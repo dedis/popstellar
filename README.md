@@ -20,3 +20,14 @@ We may develop a process for eventually merging them
 into one ultimate, stable "master" repository
 combining all the front-end and back-end builds, but that's for later if at all.
 
+Everyone working on the project,
+please create your own private "working" branches as needed
+by forking the appropriate `fe*` or `be*` branch(es) you’re working on,
+using the naming convention
+`work-(fe*|be*)-<yourname>[-optional-variant]`.
+For example,
+a branch I create to contribute to the `fe1-web` project
+might be called `work-fe1-bford` by default,
+or `work-fe1-bford-random-experiment` if I need an additional temporary branch
+for a random experiment for example.
+
