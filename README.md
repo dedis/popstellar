@@ -8,7 +8,7 @@ in the context of the following front-end and back-end branches:
 * [fe2-android](https://github.com/dedis/student20_pop/tree/fe2-android): Android native front-end implementation in Java or Scala (TBD)
 * [fe3-ios](https://github.com/dedis/student20_pop/tree/fe3-ios): Optional iOS native front-end implementation in Swift
 * [be1-go](https://github.com/dedis/student20_pop/tree/be1-go): Back-end implementation in Go
-* [be2-go](https://github.com/dedis/student20_pop/tree/be2-scala): Back-end implementation in Scala
+* [be2-scala](https://github.com/dedis/student20_pop/tree/be2-scala): Back-end implementation in Scala
 
 These branches were intentionally initialized as fresh Git repositories
 with unrelated histories,
