@@ -1,0 +1,30 @@
+import React from 'react'
+import {StyleSheet, View, Text} from 'react-native'
+
+class Home extends React.Component {
+    render() {
+        return(
+            <View style={styles.container}>
+                <Text style={styles.text}>Welcome to Personhood.Online! {'\n'}</Text>
+                <Text style={styles.text}>To connect to a local organization (LAO), please tap to Connect above. {'\n'}</Text>
+                <Text style={styles.text}>To launch a new LAO as on organizer, please tap Launch tab above. {'\n'}</Text>
+            </View>
+        )
+    }
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignContent: 'center',
+        alignItems: 'center'
+    },
+    text: {
+        textAlign: 'center',
+        fontSize: 25,
+        fontWeight: 'bold'
+    },
+  });
+
+export default Home
