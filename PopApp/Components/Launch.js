@@ -2,7 +2,9 @@ import React from 'react'
 import {StyleSheet, View, Text, Button, TextInput} from 'react-native'
 
 /*
-* The launch component
+* The Launch component
+*
+* Manage the Launch screen
 */
 class Connect extends React.Component {
     render() {

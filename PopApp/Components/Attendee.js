@@ -2,7 +2,9 @@ import React from 'react'
 import {StyleSheet, View, Text} from 'react-native'
 
 /*
-* The attendee component
+* The Attendee component
+*
+* Manage the Attendee screen
 */
 class Attendee extends React.Component {
     render() {

@@ -2,7 +2,9 @@ import React from 'react'
 import {StyleSheet, View, Text} from 'react-native'
 
 /*
-* The organization component
+* The Organization component
+*
+* Manage the Organization screen
 */
 class Organization extends React.Component {
     render() {
