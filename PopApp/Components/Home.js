@@ -3,7 +3,9 @@ import {StyleSheet, View, Text} from 'react-native'
 
 
 /*
-* The home component
+* The Home component
+*
+* Manage the Home screen
 */
 class Home extends React.Component {
     render() {

@@ -7,7 +7,9 @@ import Navigation from './Navigation/Navigation'
 
 /*
 * The start point of the app
-* It open the navigation component in a safeAreaProvider in order to resolve issue with status bar
+*
+* It open the navigation component in a safeAreaProvider to be able use
+* SafeAreaView in order to resolve issue with status bar
 */
 
 export default function App() {

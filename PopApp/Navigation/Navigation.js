@@ -12,6 +12,10 @@ const TopTabNavigator = createMaterialTopTabNavigator()
 
 /*
 * The main tab navigation component
+*
+* create a tab navigator beetween the Home, Connect and Launch component
+*
+* the SafeAreaView resolve problem with staus bar overlap
 */
 
 export default function TabNavigation() {
