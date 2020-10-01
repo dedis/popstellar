@@ -4,6 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
+/*
+    Activity used to display "Hello World"
+ */
 public class MainActivity extends AppCompatActivity {
 
     @Override
