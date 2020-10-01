@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	l, err := net.Listen("tcp", "localhost:8080")
+	l, err := net.Listen("tcp", "188.154.180.55:8080")
 	if err != nil {
 		fmt.Println(err)
 		return

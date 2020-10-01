@@ -11,7 +11,7 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 
 	// init
-	tcpAddr, err := net.ResolveTCPAddr("tcp", "127.0.0.1:8080")
+	tcpAddr, err := net.ResolveTCPAddr("tcp", "165.227.149.245:8080")
 	if err != nil {
 		fmt.Printf("TCP resolve failed:", err.Error())
 		os.Exit(1)
