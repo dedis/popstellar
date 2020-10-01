@@ -15,11 +15,11 @@ func main() {
 		return
 	}
 
-	defer l.Close()
+	l.Close()
 
 	c, err := l.Accept()
 
-	if err != nil{
+	if err != nil {
 		fmt.Println(err)
 		return
 	}
@@ -38,7 +38,10 @@ func main() {
 		fmt.Print("-> ", netData)
 		t := time.Now()
 		myTime := t.Format(time.RFC3339) + "\n"
-		c.Write([]byte(myTime))
+		_, err = c.Write([]byte(myTime))
+		if err != nil {
+			fmt.Println("unable to write to TCP stream")
+		}
 	}
 
 }
