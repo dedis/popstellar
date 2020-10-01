@@ -3,4 +3,4 @@ Proof-of-personhood, fall 2020: Android native front-end
 
 To run this project, you can either:
  * Import the project using IntelliJ or Android Studio and run the app.
- * Connect your own Android device and use `gradle build` and `gradle run`.
+ * Connect your Android device, use `gradle build` and `gradle installDebug` and open the app.
