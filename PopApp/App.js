@@ -1,13 +1,14 @@
 import 'react-native-gesture-handler'
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import SafeAreaView from 'react-native-safe-area-view';
-
-import { NavigationContainer } from '@react-navigation/native';
 
 import Navigation from './Navigation/Navigation'
+
+/*
+* The start point of the app
+* It open the navigation component in a safeAreaProvider in order to resolve issue with status bar
+*/
 
 export default function App() {
   return (

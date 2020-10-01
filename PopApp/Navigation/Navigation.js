@@ -10,7 +10,11 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 const TopTabNavigator = createMaterialTopTabNavigator()
 
-export default function App() {
+/*
+* The main tab navigation component
+*/
+
+export default function TabNavigation() {
     return (
         <NavigationContainer>
             <SafeAreaView style={{flex:1}}>

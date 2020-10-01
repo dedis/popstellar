@@ -1,6 +1,10 @@
 import React from 'react'
 import {StyleSheet, View, Text} from 'react-native'
 
+
+/*
+* The home component
+*/
 class Home extends React.Component {
     render() {
         return(

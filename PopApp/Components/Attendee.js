@@ -1,6 +1,9 @@
 import React from 'react'
 import {StyleSheet, View, Text} from 'react-native'
 
+/*
+* The attendee component
+*/
 class Attendee extends React.Component {
     render() {
         return(

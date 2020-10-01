@@ -1,6 +1,9 @@
 import React from 'react'
 import {StyleSheet, View, Text, Button, TextInput} from 'react-native'
 
+/*
+* The launch component
+*/
 class Connect extends React.Component {
     render() {
         return(
