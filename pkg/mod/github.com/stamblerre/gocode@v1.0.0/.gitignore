@@ -1,0 +1,14 @@
+*.8
+*.a
+*.out
+gocode
+gocode.exe
+goremote
+gocodetest
+*.swp
+listidents
+showcursor
+showsmap
+rename
+internal/cache
+internal/gbimporter
