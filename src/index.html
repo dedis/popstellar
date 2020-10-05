@@ -1,0 +1,27 @@
+<head>
+    <body>
+
+        <h1>Save as input in boltDB</h1>
+        <h4>And Read it</h4>
+
+        <textarea #imput></textarea>
+        <button #save></button>
+        <button #read></button>
+        
+
+        //maybe put a json file here
+        <script type="text/tiscript">
+            <!-- //read value of #input when #save is clicked -->
+            event click (#save){
+                var input = $(#input).value
+            
+                view.ReadFromSciter(input)
+            }
+
+            event click $(#read){
+                var valueFromBolt= view.ReadFromBolt()
+                $(#input).value = valueFromBolt
+            }
+        </script>
+    </body>
+</html>
