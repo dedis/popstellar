@@ -6,6 +6,10 @@ import androidx.fragment.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import com.github.dedis.student20_pop.ui.ConnectFragment;
+import com.github.dedis.student20_pop.ui.HomeFragment;
+import com.github.dedis.student20_pop.ui.LaunchFragment;
+
 /**
  * Activity used to display the different UIs
 **/
