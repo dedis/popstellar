@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/fragment_home" >
+
+    <include layout="@layout/tab_home" />
+    <include layout="@layout/tab_connect_launch" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/margin_text"
+            android:gravity="center"
+            android:textSize="@dimen/size_title"
+            android:textStyle="bold"
+            android:text="@string/text_title_welcome" />
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/margin_text"
+            android:gravity="center"
+            android:textSize="@dimen/size_body"
+            android:textStyle="bold"
+            android:text="@string/text_body_welcome" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
