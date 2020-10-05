@@ -15,9 +15,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 public class MainActivityTest {
 
-    @Rule
-    public ActivityScenarioRule<MainActivity> rule = new ActivityScenarioRule<>(MainActivity.class);
-
     @Before
     public void launchActivity() {
         ActivityScenario.launch(MainActivity.class);
