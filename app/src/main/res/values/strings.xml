@@ -13,4 +13,11 @@
     <!-- Temp -->
     <string name="text_temp_connect">Connect UI</string>
     <string name="text_temp_launch">Launch UI</string>
+
+    <string name="tab_text_1">Past Events</string>
+    <string name="tab_text_2">Present Events</string>
+    <string name="tab_text_3">Future Events</string>
+
+
+
 </resources>

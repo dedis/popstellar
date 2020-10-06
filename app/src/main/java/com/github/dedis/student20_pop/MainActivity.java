@@ -2,9 +2,13 @@ package com.github.dedis.student20_pop;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
 import android.view.View;
+
+import com.github.dedis.student20_pop.attendee.SectionsPagerAdapter;
+import com.google.android.material.tabs.TabLayout;
 
 /**
  * Activity used to display the different UIs
@@ -16,7 +20,13 @@ public final class MainActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main2);
+
+        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
+        ViewPager viewPager = findViewById(R.id.view_pager);
+        viewPager.setAdapter(sectionsPagerAdapter);
+        TabLayout tabs = findViewById(R.id.tabs);
+        tabs.setupWithViewPager(viewPager);
 
         if (findViewById(R.id.fragment_container) != null) {
             if (savedInstanceState != null) {
