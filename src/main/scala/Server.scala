@@ -42,9 +42,15 @@ object Server {
           }
         )
       }
+      //Stream that send all published messages to all clients
+      val (hsink, hsource) = MergeHub.source[Message].toMat(BroadcastHub.sink)(Keep.both).run()
+
+      def publishSubscribeRoute = path("ps") {
+        handleWebSocketMessages(PublishSubscribe.getFlow(hsink, hsource))
+      }
 
       implicit val executionContext = system.executionContext
-      val bindingFuture = Http().newServerAt("localhost", 8080).bind(route ~ wsRoute)
+      val bindingFuture = Http().newServerAt("localhost", 8080).bind(route ~ wsRoute ~ publishSubscribeRoute)
       bindingFuture.onComplete {
         case Success(value) => println("Server online at http://localhost:8080/")
         case Failure(exception) => println("Server failed to start")
