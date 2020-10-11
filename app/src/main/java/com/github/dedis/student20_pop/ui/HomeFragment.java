@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.ui.ConnectFragment;
 
 /**
  * Fragment used to display the Connect UI
