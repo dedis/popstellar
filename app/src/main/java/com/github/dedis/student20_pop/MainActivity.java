@@ -32,6 +32,11 @@ public final class MainActivity extends FragmentActivity {
         }
     }
 
+    /**
+     * Manage the fragment change after clicking a specific view.
+     *
+     * @param view the clicked view
+     */
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.tab_home:
