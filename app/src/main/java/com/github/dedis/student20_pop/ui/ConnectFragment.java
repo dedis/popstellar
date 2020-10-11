@@ -54,15 +54,13 @@ public final class ConnectFragment extends Fragment implements QRCodeListener, V
             camera = createCamera(view);
         } else {
             view.findViewById(R.id.qr_camera_preview).setVisibility(View.GONE);
-
         }
 
         return view;
     }
 
     private CameraSource createCamera(View view) {
-        view.findViewById(R.id.camera_permission_text).setVisibility(View.GONE);
-        view.findViewById(R.id.allow_camera_button).setVisibility(View.GONE);
+        view.findViewById(R.id.camera_permission).setVisibility(View.GONE);
         preview.setVisibility(View.VISIBLE);
 
         BarcodeDetector qrDetector = new BarcodeDetector.Builder(getContext())
