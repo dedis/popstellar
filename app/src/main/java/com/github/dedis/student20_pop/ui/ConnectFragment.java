@@ -25,7 +25,6 @@ import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
-import java.util.Objects;
 
 /**
  * Fragment used to display the Connect UI
@@ -49,7 +48,7 @@ public final class ConnectFragment extends Fragment implements QRCodeListener, V
         view.findViewById(R.id.allow_camera_button).setOnClickListener(this);
 
         // Check for the camera permission, if is is not granted, ask for it
-        int rc = ActivityCompat.checkSelfPermission(Objects.requireNonNull(getContext()), Manifest.permission.CAMERA);
+        int rc = ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA);
         if (rc == PackageManager.PERMISSION_GRANTED) {
             camera = createCamera(view);
         } else {
@@ -69,7 +68,7 @@ public final class ConnectFragment extends Fragment implements QRCodeListener, V
 
         qrDetector.setProcessor(new QRFocusingProcessor(qrDetector, this));
 
-        return new CameraSource.Builder(Objects.requireNonNull(getContext()), qrDetector)
+        return new CameraSource.Builder(requireContext(), qrDetector)
                 .setFacing(CameraSource.CAMERA_FACING_BACK)
                 .setRequestedPreviewSize(1600, 1024)
                 .setRequestedFps(15.0f)
@@ -122,7 +121,7 @@ public final class ConnectFragment extends Fragment implements QRCodeListener, V
                 grantResults.length != 0 &&
                 grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             // we have permission, so create the camerasource
-            camera = createCamera(Objects.requireNonNull(getView()));
+            camera = createCamera(requireView());
         }
     }
 
@@ -135,7 +134,10 @@ public final class ConnectFragment extends Fragment implements QRCodeListener, V
 
     @Override
     public void onQRCodeDetected(String url) {
-        //TODO Handle read URL
         Log.i(TAG, "Received qrcode url : " + url);
+        requireFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, ConnectingFragment.newInstance(url), TAG)
+                .addToBackStack(TAG).commit();
     }
 }

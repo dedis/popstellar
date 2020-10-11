@@ -16,4 +16,7 @@
 
     <!-- Temp -->
     <string name="text_temp_launch">Launch UI</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="connecting">Connecting...</string>
 </resources>
