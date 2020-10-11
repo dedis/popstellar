@@ -22,9 +22,7 @@ gradle installDebug
 Find the app installed on the device and open it.
 
 #### Test
+Open the virtual device and run the following command:
 ```
-gradle build
-```
-```
-gradle check
+./gradlew connectedCheck
 ```
