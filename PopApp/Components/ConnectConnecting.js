@@ -1,10 +1,12 @@
 import React from 'react'
 import {StyleSheet, View, Text, Button, ActivityIndicator} from 'react-native'
 
-/*
-    Connect to a LAO
+import STRINGS from '../res/strings'
 
-    Currently, just simulate waiting for a response
+/*
+ *  Connect to a LAO
+ *
+ *  Currently, just simulate waiting for a response
 */
 
 class ConnectConnecting extends React.Component {
@@ -12,7 +14,7 @@ class ConnectConnecting extends React.Component {
         return(
             <View style={styles.container}>
                 <View>
-                    <Text style={styles.text}>Connecting to URI</Text>
+                    <Text style={styles.text}>{STRINGS.connect_connecting_uri}</Text>
                 </View>
                 <View>
                     <View>
@@ -21,14 +23,14 @@ class ConnectConnecting extends React.Component {
                 </View>
                 <View>
                     <View style={styles.button} >
-                        <Button title="Cancel"
+                        <Button title={STRINGS.general_button_cancel}
                                 onPress={() => {
                                     this.props.navigation.navigate('Scanning');
                                     console.log(this.props.navigation)
                                 }}/>
                     </View>
                     <View style={styles.button} >
-                        <Button title="Simulate Validation"
+                        <Button title={STRINGS.connect_connecting_validate}
                                 onPress={() => {
                                     this.props.navigation.navigate('Confirm');
                                     console.log(this.props.navigation)
