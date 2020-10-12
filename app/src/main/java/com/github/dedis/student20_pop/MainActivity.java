@@ -4,8 +4,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 
+import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.ui.ConnectFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
@@ -48,6 +51,18 @@ public final class MainActivity extends FragmentActivity {
             case R.id.tab_launch:
                 showFragment(new LaunchFragment(), LaunchFragment.TAG);
                 break;
+            case R.id.button_launch:
+                String name = ((EditText) findViewById(R.id.entry_box_launch)).getText().toString();
+                Lao lao = new Lao(name);
+                // Store new lao
+                showFragment(new HomeFragment(), LaunchFragment.TAG);
+                Log.d(LaunchFragment.TAG, "New LAO created, named " + name);
+                break;
+            case R.id.button_cancel_launch:
+                ((EditText) findViewById(R.id.entry_box_launch)).getText().clear();
+                showFragment(new HomeFragment(), LaunchFragment.TAG);
+                Log.d(LaunchFragment.TAG, "LAO creation canceled");
+                break;
             default:
         }
     }
@@ -57,7 +72,8 @@ public final class MainActivity extends FragmentActivity {
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fragment_container, fragment, TAG)
-                    .addToBackStack(TAG).commit();
+                    .addToBackStack(TAG)
+                    .commit();
         }
     }
 }
