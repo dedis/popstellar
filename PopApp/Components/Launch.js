@@ -1,5 +1,6 @@
 import React from 'react'
 import {StyleSheet, View, Text, Button, TextInput} from 'react-native'
+import STRINGS from "../res/strings";
 
 /*
 * The Launch component
@@ -11,17 +12,17 @@ class Connect extends React.Component {
         return(
             <View style={styles.container}>
                 <View style={styles.viewTop}>
-                    <Text style={styles.text}>To launch a new organization please enter a name for the organization. (You can change it later.)</Text>
+                    <Text style={styles.text}>{STRINGS.launch_description}</Text>
                     <View style={styles.button}>
-                        <TextInput style={styles.textInput} placeholder="Organization name"/>
+                        <TextInput style={styles.textInput} placeholder={STRINGS.launch_organization_name}/>
                     </View>
                 </View>
                 <View style={styles.viewBottom}>
                     <View style={styles.button}>
-                        <Button title="Launch"/>
+                        <Button title={STRINGS.launch_button_launch}/>
                     </View>
                     <View style={styles.button}>
-                        <Button title="Cancel"/>
+                        <Button title={STRINGS.general_button_cancel}/>
                     </View>
                 </View>
             </View>

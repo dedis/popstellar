@@ -21,30 +21,18 @@ export default function ConnectNavigation() {
       <Stack.Screen
         name="Unapprove"
         component={ConnectUnapprove}
-        options={{
-          title: 'Unapprove',
-        }}
       />
       <Stack.Screen
         name="Scanning"
         component={ConnectScanning}
-        options={{
-          title: 'Scanning',
-        }}
       />
       <Stack.Screen
         name="Connecting"
         component={ConnectConnecting}
-        options={{
-          title: 'Connecting',
-        }}
       />
       <Stack.Screen
         name="Confirm"
         component={ConnectConfirm}
-        options={{
-          title: 'Confirm',
-        }}
       />
     </Stack.Navigator>
   );

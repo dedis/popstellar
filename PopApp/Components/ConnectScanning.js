@@ -2,18 +2,20 @@ import React from 'react'
 import {StyleSheet, View, Text, Image} from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 
+import STRINGS from '../res/strings'
+
 /*
 * Scanning connect component
 *
-* In the future will scan a QR code and connect to the LAO, now just a dummy button
+* In the future will scan a QR code and connect to the LAO, not just a dummy button
 */
 
 class ConnectScanning extends React.Component {
     render() {
         return(
             <View style={styles.container}>
-                <Text style={styles.text}>Camera View</Text>
-                <TouchableOpacity style={styles.button} onPress={() => {this.props.navigation.navigate("Connecting");}}>
+                <Text style={styles.text}>{STRINGS.connect_scanning_camera_view}</Text>
+                <TouchableOpacity style={styles.button} onPress={ () => {this.props.navigation.navigate("Connecting");} }>
                     <Image style={styles.icon} source={require("../Images/ic_camera.png")}/>
                 </TouchableOpacity>
             </View>
