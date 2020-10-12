@@ -52,18 +52,16 @@ public final class MainActivity extends FragmentActivity {
                 showFragment(new LaunchFragment(), LaunchFragment.TAG);
                 break;
             case R.id.button_launch:
-                String name = ((EditText) findViewById(R.id.entry_box_launch))
-                        .getText()
-                        .toString();
+                String name = ((EditText) findViewById(R.id.entry_box_launch)).getText().toString();
                 Lao lao = new Lao(name);
-                // Send lao name to DB, verify if null
-                Log.d(LaunchFragment.TAG, "New LAO created, named " + name);
+                // Store new lao
                 showFragment(new HomeFragment(), LaunchFragment.TAG);
+                Log.d(LaunchFragment.TAG, "New LAO created, named " + name);
                 break;
             case R.id.button_cancel_launch:
                 ((EditText) findViewById(R.id.entry_box_launch)).getText().clear();
-                Log.d(LaunchFragment.TAG, "LAO creation canceled");
                 showFragment(new HomeFragment(), LaunchFragment.TAG);
+                Log.d(LaunchFragment.TAG, "LAO creation canceled");
                 break;
             default:
         }
