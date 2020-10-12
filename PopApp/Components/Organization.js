@@ -1,5 +1,7 @@
 import React from 'react'
-import {StyleSheet, View, Text} from 'react-native'
+import { StyleSheet, View, Text } from 'react-native'
+
+import STRINGS from '../res/strings'
 
 /*
 * The organization component
@@ -8,7 +10,7 @@ class Organization extends React.Component {
     render() {
         return(
             <View style={styles.container}>
-                <Text>Organization screen</Text>
+                <Text>{STRINGS.organization_description}</Text>
             </View>
         )
     }

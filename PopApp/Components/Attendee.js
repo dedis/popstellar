@@ -1,5 +1,7 @@
 import React from 'react'
-import {StyleSheet, View, Text} from 'react-native'
+import { StyleSheet, View, Text } from 'react-native'
+
+import STRINGS from '../res/strings'
 
 /*
 * The attendee component
@@ -8,7 +10,7 @@ class Attendee extends React.Component {
     render() {
         return(
             <View style={styles.container}>
-                <Text>Attendee screen</Text>
+                <Text>{STRINGS.attendee_description}</Text>
             </View>
         )
     }

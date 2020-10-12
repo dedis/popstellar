@@ -1,13 +1,13 @@
 import 'react-native-gesture-handler'
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import React from 'react'
+import { StyleSheet } from 'react-native'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import Navigation from './Navigation/Navigation'
 
 /*
-* The start point of the app
-* It open the navigation component in a safeAreaProvider in order to resolve issue with status bar
+* The starting point of the app
+* It opens the navigation component in a safeAreaProvider in order to resolve issue with status bar
 */
 
 export default function App() {
