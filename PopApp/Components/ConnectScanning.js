@@ -16,7 +16,7 @@ class ConnectScanning extends React.Component {
             <View style={styles.container}>
                 <Text style={styles.text}>{STRINGS.connect_scanning_camera_view}</Text>
                 <TouchableOpacity style={styles.button} onPress={ () => {this.props.navigation.navigate("Connecting");} }>
-                    <Image style={styles.icon} source={require("../Images/ic_camera.png")}/>
+                    <Image style={styles.icon} source={require("../res/img/ic_camera.png")}/>
                 </TouchableOpacity>
             </View>
         )
