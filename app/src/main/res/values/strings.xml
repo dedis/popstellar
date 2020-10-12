@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Student 20 PoP</string>
 
+    <!-- General -->
+    <string name="text_button_cancel">Cancel</string>
+
     <!-- Top Tabs -->
     <string name="tab_home">Home</string>
     <string name="tab_connect">Connect</string>
@@ -10,7 +13,13 @@
     <string name="text_title_welcome">Welcome to Personhood.Online!</string>
     <string name="text_body_welcome">\n\n To connect to a local organization (LAO), please tap Connect above. \n\n To launch a new LAO as an organizer, please tap Launch tab above.</string>
 
+    <!-- Launch -->
+    <string name="text_title_launch">To launch a new organization, please enter a name for the organization.</string>
+    <string name="text_body_launch">(You can change it later.)\n\n</string>
+    <string name="text_entry_launch">Organization name</string>
+    <string name="text_button_launch">Launch</string>
+
     <!-- Temp -->
     <string name="text_temp_connect">Connect UI</string>
-    <string name="text_temp_launch">Launch UI</string>
+
 </resources>

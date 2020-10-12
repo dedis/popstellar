@@ -11,4 +11,7 @@
     <dimen name="margin_text">32dp</dimen>
     <dimen name="size_title">24sp</dimen>
     <dimen name="size_body">18sp</dimen>
+
+    <!-- Button -->
+    <dimen name="margin_button">16dp</dimen>
 </resources>
