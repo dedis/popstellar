@@ -2,13 +2,17 @@ package com.github.dedis.student20_pop;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ExpandableListView;
 
-import com.github.dedis.student20_pop.attendee.SectionsPagerAdapter;
-import com.google.android.material.tabs.TabLayout;
+import com.github.dedis.student20_pop.attendeeUI.ExpandableListViewAdapter;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 
 /**
  * Activity used to display the different UIs
@@ -16,26 +20,25 @@ import com.google.android.material.tabs.TabLayout;
 public final class MainActivity extends FragmentActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    ExpandableListViewAdapter listViewAdapter;
+    ExpandableListView expandableListView;
+    List<String> eventTypes;
+    HashMap<String, List<String>> eventList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main2);
+        setContentView(R.layout.fragment_attendee);
 
-        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
-        ViewPager viewPager = findViewById(R.id.view_pager);
-        viewPager.setAdapter(sectionsPagerAdapter);
-        TabLayout tabs = findViewById(R.id.tabs);
-        tabs.setupWithViewPager(viewPager);
+        expandableListView = findViewById(R.id.exp_list_view);
 
-        if (findViewById(R.id.fragment_container) != null) {
-            if (savedInstanceState != null) {
-                return;
-            }
+        showList();
 
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, new HomeFragment()).commit();
-        }
+        listViewAdapter = new ExpandableListViewAdapter(this, eventTypes, eventList);
+        expandableListView.setAdapter(listViewAdapter);
+        expandableListView.expandGroup(1);
+        expandableListView.expandGroup(2);
+
     }
 
     public void onClick(View view) {
@@ -61,4 +64,37 @@ public final class MainActivity extends FragmentActivity {
                     .addToBackStack(TAG).commit();
         }
     }
+
+    private void showList(){
+        eventTypes = new ArrayList<String>();
+        eventList = new HashMap<String, List<String>>();
+
+        eventTypes.add("Properties");
+        eventTypes.add("Past Events");
+        eventTypes.add("Present Events");
+        eventTypes.add("Future Events");
+
+        List<String> properties = new ArrayList<>();
+        properties.add("first property");
+        properties.add("another property");
+        properties.add("another property");
+
+        List<String> pastEvents = new ArrayList<>();
+        pastEvents.add("past event 1");
+        pastEvents.add("past event 2");
+
+        List<String> presentEvents = new ArrayList<>();
+
+        List<String> futureEvents = new ArrayList<>();
+        futureEvents.add("future event 1");
+        futureEvents.add("future event 2");
+
+        eventList.put(eventTypes.get(0), properties);
+        eventList.put(eventTypes.get(1), pastEvents);
+        eventList.put(eventTypes.get(2), presentEvents);
+        eventList.put(eventTypes.get(3), futureEvents);
+    }
+
+
+
 }
