@@ -1,6 +1,8 @@
 import React from 'react'
 import {StyleSheet, View, Text, Button} from 'react-native'
 
+import STRINGS from '../res/strings'
+
 /*
 * The unapprove component
 *
@@ -11,9 +13,9 @@ class ConnectUnapprove extends React.Component {
     render() {
         return(
             <View style={styles.container}>
-                <Text style={styles.text}>The easiest way to connect to a local organization is to scan its QR code</Text>
+                <Text style={styles.text}>{STRINGS.connect_description}</Text>
                 <View style={styles.button}>
-                    <Button title="Enable Camera Access" onPress={() => {this.props.navigation.navigate("Scanning");}}/>
+                    <Button title={STRINGS.connect_button_camera} onPress={ () => {this.props.navigation.navigate("Scanning");} }/>
                 </View>
             </View>
         );

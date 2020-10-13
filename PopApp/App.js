@@ -1,10 +1,10 @@
 import 'react-native-gesture-handler'
 import React from 'react';
-import { StyleSheet, StatusBar, Platform } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { StyleSheet, StatusBar, Platform } from 'react-native'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import Navigation from './Navigation/Navigation'
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native'
 
 /*
 * The start point of the app
