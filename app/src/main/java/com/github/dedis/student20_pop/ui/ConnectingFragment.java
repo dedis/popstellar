@@ -1,13 +1,12 @@
 package com.github.dedis.student20_pop.ui;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
 
 import com.github.dedis.student20_pop.R;
 
@@ -16,9 +15,9 @@ import com.github.dedis.student20_pop.R;
  * Use the {@link ConnectingFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ConnectingFragment extends Fragment {
+public final class ConnectingFragment extends Fragment {
 
-    private static final String URL = "url";
+    private static final String URL_EXTRA = "url";
 
     private String url;
 
@@ -32,7 +31,7 @@ public class ConnectingFragment extends Fragment {
     public static ConnectingFragment newInstance(String url) {
         ConnectingFragment fragment = new ConnectingFragment();
         Bundle args = new Bundle();
-        args.putString(URL, url);
+        args.putString(URL_EXTRA, url);
         fragment.setArguments(args);
         return fragment;
     }
@@ -41,7 +40,7 @@ public class ConnectingFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            url = getArguments().getString(URL);
+            url = getArguments().getString(URL_EXTRA);
         }
     }
 
