@@ -21,3 +21,6 @@ npm start
 
 
 Then it will open a web page and you will need to scan the QR code with your phone with the Expo app.
+
+## Coding convention
+the convention for the style of the component can be found at this link https://thoughtbot.com/blog/structure-for-styling-in-react-native
