@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment;
 import com.github.dedis.student20_pop.R;
 
 /**
- * Fragment used to display the Connect UI
+ * Fragment used to display the Home UI
 **/
 public final class HomeFragment extends Fragment {
 

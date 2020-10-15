@@ -1,12 +1,13 @@
 package com.github.dedis.student20_pop;
 
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.ui.ConnectFragment;
@@ -15,7 +16,7 @@ import com.github.dedis.student20_pop.ui.LaunchFragment;
 
 /**
  * Activity used to display the different UIs
-**/
+ **/
 public final class MainActivity extends FragmentActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -41,7 +42,7 @@ public final class MainActivity extends FragmentActivity {
      * @param view the clicked view
      */
     public void onClick(View view) {
-        switch(view.getId()) {
+        switch (view.getId()) {
             case R.id.tab_home:
                 showFragment(new HomeFragment(), HomeFragment.TAG);
                 break;
@@ -53,15 +54,17 @@ public final class MainActivity extends FragmentActivity {
                 break;
             case R.id.button_launch:
                 String name = ((EditText) findViewById(R.id.entry_box_launch)).getText().toString();
+                // Creating the LAO but not sending the information for now
                 Lao lao = new Lao(name);
-                // Store new lao
                 showFragment(new HomeFragment(), LaunchFragment.TAG);
-                Log.d(LaunchFragment.TAG, "New LAO created, named " + name);
+                Toast.makeText(this,
+                        getResources().getString(R.string.message_launch_successful, name),
+                        Toast.LENGTH_LONG)
+                        .show();
                 break;
             case R.id.button_cancel_launch:
                 ((EditText) findViewById(R.id.entry_box_launch)).getText().clear();
                 showFragment(new HomeFragment(), LaunchFragment.TAG);
-                Log.d(LaunchFragment.TAG, "LAO creation canceled");
                 break;
             default:
         }
