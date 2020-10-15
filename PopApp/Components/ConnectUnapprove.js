@@ -2,8 +2,9 @@ import React from 'react'
 import {StyleSheet, View, Text, Button} from 'react-native'
 
 import STRINGS from '../res/strings'
+import { Spacing, Typography } from '../Styles';
 
-/*
+/**
 * The unapprove component
 *
 * In the future will ask for camera permission
@@ -28,12 +29,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly'
     },
     text: {
-        fontSize: 25,
-        textAlign: "center",
-        marginHorizontal: 10
+        ...Typography.base
     },
     button:{
-        marginHorizontal: 50
+        marginHorizontal: Spacing.xl
     }
   });
 

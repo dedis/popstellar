@@ -1,6 +1,7 @@
 import React from 'react'
 import {StyleSheet, View, Text, Button, TextInput} from 'react-native'
 import STRINGS from "../res/strings";
+import { Spacing, Typography } from '../Styles';
 
 /*
 * The Launch component
@@ -36,20 +37,15 @@ const styles = StyleSheet.create({
         justifyContent: "space-around",
     },
     text: {
-        textAlign: "center",
-        fontSize: 25,
-        marginHorizontal: 15,
+        ...Typography.base
     },
     textInput: {
-        fontSize: 25,
-        marginHorizontal: 15,
+        ...Typography.base,
         borderBottomWidth: 2,
     },
     button: {
-        paddingHorizontal: 50,
-        paddingVertical: 20,
-    },
-    viewTop: {
+        paddingHorizontal: Spacing.xl,
+        paddingVertical: Spacing.s,
     },
     viewBottom: {
         justifyContent: "flex-end"

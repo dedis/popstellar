@@ -2,8 +2,9 @@ import React from 'react'
 import {StyleSheet, View, Text} from 'react-native'
 
 import STRINGS from '../res/strings'
+import { Typography } from '../Styles';
 
-/*
+/**
 * The Home component
 *
 * Manage the Home screen
@@ -26,10 +27,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     text: {
-        textAlign: 'center',
-        fontSize: 25,
-        fontWeight: 'bold',
-        margin: 15
+        ...Typography.important
     },
   });
 

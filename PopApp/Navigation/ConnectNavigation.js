@@ -4,8 +4,9 @@ import ConnectUnapprove from '../Components/ConnectUnapprove';
 import ConnectScanning from '../Components/ConnectScanning';
 import ConnectConnecting from '../Components/ConnectConnecting';
 import ConnectConfirm from '../Components/ConnectConfirm';
+import STRINGS from '../res/strings';
 
-/*
+/**
 * Define the Connect stack navigation
 */
 
@@ -19,19 +20,19 @@ export default function ConnectNavigation() {
       }}
     >
       <Stack.Screen
-        name="Unapprove"
+        name={STRINGS.connect_unapproved_title}
         component={ConnectUnapprove}
       />
       <Stack.Screen
-        name="Scanning"
+        name={STRINGS.connect_scanning_title}
         component={ConnectScanning}
       />
       <Stack.Screen
-        name="Connecting"
+        name={STRINGS.connect_connecting_title}
         component={ConnectConnecting}
       />
       <Stack.Screen
-        name="Confirm"
+        name={STRINGS.connect_confirm_title}
         component={ConnectConfirm}
       />
     </Stack.Navigator>

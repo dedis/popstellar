@@ -9,7 +9,7 @@ import STRINGS from '../res/strings'
 
 const TopTabNavigator = createMaterialTopTabNavigator();
 
-/*
+/**
 * The main tab navigation component
 *
 * create a tab navigator between the Home, Connect and Launch component
