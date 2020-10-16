@@ -2,8 +2,9 @@ import React from 'react'
 import {StyleSheet, View, Text, Button, ActivityIndicator} from 'react-native'
 
 import STRINGS from '../res/strings'
+import { Buttons, Colors, Spacing, Typography } from '../Styles';
 
-/*
+/**
  *  Connect to a LAO
  *
  *  Currently, just simulate waiting for a response
@@ -18,7 +19,7 @@ class ConnectConnecting extends React.Component {
                 </View>
                 <View>
                     <View>
-                        <ActivityIndicator size="large" color="#2196F3"/>
+                        <ActivityIndicator size="large" color={ Colors.blue }/>
                     </View>
                 </View>
                 <View>
@@ -26,14 +27,12 @@ class ConnectConnecting extends React.Component {
                         <Button title={STRINGS.general_button_cancel}
                                 onPress={() => {
                                     this.props.navigation.navigate('Scanning');
-                                    console.log(this.props.navigation)
                                 }}/>
                     </View>
                     <View style={styles.button} >
                         <Button title={STRINGS.connect_connecting_validate}
                                 onPress={() => {
                                     this.props.navigation.navigate('Confirm');
-                                    console.log(this.props.navigation)
                                 }}/>
                     </View>
                 </View>
@@ -48,13 +47,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly'
     },
     text: {
-        fontSize: 25,
-        textAlign: "center",
-        marginHorizontal: 10
+        ...Typography.base,
     },
     button:{
-        marginHorizontal: 50,
-        marginVertical: 10,
+        ...Buttons.base
     },
   });
 

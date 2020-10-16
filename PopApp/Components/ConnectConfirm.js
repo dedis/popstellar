@@ -3,8 +3,9 @@ import {StyleSheet, View, Text, Button} from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 
 import STRINGS from '../res/strings'
+import { Spacing, Typography } from '../Styles'
 
-/*
+/**
 * Ask for confirmation to connect to LAO
 *
 * Currently, just go to the Launch tab.
@@ -58,25 +59,22 @@ Integer sit amet quam vel turpis ultricies tristique ac at mauris. Vestibulum ef
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        
     },
     text: {
-        fontSize: 25,
-        textAlign: "center",
-        marginHorizontal: 10
+        ...Typography.base,
     },
     buttonView:{
         flex: 2,
         flexDirection: 'column',
     },
     button:{
-        padding: 5
+        padding: Spacing.xs
     },
     viewCenter: {
         flex: 8,
         justifyContent: 'center',
         borderWidth: 1,
-        margin: 10,
+        margin: Spacing.xs,
     },
     view: {
         flex: 1,

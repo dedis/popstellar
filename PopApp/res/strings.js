@@ -22,19 +22,19 @@ const STRINGS = {
     connect_button_camera : 'Enable Camera Access',
 
     // Unapproved Connect Strings
-    connect_unapproved_title : 'Unapproved', // unused
+    connect_unapproved_title : 'Unapproved',
 
     // Scanning Connect Strings
-    connect_scanning_title : 'Scanning',  // unused
+    connect_scanning_title : 'Scanning',
     connect_scanning_camera_view : 'Camera view',
 
     // Connecting Connect Strings
-    connect_connecting_title : 'Connecting',  // unused
+    connect_connecting_title : 'Connecting',
     connect_connecting_uri : 'Connecting to URI',
     connect_connecting_validate : 'Simulate Validation',
 
     // Confirm Connect Strings
-    connect_confirm_title : 'Confirm',  // unused
+    connect_confirm_title : 'Confirm',
     connect_confirm_description : 'Connect to this local organization?',
 
 
