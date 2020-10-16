@@ -35,4 +35,18 @@ public class MainActivityTest {
         onView(withId(R.id.tab_launch)).perform(click());
         onView(withId(R.id.fragment_launch)).check(matches(isDisplayed()));
     }
+
+    @Test
+    public void onClickLaunchLAOTest() {
+        onView(withId(R.id.tab_launch)).perform(click());
+        onView(withId(R.id.button_launch)).perform(click());
+        onView(withId(R.id.fragment_home)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void onClickCancelLAOTest() {
+        onView(withId(R.id.tab_launch)).perform(click());
+        onView(withId(R.id.button_cancel_launch)).perform(click());
+        onView(withId(R.id.fragment_home)).check(matches(isDisplayed()));
+    }
 }
