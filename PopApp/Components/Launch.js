@@ -1,19 +1,32 @@
 import React from 'react'
 import {StyleSheet, View, Text, Button, TextInput} from 'react-native'
+import { Spacing, Typography } from '../Styles';
 
 import STRINGS from '../res/strings'
 
 /*
-* The launch component
+* The Launch component
+*
+* Manage the Launch screen
 */
 class Connect extends React.Component {
     render() {
         return(
             <View style={styles.container}>
-                <Text style={styles.text}>{STRINGS.launch_description}</Text>
-                <TextInput placeholder={STRINGS.launch_organization_name}/>
-                <Button style={styles.object} title={STRINGS.launch_button_launch}/>
-                <Button style={styles.object} title={STRINGS.launch_button_cancel}/>
+                <View style={styles.viewTop}>
+                    <Text style={styles.text}>{STRINGS.launch_description}</Text>
+                    <View style={styles.button}>
+                        <TextInput style={styles.textInput} placeholder={STRINGS.launch_organization_name}/>
+                    </View>
+                </View>
+                <View style={styles.viewBottom}>
+                    <View style={styles.button}>
+                        <Button title={STRINGS.launch_button_launch}/>
+                    </View>
+                    <View style={styles.button}>
+                        <Button title={STRINGS.general_button_cancel}/>
+                    </View>
+                </View>
             </View>
         )
     }
@@ -22,11 +35,22 @@ class Connect extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center'
+        justifyContent: "space-around",
     },
     text: {
-        textAlign: "center"
-    }
+        ...Typography.base
+    },
+    textInput: {
+        ...Typography.base,
+        borderBottomWidth: 2,
+    },
+    button: {
+        paddingHorizontal: Spacing.xl,
+        paddingVertical: Spacing.s,
+    },
+    viewBottom: {
+        justifyContent: "flex-end"
+    },
   });
 
 export default Connect
