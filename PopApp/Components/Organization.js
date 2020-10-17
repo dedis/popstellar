@@ -1,8 +1,6 @@
 import React from 'react'
 import { StyleSheet, View, Text } from 'react-native'
 
-import STRINGS from '../res/strings'
-
 import STRINGS from "../res/strings";
 import { Views } from '../Styles'
 

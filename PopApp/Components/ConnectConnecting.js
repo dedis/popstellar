@@ -2,7 +2,7 @@ import React from 'react'
 import {StyleSheet, View, Text, Button, ActivityIndicator} from 'react-native'
 
 import STRINGS from '../res/strings'
-import { Buttons, Colors, Spacing, Typography } from '../Styles';
+import { Buttons, Colors, Typography } from '../Styles';
 
 /**
  *  Connect to a LAO
