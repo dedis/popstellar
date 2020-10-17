@@ -6,7 +6,7 @@ import ConnectNavigation from '../Navigation/ConnectNavigation'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import STRINGS from '../res/strings'
-import { Dimensions, StyleSheet } from 'react-native'
+import { Dimensions, Platform, StyleSheet } from 'react-native'
 
 const TopTabNavigator = createMaterialTopTabNavigator();
 
@@ -35,6 +35,11 @@ const styles = StyleSheet.create({
         flex:1,
     },
     navigator: {
-        width: "100vw"
+        ...Platform.select({
+            web: {
+                width: '100vw',
+            },
+            default: {}
+        })
     }
 })
