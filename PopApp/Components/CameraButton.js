@@ -14,8 +14,7 @@ class CameraButton extends React.Component {
 
         return(
             <View>
-                <Button title="test" onPress={() => console.log(this.props)} />
-                <TouchableOpacity style={styles.button} onPress={() => {console.log(this)} }>
+                <TouchableOpacity style={styles.button} onPress={ () => { this.props.action() } }>
                     <Image style={styles.icon} source={require("../res/img/ic_camera.png")}/>
                 </TouchableOpacity>
             </View>
