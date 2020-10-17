@@ -1,5 +1,5 @@
 import React from 'react'
-import {StyleSheet, Image} from 'react-native'
+import {StyleSheet, Image, View, Button} from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 
 import { Colors } from '../Styles'
@@ -13,9 +13,12 @@ class CameraButton extends React.Component {
     render() {
 
         return(
-            <TouchableOpacity style={styles.button} onPress={ () => {this.props.action();} }>
-                <Image style={styles.icon} source={require("../res/img/ic_camera.png")}/>
-            </TouchableOpacity>
+            <View>
+                <Button title="test" onPress={() => console.log(this.props)} />
+                <TouchableOpacity style={styles.button} onPress={() => {console.log(this)} }>
+                    <Image style={styles.icon} source={require("../res/img/ic_camera.png")}/>
+                </TouchableOpacity>
+            </View>
         )
     }
 }

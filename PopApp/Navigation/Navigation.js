@@ -6,6 +6,7 @@ import ConnectNavigation from '../Navigation/ConnectNavigation'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import STRINGS from '../res/strings'
+import { Dimensions, StyleSheet } from 'react-native'
 
 const TopTabNavigator = createMaterialTopTabNavigator();
 
@@ -19,12 +20,21 @@ const TopTabNavigator = createMaterialTopTabNavigator();
 
 export default function TabNavigation() {
     return (
-        <SafeAreaView style={{ flex: 1}}>
-            <TopTabNavigator.Navigator>
-            <TopTabNavigator.Screen name={STRINGS.navigation_tab_home} component={Home} />
-            <TopTabNavigator.Screen name={STRINGS.navigation_tab_connect} component={ConnectNavigation} />
-            <TopTabNavigator.Screen name={STRINGS.navigation_tab_launch} component={Launch} />
+        <SafeAreaView style={ styles.view }>
+            <TopTabNavigator.Navigator style={ styles.navigator }>
+                <TopTabNavigator.Screen name={STRINGS.navigation_tab_home} component={Home} />
+                <TopTabNavigator.Screen name={STRINGS.navigation_tab_connect} component={ConnectNavigation} />
+                <TopTabNavigator.Screen name={STRINGS.navigation_tab_launch} component={Launch} />
             </TopTabNavigator.Navigator>
         </SafeAreaView>
     );
-  }
+}
+
+const styles = StyleSheet.create({
+    view: {
+        flex:1,
+    },
+    navigator: {
+        width: "100vw"
+    }
+})
