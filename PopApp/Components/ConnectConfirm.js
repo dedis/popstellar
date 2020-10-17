@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
     buttonView:{
         flex: 2,
         flexDirection: 'column',
+        marginBottom: Spacing.xl
     },
     button:{
         padding: Spacing.xs
