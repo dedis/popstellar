@@ -1,6 +1,3 @@
-import {Text} from "react-native";
-import React from "react";
-
 const STRINGS = {
 
     /* --- GENERAL strings --- */
