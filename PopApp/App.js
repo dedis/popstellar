@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler'
 import React from 'react';
 import { StyleSheet, StatusBar, Platform } from 'react-native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
