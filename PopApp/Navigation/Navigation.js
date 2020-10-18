@@ -1,13 +1,13 @@
 import React from 'react'
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
-import Launch from '../Components/Launch'
-import Home from '../Components/Home'
-
-import ConnectNavigation from '../Navigation/ConnectNavigation'
+import { Platform, StyleSheet } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 
 import STRINGS from '../res/strings'
-import { Platform, StyleSheet } from 'react-native'
+
+import Launch from '../Components/Launch'
+import Home from '../Components/Home'
+import ConnectNavigation from '../Navigation/ConnectNavigation'
 
 
 const TopTabNavigator = createMaterialTopTabNavigator();
