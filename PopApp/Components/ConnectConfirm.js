@@ -1,9 +1,9 @@
 import React from 'react'
-import {StyleSheet, View, Text, Button} from 'react-native'
-import { ScrollView } from 'react-native-gesture-handler'
+import { StyleSheet, View, ScrollView, Text, Button } from 'react-native'
 
 import STRINGS from '../res/strings'
 import { Spacing, Typography } from '../Styles'
+
 
 /**
 * Ask for confirmation to connect to LAO
