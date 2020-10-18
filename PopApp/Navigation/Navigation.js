@@ -1,11 +1,14 @@
 import React from 'react'
-import {createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
+import { Platform, StyleSheet } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
+
+import STRINGS from '../res/strings'
+
 import Launch from '../Components/Launch'
 import Home from '../Components/Home'
 import ConnectNavigation from '../Navigation/ConnectNavigation'
-import { SafeAreaView } from 'react-native-safe-area-context'
 
-import STRINGS from '../res/strings'
 
 const TopTabNavigator = createMaterialTopTabNavigator();
 
@@ -19,12 +22,26 @@ const TopTabNavigator = createMaterialTopTabNavigator();
 
 export default function TabNavigation() {
     return (
-        <SafeAreaView style={{ flex: 1}}>
-            <TopTabNavigator.Navigator>
-            <TopTabNavigator.Screen name={STRINGS.navigation_tab_home} component={Home} />
-            <TopTabNavigator.Screen name={STRINGS.navigation_tab_connect} component={ConnectNavigation} />
-            <TopTabNavigator.Screen name={STRINGS.navigation_tab_launch} component={Launch} />
+        <SafeAreaView style={ styles.view }>
+            <TopTabNavigator.Navigator style={ styles.navigator }>
+                <TopTabNavigator.Screen name={STRINGS.navigation_tab_home} component={Home} />
+                <TopTabNavigator.Screen name={STRINGS.navigation_tab_connect} component={ConnectNavigation} />
+                <TopTabNavigator.Screen name={STRINGS.navigation_tab_launch} component={Launch} />
             </TopTabNavigator.Navigator>
         </SafeAreaView>
     );
-  }
+}
+
+const styles = StyleSheet.create({
+    view: {
+        flex:1,
+    },
+    navigator: {
+        ...Platform.select({
+            web: {
+                width: '100vw',
+            },
+            default: {}
+        })
+    }
+});

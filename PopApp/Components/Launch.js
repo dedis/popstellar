@@ -1,7 +1,9 @@
 import React from 'react'
-import {StyleSheet, View, Text, Button, TextInput} from 'react-native'
-import STRINGS from "../res/strings";
+import { StyleSheet, View, Text, Button, TextInput } from 'react-native'
+
+import STRINGS from '../res/strings'
 import { Spacing, Typography } from '../Styles';
+
 
 /*
 * The Launch component

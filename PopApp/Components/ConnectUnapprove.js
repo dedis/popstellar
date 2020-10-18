@@ -1,11 +1,12 @@
 import React from 'react'
-import {StyleSheet, View, Text, Button} from 'react-native'
+import { StyleSheet, View, Text, Button } from 'react-native'
 
 import STRINGS from '../res/strings'
 import { Spacing, Typography } from '../Styles';
 
+
 /**
-* The unapprove component
+* The unapproved component
 *
 * In the future will ask for camera permission
 */

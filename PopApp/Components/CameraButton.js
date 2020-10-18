@@ -1,21 +1,22 @@
 import React from 'react'
-import {StyleSheet, Image} from 'react-native'
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import { StyleSheet, Image, View, TouchableOpacity } from 'react-native'
 
 import { Colors } from '../Styles'
 
+
 /**
 * Camera button
-* use action parameter to difine the onPress action
+* use action parameter to define the onPress action
 */
 
 class CameraButton extends React.Component {
     render() {
-
         return(
-            <TouchableOpacity style={styles.button} onPress={ () => {this.props.action();} }>
-                <Image style={styles.icon} source={require("../res/img/ic_camera.png")}/>
-            </TouchableOpacity>
+            <View>
+                <TouchableOpacity style={styles.button} onPress={ () => { this.props.action() } }>
+                    <Image style={styles.icon} source={require("../res/img/ic_camera.png")}/>
+                </TouchableOpacity>
+            </View>
         )
     }
 }

@@ -1,10 +1,10 @@
 import React from 'react'
-import {StyleSheet, View, Text } from 'react-native'
+import { StyleSheet, View, Text } from 'react-native'
 
 import STRINGS from '../res/strings'
-
 import { Typography } from '../Styles'
 import CameraButton from './CameraButton'
+
 
 /**
 * Scanning connect component
