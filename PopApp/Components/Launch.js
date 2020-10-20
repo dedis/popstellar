@@ -11,13 +11,23 @@ import { Spacing, Typography } from '../Styles';
 * Manage the Launch screen
 */
 class Connect extends React.Component {
+    constructor(props) {
+        super(props)
+        this.LAOName = React.createRef()
+    }
+
+    _cancelAction() {
+        this.LAOName.current.clear()
+        this.props.navigation.navigate("Home")
+    }
+
     render() {
         return(
             <View style={styles.container}>
                 <View style={styles.viewTop}>
                     <Text style={styles.text}>{STRINGS.launch_description}</Text>
                     <View style={styles.button}>
-                        <TextInput style={styles.textInput} placeholder={STRINGS.launch_organization_name}/>
+                        <TextInput ref={this.LAOName} style={styles.textInput} placeholder={STRINGS.launch_organization_name}/>
                     </View>
                 </View>
                 <View style={styles.viewBottom}>
@@ -25,7 +35,7 @@ class Connect extends React.Component {
                         <Button title={STRINGS.launch_button_launch}/>
                     </View>
                     <View style={styles.button}>
-                        <Button title={STRINGS.general_button_cancel}/>
+                        <Button title={STRINGS.general_button_cancel} onPress={() => this._cancelAction()}/>
                     </View>
                 </View>
             </View>
