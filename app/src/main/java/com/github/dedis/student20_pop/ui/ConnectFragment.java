@@ -70,7 +70,8 @@ public final class ConnectFragment extends Fragment implements QRCodeListener, V
 
         return new CameraSource.Builder(requireContext(), qrDetector)
                 .setFacing(CameraSource.CAMERA_FACING_BACK)
-                .setRequestedPreviewSize(1600, 1024)
+                .setRequestedPreviewSize(getResources().getInteger(R.integer.requested_preview_width),
+                                         getResources().getInteger(R.integer.requested_preview_height))
                 .setRequestedFps(15.0f)
                 .setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)
                 .build();

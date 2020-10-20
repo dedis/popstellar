@@ -25,7 +25,5 @@
     <string name="message_launch_successful">LAO %1$s created successfully</string>
 
     <!-- Temp -->
-    <string name="text_temp_connect">Connect UI</string>
-    <string name="text_temp_launch">Launch UI</string>
-    <string name="connecting">Connecting...</string>
+    <string name="connecting">Connecting…</string>
 </resources>

@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresPermission;
 
+import com.github.dedis.student20_pop.R;
 import com.google.android.gms.common.images.Size;
 import com.google.android.gms.vision.CameraSource;
 
@@ -109,8 +110,9 @@ public class CameraPreview extends ViewGroup {
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        int width = 240;
-        int height = 320;
+        int width = getResources().getInteger(R.integer.camera_preview_width);
+        int height = getResources().getInteger(R.integer.camera_preview_height);
+
         if (mCameraSource != null) {
             Size size = mCameraSource.getPreviewSize();
             if (size != null) {
