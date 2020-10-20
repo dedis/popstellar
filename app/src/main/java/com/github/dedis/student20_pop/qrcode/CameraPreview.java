@@ -32,6 +32,11 @@ import com.google.android.gms.vision.CameraSource;
 
 import java.io.IOException;
 
+/**
+ * View to show the camera preview in a frame.
+ *
+ * It uses com.google.android.gms.vision.CameraSource to get the camera's image
+ */
 public class CameraPreview extends ViewGroup {
     private static final String TAG = "CameraPreview";
 
