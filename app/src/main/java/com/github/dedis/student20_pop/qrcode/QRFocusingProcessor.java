@@ -8,6 +8,11 @@ import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
+/**
+ * A Barcode processor.
+ *
+ * This class handles the detection of barcodes and chooses the most centered to be decoded.
+ */
 public class QRFocusingProcessor extends FocusingProcessor<Barcode> {
 
     public QRFocusingProcessor(BarcodeDetector detector, QRCodeListener listener) {
@@ -40,6 +45,11 @@ public class QRFocusingProcessor extends FocusingProcessor<Barcode> {
         return id;
     }
 
+    /**
+     * Tracker for barcodes
+     *
+     * Handles new barcode detection and notify the listener
+     */
     private static class BarcodeTracker extends Tracker<Barcode> {
 
         private final QRCodeListener listener;

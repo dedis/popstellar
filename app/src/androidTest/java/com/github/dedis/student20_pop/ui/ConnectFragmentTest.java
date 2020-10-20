@@ -17,6 +17,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+/**
+ * Class handling connect fragment tests
+ */
 public class ConnectFragmentTest {
 
     private static final String TEST_URL = "Test url";
