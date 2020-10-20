@@ -3,8 +3,10 @@ package main
 import (
 	"log"
 	"net/http"
+	"strconv"
 	"sync"
 
+	"github.com/boltdb/bolt"
 	"github.com/gorilla/websocket"
 )
 
@@ -17,14 +19,32 @@ type connection struct {
 	h *hub
 }
 
-func (c *connection) reader(wg *sync.WaitGroup, wsConn *websocket.Conn) {
+func (c *connection) reader(wg *sync.WaitGroup, wsConn *websocket.Conn, database *bolt.DB) {
 	defer wg.Done()
+	i := 0
 	for {
 		_, message, err := wsConn.ReadMessage()
 		if err != nil {
 			break
 		}
 		c.h.broadcast <- message
+
+		// store msg in DB
+		database.Update(func(tx *bolt.Tx) error {
+			b, err1 := tx.CreateBucketIfNotExists([]byte("MyBucket"))
+			if err1 != nil {
+				log.Fatal(err1)
+				return err1
+			}
+			err2 := b.Put([]byte(strconv.Itoa(i)), message)
+			if err2 != nil {
+				log.Fatal(err2)
+				return err2
+			}
+			i++
+			return nil
+
+		})
 	}
 }
 
@@ -42,6 +62,9 @@ var upgrader = &websocket.Upgrader{ReadBufferSize: 1024, WriteBufferSize: 1024}
 
 type wsHandler struct {
 	h *hub
+
+	// the database
+	database *bolt.DB
 }
 
 func (wsh wsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -50,13 +73,14 @@ func (wsh wsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		log.Printf("error upgrading %s", err)
 		return
 	}
+
 	c := &connection{send: make(chan []byte, 256), h: wsh.h}
 	c.h.addConnection(c)
 	defer c.h.removeConnection(c)
 	var wg sync.WaitGroup
 	wg.Add(2)
 	go c.writer(&wg, wsConn)
-	go c.reader(&wg, wsConn)
+	go c.reader(&wg, wsConn, wsh.database)
 	wg.Wait()
 	wsConn.Close()
 }
