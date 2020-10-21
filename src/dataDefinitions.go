@@ -1,8 +1,6 @@
 package src
 
-import( 
-	"hash"
-)
+import	"hash"
 
 /*
 Data Types:
