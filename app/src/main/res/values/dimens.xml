@@ -1,21 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="appbar_padding">16dp</dimen>
-    <dimen name="fab_margin">16dp</dimen>
-    <dimen name="appbar_padding_top">8dp</dimen>
-    <dimen name="text_margin">16dp</dimen>
+    <!-- Tabs -->
+    <dimen name="guideline_horizontal_tab">0.08</dimen>
+    <dimen name="guideline_vertical_tab_home">0.33</dimen>
+    <dimen name="guideline_vertical_tab_connect">0.66</dimen>
+
 
     <!-- Text -->
     <dimen name="margin_text">32dp</dimen>
     <dimen name="size_title">24sp</dimen>
     <dimen name="size_body">18sp</dimen>
 
-    <!-- Tabs -->
-    <dimen name="guideline_horizontal_tab">0.08</dimen>
-    <dimen name="guideline_vertical_tab_home">0.33</dimen>
-    <dimen name="guideline_vertical_tab_connect">0.66</dimen>
+    <!-- Camera preview -->
+    <integer name="camera_preview_width">240</integer>
+    <integer name="camera_preview_height">320</integer>
+
+    <string name="camera_preview_ratio">3:4</string>
+    <dimen name="camera_preview_margin">50dp</dimen>
+
+    <integer name="requested_preview_width">1600</integer>
+    <integer name="requested_preview_height">1024</integer>
+
+    <!-- Button -->
+    <dimen name="margin_button">16dp</dimen>
 </resources>
