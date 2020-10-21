@@ -9,6 +9,18 @@ and/or displayed in the given format but may be stored in bytes.
 
 */
 
+
+/* idea for BoltDB
+3 nested bucket
+ key : ID => Value new Bucket(LAO_1){
+	key  : ID => value = 0xA123DD
+	key organizerpkyey => ...LAO
+	key memeber => new Bucket(LAO_MEMBERS){
+		key : 1 => ...
+		key : 2 => ...
+	}
+*/
+
 type pKey int32 //TODO type ?
 type token hash.Hash // TODO 32 64
 type signature hash.Hash // TODO 32 64
@@ -34,16 +46,6 @@ type LAO struct {
 	tokensEmitted []token
 }
 
-//3 nested bucket
-//LAO
-/*  key : ID => Value new Bucket(LAO_1){
-	key  : ID => value = 0xA123DD
-	key organizerpkyey => ...LAO
-	key memeber => new Bucket(LAO_MEMBERS){
-		key : 1 => ...
-		key : 2 => ...
-	}
-*/
 
 
 /*Private information (*state stored only on the client*):
