@@ -1,2 +1,0 @@
-package bar
-func Bar() {}

@@ -1,8 +1,0 @@
-//line c:\\file\\path\\to\\file.go:1
-package a
-
-//line c:\\file\\path\\to\\file.go:2
-type x struct {
-        Foo int `json:"foo"`
-        bar int
-}

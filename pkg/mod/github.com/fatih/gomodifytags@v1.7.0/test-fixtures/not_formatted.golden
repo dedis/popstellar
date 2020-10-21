@@ -1,6 +1,0 @@
-package a
-
-type x struct {
-	Foo int `json:"foo"`
-	bar int `json:"bar"`
-}

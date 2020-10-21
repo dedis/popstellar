@@ -1,8 +1,0 @@
-package p
-
-func FuncX() {}
-func funcY() {}
-
-func f() {
-	fun@
-}

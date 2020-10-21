@@ -1,7 +1,0 @@
-package foo
-
-type foo struct {
-	bar       `json:"bar"`
-	MyExample bool     `json:"myExample"`
-	MyAnother []string `json:"myAnother"`
-}

@@ -84,3 +84,13 @@ func (wsh wsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 	wsConn.Close()
 }
+
+func (wsh wsHandler) HandleMessage(msg string) {
+	//"unpack message"
+
+	//local actions depending on message
+
+	//send response to client
+
+	//return code
+}

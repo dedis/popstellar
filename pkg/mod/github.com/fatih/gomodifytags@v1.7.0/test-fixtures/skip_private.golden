@@ -1,6 +1,0 @@
-package foo
-
-type foo struct {
-	Bar string `json:"bar"`
-	t   bool
-}

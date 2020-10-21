@@ -1,4 +1,0 @@
-Found 3 candidates:
-  func Error() string
-  var Kind reflect.Kind
-  var Method string
