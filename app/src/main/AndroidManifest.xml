@@ -21,13 +21,8 @@
             </intent-filter>
         </activity>
 
-<<<<<<< HEAD
-
-        <uses-library android:name="android.test.runner"
-=======
         <uses-library
             android:name="android.test.runner"
->>>>>>> fe2-android
             android:required="false" />
     </application>
 

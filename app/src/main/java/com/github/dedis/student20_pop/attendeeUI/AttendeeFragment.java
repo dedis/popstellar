@@ -69,7 +69,7 @@ public class AttendeeFragment extends Fragment {
         events.put(EventCategory.PRESENT, new ArrayList<Event>());
         events.put(EventCategory.FUTURE, new ArrayList<Event>());
 
-        for (Event e: lao.getEvents()){
+        /*for (Event e: lao.getEvents()){
             switch (e.getCategory()){
                 case PAST:
                     events.get(EventCategory.PAST).add(e);
@@ -82,7 +82,7 @@ public class AttendeeFragment extends Fragment {
                     break;
                 default:
             }
-        }
+        }*/
 
         //Still need to order the events in chronological order
     }
@@ -95,12 +95,14 @@ public class AttendeeFragment extends Fragment {
         Event e5 = new Event("Event 2", "Not here", Event.EventType.ROLL_CALL, EventCategory.PRESENT);
         Event e6 = new Event("Event 1", "EPFL", Event.EventType.MEETING, EventCategory.PAST);
 
+        /*
         lao.addEvent(e1);
         lao.addEvent(e2);
         lao.addEvent(e3);
         lao.addEvent(e4);
         lao.addEvent(e5);
         lao.addEvent(e6);
+         */
 
         return true;
     }
