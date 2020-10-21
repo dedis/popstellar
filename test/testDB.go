@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	db, err := bolt.Open("src/TestPublishSubscribe/test.db", 0777, nil)
+	db, err := bolt.Open("../src/PublishSubscribeSaveToDB/test.db", 0777, nil)
 	if err != nil {
 		log.Fatal("there was an error : ", err)
 	}
