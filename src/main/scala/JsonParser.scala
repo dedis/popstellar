@@ -16,25 +16,26 @@ object JsonParser {
 
     /* Simple Json Case class parsing */
     val toJsonLao: JsValue = LaoCreationMessage("Event0", "pkOrganizer", List("pkW1", "pkW2", "pkW3"), "attestation").toJson
-    //println(toJsonLao.prettyPrint)
-    val fromJsonEvent: LaoCreationMessage = toJsonLao.convertTo[LaoCreationMessage]
-    //println(s"Organizer's key : ${fromJsonEvent.organizer}")
+    //println(s"Organizer's key : ${toJsonLao.convertTo[LaoCreationMessage].organizer}")
+
 
     // Simulate answers to frontEnd
     val positiveAnswerJson = JsonMessageAnswer(success = true, None).toJson
-    //println(positiveAnswerJson.prettyPrint)
     val negativeAnswerJson = JsonMessageAnswer(success = false, Some("Error :> invalid format!")).toJson
+    //println(positiveAnswerJson.prettyPrint)
     //println(negativeAnswerJson.prettyPrint)
 
 
     /* Class Json parsing */
     val testClassInst: TestClassJsonParsing = new TestClassJsonParsing(
-      "test", 101, true, List("k1", "k2"), List(Attendee("Attendee1", "key1"), Attendee("Attendee2", "key2")), Some(3.5)
+      "test", 101, true, List("k1", "k3"), List(Attendee("Attendee1", "key1"), Attendee("Attendee2", "key2")), Some(3.5)
     )
-    val testClassInstJson = testClassInst.toJson
-    println(testClassInstJson.prettyPrint)
+    val testClassInstJson: JsValue = testClassInst.toJson
+    //println(testClassInstJson.prettyPrint)
+    //println(testClassInstJson.asJsObject().fields)
 
-    val testClassInstCon = testClassInstJson.convertTo[TestClassJsonParsing]
-    //println(s"TestClass attendees : ${testClassInstCon.attendees}")
+    val testClassInstCon: TestClassJsonParsing = testClassInstJson.convertTo[TestClassJsonParsing]
+    //println(s"Parsing correct for testClass ? ${testClassInstJson.compactPrint == testClassInstCon.toJson.compactPrint}")
+
   }
 }

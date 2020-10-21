@@ -1,6 +1,8 @@
 import spray.json._
 import types._
 
+import scala.collection.immutable.TreeMap
+
 
 object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
@@ -13,39 +15,52 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
   // Parsing for classes
   implicit object TestClassFormat extends RootJsonFormat[TestClassJsonParsing] {
-    override def read(json: JsValue): TestClassJsonParsing = json match {
-      case JsArray(Vector(JsString(name), JsNumber(number), JsBoolean(b), JsArray(keys), JsArray(attendees), additional)) =>
-        new TestClassJsonParsing(
-          name,
-          number.toInt,
-          b,
-          keys.map(_.convertTo[Key]).toList,
-          attendees.map(_.convertTo[Attendee]).toList,
-          additional match {
-            case JsNumber(d) => Some(d.toDouble)
-            case _ => None
-          }
-        )
-      case _ => throw DeserializationException("invalid TestClassFormat input")
+    override def read(json: JsValue): TestClassJsonParsing = json.asJsObject.getFields("testClass") match {
+      case Seq(values @ JsObject(_)) =>
+        values.getFields("name", "number", "b", "keys", "attendees", "additional") match {
+          case Seq(JsString(name), JsNumber(num), JsBoolean(b), JsArray(keys), JsArray(att), optional) =>
+            new TestClassJsonParsing(
+              name,
+              num.toInt,
+              b,
+              keys.map(_.convertTo[Key]).toList,
+              att.map(_.convertTo[Attendee]).toList,
+              optional match {
+                case JsNumber(d) => Some(d.toDouble)
+                case _ => None
+              }
+            )
+          case _ => throw DeserializationException("invalid testClassFormat values")
+        }
+      case _ => throw DeserializationException("invalid TestClassFormat header")
     }
 
     override def write(obj: TestClassJsonParsing): JsValue = {
-      JsArray(
-        JsString(obj.name),
-        JsNumber(obj.number),
-        JsBoolean(obj.b),
-        JsArray(obj.keys.map(e => e.toJson).toVector),
-        JsArray(obj.attendees.map(e => e.toJson).toVector),
-        obj.additional match {
-          case Some(d) => JsNumber(d)
-          case _ => JsNull
-        }
+
+      val additional: JsValue = obj.additional match {
+        case Some(d) => JsNumber(d)
+        case _ => JsNull
+      }
+
+      val content: JsObject = JsObject(
+        "name" -> JsString(obj.name),
+        "number" -> JsNumber(obj.number),
+        "b" -> JsBoolean(obj.b),
+        "keys" -> JsArray(obj.keys.map(e => e.toJson).toVector),
+        "attendees" -> JsArray(obj.attendees.map(e => e.toJson).toVector),
+        "additional" -> additional
       )
+
+      JsObject("testClass" -> content)
     }
 
   }
 }
 
+object TreeExtractor {
+  def unapply[K,V](m: TreeMap[K,V]): Option[((K,V), TreeMap[K,V])] =
+    m.headOption.map((_, m.tail))
+}
 
 package object types {
   type Key = String // hex value in string formal
