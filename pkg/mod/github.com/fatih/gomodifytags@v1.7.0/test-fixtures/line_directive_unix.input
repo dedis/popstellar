@@ -1,8 +1,0 @@
-//line /Users/fatih/test.go:1
-package a
-
-//line /Users/fatih/test.go:2
-type x struct {
-        Foo int `json:"foo"`
-        bar int
-}

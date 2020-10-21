@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-codesign -s $CERT $1
-exec "$@"

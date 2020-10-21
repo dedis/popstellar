@@ -1,4 +1,0 @@
-package nomaindir
-
-func AFunction() {
-}

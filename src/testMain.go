@@ -1,11 +1,6 @@
 package main
 
-import (
-	"log"
-
-	"github.com/sciter-sdk/go-sciter"
-	"github.com/sciter-sdk/go-sciter/window"
-)
+import "log"
 
 func main() {
 
@@ -23,6 +18,7 @@ func main() {
 	win.Show()
 
 	win.Run()
+
 }
 
 //ReadFromSciter is a function which read input from sciter textarea

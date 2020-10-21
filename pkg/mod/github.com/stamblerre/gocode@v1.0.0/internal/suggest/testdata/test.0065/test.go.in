@@ -1,8 +1,0 @@
-package p
-
-import (
-	"fmt"
-	banana "io"
-)
-
-var _ = fmt.@
