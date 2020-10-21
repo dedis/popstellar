@@ -88,12 +88,12 @@ public class AttendeeFragment extends Fragment {
     }
 
     private boolean instantiateEvents(Lao lao){
-        Event e1 = new Event("Event 1", "Right here", Event.EventType.MEETING, EventCategory.FUTURE);
-        Event e2 = new Event("Event 2", "Somewhere", Event.EventType.DISCUSSION, EventCategory.FUTURE);
-        Event e3 = new Event("Event 3", "I don't know where", Event.EventType.POLL, EventCategory.PRESENT);
-        Event e4 = new Event("Event 4", "Right here", Event.EventType.MEETING, EventCategory.PRESENT);
-        Event e5 = new Event("Event 5", "Not here", Event.EventType.ROLL_CALL, EventCategory.PRESENT);
-        Event e6 = new Event("Event 6", "EPFL", Event.EventType.MEETING, EventCategory.PAST);
+        Event e1 = new Event("Event 6", "Right here", Event.EventType.MEETING, EventCategory.FUTURE);
+        Event e2 = new Event("Event 5", "Somewhere", Event.EventType.DISCUSSION, EventCategory.FUTURE);
+        Event e3 = new Event("Event 4", "I don't know where", Event.EventType.POLL, EventCategory.PRESENT);
+        Event e4 = new Event("Event 3", "Right here", Event.EventType.MEETING, EventCategory.PRESENT);
+        Event e5 = new Event("Event 2", "Not here", Event.EventType.ROLL_CALL, EventCategory.PRESENT);
+        Event e6 = new Event("Event 1", "EPFL", Event.EventType.MEETING, EventCategory.PAST);
 
         lao.addEvent(e1);
         lao.addEvent(e2);
