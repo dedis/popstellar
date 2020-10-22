@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.dedis.student20_pop.qrcode;
+package com.github.dedis.student20_pop.utility.qrcode;
 
 import android.Manifest;
 import android.content.Context;

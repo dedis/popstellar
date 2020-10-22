@@ -15,9 +15,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.qrcode.CameraPreview;
-import com.github.dedis.student20_pop.qrcode.QRCodeListener;
-import com.github.dedis.student20_pop.qrcode.QRFocusingProcessor;
+import com.github.dedis.student20_pop.utility.qrcode.CameraPreview;
+import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
+import com.github.dedis.student20_pop.utility.qrcode.QRFocusingProcessor;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.vision.CameraSource;
