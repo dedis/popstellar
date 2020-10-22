@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.qrcode;
+package com.github.dedis.student20_pop.utility.qrcode;
 
 /**
  * A listener that will receive detected url of a QR code

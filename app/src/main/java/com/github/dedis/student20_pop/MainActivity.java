@@ -14,6 +14,8 @@ import com.github.dedis.student20_pop.ui.ConnectFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
 
+import java.util.Date;
+
 /**
  * Activity used to display the different UIs
  **/
@@ -55,7 +57,7 @@ public final class MainActivity extends FragmentActivity {
             case R.id.button_launch:
                 String name = ((EditText) findViewById(R.id.entry_box_launch)).getText().toString();
                 // Creating the LAO but not sending the information for now
-                Lao lao = new Lao(name);
+                Lao lao = new Lao(name, new Date(), "0x3333");
                 showFragment(new HomeFragment(), LaunchFragment.TAG);
                 Toast.makeText(this,
                         getResources().getString(R.string.message_launch_successful, name),
