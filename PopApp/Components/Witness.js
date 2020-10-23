@@ -2,19 +2,19 @@ import React from 'react'
 import { StyleSheet, View, Text } from 'react-native'
 
 import STRINGS from "../res/strings";
-import { Typography } from '../Styles';
+import { Typography } from '../Styles'
 
 
 /**
-* The Attendee component
+* The Witness component
 *
-* Manage the Attendee screen
+* Manage the Witness screen
 */
-class Attendee extends React.Component {
+class Witness extends React.Component {
     render() {
         return(
             <View style={styles.container}>
-                <Text style={styles.text}>{STRINGS.attendee_description}</Text>
+                <Text style={styles.text}>{STRINGS.witness_description}</Text>
             </View>
         )
     }
@@ -30,4 +30,4 @@ const styles = StyleSheet.create({
     },
   });
 
-export default Attendee
+export default Witness
