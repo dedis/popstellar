@@ -23,7 +23,7 @@ final class JsonMessageParser {
     val fields: Map[String, JsValue] = obj.fields
 
     fields.head match {
-      case ("create", values @ JsObject(_)) => values.convertTo[SubscribeChannelClient]
+      case ("create", values @ JsObject(_)) => values.convertTo[CreateChannelClient]
       case ("publish", values @ JsObject(_)) => values.convertTo[PublishChannelClient]
       case ("subscribe", values @ JsObject(_)) => values.convertTo[SubscribeChannelClient]
       case ("fetch", values @ JsObject(_)) => values.convertTo[FetchChannelClient]
@@ -44,7 +44,7 @@ final class JsonMessageParser {
   def serializeMessage(message: JsonMessage): String = message match {
     case m @ AnswerMessageServer(_, _) => m.toJson.toString
     case m @ NotifyChannelServer(_, _) => m.toJson.toString
-    case m @ FetchChannelServer(_, _, _) => m.toJson.toString
-    case _ => throw new SerializationException("JsonEncoder failed : invalid input message")
+    case m @ FetchChannelServer(_, _, _) => JsObject("event" -> m.toJson).toJson.toString
+    case _ => throw new SerializationException("Json serializer failed : invalid input message")
   }
 }

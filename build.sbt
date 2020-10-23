@@ -23,3 +23,6 @@ libraryDependencies += "com.typesafe.akka" %% "akka-persistence" % AkkaVersion
 
 // Json Parser (https://github.com/spray/spray-json)
 libraryDependencies += "io.spray" %%  "spray-json" % "1.3.5"
+
+// Scala unit tests
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % Test
