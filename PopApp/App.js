@@ -5,6 +5,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { NavigationContainer } from '@react-navigation/native'
 
 import Navigation from './Navigation/Navigation'
+import OrganizerNavigation from './Navigation/OrganizerNavigation'
+import AppNavigation from './Navigation/AppNavigation'
 
 
 /*
@@ -23,7 +25,7 @@ export default function App() {
         <StatusBar barStyle='dark-content' backgroundColor='white'/>
       }
       <NavigationContainer>
-        <Navigation/>
+        <AppNavigation/>
       </NavigationContainer>
     </SafeAreaProvider>
   );
