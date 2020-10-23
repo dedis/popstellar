@@ -3,6 +3,9 @@ package json
 import json.JsonMessages._
 import spray.json._
 
+/**
+ * Custom Json communication protocol
+ */
 object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
   /*

@@ -1,6 +1,6 @@
 /** Collection of types used in JsonMessage */
 package object JsonMessageTypes {
-  type UNKNOWN = String // TODO remove
+  type UNKNOWN = String // TODO remove later
 
   type Signature = String
   type Key = String

@@ -5,8 +5,18 @@ import json.JsonMessages._
 import json.JsonCommunicationProtocol._
 
 
+/**
+ * Custom Json Parser for our Json-RPC protocol
+ */
 final class JsonMessageParser {
 
+  /**
+   * Parse a Json string into a JsonMessage
+   *
+   * @param source the input string
+   * @return the parsed version of source
+   */
+  @throws(classOf[DeserializationException])
   def parseMessage(source: String): JsonMessage = {
 
     val obj: JsObject = source.parseJson.asJsObject
@@ -24,21 +34,17 @@ final class JsonMessageParser {
     }
   }
 
-  def encodeMessage(message: JsonMessage): String = message match {
+  /**
+   * Serialize a JsonMessage into a string
+   *
+   * @param message the JsonMessage to serialize
+   * @return the serialized version of JsonMessage
+   */
+  @throws(classOf[SerializationException])
+  def serializeMessage(message: JsonMessage): String = message match {
     case m @ AnswerMessageServer(_, _) => m.toJson.toString
     case m @ NotifyChannelServer(_, _) => m.toJson.toString
     case m @ FetchChannelServer(_, _, _) => m.toJson.toString
-    case _ => throw DeserializationException("JsonEncoder failed : invalid input message") // TODO does the "inverse" exception exist?
+    case _ => throw new SerializationException("JsonEncoder failed : invalid input message")
   }
-
 }
-
-/*
-DRAFT :
-
-takes a Json string as input. Checks that it is a correct JSON format (but not the content of the message (input checking)
-because we let the InputChecker (not implemented yet) do that)
-
-JsonParser outputs a JsonMessage
-
- */
