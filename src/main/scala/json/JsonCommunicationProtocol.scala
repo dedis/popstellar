@@ -3,6 +3,7 @@ package json
 import json.JsonMessages._
 import spray.json._
 
+
 /**
  * Custom Json communication protocol
  */
@@ -32,6 +33,5 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
   implicit val notifyChannelServerFormat: RootJsonFormat[NotifyChannelServer] = jsonFormat2(NotifyChannelServer)
   implicit val fetchChannelServerFormat: RootJsonFormat[FetchChannelServer] = jsonFormat3(FetchChannelServer)
-
 
 }
