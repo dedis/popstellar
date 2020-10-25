@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/boltdb/bolt"
 	"strconv"
+	src "student20_pop/classes"
 	"time"
 )
 
@@ -113,4 +114,10 @@ func generateID(timestamp int64, name string) []byte {
 
 	str := h.Sum(nil)
 	return str
+}
+
+func GetFromID([]byte id) (src.LAO, error){
+
+
+	return nil, errors.New("empty")
 }

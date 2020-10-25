@@ -86,7 +86,17 @@ func (wsh WsHandler) HandleMessage(msg string) {
 	//"unpack message"
 
 	//local actions depending on message
+	/*
 
+		type = analyse(msg)
+		switch type
+		case LAO :
+			action = getaction(msg)
+			switch action
+				case get : lao = getFromID(msg.getID)
+							client.send(lao.toJSON)
+
+	*/
 	// LAO --> new LAO(name : ..., id : ..., ...)
 
 	// switch case: create --> CreateLAO(...)
