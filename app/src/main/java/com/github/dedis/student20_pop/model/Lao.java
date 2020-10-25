@@ -25,9 +25,12 @@ public final class Lao {
      * @param name the name of the LAO, can be empty
      * @param time the creation time, can't be modified
      * @param organizer the public key of the organizer in Hex
-     *
+     * @throws IllegalArgumentException if any of the parameters is null
      */
     public Lao(String name, Date time, String organizer) {
+        if(name == null || time == null || organizer == null) {
+            throw new IllegalArgumentException("Trying to  create a LAO with a null value");
+        }
         this.name = name;
         this.time = time.getTime() / 1000L; // TODO: can modify to Instant instead of Date
         this.id = name + time; // TODO: hash, create function

@@ -15,14 +15,21 @@ public class Person {
     private List<String> laos; // TODO: for now list of the LAOs' id
 
     /**
-     * Constructor for a LAO
+     * Constructor for a Person
      *
      * @param name the name of the Person, can be empty
-     *
+     * @throws IllegalArgumentException if the name is null
      */
     public Person(String name) {
+        if(name == null) {
+            throw new IllegalArgumentException("Trying to create a peron with a null name");
+        }
         this.name = name;
-        this.id = ""; this.authentication = ""; // TODO: generate public and private key
+        // Generate the public and private keys
+        Keys keys = new Keys();
+        keys.generateKeys();
+        this.id = keys.getPublicKey();
+        this.authentication = keys.getPrivateKey();
         this.laos = new ArrayList<>();
     }
 

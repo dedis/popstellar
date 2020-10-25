@@ -29,9 +29,12 @@ public class Event {
      * @param name the name of the event, can be empty
      * @param time the creation time, can't be modified
      * @param lao the public key of the associated LAO
-     *
+     * @throws IllegalArgumentException if any of the parameters is null
      */
     public Event(String name, Date time, String lao, String location, String type) {
+        if(name == null || time == null || lao == null || location == null || type == null) {
+            throw new IllegalArgumentException("Trying to create an event with null parameters");
+        }
         this.name = name;
         this.time = time.getTime() / 1000L; // TODO: can modify to Instant instead of Date
         this.id = name + time; // TODO: hash
@@ -89,7 +92,7 @@ public class Event {
 
     /**
      *
-     * @return list of signatures by the organizer and the witnesses
+     * @return list of signatures by the organizer and the witnesses of the corresponding LAO
      */
     public List<String> getAttestation() {
         return attestation;

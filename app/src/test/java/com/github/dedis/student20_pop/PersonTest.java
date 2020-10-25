@@ -11,15 +11,21 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThrows;
 
 public class PersonTest {
 
     private final String name1 = "Person name 1";
     private final String name2 = "Person name 2";
     private final ArrayList<String> laos = new ArrayList<>(Arrays.asList("0x3939", "0x4747"));
-    private final ArrayList<String> laos_with_null = new ArrayList<>(Arrays.asList("0x3939", null, "0x4747"));
+    private final ArrayList<String> laosWithNull = new ArrayList<>(Arrays.asList("0x3939", null, "0x4747"));
     private final Person person1 = new Person(name1);
     private final Person person2 = new Person(name2);
+
+    @Test
+    public void createPersonWithNullParameters() {
+        assertThrows(IllegalArgumentException.class, () -> new Person(null));
+    }
 
     @Test
     public void getNameTest() {
@@ -42,14 +48,10 @@ public class PersonTest {
         assertThat(person1.getLaos(), is(laos));
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test
     public void setNullLaosTest() {
-        person1.setLaos(null);
-    }
-
-    @Test (expected = IllegalArgumentException.class)
-    public void setLaosWithNullValueTest() {
-        person1.setLaos(laos_with_null);
+        assertThrows(IllegalArgumentException.class, () -> person1.setLaos(null));
+        assertThrows(IllegalArgumentException.class, () -> person1.setLaos(laosWithNull));
     }
 
     @Test
