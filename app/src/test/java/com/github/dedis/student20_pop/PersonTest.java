@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -44,8 +45,7 @@ public class PersonTest {
 
     @Test
     public void setAndGetLaosTest() {
-        person1.setLaos(laos);
-        assertThat(person1.getLaos(), is(laos));
+        assertThat((person1.setLaos(laos)).getLaos(), is(laos));
     }
 
     @Test

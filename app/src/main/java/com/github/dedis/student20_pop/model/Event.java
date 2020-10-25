@@ -11,19 +11,19 @@ import java.util.Objects;
 /**
  * Class modeling an Event
  */
-public class Event {
+public final class Event {
 
-    private String name;
-    private long time;
-    private String id;
-    private String lao;
+    private final String name;
+    private final long time;
+    private final String id;
+    private final String lao;
     private List<String> attendees;
     // Can use GeoLocation in the future
-    private String location;
+    private final String location;
     // Can use enums in the future
-    private String type;
-    private JSONObject other;
-    private List<String> attestation;
+    private final String type;
+    private final JSONObject other;
+    private final List<String> attestation;
 
     /**
      * Constructor for an Event
@@ -45,6 +45,7 @@ public class Event {
         this.attendees = new ArrayList<>();
         this.location = location;
         this.type = type;
+        this.other = new JSONObject();
         // Will get the list of witnesses, hash and sign in the future
         this.attestation = new ArrayList<>(Collections.singletonList(name + time + lao + location));
     }

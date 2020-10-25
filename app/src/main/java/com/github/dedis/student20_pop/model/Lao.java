@@ -10,21 +10,21 @@ import java.util.Objects;
  */
 public final class Lao {
 
-    private String name;
-    private long time;
-    private String id;
-    private String organizer;
+    private final String name;
+    private final long time;
+    private final String id;
+    private final String organizer;
     private List<String> witnesses;
     private List<String> members;
     private List<String> events;
-    private String attestation;
+    private final String attestation;
 
     /**
      * Constructor for a LAO
      *
      * @param name the name of the LAO, can be empty
      * @param time the creation time, can't be modified
-     * @param organizer the public key of the organizer in Hex
+     * @param organizer the public key of the organizer
      * @throws IllegalArgumentException if any of the parameters is null
      */
     public Lao(String name, Date time, String organizer) {
@@ -39,6 +39,31 @@ public final class Lao {
         this.witnesses = new ArrayList<>();
         this.members = new ArrayList<>();
         this.events = new ArrayList<>();
+        // simple for now, will hash and sign in the future
+        this.attestation = name + time + organizer;
+    }
+
+    /**
+     * Private constructor used to create new LAO when the name is modified,
+     * forces to recompute the id and attestation using the new name
+     *
+     * @param name the name of the LAO, can be empty
+     * @param time the creation time
+     * @param organizer the public key of the organizer
+     * @param witnesses the list of the public keys of the witnesses
+     * @param members the list of the public keys of the members
+     * @param events the list of the ids of the events
+     */
+    private Lao(String name, long time, String organizer, List<String> witnesses,
+                List<String> members, List<String> events) {
+        this.name = name;
+        this.time = time;
+        // simple for now, will hash in the future
+        this.id = name + time;
+        this.organizer = organizer;
+        this.witnesses = witnesses;
+        this.members = members;
+        this.events = events;
         // simple for now, will hash and sign in the future
         this.attestation = name + time + organizer;
     }
@@ -104,15 +129,17 @@ public final class Lao {
     }
 
     /**
+     * Modifying the name of the LAO creates a new id and attestation
      *
      * @param name new name for the LAO, can be empty
+     * @return new LAO with the new name, id and attestation
      * @throws IllegalArgumentException if the name is null
      */
-    public void setName(String name) {
+    public Lao setName(String name) {
         if(name == null) {
             throw new IllegalArgumentException("Trying to set null as the name of the LAO");
         }
-        this.name = name;
+        return new Lao(name, time, organizer, witnesses, members, events);
     }
 
     /**

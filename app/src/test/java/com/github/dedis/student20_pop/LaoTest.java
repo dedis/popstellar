@@ -35,8 +35,7 @@ public class LaoTest {
     @Test
     public void setAndGetNameTest() {
         assertThat(lao1.getName(), is(lao1_name));
-        lao1.setName(lao2_name);
-        assertThat(lao1.getName(), is(lao2_name));
+        assertThat((lao1.setName(lao2_name)).getName(), is(lao2_name));
     }
 
     @Test
