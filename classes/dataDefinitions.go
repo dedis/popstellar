@@ -12,7 +12,6 @@ and/or displayed in the given format but may be stored in bytes.
 /* idea for BoltDB
 3 nested bucket
  key : ID => Value new Bucket(LAO_1){
-	key  : ID => value = 0xA123DD
 	key organizerpkyey => ...LAO
 	key memeber => new Bucket(LAO_MEMBERS){
 		key : 1 => ...
