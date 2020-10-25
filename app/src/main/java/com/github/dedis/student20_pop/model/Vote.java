@@ -9,8 +9,8 @@ public class Vote {
 
     private String person;
     private String election;
-    private String vote; // TODO: ElGamal encryption of a message
-    private String attestation; // TODO: sign SHA1
+    private String vote;
+    private String attestation;
 
     /**
      * Constructor of a Vote
@@ -26,7 +26,8 @@ public class Vote {
         this.person = person;
         this.election = election;
         this.vote = vote;
-        this.attestation = election + vote; // TODO: need LAO ID too, then use SHA1
+        // Simple for now, will get LAO ID and hash in the future
+        this.attestation = election + vote;
     }
 
     /**

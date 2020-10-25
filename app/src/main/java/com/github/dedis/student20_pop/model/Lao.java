@@ -17,7 +17,7 @@ public final class Lao {
     private List<String> witnesses;
     private List<String> members;
     private List<String> events;
-    private String attestation; // TODO: use Sign API
+    private String attestation;
 
     /**
      * Constructor for a LAO
@@ -32,13 +32,15 @@ public final class Lao {
             throw new IllegalArgumentException("Trying to  create a LAO with a null value");
         }
         this.name = name;
-        this.time = time.getTime() / 1000L; // TODO: can modify to Instant instead of Date
-        this.id = name + time; // TODO: hash, create function
+        this.time = time.getTime() / 1000L;
+        // simple for now, will hash in the future
+        this.id = name + time;
         this.organizer = organizer;
         this.witnesses = new ArrayList<>();
         this.members = new ArrayList<>();
         this.events = new ArrayList<>();
-        this.attestation = name + time + organizer; // TODO: sign API on the hash
+        // simple for now, will hash and sign in the future
+        this.attestation = name + time + organizer;
     }
 
     public String getName() {
