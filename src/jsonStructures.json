@@ -1,4 +1,12 @@
 {
+
+    String translateLAOtojson(string: lao_name, int: creation_time) {
+        ret "{ \"LAO\": { \"name: \"" ++ lao_name ++ "creation_time: \"" ++ creation_time"}"}
+    }
+
+    translate("My LAO", 1603289085)
+
+    
     "LAO": {
         "name": "My LAO",
         "creation_time": "1603289085",
