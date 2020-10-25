@@ -8,14 +8,14 @@ import java.util.Objects;
 /**
  * Class modeling an Election
  */
-public class Election {
+public final class Election {
 
-    private String name;
-    private long time;
-    private String id;
-    private String lao;
-    private List<String> options;
-    private List<String> attestation;
+    private final String name;
+    private final long time;
+    private final String id;
+    private final String lao;
+    private final List<String> options;
+    private final List<String> attestation;
 
     /**
      * Constructor of an Election

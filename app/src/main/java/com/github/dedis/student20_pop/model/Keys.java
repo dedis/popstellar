@@ -5,23 +5,16 @@ import java.util.Objects;
 /**
  * Class modeling a set of Public and Private Keys
  */
-public class Keys {
+public final class Keys {
 
-    private String publicKey;
-    private String privateKey;
+    private final String publicKey;
+    private final String privateKey;
 
     /**
-     * Empty constructor for the Keys
+     * Constructor for the Keys, generates a set of public and private keys
      */
     public Keys() {
-        // empty for now
-    }
-
-    /**
-     * Generate a set of public and private keys
-     */
-    public void generateKeys() {
-        // simple for now
+        // Generate the public and private keys
         this.publicKey = "";
         this.privateKey = "";
     }

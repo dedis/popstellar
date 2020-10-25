@@ -5,12 +5,12 @@ import java.util.Objects;
 /**
  * Class modeling a Vote
  */
-public class Vote {
+public final class Vote {
 
-    private String person;
-    private String election;
-    private String vote;
-    private String attestation;
+    private final String person;
+    private final String election;
+    private final String vote;
+    private final String attestation;
 
     /**
      * Constructor of a Vote
