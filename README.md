@@ -58,7 +58,10 @@ up to 3 layers of nested buckets with, for the example above the LAO (key => val
     - count => the number of registered LAOs
     - LAO's ID => new Bucket containing all LAO's info
 2. Layer (for each LAO's attribute):
+<<<<<<< HEAD
     - ID => ...
+=======
+>>>>>>> work-be1-rpugin
     - OrganizerPKey => ...
     - Bucket containing a list of witnesses
     - new Bucket containing a list of members
