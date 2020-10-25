@@ -18,10 +18,12 @@ public class Event {
     private String id;
     private String lao;
     private List<String> attendees;
-    private String location; // TODO: use geolocation and then toString for signature?
-    private String type; // TODO: enum for types
+    // Can use GeoLocation in the future
+    private String location;
+    // Can use enums in the future
+    private String type;
     private JSONObject other;
-    private List<String> attestation; // TODO: use sign API on the hash
+    private List<String> attestation;
 
     /**
      * Constructor for an Event
@@ -36,14 +38,15 @@ public class Event {
             throw new IllegalArgumentException("Trying to create an event with null parameters");
         }
         this.name = name;
-        this.time = time.getTime() / 1000L; // TODO: can modify to Instant instead of Date
-        this.id = name + time; // TODO: hash
+        this.time = time.getTime() / 1000L;
+        // Simple for now, will hash in the future
+        this.id = name + time;
         this.lao = lao;
         this.attendees = new ArrayList<>();
         this.location = location;
         this.type = type;
+        // Will get the list of witnesses, hash and sign in the future
         this.attestation = new ArrayList<>(Collections.singletonList(name + time + lao + location));
-        // TODO: sign API on the hash for attestation
     }
 
     public String getName() {

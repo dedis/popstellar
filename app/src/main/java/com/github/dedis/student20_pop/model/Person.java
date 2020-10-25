@@ -12,7 +12,7 @@ public class Person {
     private String name;
     private String id;
     private String authentication;
-    private List<String> laos; // TODO: for now list of the LAOs' id
+    private List<String> laos; // list of LAOs ids for now
 
     /**
      * Constructor for a Person

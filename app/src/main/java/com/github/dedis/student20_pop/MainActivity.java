@@ -56,8 +56,10 @@ public final class MainActivity extends FragmentActivity {
                 break;
             case R.id.button_launch:
                 String name = ((EditText) findViewById(R.id.entry_box_launch)).getText().toString();
+                // For later: request organizer id
+                String organizer = "0x3333";
                 // Creating the LAO but not sending the information for now
-                Lao lao = new Lao(name, new Date(), "0x3333");
+                Lao lao = new Lao(name, new Date(), organizer);
                 showFragment(new HomeFragment(), LaunchFragment.TAG);
                 Toast.makeText(this,
                         getResources().getString(R.string.message_launch_successful, name),

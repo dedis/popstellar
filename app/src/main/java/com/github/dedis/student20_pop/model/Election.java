@@ -15,7 +15,7 @@ public class Election {
     private String id;
     private String lao;
     private List<String> options;
-    private List<String> attestation; // TODO: use sign API on the hash
+    private List<String> attestation;
 
     /**
      * Constructor of an Election
@@ -32,10 +32,12 @@ public class Election {
         }
         this.name = name;
         this.time = time.getTime() / 1000L;
-        this.id = name + time; // TODO: hash
+        // simple for now, will hash later
+        this.id = name + time;
         this.lao = lao;
         this.options = options;
-        this.attestation = new ArrayList<>(); // TODO: need the list of organizer and witnesses ids
+        // Will get list of organizer and witnesses ids, hash and sign later
+        this.attestation = new ArrayList<>();
     }
 
     public String getName() {
