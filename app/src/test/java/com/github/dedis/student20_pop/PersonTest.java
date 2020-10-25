@@ -44,6 +44,11 @@ public class PersonTest {
 
     @Test (expected = IllegalArgumentException.class)
     public void setNullLaosTest() {
+        person1.setLaos(null);
+    }
+
+    @Test (expected = IllegalArgumentException.class)
+    public void setLaosWithNullValueTest() {
         person1.setLaos(laos_with_null);
     }
 
