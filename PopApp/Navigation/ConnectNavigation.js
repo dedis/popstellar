@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import STRINGS from '../res/strings';
@@ -7,7 +7,6 @@ import ConnectUnapprove from '../Components/ConnectUnapprove';
 import ConnectScanning from '../Components/ConnectScanning';
 import ConnectConnecting from '../Components/ConnectConnecting';
 import ConnectConfirm from '../Components/ConnectConfirm';
-
 
 /**
 * Define the Connect stack navigation

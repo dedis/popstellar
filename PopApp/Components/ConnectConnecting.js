@@ -1,7 +1,10 @@
-import React from 'react'
-import { StyleSheet, View, Text, Button, ActivityIndicator } from 'react-native'
+import React from 'react';
+import {
+  StyleSheet, View, Text, Button, ActivityIndicator,
+} from 'react-native';
+import PropTypes from 'prop-types';
 
-import STRINGS from '../res/strings'
+import STRINGS from '../res/strings';
 import { Buttons, Colors, Typography } from '../Styles';
 
 /**
@@ -9,49 +12,54 @@ import { Buttons, Colors, Typography } from '../Styles';
  *
  *  Currently, just simulate waiting for a response
 */
-
-class ConnectConnecting extends React.Component {
-    render() {
-        return(
-            <View style={styles.container}>
-                <View>
-                    <Text style={styles.text}>{STRINGS.connect_connecting_uri}</Text>
-                </View>
-                <View>
-                    <View>
-                        <ActivityIndicator size="large" color={ Colors.blue }/>
-                    </View>
-                </View>
-                <View>
-                    <View style={styles.button} >
-                        <Button title={STRINGS.general_button_cancel}
-                                onPress={() => {
-                                    this.props.navigation.navigate('Scanning');
-                                }}/>
-                    </View>
-                    <View style={styles.button} >
-                        <Button title={STRINGS.connect_connecting_validate}
-                                onPress={() => {
-                                    this.props.navigation.navigate('Confirm');
-                                }}/>
-                    </View>
-                </View>
-            </View>
-        )
-    }
-}
-
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'space-evenly'
-    },
-    text: {
-        ...Typography.base,
-    },
-    button:{
-        ...Buttons.base
-    },
-  });
+  container: {
+    flex: 1,
+    justifyContent: 'space-evenly',
+  },
+  text: {
+    ...Typography.base,
+  },
+  button: {
+    ...Buttons.base,
+  },
+});
 
-export default ConnectConnecting
+const ConnectConnecting = ({ navigation }) => (
+  <View style={styles.container}>
+    <View>
+      <Text style={styles.text}>{STRINGS.connect_connecting_uri}</Text>
+    </View>
+    <View>
+      <View>
+        <ActivityIndicator size="large" color={Colors.blue} />
+      </View>
+    </View>
+    <View>
+      <View style={styles.button}>
+        <Button
+          title={STRINGS.general_button_cancel}
+          onPress={() => {
+            navigation.navigate('Scanning');
+          }}
+        />
+      </View>
+      <View style={styles.button}>
+        <Button
+          title={STRINGS.connect_connecting_validate}
+          onPress={() => {
+            navigation.navigate('Confirm');
+          }}
+        />
+      </View>
+    </View>
+  </View>
+);
+
+ConnectConnecting.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
+};
+
+export default ConnectConnecting;
