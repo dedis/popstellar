@@ -31,12 +31,13 @@ Open the virtual device and run the following command:
 This project follows the [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html).
 ### File Structure
 The project is divided in 3 packages:
-* **model** for the classes used to model different entities
-* **utility** for the classes used to represent the application utilities
-* **ui** for the classes used to represent the fragments for the UI
+* **model**: for the classes used to model different entities
+* **utility**: for the classes used to represent the application utilities
+* **ui**: for the classes used to represent the fragments for the UI
 
 The new files or packages are added in one of these packages.
 ### Resource Values
 The values used for the UI are stored in the corresponding xml
-files in the res/values folder, being colors, dimens, strings or styles.
+files (colors, dimens, strings or styles) in the res/values folder.
+
 They can then be accessed using ```R.id``` or ```getResources()```.
