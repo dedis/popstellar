@@ -1,8 +1,6 @@
 # student20_pop: fe1-web branch
 Proof-of-personhood, fall 2020: Web-based front-end
 
-[TOC]
-
 ## Running the project
 Open the terminal in the folder `PopApp` and enter the following commands
 
@@ -33,3 +31,4 @@ npm start
 
 ## Coding convention
 Our styling convention regarding the components can be found [here](https://thoughtbot.com/blog/structure-for-styling-in-react-native)
+Our coding convention follow the aibnb, that can be found [here](https://github.com/airbnb/javascript) and a quick install guide [here](https://medium.com/pvtl/linting-for-react-native-bdbb586ff694)
