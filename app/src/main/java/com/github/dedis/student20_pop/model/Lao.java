@@ -1,9 +1,5 @@
 package com.github.dedis.student20_pop.model;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -119,7 +115,7 @@ public final class Lao {
      * @param witnesses list of public keys of witnesses, can be empty
      * @throws IllegalArgumentException if at least one witness public key is null
      */
-    public void setWitnesses(ArrayList<String> witnesses) {
+    public void setWitnesses(List<String> witnesses) {
         if(witnesses.contains(null)) {
             throw new IllegalArgumentException("Trying to add a null witness to the LAO " + name);
         }
@@ -155,18 +151,16 @@ public final class Lao {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Lao lao = (Lao) o;
-        return name.equals(lao.name)
-                && time == lao.time
-                && id.equals(lao.id)
-                && organizer.equals(lao.organizer)
-                && witnesses.equals(lao.witnesses)
-                && members.equals(lao.members)
-                && events.equals(lao.events)
-                && attestation.equals(lao.attestation);
+        return Objects.equals(name, lao.name)
+                && Objects.equals(time, lao.time)
+                && Objects.equals(id, lao.id)
+                && Objects.equals(organizer, lao.organizer)
+                && Objects.equals(witnesses, lao.witnesses)
+                && Objects.equals(members, lao.members)
+                && Objects.equals(events, lao.events)
+                && Objects.equals(attestation, lao.attestation);
     }
 
-    // API problem in order to use Objects.hash
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public int hashCode() {
         return Objects.hash(name, time, id, organizer, witnesses, members, events, attestation);
