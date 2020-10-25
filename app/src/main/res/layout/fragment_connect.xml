@@ -35,7 +35,7 @@
             android:layout_height="match_parent"
             android:layout_margin="@dimen/camera_preview_margin">
 
-            <com.github.dedis.student20_pop.qrcode.CameraPreview
+            <com.github.dedis.student20_pop.utility.qrcode.CameraPreview
                 android:id="@+id/qr_camera_preview"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
