@@ -37,6 +37,7 @@ func (c *connection) reader(wg *sync.WaitGroup, wsConn *websocket.Conn, database
 		if err != nil {
 			log.Fatal(err)
 		}
+		i++
 	}
 }
 
@@ -85,6 +86,11 @@ func (wsh WsHandler) HandleMessage(msg string) {
 	//"unpack message"
 
 	//local actions depending on message
+
+	// LAO --> new LAO(name : ..., id : ..., ...)
+
+	// switch case: create --> CreateLAO(...)
+	// getFromID(....)
 
 	//send response to client
 
