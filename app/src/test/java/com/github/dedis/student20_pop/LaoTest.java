@@ -76,16 +76,31 @@ public class LaoTest {
 
     @Test (expected = IllegalArgumentException.class)
     public void setNullWitnessesTest() {
-        lao1.setWitnesses(l_with_null);
+        lao1.setWitnesses(null);
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void setNullMembersTest() {
-        lao1.setMembers(l_with_null);
+        lao1.setMembers(null);
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void setNullEventsTest() {
+        lao1.setEvents(null);
+    }
+
+    @Test (expected = IllegalArgumentException.class)
+    public void setWitnessesWithNullValueTest() {
+        lao1.setWitnesses(l_with_null);
+    }
+
+    @Test (expected = IllegalArgumentException.class)
+    public void setMembersWithNullValueTest() {
+        lao1.setMembers(l_with_null);
+    }
+
+    @Test (expected = IllegalArgumentException.class)
+    public void setEventsWithNullValueTest() {
         lao1.setEvents(l_with_null);
     }
 
