@@ -21,28 +21,28 @@ and/or displayed in the given format but may be stored in bytes.
 */
 
 type pKey int32          //TODO type ?
-type token hash.Hash     // TODO 32 64
+type token hash.Hash     // TODO 32 64 \\\ how to convert to byte array ??
 type signature hash.Hash // TODO 32 64
 
 type LAO struct {
 	// name of LAO
-	name string
+	Name string
 	//Creation Date/Time
-	timestamp int64 //  Unix timestamp (uint64)
+	Timestamp int64 //  Unix timestamp (uint64)
 	//ID hash : Name || Creation Date/Time Unix Timestamp
-	id hash.Hash
+	Id hash.Hash
 	//Organiser: Public Key
-	organizerPKey pKey
+	OrganizerPKey pKey
 	//List of public keys where each public key belongs to one witness
-	witnesses []pKey
+	Witnesses []pKey
 	//List of public keys where each public key belongs to one member (physical person)
-	members []pKey
+	Members []pKey
 	//List of public keys where each public key belongs to an event
-	events []pKey
+	Events []pKey
 	//signature (hash)
-	attestation signature
+	Attestation signature
 	//tab with all created tokens
-	tokensEmitted []token
+	TokensEmitted []token
 }
 
 /*Private information (*state stored only on the client*):
