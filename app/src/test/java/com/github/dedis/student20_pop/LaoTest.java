@@ -12,6 +12,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThrows;
 
 public class LaoTest {
 
@@ -20,9 +21,16 @@ public class LaoTest {
     private final Date time = (new Date());
     private final String organizer = "0x5932";
     private final ArrayList<String> list = new ArrayList<>(Arrays.asList("0x3434", "0x4747"));
-    private final ArrayList<String> l_with_null = new ArrayList<>(Arrays.asList("0x3939", null, "0x4747"));
+    private final ArrayList<String> listWithNull = new ArrayList<>(Arrays.asList("0x3939", null, "0x4747"));
     private final Lao lao1 = new Lao(lao1_name, time, organizer);
     private final Lao lao2 = new Lao(lao2_name, time, organizer);
+
+    @Test
+    public void createLaoNullParametersTest() {
+        assertThrows(IllegalArgumentException.class, () -> new Lao(null, time, organizer));
+        assertThrows(IllegalArgumentException.class, () -> new Lao(lao1_name, null, organizer));
+        assertThrows(IllegalArgumentException.class, () -> new Lao(lao1_name, time, null));
+    }
 
     @Test
     public void setAndGetNameTest() {
@@ -69,39 +77,27 @@ public class LaoTest {
         assertThat(lao1.getAttestation(), is(lao1_name + time + organizer));
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test
     public void setNullNameTest() {
-        lao1.setName(null);
+        assertThrows(IllegalArgumentException.class, () -> lao1.setName(null));
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test
     public void setNullWitnessesTest() {
-        lao1.setWitnesses(null);
+        assertThrows(IllegalArgumentException.class, () -> lao1.setWitnesses(null));
+        assertThrows(IllegalArgumentException.class, () -> lao1.setWitnesses(listWithNull));
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test
     public void setNullMembersTest() {
-        lao1.setMembers(null);
+        assertThrows(IllegalArgumentException.class, () -> lao1.setMembers(null));
+        assertThrows(IllegalArgumentException.class, () -> lao1.setMembers(listWithNull));
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test
     public void setNullEventsTest() {
-        lao1.setEvents(null);
-    }
-
-    @Test (expected = IllegalArgumentException.class)
-    public void setWitnessesWithNullValueTest() {
-        lao1.setWitnesses(l_with_null);
-    }
-
-    @Test (expected = IllegalArgumentException.class)
-    public void setMembersWithNullValueTest() {
-        lao1.setMembers(l_with_null);
-    }
-
-    @Test (expected = IllegalArgumentException.class)
-    public void setEventsWithNullValueTest() {
-        lao1.setEvents(l_with_null);
+        assertThrows(IllegalArgumentException.class, () -> lao1.setEvents(null));
+        assertThrows(IllegalArgumentException.class, () -> lao1.setEvents(listWithNull));
     }
 
     @Test

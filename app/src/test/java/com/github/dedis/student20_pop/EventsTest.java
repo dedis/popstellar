@@ -13,6 +13,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThrows;
 
 public class EventsTest {
 
@@ -23,9 +24,18 @@ public class EventsTest {
     private final String location = "EPFL";
     private final String type = "Roll-Call";
     private final ArrayList<String> attendees = new ArrayList<>(Arrays.asList("0x3434", "0x3333"));
-    private final ArrayList<String> att_with_null = new ArrayList<>(Arrays.asList("0x3939", null));
+    private final ArrayList<String> attendeesWithNull = new ArrayList<>(Arrays.asList("0x3939", null));
     private final Event event1 = new Event(name1, time, lao, location, type);
     private final Event event2 = new Event(name2, time, lao, location, type);
+
+    @Test
+    public void createEventWithNullParametersTest() {
+        assertThrows(IllegalArgumentException.class, () -> new Event(null, time, lao, location, type));
+        assertThrows(IllegalArgumentException.class, () -> new Event(name1, null, lao, location, type));
+        assertThrows(IllegalArgumentException.class, () -> new Event(name1, time, null, location, type));
+        assertThrows(IllegalArgumentException.class, () -> new Event(name1, time, lao, null, type));
+        assertThrows(IllegalArgumentException.class, () -> new Event(name1, time, lao, location, null));
+    }
 
     @Test
     public void getNameTest() {
@@ -69,14 +79,10 @@ public class EventsTest {
                 is(new ArrayList<>(Collections.singletonList(name1 + time + lao + location))));
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test
     public void setNullAttendeesTest() {
-        event1.setAttendees(null);
-    }
-
-    @Test (expected = IllegalArgumentException.class)
-    public void setAttendeesWithNullValueTest() {
-        event1.setAttendees(att_with_null);
+        assertThrows(IllegalArgumentException.class, () -> event1.setAttendees(null));
+        assertThrows(IllegalArgumentException.class, () -> event1.setAttendees(attendeesWithNull));
     }
 
     @Test
