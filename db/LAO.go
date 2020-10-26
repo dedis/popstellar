@@ -5,8 +5,7 @@ import (
 	"errors"
 	"github.com/boltdb/bolt"
 	"strconv"
-	src "student20_pop/classes"
-	"time"
+	src "student20_pop/define"
 )
 
 const LaoDBName = "LAO.db"
@@ -45,7 +44,7 @@ func InitLAODB(db *bolt.DB) error {
  * Function to create a new LAO and store it in the DB
  * @returns : the id of the created LAO (+ event error)
  */
-func CreateLAO(name string, OrganizerPublicKey string, ip string) ([]byte, error) {
+func CreateLAO(create src.MessageLaoCreate) ([]byte, error) {
 
 	db, e := OpenLAODB()
 	defer db.Close()
@@ -53,8 +52,8 @@ func CreateLAO(name string, OrganizerPublicKey string, ip string) ([]byte, error
 		return nil, e
 	}
 
-	ctime := time.Now().Unix()
-	id := generateID(ctime, name)
+	ctime := create.Timestamp
+	id := generateID(ctime, create.Name)
 
 	err := db.Update(func(tx *bolt.Tx) error {
 
@@ -74,7 +73,7 @@ func CreateLAO(name string, OrganizerPublicKey string, ip string) ([]byte, error
 		}
 
 		// instantiate the lao
-		err1 = b.Put([]byte("name"), []byte(name))
+		err1 = b.Put([]byte("name"), create.Name)
 		if err1 != nil {
 			return err1
 		}
@@ -82,11 +81,11 @@ func CreateLAO(name string, OrganizerPublicKey string, ip string) ([]byte, error
 		if err1 != nil {
 			return err1
 		}
-		err1 = b.Put([]byte("organizerPkey"), []byte(OrganizerPublicKey))
+		err1 = b.Put([]byte("organizerPkey"), create.OrganizerPkey)
 		if err1 != nil {
 			return err1
 		}
-		err1 = b.Put([]byte("IP"), []byte(ip))
+		err1 = b.Put([]byte("IP"), create.Ip)
 		if err1 != nil {
 			return err1
 		}
@@ -108,9 +107,9 @@ func CreateLAO(name string, OrganizerPublicKey string, ip string) ([]byte, error
 /**
  * Generate a hash for ID of LAO
  */
-func generateID(timestamp int64, name string) []byte {
+func generateID(timestamp int64, name []byte) []byte {
 	h := sha1.New()
-	h.Write(append([]byte(name), make([]byte, timestamp)...))
+	h.Write(append(name, make([]byte, timestamp)...))
 
 	str := h.Sum(nil)
 	return str
@@ -119,5 +118,5 @@ func generateID(timestamp int64, name string) []byte {
 func GetFromID([]byte id) (src.LAO, error){
 
 
-	return nil, errors.New("empty")
+	return src.LAO{}, errors.New("empty")
 }

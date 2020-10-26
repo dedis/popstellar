@@ -29,7 +29,7 @@ type LAO struct {
 	//Creation Date/Time
 	Timestamp int64 //  Unix timestamp (uint64)
 	//ID hash : Name || Creation Date/Time Unix Timestamp
-	Id hash.Hash
+	Id []byte
 	//Organiser: Public Key
 	OrganizerPKey pKey
 	//List of public keys where each public key belongs to one witness
@@ -42,6 +42,7 @@ type LAO struct {
 	Attestation signature
 	//tab with all created tokens
 	TokensEmitted []token
+	Ip            []byte
 }
 
 /*Private information (*state stored only on the client*):
@@ -62,7 +63,7 @@ type Event struct {
 	//Creation Date/Time
 	timestamp int64 //  Unix timestamp (uint64)
 	//id hash : SHA1(Name + Creation Date/Time Unix Timestamp)
-	id hash.Hash
+	id []byte
 	/*	LAO: Hash
 		Associated LAO
 	*/

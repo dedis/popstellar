@@ -69,3 +69,14 @@ up to 3 layers of nested buckets with, for the example above the LAO (key => val
     - 1 count => the count of registered witness/member/event
     - 2 => witness/member/event 's public key
     
+## Json specifications
+
+* Jsons keys must only be lowercase
+* Every Json message must at least contain a field `"type"` (Lao, Event, Vote, ...) and a field `"action"` (get, set, ...)
+
+### Json messages declaration
+The following messages can be sent and require in addition the following fields :
+
+**LAO:**
+* Create : ```"name" , "organizerpkey", "ip" ```
+* Get : ```"id"```
