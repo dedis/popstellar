@@ -18,12 +18,7 @@
             {"event_key": "0x7"},
             {"event_key": "0x8"}
         ],
-        "attestations": [
-            {"signature": "signature"},
-            {"signature": "signature"},
-            {"signature": "signature"},
-            {"signature": "signature"}
-        ],
+        "attestation": "signature"},
         "IP": "172.16.254.1"
     }
 
