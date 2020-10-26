@@ -115,7 +115,7 @@ func generateID(timestamp int64, name []byte) []byte {
 	return str
 }
 
-func GetFromID([]byte id) (src.LAO, error){
+func GetFromID([]byte ) (src.LAO, error){
 
 
 	return src.LAO{}, errors.New("empty")
