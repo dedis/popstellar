@@ -30,7 +30,7 @@ class PubSubTest extends FunSuite {
     val (entry, actor) = setup()
     val sinkHead = Sink.head[JsonMessage]
 
-    val flows = (1 to numberProcesses).map(_ => PublishSubscribe.getFlow(entry, actor))
+    val flows = (1 to numberProcesses).map(_ => PublishSubscribe.jsonFlow(entry, actor))
     messages.foreach { case (message, response, flowNumber) =>
       val source = message match {
         case Some(m) => Source.single(m)

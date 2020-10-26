@@ -11,11 +11,11 @@ import akka.http.scaladsl.server.Directives._
 import akka.stream.scaladsl.{BroadcastHub, Flow, Keep, MergeHub, Sink}
 import akka.util.Timeout
 import ch.epfl.pop.json.JsonMessageParser.{parseMessage, serializeMessage}
-import ch.epfl.pop.json.JsonMessages.{FetchChannelServer, JsonMessage, PublishChannelClient}
+import ch.epfl.pop.json.JsonMessages.{AnswerMessageServer, FetchChannelServer, JsonMessage, PublishChannelClient}
 import ch.epfl.pop.pubsub.{ChannelActor, PublishSubscribe}
 
 import scala.io.StdIn
-import scala.util.{Failure, Success}
+import scala.util.{Failure, Success, Try}
 
 object Server {
 
@@ -36,24 +36,12 @@ object Server {
         }
 
       //Stream that send all published messages to all clients
-      val (hsink, hsource) = MergeHub.source[PublishChannelClient].toMat(BroadcastHub.sink)(Keep.both).run()
+      val (publishEntry, subscribeExit) = MergeHub.source[PublishChannelClient].toMat(BroadcastHub.sink)(Keep.both).run()
       implicit val timeout = Timeout(1, TimeUnit.SECONDS)
-      val actor = context.spawn(ChannelActor(hsource), "actor")
+      val actor = context.spawn(ChannelActor(subscribeExit), "actor")
 
       def publishSubscribeRoute = path("ps") {
-        val parser = Flow[Message].map {
-          case TextMessage.Strict(s) => parseMessage(s)
-        }
-        val formatter = Flow[JsonMessage].map {
-          case PublishChannelClient(channel, event) =>
-            //Curently we transform published messages to Fetch messages as notifications are not implemented
-            FetchChannelServer(channel, event, "0")
-          case x => x
-        }
-          .map(m => TextMessage.Strict(serializeMessage(m)))
-        val jsonFlow = PublishSubscribe.getFlow(hsink, actor)
-
-        handleWebSocketMessages(parser.via(jsonFlow).via(formatter))
+        handleWebSocketMessages(PublishSubscribe.messageFlow(publishEntry, actor))
       }
 
       implicit val executionContext = system.executionContext
