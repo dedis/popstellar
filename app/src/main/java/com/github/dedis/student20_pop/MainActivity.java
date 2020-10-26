@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.github.dedis.student20_pop.model.Lao;
-import com.github.dedis.student20_pop.ui.CameraPermFragment;
+import com.github.dedis.student20_pop.ui.CameraPermissionFragment;
 import com.github.dedis.student20_pop.ui.ConnectFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
@@ -55,7 +55,7 @@ public final class MainActivity extends FragmentActivity {
                 if(ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
                     showFragment(new ConnectFragment(), ConnectFragment.TAG);
                 else
-                    showFragment(new CameraPermFragment(), CameraPermFragment.TAG);
+                    showFragment(new CameraPermissionFragment(), CameraPermissionFragment.TAG);
                 break;
             case R.id.tab_launch:
                 showFragment(new LaunchFragment(), LaunchFragment.TAG);

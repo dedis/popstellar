@@ -44,7 +44,7 @@ public final class ConnectFragment extends Fragment implements QRCodeListener {
 
         preview = view.findViewById(R.id.qr_camera_preview);
 
-        // Check for the camera permission, if is is not granted, switch to CameraPermFragment
+        // Check for the camera permission, if is is not granted, switch to CameraPermissionFragment
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
             camera = createCamera();
         else
@@ -73,7 +73,7 @@ public final class ConnectFragment extends Fragment implements QRCodeListener {
     private void switchToCameraPermFragment() {
         requireFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, new CameraPermFragment(), CameraPermFragment.TAG)
+                .replace(R.id.fragment_container, new CameraPermissionFragment(), CameraPermissionFragment.TAG)
                 .commit();
     }
 
@@ -97,7 +97,7 @@ public final class ConnectFragment extends Fragment implements QRCodeListener {
     @Override
     public void onResume() {
         super.onResume();
-        // If the permission was removed while the app was paused, switch to CameraPermFragment
+        // If the permission was removed while the app was paused, switch to CameraPermissionFragment
 
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
             startCamera();

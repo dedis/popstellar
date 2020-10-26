@@ -24,7 +24,7 @@ import static org.hamcrest.Matchers.not;
 /**
  * Class handling camera permission fragment tests
  */
-public class CameraPermFragmentTest {
+public class CameraPermissionFragmentTest {
 
     @Rule public ActivityScenarioRule<MainActivity> rule = new ActivityScenarioRule<>(MainActivity.class);
 
