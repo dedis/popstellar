@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Event;
-import com.github.dedis.student20_pop.model.Event.EventCategory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,8 +16,12 @@ import java.util.Map;
 
 public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
     private Context context;
-    private List<EventCategory> categories;
-    private HashMap<EventCategory, List<Event>> events; //events and properties
+    private List<EventCategory> categories; //past, present or future
+    private HashMap<EventCategory, List<Event>> events;
+
+    private enum EventCategory{
+        PAST, PRESENT, FUTURE
+    }
 
 
     public ExpandableListViewEventAdapter(Context context, List<EventCategory> categories,
@@ -103,8 +106,11 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 
-        String eventTitle = ((Event) getChild(groupPosition, childPosition)).getTitleString();
-        String eventDescription = ((Event) getChild(groupPosition, childPosition)).getDescriptionString();
+        Event event = ((Event) getChild(groupPosition, childPosition));
+        String eventTitle = (event.getName() + " : " + event.getType());
+
+        //For now, later: for each specific type of event, show the required content
+        String eventDescription = "Time : " + event.getTime() + "\nLocation : " + event.getLocation();
 
         if (convertView == null){
             LayoutInflater inflater = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

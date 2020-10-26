@@ -7,7 +7,7 @@
 
     <include layout="@layout/tab_home"/>
 
-    <include layout="@layout/tab_connect_launch" />
+    <include layout="@layout/tab_identity_properties" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_horizontal_tab"
@@ -27,12 +27,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab">
 
+        <include layout="@layout/properties_layout"
+            android:id="@+id/properties_view"
+            android:visibility="gone"/>
+
         <ExpandableListView
             android:id="@+id/exp_list_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layoutDirection="ltr"
-            />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layoutDirection="ltr" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

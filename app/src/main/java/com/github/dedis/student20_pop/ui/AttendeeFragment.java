@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,7 +14,6 @@ import androidx.fragment.app.Fragment;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.attendeeUI.ExpandableListViewEventAdapter;
 import com.github.dedis.student20_pop.model.Event;
-import com.github.dedis.student20_pop.model.Event.EventCategory;
 import com.github.dedis.student20_pop.model.Lao;
 
 import java.util.ArrayList;
@@ -29,8 +29,8 @@ public class AttendeeFragment extends Fragment {
     public static final String TAG = AttendeeFragment.class.getSimpleName();
     ExpandableListViewEventAdapter listViewEventAdapter;
     ExpandableListView expandableListView;
-    List<EventCategory> categories;
-    HashMap<EventCategory, List<Event>> events;
+    List<String> categories;
+    HashMap<String, List<Event>> events;
     Lao lao;  //given from intent or previous fragment
 
 
@@ -41,36 +41,39 @@ public class AttendeeFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_attendee, container, false);
 
+        //Display Events
         expandableListView = rootView.findViewById(R.id.exp_list_view);
-        instantiateProperties(lao);
         instantiateEvents(lao);
         getEvents();
-
         listViewEventAdapter = new ExpandableListViewEventAdapter(this.getActivity(), categories, events);
         expandableListView.setAdapter(listViewEventAdapter);
         expandableListView.expandGroup(0);
         expandableListView.expandGroup(1);
 
+        //Display Properties
+        View properties = rootView.findViewById(R.id.properties_view);
+        ((TextView) properties.findViewById(R.id.organization_name)).setText(lao.getName());
+        ((TextView) properties.findViewById(R.id.witness_list)).setText(lao.getWitnesses().toString());
 
         return rootView;
-
-
     }
 
     //retrieve events from LAO
     private void getEvents(){
-        categories = new ArrayList<EventCategory>();
-        categories.add(EventCategory.PAST);
-        categories.add(EventCategory.PRESENT);
-        categories.add(EventCategory.FUTURE);
+        categories = new ArrayList<String>();
+        categories.add("Past Events");
+        categories.add("Present Events");
+        categories.add("Future Events");
 
-        events = new HashMap<EventCategory, List<Event>>();
-        events.put(EventCategory.PAST, new ArrayList<Event>());
-        events.put(EventCategory.PRESENT, new ArrayList<Event>());
-        events.put(EventCategory.FUTURE, new ArrayList<Event>());
+        events = new HashMap<String, List<Event>>();
+        for (String s: categories){
+            events.put(s, new ArrayList<Event>());
+        }
 
-        /*for (Event e: lao.getEvents()){
-            switch (e.getCategory()){
+        /*
+        for (String id: lao.getEvents()){
+            Event e = Event.idToEvent(id);
+            switch (e.getTime()){
                 case PAST:
                     events.get(EventCategory.PAST).add(e);
                     break;
@@ -90,13 +93,13 @@ public class AttendeeFragment extends Fragment {
     }
 
     private void instantiateEvents(Lao lao){
-        Event e1 = new Event("Event 6", "Right here", Event.EventType.MEETING, EventCategory.FUTURE);
+        /*Event e1 = new Event("Event 6", "Right here", Event.EventType.MEETING, EventCategory.FUTURE);
         Event e2 = new Event("Event 5", "Somewhere", Event.EventType.DISCUSSION, EventCategory.FUTURE);
         Event e3 = new Event("Event 4", "I don't know where", Event.EventType.POLL, EventCategory.PRESENT);
         Event e4 = new Event("Event 3", "Right here", Event.EventType.MEETING, EventCategory.PRESENT);
         Event e5 = new Event("Event 2", "Not here", Event.EventType.ROLL_CALL, EventCategory.PRESENT);
         Event e6 = new Event("Event 1", "EPFL", Event.EventType.MEETING, EventCategory.PAST);
-
+*/
         /*
         lao.addEvent(e1);
         lao.addEvent(e2);
@@ -108,8 +111,6 @@ public class AttendeeFragment extends Fragment {
 
     }
 
-    private void instantiateProperties(Lao lao){
 
-    }
 
 }
