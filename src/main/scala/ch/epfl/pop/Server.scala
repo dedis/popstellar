@@ -10,7 +10,6 @@ import akka.http.scaladsl.model.ws.{Message, TextMessage}
 import akka.http.scaladsl.server.Directives._
 import akka.stream.scaladsl.{BroadcastHub, Flow, Keep, MergeHub, Sink}
 import akka.util.Timeout
-import ch.epfl.pop.Database.Write
 import ch.epfl.pop.json.JsonMessageParser.{parseMessage, serializeMessage}
 import ch.epfl.pop.json.JsonMessages.{FetchChannelServer, JsonMessage, PublishChannelClient}
 import ch.epfl.pop.pubsub.{ChannelActor, PublishSubscribe}
@@ -27,7 +26,6 @@ object Server {
 
     val root = Behaviors.setup[Nothing] { context =>
       implicit val system = context.system
-      val db = context.spawn(Database(), "db")
 
       //Route for HTTP request
       val route =
@@ -37,26 +35,9 @@ object Server {
           }
         }
 
-      //Route for websocket requests
-      def wsRoute = path("ws") {
-        //Reply to a message with the content of the received message
-        handleWebSocketMessages(
-          Flow[Message].collect {
-            case TextMessage.Strict(text) =>
-              db ! Write(text, text)
-              TextMessage("You said " + text)
-          }
-        )
-      }
-
       //Stream that send all published messages to all clients
       val (hsink, hsource) = MergeHub.source[PublishChannelClient].toMat(BroadcastHub.sink)(Keep.both).run()
-      val writeDB = Sink.foreach[PublishChannelClient](x => println("Write to db: " + x))
-
       implicit val timeout = Timeout(1, TimeUnit.SECONDS)
-
-      hsource.runWith(writeDB)
-
       val actor = context.spawn(ChannelActor(hsource), "actor")
 
       def publishSubscribeRoute = path("ps") {
@@ -76,7 +57,7 @@ object Server {
       }
 
       implicit val executionContext = system.executionContext
-      val bindingFuture = Http().newServerAt("localhost", 8080).bind(route ~ wsRoute ~ publishSubscribeRoute)
+      val bindingFuture = Http().newServerAt("localhost", 8080).bind(route ~  publishSubscribeRoute)
       bindingFuture.onComplete {
         case Success(value) => println("ch.epfl.pop.Server online at http://localhost:8080/")
         case Failure(exception) => println("ch.epfl.pop.Server failed to start")
@@ -91,21 +72,4 @@ object Server {
     StdIn.readLine() // let it run until user presses return
 
   }
-}
-
-object Database {
-
-  sealed trait DBAction
-
-  final case class Write(key: String, value: String) extends DBAction
-
-  def apply(): Behavior[DBAction] = db()
-
-  private def db(): Behavior[DBAction] =
-    Behaviors.receiveMessage {
-      case Write(key, value) =>
-        //TODO: write in the database here
-        println(key + ": " + value)
-        Behaviors.same
-    }
 }
