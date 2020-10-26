@@ -8,6 +8,8 @@
     <string name="tab_home">Home</string>
     <string name="tab_connect">Connect</string>
     <string name="tab_launch">Launch</string>
+    <string name="tab_identity">Identity</string>
+    <string name="tab_properties">Show/Hide Properties</string>
 
     <!-- Home -->
     <string name="text_title_welcome">Welcome to Personhood.Online!</string>
