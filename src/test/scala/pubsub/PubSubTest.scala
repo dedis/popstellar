@@ -2,39 +2,36 @@ package pubsub
 
 import java.util.concurrent.TimeUnit
 
-import akka.{Done, NotUsed}
 import akka.actor.typed.scaladsl.AskPattern._
-import akka.actor.typed.{ActorRef, ActorSystem, Behavior, Props, SpawnProtocol}
 import akka.actor.typed.scaladsl.Behaviors
-import akka.http.scaladsl.model.ws.{Message, TextMessage}
+import akka.actor.typed.{ActorRef, ActorSystem, Props, SpawnProtocol}
 import akka.stream.scaladsl.{BroadcastHub, Keep, MergeHub, Sink, Source}
 import akka.util.Timeout
 import ch.epfl.pop
-import ch.epfl.pop.pubsub.PublishSubscribe
-import ch.epfl.pop.json.JsonMessages.{AnswerMessageServer, CreateChannelClient, JsonMessage, PublishChannelClient, SubscribeChannelClient}
+import ch.epfl.pop.json.JsonMessages._
 import ch.epfl.pop.pubsub.{ChannelActor, PublishSubscribe}
 import org.scalatest.FunSuite
 
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
 
-class PubSubTest extends FunSuite{
+class PubSubTest extends FunSuite {
 
-  private def sendAndVerify(messages : List[(JsonMessage, Option[JsonMessage])]): Unit = {
-    sendAndVerify(messages.map{ case (m, o) => (Some(m), o, 0)},1)
+  private def sendAndVerify(messages: List[(JsonMessage, Option[JsonMessage])]): Unit = {
+    sendAndVerify(messages.map { case (m, o) => (Some(m), o, 0) }, 1)
   }
 
-  private def sendAndVerify(messages : List[(Option[JsonMessage], Option[JsonMessage], Int)], numberProcesses: Int): Unit = {
+  private def sendAndVerify(messages: List[(Option[JsonMessage], Option[JsonMessage], Int)], numberProcesses: Int): Unit = {
     val root = Behaviors.setup[SpawnProtocol.Command] { context =>
       SpawnProtocol()
     }
     implicit val system: ActorSystem[SpawnProtocol.Command] = ActorSystem[SpawnProtocol.Command](root, "test")
     implicit val timeout = Timeout(1, TimeUnit.SECONDS)
-    val (entry,  actor) = setup()
+    val (entry, actor) = setup()
     val sinkHead = Sink.head[JsonMessage]
 
-    val flows = (1 to numberProcesses).map(_ =>PublishSubscribe.getFlow(entry, actor))
-    messages.foreach{ case (message, response, flowNumber) =>
+    val flows = (1 to numberProcesses).map(_ => PublishSubscribe.getFlow(entry, actor))
+    messages.foreach { case (message, response, flowNumber) =>
       val source = message match {
         case Some(m) => Source.single(m)
         case None => Source.empty
@@ -59,6 +56,7 @@ class PubSubTest extends FunSuite{
   }
 
   private val AnswerOk: Some[AnswerMessageServer] = Some(AnswerMessageServer(true, None))
+
   implicit def message2Option(jsonMessage: JsonMessage) = Some(jsonMessage)
 
   test("Create a channel, subscribe to it and publish a message") {
@@ -103,15 +101,15 @@ class PubSubTest extends FunSuite{
   }
 
   test("Two process subscribe and publish on the same channel") {
-    val l : List[(Option[JsonMessage], Option[JsonMessage], Int)] =
+    val l: List[(Option[JsonMessage], Option[JsonMessage], Int)] =
       List((CreateChannelClient("main", "none"), AnswerOk, 0),
-      (SubscribeChannelClient("main"), AnswerOk, 0),
-      (SubscribeChannelClient("main"), AnswerOk, 1),
-      (PublishChannelClient("main", "Hello main!"), PublishChannelClient("main", "Hello main!"), 0),
-      (PublishChannelClient("main", "message2"), PublishChannelClient("main", "message2"), 0),
-      (PublishChannelClient("main", "Hello main!"), PublishChannelClient("main", "Hello main!"), 1),
+        (SubscribeChannelClient("main"), AnswerOk, 0),
+        (SubscribeChannelClient("main"), AnswerOk, 1),
+        (PublishChannelClient("main", "Hello main!"), PublishChannelClient("main", "Hello main!"), 0),
+        (PublishChannelClient("main", "message2"), PublishChannelClient("main", "message2"), 0),
+        (PublishChannelClient("main", "Hello main!"), PublishChannelClient("main", "Hello main!"), 1),
 
-    )
+      )
     sendAndVerify(l, 2)
   }
 

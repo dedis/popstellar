@@ -25,7 +25,7 @@ object Server {
    */
   def main(args: Array[String]): Unit = {
 
-    val root = Behaviors.setup[Nothing]{ context =>
+    val root = Behaviors.setup[Nothing] { context =>
       implicit val system = context.system
       val db = context.spawn(Database(), "db")
 
@@ -48,6 +48,7 @@ object Server {
           }
         )
       }
+
       //Stream that send all published messages to all clients
       val (hsink, hsource) = MergeHub.source[PublishChannelClient].toMat(BroadcastHub.sink)(Keep.both).run()
       val writeDB = Sink.foreach[PublishChannelClient](x => println("Write to db: " + x))
@@ -62,7 +63,7 @@ object Server {
         val parser = Flow[Message].map {
           case TextMessage.Strict(s) => parseMessage(s)
         }
-        val formatter = Flow[JsonMessage].map{
+        val formatter = Flow[JsonMessage].map {
           case PublishChannelClient(channel, event) =>
             //Curently we transform published messages to Fetch messages as notifications are not implemented
             FetchChannelServer(channel, event, "0")
@@ -93,9 +94,12 @@ object Server {
 }
 
 object Database {
+
   sealed trait DBAction
-  final case class Write(key: String, value : String) extends DBAction
-  def apply(): Behavior[DBAction]  = db()
+
+  final case class Write(key: String, value: String) extends DBAction
+
+  def apply(): Behavior[DBAction] = db()
 
   private def db(): Behavior[DBAction] =
     Behaviors.receiveMessage {

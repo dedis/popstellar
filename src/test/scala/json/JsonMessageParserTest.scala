@@ -20,7 +20,8 @@ class JsonMessageParserTest extends FunSuite {
   }
 
   test("json.JsonMessageParser.serializeMessage") {
-    val sourceFetchServer: String = """{
+    val sourceFetchServer: String =
+      """{
       "event":{
         "channel":"channel1",
         "event_content":"RollCall",

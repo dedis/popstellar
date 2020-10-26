@@ -1,8 +1,8 @@
 package ch.epfl.pop.json
 
+import ch.epfl.pop.json.JsonCommunicationProtocol._
+import ch.epfl.pop.json.JsonMessages._
 import spray.json._
-import JsonMessages._
-import JsonCommunicationProtocol._
 
 
 /**
@@ -23,10 +23,10 @@ object JsonMessageParser {
     val fields: Map[String, JsValue] = obj.fields
 
     fields.head match {
-      case ("create", values @ JsObject(_)) => values.convertTo[CreateChannelClient]
-      case ("publish", values @ JsObject(_)) => values.convertTo[PublishChannelClient]
-      case ("subscribe", values @ JsObject(_)) => values.convertTo[SubscribeChannelClient]
-      case ("fetch", values @ JsObject(_)) => values.convertTo[FetchChannelClient]
+      case ("create", values@JsObject(_)) => values.convertTo[CreateChannelClient]
+      case ("publish", values@JsObject(_)) => values.convertTo[PublishChannelClient]
+      case ("subscribe", values@JsObject(_)) => values.convertTo[SubscribeChannelClient]
+      case ("fetch", values@JsObject(_)) => values.convertTo[FetchChannelClient]
 
       // TODO add more cases (need all groups to be on the same page before)
 
@@ -42,9 +42,9 @@ object JsonMessageParser {
    */
   @throws(classOf[SerializationException])
   def serializeMessage(message: JsonMessage): String = message match {
-    case m @ AnswerMessageServer(_, _) => m.toJson.toString
-    case m @ NotifyChannelServer(_, _) => m.toJson.toString
-    case m @ FetchChannelServer(_, _, _) => JsObject("event" -> m.toJson).toJson.toString
+    case m@AnswerMessageServer(_, _) => m.toJson.toString
+    case m@NotifyChannelServer(_, _) => m.toJson.toString
+    case m@FetchChannelServer(_, _, _) => JsObject("event" -> m.toJson).toJson.toString
     case _ => throw new SerializationException("Json serializer failed : invalid input message")
   }
 }

@@ -1,6 +1,6 @@
 package ch.epfl.pop.json
 
-import JsonMessages._
+import ch.epfl.pop.json.JsonMessages._
 import spray.json._
 
 
