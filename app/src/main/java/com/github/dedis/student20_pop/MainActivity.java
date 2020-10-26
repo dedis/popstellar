@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -15,6 +14,7 @@ import com.github.dedis.student20_pop.ui.ConnectFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
 
+import java.util.Date;
 
 /**
  * Activity used to display the different UIs
@@ -56,8 +56,10 @@ public final class MainActivity extends FragmentActivity {
                 break;
             case R.id.button_launch:
                 String name = ((EditText) findViewById(R.id.entry_box_launch)).getText().toString();
+                // For later: request organizer id
+                String organizer = "0x3333";
                 // Creating the LAO but not sending the information for now
-                Lao lao = new Lao(name);
+                Lao lao = new Lao(name, new Date(), organizer);
                 showFragment(new HomeFragment(), LaunchFragment.TAG);
                 Toast.makeText(this,
                         getResources().getString(R.string.message_launch_successful, name),
@@ -68,14 +70,6 @@ public final class MainActivity extends FragmentActivity {
                 ((EditText) findViewById(R.id.entry_box_launch)).getText().clear();
                 showFragment(new HomeFragment(), LaunchFragment.TAG);
                 break;
-            case R.id.tab_properties:
-                TextView properties = (TextView) findViewById(R.id.properties_view);
-                if (properties.getVisibility() == View.GONE){
-                    properties.setVisibility(View.VISIBLE);
-                }
-                else {
-                    properties.setVisibility(View.GONE);
-                }
             default:
         }
     }

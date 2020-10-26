@@ -1,9 +1,5 @@
 package com.github.dedis.student20_pop.model;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -14,32 +10,62 @@ import java.util.Objects;
  */
 public final class Lao {
 
-    private String name;
-    private long time;
-    private String id;
-    private String organizer;
+    private final String name;
+    private final long time;
+    private final String id;
+    private final String organizer;
     private List<String> witnesses;
     private List<String> members;
     private List<String> events;
-    private String attestation; // use Sign API
+    private final String attestation;
 
     /**
      * Constructor for a LAO
      *
      * @param name the name of the LAO, can be empty
      * @param time the creation time, can't be modified
-     * @param organizer the public key of the organizer in Hex
-     *
+     * @param organizer the public key of the organizer
+     * @throws IllegalArgumentException if any of the parameters is null
      */
     public Lao(String name, Date time, String organizer) {
+        if(name == null || time == null || organizer == null) {
+            throw new IllegalArgumentException("Trying to  create a LAO with a null value");
+        }
         this.name = name;
-        this.time = time.getTime() / 1000L; // can modify to Instant instead of Date
-        this.id = name + time; // have to hash
+        this.time = time.getTime() / 1000L;
+        // simple for now, will hash in the future
+        this.id = name + time;
         this.organizer = organizer;
         this.witnesses = new ArrayList<>();
         this.members = new ArrayList<>();
         this.events = new ArrayList<>();
-        this.attestation = name + time + organizer; // have to sign
+        // simple for now, will hash and sign in the future
+        this.attestation = name + time + organizer;
+    }
+
+    /**
+     * Private constructor used to create new LAO when the name is modified,
+     * forces to recompute the id and attestation using the new name
+     *
+     * @param name the name of the LAO, can be empty
+     * @param time the creation time
+     * @param organizer the public key of the organizer
+     * @param witnesses the list of the public keys of the witnesses
+     * @param members the list of the public keys of the members
+     * @param events the list of the ids of the events
+     */
+    private Lao(String name, long time, String organizer, List<String> witnesses,
+                List<String> members, List<String> events) {
+        this.name = name;
+        this.time = time;
+        // simple for now, will hash in the future
+        this.id = name + time;
+        this.organizer = organizer;
+        this.witnesses = witnesses;
+        this.members = members;
+        this.events = events;
+        // simple for now, will hash and sign in the future
+        this.attestation = name + time + organizer;
     }
 
     public String getName() {
@@ -103,24 +129,26 @@ public final class Lao {
     }
 
     /**
+     * Modifying the name of the LAO creates a new id and attestation
      *
      * @param name new name for the LAO, can be empty
+     * @return new LAO with the new name, id and attestation
      * @throws IllegalArgumentException if the name is null
      */
-    public void setName(String name) {
+    public Lao setName(String name) {
         if(name == null) {
             throw new IllegalArgumentException("Trying to set null as the name of the LAO");
         }
-        this.name = name;
+        return new Lao(name, time, organizer, witnesses, members, events);
     }
 
     /**
      *
      * @param witnesses list of public keys of witnesses, can be empty
-     * @throws IllegalArgumentException if at least one witness public key is null
+     * @throws IllegalArgumentException if the list is null or at least one public key is null
      */
-    public void setWitnesses(ArrayList<String> witnesses) {
-        if(witnesses.contains(null)) {
+    public void setWitnesses(List<String> witnesses) {
+        if(witnesses == null || witnesses.contains(null)) {
             throw new IllegalArgumentException("Trying to add a null witness to the LAO " + name);
         }
         this.witnesses = witnesses;
@@ -129,10 +157,10 @@ public final class Lao {
     /**
      *
      * @param members list of public keys of members, can be empty
-     * @throws IllegalArgumentException if at least one member public key is null
+     * @throws IllegalArgumentException if the list is null or at least one public key is null
      */
     public void setMembers(List<String> members) {
-        if(members.contains(null)) {
+        if(members == null || members.contains(null)) {
             throw new IllegalArgumentException("Trying to add a null member to the LAO " + name);
         }
         this.members = members;
@@ -141,10 +169,10 @@ public final class Lao {
     /**
      *
      * @param events list of public keys of events, can be empty
-     * @throws IllegalArgumentException if at least one event public key is null
+     * @throws IllegalArgumentException if the list is null or at least one public key is null
      */
     public void setEvents(List<String> events) {
-        if(events.contains(null)) {
+        if(events == null || events.contains(null)) {
             throw new IllegalArgumentException("Trying to add a null event to the LAO " + name);
         }
         this.events = events;
@@ -155,18 +183,16 @@ public final class Lao {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Lao lao = (Lao) o;
-        return name.equals(lao.name)
-                && time == lao.time
-                && id.equals(lao.id)
-                && organizer.equals(lao.organizer)
-                && witnesses.equals(lao.witnesses)
-                && members.equals(lao.members)
-                && events.equals(lao.events)
-                && attestation.equals(lao.attestation);
+        return Objects.equals(name, lao.name)
+                && Objects.equals(time, lao.time)
+                && Objects.equals(id, lao.id)
+                && Objects.equals(organizer, lao.organizer)
+                && Objects.equals(witnesses, lao.witnesses)
+                && Objects.equals(members, lao.members)
+                && Objects.equals(events, lao.events)
+                && Objects.equals(attestation, lao.attestation);
     }
 
-    // API problem in order to use Objects.hash
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public int hashCode() {
         return Objects.hash(name, time, id, organizer, witnesses, members, events, attestation);
