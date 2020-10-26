@@ -17,7 +17,7 @@ import com.github.dedis.student20_pop.R;
 /**
  * Fragment handling permission granting for the camera
  */
-public final class CameraPermFragment extends Fragment implements View.OnClickListener {
+public final class CameraPermissionFragment extends Fragment implements View.OnClickListener {
 
     public static final String TAG = ConnectFragment.class.getSimpleName();
 
