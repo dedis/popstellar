@@ -14,13 +14,12 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.student20_pop.R;
 
-public class CameraPermFragment extends Fragment implements View.OnClickListener {
+public final class CameraPermFragment extends Fragment implements View.OnClickListener {
 
     public static final String TAG = ConnectFragment.class.getSimpleName();
 
     private static final int HANDLE_CAMERA_PERM = 2;
 
-    @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_camera_perm, container, false);
