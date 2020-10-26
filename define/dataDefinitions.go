@@ -19,9 +19,9 @@ and/or displayed in the given format but may be stored in bytes.
 	}
 */
 
-type pKey int32          //TODO type ?
-type token hash.Hash     // TODO 32 64 \\\ how to convert to byte array ??
-type signature hash.Hash // TODO 32 64
+type pKey int32       //TODO type ?
+type token []byte     // TODO 32 64 \\\ how to convert to byte array ??
+type signature []byte // TODO 32 64
 
 type LAO struct {
 	// name of LAO

@@ -9,6 +9,7 @@ import (
 type Message struct {
 	Item   []byte
 	Action []byte
+	Data   []byte
 }
 
 /*Struct used to create LAOs*/
@@ -17,6 +18,7 @@ type MessageLaoCreate struct {
 	Timestamp     int64
 	Name          []byte
 	Ip            []byte
+	attestation   []byte
 }
 
 /**
@@ -50,6 +52,7 @@ func LaoToJson(lao LAO) []byte {
 	str = append(str, []byte(`"organizerpkey": `+string(lao.OrganizerPKey)+`, `)...)
 	str = append(str, []byte(`"creationtime": `+string(lao.Timestamp)+`, `)...)
 	str = append(str, []byte(`"ip":`+string(lao.Ip)+`, `)...)
+	str = append(str, []byte(`"attestation":`+string(lao.Attestation)+`, `)...)
 
 	// TODO create string for witness/members/...
 	str = append(str, []byte(`"witness": , `)...)
