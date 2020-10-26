@@ -90,10 +90,15 @@ func CreateLAO(name string, OrganizerPublicKey string, ip string) ([]byte, error
 		if err1 != nil {
 			return err1
 		}
-		b.CreateBucket([]byte("witness"))
-		b.CreateBucket([]byte("member"))
-		b.CreateBucket([]byte("event"))
-		b.CreateBucket([]byte("signature"))
+		b.CreateBucket([]byte("witnesses"))
+		b.CreateBucket([]byte("members"))
+		b.CreateBucket([]byte("events"))
+		// TODO: to get the attestation signed by the organizer, we need to send the LAO ID back to the Organizer so that they answer with the hash. 
+		// might need to add a validation function which blocks actions from being taken on the LAO if attestation is invalid??
+		err1 = b.Put([]byte("attestation"), []byte(""))
+		if err1 != nil {
+			return err1
+		}
 
 		return nil
 	})
@@ -116,8 +121,55 @@ func generateID(timestamp int64, name string) []byte {
 	return str
 }
 
-func GetFromID([]byte id) (src.LAO, error){
+/**
+ * Check that the attestation of an LAO is correct
+ */
+func checkValidity(id []byte) bool {
+	lao, err := GetFromID(id)
+	attestation := lao.Attestation
+
+	h := sha1.New()
+	h.Write(append([]byte(lao.Name), []byte(lao.Timestamp), []byte(lao.Witnesses)))
+	computed := h.Sum(nil)
+
+	return computed == attestation
+}
 
 
-	return nil, errors.New("empty")
+/**
+ * Returns an LAO struct based on the LAO in the database which matches the id passed an argument
+ */
+func GetFromID(id []byte) (src.LAO, error) {
+
+	var lao src.LAO
+
+	db, e := OpenLAODB()
+	defer db.Close()
+	if e != nil {
+		return lao, e
+	}
+
+
+	
+	err := db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("general")).Bucket(id)
+		if b == nil {
+			return errors.New("bkt does not exist")
+		}
+
+		// TODO right now, we get byte arrays from the db. and the LAO struct wants ints and else. We need to choose to either use only []bytes and strings, or write helpers functions to convert everything in-between
+		lao.Name = string(b.Get([]byte("name")))
+		lao.Timestamp = binary.ReadVarint(b.Get([]byte("timestamp")))
+		lao.Id = id
+		lao.OrganizerPKey = b.Get([]byte("organizerPkey"))
+		lao.Witnesses = NestedToList(b.Bucket([]byte("witnesses")))
+		lao.Members = NestedToList(b.Bucket([]byte("members")))
+		lao.Events = NestedToList(b.Bucket([]byte("events")))
+		lao.Attestation = b.Get([]byte("attestation"))
+		//lao.TokensEmitted = NestedToList(b.Bucket("???"))
+
+		return nil
+	})
+
+	return lao, err
 }
