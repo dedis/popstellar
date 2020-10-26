@@ -38,25 +38,4 @@ public class CameraPermissionFragmentTest {
         onView(withId(R.id.tab_connect)).perform(click());
         onView(withId(R.id.fragment_camera_perm)).check(matches(isDisplayed()));
     }
-
-    /*@Test
-    public void grantPermissionChangeTab() {
-        // Check that the permission is not granted
-        rule.getScenario().onActivity(activity ->
-                assertThat(ActivityCompat.checkSelfPermission(activity, Manifest.permission.CAMERA),
-                        not(is(PackageManager.PERMISSION_GRANTED))));
-
-        onView(withId(R.id.tab_connect)).perform(click());
-        onView(withId(R.id.fragment_camera_perm)).check(matches(isDisplayed()));
-
-        onView(withId(R.id.allow_camera_button)).perform(click());
-        //This is very unstable but I don't see how to do that in an other way. So if the button isn't found, the test just exits
-        onView(withText("Allow")).perform(click()); // Not working
-
-        rule.getScenario().onActivity(activity ->
-                assertThat(ActivityCompat.checkSelfPermission(activity, Manifest.permission.CAMERA),
-                        is(PackageManager.PERMISSION_GRANTED)));
-
-        onView(withId(R.id.fragment_connect)).check(matches(isDisplayed()));
-    }*/
 }
