@@ -29,12 +29,11 @@ import java.io.IOException;
 /**
  * Fragment used to display the Connect UI
 **/
-public final class ConnectFragment extends Fragment implements QRCodeListener, View.OnClickListener {
+public final class ConnectFragment extends Fragment implements QRCodeListener {
 
     public static final String TAG = ConnectFragment.class.getSimpleName();
 
     private static final int HANDLE_GMS = 9001;
-    private static final int HANDLE_CAMERA_PERM = 2;
 
     private CameraSource camera;
     private CameraPreview preview;
@@ -44,24 +43,17 @@ public final class ConnectFragment extends Fragment implements QRCodeListener, V
         View view = inflater.inflate(R.layout.fragment_connect, container, false);
 
         preview = view.findViewById(R.id.qr_camera_preview);
-        //set button click listener
-        view.findViewById(R.id.allow_camera_button).setOnClickListener(this);
 
-        // Check for the camera permission, if is is not granted, ask for it
-        int rc = ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA);
-        if (rc == PackageManager.PERMISSION_GRANTED) {
-            camera = createCamera(view);
-        } else {
-            view.findViewById(R.id.qr_camera_preview).setVisibility(View.GONE);
-        }
+        // Check for the camera permission, if is is not granted, switch to CameraPermissionFragment
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
+            camera = createCamera();
+        else
+            switchToCameraPermissionFragment();
 
         return view;
     }
 
-    private CameraSource createCamera(View view) {
-        view.findViewById(R.id.camera_permission).setVisibility(View.GONE);
-        preview.setVisibility(View.VISIBLE);
-
+    private CameraSource createCamera() {
         BarcodeDetector qrDetector = new BarcodeDetector.Builder(getContext())
                 .setBarcodeFormats(Barcode.QR_CODE)
                 .build();
@@ -75,6 +67,14 @@ public final class ConnectFragment extends Fragment implements QRCodeListener, V
                 .setRequestedFps(15.0f)
                 .setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)
                 .build();
+    }
+
+
+    private void switchToCameraPermissionFragment() {
+        requireFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, new CameraPermissionFragment(), CameraPermissionFragment.TAG)
+                .commit();
     }
 
     private void startCamera() throws SecurityException {
@@ -97,7 +97,12 @@ public final class ConnectFragment extends Fragment implements QRCodeListener, V
     @Override
     public void onResume() {
         super.onResume();
-        startCamera();
+        // If the permission was removed while the app was paused, switch to CameraPermissionFragment
+
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
+            startCamera();
+        else
+            switchToCameraPermissionFragment();
     }
 
     @Override
@@ -115,30 +120,11 @@ public final class ConnectFragment extends Fragment implements QRCodeListener, V
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == HANDLE_CAMERA_PERM &&
-                grantResults.length != 0 &&
-                grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            // we have permission, so create the camerasource
-            camera = createCamera(requireView());
-        }
-    }
-
-    @Override
-    public void onClick(View v) {
-        if(v.getId() == R.id.allow_camera_button) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA}, HANDLE_CAMERA_PERM);
-        }
-    }
-
-    @Override
     public void onQRCodeDetected(String url) {
         Log.i(TAG, "Received qrcode url : " + url);
         requireFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, ConnectingFragment.newInstance(url), TAG)
+                .replace(R.id.fragment_container, ConnectingFragment.newInstance(url), ConnectingFragment.TAG)
                 .addToBackStack(TAG).commit();
     }
 }
