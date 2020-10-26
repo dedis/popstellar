@@ -2,6 +2,7 @@ package WebSocket
 
 import (
 	"student20_pop/db"
+	src "student20_pop/define"
 
 	"log"
 	"net/http"
@@ -82,12 +83,33 @@ func (wsh WsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	wsConn.Close()
 }
 
-func (wsh WsHandler) HandleMessage(msg string) {
-	//"unpack message"
+func (wsh WsHandler) HandleMessage(msg []byte) error {
 
+	message, err := src.AnalyseMsg(msg)
+	if err != nil {
+		return err
+	}
+
+	switch message.Item {
+	case []byte("lao"):
+		switch message.Action {
+		case []byte("create"):
+			laomsg, err := src.JsonLaoCreate(msg)
+			if err != nil {
+				return err
+			}
+			id, err := db.CreateLAO(laomsg)
+
+			// TODO send back a message : success lao creation + id
+		}
+
+	}
+
+	return err
+
+	//"unpack message"
 	//local actions depending on message
 	/*
-
 		type = analyse(msg)
 		switch type
 		case LAO :
@@ -98,11 +120,8 @@ func (wsh WsHandler) HandleMessage(msg string) {
 
 	*/
 	// LAO --> new LAO(name : ..., id : ..., ...)
-
 	// switch case: create --> CreateLAO(...)
 	// getFromID(....)
-
 	//send response to client
-
 	//return code
 }
