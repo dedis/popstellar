@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:background="@color/colorButton1"
             android:text="@string/allow_camera_button"
-            android:textColor="#FFFFFF"
+            android:textColor="@android:color/white"
             android:textSize="@dimen/size_title" />
 
     </LinearLayout>
