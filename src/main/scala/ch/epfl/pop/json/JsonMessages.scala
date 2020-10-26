@@ -1,7 +1,4 @@
-package json
-
-import JsonMessageTypes._
-
+package ch.epfl.pop.json
 
 /**
  * Collection of parsed Json messages

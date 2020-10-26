@@ -1,14 +1,14 @@
-package json
+package ch.epfl.pop.json
 
 import spray.json._
-import json.JsonMessages._
-import json.JsonCommunicationProtocol._
+import JsonMessages._
+import JsonCommunicationProtocol._
 
 
 /**
  * Custom Json Parser for our Json-RPC protocol
  */
-final class JsonMessageParser {
+object JsonMessageParser {
 
   /**
    * Parse a Json string into a JsonMessage
