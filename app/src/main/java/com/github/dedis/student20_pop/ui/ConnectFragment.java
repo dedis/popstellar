@@ -48,7 +48,7 @@ public final class ConnectFragment extends Fragment implements QRCodeListener {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
             camera = createCamera();
         else
-            switchToCameraPermFragment();
+            switchToCameraPermissionFragment();
 
         return view;
     }
@@ -70,7 +70,7 @@ public final class ConnectFragment extends Fragment implements QRCodeListener {
     }
 
 
-    private void switchToCameraPermFragment() {
+    private void switchToCameraPermissionFragment() {
         requireFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, new CameraPermissionFragment(), CameraPermissionFragment.TAG)
@@ -102,7 +102,7 @@ public final class ConnectFragment extends Fragment implements QRCodeListener {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
             startCamera();
         else
-            switchToCameraPermFragment();
+            switchToCameraPermissionFragment();
     }
 
     @Override
