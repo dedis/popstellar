@@ -10,35 +10,46 @@ import android.widget.TextView;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Event;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
     private Context context;
-    private List<EventCategory> categories; //past, present or future
-    private HashMap<EventCategory, List<Event>> events;
+    private List<EventCategory> categories;
+    private HashMap<EventCategory, List<Event>> eventsMap;
 
     private enum EventCategory{
         PAST, PRESENT, FUTURE
     }
 
 
-    public ExpandableListViewEventAdapter(Context context, List<EventCategory> categories,
-                                          HashMap<EventCategory, List<Event>> events) {
-        this.categories = categories;
+    public ExpandableListViewEventAdapter(Context context, List<Event> events) {
         this.context = context;
-        this.events = events;
+        this.eventsMap = new HashMap<>();
+        this.categories = new ArrayList<>();
+        this.categories.add(EventCategory.PAST);
+        this.categories.add(EventCategory.PRESENT);
+        this.categories.add(EventCategory.FUTURE);
+        this.eventsMap.put(EventCategory.PAST, new ArrayList<>());
+        this.eventsMap.put(EventCategory.PRESENT, new ArrayList<>());
+        this.eventsMap.put(EventCategory.FUTURE, new ArrayList<>());
+
+        putEventsInMap(events, this.eventsMap);
+        orderEventsInMap(this.eventsMap);
+
     }
 
     @Override
     public int getGroupCount() {
-        return this.categories.size();
+        return this.eventsMap.size();
     }
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return this.events.get(this.categories.get(groupPosition)).size();
+        return this.eventsMap.get(this.categories.get(groupPosition)).size();
     }
 
     @Override
@@ -59,7 +70,7 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
             return null;
         }
 
-        return this.events.get(this.categories.get(groupPosition)).get(childPosition);
+        return this.eventsMap.get(this.categories.get(groupPosition)).get(childPosition);
     }
 
     @Override
@@ -112,16 +123,39 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
         //For now, later: for each specific type of event, show the required content
         String eventDescription = "Time : " + event.getTime() + "\nLocation : " + event.getLocation();
 
+
+
         if (convertView == null){
             LayoutInflater inflater = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            //now:
             convertView = inflater.inflate(R.layout.event_layout, null);
+            //later:
+            /*
+            switch (event.getType()) {
+                case MEETING:
+                    convertView = inflater.inflate(R.layout.meeting_layout, null);
+                    break;
+                case ROLL_CALL:
+                    convertView = inflater.inflate(R.layout.rollcall_layout, null);
+                    break;
+                case POLL:
+                    convertView = inflater.inflate(R.layout.poll_layout, null);
+                    break;
+                case DISCUSSION:
+                    convertView = inflater.inflate(R.layout.discussion_layout, null);
+                    break;
+                default:
+                    convertView = inflater.inflate(R.layout.event_layout, null);
+                    break;
+            }
+             */
         }
+
         TextView eventTitleTextView = convertView.findViewById(R.id.event_title);
-        TextView descriptionTextView = convertView.findViewById(R.id.event_description);
-
         eventTitleTextView.setText(eventTitle);
+        //put this in the switch, depending on what else to display
+        TextView descriptionTextView = convertView.findViewById(R.id.event_description);
         descriptionTextView.setText(eventDescription);
-
         return convertView;
     }
 
@@ -129,4 +163,39 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return true;
     }
+
+    private void putEventsInMap(List<Event> events, HashMap<EventCategory, List<Event>> eventsMap){
+        for (Event event: events){
+            if (event.getTime() < System.currentTimeMillis()/1000L){ //e.getEndTime < now
+                eventsMap.get(EventCategory.PAST).add(event);
+            }
+            else if (event.getTime() < System.currentTimeMillis()/1000L){ //&&e.getEndTime > now
+                eventsMap.get(EventCategory.PRESENT).add(event);
+            }
+            else{ //if e.getStartTime() > now
+                eventsMap.get(EventCategory.FUTURE).add(event);
+            }
+        }
+    }
+
+    private void orderEventsInMap(HashMap<EventCategory, List<Event>> eventsMap){
+
+        for (EventCategory category: categories){
+            Collections.sort(eventsMap.get(category), new EventComparator());
+        }
+
+        //2 possibilities: B strictly after A or B nested within A
+    }
+
+    private class EventComparator implements Comparator<Event> {
+        @Override
+        public int compare(Event event1, Event event2){
+            //less then: -1
+            //equal: 0
+            //greater than: 1
+            return 0;
+        }
+    }
+
+
 }
