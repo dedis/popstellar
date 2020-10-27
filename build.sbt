@@ -10,8 +10,9 @@ val AkkaVersion = "2.6.8"
 val AkkaHttpVersion = "10.2.0"
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-stream-typed" % AkkaVersion,
-  "com.typesafe.akka" %% "akka-http" % AkkaHttpVersion
-)
+  "com.typesafe.akka" %% "akka-http" % AkkaHttpVersion)
+//logging for akka
+libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.1.3" % Runtime
 
 // For LevelDB database
 // https://mvnrepository.com/artifact/org.iq80.leveldb/leveldb

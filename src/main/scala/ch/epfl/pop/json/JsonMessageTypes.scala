@@ -1,5 +1,7 @@
+package ch.epfl.pop
+
 /** Collection of types used in JsonMessage */
-package object JsonMessageTypes {
+package object json {
   type UNKNOWN = String // TODO remove later
 
   type Signature = String
