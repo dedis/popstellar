@@ -43,7 +43,7 @@ object ChannelActor {
           }
 
         case SubscribeMessage(channel, out, replyTo) =>
-          if (m contains channel) {
+          if (m.contains(channel)) {
             val channelSource = m(channel)
             channelSource.runWith(out)
             replyTo ! AnswerMessageServer(true, None)
