@@ -91,18 +91,24 @@ func (wsh WsHandler) HandleMessage(msg []byte) error {
 	}
 
 	switch message.Item {
-	case []byte("lao"):
+	case "lao":
 		switch message.Action {
 		case []byte("create"):
 			laomsg, err := src.JsonLaoCreate(msg)
 			if err != nil {
 				return err
 			}
-			id, err := db.CreateLAO(laomsg)
+			_ , err = db.CreateLAO(laomsg)
+			if err != nil {
+				return err
+			}
 
 			// TODO send back a message : success lao creation + id
+			default:
+				log.Printf("Unknown command: %v", message.Action)
 		}
-
+	default:
+		log.Printf("Unknown type of message: %v", message.Item)
 	}
 
 	return err
