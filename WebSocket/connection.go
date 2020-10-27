@@ -91,7 +91,7 @@ func (wsh WsHandler) HandleMessage(msg []byte) error {
 	}
 
 	switch message.Item {
-	case "lao":
+	case []byte("lao"):
 		switch message.Action {
 		case []byte("create"):
 			laomsg, err := src.JsonLaoCreate(msg)
