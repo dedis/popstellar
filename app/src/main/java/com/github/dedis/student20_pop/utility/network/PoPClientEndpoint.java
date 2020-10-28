@@ -1,0 +1,57 @@
+package com.github.dedis.student20_pop.utility.network;
+
+import com.github.dedis.student20_pop.utility.network.decoder.VoteDecoder;
+import com.github.dedis.student20_pop.utility.network.encoder.VoteEncoder;
+
+import org.glassfish.tyrus.client.ClientManager;
+
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.websocket.ClientEndpoint;
+import javax.websocket.CloseReason;
+import javax.websocket.DeploymentException;
+import javax.websocket.OnClose;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+
+@ClientEndpoint(
+        encoders = VoteEncoder.class,
+        decoders = VoteDecoder.class
+)
+public final class PoPClientEndpoint {
+
+    private static final ClientManager client = ClientManager.createClient();
+
+    public static ClientSession connectToServer(URI host) throws DeploymentException {
+        Session session = client.connectToServer(PoPClientEndpoint.class, host);
+        ClientSession client = new ClientSession(session);
+        listeners.put(session, client);
+        return client;
+    }
+
+    private static final Map<Session, ClientSession> listeners = new HashMap<>();
+
+    @OnOpen
+    public void onOpen(Session session) {
+        System.out.println("Client successfully connected to " + session.getId());
+    }
+
+    @OnMessage
+    public void onMessage(String message, Session session) {
+        synchronized (listeners) {
+            ClientSession client = listeners.get(session);
+            if(client == null)
+                throw new IllegalArgumentException();
+
+            client.onMessage(message);
+        }
+    }
+
+    @OnClose
+    public void onClose(Session session, CloseReason reason) {
+        listeners.remove(session);
+    }
+}
