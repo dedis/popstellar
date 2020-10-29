@@ -21,11 +21,23 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
     private List<EventCategory> categories;
     private HashMap<EventCategory, List<Event>> eventsMap;
 
+
+    /**
+     * Enum class for each event category
+     *
+     */
     private enum EventCategory{
         PAST, PRESENT, FUTURE
     }
 
 
+    /**
+     * Constructor for the expandable list view adapter to display the events
+     * in the attendee UI
+     *
+     * @param context
+     * @param events the list of events of the lao
+     */
     public ExpandableListViewEventAdapter(Context context, List<Event> events) {
         this.context = context;
         this.eventsMap = new HashMap<>();
@@ -42,16 +54,30 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
 
     }
 
+    /**
+     *
+     * @return the amount of categories
+     */
     @Override
     public int getGroupCount() {
         return this.eventsMap.size();
     }
 
+    /**
+     *
+     * @param groupPosition
+     * @return the amount of events in a given group
+     */
     @Override
     public int getChildrenCount(int groupPosition) {
         return this.eventsMap.get(this.categories.get(groupPosition)).size();
     }
 
+    /**
+     *
+     * @param groupPosition
+     * @return the category of a given position
+     */
     @Override
     public Object getGroup(int groupPosition) {
         if (groupPosition >= getGroupCount()){
@@ -60,6 +86,12 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
         return this.categories.get(groupPosition);
     }
 
+    /**
+     *
+     * @param groupPosition
+     * @param childPosition
+     * @return the event for a given position in a given category
+     */
     @Override
     public Object getChild(int groupPosition, int childPosition) {
 
@@ -88,6 +120,14 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
         return false;
     }
 
+    /**
+     *
+     * @param groupPosition
+     * @param isExpanded
+     * @param convertView
+     * @param parent
+     * @return the view for a given category
+     */
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent){
         String eventCategory = "";
@@ -114,6 +154,15 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
         return convertView;
     }
 
+    /**
+     *
+     * @param groupPosition
+     * @param childPosition
+     * @param isLastChild
+     * @param convertView
+     * @param parent
+     * @return the view for a given event
+     */
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 
@@ -164,14 +213,25 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
         return true;
     }
 
+    /**
+     * A helper method that places the events in the correct key-value pair
+     * according to their times
+     *
+     * @param events
+     * @param eventsMap
+     */
     private void putEventsInMap(List<Event> events, HashMap<EventCategory, List<Event>> eventsMap){
         //For now, the event are put in the different categories according to their time attribute
         //Later, according to the start/end-time
         for (Event event: events){
-            if (event.getTime() < System.currentTimeMillis()/1000L){ //e.getEndTime < now
+            //for now (testing purposes)
+            //later: event.getEndTime() < now
+            if (event.getTime() < System.currentTimeMillis()-86400000){
+
                 eventsMap.get(EventCategory.PAST).add(event);
             }
-            else if (event.getTime() < System.currentTimeMillis()/1000L){ //&&e.getEndTime > now
+            //later: event.getStartTime()<now && event.getEndTime() > now
+            else if (event.getTime() <= System.currentTimeMillis()){ //&&e.getEndTime > now
                 eventsMap.get(EventCategory.PRESENT).add(event);
             }
             else{ //if e.getStartTime() > now
@@ -180,6 +240,11 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
         }
     }
 
+    /**
+     * A helper method that orders the events according to their times
+     *
+     * @param eventsMap
+     */
     private void orderEventsInMap(HashMap<EventCategory, List<Event>> eventsMap){
 
         for (EventCategory category: categories){
