@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_text"
         android:gravity="center"
-        android:text="Title"
         android:textSize="@dimen/size_body"
         android:textStyle="bold" />
 
@@ -20,7 +19,6 @@
         android:id="@+id/event_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/margin_text"
-        android:text="Description" />
+        android:layout_marginHorizontal="@dimen/margin_text" />
 
 </LinearLayout>

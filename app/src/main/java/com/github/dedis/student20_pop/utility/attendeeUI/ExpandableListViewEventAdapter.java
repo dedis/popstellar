@@ -139,7 +139,7 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
                 eventCategory = "Present Events";
                 break;
             case FUTURE:
-                eventCategory = "Future Event";
+                eventCategory = "Future Events";
                 break;
         }
 
