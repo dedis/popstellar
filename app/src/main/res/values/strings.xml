@@ -43,6 +43,8 @@
     <string name="meeting_event">Meeting Event</string>
     <string name="create_meeting_event">Create Meeting event</string>
     <string name="meeting_title_required">Meeting Title*</string>
+
+    <!-- Meeting Event-->
     <string name="enter_title">Enter Title</string>
     <string name="start_date_required">Start Date*</string>
     <string name="enter_date">Enter Date</string>
@@ -53,7 +55,16 @@
     <string name="enter_location">Enter Location</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
-    
+    <string name="today">Today</string>
+    <string name="past_date_not_allowed">Event has to start/end today or in the future</string>
+    <string name="end_date_after_start_date_not_allowed">End date has to be after or the same day as the start date</string>
+    <string name="start_date_after_end_date_not_allowed">Start date must be before or the same day as end date</string>
+    <string name="time_before_date_not_allowed">Please, choose start and end dates before choosing time</string>
+    <string name="start_time_after_end_time_not_allowed">Start time must be before end time</string>
+    <string name="end_time_before_start_time_not_allowed">End time must be after start time</string>
+    <string name="end_time_optional">End Time</string>
+    <string name="picker_selection">selection</string>
+
     <!-- Roll-Call Event -->
     <string name="roll_call_event">Roll-Call Event</string>
     <string name="exception_message_empty_lao_name">Trying to set an empty name for the LAO</string>

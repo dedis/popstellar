@@ -18,7 +18,7 @@ import java.util.Objects;
 /**
  * Class modeling an Event
  */
-public final class Event {
+public class Event {
 
     private final String name;
     private final long time;
@@ -31,6 +31,13 @@ public final class Event {
     private final String type;
     private final JSONObject other;
     private final List<String> attestation;
+
+    /**
+     * Enum class for each event type
+     */
+    public enum EventType {
+        MEETING, ROLL_CALL, POLL
+    }
 
     /**
      * Constructor for an Event
