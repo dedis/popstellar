@@ -35,12 +35,12 @@ public class PersonTest {
 
     @Test
     public void getIdTest() {
-        assertThat(person1.getId(), is(""));
+        assertNotEquals(null, person1.getId());
     }
 
     @Test
     public void getAuthenticationTest() {
-        assertThat(person1.getAuthentication(), is(""));
+        assertNotEquals(null, person1.getAuthentication());
     }
 
     @Test
