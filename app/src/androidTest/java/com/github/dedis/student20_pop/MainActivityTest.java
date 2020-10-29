@@ -1,8 +1,12 @@
 package com.github.dedis.student20_pop;
 
+import android.Manifest;
+
 import androidx.test.core.app.ActivityScenario;
+import androidx.test.rule.GrantPermissionRule;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -13,6 +17,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 public class MainActivityTest {
+
+    @Rule public final GrantPermissionRule rule = GrantPermissionRule.grant(Manifest.permission.CAMERA);
 
     @Before
     public void launchActivity() {
