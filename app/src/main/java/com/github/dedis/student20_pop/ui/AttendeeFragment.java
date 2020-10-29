@@ -12,12 +12,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.attendeeUI.ExpandableListViewEventAdapter;
+import com.github.dedis.student20_pop.utility.attendeeUI.ExpandableListViewEventAdapter;
 import com.github.dedis.student20_pop.model.Event;
 import com.github.dedis.student20_pop.model.Lao;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 

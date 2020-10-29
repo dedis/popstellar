@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.attendeeUI;
+package com.github.dedis.student20_pop.utility.attendeeUI;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -105,10 +105,10 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
 
         if (convertView == null){
             LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.event_type_layout, null);
+            convertView = inflater.inflate(R.layout.event_category_layout, null);
         }
 
-        TextView eventTextView = convertView.findViewById(R.id.event_type);
+        TextView eventTextView = convertView.findViewById(R.id.event_category);
         eventTextView.setText(eventCategory);
 
         return convertView;
@@ -153,7 +153,7 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
 
         TextView eventTitleTextView = convertView.findViewById(R.id.event_title);
         eventTitleTextView.setText(eventTitle);
-        //put this in the switch, depending on what else to display
+        //later: put this in the switch, depending on what else to display
         TextView descriptionTextView = convertView.findViewById(R.id.event_description);
         descriptionTextView.setText(eventDescription);
         return convertView;
@@ -165,6 +165,8 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
     }
 
     private void putEventsInMap(List<Event> events, HashMap<EventCategory, List<Event>> eventsMap){
+        //For now, the event are put in the different categories according to their time attribute
+        //Later, according to the start/end-time
         for (Event event: events){
             if (event.getTime() < System.currentTimeMillis()/1000L){ //e.getEndTime < now
                 eventsMap.get(EventCategory.PAST).add(event);
@@ -183,17 +185,14 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
         for (EventCategory category: categories){
             Collections.sort(eventsMap.get(category), new EventComparator());
         }
-
         //2 possibilities: B strictly after A or B nested within A
     }
 
     private class EventComparator implements Comparator<Event> {
+        //later: compare start times
         @Override
         public int compare(Event event1, Event event2){
-            //less then: -1
-            //equal: 0
-            //greater than: 1
-            return 0;
+            return Long.compare(event1.getTime(), event2.getTime());
         }
     }
 
