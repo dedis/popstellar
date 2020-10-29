@@ -14,6 +14,9 @@ import com.github.dedis.student20_pop.model.Person;
 
 import java.util.ArrayList;
 
+/**
+ * Adapter to show witnesses of an Event
+ */
 public class WitnessListAdapter extends BaseAdapter {
     private final Context context;
     private final ArrayList<String> witnesses;

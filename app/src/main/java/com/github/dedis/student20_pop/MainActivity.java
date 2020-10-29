@@ -14,6 +14,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.github.dedis.student20_pop.model.Event;
+import com.github.dedis.student20_pop.model.Event.EventType;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.Person;
 import com.github.dedis.student20_pop.ui.CameraPermissionFragment;
@@ -26,6 +28,8 @@ import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraNotAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
 import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
+import com.github.dedis.student20_pop.utility.ui.organizer.OnEventCreatedListener;
+import com.github.dedis.student20_pop.utility.ui.organizer.OnEventTypeSelectedListener;
 
 import java.util.Collections;
 import java.util.Date;
@@ -35,7 +39,7 @@ import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeSca
 /**
  * Activity used to display the different UIs
  **/
-public final class MainActivity extends FragmentActivity implements OnCameraNotAllowedListener, QRCodeListener, OnCameraAllowedListener {
+public final class MainActivity extends FragmentActivity implements OnCameraNotAllowedListener, QRCodeListener, OnCameraAllowedListener, OnEventTypeSelectedListener, OnEventCreatedListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
@@ -87,25 +91,25 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
                         Log.d(TAG, "Stored private key of organizer");
 
                     app.getLocalProxy()
-                        .thenCompose(p -> p.createLao(lao.getName(), lao.getTime(), lao.getTime(), app.getPerson().getId()))
-                        .thenAccept(code -> {
-                            Person organizer = app.getPerson().setLaos(Collections.singletonList(lao.getId()));
-                            // Set LAO and organizer information locally
-                            ((PoPApplication) getApplication()).setPerson(organizer);
-                            ((PoPApplication) getApplication()).addLao(lao);
-                            ((PoPApplication) getApplication()).setCurrentLao(lao);
-                            // Start the Organizer Activity (user is considered an organizer)
-                            Intent intent = new Intent(this, OrganizerActivity.class);
-                            startActivity(intent);
-                        })
-                        .exceptionally(t -> {
-                            Toast toast = Toast.makeText(this, "An error occurred : \n" + t.getMessage(), Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL, 0, 0);
-                            toast.show();
+                            .thenCompose(p -> p.createLao(lao.getName(), lao.getTime(), lao.getTime(), app.getPerson().getId()))
+                            .thenAccept(code -> {
+                                Person organizer = app.getPerson().setLaos(Collections.singletonList(lao.getId()));
+                                // Set LAO and organizer information locally
+                                ((PoPApplication) getApplication()).setPerson(organizer);
+                                ((PoPApplication) getApplication()).addLao(lao);
+                                ((PoPApplication) getApplication()).setCurrentLao(lao);
+                                // Start the Organizer Activity (user is considered an organizer)
+                                Intent intent = new Intent(this, OrganizerActivity.class);
+                                startActivity(intent);
+                            })
+                            .exceptionally(t -> {
+                                Toast toast = Toast.makeText(this, "An error occurred : \n" + t.getMessage(), Toast.LENGTH_LONG);
+                                toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 0);
+                                toast.show();
 
-                            Log.e(TAG, "Error while creating Lao", t);
-                            return null;
-                        });
+                                Log.e(TAG, "Error while creating Lao", t);
+                                return null;
+                            });
                 }
                 break;
             case R.id.button_cancel_launch:
@@ -125,6 +129,7 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
                     .commit();
         }
     }
+
 
     @Override
     public void onCameraNotAllowedListener(QRCodeScanningType qrCodeScanningType) {
@@ -152,5 +157,22 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
     @Override
     public void onCameraAllowedListener(QRCodeScanningType qrCodeScanningType) {
         showFragment(new QRCodeScanningFragment(qrCodeScanningType), QRCodeScanningFragment.TAG);
+    }
+
+    /**
+     * only an Organizer can select an event to create
+     *
+     * @param eventType
+     */
+    public void OnEventTypeSelectedListener(EventType eventType) {
+    }
+
+    /**
+     * Only an Organizer can create an event
+     *
+     * @param event
+     */
+    @Override
+    public void OnEventCreatedListener(Event event) {
     }
 }

@@ -145,6 +145,17 @@ public class PoPApplication extends Application {
     }
 
     /**
+<<<<<<< HEAD
+=======
+     * adds an event e to the list of events of current lao
+     * @param event
+     */
+    public void addEvent(Event event) {
+        addEvent(getCurrentLao(), event);
+    }
+
+    /**
+>>>>>>> 6fd9d1d9... Add Fragments to choose date and time
      * @return the current lao
      */
     public Lao getCurrentLao() {

@@ -1,15 +1,18 @@
-package com.github.dedis.student20_pop.utility.ui;
+package com.github.dedis.student20_pop.utility.ui.organizer;
 
+import android.app.AlertDialog;
 import android.content.Context;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Event;
+import com.github.dedis.student20_pop.utility.ui.organizer.OnEventTypeSelectedListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,13 +21,13 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Adapter to show events of an Attendee
+ * Adapter to show events of an Organizer
  */
-public class AttendeeExpandableListViewEventAdapter extends BaseExpandableListAdapter {
+public class OrganizerExpandableListViewEventAdapter extends BaseExpandableListAdapter {
     private final Context context;
     private final List<EventCategory> categories;
     private final HashMap<EventCategory, List<Event>> eventsMap;
-
+    private final OnEventTypeSelectedListener onEventTypeSelectedListener;
 
     /**
      * Enum class for each event category
@@ -33,15 +36,14 @@ public class AttendeeExpandableListViewEventAdapter extends BaseExpandableListAd
         PAST, PRESENT, FUTURE
     }
 
-
     /**
      * Constructor for the expandable list view adapter to display the events
-     * in the attendee UI
+     * in the organizer UI
      *
      * @param context
      * @param events  the list of events of the lao
      */
-    public AttendeeExpandableListViewEventAdapter(Context context, List<Event> events) {
+    public OrganizerExpandableListViewEventAdapter(Context context, List<Event> events, OnEventTypeSelectedListener onEventTypeSelectedListener) {
         this.context = context;
         this.eventsMap = new HashMap<>();
         this.categories = new ArrayList<>();
@@ -51,6 +53,7 @@ public class AttendeeExpandableListViewEventAdapter extends BaseExpandableListAd
         this.eventsMap.put(EventCategory.PAST, new ArrayList<>());
         this.eventsMap.put(EventCategory.PRESENT, new ArrayList<>());
         this.eventsMap.put(EventCategory.FUTURE, new ArrayList<>());
+        this.onEventTypeSelectedListener = onEventTypeSelectedListener;
 
         putEventsInMap(events, this.eventsMap);
         orderEventsInMap(this.eventsMap);
@@ -131,13 +134,13 @@ public class AttendeeExpandableListViewEventAdapter extends BaseExpandableListAd
         String eventCategory = "";
         switch ((EventCategory) getGroup(groupPosition)) {
             case PAST:
-                eventCategory = "Past Events";
+                eventCategory = context.getString(R.string.past_events);
                 break;
             case PRESENT:
-                eventCategory = "Present Events";
+                eventCategory = context.getString(R.string.present_events);
                 break;
             case FUTURE:
-                eventCategory = "Future Events";
+                eventCategory = context.getString(R.string.future_events);
                 break;
         }
 
@@ -148,6 +151,27 @@ public class AttendeeExpandableListViewEventAdapter extends BaseExpandableListAd
 
         TextView eventTextView = convertView.findViewById(R.id.event_category);
         eventTextView.setText(eventCategory);
+
+        ImageButton addEvent = convertView.findViewById(R.id.add_future_event_button);
+        addEvent.setVisibility((getGroup(groupPosition) == EventCategory.FUTURE) ? View.VISIBLE : View.GONE);
+        addEvent.setFocusable(View.NOT_FOCUSABLE);
+        addEvent.setOnClickListener(v -> {
+            AlertDialog.Builder builderSingle = new AlertDialog.Builder(context);
+            builderSingle.setTitle(R.string.select_event_type_dialog_title);
+
+            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.select_dialog_singlechoice);
+
+            arrayAdapter.insert(context.getString(R.string.meeting_event), Event.EventType.MEETING.ordinal());
+            arrayAdapter.insert(context.getString(R.string.roll_call_event), Event.EventType.ROLL_CALL.ordinal());
+            arrayAdapter.insert(context.getString(R.string.poll_event), Event.EventType.POLL.ordinal());
+
+            builderSingle.setNegativeButton(context.getString(R.string.button_cancel), (dialog, which) -> dialog.dismiss());
+            builderSingle.setAdapter(arrayAdapter, (dialog, which) -> {
+                onEventTypeSelectedListener.OnEventTypeSelectedListener(Event.EventType.values()[which]);
+            });
+            builderSingle.show();
+        });
+
 
         return convertView;
     }
@@ -217,17 +241,16 @@ public class AttendeeExpandableListViewEventAdapter extends BaseExpandableListAd
      * @param eventsMap
      */
     private void putEventsInMap(List<Event> events, HashMap<EventCategory, List<Event>> eventsMap) {
-        //TODO: make the difference clear between PAST and PRESENT
         //For now, the event are put in the different categories according to their time attribute
         //Later, according to the start/end-time
         for (Event event : events) {
             //for now (testing purposes)
             //later: event.getEndTime() < now
-            if (event.getTime() < (System.currentTimeMillis()/1000L)) {
+            if (event.getTime() < 50) {
                 eventsMap.get(EventCategory.PAST).add(event);
             }
             //later: event.getStartTime()<now && event.getEndTime() > now
-            else if (event.getTime() <= System.currentTimeMillis()/1000L) {
+            else if (event.getTime() < 1000) {
                 eventsMap.get(EventCategory.PRESENT).add(event);
             } else { //if e.getStartTime() > now
                 eventsMap.get(EventCategory.FUTURE).add(event);
@@ -248,7 +271,7 @@ public class AttendeeExpandableListViewEventAdapter extends BaseExpandableListAd
         //2 possibilities: B strictly after A or B nested within A
     }
 
-    private class EventComparator implements Comparator<Event> {
+    private static class EventComparator implements Comparator<Event> {
         //later: compare start times
         @Override
         public int compare(Event event1, Event event2) {

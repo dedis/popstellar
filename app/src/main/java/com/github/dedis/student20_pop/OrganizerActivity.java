@@ -11,6 +11,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.github.dedis.student20_pop.model.Event;
 import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.ui.CameraPermissionFragment;
 import com.github.dedis.student20_pop.ui.ConnectingFragment;
@@ -19,11 +20,13 @@ import com.github.dedis.student20_pop.ui.IdentityFragment;
 import com.github.dedis.student20_pop.ui.OrganizerFragment;
 import com.github.dedis.student20_pop.ui.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType;
+import com.github.dedis.student20_pop.ui.event.MeetingEventFragment;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraNotAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
-import com.github.dedis.student20_pop.utility.ui.OnAddWitnessListener;
-import com.github.dedis.student20_pop.utility.ui.OnEventTypeSelectedListener;
+import com.github.dedis.student20_pop.utility.ui.organizer.OnAddWitnessListener;
+import com.github.dedis.student20_pop.utility.ui.organizer.OnEventCreatedListener;
+import com.github.dedis.student20_pop.utility.ui.organizer.OnEventTypeSelectedListener;
 
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult;
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_ALREADY_EXISTS;
@@ -33,7 +36,7 @@ import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeSca
 /**
  * Activity used to display the different UIs for organizers
  **/
-public class OrganizerActivity extends FragmentActivity implements OnEventTypeSelectedListener, OnAddWitnessListener,
+public class OrganizerActivity extends FragmentActivity implements OnEventTypeSelectedListener, OnEventCreatedListener, OnAddWitnessListener,
         OnCameraNotAllowedListener, QRCodeListener, OnCameraAllowedListener {
 
     public static final String TAG = OrganizerActivity.class.getSimpleName();
@@ -90,12 +93,16 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
         }
     }
 
+    /**
+     * Launches the fragment corresponding to the event creation the organizer has chosen
+     *
+     * @param eventType
+     */
     @Override
-    public void OnEventTypeSelectedListener(EventType eventType) {
+    public void OnEventTypeSelectedListener(Event.EventType eventType) {
         switch (eventType) {
             case MEETING:
-                //TODO
-                Log.d("Meeting Event Type ", "Launch here Meeting Event Creation Fragment");
+                showFragment(new MeetingEventFragment(), MeetingEventFragment.TAG);
                 break;
             case ROLL_CALL:
                 //TODO
@@ -162,5 +169,9 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
     @Override
     public void onCameraAllowedListener(QRCodeScanningType qrCodeScanningType) {
         showFragment(new QRCodeScanningFragment(qrCodeScanningType), QRCodeScanningFragment.TAG);
+    }
+
+    public void OnEventCreatedListener(Event event) {
+        ((PoPApplication) getApplication()).addEvent(event);
     }
 }
