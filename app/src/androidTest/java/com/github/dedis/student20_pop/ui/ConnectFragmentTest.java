@@ -1,13 +1,18 @@
+
 package com.github.dedis.student20_pop.ui;
+
+import android.Manifest;
 
 import androidx.fragment.app.Fragment;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.matcher.ViewMatchers;
+import androidx.test.rule.GrantPermissionRule;
 
 import com.github.dedis.student20_pop.MainActivity;
 import com.github.dedis.student20_pop.R;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -23,6 +28,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 public class ConnectFragmentTest {
 
     private static final String TEST_URL = "Test url";
+
+    @Rule public final GrantPermissionRule rule = GrantPermissionRule.grant(Manifest.permission.CAMERA);
 
     @Test
     public void testSimpleBarcodeReaction() {
