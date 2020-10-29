@@ -17,6 +17,7 @@ import com.github.dedis.student20_pop.R;
  */
 public final class ConnectingFragment extends Fragment {
 
+    public static final String TAG = ConnectFragment.class.getSimpleName();
     private static final String URL_EXTRA = "url";
 
     private String url;
