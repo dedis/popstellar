@@ -1,15 +1,19 @@
 package com.github.dedis.student20_pop;
 
+import android.Manifest;
 import android.os.Bundle;
 import android.util.Log;
+import android.content.pm.PackageManager;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.github.dedis.student20_pop.model.Lao;
+import com.github.dedis.student20_pop.ui.CameraPermissionFragment;
 import com.github.dedis.student20_pop.ui.AttendeeFragment;
 import com.github.dedis.student20_pop.ui.ConnectFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
@@ -57,7 +61,10 @@ public final class MainActivity extends FragmentActivity {
                 showFragment(new HomeFragment(), HomeFragment.TAG);
                 break;
             case R.id.tab_connect:
-                showFragment(new ConnectFragment(), ConnectFragment.TAG);
+                if(ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
+                    showFragment(new ConnectFragment(), ConnectFragment.TAG);
+                else
+                    showFragment(new CameraPermissionFragment(), CameraPermissionFragment.TAG);
                 break;
             case R.id.tab_launch:
                 showFragment(new LaunchFragment(), LaunchFragment.TAG);
@@ -86,6 +93,7 @@ public final class MainActivity extends FragmentActivity {
                 else{
                     properties.setVisibility(View.GONE);
                 }
+                break;
             default:
         }
     }
