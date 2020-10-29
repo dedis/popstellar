@@ -3,16 +3,16 @@
     android:orientation="vertical"
     android:gravity="center_vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/categoryTab">
 
     <TextView
         android:id="@+id/event_category"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_text"
-        android:gravity="left"
-        android:text="Event Category"
+        android:gravity="start"
         android:textSize="@dimen/size_title"
-        android:textStyle="bold" />
+        android:textStyle="bold"/>
 
 </LinearLayout>

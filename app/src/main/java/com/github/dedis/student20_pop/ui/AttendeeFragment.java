@@ -40,6 +40,9 @@ public class AttendeeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
+        //for testing purposes:
+        lao = new Lao("LAO I just joined", new Date(), "OrganizerID");
+
         View rootView = inflater.inflate(R.layout.fragment_attendee, container, false);
 
         //Display Events
@@ -52,7 +55,9 @@ public class AttendeeFragment extends Fragment {
         //Display Properties
         View properties = rootView.findViewById(R.id.properties_view);
         ((TextView) properties.findViewById(R.id.organization_name)).setText(lao.getName());
-        ((TextView) properties.findViewById(R.id.witness_list)).setText(lao.getWitnesses().toString());
+        ((TextView) properties.findViewById(R.id.witness_list)).setText("Witnesses: [id, id, id]");
+        //later: witness list, other information?
+        //((TextView) properties.findViewById(R.id.witness_list)).setText(lao.getWitnesses().toString());
 
         return rootView;
     }
@@ -70,13 +75,13 @@ public class AttendeeFragment extends Fragment {
 
         //Now (for testing) :
         ArrayList<Event> events = new ArrayList<>();
-        events.add(new Event("Past Event 1", new Date(1286278089), "laoKey", "EPFL", "Poll"));
-        events.add(new Event("Past Event 2", new Date(1601897289), "laoKey", "CE-6", "Meeting"));
-        events.add(new Event("Present Event 1", new Date(System.currentTimeMillis()),
+        events.add(new Event("Past Event 1", new Date(10*1000L), "laoKey", "EPFL", "Poll"));
+        events.add(new Event("Past Event 2", new Date(20*1000L), "laoKey", "CE-6", "Meeting"));
+        events.add(new Event("Present Event 1", new Date(500*1000L),
                 "laoKey", "Geneva", "Roll-Call"));
-        events.add(new Event("Present Event 2", new Date(System.currentTimeMillis()),
+        events.add(new Event("Present Event 2", new Date(600*1000L),
                 "laoKey", "Lausanne", "Discussion"));
-        events.add(new Event("Future Event 1", new Date(1917430089),
+        events.add(new Event("Future Event 1", new Date(5000*1000L),
                 "laoKey", "i don't know where yet", "Poll"));
 
         return events;

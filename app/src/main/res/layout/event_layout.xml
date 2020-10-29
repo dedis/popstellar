@@ -13,7 +13,7 @@
         android:layout_marginHorizontal="@dimen/margin_text"
         android:gravity="center"
         android:text="Title"
-        android:textSize="@dimen/size_title"
+        android:textSize="@dimen/size_body"
         android:textStyle="bold" />
 
     <TextView

@@ -226,12 +226,11 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
         for (Event event: events){
             //for now (testing purposes)
             //later: event.getEndTime() < now
-            if (event.getTime() < System.currentTimeMillis()-86400000){
-
+            if (event.getTime() < 50){
                 eventsMap.get(EventCategory.PAST).add(event);
             }
             //later: event.getStartTime()<now && event.getEndTime() > now
-            else if (event.getTime() <= System.currentTimeMillis()){ //&&e.getEndTime > now
+            else if (event.getTime() < 1000){
                 eventsMap.get(EventCategory.PRESENT).add(event);
             }
             else{ //if e.getStartTime() > now

@@ -9,7 +9,6 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_text"
         android:gravity="start"
-        android:text="Organization Name"
         android:textSize="@dimen/size_title"
         />
 
@@ -18,8 +17,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_text"
+        android:layout_marginBottom="@dimen/margin_text"
         android:gravity="start"
-        android:text="Witness Names and public keys"
         android:textSize="@dimen/size_body"
         />
 
