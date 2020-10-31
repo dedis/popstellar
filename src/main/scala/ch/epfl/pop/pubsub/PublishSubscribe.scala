@@ -117,13 +117,7 @@ object PublishSubscribe {
             case Failure(exception) => AnswerMessageServer(false, Some("Invalid JSON"))
           }
         }
-        val formatter = Flow[JsonMessage].map {
-          case PublishChannelClient(channel, event) =>
-            //Curently we transform published messages to Fetch messages as notifications are not implemented
-            FetchChannelServer(channel, event, "0")
-          case x => x
-        }
-          .map(m => TextMessage.Strict(serializeMessage(m)))
+        val formatter = Flow[JsonMessage].map(m => TextMessage.Strict(serializeMessage(m)))
 
         input ~> parser ~> partitioner
         partitioner.out(0) ~> merge
