@@ -5,6 +5,7 @@ import {
 
 import STRINGS from '../res/strings';
 import { Spacing, Typography } from '../Styles';
+import WebsocketLink from '../websockets/WebsocketLink';
 
 /*
 * The Launch component
@@ -32,6 +33,21 @@ const styles = StyleSheet.create({
   },
 });
 
+
+function onButtonClicked() {
+  WebsocketLink.sendMessageToServer("msg");
+
+  WebsocketLink.waitServerAnswer(() => {
+    let answer = WebsocketLink.serverAnswer;
+
+    if (answer.success === 'true') {
+      console.log("SUCCESS");
+    } else {
+      console.log("ERROR : " + answer.error);
+    }
+  });
+}
+
 const Connect = () => (
   <View style={styles.container}>
     <View style={styles.viewTop}>
@@ -42,10 +58,10 @@ const Connect = () => (
     </View>
     <View style={styles.viewBottom}>
       <View style={styles.button}>
-        <Button title={STRINGS.launch_button_launch} />
+        <Button onPress={() => onButtonClicked() } title={STRINGS.launch_button_launch} />
       </View>
       <View style={styles.button}>
-        <Button title={STRINGS.general_button_cancel} />
+        <Button onPress={() => WebsocketLink.printServerAnswer() } title={STRINGS.general_button_cancel} />
       </View>
     </View>
   </View>
