@@ -41,7 +41,7 @@ export default function TabNavigation() {
           name={STRINGS.navigation_tab_connect}
           component={ConnectNavigation}
         />
-        <TopTabNavigator.Screen name={STRINGS.navigation_tab_launch} component={Launch} />
+        <TopTabNavigator.Screen name={STRINGS.navigation_tab_launch} children={() => <Launch />} />
       </TopTabNavigator.Navigator>
     </SafeAreaView>
   );
