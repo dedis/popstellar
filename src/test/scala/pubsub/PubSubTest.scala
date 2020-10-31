@@ -9,6 +9,8 @@ import akka.actor.typed.{ActorRef, ActorSystem, Props, SpawnProtocol}
 import akka.stream.scaladsl.{BroadcastHub, Keep, MergeHub, Sink, Source}
 import akka.util.Timeout
 import ch.epfl.pop
+import ch.epfl.pop.ActorDB
+import ch.epfl.pop.ActorDB.DBMessage
 import ch.epfl.pop.json.JsonMessages._
 import ch.epfl.pop.pubsub.{ChannelActor, PublishSubscribe}
 import org.iq80.leveldb.Options
@@ -29,13 +31,6 @@ class PubSubTest extends FunSuite {
     val root = Behaviors.setup[SpawnProtocol.Command] { context =>
       SpawnProtocol()
     }
-    implicit val system: ActorSystem[SpawnProtocol.Command] = ActorSystem[SpawnProtocol.Command](root, "test")
-    implicit val timeout = Timeout(1, TimeUnit.SECONDS)
-    val (entry, actor) = setup()
-    val sinkHead = Sink.head[JsonMessage]
-
-    val options: Options = new Options()
-    options.createIfMissing(true)
 
     val DatabasePath: String = "database_test"
     val file = new File(DatabasePath)
@@ -43,10 +38,19 @@ class PubSubTest extends FunSuite {
     val directory = new Directory(file)
     directory.deleteRecursively()
 
-    val db = factory.open(file, options)
+    implicit val system: ActorSystem[SpawnProtocol.Command] = ActorSystem[SpawnProtocol.Command](root, "test")
+    implicit val timeout = Timeout(1, TimeUnit.SECONDS)
+    val (entry, actor, dbActor) = setup(DatabasePath)
+    val sinkHead = Sink.head[JsonMessage]
+
+    val options: Options = new Options()
+    options.createIfMissing(true)
 
 
-    val flows = (1 to numberProcesses).map(_ => PublishSubscribe.jsonFlow(entry, actor, db))
+
+
+
+    val flows = (1 to numberProcesses).map(_ => PublishSubscribe.jsonFlow(entry, actor, dbActor))
     messages.foreach { case (message, response, flowNumber) =>
       val source = message match {
         case Some(m) => Source.single(m)
@@ -61,14 +65,17 @@ class PubSubTest extends FunSuite {
 
   }
 
-  private def setup()(implicit system: ActorSystem[SpawnProtocol.Command], timeout: Timeout) = {
+  private def setup(databasePath : String)(implicit system: ActorSystem[SpawnProtocol.Command], timeout: Timeout) = {
     implicit val ec = system.executionContext
 
     val (entry, exit) = MergeHub.source[NotifyChannelServer].toMat(BroadcastHub.sink)(Keep.both).run()
     val futureActor: Future[ActorRef[ChannelActor.ChannelMessage]] = system.ask(SpawnProtocol.Spawn(pop.pubsub.ChannelActor(exit),
       "actor", Props.empty, _))
     val actor = Await.result(futureActor, 1.seconds)
-    (entry, actor)
+    val futureDBActor: Future[ActorRef[DBMessage]] = system.ask(SpawnProtocol.Spawn(ActorDB(databasePath), "actorDB", Props.empty, _))
+    val dbActor = Await.result(futureDBActor, 1.seconds)
+
+    (entry, actor, dbActor)
   }
 
   private val AnswerOk: Some[AnswerMessageServer] = Some(AnswerMessageServer(true, None))

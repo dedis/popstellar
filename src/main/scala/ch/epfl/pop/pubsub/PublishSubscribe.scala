@@ -7,6 +7,7 @@ import akka.stream.FlowShape
 import akka.stream.scaladsl.{BroadcastHub, Flow, GraphDSL, Keep, Merge, MergeHub, Partition, Sink}
 import akka.stream.typed.scaladsl.ActorFlow
 import akka.util.Timeout
+import ch.epfl.pop.ActorDB.{DBMessage, Read, Write}
 import ch.epfl.pop.json.JsonMessageParser.{parseMessage, serializeMessage}
 import ch.epfl.pop.json.JsonMessages.{AnswerMessageServer, CreateChannelClient, FetchChannelClient, FetchChannelServer, JsonMessage, NotifyChannelServer, PublishChannelClient, SubscribeChannelClient}
 import ch.epfl.pop.pubsub.ChannelActor.{ChannelMessage, CreateMessage, SubscribeMessage}
@@ -22,7 +23,8 @@ object PublishSubscribe {
    * @param actor    an actor handling channel creation and subscription
    * @return a flow that handles JSON messages of a publish-subscribe system
    */
-  def jsonFlow(pubEntry: Sink[NotifyChannelServer, NotUsed], actor: ActorRef[ChannelMessage], db : DB)(implicit timeout: Timeout, system: ActorSystem[Nothing]): Flow[JsonMessage, JsonMessage, NotUsed] = {
+  def jsonFlow(pubEntry: Sink[NotifyChannelServer, NotUsed], actor: ActorRef[ChannelMessage], dbActor : ActorRef[DBMessage])
+              (implicit timeout: Timeout, system: ActorSystem[Nothing]): Flow[JsonMessage, JsonMessage, NotUsed] = {
     val (userSink, userSource) = MergeHub.source[JsonMessage].toMat(BroadcastHub.sink)(Keep.both).run()
 
     Flow.fromGraph(GraphDSL.create() { implicit builder =>
@@ -57,24 +59,27 @@ object PublishSubscribe {
           }
       }
 
-      val writeDb = Flow[JsonMessage].map {
-        case message: PublishChannelClient =>
-          //TODO: compute key using hash of event once the specs are updated
-          val key = message.event
-          val value = message.event
-          db.put(key.getBytes(), value.getBytes())
-          NotifyChannelServer(message.channel, key)
+      val writeDb = ActorFlow.ask[JsonMessage, DBMessage, NotifyChannelServer](dbActor) {
+        (message, replyTo) =>
+          message match {
+            case PublishChannelClient(channel, event) =>
+              //TODO: compute key using hash of event once the specs are updated
+              val id = event
+              Write(channel, id, event, replyTo)
+          }
       }
 
-      val fetchDb = Flow[JsonMessage].map {
+      val fetchDb = ActorFlow.ask[JsonMessage, DBMessage, JsonMessage](dbActor) {
+        (message, replyTo) =>
+          message match {
+            case FetchChannelClient(channel, id) =>
+              Read(channel, id, replyTo)
+          }
+      }
+
+        Flow[JsonMessage].map {
         case FetchChannelClient(channel, id) =>
-        val event = db.get(id.getBytes())
-          if(event == null) {
-            AnswerMessageServer(false, Some("Event does not exist"))
-          }
-          else {
-            FetchChannelServer(channel, id, new String(event))
-          }
+
       }
 
       //Connect the graph
@@ -97,8 +102,8 @@ object PublishSubscribe {
    * @param actor    an actor handling channel creation and subscription
    * @return a flow that handles messages of a publish-subscribe system
    */
-  def messageFlow(pubEntry: Sink[NotifyChannelServer, NotUsed], actor: ActorRef[ChannelMessage], db : DB)(implicit timeout: Timeout, system: ActorSystem[Nothing]): Flow[Message, Message, NotUsed] = {
-    val jFlow = jsonFlow(pubEntry, actor, db : DB)
+  def messageFlow(pubEntry: Sink[NotifyChannelServer, NotUsed], actor: ActorRef[ChannelMessage], dbActor : ActorRef[DBMessage])(implicit timeout: Timeout, system: ActorSystem[Nothing]): Flow[Message, Message, NotUsed] = {
+    val jFlow = jsonFlow(pubEntry, actor, dbActor)
     Flow.fromGraph(GraphDSL.create() {
       implicit builder =>
         import GraphDSL.Implicits._
