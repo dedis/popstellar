@@ -1,5 +1,6 @@
 package pubsub
 
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 import akka.actor.typed.scaladsl.AskPattern._
@@ -10,10 +11,13 @@ import akka.util.Timeout
 import ch.epfl.pop
 import ch.epfl.pop.json.JsonMessages._
 import ch.epfl.pop.pubsub.{ChannelActor, PublishSubscribe}
+import org.iq80.leveldb.Options
+import org.iq80.leveldb.impl.Iq80DBFactory.factory
 import org.scalatest.FunSuite
 
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
+import scala.reflect.io.Directory
 
 class PubSubTest extends FunSuite {
 
@@ -30,7 +34,19 @@ class PubSubTest extends FunSuite {
     val (entry, actor) = setup()
     val sinkHead = Sink.head[JsonMessage]
 
-    val flows = (1 to numberProcesses).map(_ => PublishSubscribe.jsonFlow(entry, actor))
+    val options: Options = new Options()
+    options.createIfMissing(true)
+
+    val DatabasePath: String = "database_test"
+    val file = new File(DatabasePath)
+    //Reset db from previous tests
+    val directory = new Directory(file)
+    directory.deleteRecursively()
+
+    val db = factory.open(file, options)
+
+
+    val flows = (1 to numberProcesses).map(_ => PublishSubscribe.jsonFlow(entry, actor, db))
     messages.foreach { case (message, response, flowNumber) =>
       val source = message match {
         case Some(m) => Source.single(m)
@@ -48,7 +64,7 @@ class PubSubTest extends FunSuite {
   private def setup()(implicit system: ActorSystem[SpawnProtocol.Command], timeout: Timeout) = {
     implicit val ec = system.executionContext
 
-    val (entry, exit) = MergeHub.source[PublishChannelClient].toMat(BroadcastHub.sink)(Keep.both).run()
+    val (entry, exit) = MergeHub.source[NotifyChannelServer].toMat(BroadcastHub.sink)(Keep.both).run()
     val futureActor: Future[ActorRef[ChannelActor.ChannelMessage]] = system.ask(SpawnProtocol.Spawn(pop.pubsub.ChannelActor(exit),
       "actor", Props.empty, _))
     val actor = Await.result(futureActor, 1.seconds)
@@ -61,9 +77,13 @@ class PubSubTest extends FunSuite {
 
   test("Create a channel, subscribe to it and publish a message") {
 
-    val l = List((CreateChannelClient("main", "none"), AnswerOk),
-      (SubscribeChannelClient("main"), AnswerOk),
-      (PublishChannelClient("main", "Hello on main channel"), Some(PublishChannelClient("main", "Hello on main channel")))
+    val channel = "main"
+    val m1 = "Hello on main channel"
+    val id1 = m1
+    val l = List((CreateChannelClient(channel, "none"), AnswerOk),
+      (SubscribeChannelClient(channel), AnswerOk),
+      (PublishChannelClient(channel, m1), Some(NotifyChannelServer(channel, id1))),
+      (FetchChannelClient(channel, id1), Some(FetchChannelServer(channel, id1, m1)))
     )
 
     sendAndVerify(l)
@@ -72,12 +92,18 @@ class PubSubTest extends FunSuite {
 
   test("Create a channel, subscribe to it and publish multiple messages") {
 
-    val l = List((CreateChannelClient("main", "none"), AnswerOk),
-      (SubscribeChannelClient("main"), AnswerOk),
-      (PublishChannelClient("main", "Hello on main channel"), Some(PublishChannelClient("main", "Hello on main channel"))),
-      (PublishChannelClient("main", "Still here"), Some(PublishChannelClient("main", "Still here"))),
-      (PublishChannelClient("main", "Is there anyone?"), Some(PublishChannelClient("main", "Is there anyone?")))
-    )
+    val channel = "main"
+    val m = List("Hello on main channel", "Still here", "Is there anyone?")
+    val id = m
+
+    val l: List[(JsonMessage, Option[JsonMessage])] =
+      List((CreateChannelClient("main", "none"), AnswerOk),
+        (SubscribeChannelClient(channel), AnswerOk)
+      ) ::: m.zip(id)
+        .flatMap { p: (String, String) =>
+          List((PublishChannelClient(channel, p._1), Some(NotifyChannelServer(channel, p._2))),
+            (FetchChannelClient(channel, p._2), Some(FetchChannelServer(channel, p._2, p._1))))
+        }
 
     sendAndVerify(l)
 
@@ -85,15 +111,28 @@ class PubSubTest extends FunSuite {
 
   test("Create multiple channels, subscribe to them and publish multiple messages") {
 
-    val l = List((CreateChannelClient("main", "none"), AnswerOk),
-      (SubscribeChannelClient("main"), AnswerOk),
-      (CreateChannelClient("chan2", "none"), AnswerOk),
-      (SubscribeChannelClient("chan2"), AnswerOk),
-      (PublishChannelClient("main", "Hello on main channel"), Some(PublishChannelClient("main", "Hello on main channel"))),
-      (PublishChannelClient("main", "Still here"), Some(PublishChannelClient("main", "Still here"))),
-      (PublishChannelClient("chan2", "Hello chan2"), Some(PublishChannelClient("chan2", "Hello chan2"))),
-      (PublishChannelClient("main", "Is there anyone?"), Some(PublishChannelClient("main", "Is there anyone?"))),
-      (PublishChannelClient("chan2", "bye"), Some(PublishChannelClient("chan2", "bye"))),
+    val c1 = "main"
+    val c2 = "chan2"
+    val m = List("Hello on main channel", "Still here", "Hello chan2", "Is there anyone?", "bye")
+    val id = m
+    val l = List((CreateChannelClient(c1, "none"), AnswerOk),
+      (SubscribeChannelClient(c1), AnswerOk),
+      (CreateChannelClient(c2, "none"), AnswerOk),
+      (SubscribeChannelClient(c2), AnswerOk),
+      (PublishChannelClient(c1, m(0)), Some(NotifyChannelServer(c1, id(0)))),
+      (FetchChannelClient(c1, id(0)), Some(FetchChannelServer(c1, id(0), m(0)))),
+
+      (PublishChannelClient(c1, m(1)), Some(NotifyChannelServer(c1, id(1)))),
+      (FetchChannelClient(c1, id(1)), Some(FetchChannelServer(c1, id(1), m(1)))),
+
+      (PublishChannelClient(c2, m(2)), Some(NotifyChannelServer(c2, id(2)))),
+      (FetchChannelClient(c2, id(2)), Some(FetchChannelServer(c2, id(2), m(2)))),
+
+      (PublishChannelClient(c1, m(3)), Some(NotifyChannelServer(c1, id(3)))),
+      (FetchChannelClient(c1, id(3)), Some(FetchChannelServer(c1, id(3), m(3)))),
+
+      (PublishChannelClient(c2, m(4)), Some(NotifyChannelServer(c2, id(4)))),
+      (FetchChannelClient(c2, id(4)), Some(FetchChannelServer(c2, id(4), m(4)))),
     )
 
     sendAndVerify(l)
@@ -101,13 +140,27 @@ class PubSubTest extends FunSuite {
   }
 
   test("Two process subscribe and publish on the same channel") {
+    val channel = "main"
+    val m = List("Hello main!", "message2", "Hello main 2!")
+    val id = m
     val l: List[(Option[JsonMessage], Option[JsonMessage], Int)] =
-      List((CreateChannelClient("main", "none"), AnswerOk, 0),
-        (SubscribeChannelClient("main"), AnswerOk, 0),
-        (SubscribeChannelClient("main"), AnswerOk, 1),
-        (PublishChannelClient("main", "Hello main!"), PublishChannelClient("main", "Hello main!"), 0),
-        (PublishChannelClient("main", "message2"), PublishChannelClient("main", "message2"), 0),
-        (PublishChannelClient("main", "Hello main!"), PublishChannelClient("main", "Hello main!"), 1),
+      List((CreateChannelClient(channel, "none"), AnswerOk, 0),
+        (SubscribeChannelClient(channel), AnswerOk, 0),
+        (SubscribeChannelClient(channel), AnswerOk, 1),
+        (PublishChannelClient(channel, m(0)), NotifyChannelServer(channel, id(0)), 0),
+        (FetchChannelClient(channel, id(0)), FetchChannelServer(channel, id(0), m(0)), 0),
+        (None, NotifyChannelServer(channel, id(0)), 1),
+        (FetchChannelClient(channel, id(0)), FetchChannelServer(channel, id(0), m(0)), 1),
+
+        (PublishChannelClient(channel, m(1)), NotifyChannelServer(channel, id(1)), 0),
+        (FetchChannelClient(channel, id(1)), FetchChannelServer(channel, id(1), m(1)), 0),
+        (None, NotifyChannelServer(channel, id(1)), 1),
+        (FetchChannelClient(channel, id(1)), FetchChannelServer(channel, id(1), m(1)), 1),
+
+        (PublishChannelClient(channel, m(2)), NotifyChannelServer(channel, id(2)), 1),
+        (FetchChannelClient(channel, id(2)), FetchChannelServer(channel, id(2), m(2)), 1),
+        (None, NotifyChannelServer(channel, id(2)), 0),
+        (FetchChannelClient(channel, id(2)), FetchChannelServer(channel, id(2), m(2)), 0)
 
       )
     sendAndVerify(l, 2)
@@ -121,6 +174,12 @@ class PubSubTest extends FunSuite {
   test("Error when creating an existing channel") {
     val l = List((CreateChannelClient("main", "empty"), AnswerOk),
       (CreateChannelClient("main", "empty"), Some(AnswerMessageServer(false, Some("The channel already exist")))))
+    sendAndVerify(l)
+  }
+
+  test("Error when fetching an event that does not exist") {
+    val l = List((FetchChannelClient("main", "unknown id"),
+      Some(AnswerMessageServer(false, Some("Event does not exist")))))
     sendAndVerify(l)
   }
 
