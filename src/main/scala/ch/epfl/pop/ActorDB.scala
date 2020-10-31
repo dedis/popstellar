@@ -16,11 +16,16 @@ object ActorDB {
 
   final case class Read(channel: String, id: String, replyTo: ActorRef[JsonMessage]) extends DBMessage
 
+  /**
+   * Create an actor handling the database
+   * @param path the path of the database
+   * @return an actor handling the database
+   */
   def apply(path: String): Behavior[DBMessage] = database(path, Map.empty)
 
-  def database(path : String, channelsDB: Map[String, DB]): Behavior[DBMessage] = Behaviors.receiveMessage { message: DBMessage =>
+  private def database(path : String, channelsDB: Map[String, DB]): Behavior[DBMessage] = Behaviors.receiveMessage { message: DBMessage =>
      message match {
-         
+
       case Write(channel, id, event, replyTo) =>
         val (newChannelsDB, db) = channelsDB.get(channel) match {
           case Some(db) => (channelsDB, db)
