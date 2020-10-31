@@ -26,7 +26,8 @@
     "react-native-screens": "~2.10.1",
     "react-native-tab-view": "2.14.2",
     "react-native-web": "~0.13.12",
-    "react-navigation": "^4.4.1"
+    "react-navigation": "^4.4.1",
+    "websocket": "^1.0.32"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",
