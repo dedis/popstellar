@@ -2,36 +2,49 @@ import React from 'react';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 
 
-const TIMEOUT_MS = 25;
-const MAX_ATTEMPTS = 80;
+const SERVER_ANSWER_INTERVAL_MS = 25;
+const SERVER_ANSWER_MAX_ATTEMPTS = 160;
+
+const WEBSOCKET_READYSTATE_INTERVAL_MS = 10;
+const WEBSOCKET_READYSTATE_MAX_ATTEMPTS = 100;
 
 export default class WebsocketLink {
 
   static #ws;
-  static serverAnswer;
+  static serverAnswer = null;
 
 
-  static printServerAnswer() { console.log(this.serverAnswer); }
+  static printServerAnswer() { console.log(this.serverAnswer); } // TODO debug function
 
-  static sendMessageToServer(message) {
+
+  static sendRequestToServer(message) {
     if (this.#ws == null)
       WebsocketLink._initWebsocket();
 
     WebsocketLink._sendMessage(message);
   }
 
-  static waitServerAnswer(callback, count = 0) {
 
-    if (this.serverAnswer == null && count < MAX_ATTEMPTS) {
-      window.setTimeout(() => this.waitServerAnswer(callback,count + 1), TIMEOUT_MS);
+  static waitServerAnswer(resolveServerAnswer, rejectServerAnswer) {
+    if (this.serverAnswer == null) {
+
+      let count = 0;
+
+      const id = window.setInterval(() => {
+        if (this.serverAnswer == null && count < SERVER_ANSWER_MAX_ATTEMPTS) {
+          count += 1;
+        } else {
+          if (count === SERVER_ANSWER_MAX_ATTEMPTS)
+            rejectServerAnswer("Maximum waiting time for server answer reached : " + SERVER_ANSWER_MAX_ATTEMPTS * SERVER_ANSWER_INTERVAL_MS + "[ms] (waitServerAnswer)");
+          else
+            resolveServerAnswer(this.serverAnswer);
+          window.clearInterval(id);
+        }
+      }, SERVER_ANSWER_INTERVAL_MS);
 
     } else {
-      if (count === MAX_ATTEMPTS) {
-        console.error("(TODO) MAXIMUM ATTEMPTS REACHED : " + MAX_ATTEMPTS + " (waitServerAnswer)");
-      } else {
-        console.log("answer at count = " + count +  " :", this.serverAnswer);
-        callback();
-      }
+      // server answer is already available (this.serverAnswer != null)
+      resolveServerAnswer(this.serverAnswer);
     }
   }
 
@@ -45,7 +58,7 @@ export default class WebsocketLink {
 
     ws.onmessage = (message) => {
       const data = JSON.parse(message.data);
-      //console.log('we got a reply from server (comm) : ', data);
+      //console.log('we got a reply from server (WsLink) : ', data);
       //this.answerQueue.push(data);
       this.serverAnswer = data;
     };
@@ -54,31 +67,48 @@ export default class WebsocketLink {
     this.serverAnswer = null;
   }
 
-  static _waitWebsocketReady(message, count = 0) {
 
-    if (!this.#ws.readyState && count < MAX_ATTEMPTS) {
-      window.setTimeout(() => this._waitWebsocketReady(message, count + 1), TIMEOUT_MS);
+  static _waitWebsocketReady(resolveWebsocketReady, rejectWebsocketReady) {
+    if (!this.#ws.readyState) {
+
+      let count = 0;
+
+      const id = window.setInterval(() => {
+        if (!this.#ws.readyState && count < WEBSOCKET_READYSTATE_MAX_ATTEMPTS) {
+          count += 1;
+        } else {
+          if (count === WEBSOCKET_READYSTATE_MAX_ATTEMPTS)
+            rejectWebsocketReady("Maximum waiting time for websocket to be ready reached : " + WEBSOCKET_READYSTATE_MAX_ATTEMPTS * WEBSOCKET_READYSTATE_INTERVAL_MS + "[ms] (_waitWebsocketReady)");
+          else
+            resolveWebsocketReady();
+          window.clearInterval(id);
+        }
+      }, WEBSOCKET_READYSTATE_INTERVAL_MS);
 
     } else {
-      if (count === MAX_ATTEMPTS) {
-        console.error("(TODO) MAXIMUM ATTEMPTS REACHED : " + MAX_ATTEMPTS + " (_waitWebsocketReady)");
-      } else {
-        this._sendMessage(message);
-      }
+      resolveWebsocketReady();
     }
   }
+
 
   static _sendMessage(message) {
 
     // Check that the websocket connection is ready
     if (!this.#ws.readyState) {
-      this._waitWebsocketReady(message);
-    } else {
-      this.serverAnswer = null;
-      this.#ws.send(JSON.stringify({
-        msg: message
-      }));
 
+      let promise = new Promise((resolveWebsocketReady, rejectWebsocketReady) => {
+        this._waitWebsocketReady(resolveWebsocketReady, rejectWebsocketReady);
+      });
+
+      promise.then(
+        () => this._sendMessage(message),
+        (error) => console.error("(TODO)", error)
+      );
+
+    } else {
+      // websocket ready to be used, message can be sent
+      this.serverAnswer = null;     // reset server answer
+      this.#ws.send(JSON.stringify(message));
     }
   }
 
