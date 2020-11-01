@@ -6,6 +6,7 @@ import {
 import STRINGS from '../res/strings';
 import { Spacing, Typography } from '../Styles';
 import WebsocketLink from '../websockets/WebsocketLink';
+import * as wsUtils from '../websockets/WebsocketUtils';
 
 /*
 * The Launch component
@@ -34,19 +35,25 @@ const styles = StyleSheet.create({
 });
 
 
-function onButtonClicked() {
-  WebsocketLink.sendMessageToServer("msg");
+let onClickButtonLaunch = () => {
 
-  WebsocketLink.waitServerAnswer(() => {
-    let answer = WebsocketLink.serverAnswer;
+  const promise = new Promise((resolve, reject) => {
+    //wsUtils.requestCreateLao("nom de la LAO", resolve, reject);
+    //wsUtils.requestJoinLao("hash de la LAO", resolve, reject);
+    wsUtils.requestCreateEvent("nom de la LAO", "location de la LAO", resolve, reject);
+    //wsUtils.requestCastVote("Vote: option number 3", resolve, reject);
 
-    if (answer.success === 'true') {
-      console.log("SUCCESS");
-    } else {
-      console.log("ERROR : " + answer.error);
-    }
+    //wsUtils.requestCreateChannel("name of the channel", "contract of the channel", resolve, reject);
+    //wsUtils.requestPublishChannel("name of the channel", "content of the event", resolve, reject);
+    //wsUtils.requestSubscribeChannel("name of the channel", resolve, reject);
+    //wsUtils.requestFetchChannel("name of the channel", "id de l'event", resolve, reject)
   });
-}
+
+  promise.then(
+    () => console.log("(TODO) request accepted (launch.js)"),
+    (error) => console.error("(TODO) request rejected. Reason :", error)
+  );
+};
 
 const Connect = () => (
   <View style={styles.container}>
@@ -58,7 +65,7 @@ const Connect = () => (
     </View>
     <View style={styles.viewBottom}>
       <View style={styles.button}>
-        <Button onPress={() => onButtonClicked() } title={STRINGS.launch_button_launch} />
+        <Button onPress={() => onClickButtonLaunch() } title={STRINGS.launch_button_launch} />
       </View>
       <View style={styles.button}>
         <Button onPress={() => WebsocketLink.printServerAnswer() } title={STRINGS.general_button_cancel} />
