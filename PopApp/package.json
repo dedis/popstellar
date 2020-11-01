@@ -6,7 +6,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "startServer": "node websockets/LocalMockServer.js"
+    "startServer": "node websockets/LocalMockServer.js",
+    "startMonitorServer": "nodemon websockets/LocalMockServer.js"
   },
   "dependencies": {
     "@react-native-community/masked-view": "0.1.10",

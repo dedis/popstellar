@@ -34,16 +34,23 @@ wsServer.on('request', function (request) {
     if (message.type === 'utf8') {
       console.log('Received Message :) : ', message.utf8Data);
 
-      const answers = [{
+      let answers;
+      let idx;
+
+      answers = [{
         success: 'true',
         error: 'null'
       }, {
         success: 'false',
-        error: 'Error occurred (dummy error)!'
+        error: '[test] I could not accept your request :( (from server LocalMockServer.js)'
       }];
-      const idx = (Math.floor(Math.random() * (1000000))) % answers.length;
-      //var answers = [{type: "answer", msg: message.utf8Data}];
-      //const idx = 0;
+
+      //const answers = [{type: "answer", msg: JSON.parse(message.utf8Data)}];
+      //const answers = [{type: "answer", msg: message.utf8Data}];
+      //answers = [JSON.parse(message.utf8Data)];
+
+      idx = (Math.floor(Math.random() * (1000000))) % answers.length;
+      //idx = 0;
 
       // broadcasting message to all connected clients
       for(let key in clients) {
