@@ -1,4 +1,22 @@
 {
+
+    
+    "user": {
+        "UID": "SHA1(name + creation_time)", // maybe remove uid in the db as it's the string
+        "subscribes": [
+            {"channel_id": "0x3"},
+            {"channel_id": "0x4"},
+            {"channel_id": "0x5"},
+            {"channel_id": "0x6"}
+        ],
+        "publisher": [
+            {"channel_id": "0x7"},
+            {"channel_id": "0x8"}
+        ]
+    }
+
+    ,
+
     "LAO": {
         "name": "My LAO",
         "creation_time": "1603289085",
@@ -18,7 +36,7 @@
             {"event_key": "0x7"},
             {"event_key": "0x8"}
         ],
-        "attestation": "signature"},
+        "attestation": "signature",
         "IP": "172.16.254.1"
     }
 
