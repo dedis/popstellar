@@ -4,6 +4,12 @@ import (
 	"github.com/boltdb/bolt"
 )
 
+func OpenDB(dbName string, *bolt.DB, error) {
+
+}
+
+func InitDB ???
+
 /**
 Functions that writes a pair (key, val) in the bucket "bkt" in the database
 */
