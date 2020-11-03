@@ -1,33 +1,28 @@
 # student20_pop
 Proof-of-personhood, fall 2020
 
-Note that the main work in this repository is to be done
-in the context of the following front-end and back-end branches:
+# overview
+We defined the basic structure that mainly follow the publish subscribe model
 
-* [fe1-web](https://github.com/dedis/student20_pop/tree/fe1-web): Web-based front-end implementation in ReactJS
-* [fe2-android](https://github.com/dedis/student20_pop/tree/fe2-android): Android native front-end implementation in Java or Scala (TBD)
-* [fe3-ios](https://github.com/dedis/student20_pop/tree/fe3-ios): Optional iOS native front-end implementation in Swift
-* [be1-go](https://github.com/dedis/student20_pop/tree/be1-go): Back-end implementation in Go
-* [be2-scala](https://github.com/dedis/student20_pop/tree/be2-scala): Back-end implementation in Scala
+## Folders
 
-These branches were intentionally initialized as fresh Git repositories
-with unrelated histories,
-so that Git will complain about attempts to cross-merge them.
-Please do not attempt merges from one branch to another (for now),
-without careful consideration and discussion!
-Treat them as if they were entirely separate and unrelated repositories for now.
-We may develop a process for eventually merging them
-into one ultimate, stable "master" repository
-combining all the front-end and back-end builds, but that's for later if at all.
+# Database 
+The idea is to store a big string which contains all the information (basically in json format)
+- Userdb:   - store and retrieve user from database
+            - parse user string(in class jsonHelper
+- Channeldb:    - store and retrieve channel from database
+                - parse chanel string(in class jsonHelper
 
-Everyone working on the project,
-please create your own private "working" branches as needed
-by forking the appropriate `fe*` or `be*` branch(es) you’re working on,
-using the naming convention
-`work-(fe*|be*)-<yourname>[-optional-variant]`.
-For example,
-a branch I create to contribute to the `fe1-web` project
-might be called `work-fe1-bford` by default,
-or `work-fe1-bford-random-experiment` if I need an additional temporary branch
-for a random experiment for example.
+# Src 
+- Hub:  - Serve() which basically will be the huge loop needed to run the server and everything
+        - OpenConnection() 
+        - ListenIncomingMsg()
+        - Broadcast() 
+        - SendMsg() 
+- Subscriber:   - Publish data in database
+                - Fetch from the server to get the updates of the channels
+                - InterpretMessage which will decode string and  call the action method
+                - ActAccordingly which will call the function needed from the user concerned 
+- Publisher:    - Listen to the websocket 
+                - Send message to hub
 
