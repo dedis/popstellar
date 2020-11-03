@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
@@ -33,7 +34,7 @@ public class AttendeeFragment extends Fragment {
     ExpandableListViewEventAdapter listViewEventAdapter;
     ExpandableListView expandableListView;
     Lao lao;  //should be given from intent or previous fragment
-
+    Button propertiesButton;
 
 
     @Nullable
@@ -58,6 +59,16 @@ public class AttendeeFragment extends Fragment {
         ((TextView) properties.findViewById(R.id.witness_list)).setText("Witnesses: [id, id, id]");
         //later: witness list, other information?
         //((TextView) properties.findViewById(R.id.witness_list)).setText(lao.getWitnesses().toString());
+        propertiesButton = rootView.findViewById(R.id.tab_properties);
+
+        propertiesButton.setOnClickListener(clicked -> {
+            if (properties.getVisibility() == View.GONE){
+                properties.setVisibility(View.VISIBLE);
+            }
+            else{
+                properties.setVisibility(View.GONE);
+            }
+        });
 
         return rootView;
     }

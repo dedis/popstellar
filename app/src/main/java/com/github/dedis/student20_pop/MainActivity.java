@@ -18,6 +18,7 @@ import com.github.dedis.student20_pop.ui.AttendeeFragment;
 import com.github.dedis.student20_pop.ui.ConnectFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
+import com.github.dedis.student20_pop.ui.OrganizerPollFragment;
 
 import java.util.Date;
 
@@ -26,7 +27,8 @@ import java.util.Date;
  **/
 public final class MainActivity extends FragmentActivity {
 
-    private boolean testingAttendee = true;
+    private boolean testingAttendee = false;
+    private boolean testingPoll =  true;
     private static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
@@ -42,6 +44,10 @@ public final class MainActivity extends FragmentActivity {
             if (testingAttendee){
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.fragment_container, new AttendeeFragment()).commit();
+            }
+            else if (testingPoll){
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.fragment_container, new OrganizerPollFragment()).commit();
             }
             else {
                 getSupportFragmentManager().beginTransaction()
@@ -84,15 +90,6 @@ public final class MainActivity extends FragmentActivity {
             case R.id.button_cancel_launch:
                 ((EditText) findViewById(R.id.entry_box_launch)).getText().clear();
                 showFragment(new HomeFragment(), LaunchFragment.TAG);
-                break;
-            case R.id.tab_properties:
-                View properties = findViewById(R.id.properties_view);
-                if (properties.getVisibility() == View.GONE){
-                    properties.setVisibility(View.VISIBLE);
-                }
-                else{
-                    properties.setVisibility(View.GONE);
-                }
                 break;
             default:
         }
