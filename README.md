@@ -4,16 +4,16 @@ Proof-of-personhood, fall 2020
 # overview
 We defined the basic structure that mainly follow the publish subscribe model
 
-## Folders
+# Folders
 
-# Database 
+## Database 
 The idea is to store a big string which contains all the information (basically in json format)
 - Userdb:   - store and retrieve user from database
             - parse user string(in class jsonHelper
 - Channeldb:    - store and retrieve channel from database
                 - parse chanel string(in class jsonHelper
 
-# Src 
+## Src 
 - Hub:  - Serve() which basically will be the huge loop needed to run the server and everything
         - OpenConnection() 
         - ListenIncomingMsg()
