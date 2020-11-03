@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 
 import STRINGS from '../res/strings';
-import { Views } from '../Styles';
+import { Views, Typography } from '../Styles';
 
 /**
 * The Attendee component
@@ -14,11 +14,14 @@ const styles = StyleSheet.create({
     flex: 1,
     ...Views.base,
   },
+  text: {
+    ...Typography.base,
+  },
 });
 
 const Attendee = () => (
   <View style={styles.container}>
-    <Text>{STRINGS.attendee_description}</Text>
+    <Text style={styles.text}>{STRINGS.attendee_description}</Text>
   </View>
 );
 

@@ -9,6 +9,15 @@ const STRINGS = {
   navigation_tab_connect: 'Connect',
   navigation_tab_launch: 'Launch',
 
+  /* --- App Navigation Strings --- */
+  app_navigation_tab_home: 'Home',
+  app_navigation_tab_organizer: 'Organizer',
+
+  /* --- Organizer Navigation Strings --- */
+  organizer_navigation_tab_home: 'Home',
+  organizer_navigation_tab_attendee: 'Attendee',
+  organizer_navigation_tab_identity: 'My indentity',
+
   /* --- Home Strings --- */
   home_welcome: 'Welcome to Personhood.Online!',
   home_connect_lao: 'To connect to a local organization (LAO), please tap to Connect above',
@@ -46,6 +55,20 @@ const STRINGS = {
 
   /* --- Attendee Strings --- */
   attendee_description: 'Attendee screen',
+
+  /* --- Identity Strings --- */
+  identity_description: 'Identity screen',
+  identity_check_box_anonymous: 'Anonymous',
+  identity_check_box_anonymous_description: 'You can participate in organizations and meetings anonymously by leaving '
+        + 'this box checked. If you wish to reveal your identity to other participants in the organization, you may '
+        + 'un-check this box and enter the information you wish to reaveal below. You must enter identity information in '
+        + 'order to play an Organizer or Witness role in an organization.',
+
+  /* --- Organizer Strings --- */
+  organizer_description: 'Organizer screen',
+
+  /* --- Witness Strings --- */
+  witness_description: 'Witness screen',
 
   lorem_ipsum: "Scrollable box containing the critical informations!\nLAO's, organizers' and witnesses' names "
         + 'and hex fingerprint\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse vitae egestas '
