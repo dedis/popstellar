@@ -1,15 +1,16 @@
-import React, { Fragment } from 'react'
-import { Platform, StyleSheet, View, Text } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { createMaterialTopTabNavigator, MaterialTopTabBar } from '@react-navigation/material-top-tabs'
+import React from 'react';
+import {
+  Platform, StyleSheet, View, Text, TouchableOpacity,
+} from 'react-native';
+import { createMaterialTopTabNavigator, MaterialTopTabBar } from '@react-navigation/material-top-tabs';
+import PropTypes from 'prop-types';
+import Color from 'color';
+
 import { useTheme } from '@react-navigation/native';
+import STRINGS from '../res/strings';
 
-import STRINGS from '../res/strings'
-
-import Attendee from '../Components/Attendee'
-import Identity from '../Components/Identity'
-import { Spacing, Views } from '../Styles'
-
+import Attendee from '../Components/Attendee';
+import Identity from '../Components/Identity';
 
 const OrganizerTopTabNavigator = createMaterialTopTabNavigator();
 
@@ -20,93 +21,86 @@ const OrganizerTopTabNavigator = createMaterialTopTabNavigator();
 *
 * the SafeAreaView resolves problem with status bar overlap
 */
-
-function HomeScreen({ navigation }) {
-    React.useEffect(() => {
-      const unsubscribe = navigation.addListener('tabPress', e => {
-        // Prevent default behavior
-        e.preventDefault();
-        let parentNavigation = navigation.dangerouslyGetParent();
-        if(parentNavigation != undefined){
-            parentNavigation.navigate(STRINGS.app_navigation_tab_home)
-        }
-      });
-  
-      return unsubscribe;
-    }, [navigation]);
-  
-    return (
-      <View />
-    );
-}
-
-function LAOName({ navigation }) {
-    React.useEffect(() => {
-      const unsubscribe = navigation.addListener('tabPress', e => {
-        // Prevent default behavior
-        e.preventDefault();
-      });
-  
-      return unsubscribe;
-    }, [navigation]);
-  
-    return (
-      <View />
-    );
-}
-
-/*
-function MyTabBar(props) {
-    return (
-      <View style={ styles.fragment }>
-          <MaterialTopTabBar {...props} style={ styles.materialTab }/>
-          <Text style={[ {backgroundColor: useTheme().colors.card}, styles.laoName ]}>LAO Name</Text>
-      </View>
-    );
-  }
-*/
-
-
-export default function TabNavigation() {
-    return (
-        <SafeAreaView style={ styles.view }>
-            <OrganizerTopTabNavigator.Navigator style={ styles.navigator } 
-                                                initialRouteName={STRINGS.organizer_navigation_tab_attendee}
-                                                /*tabBar={ props => <MyTabBar {...props}/> }*/>
-                <OrganizerTopTabNavigator.Screen name={STRINGS.navigation_tab_home} component={HomeScreen} />
-                <OrganizerTopTabNavigator.Screen name={STRINGS.organizer_navigation_tab_attendee} component={Attendee} />
-                <OrganizerTopTabNavigator.Screen name={STRINGS.organizer_navigation_tab_identity} component={Identity} />
-                <OrganizerTopTabNavigator.Screen name={'LAO name'} component={LAOName} />
-            </OrganizerTopTabNavigator.Navigator>
-        </SafeAreaView>
-    );
-}
-
 const styles = StyleSheet.create({
-    view: {
-        flex:1,
+  view: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignContent: 'center',
+    shadowColor: '#000000',
+    shadowOpacity: 0.8,
+    shadowRadius: StyleSheet.hairlineWidth,
+    shadowOffset: {
+      height: StyleSheet.hairlineWidth,
+      width: 0,
     },
-    navigator: {
-        ...Platform.select({
-            web: {
-                width: '100vw',
-            },
-            default: {}
-        })
-    },
-    /*
-    fragment: {
-        flexDirection: 'row',
-    },
-    materialTab: {
-        flex: 3,
-    },
-    laoName: {
-        flex: 1,
-        textTransform: 'uppercase',
-        fontSize: 13,
-        textAlign: 'center',
-        textAlignVertical: 'center',
-    }
-    */
+    elevation: 2,
+  },
+  text: {
+    justifyContent: 'center',
+    alignContent: 'center',
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    backgroundColor: 'transparent',
+    textTransform: 'uppercase',
+  },
+
+  navigator: {
+    ...Platform.select({
+      web: {
+        width: '100vw',
+      },
+      default: {},
+    }),
+  },
 });
+
+const MytabBar = (props) => {
+  const { colors } = useTheme();
+  const inactiveColor = Color(colors.text).alpha(0.5).rgb().string();
+  const LAO = { name: 'test' }; // props.state.routes[0].params.LAOItem;
+
+  return (
+    <View style={[styles.view, { backgroundColor: colors.card }]}>
+      <TouchableOpacity style={{ flex: 1 }} onPress={() => props.navigation.navigate('Home')}>
+        <Text style={[{ flex: 1, color: inactiveColor }, styles.text]}>Home</Text>
+      </TouchableOpacity>
+      <MaterialTopTabBar
+        {...props}
+        style={{ flex: props.navigationState.routes.length, elevation: 0 }}
+      />
+      <Text style={[{ flex: 1 }, styles.text]}>{LAO.name}</Text>
+      {console.log(props)}
+      {console.log(LAO)}
+    </View>
+  );
+};
+
+MytabBar.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
+  navigationState: PropTypes.shape({
+    routes: PropTypes.arrayOf.isRequired,
+  }).isRequired,
+};
+
+export default function OrganizerNavigation() {
+  // const LAO = props.navigationState.routes[0].params;
+
+  return (
+    <OrganizerTopTabNavigator.Navigator
+      style={styles.navigator}
+      initialRouteName={STRINGS.organizer_navigation_tab_attendee}
+      tabBar={(props) => <MytabBar {...props} />}
+    >
+      <OrganizerTopTabNavigator.Screen
+        name={STRINGS.organizer_navigation_tab_attendee}
+        component={Attendee}
+      />
+      <OrganizerTopTabNavigator.Screen
+        name={STRINGS.organizer_navigation_tab_identity}
+        component={Identity}
+      />
+    </OrganizerTopTabNavigator.Navigator>
+  );
+}
