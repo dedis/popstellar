@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  StyleSheet, View, Text, FlatList, Button,
+  StyleSheet, View, Text, FlatList,
 } from 'react-native';
 import PropTypes from 'prop-types';
 
@@ -8,7 +8,7 @@ import STRINGS from '../res/strings';
 import { Spacing, Typography } from '../Styles';
 import LAOItem from './LAOItem';
 
-import LAO from '../res/laoData';
+import LAOs from '../res/laoData';
 
 /**
 * The Home component
@@ -28,8 +28,8 @@ const styles = StyleSheet.create({
   },
 });
 
-const render = (props) => {
-  if (!LAO || !LAO.length) {
+const render = () => {
+  if (!LAOs || !LAOs.length) {
     return (
       <View style={styles.container}>
         <Text style={styles.text}>{STRINGS.home_welcome}</Text>
@@ -42,17 +42,17 @@ const render = (props) => {
   return (
     <View style={styles.container}>
       <FlatList
-        data={LAO}
+        data={LAOs}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <LAOItem LAO={item} {...props} />}
+        renderItem={({ item }) => <LAOItem LAO={item} />}
         style={styles.flatList}
       />
     </View>
   );
 };
 
-const Home = (props) => (
-  render(props)
+const Home = () => (
+  render()
 );
 
 Home.propTypes = {
