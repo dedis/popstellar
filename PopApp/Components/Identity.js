@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  StyleSheet, View, Text, TextInput,
+  StyleSheet, ScrollView, Text, TextInput,
 } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import PropTypes from 'prop-types';
@@ -14,10 +14,6 @@ import { Colors, Spacing, Typography } from '../Styles';
 * Manage the Identity screen
 */
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-  },
   text: {
     ...Typography.base,
     marginBottom: Spacing.xs,
@@ -37,22 +33,48 @@ QRCode.propTypes = {
 
 const Identity = () => {
   const [toggleCheckBox, setToggleCheckBox] = useState(true);
+  const textColor = toggleCheckBox ? Colors.gray : Colors.black;
 
   return (
-    <View style={styles.container}>
+    <ScrollView>
       <CheckBox
         checked={toggleCheckBox}
         onPress={() => setToggleCheckBox(!toggleCheckBox)}
         title={STRINGS.identity_check_box_anonymous}
       />
       <Text style={styles.text}>{STRINGS.identity_check_box_anonymous_description}</Text>
-      <TextInput style={[styles.text, { color: toggleCheckBox ? Colors.gray : Colors.black }]} autoCompleteType="name" placeholder="Name" editable={!toggleCheckBox} />
-      <TextInput style={[styles.text, { color: toggleCheckBox ? Colors.gray : Colors.black }]} autoCompleteType="off" placeholder="Title" editable={!toggleCheckBox} />
-      <TextInput style={[styles.text, { color: toggleCheckBox ? Colors.gray : Colors.black }]} autoCompleteType="off" placeholder="Organization" editable={!toggleCheckBox} />
-      <TextInput style={[styles.text, { color: toggleCheckBox ? Colors.gray : Colors.black }]} autoCompleteType="email" placeholder="Email" keyboardType="email-address" editable={!toggleCheckBox} />
-      <TextInput style={[styles.text, { color: toggleCheckBox ? Colors.gray : Colors.black }]} autoCompleteType="tel" dataDetectorTypes="phoneNumber" placeholder="Phone number" keyboardType="phone-pad" editable={!toggleCheckBox} />
+      <TextInput
+        style={[styles.text, { color: textColor }]}
+        placeholder={STRINGS.identity_name_placeholder}
+        editable={!toggleCheckBox}
+      />
+      <TextInput
+        style={[styles.text, { color: textColor }]}
+        placeholder={STRINGS.identity_title_placeholder}
+        editable={!toggleCheckBox}
+      />
+      <TextInput
+        style={[styles.text, { color: textColor }]}
+        placeholder={STRINGS.identity_organization_placeholder}
+        editable={!toggleCheckBox}
+      />
+      <TextInput
+        style={[styles.text, { color: textColor }]}
+        autoCompleteType="email"
+        placeholder={STRINGS.identity_email_placeholder}
+        keyboardType="email-address"
+        editable={!toggleCheckBox}
+      />
+      <TextInput
+        style={[styles.text, { color: textColor }]}
+        autoCompleteType="tel"
+        dataDetectorTypes="phoneNumber"
+        placeholder={STRINGS.identity_phone_placeholder}
+        keyboardType="phone-pad"
+        editable={!toggleCheckBox}
+      />
       <QRCode visible={!toggleCheckBox} />
-    </View>
+    </ScrollView>
   );
 };
 

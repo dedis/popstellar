@@ -3,11 +3,11 @@ import React from 'react';
 import { StatusBar, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
+
+import { Provider } from 'react-redux';
+import Store from './Store/configureStore';
+
 import AppNavigation from './Navigation/AppNavigation';
-import Navigation from './Navigation/Navigation';
-import OrganizerNavigation from './Navigation/OrganizerNavigation';
-import Attendee from './Components/Attendee';
-import Identity from './Components/Identity';
 
 /*
 * The starting point of the app
@@ -22,9 +22,11 @@ export default function App() {
   return (
     <NavigationContainer>
       <SafeAreaProvider>
-        {Platform.OS === 'ios'
-          && <StatusBar barStyle="dark-content" backgroundColor="white" />}
-        <AppNavigation />
+        <Provider store={Store}>
+          {Platform.OS === 'ios'
+            && <StatusBar barStyle="dark-content" backgroundColor="white" />}
+          <AppNavigation />
+        </Provider>
       </SafeAreaProvider>
     </NavigationContainer>
   );

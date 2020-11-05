@@ -33,7 +33,10 @@ const styles = StyleSheet.create({
 
 export default function Navigation() {
   return (
-    <HomeTopTabNavigator.Navigator style={styles.navigator}>
+    <HomeTopTabNavigator.Navigator
+      style={styles.navigator}
+      initialRouteName={STRINGS.navigation_tab_home}
+    >
       <HomeTopTabNavigator.Screen name={STRINGS.navigation_tab_home} component={Home} />
       <HomeTopTabNavigator.Screen
         name={STRINGS.navigation_tab_connect}

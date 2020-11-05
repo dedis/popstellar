@@ -2,6 +2,8 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import STRINGS from '../res/strings';
 
@@ -20,13 +22,17 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function AppNavigation() {
+function AppNavigation({ organizationNavigation }) {
   return (
     <SafeAreaView style={styles.view}>
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
         }}
+        initialRouteName={
+          organizationNavigation
+            ? STRINGS.app_navigation_tab_organizer : STRINGS.app_navigation_tab_home
+        }
       >
         <Stack.Screen
           name={STRINGS.app_navigation_tab_home}
@@ -40,3 +46,15 @@ export default function AppNavigation() {
     </SafeAreaView>
   );
 }
+
+AppNavigation.propTypes = {
+  organizationNavigation: PropTypes.bool.isRequired,
+};
+
+const mapStateToProps = (state) => (
+  {
+    organizationNavigation: state.organizationNavigation,
+  }
+);
+
+export default connect(mapStateToProps)(AppNavigation);

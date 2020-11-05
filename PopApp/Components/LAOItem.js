@@ -4,13 +4,13 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { useNavigation } from '@react-navigation/native';
+import { connect } from 'react-redux';
 
 import STRINGS from '../res/strings';
 import { Spacing, Typography } from '../Styles';
 
-/*
+/**
 * The LAO item component
-*
 *
 */
 const styles = StyleSheet.create({
@@ -24,24 +24,18 @@ const styles = StyleSheet.create({
   },
 });
 
-const handlePress = (navigation, LAO, props) => {
-  const parentNavigation = navigation.dangerouslyGetParent();
-  console.log(parentNavigation);
-  console.log(navigation);
-  console.log(props);
-  if (parentNavigation !== undefined) {
-    // parentNavigation.reset(STRINGS.app_navigation_tab_organizer);
-    parentNavigation.navigate(STRINGS.app_navigation_tab_organizer);
-  }
+const handlePress = (navigation, LAO, dispatch) => {
+  const action = { type: 'APP_NAVIGATION_ON', value: LAO.id };
+  dispatch(action);
+  navigation.navigate(STRINGS.app_navigation_tab_organizer);
 };
 
-const LAOItem = (props) => {
+const LAOItem = ({ LAO, dispatch }) => {
   const navigation = useNavigation();
-  const { LAO } = props;
 
   return (
     <View style={styles.view}>
-      <TouchableOpacity onPress={() => handlePress(navigation, LAO, props)}>
+      <TouchableOpacity onPress={() => handlePress(navigation, LAO, dispatch)}>
         <Text style={styles.text}>{LAO.name}</Text>
       </TouchableOpacity>
     </View>
@@ -52,6 +46,13 @@ LAOItem.propTypes = {
   LAO: PropTypes.shape({
     name: PropTypes.string.isRequired,
   }).isRequired,
+  dispatch: PropTypes.func.isRequired,
 };
 
-export default LAOItem;
+const mapStateToProps = (state) => (
+  {
+    organizationNavigation: state.organizationNavigation,
+  }
+);
+
+export default connect(mapStateToProps)(LAOItem);
