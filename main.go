@@ -2,15 +2,15 @@ package main
 
 import (
 	"student20_pop/WebSocket"
-
-	"flag"
-	"log"
-	"net/http"
 	"text/template"
 
+	"flag"
 	"github.com/boltdb/bolt"
+	"log"
+	"net/http"
 )
 
+// this function basically makes the webserver run
 func main() {
 	//initiating the database
 	db, err1 := bolt.Open("test.db", 0600, nil)

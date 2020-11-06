@@ -1,12 +1,8 @@
 package WebSocket
 
 import (
-	"student20_pop/db"
-	src "student20_pop/define"
-
 	"log"
 	"net/http"
-	"strconv"
 	"sync"
 
 	"github.com/boltdb/bolt"
@@ -24,21 +20,15 @@ type connection struct {
 
 func (c *connection) reader(wg *sync.WaitGroup, wsConn *websocket.Conn, database *bolt.DB) {
 	defer wg.Done()
-	i := 0
+
 	for {
 		_, message, err := wsConn.ReadMessage()
 		if err != nil {
 			break
 		}
+		// mets le message dans les trucs à broadcast du channel
 		c.h.broadcast <- message
-		key := []byte(strconv.Itoa(i))
-		bkt := []byte("MyBucket")
-		// store msg in DB
-		err = db.Write(key, message, bkt, database)
-		if err != nil {
-			log.Fatal(err)
-		}
-		i++
+
 	}
 }
 
@@ -84,44 +74,13 @@ func (wsh WsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (wsh WsHandler) HandleMessage(msg []byte) error {
+	//TODO
 
-	message, err := src.AnalyseMsg(msg)
-	if err != nil {
-		return err
-	}
-
-	switch message.Item {
-	case []byte("lao"):
-		switch message.Action {
-		case []byte("create"):
-			laomsg, err := src.JsonLaoCreate(message.Data)
-			if err != nil {
-				return err
-			}
-			id, err := db.CreateLAO(laomsg)
-
-			// TODO send back a message : success lao creation + id
-		}
-
-	}
-
-	return err
-
-	//"unpack message"
-	//local actions depending on message
 	/*
-		type = analyse(msg)
-		switch type
-		case LAO :
-			action = getaction(msg)
-			switch action
-				case get : lao = getFromID(msg.getID)
-							client.send(lao.toJSON)
-
+		- publish to channel :
+		- Subscribe to channel :
+		- create :
 	*/
-	// LAO --> new LAO(name : ..., id : ..., ...)
-	// switch case: create --> CreateLAO(...)
-	// getFromID(....)
-	//send response to client
-	//return code
+	return nil
+
 }
