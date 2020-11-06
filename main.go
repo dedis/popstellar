@@ -24,7 +24,7 @@ func main() {
 	h := WebSocket.NewHub()
 	router := http.NewServeMux()
 	router.Handle("/", WebSocket.HomeHandler(tpl))
-	router.Handle("/ws", WebSocket.NewWSHandler(h, db))
+	router.Handle("/ws", WebSocket.NewWSHandler(h))
 	log.Printf("serving on port 8080")
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(":8080", router)) //c ici pour changer l'adresse
 }
