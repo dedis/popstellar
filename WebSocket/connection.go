@@ -1,0 +1,106 @@
+package WebSocket
+
+import (
+	"log"
+	"net/http"
+	"sync"
+
+	"github.com/gorilla/websocket"
+)
+
+//wrapper for the web socket connection
+type connection struct {
+	// Buffered channel of outbound messages.
+	send chan []byte
+
+	// The hub.
+	h *hub
+}
+
+func (c *connection) reader(wg *sync.WaitGroup, wsConn *websocket.Conn) {
+	defer wg.Done()
+
+	for {
+		_, msg, err := wsConn.ReadMessage()
+		if err != nil {
+			break
+		}
+		c.h.recievedMessage <- msg
+
+	}
+}
+
+func (c *connection) writer(wg *sync.WaitGroup, wsConn *websocket.Conn) {
+	defer wg.Done()
+	for message := range c.send {
+		err := wsConn.WriteMessage(websocket.TextMessage, message)
+		if err != nil {
+			break
+		}
+	}
+}
+
+var upgrader = &websocket.Upgrader{ReadBufferSize: 1024, WriteBufferSize: 1024}
+
+
+type WsHandler struct {
+	h *hub
+}
+
+func NewWSHandler(h *hub) WsHandler {
+	return WsHandler{h: h}
+}
+
+func (wsh WsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	//upgrader.CheckOrigin = func(r *http.Request) bool { return true }
+	wsConn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Printf("error upgrading %s", err)
+		return
+	}
+
+	c := &connection{send: make(chan []byte, 256), h: wsh.h}
+	c.h.addConnection(c)
+	defer c.h.removeConnection(c)
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go c.writer(&wg, wsConn)
+	go c.reader(&wg, wsConn)
+	wg.Wait()
+	wsConn.Close()
+}
+
+//-->  HUB
+func (wsh WsHandler) HandleMessage(msg []byte) error {
+	//TODO
+
+	switch (msg) {
+	case newLAO:  //ROMAIN
+		c.h.message <- "NEW LAO CREATED, WAAAW"
+
+	case subscribe: //OURIEL
+		append(LAO.members, ID_Subscriber)
+
+	case unsubscribe: //OURIEL
+		remove(LAO.members, ID_Subscriber)
+
+	case fetch: //OURIEL
+		sendinfo(channel)
+
+	case newEvent(Channel): //RAOUL
+		createEvent In channel
+		broadcast to channel
+
+	default :
+		log.Fatal("JSON not correctly formated :", msg)
+
+	}
+	/*
+		- publish to channel :
+		- Subscribe to channel :
+		- create :
+
+	*/
+	return nil
+
+}
