@@ -1,12 +1,8 @@
 package WebSocket
 
 import (
-	"student20_pop/db"
-	src "student20_pop/define"
-
 	"log"
 	"net/http"
-	"strconv"
 	"sync"
 
 	"github.com/boltdb/bolt"
@@ -31,7 +27,7 @@ func (c *connection) reader(wg *sync.WaitGroup, wsConn *websocket.Conn, database
 			break
 		}
 		// mets le message dans les trucs à broadcast du channel
-		c.h.broadcast <- message
+
 
 	}
 }
@@ -77,9 +73,31 @@ func (wsh WsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	wsConn.Close()
 }
 
+//-->  HUB
 func (wsh WsHandler) HandleMessage(msg []byte) error {
 	//TODO
 
+	switch (msg) {
+	case newLAO:
+		c.h.broadcast <- "NEW LAO CREATED, WAAAW"
+
+	case subscribe:
+		append(LAO.members, ID_Subscriber)
+
+	case unsubscribe:
+		remove(LAO.members, ID_Subscriber)
+
+	case fetch:
+		sendinfo(channel)
+
+	case newEvent(Channel):
+		createEvent In channel
+		broadcast to channel
+
+	case default :
+		log.Fatal("JSON not correctly formated :", msg)
+
+	}
 	/*
 		- publish to channel :
 		- Subscribe to channel :

@@ -14,7 +14,10 @@ type hub struct {
 	connections map[*connection]struct{}
 
 	// Inbound messages from the connections.
-	broadcast chan []byte
+	message chan []byte
+
+	//channel in wich we have to send the info
+	channel chan []byte
 
 	logMx sync.RWMutex
 	log   [][]byte
@@ -23,15 +26,21 @@ type hub struct {
 func NewHub() *hub {
 	h := &hub{
 		connectionsMx: sync.RWMutex{},
-		broadcast:     make(chan []byte),
+		message:       make(chan []byte),
 		connections:   make(map[*connection]struct{}),
 	}
 	//publish subscribe go routine !
 	go func() {
 		for {
-			msg := <-h.broadcast
+			msg := <-h.message
+			channel := <-h.channel
+			if channel != 0 {
+				send_to := getSubscribersFromChannel(channel)
+			} else {
+				send_to := h.connections
+			}
 			h.connectionsMx.RLock()
-			for c := range h.connections {
+			for c := range send_to {
 				select {
 				case c.send <- msg:
 				// stop trying to send to this connection after trying for 1 second.
