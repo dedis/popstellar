@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/boltdb/bolt"
 	"github.com/gorilla/websocket"
 )
 
@@ -18,16 +17,15 @@ type connection struct {
 	h *hub
 }
 
-func (c *connection) reader(wg *sync.WaitGroup, wsConn *websocket.Conn, database *bolt.DB) {
+func (c *connection) reader(wg *sync.WaitGroup, wsConn *websocket.Conn) {
 	defer wg.Done()
 
 	for {
-		_, message, err := wsConn.ReadMessage()
+		_, msg, err := wsConn.ReadMessage()
 		if err != nil {
 			break
 		}
-		// mets le message dans les trucs à broadcast du channel
-
+		c.h.recievedMessage <- msg
 
 	}
 }
@@ -44,18 +42,17 @@ func (c *connection) writer(wg *sync.WaitGroup, wsConn *websocket.Conn) {
 
 var upgrader = &websocket.Upgrader{ReadBufferSize: 1024, WriteBufferSize: 1024}
 
+
 type WsHandler struct {
 	h *hub
-
-	// the database
-	database *bolt.DB
 }
 
-func NewWSHandler(h *hub, db *bolt.DB) WsHandler {
-	return WsHandler{h: h, database: db}
+func NewWSHandler(h *hub) WsHandler {
+	return WsHandler{h: h}
 }
 
 func (wsh WsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	//upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	wsConn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("error upgrading %s", err)
@@ -68,7 +65,7 @@ func (wsh WsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 	wg.Add(2)
 	go c.writer(&wg, wsConn)
-	go c.reader(&wg, wsConn, wsh.database)
+	go c.reader(&wg, wsConn)
 	wg.Wait()
 	wsConn.Close()
 }
@@ -78,23 +75,23 @@ func (wsh WsHandler) HandleMessage(msg []byte) error {
 	//TODO
 
 	switch (msg) {
-	case newLAO:
-		c.h.broadcast <- "NEW LAO CREATED, WAAAW"
+	case newLAO:  //ROMAIN
+		c.h.message <- "NEW LAO CREATED, WAAAW"
 
-	case subscribe:
+	case subscribe: //OURIEL
 		append(LAO.members, ID_Subscriber)
 
-	case unsubscribe:
+	case unsubscribe: //OURIEL
 		remove(LAO.members, ID_Subscriber)
 
-	case fetch:
+	case fetch: //OURIEL
 		sendinfo(channel)
 
-	case newEvent(Channel):
+	case newEvent(Channel): //RAOUL
 		createEvent In channel
 		broadcast to channel
 
-	case default :
+	default :
 		log.Fatal("JSON not correctly formated :", msg)
 
 	}
@@ -102,6 +99,7 @@ func (wsh WsHandler) HandleMessage(msg []byte) error {
 		- publish to channel :
 		- Subscribe to channel :
 		- create :
+
 	*/
 	return nil
 
