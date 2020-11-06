@@ -34,7 +34,7 @@ type LAO struct {
 	OrganizerPKey pKey
 	//List of public keys where each public key belongs to one witness
 	Witnesses []pKey
-	//List of public keys where each public key belongs to one member (physical person)
+	//List of public keys where each public key belongs to one member (physical person) (subscriber)
 	Members []pKey
 	//List of public keys where each public key belongs to an event
 	Events []pKey
