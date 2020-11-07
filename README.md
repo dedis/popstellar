@@ -46,6 +46,10 @@ The actual implementation (3 files) currently works as following :
 * the `connection.go` acts like a server and serves on port 8080. When it receives a message from the client, it passes 
 it to the hub for broadcast and stores it in the DataBase.
 * the `index.html` acts like the client that prints messages received from the server and that can send messages to the server.
+### tests 
+If you want to test the websocket protocol the server running on a different machine than the client, you have to set the
+server's IP address in `index.html`  at line 36 (instead of `localhost`). You'll have to put your computer's IP address
+before the ":8080" of `main.go` at line 29.
 
 ## Database Structure
 As we are using a very basic DBMS enabling only key-values storage, we decided to have the following structure for each "entity",
