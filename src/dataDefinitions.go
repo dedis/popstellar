@@ -64,17 +64,11 @@ type Event struct {
 	timestamp int64 //  Unix timestamp (uint64)
 	//id hash : SHA1(Name + Creation Date/Time Unix Timestamp)
 	id []byte
-	/*	LAO: Hash
-		Associated LAO
-	*/
-	//
-	attendees []pKey
-	//
-	location string
-	//
+	// list of attendees
+	attendees   []pKey
+	location    string
 	typeOfEvent string
-	//
-	other string // TODO need json here
+	other       string // TODO need json here
 	/*Signature by the organizer and witnesses of the corresponding
 	LAO on (Name, Creation Date, LAO, Location) to attest to this event*/
 	attestation []signature

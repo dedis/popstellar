@@ -1,7 +1,7 @@
 package src
 
 import (
-	src "student20_pop/define"
+	src "student20_pop/src"
 	"testing"
 )
 
@@ -12,7 +12,7 @@ type MessageLaoCreate struct {
 	Ip            []byte
 }
 
-func TestLaoToJson(t *testing.T){
+func TestLaoToJson(t *testing.T) {
 	lao = src.LAO{}
 
 }
