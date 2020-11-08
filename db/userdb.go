@@ -1,32 +1,30 @@
 package db
 
 import (
-	"crypto/sha1"
 	"errors"
 	"github.com/boltdb/bolt"
 	"strconv"
-	src "student20_pop/classes"
-	"time"
 )
 
-const UserName = "user.db"
+const DatabaseUser = "user.db"
 
+/**
+ça sera quoi la tronche de notre user db ?
+1) est-ce qu'on a besoin de pouvoir implémenter une méthode FetchAllSubscribedChannels ?
+2) je pense qu'on va garder une user database juste pour pouvoir mapper un userID avec une connexion Websocket
+*/
 
 /*
  * opens the User DB. creates it if not exists.
  * don't forget to close the database afterwards
  */
 func OpenUserDB() (*bolt.DB, error) {
-	db, err := bolt.Open(UserName, 0600, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return db, nil
+	return OpenDB(DatabaseUser)
 }
 
 /**
  * Function will return an error if the DB was already initialized
+ * TODO : remove if keeping a count is unuseful
  */
 func InitUserDB(db *bolt.DB) error {
 	err := db.Update(func(tx *bolt.Tx) error {
@@ -41,18 +39,16 @@ func InitUserDB(db *bolt.DB) error {
 }
 
 // TODO don't forget to increment count when adding a user
-
-
 /**
  * Function to create a new user and store it in the DB
- * @returns : the id of the created user (+ event error)
+ * @returns : an error if could not create user
  */
-func CreateUser(id string) (error) {
+func CreateUser(id string) error {
 
 	db, e := OpenUserDB()
 	defer db.Close()
 	if e != nil {
-		return nil, e
+		return e
 	}
 
 	err := db.Update(func(tx *bolt.Tx) error {
@@ -63,7 +59,7 @@ func CreateUser(id string) (error) {
 		}
 
 		// instantiate a user with no subscribe nor publish rights
-		err1 = b.Put([]byte(id), []byte(""))
+		err1 := bkt.Put([]byte(id), []byte(""))
 		if err1 != nil {
 			return err1
 		}
@@ -73,45 +69,38 @@ func CreateUser(id string) (error) {
 	return err
 }
 
-
 /**
  * Check that the attestation of a user is correct
  */
 func checkUserValidity(id []byte) bool {
-	user, err := GetFromID(id)
-	attestation := lao.Attestation
-
-	//TODO do something??
-
-	return computed == attestation
+	//TODO later
+	return true
 }
 
-
 /**
-* Retrieve value from a given ID key, and update it with a new subscribtion or publish rights
-* returns error message
-*/
-func SubscribeUserDB (userId []byte, channelId []byte) error {
+ * Retrieve value from a given ID key, and update it with a new subscribtion or publish rights
+ * returns error message
+ */
+func SubscribeUserDB(userId []byte, channelId []byte) error {
 
 	//TODO correct the if checks
-	// TODO create functions in jsonHelper addSubscribe, addPublish
+	//TODO create functions in jsonHelper addSubscribe, addPublish
 
 	updatedString := addSubscribe(oldString, channelId)
 
-
 	db, e := OpenUserDB()
-	defer db.Close()
 	if e != nil {
-		return lao, e
+		return e
 	}
-	
+	defer db.Close()
+
 	err := db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("ids"))
 		if b == nil {
 			return errors.New("bkt does not exist")
 		}
 
-		err1 = b.Put(userid, updatedString)
+		err1 := b.Put(userId, updatedString)
 		if err1 != nil {
 			return err1
 		}
@@ -121,9 +110,9 @@ func SubscribeUserDB (userId []byte, channelId []byte) error {
 	return err
 }
 
-
 /**
- * Returns a string which contains the subscribe and publish rights in the user database which matches the id passed an argument
+ * Returns a string which contains the subscribe and publish rights
+ * in the user database which matches the id passed an argument
  */
 func GetUserDataFromID(userid []byte) ([]byte, error) {
 
@@ -132,24 +121,23 @@ func GetUserDataFromID(userid []byte) ([]byte, error) {
 	db, e := OpenUserDB()
 	defer db.Close()
 	if e != nil {
-		return lao, e
+		return nil, e
 	}
-	
+
 	err := db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte("ids"))
+		b := tx.Bucket(userid)
 		if b == nil {
 			return errors.New("bkt does not exist")
 		}
 
-		data = b.Get(userid)
+		data = b.Get(userid) //TODO
 		return nil
 	})
 
 	return data, err
 }
 
-
-//TODO move those functions to json helper but we might never need them
+//TODO move those functions to json helper if we need them
 /*
 func GetSubscribeOfUserFromId {
 	data, err = GetUserDataFromID(userid)
