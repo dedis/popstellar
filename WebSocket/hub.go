@@ -1,6 +1,8 @@
 package WebSocket
 
 import (
+	"fmt"
+	"github.com/boltdb/bolt"
 	"log"
 	"sync"
 	"time"
@@ -21,6 +23,9 @@ type hub struct {
 	//msg recieved from the webskt
 	recievedMessage chan []byte
 
+	//Database instance
+	db *bolt.DB
+
 	logMx sync.RWMutex
 	log   [][]byte
 }
@@ -31,6 +36,7 @@ func NewHub() *hub {
 		message:         make(chan []byte),
 		recievedMessage: make(chan []byte),
 		connections:     make(map[*connection]struct{}),
+		db:              nil,
 	}
 	//publish subscribe go routine !
 	/*
@@ -82,12 +88,14 @@ func NewHub() *hub {
 }
 
 func (h *hub) addConnection(conn *connection) {
+	fmt.Println("new client connected")
 	h.connectionsMx.Lock()
 	defer h.connectionsMx.Unlock()
 	h.connections[conn] = struct{}{}
 }
 
 func (h *hub) removeConnection(conn *connection) {
+	fmt.Println("client disconnected")
 	h.connectionsMx.Lock()
 	defer h.connectionsMx.Unlock()
 	if _, ok := h.connections[conn]; ok {
@@ -95,3 +103,58 @@ func (h *hub) removeConnection(conn *connection) {
 		close(conn.send)
 	}
 }
+
+//call with msg = receivedMessage
+/*
+func (h *hub) HandleMessage(msg []byte) error {
+	//TODO
+	message, err := src.AnalyseMsg(msg)
+	if err != nil {
+		return err
+	}
+
+	switch message.Item {
+	case []byte("LAO"):  //ROMAIN
+		switch message.Action {
+		case []byte("create"):
+			mc, err := src.JsonLaoCreate(message.Data)
+			if err != nil {
+				return err
+			}
+
+			h.db, err = db.OpenChannelDB()
+			if err != nil {
+				return err
+			}
+
+			id, err := db.CreateLAO(mc)
+			if err != nil {
+				return err
+			}
+
+			h.message <- []byte("{action: , id: , ...}") //TODO waiting for protocol definition
+			h.channel <- []byte("0")
+		}
+
+	case subscribe: //OURIEL
+		append(LAO.members, ID_Subscriber)
+
+	case unsubscribe: //OURIEL
+		remove(LAO.members, ID_Subscriber)
+
+	case fetch: //OURIEL
+		sendinfo(channel)
+
+	case newEvent(Channel): //RAOUL
+		createEvent In channel
+		broadcast to channel
+
+	default :
+		log.Fatal("JSON not correctly formated :", msg)
+	}
+
+	return nil
+
+}
+
+*/

@@ -42,7 +42,6 @@ func (c *connection) writer(wg *sync.WaitGroup, wsConn *websocket.Conn) {
 
 var upgrader = &websocket.Upgrader{ReadBufferSize: 1024, WriteBufferSize: 1024}
 
-
 type WsHandler struct {
 	h *hub
 }
@@ -52,7 +51,7 @@ func NewWSHandler(h *hub) WsHandler {
 }
 
 func (wsh WsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	//upgrader.CheckOrigin = func(r *http.Request) bool { return true }
+	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	wsConn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("error upgrading %s", err)
@@ -68,39 +67,4 @@ func (wsh WsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	go c.reader(&wg, wsConn)
 	wg.Wait()
 	wsConn.Close()
-}
-
-//-->  HUB
-func (wsh WsHandler) HandleMessage(msg []byte) error {
-	//TODO
-
-	switch (msg) {
-	case newLAO:  //ROMAIN
-		c.h.message <- "NEW LAO CREATED, WAAAW"
-
-	case subscribe: //OURIEL
-		append(LAO.members, ID_Subscriber)
-
-	case unsubscribe: //OURIEL
-		remove(LAO.members, ID_Subscriber)
-
-	case fetch: //OURIEL
-		sendinfo(channel)
-
-	case newEvent(Channel): //RAOUL
-		createEvent In channel
-		broadcast to channel
-
-	default :
-		log.Fatal("JSON not correctly formated :", msg)
-
-	}
-	/*
-		- publish to channel :
-		- Subscribe to channel :
-		- create :
-
-	*/
-	return nil
-
 }
