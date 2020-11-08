@@ -5,24 +5,20 @@ import (
 	"errors"
 	"github.com/boltdb/bolt"
 	"strconv"
-	src "student20_pop/define"
+	src "student20_pop/src"
 )
 
-const LaoDBName = "LAO.db"
+const DatabaseLao = "LAO.db"
 
 // would be nice to have an interface that contains methos add, remove and edit for LAO, event and vote
 
 /*
  * opens the LAO DB. creates it if not exists.
  * don't forget to close the database afterwards
+ * TODO : Keep it ? or put everything in the Channel DB ?
  */
 func OpenLAODB() (*bolt.DB, error) {
-	db, err := bolt.Open(LaoDBName, 0600, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return db, nil
+	return OpenDB(DatabaseLao)
 }
 
 /**
@@ -106,6 +102,7 @@ func CreateLAO(create src.MessageLaoCreate) ([]byte, error) {
 
 /**
  * Generate a hash for ID of LAO
+ * //TODO on garde ou on tej' nous on doit pas générer on doit check validity il me semble
  */
 func generateID(timestamp int64, name []byte) []byte {
 	h := sha1.New()
@@ -116,6 +113,6 @@ func generateID(timestamp int64, name []byte) []byte {
 }
 
 func GetFromID(id []byte) (src.LAO, error) {
-
+	//TODO
 	return src.LAO{}, errors.New("empty")
 }

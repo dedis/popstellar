@@ -14,11 +14,12 @@ type Message struct {
 
 /*Struct used to create LAOs*/
 type MessageLaoCreate struct {
+	ID            []byte
 	OrganizerPkey []byte
 	Timestamp     int64
 	Name          []byte
 	Ip            []byte
-	attestation   []byte
+	Attestation   []byte
 }
 
 /**
