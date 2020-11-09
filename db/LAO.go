@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/boltdb/bolt"
 	"strconv"
-	src "student20_pop/src"
+	"../src"
 )
 
 const DatabaseLao = "LAO.db"

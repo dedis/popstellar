@@ -3,7 +3,7 @@ package db
 import (
 	"errors"
 	"github.com/boltdb/bolt"
-	"student20_pop/src"
+	"../src"
 )
 
 const DatabaseChannel = "channel.db"
@@ -38,7 +38,7 @@ func InitChannelDB(db *bolt.DB) error {
  * @param : a src.MessageLaoCreate. all fields are stored in DB
  * @returns : the id of the created user (+ event error)
  */
-func CreateChannel(lao src.MessageLaoCreate) error {
+func CreateChannel(event src.MessageEventCreate) error {
 
 	db, e := OpenChannelDB()
 	defer db.Close()

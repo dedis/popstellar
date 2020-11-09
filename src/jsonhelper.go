@@ -22,13 +22,24 @@ type MessageLaoCreate struct {
 	Attestation   []byte
 }
 
+type MessageEventCreate struct {
+	ID			[]byte
+	Attendees	[][]byte
+	Timestamp	int64
+	Name		[]byte
+	Location    []byte
+	TypeOfEvent []byte
+	Attestation	[]byte
+	Other       []byte // TODO needed ???
+}
+
 /**
  * Function that takes a byte array as input and returns
  * a Message struct
  */
 func AnalyseMsg(message []byte) (Message, error) {
 	m := Message{}
-	err := json.Unmarshal(message, m)
+	err := json.Unmarshal(message, &m)
 	return m, err
 }
 
@@ -37,7 +48,13 @@ func AnalyseMsg(message []byte) (Message, error) {
  */
 func JsonLaoCreate(message []byte) (MessageLaoCreate, error) {
 	m := MessageLaoCreate{}
-	err := json.Unmarshal(message, m)
+	err := json.Unmarshal(message, &m)
+	return m, err
+}
+
+func DataToMessageEventCreate(data []byte) (MessageEventCreate, error) {
+	m := MessageEventCreate{}
+	err := json.Unmarshal(data, &m)
 	return m, err
 }
 
