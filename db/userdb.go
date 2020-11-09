@@ -137,6 +137,15 @@ func GetUserDataFromID(userid []byte) ([]byte, error) {
 	return data, err
 }
 
+/**
+ * check if user is already registered
+ */
+func alreadyRegister(userid []byte) (bool, error) {
+	//TODO
+	bkt, err := GetUserDataFromID(userid)
+	already := (bkt!=nil)
+	return already, err
+}
 //TODO move those functions to json helper if we need them
 /*
 func GetSubscribeOfUserFromId {

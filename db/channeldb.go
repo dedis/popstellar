@@ -65,15 +65,15 @@ func checkChannelValidity(id []byte) bool {
 * Updates a channel by adding a publisher or subscriber to it
 * returns error message
  */
-func UpdateChannelDB(userId []byte, channelId []byte, action []byte) error {
+func UpdateChannelDB(reg src.MessageRegistration)error {
 
 	//TODO correct the if checks
 	// TODO create functions in jsonHelper addSubscribe, addPublish
-	switch action {
+	switch reg.action {
 	case []byte("subscriber"):
-		return addSubscriber(userId, channelId)
+		return addSubscriber(reg.userId, reg.channelId)
 	case []byte("publisher"):
-		return addPublisher(userId, channelId)
+		return addPublisher(reg.userId, reg.channelId)
 	default:
 		return errors.New("action not recognized")
 	}
@@ -93,6 +93,12 @@ func addPublisher(id []byte, channel []byte) error {
  */
 func addSubscriber(id []byte, channel []byte) error {
 	//TODO
+	db, e := OpenChannelDB()
+	if e != nil {
+		return e
+	}
+	defer db.Close()
+
 	return nil
 }
 
