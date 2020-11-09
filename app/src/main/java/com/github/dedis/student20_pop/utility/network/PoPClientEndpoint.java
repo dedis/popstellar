@@ -1,8 +1,5 @@
 package com.github.dedis.student20_pop.utility.network;
 
-import com.github.dedis.student20_pop.utility.network.decoder.VoteDecoder;
-import com.github.dedis.student20_pop.utility.network.encoder.VoteEncoder;
-
 import org.glassfish.tyrus.client.ClientManager;
 
 import java.net.URI;
@@ -17,22 +14,31 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 
-@ClientEndpoint(
-        encoders = VoteEncoder.class,
-        decoders = VoteDecoder.class
-)
+/**
+ * A client endpoint to a web socket using jsr 365 library
+ *
+ * TODO : Use the built-in encoder and decoder to have complete messages
+ */
+@ClientEndpoint()
 public final class PoPClientEndpoint {
 
     private static final ClientManager client = ClientManager.createClient();
 
-    public static ClientSession connectToServer(URI host) throws DeploymentException {
+    /**
+     * Create a new ClientProxy that will encapsulate the socket
+     *
+     * @param host to connect to
+     * @return the proxy
+     * @throws DeploymentException if an error occurs during the deployment
+     */
+    public static ClientProxy connectToServer(URI host) throws DeploymentException {
         Session session = client.connectToServer(PoPClientEndpoint.class, host);
-        ClientSession client = new ClientSession(session);
+        ClientProxy client = new ClientProxy(session);
         listeners.put(session, client);
         return client;
     }
 
-    private static final Map<Session, ClientSession> listeners = new HashMap<>();
+    private static final Map<Session, ClientProxy> listeners = new HashMap<>();
 
     @OnOpen
     public void onOpen(Session session) {
@@ -42,7 +48,7 @@ public final class PoPClientEndpoint {
     @OnMessage
     public void onMessage(String message, Session session) {
         synchronized (listeners) {
-            ClientSession client = listeners.get(session);
+            ClientProxy client = listeners.get(session);
             if(client == null)
                 throw new IllegalArgumentException();
 

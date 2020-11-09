@@ -12,8 +12,17 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
+/**
+ * A simply implementation of a server web socket that will be used to test our client
+ */
 public class ServerWebSocket {
 
+    /**
+     * Start the server and wait for a key to be pressed to stop it
+     * Very rough, but operational
+     *
+     * @param args java main method arguments
+     */
     public static void main(String[] args) {
         Server server = new Server("localhost", 2000, "/", PoPServerEndpoint.class);
 
@@ -29,6 +38,9 @@ public class ServerWebSocket {
         }
     }
 
+    /**
+     * A sever endpoint for a web socket using the jsr 365 library
+     */
     @ServerEndpoint("/")
     private static final class PoPServerEndpoint {
 
