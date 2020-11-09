@@ -6,6 +6,8 @@ import (
 	"log"
 	"sync"
 	"time"
+	"../src"
+	"../db"
 )
 
 type hub struct {
@@ -17,11 +19,11 @@ type hub struct {
 
 	// message to send to the channel
 	message chan []byte
-	//channel in wich we have to send the info
+	//channel in which we have to send the info
 	channel chan []byte
 
-	//msg recieved from the webskt
-	recievedMessage chan []byte
+	//msg received from the webskt
+	receivedMessage chan []byte
 
 	//Database instance
 	db *bolt.DB
@@ -34,7 +36,7 @@ func NewHub() *hub {
 	h := &hub{
 		connectionsMx:   sync.RWMutex{},
 		message:         make(chan []byte),
-		recievedMessage: make(chan []byte),
+		receivedMessage: make(chan []byte),
 		connections:     make(map[*connection]struct{}),
 		db:              nil,
 	}
@@ -69,7 +71,7 @@ func NewHub() *hub {
 	go func() {
 		for {
 
-			msg := <-h.recievedMessage
+			msg := <-h.receivedMessage
 			h.connectionsMx.RLock()
 			for c := range h.connections {
 				select {
@@ -105,7 +107,7 @@ func (h *hub) removeConnection(conn *connection) {
 }
 
 //call with msg = receivedMessage
-/*
+
 func (h *hub) HandleMessage(msg []byte) error {
 	//TODO
 	message, err := src.AnalyseMsg(msg)
@@ -114,7 +116,7 @@ func (h *hub) HandleMessage(msg []byte) error {
 	}
 
 	switch message.Item {
-	case []byte("LAO"):  //ROMAIN
+/*	case []byte("LAO"):  //ROMAIN
 		switch message.Action {
 		case []byte("create"):
 			mc, err := src.JsonLaoCreate(message.Data)
@@ -144,10 +146,23 @@ func (h *hub) HandleMessage(msg []byte) error {
 
 	case fetch: //OURIEL
 		sendinfo(channel)
-
-	case newEvent(Channel): //RAOUL
-		createEvent In channel
-		broadcast to channel
+*/
+	case []byte("event"): //RAOUL
+		switch message.Action {
+		case []byte("create"):
+			m, err := src.DataToMessageEventCreate(message.Data)
+			if(err != nil) {
+				return err
+			}
+			CreateChannel(m)
+			//	broadcast to parent
+			// useless but sticks as a reminder that we broadcast to the parent channel, the one which received the createEvent order
+			h.channel <- h.channel
+			h.message <- h.message
+		
+		default :
+			log.Fatal("JSON not correctly formated :", msg)
+		}
 
 	default :
 		log.Fatal("JSON not correctly formated :", msg)
@@ -157,4 +172,4 @@ func (h *hub) HandleMessage(msg []byte) error {
 
 }
 
-*/
+
