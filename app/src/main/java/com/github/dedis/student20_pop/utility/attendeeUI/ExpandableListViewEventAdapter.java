@@ -112,7 +112,7 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
 
     @Override
     public long getChildId(int groupPosition, int childPosition) {
-        return childPosition; //((Event) getChild(groupPosition, childPosition)).getUid();
+        return childPosition;
     }
 
     @Override
