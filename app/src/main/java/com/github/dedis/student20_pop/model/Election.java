@@ -1,6 +1,14 @@
 package com.github.dedis.student20_pop.model;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
+import com.github.dedis.student20_pop.utility.security.Hash;
+import com.github.dedis.student20_pop.utility.security.Signature;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -26,18 +34,23 @@ public final class Election {
      * @param options the default ballot options
      * @throws IllegalArgumentException if any of the parameters is null
      */
-    public Election(String name, Date time, String lao, List<String> options) {
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public Election(String name, Date time, String lao, List<String> options) throws IllegalArgumentException{
         if(name == null || time == null || lao == null || options == null || options.contains(null)) {
-            throw new IllegalArgumentException("Trying to  create an Election with a null value");
+            throw new IllegalArgumentException("Trying to create an Election with a null value");
         }
         this.name = name;
         this.time = time.getTime() / 1000L;
-        // simple for now, will hash later
-        this.id = name + time;
+        this.id = Hash.hash(name + time);
         this.lao = lao;
         this.options = options;
-        // Will get list of organizer and witnesses ids, hash and sign later
-        this.attestation = new ArrayList<>();
+
+        // Will get organizer's and witnesses' private keys in the future
+        String organizer = new Keys().getPrivateKey();
+        ArrayList<String> witnesses = new ArrayList<>();
+        ArrayList<String> attestation = new ArrayList<>(Collections.singletonList(Signature.sign(organizer, id)));
+        attestation.addAll(Signature.sign(witnesses, id));
+        this.attestation = attestation;
     }
 
     public String getName() {
