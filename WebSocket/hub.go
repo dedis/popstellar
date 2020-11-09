@@ -136,13 +136,45 @@ func (h *hub) HandleMessage(msg []byte) error {
 			h.channel <- []byte("0")
 		}
 
-	case subscribe: //OURIEL
-		append(LAO.members, ID_Subscriber)
+	case []byte("subscribe"): //OURIEL
+			//h.db, err = db.OpenChannelDB()
+			//if err != nil {
+			//	return err
+			//}
+			reg, err := src.JsonRegistration(message.Data)
+			if err != nil {
+				return err
+			}
 
-	case unsubscribe: //OURIEL
-		remove(LAO.members, ID_Subscriber)
+			already, err db.alreadyRegister(reg.UserID){
+			if err != nil {
+				return err
+			}
+			if(!aleady){
+				err db.CreateUser(reg.UserID){
+				if err != nil {
+					return err
+				}
+			}
 
-	case fetch: //OURIEL
+			err db.UpdateChannelDB(reg){
+			if err != nil
+				return err
+			}
+			//append(LAO.members, ID_Subscriber) automatically done ?
+
+
+	case []byte("unsubscribe")://OURIEL
+			reg, err := src.JsonRegistration(message.Data)
+			if err != nil {
+				return err
+			}
+			err db.UpdateChannelDB(reg){
+			if err != nil
+				return err
+			}
+			//remove(LAO.members, ID_Subscriber)
+	case []byte("fetch"): //OURIEL
 		sendinfo(channel)
 
 	case newEvent(Channel): //RAOUL

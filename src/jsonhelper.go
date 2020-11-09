@@ -10,6 +10,7 @@ type Message struct {
 	Item   []byte
 	Action []byte
 	Data   []byte
+	RequestID  []byte
 }
 
 /*Struct used to create LAOs*/
@@ -20,6 +21,13 @@ type MessageLaoCreate struct {
 	Name          []byte
 	Ip            []byte
 	Attestation   []byte
+}
+
+/*Struct used to subscribe/unsubscribe to channel*/
+type MessageRegistration struct {
+	userId []byte
+	channelId []byte
+	action []byte
 }
 
 /**
@@ -41,6 +49,14 @@ func JsonLaoCreate(message []byte) (MessageLaoCreate, error) {
 	return m, err
 }
 
+/**
+ * Function that reads a JSON message in order to register\unregister one
+ */
+func JsonRegistration(message []byte) (MessageRegistration, error) {
+	m := MessageRegistration{}
+	err := json.Unmarshal(message, m)
+	return m, err
+}
 /**
  * Function that converts a Lao to a Json byte array
  */
