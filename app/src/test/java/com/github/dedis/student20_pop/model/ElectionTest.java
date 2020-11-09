@@ -1,11 +1,14 @@
-package com.github.dedis.student20_pop;
+package com.github.dedis.student20_pop.model;
 
-import com.github.dedis.student20_pop.model.Election;
+import com.github.dedis.student20_pop.utility.security.Hash;
+import com.github.dedis.student20_pop.utility.security.Signature;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -46,7 +49,7 @@ public class ElectionTest {
 
     @Test
     public void getIdTest() {
-        assertThat(election1.getId(), is(name1 + time));
+        assertThat(election1.getId(), is(Hash.hash(name1 + time)));
     }
 
     @Test
@@ -59,9 +62,13 @@ public class ElectionTest {
         assertThat(election1.getOptions(), is(options));
     }
 
+    @Ignore("Need the private key of the organizer, will test later")
     @Test
     public void getAttestationTest() {
-        assertThat(election1.getAttestation(), is(new ArrayList<>()));
+        String organizer = new Keys().getPrivateKey();
+        ArrayList<String> attestation = new ArrayList<>(Collections.singletonList(
+                Signature.sign(organizer, election1.getId())));
+        assertThat(election1.getAttestation(), is(attestation));
     }
 
     @Test

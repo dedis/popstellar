@@ -1,6 +1,6 @@
-package com.github.dedis.student20_pop;
+package com.github.dedis.student20_pop.model;
 
-import com.github.dedis.student20_pop.model.Vote;
+import com.github.dedis.student20_pop.utility.security.Signature;
 
 import org.junit.Test;
 
@@ -12,9 +12,9 @@ import static org.junit.Assert.assertThrows;
 
 public class VoteTest {
 
-    private final String person1 = "Person 1";
-    private final String person2 = "Person 2";
-    private final String election = "0x3434";
+    private final String person1 = new Keys().getPublicKey();
+    private final String person2 = new Keys().getPublicKey();
+    private final String election = new Keys().getPublicKey();
     private final String vote = "Encrypted Vote";
     private final Vote vote1 = new Vote(person1, election, vote);
     private final Vote vote2 = new Vote(person2, election, vote);
@@ -43,7 +43,7 @@ public class VoteTest {
 
     @Test
     public void getAttestationTest() {
-        assertThat(vote1.getAttestation(), is(election + vote));
+        assertThat(vote1.getAttestation(), is(Signature.sign(person1, election + "" + vote)));
     }
 
     @Test
