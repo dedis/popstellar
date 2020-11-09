@@ -16,10 +16,10 @@ libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.1.3" % Runtime
 
 // For LevelDB database
 // https://mvnrepository.com/artifact/org.iq80.leveldb/leveldb
-libraryDependencies += "org.iq80.leveldb" % "leveldb" % "0.1"
+libraryDependencies += "org.iq80.leveldb" % "leveldb" % "0.12"
 libraryDependencies += "org.xerial.snappy" % "snappy-java" % "1.1.7.3"
 // missing binary dependency, leveldbjni
-libraryDependencies += "com.typesafe.akka" %% "akka-persistence" % AkkaVersion
+//libraryDependencies += "com.typesafe.akka" %% "akka-persistence" % AkkaVersion
 
 
 // Json Parser (https://github.com/spray/spray-json)
@@ -30,3 +30,5 @@ libraryDependencies += "org.scorexfoundation" %% "scrypto" % "2.1.9"
 
 // Scala unit tests
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % Test
+
+conflictManager := ConflictManager.latestCompatible
