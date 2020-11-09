@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft/2019-09/schema#",
+    "$id": "http://pop2020.dedis.ch/low-level/return.json",
+    "properties": {
+        "action": {
+            "description": "Operation to be performed",
+            "type": "string",
+            "enum": ["return"]
+        },
+        "result": {
+            "description": "Return code for the operation",
+            "type": "integer",
+	    "minimum": -5,
+	    "maximum": 0
+        },
+        "data": {
+            "description": "Data to be returned by the operation",
+            "type": "object"
+        },
+        "req_id": {
+            "description": "Unique identifier for the request",
+            "type": "integer"
+        }
+    },
+    "required": ["action", "result", "data", "req_id"]
+}

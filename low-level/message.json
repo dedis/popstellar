@@ -1,0 +1,56 @@
+{
+    "$schema": "http://json-schema.org/draft/2019-09/schema#",
+    "$id": "http://pop2020.dedis.ch/low-level/message.json",
+    "properties": {
+        "action": {
+            "description": "Operation to be performed",
+            "type": "string",
+            "enum": ["message"]
+        },
+        "channel": {
+            "description": "Channel related to the operation",
+            "type": "string"
+        },
+        "message": {
+            "description": "Message",
+            "type": "object",
+	    "$ref": "#/definitions/message"
+        },
+        "req_id": {
+            "description": "Unique identifier for the request",
+            "type": "integer"
+        }
+    },
+    "required": ["action", "channel", "message", "req_id"],
+    "definitions": {
+       "message": {
+           "properties": {
+               "data": {
+	           "description": "Data, Base64(data)",
+	           "type": "string"
+	       },
+               "sender": {
+	           "description": "Public key of the sender",
+	           "type": "string"
+	       },
+               "signature": {
+	           "description": "Signature by sender, Sign(data)",
+	           "type": "string"
+	       },
+               "message_id": {
+	           "description": "Hash, SHA256(signature||data)",
+	           "type": "string"
+	       },
+	       "witness_signatures": {
+		   "description": "Signature by witnesses, Sign(sender||data)",
+		   "type": "array",
+		   "items": {
+	               "type": "string"
+	           }
+	       }
+           },
+	   "required": ["data","sender","signature","message_id"],
+	   "additionalProperties": false
+       }
+    }
+}
