@@ -18,7 +18,6 @@ import com.github.dedis.student20_pop.ui.AttendeeFragment;
 import com.github.dedis.student20_pop.ui.ConnectFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
-import com.github.dedis.student20_pop.ui.OrganizerPollFragment;
 
 import java.util.Date;
 
@@ -28,7 +27,6 @@ import java.util.Date;
 public final class MainActivity extends FragmentActivity {
 
     private boolean testingAttendee = false;
-    private boolean testingPoll =  true;
     private static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
@@ -44,10 +42,6 @@ public final class MainActivity extends FragmentActivity {
             if (testingAttendee){
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.fragment_container, new AttendeeFragment()).commit();
-            }
-            else if (testingPoll){
-                getSupportFragmentManager().beginTransaction()
-                        .add(R.id.fragment_container, new OrganizerPollFragment()).commit();
             }
             else {
                 getSupportFragmentManager().beginTransaction()
