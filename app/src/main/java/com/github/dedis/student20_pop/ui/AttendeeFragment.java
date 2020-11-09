@@ -21,10 +21,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
-//How do we pass the info from Connect UI to Attendee UI ?
-//What does an attendee listen for ? is it passed through the LAO?
-
 /**
  * Fragment used to display the Attendee UI
  **/
@@ -57,8 +53,7 @@ public class AttendeeFragment extends Fragment {
         View properties = rootView.findViewById(R.id.properties_view);
         ((TextView) properties.findViewById(R.id.organization_name)).setText(lao.getName());
         ((TextView) properties.findViewById(R.id.witness_list)).setText("Witnesses: [id, id, id]");
-        //later: witness list, other information?
-        //((TextView) properties.findViewById(R.id.witness_list)).setText(lao.getWitnesses().toString());
+
         propertiesButton = rootView.findViewById(R.id.tab_properties);
 
         propertiesButton.setOnClickListener(clicked -> {
@@ -73,7 +68,6 @@ public class AttendeeFragment extends Fragment {
         return rootView;
     }
 
-    //retrieve events from LAO
     private List<Event> getEvents(){
         /*
         //Later:
