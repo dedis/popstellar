@@ -18,7 +18,7 @@
 
 
     <LinearLayout
-        android:id="@+id/linearLayout4"
+        android:id="@+id/linear_layout_4"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"
@@ -27,7 +27,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab">
 
-        <include layout="@layout/properties_layout"
+        <include layout="@layout/layout_properties"
             android:id="@+id/properties_view"
             android:visibility="gone"/>
 

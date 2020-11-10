@@ -18,6 +18,7 @@ import com.github.dedis.student20_pop.ui.AttendeeFragment;
 import com.github.dedis.student20_pop.ui.ConnectFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
+import com.github.dedis.student20_pop.ui.RollCallFragment;
 
 import java.util.Date;
 
@@ -87,6 +88,30 @@ public final class MainActivity extends FragmentActivity {
                 showFragment(new HomeFragment(), LaunchFragment.TAG);
                 break;
             default:
+        }
+    }
+
+    public void onClickRollCall(View view) {
+        switch(view.getId()) {
+            /* Future: button to create a Roll-Call
+            case R.id.button_create_roll_call:
+                showFragment(new RollCallFragment().create(), RollCallFragment.TAG);
+                break;
+            */
+            case R.id.button_confirm_roll_call:
+                // Create Roll-Call Event
+                String description = ((EditText) findViewById(R.id.entry_description_roll_call))
+                        .getText().toString();
+
+            case R.id.button_cancel_roll_call:
+                // Go to Organizer UI display of events
+                break;
+
+
+            case R.id.button_roll_call:
+                showFragment(new RollCallFragment(), RollCallFragment.TAG);
+                break;
+             */
         }
     }
 

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="@dimen/margin_text"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="@dimen/size_title"
+            android:textStyle="bold"
+            android:text="@string/text_title_roll_call" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal|start"
+            android:layout_marginVertical="@dimen/margin_button"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="@dimen/size_body"
+                android:textStyle="bold"
+                android:text="@string/text_body_deadline" />
+
+            <Button
+                android:id="@+id/button_now_roll_call"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_button"
+                android:layout_marginEnd="@dimen/margin_button"
+                android:gravity="center"
+                android:text="@string/text_button_now"
+                android:onClick="onClick" />
+
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/entry_description_roll_call"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/text_entry_roll_call"
+            android:inputType="text"
+            android:autofillHints="" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:layout_marginVertical="@dimen/margin_button"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button_confirm_roll_call"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_button"
+                android:gravity="center"
+                android:text="@string/text_button_confirm"
+                android:onClick="onClick" />
+
+            <Button
+                android:id="@+id/button_open_roll_call"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_button"
+                android:gravity="center"
+                android:text="@string/text_button_open"
+                android:onClick="onClick" />
+
+            <Button
+                android:id="@+id/button_cancel_roll_call"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/text_button_cancel"
+                android:onClick="onClick" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

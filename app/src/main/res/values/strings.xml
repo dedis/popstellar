@@ -41,7 +41,13 @@
     <string name="button_schedule">Schedule</string>
     <string name="button_open">Open</string>
     <string name="button_cancel">Cancel</string>
-    
-    
-    
+
+    <!-- Roll-Call -->
+    <string name="text_title_roll_call">Create a Roll-Call</string>
+    <string name="text_body_deadline">Deadline :</string>
+    <string name="text_button_now">Now</string>
+    <string name="text_entry_roll_call">Optional Description</string>
+    <string name="text_button_confirm">Confirm</string>
+    <string name="text_button_open">Open</string>
+
 </resources>
