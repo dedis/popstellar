@@ -49,14 +49,10 @@ public class ServerWebSocket {
             System.out.printf("Connected to %s\n", session.getId());
         }
 
-
-
         @OnMessage
         public void onMessage(String message, Session session) {
             System.out.printf("Message received from %s : %s\n", session.getId(), message);
         }
-
-
 
         @OnClose
         public void onClose(Session session, CloseReason closeReason) {
