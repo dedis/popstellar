@@ -46,7 +46,7 @@ object Server {
       val options: Options = new Options()
       options.createIfMissing(true)
       val DatabasePath: String = "database"
-      val dbActor = context.spawn(ActorDB(DatabasePath), "actorDB")
+      val dbActor = context.spawn(DBActor(DatabasePath), "actorDB")
 
       def publishSubscribeRoute = path("ps") {
         handleWebSocketMessages(PublishSubscribe.messageFlow(publishEntry, actor, dbActor))
