@@ -7,7 +7,7 @@ import akka.stream.FlowShape
 import akka.stream.scaladsl.{BroadcastHub, Flow, GraphDSL, Keep, Merge, MergeHub, Partition, Sink}
 import akka.stream.typed.scaladsl.ActorFlow
 import akka.util.Timeout
-import ch.epfl.pop.ActorDB.{DBMessage, Read, Write}
+import ch.epfl.pop.DBActor.{DBMessage, Read, Write}
 import ch.epfl.pop.json.JsonMessageParser.{parseMessage, serializeMessage}
 import ch.epfl.pop.json.JsonMessages.{AnswerMessageServer, CreateChannelClient, FetchChannelClient, FetchChannelServer, JsonMessage, NotifyChannelServer, PublishChannelClient, SubscribeChannelClient}
 import ch.epfl.pop.pubsub.ChannelActor.{ChannelMessage, CreateMessage, SubscribeMessage}

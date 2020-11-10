@@ -9,12 +9,11 @@ import akka.actor.typed.{ActorRef, ActorSystem, Props, SpawnProtocol}
 import akka.stream.scaladsl.{BroadcastHub, Keep, MergeHub, Sink, Source}
 import akka.util.Timeout
 import ch.epfl.pop
-import ch.epfl.pop.ActorDB
-import ch.epfl.pop.ActorDB.DBMessage
+import ch.epfl.pop.DBActor
+import ch.epfl.pop.DBActor.DBMessage
 import ch.epfl.pop.json.JsonMessages._
 import ch.epfl.pop.pubsub.{ChannelActor, PublishSubscribe}
 import org.iq80.leveldb.Options
-import org.iq80.leveldb.impl.Iq80DBFactory.factory
 import org.scalatest.FunSuite
 
 import scala.concurrent.duration.DurationInt
@@ -46,10 +45,6 @@ class PubSubTest extends FunSuite {
     val options: Options = new Options()
     options.createIfMissing(true)
 
-
-
-
-
     val flows = (1 to numberProcesses).map(_ => PublishSubscribe.jsonFlow(entry, actor, dbActor))
     messages.foreach { case (message, response, flowNumber) =>
       val source = message match {
@@ -72,7 +67,7 @@ class PubSubTest extends FunSuite {
     val futureActor: Future[ActorRef[ChannelActor.ChannelMessage]] = system.ask(SpawnProtocol.Spawn(pop.pubsub.ChannelActor(exit),
       "actor", Props.empty, _))
     val actor = Await.result(futureActor, 1.seconds)
-    val futureDBActor: Future[ActorRef[DBMessage]] = system.ask(SpawnProtocol.Spawn(ActorDB(databasePath), "actorDB", Props.empty, _))
+    val futureDBActor: Future[ActorRef[DBMessage]] = system.ask(SpawnProtocol.Spawn(DBActor(databasePath), "actorDB", Props.empty, _))
     val dbActor = Await.result(futureDBActor, 1.seconds)
 
     (entry, actor, dbActor)

@@ -6,6 +6,9 @@ import akka.actor.typed.{ActorRef, Behavior}
 import akka.stream.scaladsl.{BroadcastHub, Keep, MergeHub, Sink, Source}
 import ch.epfl.pop.json.JsonMessages.{AnswerMessageServer, JsonMessage, NotifyChannelServer, PublishChannelClient}
 
+/**
+ * The role of the ChannelActor is to handle the creation of channels and subscribe requests of clients.
+ */
 object ChannelActor {
 
   sealed trait ChannelMessage

@@ -8,7 +8,10 @@ import ch.epfl.pop.json.JsonMessages.{AnswerMessageServer, FetchChannelServer, J
 import org.iq80.leveldb.{DB, Options}
 import org.iq80.leveldb.impl.Iq80DBFactory.factory
 
-object ActorDB {
+/**
+ * The role of a DBActor is to serve write and read requests to the database.
+ */
+object DBActor {
 
   sealed trait DBMessage
 
