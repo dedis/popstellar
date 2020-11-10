@@ -1,8 +1,9 @@
 package com.github.dedis.student20_pop;
 
 import android.Manifest;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
+import android.content.pm.PackageManager;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -13,6 +14,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.ui.CameraPermissionFragment;
+import com.github.dedis.student20_pop.ui.AttendeeFragment;
 import com.github.dedis.student20_pop.ui.ConnectFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
@@ -24,20 +26,27 @@ import java.util.Date;
  **/
 public final class MainActivity extends FragmentActivity {
 
+    private boolean testingAttendee = false;
     private static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
+        setContentView(R.layout.activity_main);
         if (findViewById(R.id.fragment_container) != null) {
             if (savedInstanceState != null) {
                 return;
             }
 
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, new HomeFragment()).commit();
+            if (testingAttendee){
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.fragment_container, new AttendeeFragment()).commit();
+            }
+            else {
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.fragment_container, new HomeFragment()).commit();
+            }
         }
     }
 

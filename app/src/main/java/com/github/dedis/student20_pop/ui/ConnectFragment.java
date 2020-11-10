@@ -28,7 +28,7 @@ import java.io.IOException;
 
 /**
  * Fragment used to display the Connect UI
-**/
+ **/
 public final class ConnectFragment extends Fragment implements QRCodeListener {
 
     public static final String TAG = ConnectFragment.class.getSimpleName();
@@ -63,7 +63,7 @@ public final class ConnectFragment extends Fragment implements QRCodeListener {
         return new CameraSource.Builder(requireContext(), qrDetector)
                 .setFacing(CameraSource.CAMERA_FACING_BACK)
                 .setRequestedPreviewSize(getResources().getInteger(R.integer.requested_preview_width),
-                                         getResources().getInteger(R.integer.requested_preview_height))
+                        getResources().getInteger(R.integer.requested_preview_height))
                 .setRequestedFps(15.0f)
                 .setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)
                 .build();
@@ -78,20 +78,20 @@ public final class ConnectFragment extends Fragment implements QRCodeListener {
     }
 
     private void startCamera() throws SecurityException {
-            // check that the device has play services available.
-            int code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getContext());
-            if (code != ConnectionResult.SUCCESS)
-                GoogleApiAvailability.getInstance().getErrorDialog(getActivity(), code, HANDLE_GMS).show();
+        // check that the device has play services available.
+        int code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getContext());
+        if (code != ConnectionResult.SUCCESS)
+            GoogleApiAvailability.getInstance().getErrorDialog(getActivity(), code, HANDLE_GMS).show();
 
-            if (camera != null) {
-                try {
-                    preview.start(camera);
-                } catch (IOException e) {
-                    Log.e(TAG, "Unable to start camera source.", e);
-                    camera.release();
-                    camera = null;
-                }
+        if (camera != null) {
+            try {
+                preview.start(camera);
+            } catch (IOException e) {
+                Log.e(TAG, "Unable to start camera source.", e);
+                camera.release();
+                camera = null;
             }
+        }
     }
 
     @Override
