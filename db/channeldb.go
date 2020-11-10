@@ -68,7 +68,7 @@ func checkChannelValidity(id []byte) bool {
 func UpdateChannelDB(userId []byte, channelId []byte, action []byte) error {
 
 	//TODO correct the if checks
-	// TODO create functions in jsonHelper addSubscribe, addPublish
+	// TODO create functions addSubscriber, addPublisher
 	switch action {
 	case []byte("subscriber"):
 		return addSubscriber(userId, channelId)
