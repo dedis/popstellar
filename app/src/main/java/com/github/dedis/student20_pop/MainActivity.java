@@ -2,7 +2,6 @@ package com.github.dedis.student20_pop;
 
 import android.Manifest;
 import android.os.Bundle;
-import android.util.Log;
 import android.content.pm.PackageManager;
 import android.view.View;
 import android.widget.EditText;
@@ -12,6 +11,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.ui.CameraPermissionFragment;
 import com.github.dedis.student20_pop.ui.AttendeeFragment;
@@ -26,8 +26,9 @@ import java.util.Date;
  **/
 public final class MainActivity extends FragmentActivity {
 
-    private boolean testingAttendee = false;
     private static final String TAG = MainActivity.class.getSimpleName();
+
+    private boolean testingAttendee = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +73,7 @@ public final class MainActivity extends FragmentActivity {
             case R.id.button_launch:
                 String name = ((EditText) findViewById(R.id.entry_box_launch)).getText().toString();
                 // For later: request organizer id
-                String organizer = "0x3333";
+                String organizer = new Keys().getPublicKey();
                 // Creating the LAO but not sending the information for now
                 Lao lao = new Lao(name, new Date(), organizer);
                 showFragment(new HomeFragment(), LaunchFragment.TAG);

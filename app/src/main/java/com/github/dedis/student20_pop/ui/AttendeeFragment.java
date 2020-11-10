@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.student20_pop.R;
+import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.utility.attendeeUI.ExpandableListViewEventAdapter;
 import com.github.dedis.student20_pop.model.Event;
 import com.github.dedis.student20_pop.model.Lao;
@@ -38,7 +39,7 @@ public class AttendeeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         //for testing purposes:
-        lao = new Lao("LAO I just joined", new Date(), "OrganizerID");
+        lao = new Lao("LAO I just joined", new Date(), new Keys().getPublicKey());
 
         View rootView = inflater.inflate(R.layout.fragment_attendee, container, false);
 
@@ -80,14 +81,14 @@ public class AttendeeFragment extends Fragment {
 
         //Now (for testing) :
         ArrayList<Event> events = new ArrayList<>();
-        events.add(new Event("Past Event 1", new Date(10*1000L), "laoKey", "EPFL", "Poll"));
-        events.add(new Event("Past Event 2", new Date(20*1000L), "laoKey", "CE-6", "Meeting"));
+        events.add(new Event("Past Event 1", new Date(10*1000L), new Keys().getPublicKey(), "EPFL", "Poll"));
+        events.add(new Event("Past Event 2", new Date(20*1000L), new Keys().getPublicKey(), "CE-6", "Meeting"));
         events.add(new Event("Present Event 1", new Date(500*1000L),
-                "laoKey", "Geneva", "Roll-Call"));
+                new Keys().getPublicKey(), "Geneva", "Roll-Call"));
         events.add(new Event("Present Event 2", new Date(600*1000L),
-                "laoKey", "Lausanne", "Discussion"));
+                new Keys().getPublicKey(), "Lausanne", "Discussion"));
         events.add(new Event("Future Event 1", new Date(5000*1000L),
-                "laoKey", "i don't know where yet", "Poll"));
+                new Keys().getPublicKey(), "i don't know where yet", "Poll"));
 
         return events;
     }

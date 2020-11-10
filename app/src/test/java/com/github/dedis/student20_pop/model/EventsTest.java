@@ -78,6 +78,7 @@ public class EventsTest {
     @Ignore("Need the private key of the organizer, will test later")
     @Test
     public void getAttestationTest() {
+        //TODO: get private key of organizer
         String organizer = new Keys().getPrivateKey();
         String data = name1 + time + lao + location;
         ArrayList<String> attestation = new ArrayList<>(Collections.singletonList(

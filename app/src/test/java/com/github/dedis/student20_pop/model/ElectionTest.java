@@ -65,6 +65,7 @@ public class ElectionTest {
     @Ignore("Need the private key of the organizer, will test later")
     @Test
     public void getAttestationTest() {
+        //TODO: get private key of organizer
         String organizer = new Keys().getPrivateKey();
         ArrayList<String> attestation = new ArrayList<>(Collections.singletonList(
                 Signature.sign(organizer, election1.getId())));
