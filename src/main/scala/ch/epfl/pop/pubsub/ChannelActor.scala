@@ -4,8 +4,11 @@ import akka.NotUsed
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.{ActorRef, Behavior}
 import akka.stream.scaladsl.{BroadcastHub, Keep, MergeHub, Sink, Source}
-import ch.epfl.pop.json.JsonMessages.{AnswerMessageServer, JsonMessage, PublishChannelClient}
+import ch.epfl.pop.json.JsonMessages.{AnswerMessageServer, JsonMessage, NotifyChannelServer, PublishChannelClient}
 
+/**
+ * The role of the ChannelActor is to handle the creation of channels and subscribe requests of clients.
+ */
 object ChannelActor {
 
   sealed trait ChannelMessage
@@ -21,17 +24,17 @@ object ChannelActor {
    * @param publishExit a source emitting all published messages
    * @return an actor handling channel creation and subscription
    */
-  def apply(publishExit: Source[PublishChannelClient, NotUsed]): Behavior[ChannelMessage] = channelHandler(Map.empty, publishExit)
+  def apply(publishExit: Source[NotifyChannelServer, NotUsed]): Behavior[ChannelMessage] = channelHandler(Map.empty, publishExit)
 
-  private def channelHandler(m: Map[String, Source[PublishChannelClient, NotUsed]],
-                             publishExit: Source[PublishChannelClient, NotUsed]): Behavior[ChannelMessage] = {
+  private def channelHandler(m: Map[String, Source[NotifyChannelServer, NotUsed]],
+                             publishExit: Source[NotifyChannelServer, NotUsed]): Behavior[ChannelMessage] = {
     Behaviors.receive { (ctx, message) =>
       implicit val system = ctx.system
       message match {
 
         case CreateMessage(channel, replyTo) =>
           if (!m.contains(channel)) {
-            val (entry, exit) = MergeHub.source[PublishChannelClient].toMat(BroadcastHub.sink)(Keep.both).run()
+            val (entry, exit) = MergeHub.source[NotifyChannelServer].toMat(BroadcastHub.sink)(Keep.both).run()
 
             publishExit.filter(_.channel == channel).runWith(entry)
             replyTo ! AnswerMessageServer(true, None)
