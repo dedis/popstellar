@@ -14,17 +14,12 @@
 # Test binary, built with `go test -c`
 *.test
 
-<<<<<<< HEAD
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
-=======
 # Database files
 *.db
 *.lock
 
-# Output of the go coverage tool, specifically when used with LiteIDE
-*.out
->>>>>>> work-be1-rpugin
