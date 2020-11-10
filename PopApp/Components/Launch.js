@@ -2,10 +2,10 @@ import React from 'react';
 import {
   StyleSheet, View, Text, Button, TextInput,
 } from 'react-native';
-import PropTypes from 'prop-types';
 
 import STRINGS from '../res/strings';
 import { Spacing, Typography } from '../Styles';
+import PROPS_TYPE from '../res/Props';
 
 /*
 * The Launch component
@@ -33,19 +33,13 @@ const styles = StyleSheet.create({
   },
 });
 
-const cancelAction = (navigation, LAOName) => {
-  LAOName.current.clear();
-  navigation.navigate('Home');
-};
-
-cancelAction.propTypes = {
-  navigation: PropTypes.shape({
-    navigate: PropTypes.func.isRequired,
-  }).isRequired,
-};
-
 const Launch = ({ navigation }) => {
   const LAOName = React.useRef();
+
+  const cancelAction = () => {
+    LAOName.current.clear();
+    navigation.navigate('Home');
+  };
 
   return (
     <View style={styles.container}>
@@ -66,7 +60,7 @@ const Launch = ({ navigation }) => {
         <View style={styles.button}>
           <Button
             title={STRINGS.general_button_cancel}
-            onPress={() => cancelAction(navigation, LAOName)}
+            onPress={() => cancelAction()}
           />
         </View>
       </View>
@@ -75,9 +69,7 @@ const Launch = ({ navigation }) => {
 };
 
 Launch.propTypes = {
-  navigation: PropTypes.shape({
-    navigate: PropTypes.func.isRequired,
-  }).isRequired,
+  navigation: PROPS_TYPE.navigation.isRequired,
 };
 
 export default Launch;

@@ -2,13 +2,13 @@ import React from 'react';
 import {
   StyleSheet, View, Text, FlatList,
 } from 'react-native';
-import PropTypes from 'prop-types';
 
 import STRINGS from '../res/strings';
 import { Spacing, Typography } from '../Styles';
 import LAOItem from './LAOItem';
 
 import LAOs from '../res/laoData';
+import PROPS_TYPE from '../res/Props';
 
 /**
 * The Home component
@@ -56,9 +56,7 @@ const Home = () => (
 );
 
 Home.propTypes = {
-  navigation: PropTypes.shape({
-    dangerouslyGetParent: PropTypes.func.isRequired,
-  }).isRequired,
+  navigation: PROPS_TYPE.navigation.isRequired,
 };
 
 export default Home;

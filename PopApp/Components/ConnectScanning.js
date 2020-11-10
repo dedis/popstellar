@@ -1,10 +1,10 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import PropTypes from 'prop-types';
 
 import STRINGS from '../res/strings';
 import { Typography } from '../Styles';
 import CameraButton from './CameraButton';
+import PROPS_TYPE from '../res/Props';
 
 /**
 * Scanning connect component
@@ -22,17 +22,24 @@ const styles = StyleSheet.create({
   },
 });
 
-const ConnectScanning = ({ navigation }) => (
-  <View style={styles.container}>
-    <Text style={styles.text}>{STRINGS.connect_scanning_camera_view}</Text>
-    <CameraButton action={() => { navigation.navigate('Connecting'); }} />
-  </View>
-);
+const ConnectScanning = ({ navigation }) => {
+  React.useEffect(
+    () => navigation.addListener('beforeRemove', (e) => {
+      e.preventDefault();
+    }),
+    [navigation],
+  );
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>{STRINGS.connect_scanning_camera_view}</Text>
+      <CameraButton action={() => { navigation.navigate('Connecting'); }} />
+    </View>
+  );
+};
 
 ConnectScanning.propTypes = {
-  navigation: PropTypes.shape({
-    navigate: PropTypes.func.isRequired,
-  }).isRequired,
+  navigation: PROPS_TYPE.navigation.isRequired,
 };
 
 export default ConnectScanning;

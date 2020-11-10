@@ -1,8 +1,11 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import {
+  StyleSheet, View,
+} from 'react-native';
 
-import STRINGS from '../res/strings';
-import { Views, Typography } from '../Styles';
+import { Typography, Spacing } from '../Styles';
+import eventsData from '../res/EventData';
+import EventsCollapsableList from './EventsCollapsableList';
 
 /**
 * The Attendee component
@@ -12,16 +15,29 @@ import { Views, Typography } from '../Styles';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    ...Views.base,
+    justifyContent: 'center',
   },
   text: {
     ...Typography.base,
   },
+  textItem: {
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: Spacing.xs,
+    paddingHorizontal: Spacing.xs,
+  },
+  touchable: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
 });
 
 const Attendee = () => (
-  <View style={styles.container}>
-    <Text style={styles.text}>{STRINGS.attendee_description}</Text>
+  <View style={[styles.container, { marginHorizontal: Spacing.xs }]}>
+    <EventsCollapsableList
+      data={eventsData}
+      closedList={['Future', '']}
+    />
   </View>
 );
 

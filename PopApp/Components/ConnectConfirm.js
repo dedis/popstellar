@@ -2,10 +2,10 @@ import React from 'react';
 import {
   StyleSheet, View, ScrollView, Text, Button,
 } from 'react-native';
-import PropTypes from 'prop-types';
 
 import STRINGS from '../res/strings';
 import { Spacing, Typography } from '../Styles';
+import PROPS_TYPE from '../res/Props';
 
 /**
 * Ask for confirmation to connect to LAO
@@ -70,10 +70,7 @@ const ConnectConfirm = ({ navigation }) => (
 );
 
 ConnectConfirm.propTypes = {
-  navigation: PropTypes.shape({
-    navigate: PropTypes.func.isRequired,
-    dangerouslyGetParent: PropTypes.func.isRequired,
-  }).isRequired,
+  navigation: PROPS_TYPE.navigation.isRequired,
 };
 
 export default ConnectConfirm;

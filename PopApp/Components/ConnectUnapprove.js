@@ -2,10 +2,10 @@ import React from 'react';
 import {
   StyleSheet, View, Text, Button,
 } from 'react-native';
-import PropTypes from 'prop-types';
 
 import STRINGS from '../res/strings';
 import { Spacing, Typography } from '../Styles';
+import PROPS_TYPE from '../res/Props';
 
 /**
 * The unapproved component
@@ -35,9 +35,7 @@ const ConnectUnapprove = ({ navigation }) => (
 );
 
 ConnectUnapprove.propTypes = {
-  navigation: PropTypes.shape({
-    navigate: PropTypes.func.isRequired,
-  }).isRequired,
+  navigation: PROPS_TYPE.navigation.isRequired,
 };
 
 export default ConnectUnapprove;

@@ -2,10 +2,10 @@ import React from 'react';
 import {
   StyleSheet, View, Text, Button, ActivityIndicator,
 } from 'react-native';
-import PropTypes from 'prop-types';
 
 import STRINGS from '../res/strings';
 import { Buttons, Colors, Typography } from '../Styles';
+import PROPS_TYPE from '../res/Props';
 
 /**
  *  Connect to a LAO
@@ -57,9 +57,7 @@ const ConnectConnecting = ({ navigation }) => (
 );
 
 ConnectConnecting.propTypes = {
-  navigation: PropTypes.shape({
-    navigate: PropTypes.func.isRequired,
-  }).isRequired,
+  navigation: PROPS_TYPE.navigation.isRequired,
 };
 
 export default ConnectConnecting;

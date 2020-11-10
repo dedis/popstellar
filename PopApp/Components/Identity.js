@@ -20,8 +20,8 @@ const styles = StyleSheet.create({
   },
 });
 
-function QRCode({ visible }) {
-  if (visible) {
+function QRCode({ visible, name }) {
+  if (visible && name && name.trim().length) {
     return <Text style={styles.text} d>QR code</Text>;
   }
   return null;
@@ -29,17 +29,23 @@ function QRCode({ visible }) {
 
 QRCode.propTypes = {
   visible: PropTypes.bool.isRequired,
+  name: PropTypes.string.isRequired,
 };
 
 const Identity = () => {
   const [toggleCheckBox, setToggleCheckBox] = useState(true);
   const textColor = toggleCheckBox ? Colors.gray : Colors.black;
+  const [name, setName] = useState('');
+
+  const anonymousPress = () => {
+    setToggleCheckBox(!toggleCheckBox);
+  };
 
   return (
     <ScrollView>
       <CheckBox
         checked={toggleCheckBox}
-        onPress={() => setToggleCheckBox(!toggleCheckBox)}
+        onPress={() => anonymousPress()}
         title={STRINGS.identity_check_box_anonymous}
       />
       <Text style={styles.text}>{STRINGS.identity_check_box_anonymous_description}</Text>
@@ -47,6 +53,7 @@ const Identity = () => {
         style={[styles.text, { color: textColor }]}
         placeholder={STRINGS.identity_name_placeholder}
         editable={!toggleCheckBox}
+        onChangeText={(text) => { setName(text); }}
       />
       <TextInput
         style={[styles.text, { color: textColor }]}
@@ -73,7 +80,7 @@ const Identity = () => {
         keyboardType="phone-pad"
         editable={!toggleCheckBox}
       />
-      <QRCode visible={!toggleCheckBox} />
+      <QRCode visible={!toggleCheckBox} name={name} />
     </ScrollView>
   );
 };
