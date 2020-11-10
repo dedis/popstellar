@@ -3,7 +3,6 @@ import {
   StyleSheet, View,
 } from 'react-native';
 
-import { Typography, Spacing } from '../Styles';
 import eventsData from '../res/EventData';
 import EventsCollapsableList from './EventsCollapsableList';
 
@@ -17,23 +16,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
-  text: {
-    ...Typography.base,
-  },
-  textItem: {
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: Spacing.xs,
-    paddingHorizontal: Spacing.xs,
-  },
-  touchable: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
 });
 
 const Attendee = () => (
-  <View style={[styles.container, { marginHorizontal: Spacing.xs }]}>
+  <View style={styles.container}>
     <EventsCollapsableList
       data={eventsData}
       closedList={['Future', '']}

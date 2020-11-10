@@ -46,10 +46,7 @@ const Item = ({ events, closedList }) => {
         style={styles.touchable}
       >
         <Text style={styles.text}>{events.title}</Text>
-        <Text style={styles.text}>
-          {' '}
-          {open ? '⌵' : 'ᐳ'}
-        </Text>
+        <Text style={styles.text}>{open ? '⌵' : 'ᐳ'}</Text>
       </TouchableOpacity>
       {open && (
       <FlatList
@@ -71,14 +68,11 @@ Item.propTypes = {
 };
 
 const EventsCollapsableList = ({ data, closedList }) => (
-  <View style={[styles.container, { marginHorizontal: Spacing.xs }]}>
-    <FlatList
-      data={data}
-      keyExtractor={(item) => item.title}
-      renderItem={({ item }) => <Item events={item} closedList={closedList} />}
-      style={{ flex: 1 }}
-    />
-  </View>
+  <FlatList
+    data={data}
+    keyExtractor={(item) => item.title}
+    renderItem={({ item }) => <Item events={item} closedList={closedList} />}
+  />
 );
 
 EventsCollapsableList.propTypes = {
