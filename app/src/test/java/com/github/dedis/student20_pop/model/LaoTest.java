@@ -1,6 +1,7 @@
-package com.github.dedis.student20_pop;
+package com.github.dedis.student20_pop.model;
 
-import com.github.dedis.student20_pop.model.Lao;
+import com.github.dedis.student20_pop.utility.security.Hash;
+import com.github.dedis.student20_pop.utility.security.Signature;
 
 import org.junit.Test;
 
@@ -19,7 +20,7 @@ public class LaoTest {
     private final String lao1_name = "LAO name 1";
     private final String lao2_name = "LAO name 2";
     private final Date time = (new Date());
-    private final String organizer = "0x5932";
+    private final String organizer = new Keys().getPublicKey();
     private final ArrayList<String> list = new ArrayList<>(Arrays.asList("0x3434", "0x4747"));
     private final ArrayList<String> listWithNull = new ArrayList<>(Arrays.asList("0x3939", null, "0x4747"));
     private final Lao lao1 = new Lao(lao1_name, time, organizer);
@@ -45,7 +46,7 @@ public class LaoTest {
 
     @Test
     public void getIdTest() {
-        assertThat(lao1.getId(), is(lao1_name+time));
+        assertThat(lao1.getId(), is(Hash.hash(lao1_name+time)));
     }
 
     @Test
@@ -73,7 +74,7 @@ public class LaoTest {
 
     @Test
     public void getAttestationTest() {
-        assertThat(lao1.getAttestation(), is(lao1_name + time + organizer));
+        assertThat(lao1.getAttestation(), is(Signature.sign(organizer,lao1_name + time + organizer)));
     }
 
     @Test
