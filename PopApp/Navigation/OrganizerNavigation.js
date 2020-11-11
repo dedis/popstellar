@@ -10,6 +10,7 @@ import STRINGS from '../res/strings';
 import Attendee from '../Components/Attendee';
 import Identity from '../Components/Identity';
 import MytabBar from '../Components/OrganizerMaterialTab';
+import WitnessNavigation from './WitnessNavigation';
 
 const OrganizerTopTabNavigator = createMaterialTopTabNavigator();
 
@@ -44,6 +45,10 @@ function OrganizerNavigation() {
       <OrganizerTopTabNavigator.Screen
         name={STRINGS.organizer_navigation_tab_attendee}
         component={Attendee}
+      />
+      <OrganizerTopTabNavigator.Screen
+        name="Witness"
+        component={WitnessNavigation}
       />
       <OrganizerTopTabNavigator.Screen
         name={STRINGS.organizer_navigation_tab_identity}
