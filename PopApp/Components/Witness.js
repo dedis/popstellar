@@ -1,8 +1,10 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Button } from 'react-native';
 
 import STRINGS from '../res/strings';
-import { Typography } from '../Styles';
+import PROPS_TYPE from '../res/Props';
+import { Buttons, Typography } from '../Styles';
+import Attendee from './Attendee';
 
 /**
 * The Witness component
@@ -11,18 +13,30 @@ import { Typography } from '../Styles';
 */
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: 'center',
   },
   text: {
     ...Typography.base,
   },
+  button: {
+    ...Buttons.base,
+  },
 });
 
-const Witness = () => (
+const Witness = ({ navigation }) => (
   <View style={styles.container}>
-    <Text style={styles.text}>{STRINGS.witness_description}</Text>
+    <View style={styles.button}>
+      <Button
+        onPress={() => navigation.navigate(STRINGS.witness_navigation_tab_video)}
+        title={STRINGS.witness_video_button}
+      />
+    </View>
+    <Attendee />
   </View>
 );
+
+Witness.propTypes = {
+  navigation: PROPS_TYPE.navigation.isRequired,
+};
 
 export default Witness;

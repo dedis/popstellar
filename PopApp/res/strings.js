@@ -18,6 +18,9 @@ const STRINGS = {
   organizer_navigation_tab_attendee: 'Attendee',
   organizer_navigation_tab_identity: 'My indentity',
 
+  witness_navigation_tab_home: 'Witness',
+  witness_navigation_tab_video: 'Witness Video',
+
   /* --- Home Strings --- */
   home_welcome: 'Welcome to Personhood.Online!',
   home_connect_lao: 'To connect to a local organization (LAO), please tap to Connect above',
@@ -74,6 +77,7 @@ const STRINGS = {
 
   /* --- Witness Strings --- */
   witness_description: 'Witness screen',
+  witness_video_button: 'Go to the video screen',
 
   lorem_ipsum: "Scrollable box containing the critical informations!\nLAO's, organizers' and witnesses' names "
         + 'and hex fingerprint\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse vitae egestas '
