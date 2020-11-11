@@ -3,6 +3,7 @@ package ch.epfl.pop.pubsub
 import akka.NotUsed
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.{ActorRef, Behavior}
+import akka.stream.{KillSwitches, UniqueKillSwitch}
 import akka.stream.scaladsl.{BroadcastHub, Keep, MergeHub, Sink, Source}
 import ch.epfl.pop.json.JsonMessages.{AnswerMessageServer, JsonMessage, NotifyChannelServer, PublishChannelClient}
 
@@ -11,12 +12,35 @@ import ch.epfl.pop.json.JsonMessages.{AnswerMessageServer, JsonMessage, NotifyCh
  */
 object ChannelActor {
 
+  /**
+   * Requests to the ChannelActor
+   */
   sealed trait ChannelMessage
 
-  final case class CreateMessage(channel: String, replyTo: ActorRef[JsonMessage]) extends ChannelMessage
+  /**
+   * Request to create a channel
+   * @param channel the channel name
+   * @param replyTo the actor to reply to once the creation is done
+   */
+  final case class CreateMessage(channel: String, replyTo: ActorRef[ChannelActorAnswer]) extends ChannelMessage
 
-  final case class SubscribeMessage(channel: String, out: Sink[JsonMessage, NotUsed], replyTo: ActorRef[JsonMessage])
+  /**
+   * Request to subsccribe to a channel
+   * @param channel the channel to subscribe
+   * @param out the entry of the client stream
+   * @param replyTo the actor to reply to once the subscription is done
+   */
+  final case class SubscribeMessage(channel: String, out: Sink[JsonMessage, NotUsed], replyTo: ActorRef[ChannelActorAnswer])
     extends ChannelMessage
+
+
+
+  sealed trait ChannelActorAnswer
+
+  final case class Answer(jsonMessage: JsonMessage) extends ChannelActorAnswer
+
+  final case class AnswerSubscribe(jsonMessage: JsonMessage, channel : String, killSwitch: Option[UniqueKillSwitch]) extends ChannelActorAnswer with UnsubMessage
+
 
   /**
    * Create an actor handling channel creation and subscription
@@ -26,33 +50,36 @@ object ChannelActor {
    */
   def apply(publishExit: Source[NotifyChannelServer, NotUsed]): Behavior[ChannelMessage] = channelHandler(Map.empty, publishExit)
 
-  private def channelHandler(m: Map[String, Source[NotifyChannelServer, NotUsed]],
+  private def channelHandler(channelsOutputs: Map[String, Source[NotifyChannelServer, NotUsed]],
                              publishExit: Source[NotifyChannelServer, NotUsed]): Behavior[ChannelMessage] = {
     Behaviors.receive { (ctx, message) =>
       implicit val system = ctx.system
       message match {
 
         case CreateMessage(channel, replyTo) =>
-          if (!m.contains(channel)) {
+          if (!channelsOutputs.contains(channel)) {
             val (entry, exit) = MergeHub.source[NotifyChannelServer].toMat(BroadcastHub.sink)(Keep.both).run()
 
             publishExit.filter(_.channel == channel).runWith(entry)
-            replyTo ! AnswerMessageServer(true, None)
-            channelHandler(m + (channel -> exit), publishExit)
+            replyTo ! Answer(AnswerMessageServer(true, None))
+            channelHandler(channelsOutputs + (channel -> exit), publishExit)
           }
           else {
-            replyTo ! AnswerMessageServer(false, Some("The channel already exist"))
+            replyTo ! Answer(AnswerMessageServer(false, Some("The channel already exist")))
             Behaviors.same
           }
 
         case SubscribeMessage(channel, out, replyTo) =>
-          if (m.contains(channel)) {
-            val channelSource = m(channel)
-            channelSource.runWith(out)
-            replyTo ! AnswerMessageServer(true, None)
+          if (channelsOutputs.contains(channel)) {
+            val channelSource = channelsOutputs(channel)
+            val killSwitch = channelSource
+              .viaMat(KillSwitches.single)(Keep.right)
+              .toMat(out)(Keep.left)
+              .run()
+            replyTo ! AnswerSubscribe(AnswerMessageServer(true, None), channel, Some(killSwitch))
           }
           else {
-            replyTo ! AnswerMessageServer(false, Some("Unknown channel."))
+            replyTo ! AnswerSubscribe(AnswerMessageServer(false, Some("Unknown channel.")), channel, None)
           }
           Behaviors.same
       }
