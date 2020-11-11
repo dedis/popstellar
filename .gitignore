@@ -1,9 +1,7 @@
-<<<<<<< HEAD
-=======
+
 #Jetbrains folder
 /.idea
 
->>>>>>> work-be1-rpugin
 # Binaries for programs and plugins
 *.exe
 *.exe~
