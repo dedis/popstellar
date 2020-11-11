@@ -45,12 +45,22 @@ func CreateChannel(event src.MessageEventCreate) error {
 	if e != nil {
 		return e
 	}
+	err := db.Update(func(tx *bolt.Tx) error {
 
-	//see create LAO for an example. Do we want to keep this function ?
-	//I mean do we want a generic function or 1 function per type of channel ?
-	// I think option 2 is better @ouriel @raoul ?
+		bkt := tx.Bucket([]byte("ids"))
+		if bkt == nil {
+			return errors.New("bkt does not exist")
+		}
 
-	return nil
+		// instantiate a user with no subscribe nor publish rights
+		err1 := bkt.Put([]byte(id), []byte(""))
+		if err1 != nil {
+			return err1
+		}
+		return nil
+	})
+
+	return err
 }
 
 /**
