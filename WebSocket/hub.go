@@ -30,6 +30,8 @@ type hub struct {
 
 	logMx sync.RWMutex
 	log   [][]byte
+
+	connIndex int
 }
 
 func NewHub() *hub {
@@ -39,6 +41,7 @@ func NewHub() *hub {
 		receivedMessage: make(chan []byte),
 		connections:     make(map[*connection]struct{}),
 		db:              nil,
+		connIndex:       0,
 	}
 	//publish subscribe go routine !
 	/*
@@ -94,6 +97,7 @@ func (h *hub) addConnection(conn *connection) {
 	h.connectionsMx.Lock()
 	defer h.connectionsMx.Unlock()
 	h.connections[conn] = struct{}{}
+	h.connIndex++ //WARNING do not decrement on remove connection. is used as ID for pub/sub
 }
 
 func (h *hub) removeConnection(conn *connection) {
@@ -110,7 +114,7 @@ func (h *hub) removeConnection(conn *connection) {
 
 func (h *hub) HandleMessage(msg []byte) error {
 	//TODO
-	message, err := src.AnalyseMsg(msg)
+	message, err := test.AnalyseMsg(msg)
 	if err != nil {
 		return err
 	}
@@ -119,7 +123,7 @@ func (h *hub) HandleMessage(msg []byte) error {
 /*	case []byte("LAO"):  //ROMAIN
 		switch message.Action {
 		case []byte("create"):
-			mc, err := src.JsonLaoCreate(message.Data)
+			mc, err := test.JsonLaoCreate(message.Data)
 			if err != nil {
 				return err
 			}
