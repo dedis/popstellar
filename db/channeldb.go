@@ -3,7 +3,6 @@ package db
 import (
 	"errors"
 	"github.com/boltdb/bolt"
-	"student20_pop/src"
 )
 
 const DatabaseChannel = "channel.db"
@@ -17,35 +16,15 @@ func OpenChannelDB() (*bolt.DB, error) {
 }
 
 /**
- * Function will return an error if the DB was already initialized
- * TODO : is it useful ? do we need a count for the # of channels ?
- * if count not needed, we can remove this function
- */
-func InitChannelDB(db *bolt.DB) error {
-	err := db.Update(func(tx *bolt.Tx) error {
-		b, err1 := tx.CreateBucket([]byte("ids"))
-		if err1 != nil {
-			return err1
-		}
-		err1 = b.Put([]byte("count"), []byte("0"))
-		return err1
-	})
-	return err
-}
-
-// TODO don't forget to increment count when adding a user
-
-
-/**
  * Function to create a new user and store it in the DB
  * @returns : the id of the created user (+ event error)
  */
-func CreateChannel(id string) (error) {
+func CreateChannel(id string) error {
 
-	db, e := OpenUserDB()
+	db, e := OpenChannelDB()
 	defer db.Close()
 	if e != nil {
-		return nil, e
+		return e
 	}
 
 	err := db.Update(func(tx *bolt.Tx) error {
@@ -56,7 +35,7 @@ func CreateChannel(id string) (error) {
 		}
 
 		// instantiate a user with no subscribe nor publish rights
-		err1 = b.Put([]byte(id), []byte(""))
+		err1 := bkt.Put([]byte(id), []byte(""))
 		if err1 != nil {
 			return err1
 		}
@@ -66,11 +45,10 @@ func CreateChannel(id string) (error) {
 	return err
 }
 
-
 /**
  * Check that the attestation of a user is correct
  */
- /*
+/*
 func checkChannelValidity(id []byte) bool {
 	user, err := GetFromID(id)
 	attestation := lao.Attestation
@@ -80,27 +58,26 @@ func checkChannelValidity(id []byte) bool {
 	return computed == attestation
 }*/
 
-
 /**
 * Retrieve value from a given ID key, and update it with a new subscribtion or publish rights
 * returns error message
-*/
-func UpdateChannelDB (userId []byte, channelId []byte, action []byte) error {
+ */
+func UpdateChannelDB(userId []byte, channelId []byte, action []byte) error {
 
 	//TODO correct the if checks
 	// TODO create functions in jsonHelper addSubscribe, addPublish
-	if(action == "subscriber") {
+	if action == "subscriber" {
 		updatedString := addSubscribe(oldString, channelId)
-	} else if(action == "publisher") {
+	} else if action == "publisher" {
 		updatedString := addPublish(oldString, channelId)
 	} else {
 		return errors.New("action not recognized")
 	}
 
-	db, e := OpenUserDB()
+	db, e := OpenChannelDB()
 	defer db.Close()
 	if e != nil {
-		return lao, e
+		return e
 	}
 
 	err := db.Update(func(tx *bolt.Tx) error {
@@ -109,7 +86,7 @@ func UpdateChannelDB (userId []byte, channelId []byte, action []byte) error {
 			return errors.New("bkt does not exist")
 		}
 
-		err1 = b.Put(userid, updatedString)
+		err1 := b.Put(userid, updatedString)
 		if err1 != nil {
 			return err1
 		}
@@ -121,18 +98,17 @@ func UpdateChannelDB (userId []byte, channelId []byte, action []byte) error {
 
 // ADD Helpers for UpdateChannelDB
 
-
 /**
  * Returns a string which contains the subscribe and publish rights in the user database which matches the id passed an argument
  */
-func GetChannelDataFromID(userid []byte) ([]byte, error) {
+func GetChannelData(id []byte) ([]byte, error) {
 
 	var data []byte
 
-	db, e := OpenUserDB()
+	db, e := OpenChannelDB()
 	defer db.Close()
 	if e != nil {
-		return lao, e
+		return nil, e
 	}
 
 	err := db.View(func(tx *bolt.Tx) error {
@@ -141,13 +117,12 @@ func GetChannelDataFromID(userid []byte) ([]byte, error) {
 			return errors.New("bkt does not exist")
 		}
 
-		data = b.Get(userid)
+		data = b.Get(id)
 		return nil
 	})
 
 	return data, err
 }
-
 
 //TODO move those functions to json helper but we might never need them
 /*
