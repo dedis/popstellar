@@ -110,6 +110,27 @@ func Find(slice []int, val int) (int, bool) {
 	return -1, false
 }
 
-func GetSubscribers(channel []byte) []int {
-	return nil
+/*helper function to find a channel's subscribers */
+func GetSubscribers(channel []byte) ([]int, error) {
+	db, err := db.OpenChannelDB()
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+
+	var data []int
+
+	err = db.View(func(tx *bolt.Tx) error {
+		bkt := tx.Bucket([]byte("sub"))
+		if bkt == nil {
+			return nil
+		}
+
+		content := bkt.Get(channel)
+		err = json.Unmarshal(content, &data)
+
+		return err
+	})
+
+	return data, nil
 }
