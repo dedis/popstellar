@@ -1,7 +1,7 @@
 package src
 
 import (
-	src "student20_pop/src"
+	"student20_pop/channel"
 	"testing"
 )
 
@@ -13,6 +13,6 @@ type MessageLaoCreate struct {
 }
 
 func TestLaoToJson(t *testing.T) {
-	lao = src.LAO{}
+	lao = channel.LAO{}
 
 }
