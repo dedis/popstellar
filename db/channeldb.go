@@ -3,7 +3,6 @@ package db
 import (
 	"errors"
 	"github.com/boltdb/bolt"
-	"../src"
 )
 
 const DatabaseChannel = "channel.db"

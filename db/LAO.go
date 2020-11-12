@@ -3,7 +3,7 @@ package db
 import (
 	"errors"
 	"github.com/boltdb/bolt"
-	"../channel"
+	"../define"
 )
 
 const DatabaseLao = "channel.db"

@@ -1,0 +1,325 @@
+{
+
+    "generic":{
+        "$schema": "http://json-schema.org/draft/2019-09/schema#",
+        "$id": "http://pop2020.dedis.ch/low-level/generic.json",
+        "properties": {
+            "action": {
+                "description": "Operation to be performed",
+                "type": "string",
+                "enum": ["subscribe","unsubscribe","message","catchup","return"]
+            },
+            "channel": {
+                "description": "Channel related to the operation",
+                "type": "string"
+            },
+            "message": {
+                "description": "Message (for 'message' action)",
+                "type": "object"
+            },
+            "result": {
+                "description": "Return code for the operation",
+                "type": "integer"
+            },
+            "data": {
+                "description": "Data to be returned by the operation",
+                "type": "object"
+            },
+            "req_id": {
+                "description": "Unique identifier for the request",
+                "type": "integer"
+            }
+        },
+        "required": ["action", "req_id"]
+    },
+
+    "message":{
+        "$schema": "http://json-schema.org/draft/2019-09/schema#",
+        "$id": "http://pop2020.dedis.ch/low-level/message.json",
+        "properties": {
+            "action": {
+                "description": "Operation to be performed",
+                "type": "string",
+                "enum": ["message"]
+            },
+            "channel": {
+                "description": "Channel related to the operation",
+                "type": "string"
+            },
+            "message": {
+                "description": "Message",
+                "type": "object",
+            "$ref": "#/definitions/message"
+            },
+            "req_id": {
+                "description": "Unique identifier for the request",
+                "type": "integer"
+            }
+        },
+        "required": ["action", "channel", "message", "req_id"],
+        "definitions": {
+           "message": {
+               "properties": {
+                   "data": {
+                   "description": "Data, Base64(data)",
+                   "type": "string"
+               },
+                   "sender": {
+                   "description": "Public key of the sender",
+                   "type": "string"
+               },
+                   "signature": {
+                   "description": "Signature by sender, Sign(data)",
+                   "type": "string"
+               },
+                   "message_id": {
+                   "description": "Hash, SHA256(signature||data)",
+                   "type": "string"
+               },
+               "witness_signatures": {
+               "description": "Signature by witnesses, Sign(sender||data)",
+               "type": "array",
+               "items": {
+                       "type": "string"
+                   }
+               }
+               },
+           "required": ["data","sender","signature","message_id"],
+           "additionalProperties": false
+           }
+        }
+    },
+
+    "subscribe":{
+        "$schema": "http://json-schema.org/draft/2019-09/schema#",
+        "$id": "http://pop2020.dedis.ch/low-level/subscribe.json",
+        "properties": {
+            "action": {
+                "description": "Operation to be performed",
+                "type": "string",
+                "enum": ["subscribe"]
+            },
+            "channel": {
+                "description": "Channel related to the operation",
+                "type": "string"
+            },
+            "req_id": {
+                "description": "Unique identifier for the request",
+                "type": "integer"
+            }
+        },
+        "required": ["action", "channel", "req_id"]
+    },
+
+    "unsubscribe":{
+        "$schema": "http://json-schema.org/draft/2019-09/schema#",
+        "$id": "http://pop2020.dedis.ch/low-level/unsubscribe.json",
+        "properties": {
+            "action": {
+                "description": "Operation to be performed",
+                "type": "string",
+                "enum": ["unsubscribe"]
+            },
+            "channel": {
+                "description": "Channel related to the operation",
+                "type": "string"
+            },
+            "req_id": {
+                "description": "Unique identifier for the request",
+                "type": "integer"
+            }
+        },
+        "required": ["action", "channel", "req_id"]
+    },
+
+    "catchup":{
+        "$schema": "http://json-schema.org/draft/2019-09/schema#",
+        "$id": "http://pop2020.dedis.ch/low-level/catchup.json",
+        "properties": {
+            "action": {
+                "description": "Operation to be performed",
+                "type": "string",
+                "enum": ["catchup"]
+            },
+            "channel": {
+                "description": "Channel related to the operation",
+                "type": "string"
+            },
+            "req_id": {
+                "description": "Unique identifier for the request",
+                "type": "integer"
+            }
+        },
+        "required": ["action", "channel", "req_id"]
+    },
+
+    "return":{
+        "$schema": "http://json-schema.org/draft/2019-09/schema#",
+        "$id": "http://pop2020.dedis.ch/low-level/return.json",
+        "properties": {
+            "action": {
+                "description": "Operation to be performed",
+                "type": "string",
+                "enum": ["return"]
+            },
+            "result": {
+                "description": "Return code for the operation",
+                "type": "integer",
+            "minimum": -5,
+            "maximum": 0
+            },
+            "data": {
+                "description": "Data to be returned by the operation",
+                "type": "object"
+            },
+            "req_id": {
+                "description": "Unique identifier for the request",
+                "type": "integer"
+            }
+        },
+        "required": ["action", "result", "data", "req_id"]
+    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    "user": {
+        "UID": "SHA1(name + creation_time)",
+        "subscribes": [
+            {"channel_id": "0x3"},
+            {"channel_id": "0x4"},
+            {"channel_id": "0x5"},
+            {"channel_id": "0x6"}
+        ],
+        "publisher": [
+            {"channel_id": "0x7"},
+            {"channel_id": "0x8"}
+        ]
+    }
+
+    ,
+
+    "LAO": {
+        "name": "My LAO",
+        "creation_time": "1603289085",
+        "UID": "SHA1(name + creation_time)",
+        "organiser_key": "0x0",
+        "witnesses": [
+            {"witness_key": "0x1"},
+            {"witness_key": "0x2"}
+        ],
+        "members": [
+            {"member_key": "0x3"},
+            {"member_key": "0x4"},
+            {"member_key": "0x5"},
+            {"member_key": "0x6"}
+        ],
+        "events": [
+            {"event_key": "0x7"},
+            {"event_key": "0x8"}
+        ],
+        "attestation": "signature",
+        "IP": "172.16.254.1"
+    }
+
+    ,
+
+    "public_person": {
+        "name": "John Doe",
+        "UID": "0x0"
+    }
+
+    ,
+
+    "private_person": {
+        "name": "John Doe",
+        "UID and publicKey": "0x0",
+        "privateKey": "0x098530",
+        "LAO_membership": [
+            {"LAO_UID": "0x0"},
+            {"LAO_UID": "0x1"},
+            {"LAO_UID": "0x2"},
+            {"LAO_UID": "0x3"},
+            {"LAO_UID": "0x4"}
+        ]
+    }
+
+    ,
+
+    "event": {
+        "name": "example event",
+        "creation_time": "1603289085",
+	    "UID": "SHA1(name + creation_time)",
+	    "LAO": "reference to the LAO_UID",
+	    "attendees_list": [
+       		{"publicKey": "0x0"},
+        	{"publicKey": "0x1"},
+       		{"publicKey": "0x2"},
+        	{"publicKey": "0x3"},
+       		{"publicKey": "0x4"}
+       	    ],
+	    
+	    "location": "EPFL",
+        "type": "rolecall",
+        "other": {"json_struct": ""},
+	    "attestations": [
+            {"signature": "signature"},
+            {"signature": "signature"},
+            {"signature": "signature"},
+            {"signature": "signature"}
+        ]
+   }
+   
+   ,
+
+    "election": {
+        "name": "example election",
+        "creation_time": "1603289085",
+	    "UID": "SHA1(name + creation_time)",
+	    "LAO": "reference to the LAO_UID",
+	    "attendees_list": [
+       		{"publicKey": "0x0"},
+        	{"publicKey": "0x1"},
+       		{"publicKey": "0x2"},
+        	{"publicKey": "0x3"},
+       		{"publicKey": "0x4"}
+       	    ],
+	    
+        "options": [
+            {"publicKey": "0x0"},
+            {"publicKey": "0x1"},
+            {"publicKey": "0x2"},
+            {"publicKey": "0x3"}
+        ],
+	    "attestations": [
+            {"signature": "signature"},
+            {"signature": "signature"},
+            {"signature": "signature"},
+            {"signature": "signature"}
+        ]
+   }
+
+   ,
+
+
+   "votes": {
+        "voter": "publicKey",
+        "election": "reference to the election UID",
+        "vote": "encrypted by ElGamal",
+        "attestation": "SHA1(election_ID, LAO_ID, vote)"
+   }
+}
+
+
+
+

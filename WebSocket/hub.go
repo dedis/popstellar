@@ -6,7 +6,6 @@ import (
 	"log"
 	"sync"
 	"time"
-	"../src"
 	"../db"
 )
 
@@ -114,13 +113,34 @@ func (h *hub) removeConnection(conn *connection) {
 
 func (h *hub) HandleMessage(msg []byte) error {
 	//TODO
-	message, err := test.AnalyseMsg(msg)
+	generic, err := AnalyseGeneric(msg)
 	if err != nil {
 		return err
 	}
 
-	switch message.Item {
-/*	case []byte("LAO"):  //ROMAIN
+	properties, err := AnalyseProperties(generic)
+	if err != nil {
+		return err
+	}
+
+	switch properties.Action {
+	case "subscribe": Subscribe(???, ([]byte) properties.Channel)
+	case "unsubscribe": Unsubscribe(???, ([]byte) properties.Channel)
+	case "message": 
+		message, err := AnalyseMessage(properties.Message)
+		if err != nil {
+			return err
+		}
+		// TODO waiting on Pierluca/Haoqian answer relating to the method field and whether we can take object/action out of data
+	case "catchup": // TODO
+	case "return": // TODO
+	default :
+		log.Fatal("JSON not correctly formated :", msg)
+	}
+
+
+/*	switch message.Item {
+	case []byte("LAO"):  //ROMAIN
 		switch message.Action {
 		case []byte("create"):
 			mc, err := test.JsonLaoCreate(message.Data)
@@ -140,7 +160,6 @@ func (h *hub) HandleMessage(msg []byte) error {
 
 			h.message <- []byte("{action: , id: , ...}") //TODO waiting for protocol definition
 			h.channel <- []byte("0")
-		}
 
 	case subscribe: //OURIEL
 		append(LAO.members, ID_Subscriber)
@@ -150,7 +169,7 @@ func (h *hub) HandleMessage(msg []byte) error {
 
 	case fetch: //OURIEL
 		sendinfo(channel)
-*/
+s
 	case []byte("event"): //RAOUL
 		switch message.Action {
 		case []byte("create"):
@@ -171,6 +190,7 @@ func (h *hub) HandleMessage(msg []byte) error {
 	default :
 		log.Fatal("JSON not correctly formated :", msg)
 	}
+*/
 
 	return nil
 
