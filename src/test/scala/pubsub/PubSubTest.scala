@@ -187,13 +187,20 @@ class PubSubTest extends FunSuite {
 
   test("Don't receive messages when unsubscribing from a channel") {
     val channel = "main"
+    val channel2 = "channel"
     val m1 = "Hello on main channel"
     val id1 = m1
+    val m2 = "m2"
+    val id2 = m2
     val l = List((CreateChannelClient(channel, "none"), AnswerOk),
       (SubscribeChannelClient(channel), AnswerOk),
+      (CreateChannelClient(channel2, "none"), AnswerOk),
+      (SubscribeChannelClient(channel2), AnswerOk),
       (PublishChannelClient(channel, m1), Some(NotifyChannelServer(channel, id1))),
       (FetchChannelClient(channel, id1), Some(FetchChannelServer(channel, id1, m1))),
-      (UnsubscribeChannelClient(channel), AnswerOk)
+      (UnsubscribeChannelClient(channel), AnswerOk),
+      (PublishChannelClient(channel, m1), None),
+      (PublishChannelClient(channel2, m2), Some(NotifyChannelServer(channel2, id2))),
     )
 
     val root = Behaviors.setup[SpawnProtocol.Command] { context =>
