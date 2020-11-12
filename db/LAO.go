@@ -86,5 +86,5 @@ func WriteLao(lao channel.LAO) error {
 
 func GetFromID(id []byte) (channel.LAO, error) {
 	//TODO
-	return channel.LAO{}, errors.New("empty")
+	return channel.LAO{}, nil
 }
