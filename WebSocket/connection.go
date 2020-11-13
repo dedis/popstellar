@@ -26,7 +26,6 @@ func (c *connection) reader(wg *sync.WaitGroup, wsConn *websocket.Conn) {
 			break
 		}
 		c.h.receivedMessage <- msg
-
 	}
 }
 

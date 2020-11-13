@@ -7,36 +7,36 @@ import (
 
 /*Most generic message structure*/
 type Generic struct {
-	schema string
-	id string
+	schema     string
+	id         string
 	Properties []byte
 }
 
 /*
 type Action string
 const(
-	SubscribeAction Action = "subscribe"
-	UnsubscribeAction = "unsubscribe"
-	MessageAction = "message"
-	CatchupAction = "catchup"
-	ReturnAction = "return"
+	Subscribe Action = "subscribe"
+	Unsubscribe Action = "unsubscribe"
+	Message Action = "message"
+	Catchup Action = "catchup"
+	Return Action = "return"
 )*/
 
 type Properties struct {
 	//Action Action
-	Action string
+	Action  string
 	Channel string
 	Message []byte
-	Result int64
+	Result  int64
 	// Data []byte
 	ReqID int64
 }
 
 type Message struct {
-	Data string
-	Sender string
-	Signature string
-	MessageID string
+	Data              string
+	Sender            string
+	Signature         string
+	MessageID         string
 	WitnessSignatures []string
 }
 
@@ -65,7 +65,7 @@ func AnalyseMessage(message []byte) (Message, error) {
 /**
  * Function that reads a JSON message in order to create a new LAO
  */
- /*
+/*
 func JsonLaoCreate(message []byte) (MessageLaoCreate, error) {
 	m := MessageLaoCreate{}
 	err := json.Unmarshal(message, &m)

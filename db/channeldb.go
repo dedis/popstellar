@@ -34,7 +34,7 @@ func CreateChannel(id string) error {
 			return errors.New("bkt does not exist")
 		}
 
-		// instantiate a user with no subscribe nor publish rights
+		// instantiate a channel with no subscriber and no publisher
 		err1 := bkt.Put([]byte(id), []byte(""))
 		if err1 != nil {
 			return err1
