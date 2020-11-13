@@ -3,7 +3,7 @@ package db
 import (
 	"errors"
 	"github.com/boltdb/bolt"
-	"../define"
+	"student20_pop/define"
 )
 
 const DatabaseLao = "channel.db"
@@ -24,6 +24,7 @@ func OpenLAODB() (*bolt.DB, error) {
  * @returns : the id of the created LAO (+ event error)
  */
 func CreateLAO(create channel.MessageLaoCreate) error {
+	// TODO adapt struct
 
 	db, e := OpenLAODB()
 	defer db.Close()
@@ -81,10 +82,12 @@ func CreateLAO(create channel.MessageLaoCreate) error {
 
 //TODO
 func WriteLao(lao channel.LAO) error {
+		// TODO adapt struct
 	return nil
 }
 
 func GetFromID(id []byte) (channel.LAO, error) {
+		// TODO adapt struct
 	//TODO
 	return channel.LAO{}, nil
 }
