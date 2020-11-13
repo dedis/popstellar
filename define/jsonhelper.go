@@ -88,9 +88,9 @@ func LaoToJson(lao LAO) []byte {
 	str = append(str, []byte(`"id": `+string(lao.ID)+`, `)...)
 	str = append(str, []byte(`"name": `+lao.Name+`, `)...)
 	str = append(str, []byte(`"organizerpkey": `+string(lao.OrganizerPKey)+`, `)...)
-	str = append(str, []byte(`"creationtime": `+string(lao.Timestamp)+`, `)...)
-	str = append(str, []byte(`"ip":`+string(lao.Ip)+`, `)...)
-	str = append(str, []byte(`"attestation":`+string(lao.Attestation)+`, `)...)
+	//str = append(str, []byte(`"creationtime": `+string(lao.Creation)+`, `)...)
+	//str = append(str, []byte(`"ip":`+string(lao.Ip)+`, `)...)
+	//str = append(str, []byte(`"attestation":`+string(lao.Attestation)+`, `)...)
 
 	// TODO create string for witness/members/...
 	str = append(str, []byte(`"witness": , `)...)
