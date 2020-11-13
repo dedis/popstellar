@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import data from '../res/EventData';
 
-import STRINGS from '../res/strings';
 import { Typography } from '../Styles';
+import EventsCollapsableList from './EventsCollapsableList';
 
 /**
 * The Organizer component
@@ -21,7 +22,7 @@ const styles = StyleSheet.create({
 
 const Organizer = () => (
   <View style={styles.container}>
-    <Text style={styles.text}>{STRINGS.organizer_description}</Text>
+    <EventsCollapsableList data={data.filter((e) => e.title !== '')} closedList={['Future']} />
   </View>
 );
 
