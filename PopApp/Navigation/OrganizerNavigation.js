@@ -11,6 +11,7 @@ import Attendee from '../Components/Attendee';
 import Identity from '../Components/Identity';
 import MytabBar from '../Components/OrganizerMaterialTab';
 import WitnessNavigation from './WitnessNavigation';
+import Organizer from '../Components/Organizer';
 
 const OrganizerTopTabNavigator = createMaterialTopTabNavigator();
 
@@ -45,6 +46,10 @@ function OrganizerNavigation() {
       <OrganizerTopTabNavigator.Screen
         name={STRINGS.organizer_navigation_tab_attendee}
         component={Attendee}
+      />
+      <OrganizerTopTabNavigator.Screen
+        name="Organizer"
+        component={Organizer}
       />
       <OrganizerTopTabNavigator.Screen
         name="Witness"
