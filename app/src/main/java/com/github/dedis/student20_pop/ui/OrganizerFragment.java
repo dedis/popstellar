@@ -26,7 +26,6 @@ import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.utility.ui.OnEventTypeSelectedListener;
 import com.github.dedis.student20_pop.utility.ui.OnEventTypeSelectedListener.EventType;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -42,6 +41,7 @@ public class OrganizerFragment extends Fragment {
     private ExpandableListView expandableListView;
     private Lao lao;  //should be given from intent or previous fragment
     private Button propertiesButton;
+    private ImageButton editPropertiesButton;
     private OnEventTypeSelectedListener listener;
 
     /**
@@ -89,12 +89,13 @@ public class OrganizerFragment extends Fragment {
                     properties.setVisibility((properties.getVisibility() == View.GONE) ? View.VISIBLE : View.GONE);
                 });
 
+        editPropertiesButton = rootView.findViewById(R.id.edit_button);
         editPropertiesButton.setVisibility(View.VISIBLE);
 
         propertiesButton.setOnClickListener(
                 clicked -> {
-            properties.setVisibility((properties.getVisibility() == View.GONE) ? View.VISIBLE : View.GONE);
-        });
+                    properties.setVisibility((properties.getVisibility() == View.GONE) ? View.VISIBLE : View.GONE);
+                });
 
         return rootView;
     }
@@ -113,13 +114,13 @@ public class OrganizerFragment extends Fragment {
         //Now (for testing) :
         ArrayList<Event> events = new ArrayList<>();
 
-        events.add(new Event("Past Event 1", new Date(10*1000L), new Keys().getPublicKey(), "EPFL", "Poll"));
-        events.add(new Event("Past Event 2", new Date(20*1000L), new Keys().getPublicKey(), "CE-6", "Meeting"));
-        events.add(new Event("Present Event 1", new Date(500*1000L),
+        events.add(new Event("Past Event 1", new Date(10 * 1000L), new Keys().getPublicKey(), "EPFL", "Poll"));
+        events.add(new Event("Past Event 2", new Date(20 * 1000L), new Keys().getPublicKey(), "CE-6", "Meeting"));
+        events.add(new Event("Present Event 1", new Date(500 * 1000L),
                 new Keys().getPublicKey(), "Geneva", "Roll-Call"));
-        events.add(new Event("Present Event 2", new Date(600*1000L),
+        events.add(new Event("Present Event 2", new Date(600 * 1000L),
                 new Keys().getPublicKey(), "Lausanne", "Discussion"));
-        events.add(new Event("Future Event 1", new Date(5000*1000L),
+        events.add(new Event("Future Event 1", new Date(5000 * 1000L),
                 new Keys().getPublicKey(), "i don't know where yet", "Poll"));
 
         return events;
