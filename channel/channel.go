@@ -134,3 +134,9 @@ func GetSubscribers(channel []byte) ([]int, error) {
 
 	return data, nil
 }
+
+func GetData(channel []byte) ([]byte, error) {
+	db, err := db.OpenChannelDB()
+	defer db.Close()
+	return nil, nil
+}
