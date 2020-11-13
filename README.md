@@ -47,9 +47,9 @@ The idea is to store a big string which contains all the information (in json fo
 
 ## Dependencies
 Currently, the project works with the following libraries:
-* [gorilla/websocket](https://github.com/gorilla/websocket) : a websocket package for golang. We chose to use this 
+* [gorilla/websocket](https://github.com/gorilla/websocket): a websocket package for golang. We chose to use this 
 package because it offers a good API, and it is more complete than the websocket package offered by the standard library.
-* [boltdb](https://github.com/boltdb/bolt) : a low-level key-value DB management system. It works by creating Buckets, 
+* [boltdb](https://github.com/boltdb/bolt): a low-level key-value DB management system. It works by creating Buckets, 
 that we can populate with key-value pairs.
 
 ## WebSocket Protocol
