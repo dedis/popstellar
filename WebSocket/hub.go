@@ -1,14 +1,13 @@
 package WebSocket
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/boltdb/bolt"
 	"log"
 	"student20_pop/channel"
 	"sync"
 	"time"
-	"../db"
+	"student20_pop/db"
 )
 
 type hub struct {
