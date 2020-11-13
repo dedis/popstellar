@@ -67,7 +67,7 @@ func UpdateChannelDB(userId []byte, channelId []byte, action []byte) error {
 	//TODO correct the if checks
 	// TODO create functions in jsonHelper addSubscribe, addPublish
 	if action == "subscriber" {
-		updatedString := addSubscribe(oldString, channelId)
+		updatedString := Subscribe(oldString, channelId)
 	} else if action == "publisher" {
 		updatedString := addPublish(oldString, channelId)
 	} else {
