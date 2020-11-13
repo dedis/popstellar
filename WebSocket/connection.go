@@ -12,7 +12,7 @@ import (
 type connection struct {
 	// Buffered channel of outbound messages.
 	send chan []byte
-
+	id   int
 	// The hub.
 	h *hub
 }
@@ -25,8 +25,7 @@ func (c *connection) reader(wg *sync.WaitGroup, wsConn *websocket.Conn) {
 		if err != nil {
 			break
 		}
-		c.h.recievedMessage <- msg
-
+		c.h.receivedMessage <- msg
 	}
 }
 
@@ -58,7 +57,7 @@ func (wsh WsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c := &connection{send: make(chan []byte, 256), h: wsh.h}
+	c := &connection{send: make(chan []byte, 256), h: wsh.h, id: wsh.h.connIndex}
 	c.h.addConnection(c)
 	defer c.h.removeConnection(c)
 	var wg sync.WaitGroup

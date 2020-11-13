@@ -33,6 +33,7 @@ func Write(key []byte, val []byte, bkt []byte, database *bolt.DB) error {
 /**
  * Functions that transforms a nested bucket of the db (of members, events, etc.) into a list
  * (of byte array currently, tbd according to the definite field of the structs)
+ * ça va surement tej'
  */
 func NestedToList(b *bolt.Bucket) [][]byte {
 	var list [][]byte

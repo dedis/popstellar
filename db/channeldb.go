@@ -16,7 +16,8 @@ func OpenChannelDB() (*bolt.DB, error) {
 }
 
 /**
- * Function to create a new user and store it in the DB
+ * Function to create a new lao in the ChannelDB
+ * @param : a src.MessageLaoCreate. all fields are stored in DB
  * @returns : the id of the created user (+ event error)
  */
 func CreateChannel(id string) error {
@@ -26,7 +27,6 @@ func CreateChannel(id string) error {
 	if e != nil {
 		return e
 	}
-
 	err := db.Update(func(tx *bolt.Tx) error {
 
 		bkt := tx.Bucket([]byte("ids"))
@@ -34,7 +34,7 @@ func CreateChannel(id string) error {
 			return errors.New("bkt does not exist")
 		}
 
-		// instantiate a user with no subscribe nor publish rights
+		// instantiate a channel with no subscriber and no publisher
 		err1 := bkt.Put([]byte(id), []byte(""))
 		if err1 != nil {
 			return err1
@@ -67,7 +67,7 @@ func UpdateChannelDB(userId []byte, channelId []byte, action []byte) error {
 	//TODO correct the if checks
 	// TODO create functions in jsonHelper addSubscribe, addPublish
 	if action == "subscriber" {
-		updatedString := addSubscribe(oldString, channelId)
+		updatedString := Subscribe(oldString, channelId)
 	} else if action == "publisher" {
 		updatedString := addPublish(oldString, channelId)
 	} else {
