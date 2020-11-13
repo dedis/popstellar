@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/boltdb/bolt"
 	"strings"
-	"../db"
+	"student20_pop/db"
 )
 
 /*
