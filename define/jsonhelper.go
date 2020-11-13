@@ -7,37 +7,42 @@ import (
 
 /*Most generic message structure*/
 type Generic struct {
-	schema     string
-	id         string
-	Properties []byte
+	jsonrpc string
+	Method	string
+	Params	[]byte
+	id      string
 }
 
-/*
-type Action string
+/* potential enum, but doesn't typecheck in go, the checks must still be manual, so kinda useless
+type Method string
 const(
-	Subscribe Action = "subscribe"
-	Unsubscribe Action = "unsubscribe"
-	Message Action = "message"
-	Catchup Action = "catchup"
-	Return Action = "return"
+	Subscribe Method = "subscribe"
+	Unsubscribe Method = "unsubscribe"
+	Message Method = "message"
+	Publish Method = "publish"
+	Catchup Method = "catchup"
 )*/
 
-type Properties struct {
-	//Action Action
-	Action  string
+type ParamsLight struct {
+	Channel string
+}
+
+type ParamsFull struct {
 	Channel string
 	Message []byte
-	Result  int64
-	// Data []byte
-	ReqID int64
 }
 
 type Message struct {
-	Data              string
+	Data              []byte
 	Sender            string
 	Signature         string
 	MessageID         string
 	WitnessSignatures []string
+}
+
+type DataCreateLao struct {
+	// Object	string
+	// Action	string
 }
 
 /**
@@ -50,15 +55,27 @@ func AnalyseGeneric(generic []byte) (Generic, error) {
 	return m, err
 }
 
-func AnalyseProperties(properties []byte) (Properties, error) {
-	m := Properties{}
-	err := json.Unmarshal(properties, &m)
+func AnalyseParamsLight(params []byte) (ParamsLight, error) {
+	m := ParamsLight{}
+	err := json.Unmarshal(params, &m)
+	return m, err
+}
+
+func AnalyseParamsFull(params []byte) (ParamsFull, error) {
+	m := ParamsFull{}
+	err := json.Unmarshal(params, &m)
 	return m, err
 }
 
 func AnalyseMessage(message []byte) (Message, error) {
 	m := Message{}
 	err := json.Unmarshal(message, &m)
+	return m, err
+}
+
+func AnalyseDataCreateLAO(data []byte) (DataCreateLAO, error) {
+	m := DataCreateLAO{}
+	err := json.Unmarshal(data, &m)
 	return m, err
 }
 
