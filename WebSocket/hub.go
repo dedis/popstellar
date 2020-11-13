@@ -47,29 +47,31 @@ func NewHub() *hub {
 		go func() {
 			for {
 				msg := <-h.message
-				channel := <-h.channel
-				if channel != 0 {
-					send_to := getSubscribersFromChannel(channel)
-				} else {
-					if(isSubchannel()){
-						send_to := getSubsrcriberFromParentChannel( channel) //Askip Bryan veut autre chose lol
-					}
-					send_to := h.connections
+				chann := h.channel
+
+				var subscribers []int = nil
+				if bytes.Compare(chann, []byte("0")) == 0 {
+					subscribers = channel.GetSubscribers(chann)
 				}
+
 				h.connectionsMx.RLock()
-				for c := range send_to {
-					select {
-					case c.send <- msg:
-					// stop trying to send to this connection after trying for 1 second.
-					// if we have to stop, it means that a reader died so remove the connection also.
-					case <-time.After(1 * time.Second):
-						log.Printf("shutting down connection %s", c)
-						h.removeConnection(c)
+				for c := range h.connections {
+					//send msg to that connection if channel is main channel or is in channel subscribers
+					_, found := channel.Find(subscribers, c.id)
+					if bytes.Compare(h.channel, []byte("0")) == 0 || found {
+						select {
+						case c.send <- msg:
+						// stop trying to send to this connection after trying for 1 second.
+						// if we have to stop, it means that a reader died so remove the connection also.
+						case <-time.After(1 * time.Second):
+							log.Printf("shutting down connection %c", c.id)
+							h.removeConnection(c)
+						}
 					}
 				}
 				h.connectionsMx.RUnlock()
 			}
-		}()*/
+		}()  */
 	go func() {
 		for {
 
@@ -126,7 +128,7 @@ func (h *hub) HandleMessage(msg []byte) error {
 	switch properties.Action {
 	case "subscribe": Subscribe(???, ([]byte) properties.Channel)
 	case "unsubscribe": Unsubscribe(???, ([]byte) properties.Channel)
-	case "message": 
+	case "message":
 		message, err := AnalyseMessage(properties.Message)
 		if err != nil {
 			return err
@@ -182,7 +184,7 @@ s
 			// useless but sticks as a reminder that we broadcast to the parent channel, the one which received the createEvent order
 			h.channel <- h.channel
 			h.message <- h.message
-		
+
 		default :
 			log.Fatal("JSON not correctly formated :", msg)
 		}
