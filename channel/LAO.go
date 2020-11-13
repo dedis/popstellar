@@ -1,9 +1,9 @@
-package db
+package channel
 
 import (
 	"errors"
 	"github.com/boltdb/bolt"
-	"student20_pop/channel"
+	"student20_pop/db"
 )
 
 const DatabaseLao = "channel.db"
@@ -16,7 +16,7 @@ const DatabaseLao = "channel.db"
  * TODO : Keep it ? or put everything in the Channel DB ?
  */
 func OpenLAODB() (*bolt.DB, error) {
-	return OpenDB(DatabaseLao)
+	return db.OpenDB(DatabaseLao)
 }
 
 /**
@@ -24,6 +24,7 @@ func OpenLAODB() (*bolt.DB, error) {
  * @returns : the id of the created LAO (+ event error)
  */
 func CreateLAO(create channel.MessageLaoCreate) error {
+	// TODO adapt struct
 
 	db, e := OpenLAODB()
 	defer db.Close()
@@ -80,11 +81,13 @@ func CreateLAO(create channel.MessageLaoCreate) error {
 }
 
 //TODO
-func WriteLao(lao channel.LAO) error {
+func UpdateLao(lao channel.LAO) error {
+	// TODO adapt struct
 	return nil
 }
 
 func GetFromID(id []byte) (channel.LAO, error) {
+	// TODO adapt struct
 	//TODO
-	return channel.LAO{}, errors.New("empty")
+	return channel.LAO{}, nil
 }
