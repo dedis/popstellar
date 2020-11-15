@@ -75,6 +75,10 @@ func NewHub() *hub {
 							log.Printf("shutting down connection %c", c.id)
 							h.removeConnection(c)
 						}
+						//TODO where to put these 3 lines?
+						err := h.HandleWholeMessage(msg, h.idOfSender)
+						resp := []byte(define.ResponseToSenderInJson(errors.As(err, )))
+						h.responseToSender <- resp
 					}
 				}
 				h.connectionsMx.RUnlock()
@@ -100,14 +104,11 @@ func NewHub() *hub {
 	}()/*
 	go func() {
 		for {
-			msg := <-h.message
+			resp := <-h.responseToSender
 			h.connectionsMx.RLock()
 			for c := range h.connections {
 				//send msg to that connection if channel is the same channel as the sender
 				if bytes.Compare(h.responseToSender, []byte("0")) == 0 {
-					err := h.HandleWholeMessage(msg, h.idOfSender)
-					resp := []byte(define.ResponseToSenderInJson(errors.As(err, )))
-					h.responseToSender <- resp
 					c.send <- resp
 				}
 			}
