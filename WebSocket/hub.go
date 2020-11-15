@@ -2,15 +2,13 @@ package WebSocket
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"github.com/boltdb/bolt"
 	"log"
-	"strings"
-	"student20_pop/channel"
 	"student20_pop/define"
 	"sync"
 	"time"
-	"student20_pop/db"
 )
 
 type hub struct {
@@ -99,20 +97,23 @@ func NewHub() *hub {
 			}
 			h.connectionsMx.RUnlock()
 		}
-	}()
+	}()/*
 	go func() {
 		for {
-			resp := <-h.responseToSender
+			msg := <-h.message
 			h.connectionsMx.RLock()
 			for c := range h.connections {
 				//send msg to that connection if channel is the same channel as the sender
 				if bytes.Compare(h.responseToSender, []byte("0")) == 0 {
-					 c.send <- resp
+					err := h.HandleWholeMessage(msg, h.idOfSender)
+					resp := []byte(define.ResponseToSenderInJson(errors.As(err, )))
+					h.responseToSender <- resp
+					c.send <- resp
 				}
 			}
 			h.connectionsMx.RUnlock()
 		}
-	}()
+	}()*/
 	return h
 }
 
