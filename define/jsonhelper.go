@@ -2,6 +2,7 @@ package define
 
 import (
 	"encoding/json"
+	"golang.org/x/tools/go/ssa/interp/testdata/src/errors"
 	"strconv"
 )
 
@@ -39,6 +40,7 @@ type Message struct {
 	MessageID         string
 	WitnessSignatures []string
 }
+
 
 type DataCreateLao struct {
 	// Object	string
@@ -136,4 +138,46 @@ func SliceToJson(title string, data [][]byte) string {
 	}
 	str += "}"
 	return str
+}
+
+/*
+* Function that converts a Lao to a Json byte array
+* we suppose error is in the good range
+*/
+func ResponseToSenderInJson(error int) string {
+	str := "{\"jsonrpc\": \"2.0\","
+	if error !=0{
+		str += "{ \"error\": { \"code\":"
+		str += strconv.Itoa(error)
+		str += ",\"description\":"
+		str += selectDescriptionError(error)
+		str += "}"
+	}else{
+		str += " \"result\": 0"
+	}
+	str += ",\"id\": 3}"
+	return str
+}
+/*
+*	return the associate description error
+*	we check the validity (error vetween -1 and -5) before the function
+*/
+func selectDescriptionError(err int) string{
+	switch(err) {
+	case -1:
+		return "\"invalid action\""
+	case -2:
+		return "\"invalid resource\""
+		//(e.g. channel does not exist,channel was not subscribed to, etc.)
+	case -3:
+		return "\"resource already exists\""
+		//(e.g. lao already exists, channel already exists, etc.)
+	case -4:
+		return "\"request data is invalid\""
+		//(e.g. message is invalid)
+	case -5:
+		return "\"access denied\""
+	//(e.g. subscribing to a “restricted” channel)
+	}
+	return ""
 }

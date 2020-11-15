@@ -1,10 +1,13 @@
 package WebSocket
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/boltdb/bolt"
 	"log"
+	"strings"
 	"student20_pop/channel"
+	"student20_pop/define"
 	"sync"
 	"time"
 	"student20_pop/db"
@@ -32,6 +35,10 @@ type hub struct {
 	log   [][]byte
 
 	connIndex int
+
+	//Response for the sender
+	idOfSender int
+	responseToSender  chan []byte
 }
 
 func NewHub() *hub {
@@ -42,6 +49,8 @@ func NewHub() *hub {
 		connections:     make(map[*connection]struct{}),
 		db:              nil,
 		connIndex:       0,
+		idOfSender: -1,
+		responseToSender: make(chan []byte),
 	}
 	//publish subscribe go routine !
 		/*
@@ -91,6 +100,19 @@ func NewHub() *hub {
 			h.connectionsMx.RUnlock()
 		}
 	}()
+	go func() {
+		for {
+			resp := <-h.responseToSender
+			h.connectionsMx.RLock()
+			for c := range h.connections {
+				//send msg to that connection if channel is the same channel as the sender
+				if bytes.Compare(h.responseToSender, []byte("0")) == 0 {
+					 c.send <- resp
+				}
+			}
+			h.connectionsMx.RUnlock()
+		}
+	}()
 	return h
 }
 
@@ -98,6 +120,7 @@ func (h *hub) addConnection(conn *connection) {
 	fmt.Println("new client connected")
 	h.connectionsMx.Lock()
 	defer h.connectionsMx.Unlock()
+	// QUESTION what if connection is already in the map ?
 	h.connections[conn] = struct{}{}
 	h.connIndex++ //WARNING do not decrement on remove connection. is used as ID for pub/sub
 }
@@ -130,7 +153,7 @@ func (h *hub) HandleWholeMessage(msg []byte, userId int) error {
 	default :
 		log.Fatal("JSON Method not recognized :", generic)
 	}
-
+	//TODO need to convert manually from Json ?
 	return nil
 }
 
@@ -170,6 +193,7 @@ func (h *hub) handlePublish(generic Generic) error {
 	}
 
 	if(LAOCreatedIsValid(data, message) {
+		h.responseToSsender = responseToSender(0)
 		return CreateLAO(data)
 	} else {
 		return errors.New("the LAO data wasn't valid")
@@ -184,12 +208,15 @@ func (h *hub) handleMessage(msg []byte, userId int) error {
 }
 
 // TODO
-func (h *hub) handleCatchup(???) error {
+func (h *hub) handleCatchup(...) error {
 
 
 	return nil
 }
 
+func (h *hub) sendResponse(conn *connection){
+
+}
 
 
 /*	switch message.Item {
