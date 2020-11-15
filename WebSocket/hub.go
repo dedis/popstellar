@@ -113,33 +113,83 @@ func (h *hub) removeConnection(conn *connection) {
 }
 
 //call with msg = receivedMessage
-
-func (h *hub) HandleMessage(msg []byte) error {
-	//TODO
+func (h *hub) HandleWholeMessage(msg []byte, userId int) error {
 	generic, err := AnalyseGeneric(msg)
 	if err != nil {
 		return err
 	}
 
-	properties, err := AnalyseProperties(generic)
+	switch generic.Method {
+	case "subscribe": return handleSubscribe(generic, userId)
+	case "unsubscribe": return handleUnsubscribe(generic, userId)
+	// TODO waiting on Pierluca/Haoqian answer relating to the method field and whether we can take object/action out of data
+	case "publish": return handlePublish(generic)
+	//case "message": return handleMessage() // Potentially, we never receive a "message" and only output "message" after a "publish" in order to broadcast
+	case "catchup": return handleCatchup() // TODO
+
+	default :
+		log.Fatal("JSON Method not recognized :", generic)
+	}
+
+	return nil
+}
+
+func (h *hub) handleSubscribe(generic Generic, userId int) error {
+	params, err := AnalyseParamsLight(generic.Params)
+	if err != nil {
+		return err
+	}
+	return Subscribe(userId, ([]byte) params.Channel)
+}
+
+func (h *hub) handleUnsubscribe(generic Generic, userId int) error {
+	params, err := AnalyseParamsLight(generic.Params)
+	if err != nil {
+		return err
+	}
+	return Unsubscribe(userId, ([]byte) params.Channel)
+}
+
+func (h *hub) handlePublish(generic Generic) error {
+	params, err := AnalyseParamsFull(generic.Params)
+	if err != nil {
+		return err
+	}
+	if params.Channel != 0 {
+		log.Fatal("Tried to publish a LAO on a channel other than root")
+	}
+	message, err := AnalyseMessage(params.Message)
+	if err != nil {
+		return err
+	}
+	// TODO cf todo of line 125. Either this function will be renamed handleCreateLAO if createLAO can be detected at method level.
+	// Or we'll need to add another switch around here and call sub-functions for each different type of publication based on object and action. What is below would then be moved to the handleCreateLAO sub-function
+	data, err := AnalyseDataCreateLAO(message.Data)
 	if err != nil {
 		return err
 	}
 
-	switch properties.Action {
-	case "subscribe": Subscribe(???, ([]byte) properties.Channel)
-	case "unsubscribe": Unsubscribe(???, ([]byte) properties.Channel)
-	case "message":
-		message, err := AnalyseMessage(properties.Message)
-		if err != nil {
-			return err
-		}
-		// TODO waiting on Pierluca/Haoqian answer relating to the method field and whether we can take object/action out of data
-	case "catchup": // TODO
-	case "return": // TODO
-	default :
-		log.Fatal("JSON not correctly formated :", msg)
+	if(LAOCreatedIsValid(data, message) {
+		return CreateLAO(data)
+	} else {
+		return errors.New("the LAO data wasn't valid")
 	}
+
+	return nil
+}
+
+func (h *hub) handleMessage(msg []byte, userId int) error {
+
+	return nil
+}
+
+// TODO
+func (h *hub) handleCatchup(???) error {
+
+
+	return nil
+}
+
 
 
 /*	switch message.Item {
@@ -226,9 +276,4 @@ s
 		log.Fatal("JSON not correctly formated :", msg)
 	}
 */
-
-	return nil
-
-}
-
 
