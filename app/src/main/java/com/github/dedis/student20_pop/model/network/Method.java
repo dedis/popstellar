@@ -9,7 +9,7 @@ public enum Method {
     SUBSCRIBE("subscribe", Subscribe.class, true),
     UNSUBSCRIBE("unsubscribe", Unsubscribe.class, true),
     PUBLISH("publish", Publish.class, true),
-    MESSAGE("message", MessageLow.class, false),
+    MESSAGE("message", LowLevelMessage.class, false),
     CATCHUP("catchup", Catchup.class, true);
 
     private static final List<Method> ALL = Collections.unmodifiableList(Arrays.asList(values()));

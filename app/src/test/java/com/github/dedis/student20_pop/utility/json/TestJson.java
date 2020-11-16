@@ -1,23 +1,23 @@
-package com.github.dedis.student20_pop.json;
+package com.github.dedis.student20_pop.utility.json;
 
 import com.github.dedis.student20_pop.model.network.Catchup;
 import com.github.dedis.student20_pop.model.network.ChanneledMessage;
-import com.github.dedis.student20_pop.model.network.MessageLow;
+import com.github.dedis.student20_pop.model.network.LowLevelMessage;
+import com.github.dedis.student20_pop.model.network.MessageContainer;
 import com.github.dedis.student20_pop.model.network.Publish;
 import com.github.dedis.student20_pop.model.network.Subscribe;
 import com.github.dedis.student20_pop.model.network.Unsubscribe;
-import com.github.dedis.student20_pop.model.network.message.Message;
 import com.github.dedis.student20_pop.model.network.result.Failure;
 import com.github.dedis.student20_pop.model.network.result.Result;
 import com.github.dedis.student20_pop.model.network.result.ResultError;
 import com.github.dedis.student20_pop.model.network.result.Success;
-import com.github.dedis.student20_pop.utility.json.JsonRequestSerializer;
-import com.github.dedis.student20_pop.utility.json.JsonResultSerializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.Arrays;
 
 public class TestJson {
 
@@ -49,7 +49,8 @@ public class TestJson {
 
     @Test
     public void testPublish() {
-        testChanneledMessage(new Publish("test", 0, new Message()));
+        testChanneledMessage(new Publish("test", 0,
+                new MessageContainer("sender", "data", "signature", "id", Arrays.asList("witness1", "witness2"))));
     }
 
     @Test
@@ -59,7 +60,8 @@ public class TestJson {
 
     @Test
     public void testMessageLow() {
-        testChanneledMessage(new MessageLow("test", new Message()));
+        testChanneledMessage(new LowLevelMessage("test",
+                new MessageContainer("sender", "data", "signature", "id", Arrays.asList("witness1", "witness2"))));
     }
 
     @Test
