@@ -2,42 +2,49 @@ package define
 
 import (
 	"encoding/json"
+	"golang.org/x/tools/go/ssa/interp/testdata/src/errors"
 	"strconv"
 )
 
 /*Most generic message structure*/
 type Generic struct {
-	schema     string
-	id         string
-	Properties []byte
+	jsonrpc string
+	Method	string
+	Params	[]byte
+	id      string
 }
 
-/*
-type Action string
+/* potential enum, but doesn't typecheck in go, the checks must still be manual, so kinda useless
+type Method string
 const(
-	Subscribe Action = "subscribe"
-	Unsubscribe Action = "unsubscribe"
-	Message Action = "message"
-	Catchup Action = "catchup"
-	Return Action = "return"
+	Subscribe Method = "subscribe"
+	Unsubscribe Method = "unsubscribe"
+	Message Method = "message"
+	Publish Method = "publish"
+	Catchup Method = "catchup"
 )*/
 
-type Properties struct {
-	//Action Action
-	Action  string
+type ParamsLight struct {
+	Channel string
+}
+
+type ParamsFull struct {
 	Channel string
 	Message []byte
-	Result  int64
-	// Data []byte
-	ReqID int64
 }
 
 type Message struct {
-	Data              string
+	Data              []byte
 	Sender            string
 	Signature         string
 	MessageID         string
 	WitnessSignatures []string
+}
+
+
+type DataCreateLao struct {
+	// Object	string
+	// Action	string
 }
 
 /**
@@ -50,15 +57,27 @@ func AnalyseGeneric(generic []byte) (Generic, error) {
 	return m, err
 }
 
-func AnalyseProperties(properties []byte) (Properties, error) {
-	m := Properties{}
-	err := json.Unmarshal(properties, &m)
+func AnalyseParamsLight(params []byte) (ParamsLight, error) {
+	m := ParamsLight{}
+	err := json.Unmarshal(params, &m)
+	return m, err
+}
+
+func AnalyseParamsFull(params []byte) (ParamsFull, error) {
+	m := ParamsFull{}
+	err := json.Unmarshal(params, &m)
 	return m, err
 }
 
 func AnalyseMessage(message []byte) (Message, error) {
 	m := Message{}
 	err := json.Unmarshal(message, &m)
+	return m, err
+}
+
+func AnalyseDataCreateLAO(data []byte) (DataCreateLAO, error) {
+	m := DataCreateLAO{}
+	err := json.Unmarshal(data, &m)
 	return m, err
 }
 
@@ -119,4 +138,46 @@ func SliceToJson(title string, data [][]byte) string {
 	}
 	str += "}"
 	return str
+}
+
+/*
+* Function that converts a Lao to a Json byte array
+* we suppose error is in the good range
+*/
+func ResponseToSenderInJson(error int) string {
+	str := "{\"jsonrpc\": \"2.0\","
+	if error !=0{
+		str += "{ \"error\": { \"code\":"
+		str += strconv.Itoa(error)
+		str += ",\"description\":"
+		str += selectDescriptionError(error)
+		str += "}"
+	}else{
+		str += " \"result\": 0"
+	}
+	str += ",\"id\": 3}"
+	return str
+}
+/*
+*	return the associate description error
+*	we check the validity (error vetween -1 and -5) before the function
+*/
+func selectDescriptionError(err int) string{
+	switch(err) {
+	case -1:
+		return "\"invalid action\""
+	case -2:
+		return "\"invalid resource\""
+		//(e.g. channel does not exist,channel was not subscribed to, etc.)
+	case -3:
+		return "\"resource already exists\""
+		//(e.g. lao already exists, channel already exists, etc.)
+	case -4:
+		return "\"request data is invalid\""
+		//(e.g. message is invalid)
+	case -5:
+		return "\"access denied\""
+	//(e.g. subscribing to a “restricted” channel)
+	}
+	return ""
 }
