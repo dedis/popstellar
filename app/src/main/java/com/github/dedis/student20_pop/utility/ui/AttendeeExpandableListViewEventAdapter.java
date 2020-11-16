@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
@@ -148,6 +149,14 @@ public class AttendeeExpandableListViewEventAdapter extends BaseExpandableListAd
 
         TextView eventTextView = convertView.findViewById(R.id.event_category);
         eventTextView.setText(eventCategory);
+
+        ImageButton addEvent = convertView.findViewById(R.id.add_future_event_button);
+        addEvent.setVisibility((getGroup(groupPosition) == EventCategory.FUTURE) ? View.VISIBLE : View.GONE);
+        addEvent.setFocusable(View.NOT_FOCUSABLE);
+        addEvent.setOnClickListener(v -> {
+            
+        });
+
         return convertView;
     }
 
