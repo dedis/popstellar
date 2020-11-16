@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.model.network;
+package com.github.dedis.student20_pop.model.network.level.mid;
 
 import java.util.List;
 import java.util.Objects;

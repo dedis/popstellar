@@ -1,8 +1,8 @@
 package com.github.dedis.student20_pop.utility.json;
 
-import com.github.dedis.student20_pop.model.network.result.Failure;
-import com.github.dedis.student20_pop.model.network.result.Result;
-import com.github.dedis.student20_pop.model.network.result.Success;
+import com.github.dedis.student20_pop.model.network.level.low.result.Failure;
+import com.github.dedis.student20_pop.model.network.level.low.result.Result;
+import com.github.dedis.student20_pop.model.network.level.low.result.Success;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;

@@ -1,8 +1,8 @@
 package com.github.dedis.student20_pop.utility.json;
 
-import com.github.dedis.student20_pop.model.network.ChanneledMessage;
-import com.github.dedis.student20_pop.model.network.Method;
-import com.github.dedis.student20_pop.model.network.Request;
+import com.github.dedis.student20_pop.model.network.level.low.ChanneledMessage;
+import com.github.dedis.student20_pop.model.network.level.low.Method;
+import com.github.dedis.student20_pop.model.network.level.low.Request;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;

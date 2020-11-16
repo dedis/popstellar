@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.model.network;
+package com.github.dedis.student20_pop.model.network.level.low;
 
 public final class Subscribe extends Request {
 

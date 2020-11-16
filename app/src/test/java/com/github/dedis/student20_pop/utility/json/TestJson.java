@@ -1,16 +1,22 @@
 package com.github.dedis.student20_pop.utility.json;
 
-import com.github.dedis.student20_pop.model.network.Catchup;
-import com.github.dedis.student20_pop.model.network.ChanneledMessage;
-import com.github.dedis.student20_pop.model.network.LowLevelMessage;
-import com.github.dedis.student20_pop.model.network.MessageContainer;
-import com.github.dedis.student20_pop.model.network.Publish;
-import com.github.dedis.student20_pop.model.network.Subscribe;
-import com.github.dedis.student20_pop.model.network.Unsubscribe;
-import com.github.dedis.student20_pop.model.network.result.Failure;
-import com.github.dedis.student20_pop.model.network.result.Result;
-import com.github.dedis.student20_pop.model.network.result.ResultError;
-import com.github.dedis.student20_pop.model.network.result.Success;
+import com.github.dedis.student20_pop.model.network.level.high.Message;
+import com.github.dedis.student20_pop.model.network.level.high.lao.CreateLao;
+import com.github.dedis.student20_pop.model.network.level.high.lao.StateLao;
+import com.github.dedis.student20_pop.model.network.level.high.lao.UpdateLao;
+import com.github.dedis.student20_pop.model.network.level.high.meeting.CreateMeeting;
+import com.github.dedis.student20_pop.model.network.level.high.message.WitnessMessage;
+import com.github.dedis.student20_pop.model.network.level.low.Catchup;
+import com.github.dedis.student20_pop.model.network.level.low.ChanneledMessage;
+import com.github.dedis.student20_pop.model.network.level.low.LowLevelMessage;
+import com.github.dedis.student20_pop.model.network.level.low.Publish;
+import com.github.dedis.student20_pop.model.network.level.low.Subscribe;
+import com.github.dedis.student20_pop.model.network.level.low.Unsubscribe;
+import com.github.dedis.student20_pop.model.network.level.low.result.Failure;
+import com.github.dedis.student20_pop.model.network.level.low.result.Result;
+import com.github.dedis.student20_pop.model.network.level.low.result.ResultError;
+import com.github.dedis.student20_pop.model.network.level.low.result.Success;
+import com.github.dedis.student20_pop.model.network.level.mid.MessageContainer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -24,6 +30,7 @@ public class TestJson {
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(ChanneledMessage.class, new JsonRequestSerializer())
             .registerTypeAdapter(Result.class, new JsonResultSerializer())
+            .registerTypeAdapter(Message.class, new JsonMessageSerializer())
             .create();
 
     private void testChanneledMessage(ChanneledMessage msg) {
@@ -34,6 +41,11 @@ public class TestJson {
     private void testResult(Result msg) {
         String json = gson.toJson(msg, Result.class);
         Assert.assertEquals(msg, gson.fromJson(json, Result.class));
+    }
+
+    private void testMessage(Message msg) {
+        String json = gson.toJson(msg, Message.class);
+        Assert.assertEquals(msg, gson.fromJson(json, Message.class));
     }
 
     @Test
@@ -72,5 +84,35 @@ public class TestJson {
     @Test
     public void testFailure() {
         testResult(new Failure(4, new ResultError(4, "Test")));
+    }
+
+    @Test
+    public void testCreateLao() {
+        testMessage(new CreateLao("id", "name", 12L, 202L, "organizer", Arrays.asList("witness1", "witness2")));
+    }
+
+    @Test
+    public void testStateLao() {
+        testMessage(new StateLao("id", "name", 12L, 202L, "organizer", Arrays.asList("witness1", "witness2")));
+    }
+
+    @Test
+    public void testUpdateLao() {
+        testMessage(new UpdateLao("name", 202L, Arrays.asList("witness1", "witness2")));
+    }
+
+    @Test
+    public void testCreateMeeting() {
+        testMessage(new CreateMeeting("id", "name", 12L, 202L, "location", 40, 231));
+    }
+
+    @Test
+    public void testStateMeeting() {
+        testMessage(new CreateMeeting("id", "name", 12L, 202L, "location", 40, 231));
+    }
+
+    @Test
+    public void testWitnessMessage() {
+        testMessage(new WitnessMessage("id", "signature"));
     }
 }
