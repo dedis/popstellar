@@ -25,7 +25,7 @@ type token []byte
 type signature []byte
 */
 
-type LAO struct {
+type DataCreateLAO struct {
 	//ID hash : Name || Creation Date/Time Unix Timestamp
 	ID []byte
 	// name of LAO

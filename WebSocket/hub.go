@@ -1,9 +1,12 @@
 package WebSocket
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
 	"github.com/boltdb/bolt"
 	"log"
+	"student20_pop/define"
 	"sync"
 	"time"
 )
@@ -30,6 +33,10 @@ type hub struct {
 	log   [][]byte
 
 	connIndex int
+
+	//Response for the sender
+	idOfSender int
+	responseToSender  chan []byte
 }
 
 func NewHub() *hub {
@@ -40,9 +47,11 @@ func NewHub() *hub {
 		connections:     make(map[*connection]struct{}),
 		db:              nil,
 		connIndex:       0,
+		idOfSender: -1,
+		responseToSender: make(chan []byte),
 	}
 	//publish subscribe go routine !
-	/*
+		/*
 		go func() {
 			for {
 				msg := <-h.message
@@ -66,6 +75,10 @@ func NewHub() *hub {
 							log.Printf("shutting down connection %c", c.id)
 							h.removeConnection(c)
 						}
+						//TODO where to put these 3 lines?
+						err := h.HandleWholeMessage(msg, h.idOfSender)
+						resp := []byte(define.ResponseToSenderInJson(errors.As(err, )))
+						h.responseToSender <- resp
 					}
 				}
 				h.connectionsMx.RUnlock()
@@ -88,7 +101,20 @@ func NewHub() *hub {
 			}
 			h.connectionsMx.RUnlock()
 		}
-	}()
+	}()/*
+	go func() {
+		for {
+			resp := <-h.responseToSender
+			h.connectionsMx.RLock()
+			for c := range h.connections {
+				//send msg to that connection if channel is the same channel as the sender
+				if bytes.Compare(h.responseToSender, []byte("0")) == 0 {
+					c.send <- resp
+				}
+			}
+			h.connectionsMx.RUnlock()
+		}
+	}()*/
 	return h
 }
 
@@ -96,6 +122,7 @@ func (h *hub) addConnection(conn *connection) {
 	fmt.Println("new client connected")
 	h.connectionsMx.Lock()
 	defer h.connectionsMx.Unlock()
+	// QUESTION what if connection is already in the map ?
 	h.connections[conn] = struct{}{}
 	h.connIndex++ //WARNING do not decrement on remove connection. is used as ID for pub/sub
 }
@@ -111,34 +138,88 @@ func (h *hub) removeConnection(conn *connection) {
 }
 
 //call with msg = receivedMessage
-/*
-func (h *hub) HandleMessage(msg []byte) error {
-	//TODO
+func (h *hub) HandleWholeMessage(msg []byte, userId int) error {
 	generic, err := AnalyseGeneric(msg)
 	if err != nil {
 		return err
 	}
 
-	properties, err := AnalyseProperties(generic)
+	switch generic.Method {
+	case "subscribe": return handleSubscribe(generic, userId)
+	case "unsubscribe": return handleUnsubscribe(generic, userId)
+	// TODO waiting on Pierluca/Haoqian answer relating to the method field and whether we can take object/action out of data
+	case "publish": return handlePublish(generic)
+	//case "message": return handleMessage() // Potentially, we never receive a "message" and only output "message" after a "publish" in order to broadcast
+	case "catchup": return handleCatchup() // TODO
+
+	default :
+		log.Fatal("JSON Method not recognized :", generic)
+	}
+	//TODO need to convert manually from Json ?
+	return nil
+}
+
+func (h *hub) handleSubscribe(generic Generic, userId int) error {
+	params, err := AnalyseParamsLight(generic.Params)
+	if err != nil {
+		return err
+	}
+	return Subscribe(userId, ([]byte) params.Channel)
+}
+
+func (h *hub) handleUnsubscribe(generic Generic, userId int) error {
+	params, err := AnalyseParamsLight(generic.Params)
+	if err != nil {
+		return err
+	}
+	return Unsubscribe(userId, ([]byte) params.Channel)
+}
+
+func (h *hub) handlePublish(generic Generic) error {
+	params, err := AnalyseParamsFull(generic.Params)
+	if err != nil {
+		return err
+	}
+	if params.Channel != 0 {
+		log.Fatal("Tried to publish a LAO on a channel other than root")
+	}
+	message, err := AnalyseMessage(params.Message)
+	if err != nil {
+		return err
+	}
+	// TODO cf todo of line 125. Either this function will be renamed handleCreateLAO if createLAO can be detected at method level.
+	// Or we'll need to add another switch around here and call sub-functions for each different type of publication based on object and action. What is below would then be moved to the handleCreateLAO sub-function
+	data, err := AnalyseDataCreateLAO(message.Data)
 	if err != nil {
 		return err
 	}
 
-	switch properties.Action {
-	case "subscribe": Subscribe(???, ([]byte) properties.Channel)
-	case "unsubscribe": Unsubscribe(???, ([]byte) properties.Channel)
-	case "message":
-		message, err := AnalyseMessage(properties.Message)
-		if err != nil {
-			return err
-		}
-		// TODO waiting on Pierluca/Haoqian answer relating to the method field and whether we can take object/action out of data
-	case "catchup": // TODO
-	case "return": // TODO
-	default :
-		log.Fatal("JSON not correctly formated :", msg)
+	if(LAOCreatedIsValid(data, message) {
+		h.responseToSsender = responseToSender(0)
+		return CreateLAO(data)
+	} else {
+		return errors.New("the LAO data wasn't valid")
 	}
-*/
+
+	return nil
+}
+
+func (h *hub) handleMessage(msg []byte, userId int) error {
+
+	return nil
+}
+
+// TODO
+func (h *hub) handleCatchup(...) error {
+
+
+	return nil
+}
+
+func (h *hub) sendResponse(conn *connection){
+
+}
+
 
 /*	switch message.Item {
 	case []byte("LAO"):  //ROMAIN
@@ -162,13 +243,45 @@ func (h *hub) HandleMessage(msg []byte) error {
 			h.message <- []byte("{action: , id: , ...}") //TODO waiting for protocol definition
 			h.channel <- []byte("0")
 
-	case subscribe: //OURIEL
-		append(LAO.members, ID_Subscriber)
+	case []byte("subscribe"): //OURIEL
+			//h.db, err = db.OpenChannelDB()
+			//if err != nil {
+			//	return err
+			//}
+			reg, err := src.JsonRegistration(message.Data)
+			if err != nil {
+				return err
+			}
 
-	case unsubscribe: //OURIEL
-		remove(LAO.members, ID_Subscriber)
+			already, err db.alreadyRegister(reg.UserID){
+			if err != nil {
+				return err
+			}
+			if(!aleady){
+				err db.CreateUser(reg.UserID){
+				if err != nil {
+					return err
+				}
+			}
 
-	case fetch: //OURIEL
+			err db.UpdateChannelDB(reg){
+			if err != nil
+				return err
+			}
+			//append(LAO.members, ID_Subscriber) automatically done ?
+
+
+	case []byte("unsubscribe")://OURIEL
+			reg, err := src.JsonRegistration(message.Data)
+			if err != nil {
+				return err
+			}
+			err db.UpdateChannelDB(reg){
+			if err != nil
+				return err
+			}
+			//remove(LAO.members, ID_Subscriber)
+	case []byte("fetch"): //OURIEL
 		sendinfo(channel)
 s
 	case []byte("event"): //RAOUL
@@ -191,9 +304,5 @@ s
 	default :
 		log.Fatal("JSON not correctly formated :", msg)
 	}
-
-
-	return nil
-
-}
 */
+
