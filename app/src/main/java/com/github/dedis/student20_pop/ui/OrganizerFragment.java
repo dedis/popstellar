@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.ui;
 
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Build;
@@ -73,6 +74,7 @@ public class OrganizerFragment extends Fragment {
             throw new ClassCastException(context.toString() + " must implement listeners");
         }
     }
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Nullable

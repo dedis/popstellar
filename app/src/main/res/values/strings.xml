@@ -32,7 +32,7 @@
 
     <!-- Temp -->
     <string name="connecting">Connecting…</string>
-    
+
     <!-- Poll -->
     <string name="poll_event">Poll Event</string>
     <string name="button_cancel">Cancel</string>
@@ -41,7 +41,19 @@
 
     <!-- Meeting Event -->
     <string name="meeting_event">Meeting Event</string>
-
+    <string name="create_meeting_event">Create Meeting event</string>
+    <string name="meeting_title_required">Meeting Title*</string>
+    <string name="enter_title">Enter Title</string>
+    <string name="start_date_required">Start Date*</string>
+    <string name="enter_date">Enter Date</string>
+    <string name="start_time_required">Start Time*</string>
+    <string name="enter_time">Enter Time</string>
+    <string name="end_date_optional">End Date</string>
+    <string name="location_optional">Location</string>
+    <string name="enter_location">Enter Location</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+    
     <!-- Roll-Call Event -->
     <string name="roll_call_event">Roll-Call Event</string>
     <string name="exception_message_empty_lao_name">Trying to set an empty name for the LAO</string>
