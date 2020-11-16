@@ -1,5 +1,12 @@
 package com.github.dedis.student20_pop.model;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
+import com.github.dedis.student20_pop.utility.security.Hash;
+import com.github.dedis.student20_pop.utility.security.Signature;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,20 +34,20 @@ public final class Lao {
      * @param organizer the public key of the organizer
      * @throws IllegalArgumentException if any of the parameters is null
      */
-    public Lao(String name, Date time, String organizer) {
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public Lao(String name, Date time, String organizer) throws IllegalArgumentException {
         if(name == null || time == null || organizer == null) {
             throw new IllegalArgumentException("Trying to  create a LAO with a null value");
         }
         this.name = name;
         this.time = time.getTime() / 1000L;
-        // simple for now, will hash in the future
-        this.id = name + time;
+        this.id = Hash.hash(name + time);
         this.organizer = organizer;
         this.witnesses = new ArrayList<>();
         this.members = new ArrayList<>();
         this.events = new ArrayList<>();
-        // simple for now, will hash and sign in the future
-        this.attestation = name + time + organizer;
+        // Will get organizer's private key in the future
+        this.attestation = Signature.sign(organizer, name + time + organizer);
     }
 
     /**
@@ -135,7 +142,7 @@ public final class Lao {
      * @return new LAO with the new name, id and attestation
      * @throws IllegalArgumentException if the name is null
      */
-    public Lao setName(String name) {
+    public Lao setName(String name) throws IllegalArgumentException {
         if(name == null) {
             throw new IllegalArgumentException("Trying to set null as the name of the LAO");
         }
@@ -147,7 +154,7 @@ public final class Lao {
      * @param witnesses list of public keys of witnesses, can be empty
      * @throws IllegalArgumentException if the list is null or at least one public key is null
      */
-    public void setWitnesses(List<String> witnesses) {
+    public void setWitnesses(List<String> witnesses) throws IllegalArgumentException {
         if(witnesses == null || witnesses.contains(null)) {
             throw new IllegalArgumentException("Trying to add a null witness to the LAO " + name);
         }
@@ -159,7 +166,7 @@ public final class Lao {
      * @param members list of public keys of members, can be empty
      * @throws IllegalArgumentException if the list is null or at least one public key is null
      */
-    public void setMembers(List<String> members) {
+    public void setMembers(List<String> members) throws IllegalArgumentException {
         if(members == null || members.contains(null)) {
             throw new IllegalArgumentException("Trying to add a null member to the LAO " + name);
         }
@@ -171,7 +178,7 @@ public final class Lao {
      * @param events list of public keys of events, can be empty
      * @throws IllegalArgumentException if the list is null or at least one public key is null
      */
-    public void setEvents(List<String> events) {
+    public void setEvents(List<String> events) throws IllegalArgumentException {
         if(events == null || events.contains(null)) {
             throw new IllegalArgumentException("Trying to add a null event to the LAO " + name);
         }

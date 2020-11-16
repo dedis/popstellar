@@ -1,8 +1,8 @@
 package com.github.dedis.student20_pop;
 
 import android.Manifest;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.content.pm.PackageManager;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -11,8 +11,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.ui.CameraPermissionFragment;
+import com.github.dedis.student20_pop.ui.AttendeeFragment;
 import com.github.dedis.student20_pop.ui.ConnectFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
@@ -26,18 +28,26 @@ public final class MainActivity extends FragmentActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    private boolean testingAttendee = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
+        setContentView(R.layout.activity_main);
         if (findViewById(R.id.fragment_container) != null) {
             if (savedInstanceState != null) {
                 return;
             }
 
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, new HomeFragment()).commit();
+            if (testingAttendee){
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.fragment_container, new AttendeeFragment()).commit();
+            }
+            else {
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.fragment_container, new HomeFragment()).commit();
+            }
         }
     }
 
@@ -63,7 +73,7 @@ public final class MainActivity extends FragmentActivity {
             case R.id.button_launch:
                 String name = ((EditText) findViewById(R.id.entry_box_launch)).getText().toString();
                 // For later: request organizer id
-                String organizer = "0x3333";
+                String organizer = new Keys().getPublicKey();
                 // Creating the LAO but not sending the information for now
                 Lao lao = new Lao(name, new Date(), organizer);
                 showFragment(new HomeFragment(), LaunchFragment.TAG);

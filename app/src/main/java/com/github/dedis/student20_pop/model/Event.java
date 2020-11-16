@@ -1,5 +1,12 @@
 package com.github.dedis.student20_pop.model;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
+import com.github.dedis.student20_pop.utility.security.Hash;
+import com.github.dedis.student20_pop.utility.security.Signature;
+
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -33,21 +40,28 @@ public final class Event {
      * @param lao the public key of the associated LAO
      * @throws IllegalArgumentException if any of the parameters is null
      */
-    public Event(String name, Date time, String lao, String location, String type) {
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public Event(String name, Date time, String lao, String location, String type) throws IllegalArgumentException {
         if(name == null || time == null || lao == null || location == null || type == null) {
             throw new IllegalArgumentException("Trying to create an event with null parameters");
         }
         this.name = name;
         this.time = time.getTime() / 1000L;
-        // Simple for now, will hash in the future
-        this.id = name + time;
-        this.lao = lao;
+        this.id = Hash.hash(name + time);
+        this.lao = Hash.hash(lao);
         this.attendees = new ArrayList<>();
         this.location = location;
         this.type = type;
         this.other = new JSONObject();
-        // Will get the list of witnesses, hash and sign in the future
-        this.attestation = new ArrayList<>(Collections.singletonList(name + time + lao + location));
+
+        // Data to sign
+        String data = name + time + lao + location;
+        // Will get organizer's and witnesses' private keys in the future
+        String organizer = new Keys().getPrivateKey();
+        ArrayList<String> witnesses = new ArrayList<>();
+        ArrayList<String> attestation = new ArrayList<>(Collections.singletonList(Signature.sign(organizer, data)));
+        attestation.addAll(Signature.sign(witnesses, data));
+        this.attestation = attestation;
     }
 
     public String getName() {
@@ -107,7 +121,7 @@ public final class Event {
      * @param attendees list of public keys of attendees, can be empty
      * @throws IllegalArgumentException if the list is null or at least one public key is null
      */
-    public void setAttendees(List<String> attendees) {
+    public void setAttendees(List<String> attendees) throws IllegalArgumentException {
         if(attendees == null || attendees.contains(null)) {
             throw new IllegalArgumentException("Trying to add a null attendee to the event " + name);
         }
