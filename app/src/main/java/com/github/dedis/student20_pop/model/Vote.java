@@ -1,5 +1,11 @@
 package com.github.dedis.student20_pop.model;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
+import com.github.dedis.student20_pop.utility.security.Signature;
+
 import java.util.Objects;
 
 /**
@@ -18,16 +24,20 @@ public final class Vote {
      * @param person the public key of the person voting
      * @param election the id of the election
      * @param vote the encrypted vote
+     * @throws IllegalArgumentException if any parameter is null
      */
-    public Vote(String person, String election, String vote) {
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public Vote(String person, String election, String vote) throws IllegalArgumentException {
         if(person == null || election == null || vote == null) {
             throw new IllegalArgumentException("Trying to create a Vote with a null parameter");
         }
         this.person = person;
         this.election = election;
         this.vote = vote;
-        // Simple for now, will get LAO ID and hash in the future
-        this.attestation = election + vote;
+        // Get LAO ID in the future
+        String lao = "";
+        // Get person's private key in the future
+        this.attestation = Signature.sign(person, election + lao + vote);
     }
 
     /**
