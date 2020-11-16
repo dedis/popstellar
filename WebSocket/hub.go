@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/boltdb/bolt"
 	"log"
+	"student20_pop/channel"
 	"student20_pop/define"
 	"sync"
 	"time"
@@ -21,7 +22,7 @@ type hub struct {
 	// message to send to the channel
 	message chan []byte
 	//channel in which we have to send the info
-	channel chan []byte
+	channel []byte
 
 	//msg received from the webskt
 	receivedMessage chan []byte
@@ -35,86 +36,90 @@ type hub struct {
 	connIndex int
 
 	//Response for the sender
-	idOfSender int
-	responseToSender  chan []byte
+	idOfSender       int
+	responseToSender chan []byte
 }
 
 func NewHub() *hub {
 	h := &hub{
-		connectionsMx:   sync.RWMutex{},
-		message:         make(chan []byte),
-		receivedMessage: make(chan []byte),
-		connections:     make(map[*connection]struct{}),
-		db:              nil,
-		connIndex:       0,
-		idOfSender: -1,
+		connectionsMx:    sync.RWMutex{},
+		message:          make(chan []byte),
+		receivedMessage:  make(chan []byte),
+		connections:      make(map[*connection]struct{}),
+		db:               nil,
+		connIndex:        0,
+		idOfSender:       -1,
 		responseToSender: make(chan []byte),
 	}
 	//publish subscribe go routine !
-		/*
+
+	go func() {
+		for {
+			msg := <-h.message
+			chann := h.channel
+
+			var subscribers []int = nil
+			var err error = nil
+			if bytes.Compare(chann, []byte("0")) != 0 {
+				subscribers, err = channel.GetSubscribers(chann)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+
+			h.connectionsMx.RLock()
+			for c := range h.connections {
+				//send msg to that connection if channel is main channel or is in channel subscribers
+				_, found := channel.Find(subscribers, c.id)
+				if bytes.Compare(h.channel, []byte("0")) == 0 || found {
+					select {
+					case c.send <- msg:
+					// stop trying to send to this connection after trying for 1 second.
+					// if we have to stop, it means that a reader died so remove the connection also.
+					case <-time.After(1 * time.Second):
+						log.Printf("shutting down connection %c", c.id)
+						h.removeConnection(c)
+					}
+					//TODO where to put these 3 lines?
+					err := h.HandleWholeMessage(msg, h.idOfSender)
+					resp := []byte(define.ResponseToSenderInJson(errors.As(err)))
+					h.responseToSender <- resp
+				}
+			}
+			h.connectionsMx.RUnlock()
+		}
+	}() /*
 		go func() {
 			for {
-				msg := <-h.message
-				chann := h.channel
 
-				var subscribers []int = nil
-				if bytes.Compare(chann, []byte("0")) == 0 {
-					subscribers = channel.GetSubscribers(chann)
-				}
-
+				msg := <-h.receivedMessage
 				h.connectionsMx.RLock()
 				for c := range h.connections {
-					//send msg to that connection if channel is main channel or is in channel subscribers
-					_, found := channel.Find(subscribers, c.id)
-					if bytes.Compare(h.channel, []byte("0")) == 0 || found {
-						select {
-						case c.send <- msg:
-						// stop trying to send to this connection after trying for 1 second.
-						// if we have to stop, it means that a reader died so remove the connection also.
-						case <-time.After(1 * time.Second):
-							log.Printf("shutting down connection %c", c.id)
-							h.removeConnection(c)
-						}
-						//TODO where to put these 3 lines?
-						err := h.HandleWholeMessage(msg, h.idOfSender)
-						resp := []byte(define.ResponseToSenderInJson(errors.As(err, )))
-						h.responseToSender <- resp
+					select {
+					case c.send <- msg:
+					// stop trying to send to this connection after trying for 1 second.
+					// if we have to stop, it means that a reader died so remove the connection also.
+					case <-time.After(1 * time.Second):
+						log.Printf("shutting down connection %s", c)
+						h.removeConnection(c)
 					}
 				}
 				h.connectionsMx.RUnlock()
 			}
-		}()  */
-	go func() {
-		for {
-
-			msg := <-h.receivedMessage
-			h.connectionsMx.RLock()
-			for c := range h.connections {
-				select {
-				case c.send <- msg:
-				// stop trying to send to this connection after trying for 1 second.
-				// if we have to stop, it means that a reader died so remove the connection also.
-				case <-time.After(1 * time.Second):
-					log.Printf("shutting down connection %s", c)
-					h.removeConnection(c)
+		}()/*
+		go func() {
+			for {
+				resp := <-h.responseToSender
+				h.connectionsMx.RLock()
+				for c := range h.connections {
+					//send msg to that connection if channel is the same channel as the sender
+					if bytes.Compare(h.responseToSender, []byte("0")) == 0 {
+						c.send <- resp
+					}
 				}
+				h.connectionsMx.RUnlock()
 			}
-			h.connectionsMx.RUnlock()
-		}
-	}()/*
-	go func() {
-		for {
-			resp := <-h.responseToSender
-			h.connectionsMx.RLock()
-			for c := range h.connections {
-				//send msg to that connection if channel is the same channel as the sender
-				if bytes.Compare(h.responseToSender, []byte("0")) == 0 {
-					c.send <- resp
-				}
-			}
-			h.connectionsMx.RUnlock()
-		}
-	}()*/
+		}()*/
 	return h
 }
 
@@ -139,69 +144,72 @@ func (h *hub) removeConnection(conn *connection) {
 
 //call with msg = receivedMessage
 func (h *hub) HandleWholeMessage(msg []byte, userId int) error {
-	generic, err := AnalyseGeneric(msg)
+	generic, err := define.AnalyseGeneric(msg)
 	if err != nil {
 		return err
 	}
 
 	switch generic.Method {
-	case "subscribe": return handleSubscribe(generic, userId)
-	case "unsubscribe": return handleUnsubscribe(generic, userId)
+	case "subscribe":
+		return h.handleSubscribe(generic, userId)
+	case "unsubscribe":
+		return h.handleUnsubscribe(generic, userId)
 	// TODO waiting on Pierluca/Haoqian answer relating to the method field and whether we can take object/action out of data
-	case "publish": return handlePublish(generic)
+	case "publish":
+		return h.handlePublish(generic)
 	//case "message": return handleMessage() // Potentially, we never receive a "message" and only output "message" after a "publish" in order to broadcast
-	case "catchup": return handleCatchup() // TODO
+	//case "catchup": return h.handleCatchup() // TODO
 
-	default :
+	default:
 		log.Fatal("JSON Method not recognized :", generic)
 	}
 	//TODO need to convert manually from Json ?
 	return nil
 }
 
-func (h *hub) handleSubscribe(generic Generic, userId int) error {
-	params, err := AnalyseParamsLight(generic.Params)
+func (h *hub) handleSubscribe(generic define.Generic, userId int) error {
+	params, err := define.AnalyseParamsLight(generic.Params)
 	if err != nil {
 		return err
 	}
-	return Subscribe(userId, ([]byte) params.Channel)
+	return channel.Subscribe(userId, []byte(params.Channel))
 }
 
-func (h *hub) handleUnsubscribe(generic Generic, userId int) error {
-	params, err := AnalyseParamsLight(generic.Params)
+func (h *hub) handleUnsubscribe(generic define.Generic, userId int) error {
+	params, err := define.AnalyseParamsLight(generic.Params)
 	if err != nil {
 		return err
 	}
-	return Unsubscribe(userId, ([]byte) params.Channel)
+	return channel.Unsubscribe(userId, []byte(params.Channel))
 }
 
-func (h *hub) handlePublish(generic Generic) error {
-	params, err := AnalyseParamsFull(generic.Params)
+func (h *hub) handlePublish(generic define.Generic) error {
+	params, err := define.AnalyseParamsFull(generic.Params)
 	if err != nil {
 		return err
 	}
-	if params.Channel != 0 {
-		log.Fatal("Tried to publish a LAO on a channel other than root")
+	if params.Channel != "0" {
+		return errors.New("tried to publish a LAO on a channel other than root")
 	}
-	message, err := AnalyseMessage(params.Message)
+	message, err := define.AnalyseMessage(params.Message)
 	if err != nil {
 		return err
 	}
 	// TODO cf todo of line 125. Either this function will be renamed handleCreateLAO if createLAO can be detected at method level.
 	// Or we'll need to add another switch around here and call sub-functions for each different type of publication based on object and action. What is below would then be moved to the handleCreateLAO sub-function
-	data, err := AnalyseDataCreateLAO(message.Data)
+	data, err := define.AnalyseDataCreateLAO(message.Data)
 	if err != nil {
 		return err
 	}
 
-	if(LAOCreatedIsValid(data, message) {
-		h.responseToSsender = responseToSender(0)
+	if define.LAOCreatedIsValid(data, message) {
+		h.responseToSender <- h.responseToSender(0)
 		return CreateLAO(data)
 	} else {
 		return errors.New("the LAO data wasn't valid")
 	}
 
-	return nil
+	//return nil
 }
 
 func (h *hub) handleMessage(msg []byte, userId int) error {
@@ -210,16 +218,14 @@ func (h *hub) handleMessage(msg []byte, userId int) error {
 }
 
 // TODO
-func (h *hub) handleCatchup(...) error {
-
+func (h *hub) handleCatchup() error {
 
 	return nil
 }
 
-func (h *hub) sendResponse(conn *connection){
+func (h *hub) sendResponse(conn *connection) {
 
 }
-
 
 /*	switch message.Item {
 	case []byte("LAO"):  //ROMAIN
@@ -305,4 +311,3 @@ s
 		log.Fatal("JSON not correctly formated :", msg)
 	}
 */
-

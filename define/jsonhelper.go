@@ -2,15 +2,14 @@ package define
 
 import (
 	"encoding/json"
-	"golang.org/x/tools/go/ssa/interp/testdata/src/errors"
 	"strconv"
 )
 
 /*Most generic message structure*/
 type Generic struct {
 	jsonrpc string
-	Method	string
-	Params	[]byte
+	Method  string
+	Params  []byte
 	id      string
 }
 
@@ -40,7 +39,6 @@ type Message struct {
 	MessageID         string
 	WitnessSignatures []string
 }
-
 
 type DataCreateLao struct {
 	// Object	string
@@ -143,27 +141,28 @@ func SliceToJson(title string, data [][]byte) string {
 /*
 * Function that converts a Lao to a Json byte array
 * we suppose error is in the good range
-*/
+ */
 func ResponseToSenderInJson(error int) string {
 	str := "{\"jsonrpc\": \"2.0\","
-	if error !=0{
+	if error != 0 {
 		str += "{ \"error\": { \"code\":"
 		str += strconv.Itoa(error)
 		str += ",\"description\":"
 		str += selectDescriptionError(error)
 		str += "}"
-	}else{
+	} else {
 		str += " \"result\": 0"
 	}
 	str += ",\"id\": 3}"
 	return str
 }
+
 /*
 *	return the associate description error
 *	we check the validity (error vetween -1 and -5) before the function
-*/
-func selectDescriptionError(err int) string{
-	switch(err) {
+ */
+func selectDescriptionError(err int) string {
+	switch err {
 	case -1:
 		return "\"invalid action\""
 	case -2:
@@ -177,7 +176,7 @@ func selectDescriptionError(err int) string{
 		//(e.g. message is invalid)
 	case -5:
 		return "\"access denied\""
-	//(e.g. subscribing to a “restricted” channel)
+		//(e.g. subscribing to a “restricted” channel)
 	}
 	return ""
 }
