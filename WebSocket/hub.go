@@ -237,9 +237,9 @@ func (h *hub) handlePublish(generic define.Generic) error {
 }
 
 
-func (h *hub) handleCreateLAO(message define.Message, channel string) error {
+func (h *hub) handleCreateLAO(message define.Message, canal string) error {
 
-	if channel != "0" {
+	if canal != "0" {
 		return errors.New("tried to publish a LAO on a channel other than root")
 	} 
 
@@ -252,11 +252,11 @@ func (h *hub) handleCreateLAO(message define.Message, channel string) error {
 		return errors.New("the LAO data wasn't valid")
 	}
 
-	lao := LAO{data.ID, data.Name, data.Creation, data.LastModified, data.OrganizerPKey, data.Witnesses}
+	lao := define.LAO{data.ID, data.Name, data.Creation, data.LastModified, data.OrganizerPKey, data.Witnesses}
 
 	h.responseToSender <- h.responseToSender(0)
 	// TODO broadcast
-	return CreateLAO(lao)
+	return channel.CreateLAO(lao)
 }
 
 
