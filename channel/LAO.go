@@ -1,7 +1,6 @@
 package channel
 
 import (
-	"errors"
 	"github.com/boltdb/bolt"
 	"student20_pop/db"
 )
@@ -22,7 +21,7 @@ func OpenLAODB() (*bolt.DB, error) {
 /**
  * Function to create a new LAO and store it in the DB
  * @returns : the id of the created LAO (+ event error)
- */
+ */ /*
 func CreateLAO(create channel.MessageLaoCreate) error {
 	// TODO adapt struct
 
@@ -91,3 +90,4 @@ func GetFromID(id []byte) (channel.LAO, error) {
 	//TODO
 	return channel.LAO{}, nil
 }
+*/

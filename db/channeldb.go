@@ -61,7 +61,7 @@ func checkChannelValidity(id []byte) bool {
 /**
 * Retrieve value from a given ID key, and update it with a new subscribtion or publish rights
 * returns error message
- */
+
 func UpdateChannelDB(userId []byte, channelId []byte, action []byte) error {
 
 	//TODO correct the if checks
@@ -95,7 +95,7 @@ func UpdateChannelDB(userId []byte, channelId []byte, action []byte) error {
 
 	return err
 }
-
+*/
 // ADD Helpers for UpdateChannelDB
 
 /**
