@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
@@ -20,17 +19,16 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
-    private Context context;
-    private List<EventCategory> categories;
-    private HashMap<EventCategory, List<Event>> eventsMap;
+public class AttendeeExpandableListViewEventAdapter extends BaseExpandableListAdapter {
+    private final Context context;
+    private final List<EventCategory> categories;
+    private final HashMap<EventCategory, List<Event>> eventsMap;
 
 
     /**
      * Enum class for each event category
-     *
      */
-    private enum EventCategory{
+    private enum EventCategory {
         PAST, PRESENT, FUTURE
     }
 
@@ -40,9 +38,9 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
      * in the attendee UI
      *
      * @param context
-     * @param events the list of events of the lao
+     * @param events  the list of events of the lao
      */
-    public ExpandableListViewEventAdapter(Context context, List<Event> events) {
+    public AttendeeExpandableListViewEventAdapter(Context context, List<Event> events) {
         this.context = context;
         this.eventsMap = new HashMap<>();
         this.categories = new ArrayList<>();
@@ -59,7 +57,6 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
     }
 
     /**
-     *
      * @return the amount of categories
      */
     @Override
@@ -68,7 +65,6 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
     }
 
     /**
-     *
      * @param groupPosition
      * @return the amount of events in a given group
      */
@@ -78,20 +74,18 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
     }
 
     /**
-     *
      * @param groupPosition
      * @return the category of a given position
      */
     @Override
     public Object getGroup(int groupPosition) {
-        if (groupPosition >= getGroupCount()){
+        if (groupPosition >= getGroupCount()) {
             return null;
         }
         return this.categories.get(groupPosition);
     }
 
     /**
-     *
      * @param groupPosition
      * @param childPosition
      * @return the event for a given position in a given category
@@ -99,10 +93,10 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
     @Override
     public Object getChild(int groupPosition, int childPosition) {
 
-        if (groupPosition >= getGroupCount()){
+        if (groupPosition >= getGroupCount()) {
             return null;
         }
-        if (childPosition >= getChildrenCount(groupPosition)){
+        if (childPosition >= getChildrenCount(groupPosition)) {
             return null;
         }
 
@@ -125,7 +119,6 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
     }
 
     /**
-     *
      * @param groupPosition
      * @param isExpanded
      * @param convertView
@@ -134,9 +127,9 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent){
+    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         String eventCategory = "";
-        switch ((EventCategory) getGroup(groupPosition)){
+        switch ((EventCategory) getGroup(groupPosition)) {
             case PAST:
                 eventCategory = "Past Events";
                 break;
@@ -148,26 +141,17 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
                 break;
         }
 
-        if (convertView == null){
+        if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.event_category_layout, null);
         }
 
         TextView eventTextView = convertView.findViewById(R.id.event_category);
         eventTextView.setText(eventCategory);
-
-        ImageButton addEvent = convertView.findViewById(R.id.add_future_event_button);
-        addEvent.setVisibility((getGroup(groupPosition) == EventCategory.FUTURE) ? View.VISIBLE : View.GONE);
-        addEvent.setFocusable(View.NOT_FOCUSABLE);
-        addEvent.setOnClickListener(v -> {
-            
-        });
-
         return convertView;
     }
 
     /**
-     *
      * @param groupPosition
      * @param childPosition
      * @param isLastChild
@@ -185,9 +169,8 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
         String eventDescription = "Time : " + event.getTime() + "\nLocation : " + event.getLocation();
 
 
-
-        if (convertView == null){
-            LayoutInflater inflater = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        if (convertView == null) {
+            LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             //now:
             convertView = inflater.inflate(R.layout.event_layout, null);
             //later:
@@ -232,20 +215,19 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
      * @param events
      * @param eventsMap
      */
-    private void putEventsInMap(List<Event> events, HashMap<EventCategory, List<Event>> eventsMap){
+    private void putEventsInMap(List<Event> events, HashMap<EventCategory, List<Event>> eventsMap) {
         //For now, the event are put in the different categories according to their time attribute
         //Later, according to the start/end-time
-        for (Event event: events){
+        for (Event event : events) {
             //for now (testing purposes)
             //later: event.getEndTime() < now
-            if (event.getTime() < 50){
+            if (event.getTime() < 50) {
                 eventsMap.get(EventCategory.PAST).add(event);
             }
             //later: event.getStartTime()<now && event.getEndTime() > now
-            else if (event.getTime() < 1000){
+            else if (event.getTime() < 1000) {
                 eventsMap.get(EventCategory.PRESENT).add(event);
-            }
-            else{ //if e.getStartTime() > now
+            } else { //if e.getStartTime() > now
                 eventsMap.get(EventCategory.FUTURE).add(event);
             }
         }
@@ -256,9 +238,9 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
      *
      * @param eventsMap
      */
-    private void orderEventsInMap(HashMap<EventCategory, List<Event>> eventsMap){
+    private void orderEventsInMap(HashMap<EventCategory, List<Event>> eventsMap) {
 
-        for (EventCategory category: categories){
+        for (EventCategory category : categories) {
             Collections.sort(eventsMap.get(category), new EventComparator());
         }
         //2 possibilities: B strictly after A or B nested within A
@@ -267,7 +249,7 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
     private class EventComparator implements Comparator<Event> {
         //later: compare start times
         @Override
-        public int compare(Event event1, Event event2){
+        public int compare(Event event1, Event event2) {
             return Long.compare(event1.getTime(), event2.getTime());
         }
     }
