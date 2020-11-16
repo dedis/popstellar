@@ -1,14 +1,12 @@
 package com.github.dedis.student20_pop.model.network;
 
-import com.github.dedis.student20_pop.model.network.message.Message;
-
 import java.util.Objects;
 
 public final class Publish extends Request {
 
-    private final Message message;
+    private final MessageContainer message;
 
-    public Publish(String channel, int id, Message message) {
+    public Publish(String channel, int id, MessageContainer message) {
         super(channel, id);
         this.message = message;
     }
@@ -18,7 +16,7 @@ public final class Publish extends Request {
         return Method.PUBLISH.getMethod();
     }
 
-    public Message getMessage() {
+    public MessageContainer getMessage() {
         return message;
     }
 

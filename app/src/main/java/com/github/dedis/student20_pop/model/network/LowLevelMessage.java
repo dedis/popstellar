@@ -1,14 +1,12 @@
 package com.github.dedis.student20_pop.model.network;
 
-import com.github.dedis.student20_pop.model.network.message.Message;
-
 import java.util.Objects;
 
-public final class MessageLow extends ChanneledMessage {
+public final class LowLevelMessage extends ChanneledMessage {
 
-    private final Message message;
+    private final MessageContainer message;
 
-    public MessageLow(String channel, Message message) {
+    public LowLevelMessage(String channel, MessageContainer message) {
         super(channel);
         this.message = message;
     }
@@ -18,7 +16,7 @@ public final class MessageLow extends ChanneledMessage {
         return Method.MESSAGE.getMethod();
     }
 
-    public Message getMessage() {
+    public MessageContainer getMessage() {
         return message;
     }
 
@@ -27,7 +25,7 @@ public final class MessageLow extends ChanneledMessage {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        MessageLow that = (MessageLow) o;
+        LowLevelMessage that = (LowLevelMessage) o;
         return Objects.equals(getMessage(), that.getMessage());
     }
 
