@@ -13,7 +13,7 @@ import com.google.gson.JsonSerializer;
 
 import java.lang.reflect.Type;
 
-public class JsonActionSerializer implements JsonSerializer<ChanneledMessage>, JsonDeserializer<ChanneledMessage> {
+public class JsonRequestSerializer implements JsonSerializer<ChanneledMessage>, JsonDeserializer<ChanneledMessage> {
 
     @Override
     public ChanneledMessage deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
