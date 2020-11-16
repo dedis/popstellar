@@ -40,9 +40,23 @@ type Message struct {
 	WitnessSignatures []string
 }
 
-type DataCreateLao struct {
-	// Object	string
-	// Action	string
+type Data map[string]interface{}
+
+type DataCreateLAO struct {
+	Object string
+	Action string
+	//ID hash : Name || Creation Date/Time Unix Timestamp
+	ID []byte
+	// name of LAO
+	Name string
+	//Creation Date/Time
+	Creation int64 //  Unix timestamp (uint64)
+	LastModified int64 //timestamp
+	//Organiser: Public Key
+	OrganizerPKey []byte
+	//List of public keys where each public key belongs to one witness
+	Witnesses [][]byte
+	//List of public keys where each public key belongs to one member (physical person) (subscriber)
 }
 
 /**
@@ -70,6 +84,12 @@ func AnalyseParamsFull(params []byte) (ParamsFull, error) {
 func AnalyseMessage(message []byte) (Message, error) {
 	m := Message{}
 	err := json.Unmarshal(message, &m)
+	return m, err
+}
+
+func AnalyseData(data []byte) (Data, error) {
+	m := Data{}
+	err := json.Unmarshal(data, &m)
 	return m, err
 }
 
