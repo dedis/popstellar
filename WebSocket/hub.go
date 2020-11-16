@@ -156,7 +156,7 @@ func (h *hub) HandleWholeMessage(msg []byte, userId int) error {
 		return h.handleUnsubscribe(generic, userId)
 	case "publish":
 		return h.handlePublish(generic)
-	//case "message": return handleMessage() // Potentially, we never receive a "message" and only output "message" after a "publish" in order to broadcast. Or they are only notification, and we just want to check that it was a success
+	//case "message": return h.handleMessage() // Potentially, we never receive a "message" and only output "message" after a "publish" in order to broadcast. Or they are only notification, and we just want to check that it was a success
 	//case "catchup": return h.handleCatchup() // TODO
 
 	default:
