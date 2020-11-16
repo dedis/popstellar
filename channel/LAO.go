@@ -5,6 +5,7 @@ import (
 	"github.com/boltdb/bolt"
 	"student20_pop/db"
 	"student20_pop/define"
+	"encoding/json"
 )
 
 const DatabaseLao = "channel.db"
@@ -48,7 +49,7 @@ func CreateLAO(data define.LAO) error {
 		if err2 != nil {
 			return err2
 		}
-		err3 := bkt.Put(data.ID, dt)
+		err3 := b.Put(data.ID, dt)
 		if err3 != nil {
 			return err3
 		}
@@ -61,13 +62,13 @@ func CreateLAO(data define.LAO) error {
 }
 
 //TODO
-func UpdateLao(lao channel.LAO) error {
+func UpdateLao(lao define.LAO) error {
 	// TODO adapt struct
 	return nil
 }
 
-func GetFromID(id []byte) (channel.LAO, error) {
+func GetFromID(id []byte) (define.LAO, error) {
 	// TODO adapt struct
 	//TODO
-	return channel.LAO{}, nil
+	return define.LAO{}, nil
 }
