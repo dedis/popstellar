@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/boltdb/bolt"
 	"student20_pop/db"
+	"student20_pop/define"
 )
 
 const DatabaseLao = "channel.db"
@@ -23,7 +24,7 @@ func OpenLAODB() (*bolt.DB, error) {
  * Function to create a new LAO and store it in the DB
  * @returns : error
  */
-func CreateLAO(data DataCreateLAO) error {
+func CreateLAO(data define.LAO) error {
 	// TODO openLAODB might change if we have a single DB
 	db, e := OpenLAODB()
 	defer db.Close()

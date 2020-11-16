@@ -154,10 +154,9 @@ func (h *hub) HandleWholeMessage(msg []byte, userId int) error {
 		return h.handleSubscribe(generic, userId)
 	case "unsubscribe":
 		return h.handleUnsubscribe(generic, userId)
-	// TODO waiting on Pierluca/Haoqian answer relating to the method field and whether we can take object/action out of data
 	case "publish":
 		return h.handlePublish(generic)
-	//case "message": return handleMessage() // Potentially, we never receive a "message" and only output "message" after a "publish" in order to broadcast
+	//case "message": return handleMessage() // Potentially, we never receive a "message" and only output "message" after a "publish" in order to broadcast. Or they are only notification, and we just want to check that it was a success
 	//case "catchup": return h.handleCatchup() // TODO
 
 	default:
@@ -188,29 +187,78 @@ func (h *hub) handlePublish(generic define.Generic) error {
 	if err != nil {
 		return err
 	}
-	if params.Channel != "0" {
-		return errors.New("tried to publish a LAO on a channel other than root")
-	}
+
 	message, err := define.AnalyseMessage(params.Message)
 	if err != nil {
 		return err
 	}
-	// TODO cf todo of line 125. Either this function will be renamed handleCreateLAO if createLAO can be detected at method level.
-	// Or we'll need to add another switch around here and call sub-functions for each different type of publication based on object and action. What is below would then be moved to the handleCreateLAO sub-function
+
+	data, err := define.AnalyseData(message.Data)
+	if err != nil {
+		return err
+	}
+
+	switch data["object"] {
+	case "lao":
+		switch data["action"] {
+		case "create":
+			return h.handleCreateLAO(message, params.Channel)
+		case "update_properties":
+
+		case "state":
+
+		default:
+			log.Fatal("Action on LAO not recognized :", data)
+		}
+
+	case "message":
+		switch data["action"] {
+		case "witness":
+
+		default:
+			log.Fatal("Action on message not recognized :", data)
+		}
+
+	case "meeting":
+		switch data["action"] {
+		case "create":
+
+		case "state":
+
+		default:
+			log.Fatal("Action on meeting not recognized :", data)
+		}
+
+	default:
+		log.Fatal("Object of action not recognized :", data)
+	}
+
+	return nil
+}
+
+
+func (h *hub) handleCreateLAO(message define.Message, channel string) error {
+
+	if channel != "0" {
+		return errors.New("tried to publish a LAO on a channel other than root")
+	} 
+
 	data, err := define.AnalyseDataCreateLAO(message.Data)
 	if err != nil {
 		return err
 	}
 
-	if define.LAOCreatedIsValid(data, message) {
-		h.responseToSender <- h.responseToSender(0)
-		return CreateLAO(data)
-	} else {
+	if !define.LAOCreatedIsValid(data, message) {
 		return errors.New("the LAO data wasn't valid")
 	}
 
-	//return nil
+	lao := LAO{data.ID, data.Name, data.Creation, data.LastModified, data.OrganizerPKey, data.Witnesses}
+
+	h.responseToSender <- h.responseToSender(0)
+	// TODO broadcast
+	return CreateLAO(lao)
 }
+
 
 func (h *hub) handleMessage(msg []byte, userId int) error {
 
