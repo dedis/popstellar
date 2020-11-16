@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"github.com/boltdb/bolt"
 	"log"
-	"student20_pop/channel"
 	"sync"
 	"time"
-	"student20_pop/db"
 )
 
 type hub struct {
@@ -44,7 +42,7 @@ func NewHub() *hub {
 		connIndex:       0,
 	}
 	//publish subscribe go routine !
-		/*
+	/*
 		go func() {
 			for {
 				msg := <-h.message
@@ -113,7 +111,7 @@ func (h *hub) removeConnection(conn *connection) {
 }
 
 //call with msg = receivedMessage
-
+/*
 func (h *hub) HandleMessage(msg []byte) error {
 	//TODO
 	generic, err := AnalyseGeneric(msg)
@@ -140,7 +138,7 @@ func (h *hub) HandleMessage(msg []byte) error {
 	default :
 		log.Fatal("JSON not correctly formated :", msg)
 	}
-
+*/
 
 /*	switch message.Item {
 	case []byte("LAO"):  //ROMAIN
@@ -193,10 +191,9 @@ s
 	default :
 		log.Fatal("JSON not correctly formated :", msg)
 	}
-*/
+
 
 	return nil
 
 }
-
-
+*/
