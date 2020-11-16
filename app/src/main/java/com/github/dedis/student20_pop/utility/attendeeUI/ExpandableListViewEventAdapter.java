@@ -1,11 +1,15 @@
 package com.github.dedis.student20_pop.utility.attendeeUI;
 
 import android.content.Context;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
+
+import androidx.annotation.RequiresApi;
 
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Event;
@@ -128,6 +132,7 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
      * @param parent
      * @return the view for a given category
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent){
         String eventCategory = "";
@@ -150,6 +155,13 @@ public class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
 
         TextView eventTextView = convertView.findViewById(R.id.event_category);
         eventTextView.setText(eventCategory);
+
+        ImageButton addEvent = convertView.findViewById(R.id.add_future_event_button);
+        addEvent.setVisibility((getGroup(groupPosition) == EventCategory.FUTURE) ? View.VISIBLE : View.GONE);
+        addEvent.setFocusable(View.NOT_FOCUSABLE);
+        addEvent.setOnClickListener(v -> {
+            
+        });
 
         return convertView;
     }

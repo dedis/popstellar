@@ -20,6 +20,7 @@ import com.github.dedis.student20_pop.ui.ConnectFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
 import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
+import com.github.dedis.student20_pop.ui.OrganizerFragment;
 
 import java.util.Collections;
 import java.util.Date;
@@ -32,6 +33,7 @@ public final class MainActivity extends FragmentActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private boolean testingAttendee = false;
+    private boolean testingOrganizer = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +48,9 @@ public final class MainActivity extends FragmentActivity {
             if (testingAttendee){
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.fragment_container, new AttendeeFragment()).commit();
+            } else if (testingOrganizer) {
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.fragment_container, new OrganizerFragment()).commit();
             }
             else {
                 getSupportFragmentManager().beginTransaction()
