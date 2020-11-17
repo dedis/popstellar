@@ -22,25 +22,8 @@ func Write(key []byte, val []byte, bkt []byte, database *bolt.DB) error {
 			return err1
 		}
 		err2 := b.Put(key, val)
-		if err2 != nil {
-			return err2
-		}
-		return nil
+		return err2
+
 	})
 	return err
-}
-
-/**
- * Functions that transforms a nested bucket of the db (of members, events, etc.) into a list
- * (of byte array currently, tbd according to the definite field of the structs)
- * ça va surement tej'
- */
-func NestedToList(b *bolt.Bucket) [][]byte {
-	var list [][]byte
-	b.ForEach(func(k, v []byte) error {
-		list = append(list, v)
-		return nil
-	})
-
-	return list
 }
