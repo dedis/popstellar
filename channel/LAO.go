@@ -14,7 +14,7 @@ import (
  * @returns : error
  */
 func writeLAO(lao define.LAO, secure bool) error {
-	db, e := db.OpenChannelDB()
+	db, e := db.OpenDB(channelDatabase)
 	defer db.Close()
 	if e != nil {
 		return e
@@ -62,7 +62,7 @@ func UpdateLao(lao define.LAO) error {
 
 /*returns channel data from a given ID */
 func GetFromID(id []byte) []byte {
-	db, e := db.OpenChannelDB()
+	db, e := db.OpenDB(channelDatabase)
 	defer db.Close()
 	if e != nil {
 		return nil
