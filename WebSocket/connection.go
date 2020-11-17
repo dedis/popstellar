@@ -25,6 +25,7 @@ func (c *connection) reader(wg *sync.WaitGroup, wsConn *websocket.Conn) {
 		if err != nil {
 			break
 		}
+		c.h.idOfSender = c.id
 		c.h.receivedMessage <- msg
 	}
 }
