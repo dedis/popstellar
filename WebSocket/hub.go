@@ -55,7 +55,10 @@ func NewHub() *hub {
 
 	go func() {
 		for {
-			msg := <-h.message
+			msg := <- h.receivedMessage
+			h.HandleWholeMessage(msg, h.idOfSender)
+			msg = <- h.message
+
 			chann := h.channel
 
 			var subscribers []int = nil
@@ -66,6 +69,8 @@ func NewHub() *hub {
 					log.Fatal(err)
 				}
 			}
+
+
 
 			h.connectionsMx.RLock()
 			for c := range h.connections {
@@ -81,9 +86,9 @@ func NewHub() *hub {
 						h.removeConnection(c)
 					}
 					//TODO where to put these 3 lines?
-					err := h.HandleWholeMessage(msg, h.idOfSender)
-					resp := []byte(define.ResponseToSenderInJson(errors.As(err)))
-					h.responseToSender <- resp
+
+					// TODO resp := []byte(define.ResponseToSenderInJson(errors.As(err)))
+					h.responseToSender <- []byte("") // TODO resp
 				}
 			}
 			h.connectionsMx.RUnlock()
@@ -202,7 +207,7 @@ func (h *hub) handlePublish(generic define.Generic) error {
 	case "lao":
 		switch data["action"] {
 		case "create":
-			return h.handleCreateLAO(message, params.Channel)
+			return h.handleCreateLAO(message, params.Channel, generic)
 		case "update_properties":
 
 		case "state":
@@ -237,7 +242,7 @@ func (h *hub) handlePublish(generic define.Generic) error {
 }
 
 
-func (h *hub) handleCreateLAO(message define.Message, canal string) error {
+func (h *hub) handleCreateLAO(message define.Message, canal string, generic define.Generic) error {
 
 	if canal != "0" {
 		return errors.New("tried to publish a LAO on a channel other than root")
@@ -254,8 +259,10 @@ func (h *hub) handleCreateLAO(message define.Message, canal string) error {
 
 	lao := define.LAO{data.ID, data.Name, data.Creation, data.LastModified, data.OrganizerPKey, data.Witnesses}
 
-	h.responseToSender <- h.responseToSender(0)
-	// TODO broadcast
+
+	h.message <- define.CreateBroadcast(message, generic)
+	h.responseToSender <- define.CreateResponse(err, generic)
+
 	return channel.CreateLAO(lao)
 }
 
