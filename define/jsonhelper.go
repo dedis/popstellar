@@ -160,8 +160,7 @@ func SliceToJson(title string, data [][]byte) string {
 }
 
 func CreateResponse(err error, generic Generic) []byte {
-	e := ErrToInt(err)
-	return []byte (ResponseToSenderInJson(e, generic.id))
+	return []byte (ResponseToSenderInJson(err, generic.id))
 }
 
 func CreateBroadcast(message Message, generic Generic) []byte {
