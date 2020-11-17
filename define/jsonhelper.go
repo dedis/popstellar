@@ -182,7 +182,7 @@ func SliceToJson(title string, data [][]byte) string {
 	return str
 }
 
-func CreateBroadcast(message Message, generic Generic) []byte {
+func CreateBroadcastMessage(message Message, generic Generic) []byte {
 	broadc := Generic{
 		jsonrpc:	generic.jsonrpc,
 		Method:		"message",
