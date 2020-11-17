@@ -36,6 +36,10 @@ type hub struct {
 	//Response for the sender
 	idOfSender       int
 	responseToSender chan []byte
+
+
+	responseToSenderNotChan []byte
+	messageToBroadcast []byte
 }
 
 func NewHub() *hub {
@@ -48,6 +52,8 @@ func NewHub() *hub {
 		connIndex:        0,
 		idOfSender:       -1,
 		responseToSender: make(chan []byte),
+		responseToSenderNotChan:	nil,
+		messageToBroadcast:			nil,
 	}
 	//publish subscribe go routine !
 
@@ -56,9 +62,10 @@ func NewHub() *hub {
 			msg := <- h.receivedMessage
 
 			h.HandleWholeMessage(msg, h.idOfSender)
-			msg = <- h.message
+			msg = h.messageToBroadcast
 			// TODO adapt as needed
-			msg = <- h.responseToSender
+			msg = h.responseToSenderNotChan
+			print(string (msg))
 
 			//chann := h.channel
 
@@ -80,7 +87,7 @@ func NewHub() *hub {
 					select {
 						// TODO go back to msg here and send response somewhere else
 	
-					case c.send <- []byte ("msg"):
+					case c.send <- msg:
 					// stop trying to send to this connection after trying for 1 second.
 					// if we have to stop, it means that a reader died so remove the connection also.
 					case <-time.After(1 * time.Second):
@@ -158,7 +165,7 @@ func (h *hub) removeConnection(conn *connection) {
 func (h *hub) HandleWholeMessage(msg []byte, userId int) {
 	generic, err := define.AnalyseGeneric(msg)
 	if err != nil {
-		h.responseToSender <- define.CreateResponse(err, generic)
+		h.responseToSenderNotChan = define.CreateResponse(err, generic)
 		return
 	}
 
@@ -177,7 +184,8 @@ func (h *hub) HandleWholeMessage(msg []byte, userId int) {
 		err = define.ErrRequestDataInvalid
 	}
 	fmt.Printf("after creatingLAO")
-	h.responseToSender <- define.CreateResponse(err, generic)
+	fmt.Printf("%v", err)
+	h.responseToSenderNotChan = define.CreateResponse(err, generic)
 }
 
 func (h *hub) handleSubscribe(generic define.Generic, userId int) error {
@@ -271,8 +279,7 @@ func (h *hub) handleCreateLAO(message define.Message, canal string, generic defi
 	
 	lao := define.LAO{ID: data.ID, Name: data.Name, Creation: data.Creation, LastModified: data.LastModified, OrganizerPKey: data.OrganizerPKey, Witnesses: data.Witnesses}
 
-	fmt.Printf("%#v", string (<- h.message) )
-	h.message <- define.CreateBroadcastMessage(message, generic)
+	h.messageToBroadcast = define.CreateBroadcastMessage(message, generic)
 
 	return channel.CreateLAO(lao)
 }
