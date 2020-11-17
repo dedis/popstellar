@@ -16,7 +16,7 @@ func LAOCreatedIsValid(data DataCreateLAO, message Message) bool {
 	}
 	//the attestation is valid,
 	// TODO hash function
-	if message.MessageID != hashTBD(message.Data+message.Signature) {
+	if message.MessageID != "0" {//hashTBD(message.Data+message.Signature) {
 		isValid = false
 	}
 	//potentially more checks

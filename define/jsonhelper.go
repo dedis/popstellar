@@ -3,6 +3,7 @@ package define
 import (
 	"encoding/json"
 	"strconv"
+	"log"
 )
 
 /*Most generic message structure*/
@@ -40,9 +41,23 @@ type Message struct {
 	WitnessSignatures []string
 }
 
-type DataCreateLao struct {
-	// Object	string
-	// Action	string
+type Data map[string]interface{}
+
+type DataCreateLAO struct {
+	Object string
+	Action string
+	//ID hash : Name || Creation Date/Time Unix Timestamp
+	ID []byte
+	// name of LAO
+	Name string
+	//Creation Date/Time
+	Creation int64 //  Unix timestamp (uint64)
+	LastModified int64 //timestamp
+	//Organiser: Public Key
+	OrganizerPKey []byte
+	//List of public keys where each public key belongs to one witness
+	Witnesses [][]byte
+	//List of public keys where each public key belongs to one member (physical person) (subscriber)
 }
 
 /**
@@ -70,6 +85,12 @@ func AnalyseParamsFull(params []byte) (ParamsFull, error) {
 func AnalyseMessage(message []byte) (Message, error) {
 	m := Message{}
 	err := json.Unmarshal(message, &m)
+	return m, err
+}
+
+func AnalyseData(data []byte) (Data, error) {
+	m := Data{}
+	err := json.Unmarshal(data, &m)
 	return m, err
 }
 
@@ -138,22 +159,47 @@ func SliceToJson(title string, data [][]byte) string {
 	return str
 }
 
+func CreateResponse(err error, generic Generic) []byte {
+	e := ErrToInt(err)
+	return []byte (ResponseToSenderInJson(e, generic.id))
+}
+
+func CreateBroadcast(message Message, generic Generic) []byte {
+	broadc := Generic{
+		jsonrpc:	generic.jsonrpc,
+		Method:		"message",
+		Params: 	generic.Params,
+		id:			generic.id,
+	}
+	b, err := json.Marshal(broadc)
+
+	if err != nil {
+		log.Fatal("couldn't Marshal the message to broadcast")
+	}
+	
+	return []byte (b)
+}
+
+
+
 /*
 * Function that converts a Lao to a Json byte array
 * we suppose error is in the good range
  */
-func ResponseToSenderInJson(error int) string {
+func ResponseToSenderInJson(err int, id string) string {
 	str := "{\"jsonrpc\": \"2.0\","
-	if error != 0 {
+	if err != 0 {
 		str += "{ \"error\": { \"code\":"
-		str += strconv.Itoa(error)
+		str += strconv.Itoa(err)
 		str += ",\"description\":"
-		str += selectDescriptionError(error)
+		str += selectDescriptionError(err)
 		str += "}"
 	} else {
 		str += " \"result\": 0"
 	}
-	str += ",\"id\": 3}"
+	str += ",\"id\": "
+	str += id
+	str += "}"
 	return str
 }
 
@@ -161,7 +207,7 @@ func ResponseToSenderInJson(error int) string {
 *	return the associate description error
 *	we check the validity (error vetween -1 and -5) before the function
  */
-func selectDescriptionError(err int) string {
+func selectDescriptionError(err error) string {
 	switch err {
 	case -1:
 		return "\"invalid action\""

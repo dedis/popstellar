@@ -55,7 +55,10 @@ func NewHub() *hub {
 
 	go func() {
 		for {
-			msg := <-h.message
+			msg := <- h.receivedMessage
+			h.HandleWholeMessage(msg, h.idOfSender)
+			msg = <- h.message
+
 			chann := h.channel
 
 			var subscribers []int = nil
@@ -66,6 +69,8 @@ func NewHub() *hub {
 					log.Fatal(err)
 				}
 			}
+
+
 
 			h.connectionsMx.RLock()
 			for c := range h.connections {
@@ -81,9 +86,9 @@ func NewHub() *hub {
 						h.removeConnection(c)
 					}
 					//TODO where to put these 3 lines?
-					err := h.HandleWholeMessage(msg, h.idOfSender)
-					resp := []byte(define.ResponseToSenderInJson(errors.As(err)))
-					h.responseToSender <- resp
+
+					// TODO resp := []byte(define.ResponseToSenderInJson(errors.As(err)))
+					h.responseToSender <- []byte("") // TODO resp
 				}
 			}
 			h.connectionsMx.RUnlock()
@@ -154,10 +159,9 @@ func (h *hub) HandleWholeMessage(msg []byte, userId int) error {
 		return h.handleSubscribe(generic, userId)
 	case "unsubscribe":
 		return h.handleUnsubscribe(generic, userId)
-	// TODO waiting on Pierluca/Haoqian answer relating to the method field and whether we can take object/action out of data
 	case "publish":
 		return h.handlePublish(generic)
-	//case "message": return handleMessage() // Potentially, we never receive a "message" and only output "message" after a "publish" in order to broadcast
+	//case "message": return h.handleMessage() // Potentially, we never receive a "message" and only output "message" after a "publish" in order to broadcast. Or they are only notification, and we just want to check that it was a success
 	//case "catchup": return h.handleCatchup() // TODO
 
 	default:
@@ -188,29 +192,80 @@ func (h *hub) handlePublish(generic define.Generic) error {
 	if err != nil {
 		return err
 	}
-	if params.Channel != "0" {
-		return errors.New("tried to publish a LAO on a channel other than root")
-	}
+
 	message, err := define.AnalyseMessage(params.Message)
 	if err != nil {
 		return err
 	}
-	// TODO cf todo of line 125. Either this function will be renamed handleCreateLAO if createLAO can be detected at method level.
-	// Or we'll need to add another switch around here and call sub-functions for each different type of publication based on object and action. What is below would then be moved to the handleCreateLAO sub-function
+
+	data, err := define.AnalyseData(message.Data)
+	if err != nil {
+		return err
+	}
+
+	switch data["object"] {
+	case "lao":
+		switch data["action"] {
+		case "create":
+			return h.handleCreateLAO(message, params.Channel, generic)
+		case "update_properties":
+
+		case "state":
+
+		default:
+			log.Fatal("Action on LAO not recognized :", data)
+		}
+
+	case "message":
+		switch data["action"] {
+		case "witness":
+
+		default:
+			log.Fatal("Action on message not recognized :", data)
+		}
+
+	case "meeting":
+		switch data["action"] {
+		case "create":
+
+		case "state":
+
+		default:
+			log.Fatal("Action on meeting not recognized :", data)
+		}
+
+	default:
+		log.Fatal("Object of action not recognized :", data)
+	}
+
+	return nil
+}
+
+
+func (h *hub) handleCreateLAO(message define.Message, canal string, generic define.Generic) error {
+
+	if canal != "0" {
+		return errors.New("tried to publish a LAO on a channel other than root")
+	} 
+
 	data, err := define.AnalyseDataCreateLAO(message.Data)
 	if err != nil {
 		return err
 	}
 
-	if define.LAOCreatedIsValid(data, message) {
-		h.responseToSender <- h.responseToSender(0)
-		return CreateLAO(data)
-	} else {
+	if !define.LAOCreatedIsValid(data, message) {
 		return errors.New("the LAO data wasn't valid")
 	}
 
-	//return nil
+	lao := define.LAO{data.ID, data.Name, data.Creation, data.LastModified, data.OrganizerPKey, data.Witnesses}
+
+
+	h.message <- define.CreateBroadcast(message, generic)
+	h.responseToSender <- define.CreateResponse(err, generic)
+
+	return channel.CreateLAO(lao)
 }
+
 
 func (h *hub) handleMessage(msg []byte, userId int) error {
 
