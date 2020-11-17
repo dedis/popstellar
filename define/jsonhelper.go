@@ -62,7 +62,26 @@ type DataCreateLAO struct {
 	Witnesses []string
 	//List of public keys where each public key belongs to one member (physical person) (subscriber)
 }
+type Error struct {
+	code int
+	description string
+}
 
+type ResponseWithGenResult struct {
+	jsonrpc      	string
+	result      	int
+	id 				string
+}
+type ResponseWithCatchupResult struct {
+	jsonrpc      	string
+	result      	[]byte
+	id 				string
+}
+type ResponseWithError struct {
+	jsonrpc      	string
+	error      		Error
+	id 				string
+}
 /**
  * Function that takes a byte array as input and returns
  * a Message struct
@@ -163,11 +182,7 @@ func SliceToJson(title string, data [][]byte) string {
 	return str
 }
 
-func CreateResponse(err error, generic Generic) []byte {
-	return []byte (ResponseToSenderInJson(err, generic.id))
-}
-
-func CreateBroadcastMessage(message Message, generic Generic) []byte {
+func CreateBroadcast(message Message, generic Generic) []byte {
 	broadc := Generic{
 		jsonrpc:	generic.jsonrpc,
 		Method:		"message",
@@ -183,49 +198,85 @@ func CreateBroadcastMessage(message Message, generic Generic) []byte {
 	return b
 }
 
-
-
 /*
 * Function that converts a Lao to a Json byte array
 * we suppose error is in the good range
  */
-func ResponseToSenderInJson(err error, id string) string {
-	str := "{\"jsonrpc\": \"2.0\","
-	if err != nil {
-		str += "{ \"error\": { \"code\":"
-		str += selectDescriptionError(err)
-		str += "}"
-	} else {
-		str += " \"result\": 0"
+
+func CreateResponse(err error, /*messages [],*/generic Generic) []byte {
+	if err!= nil {
+		resp := ResponseWithError {
+			jsonrpc	:      	"2.0",
+			error  	:		selectDescriptionError(err),
+			id		:		generic.id,
+		}
+		b, err := json.Marshal(resp)
+		if err != nil {
+			fmt.Println("couldn't Marshal the response")
+		}
+		return b
+
+	}else{
+		//if(messages == null)// Mauvaise syntaxe{
+			resp := ResponseWithGenResult{
+				jsonrpc:      	"2.0",
+				result:      	0,
+				id 		:		generic.id,
+			}
+		/*}else{
+			resp := ResponseWithCatchupResult{
+				jsonrpc:      	"2.0",
+				result:      	messages,
+				id: 			generic.id,
+			}
+		}*/
+		b, err := json.Marshal(resp)
+		if err != nil {
+			fmt.Println("couldn't Marshal the response")
+		}
+		return b
 	}
-	str += ",\"id\": "
-	str += id
-	str += "}"
-	return str
 }
 
 /*
 *	return the associate description error
 *	we check the validity (error vetween -1 and -5) before the function
  */
-func selectDescriptionError(err error) string {
+func selectDescriptionError(err error) Error {
 	switch err {
 	case ErrInvalidAction:
-		return "-1,\"description\":\"invalid action\""
+		return Error{
+			code:-1,
+			description: "invalid action",
+		}
 	case ErrInvalidResource:
-		return "-2,\"description\":\"invalid resource\""
+		return Error{
+			code:-2,
+			description: "invalid resource",
+		}
 		//(e.g. channel does not exist,channel was not subscribed to, etc.)
 	case ErrResourceAlreadyExists:
-		return "-3,\"description\":\"resource already exists\""
+		return Error{
+			code:-3,
+			description: "resource already exists",
+		}
 		//(e.g. lao already exists, channel already exists, etc.)
 	case ErrRequestDataInvalid:
-		return "-4,\"description\":\"request data is invalid\""
+		return Error{
+			code:-4,
+			description: "request data is invalid",
+		}
 		//(e.g. message is invalid)
 	case ErrAccessDenied:
-		return "-5,\"description\":\"access denied\""
+		return Error{
+			code:-5,
+			description: "access denied",
+		}
 		//(e.g. subscribing to a “restricted” channel)
 	default:
 		fmt.Printf("%v", err)
-		return ""
+		// TODO decide if we crash everything or not
+		// log.Fatal("type of error unrecognized")
+		return Error{} //should never arrive here
 	}
 }
