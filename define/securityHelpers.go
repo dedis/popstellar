@@ -4,21 +4,20 @@ import "time"
 
 const MaxSecondsElapsedBetweenLAOCreationAndPublish = 600
 
-func LAOCreatedIsValid(data DataCreateLAO, message Message) bool {
-	isValid := true
+func LAOCreatedIsValid(data DataCreateLAO, message Message) error {
 	//the last modified timestamp is equal to the creation timestamp,
 	if data.Creation != data.LastModified {
-		isValid = false
+		return ErrInvalidResource
 	}
 	//the timestamp is reasonably recent with respect to the server’s clock,
 	if data.Creation > time.Now().Unix() || data.Creation-time.Now().Unix() > MaxSecondsElapsedBetweenLAOCreationAndPublish {
-		isValid = false
+		return ErrInvalidResource
 	}
 	//the attestation is valid,
 	// TODO hash function
 	if message.MessageID != "0" {//hashTBD(message.Data+message.Signature) {
-		isValid = false
+		return ErrInvalidResource
 	}
 	//potentially more checks
-	return isValid
+	return nil
 }
