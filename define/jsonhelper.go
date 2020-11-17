@@ -4,7 +4,10 @@ import (
 	"encoding/json"
 	"strconv"
 	"log"
+	"fmt"
 )
+
+// TODO, we have exactly this issue : https://stackoverflow.com/questions/20101954/json-unmarshal-nested-object-into-string-or-byte
 
 /*Most generic message structure*/
 type Generic struct {
@@ -221,7 +224,7 @@ func selectDescriptionError(err error) string {
 		return "-5,\"description\":\"access denied\""
 		//(e.g. subscribing to a “restricted” channel)
 	default:
-		log.Fatal("type of error unrecognized:", err)
+		fmt.Printf("%v", err)
 		return ""
 	}
 }

@@ -75,8 +75,11 @@ func NewHub() *hub {
 			for c := range h.connections {
 				//send msg to that connection if channel is main channel or is in channel subscribers
 				_, found := define.Find(subscribers, c.id)
+				msg = <- h.responseToSender
 				if bytes.Compare(h.channel, []byte("0")) == 0 || found {
 					select {
+						// TODO go back to msg here and send response somewhere else
+	
 					case c.send <- msg:
 					// stop trying to send to this connection after trying for 1 second.
 					// if we have to stop, it means that a reader died so remove the connection also.
@@ -84,10 +87,6 @@ func NewHub() *hub {
 						log.Printf("shutting down connection %c", c.id)
 						h.removeConnection(c)
 					}
-					//TODO where to put these 3 lines?
-
-					// TODO resp := []byte(define.ResponseToSenderInJson(errors.As(err)))
-					h.responseToSender <- []byte("") // TODO resp
 				}
 			}
 			h.connectionsMx.RUnlock()
@@ -147,10 +146,10 @@ func (h *hub) removeConnection(conn *connection) {
 }
 
 // Test json input to create LAO:
-// TODO careful with base64
-// TODO careful with comma after witnesses[] and witnesses_signatures[]
+//  careful with base64 needed to remove
+//  careful with comma after witnesses[] and witnesses_signatures[] needed to remove
 /*
-{"jsonrpc": "2.0", "method": "publish", "params": { "channel": "0", "message": { "data": { "object": "lao", "action": "create", "id": "0x123a", "name": "My LAO", "creation": 123, "last_modified": 123, "organizer": "0x123a", "witnesses": [], }, "sender": "0x123a", "signature": "0x123a", "message_id": "0x123a", "witness_signatures": [],} }, "id": 3}
+{"jsonrpc": "2.0", "method": "publish", "params": { "channel": "0", "message": { "data": { "object": "lao", "action": "create", "id": "0x123a", "name": "My LAO", "creation": 123, "last_modified": 123, "organizer": "0x123a", "witnesses": [] }, "sender": "0x123a", "signature": "0x123a", "message_id": "0x123a", "witness_signatures": []} }, "id": 3}
 
 */
 
@@ -184,7 +183,7 @@ func (h *hub) HandleWholeMessage(msg []byte, userId int) {
 func (h *hub) handleSubscribe(generic define.Generic, userId int) error {
 	params, err := define.AnalyseParamsLight(generic.Params)
 	if err != nil {
-		return err
+		return define.ErrRequestDataInvalid
 	}
 	return channel.Subscribe(userId, []byte(params.Channel))
 }
@@ -192,7 +191,7 @@ func (h *hub) handleSubscribe(generic define.Generic, userId int) error {
 func (h *hub) handleUnsubscribe(generic define.Generic, userId int) error {
 	params, err := define.AnalyseParamsLight(generic.Params)
 	if err != nil {
-		return err
+		return define.ErrRequestDataInvalid
 	}
 	return channel.Unsubscribe(userId, []byte(params.Channel))
 }
@@ -200,17 +199,17 @@ func (h *hub) handleUnsubscribe(generic define.Generic, userId int) error {
 func (h *hub) handlePublish(generic define.Generic) error {
 	params, err := define.AnalyseParamsFull(generic.Params)
 	if err != nil {
-		return err
+		return define.ErrRequestDataInvalid
 	}
 
 	message, err := define.AnalyseMessage(params.Message)
 	if err != nil {
-		return err
+		return define.ErrRequestDataInvalid
 	}
 
 	data, err := define.AnalyseData(message.Data)
 	if err != nil {
-		return err
+		return define.ErrRequestDataInvalid
 	}
 
 	switch data["object"] {
