@@ -19,57 +19,36 @@ func OpenLAODB() (*bolt.DB, error) {
 
 /**
  * Function to create a new LAO and store it in the DB
- * @returns : the id of the created LAO (+ event error)
+ * @returns : error
  */
-func CreateLAO(create channel.MessageLaoCreate) error {
-	// TODO adapt struct
-
+func CreateLAO(data DataCreateLAO) error {
+	// TODO openLAODB might change if we have a single DB
 	db, e := OpenLAODB()
 	defer db.Close()
 	if e != nil {
 		return e
 	}
 
-	ctime := create.Timestamp
-
 	err := db.Update(func(tx *bolt.Tx) error {
-
-		bkt := tx.Bucket([]byte("general"))
-		if bkt == nil {
-			return errors.New("bkt does not exist")
-		}
-
-		b := bkt.Bucket(create.ID)
-		if b != nil {
-			return errors.New("unable to create new lao because of hash collision")
-		}
-		//create bkt for the lao
-		b, err1 := bkt.CreateBucket(create.ID)
+		b, err1 := tx.CreateBucketIfNotExists([]byte("LAO"))
 		if err1 != nil {
 			return err1
 		}
 
-		// instantiate the lao
-		err1 = b.Put([]byte("name"), create.Name)
-		if err1 != nil {
-			return err1
+		key := b.Get(data.ID)
+		if key != nil {
+			return errors.New("unable to create new LAO because of hash collision")
 		}
-		err1 = b.Put([]byte("timestamp"), make([]byte, ctime))
-		if err1 != nil {
-			return err1
+
+		// Marshal the LAO and store it
+		dt, err2 := json.Marshal(data)
+		if err2 != nil {
+			return err2
 		}
-		err1 = b.Put([]byte("organizerPkey"), create.OrganizerPkey)
-		if err1 != nil {
-			return err1
+		err3 := bkt.Put(data.ID, dt)
+		if err3 != nil {
+			return err3
 		}
-		err1 = b.Put([]byte("IP"), create.Ip)
-		if err1 != nil {
-			return err1
-		}
-		b.CreateBucket([]byte("witness"))
-		b.CreateBucket([]byte("member"))
-		b.CreateBucket([]byte("event"))
-		b.CreateBucket([]byte("signature"))
 
 		return nil
 	})

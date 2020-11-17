@@ -57,3 +57,79 @@ func checkChannelValidity(id []byte) bool {
 
 	return computed == attestation
 }*/
+
+/**
+* Retrieve value from a given ID key, and update it with a new subscribtion or publish rights
+* returns error message
+ */
+func UpdateChannelDB(userId []byte, channelId []byte, action []byte) error {
+
+	//TODO correct the if checks
+	// TODO create functions in jsonHelper addSubscribe, addPublish
+	if action == "subscriber" {
+		updatedString := Subscribe(oldString, channelId)
+	} else if action == "publisher" {
+		updatedString := addPublish(oldString, channelId)
+	} else {
+		return errors.New("action not recognized")
+	}
+
+	db, e := OpenChannelDB()
+	defer db.Close()
+	if e != nil {
+		return e
+	}
+
+	err := db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("ids"))
+		if b == nil {
+			return errors.New("bkt does not exist")
+		}
+
+		err1 := b.Put(userid, updatedString)
+		if err1 != nil {
+			return err1
+		}
+		return nil
+	})
+
+	return err
+}
+
+// ADD Helpers for UpdateChannelDB
+
+/**
+ * Returns a string which contains the subscribe and publish rights in the user database which matches the id passed an argument
+ */
+func GetChannelData(id []byte) ([]byte, error) {
+
+	var data []byte
+
+	db, e := OpenChannelDB()
+	defer db.Close()
+	if e != nil {
+		return nil, e
+	}
+
+	err := db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("ids"))
+		if b == nil {
+			return errors.New("bkt does not exist")
+		}
+
+		data = b.Get(id)
+		return nil
+	})
+
+	return data, err
+}
+
+//TODO move those functions to json helper but we might never need them
+/*
+func GetSubscribeOfUserFromId {
+	data, err = GetUserDataFromID(userid)
+	//slice json
+}
+
+func GetPublishOfUserFromId
+*/
