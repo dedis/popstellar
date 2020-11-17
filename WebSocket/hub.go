@@ -142,6 +142,7 @@ func (h *hub) removeConnection(conn *connection) {
 func (h *hub) HandleWholeMessage(msg []byte, userId int) {
 	generic, err := define.AnalyseGeneric(msg)
 	if err != nil {
+		err = define.ErrRequestDataInvalid
 		h.responseToSenderNotChan = define.CreateResponse(err, generic)
 		return
 	}
