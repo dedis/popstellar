@@ -2,6 +2,9 @@ package com.github.dedis.student20_pop.model.network.level.low.result;
 
 import java.util.Objects;
 
+/**
+ * A failed request result
+ */
 public final class Failure extends Result {
 
     private final ResultError error;

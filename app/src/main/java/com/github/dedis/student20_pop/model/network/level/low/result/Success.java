@@ -4,6 +4,9 @@ import com.google.gson.JsonElement;
 
 import java.util.Objects;
 
+/**
+ * A succeed request result
+ */
 public final class Success extends Result {
 
     private final JsonElement result;

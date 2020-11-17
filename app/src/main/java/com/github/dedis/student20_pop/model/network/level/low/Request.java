@@ -2,6 +2,10 @@ package com.github.dedis.student20_pop.model.network.level.low;
 
 import java.util.Objects;
 
+/**
+ * A request that expect a result later in the future.
+ * Therefor, has a unique id that will be linked with the received result
+ */
 public abstract class Request extends ChanneledMessage {
 
     private final transient int id;
