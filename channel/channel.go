@@ -2,11 +2,16 @@ package channel
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/boltdb/bolt"
 	"strings"
 	"student20_pop/db"
+	"student20_pop/define"
 )
+
+const bucketChannel = "general"
+const bucketSubscribers = "sub"
 
 /*
  * Function that subscribe a user to a channel. ONLY AT THE PUB/SUB LAYER
@@ -22,7 +27,7 @@ func Subscribe(userId int, channelId []byte) error {
 	defer db.Close()
 
 	err = db.Update(func(tx *bolt.Tx) error {
-		b, err1 := tx.CreateBucketIfNotExists([]byte("sub"))
+		b, err1 := tx.CreateBucketIfNotExists([]byte(bucketSubscribers))
 		if err1 != nil {
 			return err1
 		}
@@ -37,7 +42,7 @@ func Subscribe(userId int, channelId []byte) error {
 		}
 
 		//check if was already susbscribed
-		if _, found := Find(ints, userId); found {
+		if _, found := define.Find(ints, userId); found {
 			fmt.Println("user was already subscribed")
 			return nil
 		}
@@ -66,7 +71,7 @@ func Unsubscribe(userId int, channelId []byte) error {
 	defer db.Close()
 
 	err = db.Update(func(tx *bolt.Tx) error {
-		b, err1 := tx.CreateBucketIfNotExists([]byte("sub"))
+		b, err1 := tx.CreateBucketIfNotExists([]byte(bucketSubscribers))
 		if err1 != nil {
 			return err1
 		}
@@ -81,7 +86,7 @@ func Unsubscribe(userId int, channelId []byte) error {
 		}
 
 		//check if was already susbscribed
-		i, found := Find(ints, userId)
+		i, found := define.Find(ints, userId)
 		if !found {
 			fmt.Println("this user was not subscribed to this channel")
 			return nil
@@ -100,16 +105,6 @@ func Unsubscribe(userId int, channelId []byte) error {
 	return err
 }
 
-/* helper function to find an elem. in a slice */
-func Find(slice []int, val int) (int, bool) {
-	for i, item := range slice {
-		if item == val {
-			return i, true
-		}
-	}
-	return -1, false
-}
-
 /*helper function to find a channel's subscribers */
 func GetSubscribers(channel []byte) ([]int, error) {
 	db, err := db.OpenChannelDB()
@@ -121,7 +116,7 @@ func GetSubscribers(channel []byte) ([]int, error) {
 	var data []int
 
 	err = db.View(func(tx *bolt.Tx) error {
-		bkt := tx.Bucket([]byte("sub"))
+		bkt := tx.Bucket([]byte(bucketSubscribers))
 		if bkt == nil {
 			return nil
 		}
@@ -135,8 +130,48 @@ func GetSubscribers(channel []byte) ([]int, error) {
 	return data, nil
 }
 
+/*returns the content of a channel. Nil if channel does not exist*/
 func GetData(channel []byte) ([]byte, error) {
 	db, err := db.OpenChannelDB()
 	defer db.Close()
-	return nil, nil
+	if err != nil {
+		return nil, err
+	}
+
+	var data []byte
+	err = db.View(func(tx *bolt.Tx) error {
+		b, err := tx.CreateBucketIfNotExists([]byte(bucketChannel))
+		if err != nil {
+			return err
+		}
+
+		data = b.Get(channel)
+		return nil
+	})
+
+	return data, err
+}
+
+/**
+* Retrieve value from a given ID key, and adds a pubish
+* returns error message
+ */
+func UpdateChannel(userId int, channelId []byte, action []byte) error {
+
+	db, e := db.OpenChannelDB()
+	defer db.Close()
+	if e != nil {
+		return e
+	}
+
+	err := db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(bucketChannel))
+		if b == nil {
+			return errors.New("bkt does not exist")
+		}
+
+		return nil
+	})
+
+	return err
 }
