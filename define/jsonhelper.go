@@ -180,8 +180,7 @@ func CreateBroadcastMessage(message Message, generic Generic) []byte {
 		log.Fatal("couldn't Marshal the message to broadcast")
 	}
 	
-	fmt.Printf("in broadc3")
-	return []byte (b)
+	return b
 }
 
 
