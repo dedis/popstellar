@@ -40,7 +40,7 @@ import javax.websocket.Session;
  * A proxy of a connection to a websocket. It encapsulate the publish-subscribe protocol
  */
 @RequiresApi(api = Build.VERSION_CODES.N)
-public final class ClientProxy {
+public final class LowLevelClientProxy {
 
     private final Session session;
 
@@ -48,7 +48,7 @@ public final class ClientProxy {
     private final Map<Integer, CompletableFuture<JsonElement>> requests = new ConcurrentHashMap<>();
     private SplittableRandom rand = new SplittableRandom();
 
-    public ClientProxy(Session session) {
+    public LowLevelClientProxy(Session session) {
         this.session = session;
     }
 
@@ -117,7 +117,7 @@ public final class ClientProxy {
      * Called by the underlying socket endpoint when a message is received
      * @param msg received
      */
-    public void onMessage(String msg) {
+    void onMessage(String msg) {
         JsonObject obj = gson.fromJson(msg, JsonObject.class);
         if(obj.has("method")) {
             handleMessage(gson.fromJson(obj, LowLevelMessage.class));

@@ -1,5 +1,9 @@
 package com.github.dedis.student20_pop.utility.network;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import org.glassfish.tyrus.client.ClientManager;
 
 import java.net.URI;
@@ -19,26 +23,27 @@ import javax.websocket.Session;
  *
  * TODO : Use the built-in encoder and decoder to have complete messages
  */
+@RequiresApi(api = Build.VERSION_CODES.N)
 @ClientEndpoint()
 public final class PoPClientEndpoint {
 
     private static final ClientManager client = ClientManager.createClient();
 
     /**
-     * Create a new ClientProxy that will encapsulate the socket
+     * Create a new LowLevelClientProxy that will encapsulate the socket
      *
      * @param host to connect to
      * @return the proxy
      * @throws DeploymentException if an error occurs during the deployment
      */
-    public static ClientProxy connectToServer(URI host) throws DeploymentException {
+    public static HighLevelClientProxy connectToServer(URI host) throws DeploymentException {
         Session session = client.connectToServer(PoPClientEndpoint.class, host);
-        ClientProxy client = new ClientProxy(session);
-        listeners.put(session, client);
+        HighLevelClientProxy client = new HighLevelClientProxy(session);
+        listeners.put(session, client.lowLevel());
         return client;
     }
 
-    private static final Map<Session, ClientProxy> listeners = new HashMap<>();
+    private static final Map<Session, LowLevelClientProxy> listeners = new HashMap<>();
 
     @OnOpen
     public void onOpen(Session session) {
@@ -48,7 +53,7 @@ public final class PoPClientEndpoint {
     @OnMessage
     public void onMessage(String message, Session session) {
         synchronized (listeners) {
-            ClientProxy client = listeners.get(session);
+            LowLevelClientProxy client = listeners.get(session);
             if(client == null)
                 throw new IllegalArgumentException();
 
