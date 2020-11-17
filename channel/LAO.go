@@ -4,6 +4,8 @@ import (
 	"errors"
 	"github.com/boltdb/bolt"
 	"student20_pop/db"
+	"student20_pop/define"
+	"encoding/json"
 )
 
 // would be nice to have an interface that contains methods add, remove and edit for LAO, event and vote
@@ -21,7 +23,7 @@ func OpenLAODB() (*bolt.DB, error) {
  * Function to create a new LAO and store it in the DB
  * @returns : error
  */
-func CreateLAO(data DataCreateLAO) error {
+func CreateLAO(data define.LAO) error {
 	// TODO openLAODB might change if we have a single DB
 	db, e := OpenLAODB()
 	defer db.Close()
@@ -45,7 +47,7 @@ func CreateLAO(data DataCreateLAO) error {
 		if err2 != nil {
 			return err2
 		}
-		err3 := bkt.Put(data.ID, dt)
+		err3 := b.Put(data.ID, dt)
 		if err3 != nil {
 			return err3
 		}
@@ -58,13 +60,13 @@ func CreateLAO(data DataCreateLAO) error {
 }
 
 //TODO
-func UpdateLao(lao channel.LAO) error {
+func UpdateLao(lao define.LAO) error {
 	// TODO adapt struct
 	return nil
 }
 
-func GetFromID(id []byte) (channel.LAO, error) {
+func GetFromID(id []byte) (define.LAO, error) {
 	// TODO adapt struct
 	//TODO
-	return channel.LAO{}, nil
+	return define.LAO{}, nil
 }
