@@ -1,74 +1,78 @@
 package channel
 
 import (
-	"errors"
+	"encoding/json"
 	"github.com/boltdb/bolt"
 	"student20_pop/db"
 	"student20_pop/define"
-	"encoding/json"
 )
 
-const DatabaseLao = "channel.db"
-
 // would be nice to have an interface that contains methods add, remove and edit for LAO, event and vote
-
-/*
- * opens the LAO DB. creates it if not exists.
- * don't forget to close the database afterwards
- * TODO : Keep it ? or put everything in the Channel DB ?
- */
-func OpenLAODB() (*bolt.DB, error) {
-	return db.OpenDB(DatabaseLao)
-}
 
 /**
  * Function to create a new LAO and store it in the DB
  * @returns : error
  */
-func CreateLAO(data define.LAO) error {
-	// TODO openLAODB might change if we have a single DB
-	db, e := OpenLAODB()
+func writeLAO(lao define.LAO, secure bool) error {
+	db, e := db.OpenChannelDB()
 	defer db.Close()
 	if e != nil {
 		return e
 	}
 
 	err := db.Update(func(tx *bolt.Tx) error {
-		b, err1 := tx.CreateBucketIfNotExists([]byte("LAO"))
+		b, err1 := tx.CreateBucketIfNotExists([]byte(bucketChannel))
 		if err1 != nil {
 			return err1
 		}
-
-		key := b.Get(data.ID)
-		if key != nil {
-			return errors.New("unable to create new LAO because of hash collision")
+		//checks if there is already an entry with that ID if secure is true
+		if secure {
+			key := b.Get(lao.ID)
+			if key != nil {
+				return define.ErrResourceAlreadyExists
+			}
+		} else {
+			exists := b.Get(lao.ID)
+			if exists == nil {
+				return define.ErrInvalidResource
+			}
 		}
-
 		// Marshal the LAO and store it
-		dt, err2 := json.Marshal(data)
+		dt, err2 := json.Marshal(lao)
 		if err2 != nil {
 			return err2
 		}
-		err3 := b.Put(data.ID, dt)
-		if err3 != nil {
-			return err3
-		}
+		err3 := b.Put(lao.ID, dt)
 
-		return nil
+		return err3
 	})
 
-	//TODO cleanup if failed
 	return err
 }
 
-//TODO
-func UpdateLao(lao define.LAO) error {
-	// TODO adapt struct
-	return nil
+/*writes a lao to the DB, returns an error if ID already is key in DB*/
+func CreateLAO(lao define.LAO) error {
+	return writeLAO(lao, true)
 }
 
-func GetFromID(id []byte) (define.LAO, error) {
-	// TODO adapt struct
-	//TODO
-	return define.LAO{}, nil
+/*writes a lao to the DB, regardless of ID already exists*/
+func UpdateLao(lao define.LAO) error {
+	return writeLAO(lao, false)
+}
+
+/*returns channel data from a given ID */
+func GetFromID(id []byte) []byte {
+	db, e := db.OpenChannelDB()
+	defer db.Close()
+	if e != nil {
+		return nil
+	}
+	var data []byte
+	e = db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(bucketChannel))
+		data = b.Get(id)
+		return nil
+	})
+
+	return data
 }
