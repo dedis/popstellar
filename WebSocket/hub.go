@@ -271,9 +271,8 @@ func (h *hub) handleCreateLAO(message define.Message, canal string, generic defi
 	
 	lao := define.LAO{ID: data.ID, Name: data.Name, Creation: data.Creation, LastModified: data.LastModified, OrganizerPKey: data.OrganizerPKey, Witnesses: data.Witnesses}
 
+	fmt.Printf("%#v", string (<- h.message) )
 	h.message <- define.CreateBroadcastMessage(message, generic)
-
-	fmt.Printf("after setting broadcast")
 
 	return channel.CreateLAO(lao)
 }
