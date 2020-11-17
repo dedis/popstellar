@@ -147,28 +147,38 @@ func (h *hub) removeConnection(conn *connection) {
 	}
 }
 
-//call with msg = receivedMessage
-func (h *hub) HandleWholeMessage(msg []byte, userId int) error {
+// Test json input to create LAO:
+// TODO careful with base64
+// TODO careful with comma after witnesses[] and witnesses_signatures[]
+/*
+{"jsonrpc": "2.0", "method": "publish", "params": { "channel": "0", "message": { "data": { "object": "lao", "action": "create", "id": "0x123a", "name": "My LAO", "creation": 123, "last_modified": 123, "organizer": "0x123a", "witnesses": [], }, "sender": "0x123a", "signature": "0x123a", "message_id": "0x123a", "witness_signatures": [],} }, "id": 3}
+*/
+
+// Param msg = receivedMessage
+// output by setting h.responseToSender and h.broadcast
+func (h *hub) HandleWholeMessage(msg []byte, userId int) {
 	generic, err := define.AnalyseGeneric(msg)
 	if err != nil {
-		return err
+		h.responseToSender <- define.CreateResponse(err, generic)
+		return
 	}
+
 
 	switch generic.Method {
 	case "subscribe":
-		return h.handleSubscribe(generic, userId)
+		err = h.handleSubscribe(generic, userId)
 	case "unsubscribe":
-		return h.handleUnsubscribe(generic, userId)
+		err = h.handleUnsubscribe(generic, userId)
 	case "publish":
-		return h.handlePublish(generic)
+		err = h.handlePublish(generic)
 	//case "message": return h.handleMessage() // Potentially, we never receive a "message" and only output "message" after a "publish" in order to broadcast. Or they are only notification, and we just want to check that it was a success
 	//case "catchup": return h.handleCatchup() // TODO
 
 	default:
-		log.Fatal("JSON Method not recognized :", generic)
+		err = ErrRequestDataInvalid
 	}
-	//TODO need to convert manually from Json ?
-	return nil
+
+	h.responseToSender <- define.CreateResponse(err, generic)
 }
 
 func (h *hub) handleSubscribe(generic define.Generic, userId int) error {
@@ -213,7 +223,7 @@ func (h *hub) handlePublish(generic define.Generic) error {
 		case "state":
 
 		default:
-			log.Fatal("Action on LAO not recognized :", data)
+			return ErrInvalidAction
 		}
 
 	case "message":
@@ -221,7 +231,7 @@ func (h *hub) handlePublish(generic define.Generic) error {
 		case "witness":
 
 		default:
-			log.Fatal("Action on message not recognized :", data)
+			return ErrInvalidAction
 		}
 
 	case "meeting":
@@ -231,11 +241,11 @@ func (h *hub) handlePublish(generic define.Generic) error {
 		case "state":
 
 		default:
-			log.Fatal("Action on meeting not recognized :", data)
+			return ErrInvalidAction
 		}
 
 	default:
-		log.Fatal("Object of action not recognized :", data)
+		return ErrRequestDataInvalid
 	}
 
 	return nil
@@ -245,7 +255,7 @@ func (h *hub) handlePublish(generic define.Generic) error {
 func (h *hub) handleCreateLAO(message define.Message, canal string, generic define.Generic) error {
 
 	if canal != "0" {
-		return errors.New("tried to publish a LAO on a channel other than root")
+		return ErrInvalidResource
 	} 
 
 	data, err := define.AnalyseDataCreateLAO(message.Data)
@@ -253,15 +263,15 @@ func (h *hub) handleCreateLAO(message define.Message, canal string, generic defi
 		return err
 	}
 
-	if !define.LAOCreatedIsValid(data, message) {
-		return errors.New("the LAO data wasn't valid")
+	err = define.LAOCreatedIsValid(data, message) {
+	if err != nil {
+		return err
 	}
 
 	lao := define.LAO{data.ID, data.Name, data.Creation, data.LastModified, data.OrganizerPKey, data.Witnesses}
 
 
 	h.message <- define.CreateBroadcast(message, generic)
-	h.responseToSender <- define.CreateResponse(err, generic)
 
 	return channel.CreateLAO(lao)
 }
@@ -281,88 +291,3 @@ func (h *hub) handleCatchup() error {
 func (h *hub) sendResponse(conn *connection) {
 
 }
-
-/*	switch message.Item {
-	case []byte("LAO"):  //ROMAIN
-		switch message.Action {
-		case []byte("create"):
-			mc, err := test.JsonLaoCreate(message.Data)
-			if err != nil {
-				return err
-			}
-
-			h.db, err = db.OpenChannelDB()
-			if err != nil {
-				return err
-			}
-
-			id, err := db.CreateLAO(mc)
-			if err != nil {
-				return err
-			}
-
-			h.message <- []byte("{action: , id: , ...}") //TODO waiting for protocol definition
-			h.channel <- []byte("0")
-
-	case []byte("subscribe"): //OURIEL
-			//h.db, err = db.OpenChannelDB()
-			//if err != nil {
-			//	return err
-			//}
-			reg, err := src.JsonRegistration(message.Data)
-			if err != nil {
-				return err
-			}
-
-			already, err db.alreadyRegister(reg.UserID){
-			if err != nil {
-				return err
-			}
-			if(!aleady){
-				err db.CreateUser(reg.UserID){
-				if err != nil {
-					return err
-				}
-			}
-
-			err db.UpdateChannelDB(reg){
-			if err != nil
-				return err
-			}
-			//append(LAO.members, ID_Subscriber) automatically done ?
-
-
-	case []byte("unsubscribe")://OURIEL
-			reg, err := src.JsonRegistration(message.Data)
-			if err != nil {
-				return err
-			}
-			err db.UpdateChannelDB(reg){
-			if err != nil
-				return err
-			}
-			//remove(LAO.members, ID_Subscriber)
-	case []byte("fetch"): //OURIEL
-		sendinfo(channel)
-s
-	case []byte("event"): //RAOUL
-		switch message.Action {
-		case []byte("create"):
-			m, err := src.DataToMessageEventCreate(message.Data)
-			if(err != nil) {
-				return err
-			}
-			CreateChannel(m)
-			//	broadcast to parent
-			// useless but sticks as a reminder that we broadcast to the parent channel, the one which received the createEvent order
-			h.channel <- h.channel
-			h.message <- h.message
-
-		default :
-			log.Fatal("JSON not correctly formated :", msg)
-		}
-
-	default :
-		log.Fatal("JSON not correctly formated :", msg)
-	}
-*/
