@@ -243,7 +243,6 @@ func (h *hub) handleCreateLAO(message define.Message, canal string, generic defi
 
 	data, err := define.AnalyseDataCreateLAO(message.Data)
 	if err != nil {
-
 		return define.ErrInvalidResource
 	}
 
@@ -255,9 +254,13 @@ func (h *hub) handleCreateLAO(message define.Message, canal string, generic defi
 
 	lao := define.LAO{ID: data.ID, Name: data.Name, Creation: data.Creation, LastModified: data.LastModified, OrganizerPKey: data.OrganizerPKey, Witnesses: data.Witnesses}
 
+	err = channel.CreateLAO(lao)
+	if err != nil {
+		return err
+	}
 	h.messageToBroadcast = define.CreateBroadcastMessage(message, generic)
 	h.channel = []byte(canal)
-	return channel.CreateLAO(lao)
+	return nil
 }
 
 func (h *hub) handleMessage(msg []byte, userId int) error {
