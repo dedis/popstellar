@@ -220,7 +220,8 @@ func selectDescriptionError(err error) string {
 	case ErrAccessDenied:
 		return "-5,\"description\":\"access denied\""
 		//(e.g. subscribing to a “restricted” channel)
+	default:
+		log.Fatal("type of error unrecognized:", err)
+		return ""
 	}
-	log.Fatal("type of error unrecognized")
-	return ""
 }

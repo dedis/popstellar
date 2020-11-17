@@ -2,7 +2,6 @@ package WebSocket
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"github.com/boltdb/bolt"
 	"log"
@@ -75,7 +74,7 @@ func NewHub() *hub {
 			h.connectionsMx.RLock()
 			for c := range h.connections {
 				//send msg to that connection if channel is main channel or is in channel subscribers
-				_, found := channel.Find(subscribers, c.id)
+				_, found := define.Find(subscribers, c.id)
 				if bytes.Compare(h.channel, []byte("0")) == 0 || found {
 					select {
 					case c.send <- msg:
@@ -152,6 +151,7 @@ func (h *hub) removeConnection(conn *connection) {
 // TODO careful with comma after witnesses[] and witnesses_signatures[]
 /*
 {"jsonrpc": "2.0", "method": "publish", "params": { "channel": "0", "message": { "data": { "object": "lao", "action": "create", "id": "0x123a", "name": "My LAO", "creation": 123, "last_modified": 123, "organizer": "0x123a", "witnesses": [], }, "sender": "0x123a", "signature": "0x123a", "message_id": "0x123a", "witness_signatures": [],} }, "id": 3}
+
 */
 
 // Param msg = receivedMessage
@@ -175,7 +175,7 @@ func (h *hub) HandleWholeMessage(msg []byte, userId int) {
 	//case "catchup": return h.handleCatchup() // TODO
 
 	default:
-		err = ErrRequestDataInvalid
+		err = define.ErrRequestDataInvalid
 	}
 
 	h.responseToSender <- define.CreateResponse(err, generic)
@@ -223,7 +223,7 @@ func (h *hub) handlePublish(generic define.Generic) error {
 		case "state":
 
 		default:
-			return ErrInvalidAction
+			return define.ErrInvalidAction
 		}
 
 	case "message":
@@ -231,7 +231,7 @@ func (h *hub) handlePublish(generic define.Generic) error {
 		case "witness":
 
 		default:
-			return ErrInvalidAction
+			return define.ErrInvalidAction
 		}
 
 	case "meeting":
@@ -241,11 +241,11 @@ func (h *hub) handlePublish(generic define.Generic) error {
 		case "state":
 
 		default:
-			return ErrInvalidAction
+			return define.ErrInvalidAction
 		}
 
 	default:
-		return ErrRequestDataInvalid
+		return define.ErrRequestDataInvalid
 	}
 
 	return nil
@@ -255,7 +255,7 @@ func (h *hub) handlePublish(generic define.Generic) error {
 func (h *hub) handleCreateLAO(message define.Message, canal string, generic define.Generic) error {
 
 	if canal != "0" {
-		return ErrInvalidResource
+		return define.ErrInvalidResource
 	} 
 
 	data, err := define.AnalyseDataCreateLAO(message.Data)
@@ -263,7 +263,7 @@ func (h *hub) handleCreateLAO(message define.Message, canal string, generic defi
 		return err
 	}
 
-	err = define.LAOCreatedIsValid(data, message) {
+	err = define.LAOCreatedIsValid(data, message)
 	if err != nil {
 		return err
 	}
