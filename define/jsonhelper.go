@@ -13,7 +13,7 @@ import (
 type Generic struct {
 	jsonrpc string
 	Method  string
-	Params  []byte
+	Params  json.RawMessage
 	id      string
 }
 
@@ -33,11 +33,11 @@ type ParamsLight struct {
 
 type ParamsFull struct {
 	Channel string
-	Message []byte
+	Message json.RawMessage
 }
 
 type Message struct {
-	Data              []byte
+	Data              json.RawMessage
 	Sender            string
 	Signature         string
 	MessageID         string
@@ -50,16 +50,16 @@ type DataCreateLAO struct {
 	Object string
 	Action string
 	//ID hash : Name || Creation Date/Time Unix Timestamp
-	ID []byte
+	ID string
 	// name of LAO
 	Name string
 	//Creation Date/Time
 	Creation int64 //  Unix timestamp (uint64)
 	LastModified int64 //timestamp
 	//Organiser: Public Key
-	OrganizerPKey []byte
+	OrganizerPKey string
 	//List of public keys where each public key belongs to one witness
-	Witnesses [][]byte
+	Witnesses []string
 	//List of public keys where each public key belongs to one member (physical person) (subscriber)
 }
 
@@ -73,33 +73,34 @@ func AnalyseGeneric(generic []byte) (Generic, error) {
 	return m, err
 }
 
-func AnalyseParamsLight(params []byte) (ParamsLight, error) {
+func AnalyseParamsLight(params json.RawMessage) (ParamsLight, error) {
 	m := ParamsLight{}
 	err := json.Unmarshal(params, &m)
 	return m, err
 }
 
-func AnalyseParamsFull(params []byte) (ParamsFull, error) {
+func AnalyseParamsFull(params json.RawMessage) (ParamsFull, error) {
 	m := ParamsFull{}
 	err := json.Unmarshal(params, &m)
 	return m, err
 }
 
-func AnalyseMessage(message []byte) (Message, error) {
+func AnalyseMessage(message json.RawMessage) (Message, error) {
 	m := Message{}
 	err := json.Unmarshal(message, &m)
 	return m, err
 }
 
-func AnalyseData(data []byte) (Data, error) {
+func AnalyseData(data json.RawMessage) (Data, error) {
 	m := Data{}
 	err := json.Unmarshal(data, &m)
 	return m, err
 }
 
-func AnalyseDataCreateLAO(data []byte) (DataCreateLAO, error) {
+func AnalyseDataCreateLAO(data json.RawMessage) (DataCreateLAO, error) {
 	m := DataCreateLAO{}
 	err := json.Unmarshal(data, &m)
+	fmt.Printf("%#v", m)
 	return m, err
 }
 
@@ -166,7 +167,7 @@ func CreateResponse(err error, generic Generic) []byte {
 	return []byte (ResponseToSenderInJson(err, generic.id))
 }
 
-func CreateBroadcast(message Message, generic Generic) []byte {
+func CreateBroadcastMessage(message Message, generic Generic) []byte {
 	broadc := Generic{
 		jsonrpc:	generic.jsonrpc,
 		Method:		"message",
@@ -179,6 +180,7 @@ func CreateBroadcast(message Message, generic Generic) []byte {
 		log.Fatal("couldn't Marshal the message to broadcast")
 	}
 	
+	fmt.Printf("in broadc3")
 	return []byte (b)
 }
 
