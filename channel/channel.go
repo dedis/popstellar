@@ -12,6 +12,7 @@ import (
 
 const bucketChannel = "general"
 const bucketSubscribers = "sub"
+const channelDatabase = "channel.db"
 
 /*
  * Function that subscribe a user to a channel. ONLY AT THE PUB/SUB LAYER
@@ -20,7 +21,7 @@ const bucketSubscribers = "sub"
  */
 func Subscribe(userId int, channelId []byte) error {
 
-	db, err := db.OpenChannelDB()
+	db, err := db.OpenDB(channelDatabase)
 	if err != nil {
 		return err
 	}
@@ -64,7 +65,7 @@ func Subscribe(userId int, channelId []byte) error {
 */
 func Unsubscribe(userId int, channelId []byte) error {
 
-	db, err := db.OpenChannelDB()
+	db, err := db.OpenDB(channelDatabase)
 	if err != nil {
 		return err
 	}
@@ -107,7 +108,7 @@ func Unsubscribe(userId int, channelId []byte) error {
 
 /*helper function to find a channel's subscribers */
 func GetSubscribers(channel []byte) ([]int, error) {
-	db, err := db.OpenChannelDB()
+	db, err := db.OpenDB(channelDatabase)
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +133,7 @@ func GetSubscribers(channel []byte) ([]int, error) {
 
 /*returns the content of a channel. Nil if channel does not exist*/
 func GetData(channel []byte) ([]byte, error) {
-	db, err := db.OpenChannelDB()
+	db, err := db.OpenDB(channelDatabase)
 	defer db.Close()
 	if err != nil {
 		return nil, err
@@ -158,7 +159,7 @@ func GetData(channel []byte) ([]byte, error) {
  */
 func UpdateChannel(userId int, channelId []byte, action []byte) error {
 
-	db, e := db.OpenChannelDB()
+	db, e := db.OpenDB(channelDatabase)
 	defer db.Close()
 	if e != nil {
 		return e
