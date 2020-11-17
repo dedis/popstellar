@@ -6,23 +6,6 @@ import "hash"
 Data Types:
 For readability (human) and proper encoding for JSON, these data types must be transmitted
 and/or displayed in the given format but may be stored in bytes.
-
-*/
-
-/* idea for BoltDB
-3 nested bucket
- key : ID => Value new Bucket(LAO_1){
-	key organizerpkyey => ...LAO
-	key memeber => new Bucket(LAO_MEMBERS){
-		key : 1 => ...
-		key : 2 => ...
-	}
-*/
-
-/*
-type pKey []byte
-type token []byte
-type signature []byte
 */
 
 type LAO struct {
@@ -31,7 +14,7 @@ type LAO struct {
 	// name of LAO
 	Name string
 	//Creation Date/Time
-	Creation int64 //  Unix timestamp (uint64)
+	Creation     int64 //  Unix timestamp (uint64)
 	LastModified int64 //timestamp
 	//Organiser: Public Key
 	OrganizerPKey []byte
@@ -40,38 +23,19 @@ type LAO struct {
 	//List of public keys where each public key belongs to one member (physical person) (subscriber)
 }
 
-
 type Event struct {
 	//id hash : SHA1(Name + Creation Date/Time Unix Timestamp)
 	ID []byte
 	// name of event
 	Name string
 	//Creation Date/Time
-	Creation int64 //  Unix timestamp (uint64)
+	Creation     int64 //  Unix timestamp (uint64)
 	LastModified int64 //timestamp
-	Location    string
-	Start int64 //  Unix timestamp (uint64)
-	End int64 //timestamp
-	Extra []byte
+	Location     string
+	Start        int64 //  Unix timestamp (uint64)
+	End          int64 //timestamp
+	Extra        []byte
 }
-
-
-
-//--------------------------------------
-
-/*Private information (*state stored only on the client*):
-Authentication: Private Key
-LAOs: [] Network
-Ownership, membership (regular, witness) can easily be determined when accessing the LAO.
-Participating events can also be determined when accessing the LAO object.*/
-type Person struct {
-	// name of person
-	name string
-	//public key
-	id []byte
-}
-
-
 
 type Election struct {
 	// name of election
