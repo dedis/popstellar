@@ -186,12 +186,10 @@ func CreateBroadcast(message Message, generic Generic) []byte {
 * Function that converts a Lao to a Json byte array
 * we suppose error is in the good range
  */
-func ResponseToSenderInJson(err int, id string) string {
+func ResponseToSenderInJson(err error, id string) string {
 	str := "{\"jsonrpc\": \"2.0\","
-	if err != 0 {
+	if err != nil {
 		str += "{ \"error\": { \"code\":"
-		str += strconv.Itoa(err)
-		str += ",\"description\":"
 		str += selectDescriptionError(err)
 		str += "}"
 	} else {
@@ -209,20 +207,21 @@ func ResponseToSenderInJson(err int, id string) string {
  */
 func selectDescriptionError(err error) string {
 	switch err {
-	case -1:
-		return "\"invalid action\""
-	case -2:
-		return "\"invalid resource\""
+	case ErrInvalidAction:
+		return "-1,\"description\":\"invalid action\""
+	case ErrInvalidResource:
+		return "-2,\"description\":\"invalid resource\""
 		//(e.g. channel does not exist,channel was not subscribed to, etc.)
-	case -3:
-		return "\"resource already exists\""
+	case ErrResourceAlreadyExists:
+		return "-3,\"description\":\"resource already exists\""
 		//(e.g. lao already exists, channel already exists, etc.)
-	case -4:
-		return "\"request data is invalid\""
+	case ErrRequestDataInvalid:
+		return "-4,\"description\":\"request data is invalid\""
 		//(e.g. message is invalid)
-	case -5:
-		return "\"access denied\""
+	case ErrAccessDenied:
+		return "-5,\"description\":\"access denied\""
 		//(e.g. subscribing to a “restricted” channel)
 	}
+	log.Fatal("type of error unrecognized")
 	return ""
 }
