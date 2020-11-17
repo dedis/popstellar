@@ -3,15 +3,14 @@ package ch.epfl.pop.pubsub
 import akka.NotUsed
 import akka.actor.typed.{ActorRef, ActorSystem}
 import akka.http.scaladsl.model.ws.{Message, TextMessage}
-import akka.stream.FlowShape
+import akka.stream.{FlowShape, UniformFanInShape, UniqueKillSwitch}
 import akka.stream.scaladsl.{BroadcastHub, Flow, GraphDSL, Keep, Merge, MergeHub, Partition, Sink}
 import akka.stream.typed.scaladsl.ActorFlow
 import akka.util.Timeout
 import ch.epfl.pop.DBActor.{DBMessage, Read, Write}
 import ch.epfl.pop.json.JsonMessageParser.{parseMessage, serializeMessage}
-import ch.epfl.pop.json.JsonMessages.{AnswerMessageServer, CreateChannelClient, FetchChannelClient, FetchChannelServer, JsonMessage, NotifyChannelServer, PublishChannelClient, SubscribeChannelClient}
-import ch.epfl.pop.pubsub.ChannelActor.{ChannelMessage, CreateMessage, SubscribeMessage}
-import org.iq80.leveldb.DB
+import ch.epfl.pop.json.JsonMessages.{AnswerMessageServer, CreateChannelClient, FetchChannelClient, JsonMessage, NotifyChannelServer, PublishChannelClient, SubscribeChannelClient, UnsubscribeChannelClient}
+import ch.epfl.pop.pubsub.ChannelActor.{Answer, AnswerSubscribe, ChannelActorAnswer, ChannelMessage, CreateMessage, SubscribeMessage}
 
 import scala.util.{Failure, Success, Try}
 
@@ -32,18 +31,21 @@ object PublishSubscribe {
 
       //Initialize Inlet/Outlets
       val input = builder.add(Flow[JsonMessage])
-      val merge = builder.add(Merge[JsonMessage](3))
+      val merge = builder.add(Merge[JsonMessage](4))
       val output = builder.add(Flow[JsonMessage])
+      //val mergeUnsub = builder.add(Merge[UnsubMessage](2))
 
       val Create = 0
       val Subscribe = 0
+      val Unsubscribe = 3
       val Publish = 1
       val Fetch = 2
-      val partitioner = builder.add(Partition[JsonMessage](3,
+      val partitioner = builder.add(Partition[JsonMessage](4,
         {
           _ match {
             case CreateChannelClient(_, _) => Create
             case SubscribeChannelClient(_) => Subscribe
+            case UnsubscribeChannelClient(_) => Unsubscribe
             case PublishChannelClient(_, _) => Publish
             case FetchChannelClient(_,_) => Fetch
           }
@@ -51,13 +53,29 @@ object PublishSubscribe {
       ))
 
       //ActorFlow handling channel creation and subscription
-      val actorFlow = ActorFlow.ask[JsonMessage, ChannelMessage, JsonMessage](actor) {
+      val actorFlow = ActorFlow.ask[JsonMessage, ChannelMessage, ChannelActorAnswer](actor) {
         (message, replyTo) =>
           message match {
             case CreateChannelClient(message, contract) => CreateMessage(message, replyTo)
             case SubscribeChannelClient(channel) => SubscribeMessage(channel, userSink, replyTo)
           }
       }
+
+      val channelAnswerPartitioner = builder.add(Partition[ChannelActorAnswer](2, {
+        _ match {
+          case Answer(_) => 0
+          case AnswerSubscribe(_, _, _) => 1
+        }
+      }))
+
+
+      val answerToJSON = Flow[ChannelActorAnswer].map{ case Answer(jsonMessage) => jsonMessage}
+
+      val unsub = builder.add(unsubHandler())
+
+      val unsubMap = Flow[JsonMessage].map{case UnsubscribeChannelClient(channel) => UnsubRequest(channel)}
+
+      val unsubMap2 = Flow[ChannelActorAnswer].map{case a: AnswerSubscribe => a}
 
       val writeDb = ActorFlow.ask[JsonMessage, DBMessage, NotifyChannelServer](dbActor) {
         (message, replyTo) =>
@@ -77,15 +95,14 @@ object PublishSubscribe {
           }
       }
 
-        Flow[JsonMessage].map {
-        case FetchChannelClient(channel, id) =>
-
-      }
-
       //Connect the graph
       input ~> partitioner
       partitioner.out(Publish) ~> writeDb ~> pubEntry
-      partitioner.out(Create) ~> actorFlow ~> merge
+      partitioner.out(Create) ~> actorFlow ~> channelAnswerPartitioner
+      channelAnswerPartitioner.out(0) ~> answerToJSON ~> merge
+      channelAnswerPartitioner.out(1) ~> unsubMap2 ~> unsub
+      partitioner.out(Unsubscribe) ~> unsubMap ~> unsub
+      unsub ~> merge
       partitioner.out(Fetch) ~> fetchDb ~> merge
       userSource ~> merge
       merge ~> output
@@ -93,6 +110,42 @@ object PublishSubscribe {
       FlowShape(input.in, output.out)
     }
     )
+  }
+
+  private def unsubHandler() = GraphDSL.create(){ implicit builder =>
+    import GraphDSL.Implicits._
+    val merge = builder.add(Merge[UnsubMessage](2))
+
+    val unsub = Flow[UnsubMessage].statefulMapConcat{() =>
+      var channels: Map[String, UniqueKillSwitch] = Map.empty
+
+      {_ match {
+        case AnswerSubscribe(jsonMessage, channel, Some(killSwitch)) =>
+          channels = channels + (channel -> killSwitch)
+          List(jsonMessage)
+
+        case AnswerSubscribe(jsonMessage, _, None) =>
+          List(jsonMessage)
+
+        case UnsubRequest(channel) =>
+
+          val message =
+            if(channels.contains(channel)) {
+              channels(channel).shutdown()
+              channels = channels.removed(channel)
+              AnswerMessageServer(true, None)
+            }
+            else {
+              AnswerMessageServer(false, Some("You are not subscribed to this channel."))
+            }
+          List(message)
+      }
+      }
+    }
+
+    val out = merge.out ~> unsub
+
+    UniformFanInShape(out.outlet, merge.in(0), merge.in(1))
   }
 
   /**

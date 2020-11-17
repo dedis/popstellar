@@ -142,12 +142,21 @@ object JsonMessages {
   final case class SubscribeChannelClient(channel: ChannelName) extends JsonMessagePubSubClient
 
   /**
+   * Parsed message from client asking to unsubscribe to a Channel
+   *
+   * @param channel the channel's name
+   */
+  final case class UnsubscribeChannelClient(channel: ChannelName) extends JsonMessagePubSubClient
+
+  /**
    * Parsed message from client asking for the content of a Channel
    *
    * @param channel  the channel's name
    * @param event_id the event's id
    */
   final case class FetchChannelClient(channel: ChannelName, event_id: UNKNOWN) extends JsonMessagePubSubClient
+
+
 
 
   /*
