@@ -2,9 +2,9 @@ package define
 
 import (
 	"encoding/json"
-	"strconv"
-	"log"
 	"fmt"
+	"log"
+	"strconv"
 )
 
 // TODO, we have exactly this issue : https://stackoverflow.com/questions/20101954/json-unmarshal-nested-object-into-string-or-byte
@@ -54,7 +54,7 @@ type DataCreateLAO struct {
 	// name of LAO
 	Name string
 	//Creation Date/Time
-	Creation int64 //  Unix timestamp (uint64)
+	Creation     int64 //  Unix timestamp (uint64)
 	LastModified int64 //timestamp
 	//Organiser: Public Key
 	OrganizerPKey string
@@ -63,25 +63,26 @@ type DataCreateLAO struct {
 	//List of public keys where each public key belongs to one member (physical person) (subscriber)
 }
 type ErrorResponse struct {
-	Code int
+	Code        int
 	Description string
 }
 
 type ResponseWithGenResult struct {
-	Jsonrpc      	string
-	Result      	int
-	Id 				int
+	Jsonrpc string
+	Result  int
+	Id      int
 }
 type ResponseWithCatchupResult struct {
-	Jsonrpc      	string
-	Result      	string
-	Id 				int
+	Jsonrpc string
+	Result  string
+	Id      int
 }
 type ResponseWithError struct {
-	Jsonrpc      	string
-	ErrorResponse   string
-	Id 				int
+	Jsonrpc       string
+	ErrorResponse string
+	Id            int
 }
+
 /**
  * Function that takes a byte array as input and returns
  * a Message struct
@@ -184,17 +185,17 @@ func SliceToJson(title string, data [][]byte) string {
 
 func CreateBroadcastMessage(message Message, generic Generic) []byte {
 	broadc := Generic{
-		Jsonrpc:	generic.Jsonrpc,
-		Method:		"message",
-		Params: 	generic.Params,
-		Id:			generic.Id,
+		Jsonrpc: generic.Jsonrpc,
+		Method:  "message",
+		Params:  generic.Params,
+		Id:      generic.Id,
 	}
 	b, err := json.Marshal(broadc)
 
 	if err != nil {
 		log.Fatal("couldn't Marshal the message to broadcast")
 	}
-	
+
 	return b
 }
 
@@ -203,27 +204,27 @@ func CreateBroadcastMessage(message Message, generic Generic) []byte {
 * we suppose error is in the good range
  */
 
-func CreateResponse(err error, /*messages [],*/generic Generic) []byte {
-	if err!= nil {
-		resp := ResponseWithError {
-			Jsonrpc	:      	"2.0",
-			ErrorResponse :	selectDescriptionError(err),
-			Id		:		generic.Id,
+func CreateResponse(err error /*messages [],*/, generic Generic) []byte {
+	if err != nil {
+		resp := ResponseWithError{
+			Jsonrpc:       "2.0",
+			ErrorResponse: string(selectDescriptionError(err)),
+			Id:            generic.Id,
 		}
 		b, err := json.Marshal(resp)
 		if err != nil {
 			fmt.Println("couldn't Marshal the response")
 		}
-		fmt.Println(string (b))
+		fmt.Println(string(b))
 		return b
 
 	} else {
 		//if(messages == null)// Mauvaise syntaxe{
-			resp := ResponseWithGenResult{
-				Jsonrpc:      	"2.0",
-				Result:      	0,
-				Id 		:		generic.Id,
-			}
+		resp := ResponseWithGenResult{
+			Jsonrpc: "2.0",
+			Result:  0,
+			Id:      generic.Id,
+		}
 		/*}else{
 			resp := ResponseWithCatchupResult{
 				jsonrpc:      	"2.0",
@@ -243,36 +244,36 @@ func CreateResponse(err error, /*messages [],*/generic Generic) []byte {
 *	return the associate description error
 *	we check the validity (error vetween -1 and -5) before the function
  */
-func selectDescriptionError(err error) string {
+func selectDescriptionError(err error) []byte {
 	var errResp ErrorResponse
 	switch err {
 	case ErrInvalidAction:
-		errResp = ErrorResponse {
-			Code:-1,
+		errResp = ErrorResponse{
+			Code:        -1,
 			Description: "invalid action",
 		}
 	case ErrInvalidResource:
-		errResp = ErrorResponse {
-			Code:-2,
+		errResp = ErrorResponse{
+			Code:        -2,
 			Description: "invalid resource",
 		}
 		//(e.g. channel does not exist,channel was not subscribed to, etc.)
 	case ErrResourceAlreadyExists:
 		fmt.Println("in good case")
-		errResp = ErrorResponse {
-			Code:-3,
+		errResp = ErrorResponse{
+			Code:        -3,
 			Description: "resource already exists",
 		}
 		//(e.g. lao already exists, channel already exists, etc.)
 	case ErrRequestDataInvalid:
-		errResp = ErrorResponse {
-			Code:-4,
+		errResp = ErrorResponse{
+			Code:        -4,
 			Description: "request data is invalid",
 		}
 		//(e.g. message is invalid)
 	case ErrAccessDenied:
-		errResp = ErrorResponse {
-			Code:-5,
+		errResp = ErrorResponse{
+			Code:        -5,
 			Description: "access denied",
 		}
 		//(e.g. subscribing to a “restricted” channel)
@@ -280,7 +281,7 @@ func selectDescriptionError(err error) string {
 		fmt.Printf("%v", err)
 		// TODO decide if we crash everything or not
 		// log.Fatal("type of error unrecognized")
-		return "" //should never arrive here
+		return nil //should never arrive here
 	}
 
 	b, err := json.Marshal(errResp)
@@ -288,6 +289,6 @@ func selectDescriptionError(err error) string {
 	if err != nil {
 		log.Fatal("couldn't Marshal the message to broadcast")
 	}
-	
-	return string (b)
+
+	return b
 }
