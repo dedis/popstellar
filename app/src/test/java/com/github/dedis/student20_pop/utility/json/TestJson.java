@@ -25,10 +25,13 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
+/**
+ * Test object encoding and decoding with Gson
+ */
 public class TestJson {
 
     private final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(ChanneledMessage.class, new JsonRequestSerializer())
+            .registerTypeAdapter(ChanneledMessage.class, new JsonLowMessageSerializer())
             .registerTypeAdapter(Result.class, new JsonResultSerializer())
             .registerTypeAdapter(Message.class, new JsonMessageSerializer())
             .create();

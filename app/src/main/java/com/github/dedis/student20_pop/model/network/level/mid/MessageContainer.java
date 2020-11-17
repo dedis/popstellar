@@ -3,6 +3,11 @@ package com.github.dedis.student20_pop.model.network.level.mid;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Container of a high level message.
+ *
+ * It is encapsulated inside low level messages
+ */
 public class MessageContainer {
 
     private final String sender;

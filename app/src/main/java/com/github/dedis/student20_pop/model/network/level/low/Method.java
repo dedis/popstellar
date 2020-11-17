@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Enumerate the different low level messages' method
+ */
 public enum Method {
 
     SUBSCRIBE("subscribe", Subscribe.class, true),

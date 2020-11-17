@@ -3,6 +3,11 @@ package com.github.dedis.student20_pop.model.network.level.low.result;
 
 import java.util.Objects;
 
+/**
+ * An abstract result from a request
+ *
+ * Is linked to an earlier request with a unique id
+ */
 public abstract class Result {
 
     private final int id;

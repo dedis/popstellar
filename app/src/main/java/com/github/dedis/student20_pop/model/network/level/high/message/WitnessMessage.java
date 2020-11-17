@@ -4,6 +4,9 @@ import com.github.dedis.student20_pop.model.network.level.high.Action;
 import com.github.dedis.student20_pop.model.network.level.high.Message;
 import com.github.dedis.student20_pop.model.network.level.high.Objects;
 
+/**
+ * Message sent to attest the message as a witness
+ */
 public class WitnessMessage extends Message {
 
     private final String message_id;

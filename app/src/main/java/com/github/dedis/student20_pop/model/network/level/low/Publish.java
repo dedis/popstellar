@@ -4,6 +4,9 @@ import com.github.dedis.student20_pop.model.network.level.mid.MessageContainer;
 
 import java.util.Objects;
 
+/**
+ * Publish a message on a channel
+ */
 public final class Publish extends Request {
 
     private final MessageContainer message;

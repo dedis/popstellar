@@ -2,6 +2,9 @@ package com.github.dedis.student20_pop.model.network.level.low;
 
 import java.util.Objects;
 
+/**
+ * An abstract low level message that is sent over a specific channel
+ */
 public abstract class ChanneledMessage {
 
     private final String channel;

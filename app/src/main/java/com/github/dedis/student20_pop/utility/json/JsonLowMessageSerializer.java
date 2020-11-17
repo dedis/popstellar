@@ -13,21 +13,24 @@ import com.google.gson.JsonSerializer;
 
 import java.lang.reflect.Type;
 
-public class JsonRequestSerializer implements JsonSerializer<ChanneledMessage>, JsonDeserializer<ChanneledMessage> {
+/**
+ * Json serializer and deserializer for the low level messages
+ */
+public class JsonLowMessageSerializer implements JsonSerializer<ChanneledMessage>, JsonDeserializer<ChanneledMessage> {
 
     @Override
     public ChanneledMessage deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonRPCRequest container = context.deserialize(json, JsonRPCRequest.class);
-        if(!container.jsonrpc.equals("2.0"))
-            throw new JsonParseException("Unable to parse jsonrpc version : " + container.jsonrpc);
+        JsonUtils.testRPCVersion(container.jsonrpc);
 
         Method method = Method.find(container.method);
         if(method == null)
             throw new JsonParseException("Unknown method type " + container.method);
         JsonObject params = container.params;
 
+        // If the Channeled Message is a Request, we need to give the params the id the the request
         if(method.expectResult())
-            params.add("id", json.getAsJsonObject().get("id"));
+            params.add(JsonUtils.JSON_REQUEST_ID, json.getAsJsonObject().get(JsonUtils.JSON_REQUEST_ID));
 
         return context.deserialize(params, method.getDataClass());
     }
@@ -36,10 +39,10 @@ public class JsonRequestSerializer implements JsonSerializer<ChanneledMessage>, 
     public JsonElement serialize(ChanneledMessage src, Type typeOfSrc, JsonSerializationContext context) {
         JsonObject params = context.serialize(src).getAsJsonObject();
 
-        JsonObject obj = context.serialize(new JsonRPCRequest("2.0", src.getMethod(), params)).getAsJsonObject();
+        JsonObject obj = context.serialize(new JsonRPCRequest(JsonUtils.JSON_RPC_VERSION, src.getMethod(), params)).getAsJsonObject();
 
         if(src instanceof Request)
-            obj.addProperty("id", ((Request) src).getRequestID());
+            obj.addProperty(JsonUtils.JSON_REQUEST_ID, ((Request) src).getRequestID());
 
         return obj;
     }

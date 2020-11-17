@@ -14,22 +14,28 @@ import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 import java.util.Map;
 
+/**
+ * Json serializer and deserializer for the high level messages
+ */
 public class JsonMessageSerializer implements JsonSerializer<Message>, JsonDeserializer<Message> {
+
+    private static final String OBJECT = "object";
+    private static final String ACTION = "action";
 
     @Override
     public Message deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject obj = json.getAsJsonObject();
-        Objects object = Objects.find(obj.get("object").getAsString());
-        Action action = Action.find(obj.get("action").getAsString());
+        Objects object = Objects.find(obj.get(OBJECT).getAsString());
+        Action action = Action.find(obj.get(ACTION).getAsString());
 
         if(object == null)
-            throw new JsonParseException("Unknown object type : " + obj.get("object").getAsString());
+            throw new JsonParseException("Unknown object type : " + obj.get(OBJECT).getAsString());
         if(action == null)
-            throw new JsonParseException("Unknown action type : " + obj.get("action").getAsString());
+            throw new JsonParseException("Unknown action type : " + obj.get(ACTION).getAsString());
 
         Map<Action, Class<? extends Message>> actionClassMap = Message.messages.get(object);
         if(actionClassMap == null)
-            throw new JsonParseException("Unknown object type : " + obj.get("object").getAsString());
+            throw new JsonParseException("Unknown object type : " + obj.get(OBJECT).getAsString());
 
         Class<? extends Message> clazz = actionClassMap.get(action);
         if(clazz == null)
@@ -41,8 +47,8 @@ public class JsonMessageSerializer implements JsonSerializer<Message>, JsonDeser
     @Override
     public JsonElement serialize(Message src, Type typeOfSrc, JsonSerializationContext context) {
         JsonObject obj = context.serialize(src).getAsJsonObject();
-        obj.addProperty("object", src.getObject());
-        obj.addProperty("action", src.getAction());
+        obj.addProperty(OBJECT, src.getObject());
+        obj.addProperty(ACTION, src.getAction());
         return obj;
     }
 }

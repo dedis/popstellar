@@ -11,6 +11,9 @@ import com.github.dedis.student20_pop.model.network.level.high.Objects;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Message sent to update the lao specifications
+ */
 public class UpdateLao extends Message {
 
     private final String name;

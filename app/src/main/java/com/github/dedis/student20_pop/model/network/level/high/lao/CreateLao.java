@@ -7,6 +7,9 @@ import com.github.dedis.student20_pop.model.network.level.high.Objects;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Message sent when creating a new lao
+ */
 public class CreateLao extends Message {
 
     private final String id; //Hash (organizer + creation + name)

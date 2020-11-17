@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Enumerates all possible messages objects
+ */
 public enum Objects {
 
     LAO("lao"),
