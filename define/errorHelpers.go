@@ -4,9 +4,6 @@ import (
 	"errors"
 )
 
-/*TODO:
-responseToJson in marshall
-*/
 
 var ErrInvalidAction = errors.New("invalid action")
 var ErrInvalidResource = errors.New("invalid resource")
