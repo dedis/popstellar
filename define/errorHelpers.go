@@ -11,3 +11,5 @@ var ErrResourceAlreadyExists = errors.New("resource already exists")
 var ErrRequestDataInvalid = errors.New("request data is invalid")
 var ErrAccessDenied = errors.New("access denied")
 
+var ErrDBFault = errors.New("error in the DB")
+

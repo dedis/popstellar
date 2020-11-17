@@ -10,16 +10,16 @@ and/or displayed in the given format but may be stored in bytes.
 
 type LAO struct {
 	//ID hash : Name || Creation Date/Time Unix Timestamp
-	ID []byte
+	ID string
 	// name of LAO
 	Name string
 	//Creation Date/Time
 	Creation     int64 //  Unix timestamp (uint64)
 	LastModified int64 //timestamp
 	//Organiser: Public Key
-	OrganizerPKey []byte
+	OrganizerPKey string
 	//List of public keys where each public key belongs to one witness
-	Witnesses [][]byte
+	Witnesses []string
 	//List of public keys where each public key belongs to one member (physical person) (subscriber)
 }
 

@@ -1,7 +1,6 @@
 package WebSocket
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/boltdb/bolt"
 	"log"
@@ -55,39 +54,40 @@ func NewHub() *hub {
 	go func() {
 		for {
 			msg := <- h.receivedMessage
+
 			h.HandleWholeMessage(msg, h.idOfSender)
 			msg = <- h.message
+			// TODO adapt as needed
+			msg = <- h.responseToSender
 
-			chann := h.channel
+			//chann := h.channel
 
-			var subscribers []int = nil
+			/*var subscribers []int = nil
 			var err error = nil
 			if bytes.Compare(chann, []byte("0")) != 0 {
 				subscribers, err = channel.GetSubscribers(chann)
 				if err != nil {
-					log.Fatal(err)
+					log.Fatal("can't get subscribers", err)
 				}
-			}
-
-
+			}*/
 
 			h.connectionsMx.RLock()
 			for c := range h.connections {
 				//send msg to that connection if channel is main channel or is in channel subscribers
-				_, found := define.Find(subscribers, c.id)
-				msg = <- h.responseToSender
-				if bytes.Compare(h.channel, []byte("0")) == 0 || found {
+				//_, found := define.Find(subscribers, c.id)
+
+				//if bytes.Compare(h.channel, []byte("0")) == 0 || found {
 					select {
 						// TODO go back to msg here and send response somewhere else
 	
-					case c.send <- msg:
+					case c.send <- []byte ("msg"):
 					// stop trying to send to this connection after trying for 1 second.
 					// if we have to stop, it means that a reader died so remove the connection also.
 					case <-time.After(1 * time.Second):
 						log.Printf("shutting down connection %c", c.id)
 						h.removeConnection(c)
 					}
-				}
+				//}
 			}
 			h.connectionsMx.RUnlock()
 		}
@@ -176,7 +176,7 @@ func (h *hub) HandleWholeMessage(msg []byte, userId int) {
 	default:
 		err = define.ErrRequestDataInvalid
 	}
-
+	fmt.Printf("after creatingLAO")
 	h.responseToSender <- define.CreateResponse(err, generic)
 }
 
@@ -259,18 +259,21 @@ func (h *hub) handleCreateLAO(message define.Message, canal string, generic defi
 
 	data, err := define.AnalyseDataCreateLAO(message.Data)
 	if err != nil {
-		return err
-	}
 
-	err = define.LAOCreatedIsValid(data, message)
+		return define.ErrInvalidResource
+	}		
+
+	// TODO
+	/*err = define.LAOCreatedIsValid(data, message)
 	if err != nil {
-		return err
-	}
+		return define.ErrAccessDenied
+	}*/
+	
+	lao := define.LAO{ID: data.ID, Name: data.Name, Creation: data.Creation, LastModified: data.LastModified, OrganizerPKey: data.OrganizerPKey, Witnesses: data.Witnesses}
 
-	lao := define.LAO{data.ID, data.Name, data.Creation, data.LastModified, data.OrganizerPKey, data.Witnesses}
+	h.message <- define.CreateBroadcastMessage(message, generic)
 
-
-	h.message <- define.CreateBroadcast(message, generic)
+	fmt.Printf("after setting broadcast")
 
 	return channel.CreateLAO(lao)
 }
