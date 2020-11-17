@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft/2019-09/schema#",
+    "$id": "http://pop2020.dedis.ch/generic.json",
+    "type": "object",
+    "properties" : {
+        "jsonrpc": {
+            "const": "2.0"
+        },
+        "method": {
+            "description": "Operation to be performed",
+            "type": "string",
+            "enum": ["subscribe","unsubscribe","publish","message","catchup"]
+        },
+        "params": {
+            "description": "Content of the request",
+            "type": "object"
+        },
+        "id": {
+            "description": "Unique identifier for the request",
+            "type": "integer"
+        }
+    },
+    "required": ["jsonrpc", "method", "id"]
+}
