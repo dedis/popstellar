@@ -6,8 +6,6 @@ import (
 	"student20_pop/db"
 )
 
-const DatabaseLao = "channel.db"
-
 // would be nice to have an interface that contains methods add, remove and edit for LAO, event and vote
 
 /*
@@ -16,7 +14,7 @@ const DatabaseLao = "channel.db"
  * TODO : Keep it ? or put everything in the Channel DB ?
  */
 func OpenLAODB() (*bolt.DB, error) {
-	return db.OpenDB(DatabaseLao)
+	return db.OpenDB(db.DatabaseChannel)
 }
 
 /**
