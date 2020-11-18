@@ -7,7 +7,7 @@
 
     <TextView
         android:id="@+id/organization_name"
-        android:layout_width="350dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="@dimen/size_title"
         android:layout_alignParentStart="true"
