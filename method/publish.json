@@ -1,0 +1,37 @@
+{
+    "$comment": "By executing a publish action, an attendee communicates its intention to publish a specific message on a channel.",
+    "$schema": "http://json-schema.org/draft/2019-09/schema#",
+    "$id": "http://pop2020.dedis.ch/publish.json",
+    "type": "object",
+    "properties" : {
+        "jsonrpc": {
+            "const": "2.0"
+        },
+        "method": {
+            "description": "Operation to be performed",
+            "type": "string",
+            "enum": ["publish"]
+        },
+        "params": {
+            "description": "Content of the request",
+            "type": "object",
+            "properties": {
+                "channel": {
+                    "description": "Channel id",
+                    "type": "string"
+                },
+                "message": {
+                    "description": "Content of the message",
+                    "type": "object"
+                }
+            },
+            "required": ["channel", "message"]
+        },
+        "id": {
+            "description": "Unique identifier for the request",
+            "type": "integer"
+        }
+
+    },
+    "required": ["jsonrpc", "method", "params", "id"]
+}

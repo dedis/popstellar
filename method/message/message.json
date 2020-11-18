@@ -1,0 +1,67 @@
+{
+    "$comment": "By executing a publish action, an attendee communicates its intention to publish a specific message on a channel.",
+    "$schema": "http://json-schema.org/draft/2019-09/schema#",
+    "$id": "http://pop2020.dedis.ch/message.json",
+    "type": "object",
+    "properties" : {
+        "jsonrpc": {
+            "const": "2.0"
+        },
+        "method": {
+            "description": "Operation to be performed",
+            "type": "string",
+            "enum": ["publish", "broadcast"]
+        },
+        "params": {
+            "description": "Content of the request",
+            "type": "object",
+            "properties": {
+                "channel": {
+                    "description": "Channel id",
+                    "type": "string"
+                },
+                "message": {
+                    "description": "Content of the message",
+                    "type": "object",
+                    "properties": {
+                        "data": {
+                            "description": "base64 representation of the data",
+                            "type": "object",
+                            "$comment": "must be in base64"
+                        },
+                        "sender": {
+                            "description": "Public key of sender",
+                            "type": "string"
+                        },
+                        "signature": {
+                            "description": "Signature by sender over data",
+                            "type": "string"
+                        },
+                        "message_id": {
+                            "$comment": "BFord: Not sure that this actually needs to be transmitted, since it can simply be computed from the data and signature?",
+                            "description": "hash(data||signature)",
+                            "type": "string"
+                        },
+                        "witness_signatures": {
+                            "description": "Signature by witnesses (sender||data)",
+                            "type": "array",
+                            "items": {
+                                "$comment": "slightly unsure about the type here",
+                                "$comment": "initially empty array, will be filled on further message. Not sure whether it should be in the required list (but allowed to be empty) or not",
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "required": ["data", "sender", "signature", "message_id", "witness_signatures"]
+                }
+            },
+            "required": ["channel", "message"]
+        },
+        "id": {
+            "description": "Unique identifier for the request",
+            "type": "integer"
+        }
+
+    },
+    "required": ["jsonrpc", "method", "params", "id"]
+}

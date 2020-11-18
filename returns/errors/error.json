@@ -26,7 +26,8 @@
                 "descri": {
                     "description": "error description",
                     "type": "string"
-                }
+                },
+                "required": ["code", "descri"]
             }
         },
         "id": {

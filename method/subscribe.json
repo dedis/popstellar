@@ -1,4 +1,5 @@
 {
+    "$comment": "By executing a subscribe action, a client can start receiving messages from that channel.",
     "$schema": "http://json-schema.org/draft/2019-09/schema#",
     "$id": "http://pop2020.dedis.ch/subscribe.json",
     "type": "object",
@@ -19,7 +20,8 @@
                     "description": "Channel id",
                     "type": "string"
                 }
-            }
+            },
+            "required": ["channel"]
         },
         "id": {
             "description": "Unique identifier for the request",

@@ -4,7 +4,7 @@ Proof-of-personhood, fall 2020: Protocol specification
 
 _Most of the sub-folders have their own README detailing some general information about their layer._
 
-Every type = object is described in more details in a sub-folder.
+Every "type" : "object" is described in more details in a sub-folder.
 
 There might a way to avoid repeating all the wrapping information by using refs, but for now, it may be safer to just repeat it so that every json file is guaranteed to be complete.
 
