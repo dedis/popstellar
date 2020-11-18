@@ -3,6 +3,8 @@ package ch.epfl.pop.json
 import ch.epfl.pop.json.Actions.Actions
 import ch.epfl.pop.json.Objects.Objects
 
+
+
 object JsonUtils {
 
   /** JSON-RPC protocol version */
@@ -10,7 +12,7 @@ object JsonUtils {
 
   /** Transform a String in hex ("0xabc") into a HexString ("abc") */
   def hexStringUnwrap(s: String): HexString = {
-    if (s.startsWith("0x")) s.drop(2)
+    if (s.startsWith("0x") || s.startsWith("0X")) s.drop(2)
     else s
   }
 
