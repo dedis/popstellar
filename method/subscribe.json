@@ -1,26 +1,23 @@
 {
-    "$comment": "By executing a subscribe action, a client can start receiving messages from that channel.",
-    "$schema": "http://json-schema.org/draft/2019-09/schema#",
-    "$id": "http://pop2020.dedis.ch/subscribe.json",
-    "type": "object",
-    "properties" : {
-        "method": {
-            "description": "Operation to be performed",
-            "type": "string",
-            "enum": ["subscribe"]
-        },
-        "params": {
-            "description": "Content of the request",
-            "type": "object",
-            "properties": {
-                "channel": {
-                    "description": "Channel id",
-                    "type": "string"
-                }
-            },
-            "required": ["channel"]
-        }
+	"$schema": "http://json-schema.org/draft/2019-09/schema#",
+	"$id": "http://pop2020.dedis.ch/subscribe.json",
+	"description": "Match subscribe to a channel client query",
+	"type": "object",
 
-    },
-    "required": ["method", "params"]
+	"properties": {
+		"method": { 
+			"description": "[String] operation to be performed by the query",
+			"const": "subscribe" 
+		},
+		"params": {
+			"type": "object",
+			"properties": {
+				"channel": { "description": "[String] name of the channel", "$ref": "channel/subChannel.json" }
+			},
+			"additionalProperties": false,
+			"required": ["channel"]
+		},
+		"id": { "type": "integer" }
+	},
+	"required": ["method", "params", "id"]
 }

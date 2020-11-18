@@ -1,0 +1,23 @@
+{
+	"$schema": "http://json-schema.org/draft/2019-09/schema#",
+	"$id": "http://pop2020.dedis.ch/catchup.json",
+	"description": "Match catchup on past message on a channel query",
+	"type": "object",
+
+	"properties": {
+		"method": { 
+			"description": "[String] operation to be performed by the query",
+			"const": "catchup" 
+		},
+		"params": {
+			"type": "object",
+			"properties": {
+				"channel": { "description": "[String] name of the channel", "$ref": "channel/subChannel.json" }
+			},
+			"additionalProperties": false,
+			"required": ["channel"]
+		},
+		"id": { "type": "integer" }
+	},
+	"required": ["method", "params", "id"]
+}

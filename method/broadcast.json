@@ -1,10 +1,34 @@
 {
-    "$comment": "Previously called message.json, I'd suggest to rename it to broadcast as 1) it's what it does 2) it disambiguates it from the mid-level field message",
-    "$comment": "If you agree, we would also need to change the enum in generic from message to broadcast",
-    "$schema": "http://json-schema.org/draft/2019-09/schema#",
-    "$id": "http://pop2020.dedis.ch/low-level/broadcast.json",
-    "properties": {
-        
-    }
+	"$schema": "http://json-schema.org/draft/2019-09/schema#",
+	"$id": "http://pop2020.dedis.ch/broadcast.json",
+	"description": "Match propagation/broadcast of a message on a channel query",
+	"type": "object",
 
+	"properties": {
+		"method": { 
+			"description": "[String] operation to be performed by the query",
+			"const": "message" 
+		},
+		"params": {
+			"type": "object",
+			"properties": {
+				"channel": { "description": "[String] name of the channel", "$ref": "channel/subChannel.json" },
+				"message": { 
+					"description": "[Message] message to be published", 
+					"oneOf": [
+						{ "$ref": "message/messageUpdateLao.json" },
+						{ "$ref": "message/messageStateLao.json" },
+						{ "$ref": "message/messageWitnessMessage.json" },
+						{ "$ref": "message/messageCreateMeeting.json" },
+						{ "$ref": "message/messageStateMeeting.json" }
+					]
+				}
+			},
+			"additionalProperties": false,
+			"required": ["channel", "message"]
+		}
+	},
+	"maxProperties": 3,
+	"required": ["method", "params"],
+	"$comment": "Note: only 3 properties on this query!"
 }

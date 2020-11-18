@@ -1,29 +1,59 @@
 {
-    "$comment": "By executing a publish action, an attendee communicates its intention to publish a specific message on a channel.",
-    "$schema": "http://json-schema.org/draft/2019-09/schema#",
-    "$id": "http://pop2020.dedis.ch/publish.json",
-    "type": "object",
-    "properties" : {
-        "method": {
-            "description": "Operation to be performed",
-            "type": "string",
-            "enum": ["publish"]
-        },
-        "params": {
-            "description": "Content of the request",
-            "type": "object",
-            "properties": {
-                "channel": {
-                    "description": "Channel id",
-                    "type": "string"
-                },
-                "message": {
-                    "$ref": "message/message.json#/definition"
-                }
-            },
-            "required": ["channel", "message"]
-        }
+	"$schema": "http://json-schema.org/draft/2019-09/schema#",
+	"$id": "http://pop2020.dedis.ch/publish.json",
+	"description": "Match publish query",
+	"type": "object",
 
-    },
-    "required": ["method", "params"]
+	"properties": {
+		"method": { 
+			"description": "[String] operation to be performed by the query",
+			"const": "publish" 
+		},
+		"params": {
+			"oneOf": [
+				{
+					"description": "Match a publish query destined for the root channel",
+					"type": "object",
+					"properties": {
+						"channel": { 
+							"description": "[String] name of the (root) channel", 
+							"$ref": "channel/rootChannel.json",
+							"$comment": "Note: should always be \"/root\""
+						},
+						"message": { 
+							"description": "[Message] message to be published",
+							"$ref": "message/messageCreateLao.json"
+						}
+					},
+					"additionalProperties": false,
+					"required": ["channel", "message"]
+				}, 
+				{
+					"description": "Match a publish query destined for a sub-channel",
+					"type": "object",
+					"properties": {
+						"channel": { 
+							"description": "[String] name of the channel", 
+							"$ref": "channel/subChannel.json"
+						},
+						"message": { 
+							"description": "[Message] message to be published",
+							"oneOf": [
+								{ "$ref": "message/messageUpdateLao.json" },
+								{ "$ref": "message/messageStateLao.json" },
+								{ "$ref": "message/messageWitnessMessage.json" },
+								{ "$ref": "message/messageCreateMeeting.json" },
+								{ "$ref": "message/messageStateMeeting.json" }
+							]
+						}
+					},
+					"additionalProperties": false,
+					"required": ["channel", "message"]
+				}
+			]
+		},
+		"id": { "type": "integer" }
+	},
+	"required": ["method", "params", "id"],
+	"$comment": "Note: multiple queries have the \"publish\" method"
 }

@@ -1,0 +1,23 @@
+{
+	"$schema": "http://json-schema.org/draft/2019-09/schema#",
+	"$id": "http://pop2020.dedis.ch/unsubscribe.json",
+	"description": "Match unsubscribe from a channel client query",
+	"type": "object",
+
+	"properties": {
+		"method": { 
+			"description": "[String] operation to be performed by the query",
+			"const": "unsubscribe" 
+		},
+		"params": {
+			"type": "object",
+			"properties": {
+				"channel": { "description": "[String] name of the channel", "$ref": "channel/subChannel.json" }
+			},
+			"additionalProperties": false,
+			"required": ["channel"]
+		},
+		"id": { "type": "integer" }
+	},
+	"required": ["method", "params", "id"]
+}
