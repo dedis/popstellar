@@ -1,0 +1,38 @@
+{
+	"$schema": "http://json-schema.org/draft/2019-09/schema#",
+	"$id": "http://pop2020.dedis.ch/method/message/messageWitnessMessage.json",
+	"title": "This represenets a message someone would want to publish on a specific channel",
+	"description": "Match a message used in a \"witness a message query\"",
+	"type": "object",
+
+	"properties": {
+		"data": {
+			"description": "[String] data contained in the message",
+			"$ref": "utility/base64String.json",
+			"$comment": "Note: the string is encoded in Base64"
+		},
+		"sender": {
+			"description": "[String] public key of the witness",
+			"$ref": "utility/base64String.json",
+			"$comment": "Note: the string is encoded in Base64"
+		},
+		"signature": {
+			"description": "[String] witness' signature on data : Sign(Hash(data))",
+			"$ref": "utility/base64String.json",
+			"$comment": "Note: the string is encoded in Base64"
+		},
+		"message_id": {
+			"description": "[String] message id : Hash(data||signature)",
+			"$ref": "utility/base64String.json",
+			"$comment": "Note: the string is encoded in Base64"
+		},
+		"witness_signatures": {
+			"description": "[Array[String]] list of witnesses' signatures",
+			"type": "array", 
+			"maxItems": 0,
+			"$comment": "Note: should always be empty"
+		}
+	}, 
+	"additionalProperties": false,
+	"required": ["data", "sender", "signature", "message_id", "witness_signatures"]
+}

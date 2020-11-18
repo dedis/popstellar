@@ -16,11 +16,8 @@
 				"message": { 
 					"description": "[Message] message to be published", 
 					"oneOf": [
-						{ "$ref": "message/messageUpdateLao.json" },
-						{ "$ref": "message/messageStateLao.json" },
-						{ "$ref": "message/messageWitnessMessage.json" },
-						{ "$ref": "message/messageCreateMeeting.json" },
-						{ "$ref": "message/messageStateMeeting.json" }
+						{ "$ref": "message/messageGeneral.json" },
+						{ "$ref": "message/messageWitnessMessage.json" }
 					]
 				}
 			},
