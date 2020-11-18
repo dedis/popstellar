@@ -15,10 +15,19 @@
             "description": "Content of the request",
             "type": "object"
         },
+        "result": {
+            "description": "For responses, present on success, absent on error",
+            "type": "integer"
+        },
+        "error": {
+            "description": "For responses, absent on success, present on error",
+            "type": "object"
+        },
         "id": {
             "description": "Unique identifier for the request",
             "type": "integer"
         }
+
     },
-    "required": ["jsonrpc", "method", "id"]
+    "required": ["jsonrpc"]
 }

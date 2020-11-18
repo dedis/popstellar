@@ -1,7 +1,7 @@
 {
     "$comment": "Previously called message.json, I'd suggest to rename it to broadcast as 1) it's what it does 2) it disambiguates it from the mid-level field message",
     "$schema": "http://json-schema.org/draft/2019-09/schema#",
-    "$id": "http://pop2020.dedis.ch/low-level/message.json",
+    "$id": "http://pop2020.dedis.ch/low-level/broadcast.json",
     "properties": {
         "action": {
             "description": "Operation to be performed",
