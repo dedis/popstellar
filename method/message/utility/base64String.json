@@ -1,0 +1,6 @@
+{
+	"description": "Match string in Base64",
+	"type": "string",
+	"contentEncoding": "base64",
+	"$comment": "Note: JsonSchema doesn't check that the string is some valid Base64 string"
+}

@@ -1,0 +1,6 @@
+{
+	"description": "Match string in hexadecimal",
+	"type": "string",
+	"pattern": "^0x[a-fA-F0-9]+$",
+	"$comment": "Note: always starts with \"0x\""
+}
