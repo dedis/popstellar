@@ -70,7 +70,7 @@ func NewHub() *hub {
 
 			var subscribers []int = nil
 			var err error = nil
-			if bytes.Compare(h.channel, []byte("0")) != 0 {
+			if bytes.Compare(h.channel, []byte("/root")) != 0 {
 				subscribers, err = channel.GetSubscribers(h.channel)
 				if err != nil {
 					log.Fatal("can't get subscribers", err)
@@ -82,7 +82,7 @@ func NewHub() *hub {
 				//send msgBroadcast to that connection if channel is main channel or is in channel subscribers
 				_, found := define.Find(subscribers, c.id)
 
-				if (bytes.Compare(h.channel, []byte("0")) == 0 || found) && msgBroadcast != nil {
+				if (bytes.Compare(h.channel, []byte("/root")) == 0 || found) && msgBroadcast != nil {
 					select {
 					case c.send <- msgBroadcast:
 					// stop trying to send to this connection after trying for 1 second.
@@ -147,6 +147,8 @@ func (h *hub) HandleWholeMessage(msg []byte, userId int) {
 		return
 	}
 
+	var history []string = nil
+
 	switch generic.Method {
 	case "subscribe":
 		err = h.handleSubscribe(generic, userId)
@@ -154,14 +156,14 @@ func (h *hub) HandleWholeMessage(msg []byte, userId int) {
 		err = h.handleUnsubscribe(generic, userId)
 	case "publish":
 		err = h.handlePublish(generic)
-	//case "message": return h.handleMessage() // Potentially, we never receive a "message" and only output "message" after a "publish" in order to broadcast. Or they are only notification, and we just want to check that it was a success
-	//case "catchup": return h.handleCatchup() // TODO
-
+	//case "message": err = h.handleMessage() // Potentially, we never receive a "message" and only output "message" after a "publish" in order to broadcast. Or they are only notification, and we just want to check that it was a success
+	case "catchup": 
+		(history, err) = h.handleCatchup(generic)
 	default:
 		err = define.ErrRequestDataInvalid
 	}
 
-	h.responseToSenderNotChan = define.CreateResponse(err, generic)
+	h.responseToSenderNotChan = define.CreateResponse(err, history, generic)
 }
 
 func (h *hub) handleSubscribe(generic define.Generic, userId int) error {
@@ -236,7 +238,7 @@ func (h *hub) handlePublish(generic define.Generic) error {
 
 func (h *hub) handleCreateLAO(message define.Message, canal string, generic define.Generic) error {
 
-	if canal != "0" {
+	if canal != "/root" {
 		return define.ErrInvalidResource
 	}
 
@@ -268,9 +270,15 @@ func (h *hub) handleMessage(msg []byte, userId int) error {
 }
 
 // TODO
-func (h *hub) handleCatchup() error {
+func (h *hub) handleCatchup(generic define.Generic) ([]byte, error) {
+	// TODO maybe pass userId as an arg in order to check access rights later on?
+	params, err := define.AnalyseParamsLight(generic.Params)
+	if err != nil {
+		return (nil, define.ErrRequestDataInvalid)
+	}
+	(history, err) := channel.GetData([]byte (params.Channel))
 
-	return nil
+	return (history, err)
 }
 
 func (h *hub) sendResponse(conn *connection) {

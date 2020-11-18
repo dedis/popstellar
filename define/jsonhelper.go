@@ -203,9 +203,9 @@ func CreateBroadcastMessage(message Message, generic Generic) []byte {
 * we suppose error is in the good range
  */
 
-func CreateResponse(err error /*messages [],*/, generic Generic) []byte {
+func createResponse(err error, messages []byte, generic Generic) []byte {
 	if err != nil {
-		resp := ResponseWithError{
+		resp := ResponseWithError {
 			Jsonrpc:       "2.0",
 			ErrorResponse: string(selectDescriptionError(err)),
 			Id:            generic.Id,
@@ -217,24 +217,29 @@ func CreateResponse(err error /*messages [],*/, generic Generic) []byte {
 		return b
 
 	} else {
-		//if(messages == null)// Mauvaise syntaxe{
-		resp := ResponseWithGenResult{
-			Jsonrpc: "2.0",
-			Result:  0,
-			Id:      generic.Id,
-		}
-		/*}else{
-			resp := ResponseWithCatchupResult{
-				jsonrpc:      	"2.0",
-				result:      	messages,
-				id: 			generic.id,
+		if(messages == nil) {
+			resp := ResponseWithGenResult {
+				Jsonrpc: "2.0",
+				Result:  0,
+				Id:      generic.Id,
 			}
-		}*/
-		b, err := json.Marshal(resp)
-		if err != nil {
-			fmt.Println("couldn't Marshal the response")
+			b, err := json.Marshal(resp)
+			if err != nil {
+				fmt.Println("couldn't Marshal the response")
+			}
+			return b
+		} else {
+			resp := ResponseWithCatchupResult {
+				Jsonrpc:	"2.0",
+				Result:		string (messages),
+				Id:			generic.Id,
+			}
+			b, err := json.Marshal(resp)
+			if err != nil {
+				fmt.Println("couldn't Marshal the response")
+			}
+			return b
 		}
-		return b
 	}
 }
 
