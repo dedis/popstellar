@@ -147,7 +147,7 @@ func (h *hub) HandleWholeMessage(msg []byte, userId int) {
 		return
 	}
 
-	var history []string = nil
+	var history []byte = nil
 
 	switch generic.Method {
 	case "subscribe":
@@ -158,7 +158,7 @@ func (h *hub) HandleWholeMessage(msg []byte, userId int) {
 		err = h.handlePublish(generic)
 	//case "message": err = h.handleMessage() // Potentially, we never receive a "message" and only output "message" after a "publish" in order to broadcast. Or they are only notification, and we just want to check that it was a success
 	case "catchup": 
-		(history, err) = h.handleCatchup(generic)
+		history, err = h.handleCatchup(generic)
 	default:
 		err = define.ErrRequestDataInvalid
 	}
@@ -253,9 +253,9 @@ func (h *hub) handleCreateLAO(message define.Message, canal string, generic defi
 		return define.ErrAccessDenied
 	}*/
 
-	lao := define.LAO{ID: data.ID, Name: data.Name, Creation: data.Creation, LastModified: data.LastModified, OrganizerPKey: data.OrganizerPKey, Witnesses: data.Witnesses}
+	canalLAO = canal + data.ID
 
-	err = channel.CreateLAO(lao)
+	err = channel.CreateLAO(message, canalLAO)
 	if err != nil {
 		return err
 	}
@@ -274,11 +274,11 @@ func (h *hub) handleCatchup(generic define.Generic) ([]byte, error) {
 	// TODO maybe pass userId as an arg in order to check access rights later on?
 	params, err := define.AnalyseParamsLight(generic.Params)
 	if err != nil {
-		return (nil, define.ErrRequestDataInvalid)
+		return nil, define.ErrRequestDataInvalid
 	}
-	(history, err) := channel.GetData([]byte (params.Channel))
+	history, err := channel.GetData([]byte (params.Channel))
 
-	return (history, err)
+	return history, err
 }
 
 func (h *hub) sendResponse(conn *connection) {

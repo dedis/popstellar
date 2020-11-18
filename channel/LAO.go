@@ -13,7 +13,7 @@ import (
  * Function to create a new LAO and store it in the DB
  * @returns : error
  */
-func writeLAO(lao define.LAO, secure bool) error {
+func writeLAO(lao define.Message, canal string, secure bool) error {
 	db, e := db.OpenDB(channelDatabase)
 	defer db.Close()
 	if e != nil {
@@ -27,12 +27,12 @@ func writeLAO(lao define.LAO, secure bool) error {
 		}
 		//checks if there is already an entry with that ID if secure is true
 		if secure {
-			key := b.Get([]byte (lao.ID))
+			key := b.Get([]byte (canal))
 			if key != nil {
 				return define.ErrResourceAlreadyExists
 			}
 		} else {
-			exists := b.Get([]byte (lao.ID))
+			exists := b.Get([]byte (canal))
 			if exists == nil {
 				return define.ErrInvalidResource
 			}
@@ -42,7 +42,7 @@ func writeLAO(lao define.LAO, secure bool) error {
 		if err2 != nil {
 			return define.ErrRequestDataInvalid
 		}
-		err3 := b.Put([]byte (lao.ID), dt)
+		err3 := b.Put([]byte (canal), dt)
 
 		return err3
 	})
@@ -51,13 +51,16 @@ func writeLAO(lao define.LAO, secure bool) error {
 }
 
 /*writes a lao to the DB, returns an error if ID already is key in DB*/
-func CreateLAO(lao define.LAO) error {
-	return writeLAO(lao, true)
+func CreateLAO(lao define.Message, canal string) error {
+	return writeLAO(lao, canal, true)
 }
 
+
+// TODO Update must append !!! Not Overwrite !!!!!!!!!!!!!!!!!!
+// TODO merge channel and LAO ?
 /*writes a lao to the DB, regardless of ID already exists*/
-func UpdateLao(lao define.LAO) error {
-	return writeLAO(lao, false)
+func UpdateLao(lao define.Message, canal string) error {
+	return writeLAO(lao, canal, false)
 }
 
 /*returns channel data from a given ID */
