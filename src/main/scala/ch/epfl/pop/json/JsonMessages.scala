@@ -3,6 +3,8 @@ package ch.epfl.pop.json
 import ch.epfl.pop.json.Methods.Methods
 import ch.epfl.pop.json.JsonUtils.JSON_RPC_VERSION
 
+
+
 /**
  * Collection of parsed Json messages
  */
@@ -16,22 +18,28 @@ object JsonMessages {
   /* ---------------- ANSWER MESSAGES SERVER ----------------- */
   /* --------------------------------------------------------- */
 
-  /** Parsed answer (Int result) Json message from the server */
-  final case class AnswerIntMessageServer(
+  /** Parsed answer Json message from the server */
+  sealed trait JsonMessageAnswerServer extends JsonMessage
+
+
+  /** Parsed result answer (Int result) Json message from the server */
+  final case class AnswerResultIntMessageServer(
                                            jsonrpc: String = JSON_RPC_VERSION,
-                                           result: Option[Int],
-                                           error: Option[MessageErrorContent],
+                                           result: Int,
                                            id: Int
-                                         ) extends JsonMessage
+                                         ) extends JsonMessageAnswerServer
 
-  /** Parsed answer (Array result) Json message from the server */
-  final case class AnswerArrayMessageServer(
+  /** Parsed result answer (Array result) Json message from the server */
+  final case class AnswerResultArrayMessageServer(
                                              jsonrpc: String = JSON_RPC_VERSION,
-                                             result: Option[List[ChannelMessage]],
-                                             error: Option[MessageErrorContent],
+                                             result: ChannelMessages,
                                              id: Int
-                                           ) extends JsonMessage
+                                           ) extends JsonMessageAnswerServer
 
+  /** Parsed error answer Json message from the server */
+  final case class AnswerErrorMessageServer(
+                                             jsonrpc: String = JSON_RPC_VERSION, error: MessageErrorContent, id: Int
+                                           ) extends JsonMessageAnswerServer
 
   /* --------------------------------------------------------- */
   /* ------------ ADMINISTRATION MESSAGES CLIENT ------------- */

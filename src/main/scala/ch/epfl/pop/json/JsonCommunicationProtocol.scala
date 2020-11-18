@@ -229,51 +229,12 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
   /* ------------------- ANSWER MESSAGES SERVER ------------------- */
 
+  implicit val channelMessagesFormat: RootJsonFormat[ChannelMessages] = jsonFormat1(ChannelMessages)
   implicit val messageErrorContentFormat: RootJsonFormat[MessageErrorContent] = jsonFormat2(MessageErrorContent)
 
-  implicit object AnswerIntMessageServerFormat extends RootJsonFormat[AnswerIntMessageServer] {
-    override def read(json: JsValue): AnswerIntMessageServer =
-      throw new UnsupportedOperationException("A AnswerIntMessageServer (server answer) is not supposed to get parsed")
-
-    override def write(obj: AnswerIntMessageServer): JsValue = (obj.result, obj.error) match {
-      case (Some(r), None) =>
-        JsObject(
-          "jsonrpc" -> obj.jsonrpc.toJson,
-          "result" -> r.toJson,
-          "id" -> obj.id.toJson
-        )
-      case (None, Some(e)) =>
-        JsObject(
-          "jsonrpc" -> obj.jsonrpc.toJson,
-          "error" -> e.toJson,
-          "id" -> obj.id.toJson
-        )
-      case _ => throw new IllegalStateException("Impossible argument combination in AnswerIntMessageServerFormat.write")
-    }
-  }
-
-  implicit object AnswerArrayMessageServerFormat extends RootJsonFormat[AnswerArrayMessageServer] {
-    override def read(json: JsValue): AnswerArrayMessageServer =
-      throw new UnsupportedOperationException("A AnswerArrayMessageServer (server answer) is not supposed to get parsed")
-
-    override def write(obj: AnswerArrayMessageServer): JsValue = (obj.result, obj.error) match {
-      case (Some(r), None) =>
-        JsObject(
-          "jsonrpc" -> obj.jsonrpc.toJson,
-          "result" -> JsObject(
-            "messages" -> JsArray(r.map(_.toJson).toVector)
-          ),
-          "id" -> obj.id.toJson
-        )
-      case (None, Some(e)) =>
-        JsObject(
-          "jsonrpc" -> obj.jsonrpc.toJson,
-          "error" -> e.toJson,
-          "id" -> obj.id.toJson
-        )
-      case _ => throw new IllegalStateException("Impossible argument combination in AnswerIntMessageServerFormat.write")
-    }
-  }
+  implicit val answerResultIntMessageServerFormat: RootJsonFormat[AnswerResultIntMessageServer] = jsonFormat3(AnswerResultIntMessageServer)
+  implicit val answerResultArrayMessageServerFormat: RootJsonFormat[AnswerResultArrayMessageServer] = jsonFormat3(AnswerResultArrayMessageServer)
+  implicit val answerErrorMessageServerFormat: RootJsonFormat[AnswerErrorMessageServer] = jsonFormat3(AnswerErrorMessageServer)
 
 
   /* ------------------- PUBSUB MESSAGES CLIENT ------------------- */

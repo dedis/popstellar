@@ -46,6 +46,7 @@ package object json {
                                    data: MessageContentData, sender: Key, signature: Signature, message_id: Hash, witness_signatures: List[Key]
                                  )
 
+  final case class ChannelMessages(messages: List[ChannelMessage])
   final case class MessageErrorContent(code: Int, description: String)
 
   /* --------------------------------------------------------- */

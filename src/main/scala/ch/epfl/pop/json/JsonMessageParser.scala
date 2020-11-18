@@ -5,6 +5,7 @@ import ch.epfl.pop.json.JsonMessages._
 import spray.json._
 
 
+
 /**
  * Custom Json Parser for our Json-RPC protocol
  */
@@ -58,8 +59,11 @@ object JsonMessageParser {
    */
   @throws(classOf[SerializationException])
   def serializeMessage(message: JsonMessage): String = message match {
-    case m: AnswerIntMessageServer => m.toJson.toString
-    case m: AnswerArrayMessageServer => m.toJson.toString
+    case _: JsonMessageAnswerServer => message match {
+      case m: AnswerResultIntMessageServer => m.toJson.toString
+      case m: AnswerResultArrayMessageServer => m.toJson.toString
+      case m: AnswerErrorMessageServer => m.toJson.toString
+    }
 
     case _: JsonMessageAdminClient => message match {
       case m: CreateLaoMessageClient => m.toJson(JsonMessageAdminClientFormat.write).toString

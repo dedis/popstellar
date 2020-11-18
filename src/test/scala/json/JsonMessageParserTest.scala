@@ -2,10 +2,11 @@ package json
 
 import java.util.Base64
 
-import ch.epfl.pop.json.JsonCommunicationProtocol.AnswerArrayMessageServerFormat
 import ch.epfl.pop.json.JsonMessages._
 import ch.epfl.pop.json._
 import org.scalatest.FunSuite
+
+
 
 class JsonMessageParserTest extends FunSuite {
 
@@ -271,30 +272,16 @@ class JsonMessageParserTest extends FunSuite {
     assert(spdp.isInstanceOf[CatchupMessageClient])
   }
 
-  test("JsonMessageParser.parseMessage|encodeMessage:AnswerIntMessageServer") {
-
-    // Success
+  test("JsonMessageParser.parseMessage|encodeMessage:AnswerResultIntMessageServer") {
     val source: String = embeddedServerAnswer(Some(0), None, id = 13)
 
-    val sp: JsonMessages.JsonMessage = AnswerIntMessageServer("2.0", Some(0), None, 13)
+    val sp: JsonMessages.JsonMessage = AnswerResultIntMessageServer("2.0", 0, 13)
     val spd: String = JsonMessageParser.serializeMessage(sp).filterNot((c: Char) => c.isWhitespace)
 
     assertResult(source)(spd)
-
-
-    // Failure
-    for (i <- -5 until 0) {
-      val source: String = embeddedServerAnswer(None, code = i, id = 3 * i)
-
-      val sp: JsonMessages.JsonMessage = AnswerIntMessageServer("2.0", None, Some(MessageErrorContent(i, ERROR_MESSAGE)), 3 * i)
-      val spd: String = JsonMessageParser.serializeMessage(sp)
-
-      assertResult(source)(spd)
-    }
   }
 
-  test("JsonMessageParser.parseMessage|encodeMessage:AnswerArrayMessageServer") {
-    // Success
+  test("JsonMessageParser.parseMessage|encodeMessage:AnswerResultArrayMessageServer") {
     val source: String = s"""{
                             |    "id": 99,
                             |    "jsonrpc": "2.0",
@@ -304,20 +291,28 @@ class JsonMessageParserTest extends FunSuite {
                             |  }
                             |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
 
-    val sp: JsonMessages.JsonMessage = AnswerArrayMessageServer("2.0", Some(List("M1", "M2", "M3")), None, 99)
+    val sp: JsonMessages.JsonMessage = AnswerResultArrayMessageServer("2.0", ChannelMessages(List("M1", "M2", "M3")), 99)
     val spd: String = JsonMessageParser.serializeMessage(sp)
 
     assertResult(source)(spd)
+  }
 
+  test("JsonMessageParser.parseMessage|encodeMessage:AnswerErrorMessageServer") {
+    val source: String = s"""{
+                            |    "error": {
+                            |       "code": ERR_CODE,
+                            |       "description": "err"
+                            |    },
+                            |    "id": 99,
+                            |    "jsonrpc": "2.0"
+                            |  }
+                            |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
 
-    // Failure
     for (i <- -5 until 0) {
-      val source: String = embeddedServerAnswer(None, code = i, id = 3 * i)
-
-      val sp: JsonMessages.JsonMessage = AnswerArrayMessageServer("2.0", None, Some(MessageErrorContent(i, ERROR_MESSAGE)), 3 * i)
+      val sp: JsonMessages.JsonMessage = AnswerErrorMessageServer("2.0", MessageErrorContent(i, "err"), 99)
       val spd: String = JsonMessageParser.serializeMessage(sp)
 
-      assertResult(source)(spd)
+      assertResult(source.replaceAll("ERR_CODE", String.valueOf(i)))(spd)
     }
   }
 }
