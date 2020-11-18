@@ -22,7 +22,7 @@ public final class Person {
      */
     public Person(String name) {
         if(name == null) {
-            throw new IllegalArgumentException("Trying to create a peron with a null name");
+            throw new IllegalArgumentException("Trying to create a person with a null name");
         }
         this.name = name;
         // Generate the public and private keys
