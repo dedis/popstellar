@@ -7,6 +7,7 @@ import com.github.dedis.student20_pop.MainActivity;
 import com.github.dedis.student20_pop.R;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
@@ -28,13 +29,13 @@ public class OrganizerFragmentTest {
 
     //These tests only pass when testingOrganizer is true in MainActivity
     @Test
-    public void onClickPropertiesTest(){
+    public void onClickPropertiesTest() {
         onView(withId(R.id.tab_properties)).perform(click());
         onView(withId(R.id.properties_view)).check(matches(isDisplayed()));
     }
 
     @Test
-    public void onClickListEventsTest(){
+    public void onClickListEventsTest() {
         onView(withText(getApplicationContext().getString(R.string.past_events))).perform(click());
         onView(withText(getApplicationContext().getString(R.string.present_events))).perform(click());
         onView(withText(getApplicationContext().getString(R.string.future_events))).perform(click());
@@ -42,7 +43,7 @@ public class OrganizerFragmentTest {
     }
 
     @Test
-    public void clickOnAddEventButtonOpensDialog(){
+    public void clickOnAddEventButtonOpensDialog() {
         onView(allOf(withId(R.id.add_future_event_button),
                 withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
                 .perform(click());
@@ -50,7 +51,7 @@ public class OrganizerFragmentTest {
     }
 
     @Test
-    public void canCancelAddEvent(){
+    public void canCancelAddEvent() {
         onView(allOf(withId(R.id.add_future_event_button),
                 withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
                 .perform(click());
@@ -59,32 +60,32 @@ public class OrganizerFragmentTest {
     }
 
     @Test
-    public void canLaunchCreateMeetingEventFragment(){
+    @Ignore("TODO : Check that the corresponding Fragment has been launched")
+    public void canLaunchCreateMeetingEventFragment() {
         onView(allOf(withId(R.id.add_future_event_button),
                 withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
                 .perform(click());
         onView(withText(getApplicationContext().getString(R.string.meeting_event))).check(matches(isDisplayed()));
         onView(withText(getApplicationContext().getString(R.string.meeting_event))).perform(click());
-        //TODO : Check that the corresponding Fragment has been launched
     }
 
     @Test
-    public void canLaunchCreateRollCallEventFragment(){
+    @Ignore("TODO : Check that the corresponding Fragment has been launched")
+    public void canLaunchCreateRollCallEventFragment() {
         onView(allOf(withId(R.id.add_future_event_button),
                 withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
                 .perform(click());
         onView(withText(getApplicationContext().getString(R.string.roll_call_event))).check(matches(isDisplayed()));
         onView(withText(getApplicationContext().getString(R.string.roll_call_event))).perform(click());
-        //TODO : Check that the corresponding Fragment has been launched
     }
 
     @Test
-    public void canLaunchCreatePollEventFragment(){
+    @Ignore("TODO : Check that the corresponding Fragment has been launched")
+    public void canLaunchCreatePollEventFragment() {
         onView(allOf(withId(R.id.add_future_event_button),
                 withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
                 .perform(click());
         onView(withText(getApplicationContext().getString(R.string.poll_event))).check(matches(isDisplayed()));
         onView(withText(getApplicationContext().getString(R.string.roll_call_event))).perform(click());
-        //TODO : Check that the corresponding Fragment has been launched
     }
 }

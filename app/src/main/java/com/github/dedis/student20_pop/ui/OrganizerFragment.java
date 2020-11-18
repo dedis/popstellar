@@ -48,6 +48,13 @@ public class OrganizerFragment extends Fragment {
         PAST, PRESENT, FUTURE
     }
 
+    /**
+     * Enum class for each event type
+     */
+    private enum EventType {
+        MEETING, ROLL_CALL, POLL
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Nullable
     @Override
@@ -104,17 +111,17 @@ public class OrganizerFragment extends Fragment {
         return events;
     }
 
-    public void launchEventCreationFragment(int eventType) {
+    public void launchEventCreationFragment(EventType eventType) {
         switch (eventType) {
-            case 0:
+            case MEETING:
                 //TODO
                 Log.d("Meeting Event Type ", "Launch here Meeting Event Creation Fragment");
                 break;
-            case 1:
+            case ROLL_CALL:
                 //TODO
                 Log.d("Roll-Call Event Type ", "Launch here Roll-Call Event Creation Fragment");
                 break;
-            case 2:
+            case POLL:
                 //TODO
                 Log.d("Poll Event Type ", "Launch here Poll Event Creation Fragment");
                 break;
@@ -257,13 +264,14 @@ public class OrganizerFragment extends Fragment {
                     builderSingle.setTitle(R.string.select_event_type_dialog_title);
 
                     final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.select_dialog_singlechoice);
-                    arrayAdapter.add(context.getString(R.string.meeting_event));
-                    arrayAdapter.add(context.getString(R.string.roll_call_event));
-                    arrayAdapter.add(context.getString(R.string.poll_event));
+
+                    arrayAdapter.insert(context.getString(R.string.meeting_event), EventType.MEETING.ordinal());
+                    arrayAdapter.insert(context.getString(R.string.roll_call_event), EventType.ROLL_CALL.ordinal());
+                    arrayAdapter.insert(context.getString(R.string.poll_event), EventType.POLL.ordinal());
 
                     builderSingle.setNegativeButton(context.getString(R.string.button_cancel), (dialog, which) -> dialog.dismiss());
                     builderSingle.setAdapter(arrayAdapter, (dialog, which) -> {
-                        launchEventCreationFragment(which);
+                        launchEventCreationFragment(EventType.values()[which]);
                     });
                     builderSingle.show();
                 });

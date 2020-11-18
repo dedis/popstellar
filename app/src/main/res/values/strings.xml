@@ -33,16 +33,6 @@
     
     <!-- Poll -->
     <string name="poll_event">Poll Event</string>
-    <string name="create_poll_title">Create a Poll</string>
-    <string name="question_title">Question : </string>
-    <string name="start_time">Start Time : </string>
-    <string name="end_time">End Time (Optional) : </string>
-    <string name="now">Now</string>
-    <string name="poll_type_1">Choose 1 of N</string>
-    <string name="poll_type_2">Approve Any of N</string>
-    <string name="choices_title">Choices : </string>
-    <string name="button_schedule">Schedule</string>
-    <string name="button_open">Open</string>
     <string name="button_cancel">Cancel</string>
     <string name="select_event_type_dialog_title">Select Event Type</string>
 

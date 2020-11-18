@@ -11,7 +11,7 @@
         android:id="@+id/event_category"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="@dimen/margin_top"
         android:layout_marginHorizontal="@dimen/margin_text"
         android:gravity="start"
         android:textSize="@dimen/size_title"
