@@ -46,7 +46,6 @@
                             "description": "Signature by witnesses (sender||data)",
                             "type": "array",
                             "items": {
-                                "$comment": "slightly unsure about the type here",
                                 "$comment": "initially empty array, will be filled on further message. Not 100% sure whether it should be in the required list (but allowed to be empty) or not",
                                 "type": "string"
                             }

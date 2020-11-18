@@ -6,23 +6,29 @@
         "jsonrpc": {
             "const": "2.0"
         },
-        "method": {
-            "description": "Operation to be performed",
-            "type": "string",
-            "enum": ["subscribe","unsubscribe","publish","message","catchup"]
-        },
-        "params": {
-            "description": "Content of the request",
-            "type": "object"
-        },
-        "result": {
-            "description": "For responses, present on success, absent on error",
-            "type": "integer"
-        },
-        "error": {
-            "description": "For responses, absent on success, present on error",
-            "type": "object"
-        },
+        "oneOf": [
+            {
+                "method": {
+                    "description": "Operation to be performed",
+                    "type": "string",
+                    "enum": ["subscribe","unsubscribe","publish","message","catchup"]
+                },
+                "params": {
+                    "description": "Content of the request",
+                    "type": "object"
+                }
+            },
+            {
+                "result": {
+                    "description": "For responses, present on success, absent on error",
+                    "type": "integer"
+                },
+                "error": {
+                    "description": "For responses, absent on success, present on error",
+                    "type": "object"
+                }
+            }
+        ],
         "id": {
             "description": "Unique identifier for the request",
             "type": "integer"
