@@ -11,6 +11,33 @@ import (
 	"time"
 )
 
+/*
+TODO
+faire des tests
+-Subscribing
+-Unsubscribing
+
+changer les types de channel de string vers int + conversion array de byte -> string /Ouriel
+
+Propagating a message on a channel
+Catching up on past messages on a channel /RAOUl
+
+Publish a message on a channel:
+Update LAO properties ->
+LAO state broadcast ->
+Witness a message ->
+
+Creating a 'event' !
+#check from witness
+#verify if witnessed
+-meeting/ Ouriel
+-roll call/ ouriel
+-discussion(?)
+-poll/ouriel
+-cast vote
+-register attendance
+Meeting state broadcast
+*/
 type hub struct {
 	// the mutex to protect connections
 	connectionsMx sync.RWMutex
@@ -81,7 +108,7 @@ func NewHub() *hub {
 			for c := range h.connections {
 				//send msgBroadcast to that connection if channel is main channel or is in channel subscribers
 				_, found := define.Find(subscribers, c.id)
-
+				//TODO switch to /url of root
 				if (bytes.Compare(h.channel, []byte("0")) == 0 || found) && msgBroadcast != nil {
 					select {
 					case c.send <- msgBroadcast:
