@@ -1,0 +1,5 @@
+{
+	"description": "Match a root-channel",
+	"const": "/root",
+	"$comment": "Note: default server channel (should always be \"/root\")"
+}
