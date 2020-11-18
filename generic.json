@@ -8,25 +8,19 @@
         },
         "oneOf": [
             {
-                "method": {
-                    "description": "Operation to be performed",
-                    "type": "string",
-                    "enum": ["subscribe","unsubscribe","publish","message","catchup"]
-                },
-                "params": {
-                    "description": "Content of the request",
-                    "type": "object"
-                }
+                "anyOf": [
+                    { "$ref": "method/subscribe.json#/properties" },
+                    { "$ref": "method/unsubscribe.json#/properties" },
+                    { "$ref": "method/publish.json#/properties" },
+                    { "$ref": "method/broadcast.json#/properties" },
+                    { "$ref": "method/catchup.json#/properties" }
+                ]
             },
             {
-                "result": {
-                    "description": "For responses, present on success, absent on error",
-                    "type": "integer"
-                },
-                "error": {
-                    "description": "For responses, absent on success, present on error",
-                    "type": "object"
-                }
+                "anyOf": [
+                    { "$ref": "returns/return.json#/properties" },
+                    { "$ref": "returns/returnCatchup.json#/properties" }
+                ]
             }
         ],
         "id": {
@@ -35,5 +29,5 @@
         }
 
     },
-    "required": ["jsonrpc"]
+    "required": ["jsonrpc", "oneOf"]
 }

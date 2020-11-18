@@ -5,106 +5,52 @@
     "$schema": "http://json-schema.org/draft/2019-09/schema#",
     "$id": "http://pop2020.dedis.ch/createLao.json",
     "type": "object",
-    "properties" : {
-        "jsonrpc": {
-            "const": "2.0"
-        },
-        "method": {
-            "description": "Operation to be performed",
-            "type": "string",
-            "enum": ["publish"]
-        },
-        "params": {
-            "description": "Content of the request",
+    "definition" : {
+        "data": {
+            "description": "base64 representation of the data",
             "type": "object",
+            "$comment": "must be in base64",
             "properties": {
-                "channel": {
-                    "description": "Channel id",
+                "object": {
+                    "description": "object on which to perform the action",
+                    "type": "string",
+                    "enum": ["lao"]
+                }, 
+                "action": {
+                    "description": "action to perform on the object",
+                    "type": "string",
+                    "enum": ["create"]
+                }, 
+                "id": {
+                    "description": "Hash,SHA256(organizer||creation||name)",
                     "type": "string"
-                },
-                "message": {
-                    "description": "Content of the message",
-                    "type": "object",
-                    "properties": {
-                        "data": {
-                            "description": "base64 representation of the data",
-                            "type": "object",
-                            "$comment": "must be in base64",
-                            "properties": {
-                                "object": {
-                                    "description": "object on which to perform the action",
-                                    "type": "string",
-                                    "enum": ["lao"]
-                                }, 
-                                "action": {
-                                    "description": "action to perform on the object",
-                                    "type": "string",
-                                    "enum": ["create"]
-                                }, 
-                                "id": {
-                                    "description": "Hash,SHA256(organizer||creation||name)",
-                                    "type": "string"
-                                }, 
-                                "name": {
-                                    "description": "name of the LAO",
-                                    "type": "string"
-                                }, 
-                                "creation": {
-                                    "description": "timestamp of the creation time",
-                                    "type": "integer"
-                                }, 
-                                "last_modified": {
-                                    "description": "timestamp of the last modification time",
-                                    "type": "integer"
-                                }, 
-                                "organizer": {
-                                    "description": "Public key of organizer",
-                                    "type": "string"
-                                }, 
-                                "witnesses" : {
-                                    "description": "list of Public keys of witnesses ",
-                                    "type": "array",
-                                    "items": {
-                                        "$comment": "initially empty array, will be filled on further message. Not 100% sure whether it should be in the required list (but allowed to be empty) or not",
-                                        "type": "string"
-                                    }
-                                }
-                            },
-                            "required": ["object", "action", "id", "name", "creation", "last_modified", "organizer", "witnesses"]
-                        },
-                        "sender": {
-                            "description": "Public key of sender",
-                            "type": "string"
-                        },
-                        "signature": {
-                            "description": "Signature by sender over data",
-                            "type": "string"
-                        },
-                        "message_id": {
-                            "$comment": "BFord: Not sure that this actually needs to be transmitted, since it can simply be computed from the data and signature?",
-                            "description": "hash(data||signature)",
-                            "type": "string"
-                        },
-                        "witness_signatures": {
-                            "description": "Signature by witnesses (sender||data)",
-                            "type": "array",
-                            "items": {
-                                "$comment": "slightly unsure about the type here",
-                                "$comment": "initially empty array, will be filled on further message. Not 100% sure whether it should be in the required list (but allowed to be empty) or not",
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "required": ["data", "sender", "signature", "message_id", "witness_signatures"]
+                }, 
+                "name": {
+                    "description": "name of the LAO",
+                    "type": "string"
+                }, 
+                "creation": {
+                    "description": "timestamp of the creation time",
+                    "type": "integer"
+                }, 
+                "last_modified": {
+                    "description": "timestamp of the last modification time",
+                    "type": "integer"
+                }, 
+                "organizer": {
+                    "description": "Public key of organizer",
+                    "type": "string"
+                }, 
+                "witnesses" : {
+                    "description": "list of Public keys of witnesses ",
+                    "type": "array",
+                    "items": {
+                        "$comment": "initially empty array, will be filled on further message. Not 100% sure whether it should be in the required list (but allowed to be empty) or not",
+                        "type": "string"
+                    }
                 }
             },
-            "required": ["channel", "message"]
-        },
-        "id": {
-            "description": "Unique identifier for the request",
-            "type": "integer"
+            "required": ["object", "action", "id", "name", "creation", "last_modified", "organizer", "witnesses"]
         }
-
-    },
-    "required": ["jsonrpc", "method", "params", "id"]
+    }
 }

@@ -4,9 +4,6 @@
     "$id": "http://pop2020.dedis.ch/subscribe.json",
     "type": "object",
     "properties" : {
-        "jsonrpc": {
-            "const": "2.0"
-        },
         "method": {
             "description": "Operation to be performed",
             "type": "string",
@@ -22,12 +19,8 @@
                 }
             },
             "required": ["channel"]
-        },
-        "id": {
-            "description": "Unique identifier for the request",
-            "type": "integer"
         }
 
     },
-    "required": ["jsonrpc", "method", "params", "id"]
+    "required": ["method", "params"]
 }
