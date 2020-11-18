@@ -160,8 +160,7 @@ func (h *hub) HandleWholeMessage(msg []byte, userId int) {
 	default:
 		err = define.ErrRequestDataInvalid
 	}
-	fmt.Printf("after creatingLAO")
-	fmt.Printf("%v", err)
+
 	h.responseToSenderNotChan = define.CreateResponse(err, generic)
 }
 
