@@ -120,7 +120,6 @@ func AnalyseData(data json.RawMessage) (Data, error) {
 func AnalyseDataCreateLAO(data json.RawMessage) (DataCreateLAO, error) {
 	m := DataCreateLAO{}
 	err := json.Unmarshal(data, &m)
-	fmt.Printf("%#v", m)
 	return m, err
 }
 
@@ -215,7 +214,6 @@ func CreateResponse(err error /*messages [],*/, generic Generic) []byte {
 		if err != nil {
 			fmt.Println("couldn't Marshal the response")
 		}
-		fmt.Println(string(b))
 		return b
 
 	} else {
@@ -259,7 +257,6 @@ func selectDescriptionError(err error) []byte {
 		}
 		//(e.g. channel does not exist,channel was not subscribed to, etc.)
 	case ErrResourceAlreadyExists:
-		fmt.Println("in good case")
 		errResp = ErrorResponse{
 			Code:        -3,
 			Description: "resource already exists",
