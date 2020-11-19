@@ -1,0 +1,43 @@
+{
+	"$schema": "http://json-schema.org/draft/2019-09/schema#",
+	"$id": "http://pop2020.dedis.ch/method/message/data/dataStateLao.json",
+	"description": "Match a state broadcast LAO query",
+	"type": "object",
+
+	"properties": {
+		"object": { "const": "lao" },
+		"action": { "const": "state" },
+		"id": { 
+			"$ref": "../utility/hexString.json",
+			"$comment": "Hash : SHA256(organizer||creation||name)"
+		},
+		"name": { "type": "string" },
+		"creation": { "description": "[Timestamp] creation time", "type": "integer", "minimum": 0 },
+		"last_modified": { "description": "[Timestamp] last modification's time", "type": "integer", "minimum": 0 },
+		"organizer": { 
+			"description": "[HexString] public key of the organizer",
+			"$ref": "../utility/hexString.json"
+		},
+		"witnesses": { 
+			"description": "[Array[HexString]] list of public keys of witnesses",
+			"type": "array", 
+			"uniqueItems": true, 
+			"items": { "$ref": "../utility/hexString.json" }
+		},
+		"modification_id": {
+			"description": "[HexString] id of the modification (either creation/update)",
+			"$ref": "../utility/hexString.json"
+		},
+		"modification_signatures": {
+			"description": "[Array[HexString]] signatures of the witnesses on the modification message (either creation/update)",
+			"type": "array",
+			"items": { "$ref": "../utility/hexString.json" }
+		}
+	},
+	"additionalProperties": false,
+	"required": ["object", "action", "id", "name", "creation", "last_modified", "organizer", "witnesses", "modification_id", "modification_signatures"],
+	"note": [
+		"When a LAO is created or modified, the organizer is expected to publish the lao/state message to the ",
+		"LAO’s main channel (LAO's id), once it got the required number of witness signatures"
+	]
+}

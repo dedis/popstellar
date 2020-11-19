@@ -1,0 +1,31 @@
+{
+	"$schema": "http://json-schema.org/draft/2019-09/schema#",
+	"$id": "http://pop2020.dedis.ch/method/message/data/data.json",
+	"description": "Match a random data fragment",
+	"type": "object",
+
+	"properties": {
+		"object": { "type": "string", "enum": ["lao", "message", "meeting"] },
+		"action": { "type": "string", "enum": ["create", "update_properties", "state", "witness"] },
+		"id": { 
+			"$ref": "../utility/hexString.json",
+			"$comment": "Hash : SHA256(organizer||creation||name)"
+		},
+		"name": { "type": "string" },
+		"creation": { "description": "[Timestamp] creation time", "type": "integer", "minimum": 0 },
+		"last_modified": { "description": "[Timestamp] last modification's time", "type": "integer", "minimum": 0 },
+		"organizer": { 
+			"$ref": "../utility/hexString.json",
+			"$comment": "public key of the organizer"
+		},
+		"witnesses": { 
+			"type": "array", 
+			"uniqueItems": true, 
+			"items": { "$ref": "../utility/hexString.json" },
+			"$comment": "Note: list of public keys of witnesses"
+		}
+	},
+	"additionalProperties": false,
+	"required": ["object", "action", "id", "name", "creation", "last_modified", "organizer", "witnesses"],
+	"$comment": "Note: this file is not necessary as all other data files recognize a subset of this file"
+}

@@ -1,0 +1,41 @@
+{
+	"$schema": "http://json-schema.org/draft/2019-09/schema#",
+	"$id": "http://pop2020.dedis.ch/method/message/data/dataStateMeeting.json",
+	"description": "Match a state broadcast Meeting query",
+	"type": "object",
+
+	"properties": {
+		"object": { "const": "meeting" },
+		"action": { "const": "state" },
+		"id": { 
+			"$ref": "../utility/hexString.json",
+			"$comment": "Hash : SHA256(lao_id||creation||name)"
+		},
+		"name": { "type": "string" },
+		"creation": { "description": "[Timestamp] creation time", "type": "integer", "minimum": 0 },
+		"last_modified": { "description": "[Timestamp] last modification's time", "type": "integer", "minimum": 0 },
+		"location": {
+			"description": "[String] location of the meeting",
+			"type": "string",
+			"$comment": "Note: optional"
+		},
+		"start": { "description": "[Timestamp] start time", "type": "integer", "minimum": 0 },
+		"end": {
+			"description": "[Timestamp] end time",
+			"type": "integer",
+			"minimum": 0,
+			"$comment": "Note: optional"
+		},
+		"extra": {
+			"description": "[JsObject] arbitrary object for extra information",
+			"type": "object",
+			"$comment": "Note: optional"
+		}
+	},
+	"additionalProperties": false,
+	"required": ["object", "action", "id", "name", "creation", "last_modified", "start"],
+	"note": [
+		"When a meeting is created, modified or attested to by a witness, the server is expected to publish the ",
+		"meeting/state message to the LAO’s main channel (LAO's id)"
+	]
+}
