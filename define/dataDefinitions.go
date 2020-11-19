@@ -23,6 +23,7 @@ type LAO struct {
 	//List of public keys where each public key belongs to one member (physical person) (subscriber)
 }
 
+//TODO see if we keep the event type or if we completely move to Meeting Poll ROll CAll Discussion
 type Event struct {
 	//id hash : SHA1(Name + Creation Date/Time Unix Timestamp)
 	ID string

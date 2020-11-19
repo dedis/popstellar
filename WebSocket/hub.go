@@ -243,7 +243,15 @@ func (h *hub) handlePublish(generic define.Generic) error {
 		default:
 			return define.ErrInvalidAction
 		}
+	case "roll call":
+		switch data["action"] {
+		case "create":
+			return h.handleCreateRollCall(message, params.Channel, generic)
+		case "state":
 
+		default:
+			return define.ErrInvalidAction
+		}
 	case "meeting":
 		switch data["action"] {
 		case "create":
@@ -253,7 +261,15 @@ func (h *hub) handlePublish(generic define.Generic) error {
 		default:
 			return define.ErrInvalidAction
 		}
+	case "poll":
+		switch data["action"] {
+		case "create":
+			return h.handleCreatePoll(message, params.Channel, generic)
+		case "state":
 
+		default:
+			return define.ErrInvalidAction
+		}
 	default:
 		return define.ErrRequestDataInvalid
 	}
@@ -283,11 +299,30 @@ func (h *hub) handleCreateLAO(message define.Message, canal string, generic defi
 	if err != nil {
 		return err
 	}
-	h.messageToBroadcast = define.CreateBroadcastMessage(message, generic)
-	h.channel = []byte(canal)
-	return nil
+	return h.finalizeHandling(message,canal,generic)
 }
 
+func (h *hub) handleCreateRollCall(message define.Message, canal string, generic define.Generic) error {
+	if canal != "0" {
+		return define.ErrInvalidResource
+	}
+
+	data, err := define.AnalyseDataCreateRollCall(message.Data)
+	if err != nil {
+		return define.ErrInvalidResource
+	}
+
+	// don't need to check for validity if we use json schema
+	//TODO do we move to multiple type ? cf datadef
+	event := define.Event{ID: data.ID, Name: data.Name, Creation: data.Creation,
+		LastModified: data.LastModified,Location: data.Location, Start: data.Start,
+		End: data.End, Extra: data.Extra}
+	err = channel.CreateObject(event)
+	if err != nil {
+		return err
+	}
+	return h.finalizeHandling(message,canal,generic)
+}
 func (h *hub) handleCreateMeeting(message define.Message, canal string, generic define.Generic) error {
 
 	if canal != "0" {
@@ -300,7 +335,6 @@ func (h *hub) handleCreateMeeting(message define.Message, canal string, generic 
 	}
 
 	// don't need to check for validity if we use json schema
-
 	event := define.Event{ID: data.ID, Name: data.Name, Creation: data.Creation,
 		LastModified: data.LastModified,Location: data.Location, Start: data.Start,
 		End: data.End, Extra: data.Extra}
@@ -308,9 +342,35 @@ func (h *hub) handleCreateMeeting(message define.Message, canal string, generic 
 	if err != nil {
 		return err
 	}
+	return h.finalizeHandling(message,canal,generic)
+}
+func (h *hub) finalizeHandling(message define.Message, canal string, generic define.Generic) error {
 	h.messageToBroadcast = define.CreateBroadcastMessage(message, generic)
 	h.channel = []byte(canal)
 	return nil
+}
+
+
+func (h *hub) handleCreatePoll(message define.Message, canal string, generic define.Generic) error {
+
+	if canal != "0" {
+		return define.ErrInvalidResource
+	}
+
+	data, err := define.AnalyseDataCreatePoll(message.Data)
+	if err != nil {
+		return define.ErrInvalidResource
+	}
+
+	// don't need to check for validity if we use json schema
+	event := define.Event{ID: data.ID, Name: data.Name, Creation: data.Creation,
+		LastModified: data.LastModified,Location: data.Location, Start: data.Start,
+		End: data.End, Extra: data.Extra}
+	err = channel.CreateObject(event)
+	if err != nil {
+		return err
+	}
+	return h.finalizeHandling(message,canal,generic)
 }
 func (h *hub) handleMessage(msg []byte, userId int) error {
 

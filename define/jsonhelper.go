@@ -98,6 +98,40 @@ type DataCreateMeeting struct {
 	End int64 /* Timestamp, optional */
 	Extra string /* arbitrary object, optional */
 }
+type DataCreateRollCall struct{
+	//TODO right now same attribute as meeting
+	Object string
+	Action string
+	//ID hash : Name || Creation Date/Time Unix Timestamp
+	ID string
+	// name of LAO
+	Name string
+	//Creation Date/Time
+	Creation     int64 //  Unix timestamp (uint64)
+	LastModified int64 //timestamp
+	Location string //optional
+	//Organiser: Public Key
+	Start int64 /* Timestamp */
+	End int64 /* Timestamp, optional */
+	Extra string /* arbitrary object, optional */
+}
+type DataCreatePoll struct{
+	//TODO right now same attribute as meeting
+	Object string
+	Action string
+	//ID hash : Name || Creation Date/Time Unix Timestamp
+	ID string
+	// name of LAO
+	Name string
+	//Creation Date/Time
+	Creation     int64 //  Unix timestamp (uint64)
+	LastModified int64 //timestamp
+	Location string //optional
+	//Organiser: Public Key
+	Start int64 /* Timestamp */
+	End int64 /* Timestamp, optional */
+	Extra string /* arbitrary object, optional */
+}
 /**
  * Function that takes a byte array as input and returns
  * a Message struct
@@ -140,6 +174,17 @@ func AnalyseDataCreateLAO(data json.RawMessage) (DataCreateLAO, error) {
 
 func AnalyseDataCreateMeeting(data json.RawMessage) (DataCreateMeeting, error) {
 	m := DataCreateMeeting{}
+	err := json.Unmarshal(data, &m)
+	return m, err
+}
+func AnalyseDataCreateRollCall(data json.RawMessage) (DataCreateRollCall, error) {
+	m := DataCreateRollCall{}
+	err := json.Unmarshal(data, &m)
+	return m, err
+}
+
+func AnalyseDataCreatePoll(data json.RawMessage) (DataCreatePoll, error) {
+	m := DataCreatePoll{}
 	err := json.Unmarshal(data, &m)
 	return m, err
 }
