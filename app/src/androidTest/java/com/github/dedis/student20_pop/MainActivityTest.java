@@ -6,6 +6,7 @@ import androidx.test.core.app.ActivityScenario;
 import androidx.test.rule.GrantPermissionRule;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -57,13 +58,14 @@ public class MainActivityTest {
         onView(withId(R.id.fragment_home)).check(matches(isDisplayed()));
     }
 
-    //These tests only pass when testingAttendee is true in MainActivity
+    @Ignore("Need to set testingAttendee to true in MainActivity")
     @Test
     public void onClickPropertiesTest(){
         onView(withId(R.id.tab_properties)).perform(click());
         onView(withId(R.id.properties_view)).check(matches(isDisplayed()));
     }
 
+    @Ignore("Need to set testingAttendee to true in MainActivity")
     @Test
     public void onClickListEventsTest(){
         onView(withText("Past Events")).perform(click());

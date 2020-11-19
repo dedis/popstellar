@@ -22,7 +22,7 @@ public final class Person {
      */
     public Person(String name) {
         if(name == null) {
-            throw new IllegalArgumentException("Trying to create a peron with a null name");
+            throw new IllegalArgumentException("Trying to create a person with a null name");
         }
         this.name = name;
         // Generate the public and private keys
@@ -81,7 +81,7 @@ public final class Person {
      * @return a new Person with the same name, public and private key, but new list of laos
      * @throws IllegalArgumentException if the list is null or at least one lao value is null
      */
-    public Person setLaos(List<String> laos) throws IllegalArgumentException {
+    public Person setLaos(List<String> laos) {
         if(laos == null || laos.contains(null)) {
             throw new IllegalArgumentException("Trying to add a null lao to the Person " + name);
         }
