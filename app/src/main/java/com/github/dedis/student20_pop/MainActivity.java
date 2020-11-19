@@ -21,8 +21,6 @@ import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
 import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.Date;
 
@@ -83,12 +81,8 @@ public final class MainActivity extends FragmentActivity {
                 Lao lao = new Lao(name, new Date(), organizer.getId());
                 organizer.setLaos(Collections.singletonList(lao.getId()));
                 // Store the private key of the organizer
-                try {
-                    PrivateInfoStorage.storeData(this, organizer.getId(), organizer.getAuthentication());
-                    Log.d(TAG, "Stored organizer's private key correctly");
-                } catch (GeneralSecurityException | IOException e) {
-                    e.printStackTrace();
-                }
+                if(PrivateInfoStorage.storeData(this, organizer.getId(), organizer.getAuthentication()))
+                    Log.d(TAG, "Stored private key of organizer");
                 showFragment(new HomeFragment(), LaunchFragment.TAG);
                 Toast.makeText(this,
                         getResources().getString(R.string.message_launch_successful, name),

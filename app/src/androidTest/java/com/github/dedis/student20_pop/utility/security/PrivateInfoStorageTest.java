@@ -1,43 +1,32 @@
 package com.github.dedis.student20_pop.utility.security;
 
 import androidx.test.core.app.ActivityScenario;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import com.github.dedis.student20_pop.MainActivity;
-import com.github.dedis.student20_pop.PoPApplication;
-import com.github.dedis.student20_pop.R;
 
-import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class PrivateInfoStorageTest {
 
-    @Before
-    public void launchActivity() {
-        ActivityScenario.launch(MainActivity.class);
+    @Test
+    public void storeAndReadDataTest() {
+        ActivityScenario.launch(MainActivity.class).onActivity(activity -> {
+            assertTrue(PrivateInfoStorage.storeData(activity, "TEST","DATA"));
+            assertThat(PrivateInfoStorage.readData(activity, "TEST"), is("DATA"));
+        });
     }
 
-    @Test
-    public void storeDataTest() {
-        ActivityScenario.launch(MainActivity.class).onActivity(activity -> {
+    @Test(expected = IllegalArgumentException.class)
+    public void nullContextStoreTest() {
+        PrivateInfoStorage.storeData(null, "TEST", "DATA");
+    }
 
-            try {
-                PrivateInfoStorage.storeData(activity, "TEST","DATA");
-                assertThat(PrivateInfoStorage.readData(activity, "TEST"), is("DATA"));
-            } catch (GeneralSecurityException | IOException e) {
-                e.printStackTrace();
-            }
-        });
+    @Test(expected = IllegalArgumentException.class)
+    public void nullContextReadTest() {
+        PrivateInfoStorage.readData(null, "TEST");
     }
 }
