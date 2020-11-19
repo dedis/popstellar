@@ -25,7 +25,7 @@ type LAO struct {
 
 type Event struct {
 	//id hash : SHA1(Name + Creation Date/Time Unix Timestamp)
-	ID []byte
+	ID string
 	// name of event
 	Name string
 	//Creation Date/Time
@@ -34,7 +34,7 @@ type Event struct {
 	Location     string
 	Start        int64 //  Unix timestamp (uint64)
 	End          int64 //timestamp
-	Extra        []byte
+	Extra        string //TODO if this is json no need to stick to []byte
 }
 
 type Election struct {

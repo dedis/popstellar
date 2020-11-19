@@ -82,7 +82,22 @@ type ResponseWithError struct {
 	ErrorResponse string
 	Id            int
 }
-
+type DataCreateMeeting struct {
+	Object string
+	Action string
+	//ID hash : Name || Creation Date/Time Unix Timestamp
+	ID string
+	// name of LAO
+	Name string
+	//Creation Date/Time
+	Creation     int64 //  Unix timestamp (uint64)
+	LastModified int64 //timestamp
+	Location string //optional
+	//Organiser: Public Key
+	Start int64 /* Timestamp */
+	End int64 /* Timestamp, optional */
+	Extra string /* arbitrary object, optional */
+}
 /**
  * Function that takes a byte array as input and returns
  * a Message struct
@@ -123,6 +138,11 @@ func AnalyseDataCreateLAO(data json.RawMessage) (DataCreateLAO, error) {
 	return m, err
 }
 
+func AnalyseDataCreateMeeting(data json.RawMessage) (DataCreateMeeting, error) {
+	m := DataCreateMeeting{}
+	err := json.Unmarshal(data, &m)
+	return m, err
+}
 /**
  * Function that reads a JSON message in order to create a new LAO
  */
