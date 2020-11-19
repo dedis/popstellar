@@ -35,7 +35,7 @@ public final class Election {
      * @throws IllegalArgumentException if any of the parameters is null
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Election(String name, Date time, String lao, List<String> options) throws IllegalArgumentException{
+    public Election(String name, Date time, String lao, List<String> options) {
         if(name == null || time == null || lao == null || options == null || options.contains(null)) {
             throw new IllegalArgumentException("Trying to create an Election with a null value");
         }

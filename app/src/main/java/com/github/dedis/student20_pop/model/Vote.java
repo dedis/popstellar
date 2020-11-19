@@ -26,8 +26,7 @@ public final class Vote {
      * @param vote the encrypted vote
      * @throws IllegalArgumentException if any parameter is null
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public Vote(String person, String election, String vote) throws IllegalArgumentException {
+    public Vote(String person, String election, String vote) {
         if(person == null || election == null || vote == null) {
             throw new IllegalArgumentException("Trying to create a Vote with a null parameter");
         }
