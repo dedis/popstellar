@@ -247,7 +247,7 @@ func (h *hub) handlePublish(generic define.Generic) error {
 	case "meeting":
 		switch data["action"] {
 		case "create":
-
+			return h.handleCreateMeeting(message, params.Channel, generic)
 		case "state":
 
 		default:
@@ -277,10 +277,9 @@ func (h *hub) handleCreateLAO(message define.Message, canal string, generic defi
 	if err != nil {
 		return define.ErrAccessDenied
 	}*/
-
 	lao := define.LAO{ID: data.ID, Name: data.Name, Creation: data.Creation, LastModified: data.LastModified, OrganizerPKey: data.OrganizerPKey, Witnesses: data.Witnesses}
 
-	err = channel.CreateLAO(lao)
+	err = channel.CreateObject(lao)
 	if err != nil {
 		return err
 	}
@@ -289,6 +288,30 @@ func (h *hub) handleCreateLAO(message define.Message, canal string, generic defi
 	return nil
 }
 
+func (h *hub) handleCreateMeeting(message define.Message, canal string, generic define.Generic) error {
+
+	if canal != "0" {
+		return define.ErrInvalidResource
+	}
+
+	data, err := define.AnalyseDataCreateMeeting(message.Data)
+	if err != nil {
+		return define.ErrInvalidResource
+	}
+
+	// don't need to check for validity if we use json schema
+
+	event := define.Event{ID: data.ID, Name: data.Name, Creation: data.Creation,
+		LastModified: data.LastModified,Location: data.Location, Start: data.Start,
+		End: data.End, Extra: data.Extra}
+	err = channel.CreateObject(event)
+	if err != nil {
+		return err
+	}
+	h.messageToBroadcast = define.CreateBroadcastMessage(message, generic)
+	h.channel = []byte(canal)
+	return nil
+}
 func (h *hub) handleMessage(msg []byte, userId int) error {
 
 	return nil

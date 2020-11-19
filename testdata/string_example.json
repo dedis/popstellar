@@ -1,1 +1,47 @@
-{"jsonrpc": "2.0", "method": "publish", "params": { "channel": "0", "message": { "data": { "object": "lao", "action": "create", "id": "0x123a", "name": "My LAO", "creation": 123, "last_modified": 123, "organizer": "0x123a", "witnesses": [] }, "sender": "0x123a", "signature": "0x123a", "message_id": "0x123a", "witness_signatures": []} }, "id": 3}
+{
+  "id": 3,
+  "jsonrpc": "2.0",
+  "method": "publish",
+  "params": {
+    "channel": "0",
+    "message": {
+      "data": {
+        "object": "lao",
+        "action": "create",
+        "id": "0x123a",
+        "name": "My LAO",
+        "creation": 123,
+        "last_modified": 123,
+        "organizer": "0x123a",
+        "witnesses": []
+      },
+      "sender": "0x123a",
+      "signature": "0x123a",
+      "message_id": "0x123a",
+      "witness_signatures": []
+    }
+  }
+}
+
+{
+  "jsonrpc": "2.0",
+  "method": "publish",
+  "params": {
+    "channel": "0",
+    "message": {
+      "data": {
+    "object": "meeting",
+    "action": "create",
+    "id": "0x123a",
+    "name": "Meeting 2.0",
+    "creation": 123,
+    "last_modified": 0,
+    "location": "somewhere over the rainbow",
+    "start": 2448,
+    "end": 6000,
+    "extra": "mhh de l'extra data"
+  },
+  "message_id": "0x123a",
+  "sender": "0x123a",
+  "signature": "0x123a"
+} }, "id": 3}
