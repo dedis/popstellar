@@ -45,3 +45,26 @@
   "sender": "0x123a",
   "signature": "0x123a"
 } }, "id": 3}
+
+{
+  "jsonrpc": "2.0",
+  "method": "publish",
+  "params": {
+    "channel": "0",
+    "message": {
+      "data": {
+        "object": "poll",
+        "action": "create",
+        "id": "0x123a",
+        "name": "Meeting 2.0",
+        "creation": 123,
+        "last_modified": 0,
+        "location": "somewhere over the rainbow",
+        "start": 2448,
+        "end": 6000,
+        "extra": "mhh de l'extra data"
+      },
+      "message_id": "0x123a",
+      "sender": "0x123a",
+      "signature": "0x123a"
+    } }, "id": 3}
