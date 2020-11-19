@@ -4,10 +4,14 @@ import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import com.github.dedis.student20_pop.MainActivity;
+import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -27,8 +31,13 @@ public class PrivateInfoStorageTest {
     @Test
     public void storeDataTest() {
         ActivityScenario.launch(MainActivity.class).onActivity(activity -> {
-            PrivateInfoStorage.storeData(activity, "TEST","DATA");
-            assertThat(PrivateInfoStorage.readData(activity, "TEST"), is("DATA"));
+
+            try {
+                PrivateInfoStorage.storeData(activity, "TEST","DATA");
+                assertThat(PrivateInfoStorage.readData(activity, "TEST"), is("DATA"));
+            } catch (GeneralSecurityException | IOException e) {
+                e.printStackTrace();
+            }
         });
     }
 }
