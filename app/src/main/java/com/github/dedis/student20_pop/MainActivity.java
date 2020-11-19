@@ -3,6 +3,7 @@ package com.github.dedis.student20_pop;
 import android.Manifest;
 import android.os.Bundle;
 import android.content.pm.PackageManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -20,6 +21,8 @@ import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
 import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.Date;
 
@@ -80,7 +83,12 @@ public final class MainActivity extends FragmentActivity {
                 Lao lao = new Lao(name, new Date(), organizer.getId());
                 organizer.setLaos(Collections.singletonList(lao.getId()));
                 // Store the private key of the organizer
-                PrivateInfoStorage.storeData(this, organizer.getId(), organizer.getAuthentication());
+                try {
+                    PrivateInfoStorage.storeData(this, organizer.getId(), organizer.getAuthentication());
+                    Log.d(TAG, "Stored organizer's private key correctly");
+                } catch (GeneralSecurityException | IOException e) {
+                    e.printStackTrace();
+                }
                 showFragment(new HomeFragment(), LaunchFragment.TAG);
                 Toast.makeText(this,
                         getResources().getString(R.string.message_launch_successful, name),

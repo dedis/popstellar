@@ -1,6 +1,7 @@
 package com.github.dedis.student20_pop.model;
 
 import com.github.dedis.student20_pop.utility.security.Hash;
+import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
 import com.github.dedis.student20_pop.utility.security.Signature;
 
 import org.junit.Ignore;
