@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.github.dedis.student20_pop"
-        minSdkVersion 19
+        minSdkVersion 26
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -42,6 +42,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation "androidx.security:security-crypto:1.1.0-alpha02"
     implementation 'com.google.android.gms:play-services-vision:20.1.2'
     implementation 'com.google.crypto.tink:tink-android:1.5.0'
 
