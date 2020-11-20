@@ -24,6 +24,9 @@ import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Event;
 import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
+import com.github.dedis.student20_pop.utility.OrganizerUI.OnEventTypeSelectedListener;
+import com.github.dedis.student20_pop.utility.OrganizerUI.OnEventTypeSelectedListener.EventType;
+
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,6 +43,7 @@ public class OrganizerFragment extends Fragment {
     private ExpandableListView expandableListView;
     private Lao lao;  //should be given from intent or previous fragment
     private Button propertiesButton;
+    private OnEventTypeSelectedListener listener;
 
     /**
      * Enum class for each event category
@@ -48,11 +52,14 @@ public class OrganizerFragment extends Fragment {
         PAST, PRESENT, FUTURE
     }
 
-    /**
-     * Enum class for each event type
-     */
-    private enum EventType {
-        MEETING, ROLL_CALL, POLL
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            listener = (OnEventTypeSelectedListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement OnEventTypeSelectedListener");
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -109,26 +116,6 @@ public class OrganizerFragment extends Fragment {
                 new Keys().getPublicKey(), "i don't know where yet", "Poll"));
 
         return events;
-    }
-
-    public void launchEventCreationFragment(EventType eventType) {
-        switch (eventType) {
-            case MEETING:
-                //TODO
-                Log.d("Meeting Event Type ", "Launch here Meeting Event Creation Fragment");
-                break;
-            case ROLL_CALL:
-                //TODO
-                Log.d("Roll-Call Event Type ", "Launch here Roll-Call Event Creation Fragment");
-                break;
-            case POLL:
-                //TODO
-                Log.d("Poll Event Type ", "Launch here Poll Event Creation Fragment");
-                break;
-            default:
-                Log.d("Default Event Type :", "Default Behaviour TBD");
-                break;
-        }
     }
 
     public class OrganizerExpandableListViewEventAdapter extends BaseExpandableListAdapter {
@@ -271,7 +258,7 @@ public class OrganizerFragment extends Fragment {
 
                     builderSingle.setNegativeButton(context.getString(R.string.button_cancel), (dialog, which) -> dialog.dismiss());
                     builderSingle.setAdapter(arrayAdapter, (dialog, which) -> {
-                        launchEventCreationFragment(EventType.values()[which]);
+                        listener.OnEventTypeSelectedListener(EventType.values()[which]);
                     });
                     builderSingle.show();
                 });
