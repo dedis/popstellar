@@ -9,6 +9,7 @@
 
     <!-- Text -->
     <dimen name="margin_text">32dp</dimen>
+    <dimen name="margin_top">5dp</dimen>
     <dimen name="size_title">24sp</dimen>
     <dimen name="size_body">18sp</dimen>
 
