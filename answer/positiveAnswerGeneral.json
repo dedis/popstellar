@@ -4,7 +4,6 @@
 	"title": "All requests (except catchup (list of message) and propagate message (nothing)) expect an ACK (0) as answer",
 	"description": "[Int] success result message",
 
-	"type": "integer",
-	"minimum": 0, "maximum": 0, 
-	"$comment": "Note: should always be 0" 
+	"const": 0,
+	"$comment": "Note: should always be 0"
 }
