@@ -17,7 +17,7 @@
 
 
     <LinearLayout
-        android:id="@+id/linearLayout4"
+        android:id="@+id/organizer_linear_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"
@@ -32,7 +32,7 @@
             android:visibility="gone" />
 
         <ExpandableListView
-            android:id="@+id/exp_list_view"
+            android:id="@+id/organizer_expandable_list_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layoutDirection="ltr" />
