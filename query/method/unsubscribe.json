@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft/2019-09/schema#",
-	"$id": "http://pop2020.dedis.ch/unsubscribe.json",
+	"$id": "https://github.com/dedis/student20_pop/tree/proto-specs/query/method/unsubscribe.json",
 	"description": "Match unsubscribe from a channel client query",
 	"type": "object",
 

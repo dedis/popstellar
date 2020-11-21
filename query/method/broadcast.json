@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft/2019-09/schema#",
-	"$id": "http://pop2020.dedis.ch/broadcast.json",
+	"$id": "https://github.com/dedis/student20_pop/tree/proto-specs/query/method/broadcast.json",
 	"description": "Match propagation/broadcast of a message on a channel query",
 	"type": "object",
 

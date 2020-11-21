@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft/2019-09/schema#",
-	"$id": "http://pop2020.dedis.ch/method/message/data/dataCreateLao.json",
+	"$id": "https://github.com/dedis/student20_pop/tree/proto-specs/query/method/message/data/dataCreateLao.json",
 	"description": "Match a create LAO query",
 	"type": "object",
 

@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft/2019-09/schema#",
-	"$id": "http://pop2020.dedis.ch/answer/positiveAnswerGeneral.json",
+	"$id": "https://github.com/dedis/student20_pop/tree/proto-specs/answer/positiveAnswer/positiveAnswerGeneral.json",
 	"title": "All requests (except catchup (list of message) and propagate message (nothing)) expect an ACK (0) as answer",
 	"description": "[Int] success result message",
 
