@@ -1,0 +1,31 @@
+{
+	"$schema": "http://json-schema.org/draft/2019-09/schema#",
+	"$id": "http://pop2020.dedis.ch/generic.json",
+	"title": "Match a custom JsonRpc 2.0 query message",
+	"description": "Match a client query",
+	"type": "object",
+
+	"allOf": [
+		{
+			"maxProperties": 4, 
+			"$comment": "Note: can't use \"additionalProperties: false\" due to \"allOf\""
+		}, {
+			"properties": { 
+				"jsonrpc": { 
+					"description": "[String] JsonRpc version", 
+					"const": "2.0", 
+					"$comment": "should always be \"2.0\"" 
+				} 
+			},
+			"required": ["jsonrpc"]
+		}, {
+			"oneOf": [
+				{ "$ref": "method/subscribe.json" },
+				{ "$ref": "method/unsubscribe.json" },
+				{ "$ref": "method/catchup.json" },
+				{ "$ref": "method/broadcast.json" },
+				{ "$ref": "method/publish.json" }
+			]
+		}
+	]
+}
