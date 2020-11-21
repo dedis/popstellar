@@ -7,8 +7,8 @@
 	"type": "array", 
 	"items": {
 		"oneOf": [
-			{ "$ref": "../method/message/messageGeneral.json" }, 
-			{ "$ref": "../method/message/messageWitnessMessage.json" }
+			{ "$ref": "../../query/method/message/messageGeneral.json" }, 
+			{ "$ref": "../../query/method/message/messageWitnessMessage.json" }
 		],
 		"$comment": "Note: items in the list are [Message]s: high-level message objects"
 	},
