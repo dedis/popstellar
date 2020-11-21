@@ -10,44 +10,50 @@
 			"const": "publish" 
 		},
 		"params": {
-			"oneOf": [
-				{
-					"description": "Match a publish query destined for the root channel",
-					"type": "object",
-					"properties": {
-						"channel": { 
-							"description": "[String] name of the (root) channel", 
-							"$ref": "channel/rootChannel.json",
-							"$comment": "Note: should always be \"/root\""
-						},
-						"message": { 
-							"description": "[Message] message to be published",
-							"$ref": "message/messageGeneral.json"
-						}
-					},
-					"additionalProperties": false,
-					"required": ["channel", "message"]
-				}, 
-				{
-					"description": "Match a publish query destined for a sub-channel",
-					"type": "object",
-					"properties": {
-						"channel": { 
-							"description": "[String] name of the channel", 
-							"$ref": "channel/subChannel.json"
-						},
-						"message": { 
-							"description": "[Message] message to be published",
-							"oneOf": [
-								{ "$ref": "message/messageGeneral.json" },
-								{ "$ref": "message/messageWitnessMessage.json" }
-							]
-						}
-					},
-					"additionalProperties": false,
-					"required": ["channel", "message"]
+
+			"type": "object",
+			"properties": {
+				"channel": {
+					"description": "[String] name of the channel", 
+					"type": "string",
+					"pattern": "^\/root(\/[^\/]+)?$",
+					"$comment": "Note: the regex matches a \"/root\" or a \"/root/<channel>\""
 				}
-			]
+			},
+
+			"allOf": [
+				{
+					"if": { "properties": { "channel": { "$ref": "../channel/rootChannel.json" } } },
+					"then": {
+						"properties": {
+							"message": { 
+								"description": "[Message] message to be published",
+								"$ref": "message/messageGeneral.json"
+							}
+						},
+						"$comment": "Note: match a publish query destined for the root channel"
+					}
+				}, 
+
+				{
+					"if": { "properties": { "channel": { "$ref": "../channel/subChannel.json" } } },
+					"then": {
+						"properties": {
+							"message": { 
+								"description": "[Message] message to be published",
+								"anyOf": [
+									{ "$ref": "message/messageGeneral.json" },
+									{ "$ref": "message/messageWitnessMessage.json" }
+								]
+							}
+						},
+						"$comment": "Note: match a publish query destined for a sub-channel"
+					}
+				}
+			],
+
+			"additionalProperties": false,
+			"required": ["channel", "message"]
 		},
 		"id": { "type": "integer" }
 	},
