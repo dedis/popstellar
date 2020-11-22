@@ -5,6 +5,7 @@ import ch.epfl.pop.json.JsonMessages._
 import spray.json._
 
 
+
 /**
  * Custom Json Parser for our Json-RPC protocol
  */
@@ -20,17 +21,33 @@ object JsonMessageParser {
   def parseMessage(source: String): JsonMessage = {
 
     val obj: JsObject = source.parseJson.asJsObject
-    val fields: Map[String, JsValue] = obj.fields
 
-    fields.head match {
-      case ("create", values@JsObject(_)) => values.convertTo[CreateChannelClient]
-      case ("publish", values@JsObject(_)) => values.convertTo[PublishChannelClient]
-      case ("subscribe", values@JsObject(_)) => values.convertTo[SubscribeChannelClient]
-      case ("fetch", values@JsObject(_)) => values.convertTo[FetchChannelClient]
+    obj.getFields("jsonrpc") match {
+      case Seq(JsString(v)) => if (v != "2.0") throw DeserializationException("TODO send error code")
+      case _ => throw DeserializationException("invalid message : jsonrpc field missing or wrongly formatted")
+    }
 
-      // TODO add more cases (need all groups to be on the same page before)
+    obj.getFields("method") match {
+      case Seq(JsString(m)) => m match {
+        /* Subscribing to a channel */
+        case Methods.Subscribe() => obj.convertTo[SubscribeMessageClient]
 
-      case _ => throw DeserializationException(s"Invalid Json format or object header : ${fields.keys.head}")
+        /* Unsubscribing from a channel */
+        case Methods.Unsubscribe() => obj.convertTo[UnsubscribeMessageClient]
+
+        /* Propagating message on a channel */
+        case Methods.Message() => obj.convertTo[PropagateMessageClient]
+
+        /* Catching up on past message on a channel */
+        case Methods.Catchup() => obj.convertTo[CatchupMessageClient]
+
+        /* Publish on a channel + All Higher-level communication */
+        case Methods.Publish() => obj.convertTo[JsonMessageAdminClient]
+
+        /* parsing error : invalid method value */
+        case _ => throw DeserializationException("invalid message : method value unrecognized")
+      }
+      case _ => throw DeserializationException("invalid message : method field missing or wrongly formatted")
     }
   }
 
@@ -42,9 +59,28 @@ object JsonMessageParser {
    */
   @throws(classOf[SerializationException])
   def serializeMessage(message: JsonMessage): String = message match {
-    case m@AnswerMessageServer(_, _) => m.toJson.toString
-    case m@NotifyChannelServer(_, _) => m.toJson.toString
-    case m@FetchChannelServer(_, _, _) => JsObject("event" -> m.toJson).toJson.toString
+    case _: JsonMessageAnswerServer => message match {
+      case m: AnswerResultIntMessageServer => m.toJson.toString
+      case m: AnswerResultArrayMessageServer => m.toJson.toString
+      case m: AnswerErrorMessageServer => m.toJson.toString
+    }
+
+    case _: JsonMessageAdminClient => message match {
+      case m: CreateLaoMessageClient => m.toJson(JsonMessageAdminClientFormat.write).toString
+      case m: UpdateLaoMessageClient => m.toJson(JsonMessageAdminClientFormat.write).toString
+      case m: BroadcastLaoMessageClient => m.toJson(JsonMessageAdminClientFormat.write).toString
+      case m: WitnessMessageMessageClient => m.toJson(JsonMessageAdminClientFormat.write).toString
+      case m: CreateMeetingMessageClient => m.toJson(JsonMessageAdminClientFormat.write).toString
+      case m: BroadcastMeetingMessageClient => m.toJson(JsonMessageAdminClientFormat.write).toString
+    }
+
+    case _: JsonMessagePubSubClient => message match {
+      case m: SubscribeMessageClient => m.toJson.toString
+      case m: UnsubscribeMessageClient => m.toJson.toString
+      case m: PropagateMessageClient => m.toJson.toString
+      case m: CatchupMessageClient => m.toJson.toString
+    }
+
     case _ => throw new SerializationException("Json serializer failed : invalid input message")
   }
 }
