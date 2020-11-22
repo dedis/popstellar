@@ -9,7 +9,7 @@ import (
 )
 
 const bucketSubscribers = "sub"
-const database = "pop.db"
+
 
 /*
  * Function that subscribe a user to a channel. ONLY AT THE PUB/SUB LAYER
@@ -18,7 +18,7 @@ const database = "pop.db"
  */
 func Subscribe(userId int, channelId []byte) error {
 
-	db, err := OpenDB(database)
+	db, err := OpenDB(Database)
 	if err != nil {
 		return err
 	}
@@ -62,7 +62,7 @@ func Subscribe(userId int, channelId []byte) error {
 */
 func Unsubscribe(userId int, channelId []byte) error {
 
-	db, err := OpenDB(database)
+	db, err := OpenDB(Database)
 	if err != nil {
 		return err
 	}
@@ -105,7 +105,7 @@ func Unsubscribe(userId int, channelId []byte) error {
 
 /*helper function to find a channel's subscribers */
 func GetSubscribers(channel []byte) ([]int, error) {
-	db, err := OpenDB(database)
+	db, err := OpenDB(Database)
 	if err != nil {
 		return nil, err
 	}

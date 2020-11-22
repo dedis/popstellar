@@ -14,7 +14,7 @@ const bucketChannel = "channels"
  * @returns : error
  */
 func writeChannel(obj interface{}, secure bool) error {
-	db, e := OpenDB(database)
+	db, e := OpenDB(Database)
 	defer db.Close()
 	if e != nil {
 		return e
@@ -31,8 +31,8 @@ func writeChannel(obj interface{}, secure bool) error {
 		case define.LAO :
 			// type assert
 			objID = []byte (obj.(define.LAO).ID)
-		case define.Event:
-			objID = []byte (obj.(define.Event).ID)
+		case define.Meeting:
+			objID = []byte (obj.(define.Meeting).ID)
 		// TODO add cases as needed
 		default:
 			//TODO not sure for the error type
@@ -56,8 +56,8 @@ func writeChannel(obj interface{}, secure bool) error {
 		case define.LAO :
 			// type assert
 			dt, err2 = json.Marshal(obj.(define.LAO).ID)
-		case define.Event:
-			dt, err2 = json.Marshal(obj.(define.Event).ID)
+		case define.Meeting:
+			dt, err2 = json.Marshal(obj.(define.Meeting).ID)
 		default:
 			//TODO not sure for the error type
 			return define.ErrRequestDataInvalid
@@ -86,7 +86,7 @@ func UpdateChannel(obj interface{}) error {
 
 /*returns channel data from a given ID */
 func GetChannelFromID(id []byte) []byte {
-	db, e := OpenDB(database)
+	db, e := OpenDB(Database)
 	defer db.Close()
 	if e != nil {
 		return nil
