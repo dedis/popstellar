@@ -20,7 +20,7 @@ faire des tests
 -Subscribing
 -Unsubscribing
 
-changer les types de channel de string vers int + conversion array de byte -> string /Ouriel
+conversion array de byte -> string /Ouriel
 
 Propagating a message on a channel
 Catching up on past messages on a channel /RAOUl
@@ -48,10 +48,17 @@ type hub struct {
 	// Registered connections.
 	connections map[*connection]struct{}
 
-	// message to send to the channel
-	message chan []byte
-	//channel in which we have to send the info
+	// 1st message to send to the channel
+	message []byte
 	channel []byte
+
+	// 2nd message to send to the channel
+	message2 []byte
+	channel2 []byte
+
+	//Response for the sender
+	idOfSender       int
+	responseToSender []byte
 
 	//msg received from the webskt
 	receivedMessage chan []byte
@@ -63,27 +70,20 @@ type hub struct {
 	log   [][]byte
 
 	connIndex int
-
-	//Response for the sender
-	idOfSender       int
-	responseToSender chan []byte
-
-	responseToSenderNotChan []byte
-	messageToBroadcast      []byte
 }
 
-func NewHub() *hub {
+func NewOrganizerHub() *hub {
 	h := &hub{
-		connectionsMx:           sync.RWMutex{},
-		message:                 make(chan []byte),
-		receivedMessage:         make(chan []byte),
-		connections:             make(map[*connection]struct{}),
-		db:                      nil,
-		connIndex:               0,
-		idOfSender:              -1,
-		responseToSender:        make(chan []byte),
-		responseToSenderNotChan: nil,
-		messageToBroadcast:      nil,
+		connectionsMx:    sync.RWMutex{},
+		receivedMessage:  make(chan []byte),
+		connections:      make(map[*connection]struct{}),
+		db:               nil,
+		connIndex:        0,
+		idOfSender:       -1,
+		responseToSender: nil,
+		message:          nil,
+		message2:         nil,
+		channel2:         nil,
 	}
 	//publish subscribe go routine !
 
@@ -91,16 +91,16 @@ func NewHub() *hub {
 		for {
 			//get msg from connection
 			msg := <-h.receivedMessage
-			h.messageToBroadcast = nil
-			h.responseToSenderNotChan = nil
+			h.message = nil
+			h.responseToSender = nil
 			//handle the message and generate the response
 			h.HandleWholeMessage(msg, h.idOfSender)
-			msgBroadcast := h.messageToBroadcast
-			msgResponse := h.responseToSenderNotChan
+			msgBroadcast := h.message
+			msgResponse := h.responseToSender
 
 			var subscribers []int = nil
 			var err error = nil
-			if bytes.Compare(h.channel, []byte("/root")) != 0 {
+			if bytes.Equal(h.channel, []byte("/root")) {
 				subscribers, err = channel.GetSubscribers(h.channel)
 				if err != nil {
 					log.Fatal("can't get subscribers", err)
@@ -112,7 +112,7 @@ func NewHub() *hub {
 				//send msgBroadcast to that connection if channel is main channel or is in channel subscribers
 				_, found := define.Find(subscribers, c.id)
 
-				if (bytes.Compare(h.channel, []byte("/root")) == 0 || found) && msgBroadcast != nil {
+				if (bytes.Equal(h.channel, []byte("/root")) || found) && msgBroadcast != nil {
 					select {
 					case c.send <- msgBroadcast:
 					// stop trying to send to this connection after trying for 1 second.
@@ -173,7 +173,7 @@ func (h *hub) HandleWholeMessage(msg []byte, userId int) {
 	generic, err := define.AnalyseGeneric(msg)
 	if err != nil {
 		err = define.ErrRequestDataInvalid
-		h.responseToSenderNotChan = define.CreateResponse(err, nil, generic)
+		h.responseToSender = define.CreateResponse(err, nil, generic)
 		return
 	}
 
@@ -193,7 +193,7 @@ func (h *hub) HandleWholeMessage(msg []byte, userId int) {
 		err = define.ErrRequestDataInvalid
 	}
 
-	h.responseToSenderNotChan = define.CreateResponse(err, history, generic)
+	h.responseToSender = define.CreateResponse(err, history, generic)
 }
 
 func (h *hub) handleSubscribe(generic define.Generic, userId int) error {
@@ -305,11 +305,10 @@ func (h *hub) handleCreateLAO(message define.Message, canal string, generic defi
 		return define.ErrInvalidResource
 	}
 
-	// TODO
-	/*err = define.LAOCreatedIsValid(data, message)
+	err = define.LAOCreatedIsValid(data, message)
 	if err != nil {
-		return define.ErrAccessDenied
-	}*/
+		return err
+	}
 
 	canalLAO := canal + data.ID
 
@@ -318,7 +317,14 @@ func (h *hub) handleCreateLAO(message define.Message, canal string, generic defi
 		return err
 	}
 
-	lao := define.LAO{ID: data.ID, Name: data.Name, Creation: data.Creation, LastModified: data.LastModified, OrganizerPKey: data.OrganizerPKey, Witnesses: data.Witnesses}
+	lao := define.LAO{
+		ID:            data.ID,
+		Name:          data.Name,
+		Creation:      data.Creation,
+		LastModified:  data.LastModified,
+		OrganizerPKey: data.OrganizerPKey,
+		Witnesses:     data.Witnesses,
+	}
 	err = channel.CreateObject(lao)
 	if err != nil {
 		return err
@@ -339,9 +345,15 @@ func (h *hub) handleCreateRollCall(message define.Message, canal string, generic
 
 	// don't need to check for validity if we use json schema
 	//TODO do we move to multiple type ? cf datadef
-	event := define.Event{ID: data.ID, Name: data.Name, Creation: data.Creation,
-		LastModified: data.LastModified, Location: data.Location, Start: data.Start,
-		End: data.End, Extra: data.Extra}
+	event := define.Event{ID: data.ID,
+		Name:         data.Name,
+		Creation:     data.Creation,
+		LastModified: data.LastModified,
+		Location:     data.Location,
+		Start:        data.Start,
+		End:          data.End,
+		Extra:        data.Extra,
+	}
 	err = channel.CreateObject(event)
 	if err != nil {
 		return err
@@ -361,9 +373,15 @@ func (h *hub) handleCreateMeeting(message define.Message, canal string, generic 
 	}
 
 	// don't need to check for validity if we use json schema
-	event := define.Event{ID: data.ID, Name: data.Name, Creation: data.Creation,
-		LastModified: data.LastModified, Location: data.Location, Start: data.Start,
-		End: data.End, Extra: data.Extra}
+	event := define.Event{ID: data.ID,
+		Name:         data.Name,
+		Creation:     data.Creation,
+		LastModified: data.LastModified,
+		Location:     data.Location,
+		Start:        data.Start,
+		End:          data.End,
+		Extra:        data.Extra,
+	}
 	err = channel.CreateObject(event)
 	if err != nil {
 		return err
@@ -372,7 +390,7 @@ func (h *hub) handleCreateMeeting(message define.Message, canal string, generic 
 }
 
 func (h *hub) finalizeHandling(message define.Message, canal string, generic define.Generic) error {
-	h.messageToBroadcast = define.CreateBroadcastMessage(message, generic)
+	h.message = define.CreateBroadcastMessage(message, generic)
 	h.channel = []byte(canal)
 	return nil
 }
@@ -389,9 +407,15 @@ func (h *hub) handleCreatePoll(message define.Message, canal string, generic def
 	}
 
 	// don't need to check for validity if we use json schema
-	event := define.Event{ID: data.ID, Name: data.Name, Creation: data.Creation,
-		LastModified: data.LastModified, Location: data.Location, Start: data.Start,
-		End: data.End, Extra: data.Extra}
+	event := define.Event{ID: data.ID,
+		Name:         data.Name,
+		Creation:     data.Creation,
+		LastModified: data.LastModified,
+		Location:     data.Location,
+		Start:        data.Start,
+		End:          data.End,
+		Extra:        data.Extra,
+	}
 	err = channel.CreateObject(event)
 	if err != nil {
 		return err
@@ -405,7 +429,7 @@ func (h *hub) handleMessage(msg []byte, userId int) error {
 
 // This is organizer implementation. If Witness, should return a witness msg on object
 func (h *hub) handleUpdateProperties(canal string, msg []byte) error {
-	h.messageToBroadcast = msg
+	h.message = msg
 	h.channel = []byte(canal)
 	return channel.WriteMessage(msg, true)
 }
@@ -460,7 +484,7 @@ func (h *hub) handleWitnessMessage(canal string, msg []byte) error {
 	}
 
 	//broadcast received message
-	h.messageToBroadcast = msg
+	h.message = msg
 	h.channel = []byte(canal)
 	return nil
 }

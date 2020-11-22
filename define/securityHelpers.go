@@ -27,10 +27,10 @@ func LAOCreatedIsValid(data DataCreateLAO, message Message) error {
 	if !bytes.Equal([]byte(message.MessageID), hash[:]) {
 		return ErrInvalidResource
 	}
-	//potentially more checks
+
 	return nil
 }
 
-func EventValidtyCheck() error {
+func MessageIsValid(msg Message) error {
 	return nil
 }
