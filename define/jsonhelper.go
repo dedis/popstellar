@@ -159,6 +159,7 @@ func AnalyseMessage(message json.RawMessage) (Message, error) {
 }
 
 func AnalyseData(data json.RawMessage) (Data, error) {
+	// TODO decode from Base64
 	m := Data{}
 	err := json.Unmarshal(data, &m)
 	return m, err
@@ -204,7 +205,7 @@ func DataToMessageEventCreate(data []byte) (MessageEventCreate, error) {
 	return m, err
 }*/
 
-func CreateBroadcastMessage(message Message, generic Generic) []byte {
+func CreateBroadcastMessage(generic Generic) []byte {
 	broadc := Generic{
 		Jsonrpc: generic.Jsonrpc,
 		Method:  "message",

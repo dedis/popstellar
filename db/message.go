@@ -12,7 +12,7 @@ import (
  */
  func writeMessage(message define.Message, channel string, creating bool) error {
 
-	db, e := OpenDB(database)
+	db, e := OpenDB(Database)
 	defer db.Close()
 	if e != nil {
 		return e
@@ -56,7 +56,7 @@ func UpdateMessage(message define.Message, channel string) error {
 
 /*returns the content of a message sent on a channel. Nil if channel or DB does not exist*/
 func GetMessage(channel []byte, message []byte) []byte {
-	database, err := OpenDB(database)
+	database, err := OpenDB(Database)
 	defer database.Close()
 	if err != nil {
 		return nil
