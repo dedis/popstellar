@@ -1,6 +1,11 @@
 package define
 
-import "time"
+import (
+	"bytes"
+	"crypto/sha256"
+	"strconv"
+	"time"
+)
 
 const MaxTimeBetweenLAOCreationAndPublish = 600
 
@@ -15,10 +20,17 @@ func LAOCreatedIsValid(data DataCreateLAO, message Message) error {
 		return ErrInvalidResource
 	}
 	//the attestation is valid,
-	// TODO hash function
-	if message.MessageID != "0" {//hashTBD(message.Data+message.Signature) {
+	str := []byte(data.OrganizerPKey)
+	str = append(str, []byte(strconv.FormatInt(data.Creation, 10))...)
+	str = append(str, []byte(data.Name)...)
+	hash := sha256.Sum256(str)
+	if !bytes.Equal([]byte(message.MessageID), hash[:]) {
 		return ErrInvalidResource
 	}
 	//potentially more checks
+	return nil
+}
+
+func EventValidtyCheck() error {
 	return nil
 }
