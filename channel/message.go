@@ -56,7 +56,7 @@ func writeMessage(message define.Message, canal string, creating bool) error {
 }
 
 /*writes a message to the DB, returns an error if ID already is key in DB*/
-func CreateMessage(message define.Message, canal string) error {
+func StoreMessage(message define.Message, canal string) error {
 	return writeMessage(message, canal, true)
 }
 

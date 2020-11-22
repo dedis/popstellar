@@ -269,7 +269,7 @@ func CreateBroadcastMessage(message Message, generic Generic) []byte {
 * we suppose error is in the good range
  */
 
-func createResponse(err error, messages []byte, generic Generic) []byte {
+func CreateResponse(err error, messages []byte, generic Generic) []byte {
 	if err != nil {
 		resp := ResponseWithError {
 			Jsonrpc:       "2.0",

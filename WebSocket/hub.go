@@ -170,7 +170,7 @@ func (h *hub) HandleWholeMessage(msg []byte, userId int) {
 	generic, err := define.AnalyseGeneric(msg)
 	if err != nil {
 		err = define.ErrRequestDataInvalid
-		h.responseToSenderNotChan = define.CreateResponse(err, generic)
+		h.responseToSenderNotChan = define.CreateResponse(err, nil, generic)
 		return
 	}
 
@@ -296,7 +296,7 @@ func (h *hub) handleCreateLAO(message define.Message, canal string, generic defi
 		return define.ErrAccessDenied
 	}*/
 	
-	canalLAO = canal + data.ID
+	canalLAO := canal + data.ID
 
 	err = channel.StoreMessage(message, canalLAO)
 	if err != nil {

@@ -13,7 +13,6 @@ import (
  * Function to create a new Object (LAO,Event...) and store it in the DB
  * @returns : error
  */
-<<<<<<< HEAD
 func writeObject(obj interface{}, secure bool) error {
 	db, e := db.OpenDB(channelDatabase)
 	defer db.Close()
@@ -78,9 +77,6 @@ func writeObject(obj interface{}, secure bool) error {
  * @returns : error
  *
 func writeLAO(lao define.LAO, secure bool) error {
-=======
-func writeLAO(lao define.Message, canal string, secure bool) error {
->>>>>>> work-be1-raoul
 	db, e := db.OpenDB(channelDatabase)
 	defer db.Close()
 	if e != nil {
@@ -118,27 +114,14 @@ func writeLAO(lao define.Message, canal string, secure bool) error {
 }
 */
 
-<<<<<<< HEAD
 /*writes a Event to the DB, returns an error if ID already is key in DB*/
 func CreateObject(obj interface{}) error {
 	return writeObject(obj, true)
 }
+
 /*writes a lao to the DB, regardless of ID already exists*/
 func UpdateObject(obj define.LAO) error {
 	return writeObject(obj, false)
-=======
-/*writes a lao to the DB, returns an error if ID already is key in DB*/
-func CreateLAO(lao define.Message, canal string) error {
-	return writeLAO(lao, canal, true)
-}
-
-
-// TODO Update must append !!! Not Overwrite !!!!!!!!!!!!!!!!!!
-// TODO merge channel and LAO ?
-/*writes a lao to the DB, regardless of ID already exists*/
-func UpdateLao(lao define.Message, canal string) error {
-	return writeLAO(lao, canal, false)
->>>>>>> work-be1-raoul
 }
 
 /*returns channel data from a given ID */
