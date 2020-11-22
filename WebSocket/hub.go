@@ -343,9 +343,13 @@ func (h *hub) handleCreateRollCall(message define.Message, canal string, generic
 		return define.ErrInvalidResource
 	}
 
+	err = define.RollCallCreatedIsValid(data, message)
+	if err != nil {
+		return err
+	}
+
 	// don't need to check for validity if we use json schema
-	//TODO do we move to multiple type ? cf datadef
-	event := define.Event{ID: data.ID,
+	event := define.RollCall{ID: data.ID,
 		Name:         data.Name,
 		Creation:     data.Creation,
 		LastModified: data.LastModified,
@@ -363,7 +367,7 @@ func (h *hub) handleCreateRollCall(message define.Message, canal string, generic
 
 func (h *hub) handleCreateMeeting(message define.Message, canal string, generic define.Generic) error {
 
-	if canal != "0" {
+	if canal == "/root" {
 		return define.ErrInvalidResource
 	}
 
@@ -373,7 +377,7 @@ func (h *hub) handleCreateMeeting(message define.Message, canal string, generic 
 	}
 
 	// don't need to check for validity if we use json schema
-	event := define.Event{ID: data.ID,
+	event := define.Meeting{ID: data.ID,
 		Name:         data.Name,
 		Creation:     data.Creation,
 		LastModified: data.LastModified,
@@ -407,7 +411,7 @@ func (h *hub) handleCreatePoll(message define.Message, canal string, generic def
 	}
 
 	// don't need to check for validity if we use json schema
-	event := define.Event{ID: data.ID,
+	event := define.Poll{ID: data.ID,
 		Name:         data.Name,
 		Creation:     data.Creation,
 		LastModified: data.LastModified,
