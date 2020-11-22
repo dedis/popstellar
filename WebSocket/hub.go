@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/boltdb/bolt"
 	"log"
-	"student20_pop/channel"
 	"student20_pop/define"
 	"sync"
 	"time"
