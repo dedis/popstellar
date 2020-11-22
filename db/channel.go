@@ -1,20 +1,20 @@
-package channel
+package db
 
 import (
 	"encoding/json"
 	"github.com/boltdb/bolt"
-	"student20_pop/db"
 	"student20_pop/define"
 )
 
-// would be nice to have an interface that contains methods add, remove and edit for LAO, event and vote
+const bucketChannel = "channels"
+
 
 /**
  * Function to create a new Object (LAO,Event...) and store it in the DB
  * @returns : error
  */
-func writeObject(obj interface{}, secure bool) error {
-	db, e := db.OpenDB(channelDatabase)
+func writeChannel(obj interface{}, secure bool) error {
+	db, e := OpenDB(database)
 	defer db.Close()
 	if e != nil {
 		return e
@@ -33,6 +33,7 @@ func writeObject(obj interface{}, secure bool) error {
 			objID = []byte (obj.(define.LAO).ID)
 		case define.Event:
 			objID = []byte (obj.(define.Event).ID)
+		// TODO add cases as needed
 		default:
 			//TODO not sure for the error type
 			return define.ErrRequestDataInvalid
@@ -72,61 +73,20 @@ func writeObject(obj interface{}, secure bool) error {
 	return err
 }
 
-/**
- * Function to create a new LAO and store it in the DB
- * @returns : error
- *
-func writeLAO(lao define.LAO, secure bool) error {
-	db, e := db.OpenDB(channelDatabase)
-	defer db.Close()
-	if e != nil {
-		return e
-	}
 
-	err := db.Update(func(tx *bolt.Tx) error {
-		b, err1 := tx.CreateBucketIfNotExists([]byte(bucketChannel))
-		if err1 != nil {
-			return err1
-		}
-		//checks if there is already an entry with that ID if secure is true
-		if secure {
-			key := b.Get([]byte (canal))
-			if key != nil {
-				return define.ErrResourceAlreadyExists
-			}
-		} else {
-			exists := b.Get([]byte (canal))
-			if exists == nil {
-				return define.ErrInvalidResource
-			}
-		}
-		// Marshal the LAO and store it
-		dt, err2 := json.Marshal(lao)
-		if err2 != nil {
-			return define.ErrRequestDataInvalid
-		}
-		err3 := b.Put([]byte (canal), dt)
-
-		return err3
-	})
-
-	return err
-}
-*/
-
-/*writes a Event to the DB, returns an error if ID already is key in DB*/
-func CreateObject(obj interface{}) error {
-	return writeObject(obj, true)
+/*writes a channel (LAO, meeting, rolecall, etc.) to the DB, returns an error if ID already is key in DB*/
+func CreateChannel(obj interface{}) error {
+	return writeChannel(obj, true)
 }
 
-/*writes a lao to the DB, regardless of ID already exists*/
-func UpdateObject(obj define.LAO) error {
-	return writeObject(obj, false)
+/*writes a channel (LAO, meeting, rolecall, etc.) to the DB, only if ID already exists, otherwise return an error*/
+func UpdateChannel(obj interface{}) error {
+	return writeChannel(obj, false)
 }
 
 /*returns channel data from a given ID */
-func GetFromID(id []byte) []byte {
-	db, e := db.OpenDB(channelDatabase)
+func GetChannelFromID(id []byte) []byte {
+	db, e := OpenDB(database)
 	defer db.Close()
 	if e != nil {
 		return nil
@@ -137,6 +97,6 @@ func GetFromID(id []byte) []byte {
 		data = b.Get(id)
 		return nil
 	})
-
 	return data
 }
+
