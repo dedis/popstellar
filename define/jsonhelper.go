@@ -269,7 +269,7 @@ func CreateBroadcastMessage(message Message, generic Generic) []byte {
 * we suppose error is in the good range
  */
 
-func CreateResponse(err error /*,messages [][]byte*/, generic Generic) []byte {
+func createResponse(err error, messages []byte, generic Generic) []byte {
 	if err != nil {
 		resp := ResponseWithError {
 			Jsonrpc:       "2.0",
@@ -280,7 +280,6 @@ func CreateResponse(err error /*,messages [][]byte*/, generic Generic) []byte {
 		if err != nil {
 			fmt.Println("couldn't Marshal the response")
 		}
-		fmt.Println(string(b))
 		return b
 
 	} else {
@@ -329,7 +328,6 @@ func selectDescriptionError(err error) []byte {
 		}
 		//(e.g. channel does not exist,channel was not subscribed to, etc.)
 	case ErrResourceAlreadyExists:
-		fmt.Println("in good case")
 		errResp = ErrorResponse{
 			Code:        -3,
 			Description: "resource already exists",
