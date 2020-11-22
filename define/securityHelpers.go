@@ -31,6 +31,16 @@ func LAOCreatedIsValid(data DataCreateLAO, message Message) error {
 	return nil
 }
 
+func MeetingCreatedIsValid(data DataCreateMeeting, message Message) error {
+	return nil
+}
+func PollCreatedIsValid(data DataCreatePoll, message Message) error {
+	return nil
+}
+func RollCallCreatedIsValid(data DataCreateRollCall, message Message) error {
+	return nil
+}
+
 func MessageIsValid(msg Message) error {
 	return nil
 }
