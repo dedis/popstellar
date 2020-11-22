@@ -29,10 +29,13 @@ func writeObject(obj interface{}, secure bool) error {
 		var objID []byte
 		switch obj.(type){
 		case define.LAO :
-			// type assert
 			objID = []byte (obj.(define.LAO).ID)
-		case define.Event:
-			objID = []byte (obj.(define.Event).ID)
+		case define.Meeting:
+			objID = []byte (obj.(define.Meeting).ID)
+		case define.Poll:
+			objID = []byte (obj.(define.Poll).ID)
+		case define.RollCall:
+			objID = []byte (obj.(define.RollCall).ID)
 		default:
 			//TODO not sure for the error type
 			return define.ErrRequestDataInvalid
@@ -55,8 +58,12 @@ func writeObject(obj interface{}, secure bool) error {
 		case define.LAO :
 			// type assert
 			dt, err2 = json.Marshal(obj.(define.LAO).ID)
-		case define.Event:
-			dt, err2 = json.Marshal(obj.(define.Event).ID)
+		case define.Meeting:
+			dt, err2 = json.Marshal(obj.(define.Meeting).ID)
+		case define.Poll:
+			dt, err2 = json.Marshal(obj.(define.Poll).ID)
+		case define.RollCall:
+			dt, err2 = json.Marshal(obj.(define.RollCall).ID)
 		default:
 			//TODO not sure for the error type
 			return define.ErrRequestDataInvalid
