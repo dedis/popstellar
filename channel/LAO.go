@@ -90,12 +90,12 @@ func writeLAO(lao define.LAO, secure bool) error {
 		}
 		//checks if there is already an entry with that ID if secure is true
 		if secure {
-			key := b.Get([]byte (lao.ID))
+			key := b.Get([]byte (canal))
 			if key != nil {
 				return define.ErrResourceAlreadyExists
 			}
 		} else {
-			exists := b.Get([]byte (lao.ID))
+			exists := b.Get([]byte (canal))
 			if exists == nil {
 				return define.ErrInvalidResource
 			}
@@ -105,7 +105,7 @@ func writeLAO(lao define.LAO, secure bool) error {
 		if err2 != nil {
 			return define.ErrRequestDataInvalid
 		}
-		err3 := b.Put([]byte (lao.ID), dt)
+		err3 := b.Put([]byte (canal), dt)
 
 		return err3
 	})
