@@ -7,10 +7,12 @@ import akka.stream.{FlowShape, UniformFanInShape, UniqueKillSwitch}
 import akka.stream.scaladsl.{BroadcastHub, Flow, GraphDSL, Keep, Merge, MergeHub, Partition, Sink}
 import akka.stream.typed.scaladsl.ActorFlow
 import akka.util.Timeout
-import ch.epfl.pop.DBActor.{DBMessage, Read, Write}
+import ch.epfl.pop.DBActor
+import ch.epfl.pop.DBActor.{Catchup, DBMessage, Write}
 import ch.epfl.pop.json.JsonMessageParser.{parseMessage, serializeMessage}
-import ch.epfl.pop.json.JsonMessages.{AnswerMessageServer, CreateChannelClient, FetchChannelClient, JsonMessage, NotifyChannelServer, PublishChannelClient, SubscribeChannelClient, UnsubscribeChannelClient}
-import ch.epfl.pop.pubsub.ChannelActor.{Answer, AnswerSubscribe, ChannelActorAnswer, ChannelMessage, CreateMessage, SubscribeMessage}
+import ch.epfl.pop.json.JsonMessages.{AnswerErrorMessageServer, AnswerMessageServer, AnswerResultIntMessageServer, CatchupMessageClient, CreateChannelClient, FetchChannelClient, JsonMessage, JsonMessageAdminClient, JsonMessageAnswerServer, JsonMessagePubSubClient, NotifyChannelServer, PropagateMessageClient, PublishChannelClient, SubscribeChannelClient, SubscribeMessageClient, UnsubscribeChannelClient, UnsubscribeMessageClient}
+import ch.epfl.pop.json.MessageErrorContent
+import ch.epfl.pop.pubsub.ChannelActor.{AnswerCreate, AnswerSubscribe, ChannelActorAnswer, ChannelMessage, CreateMessage, SubscribeMessage}
 
 import scala.util.{Failure, Success, Try}
 
@@ -18,36 +20,38 @@ object PublishSubscribe {
   /**
    * Create a flow that handles JSON messages of a publish-subscribe system.
    *
-   * @param pubEntry a mergehub where all published messages are sent
    * @param actor    an actor handling channel creation and subscription
    * @return a flow that handles JSON messages of a publish-subscribe system
    */
-  def jsonFlow(pubEntry: Sink[NotifyChannelServer, NotUsed], actor: ActorRef[ChannelMessage], dbActor : ActorRef[DBMessage])
-              (implicit timeout: Timeout, system: ActorSystem[Nothing]): Flow[JsonMessage, JsonMessage, NotUsed] = {
-    val (userSink, userSource) = MergeHub.source[JsonMessage].toMat(BroadcastHub.sink)(Keep.both).run()
+  def jsonFlow(actor: ActorRef[ChannelMessage],
+               dbActor : ActorRef[DBMessage])
+              (implicit timeout: Timeout,
+               system: ActorSystem[Nothing]): Flow[JsonMessagePubSubClient, JsonMessageAnswerServer, NotUsed] = {
+
+    val (userSink, userSource) = MergeHub.source[PropagateMessageClient].toMat(BroadcastHub.sink)(Keep.both).run()
 
     Flow.fromGraph(GraphDSL.create() { implicit builder =>
       import GraphDSL.Implicits._
 
       //Initialize Inlet/Outlets
-      val input = builder.add(Flow[JsonMessage])
-      val merge = builder.add(Merge[JsonMessage](4))
-      val output = builder.add(Flow[JsonMessage])
+      val input = builder.add(Flow[JsonMessagePubSubClient])
+      val merge = builder.add(Merge[JsonMessageAnswerServer](5))
+      val output = builder.add(Flow[JsonMessageAnswerServer])
       //val mergeUnsub = builder.add(Merge[UnsubMessage](2))
 
       val Create = 0
       val Subscribe = 0
       val Unsubscribe = 3
       val Publish = 1
-      val Fetch = 2
-      val partitioner = builder.add(Partition[JsonMessage](4,
+      val Catchup = 2
+      val partitioner = builder.add(Partition[JsonMessagePubSubClient](4,
         {
           _ match {
-            case CreateChannelClient(_, _) => Create
-            case SubscribeChannelClient(_) => Subscribe
-            case UnsubscribeChannelClient(_) => Unsubscribe
-            case PublishChannelClient(_, _) => Publish
-            case FetchChannelClient(_,_) => Fetch
+            case _ : SubscribeMessageClient => Subscribe
+            case _ : UnsubscribeMessageClient => Unsubscribe
+            case _ : JsonMessageAdminClient => Publish
+            case _ : CatchupMessageClient => Catchup
+            //case CreateChannelClient(_, _) => Create
           }
         }
       ))
@@ -56,54 +60,57 @@ object PublishSubscribe {
       val actorFlow = ActorFlow.ask[JsonMessage, ChannelMessage, ChannelActorAnswer](actor) {
         (message, replyTo) =>
           message match {
-            case CreateChannelClient(message, contract) => CreateMessage(message, replyTo)
-            case SubscribeChannelClient(channel) => SubscribeMessage(channel, userSink, replyTo)
+            //case CreateChannelClient(message, contract) => CreateMessage(message, replyTo)
+            //case SubscribeChannelClient(channel) => SubscribeMessage(channel, userSink, replyTo)
+            case SubscribeMessageClient(_, _, params, id) => SubscribeMessage(params.channel, userSink, id, replyTo)
+
           }
       }
 
       val channelAnswerPartitioner = builder.add(Partition[ChannelActorAnswer](2, {
         _ match {
-          case Answer(_) => 0
+          case AnswerCreate(_) => 0
           case AnswerSubscribe(_, _, _) => 1
         }
       }))
 
 
-      val answerToJSON = Flow[ChannelActorAnswer].map{ case Answer(jsonMessage) => jsonMessage}
+      val answerToJSON = Flow[ChannelActorAnswer].map{ case AnswerCreate(jsonMessage) => jsonMessage}
 
       val unsub = builder.add(unsubHandler())
 
-      val unsubMap = Flow[JsonMessage].map{case UnsubscribeChannelClient(channel) => UnsubRequest(channel)}
+      val unsubMap = Flow[JsonMessage].map{case UnsubscribeMessageClient(_, _, params, id) => UnsubRequest(params.channel, id)}
 
       val unsubMap2 = Flow[ChannelActorAnswer].map{case a: AnswerSubscribe => a}
 
-      val writeDb = ActorFlow.ask[JsonMessage, DBMessage, NotifyChannelServer](dbActor) {
+      val writeDb = ActorFlow.ask[JsonMessage, DBMessage, JsonMessageAnswerServer](dbActor) {
         (message, replyTo) =>
           message match {
-            case PublishChannelClient(channel, event) =>
+            case req : JsonMessageAdminClient =>
               //TODO: compute key using hash of event once the specs are updated
-              val id = event
-              Write(channel, id, event, replyTo)
+              val m = req.params.message.get
+              val messageData = ??? //TODO: get message data once it will be available as the part of the message
+              Write(req.params.channel, m.message_id, messageData, req.id, replyTo)
           }
       }
 
-      val fetchDb = ActorFlow.ask[JsonMessage, DBMessage, JsonMessage](dbActor) {
+      val catchupDB = ActorFlow.ask[JsonMessagePubSubClient, DBMessage, JsonMessageAnswerServer](dbActor) {
         (message, replyTo) =>
           message match {
-            case FetchChannelClient(channel, id) =>
-              Read(channel, id, replyTo)
+            case CatchupMessageClient(_, _, params, id) =>
+              DBActor.Catchup(params.channel, id, replyTo)
           }
       }
 
       //Connect the graph
       input ~> partitioner
-      partitioner.out(Publish) ~> writeDb ~> pubEntry
+      partitioner.out(Publish) ~> writeDb ~> merge
       partitioner.out(Create) ~> actorFlow ~> channelAnswerPartitioner
       channelAnswerPartitioner.out(0) ~> answerToJSON ~> merge
       channelAnswerPartitioner.out(1) ~> unsubMap2 ~> unsub
       partitioner.out(Unsubscribe) ~> unsubMap ~> unsub
       unsub ~> merge
-      partitioner.out(Fetch) ~> fetchDb ~> merge
+      partitioner.out(Catchup) ~> catchupDB ~> merge
       userSource ~> merge
       merge ~> output
 
@@ -127,16 +134,17 @@ object PublishSubscribe {
         case AnswerSubscribe(jsonMessage, _, None) =>
           List(jsonMessage)
 
-        case UnsubRequest(channel) =>
+        case UnsubRequest(channel, id) =>
 
           val message =
             if(channels.contains(channel)) {
               channels(channel).shutdown()
               channels = channels.removed(channel)
-              AnswerMessageServer(true, None)
+              AnswerResultIntMessageServer(id = id)
             }
             else {
-              AnswerMessageServer(false, Some("You are not subscribed to this channel."))
+              val error = MessageErrorContent(-2, "Invalid resource: you are not subscribed to channel " + channel + ".")
+              AnswerErrorMessageServer(error = error, id = id)
             }
           List(message)
       }
@@ -151,19 +159,21 @@ object PublishSubscribe {
   /**
    * Create a flow that handles messages of a publish-subscribe system.
    *
-   * @param pubEntry a mergehub where all published messages are sent
    * @param actor    an actor handling channel creation and subscription
    * @return a flow that handles messages of a publish-subscribe system
    */
-  def messageFlow(pubEntry: Sink[NotifyChannelServer, NotUsed], actor: ActorRef[ChannelMessage], dbActor : ActorRef[DBMessage])(implicit timeout: Timeout, system: ActorSystem[Nothing]): Flow[Message, Message, NotUsed] = {
-    val jFlow = jsonFlow(pubEntry, actor, dbActor)
+  def messageFlow(actor: ActorRef[ChannelMessage],
+                  dbActor : ActorRef[DBMessage])
+                 (implicit timeout: Timeout,
+                  system: ActorSystem[Nothing]): Flow[Message, Message, NotUsed] = {
+    val jFlow = jsonFlow(actor, dbActor)
     Flow.fromGraph(GraphDSL.create() {
       implicit builder =>
         import GraphDSL.Implicits._
         val input = builder.add(Flow[Message])
         val output = builder.add(Flow[Message])
         val partitioner = builder.add(Partition[JsonMessage]( 2, {
-          case AnswerMessageServer(_,_) => 0
+          case _ :JsonMessageAnswerServer => 0
           case _ => 1
         }))
         val merge = builder.add(Merge[JsonMessage](2))
@@ -172,14 +182,18 @@ object PublishSubscribe {
         val parser = Flow[Message].map {
           case TextMessage.Strict(s) => Try(parseMessage(s)) match {
             case Success(message) => message
-            case Failure(exception) => AnswerMessageServer(false, Some("Invalid JSON"))
+            case Failure(exception) =>
+              val error = MessageErrorContent(-4, "Invalid JSON.")
+              AnswerErrorMessageServer(error = error, id = 0) //TODO: find a better way than using a fixed id
           }
         }
         val formatter = Flow[JsonMessage].map(m => TextMessage.Strict(serializeMessage(m)))
 
+        val mapPubSub = Flow[JsonMessage].map{case m: JsonMessagePubSubClient => m}
+
         input ~> parser ~> partitioner
         partitioner.out(0) ~> merge
-        partitioner.out(1) ~> jFlow ~> merge
+        partitioner.out(1) ~> mapPubSub ~> jFlow ~> merge
         merge ~> formatter ~> output
 
         FlowShape(input.in, output.out)

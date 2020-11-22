@@ -1,24 +1,20 @@
 package ch.epfl.pop
 
-import java.io.File
 import java.util.concurrent.TimeUnit
 
+import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.Behaviors
-import akka.actor.typed.{ActorSystem, Behavior}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
-import akka.http.scaladsl.model.ws.{Message, TextMessage}
 import akka.http.scaladsl.server.Directives._
-import akka.stream.scaladsl.{BroadcastHub, Flow, Keep, MergeHub, Sink}
+import akka.stream.scaladsl.{BroadcastHub, Keep, MergeHub}
 import akka.util.Timeout
-import ch.epfl.pop.json.JsonMessageParser.{parseMessage, serializeMessage}
-import ch.epfl.pop.json.JsonMessages.{AnswerMessageServer, FetchChannelServer, JsonMessage, NotifyChannelServer, PublishChannelClient}
+import ch.epfl.pop.json.JsonMessages.PropagateMessageClient
 import ch.epfl.pop.pubsub.{ChannelActor, PublishSubscribe}
 import org.iq80.leveldb.Options
-import org.iq80.leveldb.impl.Iq80DBFactory._
 
 import scala.io.StdIn
-import scala.util.{Failure, Success, Try}
+import scala.util.{Failure, Success}
 
 object Server {
 
@@ -39,21 +35,21 @@ object Server {
         }
 
       //Stream that send all published messages to all clients
-      val (publishEntry, subscribeExit) = MergeHub.source[NotifyChannelServer].toMat(BroadcastHub.sink)(Keep.both).run()
+      val (publishEntry, subscribeExit) = MergeHub.source[PropagateMessageClient].toMat(BroadcastHub.sink)(Keep.both).run()
       implicit val timeout = Timeout(1, TimeUnit.SECONDS)
       val actor = context.spawn(ChannelActor(subscribeExit), "actor")
       //Create database
       val options: Options = new Options()
       options.createIfMissing(true)
       val DatabasePath: String = "database"
-      val dbActor = context.spawn(DBActor(DatabasePath), "actorDB")
+      val dbActor = context.spawn(DBActor(DatabasePath, publishEntry), "actorDB")
 
       def publishSubscribeRoute = path("ps") {
-        handleWebSocketMessages(PublishSubscribe.messageFlow(publishEntry, actor, dbActor))
+        handleWebSocketMessages(PublishSubscribe.messageFlow(actor, dbActor))
       }
 
       implicit val executionContext = system.executionContext
-      val bindingFuture = Http().newServerAt("localhost", 8080).bind(route ~  publishSubscribeRoute)
+      val bindingFuture = Http().newServerAt("localhost", 8080).bind(route ~ publishSubscribeRoute)
       bindingFuture.onComplete {
         case Success(value) => println("ch.epfl.pop.Server online at http://localhost:8080/")
         case Failure(exception) => println("ch.epfl.pop.Server failed to start")
