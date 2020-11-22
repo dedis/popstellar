@@ -496,9 +496,9 @@ func (h *hub) handleCatchup(generic define.Generic) ([]byte, error) {
 	if err != nil {
 		return nil, define.ErrRequestDataInvalid
 	}
-	history, err := channel.GetData([]byte(params.Channel))
+	history := channel.GetChannelFromID([]byte(params.Channel))
 
-	return history, err
+	return history, nil
 }
 
 func (h *hub) sendResponse(conn *connection) {

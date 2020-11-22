@@ -1,18 +1,15 @@
-package channel
+package db
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/boltdb/bolt"
 	"strings"
-	"student20_pop/db"
 	"student20_pop/define"
 )
 
-const bucketChannel = "general"
 const bucketSubscribers = "sub"
-const channelDatabase = "channel.db"
+const database = "pop.db"
 
 /*
  * Function that subscribe a user to a channel. ONLY AT THE PUB/SUB LAYER
@@ -21,7 +18,7 @@ const channelDatabase = "channel.db"
  */
 func Subscribe(userId int, channelId []byte) error {
 
-	db, err := db.OpenDB(channelDatabase)
+	db, err := OpenDB(database)
 	if err != nil {
 		return err
 	}
@@ -45,7 +42,7 @@ func Subscribe(userId int, channelId []byte) error {
 		//check if was already susbscribed
 		if _, found := define.Find(ints, userId); found {
 			fmt.Println("user was already subscribed")
-			return nil
+			return define.ErrResourceAlreadyExists
 		}
 		ints = append(ints, userId)
 		//converts []int to string to []byte
@@ -65,7 +62,7 @@ func Subscribe(userId int, channelId []byte) error {
 */
 func Unsubscribe(userId int, channelId []byte) error {
 
-	db, err := db.OpenDB(channelDatabase)
+	db, err := OpenDB(database)
 	if err != nil {
 		return err
 	}
@@ -90,7 +87,7 @@ func Unsubscribe(userId int, channelId []byte) error {
 		i, found := define.Find(ints, userId)
 		if !found {
 			fmt.Println("this user was not subscribed to this channel")
-			return nil
+			return define.ErrInvalidResource
 		}
 		//remove elem from array
 		ints[i] = ints[len(ints)-1]
@@ -108,7 +105,7 @@ func Unsubscribe(userId int, channelId []byte) error {
 
 /*helper function to find a channel's subscribers */
 func GetSubscribers(channel []byte) ([]int, error) {
-	db, err := db.OpenDB(channelDatabase)
+	db, err := OpenDB(database)
 	if err != nil {
 		return nil, err
 	}
@@ -129,108 +126,4 @@ func GetSubscribers(channel []byte) ([]int, error) {
 	})
 
 	return data, nil
-}
-
-/*returns the content of a channel. Nil if channel does not exist*/
-func GetData(channel []byte) ([]byte, error) {
-	db, err := db.OpenDB(channelDatabase)
-	defer db.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	var data []byte
-	err = db.View(func(tx *bolt.Tx) error {
-		b, err := tx.CreateBucketIfNotExists([]byte(bucketChannel))
-		if err != nil {
-			return err
-		}
-
-		data = b.Get(channel)
-		return nil
-	})
-
-	return data, err
-}
-
-/**
-* Retrieve value from a given ID key, and adds a publish
-* returns error message
- */
-func UpdateChannel(userId int, channelId []byte, action []byte) error {
-
-	db, e := db.OpenDB(channelDatabase)
-	defer db.Close()
-	if e != nil {
-		return e
-	}
-
-	err := db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(bucketChannel))
-		if b == nil {
-			return errors.New("bkt does not exist")
-		}
-
-		return nil
-	})
-
-	return err
-}
-
-/**
-* Writes a message to the database. If safe is true and a message with this ID already exists, returns an error
- */
-func WriteMessage(message []byte, safe bool) error {
-
-	g, err := define.AnalyseGeneric(message)
-	params, err := define.AnalyseParamsFull(g.Params)
-	msg, err := define.AnalyseMessage(params.Message)
-	if err != nil {
-		return define.ErrRequestDataInvalid
-	}
-
-	db, e := db.OpenDB(channelDatabase)
-	defer db.Close()
-	if e != nil {
-		return e
-	}
-
-	err = db.Update(func(tx *bolt.Tx) error {
-		b, err1 := tx.CreateBucketIfNotExists([]byte(params.Channel))
-		if err1 != nil {
-			return define.ErrDBFault
-		}
-
-		if check := b.Get([]byte(msg.MessageID)); check != nil && safe {
-			return define.ErrResourceAlreadyExists
-		}
-
-		b.Put([]byte(msg.MessageID), message)
-
-		return nil
-	})
-
-	return err
-}
-
-/*returns the content of a message sent on a channel. Nil if channel does not exist*/
-func GetMessage(channel []byte, message []byte) ([]byte, error) {
-	database, err := db.OpenDB(channelDatabase)
-	defer database.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	var data []byte
-	err = database.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket(channel)
-		if b == nil {
-			return define.ErrInvalidResource
-		}
-
-		data = b.Get(message)
-		return nil
-	})
-
-	return data, err
 }
