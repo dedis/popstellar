@@ -108,8 +108,8 @@ func NewHub() *hub {
 			for c := range h.connections {
 				//send msgBroadcast to that connection if channel is main channel or is in channel subscribers
 				_, found := define.Find(subscribers, c.id)
-				//TODO switch to /url of root
-				if (bytes.Compare(h.channel, []byte("0")) == 0 || found) && msgBroadcast != nil {
+
+				if (bytes.Compare(h.channel, []byte("/root")) == 0 || found) && msgBroadcast != nil {
 					select {
 					case c.send <- msgBroadcast:
 					// stop trying to send to this connection after trying for 1 second.
@@ -189,9 +189,8 @@ func (h *hub) HandleWholeMessage(msg []byte, userId int) {
 	default:
 		err = define.ErrRequestDataInvalid
 	}
-	fmt.Printf("after creatingLAO")
-	fmt.Printf("%v", err)
-	h.responseToSenderNotChan = define.CreateResponse(err, generic)
+
+	h.responseToSenderNotChan = define.CreateResponse(err, history, generic)
 }
 
 func (h *hub) handleSubscribe(generic define.Generic, userId int) error {
@@ -296,17 +295,27 @@ func (h *hub) handleCreateLAO(message define.Message, canal string, generic defi
 	if err != nil {
 		return define.ErrAccessDenied
 	}*/
-	lao := define.LAO{ID: data.ID, Name: data.Name, Creation: data.Creation, LastModified: data.LastModified, OrganizerPKey: data.OrganizerPKey, Witnesses: data.Witnesses}
+	
+	canalLAO = canal + data.ID
 
+	err = channel.StoreMessage(message, canalLAO)
+	if err != nil {
+		return err
+	}
+
+	lao := define.LAO{ID: data.ID, Name: data.Name, Creation: data.Creation, LastModified: data.LastModified, OrganizerPKey: data.OrganizerPKey, Witnesses: data.Witnesses}
 	err = channel.CreateObject(lao)
 	if err != nil {
 		return err
 	}
+
 	return h.finalizeHandling(message,canal,generic)
 }
 
+	
+
 func (h *hub) handleCreateRollCall(message define.Message, canal string, generic define.Generic) error {
-	if canal != "0" {
+	if canal != "/root" {
 		return define.ErrInvalidResource
 	}
 
@@ -326,6 +335,7 @@ func (h *hub) handleCreateRollCall(message define.Message, canal string, generic
 	}
 	return h.finalizeHandling(message,canal,generic)
 }
+
 func (h *hub) handleCreateMeeting(message define.Message, canal string, generic define.Generic) error {
 
 	if canal != "0" {
@@ -347,6 +357,7 @@ func (h *hub) handleCreateMeeting(message define.Message, canal string, generic 
 	}
 	return h.finalizeHandling(message,canal,generic)
 }
+
 func (h *hub) finalizeHandling(message define.Message, canal string, generic define.Generic) error {
 	h.messageToBroadcast = define.CreateBroadcastMessage(message, generic)
 	h.channel = []byte(canal)

@@ -154,7 +154,7 @@ func GetData(channel []byte) ([]byte, error) {
 }
 
 /**
-* Retrieve value from a given ID key, and adds a pubish
+* Retrieve value from a given ID key, and adds a publish
 * returns error message
  */
 func UpdateChannel(userId int, channelId []byte, action []byte) error {
