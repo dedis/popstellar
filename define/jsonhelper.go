@@ -4,10 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"strconv"
 )
-
-// TODO, we have exactly this issue : https://stackoverflow.com/questions/20101954/json-unmarshal-nested-object-into-string-or-byte
 
 /*Most generic message structure*/
 type Generic struct {
@@ -90,15 +87,15 @@ type DataCreateMeeting struct {
 	// name of LAO
 	Name string
 	//Creation Date/Time
-	Creation     int64 //  Unix timestamp (uint64)
-	LastModified int64 //timestamp
-	Location string //optional
+	Creation     int64  //  Unix timestamp (uint64)
+	LastModified int64  //timestamp
+	Location     string //optional
 	//Organiser: Public Key
-	Start int64 /* Timestamp */
-	End int64 /* Timestamp, optional */
+	Start int64  /* Timestamp */
+	End   int64  /* Timestamp, optional */
 	Extra string /* arbitrary object, optional */
 }
-type DataCreateRollCall struct{
+type DataCreateRollCall struct {
 	//TODO right now same attribute as meeting
 	Object string
 	Action string
@@ -107,15 +104,15 @@ type DataCreateRollCall struct{
 	// name of LAO
 	Name string
 	//Creation Date/Time
-	Creation     int64 //  Unix timestamp (uint64)
-	LastModified int64 //timestamp
-	Location string //optional
+	Creation     int64  //  Unix timestamp (uint64)
+	LastModified int64  //timestamp
+	Location     string //optional
 	//Organiser: Public Key
-	Start int64 /* Timestamp */
-	End int64 /* Timestamp, optional */
+	Start int64  /* Timestamp */
+	End   int64  /* Timestamp, optional */
 	Extra string /* arbitrary object, optional */
 }
-type DataCreatePoll struct{
+type DataCreatePoll struct {
 	//TODO right now same attribute as meeting
 	Object string
 	Action string
@@ -124,14 +121,15 @@ type DataCreatePoll struct{
 	// name of LAO
 	Name string
 	//Creation Date/Time
-	Creation     int64 //  Unix timestamp (uint64)
-	LastModified int64 //timestamp
-	Location string //optional
+	Creation     int64  //  Unix timestamp (uint64)
+	LastModified int64  //timestamp
+	Location     string //optional
 	//Organiser: Public Key
-	Start int64 /* Timestamp */
-	End int64 /* Timestamp, optional */
+	Start int64  /* Timestamp */
+	End   int64  /* Timestamp, optional */
 	Extra string /* arbitrary object, optional */
 }
+
 /**
  * Function that takes a byte array as input and returns
  * a Message struct
@@ -189,6 +187,7 @@ func AnalyseDataCreatePoll(data json.RawMessage) (DataCreatePoll, error) {
 	err := json.Unmarshal(data, &m)
 	return m, err
 }
+
 /**
  * Function that reads a JSON message in order to create a new LAO
  */
@@ -204,49 +203,6 @@ func DataToMessageEventCreate(data []byte) (MessageEventCreate, error) {
 	err := json.Unmarshal(data, &m)
 	return m, err
 }*/
-
-/**
- * Function that converts a Lao to a Json byte array
- */
-func LaoToJson(lao LAO) []byte {
-	str := []byte("{")
-
-	str = append(str, []byte(`"type": lao, `)...)
-	str = append(str, []byte(`"id": `+string(lao.ID)+`, `)...)
-	str = append(str, []byte(`"name": `+lao.Name+`, `)...)
-	str = append(str, []byte(`"organizerpkey": `+string(lao.OrganizerPKey)+`, `)...)
-	//str = append(str, []byte(`"creationtime": `+string(lao.Creation)+`, `)...)
-	//str = append(str, []byte(`"ip":`+string(lao.Ip)+`, `)...)
-	//str = append(str, []byte(`"attestation":`+string(lao.Attestation)+`, `)...)
-
-	// TODO create string for witness/members/...
-	str = append(str, []byte(`"witness": , `)...)
-	str = append(str, []byte(`"members": , `)...)
-	str = append(str, []byte(`"events": , `)...)
-
-	str = append(str, []byte("}")...)
-	return str
-}
-
-/**
- * Function that generate JSON string from slice
- * returns title:{} if data is empty
- */
-func SliceToJson(title string, data [][]byte) string {
-	str := title + ": {"
-	for i, d := range data {
-		str += `"`
-		str += strconv.Itoa(i)
-		str += `": "`
-		str += string(d)
-		//if not last occurence
-		if i != len(data) {
-			str += ", "
-		}
-	}
-	str += "}"
-	return str
-}
 
 func CreateBroadcastMessage(message Message, generic Generic) []byte {
 	broadc := Generic{
@@ -271,7 +227,7 @@ func CreateBroadcastMessage(message Message, generic Generic) []byte {
 
 func CreateResponse(err error, messages []byte, generic Generic) []byte {
 	if err != nil {
-		resp := ResponseWithError {
+		resp := ResponseWithError{
 			Jsonrpc:       "2.0",
 			ErrorResponse: string(selectDescriptionError(err)),
 			Id:            generic.Id,
@@ -283,8 +239,8 @@ func CreateResponse(err error, messages []byte, generic Generic) []byte {
 		return b
 
 	} else {
-		if(messages == nil) {
-			resp := ResponseWithGenResult {
+		if messages == nil {
+			resp := ResponseWithGenResult{
 				Jsonrpc: "2.0",
 				Result:  0,
 				Id:      generic.Id,
@@ -295,10 +251,10 @@ func CreateResponse(err error, messages []byte, generic Generic) []byte {
 			}
 			return b
 		} else {
-			resp := ResponseWithCatchupResult {
-				Jsonrpc:	"2.0",
-				Result:		string (messages),
-				Id:			generic.Id,
+			resp := ResponseWithCatchupResult{
+				Jsonrpc: "2.0",
+				Result:  string(messages),
+				Id:      generic.Id,
 			}
 			b, err := json.Marshal(resp)
 			if err != nil {

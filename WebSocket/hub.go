@@ -2,6 +2,7 @@ package WebSocket
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/boltdb/bolt"
 	"log"
@@ -10,6 +11,8 @@ import (
 	"sync"
 	"time"
 )
+
+const SIG_TRESHOLD = 4
 
 /*
 TODO
@@ -184,7 +187,7 @@ func (h *hub) HandleWholeMessage(msg []byte, userId int) {
 	case "publish":
 		err = h.handlePublish(generic)
 	//case "message": err = h.handleMessage() // Potentially, we never receive a "message" and only output "message" after a "publish" in order to broadcast. Or they are only notification, and we just want to check that it was a success
-	case "catchup": 
+	case "catchup":
 		history, err = h.handleCatchup(generic)
 	default:
 		err = define.ErrRequestDataInvalid
@@ -231,7 +234,8 @@ func (h *hub) handlePublish(generic define.Generic) error {
 		case "create":
 			return h.handleCreateLAO(message, params.Channel, generic)
 		case "update_properties":
-
+			msg, _ := json.Marshal(generic)
+			return h.handleUpdateProperties(params.Channel, msg)
 		case "state":
 
 		default:
@@ -241,7 +245,18 @@ func (h *hub) handlePublish(generic define.Generic) error {
 	case "message":
 		switch data["action"] {
 		case "witness":
-
+			msg, err1 := json.Marshal(generic)
+			if err1 != nil {
+				return err1
+			}
+			err := h.handleWitnessMessage(params.Channel, msg)
+			if err != nil {
+				return err
+			}
+			if len(message.WitnessSignatures) == SIG_TRESHOLD-1 {
+				//TODO: update state and send state broadcast
+			}
+			return err
 		default:
 			return define.ErrInvalidAction
 		}
@@ -295,7 +310,7 @@ func (h *hub) handleCreateLAO(message define.Message, canal string, generic defi
 	if err != nil {
 		return define.ErrAccessDenied
 	}*/
-	
+
 	canalLAO := canal + data.ID
 
 	err = channel.StoreMessage(message, canalLAO)
@@ -309,10 +324,8 @@ func (h *hub) handleCreateLAO(message define.Message, canal string, generic defi
 		return err
 	}
 
-	return h.finalizeHandling(message,canal,generic)
+	return h.finalizeHandling(message, canal, generic)
 }
-
-	
 
 func (h *hub) handleCreateRollCall(message define.Message, canal string, generic define.Generic) error {
 	if canal != "/root" {
@@ -327,13 +340,13 @@ func (h *hub) handleCreateRollCall(message define.Message, canal string, generic
 	// don't need to check for validity if we use json schema
 	//TODO do we move to multiple type ? cf datadef
 	event := define.Event{ID: data.ID, Name: data.Name, Creation: data.Creation,
-		LastModified: data.LastModified,Location: data.Location, Start: data.Start,
+		LastModified: data.LastModified, Location: data.Location, Start: data.Start,
 		End: data.End, Extra: data.Extra}
 	err = channel.CreateObject(event)
 	if err != nil {
 		return err
 	}
-	return h.finalizeHandling(message,canal,generic)
+	return h.finalizeHandling(message, canal, generic)
 }
 
 func (h *hub) handleCreateMeeting(message define.Message, canal string, generic define.Generic) error {
@@ -349,13 +362,13 @@ func (h *hub) handleCreateMeeting(message define.Message, canal string, generic 
 
 	// don't need to check for validity if we use json schema
 	event := define.Event{ID: data.ID, Name: data.Name, Creation: data.Creation,
-		LastModified: data.LastModified,Location: data.Location, Start: data.Start,
+		LastModified: data.LastModified, Location: data.Location, Start: data.Start,
 		End: data.End, Extra: data.Extra}
 	err = channel.CreateObject(event)
 	if err != nil {
 		return err
 	}
-	return h.finalizeHandling(message,canal,generic)
+	return h.finalizeHandling(message, canal, generic)
 }
 
 func (h *hub) finalizeHandling(message define.Message, canal string, generic define.Generic) error {
@@ -363,7 +376,6 @@ func (h *hub) finalizeHandling(message define.Message, canal string, generic def
 	h.channel = []byte(canal)
 	return nil
 }
-
 
 func (h *hub) handleCreatePoll(message define.Message, canal string, generic define.Generic) error {
 
@@ -378,16 +390,78 @@ func (h *hub) handleCreatePoll(message define.Message, canal string, generic def
 
 	// don't need to check for validity if we use json schema
 	event := define.Event{ID: data.ID, Name: data.Name, Creation: data.Creation,
-		LastModified: data.LastModified,Location: data.Location, Start: data.Start,
+		LastModified: data.LastModified, Location: data.Location, Start: data.Start,
 		End: data.End, Extra: data.Extra}
 	err = channel.CreateObject(event)
 	if err != nil {
 		return err
 	}
-	return h.finalizeHandling(message,canal,generic)
+	return h.finalizeHandling(message, canal, generic)
 }
 func (h *hub) handleMessage(msg []byte, userId int) error {
 
+	return nil
+}
+
+// This is organizer implementation. If Witness, should return a witness msg on object
+func (h *hub) handleUpdateProperties(canal string, msg []byte) error {
+	h.messageToBroadcast = msg
+	h.channel = []byte(canal)
+	return channel.WriteMessage(msg, true)
+}
+
+func (h *hub) handleWitnessMessage(canal string, msg []byte) error {
+	//TODO verify signature correctness
+	// decrypt msg and compare with hash of "local" data
+
+	//add signature to already stored message:
+	//extract messageID and Witness signature from received message
+	r_g, err := define.AnalyseGeneric(msg)
+	r_p, err := define.AnalyseParamsFull(r_g.Params)
+	r_d, err := define.AnalyseMessage(r_p.Message)
+	if err != nil {
+		return define.ErrRequestDataInvalid
+	}
+	//retrieve message to sign from database
+	toSign, err := channel.GetMessage([]byte(canal), []byte(r_d.MessageID))
+	//extract signature list
+	g := define.Generic{}
+	p := define.ParamsFull{}
+	m := define.Message{}
+	err = json.Unmarshal(toSign, &g)
+	err = json.Unmarshal(g.Params, &p)
+	err = json.Unmarshal(p.Message, &m)
+	if err != nil {
+		return define.ErrRequestDataInvalid
+	}
+
+	//if message was already signed by this witness, returns an error
+	_, found := define.FindStr(m.WitnessSignatures, r_d.Signature)
+	if found {
+		return define.ErrResourceAlreadyExists
+	}
+
+	m.WitnessSignatures = append(m.WitnessSignatures, r_d.Signature)
+	//build the string back
+	str, err := json.Marshal(m)
+	p.Message = str
+	str, err = json.Marshal(p)
+	g.Params = str
+	str, err = json.Marshal(g)
+	if err != nil {
+		return define.ErrRequestDataInvalid
+	}
+
+	//store received message in DB and update "LAOUpdateProperties" message in DB
+	err = channel.WriteMessage(str, false)
+	err = channel.WriteMessage(msg, true)
+	if err != nil {
+		return define.ErrDBFault
+	}
+
+	//broadcast received message
+	h.messageToBroadcast = msg
+	h.channel = []byte(canal)
 	return nil
 }
 
@@ -398,7 +472,7 @@ func (h *hub) handleCatchup(generic define.Generic) ([]byte, error) {
 	if err != nil {
 		return nil, define.ErrRequestDataInvalid
 	}
-	history, err := channel.GetData([]byte (params.Channel))
+	history, err := channel.GetData([]byte(params.Channel))
 
 	return history, err
 }

@@ -176,3 +176,61 @@ func UpdateChannel(userId int, channelId []byte, action []byte) error {
 
 	return err
 }
+
+/**
+* Writes a message to the database. If safe is true and a message with this ID already exists, returns an error
+ */
+func WriteMessage(message []byte, safe bool) error {
+
+	g, err := define.AnalyseGeneric(message)
+	params, err := define.AnalyseParamsFull(g.Params)
+	msg, err := define.AnalyseMessage(params.Message)
+	if err != nil {
+		return define.ErrRequestDataInvalid
+	}
+
+	db, e := db.OpenDB(channelDatabase)
+	defer db.Close()
+	if e != nil {
+		return e
+	}
+
+	err = db.Update(func(tx *bolt.Tx) error {
+		b, err1 := tx.CreateBucketIfNotExists([]byte(params.Channel))
+		if err1 != nil {
+			return define.ErrDBFault
+		}
+
+		if check := b.Get([]byte(msg.MessageID)); check != nil && safe {
+			return define.ErrResourceAlreadyExists
+		}
+
+		b.Put([]byte(msg.MessageID), message)
+
+		return nil
+	})
+
+	return err
+}
+
+/*returns the content of a message sent on a channel. Nil if channel does not exist*/
+func GetMessage(channel []byte, message []byte) ([]byte, error) {
+	database, err := db.OpenDB(channelDatabase)
+	defer database.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	var data []byte
+	err = database.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket(channel)
+		if b == nil {
+			return define.ErrInvalidResource
+		}
+
+		data = b.Get(message)
+		return nil
+	})
+
+	return data, err
+}
