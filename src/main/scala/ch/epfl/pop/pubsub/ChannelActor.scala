@@ -2,10 +2,10 @@ package ch.epfl.pop.pubsub
 
 import akka.NotUsed
 import akka.actor.typed.scaladsl.Behaviors
-import akka.actor.typed.{ActorRef, Behavior}
+import akka.actor.typed.{ActorRef, ActorSystem, Behavior}
+import akka.stream.scaladsl.{Keep, Sink, Source}
 import akka.stream.{KillSwitches, UniqueKillSwitch}
-import akka.stream.scaladsl.{BroadcastHub, Keep, MergeHub, Sink, Source}
-import ch.epfl.pop.json.JsonMessages.{AnswerErrorMessageServer, AnswerResultIntMessageServer, JsonMessage, JsonMessageAnswerServer, PropagateMessageClient}
+import ch.epfl.pop.json.JsonMessages.{AnswerErrorMessageServer, AnswerResultIntMessageServer, JsonMessageAnswerServer, PropagateMessageClient}
 import ch.epfl.pop.json.MessageErrorContent
 
 /**
@@ -55,7 +55,7 @@ object ChannelActor {
   private def channelHandler(channelsOutputs: Map[String, Source[PropagateMessageClient, NotUsed]],
                              publishExit: Source[PropagateMessageClient, NotUsed]): Behavior[ChannelMessage] = {
     Behaviors.receive { (ctx, message) =>
-      implicit val system = ctx.system
+      implicit val system: ActorSystem[Nothing] = ctx.system
       message match {
 
           //TODO: update this part when we will create channels

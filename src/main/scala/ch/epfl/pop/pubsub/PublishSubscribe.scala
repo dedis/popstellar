@@ -3,16 +3,16 @@ package ch.epfl.pop.pubsub
 import akka.NotUsed
 import akka.actor.typed.{ActorRef, ActorSystem}
 import akka.http.scaladsl.model.ws.{Message, TextMessage}
-import akka.stream.{FlowShape, UniformFanInShape, UniqueKillSwitch}
-import akka.stream.scaladsl.{BroadcastHub, Flow, GraphDSL, Keep, Merge, MergeHub, Partition, Sink}
+import akka.stream.scaladsl.{BroadcastHub, Flow, GraphDSL, Keep, Merge, MergeHub, Partition}
 import akka.stream.typed.scaladsl.ActorFlow
+import akka.stream.{FlowShape, UniformFanInShape, UniqueKillSwitch}
 import akka.util.Timeout
 import ch.epfl.pop.DBActor
-import ch.epfl.pop.DBActor.{Catchup, DBMessage, Write}
+import ch.epfl.pop.DBActor.{DBMessage, Write}
 import ch.epfl.pop.json.JsonMessageParser.{parseMessage, serializeMessage}
-import ch.epfl.pop.json.JsonMessages.{AnswerErrorMessageServer, AnswerMessageServer, AnswerResultIntMessageServer, CatchupMessageClient, CreateChannelClient, FetchChannelClient, JsonMessage, JsonMessageAdminClient, JsonMessageAnswerServer, JsonMessagePubSubClient, NotifyChannelServer, PropagateMessageClient, PublishChannelClient, SubscribeChannelClient, SubscribeMessageClient, UnsubscribeChannelClient, UnsubscribeMessageClient}
+import ch.epfl.pop.json.JsonMessages._
 import ch.epfl.pop.json.MessageErrorContent
-import ch.epfl.pop.pubsub.ChannelActor.{AnswerCreate, AnswerSubscribe, ChannelActorAnswer, ChannelMessage, CreateMessage, SubscribeMessage}
+import ch.epfl.pop.pubsub.ChannelActor._
 
 import scala.util.{Failure, Success, Try}
 
@@ -68,10 +68,8 @@ object PublishSubscribe {
       }
 
       val channelAnswerPartitioner = builder.add(Partition[ChannelActorAnswer](2, {
-        _ match {
-          case AnswerCreate(_) => 0
-          case AnswerSubscribe(_, _, _) => 1
-        }
+        case AnswerCreate(_) => 0
+        case AnswerSubscribe(_, _, _) => 1
       }))
 
 
@@ -111,7 +109,7 @@ object PublishSubscribe {
       partitioner.out(Unsubscribe) ~> unsubMap ~> unsub
       unsub ~> merge
       partitioner.out(Catchup) ~> catchupDB ~> merge
-      userSource ~> merge
+      //userSource ~> merge //TODO doesn't compile
       merge ~> output
 
       FlowShape(input.in, output.out)
@@ -126,7 +124,7 @@ object PublishSubscribe {
     val unsub = Flow[UnsubMessage].statefulMapConcat{() =>
       var channels: Map[String, UniqueKillSwitch] = Map.empty
 
-      {_ match {
+      {
         case AnswerSubscribe(jsonMessage, channel, Some(killSwitch)) =>
           channels = channels + (channel -> killSwitch)
           List(jsonMessage)
@@ -137,7 +135,7 @@ object PublishSubscribe {
         case UnsubRequest(channel, id) =>
 
           val message =
-            if(channels.contains(channel)) {
+            if (channels.contains(channel)) {
               channels(channel).shutdown()
               channels = channels.removed(channel)
               AnswerResultIntMessageServer(id = id)
@@ -147,7 +145,6 @@ object PublishSubscribe {
               AnswerErrorMessageServer(error = error, id = id)
             }
           List(message)
-      }
       }
     }
 

@@ -86,19 +86,32 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
         /* create meeting and broadcast meeting's state */
         case Objects.Meeting() =>
-          jsonObject.getFields("action", "id", "name", "creation", "last_modified", "location", "start", "end", "extra") match {
-            case Seq(a@JsString(_), JsString(id), JsString(n), c@JsNumber(_), lm@JsNumber(_), JsString(loc), st@JsNumber(_), end@JsNumber(_), _) =>
-              new MessageContentDataBuilder()
+          jsonObject.getFields("action", "id", "name", "creation", "last_modified", "start") match {
+            case Seq(a@JsString(_), JsString(id), JsString(n), c@JsNumber(_), lm@JsNumber(_), st@JsNumber(_)) =>
+
+              val location: Seq[JsValue] = jsonObject.getFields("location")
+              val end: Seq[JsValue] = jsonObject.getFields("end")
+              val extra: Seq[JsValue] = jsonObject.getFields("extra")
+
+              val mcd = new MessageContentDataBuilder()
                 .setHeader(Objects.Meeting, a.convertTo[Actions])
                 .setId(hexStringUnwrap(id))
                 .setName(n)
                 .setCreation(c.convertTo[TimeStamp])
                 .setLastModified(lm.convertTo[TimeStamp])
-                .setLocation(loc)
                 .setStart(st.convertTo[TimeStamp])
-                .setEnd(end.convertTo[TimeStamp])
-                .setExtra("extra: TODO in JsonCommunicationProtocol")
-                .build()
+
+              location match {
+                case Seq(JsString(l)) => mcd.setLocation(l)
+                case _ =>
+              }
+              end match {
+                case Seq(end@JsNumber(_)) => mcd.setEnd(end.convertTo[TimeStamp])
+                case _ =>
+              }
+              extra match { case _ => mcd.setExtra("extra: TODO in JsonCommunicationProtocol") }
+
+              mcd.build()
 
             // parsing error : invalid message content data fields
             case _ => throw DeserializationException("invalid MessageContentData : fields missing or wrongly formatted")

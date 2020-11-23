@@ -50,7 +50,7 @@ object DBActor {
             val db = factory.open(new File(path + "/" + channel), options)
             (channelsDB + (channel -> db), db)
         }
-        db.put(id.getBytes(), message.getBytes()) //TODO: serialize message in Json
+        //db.put(id.getBytes(), message.getBytes()) //TODO: serialize message in Json
 
         val method = Methods.Message
         val params = MessageParameters(channel, Some(message))
@@ -68,7 +68,7 @@ object DBActor {
           var messages : List[ChannelMessage] = Nil
           while(it.hasNext) {
             val message = it.next().getValue
-            messages = new String(message, StandardCharsets.UTF_8) :: messages
+            //messages = new String(message, StandardCharsets.UTF_8) :: messages // TODO : message is a MessageContent not a String
           }
           AnswerResultArrayMessageServer(result = ChannelMessages(messages), id = rid)
 

@@ -25,9 +25,9 @@ object JsonAnswerServer {
   }
 
   def sendAnswer(answer: String): Unit = {
-    println("======== MESSAGE TO SEND TO CLIENT ========")
+    println("======== (TODO) MESSAGE TO SEND TO CLIENT ========")
     println(answer)
-    println("===========================================")
+    println("==================================================")
   }
 
 

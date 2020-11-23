@@ -17,7 +17,7 @@ package object json {
   type Hash = HexString
 
   type ChannelName = String
-  type ChannelMessage = String
+  type ChannelMessage = MessageContent
 
 
 

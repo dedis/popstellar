@@ -3,14 +3,31 @@ package json
 import java.util.Base64
 
 import ch.epfl.pop.json.JsonMessages._
+import ch.epfl.pop.json.JsonUtils.MessageContentDataBuilder
 import ch.epfl.pop.json._
+import spray.json._
+import ch.epfl.pop.json.JsonCommunicationProtocol._
 import org.scalatest.FunSuite
+import spray.json.DeserializationException
 
 
 
 class JsonMessageParserTest extends FunSuite {
 
   val ERROR_MESSAGE: String = "error_for_error_code_above"
+
+
+  @scala.annotation.tailrec
+  final def listStringify(value: List[Key], acc: String = ""): String = {
+    if (value.nonEmpty) {
+      var sep = ""
+      if (value.length > 1) sep = ","
+
+      listStringify(value.tail, acc + "\"" + value.head + "\"" + sep)
+    }
+    else "[" + acc + "]"
+  }
+
 
   val MessageContentExample: String = """{
                                         |            "data": "eyJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJ1cGRhdGVfcHJvcGVydGllcyIsImlkIjoiMHhhYWEiLCJuYW1lIjoiTWEgTGFvIiwiY3JlYXRpb24iOjQ1NDUsImxhc3RfbW9kaWZpZWQiOjQ1NDUsIm9yZ2FuaXplciI6IjB4YmIiLCJ3aXRuZXNzZXMiOlsiMHgxMiIsICIweDEzIl19",
@@ -163,15 +180,55 @@ class JsonMessageParserTest extends FunSuite {
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:CreateMeetingMessageClient") {
-    val source: String = embeddedMessage(dataCreateMeeting)
-    val sp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(source)
+    // Meeting with every argument
+    var data: String = dataCreateMeeting
+    var sp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(embeddedMessage(data))
 
-    val spd: String = JsonMessageParser.serializeMessage(sp)
-    val spdp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(spd)
+    var spd: String = JsonMessageParser.serializeMessage(sp)
+    var spdp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(spd)
 
     assert(sp === spdp)
     assert(sp.isInstanceOf[CreateMeetingMessageClient])
     assert(spdp.isInstanceOf[CreateMeetingMessageClient])
+
+
+    // Meeting without location
+    data = data.replaceAll(",\"location\":\"[a-zA-Z]*\"", "")
+    sp = JsonMessageParser.parseMessage(embeddedMessage(data))
+
+    spd = JsonMessageParser.serializeMessage(sp)
+    spdp = JsonMessageParser.parseMessage(spd)
+
+    assert(sp === spdp)
+    assert(sp.isInstanceOf[CreateMeetingMessageClient])
+    assert(spdp.isInstanceOf[CreateMeetingMessageClient])
+
+    // Meeting without location and end
+    data = data.replaceAll(",\"end\":[0-9]*", "")
+    sp = JsonMessageParser.parseMessage(embeddedMessage(data))
+
+    spd = JsonMessageParser.serializeMessage(sp)
+    spdp = JsonMessageParser.parseMessage(spd)
+
+    assert(sp === spdp)
+    assert(sp.isInstanceOf[CreateMeetingMessageClient])
+    assert(spdp.isInstanceOf[CreateMeetingMessageClient])
+
+    // Meeting without location, end and extra
+    data = data.replaceAll(",\"extra\":\"[a-zA-Z0-9_]*\"", "")
+    sp = JsonMessageParser.parseMessage(embeddedMessage(data))
+
+    spd = JsonMessageParser.serializeMessage(sp)
+    spdp = JsonMessageParser.parseMessage(spd)
+
+    assert(sp === spdp)
+    assert(sp.isInstanceOf[CreateMeetingMessageClient])
+    assert(spdp.isInstanceOf[CreateMeetingMessageClient])
+
+    // Meeting without start (should not work)
+    data = data.replaceAll(",\"start\":[0-9]*", "")
+    try { sp = JsonMessageParser.parseMessage(embeddedMessage(data)); fail() }
+    catch { case _: DeserializationException => }
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:BroadcastMeetingMessageClient") {
@@ -286,15 +343,42 @@ class JsonMessageParserTest extends FunSuite {
                             |    "id": 99,
                             |    "jsonrpc": "2.0",
                             |    "result": {
-                            |       "messages": ["M1", "M2", "M3"]
+                            |       "messages": F_MESSAGES
                             |    }
                             |  }
                             |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
 
-    val sp: JsonMessages.JsonMessage = AnswerResultArrayMessageServer("2.0", ChannelMessages(List("M1", "M2", "M3")), 99)
-    val spd: String = JsonMessageParser.serializeMessage(sp)
+    var sp: JsonMessages.JsonMessage = AnswerResultArrayMessageServer("2.0", ChannelMessages(List()), 99)
+    var spd: String = JsonMessageParser.serializeMessage(sp)
 
-    assertResult(source)(spd)
+    assertResult(source.replaceAll("F_MESSAGES", "[]"))(spd)
+
+
+    // 1 message and empty witness list
+    val data: MessageContentData = new MessageContentDataBuilder().setHeader(Objects.Message, Actions.Witness).setId("2").setStart(22).build()
+    var m: MessageContent = MessageContent(data, "skey", "sign", "mid", List())
+    sp = AnswerResultArrayMessageServer("2.0", ChannelMessages(List(m)), 99)
+    spd = JsonMessageParser.serializeMessage(sp)
+
+    val rd: String = """eyJvYmplY3QiOiJtZXNzYWdlIiwiYWN0aW9uIjoid2l0bmVzcyIsImlkIjoiMHgyIiwic3RhcnQiOjIyfQ=="""
+    var r: String = s"""[{"data":"$rd","message_id":"mid","sender":"skey","signature":"sign","witness_signatures":[]}]"""
+
+    assertResult(source.replaceAll("F_MESSAGES", r))(spd)
+    assert(rd === Base64.getEncoder.encode(data.toJson.toString().getBytes).map(_.toChar).mkString)
+    assert(Base64.getDecoder.decode(rd).map(_.toChar).mkString === data.toJson.toString())
+
+
+    // 1 message and non-empty witness list
+    val sig: List[Key] = List("witnessKey1", "witnessKey2", "witnessKey3")
+    m = MessageContent(data, "skey", "sign", "mid", sig)
+    sp = AnswerResultArrayMessageServer("2.0", ChannelMessages(List(m)), 99)
+    spd = JsonMessageParser.serializeMessage(sp)
+
+    r = s"""[{"data":"$rd","message_id":"mid","sender":"skey","signature":"sign","witness_signatures":${listStringify(sig)}}]"""
+
+    assertResult(source.replaceAll("F_MESSAGES", r))(spd)
+    assert(rd === Base64.getEncoder.encode(data.toJson.toString().getBytes).map(_.toChar).mkString)
+    assert(Base64.getDecoder.decode(rd).map(_.toChar).mkString === data.toJson.toString())
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:AnswerErrorMessageServer") {
