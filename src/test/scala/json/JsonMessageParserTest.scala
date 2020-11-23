@@ -332,7 +332,7 @@ class JsonMessageParserTest extends FunSuite {
   test("JsonMessageParser.parseMessage|encodeMessage:AnswerResultIntMessageServer") {
     val source: String = embeddedServerAnswer(Some(0), None, id = 13)
 
-    val sp: JsonMessages.JsonMessage = AnswerResultIntMessageServer("2.0", 0, 13)
+    val sp: JsonMessages.JsonMessage = AnswerResultIntMessageServer(13, 0,  "2.0")
     val spd: String = JsonMessageParser.serializeMessage(sp).filterNot((c: Char) => c.isWhitespace)
 
     assertResult(source)(spd)
@@ -348,7 +348,7 @@ class JsonMessageParserTest extends FunSuite {
                             |  }
                             |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
 
-    var sp: JsonMessages.JsonMessage = AnswerResultArrayMessageServer("2.0", ChannelMessages(List()), 99)
+    var sp: JsonMessages.JsonMessage = AnswerResultArrayMessageServer(99, ChannelMessages(List()))
     var spd: String = JsonMessageParser.serializeMessage(sp)
 
     assertResult(source.replaceAll("F_MESSAGES", "[]"))(spd)
@@ -357,7 +357,7 @@ class JsonMessageParserTest extends FunSuite {
     // 1 message and empty witness list
     val data: MessageContentData = new MessageContentDataBuilder().setHeader(Objects.Message, Actions.Witness).setId("2").setStart(22).build()
     var m: MessageContent = MessageContent(data, "skey", "sign", "mid", List())
-    sp = AnswerResultArrayMessageServer("2.0", ChannelMessages(List(m)), 99)
+    sp = AnswerResultArrayMessageServer(99, ChannelMessages(List(m)))
     spd = JsonMessageParser.serializeMessage(sp)
 
     val rd: String = """eyJvYmplY3QiOiJtZXNzYWdlIiwiYWN0aW9uIjoid2l0bmVzcyIsImlkIjoiMHgyIiwic3RhcnQiOjIyfQ=="""
@@ -371,7 +371,7 @@ class JsonMessageParserTest extends FunSuite {
     // 1 message and non-empty witness list
     val sig: List[Key] = List("witnessKey1", "witnessKey2", "witnessKey3")
     m = MessageContent(data, "skey", "sign", "mid", sig)
-    sp = AnswerResultArrayMessageServer("2.0", ChannelMessages(List(m)), 99)
+    sp = AnswerResultArrayMessageServer(99, ChannelMessages(List(m)))
     spd = JsonMessageParser.serializeMessage(sp)
 
     r = s"""[{"data":"$rd","message_id":"mid","sender":"skey","signature":"sign","witness_signatures":${listStringify(sig)}}]"""
@@ -393,7 +393,7 @@ class JsonMessageParserTest extends FunSuite {
                             |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
 
     for (i <- -5 until 0) {
-      val sp: JsonMessages.JsonMessage = AnswerErrorMessageServer("2.0", MessageErrorContent(i, "err"), 99)
+      val sp: JsonMessages.JsonMessage = AnswerErrorMessageServer(99, MessageErrorContent(i, "err"),  "2.0")
       val spd: String = JsonMessageParser.serializeMessage(sp)
 
       assertResult(source.replaceAll("ERR_CODE", String.valueOf(i)))(spd)

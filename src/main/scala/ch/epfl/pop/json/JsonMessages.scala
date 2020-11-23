@@ -24,21 +24,21 @@ object JsonMessages {
 
   /** Parsed result answer (Int result) Json message from the server */
   final case class AnswerResultIntMessageServer(
-                                           jsonrpc: String = JSON_RPC_VERSION,
+                                           id: Int,
                                            result: Int = 0,
-                                           id: Int
+                                           jsonrpc: String = JSON_RPC_VERSION
                                          ) extends JsonMessageAnswerServer
 
   /** Parsed result answer (Array result) Json message from the server */
   final case class AnswerResultArrayMessageServer(
-                                             jsonrpc: String = JSON_RPC_VERSION,
+                                             id: Int,
                                              result: ChannelMessages,
-                                             id: Int
+                                             jsonrpc: String = JSON_RPC_VERSION
                                            ) extends JsonMessageAnswerServer
 
   /** Parsed error answer Json message from the server */
   final case class AnswerErrorMessageServer(
-                                             jsonrpc: String = JSON_RPC_VERSION, error: MessageErrorContent, id: Int
+                                             id: Int, error: MessageErrorContent, jsonrpc: String = JSON_RPC_VERSION
                                            ) extends JsonMessageAnswerServer
 
   /* --------------------------------------------------------- */
