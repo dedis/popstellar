@@ -5,16 +5,7 @@
   "params": {
     "channel": "0",
     "message": {
-      "data": {
-        "object": "lao",
-        "action": "create",
-        "id": "0x123a",
-        "name": "My LAO",
-        "creation": 123,
-        "last_modified": 123,
-        "organizer": "0x123a",
-        "witnesses": []
-      },
+      "data": ewogICAgICAgICJvYmplY3QiOiAibGFvIiwKICAgICAgICAiYWN0aW9uIjogImNyZWF0ZSIsCiAgICAgICAgImlkIjogIjB4MTIzYSIsCiAgICAgICAgIm5hbWUiOiAiTXkgTEFPIiwKICAgICAgICAiY3JlYXRpb24iOiAxMjMsCiAgICAgICAgImxhc3RfbW9kaWZpZWQiOiAxMjMsCiAgICAgICAgIm9yZ2FuaXplciI6ICIweDEyM2EiLAogICAgICAgICJ3aXRuZXNzZXMiOiBbXQogICAgICB9,
       "sender": "0x123a",
       "signature": "0x123a",
       "message_id": "0x123a",
@@ -23,28 +14,41 @@
   }
 }
 
+data : {
+"object": "lao",
+"action": "create",
+"id": "0x123a",
+"name": "My LAO",
+"creation": 123,
+"last_modified": 123,
+"organizer": "0x123a",
+"witnesses": []
+}
+
 {
   "jsonrpc": "2.0",
   "method": "publish",
   "params": {
     "channel": "0",
     "message": {
-      "data": {
-    "object": "meeting",
-    "action": "create",
-    "id": "0x123a",
-    "name": "Meeting 2.0",
-    "creation": 123,
-    "last_modified": 0,
-    "location": "somewhere over the rainbow",
-    "start": 2448,
-    "end": 6000,
-    "extra": "mhh de l'extra data"
-  },
+      "data":
+      {ew0KICAib2JqZWN0IjogIm1lZXRpbmciLA0KICAiYWN0aW9uIjogImNyZWF0ZSIsDQogICJpZCI6ICIweDEyM2EiLA0KICAibmFtZSI6ICJNZWV0aW5nIDIuMCIsDQogICJjcmVhdGlvbiI6IDEyMywNCiAgImxhc3RfbW9kaWZpZWQiOiAwLA0KICAibG9jYXRpb24iOiAic29tZXdoZXJlIG92ZXIgdGhlIHJhaW5ib3ciLA0KICAic3RhcnQiOiAyNDQ4LA0KICAiZW5kIjogNjAwMCwNCiAgImV4dHJhIjogIm1oaCBkZSBsJ2V4dHJhIGRhdGEiDQp9},
   "message_id": "0x123a",
   "sender": "0x123a",
   "signature": "0x123a"
 } }, "id": 3}
+data {
+  "object": "meeting",
+  "action": "create",
+  "id": "0x123a",
+  "name": "Meeting 2.0",
+  "creation": 123,
+  "last_modified": 0,
+  "location": "somewhere over the rainbow",
+  "start": 2448,
+  "end": 6000,
+  "extra": "mhh de l'extra data"
+},
 
 {
   "jsonrpc": "2.0",
