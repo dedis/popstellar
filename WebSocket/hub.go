@@ -1,6 +1,7 @@
 package WebSocket
 
 import (
+	b64 "encoding/base64"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -223,7 +224,11 @@ func (h *hub) handlePublish(generic define.Generic) error {
 		return define.ErrRequestDataInvalid
 	}
 
-	data, err := define.AnalyseData(message.Data)
+	data := define.Data{}
+	base64Text := make([]byte, b64.StdEncoding.DecodedLen(len(message.Data)))
+	l, _ := b64.StdEncoding.Decode(base64Text, message.Data)
+	err = json.Unmarshal(base64Text[:l], &data)
+	//data, err := define.AnalyseData(message.Data)
 	if err != nil {
 		return define.ErrRequestDataInvalid
 	}

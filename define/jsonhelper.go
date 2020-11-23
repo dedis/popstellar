@@ -34,7 +34,7 @@ type ParamsFull struct {
 }
 
 type Message struct {
-	Data              json.RawMessage
+	Data              json.RawMessage //in base 64
 	Sender            string
 	Signature         string
 	MessageID         string
@@ -157,12 +157,9 @@ func AnalyseMessage(message json.RawMessage) (Message, error) {
 	err := json.Unmarshal(message, &m)
 	return m, err
 }
-
+//obsolete
 func AnalyseData(data json.RawMessage) (Data, error) {
 	m := Data{}
-//	base64Text := make([]byte, b64.StdEncoding.DecodedLen(len(data)))
-//	l, _ := b64.StdEncoding.Decode(base64Text, data)
-//	err := json.Unmarshal(base64Text[:l], &m)
 	err := json.Unmarshal(data, &m)
 	return m, err
 }
@@ -170,7 +167,6 @@ func AnalyseData(data json.RawMessage) (Data, error) {
 func AnalyseDataCreateLAO(data json.RawMessage) (DataCreateLAO, error) {
 	m := DataCreateLAO{}
 	err := json.Unmarshal(data, &m)
-	fmt.Printf("%#v", m)
 	return m, err
 }
 
