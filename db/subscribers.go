@@ -10,7 +10,7 @@ import (
 
 const bucketSubscribers = "sub"
 
-/*
+/**
  * Function that subscribe a user to a channel. ONLY AT THE PUB/SUB LAYER
  * if user was already subscribed, does nothing
  * does not change LAO's member field

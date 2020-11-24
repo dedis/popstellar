@@ -9,7 +9,7 @@ import (
 
 const MaxTimeBetweenLAOCreationAndPublish = 600
 
-// TODO if we use the json Schema, don't need these helpers anymore
+// TODO if we use the json Schema, don't need to check structure correctness
 func LAOCreatedIsValid(data DataCreateLAO, message Message) error {
 	//the last modified timestamp is equal to the creation timestamp,
 	if data.Creation != data.LastModified {
