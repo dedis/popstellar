@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.ui;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,11 +11,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Keys;
-import com.github.dedis.student20_pop.utility.attendeeUI.ExpandableListViewEventAdapter;
+import com.github.dedis.student20_pop.utility.attendeeUI.AttendeeExpandableListViewEventAdapter;
 import com.github.dedis.student20_pop.model.Event;
 import com.github.dedis.student20_pop.model.Lao;
 
@@ -28,12 +30,13 @@ import java.util.List;
 public class AttendeeFragment extends Fragment {
 
     public static final String TAG = AttendeeFragment.class.getSimpleName();
-    ExpandableListViewEventAdapter listViewEventAdapter;
+    AttendeeExpandableListViewEventAdapter listViewEventAdapter;
     ExpandableListView expandableListView;
     Lao lao;  //should be given from intent or previous fragment
     Button propertiesButton;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -45,7 +48,7 @@ public class AttendeeFragment extends Fragment {
 
         //Display Events
         expandableListView = rootView.findViewById(R.id.exp_list_view);
-        listViewEventAdapter = new ExpandableListViewEventAdapter(this.getActivity(),getEvents());
+        listViewEventAdapter = new AttendeeExpandableListViewEventAdapter(this.getActivity(),getEvents());
         expandableListView.setAdapter(listViewEventAdapter);
         expandableListView.expandGroup(0);
         expandableListView.expandGroup(1);
@@ -69,6 +72,7 @@ public class AttendeeFragment extends Fragment {
         return rootView;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private List<Event> getEvents(){
         /*
         //Later:
