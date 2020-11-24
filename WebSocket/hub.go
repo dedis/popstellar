@@ -68,10 +68,13 @@ type hub struct {
 	logMx sync.RWMutex
 	log   [][]byte
 
+	organizer *Organizer
+	witness   *Witness
+
 	connIndex int
 }
 
-func NewOrganizerHub() *hub {
+func NewHub() *hub {
 	h := &hub{
 		connectionsMx:    sync.RWMutex{},
 		receivedMessage:  make(chan []byte),
@@ -83,6 +86,8 @@ func NewOrganizerHub() *hub {
 		message:          nil,
 		message2:         nil,
 		channel2:         nil,
+		organizer:        NewOrganizer(),
+		witness:          NewWitness(),
 	}
 	//publish subscribe go routine !
 
@@ -93,54 +98,64 @@ func NewOrganizerHub() *hub {
 			h.message = nil
 			h.responseToSender = nil
 			//handle the message and generate the response
-			h.HandleWholeMessage(msg, h.idOfSender)
+			h.responseToSender = h.HandleWholeMessage(msg, h.idOfSender)
 			msgBroadcast := h.message
 			msgResponse := h.responseToSender
 
-			var subscribers []int = nil
-			var err error = nil
-			if bytes.Equal(h.channel, []byte("/root")) {
-				subscribers, err = db.GetSubscribers(h.channel)
-				if err != nil {
-					log.Fatal("can't get subscribers", err)
-				}
-			}
-
 			h.connectionsMx.RLock()
-			for c := range h.connections {
-				//send msgBroadcast to that connection if channel is main channel or is in channel subscribers
-				_, found := define.Find(subscribers, c.id)
-
-				if (bytes.Equal(h.channel, []byte("/root")) || found) && msgBroadcast != nil {
-					select {
-					case c.send <- msgBroadcast:
-					// stop trying to send to this connection after trying for 1 second.
-					// if we have to stop, it means that a reader died so remove the connection also.
-					case <-time.After(1 * time.Second):
-						log.Printf("shutting down connection %c", c.id)
-						h.removeConnection(c)
-					}
-				}
-			}
-			for c := range h.connections {
-				//send answer to client
-				if h.idOfSender == c.id {
-					select {
-
-					case c.send <- msgResponse:
-					// stop trying to send to this connection after trying for 1 second.
-					// if we have to stop, it means that a reader died so remove the connection also.
-					case <-time.After(1 * time.Second):
-						log.Printf("shutting down connection %c", c.id)
-						h.removeConnection(c)
-					}
-				}
-			}
+			h.publishOnChannel(msgBroadcast, h.channel)
+			h.sendResponse(msgResponse, h.idOfSender)
 
 			h.connectionsMx.RUnlock()
 		}
 	}()
 	return h
+}
+
+/* sends the message msg to every subscribers of the channel channel */
+func (h *hub) publishOnChannel(msg []byte, channel []byte) {
+
+	var subscribers []int = nil
+	var err error = nil
+	if bytes.Equal(channel, []byte("/root")) {
+		subscribers, err = db.GetSubscribers(channel)
+		if err != nil {
+			log.Fatal("can't get subscribers", err)
+		}
+	}
+
+	for c := range h.connections {
+		//send msgBroadcast to that connection if channel is main channel or is in channel subscribers
+		_, found := define.Find(subscribers, c.id)
+
+		if (bytes.Equal(channel, []byte("/root")) || found) && msg != nil {
+			select {
+			case c.send <- msg:
+			// stop trying to send to this connection after trying for 1 second.
+			// if we have to stop, it means that a reader died so remove the connection also.
+			case <-time.After(1 * time.Second):
+				log.Printf("shutting down connection %c", c.id)
+				h.removeConnection(c)
+			}
+		}
+	}
+}
+
+/*sends the message msg to the connection sender*/
+func (h *hub) sendResponse(msg []byte, sender int) {
+	for c := range h.connections {
+		//send answer to client
+		if sender == c.id {
+			select {
+			case c.send <- msg:
+			// stop trying to send to this connection after trying for 1 second.
+			// if we have to stop, it means that a reader died so remove the connection also.
+			case <-time.After(1 * time.Second):
+				log.Printf("shutting down connection %c", c.id)
+				h.removeConnection(c)
+			}
+		}
+	}
 }
 
 func (h *hub) addConnection(conn *connection) {

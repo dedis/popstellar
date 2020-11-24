@@ -11,17 +11,19 @@ import (
 
 type Organizer struct {
 	//OrgDatabase instance
-	db *bolt.DB
+	db                 *bolt.DB
+	subscribedChannels []string
 }
 
 func NewOrganizer() *Organizer {
-	dbtmp, err := db.OpenDB(db.OrgDatabase)
+	databaseTemp, err := db.OpenDB(db.OrgDatabase)
 	if err != nil {
 		log.Fatal("couldn't start a new db")
 	}
 
 	o := &Organizer{
-		db: dbtmp,
+		db:                 databaseTemp,
+		subscribedChannels: make([]string, 0),
 	}
 
 	return o
@@ -35,14 +37,16 @@ func (o *Organizer) CloseDB() {
 //  careful with base64 needed to remove
 //  careful with comma after witnesses[] and witnesses_signatures[] needed to remove
 
-// Param msg = receivedMessage
-// output by setting h.responseToSender and h.broadcast
-func (h *hub) HandleWholeMessage(msg []byte, userId int) {
+/** processes what is received from the WebSocket
+ * msg : receivedMessage
+ * returns : []byte response to send to the message's sender
+ */
+func (h *hub) HandleWholeMessage(msg []byte, userId int) []byte {
 	generic, err := define.AnalyseGeneric(msg)
 	if err != nil {
 		err = define.ErrRequestDataInvalid
-		h.responseToSender = define.CreateResponse(err, nil, generic)
-		return
+		return define.CreateResponse(err, nil, generic)
+
 	}
 
 	var history []byte = nil
@@ -61,7 +65,7 @@ func (h *hub) HandleWholeMessage(msg []byte, userId int) {
 		err = define.ErrRequestDataInvalid
 	}
 
-	h.responseToSender = define.CreateResponse(err, history, generic)
+	return define.CreateResponse(err, history, generic)
 }
 
 func (h *hub) handleSubscribe(generic define.Generic, userId int) error {
@@ -201,19 +205,19 @@ func (h *hub) handleCreateLAO(message define.Message, canal string, generic defi
 	return h.finalizeHandling(message, canal, generic)
 }
 
-func (h *hub) handleCreateRollCall(message define.Message, canal string, generic define.Generic) error {
+func (h *hub) handleCreateRollCall(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
 	if canal != "/root" {
-		return define.ErrInvalidResource
+		return nil, nil, define.ErrInvalidResource
 	}
 
 	data, err := define.AnalyseDataCreateRollCall(message.Data)
 	if err != nil {
-		return define.ErrInvalidResource
+		return nil, nil, define.ErrInvalidResource
 	}
 
 	err = define.RollCallCreatedIsValid(data, message)
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
 
 	// don't need to check for validity if we use json schema
@@ -227,22 +231,24 @@ func (h *hub) handleCreateRollCall(message define.Message, canal string, generic
 		Extra:        data.Extra,
 	}
 	err = db.CreateChannel(event)
-	if err != nil {
-		return err
-	}
-
-	return h.finalizeHandling(message, canal, generic)
+	msg, channel := h.finalizeHandling(message, canal, generic)
+	return msg, channel, nil
 }
 
-func (h *hub) handleCreateMeeting(message define.Message, canal string, generic define.Generic) error {
+/** @returns, in order
+ * message
+ * channel
+ * error
+ */
+func (h *hub) handleCreateMeeting(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
 
 	if canal == "/root" {
-		return define.ErrInvalidResource
+		return nil, nil, define.ErrInvalidResource
 	}
 
 	data, err := define.AnalyseDataCreateMeeting(message.Data)
 	if err != nil {
-		return define.ErrInvalidResource
+		return nil, nil, define.ErrInvalidResource
 	}
 
 	// don't need to check for validity if we use json schema
@@ -257,20 +263,26 @@ func (h *hub) handleCreateMeeting(message define.Message, canal string, generic 
 	}
 	err = db.CreateChannel(event)
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
-	return h.finalizeHandling(message, canal, generic)
+	channel, msg := h.finalizeHandling(message, canal, generic)
+	return channel, msg, nil
 }
 
-func (h *hub) handleCreatePoll(message define.Message, canal string, generic define.Generic) error {
+/** @returns, in order
+ * message
+ * channel
+ * error
+ */
+func (h *hub) handleCreatePoll(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
 
 	if canal != "0" {
-		return define.ErrInvalidResource
+		return nil, nil, define.ErrInvalidResource
 	}
 
 	data, err := define.AnalyseDataCreatePoll(message.Data)
 	if err != nil {
-		return define.ErrInvalidResource
+		return nil, nil, define.ErrInvalidResource
 	}
 
 	// don't need to check for validity if we use json schema
@@ -285,9 +297,10 @@ func (h *hub) handleCreatePoll(message define.Message, canal string, generic def
 	}
 	err = db.CreateChannel(event)
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
-	return h.finalizeHandling(message, canal, generic)
+	channel, msg := h.finalizeHandling(message, canal, generic)
+	return channel, msg, nil
 }
 func (h *hub) handleMessage(msg []byte, userId int) error {
 
@@ -295,13 +308,22 @@ func (h *hub) handleMessage(msg []byte, userId int) error {
 }
 
 // This is organizer implementation. If Witness, should return a witness msg on object
-func (h *hub) handleUpdateProperties(message define.Message, canal string, generic define.Generic) error {
-	h.message = define.CreateBroadcastMessage(generic)
-	h.channel = []byte(canal)
-	return db.UpdateMessage(message, canal)
+//TODO check correctness
+/** @returns, in order
+ * message
+ * channel
+ */
+func (h *hub) handleUpdateProperties(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
+	channel, msg := h.finalizeHandling(message, canal, generic)
+	return channel, msg, db.UpdateMessage(message, canal)
 }
 
-func (h *hub) handleWitnessMessage(message define.Message, canal string, generic define.Generic) error {
+/** @returns, in order
+ * message
+ * channel
+ * error
+ */
+func (h *hub) handleWitnessMessage(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
 	//TODO verify signature correctness
 	// decrypt msg and compare with hash of "local" data
 
@@ -310,18 +332,18 @@ func (h *hub) handleWitnessMessage(message define.Message, canal string, generic
 	//retrieve message to sign from database
 	toSign := db.GetMessage([]byte(canal), []byte(message.MessageID))
 	if toSign == nil {
-		return define.ErrInvalidResource
+		return nil, nil, define.ErrInvalidResource
 	}
 
 	toSignStruct, err := define.AnalyseMessage(toSign)
 	if err != nil {
-		return define.ErrRequestDataInvalid
+		return nil, nil, define.ErrRequestDataInvalid
 	}
 
 	//if message was already signed by this witness, returns an error
 	_, found := define.FindStr(toSignStruct.WitnessSignatures, message.Signature)
 	if found {
-		return define.ErrResourceAlreadyExists
+		return nil, nil, define.ErrResourceAlreadyExists
 	}
 
 	toSignStruct.WitnessSignatures = append(toSignStruct.WitnessSignatures, message.Signature)
@@ -329,18 +351,17 @@ func (h *hub) handleWitnessMessage(message define.Message, canal string, generic
 	// update "LAOUpdateProperties" message in DB
 	err = db.UpdateMessage(toSignStruct, canal)
 	if err != nil {
-		return define.ErrDBFault
+		return nil, nil, define.ErrDBFault
 	}
 	//store received message in DB
 	err = db.CreateMessage(message, canal)
 	if err != nil {
-		return define.ErrDBFault
+		return nil, nil, define.ErrDBFault
 	}
 
 	//broadcast received message
-	h.message = define.CreateBroadcastMessage(generic)
-	h.channel = []byte(canal)
-	return nil
+	channel, msg := h.finalizeHandling(message, canal, generic)
+	return channel, msg, nil
 }
 
 func (h *hub) handleCatchup(generic define.Generic) ([]byte, error) {
@@ -354,8 +375,12 @@ func (h *hub) handleCatchup(generic define.Generic) ([]byte, error) {
 	return history, nil
 }
 
-func (h *hub) finalizeHandling(message define.Message, canal string, generic define.Generic) error {
+/** @returns, in order
+ * message
+ * channel
+ */
+func (h *hub) finalizeHandling(message define.Message, canal string, generic define.Generic) ([]byte, []byte) {
 	h.message = define.CreateBroadcastMessage(generic)
 	h.channel = []byte(canal)
-	return nil
+	return define.CreateBroadcastMessage(generic), []byte(canal)
 }
