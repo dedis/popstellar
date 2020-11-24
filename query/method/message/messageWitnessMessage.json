@@ -7,27 +7,31 @@
 
 	"properties": {
 		"data": {
-			"description": "[String] data contained in the message",
-			"$ref": "utility/base64String.json",
+			"description": "[Base64String] data contained in the message",
+			"type": "string",
+			"contentEncoding": "base64",
 			"$comment": "Note: the string is encoded in Base64"
 		},
 		"sender": {
-			"description": "[String] public key of the witness",
-			"$ref": "utility/base64String.json",
+			"description": "[Base64String] public key of the witness",
+			"type": "string",
+			"contentEncoding": "base64",
 			"$comment": "Note: the string is encoded in Base64"
 		},
 		"signature": {
-			"description": "[String] witness' signature on data : Sign(Hash(data))",
-			"$ref": "utility/base64String.json",
+			"description": "[Base64String] witness' signature on data : Sign(Hash(data))",
+			"type": "string",
+			"contentEncoding": "base64",
 			"$comment": "Note: the string is encoded in Base64"
 		},
 		"message_id": {
-			"description": "[String] message id : Hash(data||signature)",
-			"$ref": "utility/base64String.json",
+			"description": "[Base64String] message id : Hash(data||signature)",
+			"type": "string",
+			"contentEncoding": "base64",
 			"$comment": "Note: the string is encoded in Base64"
 		},
 		"witness_signatures": {
-			"description": "[Array[String]] list of witnesses' signatures",
+			"description": "[Array[Base64String]] list of witnesses' signatures",
 			"type": "array", 
 			"maxItems": 0,
 			"$comment": "Note: should always be empty"

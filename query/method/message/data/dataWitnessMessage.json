@@ -7,10 +7,11 @@
 	"properties": {
 		"object": { "const": "message" },
 		"action": { "const": "witness" },
-		"message_id": { "$ref": "../utility/hexString.json" },
+		"message_id": { "type": "string", "contentEncoding": "base64" },
 		"signature": {
-			"description": "[HexString] signature by the witness over the \"data\" field of the message",
-			"$ref": "../utility/hexString.json"
+			"description": "[Base64String] signature by the witness over the \"data\" field of the message",
+			"type": "string",
+			"contentEncoding": "base64"
 		}
 	},
 	"additionalProperties": false,

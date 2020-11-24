@@ -8,7 +8,8 @@
 		"object": { "const": "meeting" },
 		"action": { "const": "create" },
 		"id": { 
-			"$ref": "../utility/hexString.json",
+			"type": "string",
+			"contentEncoding": "base64",
 			"$comment": "Hash : SHA256(lao_id||creation||name)"
 		},
 		"name": { "type": "string" },

@@ -8,30 +8,33 @@
 		"object": { "const": "lao" },
 		"action": { "const": "state" },
 		"id": { 
-			"$ref": "../utility/hexString.json",
+			"type": "string",
+			"contentEncoding": "base64",
 			"$comment": "Hash : SHA256(organizer||creation||name)"
 		},
 		"name": { "type": "string" },
 		"creation": { "description": "[Timestamp] creation time", "type": "integer", "minimum": 0 },
 		"last_modified": { "description": "[Timestamp] last modification's time", "type": "integer", "minimum": 0 },
 		"organizer": { 
-			"description": "[HexString] public key of the organizer",
-			"$ref": "../utility/hexString.json"
+			"description": "[Base64String] public key of the organizer",
+			"type": "string",
+			"contentEncoding": "base64"
 		},
 		"witnesses": { 
-			"description": "[Array[HexString]] list of public keys of witnesses",
+			"description": "[Array[Base64String]] list of public keys of witnesses",
 			"type": "array", 
 			"uniqueItems": true, 
-			"items": { "$ref": "../utility/hexString.json" }
+			"items": { "type": "string", "contentEncoding": "base64" }
 		},
 		"modification_id": {
-			"description": "[HexString] id of the modification (either creation/update)",
-			"$ref": "../utility/hexString.json"
+			"description": "[Base64String] id of the modification (either creation/update)",
+			"type": "string",
+			"contentEncoding": "base64"
 		},
 		"modification_signatures": {
-			"description": "[Array[HexString]] signatures of the witnesses on the modification message (either creation/update)",
+			"description": "[Array[Base64String]] signatures of the witnesses on the modification message (either creation/update)",
 			"type": "array",
-			"items": { "$ref": "../utility/hexString.json" }
+			"items": { "type": "string", "contentEncoding": "base64" }
 		}
 	},
 	"additionalProperties": false,

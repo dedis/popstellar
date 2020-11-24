@@ -10,10 +10,10 @@
 		"name": { "type": "string" },
 		"last_modified": { "description": "[Timestamp] last modification's time", "type": "integer", "minimum": 0 },
 		"witnesses": { 
-			"description": "[Array[HexString]] list of public keys of witnesses",
+			"description": "[Array[Base64String]] list of public keys of witnesses",
 			"type": "array", 
 			"uniqueItems": true, 
-			"items": { "$ref": "../utility/hexString.json" }
+			"items": { "type": "string", "contentEncoding": "base64" }
 		}
 	},
 	"additionalProperties": false,
