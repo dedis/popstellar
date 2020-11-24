@@ -10,7 +10,8 @@ import (
 )
 
 type Witness struct {
-	db *bolt.DB
+	db                 *bolt.DB
+	subscribedChannels []string
 }
 
 func NewWitness() *Witness {
@@ -42,7 +43,7 @@ func (h *hub) witnessHandleWholeMessage(msg []byte, userId int) {
 
 	switch generic.Method {
 	case "publish":
-		err = h.handlePublish(generic)
+		err = nil //h.handlePublish(generic)
 	default:
 		// do nothing
 	}
@@ -90,7 +91,7 @@ func (h *hub) witnessHandleUpdateProperties(message define.Message, channel stri
 	if err != nil {
 		return err
 	}
-	h.message = witnessSignMessage(msg)
+	h.message = witnessSignMessage(message)
 	h.channel = []byte(channel)
 	return nil
 }

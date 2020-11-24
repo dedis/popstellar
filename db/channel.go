@@ -3,7 +3,6 @@ package db
 import (
 	"encoding/json"
 	"github.com/boltdb/bolt"
-	"student20_pop/WebSocket"
 	"student20_pop/define"
 )
 
@@ -104,12 +103,4 @@ func GetChannelFromID(id []byte) []byte {
 		return nil
 	})
 	return data
-}
-
-func IsWitness(witness WebSocket.Witness, channel string) bool {
-	return false
-}
-
-func IsOrganizer(organizer WebSocket.Organizer, channel string) bool {
-	return false
 }

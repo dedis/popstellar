@@ -1,4 +1,4 @@
-package WebSocket
+package actors
 
 import (
 	b64 "encoding/base64"
@@ -39,36 +39,42 @@ func (o *Organizer) CloseDB() {
 
 /** processes what is received from the WebSocket
  * msg : receivedMessage
- * returns : []byte response to send to the message's sender
+ * returns, in order :
+ * message to send on channel, or nil
+ * channel for the message, or nil
+ * response to the sender, or nil
  */
-func (h *hub) HandleWholeMessage(msg []byte, userId int) []byte {
+func (o *Organizer) HandleWholeMessage(msg []byte, userId int) ([]byte, []byte, []byte) {
 	generic, err := define.AnalyseGeneric(msg)
 	if err != nil {
-		err = define.ErrRequestDataInvalid
-		return define.CreateResponse(err, nil, generic)
+		return nil, nil, define.CreateResponse(define.ErrRequestDataInvalid, nil, generic)
 
 	}
 
 	var history []byte = nil
+	var message []byte = nil
+	var channel []byte = nil
 
 	switch generic.Method {
 	case "subscribe":
-		err = h.handleSubscribe(generic, userId)
+		message, channel, err = nil, nil, handleSubscribe(generic, userId)
 	case "unsubscribe":
-		err = h.handleUnsubscribe(generic, userId)
+		message, channel, err = nil, nil, handleUnsubscribe(generic, userId)
 	case "publish":
-		err = h.handlePublish(generic)
-	//case "message": err = h.handleMessage() // Potentially, we never receive a "message" and only output "message" after a "publish" in order to broadcast. Or they are only notification, and we just want to check that it was a success
+		message, channel, err = handlePublish(generic)
+	//case "message": err = h.handleMessage()
+	//Potentially, we never receive a "message" and only output "message" after a "publish" in order to broadcast.
+	//Or they are only notification, and we just want to check that it was a success
 	case "catchup":
-		history, err = h.handleCatchup(generic)
+		history, err = handleCatchup(generic)
 	default:
-		err = define.ErrRequestDataInvalid
+		message, channel, err = nil, nil, define.ErrRequestDataInvalid
 	}
 
-	return define.CreateResponse(err, history, generic)
+	return message, channel, define.CreateResponse(err, history, generic)
 }
 
-func (h *hub) handleSubscribe(generic define.Generic, userId int) error {
+func handleSubscribe(generic define.Generic, userId int) error {
 	params, err := define.AnalyseParamsLight(generic.Params)
 	if err != nil {
 		return define.ErrRequestDataInvalid
@@ -76,7 +82,7 @@ func (h *hub) handleSubscribe(generic define.Generic, userId int) error {
 	return db.Subscribe(userId, []byte(params.Channel))
 }
 
-func (h *hub) handleUnsubscribe(generic define.Generic, userId int) error {
+func handleUnsubscribe(generic define.Generic, userId int) error {
 	params, err := define.AnalyseParamsLight(generic.Params)
 	if err != nil {
 		return define.ErrRequestDataInvalid
@@ -84,15 +90,20 @@ func (h *hub) handleUnsubscribe(generic define.Generic, userId int) error {
 	return db.Unsubscribe(userId, []byte(params.Channel))
 }
 
-func (h *hub) handlePublish(generic define.Generic) error {
+/** @returns, in order
+ * message
+ * channel
+ * error
+ */
+func handlePublish(generic define.Generic) ([]byte, []byte, error) {
 	params, err := define.AnalyseParamsFull(generic.Params)
 	if err != nil {
-		return define.ErrRequestDataInvalid
+		return nil, nil, define.ErrRequestDataInvalid
 	}
 
 	message, err := define.AnalyseMessage(params.Message)
 	if err != nil {
-		return define.ErrRequestDataInvalid
+		return nil, nil, define.ErrRequestDataInvalid
 	}
 
 	data := define.Data{}
@@ -102,91 +113,90 @@ func (h *hub) handlePublish(generic define.Generic) error {
 
 	//data, err := define.AnalyseData(message.Data)
 	if err != nil {
-		return define.ErrRequestDataInvalid
+		return nil, nil, define.ErrRequestDataInvalid
 	}
 
 	switch data["object"] {
 	case "lao":
 		switch data["action"] {
 		case "create":
-			return h.handleCreateLAO(message, params.Channel, generic)
+			return handleCreateLAO(message, params.Channel, generic)
 		case "update_properties":
-			return h.handleUpdateProperties(message, params.Channel, generic)
+			return handleUpdateProperties(message, params.Channel, generic)
 		case "state":
 
 		default:
-			return define.ErrInvalidAction
+			return nil, nil, define.ErrInvalidAction
 		}
 
 	case "message":
 		switch data["action"] {
 		case "witness":
-			err := h.handleWitnessMessage(message, params.Channel, generic)
-			if err != nil {
-				return err
-			}
-			if len(message.WitnessSignatures) == SIG_TRESHOLD-1 {
-				//TODO: update state and send state broadcast
-			}
-			return err
+			return handleWitnessMessage(message, params.Channel, generic)
+			//TODO: update state and send state broadcast
 		default:
-			return define.ErrInvalidAction
+			return nil, nil, define.ErrInvalidAction
 		}
 	case "roll call":
 		switch data["action"] {
 		case "create":
-			return h.handleCreateRollCall(message, params.Channel, generic)
+			return handleCreateRollCall(message, params.Channel, generic)
 		case "state":
 
 		default:
-			return define.ErrInvalidAction
+			return nil, nil, define.ErrInvalidAction
 		}
 	case "meeting":
 		switch data["action"] {
 		case "create":
-			return h.handleCreateMeeting(message, params.Channel, generic)
+			return handleCreateMeeting(message, params.Channel, generic)
 		case "state":
 
 		default:
-			return define.ErrInvalidAction
+			return nil, nil, define.ErrInvalidAction
 		}
 	case "poll":
 		switch data["action"] {
 		case "create":
-			return h.handleCreatePoll(message, params.Channel, generic)
+			return handleCreatePoll(message, params.Channel, generic)
 		case "state":
 
 		default:
-			return define.ErrInvalidAction
+			return nil, nil, define.ErrInvalidAction
 		}
 	default:
-		return define.ErrRequestDataInvalid
+		return nil, nil, define.ErrRequestDataInvalid
 	}
 
-	return nil
+	return nil, nil, nil
 }
 
-func (h *hub) handleCreateLAO(message define.Message, canal string, generic define.Generic) error {
+/** @returns, in order
+ * message
+ * channel
+ * error
+ */
+func handleCreateLAO(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
 
 	if canal != "/root" {
-		return define.ErrInvalidResource
+		return nil, nil, define.ErrInvalidResource
 	}
 
 	data, err := define.AnalyseDataCreateLAO(message.Data)
 	if err != nil {
-		return define.ErrInvalidResource
+		return nil, nil, define.ErrInvalidResource
 	}
 
 	err = define.LAOCreatedIsValid(data, message)
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
 
 	canalLAO := canal + data.ID
 
 	err = db.CreateMessage(message, canalLAO)
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
 
 	lao := define.LAO{
@@ -199,13 +209,18 @@ func (h *hub) handleCreateLAO(message define.Message, canal string, generic defi
 	}
 	err = db.CreateChannel(lao)
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
-
-	return h.finalizeHandling(message, canal, generic)
+	msg, channel := finalizeHandling(message, canal, generic)
+	return msg, channel, nil
 }
 
-func (h *hub) handleCreateRollCall(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
+/** @returns, in order
+ * message
+ * channel
+ * error
+ */
+func handleCreateRollCall(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
 	if canal != "/root" {
 		return nil, nil, define.ErrInvalidResource
 	}
@@ -231,7 +246,10 @@ func (h *hub) handleCreateRollCall(message define.Message, canal string, generic
 		Extra:        data.Extra,
 	}
 	err = db.CreateChannel(event)
-	msg, channel := h.finalizeHandling(message, canal, generic)
+	if err != nil {
+		return nil, nil, err
+	}
+	msg, channel := finalizeHandling(message, canal, generic)
 	return msg, channel, nil
 }
 
@@ -240,7 +258,7 @@ func (h *hub) handleCreateRollCall(message define.Message, canal string, generic
  * channel
  * error
  */
-func (h *hub) handleCreateMeeting(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
+func handleCreateMeeting(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
 
 	if canal == "/root" {
 		return nil, nil, define.ErrInvalidResource
@@ -265,7 +283,7 @@ func (h *hub) handleCreateMeeting(message define.Message, canal string, generic 
 	if err != nil {
 		return nil, nil, err
 	}
-	channel, msg := h.finalizeHandling(message, canal, generic)
+	channel, msg := finalizeHandling(message, canal, generic)
 	return channel, msg, nil
 }
 
@@ -274,7 +292,7 @@ func (h *hub) handleCreateMeeting(message define.Message, canal string, generic 
  * channel
  * error
  */
-func (h *hub) handleCreatePoll(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
+func handleCreatePoll(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
 
 	if canal != "0" {
 		return nil, nil, define.ErrInvalidResource
@@ -299,11 +317,10 @@ func (h *hub) handleCreatePoll(message define.Message, canal string, generic def
 	if err != nil {
 		return nil, nil, err
 	}
-	channel, msg := h.finalizeHandling(message, canal, generic)
+	channel, msg := finalizeHandling(message, canal, generic)
 	return channel, msg, nil
 }
-func (h *hub) handleMessage(msg []byte, userId int) error {
-
+func handleMessage(msg []byte, userId int) error {
 	return nil
 }
 
@@ -313,8 +330,8 @@ func (h *hub) handleMessage(msg []byte, userId int) error {
  * message
  * channel
  */
-func (h *hub) handleUpdateProperties(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
-	channel, msg := h.finalizeHandling(message, canal, generic)
+func handleUpdateProperties(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
+	channel, msg := finalizeHandling(message, canal, generic)
 	return channel, msg, db.UpdateMessage(message, canal)
 }
 
@@ -323,7 +340,7 @@ func (h *hub) handleUpdateProperties(message define.Message, canal string, gener
  * channel
  * error
  */
-func (h *hub) handleWitnessMessage(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
+func handleWitnessMessage(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
 	//TODO verify signature correctness
 	// decrypt msg and compare with hash of "local" data
 
@@ -360,11 +377,11 @@ func (h *hub) handleWitnessMessage(message define.Message, canal string, generic
 	}
 
 	//broadcast received message
-	channel, msg := h.finalizeHandling(message, canal, generic)
+	channel, msg := finalizeHandling(message, canal, generic)
 	return channel, msg, nil
 }
 
-func (h *hub) handleCatchup(generic define.Generic) ([]byte, error) {
+func handleCatchup(generic define.Generic) ([]byte, error) {
 	// TODO maybe pass userId as an arg in order to check access rights later on?
 	params, err := define.AnalyseParamsLight(generic.Params)
 	if err != nil {
@@ -379,8 +396,6 @@ func (h *hub) handleCatchup(generic define.Generic) ([]byte, error) {
  * message
  * channel
  */
-func (h *hub) finalizeHandling(message define.Message, canal string, generic define.Generic) ([]byte, []byte) {
-	h.message = define.CreateBroadcastMessage(generic)
-	h.channel = []byte(canal)
+func finalizeHandling(message define.Message, canal string, generic define.Generic) ([]byte, []byte) {
 	return define.CreateBroadcastMessage(generic), []byte(canal)
 }
