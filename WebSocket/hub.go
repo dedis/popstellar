@@ -3,7 +3,6 @@ package WebSocket
 import (
 	"bytes"
 	"fmt"
-	"github.com/boltdb/bolt"
 	"log"
 	"student20_pop/actors"
 	"student20_pop/db"
@@ -48,47 +47,28 @@ type hub struct {
 	// Registered connections.
 	connections map[*connection]struct{}
 
-	// 1st message to send to the channel
-	message []byte
-	channel []byte
-
-	// 2nd message to send to the channel
-	message2 []byte
-	channel2 []byte
-
 	//Response for the sender
-	idOfSender       int
-	responseToSender []byte
-
-	//msg received from the webskt
+	idOfSender int
+	//msg received from the sender through the websocket
 	receivedMessage chan []byte
-
-	//OrgDatabase instance
-	db *bolt.DB
 
 	logMx sync.RWMutex
 	log   [][]byte
 
 	organizer *actors.Organizer
-	witness   *Witness
 
 	connIndex int
 }
 
 func NewHub() *hub {
+
 	h := &hub{
-		connectionsMx:    sync.RWMutex{},
-		receivedMessage:  make(chan []byte),
-		connections:      make(map[*connection]struct{}),
-		db:               nil,
-		connIndex:        0,
-		idOfSender:       -1,
-		responseToSender: nil,
-		message:          nil,
-		message2:         nil,
-		channel2:         nil,
-		organizer:        actors.NewOrganizer(),
-		witness:          NewWitness(),
+		connectionsMx:   sync.RWMutex{},
+		receivedMessage: make(chan []byte),
+		connections:     make(map[*connection]struct{}),
+		connIndex:       0,
+		idOfSender:      -1,
+		organizer:       actors.NewOrganizer(),
 	}
 	//publish subscribe go routine !
 
