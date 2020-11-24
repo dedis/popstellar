@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/boltdb/bolt"
 	"log"
+	"student20_pop/actors"
 	"student20_pop/db"
 	"student20_pop/define"
 	"sync"
@@ -68,7 +69,7 @@ type hub struct {
 	logMx sync.RWMutex
 	log   [][]byte
 
-	organizer *Organizer
+	organizer *actors.Organizer
 	witness   *Witness
 
 	connIndex int
@@ -86,7 +87,7 @@ func NewHub() *hub {
 		message:          nil,
 		message2:         nil,
 		channel2:         nil,
-		organizer:        NewOrganizer(),
+		organizer:        actors.NewOrganizer(),
 		witness:          NewWitness(),
 	}
 	//publish subscribe go routine !
@@ -95,17 +96,13 @@ func NewHub() *hub {
 		for {
 			//get msg from connection
 			msg := <-h.receivedMessage
-			h.message = nil
-			h.responseToSender = nil
+
 			//handle the message and generate the response
-			h.responseToSender = h.HandleWholeMessage(msg, h.idOfSender)
-			msgBroadcast := h.message
-			msgResponse := h.responseToSender
+			message, channel, response := h.organizer.HandleWholeMessage(msg, h.idOfSender)
 
 			h.connectionsMx.RLock()
-			h.publishOnChannel(msgBroadcast, h.channel)
-			h.sendResponse(msgResponse, h.idOfSender)
-
+			h.publishOnChannel(message, channel)
+			h.sendResponse(response, h.idOfSender)
 			h.connectionsMx.RUnlock()
 		}
 	}()
