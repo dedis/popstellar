@@ -4,9 +4,6 @@ import (
 	"github.com/boltdb/bolt"
 )
 
-const OrgDatabase = "orgDatabase.db"
-const WitDatabase = "witDatabase.db"
-
 func OpenDB(dbName string) (*bolt.DB, error) {
 	db, err := bolt.Open(dbName, 0600, nil)
 	if err != nil {
