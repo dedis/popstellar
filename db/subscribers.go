@@ -17,7 +17,7 @@ const bucketSubscribers = "sub"
  */
 func Subscribe(userId int, channelId []byte) error {
 
-	db, err := OpenDB(OrgDatabase)
+	db, err := OpenDB(define.SubscribeDB)
 	if err != nil {
 		return err
 	}
@@ -61,7 +61,7 @@ func Subscribe(userId int, channelId []byte) error {
 */
 func Unsubscribe(userId int, channelId []byte) error {
 
-	db, err := OpenDB(OrgDatabase)
+	db, err := OpenDB(define.SubscribeDB)
 	if err != nil {
 		return err
 	}
@@ -104,7 +104,7 @@ func Unsubscribe(userId int, channelId []byte) error {
 
 /*helper function to find a channel's subscribers */
 func GetSubscribers(channel []byte) ([]int, error) {
-	db, err := OpenDB(OrgDatabase)
+	db, err := OpenDB(define.SubscribeDB)
 	if err != nil {
 		return nil, err
 	}

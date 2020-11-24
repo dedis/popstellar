@@ -12,8 +12,8 @@ const bucketChannel = "channels"
  * Function to create a new Object (LAO,Event...) and store it in the DB
  * @returns : error
  */
-func writeChannel(obj interface{}, secure bool) error {
-	db, e := OpenDB(OrgDatabase)
+func writeChannel(obj interface{}, database string, secure bool) error {
+	db, e := OpenDB(database)
 	defer db.Close()
 	if e != nil {
 		return e
@@ -79,19 +79,19 @@ func writeChannel(obj interface{}, secure bool) error {
 	return err
 }
 
-/*writes a channel (LAO, meeting, rolecall, etc.) to the DB, returns an error if ID already is key in DB*/
-func CreateChannel(obj interface{}) error {
-	return writeChannel(obj, true)
+/*writes a channel (LAO, meeting, rollCall, etc.) to the DB, returns an error if ID already is key in DB*/
+func CreateChannel(obj interface{}, database string) error {
+	return writeChannel(obj, database, true)
 }
 
-/*writes a channel (LAO, meeting, rolecall, etc.) to the DB, only if ID already exists, otherwise return an error*/
-func UpdateChannel(obj interface{}) error {
-	return writeChannel(obj, false)
+/*writes a channel (LAO, meeting, rollCall, etc.) to the DB, only if ID already exists, otherwise return an error*/
+func UpdateChannel(obj interface{}, database string) error {
+	return writeChannel(obj, database, false)
 }
 
 /*returns channel data from a given ID */
-func GetChannelFromID(id []byte) []byte {
-	db, e := OpenDB(OrgDatabase)
+func GetChannel(id []byte, database string) []byte {
+	db, e := OpenDB(database)
 	defer db.Close()
 	if e != nil {
 		return nil
