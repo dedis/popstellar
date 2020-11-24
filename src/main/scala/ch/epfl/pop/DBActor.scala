@@ -8,8 +8,11 @@ import akka.actor.typed.{ActorRef, ActorSystem, Behavior}
 import akka.stream.scaladsl.{Sink, Source}
 import ch.epfl.pop.json.JsonMessages._
 import ch.epfl.pop.json._
+import spray.json._
+import ch.epfl.pop.json.JsonCommunicationProtocol.MessageContentFormat
 import org.iq80.leveldb.impl.Iq80DBFactory.factory
 import org.iq80.leveldb.{DB, Options}
+
 
 /**
  * The role of a DBActor is to serve write and read requests to the database.
@@ -51,12 +54,12 @@ object DBActor {
 
 
 
-        val message = params.message.get
+        val message: MessageContent = params.message.get
         val id = message.message_id
-        db.put(id.getBytes(),JsonMessageParser.serializeMessage(message).getBytes) //TODO: serialize message in Json
+        db.put(id.getBytes(), message.toJson.toString.getBytes)
 
         val propagate = PropagateMessageServer(params)
-        implicit val system = ctx.system
+        implicit val system: ActorSystem[Nothing] = ctx.system
 
         Source.single(propagate).runWith(pubEntry)
         replyTo ! AnswerResultIntMessageServer(id = rid)

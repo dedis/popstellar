@@ -181,8 +181,8 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
   implicit val messageParametersFormat: RootJsonFormat[MessageParameters] = jsonFormat2(MessageParameters)
 
-  implicit object JsonMessageAdminClientFormat extends RootJsonFormat[JsonMessageAdminClient] {
-    override def read(json: JsValue): JsonMessageAdminClient = {
+  implicit object JsonMessagePublishClientFormat extends RootJsonFormat[JsonMessagePublishClient] {
+    override def read(json: JsValue): JsonMessagePublishClient = {
       json.asJsObject.getFields("jsonrpc", "method", "params", "id") match {
         case Seq(JsString(version), method@JsString(_), params@JsObject(_), JsNumber(id)) =>
 
@@ -194,22 +194,22 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
               /* CreateLaoMessageClient, UpdateLaoMessageClient and BroadcastLaoMessageClient */
               case (Objects.Lao, action) => action match {
                 // CreateLaoMessageClient
-                case Actions.Create => CreateLaoMessageClient(version, method.convertTo[Methods], parsedParams, id.toInt)
+                case Actions.Create => CreateLaoMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
                 // UpdateLaoMessageClient
-                case Actions.UpdateProperties => UpdateLaoMessageClient(version, method.convertTo[Methods], parsedParams, id.toInt)
+                case Actions.UpdateProperties => UpdateLaoMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
                 // BroadcastLaoMessageClient
-                case Actions.State => BroadcastLaoMessageClient(version, method.convertTo[Methods], parsedParams, id.toInt)
+                case Actions.State => BroadcastLaoMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
               }
 
               /* WitnessMessageMessageClient */
-              case (Objects.Message, Actions.Witness) => WitnessMessageMessageClient(version, method.convertTo[Methods], parsedParams, id.toInt)
+              case (Objects.Message, Actions.Witness) => WitnessMessageMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
 
               /* CreateMeetingMessageClient and BroadcastMeetingMessageClient */
               case (Objects.Meeting, action) => action match {
                 // CreateMeetingMessageClient
-                case Actions.Create => CreateMeetingMessageClient(version, method.convertTo[Methods], parsedParams, id.toInt)
+                case Actions.Create => CreateMeetingMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
                 // BroadcastMeetingMessageClient
-                case Actions.State => BroadcastMeetingMessageClient(version, method.convertTo[Methods], parsedParams, id.toInt)
+                case Actions.State => BroadcastMeetingMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
               }
 
               /* parsing error : invalid object/action pair */
@@ -220,7 +220,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
             // Should never happen missing MessageContent in MessageParameters
             case _ =>
-              println("parsing error : missing MessageContent in MessageParameter for JsonMessageAdminClient. Returning null")
+              println("parsing error : missing MessageContent in MessageParameter for JsonMessagePublishClient. Returning null")
               null
           }
 
@@ -230,7 +230,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
     }
 
 
-    override def write(obj: JsonMessageAdminClient): JsValue =
+    override def write(obj: JsonMessagePublishClient): JsValue =
       JsObject(
         "jsonrpc" -> obj.jsonrpc.toJson,
         "method" -> obj.method.toJson,

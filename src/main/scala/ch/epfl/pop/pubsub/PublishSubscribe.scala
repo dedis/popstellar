@@ -11,7 +11,7 @@ import akka.util.Timeout
 import ch.epfl.pop.DBActor
 import ch.epfl.pop.DBActor.{DBMessage, Write}
 import ch.epfl.pop.json.JsonMessageParser.{parseMessage, serializeMessage}
-import ch.epfl.pop.json.JsonMessages.{JsonMessageAdminClient, _}
+import ch.epfl.pop.json.JsonMessages.{JsonMessagePublishClient, _}
 import ch.epfl.pop.json.{MessageErrorContent, MessageParameters}
 import ch.epfl.pop.pubsub.ChannelActor._
 
@@ -51,7 +51,7 @@ object PublishSubscribe {
           _ match {
             case _ : SubscribeMessageClient => Subscribe
             case _ : UnsubscribeMessageClient => Unsubscribe
-            case _ : JsonMessageAdminClient => Publish // TODO un JsonMessagePubSub client ne peut jamais être également un JsonMessageAdminClient :thinking:
+            case _ : JsonMessagePublishClient => Publish // TODO
             case _ : CatchupMessageClient => Catchup
           }
         }
@@ -104,7 +104,7 @@ object PublishSubscribe {
 
     m =>
       m match {
-        case CreateLaoMessageClient(_, _, params, id) =>
+        case CreateLaoMessageClient(params, id, _, _) =>
           val highLevelMessage = params.message.get.data
           val channel = "root/" + highLevelMessage.id
           val future = actor.ask(ref => CreateMessage(channel, ref))
@@ -115,7 +115,7 @@ object PublishSubscribe {
           else {
             pub(params, id)
           }
-        case req: JsonMessageAdminClient =>
+        case req: JsonMessagePublishClient =>
           pub(req.params, req.id)
       }
   }

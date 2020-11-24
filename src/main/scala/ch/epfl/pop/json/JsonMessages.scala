@@ -52,11 +52,11 @@ object JsonMessages {
   /* --------------------------------------------------------- */
 
   /** Parsed Administration Json message from the client */
-  sealed class JsonMessageAdminClient(
-                                       val jsonrpc: String = JSON_RPC_VERSION,
-                                       val method: Methods,
+  sealed class JsonMessagePublishClient(
                                        val params: MessageParameters,
-                                       val id: Int
+                                       val id: Int,
+                                       val method: Methods,
+                                       val jsonrpc: String = JSON_RPC_VERSION
                                      ) extends JsonMessage
 
 
@@ -64,51 +64,52 @@ object JsonMessages {
 
   /** Parsed client LAO creation query */
   final case class CreateLaoMessageClient(
-                                           override val jsonrpc: String = JSON_RPC_VERSION,
-                                           override val method: Methods,
                                            override val params: MessageParameters,
-                                           override val id: Int
-                                         ) extends JsonMessageAdminClient(jsonrpc, method, params, id)
+                                           override val id: Int,
+                                           override val method: Methods,
+                                           override val jsonrpc: String = JSON_RPC_VERSION
+                                         ) extends JsonMessagePublishClient(params, id, method, jsonrpc)
 
   /** Parsed client LAO update query */
   final case class UpdateLaoMessageClient(
-                                           override val jsonrpc: String = JSON_RPC_VERSION,
-                                           override val method: Methods,
                                            override val params: MessageParameters,
-                                           override val id: Int
-                                         ) extends JsonMessageAdminClient(jsonrpc, method, params, id)
+                                           override val id: Int,
+                                           override val method: Methods,
+                                           override val jsonrpc: String = JSON_RPC_VERSION
+                                         ) extends JsonMessagePublishClient(params, id, method, jsonrpc)
 
   /** Parsed client LAO state broadcast query */
   final case class BroadcastLaoMessageClient(
-                                              override val jsonrpc: String = JSON_RPC_VERSION,
-                                              override val method: Methods,
                                               override val params: MessageParameters,
-                                              override val id: Int
-                                            ) extends JsonMessageAdminClient(jsonrpc, method, params, id)
+                                              override val id: Int,
+                                              override val method: Methods,
+                                              override val jsonrpc: String = JSON_RPC_VERSION
+                                            ) extends JsonMessagePublishClient(params, id, method, jsonrpc)
 
   /** Parsed client message witness query */
   final case class WitnessMessageMessageClient(
-                                                override val jsonrpc: String = JSON_RPC_VERSION,
-                                                override val method: Methods,
                                                 override val params: MessageParameters,
-                                                override val id: Int
-                                              ) extends JsonMessageAdminClient(jsonrpc, method, params, id)
+                                                override val id: Int,
+                                                override val method: Methods,
+                                                override val jsonrpc: String = JSON_RPC_VERSION
+                                              ) extends JsonMessagePublishClient(params, id, method, jsonrpc)
 
   /** Parsed client meeting creation query */
   final case class CreateMeetingMessageClient(
-                                               override val jsonrpc: String = JSON_RPC_VERSION,
-                                               override val method: Methods,
                                                override val params: MessageParameters,
-                                               override val id: Int
-                                             ) extends JsonMessageAdminClient(jsonrpc, method, params, id)
+                                               override val id: Int,
+                                               override val method: Methods,
+                                               override val jsonrpc: String = JSON_RPC_VERSION
+                                             ) extends JsonMessagePublishClient(params, id, method, jsonrpc)
 
   /** Parsed client meeting state broadcast query */
   final case class BroadcastMeetingMessageClient(
-                                                  override val jsonrpc: String = JSON_RPC_VERSION,
-                                                  override val method: Methods,
                                                   override val params: MessageParameters,
-                                                  override val id: Int
-                                                ) extends JsonMessageAdminClient(jsonrpc, method, params, id)
+                                                  override val id: Int,
+                                                  override val method: Methods,
+                                                  override val jsonrpc: String = JSON_RPC_VERSION
+                                                ) extends JsonMessagePublishClient(params, id, method, jsonrpc)
+
 
 
   /* --------------------------------------------------------- */

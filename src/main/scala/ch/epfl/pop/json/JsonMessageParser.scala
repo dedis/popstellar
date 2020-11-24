@@ -41,7 +41,7 @@ object JsonMessageParser {
         case Methods.Catchup() => obj.convertTo[CatchupMessageClient]
 
         /* Publish on a channel + All Higher-level communication */
-        case Methods.Publish() => obj.convertTo[JsonMessageAdminClient]
+        case Methods.Publish() => obj.convertTo[JsonMessagePublishClient]
 
         /* parsing error : invalid method value */
         case _ => throw DeserializationException("invalid message : method value unrecognized")
@@ -65,13 +65,13 @@ object JsonMessageParser {
       case m: PropagateMessageServer => m.toJson.toString
     }
 
-    case _: JsonMessageAdminClient => message match {
-      case m: CreateLaoMessageClient => m.toJson(JsonMessageAdminClientFormat.write).toString
-      case m: UpdateLaoMessageClient => m.toJson(JsonMessageAdminClientFormat.write).toString
-      case m: BroadcastLaoMessageClient => m.toJson(JsonMessageAdminClientFormat.write).toString
-      case m: WitnessMessageMessageClient => m.toJson(JsonMessageAdminClientFormat.write).toString
-      case m: CreateMeetingMessageClient => m.toJson(JsonMessageAdminClientFormat.write).toString
-      case m: BroadcastMeetingMessageClient => m.toJson(JsonMessageAdminClientFormat.write).toString
+    case _: JsonMessagePublishClient => message match {
+      case m: CreateLaoMessageClient => m.toJson(JsonMessagePublishClientFormat.write).toString
+      case m: UpdateLaoMessageClient => m.toJson(JsonMessagePublishClientFormat.write).toString
+      case m: BroadcastLaoMessageClient => m.toJson(JsonMessagePublishClientFormat.write).toString
+      case m: WitnessMessageMessageClient => m.toJson(JsonMessagePublishClientFormat.write).toString
+      case m: CreateMeetingMessageClient => m.toJson(JsonMessagePublishClientFormat.write).toString
+      case m: BroadcastMeetingMessageClient => m.toJson(JsonMessagePublishClientFormat.write).toString
     }
 
     case _: JsonMessagePubSubClient => message match {
