@@ -49,7 +49,7 @@ object PublishSubscribe {
           _ match {
             case _ : SubscribeMessageClient => Subscribe
             case _ : UnsubscribeMessageClient => Unsubscribe
-            case _ : JsonMessageAdminClient => Publish
+            case _ : JsonMessageAdminClient => Publish // TODO un JsonMessagePubSub client ne peut jamais être également un JsonMessageAdminClient :thinking:
             case _ : CatchupMessageClient => Catchup
             //case CreateChannelClient(_, _) => Create
           }
@@ -62,7 +62,7 @@ object PublishSubscribe {
           message match {
             //case CreateChannelClient(message, contract) => CreateMessage(message, replyTo)
             //case SubscribeChannelClient(channel) => SubscribeMessage(channel, userSink, replyTo)
-            case SubscribeMessageClient(_, _, params, id) => SubscribeMessage(params.channel, userSink, id, replyTo)
+            case SubscribeMessageClient(params, id, _, _) => SubscribeMessage(params.channel, userSink, id, replyTo)
 
           }
       }
@@ -77,7 +77,7 @@ object PublishSubscribe {
 
       val unsub = builder.add(unsubHandler())
 
-      val unsubMap = Flow[JsonMessage].map{case UnsubscribeMessageClient(_, _, params, id) => UnsubRequest(params.channel, id)}
+      val unsubMap = Flow[JsonMessage].map{case UnsubscribeMessageClient(params, id, _, _) => UnsubRequest(params.channel, id)}
 
       val unsubMap2 = Flow[ChannelActorAnswer].map{case a: AnswerSubscribe => a}
 
@@ -95,7 +95,7 @@ object PublishSubscribe {
       val catchupDB = ActorFlow.ask[JsonMessagePubSubClient, DBMessage, JsonMessageAnswerServer](dbActor) {
         (message, replyTo) =>
           message match {
-            case CatchupMessageClient(_, _, params, id) =>
+            case CatchupMessageClient(params, id, _, _) =>
               DBActor.Catchup(params.channel, id, replyTo)
           }
       }

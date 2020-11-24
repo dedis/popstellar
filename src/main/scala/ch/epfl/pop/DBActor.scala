@@ -54,7 +54,7 @@ object DBActor {
 
         val method = Methods.Message
         val params = MessageParameters(channel, Some(message))
-        val propagate = PropagateMessageClient(method = method, params = params)
+        val propagate = PropagateMessageClient(params)
         implicit val system = ctx.system
         Source.single(propagate).runWith(pubEntry)
         replyTo ! AnswerResultIntMessageServer(id = rid)

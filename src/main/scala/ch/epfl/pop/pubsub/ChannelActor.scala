@@ -26,7 +26,7 @@ object ChannelActor {
   final case class CreateMessage(channel: String, replyTo: ActorRef[ChannelActorAnswer]) extends ChannelMessage
 
   /**
-   * Request to subsccribe to a channel
+   * Request to subscribe to a channel
    * @param channel the channel to subscribe
    * @param out the entry of the client stream
    * @param id the id of the request

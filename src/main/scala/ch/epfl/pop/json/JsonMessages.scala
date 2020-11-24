@@ -117,21 +117,32 @@ object JsonMessages {
 
   /** Parsed client subscribe to a channel query */
   final case class SubscribeMessageClient(
-                                           jsonrpc: String = JSON_RPC_VERSION, method: Methods, params: MessageParameters, id: Int
+                                           params: MessageParameters,
+                                           id: Int,
+                                           method: Methods = Methods.Subscribe,
+                                           jsonrpc: String = JSON_RPC_VERSION
                                          ) extends JsonMessagePubSubClient
 
   /** Parsed client unsubscribe from a channel query */
   final case class UnsubscribeMessageClient(
-                                             jsonrpc: String = JSON_RPC_VERSION, method: Methods, params: MessageParameters, id: Int
+                                             params: MessageParameters,
+                                             id: Int,
+                                             method: Methods = Methods.Unsubscribe,
+                                             jsonrpc: String = JSON_RPC_VERSION
                                            ) extends JsonMessagePubSubClient
 
   /** Parsed client propagate a message on a channel query */
   final case class PropagateMessageClient(
-                                           jsonrpc: String = JSON_RPC_VERSION, method: Methods, params: MessageParameters
+                                           params: MessageParameters,
+                                           method: Methods = Methods.Message,
+                                           jsonrpc: String = JSON_RPC_VERSION
                                          ) extends JsonMessagePubSubClient
 
   /** Parsed client catchup on past messages on a channel query */
   final case class CatchupMessageClient(
-                                         jsonrpc: String = JSON_RPC_VERSION, method: Methods, params: MessageParameters, id: Int
+                                         params: MessageParameters,
+                                         id: Int,
+                                         method: Methods = Methods.Catchup,
+                                         jsonrpc: String = JSON_RPC_VERSION
                                        ) extends JsonMessagePubSubClient
 }
