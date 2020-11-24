@@ -4,7 +4,6 @@ import ch.epfl.pop.json.Actions.Actions
 import ch.epfl.pop.json.Objects.Objects
 
 
-
 object JsonUtils {
 
   /** JSON-RPC protocol version */

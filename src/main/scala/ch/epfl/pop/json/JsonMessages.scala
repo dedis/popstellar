@@ -4,7 +4,6 @@ import ch.epfl.pop.json.Methods.Methods
 import ch.epfl.pop.json.JsonUtils.JSON_RPC_VERSION
 
 
-
 /**
  * Collection of parsed Json messages
  */
@@ -40,6 +39,13 @@ object JsonMessages {
   final case class AnswerErrorMessageServer(
                                              id: Int, error: MessageErrorContent, jsonrpc: String = JSON_RPC_VERSION
                                            ) extends JsonMessageAnswerServer
+
+  /** Parsed client propagate a message on a channel query */
+  final case class PropagateMessageServer(
+                                           params: MessageParameters,
+                                           method: Methods = Methods.Message,
+                                           jsonrpc: String = JSON_RPC_VERSION
+                                         ) extends JsonMessageAnswerServer
 
   /* --------------------------------------------------------- */
   /* ------------ ADMINISTRATION MESSAGES CLIENT ------------- */
@@ -130,13 +136,6 @@ object JsonMessages {
                                              method: Methods = Methods.Unsubscribe,
                                              jsonrpc: String = JSON_RPC_VERSION
                                            ) extends JsonMessagePubSubClient
-
-  /** Parsed client propagate a message on a channel query */
-  final case class PropagateMessageClient(
-                                           params: MessageParameters,
-                                           method: Methods = Methods.Message,
-                                           jsonrpc: String = JSON_RPC_VERSION
-                                         ) extends JsonMessagePubSubClient
 
   /** Parsed client catchup on past messages on a channel query */
   final case class CatchupMessageClient(

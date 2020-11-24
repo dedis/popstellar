@@ -11,7 +11,6 @@ import org.scalatest.FunSuite
 import spray.json.DeserializationException
 
 
-
 class JsonMessageParserTest extends FunSuite {
 
   val ERROR_MESSAGE: String = "error_for_error_code_above"
@@ -287,7 +286,7 @@ class JsonMessageParserTest extends FunSuite {
     assert(spdp.isInstanceOf[UnsubscribeMessageClient])
   }
 
-  test("JsonMessageParser.parseMessage|encodeMessage:PropagateMessageClient") {
+  test("JsonMessageParser.parseMessage|encodeMessage:PropagateMessageServer") {
     val source: String = s"""{
                            |    "jsonrpc": "2.0",
                            |    "method": "message",
@@ -304,8 +303,8 @@ class JsonMessageParserTest extends FunSuite {
     val spdp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(spd)
 
     assert(sp === spdp)
-    assert(sp.isInstanceOf[PropagateMessageClient])
-    assert(spdp.isInstanceOf[PropagateMessageClient])
+    assert(sp.isInstanceOf[PropagateMessageServer])
+    assert(spdp.isInstanceOf[PropagateMessageServer])
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:CatchupMessageClient") {

@@ -5,7 +5,6 @@ import ch.epfl.pop.json.JsonMessages._
 import spray.json._
 
 
-
 /**
  * Custom Json Parser for our Json-RPC protocol
  */
@@ -36,7 +35,7 @@ object JsonMessageParser {
         case Methods.Unsubscribe() => obj.convertTo[UnsubscribeMessageClient]
 
         /* Propagating message on a channel */
-        case Methods.Message() => obj.convertTo[PropagateMessageClient]
+        case Methods.Message() => obj.convertTo[PropagateMessageServer]
 
         /* Catching up on past message on a channel */
         case Methods.Catchup() => obj.convertTo[CatchupMessageClient]
@@ -63,6 +62,7 @@ object JsonMessageParser {
       case m: AnswerResultIntMessageServer => m.toJson.toString
       case m: AnswerResultArrayMessageServer => m.toJson.toString
       case m: AnswerErrorMessageServer => m.toJson.toString
+      case m: PropagateMessageServer => m.toJson.toString
     }
 
     case _: JsonMessageAdminClient => message match {
@@ -77,7 +77,6 @@ object JsonMessageParser {
     case _: JsonMessagePubSubClient => message match {
       case m: SubscribeMessageClient => m.toJson.toString
       case m: UnsubscribeMessageClient => m.toJson.toString
-      case m: PropagateMessageClient => m.toJson.toString
       case m: CatchupMessageClient => m.toJson.toString
     }
 

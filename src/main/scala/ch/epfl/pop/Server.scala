@@ -9,10 +9,11 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
 import akka.stream.scaladsl.{BroadcastHub, Keep, MergeHub}
 import akka.util.Timeout
-import ch.epfl.pop.json.JsonMessages.PropagateMessageClient
+import ch.epfl.pop.json.JsonMessages.PropagateMessageServer
 import ch.epfl.pop.pubsub.{ChannelActor, PublishSubscribe}
 import org.iq80.leveldb.Options
 
+import scala.concurrent.ExecutionContextExecutor
 import scala.io.StdIn
 import scala.util.{Failure, Success}
 
@@ -24,7 +25,7 @@ object Server {
   def main(args: Array[String]): Unit = {
 
     val root = Behaviors.setup[Nothing] { context =>
-      implicit val system = context.system
+      implicit val system: ActorSystem[Nothing] = context.system
 
       //Route for HTTP request
       val route =
@@ -35,8 +36,8 @@ object Server {
         }
 
       //Stream that send all published messages to all clients
-      val (publishEntry, subscribeExit) = MergeHub.source[PropagateMessageClient].toMat(BroadcastHub.sink)(Keep.both).run()
-      implicit val timeout = Timeout(1, TimeUnit.SECONDS)
+      val (publishEntry, subscribeExit) = MergeHub.source[PropagateMessageServer].toMat(BroadcastHub.sink)(Keep.both).run()
+      implicit val timeout: Timeout = Timeout(1, TimeUnit.SECONDS)
       val actor = context.spawn(ChannelActor(subscribeExit), "actor")
       //Create database
       val options: Options = new Options()
@@ -48,7 +49,7 @@ object Server {
         handleWebSocketMessages(PublishSubscribe.messageFlow(actor, dbActor))
       }
 
-      implicit val executionContext = system.executionContext
+      implicit val executionContext: ExecutionContextExecutor = system.executionContext
       val bindingFuture = Http().newServerAt("localhost", 8080).bind(route ~ publishSubscribeRoute)
       bindingFuture.onComplete {
         case Success(value) => println("ch.epfl.pop.Server online at http://localhost:8080/")

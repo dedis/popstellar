@@ -16,6 +16,7 @@ import ch.epfl.pop.pubsub.ChannelActor._
 
 import scala.util.{Failure, Success, Try}
 
+
 object PublishSubscribe {
   /**
    * Create a flow that handles JSON messages of a publish-subscribe system.
@@ -28,7 +29,7 @@ object PublishSubscribe {
               (implicit timeout: Timeout,
                system: ActorSystem[Nothing]): Flow[JsonMessagePubSubClient, JsonMessageAnswerServer, NotUsed] = {
 
-    val (userSink, userSource) = MergeHub.source[PropagateMessageClient].toMat(BroadcastHub.sink)(Keep.both).run()
+    val (userSink, userSource) = MergeHub.source[PropagateMessageServer].toMat(BroadcastHub.sink)(Keep.both).run()
 
     Flow.fromGraph(GraphDSL.create() { implicit builder =>
       import GraphDSL.Implicits._

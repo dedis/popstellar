@@ -254,6 +254,6 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
   implicit val subscribeMessageClientFormat: RootJsonFormat[SubscribeMessageClient] = jsonFormat4(SubscribeMessageClient)
   implicit val unsubscribeMessageClientFormat: RootJsonFormat[UnsubscribeMessageClient] = jsonFormat4(UnsubscribeMessageClient)
-  implicit val propagateMessageClientFormat: RootJsonFormat[PropagateMessageClient] = jsonFormat3(PropagateMessageClient)
+  implicit val propagateMessageClientFormat: RootJsonFormat[PropagateMessageServer] = jsonFormat3(PropagateMessageServer)
   implicit val catchupMessageClientFormat: RootJsonFormat[CatchupMessageClient] = jsonFormat4(CatchupMessageClient)
 }

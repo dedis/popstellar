@@ -1,16 +1,15 @@
 package ch.epfl.pop
 
 import java.io.File
-import java.nio.charset.StandardCharsets
 
 import akka.NotUsed
 import akka.actor.typed.scaladsl.Behaviors
-import akka.actor.typed.{ActorRef, Behavior}
+import akka.actor.typed.{ActorRef, ActorSystem, Behavior}
 import akka.stream.scaladsl.{Sink, Source}
-import ch.epfl.pop.json.JsonMessages.{AnswerErrorMessageServer, AnswerResultArrayMessageServer, AnswerResultIntMessageServer, JsonMessageAnswerServer, PropagateMessageClient}
-import ch.epfl.pop.json.{ChannelMessage, ChannelMessages, MessageContent, MessageErrorContent, MessageParameters, Methods}
-import org.iq80.leveldb.{DB, Options}
+import ch.epfl.pop.json.JsonMessages._
+import ch.epfl.pop.json._
 import org.iq80.leveldb.impl.Iq80DBFactory.factory
+import org.iq80.leveldb.{DB, Options}
 
 /**
  * The role of a DBActor is to serve write and read requests to the database.
@@ -36,9 +35,9 @@ object DBActor {
    * @param path the path of the database
    * @return an actor handling the database
    */
-  def apply(path: String, pubEntry: Sink[PropagateMessageClient, NotUsed]): Behavior[DBMessage] = database(path, Map.empty, pubEntry)
+  def apply(path: String, pubEntry: Sink[PropagateMessageServer, NotUsed]): Behavior[DBMessage] = database(path, Map.empty, pubEntry)
 
-  private def database(path : String, channelsDB: Map[String, DB], pubEntry: Sink[PropagateMessageClient, NotUsed]): Behavior[DBMessage] = Behaviors.receive { (ctx, message) =>
+  private def database(path : String, channelsDB: Map[String, DB], pubEntry: Sink[PropagateMessageServer, NotUsed]): Behavior[DBMessage] = Behaviors.receive { (ctx, message) =>
      message match {
 
       case Write(channel, id, message, rid, replyTo) =>
@@ -54,8 +53,8 @@ object DBActor {
 
         val method = Methods.Message
         val params = MessageParameters(channel, Some(message))
-        val propagate = PropagateMessageClient(params)
-        implicit val system = ctx.system
+        val propagate = PropagateMessageServer(params)
+        implicit val system: ActorSystem[Nothing] = ctx.system
         Source.single(propagate).runWith(pubEntry)
         replyTo ! AnswerResultIntMessageServer(id = rid)
 

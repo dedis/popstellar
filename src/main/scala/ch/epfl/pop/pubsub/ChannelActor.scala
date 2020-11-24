@@ -5,7 +5,7 @@ import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.{ActorRef, ActorSystem, Behavior}
 import akka.stream.scaladsl.{Keep, Sink, Source}
 import akka.stream.{KillSwitches, UniqueKillSwitch}
-import ch.epfl.pop.json.JsonMessages.{AnswerErrorMessageServer, AnswerResultIntMessageServer, JsonMessageAnswerServer, PropagateMessageClient}
+import ch.epfl.pop.json.JsonMessages.{AnswerErrorMessageServer, AnswerResultIntMessageServer, JsonMessageAnswerServer, PropagateMessageServer}
 import ch.epfl.pop.json.MessageErrorContent
 
 /**
@@ -32,7 +32,7 @@ object ChannelActor {
    * @param id the id of the request
    * @param replyTo the actor to reply to once the subscription is done
    */
-  final case class SubscribeMessage(channel: String, out: Sink[PropagateMessageClient, NotUsed], id: Int, replyTo: ActorRef[ChannelActorAnswer])
+  final case class SubscribeMessage(channel: String, out: Sink[PropagateMessageServer, NotUsed], id: Int, replyTo: ActorRef[ChannelActorAnswer])
     extends ChannelMessage
 
 
@@ -50,10 +50,10 @@ object ChannelActor {
    * @param publishExit a source emitting all published messages
    * @return an actor handling channel creation and subscription
    */
-  def apply(publishExit: Source[PropagateMessageClient, NotUsed]): Behavior[ChannelMessage] = channelHandler(Map.empty, publishExit)
+  def apply(publishExit: Source[PropagateMessageServer, NotUsed]): Behavior[ChannelMessage] = channelHandler(Map.empty, publishExit)
 
-  private def channelHandler(channelsOutputs: Map[String, Source[PropagateMessageClient, NotUsed]],
-                             publishExit: Source[PropagateMessageClient, NotUsed]): Behavior[ChannelMessage] = {
+  private def channelHandler(channelsOutputs: Map[String, Source[PropagateMessageServer, NotUsed]],
+                             publishExit: Source[PropagateMessageServer, NotUsed]): Behavior[ChannelMessage] = {
     Behaviors.receive { (ctx, message) =>
       implicit val system: ActorSystem[Nothing] = ctx.system
       message match {
