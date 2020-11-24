@@ -1,9 +1,0 @@
-{
-	"$schema": "http://json-schema.org/draft/2019-09/schema#",
-	"$id": "https://github.com/dedis/student20_pop/tree/proto-specs/query/method/message/utility/hexString.json",
-	"description": "Match string in hexadecimal",
-
-	"type": "string",
-	"pattern": "^0x[a-fA-F0-9]+$",
-	"$comment": "Note: always starts with \"0x\""
-}
