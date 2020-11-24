@@ -20,13 +20,11 @@ object DBActor {
 
   /**
    * Request to write a message in the database
-   * @param channel the channel the message was published to
-   * @param id the id of the message
    * @param message the message to write in the database
    * @param rid the id of the client request
    * @param replyTo the actor to respond to
    */
-  final case class Write(channel: String, id: String, message: MessageContent, rid : Int, replyTo: ActorRef[JsonMessageAnswerServer]) extends DBMessage
+  final case class Write(message: MessageParameters, rid : Int, replyTo: ActorRef[JsonMessageAnswerServer]) extends DBMessage
 
   final case class Catchup(channel: String, rid: Int, replyTo: ActorRef[JsonMessageAnswerServer]) extends DBMessage
 
@@ -40,7 +38,8 @@ object DBActor {
   private def database(path : String, channelsDB: Map[String, DB], pubEntry: Sink[PropagateMessageServer, NotUsed]): Behavior[DBMessage] = Behaviors.receive { (ctx, message) =>
      message match {
 
-      case Write(channel, id, message, rid, replyTo) =>
+      case Write(params, rid, replyTo) =>
+        val channel = params.channel
         val (newChannelsDB, db) = channelsDB.get(channel) match {
           case Some(db) => (channelsDB, db)
           case None =>
@@ -49,12 +48,16 @@ object DBActor {
             val db = factory.open(new File(path + "/" + channel), options)
             (channelsDB + (channel -> db), db)
         }
-        //db.put(id.getBytes(), message.getBytes()) //TODO: serialize message in Json
 
-        val method = Methods.Message
-        val params = MessageParameters(channel, Some(message))
+
+
+        val message = params.message.get
+        val id = message.message_id
+        db.put(id.getBytes(),JsonMessageParser.serializeMessage(message).getBytes) //TODO: serialize message in Json
+
         val propagate = PropagateMessageServer(params)
-        implicit val system: ActorSystem[Nothing] = ctx.system
+        implicit val system = ctx.system
+
         Source.single(propagate).runWith(pubEntry)
         replyTo ! AnswerResultIntMessageServer(id = rid)
 

@@ -3,7 +3,7 @@ package ch.epfl.pop.pubsub
 import akka.NotUsed
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.{ActorRef, ActorSystem, Behavior}
-import akka.stream.scaladsl.{Keep, Sink, Source}
+import akka.stream.scaladsl.{BroadcastHub, Keep, MergeHub, Sink, Source}
 import akka.stream.{KillSwitches, UniqueKillSwitch}
 import ch.epfl.pop.json.JsonMessages.{AnswerErrorMessageServer, AnswerResultIntMessageServer, JsonMessageAnswerServer, PropagateMessageServer}
 import ch.epfl.pop.json.MessageErrorContent
@@ -23,7 +23,7 @@ object ChannelActor {
    * @param channel the channel name
    * @param replyTo the actor to reply to once the creation is done
    */
-  final case class CreateMessage(channel: String, replyTo: ActorRef[ChannelActorAnswer]) extends ChannelMessage
+  final case class CreateMessage(channel: String, replyTo: ActorRef[Boolean]) extends ChannelMessage
 
   /**
    * Request to subscribe to a channel
@@ -39,7 +39,7 @@ object ChannelActor {
 
   sealed trait ChannelActorAnswer
 
-  final case class AnswerCreate(jsonMessage: JsonMessageAnswerServer) extends ChannelActorAnswer
+  //final case class AnswerCreate(jsonMessage: JsonMessageAnswerServer) extends ChannelActorAnswer
 
   final case class AnswerSubscribe(jsonMessage: JsonMessageAnswerServer, channel : String, killSwitch: Option[UniqueKillSwitch]) extends ChannelActorAnswer with UnsubMessage
 
@@ -50,7 +50,16 @@ object ChannelActor {
    * @param publishExit a source emitting all published messages
    * @return an actor handling channel creation and subscription
    */
-  def apply(publishExit: Source[PropagateMessageServer, NotUsed]): Behavior[ChannelMessage] = channelHandler(Map.empty, publishExit)
+
+  def apply(publishExit: Source[PropagateMessageServer, NotUsed])(implicit system :ActorSystem[Nothing]): Behavior[ChannelMessage] = {
+    //Setup root channel
+    val root = "root"
+    val (entry, exit) = MergeHub.source[PropagateMessageServer].toMat(BroadcastHub.sink)(Keep.both).run()
+    publishExit.filter(_.params.channel == root).runWith(entry)
+
+    channelHandler(Map(root -> exit), publishExit)
+  }
+
 
   private def channelHandler(channelsOutputs: Map[String, Source[PropagateMessageServer, NotUsed]],
                              publishExit: Source[PropagateMessageServer, NotUsed]): Behavior[ChannelMessage] = {
@@ -58,19 +67,20 @@ object ChannelActor {
       implicit val system: ActorSystem[Nothing] = ctx.system
       message match {
 
-          //TODO: update this part when we will create channels
-        /*case CreateMessage(channel, replyTo) =>
+        case CreateMessage(channel,  replyTo) =>
           if (!channelsOutputs.contains(channel)) {
-            val (entry, exit) = MergeHub.source[PropagateMessageClient].toMat(BroadcastHub.sink)(Keep.both).run()
+            val (entry, exit) = MergeHub.source[PropagateMessageServer].toMat(BroadcastHub.sink)(Keep.both).run()
 
             publishExit.filter(_.params.channel == channel).runWith(entry)
-            replyTo ! AnswerCreate(AnswerMessageServer(true, None))
+            replyTo ! true
             channelHandler(channelsOutputs + (channel -> exit), publishExit)
           }
           else {
-            replyTo ! AnswerCreate(AnswerMessageServer(false, Some("The channel already exist")))
-            Behaviors.same
-          }*/
+
+            replyTo ! false
+          }
+          Behaviors.same
+
 
         case SubscribeMessage(channel, out, id, replyTo) =>
           if (channelsOutputs.contains(channel)) {

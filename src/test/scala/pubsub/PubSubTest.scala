@@ -63,7 +63,7 @@ class PubSubTest extends FunSuite {
   private def setup(databasePath : String)(implicit system: ActorSystem[SpawnProtocol.Command], timeout: Timeout) = {
     implicit val ec = system.executionContext
 
-    val (entry, exit) = MergeHub.source[NotifyChannelServer].toMat(BroadcastHub.sink)(Keep.both).run()
+    val (entry, exit) = MergeHub.source[PropagateMessageClient].toMat(BroadcastHub.sink)(Keep.both).run()
     val futureActor: Future[ActorRef[ChannelActor.ChannelMessage]] = system.ask(SpawnProtocol.Spawn(pop.pubsub.ChannelActor(exit),
       "actor", Props.empty, _))
     val actor = Await.result(futureActor, 1.seconds)
