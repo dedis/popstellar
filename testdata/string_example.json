@@ -5,7 +5,7 @@
   "params": {
     "channel": "0",
     "message": {
-      "data": ewogICAgICAgICJvYmplY3QiOiAibGFvIiwKICAgICAgICAiYWN0aW9uIjogImNyZWF0ZSIsCiAgICAgICAgImlkIjogIjB4MTIzYSIsCiAgICAgICAgIm5hbWUiOiAiTXkgTEFPIiwKICAgICAgICAiY3JlYXRpb24iOiAxMjMsCiAgICAgICAgImxhc3RfbW9kaWZpZWQiOiAxMjMsCiAgICAgICAgIm9yZ2FuaXplciI6ICIweDEyM2EiLAogICAgICAgICJ3aXRuZXNzZXMiOiBbXQogICAgICB9,
+      "data": "ew0KIm9iamVjdCI6ICJsYW8iLA0KImFjdGlvbiI6ICJjcmVhdGUiLA0KImlkIjogIjB4MTIzYSIsDQoibmFtZSI6ICJNeSBMQU8iLA0KImNyZWF0aW9uIjogMTIzLA0KImxhc3RfbW9kaWZpZWQiOiAxMjMsDQoib3JnYW5pemVyIjogIjB4MTIzYSIsDQoid2l0bmVzc2VzIjogW10NCn0=",
       "sender": "0x123a",
       "signature": "0x123a",
       "message_id": "0x123a",

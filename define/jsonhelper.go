@@ -1,6 +1,7 @@
 package define
 
 import (
+	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -34,7 +35,7 @@ type ParamsFull struct {
 }
 
 type Message struct {
-	Data              json.RawMessage //in base 64
+	Data              string //in base 64
 	Sender            string
 	Signature         string
 	MessageID         string
@@ -158,10 +159,11 @@ func AnalyseMessage(message json.RawMessage) (Message, error) {
 	return m, err
 }
 //obsolete
-func AnalyseData(data json.RawMessage) (Data, error) {
-	// TODO decode from Base64
+func AnalyseData(data string) (Data, error) {
 	m := Data{}
-	err := json.Unmarshal(data, &m)
+	base64Text := make([]byte, b64.StdEncoding.DecodedLen(len(data)))
+	l, _ := b64.StdEncoding.Decode(base64Text, []byte(data))
+	err := json.Unmarshal(base64Text[:l], &data)
 	return m, err
 }
 
