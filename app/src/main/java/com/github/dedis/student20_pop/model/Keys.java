@@ -1,10 +1,9 @@
 package com.github.dedis.student20_pop.model;
 
 import java.security.GeneralSecurityException;
+import java.util.Base64;
 import java.util.Objects;
 import com.google.crypto.tink.subtle.Ed25519Sign;
-import com.google.crypto.tink.subtle.Hex;
-
 
 /**
  * Class modeling a set of Public and Private Keys
@@ -22,8 +21,8 @@ public final class Keys {
         //("While they're generally safe to use, they're not meant for public consumption and can be modified in any way, or even removed, at any time.")
         try {
             Ed25519Sign.KeyPair keyPair = Ed25519Sign.KeyPair.newKeyPair();
-            this.publicKey = Hex.encode(keyPair.getPublicKey());
-            this.privateKey = Hex.encode(keyPair.getPrivateKey()); //use Hex.decode to get byte[]
+            this.publicKey = Base64.getEncoder().encodeToString(keyPair.getPublicKey());
+            this.privateKey = Base64.getEncoder().encodeToString(keyPair.getPrivateKey()); //use Base64.getDecoder().decode to get byte[]
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
         }
