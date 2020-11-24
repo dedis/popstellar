@@ -8,6 +8,8 @@ For readability (human) and proper encoding for JSON, these data types must be t
 and/or displayed in the given format but may be stored in bytes.
 */
 
+const SubscribeDB = "sub.db"
+
 type LAO struct {
 	//ID hash : Name || Creation Date/Time Unix Timestamp
 	ID string
@@ -32,8 +34,8 @@ type Meeting struct {
 	Creation     int64 //  Unix timestamp (uint64)
 	LastModified int64 //timestamp
 	Location     string
-	Start        int64 //  Unix timestamp (uint64)
-	End          int64 //timestamp
+	Start        int64  //  Unix timestamp (uint64)
+	End          int64  //timestamp
 	Extra        string //TODO if this is json no need to stick to []byte
 }
 
@@ -46,8 +48,8 @@ type RollCall struct {
 	Creation     int64 //  Unix timestamp (uint64)
 	LastModified int64 //timestamp
 	Location     string
-	Start        int64 //  Unix timestamp (uint64)
-	End          int64 //timestamp
+	Start        int64  //  Unix timestamp (uint64)
+	End          int64  //timestamp
 	Extra        string //TODO if this is json no need to stick to []byte
 }
 
@@ -60,8 +62,8 @@ type Poll struct {
 	Creation     int64 //  Unix timestamp (uint64)
 	LastModified int64 //timestamp
 	Location     string
-	Start        int64 //  Unix timestamp (uint64)
-	End          int64 //timestamp
+	Start        int64  //  Unix timestamp (uint64)
+	End          int64  //timestamp
 	Extra        string //TODO if this is json no need to stick to []byte
 }
 

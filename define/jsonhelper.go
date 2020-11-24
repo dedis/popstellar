@@ -158,6 +158,7 @@ func AnalyseMessage(message json.RawMessage) (Message, error) {
 	err := json.Unmarshal(message, &m)
 	return m, err
 }
+
 //obsolete
 func AnalyseData(data string) (Data, error) {
 	m := Data{}
@@ -207,13 +208,13 @@ func DataToMessageEventCreate(data []byte) (MessageEventCreate, error) {
 }*/
 
 func CreateBroadcastMessage(generic Generic) []byte {
-	broadc := Generic{
+	broadcast := Generic{
 		Jsonrpc: generic.Jsonrpc,
 		Method:  "message",
 		Params:  generic.Params,
 		Id:      generic.Id,
 	}
-	b, err := json.Marshal(broadc)
+	b, err := json.Marshal(broadcast)
 
 	if err != nil {
 		log.Fatal("couldn't Marshal the message to broadcast")
