@@ -195,6 +195,8 @@ func (w *Witness) handleUpdateProperties(message define.Message, channel string,
 		return nil, nil, err
 	}
 
+	//toSign := message.Sender + string(message.Data)
+
 	//TODO create a response signing the message
 
 	return nil, nil, err
