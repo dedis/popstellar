@@ -4,8 +4,7 @@ import (
 	"github.com/boltdb/bolt"
 )
 
-// TODO refactor database to OrgDatabase, and adapt adequately the function
-const Database = "orgDatabase.db"
+const OrgDatabase = "orgDatabase.db"
 const WitDatabase = "witDatabase.db"
 
 func OpenDB(dbName string) (*bolt.DB, error) {

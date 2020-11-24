@@ -6,13 +6,12 @@ import (
 	"student20_pop/define"
 )
 
-
 /**
 * Writes a message to the database. If safe is true and a message with this ID already exists, returns an error
  */
- func writeMessage(message define.Message, channel string, creating bool) error {
+func writeMessage(message define.Message, channel string, creating bool) error {
 
-	db, e := OpenDB(Database)
+	db, e := OpenDB(OrgDatabase)
 	defer db.Close()
 	if e != nil {
 		return e
@@ -41,22 +40,19 @@ import (
 	return err
 }
 
-
 /*writes a message to the DB, returns an error if ID already is key in DB*/
 func CreateMessage(message define.Message, channel string) error {
 	return writeMessage(message, channel, true)
 }
-
 
 /*writes a message to the DB, regardless of ID already exists*/
 func UpdateMessage(message define.Message, channel string) error {
 	return writeMessage(message, channel, false)
 }
 
-
 /*returns the content of a message sent on a channel. Nil if channel or DB does not exist*/
 func GetMessage(channel []byte, message []byte) []byte {
-	database, err := OpenDB(Database)
+	database, err := OpenDB(OrgDatabase)
 	defer database.Close()
 	if err != nil {
 		return nil
@@ -79,5 +75,3 @@ func GetMessage(channel []byte, message []byte) []byte {
 
 	return data
 }
-
-

@@ -13,7 +13,7 @@ const bucketChannel = "channels"
  * @returns : error
  */
 func writeChannel(obj interface{}, secure bool) error {
-	db, e := OpenDB(Database)
+	db, e := OpenDB(OrgDatabase)
 	defer db.Close()
 	if e != nil {
 		return e
@@ -91,7 +91,7 @@ func UpdateChannel(obj interface{}) error {
 
 /*returns channel data from a given ID */
 func GetChannelFromID(id []byte) []byte {
-	db, e := OpenDB(Database)
+	db, e := OpenDB(OrgDatabase)
 	defer db.Close()
 	if e != nil {
 		return nil
