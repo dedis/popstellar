@@ -143,7 +143,7 @@ public class AttendeeExpandableListViewEventAdapter extends BaseExpandableListAd
 
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.event_category_layout, null);
+            convertView = inflater.inflate(R.layout.layout_event_category, null);
         }
 
         TextView eventTextView = convertView.findViewById(R.id.event_category);
@@ -172,7 +172,7 @@ public class AttendeeExpandableListViewEventAdapter extends BaseExpandableListAd
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             //now:
-            convertView = inflater.inflate(R.layout.event_layout, null);
+            convertView = inflater.inflate(R.layout.layout_event, null);
             //later:
             /*
             switch (event.getType()) {
