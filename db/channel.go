@@ -8,7 +8,6 @@ import (
 
 const bucketChannel = "channels"
 
-
 /**
  * Function to create a new Object (LAO,Event...) and store it in the DB
  * @returns : error
@@ -27,13 +26,16 @@ func writeChannel(obj interface{}, secure bool) error {
 		}
 		//generic adaptation
 		var objID []byte
-		switch obj.(type){
-		case define.LAO :
+		switch obj.(type) {
+		case define.LAO:
 			// type assert
-			objID = []byte (obj.(define.LAO).ID)
+			objID = []byte(obj.(define.LAO).ID)
 		case define.Meeting:
-			objID = []byte (obj.(define.Meeting).ID)
-		// TODO add cases as needed
+			objID = []byte(obj.(define.Meeting).ID)
+		case define.Poll:
+			objID = []byte(obj.(define.Poll).ID)
+		case define.RollCall:
+			objID = []byte(obj.(define.RollCall).ID)
 		default:
 			//TODO not sure for the error type
 			return define.ErrRequestDataInvalid
@@ -52,12 +54,16 @@ func writeChannel(obj interface{}, secure bool) error {
 		}
 		var dt []byte
 		var err2 error
-		switch obj.(type){
-		case define.LAO :
+		switch obj.(type) {
+		case define.LAO:
 			// type assert
 			dt, err2 = json.Marshal(obj.(define.LAO).ID)
 		case define.Meeting:
 			dt, err2 = json.Marshal(obj.(define.Meeting).ID)
+		case define.Poll:
+			dt, err2 = json.Marshal(obj.(define.Poll).ID)
+		case define.RollCall:
+			dt, err2 = json.Marshal(obj.(define.RollCall).ID)
 		default:
 			//TODO not sure for the error type
 			return define.ErrRequestDataInvalid
@@ -72,7 +78,6 @@ func writeChannel(obj interface{}, secure bool) error {
 
 	return err
 }
-
 
 /*writes a channel (LAO, meeting, rolecall, etc.) to the DB, returns an error if ID already is key in DB*/
 func CreateChannel(obj interface{}) error {
@@ -99,4 +104,3 @@ func GetChannelFromID(id []byte) []byte {
 	})
 	return data
 }
-
