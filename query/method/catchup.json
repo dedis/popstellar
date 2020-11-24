@@ -1,0 +1,23 @@
+{
+	"$schema": "http://json-schema.org/draft/2019-09/schema#",
+	"$id": "https://github.com/dedis/student20_pop/tree/proto-specs/query/method/catchup.json",
+	"description": "Match catchup on past message on a channel query",
+	"type": "object",
+
+	"properties": {
+		"method": { 
+			"description": "[String] operation to be performed by the query",
+			"const": "catchup" 
+		},
+		"params": {
+			"type": "object",
+			"properties": {
+				"channel": { "description": "[String] name of the channel", "$ref": "channel/subChannel.json" }
+			},
+			"additionalProperties": false,
+			"required": ["channel"]
+		},
+		"id": { "type": "integer" }
+	},
+	"required": ["method", "params", "id"]
+}
