@@ -1,28 +1,27 @@
 package WebSocket
 
-
 import (
+	b64 "encoding/base64"
+	"encoding/json"
 	"github.com/boltdb/bolt"
-	"student20_pop/define"
-	"student20_pop/db"
 	"log"
+	"student20_pop/db"
+	"student20_pop/define"
 )
 
 type Organizer struct {
-	//Database instance
+	//OrgDatabase instance
 	db *bolt.DB
 }
 
-
 func NewOrganizer() *Organizer {
-	dbtmp, err := db.OpenDB(db.Database)
+	dbtmp, err := db.OpenDB(db.OrgDatabase)
 	if err != nil {
 		log.Fatal("couldn't start a new db")
 	}
 
-
 	o := &Organizer{
-		db:		dbtmp,
+		db: dbtmp,
 	}
 
 	return o
@@ -92,7 +91,12 @@ func (h *hub) handlePublish(generic define.Generic) error {
 		return define.ErrRequestDataInvalid
 	}
 
-	data, err := define.AnalyseData(message.Data)
+	data := define.Data{}
+	base64Text := make([]byte, b64.StdEncoding.DecodedLen(len(message.Data)))
+	l, _ := b64.StdEncoding.Decode(base64Text, message.Data)
+	err = json.Unmarshal(base64Text[:l], &data)
+
+	//data, err := define.AnalyseData(message.Data)
 	if err != nil {
 		return define.ErrRequestDataInvalid
 	}
@@ -226,6 +230,7 @@ func (h *hub) handleCreateRollCall(message define.Message, canal string, generic
 	if err != nil {
 		return err
 	}
+
 	return h.finalizeHandling(message, canal, generic)
 }
 
@@ -307,7 +312,6 @@ func (h *hub) handleWitnessMessage(message define.Message, canal string, generic
 	if toSign == nil {
 		return define.ErrInvalidResource
 	}
-	
 
 	toSignStruct, err := define.AnalyseMessage(toSign)
 	if err != nil {
@@ -321,7 +325,6 @@ func (h *hub) handleWitnessMessage(message define.Message, canal string, generic
 	}
 
 	toSignStruct.WitnessSignatures = append(toSignStruct.WitnessSignatures, message.Signature)
-
 
 	// update "LAOUpdateProperties" message in DB
 	err = db.UpdateMessage(toSignStruct, canal)
@@ -339,7 +342,6 @@ func (h *hub) handleWitnessMessage(message define.Message, canal string, generic
 	h.channel = []byte(canal)
 	return nil
 }
-
 
 func (h *hub) handleCatchup(generic define.Generic) ([]byte, error) {
 	// TODO maybe pass userId as an arg in order to check access rights later on?
