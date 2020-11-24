@@ -34,7 +34,7 @@ type ParamsFull struct {
 }
 
 type Message struct {
-	Data              json.RawMessage
+	Data              json.RawMessage //in base 64
 	Sender            string
 	Signature         string
 	MessageID         string
@@ -76,7 +76,7 @@ type ResponseWithCatchupResult struct {
 }
 type ResponseWithError struct {
 	Jsonrpc       string
-	ErrorResponse string
+	ErrorResponse json.RawMessage
 	Id            int
 }
 type DataCreateMeeting struct {
@@ -157,7 +157,7 @@ func AnalyseMessage(message json.RawMessage) (Message, error) {
 	err := json.Unmarshal(message, &m)
 	return m, err
 }
-
+//obsolete
 func AnalyseData(data json.RawMessage) (Data, error) {
 	// TODO decode from Base64
 	m := Data{}
@@ -168,7 +168,6 @@ func AnalyseData(data json.RawMessage) (Data, error) {
 func AnalyseDataCreateLAO(data json.RawMessage) (DataCreateLAO, error) {
 	m := DataCreateLAO{}
 	err := json.Unmarshal(data, &m)
-	fmt.Printf("%#v", m)
 	return m, err
 }
 
@@ -230,7 +229,7 @@ func CreateResponse(err error, messages []byte, generic Generic) []byte {
 	if err != nil {
 		resp := ResponseWithError{
 			Jsonrpc:       "2.0",
-			ErrorResponse: string(selectDescriptionError(err)),
+			ErrorResponse: selectDescriptionError(err),
 			Id:            generic.Id,
 		}
 		b, err := json.Marshal(resp)
@@ -302,6 +301,7 @@ func selectDescriptionError(err error) []byte {
 			Description: "access denied",
 		}
 		//(e.g. subscribing to a “restricted” channel)
+
 	default:
 		fmt.Printf("%v", err)
 		// TODO decide if we crash everything or not
