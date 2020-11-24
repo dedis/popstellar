@@ -32,6 +32,23 @@ func LAOCreatedIsValid(data DataCreateLAO, message Message) error {
 }
 
 func MeetingCreatedIsValid(data DataCreateMeeting, message Message) error {
+	//the last modified timestamp is equal to the creation timestamp,
+	if data.Creation != data.LastModified {
+		return ErrInvalidResource
+	}
+	//the timestamp is reasonably recent with respect to the server’s clock,
+	if data.Creation > time.Now().Unix() || data.Creation-time.Now().Unix() > MaxTimeBetweenLAOCreationAndPublish {
+		return ErrInvalidResource
+	}
+
+	//we start after the creation and we end after the start
+	if data.Start < data.Creation || data.End < data.Start {
+		return ErrInvalidResource
+	}
+	//need to meet somewhere
+	if data.Location == "" {
+		return ErrInvalidResource
+	}
 	return nil
 }
 func PollCreatedIsValid(data DataCreatePoll, message Message) error {
