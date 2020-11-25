@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/boltdb/bolt"
 	"student20_pop/define"
+	"fmt"
 )
 
 /**
@@ -65,6 +66,7 @@ func GetMessage(channel []byte, message []byte, database string) []byte {
 	err = db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket(channel)
 		if b == nil {
+			fmt.Printf("12")
 			return define.ErrInvalidResource
 		}
 

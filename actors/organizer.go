@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"student20_pop/db"
 	"student20_pop/define"
+	"fmt"
 )
 
 type Organizer struct {
@@ -32,6 +33,7 @@ func NewOrganizer(pkey string, db string) *Organizer {
 func (o *Organizer) HandleWholeMessage(msg []byte, userId int) ([]byte, []byte, []byte) {
 	generic, err := define.AnalyseGeneric(msg)
 	if err != nil {
+		fmt.Printf("1")
 		return nil, nil, define.CreateResponse(define.ErrRequestDataInvalid, nil, generic)
 	}
 
@@ -52,6 +54,7 @@ func (o *Organizer) HandleWholeMessage(msg []byte, userId int) ([]byte, []byte, 
 	case "catchup":
 		history, err = o.handleCatchup(generic)
 	default:
+		fmt.Printf("2")
 		message, channel, err = nil, nil, define.ErrRequestDataInvalid
 	}
 
@@ -61,6 +64,7 @@ func (o *Organizer) HandleWholeMessage(msg []byte, userId int) ([]byte, []byte, 
 func handleSubscribe(generic define.Generic, userId int) error {
 	params, err := define.AnalyseParamsLight(generic.Params)
 	if err != nil {
+		fmt.Printf("3")
 		return define.ErrRequestDataInvalid
 	}
 	return db.Subscribe(userId, []byte(params.Channel))
@@ -69,6 +73,7 @@ func handleSubscribe(generic define.Generic, userId int) error {
 func handleUnsubscribe(generic define.Generic, userId int) error {
 	params, err := define.AnalyseParamsLight(generic.Params)
 	if err != nil {
+		fmt.Printf("4")
 		return define.ErrRequestDataInvalid
 	}
 	return db.Unsubscribe(userId, []byte(params.Channel))
@@ -82,16 +87,19 @@ func handleUnsubscribe(generic define.Generic, userId int) error {
 func (o *Organizer) handlePublish(generic define.Generic) ([]byte, []byte, error) {
 	params, err := define.AnalyseParamsFull(generic.Params)
 	if err != nil {
+		fmt.Printf("5")
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
 	message, err := define.AnalyseMessage(params.Message)
 	if err != nil {
+		fmt.Printf("6")
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
 	data, err := define.AnalyseData(message.Data)
 	if err != nil {
+		fmt.Printf("7")
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
@@ -144,6 +152,7 @@ func (o *Organizer) handlePublish(generic define.Generic) ([]byte, []byte, error
 			return nil, nil, define.ErrInvalidAction
 		}
 	default:
+		fmt.Printf("8")
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
@@ -182,8 +191,8 @@ func (o *Organizer) handleCreateLAO(message define.Message, canal string, generi
 		ID:            data.ID,
 		Name:          data.Name,
 		Creation:      data.Creation,
-		LastModified:  data.LastModified,
-		OrganizerPKey: data.OrganizerPKey,
+		LastModified:  data.Last_modified,
+		OrganizerPKey: data.Organizer,
 		Witnesses:     data.Witnesses,
 	}
 	err = db.CreateChannel(lao, o.database)
@@ -200,7 +209,7 @@ func (o *Organizer) handleCreateLAO(message define.Message, canal string, generi
  * error
  */
 func (o *Organizer) handleCreateRollCall(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
-	if canal != "/root" {
+	if canal == "/root" {
 		return nil, nil, define.ErrInvalidResource
 	}
 
@@ -218,7 +227,7 @@ func (o *Organizer) handleCreateRollCall(message define.Message, canal string, g
 	event := define.RollCall{ID: data.ID,
 		Name:         data.Name,
 		Creation:     data.Creation,
-		LastModified: data.LastModified,
+		LastModified: data.Last_modified,
 		Location:     data.Location,
 		Start:        data.Start,
 		End:          data.End,
@@ -252,7 +261,7 @@ func (o *Organizer) handleCreateMeeting(message define.Message, canal string, ge
 	event := define.Meeting{ID: data.ID,
 		Name:         data.Name,
 		Creation:     data.Creation,
-		LastModified: data.LastModified,
+		LastModified: data.Last_modified,
 		Location:     data.Location,
 		Start:        data.Start,
 		End:          data.End,
@@ -273,7 +282,7 @@ func (o *Organizer) handleCreateMeeting(message define.Message, canal string, ge
  */
 func (o *Organizer) handleCreatePoll(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
 
-	if canal != "0" {
+	if canal == "/root" {
 		return nil, nil, define.ErrInvalidResource
 	}
 
@@ -286,12 +295,13 @@ func (o *Organizer) handleCreatePoll(message define.Message, canal string, gener
 	event := define.Poll{ID: data.ID,
 		Name:         data.Name,
 		Creation:     data.Creation,
-		LastModified: data.LastModified,
+		LastModified: data.Last_modified,
 		Location:     data.Location,
 		Start:        data.Start,
 		End:          data.End,
 		Extra:        data.Extra,
 	}
+
 	err = db.CreateChannel(event, o.database)
 	if err != nil {
 		return nil, nil, err
@@ -333,6 +343,7 @@ func (o *Organizer) handleWitnessMessage(message define.Message, canal string, g
 
 	toSignStruct, err := define.AnalyseMessage(toSign)
 	if err != nil {
+		fmt.Printf("9")
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
@@ -364,6 +375,7 @@ func (o *Organizer) handleCatchup(generic define.Generic) ([]byte, error) {
 	// TODO maybe pass userId as an arg in order to check access rights later on?
 	params, err := define.AnalyseParamsLight(generic.Params)
 	if err != nil {
+		fmt.Printf("10")
 		return nil, define.ErrRequestDataInvalid
 	}
 	history := db.GetChannel([]byte(params.Channel), o.database)

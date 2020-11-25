@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/boltdb/bolt"
 	"student20_pop/define"
+	"fmt"
 )
 
 const bucketChannel = "channels"
@@ -49,6 +50,7 @@ func writeChannel(obj interface{}, database string, secure bool) error {
 		} else {
 			exists := b.Get(objID)
 			if exists == nil {
+				fmt.Printf("11")
 				return define.ErrInvalidResource
 			}
 		}
