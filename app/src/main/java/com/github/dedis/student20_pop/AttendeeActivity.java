@@ -7,29 +7,29 @@ import android.view.View;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.github.dedis.student20_pop.ui.AttendeeFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
-import com.github.dedis.student20_pop.ui.OrganizerFragment;
 import com.github.dedis.student20_pop.utility.ui.OnEventTypeSelectedListener;
 
 /**
- * Activity used to display the different UIs for organizers
+ * Activity used to display the different UIs for attendees
  **/
-public class OrganizerActivity extends FragmentActivity implements OnEventTypeSelectedListener  {
+public class AttendeeActivity extends FragmentActivity implements OnEventTypeSelectedListener {
 
-    private static final String TAG = OrganizerActivity.class.getSimpleName();
+    private static final String TAG = AttendeeActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_organizer);
-        if (findViewById(R.id.fragment_container_organizer) != null) {
+        setContentView(R.layout.activity_attendee);
+        if (findViewById(R.id.fragment_container_attendee) != null) {
             if (savedInstanceState != null) {
                 return;
             }
 
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container_organizer, new OrganizerFragment()).commit();
+                    .add(R.id.fragment_container_attendee, new AttendeeFragment()).commit();
         }
     }
 
@@ -53,7 +53,7 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
         if (!fragment.isVisible()) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment_container_organizer, fragment, TAG)
+                    .replace(R.id.fragment_container_attendee, fragment, TAG)
                     .addToBackStack(TAG)
                     .commit();
         }

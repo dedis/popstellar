@@ -14,7 +14,6 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.Person;
-import com.github.dedis.student20_pop.ui.AttendeeFragment;
 import com.github.dedis.student20_pop.ui.CameraPermissionFragment;
 import com.github.dedis.student20_pop.ui.ConnectFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
@@ -31,8 +30,6 @@ public final class MainActivity extends FragmentActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private final boolean testingAttendee = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,13 +40,8 @@ public final class MainActivity extends FragmentActivity {
                 return;
             }
 
-            if (testingAttendee) {
-                getSupportFragmentManager().beginTransaction()
-                        .add(R.id.fragment_container_main, new AttendeeFragment()).commit();
-            } else {
-                getSupportFragmentManager().beginTransaction()
+            getSupportFragmentManager().beginTransaction()
                         .add(R.id.fragment_container_main, new HomeFragment()).commit();
-            }
         }
     }
 

@@ -21,6 +21,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".OrganizerActivity"/>
+        <activity android:name=".AttendeeActivity"/>
 
         <uses-library
             android:name="android.test.runner"
