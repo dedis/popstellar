@@ -168,8 +168,8 @@ func (w *Witness) handleCreateLAO(message define.Message, channel string, generi
 		ID:            data.ID,
 		Name:          data.Name,
 		Creation:      data.Creation,
-		LastModified:  data.LastModified,
-		OrganizerPKey: data.OrganizerPKey,
+		LastModified:  data.Last_modified,
+		OrganizerPKey: data.Organizer,
 		Witnesses:     data.Witnesses,
 	}
 	err = db.CreateChannel(lao, w.database)

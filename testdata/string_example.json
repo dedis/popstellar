@@ -8,7 +8,7 @@
       "data": "ewogICAgICAgICJvYmplY3QiOiAibGFvIiwKICAgICAgICAiYWN0aW9uIjogImNyZWF0ZSIsCiAgICAgICAgImlkIjogIjB4MTIzYSIsCiAgICAgICAgIm5hbWUiOiAiTXkgTEFPIiwKICAgICAgICAiY3JlYXRpb24iOiAxMjMsCiAgICAgICAgImxhc3RfbW9kaWZpZWQiOiAxMjMsCiAgICAgICAgIm9yZ2FuaXplciI6ICIweDEyM2EiLAogICAgICAgICJ3aXRuZXNzZXMiOiBbXQogICAgICB9",
       "sender": "0x123a",
       "signature": "0x123a",
-      "message_id": "0x123a",
+      "message_id": "[244 89 172 199 4 199 199 14 81 22 146 28 151 192 213 231 230 31 114 113 26 225 79 7 225 86 160 233 130 10 61 242]",
       "witness_signatures": []
     }
   }
@@ -29,7 +29,7 @@ data : {
   "jsonrpc": "2.0",
   "method": "publish",
   "params": {
-    "channel": "0",
+    "channel": "/root",
     "message": {
       "data":
       {ew0KICAib2JqZWN0IjogIm1lZXRpbmciLA0KICAiYWN0aW9uIjogImNyZWF0ZSIsDQogICJpZCI6ICIweDEyM2EiLA0KICAibmFtZSI6ICJNZWV0aW5nIDIuMCIsDQogICJjcmVhdGlvbiI6IDEyMywNCiAgImxhc3RfbW9kaWZpZWQiOiAwLA0KICAibG9jYXRpb24iOiAic29tZXdoZXJlIG92ZXIgdGhlIHJhaW5ib3ciLA0KICAic3RhcnQiOiAyNDQ4LA0KICAiZW5kIjogNjAwMCwNCiAgImV4dHJhIjogIm1oaCBkZSBsJ2V4dHJhIGRhdGEiDQp9},
@@ -54,7 +54,7 @@ data {
   "jsonrpc": "2.0",
   "method": "publish",
   "params": {
-    "channel": "0",
+    "channel": "/root",
     "message": {
       "data": {
         "object": "poll",
