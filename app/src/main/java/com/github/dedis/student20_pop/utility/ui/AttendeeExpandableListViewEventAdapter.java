@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.utility.attendeeUI;
+package com.github.dedis.student20_pop.utility.ui;
 
 import android.content.Context;
 import android.os.Build;

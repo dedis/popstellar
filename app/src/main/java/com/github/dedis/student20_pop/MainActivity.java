@@ -1,12 +1,12 @@
 package com.github.dedis.student20_pop;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -19,8 +19,6 @@ import com.github.dedis.student20_pop.ui.CameraPermissionFragment;
 import com.github.dedis.student20_pop.ui.ConnectFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
-import com.github.dedis.student20_pop.ui.OrganizerFragment;
-import com.github.dedis.student20_pop.utility.OrganizerUI.OnEventTypeSelectedListener;
 import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
 
 import java.util.Collections;
@@ -29,32 +27,28 @@ import java.util.Date;
 /**
  * Activity used to display the different UIs
  **/
-public final class MainActivity extends FragmentActivity implements OnEventTypeSelectedListener {
+public final class MainActivity extends FragmentActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private final boolean testingAttendee = false;
-    private final boolean testingOrganizer = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        if (findViewById(R.id.fragment_container) != null) {
+        if (findViewById(R.id.fragment_container_main) != null) {
             if (savedInstanceState != null) {
                 return;
             }
 
             if (testingAttendee) {
                 getSupportFragmentManager().beginTransaction()
-                        .add(R.id.fragment_container, new AttendeeFragment()).commit();
-            } else if (testingOrganizer) {
-                getSupportFragmentManager().beginTransaction()
-                        .add(R.id.fragment_container, new OrganizerFragment()).commit();
+                        .add(R.id.fragment_container_main, new AttendeeFragment()).commit();
             } else {
                 getSupportFragmentManager().beginTransaction()
-                        .add(R.id.fragment_container, new HomeFragment()).commit();
+                        .add(R.id.fragment_container_main, new HomeFragment()).commit();
             }
         }
     }
@@ -88,11 +82,10 @@ public final class MainActivity extends FragmentActivity implements OnEventTypeS
                 // Store the private key of the organizer
                 if (PrivateInfoStorage.storeData(this, organizer.getId(), organizer.getAuthentication()))
                     Log.d(TAG, "Stored private key of organizer");
-                showFragment(new HomeFragment(), LaunchFragment.TAG);
-                Toast.makeText(this,
-                        getResources().getString(R.string.message_launch_successful, name),
-                        Toast.LENGTH_LONG)
-                        .show();
+                // Start the Organizer Activity (user is considered an organizer)
+                Intent intent = new Intent(this, OrganizerActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
                 break;
             case R.id.button_cancel_launch:
                 ((EditText) findViewById(R.id.entry_box_launch)).getText().clear();
@@ -106,30 +99,9 @@ public final class MainActivity extends FragmentActivity implements OnEventTypeS
         if (!fragment.isVisible()) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment_container, fragment, TAG)
+                    .replace(R.id.fragment_container_main, fragment, TAG)
                     .addToBackStack(TAG)
                     .commit();
-        }
-    }
-
-    @Override
-    public void OnEventTypeSelectedListener(EventType eventType) {
-        switch (eventType) {
-            case MEETING:
-                //TODO
-                Log.d("Meeting Event Type ", "Launch here Meeting Event Creation Fragment");
-                break;
-            case ROLL_CALL:
-                //TODO
-                Log.d("Roll-Call Event Type ", "Launch here Roll-Call Event Creation Fragment");
-                break;
-            case POLL:
-                //TODO
-                Log.d("Poll Event Type ", "Launch here Poll Event Creation Fragment");
-                break;
-            default:
-                Log.d("Default Event Type :", "Default Behaviour TBD");
-                break;
         }
     }
 }

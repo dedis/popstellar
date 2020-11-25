@@ -39,7 +39,7 @@ public final class CameraPermissionFragment extends Fragment implements View.OnC
     private void switchToConnectFragment() {
         requireFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, new ConnectFragment(), ConnectFragment.TAG)
+                .replace(R.id.fragment_container_main, new ConnectFragment(), ConnectFragment.TAG)
                 .commit();
     }
 
