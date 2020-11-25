@@ -16,11 +16,13 @@ import com.github.dedis.student20_pop.R;
 **/
 public final class HomeFragment extends Fragment {
 
-    public static final String TAG = ConnectFragment.class.getSimpleName();
+    public static final String TAG = HomeFragment.class.getSimpleName();
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // TODO: retrieve list of LAOs from backend and display them
+
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 }

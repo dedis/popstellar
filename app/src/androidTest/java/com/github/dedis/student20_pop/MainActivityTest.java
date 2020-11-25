@@ -48,7 +48,7 @@ public class MainActivityTest {
     public void onClickLaunchLAOTest() {
         onView(withId(R.id.tab_launch)).perform(click());
         onView(withId(R.id.button_launch)).perform(click());
-        onView(withId(R.id.fragment_home)).check(matches(isDisplayed()));
+        onView(withId(R.id.fragment_organizer)).check(matches(isDisplayed()));
     }
 
     @Test
