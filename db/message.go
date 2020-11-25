@@ -23,7 +23,7 @@ func writeMessage(message define.Message, channel string, database string, creat
 			return define.ErrDBFault
 		}
 
-		if check := b.Get([]byte(message.MessageID)); check != nil && creating {
+		if check := b.Get([]byte(message.Message_id)); check != nil && creating {
 			return define.ErrResourceAlreadyExists
 		}
 
@@ -32,7 +32,7 @@ func writeMessage(message define.Message, channel string, database string, creat
 		if err2 != nil {
 			return define.ErrRequestDataInvalid
 		}
-		err := b.Put([]byte(message.MessageID), msg)
+		err := b.Put([]byte(message.Message_id), msg)
 		if err != nil {
 			return define.ErrDBFault
 		}

@@ -24,7 +24,7 @@ func LAOCreatedIsValid(data DataCreateLAO, message Message) error {
 	str = append(str, []byte(strconv.FormatInt(data.Creation, 10))...)
 	str = append(str, []byte(data.Name)...)
 	hash := sha256.Sum256(str)
-	if !bytes.Equal([]byte(message.MessageID), hash[:]) {
+	if !bytes.Equal([]byte(message.Message_id), hash[:]) {
 		return ErrInvalidResource
 	}
 
