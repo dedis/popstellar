@@ -3,7 +3,7 @@
   "jsonrpc": "2.0",
   "method": "publish",
   "params": {
-    "channel": "0",
+    "channel": "/root",
     "message": {
       "data": "ewogICAgICAgICJvYmplY3QiOiAibGFvIiwKICAgICAgICAiYWN0aW9uIjogImNyZWF0ZSIsCiAgICAgICAgImlkIjogIjB4MTIzYSIsCiAgICAgICAgIm5hbWUiOiAiTXkgTEFPIiwKICAgICAgICAiY3JlYXRpb24iOiAxMjMsCiAgICAgICAgImxhc3RfbW9kaWZpZWQiOiAxMjMsCiAgICAgICAgIm9yZ2FuaXplciI6ICIweDEyM2EiLAogICAgICAgICJ3aXRuZXNzZXMiOiBbXQogICAgICB9",
       "sender": "0x123a",

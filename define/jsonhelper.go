@@ -38,7 +38,7 @@ type Message struct {
 	Data              string //in base 64
 	Sender            string
 	Signature         string
-	MessageID         string
+	Message_id        string
 	WitnessSignatures []string
 }
 
@@ -159,12 +159,13 @@ func AnalyseMessage(message json.RawMessage) (Message, error) {
 	return m, err
 }
 
-//obsolete
 func AnalyseData(data string) (Data, error) {
 	m := Data{}
-	base64Text := make([]byte, b64.StdEncoding.DecodedLen(len(data)))
-	l, _ := b64.StdEncoding.Decode(base64Text, []byte(data))
-	err := json.Unmarshal(base64Text[:l], &data)
+	l, err := b64.StdEncoding.DecodeString(data)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(l, &data)
 	return m, err
 }
 
