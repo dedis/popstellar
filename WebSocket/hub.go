@@ -82,13 +82,13 @@ func NewHub() *hub {
 			var channel []byte = nil
 			var response []byte = nil
 			//handle the message and generate the response, if error, print it in console
-			check1, err := h.isForOrganizer(msg)
+			/*check1, err := h.isForOrganizer(msg)
 			if err != nil {
 				fmt.Print(err)
 			}
 			check2, err2 := h.isForWitness(msg)
 			if err2 != nil {
-				fmt.Print(err)
+				fmt.Print(err2)
 			}
 			if check1 && check2 {
 				fmt.Print("cannot be both witness and organizer")
@@ -97,7 +97,9 @@ func NewHub() *hub {
 				fmt.Print(err)
 			} else if check2 {
 				//TODO
-			}
+			}*/
+
+			message, channel, response = h.organizer.HandleWholeMessage(msg, h.idOfSender)
 
 			h.connectionsMx.RLock()
 			h.publishOnChannel(message, channel)

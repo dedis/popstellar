@@ -97,7 +97,7 @@ func GetChannel(id []byte, database string) []byte {
 		return nil
 	}
 	var data []byte
-	e = db.View(func(tx *bolt.Tx) error {
+	e = db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucketChannel))
 		data = b.Get(id)
 		return nil

@@ -1,7 +1,6 @@
 package actors
 
 import (
-	b64 "encoding/base64"
 	"encoding/json"
 	"student20_pop/db"
 	"student20_pop/define"
@@ -34,7 +33,6 @@ func (o *Organizer) HandleWholeMessage(msg []byte, userId int) ([]byte, []byte, 
 	generic, err := define.AnalyseGeneric(msg)
 	if err != nil {
 		return nil, nil, define.CreateResponse(define.ErrRequestDataInvalid, nil, generic)
-
 	}
 
 	var history []byte = nil
@@ -92,12 +90,7 @@ func (o *Organizer) handlePublish(generic define.Generic) ([]byte, []byte, error
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
-	data := define.Data{}
-	base64Text := make([]byte, b64.StdEncoding.DecodedLen(len(message.Data)))
-	l, _ := b64.StdEncoding.Decode(base64Text, message.Data)
-	err = json.Unmarshal(base64Text[:l], &data)
-
-	//data, err := define.AnalyseData(message.Data)
+	data, err := define.AnalyseData(message.Data)
 	if err != nil {
 		return nil, nil, define.ErrRequestDataInvalid
 	}
@@ -333,7 +326,7 @@ func (o *Organizer) handleWitnessMessage(message define.Message, canal string, g
 	//add signature to already stored message:
 
 	//retrieve message to sign from database
-	toSign := db.GetMessage([]byte(canal), []byte(message.MessageID), o.database)
+	toSign := db.GetMessage([]byte(canal), []byte(message.Message_id), o.database)
 	if toSign == nil {
 		return nil, nil, define.ErrInvalidResource
 	}
@@ -389,6 +382,9 @@ func finalizeHandling(message define.Message, canal string, generic define.Gener
 /*returns true if o is the organizer of the event*/
 func (o *Organizer) IsOrganizer(id string) (bool, error) {
 	data := db.GetChannel([]byte(id), o.database)
+	if data == nil {
+		return false, nil
+	}
 	lao := define.LAO{} //TODO currently is only for LAO. Need generic type for channel
 	err := json.Unmarshal(data, &lao)
 	if err != nil {
