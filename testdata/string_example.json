@@ -8,7 +8,7 @@
       "data": "ewogICAgICAgICJvYmplY3QiOiAibGFvIiwKICAgICAgICAiYWN0aW9uIjogImNyZWF0ZSIsCiAgICAgICAgImlkIjogIjB4MTIzYSIsCiAgICAgICAgIm5hbWUiOiAiTXkgTEFPIiwKICAgICAgICAiY3JlYXRpb24iOiAxMjMsCiAgICAgICAgImxhc3RfbW9kaWZpZWQiOiAxMjMsCiAgICAgICAgIm9yZ2FuaXplciI6ICIweDEyM2EiLAogICAgICAgICJ3aXRuZXNzZXMiOiBbXQogICAgICB9",
       "sender": "0x123a",
       "signature": "0x123a",
-      "message_id": "0x123a",
+      "message_id": "[244 89 172 199 4 199 199 14 81 22 146 28 151 192 213 231 230 31 114 113 26 225 79 7 225 86 160 233 130 10 61 242]",
       "witness_signatures": []
     }
   }

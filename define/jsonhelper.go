@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strings"
 )
 
 /*Most generic message structure*/
@@ -35,7 +36,7 @@ type ParamsFull struct {
 }
 
 type Message struct {
-	Data              string //in base 64
+	Data              json.RawMessage //in base 64
 	Sender            string
 	Signature         string
 	Message_id        string
@@ -53,9 +54,9 @@ type DataCreateLAO struct {
 	Name string
 	//Creation Date/Time
 	Creation     int64 //  Unix timestamp (uint64)
-	LastModified int64 //timestamp
+	Last_modified int64 //timestamp
 	//Organiser: Public Key
-	OrganizerPKey string
+	Organizer string
 	//List of public keys where each public key belongs to one witness
 	Witnesses []string
 	//List of public keys where each public key belongs to one member (physical person) (subscriber)
@@ -89,7 +90,7 @@ type DataCreateMeeting struct {
 	Name string
 	//Creation Date/Time
 	Creation     int64  //  Unix timestamp (uint64)
-	LastModified int64  //timestamp
+	Last_modified int64  //timestamp
 	Location     string //optional
 	//Organiser: Public Key
 	Start int64  /* Timestamp */
@@ -106,7 +107,7 @@ type DataCreateRollCall struct {
 	Name string
 	//Creation Date/Time
 	Creation     int64  //  Unix timestamp (uint64)
-	LastModified int64  //timestamp
+	Last_modified int64  //timestamp
 	Location     string //optional
 	//Organiser: Public Key
 	Start int64  /* Timestamp */
@@ -123,7 +124,7 @@ type DataCreatePoll struct {
 	Name string
 	//Creation Date/Time
 	Creation     int64  //  Unix timestamp (uint64)
-	LastModified int64  //timestamp
+	Last_modified int64  //timestamp
 	Location     string //optional
 	//Organiser: Public Key
 	Start int64  /* Timestamp */
@@ -159,36 +160,41 @@ func AnalyseMessage(message json.RawMessage) (Message, error) {
 	return m, err
 }
 
-func AnalyseData(data string) (Data, error) {
+func AnalyseData(data json.RawMessage) (Data, error) {
 	m := Data{}
-	l, err := b64.StdEncoding.DecodeString(data)
+	d, err := b64.StdEncoding.DecodeString(strings.Trim(string(data), `"`))
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
-	err = json.Unmarshal(l, &data)
+	err = json.Unmarshal(d, &m)
 	return m, err
 }
 
 func AnalyseDataCreateLAO(data json.RawMessage) (DataCreateLAO, error) {
 	m := DataCreateLAO{}
-	err := json.Unmarshal(data, &m)
+	d, err := b64.StdEncoding.DecodeString(strings.Trim(string(data), `"`))
+	err = json.Unmarshal(d, &m)
 	return m, err
 }
 
 func AnalyseDataCreateMeeting(data json.RawMessage) (DataCreateMeeting, error) {
 	m := DataCreateMeeting{}
-	err := json.Unmarshal(data, &m)
+	d, err := b64.StdEncoding.DecodeString(strings.Trim(string(data), `"`))
+	err = json.Unmarshal(d, &m)
 	return m, err
 }
 func AnalyseDataCreateRollCall(data json.RawMessage) (DataCreateRollCall, error) {
 	m := DataCreateRollCall{}
-	err := json.Unmarshal(data, &m)
+	d, err := b64.StdEncoding.DecodeString(strings.Trim(string(data), `"`))
+	err = json.Unmarshal(d, &m)
 	return m, err
 }
 
 func AnalyseDataCreatePoll(data json.RawMessage) (DataCreatePoll, error) {
 	m := DataCreatePoll{}
-	err := json.Unmarshal(data, &m)
+	d, err := b64.StdEncoding.DecodeString(strings.Trim(string(data), `"`))
+	err = json.Unmarshal(d, &m)
 	return m, err
 }
 
