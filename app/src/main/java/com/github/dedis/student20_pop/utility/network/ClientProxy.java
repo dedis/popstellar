@@ -1,6 +1,6 @@
 package com.github.dedis.student20_pop.utility.network;
 
-import com.github.dedis.student20_pop.model.Event;
+import com.github.dedis.student20_pop.model.network.level.high.Message;
 
 import javax.websocket.Session;
 
@@ -25,12 +25,21 @@ public final class ClientProxy {
     }
 
     /**
+     * Unsubscribe to a channel
+     *
+     * @param channel to subscribe to
+     */
+    public void unsubscribe(String channel) {
+        //TODO
+    }
+
+    /**
      * Publish an event on given channel
      *
      * @param channel to publish the event on
-     * @param event to publish
+     * @param message to publish
      */
-    public void publish(String channel, Event event) {
+    public void publish(String channel, Message message) {
         //TODO
     }
 
@@ -38,9 +47,8 @@ public final class ClientProxy {
      * fetch events from the given channel
      *
      * @param channel to fetch from
-     * @param id of the events (Type might change)
      */
-    public void fetch(String channel, String id) {
+    public void catchup(String channel) {
         //TODO fetch data. Is it a request ?
     }
 

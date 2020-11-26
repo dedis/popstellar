@@ -49,6 +49,7 @@ dependencies {
     implementation 'javax.websocket:javax.websocket-api:1.0'
     implementation 'org.glassfish.tyrus:tyrus-client:1.1'
     implementation 'org.glassfish.tyrus:tyrus-container-grizzly:1.1'
+    implementation 'com.google.code.gson:gson:2.8.6'
 
     testImplementation 'junit:junit:4.13'
     testImplementation 'net.jodah:concurrentunit:0.4.6'
