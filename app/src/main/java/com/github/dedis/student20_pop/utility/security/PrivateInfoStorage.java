@@ -86,7 +86,7 @@ public class PrivateInfoStorage {
 
     private static EncryptedFile buildEncryptedFile(Context context, String fileName) throws GeneralSecurityException, IOException {
         if(fileName.contains("/")) {
-            throw new IllegalArgumentException("The file name can't contain path separators");
+            fileName = fileName.replaceAll("/", "");
         }
 
         // format the file name

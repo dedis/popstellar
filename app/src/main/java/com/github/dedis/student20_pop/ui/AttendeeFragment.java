@@ -16,7 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Keys;
-import com.github.dedis.student20_pop.utility.attendeeUI.AttendeeExpandableListViewEventAdapter;
+import com.github.dedis.student20_pop.utility.ui.AttendeeExpandableListViewEventAdapter;
 import com.github.dedis.student20_pop.model.Event;
 import com.github.dedis.student20_pop.model.Lao;
 
