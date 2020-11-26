@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.utility.OrganizerUI;
+package com.github.dedis.student20_pop.utility.ui;
 
 public interface OnEventTypeSelectedListener {
     /**

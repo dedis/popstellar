@@ -1,9 +1,5 @@
 package com.github.dedis.student20_pop.model;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import com.github.dedis.student20_pop.utility.security.Hash;
 import com.github.dedis.student20_pop.utility.security.Signature;
 
@@ -34,7 +30,6 @@ public final class Lao {
      * @param organizer the public key of the organizer
      * @throws IllegalArgumentException if any of the parameters is null
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public Lao(String name, Date time, String organizer) {
         if(name == null || time == null || organizer == null) {
             throw new IllegalArgumentException("Trying to  create a LAO with a null value");
