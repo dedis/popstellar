@@ -35,7 +35,7 @@ public final class Lao {
      * @throws IllegalArgumentException if any of the parameters is null
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Lao(String name, Date time, String organizer) throws IllegalArgumentException {
+    public Lao(String name, Date time, String organizer) {
         if(name == null || time == null || organizer == null) {
             throw new IllegalArgumentException("Trying to  create a LAO with a null value");
         }
@@ -142,7 +142,7 @@ public final class Lao {
      * @return new LAO with the new name, id and attestation
      * @throws IllegalArgumentException if the name is null
      */
-    public Lao setName(String name) throws IllegalArgumentException {
+    public Lao setName(String name) {
         if(name == null) {
             throw new IllegalArgumentException("Trying to set null as the name of the LAO");
         }
@@ -154,7 +154,7 @@ public final class Lao {
      * @param witnesses list of public keys of witnesses, can be empty
      * @throws IllegalArgumentException if the list is null or at least one public key is null
      */
-    public void setWitnesses(List<String> witnesses) throws IllegalArgumentException {
+    public void setWitnesses(List<String> witnesses) {
         if(witnesses == null || witnesses.contains(null)) {
             throw new IllegalArgumentException("Trying to add a null witness to the LAO " + name);
         }
@@ -166,7 +166,7 @@ public final class Lao {
      * @param members list of public keys of members, can be empty
      * @throws IllegalArgumentException if the list is null or at least one public key is null
      */
-    public void setMembers(List<String> members) throws IllegalArgumentException {
+    public void setMembers(List<String> members) {
         if(members == null || members.contains(null)) {
             throw new IllegalArgumentException("Trying to add a null member to the LAO " + name);
         }
@@ -178,7 +178,7 @@ public final class Lao {
      * @param events list of public keys of events, can be empty
      * @throws IllegalArgumentException if the list is null or at least one public key is null
      */
-    public void setEvents(List<String> events) throws IllegalArgumentException {
+    public void setEvents(List<String> events) {
         if(events == null || events.contains(null)) {
             throw new IllegalArgumentException("Trying to add a null event to the LAO " + name);
         }

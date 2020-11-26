@@ -24,8 +24,7 @@ public class Hash {
      * @return the hashed data or null if failed to hash
      * @throws IllegalArgumentException if the data is null
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public static String hash(String data) throws IllegalArgumentException {
+    public static String hash(String data) {
         if(data == null) {
             throw new IllegalArgumentException("Can't hash a null data");
         }
