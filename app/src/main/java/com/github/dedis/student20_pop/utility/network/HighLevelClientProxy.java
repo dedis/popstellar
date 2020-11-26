@@ -9,6 +9,7 @@ import com.github.dedis.student20_pop.utility.security.Signature;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import javax.websocket.Session;
 
@@ -27,23 +28,23 @@ public final class HighLevelClientProxy {
         return lowLevelClientProxy;
     }
 
-    public void createLoa(String name, long creation, long lastModified, String organizer) {
-        lowLevelClientProxy.publish(publicKey, "/root",
+    public CompletableFuture<Integer> createLoa(String name, long creation, long lastModified, String organizer) {
+        return lowLevelClientProxy.publish(publicKey, "/root",
                 new CreateLao(Hash.hash(organizer + creation + name), name, creation, lastModified, organizer, new ArrayList<>()));
     }
 
-    public void updateLao(String laoId, String name, long lastModified, List<String> witnesses) {
-        lowLevelClientProxy.publish(publicKey, "/root/" + laoId,
+    public CompletableFuture<Integer> updateLao(String laoId, String name, long lastModified, List<String> witnesses) {
+        return lowLevelClientProxy.publish(publicKey, "/root/" + laoId,
                 new UpdateLao(name, lastModified, witnesses));
     }
 
-    public void witnessMessage(String laoId, String messageId, String data) {
-        lowLevelClientProxy.publish(publicKey, "/root/" + laoId,
+    public CompletableFuture<Integer> witnessMessage(String laoId, String messageId, String data) {
+        return lowLevelClientProxy.publish(publicKey, "/root/" + laoId,
                 new WitnessMessage(messageId, Signature.sign(privateKey, data)));
     }
 
-    public void createMeeting(String laoId, String name, long creation, long lastModified, String location, long start, long end) {
-        lowLevelClientProxy.publish(publicKey, "/root/" + laoId,
+    public CompletableFuture<Integer> createMeeting(String laoId, String name, long creation, long lastModified, String location, long start, long end) {
+        return lowLevelClientProxy.publish(publicKey, "/root/" + laoId,
                 new CreateMeeting(Hash.hash(laoId + creation + name), name, creation, lastModified, location, start, end));
     }
 }
