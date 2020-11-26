@@ -1,9 +1,6 @@
 package com.github.dedis.student20_pop.utility.network;
 
-import android.os.Build;
 import android.util.Base64;
-
-import androidx.annotation.RequiresApi;
 
 import com.github.dedis.student20_pop.model.network.level.high.Message;
 import com.github.dedis.student20_pop.model.network.level.low.Catchup;
@@ -39,7 +36,6 @@ import javax.websocket.Session;
 /**
  * A proxy of a connection to a websocket. It encapsulate the publish-subscribe protocol
  */
-@RequiresApi(api = Build.VERSION_CODES.N)
 public final class LowLevelClientProxy {
 
     private final Session session;
@@ -94,7 +90,6 @@ public final class LowLevelClientProxy {
      *
      * @return a completable future holding the response value
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public CompletableFuture<Integer> publish(String sender, String channel, Message message) {
         String data = Base64.encodeToString(gson.toJson(message, Message.class).getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);
         String signature = Signature.sign(/* TODO */ "sign", data);

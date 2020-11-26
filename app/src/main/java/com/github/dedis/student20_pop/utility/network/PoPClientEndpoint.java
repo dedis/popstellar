@@ -1,9 +1,5 @@
 package com.github.dedis.student20_pop.utility.network;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import org.glassfish.tyrus.client.ClientManager;
 
 import java.net.URI;
@@ -21,9 +17,8 @@ import javax.websocket.Session;
 /**
  * A client endpoint to a web socket using jsr 365 library
  *
- * TODO : Use the built-in encoder and decoder to have complete messages
+ * TODO link onOpen and onRemove to the UI
  */
-@RequiresApi(api = Build.VERSION_CODES.N)
 @ClientEndpoint()
 public final class PoPClientEndpoint {
 
@@ -36,9 +31,9 @@ public final class PoPClientEndpoint {
      * @return the proxy
      * @throws DeploymentException if an error occurs during the deployment
      */
-    public static HighLevelClientProxy connectToServer(URI host) throws DeploymentException {
+    public static HighLevelClientProxy connectToServer(URI host, String publicKey, String privateKey) throws DeploymentException {
         Session session = client.connectToServer(PoPClientEndpoint.class, host);
-        HighLevelClientProxy client = new HighLevelClientProxy(session);
+        HighLevelClientProxy client = new HighLevelClientProxy(session, publicKey, privateKey);
         listeners.put(session, client.lowLevel());
         return client;
     }
