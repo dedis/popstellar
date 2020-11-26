@@ -41,7 +41,7 @@ public final class Event {
      * @throws IllegalArgumentException if any of the parameters is null
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Event(String name, Date time, String lao, String location, String type) throws IllegalArgumentException {
+    public Event(String name, Date time, String lao, String location, String type) {
         if(name == null || time == null || lao == null || location == null || type == null) {
             throw new IllegalArgumentException("Trying to create an event with null parameters");
         }
@@ -121,7 +121,7 @@ public final class Event {
      * @param attendees list of public keys of attendees, can be empty
      * @throws IllegalArgumentException if the list is null or at least one public key is null
      */
-    public void setAttendees(List<String> attendees) throws IllegalArgumentException {
+    public void setAttendees(List<String> attendees) {
         if(attendees == null || attendees.contains(null)) {
             throw new IllegalArgumentException("Trying to add a null attendee to the event " + name);
         }

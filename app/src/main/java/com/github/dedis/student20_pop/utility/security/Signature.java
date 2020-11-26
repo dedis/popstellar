@@ -1,9 +1,6 @@
 package com.github.dedis.student20_pop.utility.security;
 
-import android.os.Build;
 import android.util.Log;
-
-import androidx.annotation.RequiresApi;
 
 import com.google.crypto.tink.subtle.Ed25519Sign;
 import com.google.crypto.tink.subtle.Hex;
@@ -28,15 +25,14 @@ public class Signature {
      * @return the signature or null if failed to sign
      * @throws IllegalArgumentException if any parameter is null
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public static String sign(String privateKey, String data) throws IllegalArgumentException {
+    public static String sign(String privateKey, String data) {
         if(privateKey == null || data == null) {
             throw new IllegalArgumentException("Can't sign a null data");
         }
         String signature = null;
         try {
             byte[] hash = Base64.getDecoder().decode(Hash.hash(data));
-            Ed25519Sign signer = new Ed25519Sign(Hex.decode(privateKey));
+            Ed25519Sign signer = new Ed25519Sign(Base64.getDecoder().decode(privateKey));
             signature =  Base64.getEncoder().encodeToString(signer.sign(hash));
         } catch (GeneralSecurityException e) {
             Log.e(TAG, "Failed to sign the data", e);
@@ -53,8 +49,7 @@ public class Signature {
      * @return the list of signatures or null if failed to sign
      * @throws IllegalArgumentException if any parameter is null (including one of the private keys)
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public static ArrayList<String> sign(List<String> privateKeys, String data) throws IllegalArgumentException {
+    public static ArrayList<String> sign(List<String> privateKeys, String data) {
         if(privateKeys == null || privateKeys.contains(null) || data == null) {
             throw new IllegalArgumentException("Can't sign a null data");
         }

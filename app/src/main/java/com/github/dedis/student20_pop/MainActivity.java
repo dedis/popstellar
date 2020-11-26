@@ -1,8 +1,9 @@
 package com.github.dedis.student20_pop;
 
 import android.Manifest;
-import android.os.Bundle;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -11,24 +12,29 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
-import com.github.dedis.student20_pop.ui.CameraPermissionFragment;
+import com.github.dedis.student20_pop.model.Person;
 import com.github.dedis.student20_pop.ui.AttendeeFragment;
+import com.github.dedis.student20_pop.ui.CameraPermissionFragment;
 import com.github.dedis.student20_pop.ui.ConnectFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
+import com.github.dedis.student20_pop.ui.OrganizerFragment;
+import com.github.dedis.student20_pop.utility.OrganizerUI.OnEventTypeSelectedListener;
+import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
 
+import java.util.Collections;
 import java.util.Date;
 
 /**
  * Activity used to display the different UIs
  **/
-public final class MainActivity extends FragmentActivity {
+public final class MainActivity extends FragmentActivity implements OnEventTypeSelectedListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private boolean testingAttendee = false;
+    private final boolean testingAttendee = false;
+    private final boolean testingOrganizer = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,11 +46,13 @@ public final class MainActivity extends FragmentActivity {
                 return;
             }
 
-            if (testingAttendee){
+            if (testingAttendee) {
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.fragment_container, new AttendeeFragment()).commit();
-            }
-            else {
+            } else if (testingOrganizer) {
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.fragment_container, new OrganizerFragment()).commit();
+            } else {
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.fragment_container, new HomeFragment()).commit();
             }
@@ -62,7 +70,7 @@ public final class MainActivity extends FragmentActivity {
                 showFragment(new HomeFragment(), HomeFragment.TAG);
                 break;
             case R.id.tab_connect:
-                if(ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
                     showFragment(new ConnectFragment(), ConnectFragment.TAG);
                 else
                     showFragment(new CameraPermissionFragment(), CameraPermissionFragment.TAG);
@@ -72,10 +80,14 @@ public final class MainActivity extends FragmentActivity {
                 break;
             case R.id.button_launch:
                 String name = ((EditText) findViewById(R.id.entry_box_launch)).getText().toString();
-                // For later: request organizer id
-                String organizer = new Keys().getPublicKey();
-                // Creating the LAO but not sending the information for now
-                Lao lao = new Lao(name, new Date(), organizer);
+                // For later: send LAO and organizer information
+                Person organizer = new Person("name");
+                // Creating the LAO and adding it to the organizer's LAO
+                Lao lao = new Lao(name, new Date(), organizer.getId());
+                organizer.setLaos(Collections.singletonList(lao.getId()));
+                // Store the private key of the organizer
+                if (PrivateInfoStorage.storeData(this, organizer.getId(), organizer.getAuthentication()))
+                    Log.d(TAG, "Stored private key of organizer");
                 showFragment(new HomeFragment(), LaunchFragment.TAG);
                 Toast.makeText(this,
                         getResources().getString(R.string.message_launch_successful, name),
@@ -97,6 +109,27 @@ public final class MainActivity extends FragmentActivity {
                     .replace(R.id.fragment_container, fragment, TAG)
                     .addToBackStack(TAG)
                     .commit();
+        }
+    }
+
+    @Override
+    public void OnEventTypeSelectedListener(EventType eventType) {
+        switch (eventType) {
+            case MEETING:
+                //TODO
+                Log.d("Meeting Event Type ", "Launch here Meeting Event Creation Fragment");
+                break;
+            case ROLL_CALL:
+                //TODO
+                Log.d("Roll-Call Event Type ", "Launch here Roll-Call Event Creation Fragment");
+                break;
+            case POLL:
+                //TODO
+                Log.d("Poll Event Type ", "Launch here Poll Event Creation Fragment");
+                break;
+            default:
+                Log.d("Default Event Type :", "Default Behaviour TBD");
+                break;
         }
     }
 }
