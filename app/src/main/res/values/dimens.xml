@@ -12,6 +12,7 @@
     <dimen name="margin_top">5dp</dimen>
     <dimen name="size_title">24sp</dimen>
     <dimen name="size_body">18sp</dimen>
+    <dimen name="size_small">12sp</dimen>
 
     <!-- Camera preview -->
     <integer name="camera_preview_width">240</integer>
