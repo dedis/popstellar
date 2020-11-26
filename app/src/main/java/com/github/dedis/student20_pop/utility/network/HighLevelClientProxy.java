@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.utility.network;
 
+import com.github.dedis.student20_pop.model.Person;
 import com.github.dedis.student20_pop.model.network.level.high.lao.CreateLao;
 import com.github.dedis.student20_pop.model.network.level.high.lao.UpdateLao;
 import com.github.dedis.student20_pop.model.network.level.high.meeting.CreateMeeting;
@@ -18,9 +19,9 @@ public final class HighLevelClientProxy {
     private final LowLevelClientProxy lowLevelClientProxy;
     private final String publicKey, privateKey;
 
-    public HighLevelClientProxy(Session session, String publicKey, String privateKey) {
-        this.publicKey = publicKey;
-        this.privateKey = privateKey;
+    public HighLevelClientProxy(Session session, Person person) {
+        this.publicKey = person.getId();
+        this.privateKey = person.getAuthentication();
         lowLevelClientProxy = new LowLevelClientProxy(session);
     }
 

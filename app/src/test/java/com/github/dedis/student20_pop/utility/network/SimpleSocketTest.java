@@ -1,5 +1,7 @@
 package com.github.dedis.student20_pop.utility.network;
 
+import com.github.dedis.student20_pop.model.Person;
+
 import net.jodah.concurrentunit.Waiter;
 
 import org.glassfish.tyrus.server.Server;
@@ -46,7 +48,7 @@ public class SimpleSocketTest {
 
         Thread t = new Thread(() -> {
             try {
-                LowLevelClientProxy session = PoPClientEndpoint.connectToServer(URI.create("ws://localhost:2000/"), "", "").lowLevel();
+                LowLevelClientProxy session = PoPClientEndpoint.connectToServer(URI.create("ws://localhost:2000/"), new Person("tester")).lowLevel();
                 for(String s : toSend)
                     session.getSession().getBasicRemote().sendText(s);
                 session.getSession().close();
