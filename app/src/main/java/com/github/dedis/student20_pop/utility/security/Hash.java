@@ -1,9 +1,6 @@
 package com.github.dedis.student20_pop.utility.security;
 
-import android.os.Build;
 import android.util.Log;
-
-import androidx.annotation.RequiresApi;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
