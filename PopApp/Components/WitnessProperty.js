@@ -3,12 +3,12 @@ import {
   StyleSheet, View, Text, FlatList,
 } from 'react-native';
 
-import EventItem from './EventItem';
 import { Spacing } from '../Styles';
 import PROPS_TYPE from '../res/Props';
+import STRINGS from '../res/strings';
 
 /**
- * Roll-call component
+ * Witnesses property component
  */
 const styles = StyleSheet.create({
   view: {
@@ -25,23 +25,21 @@ const styles = StyleSheet.create({
   },
 });
 
-const RollCallEvent = ({ event }) => (
+const MeetingEvent = ({ event }) => (
   <View style={styles.view}>
-    <Text style={styles.text}>Status (Future, Open or Closed)</Text>
-    <Text style={styles.text}>Participants #</Text>
-    <Text style={styles.text}>QR code</Text>
+    <Text style={styles.text}>{STRINGS.witness_name}</Text>
     <FlatList
-      data={event.childrens}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => <EventItem event={item} />}
+      data={event.witnesses}
+      keyExtractor={(item) => item}
+      renderItem={({ item }) => <Text>{item}</Text>}
       listKey={event.id.toString()}
       style={styles.flatList}
     />
   </View>
 );
 
-RollCallEvent.propTypes = {
+MeetingEvent.propTypes = {
   event: PROPS_TYPE.event.isRequired,
 };
 
-export default RollCallEvent;
+export default MeetingEvent;

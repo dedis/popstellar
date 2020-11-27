@@ -4,27 +4,13 @@ const data = [
     data: [
       {
         id: 21,
-        type: 'meeting',
+        type: 'organization_name',
         name: 'Property 1',
-        date: '2020-10-28',
       },
       {
         id: 22,
-        type: 'meeting',
-        name: 'Property 2',
-        date: '2020-10-28',
-      },
-      {
-        id: 23,
-        type: 'meeting',
-        name: 'Property 3',
-        date: '2020-10-28',
-      },
-      {
-        id: 24,
-        type: 'meeting',
-        name: 'Property 4',
-        date: '2021-10-28',
+        type: 'witness',
+        witnesses: ['Witness 1', 'Witness 2'],
       },
     ],
   },
@@ -102,7 +88,7 @@ const data = [
       },
       {
         id: 11,
-        type: 'meeting',
+        type: 'rollCall',
         name: 'Events 11',
         date: '2020-10-28',
       },

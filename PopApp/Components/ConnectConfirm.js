@@ -57,13 +57,17 @@ const ConnectConfirm = ({ navigation }) => (
           onPress={() => {
             const parentNavigation = navigation.dangerouslyGetParent();
             if (parentNavigation !== undefined) {
-              parentNavigation.navigate('Launch');
+              parentNavigation.navigate(STRINGS.navigation_tab_launch);
             }
           }}
         />
       </View>
       <View style={styles.button}>
-        <Button title={STRINGS.general_button_cancel} style={styles.button} onPress={() => { navigation.navigate('Scanning'); }} />
+        <Button
+          title={STRINGS.general_button_cancel}
+          style={styles.button}
+          onPress={() => { navigation.navigate(STRINGS.connect_scanning_title); }}
+        />
       </View>
     </View>
   </View>

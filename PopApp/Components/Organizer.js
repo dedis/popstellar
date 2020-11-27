@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import data from '../res/EventData';
 
 import { Typography } from '../Styles';
-import EventsCollapsableList from './EventsCollapsableList';
+import OrganizerEventsCollapsableList from './OrganizerCollapsableList';
 
 /**
 * The Organizer component
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
 
 const Organizer = () => (
   <View style={styles.container}>
-    <EventsCollapsableList data={data.filter((e) => e.title !== '')} closedList={['Future']} />
+    <OrganizerEventsCollapsableList data={data} closedList={['Future', '']} />
   </View>
 );
 

@@ -9,10 +9,11 @@ const PROPS_TYPE = {
 
   event: PropTypes.shape({
     id: PropTypes.number.isRequired,
-    type: PropTypes.string,
-    name: PropTypes.string.isRequired,
-    date: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+    name: PropTypes.string,
+    date: PropTypes.string,
     children: PropTypes.arrayOf(this),
+    witnesses: PropTypes.arrayOf(PropTypes.string),
   }),
 
   navigation: PropTypes.shape({

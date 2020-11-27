@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import STRINGS from '../res/strings';
 
 import Navigation from './Navigation';
-import OrganizerNavigation from './OrganizerNavigation';
+import OrganizationNavigation from './OrganizationNavigation';
 
 /**
 * Define the App stack navigation
@@ -40,7 +40,7 @@ function AppNavigation({ organizationNavigation }) {
         />
         <Stack.Screen
           name={STRINGS.app_navigation_tab_organizer}
-          component={OrganizerNavigation}
+          component={OrganizationNavigation}
         />
       </Stack.Navigator>
     </SafeAreaView>
