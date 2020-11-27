@@ -2,9 +2,15 @@ package json
 
 import java.util.Base64
 
-import ch.epfl.pop.json.{Actions, ChannelName, Methods, Objects}
+import ch.epfl.pop.json.JsonMessages.JsonMessage
+import ch.epfl.pop.json.JsonUtils.JsonMessageParserError
+import ch.epfl.pop.json.{Actions, ChannelName, JsonMessageParser, Methods, Objects}
 
-object JsonParserTestsUtils {
+import scala.util.Random
+import org.scalatest.{FunSuite, Matchers}
+
+
+object JsonParserTestsUtils extends FunSuite with Matchers {
 
   val ERROR_MESSAGE: String = "error_for_error_code_above"
 
@@ -119,6 +125,101 @@ object JsonParserTestsUtils {
            |  }
            |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
       case _ => throw new IllegalArgumentException("Impossible argument combination in embeddedServerAnswer")
+    }
+  }
+
+  def checkBogusInputs(source: String): Unit = {
+
+    val RANDOM_GENERATOR = new Random(2020)
+
+    def altereString(str: String): String = {
+      if (str.isEmpty) "alteredString"
+      else str.tail
+    }
+
+    def randomInt: Int = RANDOM_GENERATOR.nextInt()
+
+    val arrEmpty: String = """[]"""
+    val arr: String = """["MTu", "T0x"]"""
+
+    def patternString(kw: String): String = s""""$kw":"[^,]*""""
+    def patternAfterString(kw: String, newValue: String): String = s""""$kw":$newValue"""
+
+    def performBogusTest(s: String): Unit = {
+      JsonMessageParser.parseMessage(s) match {
+        case Left(_) => fail()
+        case Right(e) => e shouldBe a [JsonMessageParserError]
+      }
+    }
+
+    def checkBatchTestsString(kw: String): Unit = {
+      val pattern: String = s""""$kw":"[^,]*""""
+      def patternAfter(newValue: String): String = s""""$kw":$newValue"""
+
+      if (source.contains(kw)) {
+        performBogusTest(source.replaceAll(pattern, patternAfter("\"3.0\"")))
+        performBogusTest(source.replaceAll(pattern, patternAfter("\"string\"")))
+        performBogusTest(source.replaceAll(pattern, patternAfter("2.0")))
+        performBogusTest(source.replaceAll(pattern, patternAfter("")))
+        performBogusTest(source.replaceAll(pattern, patternAfter("s|{@sopOIJ34≠")))
+        performBogusTest(source.replaceAll(pattern, patternAfter(arrEmpty)))
+        performBogusTest(source.replaceAll(pattern, patternAfter(arr)))
+        performBogusTest(source.replaceAll(pattern, patternAfter(randomInt.toString)))
+      }
+    }
+
+    def checkBatchTestsInt(kw: String): Unit = {
+      val pattern: String = s""""$kw":[0-9]*"""
+      def patternAfter(newValue: String): String = s""""$kw":$newValue"""
+
+      if (source.contains(kw)) {
+        performBogusTest(source.replaceAll(pattern, patternAfter("\"3.0\"")))
+        performBogusTest(source.replaceAll(pattern, patternAfter("\"3\"")))
+        performBogusTest(source.replaceAll(pattern, patternAfter("\"string\"")))
+        //performBogusTest(source.replaceAll(pattern, patternAfter("2.0")))
+        performBogusTest(source.replaceAll(pattern, patternAfter("")))
+        performBogusTest(source.replaceAll(pattern, patternAfter("s|{@sopOIJ34≠")))
+      }
+    }
+
+    def checkBatchWithArrays(source: String, kw: String, pattern: String): Unit = {
+      performBogusTest(source.replaceAll(pattern, patternAfterString(kw, randomInt.toString)))
+      performBogusTest(source.replaceAll(pattern, patternAfterString(kw, arrEmpty)))
+      performBogusTest(source.replaceAll(pattern, patternAfterString(kw, arr)))
+    }
+
+    def checkBatchWithNonBase64(source: String, kw: String): Unit = {
+      performBogusTest(source.replaceAll(patternString(kw), patternAfterString(kw, "not-A-Base64-String")))
+    }
+
+    if (source.contains("jsonrpc")) {
+      val kw: String = "jsonrpc"
+      checkBatchTestsString(kw)
+    }
+    if (source.contains("\"method\":")) checkBatchTestsString("method")
+    if (source.contains("\"id\":")) checkBatchTestsInt("id")
+
+    if (source.contains("\"params\":")) {
+      if (source.contains("\"channel\":")) {
+        val kw: String = "channel"
+        val pattern: String = """"KW":"[^,]*"""".replaceAll("KW", kw)
+
+        checkBatchWithArrays(source, kw, pattern)
+      }
+
+      if (source.contains("\"message\":")) {
+        if (source.contains("\"data\":")) {
+          checkBatchWithNonBase64(source, "data")
+
+          // TODO check inside
+        }
+        if (source.contains("\"sender\":")) checkBatchWithNonBase64(source, "sender")
+        if (source.contains("\"signature\":")) checkBatchWithNonBase64(source, "signature")
+        if (source.contains("\"message_id\":")) checkBatchWithNonBase64(source, "message_id")
+        if (source.contains("\"witness_signatures\":")) {
+          // TODO check that all values are base64 strings
+        }
+      }
     }
   }
 }

@@ -134,6 +134,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     sp shouldBe a [UpdateLaoMessageClient]
     spdp shouldBe a [UpdateLaoMessageClient]
     sp shouldBeEqualUntilMessageContent spdp
+    checkBogusInputs(source)
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:BroadcastLaoMessageClient") {
@@ -152,6 +153,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     sp shouldBe a [BroadcastLaoMessageClient]
     spdp shouldBe a [BroadcastLaoMessageClient]
     sp shouldBeEqualUntilMessageContent spdp
+    checkBogusInputs(source)
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:WitnessMessageMessageClient") {
@@ -170,6 +172,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     sp shouldBe a [WitnessMessageMessageClient]
     spdp shouldBe a [WitnessMessageMessageClient]
     sp shouldBeEqualUntilMessageContent spdp
+    checkBogusInputs(source)
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:CreateMeetingMessageClient") {
@@ -269,6 +272,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     sp shouldBe a [BroadcastMeetingMessageClient]
     spdp shouldBe a [BroadcastMeetingMessageClient]
     sp shouldBeEqualUntilMessageContent spdp
+    checkBogusInputs(source)
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:PropagateMessageServer") {
@@ -296,6 +300,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     sp shouldBe a [PropagateMessageServer]
     spdp shouldBe a [PropagateMessageServer]
     sp shouldBeEqualUntilMessageContent spdp
+    checkBogusInputs(source)
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:SubscribeMessageClient") {
@@ -323,6 +328,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     assert(sp === spdp)
     assert(sp.isInstanceOf[SubscribeMessageClient])
     assert(spdp.isInstanceOf[SubscribeMessageClient])
+    checkBogusInputs(source)
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:UnsubscribeMessageClient") {
@@ -350,6 +356,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     assert(sp === spdp)
     assert(sp.isInstanceOf[UnsubscribeMessageClient])
     assert(spdp.isInstanceOf[UnsubscribeMessageClient])
+    checkBogusInputs(source)
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:CatchupMessageClient") {
@@ -377,6 +384,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     assert(sp === spdp)
     assert(sp.isInstanceOf[CatchupMessageClient])
     assert(spdp.isInstanceOf[CatchupMessageClient])
+    checkBogusInputs(source)
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:AnswerResultIntMessageServer") {
