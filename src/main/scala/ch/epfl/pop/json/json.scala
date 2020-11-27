@@ -49,7 +49,7 @@ package object json {
                                    sender: Key,
                                    signature: Signature,
                                    message_id: Hash,
-                                   witness_signatures: List[Key]
+                                   witness_signatures: List[Signature]
                                  )
 
   final case class ChannelMessages(messages: List[ChannelMessage])

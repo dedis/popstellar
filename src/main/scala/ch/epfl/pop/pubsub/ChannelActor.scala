@@ -53,7 +53,7 @@ object ChannelActor {
 
   def apply(publishExit: Source[PropagateMessageServer, NotUsed])(implicit system :ActorSystem[Nothing]): Behavior[ChannelMessage] = {
     //Setup root channel
-    val root = "root"
+    val root = "/root"
     val (entry, exit) = MergeHub.source[PropagateMessageServer].toMat(BroadcastHub.sink)(Keep.both).run()
     publishExit.filter(_.params.channel == root).runWith(entry)
 
@@ -69,17 +69,20 @@ object ChannelActor {
 
         case CreateMessage(channel,  replyTo) =>
           if (!channelsOutputs.contains(channel)) {
+            ctx.log.debug("creating channel: " + channel)
             val (entry, exit) = MergeHub.source[PropagateMessageServer].toMat(BroadcastHub.sink)(Keep.both).run()
 
             publishExit.filter(_.params.channel == channel).runWith(entry)
+            ctx.log.debug("New channel map: " + (channelsOutputs + (channel -> exit)).toString())
             replyTo ! true
             channelHandler(channelsOutputs + (channel -> exit), publishExit)
+
           }
           else {
-
             replyTo ! false
+            Behaviors.same
           }
-          Behaviors.same
+
 
 
         case SubscribeMessage(channel, out, id, replyTo) =>
@@ -92,6 +95,7 @@ object ChannelActor {
             replyTo ! AnswerSubscribe(AnswerResultIntMessageServer(id = id), channel, Some(killSwitch))
           }
           else {
+            ctx.log.debug(channelsOutputs.toString())
             val error = MessageErrorContent(-2, "Invalid resource: channel " + channel + " does not exist.")
             replyTo ! AnswerSubscribe(AnswerErrorMessageServer(error = error, id = id), channel, None)
           }

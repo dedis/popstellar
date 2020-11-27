@@ -82,6 +82,9 @@ object JsonMessageParser {
     }
   }
 
+  def parseChannelMessage(source: Array[Byte]): ChannelMessage = source.map(_.toChar).mkString.parseJson.convertTo[ChannelMessage]
+
+
   /**
    * Serialize a JsonMessage into a string
    *

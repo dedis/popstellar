@@ -413,7 +413,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
 
 
     // 1 message and empty witness list
-    val data: MessageContentData = new MessageContentDataBuilder().setHeader(Objects.Message, Actions.Witness).setId("2".getBytes).setStart(22).build()
+    val data: MessageContentData = new MessageContentDataBuilder().setHeader(Objects.Message, Actions.Witness).setId("2".getBytes).setStart(22L).build()
     val encodedData: Base64String = JsonUtils.ENCODER.encode(data.toJson.compactPrint.getBytes).map(_.toChar).mkString
     var m: MessageContent = MessageContent(encodedData, data, "skey".getBytes, "sign".getBytes, "mid".getBytes, List())
     sp = AnswerResultArrayMessageServer(99, ChannelMessages(List(m)))
