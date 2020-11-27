@@ -40,7 +40,7 @@ const ConnectConnecting = ({ navigation }) => (
         <Button
           title={STRINGS.general_button_cancel}
           onPress={() => {
-            navigation.navigate('Scanning');
+            navigation.navigate(STRINGS.connect_scanning_title);
           }}
         />
       </View>
@@ -48,7 +48,7 @@ const ConnectConnecting = ({ navigation }) => (
         <Button
           title={STRINGS.connect_connecting_validate}
           onPress={() => {
-            navigation.navigate('Confirm');
+            navigation.navigate(STRINGS.connect_confirm_title);
           }}
         />
       </View>

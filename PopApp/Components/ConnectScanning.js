@@ -33,7 +33,7 @@ const ConnectScanning = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>{STRINGS.connect_scanning_camera_view}</Text>
-      <CameraButton action={() => { navigation.navigate('Connecting'); }} />
+      <CameraButton action={() => { navigation.navigate(STRINGS.connect_connecting_title); }} />
     </View>
   );
 };

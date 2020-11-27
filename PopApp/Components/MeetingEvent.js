@@ -30,6 +30,7 @@ const MeetingEvent = ({ event }) => (
     <Text style={styles.text}>{event.name}</Text>
     <Text style={styles.text}>Start time</Text>
     <Text style={styles.text}>Optionnal end time</Text>
+    <Text style={styles.text} dataDetectorType="link">Location, test.com</Text>
     <FlatList
       data={event.childrens}
       keyExtractor={(item) => item.id.toString()}

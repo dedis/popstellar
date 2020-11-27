@@ -29,7 +29,10 @@ const ConnectUnapprove = ({ navigation }) => (
   <View style={styles.container}>
     <Text style={styles.text}>{STRINGS.connect_description}</Text>
     <View style={styles.button}>
-      <Button title={STRINGS.connect_button_camera} onPress={() => { navigation.navigate('Scanning'); }} />
+      <Button
+        title={STRINGS.connect_button_camera}
+        onPress={() => { navigation.navigate(STRINGS.connect_scanning_title); }}
+      />
     </View>
   </View>
 );

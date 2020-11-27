@@ -55,6 +55,7 @@ const PollEvent = ({ event }) => {
     <View style={styles.view}>
       <Text style={styles.text}>{event.name}</Text>
       <Text style={styles.text}>Status (Future, Open or Closed)</Text>
+      <Text style={styles.text}>Participants: N of M</Text>
       <RadioForm
         radio_props={radioProps}
         initial={0}

@@ -3,6 +3,7 @@ const STRINGS = {
   /* --- GENERAL strings --- */
   general_button_cancel: 'Cancel',
   general_button_confirm: 'Confirm',
+  general_button_open: 'Open',
 
   /* --- Navigation Strings --- */
   navigation_tab_home: 'Home',
@@ -13,13 +14,20 @@ const STRINGS = {
   app_navigation_tab_home: 'AppHome',
   app_navigation_tab_organizer: 'AppOrganizer',
 
-  /* --- Organizer Navigation Strings --- */
-  organizer_navigation_tab_home: 'Home',
-  organizer_navigation_tab_attendee: 'Attendee',
-  organizer_navigation_tab_identity: 'My indentity',
+  /* --- Organization Navigation Strings --- */
+  organization_navigation_tab_home: 'Home',
+  organization_navigation_tab_attendee: 'Attendee',
+  organization_navigation_tab_identity: 'My indentity',
 
+  /* --- Witness Navigation Strings --- */
   witness_navigation_tab_home: 'Witness',
   witness_navigation_tab_video: 'Witness Video',
+
+  /* --- Organizer Navigation Strings --- */
+  organizer_navigation_tab_home: 'Organizer',
+  organizer_navigation_tab_create_event: 'Create Event',
+  organizer_navigation_tab_add_witness: 'Add witness',
+  organizer_navigation_tab_roll_call: 'Roll-Call',
 
   /* --- Home Strings --- */
   home_welcome: 'Welcome to Personhood.Online!',
@@ -51,13 +59,8 @@ const STRINGS = {
   launch_organization_name: 'Organization name',
   launch_button_launch: 'Launch',
 
-  launch_button_cancel: 'Cancel',
-
-  /* --- Organization Strings --- */
-  organization_description: 'Organization screen',
-
-  /* --- Attendee Strings --- */
-  attendee_description: 'Attendee screen',
+  /* --- Organizer Strings --- */
+  organization_name: 'Organization name',
 
   /* --- Identity Strings --- */
   identity_description: 'Identity screen',
@@ -72,12 +75,36 @@ const STRINGS = {
   identity_email_placeholder: 'Email',
   identity_phone_placeholder: 'Phone number',
 
-  /* --- Organizer Strings --- */
-  organizer_description: 'Organizer screen',
-
   /* --- Witness Strings --- */
   witness_description: 'Witness screen',
   witness_video_button: 'Go to the video screen',
+  witness_name: 'Witnesses',
+  witness_scan: 'Please scan the personal QR code of the witness to add',
+
+  /* --- Discussion creation Strings --- */
+  discussion_create_name: 'Name*',
+  discussion_create_open: 'discussion open',
+
+  /* --- Roll-call creation Strings --- */
+  roll_call_create_deadline: 'Deadline:',
+  roll_call_create_description: 'Description',
+
+  /* --- Roll-call scanning Strings --- */
+  roll_call_scan_description: 'Please scan each participant’s Roll-call QR code exactly once.',
+  roll_call_scan_participant: 'participants scanned',
+  roll_call_scan_close: 'Close Roll-Call',
+
+  /* --- Poll creation Strings --- */
+  poll_create_question: 'Question*',
+  poll_create_finish_time: 'Finish time',
+
+  /* --- Meeting creation Strings --- */
+  meeting_create_name: 'Name*',
+  meeting_create_finish_time: 'Finish time',
+  meeting_create_location: 'Location',
+
+  /* --- General creation Strings --- */
+  create_description: 'Choose the type of event you want to create',
 
   lorem_ipsum: "Scrollable box containing the critical informations!\nLAO's, organizers' and witnesses' names "
         + 'and hex fingerprint\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse vitae egestas '

@@ -1,72 +1,41 @@
 import React from 'react';
-import {
-  Platform, StyleSheet,
-} from 'react-native';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { connect } from 'react-redux';
+import { createStackNavigator } from '@react-navigation/stack';
 
+import Organizer from '../Components/Organizer';
+import CreateEvent from '../Components/CreateEvent';
+import WitnessScanning from '../Components/WitnessScanning';
+import RollCallScanning from '../Components/RollCallScanning';
 import STRINGS from '../res/strings';
 
-import Attendee from '../Components/Attendee';
-import Identity from '../Components/Identity';
-import MytabBar from '../Components/OrganizerMaterialTab';
-import WitnessNavigation from './WitnessNavigation';
-import Organizer from '../Components/Organizer';
-
-const OrganizerTopTabNavigator = createMaterialTopTabNavigator();
-
 /**
-* The organizer tab navigation component
-*
-* create a tab navigator between the Home, Attendee, Organizer, Witness and Identity component
-*
-* the SafeAreaView resolves problem with status bar overlap
+* Define the Organizer stack navigation
 */
-const styles = StyleSheet.create({
-  navigator: {
-    ...Platform.select({
-      web: {
-        width: '100vw',
-      },
-      default: {},
-    }),
-  },
-});
 
-function OrganizerNavigation() {
-  // const LAO = props.navigationState.routes[0].params;
+const Stack = createStackNavigator();
 
+export default function OrganizerNavigation() {
   return (
-    <OrganizerTopTabNavigator.Navigator
-      style={styles.navigator}
-      initialRouteName={STRINGS.organizer_navigation_tab_attendee}
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      tabBar={(props) => <MytabBar {...props} />}
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
     >
-      <OrganizerTopTabNavigator.Screen
-        name={STRINGS.organizer_navigation_tab_attendee}
-        component={Attendee}
-      />
-      <OrganizerTopTabNavigator.Screen
-        name="Organizer"
+      <Stack.Screen
+        name={STRINGS.organizer_navigation_tab_home}
         component={Organizer}
       />
-      <OrganizerTopTabNavigator.Screen
-        name="Witness"
-        component={WitnessNavigation}
+      <Stack.Screen
+        name={STRINGS.organizer_navigation_tab_create_event}
+        component={CreateEvent}
       />
-      <OrganizerTopTabNavigator.Screen
-        name={STRINGS.organizer_navigation_tab_identity}
-        component={Identity}
+      <Stack.Screen
+        name={STRINGS.organizer_navigation_tab_add_witness}
+        component={WitnessScanning}
       />
-    </OrganizerTopTabNavigator.Navigator>
+      <Stack.Screen
+        name={STRINGS.organizer_navigation_tab_roll_call}
+        component={RollCallScanning}
+      />
+    </Stack.Navigator>
   );
 }
-
-const mapStateToProps = (state) => (
-  {
-    LAO_ID: state.LAO_ID,
-  }
-);
-
-export default connect(mapStateToProps)(OrganizerNavigation);
