@@ -16,7 +16,7 @@ import com.github.dedis.student20_pop.utility.ui.OnEventTypeSelectedListener;
  **/
 public class OrganizerActivity extends FragmentActivity implements OnEventTypeSelectedListener  {
 
-    private static final String TAG = OrganizerActivity.class.getSimpleName();
+    public static final String TAG = OrganizerActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

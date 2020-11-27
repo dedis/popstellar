@@ -6,7 +6,9 @@
     android:layout_height="match_parent"
     android:id="@+id/fragment_home" >
 
-    <include layout="@layout/tab_home" />
+    <include
+        android:id="@+id/include"
+        layout="@layout/tab_home" />
     <include layout="@layout/tab_connect_launch" />
 
     <androidx.constraintlayout.widget.Guideline
@@ -14,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="@dimen/guideline_horizontal_tab" />
+        app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
 
     <LinearLayout
         android:id="@+id/welcome_screen"
@@ -49,11 +51,11 @@
     <LinearLayout
         android:id="@+id/list_screen"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab">
+        app:layout_constraintTop_toTopOf="@id/guideline_horizontal_tab">
 
         <ListView
             android:id="@+id/lao_list"
@@ -61,6 +63,7 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/margin_button"
             android:layout_marginRight="@dimen/margin_button"
+            android:divider="@color/white"
             android:dividerHeight="@dimen/margin_top" />
     </LinearLayout>
 
