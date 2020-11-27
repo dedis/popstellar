@@ -4,17 +4,16 @@ import ch.epfl.pop.json.Actions.Actions
 import ch.epfl.pop.json.Objects.Objects
 
 
-
 /** Collection of types used in Json parsing */
 package object json {
   type UNKNOWN = String // TODO remove later
 
-  type DecodedBase64String = Array[Byte]
+  type ByteArray = Array[Byte]
 
   type TimeStamp = BigInt
-  type Signature = DecodedBase64String
-  type Key = DecodedBase64String
-  type Hash = DecodedBase64String
+  type Signature = ByteArray
+  type Key = ByteArray
+  type Hash = ByteArray
 
   type ChannelName = String
   type ChannelMessage = MessageContent
@@ -43,7 +42,11 @@ package object json {
 
   final case class MessageParameters(channel: ChannelName, message: Option[MessageContent])
   final case class MessageContent(
-                                   data: MessageContentData, sender: Key, signature: Signature, message_id: Hash, witness_signatures: List[Key]
+                                   data: MessageContentData,
+                                   sender: Key,
+                                   signature: Signature,
+                                   message_id: Hash,
+                                   witness_signatures: List[Key]
                                  )
 
   final case class ChannelMessages(messages: List[ChannelMessage])

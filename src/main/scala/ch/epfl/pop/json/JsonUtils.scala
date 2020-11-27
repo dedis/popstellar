@@ -55,7 +55,7 @@ object JsonUtils {
     var action: Actions = _
 
     /* LAO related fields */
-    var id: DecodedBase64String = Array[Byte]()
+    var id: ByteArray = Array[Byte]()
     var name: String = ""
     var creation: TimeStamp = BigInt(-1)
     var last_modified: TimeStamp = BigInt(-1)
@@ -63,7 +63,7 @@ object JsonUtils {
     var witnesses: List[Key] = List()
 
     /* witness a message related fields */
-    var message_id: DecodedBase64String = Array[Byte]()
+    var message_id: ByteArray = Array[Byte]()
     var signature: Signature = Array[Byte]()
 
     /* meeting related fields */
@@ -91,13 +91,13 @@ object JsonUtils {
 
     def setObject(obj: Objects): MessageContentDataBuilder = { this._object = obj; this }
     def setAction(action: Actions): MessageContentDataBuilder = { this.action = action; this }
-    def setId(id: DecodedBase64String): MessageContentDataBuilder = { this.id = id; this }
+    def setId(id: ByteArray): MessageContentDataBuilder = { this.id = id; this }
     def setName(name: String): MessageContentDataBuilder = { this.name = name; this }
     def setCreation(creation: TimeStamp): MessageContentDataBuilder = { this.creation = creation; this }
     def setLastModified(lastModified: TimeStamp): MessageContentDataBuilder = { this.last_modified = lastModified; this }
     def setOrganizer(organizer: Key): MessageContentDataBuilder = { this.organizer = organizer; this }
     def setWitnesses(witnesses: List[Key]): MessageContentDataBuilder = { this.witnesses = witnesses; this }
-    def setMessageId(id: DecodedBase64String): MessageContentDataBuilder = { this.message_id = id; this }
+    def setMessageId(id: ByteArray): MessageContentDataBuilder = { this.message_id = id; this }
     def setSignature(signature: Signature): MessageContentDataBuilder = { this.signature = signature; this }
     def setLocation(location: String): MessageContentDataBuilder = { this.location = location; this }
     def setStart(start: TimeStamp): MessageContentDataBuilder = { this.start = start; this }

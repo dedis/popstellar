@@ -44,9 +44,9 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
   }
 
   /* implicit used to parse/serialize a String encoded in Base64 */
-  implicit object DecodedBase64StringFormat extends RootJsonFormat[DecodedBase64String] {
-    override def read(json: JsValue): DecodedBase64String = JsonUtils.DECODER.decode(json.convertTo[String])
-    override def write(obj: DecodedBase64String): JsValue = JsString(JsonUtils.ENCODER.encode(obj).map(_.toChar).mkString)
+  implicit object ByteArrayFormat extends RootJsonFormat[ByteArray] {
+    override def read(json: JsValue): ByteArray = JsonUtils.DECODER.decode(json.convertTo[String])
+    override def write(obj: ByteArray): JsValue = JsString(JsonUtils.ENCODER.encode(obj).map(_.toChar).mkString)
   }
 
 
@@ -65,7 +65,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
             case Seq(a@JsString(_), id@JsString(_), JsString(n), c@JsNumber(_), lm@JsNumber(_), orgKey@JsString(_), JsArray(w)) =>
               new MessageContentDataBuilder()
                 .setHeader(Objects.Lao, a.convertTo[Actions])
-                .setId(id.convertTo[DecodedBase64String])
+                .setId(id.convertTo[ByteArray])
                 .setName(n)
                 .setCreation(c.convertTo[TimeStamp])
                 .setLastModified(lm.convertTo[TimeStamp])
@@ -93,7 +93,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
             case Seq(action@JsString(_), mid@JsString(_), signature@JsString(_)) =>
               new MessageContentDataBuilder()
                 .setHeader(Objects.Message, action.convertTo[Actions])
-                .setMessageId(mid.convertTo[DecodedBase64String])
+                .setMessageId(mid.convertTo[ByteArray])
                 .setSignature(signature.convertTo[Signature])
                 .build()
 
@@ -112,7 +112,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
               val mcd = new MessageContentDataBuilder()
                 .setHeader(Objects.Meeting, a.convertTo[Actions])
-                .setId(id.convertTo[DecodedBase64String])
+                .setId(id.convertTo[ByteArray])
                 .setName(n)
                 .setCreation(c.convertTo[TimeStamp])
                 .setLastModified(lm.convertTo[TimeStamp])
