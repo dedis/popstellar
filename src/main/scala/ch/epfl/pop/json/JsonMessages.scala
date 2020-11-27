@@ -57,7 +57,7 @@ object JsonMessages {
                                        val id: Int,
                                        val method: Methods,
                                        val jsonrpc: String = JSON_RPC_VERSION
-                                     ) extends JsonMessage
+                                     ) extends JsonMessagePubSubClient
 
 
   /* --------------- ADMIN CLIENT MESSAGES --------------- */

@@ -38,7 +38,7 @@ object PublishSubscribe {
 
       //Initialize Inlet/Outlets
       val input = builder.add(Flow[JsonMessagePubSubClient])
-      val merge = builder.add(Merge[JsonMessageAnswerServer](5))
+      val merge = builder.add(Merge[JsonMessageAnswerServer](4))
       val output = builder.add(Flow[JsonMessageAnswerServer])
       //val mergeUnsub = builder.add(Merge[UnsubMessage](2))
 
@@ -51,7 +51,7 @@ object PublishSubscribe {
           _ match {
             case _ : SubscribeMessageClient => Subscribe
             case _ : UnsubscribeMessageClient => Unsubscribe
-            case _ : JsonMessagePublishClient => Publish // TODO
+            case _ : JsonMessagePublishClient => Publish
             case _ : CatchupMessageClient => Catchup
           }
         }
@@ -106,14 +106,16 @@ object PublishSubscribe {
       m match {
         case CreateLaoMessageClient(params, id, _, _) =>
           val highLevelMessage = params.message.get.data
-          val channel = "root/" + highLevelMessage.id
+          val channel = "/root/" + highLevelMessage.id
           val future = actor.ask(ref => CreateMessage(channel, ref))
+          system.log.debug("Actor at creation of channel: " + actor.toString)
           if (!Await.result(future, timeout.duration)) {
             val error = MessageErrorContent(-3, "Channel " + channel + " already exists.")
             AnswerErrorMessageServer(error = error, id = id)
           }
           else {
-            pub(params, id)
+            //Publish on the LAO main channel
+            pub(MessageParameters(channel, params.message), id)
           }
         case req: JsonMessagePublishClient =>
           pub(req.params, req.id)

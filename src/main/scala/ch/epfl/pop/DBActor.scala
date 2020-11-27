@@ -1,6 +1,7 @@
 package ch.epfl.pop
 
 import java.io.File
+import java.nio.charset.StandardCharsets
 
 import akka.NotUsed
 import akka.actor.typed.scaladsl.Behaviors
@@ -73,12 +74,15 @@ object DBActor {
           var messages : List[ChannelMessage] = Nil
           while(it.hasNext) {
             val message = it.next().getValue
-            //messages = new String(message, StandardCharsets.UTF_8) :: messages // TODO : message is a MessageContent not a String
+            ctx.log.debug(new String(message, StandardCharsets.UTF_8))
+            val messageParsed = (new String(message, StandardCharsets.UTF_8)).parseJson.asJsObject.convertTo[MessageContent]
+            messages =  messageParsed :: messages
           }
-          AnswerResultArrayMessageServer(result = ChannelMessages(messages), id = rid)
+          replyTo ! AnswerResultArrayMessageServer(result = ChannelMessages(messages.reverse), id = rid)
 
         }
         else {
+          ctx.log.debug("Error invalid channel " + channel + "on catchup.")
           val error = MessageErrorContent(-2, "Invalid resource: channel " + channel + " does not exist.")
           replyTo ! AnswerErrorMessageServer(error = error, id = rid)
         }

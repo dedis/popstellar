@@ -43,7 +43,7 @@ package object json {
 
   final case class MessageParameters(channel: ChannelName, message: Option[MessageContent])
   final case class MessageContent(
-                                   data: MessageContentData, sender: Key, signature: Signature, message_id: Hash, witness_signatures: List[Key]
+                                   data: MessageContentData, sender: Key, signature: Signature, message_id: Hash, witness_signatures: List[Signature]
                                  )
 
   final case class ChannelMessages(messages: List[ChannelMessage])
