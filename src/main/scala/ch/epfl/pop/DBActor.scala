@@ -8,8 +8,7 @@ import akka.actor.typed.{ActorRef, ActorSystem, Behavior}
 import akka.stream.scaladsl.{Sink, Source}
 import ch.epfl.pop.json.JsonMessages._
 import ch.epfl.pop.json._
-import spray.json._
-import ch.epfl.pop.json.JsonCommunicationProtocol.MessageContentFormat
+import ch.epfl.pop.json.JsonMessageParser.serializeMessage
 import org.iq80.leveldb.impl.Iq80DBFactory.factory
 import org.iq80.leveldb.{DB, Options}
 
@@ -56,7 +55,7 @@ object DBActor {
 
         val message: MessageContent = params.message.get
         val id = message.message_id
-        db.put(id.getBytes(), message.toJson.toString.getBytes)
+        db.put(id, serializeMessage(message).getBytes)
 
         val propagate = PropagateMessageServer(params)
         implicit val system: ActorSystem[Nothing] = ctx.system

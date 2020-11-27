@@ -82,4 +82,6 @@ object JsonMessageParser {
 
     case _ => throw new SerializationException("Json serializer failed : invalid input message")
   }
+
+  def serializeMessage(mc: MessageContent): String = mc.toJson.toString
 }
