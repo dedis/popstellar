@@ -167,9 +167,11 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
     override def read(json: JsValue): MessageContent =
       json.asJsObject.getFields("data", "sender", "signature", "message_id", "witness_signatures") match {
         case Seq(data, sender, signature, message_id, JsArray(witnesses)) =>
-          val decodedData: String = JsonUtils.DECODER.decode(data.convertTo[String]).map(_.toChar).mkString
+          val string64Data: Base64String = data.convertTo[Base64String]
+          val decodedData: String = JsonUtils.DECODER.decode(string64Data).map(_.toChar).mkString
 
           MessageContent(
+            string64Data,
             decodedData.parseJson.convertTo[MessageContentData],
             sender.convertTo[Key],
             signature.convertTo[Signature],
@@ -181,19 +183,14 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
         case _ => throw JsonMessageParserException("invalid \"MessageContent\" : fields missing or wrongly formatted")
       }
 
-    override def write(obj: MessageContent): JsValue = {
-
-      val encodedData: Array[Byte] = JsonUtils.ENCODER.encode(obj.data.toJson.compactPrint.getBytes)
-      val encodedString: String = encodedData.map(_.toChar).mkString
-
+    override def write(obj: MessageContent): JsValue =
       JsObject(
-        "data" -> JsString(encodedString),
+        "data" -> obj.encodedData.toJson,
         "sender" -> obj.sender.toJson,
         "signature" -> obj.signature.toJson,
         "message_id" -> obj.message_id.toJson,
         "witness_signatures" -> JsArray(obj.witness_signatures.map(_.toJson).toVector)
       )
-    }
   }
 
   implicit val messageParametersFormat: RootJsonFormat[MessageParameters] = jsonFormat2(MessageParameters)

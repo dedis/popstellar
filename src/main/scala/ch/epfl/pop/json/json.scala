@@ -8,6 +8,8 @@ import ch.epfl.pop.json.Objects.Objects
 package object json {
   type UNKNOWN = String // TODO remove later
 
+  /** Base64 strings (untouched and decoded) */
+  type Base64String = String
   type ByteArray = Array[Byte]
 
   type TimeStamp = BigInt
@@ -42,6 +44,7 @@ package object json {
 
   final case class MessageParameters(channel: ChannelName, message: Option[MessageContent])
   final case class MessageContent(
+                                   encodedData: Base64String,
                                    data: MessageContentData,
                                    sender: Key,
                                    signature: Signature,

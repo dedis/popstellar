@@ -1,7 +1,5 @@
 package json
 
-import java.util.Base64
-
 import ch.epfl.pop.json.JsonMessages.{JsonMessagePublishClient, _}
 import ch.epfl.pop.json.JsonUtils.{JsonMessageParserException, MessageContentDataBuilder}
 import ch.epfl.pop.json._
@@ -408,7 +406,8 @@ class JsonMessageParserTest extends FunSuite with Matchers {
 
     // 1 message and empty witness list
     val data: MessageContentData = new MessageContentDataBuilder().setHeader(Objects.Message, Actions.Witness).setId("2".getBytes).setStart(22).build()
-    var m: MessageContent = MessageContent(data, "skey".getBytes, "sign".getBytes, "mid".getBytes, List())
+    val encodedData: Base64String = JsonUtils.ENCODER.encode(data.toJson.compactPrint.getBytes).map(_.toChar).mkString
+    var m: MessageContent = MessageContent(encodedData, data, "skey".getBytes, "sign".getBytes, "mid".getBytes, List())
     sp = AnswerResultArrayMessageServer(99, ChannelMessages(List(m)))
     spd = JsonMessageParser.serializeMessage(sp)
 
@@ -416,21 +415,21 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     var r: String = s"""[{"data":"$rd","message_id":"bWlk","sender":"c2tleQ==","signature":"c2lnbg==","witness_signatures":[]}]"""
 
     assertResult(source.replaceAll("F_MESSAGES", r))(spd)
-    assert(rd === Base64.getEncoder.encode(data.toJson.toString().getBytes).map(_.toChar).mkString)
-    assert(Base64.getDecoder.decode(rd).map(_.toChar).mkString === data.toJson.toString())
+    assert(rd === JsonUtils.ENCODER.encode(data.toJson.toString().getBytes).map(_.toChar).mkString)
+    assert(JsonUtils.DECODER.decode(rd).map(_.toChar).mkString === data.toJson.toString())
 
 
     // 1 message and non-empty witness list
     val sig: List[Key] = List("witnessKey1".getBytes, "witnessKey2".getBytes, "witnessKey3".getBytes)
-    m = MessageContent(data, "skey".getBytes, "sign".getBytes, "mid".getBytes, sig)
+    m = MessageContent(encodedData, data, "skey".getBytes, "sign".getBytes, "mid".getBytes, sig)
     sp = AnswerResultArrayMessageServer(99, ChannelMessages(List(m)))
     spd = JsonMessageParser.serializeMessage(sp)
 
     r = s"""[{"data":"$rd","message_id":"bWlk","sender":"c2tleQ==","signature":"c2lnbg==","witness_signatures":${listStringify(sig)}}]"""
 
     assertResult(source.replaceAll("F_MESSAGES", r))(spd)
-    assert(rd === Base64.getEncoder.encode(data.toJson.toString().getBytes).map(_.toChar).mkString)
-    assert(Base64.getDecoder.decode(rd).map(_.toChar).mkString === data.toJson.toString())
+    assert(rd === JsonUtils.ENCODER.encode(data.toJson.toString().getBytes).map(_.toChar).mkString)
+    assert(JsonUtils.DECODER.decode(rd).map(_.toChar).mkString === data.toJson.toString())
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:AnswerErrorMessageServer") {
