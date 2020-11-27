@@ -57,8 +57,8 @@ object JsonUtils {
     /* LAO related fields */
     var id: ByteArray = Array[Byte]()
     var name: String = ""
-    var creation: TimeStamp = BigInt(-1)
-    var last_modified: TimeStamp = BigInt(-1)
+    var creation: TimeStamp = -1L
+    var last_modified: TimeStamp = -1L
     var organizer: Key = Array[Byte]()
     var witnesses: List[Key] = List()
 
@@ -72,8 +72,8 @@ object JsonUtils {
 
     /* meeting related fields */
     var location: String = ""
-    var start: TimeStamp = BigInt(-1)
-    var end: TimeStamp = BigInt(-1)
+    var start: TimeStamp = -1L
+    var end: TimeStamp = -1L
     var extra: UNKNOWN = ""
 
 

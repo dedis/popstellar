@@ -166,8 +166,8 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
       if (!obj.id.isEmpty) jsObjectContent += ("id" -> obj.id.toJson)
       if (obj.name != "") jsObjectContent += ("name" -> obj.name.toJson)
-      if (obj.creation != -1) jsObjectContent += ("creation" -> obj.creation.toJson)
-      if (obj.last_modified != -1) jsObjectContent += ("last_modified" -> obj.last_modified.toJson)
+      if (obj.creation != -1L) jsObjectContent += ("creation" -> obj.creation.toJson)
+      if (obj.last_modified != -1L) jsObjectContent += ("last_modified" -> obj.last_modified.toJson)
       if (!obj.organizer.isEmpty) jsObjectContent += ("organizer" -> obj.organizer.toJson)
       if (obj._object == Objects.Lao) jsObjectContent += ("witnesses" -> JsArray(obj.witnesses.map(w => w.toJson).toVector))
       if (!obj.modification_id.isEmpty) jsObjectContent += ("modification_id" -> obj.modification_id.toJson)
@@ -176,8 +176,8 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
       if (!obj.message_id.isEmpty) jsObjectContent += ("message_id" -> obj.message_id.toJson)
       if (!obj.signature.isEmpty) jsObjectContent += ("signature" -> obj.signature.toJson)
       if (obj.location != "") jsObjectContent += ("location" -> obj.location.toJson)
-      if (obj.start != -1) jsObjectContent += ("start" -> obj.start.toJson)
-      if (obj.end != -1) jsObjectContent += ("end" -> obj.end.toJson)
+      if (obj.start != -1L) jsObjectContent += ("start" -> obj.start.toJson)
+      if (obj.end != -1L) jsObjectContent += ("end" -> obj.end.toJson)
       if (obj.extra != "") jsObjectContent += ("extra" -> obj.extra.toJson) // TODO modify extra's type
 
       JsObject(jsObjectContent)

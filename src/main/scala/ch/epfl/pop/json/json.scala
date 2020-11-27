@@ -12,7 +12,7 @@ package object json {
   type Base64String = String
   type ByteArray = Array[Byte]
 
-  type TimeStamp = BigInt
+  type TimeStamp = Long
   type Signature = ByteArray
   type Key = ByteArray
   type Hash = ByteArray
