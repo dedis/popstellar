@@ -62,6 +62,10 @@ object JsonUtils {
     var organizer: Key = Array[Byte]()
     var witnesses: List[Key] = List()
 
+    /* state LAO broadcast fields */
+    var modification_id: ByteArray = Array[Byte]()
+    var modification_signatures: List[Signature] = List()
+
     /* witness a message related fields */
     var message_id: ByteArray = Array[Byte]()
     var signature: Signature = Array[Byte]()
@@ -75,12 +79,13 @@ object JsonUtils {
 
     def build(): MessageContentData = {
       if (_object == null || action == null) {
-        println("Builder error! _object field or action field is null. Returning null")
+        println("Builder error! _object field or action field is null. Returning null") // TODO
         null
       } else {
         MessageContentData(
           _object, action,
           id, name, creation, last_modified, organizer, witnesses,
+          modification_id, modification_signatures,
           message_id, signature,
           location, start, end, extra
         )
@@ -97,6 +102,8 @@ object JsonUtils {
     def setLastModified(lastModified: TimeStamp): MessageContentDataBuilder = { this.last_modified = lastModified; this }
     def setOrganizer(organizer: Key): MessageContentDataBuilder = { this.organizer = organizer; this }
     def setWitnesses(witnesses: List[Key]): MessageContentDataBuilder = { this.witnesses = witnesses; this }
+    def setModificationId(modification_id: ByteArray): MessageContentDataBuilder = { this.modification_id = modification_id; this }
+    def setModificationSignatures(modification_sig: List[Signature]): MessageContentDataBuilder = { this.modification_signatures = modification_sig; this}
     def setMessageId(id: ByteArray): MessageContentDataBuilder = { this.message_id = id; this }
     def setSignature(signature: Signature): MessageContentDataBuilder = { this.signature = signature; this }
     def setLocation(location: String): MessageContentDataBuilder = { this.location = location; this }

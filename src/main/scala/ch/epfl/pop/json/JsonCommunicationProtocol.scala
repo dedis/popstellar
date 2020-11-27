@@ -63,15 +63,33 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
             // create LAO and broadcast LAO's state
             case Seq(a@JsString(_), id@JsString(_), JsString(n), c@JsNumber(_), lm@JsNumber(_), orgKey@JsString(_), JsArray(w)) =>
-              new MessageContentDataBuilder()
-                .setHeader(Objects.Lao, a.convertTo[Actions])
+              val action: Actions = a.convertTo[Actions]
+              val mcb = new MessageContentDataBuilder()
+                .setHeader(Objects.Lao, action)
                 .setId(id.convertTo[ByteArray])
                 .setName(n)
                 .setCreation(c.convertTo[TimeStamp])
                 .setLastModified(lm.convertTo[TimeStamp])
                 .setOrganizer(orgKey.convertTo[Key])
                 .setWitnesses(w.map(_.convertTo[Key]).toList)
-                .build()
+
+              action match {
+                case Actions.State =>
+                  jsonObject.getFields("modification_id", "modification_signatures") match {
+                    case Seq(mid@JsString(_), JsArray(ms)) =>
+                      mcb.setModificationId(mid.convertTo[ByteArray])
+                        .setModificationSignatures(ms.map(_.convertTo[Signature]).toList)
+                        .build()
+
+                    case _ => throw JsonMessageParserException(
+                      "invalid \"StateBroadcastLao\" query : fields (\"modification_id\" and/or " +
+                      "\"modification_signatures\") missing or wrongly formatted"
+                    )
+                  }
+
+                case _ => mcb.build()
+              }
+
 
             // update LAO's properties
             case Seq(action@JsString(_), JsString(name), lastModified@JsNumber(_), JsArray(witnesses)) =>
@@ -152,6 +170,9 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
       if (obj.last_modified != -1) jsObjectContent += ("last_modified" -> obj.last_modified.toJson)
       if (!obj.organizer.isEmpty) jsObjectContent += ("organizer" -> obj.organizer.toJson)
       if (obj._object == Objects.Lao) jsObjectContent += ("witnesses" -> JsArray(obj.witnesses.map(w => w.toJson).toVector))
+      if (!obj.modification_id.isEmpty) jsObjectContent += ("modification_id" -> obj.modification_id.toJson)
+      if (obj._object == Objects.Lao && obj.action == Actions.State)
+        jsObjectContent += ("modification_signatures" -> JsArray(obj.modification_signatures.map(s => s.toJson).toVector))
       if (!obj.message_id.isEmpty) jsObjectContent += ("message_id" -> obj.message_id.toJson)
       if (!obj.signature.isEmpty) jsObjectContent += ("signature" -> obj.signature.toJson)
       if (obj.location != "") jsObjectContent += ("location" -> obj.location.toJson)

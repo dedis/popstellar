@@ -24,6 +24,7 @@ object JsonParserTestsUtils {
   val _dataLao: String = s"""{
                             |    "object": "${Objects.Lao.toString}",
                             |    "action": "F_ACTION",
+                            |    FF_MODIFICATION
                             |    "id": "OTk5",
                             |    "name": "name",
                             |    "creation": 222,
@@ -62,8 +63,15 @@ object JsonParserTestsUtils {
                                       |}""".stripMargin.filterNot((c: Char) => c.isWhitespace)
 
 
-  val dataCreateLao: String = _dataLao.replaceAll("F_ACTION", Actions.Create.toString)
-  val dataBroadcastLao: String = _dataLao.replaceAll("F_ACTION", Actions.State.toString)
+  val dataCreateLao: String = _dataLao
+    .replaceAll("F_ACTION", Actions.Create.toString)
+    .replaceAll("FF_MODIFICATION", "")
+  val dataBroadcastLao: String = _dataLao
+    .replaceAll("F_ACTION", Actions.State.toString)
+    .replaceAll(
+      "FF_MODIFICATION",
+      "\"modification_id\":\"NDU2\",\"modification_signatures\":[\"amUgc2lnbmU=\",\"amUgc2lnbmUgYXVzc2k=\"],"
+    )
   val dataCreateMeeting: String = _dataMeeting.replaceAll("F_ACTION", Actions.Create.toString)
   val dataBroadcastMeeting: String = _dataMeeting.replaceAll("F_ACTION", Actions.State.toString)
 

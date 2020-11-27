@@ -98,6 +98,10 @@ package object json {
     organizer: Key,
     witnesses: List[Key],
 
+    /* state LAO broadcast fields */
+    modification_id: Array[Byte],
+    modification_signatures: List[Signature],
+
     /* witness a message related fields */
     message_id: Array[Byte],
     signature: Signature,
