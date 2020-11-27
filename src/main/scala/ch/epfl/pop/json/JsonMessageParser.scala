@@ -2,7 +2,11 @@ package ch.epfl.pop.json
 
 import ch.epfl.pop.json.JsonCommunicationProtocol._
 import ch.epfl.pop.json.JsonMessages._
+import ch.epfl.pop.json.JsonUtils.ErrorCodes.ErrorCodes
+import ch.epfl.pop.json.JsonUtils.{ErrorCodes, JsonMessageParserError, JsonMessageParserException}
 import spray.json._
+
+import scala.util.{Failure, Success, Try}
 
 
 /**
@@ -16,37 +20,65 @@ object JsonMessageParser {
    * @param source the input string
    * @return the parsed version of source
    */
-  @throws(classOf[DeserializationException])
-  def parseMessage(source: String): JsonMessage = {
+  def parseMessage(source: String): Either[JsonMessage, JsonMessageParserError] = {
 
-    val obj: JsObject = source.parseJson.asJsObject
+    def buildJsonMessageParserException(
+                                         obj: JsObject,
+                                         id: Int = JsonUtils.ID_NOT_FOUND,
+                                         errorCode: ErrorCodes = ErrorCodes.InvalidData,
+                                         description: String = ""): JsonMessageParserError = {
 
-    obj.getFields("jsonrpc") match {
-      case Seq(JsString(v)) => if (v != "2.0") throw DeserializationException("TODO send error code")
-      case _ => throw DeserializationException("invalid message : jsonrpc field missing or wrongly formatted")
+      val msg: String = if (description == "") errorCode.toString else description
+
+      obj.getFields("id") match {
+        case Seq(JsNumber(id)) => JsonMessageParserError(msg, id.toInt, errorCode)
+        case _ => JsonMessageParserError(msg, JsonUtils.ID_NOT_FOUND, errorCode)
+      }
     }
 
-    obj.getFields("method") match {
-      case Seq(JsString(m)) => m match {
-        /* Subscribing to a channel */
-        case Methods.Subscribe() => obj.convertTo[SubscribeMessageClient]
 
-        /* Unsubscribing from a channel */
-        case Methods.Unsubscribe() => obj.convertTo[UnsubscribeMessageClient]
+    Try(source.parseJson.asJsObject) match {
+      case Success(obj) =>
 
-        /* Propagating message on a channel */
-        case Methods.Message() => obj.convertTo[PropagateMessageServer]
+        try {
+          obj.getFields("jsonrpc") match {
+            case Seq(JsString(v)) =>
+              if (v != JsonUtils.JSON_RPC_VERSION)
+                throw JsonMessageParserException("invalid \"jsonrpc\" field : invalid jsonrpc version")
+            case _ => throw DeserializationException("invalid message : jsonrpc field missing or wrongly formatted")
+          }
 
-        /* Catching up on past message on a channel */
-        case Methods.Catchup() => obj.convertTo[CatchupMessageClient]
+          obj.getFields("method") match {
+            case Seq(JsString(m)) => m match {
+              /* Subscribing to a channel */
+              case Methods.Subscribe() => Left(obj.convertTo[SubscribeMessageClient])
 
-        /* Publish on a channel + All Higher-level communication */
-        case Methods.Publish() => obj.convertTo[JsonMessagePublishClient]
+              /* Unsubscribe from a channel */
+              case Methods.Unsubscribe() => Left(obj.convertTo[UnsubscribeMessageClient])
 
-        /* parsing error : invalid method value */
-        case _ => throw DeserializationException("invalid message : method value unrecognized")
-      }
-      case _ => throw DeserializationException("invalid message : method field missing or wrongly formatted")
+              /* Propagate message on a channel */
+              case Methods.Message() => Left(obj.convertTo[PropagateMessageServer])
+
+              /* Catch up on past message on a channel */
+              case Methods.Catchup() => Left(obj.convertTo[CatchupMessageClient])
+
+              /* Publish on a channel + All Higher-level communication */
+              case Methods.Publish() => Left(obj.convertTo[JsonMessagePublishClient])
+
+              /* parsing error : invalid method value */
+              case _ => throw JsonMessageParserException("invalid message : method value unrecognized")
+            }
+            case _ => throw JsonMessageParserException("invalid message : method field missing or wrongly formatted")
+          }
+
+        } catch {
+          case JsonMessageParserException(msg, id, code) => Right(buildJsonMessageParserException(obj, id, code, msg))
+          case DeserializationException(msg, _, _) => Right(buildJsonMessageParserException(obj, description = msg))
+          case _ => Right(buildJsonMessageParserException(obj))
+        }
+
+      /* parsing error : String is not a valid JsObject */
+      case Failure(_) => Right(JsonMessageParserError("Invalid Json formatting (not a valid JsonObject)"))
     }
   }
 

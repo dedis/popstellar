@@ -3,12 +3,11 @@ package json
 import java.util.Base64
 
 import ch.epfl.pop.json.JsonMessages.{JsonMessagePublishClient, _}
-import ch.epfl.pop.json.JsonUtils.MessageContentDataBuilder
+import ch.epfl.pop.json.JsonUtils.{JsonMessageParserException, MessageContentDataBuilder}
 import ch.epfl.pop.json._
 import spray.json._
 import ch.epfl.pop.json.JsonCommunicationProtocol._
 import org.scalatest.{FunSuite, Matchers}
-import spray.json.DeserializationException
 import JsonParserTestsUtils._
 
 
@@ -105,10 +104,16 @@ class JsonMessageParserTest extends FunSuite with Matchers {
 
   test("JsonMessageParser.parseMessage|encodeMessage:CreateLaoMessageClient") {
     val source: String = embeddedMessage(dataCreateLao, channel = "/root")
-    val sp: JsonMessage = JsonMessageParser.parseMessage(source)
+    val sp: JsonMessage = JsonMessageParser.parseMessage(source) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     val spd: String = JsonMessageParser.serializeMessage(sp)
-    val spdp: JsonMessage = JsonMessageParser.parseMessage(spd)
+    val spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     sp shouldBe a [CreateLaoMessageClient]
     spdp shouldBe a [CreateLaoMessageClient]
@@ -117,10 +122,16 @@ class JsonMessageParserTest extends FunSuite with Matchers {
 
   test("JsonMessageParser.parseMessage|encodeMessage:UpdateLaoMessageClient") {
     val source: String = embeddedMessage(dataUpdateLao)
-    val sp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(source)
+    val sp: JsonMessage = JsonMessageParser.parseMessage(source) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     val spd: String = JsonMessageParser.serializeMessage(sp)
-    val spdp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(spd)
+    val spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     sp shouldBe a [UpdateLaoMessageClient]
     spdp shouldBe a [UpdateLaoMessageClient]
@@ -129,10 +140,16 @@ class JsonMessageParserTest extends FunSuite with Matchers {
 
   test("JsonMessageParser.parseMessage|encodeMessage:BroadcastLaoMessageClient") {
     val source: String = embeddedMessage(dataBroadcastLao)
-    val sp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(source)
+    val sp: JsonMessage = JsonMessageParser.parseMessage(source) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     val spd: String = JsonMessageParser.serializeMessage(sp)
-    val spdp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(spd)
+    val spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     sp shouldBe a [BroadcastLaoMessageClient]
     spdp shouldBe a [BroadcastLaoMessageClient]
@@ -141,10 +158,16 @@ class JsonMessageParserTest extends FunSuite with Matchers {
 
   test("JsonMessageParser.parseMessage|encodeMessage:WitnessMessageMessageClient") {
     val source: String = embeddedMessage(dataWitnessMessage)
-    val sp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(source)
+    val sp: JsonMessage = JsonMessageParser.parseMessage(source) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     val spd: String = JsonMessageParser.serializeMessage(sp)
-    val spdp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(spd)
+    val spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     sp shouldBe a [WitnessMessageMessageClient]
     spdp shouldBe a [WitnessMessageMessageClient]
@@ -154,10 +177,16 @@ class JsonMessageParserTest extends FunSuite with Matchers {
   test("JsonMessageParser.parseMessage|encodeMessage:CreateMeetingMessageClient") {
     // Meeting with every argument
     var data: String = dataCreateMeeting
-    var sp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(embeddedMessage(data))
+    var sp: JsonMessage = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     var spd: String = JsonMessageParser.serializeMessage(sp)
-    var spdp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(spd)
+    var spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     sp shouldBe a [CreateMeetingMessageClient]
     spdp shouldBe a [CreateMeetingMessageClient]
@@ -166,10 +195,16 @@ class JsonMessageParserTest extends FunSuite with Matchers {
 
     // Meeting without location
     data = data.replaceAll(",\"location\":\"[a-zA-Z]*\"", "")
-    sp = JsonMessageParser.parseMessage(embeddedMessage(data))
+    sp = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     spd = JsonMessageParser.serializeMessage(sp)
-    spdp = JsonMessageParser.parseMessage(spd)
+    spdp = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     sp shouldBe a [CreateMeetingMessageClient]
     spdp shouldBe a [CreateMeetingMessageClient]
@@ -177,10 +212,16 @@ class JsonMessageParserTest extends FunSuite with Matchers {
 
     // Meeting without location and end
     data = data.replaceAll(",\"end\":[0-9]*", "")
-    sp = JsonMessageParser.parseMessage(embeddedMessage(data))
+    sp = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     spd = JsonMessageParser.serializeMessage(sp)
-    spdp = JsonMessageParser.parseMessage(spd)
+    spdp = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     sp shouldBe a [CreateMeetingMessageClient]
     spdp shouldBe a [CreateMeetingMessageClient]
@@ -188,10 +229,16 @@ class JsonMessageParserTest extends FunSuite with Matchers {
 
     // Meeting without location, end and extra
     data = data.replaceAll(",\"extra\":\"[a-zA-Z0-9_]*\"", "")
-    sp = JsonMessageParser.parseMessage(embeddedMessage(data))
+    sp = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     spd = JsonMessageParser.serializeMessage(sp)
-    spdp = JsonMessageParser.parseMessage(spd)
+    spdp = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     sp shouldBe a [CreateMeetingMessageClient]
     spdp shouldBe a [CreateMeetingMessageClient]
@@ -199,16 +246,27 @@ class JsonMessageParserTest extends FunSuite with Matchers {
 
     // Meeting without start (should not work)
     data = data.replaceAll(",\"start\":[0-9]*", "")
-    try { sp = JsonMessageParser.parseMessage(embeddedMessage(data)); fail() }
-    catch { case _: DeserializationException => }
+    try {
+      sp = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
+        case Left(_) => fail()
+        case Right(_) => throw JsonMessageParserException("")
+      }
+    }
+    catch { case _: JsonMessageParserException => }
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:BroadcastMeetingMessageClient") {
     val source: String = embeddedMessage(dataBroadcastMeeting)
-    val sp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(source)
+    val sp: JsonMessage = JsonMessageParser.parseMessage(source) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     val spd: String = JsonMessageParser.serializeMessage(sp)
-    val spdp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(spd)
+    val spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     sp shouldBe a [BroadcastMeetingMessageClient]
     spdp shouldBe a [BroadcastMeetingMessageClient]
@@ -226,10 +284,16 @@ class JsonMessageParserTest extends FunSuite with Matchers {
                             |  }
                             |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
 
-    val sp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(source)
+    val sp: JsonMessage = JsonMessageParser.parseMessage(source) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     val spd: String = JsonMessageParser.serializeMessage(sp)
-    val spdp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(spd)
+    val spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     sp shouldBe a [PropagateMessageServer]
     spdp shouldBe a [PropagateMessageServer]
@@ -247,10 +311,16 @@ class JsonMessageParserTest extends FunSuite with Matchers {
                            |  }
                            |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
 
-    val sp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(source)
+    val sp: JsonMessage = JsonMessageParser.parseMessage(source) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     val spd: String = JsonMessageParser.serializeMessage(sp)
-    val spdp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(spd)
+    val spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     assert(sp === spdp)
     assert(sp.isInstanceOf[SubscribeMessageClient])
@@ -268,10 +338,16 @@ class JsonMessageParserTest extends FunSuite with Matchers {
                            |  }
                            |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
 
-    val sp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(source)
+    val sp: JsonMessage = JsonMessageParser.parseMessage(source) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     val spd: String = JsonMessageParser.serializeMessage(sp)
-    val spdp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(spd)
+    val spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     assert(sp === spdp)
     assert(sp.isInstanceOf[UnsubscribeMessageClient])
@@ -289,10 +365,16 @@ class JsonMessageParserTest extends FunSuite with Matchers {
                            |  }
                            |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
 
-    val sp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(source)
+    val sp: JsonMessage = JsonMessageParser.parseMessage(source) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     val spd: String = JsonMessageParser.serializeMessage(sp)
-    val spdp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(spd)
+    val spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
     assert(sp === spdp)
     assert(sp.isInstanceOf[CatchupMessageClient])
@@ -345,7 +427,6 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     spd = JsonMessageParser.serializeMessage(sp)
 
     r = s"""[{"data":"$rd","message_id":"bWlk","sender":"c2tleQ==","signature":"c2lnbg==","witness_signatures":${listStringify(sig)}}]"""
-    println(r)
 
     assertResult(source.replaceAll("F_MESSAGES", r))(spd)
     assert(rd === Base64.getEncoder.encode(data.toJson.toString().getBytes).map(_.toChar).mkString)

@@ -191,7 +191,7 @@ object PublishSubscribe {
 
         val mapPubSub = Flow[JsonMessage].map{case m: JsonMessagePubSubClient => m}
 
-        input ~> parser ~> partitioner
+        //input ~> parser ~> partitioner // TODO doesnt compile?
         partitioner.out(0) ~> merge
         partitioner.out(1) ~> mapPubSub ~> jFlow ~> merge
         merge ~> formatter ~> output

@@ -3,6 +3,7 @@ package ch.epfl.pop.json
 import java.util.Base64
 
 import ch.epfl.pop.json.Actions.Actions
+import ch.epfl.pop.json.JsonUtils.ErrorCodes.ErrorCodes
 import ch.epfl.pop.json.Objects.Objects
 
 
@@ -11,26 +12,40 @@ object JsonUtils {
   /** JSON-RPC protocol version */
   val JSON_RPC_VERSION: String = "2.0"
 
+  /** Static references to Base64 encoder/decoder */
   val ENCODER: Base64.Encoder = Base64.getEncoder
   val DECODER: Base64.Decoder = Base64.getDecoder
 
-  /*trait Base64Utils {
-    val ENCODER: Base64.Encoder = Base64.getEncoder
-    val DECODER: Base64.Decoder = Base64.getDecoder
-  }*/
+  /** Default id field value if the id field cannot be parsed */
+  val ID_NOT_FOUND: Int = -1
 
+  /** Parsing exception, always caught by the parser */
+  final case class JsonMessageParserException(
+                                               description: String,
+                                               id: Int = ID_NOT_FOUND,
+                                               errorCode: ErrorCodes = ErrorCodes.InvalidData
+                                             ) extends Exception(description) {}
 
-  /** Transform a String in hex ("0xabc") into a HexString ("abc") */
-  /*def hexStringUnwrap(s: String): HexString = {
-    if (s.startsWith("0x") || s.startsWith("0X")) s.drop(2)
-    else s
+  /** Object sent back to PubSub if a parsing error occurred */
+  final case class JsonMessageParserError(description: String, id: Int = ID_NOT_FOUND, errorCode: ErrorCodes = ErrorCodes.InvalidData)
+
+  object ErrorCodes extends Enumeration {
+    type ErrorCodes = Value
+
+    // operation was successful (should never be used)
+    val Success: JsonUtils.ErrorCodes.Value = Value(0, "operation was successful")
+    // invalid action
+    val InvalidAction: JsonUtils.ErrorCodes.Value = Value(-1, "invalid action")
+    // invalid resource (e.g. channel does not exist, channel was not subscribed to, etc.)
+    val InvalidResource: JsonUtils.ErrorCodes.Value = Value(-2, "invalid resource")
+    // resource already exists (e.g. lao already exists, channel already exists, etc.)
+    val AlreadyExists: JsonUtils.ErrorCodes.Value = Value(-3, "resource already exists")
+    // request data is invalid (e.g. message is invalid)
+    val InvalidData: JsonUtils.ErrorCodes.Value = Value(-4, "request data is invalid")
+    // access denied (e.g. subscribing to a “restricted” channel)
+    val AccessDenied: JsonUtils.ErrorCodes.Value = Value(-5, "access denied")
   }
 
-  /** Transform a HexString ("abc") into String in hex ("0xabc") */
-  def hexStringWrap(s: HexString): String = {
-    if (s.startsWith("0x")) s
-    else "0x" + s
-  }*/
 
 
   /** Builder for MessageContentData */

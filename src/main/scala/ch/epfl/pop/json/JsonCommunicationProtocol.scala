@@ -1,7 +1,5 @@
 package ch.epfl.pop.json
 
-import java.util.Base64
-
 import ch.epfl.pop.json.Actions.Actions
 import ch.epfl.pop.json.JsonMessages._
 import ch.epfl.pop.json.JsonUtils._
@@ -10,6 +8,7 @@ import ch.epfl.pop.json.Objects.Objects
 import spray.json._
 
 import scala.collection.immutable
+import scala.util.{Failure, Success, Try}
 
 
 /**
@@ -17,22 +16,34 @@ import scala.collection.immutable
  */
 object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
+  /* implicit used to parse/serialize a Methods enumeration value */
   implicit object jsonEnumMethodsFormat extends RootJsonFormat[Methods] {
-    override def read(json: JsValue): Methods = Methods.withName(json.convertTo[String]) // TODO may throw NoSuchElementException
+    override def read(json: JsValue): Methods = Try(Methods.withName(json.convertTo[String])) match {
+      case Success(v) => v
+      case _ => throw DeserializationException("invalid \"method\" field : unrecognized")
+    }
     override def write(obj: Methods): JsValue = JsString(obj.toString)
   }
 
+  /* implicit used to parse/serialize a Objects enumeration value */
   implicit object jsonEnumObjectsFormat extends RootJsonFormat[Objects] {
-    override def read(json: JsValue): Objects = Objects.withName(json.convertTo[String]) // TODO may throw NoSuchElementException
+    override def read(json: JsValue): Objects = Try(Objects.withName(json.convertTo[String])) match {
+      case Success(v) => v
+      case _ => throw DeserializationException("invalid \"object\" field : unrecognized")
+    }
     override def write(obj: Objects): JsValue = JsString(obj.toString)
   }
 
+  /* implicit used to parse/serialize a Actions enumeration value */
   implicit object jsonEnumActionsFormat extends RootJsonFormat[Actions] {
-    override def read(json: JsValue): Actions = Actions.withName(json.convertTo[String]) // TODO may throw NoSuchElementException
+    override def read(json: JsValue): Actions = Try(Actions.withName(json.convertTo[String])) match {
+      case Success(v) => v
+      case _ => throw DeserializationException("invalid \"action\" field : unrecognized")
+    }
     override def write(obj: Actions): JsValue = JsString(obj.toString)
   }
 
-
+  /* implicit used to parse/serialize a String encoded in Base64 */
   implicit object DecodedBase64StringFormat extends RootJsonFormat[DecodedBase64String] {
     override def read(json: JsValue): DecodedBase64String = JsonUtils.DECODER.decode(json.convertTo[String])
     override def write(obj: DecodedBase64String): JsValue = JsString(JsonUtils.ENCODER.encode(obj).map(_.toChar).mkString)
@@ -73,7 +84,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
 
             // parsing error : invalid message content data fields
-            case _ => throw DeserializationException("invalid MessageContentData : fields missing or wrongly formatted")
+            case _ => throw JsonMessageParserException("invalid \"MessageContentData\" : fields missing or wrongly formatted")
         }
 
         /* witness a message */
@@ -87,7 +98,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
                 .build()
 
             // parsing error : invalid message content data fields
-            case _ => throw DeserializationException("invalid MessageContentData : fields missing or wrongly formatted")
+            case _ => throw JsonMessageParserException("invalid \"MessageContentData\" : fields missing or wrongly formatted")
           }
 
         /* create meeting and broadcast meeting's state */
@@ -120,11 +131,11 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
               mcd.build()
 
             // parsing error : invalid message content data fields
-            case _ => throw DeserializationException("invalid MessageContentData : fields missing or wrongly formatted")
+            case _ => throw JsonMessageParserException("invalid \"MessageContentData\" : fields missing or wrongly formatted")
           }
 
         /* parsing error : object field not recognized */
-        case _ => throw DeserializationException("invalid MessageContentData : invalid object field")
+        case _ => throw JsonMessageParserException("invalid \"MessageContentData\" : invalid \"object\" field (unrecognized)")
       }
     }
 
@@ -156,7 +167,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
     override def read(json: JsValue): MessageContent =
       json.asJsObject.getFields("data", "sender", "signature", "message_id", "witness_signatures") match {
         case Seq(data, sender, signature, message_id, JsArray(witnesses)) =>
-          val decodedData: String = Base64.getDecoder.decode(data.convertTo[String]).map(_.toChar).mkString
+          val decodedData: String = JsonUtils.DECODER.decode(data.convertTo[String]).map(_.toChar).mkString
 
           MessageContent(
             decodedData.parseJson.convertTo[MessageContentData],
@@ -167,12 +178,12 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
           )
 
         // parsing error : invalid message content fields
-        case _ => throw DeserializationException("invalid MessageContent : fields missing or wrongly formatted")
+        case _ => throw JsonMessageParserException("invalid \"MessageContent\" : fields missing or wrongly formatted")
       }
 
     override def write(obj: MessageContent): JsValue = {
 
-      val encodedData: Array[Byte] = Base64.getEncoder.encode(obj.data.toJson.compactPrint.getBytes)
+      val encodedData: Array[Byte] = JsonUtils.ENCODER.encode(obj.data.toJson.compactPrint.getBytes)
       val encodedString: String = encodedData.map(_.toChar).mkString
 
       JsObject(
@@ -192,46 +203,62 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
       json.asJsObject.getFields("jsonrpc", "method", "params", "id") match {
         case Seq(JsString(version), method@JsString(_), params@JsObject(_), JsNumber(id)) =>
 
-          val parsedParams: MessageParameters = params.convertTo[MessageParameters]
+          val parsed: Try[JsonMessagePublishClient] = Try {
+            val parsedParams: MessageParameters = params.convertTo[MessageParameters]
 
-          parsedParams.message match {
-            case Some(messageContent) => (messageContent.data._object, messageContent.data.action) match {
+            parsedParams.message match {
+              case Some(messageContent) => (messageContent.data._object, messageContent.data.action) match {
 
-              /* CreateLaoMessageClient, UpdateLaoMessageClient and BroadcastLaoMessageClient */
-              case (Objects.Lao, action) => action match {
-                // CreateLaoMessageClient
-                case Actions.Create => CreateLaoMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
-                // UpdateLaoMessageClient
-                case Actions.UpdateProperties => UpdateLaoMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
-                // BroadcastLaoMessageClient
-                case Actions.State => BroadcastLaoMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
+                /* CreateLaoMessageClient, UpdateLaoMessageClient and BroadcastLaoMessageClient */
+                case (Objects.Lao, action) => action match {
+                  // CreateLaoMessageClient
+                  case Actions.Create => CreateLaoMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
+                  // UpdateLaoMessageClient
+                  case Actions.UpdateProperties => UpdateLaoMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
+                  // BroadcastLaoMessageClient
+                  case Actions.State => BroadcastLaoMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
+                }
+
+                /* WitnessMessageMessageClient */
+                case (Objects.Message, Actions.Witness) => WitnessMessageMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
+
+                /* CreateMeetingMessageClient and BroadcastMeetingMessageClient */
+                case (Objects.Meeting, action) => action match {
+                  // CreateMeetingMessageClient
+                  case Actions.Create => CreateMeetingMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
+                  // BroadcastMeetingMessageClient
+                  case Actions.State => BroadcastMeetingMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
+                }
+
+                /* parsing error : invalid object/action pair */
+                case _ => throw JsonMessageParserException(
+                  s"invalid message : invalid (object = ${messageContent.data._object}, action = ${messageContent.data.action}) pair",
+                  id.toInt
+                )
               }
 
-              /* WitnessMessageMessageClient */
-              case (Objects.Message, Actions.Witness) => WitnessMessageMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
-
-              /* CreateMeetingMessageClient and BroadcastMeetingMessageClient */
-              case (Objects.Meeting, action) => action match {
-                // CreateMeetingMessageClient
-                case Actions.Create => CreateMeetingMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
-                // BroadcastMeetingMessageClient
-                case Actions.State => BroadcastMeetingMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
-              }
-
-              /* parsing error : invalid object/action pair */
-              case _ => throw DeserializationException(
-                s"invalid message : invalid (object = ${messageContent.data._object}, action = ${messageContent.data.action}) pair"
+              // Should never happen missing MessageContent in MessageParameters
+              case _ => throw JsonMessageParserException(
+                "missing MessageContent in MessageParameter for JsonMessagePublishClient", id.toInt
               )
             }
+          }
 
-            // Should never happen missing MessageContent in MessageParameters
-            case _ =>
-              println("parsing error : missing MessageContent in MessageParameter for JsonMessagePublishClient. Returning null")
-              null
+          parsed match {
+            case Success(mpc) => mpc
+            case Failure(s) => s match {
+              case DeserializationException(msg, _, _) => throw JsonUtils.JsonMessageParserException(msg, id.toInt)
+              case _ => throw s
+            }
           }
 
         // parsing error : invalid message parameters fields
-        case _ => throw DeserializationException("invalid MessageParameters : fields missing or wrongly formatted")
+        case _ =>
+          val msg: String = "invalid MessageParameters : fields missing or wrongly formatted"
+          json.asJsObject.getFields("id") match {
+            case Seq(JsNumber(id)) => throw JsonUtils.JsonMessageParserException(msg, id.toInt)
+            case _ => throw JsonUtils.JsonMessageParserException(msg)
+          }
       }
     }
 
@@ -251,6 +278,8 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
   implicit val channelMessagesFormat: RootJsonFormat[ChannelMessages] = jsonFormat1(ChannelMessages)
   implicit val messageErrorContentFormat: RootJsonFormat[MessageErrorContent] = jsonFormat2(MessageErrorContent)
 
+  implicit val propagateMessageServerFormat: RootJsonFormat[PropagateMessageServer] = jsonFormat3(PropagateMessageServer)
+
   implicit val answerResultIntMessageServerFormat: RootJsonFormat[AnswerResultIntMessageServer] = jsonFormat3(AnswerResultIntMessageServer)
   implicit val answerResultArrayMessageServerFormat: RootJsonFormat[AnswerResultArrayMessageServer] = jsonFormat3(AnswerResultArrayMessageServer)
   implicit val answerErrorMessageServerFormat: RootJsonFormat[AnswerErrorMessageServer] = jsonFormat3(AnswerErrorMessageServer)
@@ -260,6 +289,5 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
   implicit val subscribeMessageClientFormat: RootJsonFormat[SubscribeMessageClient] = jsonFormat4(SubscribeMessageClient)
   implicit val unsubscribeMessageClientFormat: RootJsonFormat[UnsubscribeMessageClient] = jsonFormat4(UnsubscribeMessageClient)
-  implicit val propagateMessageServerFormat: RootJsonFormat[PropagateMessageServer] = jsonFormat3(PropagateMessageServer) // TODO move
   implicit val catchupMessageClientFormat: RootJsonFormat[CatchupMessageClient] = jsonFormat4(CatchupMessageClient)
 }
