@@ -33,6 +33,12 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
   }
 
 
+  implicit object DecodedBase64StringFormat extends RootJsonFormat[DecodedBase64String] {
+    override def read(json: JsValue): DecodedBase64String = JsonUtils.DECODER.decode(json.convertTo[String])
+    override def write(obj: DecodedBase64String): JsValue = JsString(JsonUtils.ENCODER.encode(obj).map(_.toChar).mkString)
+  }
+
+
   /* ------------------- ADMIN MESSAGES CLIENT ------------------- */
 
   implicit object MessageContentDataFormat extends RootJsonFormat[MessageContentData] {
@@ -45,10 +51,10 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
           jsonObject.getFields("action", "id", "name", "creation", "last_modified", "organizer", "witnesses") match {
 
             // create LAO and broadcast LAO's state
-            case Seq(a@JsString(_), JsString(id), JsString(n), c@JsNumber(_), lm@JsNumber(_), orgKey@JsString(_), JsArray(w)) =>
+            case Seq(a@JsString(_), id@JsString(_), JsString(n), c@JsNumber(_), lm@JsNumber(_), orgKey@JsString(_), JsArray(w)) =>
               new MessageContentDataBuilder()
                 .setHeader(Objects.Lao, a.convertTo[Actions])
-                .setId(hexStringUnwrap(id))
+                .setId(id.convertTo[DecodedBase64String])
                 .setName(n)
                 .setCreation(c.convertTo[TimeStamp])
                 .setLastModified(lm.convertTo[TimeStamp])
@@ -73,10 +79,10 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
         /* witness a message */
         case Objects.Message() =>
           jsonObject.getFields("action", "message_id", "signature") match {
-            case Seq(action@JsString(_), JsString(mid), signature@JsString(_)) =>
+            case Seq(action@JsString(_), mid@JsString(_), signature@JsString(_)) =>
               new MessageContentDataBuilder()
                 .setHeader(Objects.Message, action.convertTo[Actions])
-                .setMessageId(hexStringUnwrap(mid))
+                .setMessageId(mid.convertTo[DecodedBase64String])
                 .setSignature(signature.convertTo[Signature])
                 .build()
 
@@ -87,7 +93,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
         /* create meeting and broadcast meeting's state */
         case Objects.Meeting() =>
           jsonObject.getFields("action", "id", "name", "creation", "last_modified", "start") match {
-            case Seq(a@JsString(_), JsString(id), JsString(n), c@JsNumber(_), lm@JsNumber(_), st@JsNumber(_)) =>
+            case Seq(a@JsString(_), id@JsString(_), JsString(n), c@JsNumber(_), lm@JsNumber(_), st@JsNumber(_)) =>
 
               val location: Seq[JsValue] = jsonObject.getFields("location")
               val end: Seq[JsValue] = jsonObject.getFields("end")
@@ -95,7 +101,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
               val mcd = new MessageContentDataBuilder()
                 .setHeader(Objects.Meeting, a.convertTo[Actions])
-                .setId(hexStringUnwrap(id))
+                .setId(id.convertTo[DecodedBase64String])
                 .setName(n)
                 .setCreation(c.convertTo[TimeStamp])
                 .setLastModified(lm.convertTo[TimeStamp])
@@ -129,14 +135,14 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
       jsObjectContent += ("object" -> JsString(obj._object.toString))
       jsObjectContent += ("action" -> JsString(obj.action.toString))
 
-      if (obj.id != "") jsObjectContent += ("id" -> JsString(hexStringWrap(obj.id)))
+      if (!obj.id.isEmpty) jsObjectContent += ("id" -> obj.id.toJson)
       if (obj.name != "") jsObjectContent += ("name" -> obj.name.toJson)
       if (obj.creation != -1) jsObjectContent += ("creation" -> obj.creation.toJson)
       if (obj.last_modified != -1) jsObjectContent += ("last_modified" -> obj.last_modified.toJson)
-      if (obj.organizer != "") jsObjectContent += ("organizer" -> obj.organizer.toJson)
+      if (!obj.organizer.isEmpty) jsObjectContent += ("organizer" -> obj.organizer.toJson)
       if (obj._object == Objects.Lao) jsObjectContent += ("witnesses" -> JsArray(obj.witnesses.map(w => w.toJson).toVector))
-      if (obj.message_id != "") jsObjectContent += ("message_id" -> JsString(hexStringWrap(obj.message_id)))
-      if (obj.signature != "") jsObjectContent += ("signature" -> obj.signature.toJson)
+      if (!obj.message_id.isEmpty) jsObjectContent += ("message_id" -> obj.message_id.toJson)
+      if (!obj.signature.isEmpty) jsObjectContent += ("signature" -> obj.signature.toJson)
       if (obj.location != "") jsObjectContent += ("location" -> obj.location.toJson)
       if (obj.start != -1) jsObjectContent += ("start" -> obj.start.toJson)
       if (obj.end != -1) jsObjectContent += ("end" -> obj.end.toJson)
@@ -254,6 +260,6 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
   implicit val subscribeMessageClientFormat: RootJsonFormat[SubscribeMessageClient] = jsonFormat4(SubscribeMessageClient)
   implicit val unsubscribeMessageClientFormat: RootJsonFormat[UnsubscribeMessageClient] = jsonFormat4(UnsubscribeMessageClient)
-  implicit val propagateMessageClientFormat: RootJsonFormat[PropagateMessageServer] = jsonFormat3(PropagateMessageServer)
+  implicit val propagateMessageServerFormat: RootJsonFormat[PropagateMessageServer] = jsonFormat3(PropagateMessageServer) // TODO move
   implicit val catchupMessageClientFormat: RootJsonFormat[CatchupMessageClient] = jsonFormat4(CatchupMessageClient)
 }

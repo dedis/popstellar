@@ -2,18 +2,93 @@ package json
 
 import java.util.Base64
 
-import ch.epfl.pop.json.JsonMessages._
+import ch.epfl.pop.json.JsonMessages.{JsonMessagePublishClient, _}
 import ch.epfl.pop.json.JsonUtils.MessageContentDataBuilder
 import ch.epfl.pop.json._
 import spray.json._
 import ch.epfl.pop.json.JsonCommunicationProtocol._
-import org.scalatest.FunSuite
+import org.scalatest.{FunSuite, Matchers}
 import spray.json.DeserializationException
+import JsonParserTestsUtils._
 
 
-class JsonMessageParserTest extends FunSuite {
+class JsonMessageParserTest extends FunSuite with Matchers {
 
-  val ERROR_MESSAGE: String = "error_for_error_code_above"
+
+  implicit class RichJsonMessage(m: JsonMessage) {
+    def shouldBeEqualUntilMessageContent(o: JsonMessage): Unit = {
+
+      @scala.annotation.tailrec
+      def checkListOfByteArray(l1: List[Array[Byte]], l2: List[Array[Byte]]): Unit = {
+        l1.length should equal (l2.length)
+
+        (l1, l2) match {
+          case _ if l1.isEmpty =>
+          case (h1 :: tail1, h2 :: tail2) =>
+            h1 should equal (h2)
+            checkListOfByteArray(tail1, tail2)
+        }
+      }
+
+
+      val o1 = this.m
+      val o2 = o
+
+      o1 match {
+        case _: PropagateMessageServer =>
+          o2 shouldBe a [PropagateMessageServer]
+
+          val o11 = o1.asInstanceOf[PropagateMessageServer]
+          val o22 = o2.asInstanceOf[PropagateMessageServer]
+
+          val a1 = CreateLaoMessageClient(o11.params, -1, o11.method, o11.jsonrpc)
+          val a2 = CreateLaoMessageClient(o22.params, -1, o22.method, o22.jsonrpc)
+
+          a1 shouldBeEqualUntilMessageContent a2
+
+
+        case _: JsonMessagePublishClient =>
+          o2 shouldBe a [JsonMessagePublishClient]
+
+          val o11 = o1.asInstanceOf[JsonMessagePublishClient]
+          val o22 = o2.asInstanceOf[JsonMessagePublishClient]
+
+          o11.jsonrpc should equal(o22.jsonrpc)
+          o11.id should equal(o22.id)
+          o11.method should equal(o22.method)
+
+          o11.params.channel should equal (o22.params.channel)
+          (o11.params.message, o22.params.message) match {
+            case (None, None) =>
+
+            case (Some(mc1), Some(mc2)) =>
+              mc1.sender should equal (mc2.sender)
+              mc1.signature should equal (mc2.signature)
+              mc1.message_id should equal (mc2.message_id)
+              checkListOfByteArray(mc1.witness_signatures, mc2.witness_signatures)
+
+              mc1.data._object should equal (mc2.data._object)
+              mc1.data.action should equal (mc2.data.action)
+              mc1.data.id should equal (mc2.data.id)
+              mc1.data.name should equal (mc2.data.name)
+              mc1.data.creation should equal (mc2.data.creation)
+              mc1.data.last_modified should equal (mc2.data.last_modified)
+              mc1.data.organizer should equal (mc2.data.organizer)
+              checkListOfByteArray(mc1.data.witnesses, mc2.data.witnesses)
+              mc1.data.message_id should equal (mc2.data.message_id)
+              mc1.data.signature should equal (mc2.data.signature)
+              mc1.data.location should equal (mc2.data.location)
+              mc1.data.start should equal (mc2.data.start)
+              mc1.data.end should equal (mc2.data.end)
+              mc1.data.extra should equal (mc2.data.extra)
+
+            case _ => fail()
+          }
+
+        case _ => throw new UnsupportedOperationException
+      }
+    }
+  }
 
 
   @scala.annotation.tailrec
@@ -22,124 +97,22 @@ class JsonMessageParserTest extends FunSuite {
       var sep = ""
       if (value.length > 1) sep = ","
 
-      listStringify(value.tail, acc + "\"" + value.head + "\"" + sep)
+      listStringify(value.tail, acc + "\"" + encodeBase64String(value.head.map(_.toChar).mkString) + "\"" + sep)
     }
     else "[" + acc + "]"
   }
 
 
-  val MessageContentExample: String = """{
-                                        |            "data": "eyJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJ1cGRhdGVfcHJvcGVydGllcyIsImlkIjoiMHhhYWEiLCJuYW1lIjoiTWEgTGFvIiwiY3JlYXRpb24iOjQ1NDUsImxhc3RfbW9kaWZpZWQiOjQ1NDUsIm9yZ2FuaXplciI6IjB4YmIiLCJ3aXRuZXNzZXMiOlsiMHgxMiIsICIweDEzIl19",
-                                        |            "sender": "0x530dE8",
-                                        |            "signature": "0x5100",
-                                        |            "message_id": "0x1d0",
-                                        |            "witness_signatures": ["0xceb1", "0xceb2", "0xceb3"]
-                                        |        }""".stripMargin.filterNot((c: Char) => c.isWhitespace)
-
-
-  val _dataLao: String = s"""{
-                                  |    "object": "${Objects.Lao.toString}",
-                                  |    "action": "F_ACTION",
-                                  |    "id": "0x999",
-                                  |    "name": "name",
-                                  |    "creation": 222,
-                                  |    "last_modified": 222,
-                                  |    "organizer": "0x909",
-                                  |    "witnesses": ["0x111"]
-                                  |}""".stripMargin.filterNot((c: Char) => c.isWhitespace)
-
-  val _dataMeeting: String = s"""{
-                                  |    "object": "${Objects.Meeting.toString}",
-                                  |    "action": "F_ACTION",
-                                  |    "id": "0x888",
-                                  |    "name": "nameMeeting",
-                                  |    "creation": 333,
-                                  |    "last_modified": 333,
-                                  |    "location": "Paris",
-                                  |    "start": 400,
-                                  |    "end": 500,
-                                  |    "extra": "extra_stuff"
-                                  |}""".stripMargin.filterNot((c: Char) => c.isWhitespace)
-
-
-  val dataUpdateLao: String = s"""{
-                                 |    "object": "${Objects.Lao.toString}",
-                                 |    "action": "${Actions.UpdateProperties.toString}",
-                                 |    "name": "name6",
-                                 |    "last_modified": 2226,
-                                 |    "witnesses": ["0x111", "0x1116"]
-                                 |}""".stripMargin.filterNot((c: Char) => c.isWhitespace)
-
-  val dataWitnessMessage: String = s"""{
-                                      |    "object": "${Objects.Message.toString}",
-                                      |    "action": "${Actions.Witness.toString}",
-                                      |    "message_id": "0xbeef",
-                                      |    "signature": "0x9090"
-                                      |}""".stripMargin.filterNot((c: Char) => c.isWhitespace)
-
-  val dataCreateLao: String = _dataLao.replaceAll("F_ACTION", Actions.Create.toString)
-  val dataBroadcastLao: String = _dataLao.replaceAll("F_ACTION", Actions.State.toString)
-  val dataCreateMeeting: String = _dataMeeting.replaceAll("F_ACTION", Actions.Create.toString)
-  val dataBroadcastMeeting: String = _dataMeeting.replaceAll("F_ACTION", Actions.State.toString)
-
-
-  def embeddedMessage(
-                        data: String,
-                        method: Methods.Methods = Methods.Publish,
-                        channel: ChannelName = "/root/lao_id",
-                        id: Int = 0
-                      ): String = {
-                        s"""{
-                           |    "jsonrpc": "2.0",
-                           |    "method": "${method.toString}",
-                           |    "params": {
-                           |        "channel": "$channel",
-                           |        "message": {
-                           |            "data": "${Base64.getEncoder.encode(data.getBytes).map(_.toChar).mkString}",
-                           |            "sender": "0x530dE8",
-                           |            "signature": "0x5100",
-                           |            "message_id": "0x1d0",
-                           |            "witness_signatures": ["0xceb1", "0xceb2", "0xceb3"]
-                           |        }
-                           |    },
-                           |    "id": $id
-                           |  }
-                           |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
-  }
-
-  def embeddedServerAnswer(result: Option[Int], error: Option[String] = Some(ERROR_MESSAGE), code: Int = 0, id: Int = 0): String = {
-    (result, error) match {
-      case (Some(r), None) =>
-        val additional: String = s""""result": $r"""
-        s"""{
-           |    "id": $id,
-           |    "jsonrpc": "2.0",
-           |    $additional
-           |  }
-           |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
-      case (None, Some(e)) =>
-        val additional: String = s""""error": {"code": $code, "description": "$e"}"""
-        s"""{
-           |    $additional,
-           |    "id": $id,
-           |    "jsonrpc": "2.0"
-           |  }
-           |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
-      case _ => throw new IllegalArgumentException("Impossible argument combination in embeddedServerAnswer")
-    }
-  }
-
-
   test("JsonMessageParser.parseMessage|encodeMessage:CreateLaoMessageClient") {
     val source: String = embeddedMessage(dataCreateLao, channel = "/root")
-    val sp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(source)
+    val sp: JsonMessage = JsonMessageParser.parseMessage(source)
 
     val spd: String = JsonMessageParser.serializeMessage(sp)
-    val spdp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(spd)
+    val spdp: JsonMessage = JsonMessageParser.parseMessage(spd)
 
-    assert(sp === spdp)
-    assert(sp.isInstanceOf[CreateLaoMessageClient])
-    assert(spdp.isInstanceOf[CreateLaoMessageClient])
+    sp shouldBe a [CreateLaoMessageClient]
+    spdp shouldBe a [CreateLaoMessageClient]
+    sp shouldBeEqualUntilMessageContent spdp
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:UpdateLaoMessageClient") {
@@ -149,9 +122,9 @@ class JsonMessageParserTest extends FunSuite {
     val spd: String = JsonMessageParser.serializeMessage(sp)
     val spdp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(spd)
 
-    assert(sp === spdp)
-    assert(sp.isInstanceOf[UpdateLaoMessageClient])
-    assert(spdp.isInstanceOf[UpdateLaoMessageClient])
+    sp shouldBe a [UpdateLaoMessageClient]
+    spdp shouldBe a [UpdateLaoMessageClient]
+    sp shouldBeEqualUntilMessageContent spdp
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:BroadcastLaoMessageClient") {
@@ -161,9 +134,9 @@ class JsonMessageParserTest extends FunSuite {
     val spd: String = JsonMessageParser.serializeMessage(sp)
     val spdp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(spd)
 
-    assert(sp === spdp)
-    assert(sp.isInstanceOf[BroadcastLaoMessageClient])
-    assert(spdp.isInstanceOf[BroadcastLaoMessageClient])
+    sp shouldBe a [BroadcastLaoMessageClient]
+    spdp shouldBe a [BroadcastLaoMessageClient]
+    sp shouldBeEqualUntilMessageContent spdp
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:WitnessMessageMessageClient") {
@@ -173,9 +146,9 @@ class JsonMessageParserTest extends FunSuite {
     val spd: String = JsonMessageParser.serializeMessage(sp)
     val spdp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(spd)
 
-    assert(sp === spdp)
-    assert(sp.isInstanceOf[WitnessMessageMessageClient])
-    assert(spdp.isInstanceOf[WitnessMessageMessageClient])
+    sp shouldBe a [WitnessMessageMessageClient]
+    spdp shouldBe a [WitnessMessageMessageClient]
+    sp shouldBeEqualUntilMessageContent spdp
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:CreateMeetingMessageClient") {
@@ -186,9 +159,9 @@ class JsonMessageParserTest extends FunSuite {
     var spd: String = JsonMessageParser.serializeMessage(sp)
     var spdp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(spd)
 
-    assert(sp === spdp)
-    assert(sp.isInstanceOf[CreateMeetingMessageClient])
-    assert(spdp.isInstanceOf[CreateMeetingMessageClient])
+    sp shouldBe a [CreateMeetingMessageClient]
+    spdp shouldBe a [CreateMeetingMessageClient]
+    sp shouldBeEqualUntilMessageContent spdp
 
 
     // Meeting without location
@@ -198,9 +171,9 @@ class JsonMessageParserTest extends FunSuite {
     spd = JsonMessageParser.serializeMessage(sp)
     spdp = JsonMessageParser.parseMessage(spd)
 
-    assert(sp === spdp)
-    assert(sp.isInstanceOf[CreateMeetingMessageClient])
-    assert(spdp.isInstanceOf[CreateMeetingMessageClient])
+    sp shouldBe a [CreateMeetingMessageClient]
+    spdp shouldBe a [CreateMeetingMessageClient]
+    sp shouldBeEqualUntilMessageContent spdp
 
     // Meeting without location and end
     data = data.replaceAll(",\"end\":[0-9]*", "")
@@ -209,9 +182,9 @@ class JsonMessageParserTest extends FunSuite {
     spd = JsonMessageParser.serializeMessage(sp)
     spdp = JsonMessageParser.parseMessage(spd)
 
-    assert(sp === spdp)
-    assert(sp.isInstanceOf[CreateMeetingMessageClient])
-    assert(spdp.isInstanceOf[CreateMeetingMessageClient])
+    sp shouldBe a [CreateMeetingMessageClient]
+    spdp shouldBe a [CreateMeetingMessageClient]
+    sp shouldBeEqualUntilMessageContent spdp
 
     // Meeting without location, end and extra
     data = data.replaceAll(",\"extra\":\"[a-zA-Z0-9_]*\"", "")
@@ -220,9 +193,9 @@ class JsonMessageParserTest extends FunSuite {
     spd = JsonMessageParser.serializeMessage(sp)
     spdp = JsonMessageParser.parseMessage(spd)
 
-    assert(sp === spdp)
-    assert(sp.isInstanceOf[CreateMeetingMessageClient])
-    assert(spdp.isInstanceOf[CreateMeetingMessageClient])
+    sp shouldBe a [CreateMeetingMessageClient]
+    spdp shouldBe a [CreateMeetingMessageClient]
+    sp shouldBeEqualUntilMessageContent spdp
 
     // Meeting without start (should not work)
     data = data.replaceAll(",\"start\":[0-9]*", "")
@@ -237,12 +210,31 @@ class JsonMessageParserTest extends FunSuite {
     val spd: String = JsonMessageParser.serializeMessage(sp)
     val spdp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(spd)
 
-    assert(sp === spdp)
-    assert(sp.isInstanceOf[BroadcastMeetingMessageClient])
-    assert(spdp.isInstanceOf[BroadcastMeetingMessageClient])
+    sp shouldBe a [BroadcastMeetingMessageClient]
+    spdp shouldBe a [BroadcastMeetingMessageClient]
+    sp shouldBeEqualUntilMessageContent spdp
   }
 
+  test("JsonMessageParser.parseMessage|encodeMessage:PropagateMessageServer") {
+    val source: String = s"""{
+                            |    "jsonrpc": "2.0",
+                            |    "method": "message",
+                            |    "params": {
+                            |        "channel": "channel_id",
+                            |        "message": $MessageContentExample
+                            |    }
+                            |  }
+                            |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
 
+    val sp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(source)
+
+    val spd: String = JsonMessageParser.serializeMessage(sp)
+    val spdp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(spd)
+
+    sp shouldBe a [PropagateMessageServer]
+    spdp shouldBe a [PropagateMessageServer]
+    sp shouldBeEqualUntilMessageContent spdp
+  }
 
   test("JsonMessageParser.parseMessage|encodeMessage:SubscribeMessageClient") {
     val source: String = """{
@@ -284,27 +276,6 @@ class JsonMessageParserTest extends FunSuite {
     assert(sp === spdp)
     assert(sp.isInstanceOf[UnsubscribeMessageClient])
     assert(spdp.isInstanceOf[UnsubscribeMessageClient])
-  }
-
-  test("JsonMessageParser.parseMessage|encodeMessage:PropagateMessageServer") {
-    val source: String = s"""{
-                           |    "jsonrpc": "2.0",
-                           |    "method": "message",
-                           |    "params": {
-                           |        "channel": "channel_id",
-                           |        "message": $MessageContentExample
-                           |    }
-                           |  }
-                           |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
-
-    val sp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(source)
-
-    val spd: String = JsonMessageParser.serializeMessage(sp)
-    val spdp: JsonMessages.JsonMessage = JsonMessageParser.parseMessage(spd)
-
-    assert(sp === spdp)
-    assert(sp.isInstanceOf[PropagateMessageServer])
-    assert(spdp.isInstanceOf[PropagateMessageServer])
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:CatchupMessageClient") {
@@ -354,13 +325,13 @@ class JsonMessageParserTest extends FunSuite {
 
 
     // 1 message and empty witness list
-    val data: MessageContentData = new MessageContentDataBuilder().setHeader(Objects.Message, Actions.Witness).setId("2").setStart(22).build()
-    var m: MessageContent = MessageContent(data, "skey", "sign", "mid", List())
+    val data: MessageContentData = new MessageContentDataBuilder().setHeader(Objects.Message, Actions.Witness).setId("2".getBytes).setStart(22).build()
+    var m: MessageContent = MessageContent(data, "skey".getBytes, "sign".getBytes, "mid".getBytes, List())
     sp = AnswerResultArrayMessageServer(99, ChannelMessages(List(m)))
     spd = JsonMessageParser.serializeMessage(sp)
 
-    val rd: String = """eyJvYmplY3QiOiJtZXNzYWdlIiwiYWN0aW9uIjoid2l0bmVzcyIsImlkIjoiMHgyIiwic3RhcnQiOjIyfQ=="""
-    var r: String = s"""[{"data":"$rd","message_id":"mid","sender":"skey","signature":"sign","witness_signatures":[]}]"""
+    val rd: String = """eyJvYmplY3QiOiJtZXNzYWdlIiwiYWN0aW9uIjoid2l0bmVzcyIsImlkIjoiTWc9PSIsInN0YXJ0IjoyMn0="""
+    var r: String = s"""[{"data":"$rd","message_id":"bWlk","sender":"c2tleQ==","signature":"c2lnbg==","witness_signatures":[]}]"""
 
     assertResult(source.replaceAll("F_MESSAGES", r))(spd)
     assert(rd === Base64.getEncoder.encode(data.toJson.toString().getBytes).map(_.toChar).mkString)
@@ -368,12 +339,13 @@ class JsonMessageParserTest extends FunSuite {
 
 
     // 1 message and non-empty witness list
-    val sig: List[Key] = List("witnessKey1", "witnessKey2", "witnessKey3")
-    m = MessageContent(data, "skey", "sign", "mid", sig)
+    val sig: List[Key] = List("witnessKey1".getBytes, "witnessKey2".getBytes, "witnessKey3".getBytes)
+    m = MessageContent(data, "skey".getBytes, "sign".getBytes, "mid".getBytes, sig)
     sp = AnswerResultArrayMessageServer(99, ChannelMessages(List(m)))
     spd = JsonMessageParser.serializeMessage(sp)
 
-    r = s"""[{"data":"$rd","message_id":"mid","sender":"skey","signature":"sign","witness_signatures":${listStringify(sig)}}]"""
+    r = s"""[{"data":"$rd","message_id":"bWlk","sender":"c2tleQ==","signature":"c2lnbg==","witness_signatures":${listStringify(sig)}}]"""
+    println(r)
 
     assertResult(source.replaceAll("F_MESSAGES", r))(spd)
     assert(rd === Base64.getEncoder.encode(data.toJson.toString().getBytes).map(_.toChar).mkString)
@@ -399,3 +371,6 @@ class JsonMessageParserTest extends FunSuite {
     }
   }
 }
+
+
+

@@ -23,17 +23,17 @@ object JsonMessages {
 
   /** Parsed result answer (Int result) Json message from the server */
   final case class AnswerResultIntMessageServer(
-                                           id: Int,
-                                           result: Int = 0,
-                                           jsonrpc: String = JSON_RPC_VERSION
-                                         ) extends JsonMessageAnswerServer
+                                                 id: Int,
+                                                 result: Int = 0,
+                                                 jsonrpc: String = JSON_RPC_VERSION
+                                               ) extends JsonMessageAnswerServer
 
   /** Parsed result answer (Array result) Json message from the server */
   final case class AnswerResultArrayMessageServer(
-                                             id: Int,
-                                             result: ChannelMessages,
-                                             jsonrpc: String = JSON_RPC_VERSION
-                                           ) extends JsonMessageAnswerServer
+                                                   id: Int,
+                                                   result: ChannelMessages,
+                                                   jsonrpc: String = JSON_RPC_VERSION
+                                                 ) extends JsonMessageAnswerServer
 
   /** Parsed error answer Json message from the server */
   final case class AnswerErrorMessageServer(
@@ -53,11 +53,11 @@ object JsonMessages {
 
   /** Parsed Administration Json message from the client */
   sealed class JsonMessagePublishClient(
-                                       val params: MessageParameters,
-                                       val id: Int,
-                                       val method: Methods,
-                                       val jsonrpc: String = JSON_RPC_VERSION
-                                     ) extends JsonMessage
+                                         val params: MessageParameters,
+                                         val id: Int,
+                                         val method: Methods,
+                                         val jsonrpc: String = JSON_RPC_VERSION
+                                       ) extends JsonMessagePubSubClient
 
 
   /* --------------- ADMIN CLIENT MESSAGES --------------- */

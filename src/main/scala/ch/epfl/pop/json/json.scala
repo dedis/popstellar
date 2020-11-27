@@ -9,12 +9,12 @@ import ch.epfl.pop.json.Objects.Objects
 package object json {
   type UNKNOWN = String // TODO remove later
 
-  type HexString = String
+  type DecodedBase64String = Array[Byte]
 
   type TimeStamp = BigInt
-  type Signature = HexString
-  type Key = HexString
-  type Hash = HexString
+  type Signature = DecodedBase64String
+  type Key = DecodedBase64String
+  type Hash = DecodedBase64String
 
   type ChannelName = String
   type ChannelMessage = MessageContent
@@ -85,7 +85,7 @@ package object json {
     action: Actions,
 
     /* LAO related fields */
-    id: HexString,
+    id: Array[Byte],
     name: String,
     creation: TimeStamp,
     last_modified: TimeStamp,
@@ -93,7 +93,7 @@ package object json {
     witnesses: List[Key],
 
     /* witness a message related fields */
-    message_id: HexString,
+    message_id: Array[Byte],
     signature: Signature,
 
     /* meeting related fields */
