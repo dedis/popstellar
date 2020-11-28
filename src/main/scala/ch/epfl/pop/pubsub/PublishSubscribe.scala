@@ -1,5 +1,7 @@
 package ch.epfl.pop.pubsub
 
+import java.util.Base64
+
 import akka.NotUsed
 import akka.actor.typed.scaladsl.AskPattern.{Askable, schedulerFromActorSystem}
 import akka.actor.typed.{ActorRef, ActorSystem}
@@ -12,11 +14,12 @@ import ch.epfl.pop.DBActor
 import ch.epfl.pop.DBActor.{DBMessage, Write}
 import ch.epfl.pop.json.JsonMessageParser.{parseMessage, serializeMessage}
 import ch.epfl.pop.json.JsonMessages.{JsonMessagePublishClient, _}
+import ch.epfl.pop.json.JsonUtils.JsonMessageParserError
 import ch.epfl.pop.json.{MessageErrorContent, MessageParameters}
 import ch.epfl.pop.pubsub.ChannelActor._
 
-import scala.concurrent.{Await, Future}
-import scala.util.{Failure, Success, Try}
+import scala.concurrent.{Await}
+
 
 
 object PublishSubscribe {
@@ -40,7 +43,6 @@ object PublishSubscribe {
       val input = builder.add(Flow[JsonMessagePubSubClient])
       val merge = builder.add(Merge[JsonMessageAnswerServer](4))
       val output = builder.add(Flow[JsonMessageAnswerServer])
-      //val mergeUnsub = builder.add(Merge[UnsubMessage](2))
 
       val Subscribe = 0
       val Unsubscribe = 3
@@ -51,7 +53,7 @@ object PublishSubscribe {
           _ match {
             case _ : SubscribeMessageClient => Subscribe
             case _ : UnsubscribeMessageClient => Unsubscribe
-            case _ : JsonMessagePublishClient => Publish
+            case m : JsonMessagePublishClient => Publish
             case _ : CatchupMessageClient => Catchup
           }
         }
@@ -97,8 +99,8 @@ object PublishSubscribe {
                      (implicit timeout: Timeout,
                       system: ActorSystem[Nothing]): JsonMessage => JsonMessageAnswerServer = {
 
-    def pub(params: MessageParameters, id: Int) = {
-      val future = dbActor.ask(ref => Write(params, id, ref))
+    def pub(params: MessageParameters, id: Int, propagate: Boolean) = {
+      val future = dbActor.ask(ref => Write(params, id, propagate, ref))
       Await.result(future, timeout.duration)
     }
 
@@ -106,19 +108,19 @@ object PublishSubscribe {
       m match {
         case CreateLaoMessageClient(params, id, _, _) =>
           val highLevelMessage = params.message.get.data
-          val channel = "/root/" + highLevelMessage.id
+          val channel = "/root/" + new String(Base64.getEncoder.encode( highLevelMessage.id))
           val future = actor.ask(ref => CreateMessage(channel, ref))
-          system.log.debug("Actor at creation of channel: " + actor.toString)
+
           if (!Await.result(future, timeout.duration)) {
             val error = MessageErrorContent(-3, "Channel " + channel + " already exists.")
             AnswerErrorMessageServer(error = error, id = id)
           }
           else {
             //Publish on the LAO main channel
-            pub(MessageParameters(channel, params.message), id)
+            pub(MessageParameters(channel, params.message), id, false)
           }
         case req: JsonMessagePublishClient =>
-          pub(req.params, req.id)
+          pub(req.params, req.id, true)
       }
   }
 
@@ -182,18 +184,17 @@ object PublishSubscribe {
 
 
         val parser = Flow[Message].map {
-          case TextMessage.Strict(s) => Try(parseMessage(s)) match {
-            case Success(message) => message
-            case Failure(exception) =>
-              val error = MessageErrorContent(-4, "Invalid JSON.")
-              AnswerErrorMessageServer(error = error, id = 0) //TODO: find a better way than using a fixed id
+          case TextMessage.Strict(s) => parseMessage(s) match {
+            case Left(m) => m
+            case Right(JsonMessageParserError(description, id, errorCode)) =>
+              AnswerErrorMessageServer(id, MessageErrorContent(errorCode.id, description))
           }
         }
         val formatter = Flow[JsonMessage].map(m => TextMessage.Strict(serializeMessage(m)))
 
         val mapPubSub = Flow[JsonMessage].map{case m: JsonMessagePubSubClient => m}
 
-        //input ~> parser ~> partitioner // TODO doesnt compile?
+        input ~> parser ~> partitioner
         partitioner.out(0) ~> merge
         partitioner.out(1) ~> mapPubSub ~> jFlow ~> merge
         merge ~> formatter ~> output

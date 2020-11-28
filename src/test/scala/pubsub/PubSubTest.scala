@@ -14,7 +14,7 @@ import ch.epfl.pop
 import ch.epfl.pop.DBActor
 import ch.epfl.pop.DBActor.DBMessage
 import ch.epfl.pop.json.JsonMessages._
-import ch.epfl.pop.json.{Actions, ChannelMessages, ChannelName, JsonMessages, MessageContent, MessageContentData, MessageErrorContent, MessageParameters, Methods, Objects, Signature}
+import ch.epfl.pop.json.{Actions, ChannelMessages, ChannelName, MessageContent, MessageContentData, MessageErrorContent, MessageParameters, Methods, Objects, Signature}
 import ch.epfl.pop.pubsub.{ChannelActor, PublishSubscribe}
 import org.iq80.leveldb.Options
 import org.scalatest.FunSuite
@@ -24,7 +24,7 @@ import ch.epfl.pop.json.JsonUtils.MessageContentDataBuilder
 import scorex.crypto.signatures.{Curve25519, PrivateKey, PublicKey}
 
 import scala.concurrent.duration.DurationInt
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.math.pow
 import scala.reflect.io.Directory
 
@@ -47,8 +47,8 @@ class PubSubTest extends FunSuite {
 
     implicit val system: ActorSystem[SpawnProtocol.Command] = ActorSystem[SpawnProtocol.Command](root, "test")
     implicit val timeout = Timeout(1, TimeUnit.SECONDS)
-    val (entry, actor, dbActor) = setup(DatabasePath)
-    system.log.debug("Actor before creating flow: " + actor.toString)
+    val (_, actor, dbActor) = setup(DatabasePath)
+
     val sinkHead = Sink.head[JsonMessageAnswerServer]
 
     val options: Options = new Options()
@@ -58,10 +58,10 @@ class PubSubTest extends FunSuite {
 
     messages.foreach { case (message, response, flowNumber) =>
       val source = message match {
-        case Some(m) => Source.single(m)
+        case Some(m) => println("Sending: " + m.toString); Source.single(m)
         case None => Source.empty
       }
-      val future = source.initialDelay(1.milli).via(flows(flowNumber)).runWith(sinkHead)
+      val future = source.initialDelay(1.milli).via(flows(flowNumber)).log("logging pubsub").runWith(sinkHead)
       response match {
         case Some(json) => assert(Await.result(future, 1.seconds) == json)
         case None =>
@@ -71,7 +71,7 @@ class PubSubTest extends FunSuite {
   }
 
   private def setup(databasePath : String)(implicit system: ActorSystem[SpawnProtocol.Command], timeout: Timeout) = {
-    implicit val ec = system.executionContext
+    implicit val ec: ExecutionContext = system.executionContext
 
     val (entry, exit) = MergeHub.source[PropagateMessageServer].toMat(BroadcastHub.sink)(Keep.both).run()
     val futureActor: Future[ActorRef[ChannelActor.ChannelMessage]] = system.ask(SpawnProtocol.Spawn(pop.pubsub.ChannelActor(exit),
@@ -83,10 +83,6 @@ class PubSubTest extends FunSuite {
     (entry, actor, dbActor)
   }
 
- // private val AnswerOk: Some[AnswerMessageServer] = Some(AnswerMessageServer(true, None))
-
-  implicit def message2Option(jsonMessage: JsonMessage) = Some(jsonMessage)
-
   private def generateKeyPair(): (PrivateKey, PublicKey) = {
     val (sk, pk): (PrivateKey, PublicKey) = Curve25519.createKeyPair
     (sk, pk)
@@ -95,7 +91,7 @@ class PubSubTest extends FunSuite {
   private def b64Encode(b: Array[Byte]): Array[Byte] = Base64.getEncoder.encode(b)
 
   private def getMessageParams(data : MessageContentData, pk: PublicKey, sk: PrivateKey, channel: ChannelName): MessageParameters = {
-    val messageId = b64Encode((data.toJson.toString().getBytes()))
+    val messageId = b64Encode(data.toJson.toString().getBytes())
     val signature = b64Encode(Curve25519.sign(sk, messageId))
     val sender = b64Encode(supertagged.untag(pk))
     val witnessSignature: List[Signature] = Nil
@@ -133,8 +129,8 @@ class PubSubTest extends FunSuite {
 
   private def createLaoSetup(sk: PrivateKey, pk: PublicKey, name: String = "The best LAO in the world", startingId: Int = 0) = {
     val createLao = getCreateLao(pk, sk, startingId + 0, name)
-    val laoID = createLao.params.message.get.data.id
-    val channel = "/root/" + laoID
+    val laoID =  new String(Base64.getEncoder.encode(createLao.params.message.get.data.id))
+    val channel = "/root/" +laoID
 
     val state = getBroadcastState(createLao, pk, sk, channel, startingId + 2)
     val prop = getPropagate(state.params)
@@ -142,6 +138,8 @@ class PubSubTest extends FunSuite {
     val l: List[(Option[JsonMessagePubSubClient], Option[JsonMessageAnswerServer])] =
       List((Some(createLao), Some(AnswerResultIntMessageServer(startingId + 0))),
         (Some(SubscribeMessageClient(MessageParameters(channel, None), startingId + 1)), Some(AnswerResultIntMessageServer(startingId + 1))),
+        //Temporary second subscribe message
+        //(Some(SubscribeMessageClient(MessageParameters(channel, None), startingId + 2)), Some(AnswerResultIntMessageServer(startingId + 2))),
         (Some(state), Some(AnswerResultIntMessageServer(startingId + 2))),
         (None, Some(prop))
       )
@@ -160,7 +158,8 @@ class PubSubTest extends FunSuite {
       .setLastModified(dataCreate.creation)
       .setOrganizer(dataCreate.organizer)
       .setWitnesses(Nil)
-      //TODO: add modificationId and modificationSignatures
+      .setModificationId(dataCreate.id)
+      .setModificationSignatures(Nil)
       .build()
 
     val params = getMessageParams(dataBroadcast, pk, sk, channel)
@@ -180,9 +179,10 @@ class PubSubTest extends FunSuite {
     digest.update(laoId.getBytes())
     digest.update(BigInt(creationTime).toByteArray)
     digest.update(name.getBytes)
-    val eventID = new String(b64Encode(digest.digest()))
+    val eventID = b64Encode(digest.digest())
     val data = new MessageContentDataBuilder()
       .setHeader(Objects.Meeting, Actions.Create)
+      .setId(eventID)
       .setCreation(creationTime)
       .setLastModified(creationTime)
       .setLocation(location)
@@ -204,7 +204,7 @@ class PubSubTest extends FunSuite {
     val (sk, pk): (PrivateKey, PublicKey) = Curve25519.createKeyPair
     val (l, laoID) = createLaoSetup(sk, pk)
 
-    val meeting = getCreateMeeting(laoID.map(_.toChar).mkString, sk, pk, 4)
+    val meeting = getCreateMeeting(laoID, sk, pk, 4)
 
     val messages = List(
       (Some(meeting),Some(AnswerResultIntMessageServer(4))),
@@ -218,8 +218,8 @@ class PubSubTest extends FunSuite {
     val (l1, laoID1) = createLaoSetup(sk, pk)
     val (l2, laoID2) = createLaoSetup(sk, pk, "My new LAO", 3)
 
-    val msg1 = getCreateMeeting(laoID1.map(_.toChar).mkString, sk, pk, 4)
-    val msg2 = getCreateMeeting(laoID2.map(_.toChar).mkString, sk, pk, 5)
+    val msg1 = getCreateMeeting(laoID1, sk, pk, 4)
+    val msg2 = getCreateMeeting(laoID2, sk, pk, 5)
 
     val messages : List[(Option[JsonMessagePubSubClient], Option[JsonMessageAnswerServer])] = List(
       (Some(msg1), Some(AnswerResultIntMessageServer(4))),
@@ -237,8 +237,8 @@ class PubSubTest extends FunSuite {
     val (sk2, pk2): (PrivateKey, PublicKey) = Curve25519.createKeyPair
     val (l, laoID) = createLaoSetup(sk1, pk1)
     val channel = "/root/" + laoID
-    val meeting1 = getCreateMeeting(laoID.map(_.toChar).mkString, sk1, pk1, 4)
-    val meeting2 = getCreateMeeting(laoID.map(_.toChar).mkString, sk2, pk2, 1)
+    val meeting1 = getCreateMeeting(laoID, sk1, pk1, 4)
+    val meeting2 = getCreateMeeting(laoID, sk2, pk2, 1)
 
     val messages: List[(Option[JsonMessagePubSubClient], Option[JsonMessageAnswerServer], Int)] = List(
       (Some(SubscribeMessageClient(MessageParameters(channel, None), 0)), Some(AnswerResultIntMessageServer(0)), 1),
@@ -266,7 +266,7 @@ class PubSubTest extends FunSuite {
     val laoName = "My LAO"
     val (l1, _) = createLaoSetup(sk, pk, laoName)
     val createMsg = getCreateLao(pk, sk, 3, laoName)
-    val laoID = createMsg.params.message.get.data.id
+    val laoID =  new String(Base64.getEncoder.encode(createMsg.params.message.get.data.id))
     val l = List(
       (Some(createMsg), Some(AnswerErrorMessageServer(3, MessageErrorContent(-3, "Channel /root/"
         + laoID +  " already exists."))))
@@ -280,8 +280,8 @@ class PubSubTest extends FunSuite {
     val (sk, pk): (PrivateKey, PublicKey) = Curve25519.createKeyPair
     val (l1, laoId) = createLaoSetup(sk, pk)
     val channel = "/root/" + laoId
-    val meeting1 = getCreateMeeting(laoId.map(_.toChar).mkString, sk, pk, 4)
-    val meeting2 = getCreateMeeting(laoId.map(_.toChar).mkString, sk, pk, 5)
+    val meeting1 = getCreateMeeting(laoId, sk, pk, 4)
+    val meeting2 = getCreateMeeting(laoId, sk, pk, 5)
 
     val messages = List(
       (Some(UnsubscribeMessageClient(MessageParameters(channel, None), 3)), Some(AnswerResultIntMessageServer(3))),
@@ -302,7 +302,7 @@ class PubSubTest extends FunSuite {
 
     implicit val system: ActorSystem[SpawnProtocol.Command] = ActorSystem[SpawnProtocol.Command](root, "test")
     implicit val timeout = Timeout(1, TimeUnit.SECONDS)
-    val (entry, actor, dbActor) = setup(DatabasePath)
+    val (_, actor, dbActor) = setup(DatabasePath)
 
     val options: Options = new Options()
     options.createIfMissing(true)
@@ -329,7 +329,7 @@ class PubSubTest extends FunSuite {
   test("Catchup messages on a channel") {
     val (sk, pk): (PrivateKey, PublicKey) = Curve25519.createKeyPair
     val createLao = getCreateLao(pk, sk, 0, "My LAO")
-    val laoId = createLao.params.message.get.data.id
+    val laoId =  new String(Base64.getEncoder.encode(createLao.params.message.get.data.id))
     val channel = "/root/" + laoId
     val state = getBroadcastState(createLao, pk, sk, channel, 1)
     val catchup = CatchupMessageClient(MessageParameters(channel, None), 2)

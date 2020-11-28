@@ -27,7 +27,7 @@ object DBActor {
    * @param rid the id of the client request
    * @param replyTo the actor to respond to
    */
-  final case class Write(message: MessageParameters, rid : Int, replyTo: ActorRef[JsonMessageAnswerServer]) extends DBMessage
+  final case class Write(message: MessageParameters, rid : Int,propagate: Boolean, replyTo: ActorRef[JsonMessageAnswerServer]) extends DBMessage
 
   final case class Catchup(channel: String, rid: Int, replyTo: ActorRef[JsonMessageAnswerServer]) extends DBMessage
 
@@ -41,7 +41,7 @@ object DBActor {
   private def database(path : String, channelsDB: Map[String, DB], pubEntry: Sink[PropagateMessageServer, NotUsed]): Behavior[DBMessage] = Behaviors.receive { (ctx, message) =>
      message match {
 
-      case Write(params, rid, replyTo) =>
+      case Write(params, rid, propagate, replyTo) =>
         val channel = params.channel
         val (newChannelsDB, db) = channelsDB.get(channel) match {
           case Some(db) => (channelsDB, db)
@@ -58,10 +58,12 @@ object DBActor {
         val id = message.message_id
         db.put(id, serializeMessage(message).getBytes)
 
-        val propagate = PropagateMessageServer(params)
-        implicit val system: ActorSystem[Nothing] = ctx.system
+        if(propagate) {
+          val prop = PropagateMessageServer(params)
+          implicit val system: ActorSystem[Nothing] = ctx.system
+          Source.single(prop).runWith(pubEntry)
+        }
 
-        Source.single(propagate).runWith(pubEntry)
         replyTo ! AnswerResultIntMessageServer(id = rid)
 
         database(path, newChannelsDB, pubEntry)
