@@ -95,7 +95,7 @@ func MessageIsValid(msg Message) error {
 /*
 	we check that Sign(sender||data) is the given signature
 */
-func VerifySignature(publicKey string, data string,signature string ) error{
+func VerifySignature(publicKey string, data []byte,signature string ) error{
 	//check the size of the key as it will panic if we plug it in Verify
 	if len(publicKey) != ed.PublicKeySize{
 		return ErrRequestDataInvalid
@@ -108,7 +108,7 @@ func VerifySignature(publicKey string, data string,signature string ) error{
 		return ErrEncodingFault
 	}
 	//data is also in base64 so we need to decrypt it before using it
-	dataInClear,err := Decode(data)
+	dataInClear,err := Decode(string(data))
 	if err!=nil{
 		return ErrEncodingFault
 	}
@@ -139,7 +139,7 @@ func VerifyWitnessSignatures(publicKeys []byte, signatures []byte,data string,se
 	if err!=nil{
 		return ErrEncodingFault
 	}
-	toCheck := string(senderInClear) + string(dataInClear)
+	toCheck := append(senderInClear,dataInClear ...)
 	for i := 0; i < len(signatures); i++ {
 		err := VerifySignature(string (publicKeys[i]), toCheck ,string (signatures[i]))
 		if err!= nil{
