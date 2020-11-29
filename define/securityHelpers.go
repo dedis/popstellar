@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	ed "crypto/ed25519"
+	"github.com/rogpeppe/godef/go/ast"
 	"strconv"
 	"time"
 	"fmt"
@@ -91,15 +92,27 @@ func MessageIsValid(msg Message) error {
 	// the witness signatures are valid (check on every message??)
 	return VerifyWitnessSignatures()
 }
-
-func VerifySignature(publicKey string, data string,signature string ) error{
+/*
+	we check that Sign(sender||data) is the given signature
+*/
+func VerifySignature(publicKey string, data []byte,signature string ) error{
 	//check the size of the key as it will panic if we plug it in Verify
 	if len(publicKey) != ed.PublicKeySize{
 		return ErrRequestDataInvalid
 	}
 	//check the validity of the signature
-	//TODO prone to modification depending on base64 encoding
-	if ed.Verify([]byte(publicKey), []byte(data), []byte(signature)){
+	//TODO method is defined supposing args are encrypted
+	//the key is in base64 so we need to decrypt it before using it
+	keyDecoded,err := Decode(publicKey)
+	if err!=nil{
+		return ErrEncodingFault
+	}
+	//data is also in base64 so we need to decrypt it before using it
+	dataDecoded,err := Decode(string(data))
+	if err!=nil{
+		return ErrEncodingFault
+	}
+	if ed.Verify(keyDecoded, dataDecoded, []byte(signature)){
 		return nil
 	}
 	//invalid signature
@@ -117,8 +130,16 @@ of the witness id in witness[]
 	witnessSignature[_,_,_./.]
 	WitnessSignatures[3,6,2,1]
 */
-func VerifyWitnessSignatures(publicKeys []byte, signatures []byte,data string,sender string,signature string ) error {
-	toCheck := sender + data
+func VerifyWitnessSignatures(publicKeys []byte, signatures []byte,data string,sender string) error {
+	senderDecoded,err := Decode(sender)
+	if err!=nil{
+		return ErrEncodingFault
+	}
+	dataDecoded,err := Decode(data)
+	if err!=nil{
+		return ErrEncodingFault
+	}
+	toCheck := append(senderDecoded, dataDecoded...)
 	for i := 0; i < len(signatures); i++ {
 		err := VerifySignature(string (publicKeys[i]), toCheck ,string (signatures[i]))
 		if err!= nil{
