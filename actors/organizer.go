@@ -2,9 +2,11 @@ package actors
 
 import (
 	"encoding/json"
+	"fmt"
+	"github.com/santhosh-tekuri/jsonschema"
+	"os"
 	"student20_pop/db"
 	"student20_pop/define"
-	"fmt"
 )
 
 type Organizer struct {
@@ -31,6 +33,20 @@ func NewOrganizer(pkey string, db string) *Organizer {
  * response to the sender, or nil
  */
 func (o *Organizer) HandleWholeMessage(msg []byte, userId int) ([]byte, []byte, []byte) {
+
+	schema, err := jsonschema.Compile("schemas/purchaseOrder.json")
+	if err != nil {
+		return err
+	}
+	f, err := os.Open("purchaseOrder.json")
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	if err = schema.Validate(f); err != nil {
+		return err
+	}
+
 	generic, err := define.AnalyseGeneric(msg)
 	if err != nil {
 		fmt.Printf("1")
