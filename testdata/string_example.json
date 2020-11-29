@@ -5,7 +5,7 @@
   "params": {
     "channel": "/root",
     "message": {
-      "data": "ewoib2JqZWN0IjogImxhbyIsCiJhY3Rpb24iOiAiY3JlYXRlIiwKImlkIjogIk1IZzJOalk9IiwKIm5hbWUiOiAiTXkgTEFPIiwKImNyZWF0aW9uIjogMTIzLAoibGFzdF9tb2RpZmllZCI6IDEyMywKIm9yZ2FuaXplciI6ICJNSGd4TWpNME5RPT0iLAoid2l0bmVzc2VzIjogW10KfQ==",
+      "data": "ewoib2JqZWN0IjogImxhbyIsCiJhY3Rpb24iOiAiY3JlYXRlIiwKImlkIjogIkhTL3JPSElUR2RSamkxbSswN09KU3N1RTBuZEM0cHFpdU1aTGN5TVpVTDQ9IiwKIm5hbWUiOiAiTXkgTEFPIiwKImNyZWF0aW9uIjogMTIzLAoibGFzdF9tb2RpZmllZCI6IDEyMywKIm9yZ2FuaXplciI6ICJNSGd4TWpNME5RPT0iLAoid2l0bmVzc2VzIjogW10KfQ==",
       "sender": "MHgxMjM0NQ==",
       "signature": "MHgxMjNhYg==",
       "message_id": "MHg2NjY=",
@@ -19,7 +19,7 @@ signature": "0x123ab",
 data : {
 "object": "lao",
 "action": "create",
-"id": "MHg2NjY=",
+"id": "HS/rOHITGdRji1m+07OJSsuE0ndC4pqiuMZLcyMZUL4=",
 "name": "My LAO",
 "creation": 123,
 "last_modified": 123,
