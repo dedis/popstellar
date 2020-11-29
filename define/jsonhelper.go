@@ -158,32 +158,32 @@ func AnalyseMessage(message json.RawMessage) (Message, error) {
 	m := Message{}
 	err := json.Unmarshal(message, &m)
 
-	d, err := decode(m.Sender)
+	d, err := Decode(m.Sender)
 	if err != nil {
 		return m, ErrEncodingFault
 	}
 	m.Sender = string(d)
 
-	d, err = decode(m.Message_id)
+	d, err = Decode(m.Message_id)
 	if err != nil {
 		return m, ErrEncodingFault
 	}
 	m.Message_id = string(d)
 
-	d, err = decode(m.Signature)
+	d, err = Decode(m.Signature)
 	if err != nil {
 		return m, ErrEncodingFault
 	}
 	m.Signature = string(d)
 
-	d, err = decode(string(m.Data))
+	d, err = Decode(string(m.Data))
 	if err != nil {
 		return m, ErrEncodingFault
 	}
 	m.Data = d
 
 	for i := 0; i < len(m.WitnessSignatures); i++ {
-		d, err = decode(m.WitnessSignatures[i])
+		d, err = Decode(m.WitnessSignatures[i])
 		if err != nil {
 			return m, ErrEncodingFault
 		}
@@ -198,7 +198,7 @@ func AnalyseData(data string) (Data, error) {
 	return m, err
 }
 
-func decode(data string) ([]byte, error) {
+func Decode(data string) ([]byte, error) {
 	d, err := b64.StdEncoding.DecodeString(strings.Trim(string(data), `"`))
 	if err != nil {
 		fmt.Println(err)
@@ -210,20 +210,20 @@ func AnalyseDataCreateLAO(data json.RawMessage) (DataCreateLAO, error) {
 	m := DataCreateLAO{}
 	err := json.Unmarshal(data, &m)
 	//decryption of ID
-	d, err := decode(m.ID)
+	d, err := Decode(m.ID)
 	if err != nil {
 		return m, ErrEncodingFault
 	}
 	m.ID = string(d)
 	//decryption of organizer
-	d, err = decode(m.Organizer)
+	d, err = Decode(m.Organizer)
 	if err != nil {
 		return m, ErrEncodingFault
 	}
 	m.Organizer = string(d)
 	//decryption of witnesses public keys
 	for i := 0; i < len(m.Witnesses); i++ {
-		d, err = decode(m.Witnesses[i])
+		d, err = Decode(m.Witnesses[i])
 		if err != nil {
 			return m, ErrEncodingFault
 		}
@@ -237,7 +237,7 @@ func AnalyseDataCreateMeeting(data json.RawMessage) (DataCreateMeeting, error) {
 	d, err := b64.StdEncoding.DecodeString(strings.Trim(string(data), `"`))
 	err = json.Unmarshal(d, &m)
 	//decryption of ID
-	d, err = decode(m.ID)
+	d, err = Decode(m.ID)
 	if err != nil {
 		return m, ErrEncodingFault
 	}

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	ed "crypto/ed25519"
+	"github.com/rogpeppe/godef/go/ast"
 	"strconv"
 	"time"
 	"fmt"
@@ -74,15 +75,27 @@ func RollCallCreatedIsValid(data DataCreateRollCall, message Message) error {
 func MessageIsValid(msg Message) error {
 	return nil
 }
-
+/*
+	we check that Sign(sender||data) is the given signature
+*/
 func VerifySignature(publicKey string, data string,signature string ) error{
 	//check the size of the key as it will panic if we plug it in Verify
 	if len(publicKey) != ed.PublicKeySize{
 		return ErrRequestDataInvalid
 	}
 	//check the validity of the signature
-	//TODO prone to modification depending on base64 encoding
-	if ed.Verify([]byte(publicKey), []byte(data), []byte(signature)){
+	//TODO method is defined supposing args are encrypted
+	//the key is in base64 so we need to decrypt it before using it
+	keyInClear,err := Decode(publicKey)
+	if err!=nil{
+		return ErrEncodingFault
+	}
+	//data is also in base64 so we need to decrypt it before using it
+	dataInClear,err := Decode(data)
+	if err!=nil{
+		return ErrEncodingFault
+	}
+	if ed.Verify(keyInClear, dataInClear, []byte(signature)){
 		return nil
 	}
 	//invalid signature
@@ -100,7 +113,15 @@ of the witness id in witness[]
 	witnessSignature[_,_,_./.]
 */
 func VerifyWitnessSignatures(publicKeys []byte, signatures []byte,data string,sender string,signature string ) error {
-	toCheck := sender + data
+	senderInClear,err := Decode(sender)
+	if err!=nil{
+		return ErrEncodingFault
+	}
+	dataInClear,err := Decode(data)
+	if err!=nil{
+		return ErrEncodingFault
+	}
+	toCheck := string(senderInClear) + string(dataInClear)
 	for i := 0; i < len(signatures); i++ {
 		err := VerifySignature(string (publicKeys[i]), toCheck ,string (signatures[i]))
 		if err!= nil{
