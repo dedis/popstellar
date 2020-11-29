@@ -34,8 +34,6 @@ const styles = StyleSheet.create({
 });
 
 function OrganizationNavigation() {
-  // const LAO = props.navigationState.routes[0].params;
-
   return (
     <OrganizationTopTabNavigator.Navigator
       style={styles.navigator}
