@@ -77,3 +77,6 @@ keys, just like above, but this time the value is the list of the subscribers to
 ## Json specifications
 
 We use the protocol as defined in [Protocol - Detailed specifications](https://docs.google.com/document/d/1fyNWSPzLhM6W9V0VTFf2waMLiJGcscy7wa4bQlLkySM/edit).
+
+## Useful links :
+* https://stackoverflow.com/questions/20101954/json-unmarshal-nested-object-into-string-or-byte

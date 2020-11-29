@@ -3,14 +3,41 @@ package WebSocket
 import (
 	"bytes"
 	"fmt"
-	"github.com/boltdb/bolt"
 	"log"
-	"student20_pop/channel"
+	"student20_pop/actors"
+	"student20_pop/db"
 	"student20_pop/define"
 	"sync"
 	"time"
 )
 
+const SIG_TRESHOLD = 4
+
+/*
+TODO
+faire des tests
+-Subscribing
+-Unsubscribing
+
+Propagating a message on a channel
+Catching up on past messages on a channel /RAOUl
+
+Publish a message on a channel:
+Update LAO properties ->
+LAO state broadcast ->
+Witness a message ->
+
+Creating a 'event' !
+#check from witness
+#verify if witnessed
+-meeting/ Ouriel
+-roll call/ ouriel
+-discussion(?)
+-poll/ouriel
+-cast vote
+-register attendance
+Meeting state broadcast
+*/
 type hub struct {
 	// the mutex to protect connections
 	connectionsMx sync.RWMutex
@@ -18,42 +45,30 @@ type hub struct {
 	// Registered connections.
 	connections map[*connection]struct{}
 
-	// message to send to the channel
-	message chan []byte
-	//channel in which we have to send the info
-	channel []byte
-
-	//msg received from the webskt
+	//Response for the sender
+	idOfSender int
+	//msg received from the sender through the websocket
 	receivedMessage chan []byte
-
-	//Database instance
-	db *bolt.DB
 
 	logMx sync.RWMutex
 	log   [][]byte
 
+	organizer *actors.Organizer
+	witness   *actors.Witness
+
 	connIndex int
-
-	//Response for the sender
-	idOfSender       int
-	responseToSender chan []byte
-
-	responseToSenderNotChan []byte
-	messageToBroadcast      []byte
 }
 
 func NewHub() *hub {
+
 	h := &hub{
-		connectionsMx:           sync.RWMutex{},
-		message:                 make(chan []byte),
-		receivedMessage:         make(chan []byte),
-		connections:             make(map[*connection]struct{}),
-		db:                      nil,
-		connIndex:               0,
-		idOfSender:              -1,
-		responseToSender:        make(chan []byte),
-		responseToSenderNotChan: nil,
-		messageToBroadcast:      nil,
+		connectionsMx:   sync.RWMutex{},
+		receivedMessage: make(chan []byte),
+		connections:     make(map[*connection]struct{}),
+		connIndex:       0,
+		idOfSender:      -1,
+		organizer:       actors.NewOrganizer("", "orgDatabase.db"),
+		witness:         actors.NewWitness("", "witDatabase.db"),
 	}
 	//publish subscribe go routine !
 
@@ -61,57 +76,84 @@ func NewHub() *hub {
 		for {
 			//get msg from connection
 			msg := <-h.receivedMessage
-			h.messageToBroadcast = nil
-			h.responseToSenderNotChan = nil
-			//handle the message and generate the response
-			h.HandleWholeMessage(msg, h.idOfSender)
-			msgBroadcast := h.messageToBroadcast
-			msgResponse := h.responseToSenderNotChan
 
-			var subscribers []int = nil
-			var err error = nil
-			if bytes.Compare(h.channel, []byte("0")) != 0 {
-				subscribers, err = channel.GetSubscribers(h.channel)
-				if err != nil {
-					log.Fatal("can't get subscribers", err)
-				}
+			// check if messages concerns organizer
+			var message []byte = nil
+			var channel []byte = nil
+			var response []byte = nil
+			//handle the message and generate the response, if error, print it in console
+			/*check1, err := h.isForOrganizer(msg)
+			if err != nil {
+				fmt.Print(err)
 			}
+			check2, err2 := h.isForWitness(msg)
+			if err2 != nil {
+				fmt.Print(err2)
+			}
+			if check1 && check2 {
+				fmt.Print("cannot be both witness and organizer")
+			} else if check1 {
+				message, channel, response = h.organizer.HandleWholeMessage(msg, h.idOfSender)
+				fmt.Print(err)
+			} else if check2 {
+				//TODO
+			}*/
+
+			message, channel, response = h.organizer.HandleWholeMessage(msg, h.idOfSender)
 
 			h.connectionsMx.RLock()
-			for c := range h.connections {
-				//send msgBroadcast to that connection if channel is main channel or is in channel subscribers
-				_, found := define.Find(subscribers, c.id)
-
-				if (bytes.Compare(h.channel, []byte("0")) == 0 || found) && msgBroadcast != nil {
-					select {
-					case c.send <- msgBroadcast:
-					// stop trying to send to this connection after trying for 1 second.
-					// if we have to stop, it means that a reader died so remove the connection also.
-					case <-time.After(1 * time.Second):
-						log.Printf("shutting down connection %c", c.id)
-						h.removeConnection(c)
-					}
-				}
-			}
-			for c := range h.connections {
-				//send answer to client
-				if h.idOfSender == c.id {
-					select {
-
-					case c.send <- msgResponse:
-					// stop trying to send to this connection after trying for 1 second.
-					// if we have to stop, it means that a reader died so remove the connection also.
-					case <-time.After(1 * time.Second):
-						log.Printf("shutting down connection %c", c.id)
-						h.removeConnection(c)
-					}
-				}
-			}
-
+			h.publishOnChannel(message, channel)
+			h.sendResponse(response, h.idOfSender)
 			h.connectionsMx.RUnlock()
 		}
 	}()
 	return h
+}
+
+/* sends the message msg to every subscribers of the channel channel */
+func (h *hub) publishOnChannel(msg []byte, channel []byte) {
+
+	var subscribers []int = nil
+	var err error = nil
+	if bytes.Equal(channel, []byte("/root")) {
+		subscribers, err = db.GetSubscribers(channel)
+		if err != nil {
+			log.Fatal("can't get subscribers", err)
+		}
+	}
+
+	for c := range h.connections {
+		//send msgBroadcast to that connection if channel is main channel or is in channel subscribers
+		_, found := define.Find(subscribers, c.id)
+
+		if (bytes.Equal(channel, []byte("/root")) || found) && msg != nil {
+			select {
+			case c.send <- msg:
+			// stop trying to send to this connection after trying for 1 second.
+			// if we have to stop, it means that a reader died so remove the connection also.
+			case <-time.After(1 * time.Second):
+				log.Printf("shutting down connection %c", c.id)
+				h.removeConnection(c)
+			}
+		}
+	}
+}
+
+/*sends the message msg to the connection sender*/
+func (h *hub) sendResponse(msg []byte, sender int) {
+	for c := range h.connections {
+		//send answer to client
+		if sender == c.id {
+			select {
+			case c.send <- msg:
+			// stop trying to send to this connection after trying for 1 second.
+			// if we have to stop, it means that a reader died so remove the connection also.
+			case <-time.After(1 * time.Second):
+				log.Printf("shutting down connection %c", c.id)
+				h.removeConnection(c)
+			}
+		}
+	}
 }
 
 func (h *hub) addConnection(conn *connection) {
@@ -133,146 +175,31 @@ func (h *hub) removeConnection(conn *connection) {
 	}
 }
 
-// Test json input to create LAO:
-//  careful with base64 needed to remove
-//  careful with comma after witnesses[] and witnesses_signatures[] needed to remove
+/*returns whether the Hub's organizer has the same public key as the organizer of the channel of the message*/
+func (h *hub) isForOrganizer(message []byte) (bool, error) {
 
-// Param msg = receivedMessage
-// output by setting h.responseToSender and h.broadcast
-func (h *hub) HandleWholeMessage(msg []byte, userId int) {
-	generic, err := define.AnalyseGeneric(msg)
+	gen, err := define.AnalyseGeneric(message)
 	if err != nil {
-		err = define.ErrRequestDataInvalid
-		h.responseToSenderNotChan = define.CreateResponse(err, generic)
-		return
+		return false, err
 	}
-
-	switch generic.Method {
-	case "subscribe":
-		err = h.handleSubscribe(generic, userId)
-	case "unsubscribe":
-		err = h.handleUnsubscribe(generic, userId)
-	case "publish":
-		err = h.handlePublish(generic)
-	//case "message": return h.handleMessage() // Potentially, we never receive a "message" and only output "message" after a "publish" in order to broadcast. Or they are only notification, and we just want to check that it was a success
-	//case "catchup": return h.handleCatchup() // TODO
-
-	default:
-		err = define.ErrRequestDataInvalid
+	params, err := define.AnalyseParamsFull(gen.Params)
+	if err != nil {
+		return false, err
 	}
-
-	h.responseToSenderNotChan = define.CreateResponse(err, generic)
+	//TODO extract parent channel if subChannel
+	return h.organizer.IsOrganizer(params.Channel)
 }
 
-func (h *hub) handleSubscribe(generic define.Generic, userId int) error {
-	params, err := define.AnalyseParamsLight(generic.Params)
+/*returns whether the Hub's Witness can witness the received message*/
+func (h *hub) isForWitness(message []byte) (bool, error) {
+	gen, err := define.AnalyseGeneric(message)
 	if err != nil {
-		return define.ErrRequestDataInvalid
+		return false, err
 	}
-	return channel.Subscribe(userId, []byte(params.Channel))
-}
-
-func (h *hub) handleUnsubscribe(generic define.Generic, userId int) error {
-	params, err := define.AnalyseParamsLight(generic.Params)
+	params, err := define.AnalyseParamsFull(gen.Params)
 	if err != nil {
-		return define.ErrRequestDataInvalid
-	}
-	return channel.Unsubscribe(userId, []byte(params.Channel))
-}
-
-func (h *hub) handlePublish(generic define.Generic) error {
-	params, err := define.AnalyseParamsFull(generic.Params)
-	if err != nil {
-		return define.ErrRequestDataInvalid
+		return false, err
 	}
 
-	message, err := define.AnalyseMessage(params.Message)
-	if err != nil {
-		return define.ErrRequestDataInvalid
-	}
-
-	data, err := define.AnalyseData(message.Data)
-	if err != nil {
-		return define.ErrRequestDataInvalid
-	}
-
-	switch data["object"] {
-	case "lao":
-		switch data["action"] {
-		case "create":
-			return h.handleCreateLAO(message, params.Channel, generic)
-		case "update_properties":
-
-		case "state":
-
-		default:
-			return define.ErrInvalidAction
-		}
-
-	case "message":
-		switch data["action"] {
-		case "witness":
-
-		default:
-			return define.ErrInvalidAction
-		}
-
-	case "meeting":
-		switch data["action"] {
-		case "create":
-
-		case "state":
-
-		default:
-			return define.ErrInvalidAction
-		}
-
-	default:
-		return define.ErrRequestDataInvalid
-	}
-
-	return nil
-}
-
-func (h *hub) handleCreateLAO(message define.Message, canal string, generic define.Generic) error {
-
-	if canal != "0" {
-		return define.ErrInvalidResource
-	}
-
-	data, err := define.AnalyseDataCreateLAO(message.Data)
-	if err != nil {
-		return define.ErrInvalidResource
-	}
-
-	// TODO
-	/*err = define.LAOCreatedIsValid(data, message)
-	if err != nil {
-		return define.ErrAccessDenied
-	}*/
-
-	lao := define.LAO{ID: data.ID, Name: data.Name, Creation: data.Creation, LastModified: data.LastModified, OrganizerPKey: data.OrganizerPKey, Witnesses: data.Witnesses}
-
-	err = channel.CreateLAO(lao)
-	if err != nil {
-		return err
-	}
-	h.messageToBroadcast = define.CreateBroadcastMessage(message, generic)
-	h.channel = []byte(canal)
-	return nil
-}
-
-func (h *hub) handleMessage(msg []byte, userId int) error {
-
-	return nil
-}
-
-// TODO
-func (h *hub) handleCatchup() error {
-
-	return nil
-}
-
-func (h *hub) sendResponse(conn *connection) {
-
+	return h.witness.IsWitness(params.Channel)
 }
