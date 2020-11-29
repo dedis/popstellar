@@ -8,6 +8,8 @@ import { Colors, Spacing } from '../Styles';
 
 /**
  * Progress bar
+ *
+ * progress real number between 0 and 1
  */
 
 const styles = StyleSheet.create({

@@ -1,5 +1,11 @@
 const initialState = { organizationNavigation: false, LAO_ID: -1 };
 
+/**
+ * Reducer to switch between organization UI and home UI
+ *
+ * Pass the LAO id to the organization UI
+ */
+
 function toggleAppNavigationScreen(state = initialState, action) {
   let nextState;
   switch (action.type) {

@@ -12,6 +12,12 @@ import STRINGS from '../res/strings';
 import LAOs from '../res/laoData';
 import PROPS_TYPE from '../res/Props';
 
+/**
+ * Organizer tab bar
+ *
+ * Design is only correct on Android
+ */
+
 const styles = StyleSheet.create({
   view: {
     flexDirection: 'row',
