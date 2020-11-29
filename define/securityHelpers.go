@@ -103,16 +103,16 @@ func VerifySignature(publicKey string, data []byte,signature string ) error{
 	//check the validity of the signature
 	//TODO method is defined supposing args are encrypted
 	//the key is in base64 so we need to decrypt it before using it
-	keyInClear,err := Decode(publicKey)
+	keyDecoded,err := Decode(publicKey)
 	if err!=nil{
 		return ErrEncodingFault
 	}
 	//data is also in base64 so we need to decrypt it before using it
-	dataInClear,err := Decode(string(data))
+	dataDecoded,err := Decode(string(data))
 	if err!=nil{
 		return ErrEncodingFault
 	}
-	if ed.Verify(keyInClear, dataInClear, []byte(signature)){
+	if ed.Verify(keyDecoded, dataDecoded, []byte(signature)){
 		return nil
 	}
 	//invalid signature
@@ -130,16 +130,16 @@ of the witness id in witness[]
 	witnessSignature[_,_,_./.]
 	WitnessSignatures[3,6,2,1]
 */
-func VerifyWitnessSignatures(publicKeys []byte, signatures []byte,data string,sender string,signature string ) error {
-	senderInClear,err := Decode(sender)
+func VerifyWitnessSignatures(publicKeys []byte, signatures []byte,data string,sender string) error {
+	senderDecoded,err := Decode(sender)
 	if err!=nil{
 		return ErrEncodingFault
 	}
-	dataInClear,err := Decode(data)
+	dataDecoded,err := Decode(data)
 	if err!=nil{
 		return ErrEncodingFault
 	}
-	toCheck := append(senderInClear,dataInClear ...)
+	toCheck := append(senderDecoded, dataDecoded...)
 	for i := 0; i < len(signatures); i++ {
 		err := VerifySignature(string (publicKeys[i]), toCheck ,string (signatures[i]))
 		if err!= nil{
