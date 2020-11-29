@@ -1,6 +1,7 @@
 package define
 
 import (
+	//b64 "encoding/base64"
 	"bytes"
 	"crypto/sha256"
 	ed "crypto/ed25519"
@@ -30,14 +31,14 @@ func LAOCreatedIsValid(data DataCreateLAO, message Message) error {
 	str = append(str, []byte(strconv.FormatInt(data.Creation, 10))...)
 	str = append(str, []byte(data.Name)...)
 	hash := sha256.Sum256(str)
+	//hash64 := b64.StdEncoding.EncodeToString(hash[:])
 	
 
-	if !bytes.Equal([]byte(message.Message_id), hash[:]) {
+	if !bytes.Equal([]byte(data.ID), hash[:]) {
+	//if(hash64 != data.ID) {
 		fmt.Printf("sec3 \n")
-		fmt.Printf("%v, %v", string(hash[:]), message.Message_id)
-		// TODO Reactivate return error once hash is solved
-		// the real issue is probably that my hash is incorrect because wasn't cast to string... but string(hash) is gross. Maybe the solution is the shift to  base64 encoded hash (and everything else)
-		//return ErrInvalidResource
+		fmt.Printf("%v, %v", hash, data.ID)
+		return ErrInvalidResource
 	}
 
 	return nil
@@ -73,7 +74,23 @@ func RollCallCreatedIsValid(data DataCreateRollCall, message Message) error {
 }
 
 func MessageIsValid(msg Message) error {
-	return nil
+	// the message_id is valid
+	str := []byte(msg.Data)
+	str = append(str, []byte(msg.Signature)...)
+	hash := sha256.Sum256(str)
+
+	if !bytes.Equal([]byte(msg.Message_id), hash[:]) {
+		return ErrInvalidResource
+	}
+
+	// the signature is valid
+	err := VerifySignature(msg.Sender, msg.Data, msg.Signature)
+	if(err != nil) {
+		return err
+	}
+
+	// the witness signatures are valid (check on every message??)
+	return VerifyWitnessSignatures()
 }
 /*
 	we check that Sign(sender||data) is the given signature
@@ -111,6 +128,7 @@ of the witness id in witness[]
 
 	Witness[1,2,3...]
 	witnessSignature[_,_,_./.]
+	WitnessSignatures[3,6,2,1]
 */
 func VerifyWitnessSignatures(publicKeys []byte, signatures []byte,data string,sender string,signature string ) error {
 	senderInClear,err := Decode(sender)
