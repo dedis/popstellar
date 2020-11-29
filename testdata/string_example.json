@@ -5,23 +5,25 @@
   "params": {
     "channel": "/root",
     "message": {
-      "data": "ewogICAgICAgICJvYmplY3QiOiAibGFvIiwKICAgICAgICAiYWN0aW9uIjogImNyZWF0ZSIsCiAgICAgICAgImlkIjogIjB4MTIzYSIsCiAgICAgICAgIm5hbWUiOiAiTXkgTEFPIiwKICAgICAgICAiY3JlYXRpb24iOiAxMjMsCiAgICAgICAgImxhc3RfbW9kaWZpZWQiOiAxMjMsCiAgICAgICAgIm9yZ2FuaXplciI6ICIweDEyM2EiLAogICAgICAgICJ3aXRuZXNzZXMiOiBbXQogICAgICB9",
-      "sender": "0x123a",
-      "signature": "0x123a",
-      "message_id": "[244 89 172 199 4 199 199 14 81 22 146 28 151 192 213 231 230 31 114 113 26 225 79 7 225 86 160 233 130 10 61 242]",
+      "data": "ewoib2JqZWN0IjogImxhbyIsCiJhY3Rpb24iOiAiY3JlYXRlIiwKImlkIjogIk1IZzJOalk9IiwKIm5hbWUiOiAiTXkgTEFPIiwKImNyZWF0aW9uIjogMTIzLAoibGFzdF9tb2RpZmllZCI6IDEyMywKIm9yZ2FuaXplciI6ICJNSGd4TWpNME5RPT0iLAoid2l0bmVzc2VzIjogW10KfQ==",
+      "sender": "MHgxMjM0NQ==",
+      "signature": "MHgxMjNhYg==",
+      "message_id": "MHg2NjY=",
       "witness_signatures": []
     }
   }
 }
-
+sender : "0x12345"
+message_id": "0x666",
+signature": "0x123ab",
 data : {
 "object": "lao",
 "action": "create",
-"id": "0x123a",
+"id": "MHg2NjY=",
 "name": "My LAO",
 "creation": 123,
 "last_modified": 123,
-"organizer": "0x123a",
+"organizer": "MHgxMjM0NQ==",
 "witnesses": []
 }
 
