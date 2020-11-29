@@ -199,7 +199,7 @@ func AnalyseData(data string) (Data, error) {
 }
 
 func Decode(data string) ([]byte, error) {
-	d, err := b64.StdEncoding.DecodeString(strings.Trim(string(data), `"`))
+	d, err := b64.StdEncoding.DecodeString(strings.Trim(data, `"`))
 	if err != nil {
 		fmt.Println(err)
 	}
