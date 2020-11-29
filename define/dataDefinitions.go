@@ -8,6 +8,8 @@ For readability (human) and proper encoding for JSON, these data types must be t
 and/or displayed in the given format but may be stored in bytes.
 */
 
+const SubscribeDB = "sub.db"
+
 type LAO struct {
 	//ID hash : Name || Creation Date/Time Unix Timestamp
 	ID string
@@ -23,18 +25,46 @@ type LAO struct {
 	//List of public keys where each public key belongs to one member (physical person) (subscriber)
 }
 
-type Event struct {
+type Meeting struct {
 	//id hash : SHA1(Name + Creation Date/Time Unix Timestamp)
-	ID []byte
+	ID string
 	// name of event
 	Name string
 	//Creation Date/Time
 	Creation     int64 //  Unix timestamp (uint64)
 	LastModified int64 //timestamp
 	Location     string
-	Start        int64 //  Unix timestamp (uint64)
-	End          int64 //timestamp
-	Extra        []byte
+	Start        int64  //  Unix timestamp (uint64)
+	End          int64  //timestamp
+	Extra        string //TODO if this is json no need to stick to []byte
+}
+
+type RollCall struct {
+	//id hash : SHA1(Name + Creation Date/Time Unix Timestamp)
+	ID string
+	// name of event
+	Name string
+	//Creation Date/Time
+	Creation     int64 //  Unix timestamp (uint64)
+	LastModified int64 //timestamp
+	Location     string
+	Start        int64  //  Unix timestamp (uint64)
+	End          int64  //timestamp
+	Extra        string //TODO if this is json no need to stick to []byte
+}
+
+type Poll struct {
+	//id hash : SHA1(Name + Creation Date/Time Unix Timestamp)
+	ID string
+	// name of event
+	Name string
+	//Creation Date/Time
+	Creation     int64 //  Unix timestamp (uint64)
+	LastModified int64 //timestamp
+	Location     string
+	Start        int64  //  Unix timestamp (uint64)
+	End          int64  //timestamp
+	Extra        string //TODO if this is json no need to stick to []byte
 }
 
 type Election struct {
