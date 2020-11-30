@@ -14,20 +14,17 @@ class SignatureTest extends FunSuite {
     val msg = "{\"ts\": 1604911874, \"type\":\"rollcall\"}"
     val (sk, pk) = Curve25519.createKeyPair(seed)
     val sig = Curve25519.sign(sk, msg.getBytes(StandardCharsets.UTF_8))
-    val sigHex = Base16.encode(sig)
-    val keyHex = Base16.encode(pk)
 
-    assert(Signature.verify(msg, sigHex, keyHex))
+    assert(Signature.verify(msg, sig, pk))
   }
 
   test("Signature verification fails on incorrect signature") {
     val seed = "PoP".getBytes
     val msg = "{\"ts\": 1604911874, \"type\":\"rollcall\"}"
     val (_, pk) = Curve25519.createKeyPair(seed)
-    val sigHex = Base16.encode("incorrect signature".getBytes())
-    val keyHex = Base16.encode(pk)
+    val sig = "incorrect signature".getBytes()
 
-    assert(!Signature.verify(msg, sigHex, keyHex))
+    assert(!Signature.verify(msg, sig, pk))
   }
 
 }
