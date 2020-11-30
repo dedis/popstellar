@@ -6,6 +6,7 @@ import {
 import STRINGS from '../res/strings';
 import { Spacing, Typography } from '../Styles';
 import PROPS_TYPE from '../res/Props';
+import { requestCreateLao } from '../websockets/WebsocketApi'
 
 /*
 * The Launch component
@@ -55,7 +56,10 @@ const Launch = ({ navigation }) => {
       </View>
       <View style={styles.viewBottom}>
         <View style={styles.button}>
-          <Button title={STRINGS.launch_button_launch} />
+          <Button
+            title={STRINGS.launch_button_launch}
+            onPress={() => requestCreateLao("Ma petite LAO :)")}
+          />
         </View>
         <View style={styles.button}>
           <Button

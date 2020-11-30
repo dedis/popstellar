@@ -24,7 +24,7 @@ export default function App() {
       <SafeAreaProvider>
         <Provider store={Store}>
           {Platform.OS === 'ios'
-            && <StatusBar barStyle="dark-content" backgroundColor="white" />}
+          && <StatusBar barStyle="dark-content" backgroundColor="white" />}
           <AppNavigation />
         </Provider>
       </SafeAreaProvider>

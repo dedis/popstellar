@@ -9,12 +9,12 @@ import Home from '../Components/Home';
 import ConnectNavigation from './ConnectNavigation';
 
 /**
-* The main tab navigation component
-*
-* create a tab navigator between the Home, Connect and Launch component
-*
-* the SafeAreaView resolves problem with status bar overlap
-*/
+ * The main tab navigation component
+ *
+ * create a tab navigator between the Home, Connect and Launch component
+ *
+ * the SafeAreaView resolves problem with status bar overlap
+ */
 const HomeTopTabNavigator = createMaterialTopTabNavigator();
 
 const styles = StyleSheet.create({
