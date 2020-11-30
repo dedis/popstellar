@@ -6,7 +6,7 @@ import {
 import STRINGS from '../res/strings';
 import { Spacing, Typography } from '../Styles';
 import WebsocketLink from '../websockets/WebsocketLink';
-import * as wsUtils from '../websockets/WebsocketUtils';
+import * as wsApi from '../websockets/WebsocketApi';
 
 /*
 * The Launch component
@@ -34,13 +34,14 @@ const styles = StyleSheet.create({
   },
 });
 
-
 let onClickButtonLaunch = () => {
 
+  wsApi.requestCreateLao("Ma petite LAO")
+  /*
   const promise = new Promise((resolve, reject) => {
     //wsUtils.requestCreateLao("nom de la LAO", resolve, reject);
     //wsUtils.requestJoinLao("hash de la LAO", resolve, reject);
-    wsUtils.requestCreateEvent("nom de la LAO", "location de la LAO", resolve, reject);
+    //wsUtils.requestCreateEvent("nom de la LAO", "location de la LAO", resolve, reject);
     //wsUtils.requestCastVote("Vote: option number 3", resolve, reject);
 
     //wsUtils.requestCreateChannel("name of the channel", "contract of the channel", resolve, reject);
@@ -52,7 +53,7 @@ let onClickButtonLaunch = () => {
   promise.then(
     () => console.log("(TODO) request accepted (launch.js)"),
     (error) => console.error("(TODO) request rejected. Reason :", error)
-  );
+  );*/
 };
 
 const Connect = () => (
@@ -65,10 +66,10 @@ const Connect = () => (
     </View>
     <View style={styles.viewBottom}>
       <View style={styles.button}>
-        <Button onPress={() => onClickButtonLaunch() } title={STRINGS.launch_button_launch} />
+        <Button onPress={() => onClickButtonLaunch()} title={STRINGS.launch_button_launch} />
       </View>
       <View style={styles.button}>
-        <Button onPress={() => WebsocketLink.printServerAnswer() } title={STRINGS.general_button_cancel} />
+        <Button onPress={() => WebsocketLink.printServerAnswer()} title={STRINGS.general_button_cancel} />
       </View>
     </View>
   </View>
