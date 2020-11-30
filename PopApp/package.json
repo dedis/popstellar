@@ -17,6 +17,7 @@
     "expo": "~39.0.2",
     "expo-cli": "^3.28.0",
     "expo-status-bar": "~1.0.2",
+    "hash.js": "^1.1.7",
     "prop-types": "^15.7.2",
     "react": "16.13.1",
     "react-dom": "16.13.1",
@@ -29,6 +30,8 @@
     "react-native-tab-view": "2.14.2",
     "react-native-web": "~0.13.12",
     "react-navigation": "^4.4.1",
+    "tweetnacl": "^1.0.3",
+    "tweetnacl-util": "^0.15.1",
     "websocket": "^1.0.32"
   },
   "devDependencies": {

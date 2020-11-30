@@ -36,6 +36,22 @@ wsServer.on('request', function (request) {
 
       let answers;
       let idx;
+      const JSON_RPC_VERSION = "2.0";
+
+      const general_answer_positive = {
+        jsonrpc: JSON_RPC_VERSION,
+        result: 0,
+        id: JSON.parse(message.utf8Data).id
+      };
+
+      const general_answer_negative = {
+        jsonrpc: JSON_RPC_VERSION,
+        error: {
+          code: -Math.round(Math.random() * 4 + 1),
+          description: "dummy error from server"
+        },
+        id: JSON.parse(message.utf8Data).id
+      };
 
       answers = [{
         success: 'true',
@@ -49,8 +65,12 @@ wsServer.on('request', function (request) {
       //const answers = [{type: "answer", msg: message.utf8Data}];
       //answers = [JSON.parse(message.utf8Data)];
 
+      answers = [general_answer_positive, general_answer_negative];
+      answers = [general_answer_positive];
+
       idx = (Math.floor(Math.random() * (1000000))) % answers.length;
       //idx = 0;
+      //idx = 1;
 
       // broadcasting message to all connected clients
       for(let key in clients) {

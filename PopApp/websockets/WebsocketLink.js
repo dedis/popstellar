@@ -1,9 +1,7 @@
 import React from 'react';
-import { w3cwebsocket as W3CWebSocket } from "websocket";
-
-
-const SERVER_ANSWER_INTERVAL_MS = 25;
-const SERVER_ANSWER_MAX_ATTEMPTS = 160;
+import { w3cwebsocket as W3CWebSocket } from 'websocket';
+import { handleServerAnswer } from './WebsocketAnswer';
+import { PendingRequest } from './WebsocketUtils';
 
 const WEBSOCKET_READYSTATE_INTERVAL_MS = 10;
 const WEBSOCKET_READYSTATE_MAX_ATTEMPTS = 100;
@@ -11,66 +9,33 @@ const WEBSOCKET_READYSTATE_MAX_ATTEMPTS = 100;
 export default class WebsocketLink {
 
   static #ws;
-  static serverAnswer = null;
+  static #pendingQueries;
 
 
-  static printServerAnswer() { console.log(this.serverAnswer); } // TODO debug function
+  static sendRequestToServer(message, retry = false) {
+    if (this.#ws == null) WebsocketLink._initWebsocket();
 
-
-  static sendRequestToServer(message) {
-    if (this.#ws == null)
-      WebsocketLink._initWebsocket();
-
-    WebsocketLink._sendMessage(message);
+    WebsocketLink._sendMessage(message, retry);
   }
 
 
-  static waitServerAnswer(resolveServerAnswer, rejectServerAnswer) {
-    if (this.serverAnswer == null) {
-
-      let count = 0;
-
-      const id = window.setInterval(() => {
-        if (this.serverAnswer == null && count < SERVER_ANSWER_MAX_ATTEMPTS) {
-          count += 1;
-        } else {
-          if (count === SERVER_ANSWER_MAX_ATTEMPTS)
-            rejectServerAnswer("Maximum waiting time for server answer reached : " + SERVER_ANSWER_MAX_ATTEMPTS * SERVER_ANSWER_INTERVAL_MS + "[ms] (waitServerAnswer)");
-          else
-            resolveServerAnswer(this.serverAnswer);
-          window.clearInterval(id);
-        }
-      }, SERVER_ANSWER_INTERVAL_MS);
-
-    } else {
-      // server answer is already available (this.serverAnswer != null)
-      resolveServerAnswer(this.serverAnswer);
-    }
-  }
+  static getPendingProperties() { return this.#pendingQueries; }
 
 
-  static _initWebsocket(address = '127.0.0.1', port =  '8000') {
-    console.log("initiating web socket : " + 'ws://' + address + ':' + port);
+  static _initWebsocket(address = '127.0.0.1', port = '8000') {
     const ws = new W3CWebSocket('ws://' + address + ':' + port);
 
-
-    ws.onopen = () => { };
-
-    ws.onmessage = (message) => {
-      const data = JSON.parse(message.data);
-      //console.log('we got a reply from server (WsLink) : ', data);
-      //this.answerQueue.push(data);
-      this.serverAnswer = data;
-    };
+    ws.onopen = () => { console.log(`initiating web socket : ws://${address}:${port}`); };
+    ws.onmessage = (message) => { handleServerAnswer(message) };
 
     this.#ws = ws;
-    this.serverAnswer = null;
+    this.#pendingQueries = new Map();
   }
 
 
   static _waitWebsocketReady(resolveWebsocketReady, rejectWebsocketReady) {
-    if (!this.#ws.readyState) {
 
+    if (!this.#ws.readyState) {
       let count = 0;
 
       const id = window.setInterval(() => {
@@ -78,7 +43,11 @@ export default class WebsocketLink {
           count += 1;
         } else {
           if (count === WEBSOCKET_READYSTATE_MAX_ATTEMPTS)
-            rejectWebsocketReady("Maximum waiting time for websocket to be ready reached : " + WEBSOCKET_READYSTATE_MAX_ATTEMPTS * WEBSOCKET_READYSTATE_INTERVAL_MS + "[ms] (_waitWebsocketReady)");
+            rejectWebsocketReady(
+                "Maximum waiting time for websocket to be ready reached : " +
+                WEBSOCKET_READYSTATE_MAX_ATTEMPTS * WEBSOCKET_READYSTATE_INTERVAL_MS +
+                "[ms] (_waitWebsocketReady)"
+            );
           else
             resolveWebsocketReady();
           window.clearInterval(id);
@@ -90,8 +59,7 @@ export default class WebsocketLink {
     }
   }
 
-
-  static _sendMessage(message) {
+  static _sendMessage(message, retry) {
 
     // Check that the websocket connection is ready
     if (!this.#ws.readyState) {
@@ -101,17 +69,15 @@ export default class WebsocketLink {
       });
 
       promise.then(
-        () => this._sendMessage(message),
-        (error) => console.error("(TODO)", error)
+        () => this._sendMessage(message, retry),
+        (error) => console.error("(TODO)", error),
       );
 
     } else {
       // websocket ready to be used, message can be sent
-      this.serverAnswer = null;     // reset server answer
+      if (!retry) this.#pendingQueries.set(message.id, new PendingRequest(message));
+      console.log("sending this message ", message);
       this.#ws.send(JSON.stringify(message));
     }
   }
-
 }
-
-
