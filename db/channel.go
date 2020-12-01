@@ -2,9 +2,9 @@ package db
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/boltdb/bolt"
 	"student20_pop/define"
-	"fmt"
 )
 
 const bucketChannel = "channels"
@@ -15,10 +15,10 @@ const bucketChannel = "channels"
  */
 func writeChannel(obj interface{}, database string, secure bool) error {
 	db, e := OpenDB(database)
-	defer db.Close()
 	if e != nil {
 		return e
 	}
+	defer db.Close()
 
 	err := db.Update(func(tx *bolt.Tx) error {
 		b, err1 := tx.CreateBucketIfNotExists([]byte(bucketChannel))
@@ -50,7 +50,7 @@ func writeChannel(obj interface{}, database string, secure bool) error {
 		} else {
 			exists := b.Get(objID)
 			if exists == nil {
-				fmt.Printf("11")
+				fmt.Printf("Could not find (key, val) pair to update in write channel with param secure=false")
 				return define.ErrInvalidResource
 			}
 		}
@@ -94,10 +94,10 @@ func UpdateChannel(obj interface{}, database string) error {
 /*returns channel data from a given ID */
 func GetChannel(id []byte, database string) []byte {
 	db, e := OpenDB(database)
-	defer db.Close()
 	if e != nil {
 		return nil
 	}
+	defer db.Close()
 	var data []byte
 	e = db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucketChannel))

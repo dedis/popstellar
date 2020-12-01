@@ -1,6 +1,7 @@
 package WebSocket
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"sync"
@@ -65,5 +66,8 @@ func (wsh WsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	go c.writer(&wg, wsConn)
 	go c.reader(&wg, wsConn)
 	wg.Wait()
-	wsConn.Close()
+	err = wsConn.Close()
+	if err != nil {
+		fmt.Print(err)
+	}
 }
