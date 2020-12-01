@@ -10,7 +10,7 @@ class ValidateTest extends FunSuite {
     val (sk, pk) = Curve25519.createKeyPair(seed)
     val encodedData = "This is my message"
     val signature = Curve25519.sign(sk, encodedData.getBytes)
-    val id = Hash.computeID(encodedData, signature)
+    val id = Hash.computeMessageId(encodedData, signature)
     val witnessSignatures = Nil
     val content: MessageContent = MessageContent(encodedData, null, pk, signature, id, witnessSignatures)
     assert(Validate.validate(content).isEmpty)
@@ -21,7 +21,7 @@ class ValidateTest extends FunSuite {
     val (sk, pk) = Curve25519.createKeyPair(seed)
     val encodedData = "This is my message"
     val signature = "incorrect signature".getBytes
-    val id = Hash.computeID(encodedData, signature)
+    val id = Hash.computeMessageId(encodedData, signature)
     val witnessSignatures = Nil
     val content: MessageContent = MessageContent(encodedData, null, pk, signature, id, witnessSignatures)
     assert(Validate.validate(content).nonEmpty)
@@ -32,7 +32,7 @@ class ValidateTest extends FunSuite {
     val (sk, pk) = Curve25519.createKeyPair(seed)
     val encodedData = "This is my message"
     val signature = Curve25519.sign(sk, encodedData.getBytes)
-    val id = Hash.computeID(encodedData, "incorrect".getBytes)
+    val id = Hash.computeMessageId(encodedData, "incorrect".getBytes)
     val witnessSignatures = Nil
     val content: MessageContent = MessageContent(encodedData, null, pk, signature, id, witnessSignatures)
     assert(Validate.validate(content).nonEmpty)

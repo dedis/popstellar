@@ -5,7 +5,6 @@ import java.nio.charset.StandardCharsets
 import ch.epfl.pop.crypto.Signature
 import org.scalatest.FunSuite
 import scorex.crypto.signatures.Curve25519
-import scorex.util.encode.Base16
 
 class SignatureTest extends FunSuite {
 
