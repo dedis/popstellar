@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +23,8 @@ import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Event;
 import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
-import com.github.dedis.student20_pop.utility.OrganizerUI.OnEventTypeSelectedListener;
-import com.github.dedis.student20_pop.utility.OrganizerUI.OnEventTypeSelectedListener.EventType;
+import com.github.dedis.student20_pop.utility.ui.OnEventTypeSelectedListener;
+import com.github.dedis.student20_pop.utility.ui.OnEventTypeSelectedListener.EventType;
 
 
 import java.util.ArrayList;

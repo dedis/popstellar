@@ -73,7 +73,7 @@ public final class ConnectFragment extends Fragment implements QRCodeListener {
     private void switchToCameraPermissionFragment() {
         requireFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, new CameraPermissionFragment(), CameraPermissionFragment.TAG)
+                .replace(R.id.fragment_container_main, new CameraPermissionFragment(), CameraPermissionFragment.TAG)
                 .commit();
     }
 
@@ -124,7 +124,7 @@ public final class ConnectFragment extends Fragment implements QRCodeListener {
         Log.i(TAG, "Received qrcode url : " + url);
         requireFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, ConnectingFragment.newInstance(url), ConnectingFragment.TAG)
+                .replace(R.id.fragment_container_main, ConnectingFragment.newInstance(url), ConnectingFragment.TAG)
                 .addToBackStack(TAG).commit();
     }
 }
