@@ -1,46 +1,22 @@
 # student20_pop
 Proof-of-personhood, fall 2020
 
-# overview
-We defined the basic structure that mainly follow the publish subscribe paradigm
-
 # Packages
 
-## Database 
-The idea is to store a big string which contains all the information (in json format)
-- Channeldb:    
-   - store and retrieve channel from database
-   - parse chanel string(in class jsonHelper
-   - keep record of subscribers of channels
+## db 
+This package contains helper functions to interact with databases. A big code refactor will be pushed soon and this package will absorb the current channel package.
 
 ## Websocket 
 - Hub.go: The bandmaster of our backend
-   - OpenConnection() and CloseConnection(), self explainatory, for websocket connections
-   
 - Connection.go: the websocket connection
-    - reader(): read messages from websocket
-    - writer(): writes messages to websocket
-    - serveHTTP() : serves the http connexion for the websocket
+- homePage.go: serves the index.html file
     
-- homePage.go
-    - serveHTTP(): serves the index.html file
-    
-## Channel
-- channel.go : the channel managment at the WS layer
-    - subscribe() : subsribes a given WS to a given channel
-    - unsubscribe() : unsubsribes a given WS from a given channel
-    - getSubscribers(): returns the subscribers of a given channel
-    - find(): a helper function to find items in slices
-    
+## Define    
 - dataDefinitions.go : defines structures for the used data types
-    - LAO
-    - Person
-    - Event
-    - Election
-    - Vote
-    
--jsonHelper.go : some helper functions to work with JSON
-
+- errorHelpers.go : defines the error used inside the backend
+- jsonHelpers.go : structures of messages received through the websocket and functions to extract data from jsons
+- helper.go : general useful functions that are not in the go std library (find elem in slice for now)
+- securityHelpers.go : functions to check hashes and signatures
 
 
 # Back-end components
@@ -54,26 +30,27 @@ that we can populate with key-value pairs.
 
 ## WebSocket Protocol
 The actual implementation (4 files) currently works as following :
-* the `hub.go` maintains a list of opened connections and "routes" the messages. (Not very useful yet given there is only 1 connection)
-* the `connection.go` acts like a server and serves on port 8080. When it receives a message from the client, it passes 
-it to the hub for broadcast and stores it in the DataBase.
+* the `hub.go` maintains a list of opened connections and "routes" the messages. We will change this so there is no more routing to do in the next update.
+* the `connection.go` is the file that properly handles the websocket connection. When it receives a message from the client, it passes 
+it to the hub.
 * the `index.html` acts like the client that prints messages received from the server and that can send messages to the server.
 * the `homePage.go` just serves the `index.html` file on http requests
-### tests 
+### tweaking the server's properties 
 If you want to test the websocket protocol the server running on a different machine than the client, you have to set the
 server's IP address in `index.html`  at line 36 (instead of `localhost`). You'll have to put your computer's IP address
 before the ":8080" of `main.go` at line 29.
 
 ## Database Structure
-As we are using a very basic DBMS enabling only key-values storage. Currently everything is stored in one Database
-(and file) called channel.db, and separated in 2 buckets.
+As we are using a very basic DBMS enabling only key-values storage. There are currently 3 different databases :
+1. for the hub, containing a list of channels and their subscribers
+2. one for the witness (described below)
+3. one for the organizer (same structure as witness's one)
 
-There is one bucket ???@Raoul that stores key values pairswith channel's ID as keys and 
-channel's JSON string representation as value.
+### Organizer/Witness Database
+Thoses databases contains 2 types of bucket :
+* The first type is a unique bucket named containing, for each channel, a key-value pair with the channel's ID as key and all the infos about that channel as value. No history is stored in this bucket.
+* The 2nd type of bucket is a bucket whose name is the id of a channel, and that contains a key-value pair for each message sent on this channel. The keys are the message's ID and the values the data contained in this message.
 
-There is also a channel "sub" that is only used by the publish subscribe protocol. Basically it contains channel IDs as
-keys, just like above, but this time the value is the list of the subscribers to this particular channel.
-    
 ## Json specifications
 
-We use the protocol as defined in [Protocol - Detailed specifications](https://docs.google.com/document/d/1fyNWSPzLhM6W9V0VTFf2waMLiJGcscy7wa4bQlLkySM/edit).
+We use the protocol as defined in the branch proto-specs on github.

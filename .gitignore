@@ -20,4 +20,6 @@
 # Database files
 *.db
 *.lock
+/test
+/testdata
 
