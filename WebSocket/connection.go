@@ -19,7 +19,6 @@ type connection struct {
 
 func (c *connection) reader(wg *sync.WaitGroup, wsConn *websocket.Conn) {
 	defer wg.Done()
-
 	for {
 		_, msg, err := wsConn.ReadMessage()
 		if err != nil {
