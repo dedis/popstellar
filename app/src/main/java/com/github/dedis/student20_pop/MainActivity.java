@@ -18,10 +18,15 @@ import com.github.dedis.student20_pop.ui.CameraPermissionFragment;
 import com.github.dedis.student20_pop.ui.ConnectFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
+import com.github.dedis.student20_pop.utility.network.PoPClientEndpoint;
 import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
+
+import javax.websocket.DeploymentException;
 
 /**
  * Activity used to display the different UIs
@@ -71,13 +76,33 @@ public final class MainActivity extends FragmentActivity {
                 // Creating the LAO and adding it to the organizer's LAO
                 Lao lao = new Lao(name, new Date(), organizer.getId());
                 organizer.setLaos(Collections.singletonList(lao.getId()));
+
+                CompletableFuture.supplyAsync(() -> {
+                    try {
+                        return PoPClientEndpoint.connectToServer(URI.create("ws://10.0.2.2:2000/"), organizer);
+                    } catch (DeploymentException e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                }).thenCompose(p -> {
+                    if(p != null)
+                        return p.createLoa(lao.getName(), lao.getTime(), lao.getTime(), organizer.getId());
+                    else
+                        return null;
+                }).whenComplete((errCode, t) -> {
+                        if(t != null)
+                            Log.e(TAG, "Error while creating the lao", t);
+                        else {
+                            // Start the Organizer Activity (user is considered an organizer)
+                            Intent intent = new Intent(this, OrganizerActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                        }
+                    });
+
                 // Store the private key of the organizer
                 if (PrivateInfoStorage.storeData(this, organizer.getId(), organizer.getAuthentication()))
                     Log.d(TAG, "Stored private key of organizer");
-                // Start the Organizer Activity (user is considered an organizer)
-                Intent intent = new Intent(this, OrganizerActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
                 break;
             case R.id.button_cancel_launch:
                 ((EditText) findViewById(R.id.entry_box_launch)).getText().clear();
