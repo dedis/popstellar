@@ -11,4 +11,5 @@ var ErrRequestDataInvalid = errors.New("request data is invalid")
 var ErrAccessDenied = errors.New("access denied")
 
 var ErrDBFault = errors.New("error in the DB")
+var ErrIdNotDecoded = errors.New("could not unmarshall message's ID")
 var ErrEncodingFault = errors.New("encoding error")

@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const SIG_TRESHOLD = 4
+const SIG_THRESHOLD = 4
 
 /*
 TODO
