@@ -4,6 +4,7 @@ import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.matcher.ViewMatchers;
 
 import com.github.dedis.student20_pop.MainActivity;
+import com.github.dedis.student20_pop.OrganizerActivity;
 import com.github.dedis.student20_pop.R;
 
 import org.junit.Before;
@@ -24,10 +25,9 @@ public class OrganizerFragmentTest {
 
     @Before
     public void launchActivity() {
-        ActivityScenario.launch(MainActivity.class);
+        ActivityScenario.launch(OrganizerActivity.class);
     }
 
-    //These tests only pass when testingOrganizer is true in MainActivity
     @Test
     public void onClickPropertiesTest() {
         onView(withId(R.id.tab_properties)).perform(click());
