@@ -1,19 +1,28 @@
 package main
 
 import (
-	"student20_pop/WebSocket"
-	"text/template"
-
-	"flag"
 	"log"
 	"net/http"
+	"student20_pop/WebSocket"
+	"text/template"
 )
 
 // this function basically makes the webserver run
 func main() {
 
+	/*path, err := os.Getwd()
+	if err != nil {
+		log.Println(err)
+	}
+	fmt.Println(path)
+
 	flag.Parse()
-	tpl := template.Must(template.ParseFiles("index.html"))
+	*/
+	tpl := template.Must(template.ParseFiles("student20_pop/index.html"))
+	/*
+	flag.Parse()
+	*/
+	//tpl := template.Must(template.ParseFiles("index.html"))
 	h := WebSocket.NewHub()
 	router := http.NewServeMux()
 	router.Handle("/", WebSocket.HomeHandler(tpl))
