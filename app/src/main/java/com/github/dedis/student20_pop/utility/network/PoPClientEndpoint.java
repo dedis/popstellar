@@ -21,7 +21,7 @@ import javax.websocket.Session;
  *
  * TODO link onOpen and onRemove to the UI
  */
-@ClientEndpoint()
+@ClientEndpoint(encoders = SimpleEncoder.class, decoders = SimpleDecoder.class)
 public final class PoPClientEndpoint {
 
     private static final ClientManager client = ClientManager.createClient();

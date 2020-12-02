@@ -79,7 +79,7 @@ public final class MainActivity extends FragmentActivity {
 
                 CompletableFuture.supplyAsync(() -> {
                     try {
-                        return PoPClientEndpoint.connectToServer(URI.create("ws://10.0.2.2:2000/"), organizer);
+                        return PoPClientEndpoint.connectToServer(URI.create("ws://10.0.2.2:2020/"), organizer);
                     } catch (DeploymentException e) {
                         e.printStackTrace();
                         return null;
