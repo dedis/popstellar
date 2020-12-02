@@ -4,7 +4,6 @@ import com.github.dedis.student20_pop.model.Person;
 
 import net.jodah.concurrentunit.Waiter;
 
-import org.glassfish.tyrus.server.Server;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -43,12 +42,12 @@ public class SimpleSocketTest {
         waiter = new Waiter();
         messages = new LinkedList<>(toSend);
 
-        Server server = new Server("localhost", 2000, "", MockServerEndpoint.class);
-        server.start();
+        //Server server = new Server("localhost", 2020, "", MockServerEndpoint.class);
+        //server.start();
 
         Thread t = new Thread(() -> {
             try {
-                LowLevelClientProxy session = PoPClientEndpoint.connectToServer(URI.create("ws://localhost:2000/"), new Person("tester")).lowLevel();
+                LowLevelClientProxy session = PoPClientEndpoint.connectToServer(URI.create("ws://localhost:2020/"), new Person("tester")).lowLevel();
                 for(String s : toSend)
                     session.getSession().getBasicRemote().sendText(s);
                 session.getSession().close();
@@ -62,7 +61,7 @@ public class SimpleSocketTest {
 
         waiter.await(10000, toSend.size() + 1);
 
-        server.stop();
+        //server.stop();
     }
 
     @ServerEndpoint("/")

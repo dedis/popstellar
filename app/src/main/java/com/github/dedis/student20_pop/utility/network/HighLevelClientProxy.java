@@ -30,22 +30,22 @@ public final class HighLevelClientProxy {
     }
 
     public CompletableFuture<Integer> createLoa(String name, long creation, long lastModified, String organizer) {
-        return lowLevelClientProxy.publish(publicKey, "/root",
+        return lowLevelClientProxy.publish(publicKey, privateKey, "/root",
                 new CreateLao(Hash.hash(organizer + creation + name), name, creation, lastModified, organizer, new ArrayList<>()));
     }
 
     public CompletableFuture<Integer> updateLao(String laoId, String name, long lastModified, List<String> witnesses) {
-        return lowLevelClientProxy.publish(publicKey, "/root/" + laoId,
+        return lowLevelClientProxy.publish(publicKey, privateKey, "/root/" + laoId,
                 new UpdateLao(name, lastModified, witnesses));
     }
 
     public CompletableFuture<Integer> witnessMessage(String laoId, String messageId, String data) {
-        return lowLevelClientProxy.publish(publicKey, "/root/" + laoId,
+        return lowLevelClientProxy.publish(publicKey, privateKey, "/root/" + laoId,
                 new WitnessMessage(messageId, Signature.sign(privateKey, data)));
     }
 
     public CompletableFuture<Integer> createMeeting(String laoId, String name, long creation, long lastModified, String location, long start, long end) {
-        return lowLevelClientProxy.publish(publicKey, "/root/" + laoId,
+        return lowLevelClientProxy.publish(publicKey, privateKey, "/root/" + laoId,
                 new CreateMeeting(Hash.hash(laoId + creation + name), name, creation, lastModified, location, start, end));
     }
 }
