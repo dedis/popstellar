@@ -6,7 +6,7 @@ import {
 import STRINGS from '../res/strings';
 import { Spacing, Typography } from '../Styles';
 import PROPS_TYPE from '../res/Props';
-import { requestCreateLao } from '../websockets/WebsocketApi'
+import { requestCreateLao, requestUpdateLao, requestStateLao, requestWitnessMessage, requestCreateMeeting, requestStateMeeting } from '../websockets/WebsocketApi'
 
 /*
 * The Launch component
@@ -34,11 +34,22 @@ const styles = StyleSheet.create({
   },
 });
 
+const onButtonLaunchPress = (inputLaoName) => {
+  if (inputLaoName.current.value) requestCreateLao(inputLaoName.current.value);
+  else requestCreateLao("Ma petite LAO :)"); // TODO temp for testing purposes
+  //requestUpdateLao("Nouveau nom");
+  //requestStateLao();
+  //requestWitnessMessage();
+  //requestCreateMeeting("Nouveau meeting", 123, "Lausanne");
+  //requestStateMeeting();
+};
+
+
 const Launch = ({ navigation }) => {
-  const LAOName = React.useRef();
+  const inputLaoName = React.useRef();
 
   const cancelAction = () => {
-    LAOName.current.clear();
+    inputLaoName.current.clear();
     navigation.navigate('Home');
   };
 
@@ -48,7 +59,7 @@ const Launch = ({ navigation }) => {
         <Text style={styles.text}>{STRINGS.launch_description}</Text>
         <View style={styles.button}>
           <TextInput
-            ref={LAOName}
+            ref={inputLaoName}
             style={styles.textInput}
             placeholder={STRINGS.launch_organization_name}
           />
@@ -58,7 +69,7 @@ const Launch = ({ navigation }) => {
         <View style={styles.button}>
           <Button
             title={STRINGS.launch_button_launch}
-            onPress={() => requestCreateLao("Ma petite LAO :)")}
+            onPress={() => onButtonLaunchPress(inputLaoName)}
           />
         </View>
         <View style={styles.button}>

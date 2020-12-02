@@ -76,7 +76,7 @@ export default class WebsocketLink {
     } else {
       // websocket ready to be used, message can be sent
       if (!retry) this.#pendingQueries.set(message.id, new PendingRequest(message));
-      console.log("sending this message ", message);
+      //console.log("sending this message ", JSON.stringify(message));
       this.#ws.send(JSON.stringify(message));
     }
   }
