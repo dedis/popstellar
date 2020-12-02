@@ -7,7 +7,7 @@
 	"properties": {
 		"object": { "const": "meeting" },
 		"action": { "const": "create" },
-		"id": { 
+		"id": {
 			"type": "string",
 			"contentEncoding": "base64",
 			"$comment": "Hash : SHA256(lao_id||creation||name)"
@@ -39,7 +39,7 @@
 		"By sending the meeting/create message to the LAO’s main channel (LAO's id), the meeting will be created with ",
 		"the identifier id. The server is expected to verify the data, such that the last modified timestamp is equal ",
 		"to the creation timestamp, that the timestamp is reasonably recent with respect to the server’s clock, that ",
-		"the attestation is valid, etc. Upon successful creation, the server is expected to broadcast the Meeting state ",
+		"the attestation is valid, etc. Upon successful creation, the organizer is expected to broadcast the Meeting state ",
 		"to all witnesses and clients (see \"Meeting state broadcast\")"
 	]
 }
