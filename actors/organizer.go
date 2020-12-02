@@ -97,6 +97,12 @@ func (o *Organizer) handlePublish(generic define.Generic) ([]byte, []byte, error
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
+	err = define.MessageIsValid(message)
+	if err != nil {
+		fmt.Printf("7")
+		return nil, nil, define.ErrRequestDataInvalid
+	}
+
 	data, err := define.AnalyseData(string(message.Data))
 	if err != nil {
 		fmt.Printf("7")

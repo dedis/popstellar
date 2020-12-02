@@ -13,6 +13,7 @@
     }
   }
 }
+
 sender : "0x12345"
 message_id": "0x666",
 signature": "0x123ab",
