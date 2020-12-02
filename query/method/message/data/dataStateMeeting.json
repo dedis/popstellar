@@ -55,7 +55,7 @@
 						"contentEncoding": "base64",
 						"$comment": "Note: the strings are encoded in Base64"
 					}
-				},
+				}
 			}
 		}
 	},
