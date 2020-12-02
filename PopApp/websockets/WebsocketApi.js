@@ -7,9 +7,35 @@ import WebsocketLink from './WebsocketLink';
 
 const hashLib = require('hash.js');
 
+/* TEMP */
 const pair = sign.keyPair();
 const pubKey = pair.publicKey; // 32 bytes
 const secKey = pair.secretKey; // 64 bytes
+
+const currentLao = {
+  "jsonrpc": "2.0",
+  "method": "publish",
+  "params": {
+    "channel": "/root",
+    "message": {
+      "data": {
+        "object": "lao",
+        "action": "create",
+        "id": "MGEyNzk4NGNkMGUzZGZlN2I2YTUzMmE1Yzg1NzZiNWFjNzIyYTc5NWQ2OTk5M2U2ZTFmMWU3YTQ4YmY3MTNmMA==",
+        "name": "Ma petite LAO :)",
+        "creation": 1606829736,
+        "last_modified": 1606829736,
+        "organizer": "RZ+mdjElW8B+GfDqjZTqWa/3Pn5O/TZFFB/sUK0eYSg=",
+        "witnesses": []
+      },
+      "sender": "RZ+mdjElW8B+GfDqjZTqWa/3Pn5O/TZFFB/sUK0eYSg=",
+      "signature": "n+7/EuqK76M7iQ68OWQzXZakEQl22QNdXOV8uGbaggacLABGcH7TgPQKZOAFDw3UFa30BuPIFQlwFfXAeKykAHsib2JqZWN0IjoibGFvIiwiYWN0aW9uIjoiY3JlYXRlIiwiaWQiOiJNR0V5TnprNE5HTmtNR1V6WkdabE4ySTJZVFV6TW1FMVl6ZzFOelppTldGak56SXlZVGM1TldRMk9UazVNMlUyWlRGbU1XVTNZVFE0WW1ZM01UTm1NQT09IiwibmFtZSI6Ik1hIHBldGl0ZSBMQU8gOikiLCJjcmVhdGlvbiI6MTYwNjgyOTczNiwibGFzdF9tb2RpZmllZCI6MTYwNjgyOTczNiwib3JnYW5pemVyIjoiUlorbWRqRWxXOEIrR2ZEcWpaVHFXYS8zUG41Ty9UWkZGQi9zVUswZVlTZz0iLCJ3aXRuZXNzZXMiOltdfQ==",
+      "message_id": "ZGNkMjFiOGYwM2YzYWE2ZDdmYWNjNzM4NWYxZjkzOTJhMjI4YmIzZmI2YzJmYTE1M2Y3YWU0MDZiZTY2OWZjNQ==",
+      "witness_signatures": []
+    }
+  },
+  "id": 124
+};
 
 const signStrings = (...strs) => {
   let str = '';
@@ -46,8 +72,6 @@ const _generateParams = (channel, message) => {
 
 const _generateMessage = (jsonData, witness_signatures = []) => {
   const sign = signStrings(jsonData);
-
-  console.log(encodeBase64(pubKey));
 
   return {
     data: toString64(jsonData),
@@ -128,6 +152,8 @@ class DataBuilder {
 export const requestCreateLao = (name) => {
   const time = getCurrentTime();
 
+  //console.log(JSON.stringify(currentLao));
+
   const jsonData = new DataBuilder()
     .setObject(objects.LAO).setAction(actions.CREATE)
     .setId(hashStrings(pubKey, time, name))
@@ -146,40 +172,97 @@ export const requestCreateLao = (name) => {
 
 export const requestUpdateLao = (name) => {
   const time = getCurrentTime();
+  const currentMessage = currentLao.params.message;
 
   const jsonData = new DataBuilder()
     .setObject(objects.LAO).setAction(actions.UPDATE_PROPERTIES)
     .setName(name)
     .setLastModified(time)
-    .setWitnesses([]) // TODO witnesses from LAO
+    .setWitnesses(currentMessage.data.witnesses)
     .buildJson();
 
-  const m = _generateMessage(jsonData); // TODO witn
-  const obj = _generateQuery(methods.PUBLISH, _generateParams('/root', m)); // TODO LAO ID in channel
-
-  WebsocketLink.sendRequestToServer(obj);
-};
-
-export const requestStateLao = () => {
-  const time = getCurrentTime();
-
-  const jsonData = new DataBuilder()
-    /*.setObject(objects.LAO).setAction(actions.STATE)
-    .setId(hashStrings(pubKey, ???, name))
-    .setName(name)
-    .setCreation(time).setLastModified(time)
-    .setOrganizer(encodeBase64(pubKey))
-    .setWitnesses([])*/ // + add fields
-    .buildJson();
-
-  const m = _generateMessage(jsonData);
+  const m = _generateMessage(jsonData, currentMessage.witness_signatures);
   const obj = _generateQuery(methods.PUBLISH, _generateParams('/root', m));
 
   WebsocketLink.sendRequestToServer(obj);
 };
 
-export const requestWitnessMessage = () => {};
+export const requestStateLao = () => {
+  const currentData = currentLao.params.message.data;
 
-export const requestCreateMeeting = () => {};
+  const jsonData = new DataBuilder()
+    .setObject(objects.LAO).setAction(actions.STATE)
+    .setId(hashStrings(currentData.organizer, currentData.creation, currentData.name))
+    .setName(currentData.name)
+    .setCreation(currentData.creation).setLastModified(currentData.last_modified)
+    .setOrganizer(encodeBase64(currentData.organizer))
+    .setWitnesses(currentData.witnesses)
+    .setModificationId(0).setModificationSignature([]) // TODO modif id? modf_signatures
+    .buildJson();
 
-export const requestStateMeeting = () => {};
+  const m = _generateMessage(jsonData, currentLao.params.message.witness_signatures);
+  const obj = _generateQuery(methods.PUBLISH, _generateParams('/root', m));
+
+  WebsocketLink.sendRequestToServer(obj);
+};
+
+export const requestWitnessMessage = () => {
+
+  const jsonData = new DataBuilder()
+    .setObject(objects.MESSAGE).setAction(actions.WITNESS)
+    .setMessageId("Hash") // TODO
+    .setSignature(signStrings("jsonData from message received")) // TODO
+    .buildJson();
+
+  const m = _generateMessage(jsonData, []);
+  const obj = _generateQuery(methods.PUBLISH, _generateParams('/root/' + currentLao.params.message.data.id, m));
+
+  WebsocketLink.sendRequestToServer(obj);
+};
+
+
+export const requestCreateMeeting = (name, startTime, location = "", endTime = 0, extra = {}) => {
+  const time = getCurrentTime();
+  const lao_id = currentLao.params.message.data.id;
+
+  let json = new DataBuilder()
+    .setObject(objects.MEETING).setAction(actions.CREATE)
+    .setId(hashStrings(lao_id, time, name))
+    .setName(name)
+    .setCreation(time).setLastModified(time)
+    .setLocation(location)
+    .setStartTime(startTime);
+
+  if (typeof location === 'string' && location !== "") json.setLocation(location);
+  if (Number.isInteger(endTime) && !endTime) json.setEndTime(endTime);
+  if (extra !== 'undefined' && Object.keys(extra).length === 0 && extra.constructor === Object) json.setExtra(extra);
+
+  const jsonData = json.buildJson();
+
+  const m = _generateMessage(jsonData);
+  const obj = _generateQuery(methods.PUBLISH, _generateParams('/root/' + lao_id, m));
+
+  WebsocketLink.sendRequestToServer(obj);
+};
+
+
+export const requestStateMeeting = () => {
+  const currentData = currentLao.params.message.data;
+
+  let json = new DataBuilder()
+    .setObject(objects.MEETING).setAction(actions.STATE)
+    .setId(hashStrings(currentData.id, currentData.creation, currentData.name))
+    .setName(currentData.name)
+    .setCreation(currentData.creation).setLastModified(currentData.last_modified);
+
+  if (currentData.hasOwnProperty('location')) json.setLocation(currentData.location);
+  if (currentData.hasOwnProperty('end')) json.setEndTime(currentData.end);
+  if (currentData.hasOwnProperty('extra')) json.setExtra(currentData.extra);
+
+  const jsonData = json.buildJson();
+
+  const m = _generateMessage(jsonData, currentLao.params.message.witness_signatures);
+  const obj = _generateQuery(methods.PUBLISH, _generateParams('/root/' + currentData.id, m));
+
+  WebsocketLink.sendRequestToServer(obj);
+};
