@@ -51,10 +51,8 @@ AppNavigation.propTypes = {
   organizationNavigation: PropTypes.bool.isRequired,
 };
 
-const mapStateToProps = (state) => (
-  {
-    organizationNavigation: state.organizationNavigation,
-  }
-);
+const mapStateToProps = (state) => ({
+  organizationNavigation: state.toggleAppNavigationScreenReducer.organizationNavigation,
+});
 
 export default connect(mapStateToProps)(AppNavigation);

@@ -61,10 +61,8 @@ function OrganizationNavigation() {
   );
 }
 
-const mapStateToProps = (state) => (
-  {
-    LAO_ID: state.LAO_ID,
-  }
-);
+const mapStateToProps = (state) => ({
+    LAO_ID: state.toggleAppNavigationScreenReducer.LAO_ID,
+});
 
 export default connect(mapStateToProps)(OrganizationNavigation);
