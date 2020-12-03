@@ -6,7 +6,7 @@
     "channel": "/root",
     "message": {
       "data": "ewoib2JqZWN0IjogImxhbyIsCiJhY3Rpb24iOiAiY3JlYXRlIiwKImlkIjogIkhTL3JPSElUR2RSamkxbSswN09KU3N1RTBuZEM0cHFpdU1aTGN5TVpVTDQ9IiwKIm5hbWUiOiAiTXkgTEFPIiwKImNyZWF0aW9uIjogMTIzLAoibGFzdF9tb2RpZmllZCI6IDEyMywKIm9yZ2FuaXplciI6ICJNSGd4TWpNME5RPT0iLAoid2l0bmVzc2VzIjogW10KfQ==",
-      "sender": "MHgxMjM0NQ==",
+      "sender": "MTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTI=",
       "signature": "MHgxMjNhYg==",
       "message_id": "MHg2NjY=",
       "witness_signatures": []
@@ -14,7 +14,7 @@
   }
 }
 
-sender : "0x12345"
+sender : "12345678901234567890123456789012"
 message_id": "0x666",
 signature": "0x123ab",
 data : {
