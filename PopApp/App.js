@@ -3,9 +3,10 @@ import React from 'react';
 import { StatusBar, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
+import { PersistGate } from 'redux-persist/integration/react'
 
 import { Provider } from 'react-redux';
-import Store from './Store/configureStore';
+import { storeInit } from './Store/configureStore';
 
 import AppNavigation from './Navigation/AppNavigation';
 
@@ -19,15 +20,19 @@ import AppNavigation from './Navigation/AppNavigation';
 */
 
 export default function App() {
+  const { store, persistor } = storeInit();
+
   return (
-    <NavigationContainer>
-      <SafeAreaProvider>
-        <Provider store={Store}>
-          {Platform.OS === 'ios'
-          && <StatusBar barStyle="dark-content" backgroundColor="white" />}
-          <AppNavigation />
-        </Provider>
-      </SafeAreaProvider>
-    </NavigationContainer>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <NavigationContainer>
+          <SafeAreaProvider>
+            {Platform.OS === 'ios'
+            && <StatusBar barStyle="dark-content" backgroundColor="white" />}
+            <AppNavigation />
+          </SafeAreaProvider>
+        </NavigationContainer>
+      </PersistGate>
+    </Provider>
   );
 }
