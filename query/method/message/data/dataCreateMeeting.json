@@ -14,7 +14,6 @@
 		},
 		"name": { "type": "string" },
 		"creation": { "description": "[Timestamp] creation time", "type": "integer", "minimum": 0 },
-		"last_modified": { "description": "[Timestamp] last modification's time", "type": "integer", "minimum": 0 },
 		"location": {
 			"description": "[String] location of the meeting",
 			"type": "string",
