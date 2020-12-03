@@ -55,12 +55,14 @@
 						"contentEncoding": "base64",
 						"$comment": "Note: the strings are encoded in Base64"
 					}
-				}
+				},
+				"additionalProperties": false,
+				"required": ["witness", "signature"]
 			}
 		}
 	},
 	"additionalProperties": false,
-	"required": ["object", "action", "id", "name", "creation", "last_modified", "start"],
+	"required": ["object", "action", "id", "name", "creation", "last_modified", "start", "modification_id", "modification_signatures"],
 	"note": [
 		"When a meeting is created or modified, the organizer is expected to publish the ",
 		"meeting/state message to the LAO’s main channel (LAO's id)"

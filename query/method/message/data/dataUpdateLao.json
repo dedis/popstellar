@@ -22,7 +22,7 @@
 		}
 	},
 	"additionalProperties": false,
-	"required": ["object", "action", "name", "last_modified", "witnesses"],
+	"required": ["object", "action", "id", "name", "last_modified", "witnesses"],
 	"note": [
 		"By sending the lao/update_properties message to the LAO’s main channel (LAO's id), the LAO name, list of ",
 		"witnesses and last modified timestamp are updated. The server is expected to forward the message to the ",

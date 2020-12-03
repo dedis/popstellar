@@ -33,7 +33,7 @@
 		}
 	},
 	"additionalProperties": false,
-	"required": ["object", "action", "id", "name", "creation", "last_modified", "start"],
+	"required": ["object", "action", "id", "name", "creation", "start"],
 	"note": [
 		"By sending the meeting/create message to the LAO’s main channel (LAO's id), the meeting will be created with ",
 		"the identifier id. The server is expected to verify the data, such that the last modified timestamp is equal ",

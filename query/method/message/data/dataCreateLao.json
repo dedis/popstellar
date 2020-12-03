@@ -27,7 +27,7 @@
 		}
 	},
 	"additionalProperties": false,
-	"required": ["object", "action", "id", "name", "creation", "last_modified", "organizer", "witnesses"],
+	"required": ["object", "action", "id", "name", "creation", "organizer", "witnesses"],
 	"note": [
 		"By sending the lao/create message to the organizer’s server’s default channel (\"/root\"), the main channel of ",
 		"the LAO will be created with the identifier id. At that point, any of the clients, including the organizer, can ",
