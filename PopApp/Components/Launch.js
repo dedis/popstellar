@@ -7,6 +7,7 @@ import STRINGS from '../res/strings';
 import { Spacing, Typography } from '../Styles';
 import PROPS_TYPE from '../res/Props';
 import { requestCreateLao, requestUpdateLao, requestStateLao, requestWitnessMessage, requestCreateMeeting, requestStateMeeting } from '../websockets/WebsocketApi'
+import { getStore } from '../Store/configureStore';
 
 /*
 * The Launch component
@@ -70,6 +71,21 @@ const Launch = ({ navigation }) => {
           <Button
             title={STRINGS.launch_button_launch}
             onPress={() => onButtonLaunchPress(inputLaoName)}
+          />
+        </View>
+        <View style={styles.button}>
+          <Button
+            title={"TEST print store"}
+            onPress={() => console.log("printing store ", getStore().getState())}
+          />
+        </View>
+        <View style={styles.button}>
+          <Button
+            title={"CLEAR print store"}
+            onPress={() => {
+              const a = { type: 'CLEAR_STORAGE' };
+              getStore().dispatch(a);
+            }}
           />
         </View>
         <View style={styles.button}>
