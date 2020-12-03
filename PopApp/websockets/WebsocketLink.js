@@ -12,10 +12,10 @@ export default class WebsocketLink {
   static #pendingQueries;
 
 
-  static sendRequestToServer(message, retry = false) {
+  static sendRequestToServer(message, requestObject, requestAction, retry = false) {
     if (this.#ws == null) WebsocketLink._initWebsocket();
 
-    WebsocketLink._sendMessage(message, retry);
+    WebsocketLink._sendMessage(message, requestObject, requestAction, retry);
   }
 
 
@@ -59,7 +59,7 @@ export default class WebsocketLink {
     }
   }
 
-  static _sendMessage(message, retry) {
+  static _sendMessage(message, requestObject, requestAction, retry) {
 
     // Check that the websocket connection is ready
     if (!this.#ws.readyState) {
@@ -69,13 +69,13 @@ export default class WebsocketLink {
       });
 
       promise.then(
-        () => this._sendMessage(message, retry),
+        () => this._sendMessage(message, requestObject, requestAction, retry),
         (error) => console.error("(TODO)", error),
       );
 
     } else {
       // websocket ready to be used, message can be sent
-      if (!retry) this.#pendingQueries.set(message.id, new PendingRequest(message));
+      if (!retry) this.#pendingQueries.set(message.id, new PendingRequest(message, requestObject, requestAction));
       //console.log("sending this message ", JSON.stringify(message));
       this.#ws.send(JSON.stringify(message));
     }
