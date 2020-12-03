@@ -1,5 +1,6 @@
 import WebsocketLink from './WebsocketLink';
-import { JSON_RPC_VERSION, PendingRequest, SERVER_ANSWER_FIELD_COUNT } from './WebsocketUtils';
+import { actions, JSON_RPC_VERSION, objects, PendingRequest, SERVER_ANSWER_FIELD_COUNT } from './WebsocketUtils';
+import { getStore } from "../Store/configureStore";
 
 const MAX_QUERY_RETRIES = 3;
 const answerProperties = Object.freeze({
@@ -37,6 +38,21 @@ export const handleServerAnswer = (message) => {
     // processes positive server answer
     if (obj.result === 0) {
       // general positive answer
+      const answer = WebsocketLink.getPendingProperties().get(obj.id);
+
+      // handle "callbacks" if needed
+      switch (answer.requestObject) {
+        case objects.LAO:
+          if (answer.requestAction === actions.CREATE) {
+            // callback for a successful create LAO request
+            getStore().dispatch({ type: 'SET_CURRENT_LAO', value: answer.message });
+          }
+          break;
+
+        default:
+          break;
+      }
+
       WebsocketLink.getPendingProperties().delete(obj.id);
     } else {
       // TODO handle propagate (+ what if none of those two possibilities, silent return?)
@@ -51,11 +67,13 @@ export const handleServerAnswer = (message) => {
     if (!Number.isInteger(error.code) || error.code < -5 || error.code > -1) return;
     if (typeof error.description !== 'string') return;
 
-    const query = WebsocketLink.getPendingProperties().get(obj.id).message;
-    const { retryCount } = WebsocketLink.getPendingProperties().get(obj.id);
+    const query = WebsocketLink.getPendingProperties().get(obj.id);
+    const retryCount = WebsocketLink.getPendingProperties().get(obj.id).retryCount;
     if (retryCount < MAX_QUERY_RETRIES) {
-      WebsocketLink.getPendingProperties().set(obj.id, new PendingRequest(query, retryCount + 1));
-      WebsocketLink.sendRequestToServer(query, true);
+      WebsocketLink.getPendingProperties().set(
+        obj.id, new PendingRequest(query.message, query.requestObject, query.requestAction, retryCount + 1)
+      );
+      WebsocketLink.sendRequestToServer(query.message, true);
     } else {
       console.error(`max retryCount (${MAX_QUERY_RETRIES}) reached! Failing query : `, query);
       WebsocketLink.getPendingProperties().delete(obj.id);

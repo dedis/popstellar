@@ -3,6 +3,9 @@ import { sign } from 'tweetnacl';
 import {
   JSON_RPC_VERSION, objects, actions, getCurrentTime, methods, generateId, toString64,
 } from './WebsocketUtils';
+import USER_LOGOUT from 'redux'
+import { purgeStoredState } from 'redux-persist'
+import { getStore, getPersistor, getPersistConfig } from '../Store/configureStore';
 import WebsocketLink from './WebsocketLink';
 
 const hashLib = require('hash.js');
@@ -148,11 +151,9 @@ class DataBuilder {
 
 
 
-
+/** send a server query asking for the creation of a LAO with a given name (String) */
 export const requestCreateLao = (name) => {
   const time = getCurrentTime();
-
-  //console.log(JSON.stringify(currentLao));
 
   const jsonData = new DataBuilder()
     .setObject(objects.LAO).setAction(actions.CREATE)
@@ -166,10 +167,11 @@ export const requestCreateLao = (name) => {
   const m = _generateMessage(jsonData);
   const obj = _generateQuery(methods.PUBLISH, _generateParams('/root', m));
 
-  WebsocketLink.sendRequestToServer(obj);
+  WebsocketLink.sendRequestToServer(obj, objects.LAO, actions.CREATE);
 };
 
 
+/** send a server query asking for a LAO update providing a new name (String) */
 export const requestUpdateLao = (name) => {
   const time = getCurrentTime();
   const currentMessage = currentLao.params.message;
@@ -184,9 +186,11 @@ export const requestUpdateLao = (name) => {
   const m = _generateMessage(jsonData, currentMessage.witness_signatures);
   const obj = _generateQuery(methods.PUBLISH, _generateParams('/root', m));
 
-  WebsocketLink.sendRequestToServer(obj);
+  WebsocketLink.sendRequestToServer(obj, objects.LAO, actions.UPDATE_PROPERTIES);
 };
 
+
+/** send a server query asking for the current state of a LAO */
 export const requestStateLao = () => {
   const currentData = currentLao.params.message.data;
 
@@ -203,9 +207,11 @@ export const requestStateLao = () => {
   const m = _generateMessage(jsonData, currentLao.params.message.witness_signatures);
   const obj = _generateQuery(methods.PUBLISH, _generateParams('/root', m));
 
-  WebsocketLink.sendRequestToServer(obj);
+  WebsocketLink.sendRequestToServer(obj, objects.LAO, actions.STATE);
 };
 
+
+// TODO remove?
 export const requestWitnessMessage = () => {
 
   const jsonData = new DataBuilder()
@@ -217,10 +223,12 @@ export const requestWitnessMessage = () => {
   const m = _generateMessage(jsonData, []);
   const obj = _generateQuery(methods.PUBLISH, _generateParams('/root/' + currentLao.params.message.data.id, m));
 
-  WebsocketLink.sendRequestToServer(obj);
+  WebsocketLink.sendRequestToServer(obj, objects.MESSAGE, actions.WITNESS);
 };
 
 
+/** send a server query asking for the creation of a meeting given a certain name (String), startTime (Date), optional
+ *  location (String), optional end time (Date) and optional extra information (Json object) */
 export const requestCreateMeeting = (name, startTime, location = "", endTime = 0, extra = {}) => {
   const time = getCurrentTime();
   const lao_id = currentLao.params.message.data.id;
@@ -242,10 +250,11 @@ export const requestCreateMeeting = (name, startTime, location = "", endTime = 0
   const m = _generateMessage(jsonData);
   const obj = _generateQuery(methods.PUBLISH, _generateParams('/root/' + lao_id, m));
 
-  WebsocketLink.sendRequestToServer(obj);
+  WebsocketLink.sendRequestToServer(obj, objects.MEETING, actions.CREATE);
 };
 
 
+/** send a server query asking for the state of a meeting */
 export const requestStateMeeting = () => {
   const currentData = currentLao.params.message.data;
 
@@ -264,5 +273,5 @@ export const requestStateMeeting = () => {
   const m = _generateMessage(jsonData, currentLao.params.message.witness_signatures);
   const obj = _generateQuery(methods.PUBLISH, _generateParams('/root/' + currentData.id, m));
 
-  WebsocketLink.sendRequestToServer(obj);
+  WebsocketLink.sendRequestToServer(obj, objects.MEETING, actions.STATE);
 };

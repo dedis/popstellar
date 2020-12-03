@@ -29,8 +29,10 @@ export const getCurrentTime = () => Math.floor(Date.now() / 1000);
 export const generateId = () => 124;
 
 export const PendingRequest = class {
-  constructor(message, retryCount = 0) {
+  constructor(message, requestObject, requestAction, retryCount = 0) {
     this.message = message;
+    this.requestObject = requestObject;
+    this.requestAction = requestAction;
     this.retryCount = retryCount;
   }
 };
