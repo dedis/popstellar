@@ -37,6 +37,8 @@ const Witness = ({ navigation }) => (
         <Attendee />
       </View>
     )}
+    data={[]}
+    renderItem={() => null}
   />
 );
 
