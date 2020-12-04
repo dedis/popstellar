@@ -103,7 +103,7 @@ package object json {
     modification_signatures: List[Signature],
 
     /* witness a message related fields */
-    message_id: Array[Byte],
+    message_id: Base64String,
     signature: Signature,
 
     /* meeting related fields */

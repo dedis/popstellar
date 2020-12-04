@@ -1,7 +1,6 @@
 package ch.epfl.pop.pubsub
 
 import java.util.Base64
-
 import akka.NotUsed
 import akka.actor.typed.scaladsl.AskPattern.{Askable, schedulerFromActorSystem}
 import akka.actor.typed.{ActorRef, ActorSystem}
@@ -10,15 +9,16 @@ import akka.stream.scaladsl.{BroadcastHub, Flow, GraphDSL, Keep, Merge, MergeHub
 import akka.stream.typed.scaladsl.ActorFlow
 import akka.stream.{FlowShape, UniformFanInShape, UniqueKillSwitch}
 import akka.util.Timeout
-import ch.epfl.pop.DBActor
-import ch.epfl.pop.DBActor.{DBMessage, Write}
+import ch.epfl.pop.{DBActor, Validate}
+import ch.epfl.pop.DBActor.{DBMessage, Read, Write}
 import ch.epfl.pop.json.JsonMessageParser.{parseMessage, serializeMessage}
 import ch.epfl.pop.json.JsonMessages.{JsonMessagePublishClient, _}
+import ch.epfl.pop.json.JsonUtils.ErrorCodes.InvalidData
 import ch.epfl.pop.json.JsonUtils.JsonMessageParserError
 import ch.epfl.pop.json.{MessageErrorContent, MessageParameters}
 import ch.epfl.pop.pubsub.ChannelActor._
 
-import scala.concurrent.{Await}
+import scala.concurrent.Await
 
 
 
@@ -104,23 +104,57 @@ object PublishSubscribe {
       Await.result(future, timeout.duration)
     }
 
-    m =>
-      m match {
-        case CreateLaoMessageClient(params, id, _, _) =>
-          val highLevelMessage = params.message.get.data
-          val channel = "/root/" + new String(Base64.getEncoder.encode( highLevelMessage.id))
-          val future = actor.ask(ref => CreateMessage(channel, ref))
+    def errorOrPublish(params: MessageParameters, id: Int, error: Option[MessageErrorContent]) = {
+      error match {
+        case Some(error) => AnswerErrorMessageServer(id, error)
+        case None =>
+          val content = params.message.get
+          Validate.validate(content) match {
+            case Some(error) => AnswerErrorMessageServer(id, error)
+            case None => pub(params, id, true)
+          }
+      }
+    }
 
-          if (!Await.result(future, timeout.duration)) {
-            val error = MessageErrorContent(-3, "Channel " + channel + " already exists.")
-            AnswerErrorMessageServer(error = error, id = id)
+    _ match {
+        case m @ CreateLaoMessageClient(params, id, _, _) =>
+          Validate.validate(m) match {
+            case Some(error) => AnswerErrorMessageServer(id, error)
+            case None =>
+              val highLevelMessage = params.message.get.data
+              val channel = "/root/" + new String(Base64.getEncoder.encode( highLevelMessage.id))
+              val future = actor.ask(ref => CreateMessage(channel, ref))
+
+              if (!Await.result(future, timeout.duration)) {
+                val error = MessageErrorContent(-3, "Channel " + channel + " already exists.")
+                AnswerErrorMessageServer(error = error, id = id)
+              }
+              else {
+                //Publish on the LAO main channel
+                pub(MessageParameters(channel, params.message), id, false)
+              }
           }
-          else {
-            //Publish on the LAO main channel
-            pub(MessageParameters(channel, params.message), id, false)
+        case m @ UpdateLaoMessageClient(params,id,_,_) =>
+          errorOrPublish(params, id, Validate.validate(m))
+        case m @ BroadcastLaoMessageClient(params, id,_,_) =>
+          val future = dbActor.ask(ref => Read(params.channel, params.message.get.data.id, ref))
+          Await.result(future, timeout.duration) match {
+            case None => AnswerErrorMessageServer(id, MessageErrorContent(InvalidData.id, "Invalid reference to a message_id"))
+            case Some(msgContent) =>
+              errorOrPublish(params, id, Validate.validate(m, msgContent.data))
           }
-        case req: JsonMessagePublishClient =>
-          pub(req.params, req.id, true)
+        case m @ WitnessMessageMessageClient(params, id, _, _) =>
+           errorOrPublish(params, id, Validate.validate(m))
+        case m @ CreateMeetingMessageClient(params, id, _, _) =>
+          val laoId = params.channel.slice(5,params.channel.length).getBytes
+          errorOrPublish(params, id, Validate.validate(m, laoId))
+        case m @ BroadcastMeetingMessageClient(params, id, _ ,_) =>
+          val future = dbActor.ask(ref => Read(params.channel, params.message.get.data.id, ref))
+          Await.result(future, timeout.duration) match {
+            case None => AnswerErrorMessageServer(id, MessageErrorContent(InvalidData.id, "Invalid reference to a message_id"))
+            case Some(msgContent) =>
+              errorOrPublish(params, id, Validate.validate(m, msgContent.data))
+          }
       }
   }
 
