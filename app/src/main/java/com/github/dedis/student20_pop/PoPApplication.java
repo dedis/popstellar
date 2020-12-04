@@ -3,6 +3,8 @@ package com.github.dedis.student20_pop;
 import android.app.Application;
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.Person;
 
@@ -64,5 +66,10 @@ public class PoPApplication extends Application {
         if(laos != null) {
             this.laos = laos;
         }
+    }
+
+    @VisibleForTesting
+    public static void setAppContext(Context context) {
+        appContext = context;
     }
 }
