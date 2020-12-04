@@ -3,7 +3,7 @@ Proof-of-personhood, fall 2020
 
 # overview
 Back-end for the Proof-of-personhood application. To run the backend simply : `go run main.go <mode> <address>` where
-`<mode>` can be either 'o' or 'w' (for organizer and witness respectively) and address is the adress and port on which 
+`<mode>` can be either 'o' or 'w' (for organizer and witness respectively) and address is the address and port on which 
 the server should run (e.g. localhost:8080)
 
 # Packages
