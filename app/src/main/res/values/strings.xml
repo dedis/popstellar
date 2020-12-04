@@ -34,6 +34,7 @@
     <!-- Poll -->
     <string name="poll_event">Poll Event</string>
     <string name="button_cancel">Cancel</string>
+    <string name="button_confirm">Confirm</string>
     <string name="select_event_type_dialog_title">Select Event Type</string>
 
     <!-- Meeting Event -->

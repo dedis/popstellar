@@ -147,14 +147,6 @@ public class AttendeeExpandableListViewEventAdapter extends BaseExpandableListAd
             convertView = inflater.inflate(R.layout.layout_event_category, null);
         }
 
-
-        ImageButton addFutureEventButton = convertView.findViewById(R.id.add_future_event_button);
-        addFutureEventButton.setVisibility((getGroup(groupPosition) == EventCategory.FUTURE) ? View.VISIBLE : View.GONE);
-        addFutureEventButton.setFocusable(View.NOT_FOCUSABLE);
-        addFutureEventButton.setOnClickListener(v -> {
-
-        });
-
         TextView eventTextView = convertView.findViewById(R.id.event_category);
         eventTextView.setText(eventCategory);
         return convertView;
