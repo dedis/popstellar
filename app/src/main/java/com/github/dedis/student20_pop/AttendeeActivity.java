@@ -21,7 +21,6 @@ public class AttendeeActivity extends FragmentActivity implements OnEventTypeSel
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("DEBUG", "ö---------------------------- Hallotsame : Attendee Activity");
 
         setContentView(R.layout.activity_attendee);
         if (findViewById(R.id.fragment_container_attendee) != null) {

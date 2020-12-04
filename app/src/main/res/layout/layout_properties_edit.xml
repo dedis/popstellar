@@ -14,15 +14,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/witness_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/organization_name_editText"
-        android:textSize="@dimen/size_body"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/organization_name_editText" />
-
     <ImageButton
         android:id="@+id/add_witness_button"
         android:layout_width="wrap_content"
@@ -31,7 +22,16 @@
         android:src="@drawable/ic_baseline_add_24"
         android:visibility="visible"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@id/witness_list" />
+        app:layout_constraintTop_toTopOf="@id/organization_name_editText" />
+
+    <ListView
+        android:id="@+id/witness_edit_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/organization_name_editText"
+        android:textSize="@dimen/size_body"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/organization_name_editText" />
 
     <Button
         android:id="@+id/properties_edit_confirm"
@@ -39,7 +39,7 @@
         android:layout_height="wrap_content"
         android:text="@string/button_confirm"
         app:layout_constraintRight_toLeftOf="@id/properties_edit_cancel"
-        app:layout_constraintTop_toBottomOf="@id/add_witness_button" />
+        app:layout_constraintTop_toBottomOf="@id/witness_edit_list" />
 
 
     <Button
@@ -48,6 +48,6 @@
         android:layout_height="wrap_content"
         android:text="@string/button_cancel"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/add_witness_button" />
+        app:layout_constraintTop_toBottomOf="@id/witness_edit_list" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
