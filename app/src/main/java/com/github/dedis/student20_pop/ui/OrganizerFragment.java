@@ -26,9 +26,11 @@ import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Event;
 import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
+import com.github.dedis.student20_pop.model.Person;
 import com.github.dedis.student20_pop.utility.ui.OnAddWitnessListener;
 import com.github.dedis.student20_pop.utility.ui.OnEventTypeSelectedListener;
 import com.github.dedis.student20_pop.utility.ui.OnEventTypeSelectedListener.EventType;
+import com.github.dedis.student20_pop.utility.ui.WitnessListAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -92,12 +94,12 @@ public class OrganizerFragment extends Fragment {
         laoNameTextView.setText(lao.getName());
 
         //TODO : Connect to Backend and retrieve the list of witnesses
-        final ArrayList<String> witnesses = new ArrayList<>();
-        witnesses.add("Witness 1 : 3029320932");
-        witnesses.add("Witness 2 : 2304830493");
-        witnesses.add("Witness 3 : 3092309484");
-        final ArrayAdapter<String> adapter = new ArrayAdapter(getActivity(),
-                android.R.layout.simple_list_item_1, witnesses);
+        final ArrayList<Person> witnesses = new ArrayList<>();
+        witnesses.add(new Person("Alphonse"));
+        witnesses.add(new Person("Barbara"));
+        witnesses.add(new Person("Charles"));
+        witnesses.add(new Person("Deborah"));
+        final WitnessListAdapter adapter = new WitnessListAdapter(getActivity(), witnesses);
         witnessesListView = propertiesView.findViewById(R.id.witness_list);
         witnessesListView.setAdapter(adapter);
 
@@ -137,7 +139,7 @@ public class OrganizerFragment extends Fragment {
         expandableListView.expandGroup(0);
         expandableListView.expandGroup(1);
 
-        ((Button) propertiesEditView.findViewById(R.id.properties_edit_cancel))
+        propertiesEditView.findViewById(R.id.properties_edit_cancel)
                 .setOnClickListener(c -> {
                     viewSwitcher.showNext();
                     editPropertiesButton.setVisibility(View.VISIBLE);
