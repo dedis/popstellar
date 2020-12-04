@@ -24,16 +24,16 @@ func main() {
 		router := http.NewServeMux()
 		router.Handle("/", WebSocket.HomeHandler(tpl))
 		router.Handle("/ws", WebSocket.NewWSHandler(h))
-		log.Printf("serving organizer on port " + os.Args[2])
-		log.Fatal(http.ListenAndServe(":"+os.Args[2], router)) //here to change the srv address
+		log.Printf("serving organizer on address " + os.Args[2])
+		log.Fatal(http.ListenAndServe(os.Args[2], router)) //here to change the srv address
 
 	case "w":
 		h := WebSocket.NewWitnessHub()
 		router := http.NewServeMux()
 		router.Handle("/", WebSocket.HomeHandler(tpl))
 		router.Handle("/ws", WebSocket.NewWSHandler(h))
-		log.Printf("serving witness on port " + os.Args[2])
-		log.Fatal(http.ListenAndServe(":"+(os.Args[2]), router)) //here to change the srv address
+		log.Printf("serving witness on adress " + os.Args[2])
+		log.Fatal(http.ListenAndServe(os.Args[2], router)) //here to change the srv address
 
 	}
 
