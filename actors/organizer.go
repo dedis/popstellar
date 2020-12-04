@@ -1,7 +1,6 @@
 package actors
 
 import (
-	"encoding/json"
 	"fmt"
 	"student20_pop/db"
 	"student20_pop/define"
@@ -389,19 +388,4 @@ func (o *Organizer) handleCatchup(generic define.Generic) ([]byte, error) {
  */
 func finalizeHandling(message define.Message, canal string, generic define.Generic) ([]byte, []byte) {
 	return define.CreateBroadcastMessage(generic), []byte(canal)
-}
-
-/*returns true if o is the organizer of the event*/
-func (o *Organizer) IsOrganizer(id string) (bool, error) {
-	data := db.GetChannel([]byte(id), o.database)
-	if data == nil {
-		return false, nil
-	}
-	lao := define.LAO{} //TODO currently is only for LAO. Need generic type for channel
-	err := json.Unmarshal(data, &lao)
-	if err != nil {
-		return false, define.ErrEncodingFault
-	}
-
-	return lao.OrganizerPKey == o.PublicKey, nil
 }

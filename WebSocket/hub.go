@@ -191,32 +191,3 @@ func (h *hub) removeConnection(conn *connection) {
 		close(conn.send)
 	}
 }
-
-/*returns whether the Hub's organizer has the same public key as the organizer of the channel of the message*/
-func (h *hub) isForOrganizer(message []byte) (bool, error) {
-
-	gen, err := define.AnalyseGeneric(message)
-	if err != nil {
-		return false, err
-	}
-	params, err := define.AnalyseParamsFull(gen.Params)
-	if err != nil {
-		return false, err
-	}
-	//TODO extract parent channel if subChannel
-	return h.organizer.IsOrganizer(params.Channel)
-}
-
-/*returns whether the Hub's Witness can witness the received message*/
-func (h *hub) isForWitness(message []byte) (bool, error) {
-	gen, err := define.AnalyseGeneric(message)
-	if err != nil {
-		return false, err
-	}
-	params, err := define.AnalyseParamsFull(gen.Params)
-	if err != nil {
-		return false, err
-	}
-
-	return h.witness.IsWitness(params.Channel)
-}

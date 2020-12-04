@@ -19,20 +19,6 @@ func NewWitness(pkey string, db string) *Witness {
 	}
 }
 
-/*returns true if w is in the witness list of the event*/
-func (w *Witness) IsWitness(id string) (bool, error) {
-	data := db.GetChannel([]byte(id), w.database)
-	lao := define.LAO{} //TODO currently is only for LAO. Need generic type for channel
-	err := json.Unmarshal(data, &lao)
-	if err != nil {
-		return false, define.ErrEncodingFault
-	}
-
-	_, found := define.FindStr(lao.Witnesses, w.PublicKey)
-
-	return found, nil
-}
-
 /** processes what is received from the WebSocket
  * Currently only supports updateProperties
  * msg : receivedMessage
