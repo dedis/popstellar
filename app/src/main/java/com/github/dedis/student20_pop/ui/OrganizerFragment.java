@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
@@ -51,6 +52,9 @@ public class OrganizerFragment extends Fragment {
     private OnAddWitnessListener onAddWitnessListener;
     private EditText laoNameEditText;
     private TextView laoNameTextView;
+    private ListView witnessesListView;
+    private ListView witnessesEditListView;
+
 
     /**
      * Enum class for each event category
@@ -79,9 +83,6 @@ public class OrganizerFragment extends Fragment {
         lao = new Lao("LAO I just joined", new Date(), new Keys().getPublicKey());
 
         //Display Properties
-        //TODO : Connect to Backend and retrieve the list of witnesses
-        String witnessList = "Witnesses: [id, id, id]";
-
         View rootView = inflater.inflate(R.layout.fragment_organizer, container, false);
 
         //Layout Properties fields
@@ -89,7 +90,17 @@ public class OrganizerFragment extends Fragment {
         View propertiesView = rootView.findViewById(R.id.properties_view);
         laoNameTextView = propertiesView.findViewById(R.id.organization_name);
         laoNameTextView.setText(lao.getName());
-        ((TextView) propertiesView.findViewById(R.id.witness_list)).setText(witnessList);
+
+        //TODO : Connect to Backend and retrieve the list of witnesses
+        final ArrayList<String> witnesses = new ArrayList<>();
+        witnesses.add("Witness 1 : 3029320932");
+        witnesses.add("Witness 2 : 2304830493");
+        witnesses.add("Witness 3 : 3092309484");
+        final ArrayAdapter<String> adapter = new ArrayAdapter(getActivity(),
+                android.R.layout.simple_list_item_1, witnesses);
+        witnessesListView = propertiesView.findViewById(R.id.witness_list);
+        witnessesListView.setAdapter(adapter);
+
         editPropertiesButton = rootView.findViewById(R.id.edit_button);
         editPropertiesButton
                 .setVisibility(
@@ -101,7 +112,9 @@ public class OrganizerFragment extends Fragment {
         View propertiesEditView = rootView.findViewById(R.id.properties_edit_view);
         laoNameEditText = propertiesEditView.findViewById(R.id.organization_name_editText);
         laoNameEditText.setText(lao.getName());
-        ((TextView) propertiesEditView.findViewById(R.id.witness_list)).setText(witnessList);
+        witnessesEditListView = propertiesEditView.findViewById(R.id.witness_edit_list);
+        witnessesEditListView.setAdapter(adapter);
+
         addWitnessButton = propertiesEditView.findViewById(R.id.add_witness_button);
         confirmButton = propertiesEditView.findViewById(R.id.properties_edit_confirm);
 
