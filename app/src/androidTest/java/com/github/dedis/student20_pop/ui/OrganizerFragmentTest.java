@@ -11,6 +11,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -21,6 +22,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibilit
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.not;
 
 
@@ -97,6 +99,40 @@ public class OrganizerFragmentTest {
         onView(withId(R.id.organization_name_editText)).perform(clearText());
         onView(withId(R.id.properties_edit_cancel)).perform(click());
         onView(withId(R.id.properties_view)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void clickOnDeleteOpensDialog() {
+        onView(withId(R.id.tab_properties)).perform(click());
+        onView(withId(R.id.properties_view)).check(matches(isDisplayed()));
+        onView(withId(R.id.edit_button)).perform(click());
+        onData(anything()).inAdapterView(withId(R.id.witness_edit_list))
+                .atPosition(0).onChildView(withId(R.id.image_button_delete_witness)).check(matches(isDisplayed())).perform(click());
+        onView(withText("Delete ?")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void canCancelDeleteWitness() {
+        onView(withId(R.id.tab_properties)).perform(click());
+        onView(withId(R.id.properties_view)).check(matches(isDisplayed()));
+        onView(withId(R.id.edit_button)).perform(click());
+        onData(anything()).inAdapterView(withId(R.id.witness_edit_list))
+                .atPosition(0).onChildView(withId(R.id.image_button_delete_witness)).check(matches(isDisplayed())).perform(click());
+        onView(withText("Delete ?")).check(matches(isDisplayed()));
+        onView(withText(R.string.button_cancel)).perform(click());
+        onData(anything()).inAdapterView(withId(R.id.witness_edit_list))
+                .atPosition(0).onChildView(withId(R.id.image_button_delete_witness)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void canDeleteWitness() {
+        onView(withId(R.id.tab_properties)).perform(click());
+        onView(withId(R.id.properties_view)).check(matches(isDisplayed()));
+        onView(withId(R.id.edit_button)).perform(click());
+        onData(anything()).inAdapterView(withId(R.id.witness_edit_list))
+                .atPosition(0).onChildView(withId(R.id.image_button_delete_witness)).check(matches(isDisplayed())).perform(click());
+        onView(withText("Delete ?")).check(matches(isDisplayed()));
+        onView(withText(R.string.button_confirm)).perform(click());
     }
 
     @Test(expected = IllegalArgumentException.class)
