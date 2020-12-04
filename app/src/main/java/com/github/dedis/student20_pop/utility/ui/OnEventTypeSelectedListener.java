@@ -4,8 +4,9 @@ public interface OnEventTypeSelectedListener {
     /**
      * Enum class for each event type
      */
-     enum EventType {
+    enum EventType {
         MEETING, ROLL_CALL, POLL
     }
-    public void OnEventTypeSelectedListener(EventType eventType);
+
+    void OnEventTypeSelectedListener(EventType eventType);
 }

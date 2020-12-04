@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fragment_organizer"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/fragment_organizer" >
+    android:layout_height="match_parent">
 
     <include layout="@layout/tab_home" />
 
@@ -27,10 +27,31 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab">
 
-    <include
-            android:id="@+id/properties_view"
-            layout="@layout/layout_properties"
-            android:visibility="gone" />
+        <ImageButton
+            android:id="@+id/edit_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:src="@drawable/ic_baseline_edit_24"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ViewSwitcher
+            android:id="@+id/viewSwitcher"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/margin_top"
+            android:visibility="gone">
+
+            <include
+                android:id="@+id/properties_view"
+                layout="@layout/layout_properties" />
+
+            <include
+                android:id="@+id/properties_edit_view"
+                layout="@layout/layout_properties_edit" />
+        </ViewSwitcher>
+
 
         <ExpandableListView
             android:id="@+id/organizer_expandable_list_view"

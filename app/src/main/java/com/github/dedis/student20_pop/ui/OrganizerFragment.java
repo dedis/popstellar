@@ -10,9 +10,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,6 +25,7 @@ import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Event;
 import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
+import com.github.dedis.student20_pop.utility.ui.OnAddWitnessListener;
 import com.github.dedis.student20_pop.utility.ui.OnEventTypeSelectedListener;
 import com.github.dedis.student20_pop.utility.ui.OnEventTypeSelectedListener.EventType;
 
@@ -42,7 +45,12 @@ public class OrganizerFragment extends Fragment {
     private Lao lao;  //should be given from intent or previous fragment
     private Button propertiesButton;
     private ImageButton editPropertiesButton;
-    private OnEventTypeSelectedListener listener;
+    private ImageButton addWitnessButton;
+    private Button confirmButton;
+    private OnEventTypeSelectedListener onEventTypeSelectedListener;
+    private OnAddWitnessListener onAddWitnessListener;
+    private EditText laoNameEditText;
+    private TextView laoNameTextView;
 
     /**
      * Enum class for each event category
@@ -55,9 +63,10 @@ public class OrganizerFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            listener = (OnEventTypeSelectedListener) context;
+            onEventTypeSelectedListener = (OnEventTypeSelectedListener) context;
+            onAddWitnessListener = (OnAddWitnessListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnEventTypeSelectedListener");
+            throw new ClassCastException(context.toString() + " must implement listeners");
         }
     }
 
@@ -66,36 +75,85 @@ public class OrganizerFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        //for testing purposes:
+        //TODO : Retrieve this LAO from the Intent
         lao = new Lao("LAO I just joined", new Date(), new Keys().getPublicKey());
+
+        //Display Properties
+        //TODO : Connect to Backend and retrieve the list of witnesses
+        String witnessList = "Witnesses: [id, id, id]";
 
         View rootView = inflater.inflate(R.layout.fragment_organizer, container, false);
 
-        //Display Events
-        expandableListView = rootView.findViewById(R.id.organizer_expandable_list_view);
-        listViewEventAdapter = new OrganizerExpandableListViewEventAdapter(this.getActivity(), getEvents(), true);
-        expandableListView.setAdapter(listViewEventAdapter);
-        expandableListView.expandGroup(0);
-        expandableListView.expandGroup(1);
+        //Layout Properties fields
+        ViewSwitcher viewSwitcher = rootView.findViewById(R.id.viewSwitcher);
+        View propertiesView = rootView.findViewById(R.id.properties_view);
+        laoNameTextView = propertiesView.findViewById(R.id.organization_name);
+        laoNameTextView.setText(lao.getName());
+        ((TextView) propertiesView.findViewById(R.id.witness_list)).setText(witnessList);
+        editPropertiesButton = rootView.findViewById(R.id.edit_button);
+        editPropertiesButton
+                .setVisibility(
+                        ((viewSwitcher.getNextView().getId() == R.id.properties_edit_view) &&
+                                (viewSwitcher.getVisibility() == View.VISIBLE)) ?
+                                View.VISIBLE : View.GONE);
 
-        //Display Properties
-        View properties = rootView.findViewById(R.id.properties_view);
-        ((TextView) properties.findViewById(R.id.organization_name)).setText(lao.getName());
-        ((TextView) properties.findViewById(R.id.witness_list)).setText("Witnesses: [id, id, id]");
+        //Layout Edit Properties fields
+        View propertiesEditView = rootView.findViewById(R.id.properties_edit_view);
+        laoNameEditText = propertiesEditView.findViewById(R.id.organization_name_editText);
+        laoNameEditText.setText(lao.getName());
+        ((TextView) propertiesEditView.findViewById(R.id.witness_list)).setText(witnessList);
+        addWitnessButton = propertiesEditView.findViewById(R.id.add_witness_button);
+        confirmButton = propertiesEditView.findViewById(R.id.properties_edit_confirm);
 
         propertiesButton = rootView.findViewById(R.id.tab_properties);
         propertiesButton.setOnClickListener(
                 clicked -> {
-                    properties.setVisibility((properties.getVisibility() == View.GONE) ? View.VISIBLE : View.GONE);
+                    viewSwitcher.setVisibility((viewSwitcher.getVisibility() == View.GONE) ? View.VISIBLE : View.GONE);
+                    editPropertiesButton
+                            .setVisibility(
+                                    ((viewSwitcher.getNextView().getId() == R.id.properties_edit_view) &&
+                                            (viewSwitcher.getVisibility() == View.VISIBLE)) ?
+                                            View.VISIBLE : View.GONE);
                 });
 
-        editPropertiesButton = rootView.findViewById(R.id.edit_button);
-        editPropertiesButton.setVisibility(View.VISIBLE);
 
-        propertiesButton.setOnClickListener(
+        //Display Events
+        expandableListView = rootView.findViewById(R.id.organizer_expandable_list_view);
+        listViewEventAdapter = new OrganizerExpandableListViewEventAdapter(this.getActivity(), getEvents());
+        expandableListView.setAdapter(listViewEventAdapter);
+        expandableListView.expandGroup(0);
+        expandableListView.expandGroup(1);
+
+        ((Button) propertiesEditView.findViewById(R.id.properties_edit_cancel))
+                .setOnClickListener(c -> {
+                    viewSwitcher.showNext();
+                    editPropertiesButton.setVisibility(View.VISIBLE);
+                    addWitnessButton.setVisibility(View.GONE);
+                });
+
+        editPropertiesButton.setOnClickListener(
                 clicked -> {
-                    properties.setVisibility((properties.getVisibility() == View.GONE) ? View.VISIBLE : View.GONE);
-                });
+                    viewSwitcher.showNext();
+                    editPropertiesButton.setVisibility(View.GONE);
+                    addWitnessButton.setVisibility(View.VISIBLE);
+                }
+        );
+
+        addWitnessButton.setOnClickListener(
+                clicked -> {
+                    onAddWitnessListener.onAddWitnessListener();
+                }
+        );
+
+        confirmButton.setOnClickListener(
+                clicked -> {
+                    viewSwitcher.showNext();
+                    lao = lao.setName(laoNameEditText.getText().toString());
+                    laoNameTextView.setText(laoNameEditText.getText());
+                    editPropertiesButton.setVisibility(View.VISIBLE);
+                    addWitnessButton.setVisibility(View.GONE);
+                }
+        );
 
         return rootView;
     }
@@ -113,7 +171,6 @@ public class OrganizerFragment extends Fragment {
 
         //Now (for testing) :
         ArrayList<Event> events = new ArrayList<>();
-
         events.add(new Event("Past Event 1", new Date(10 * 1000L), new Keys().getPublicKey(), "EPFL", "Poll"));
         events.add(new Event("Past Event 2", new Date(20 * 1000L), new Keys().getPublicKey(), "CE-6", "Meeting"));
         events.add(new Event("Present Event 1", new Date(500 * 1000L),
@@ -130,20 +187,17 @@ public class OrganizerFragment extends Fragment {
         private final Context context;
         private final List<EventCategory> categories;
         private final HashMap<EventCategory, List<Event>> eventsMap;
-        private final Boolean isOrganizer;
-
 
         /**
          * Constructor for the expandable list view adapter to display the events
-         * in the attendee UI
+         * in the organizer UI
          *
          * @param context
          * @param events  the list of events of the lao
          */
-        public OrganizerExpandableListViewEventAdapter(Context context, List<Event> events, boolean isOrganizer) {
+        public OrganizerExpandableListViewEventAdapter(Context context, List<Event> events) {
             this.context = context;
             this.eventsMap = new HashMap<>();
-            this.isOrganizer = isOrganizer;
             this.categories = new ArrayList<>();
             this.categories.add(EventCategory.PAST);
             this.categories.add(EventCategory.PRESENT);
@@ -250,27 +304,26 @@ public class OrganizerFragment extends Fragment {
             TextView eventTextView = convertView.findViewById(R.id.event_category);
             eventTextView.setText(eventCategory);
 
-            if (isOrganizer) {
-                ImageButton addEvent = convertView.findViewById(R.id.add_future_event_button);
-                addEvent.setVisibility((getGroup(groupPosition) == EventCategory.FUTURE) ? View.VISIBLE : View.GONE);
-                addEvent.setFocusable(View.NOT_FOCUSABLE);
-                addEvent.setOnClickListener(v -> {
-                    AlertDialog.Builder builderSingle = new AlertDialog.Builder(context);
-                    builderSingle.setTitle(R.string.select_event_type_dialog_title);
+            ImageButton addEvent = convertView.findViewById(R.id.add_future_event_button);
+            addEvent.setVisibility((getGroup(groupPosition) == EventCategory.FUTURE) ? View.VISIBLE : View.GONE);
+            addEvent.setFocusable(View.NOT_FOCUSABLE);
+            addEvent.setOnClickListener(v -> {
+                AlertDialog.Builder builderSingle = new AlertDialog.Builder(context);
+                builderSingle.setTitle(R.string.select_event_type_dialog_title);
 
-                    final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.select_dialog_singlechoice);
+                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.select_dialog_singlechoice);
 
-                    arrayAdapter.insert(context.getString(R.string.meeting_event), EventType.MEETING.ordinal());
-                    arrayAdapter.insert(context.getString(R.string.roll_call_event), EventType.ROLL_CALL.ordinal());
-                    arrayAdapter.insert(context.getString(R.string.poll_event), EventType.POLL.ordinal());
+                arrayAdapter.insert(context.getString(R.string.meeting_event), EventType.MEETING.ordinal());
+                arrayAdapter.insert(context.getString(R.string.roll_call_event), EventType.ROLL_CALL.ordinal());
+                arrayAdapter.insert(context.getString(R.string.poll_event), EventType.POLL.ordinal());
 
-                    builderSingle.setNegativeButton(context.getString(R.string.button_cancel), (dialog, which) -> dialog.dismiss());
-                    builderSingle.setAdapter(arrayAdapter, (dialog, which) -> {
-                        listener.OnEventTypeSelectedListener(EventType.values()[which]);
-                    });
-                    builderSingle.show();
+                builderSingle.setNegativeButton(context.getString(R.string.button_cancel), (dialog, which) -> dialog.dismiss());
+                builderSingle.setAdapter(arrayAdapter, (dialog, which) -> {
+                    onEventTypeSelectedListener.OnEventTypeSelectedListener(EventType.values()[which]);
                 });
-            }
+                builderSingle.show();
+            });
+
 
             return convertView;
         }
