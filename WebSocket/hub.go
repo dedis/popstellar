@@ -59,7 +59,7 @@ type hub struct {
 	connIndex int
 }
 
-func NewHub() *hub {
+func NewOrganizerHub() *hub {
 
 	h := &hub{
 		connectionsMx:   sync.RWMutex{},
@@ -68,6 +68,40 @@ func NewHub() *hub {
 		connIndex:       0,
 		idOfSender:      -1,
 		organizer:       actors.NewOrganizer("", "orgDatabase.db"),
+		witness:         nil,
+	}
+	//publish subscribe go routine !
+
+	go func() {
+		for {
+			//get msg from connection
+			msg := <-h.receivedMessage
+
+			// check if messages concerns organizer
+			var message []byte = nil
+			var channel []byte = nil
+			var response []byte = nil
+			//handle the message and generate the response
+			message, channel, response = h.organizer.HandleWholeMessage(msg, h.idOfSender)
+
+			h.connectionsMx.RLock()
+			h.publishOnChannel(message, channel)
+			h.sendResponse(response, h.idOfSender)
+			h.connectionsMx.RUnlock()
+		}
+	}()
+	return h
+}
+
+func NewWitnessHub() *hub {
+
+	h := &hub{
+		connectionsMx:   sync.RWMutex{},
+		receivedMessage: make(chan []byte),
+		connections:     make(map[*connection]struct{}),
+		connIndex:       0,
+		idOfSender:      -1,
+		organizer:       nil,
 		witness:         actors.NewWitness("", "witDatabase.db"),
 	}
 	//publish subscribe go routine !
@@ -81,25 +115,8 @@ func NewHub() *hub {
 			var message []byte = nil
 			var channel []byte = nil
 			var response []byte = nil
-			//handle the message and generate the response, if error, print it in console
-			/*check1, err := h.isForOrganizer(msg)
-			if err != nil {
-				fmt.Print(err)
-			}
-			check2, err2 := h.isForWitness(msg)
-			if err2 != nil {
-				fmt.Print(err2)
-			}
-			if check1 && check2 {
-				fmt.Print("cannot be both witness and organizer")
-			} else if check1 {
-				message, channel, response = h.organizer.HandleWholeMessage(msg, h.idOfSender)
-				fmt.Print(err)
-			} else if check2 {
-				//TODO
-			}*/
-
-			message, channel, response = h.organizer.HandleWholeMessage(msg, h.idOfSender)
+			//handle the message and generate the response
+			message, channel, response = h.witness.HandleWholeMessage(msg, h.idOfSender)
 
 			h.connectionsMx.RLock()
 			h.publishOnChannel(message, channel)
