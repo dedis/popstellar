@@ -9,10 +9,22 @@ import { Buttons, Typography, Spacing } from '../Styles';
 import STRINGS from '../res/strings';
 
 /**
- * Screen to create a meeting event
+ * Screen to create a meeting event: a name text input, a start time text and its buttons,
+ * a finish time text and its buttons, a location text input, a confirm button and a cancel button
  *
- * It is possible to put a finish time before the start time => to fix
- * Design not finish
+ * The name text input is the name of the meeting and it is compulsory
+ * The start time can be choose when the user press on the button on the same row
+ *  and it is compulsory
+ * The finish time can be choose when the user press on the first button on the same row and reset
+ *  when he press on the second button
+ * The location text input is the location of the event (location or URL)
+ * The confirm button does noting and it is enable when the name is defined
+ * The cancel button redirect to the organizer component
+ *
+ * TODO makes impossible to set a finish time before the start time
+ * TODO the confirm button should be disable if the the start time is in the past
+ * TODO give appropriate name for the button that manage the dates
+ * TODO Send the meeting event to the organization server when the confirm button is press
  */
 
 const styles = StyleSheet.create({
@@ -30,7 +42,9 @@ const styles = StyleSheet.create({
 
 const CreateMeeting = () => {
   const navigation = useNavigation();
+  const [name, setName] = useState('');
 
+  // all the funtion to manage the date object, one object to set start and finish time
   const [startDate, setStartDate] = useState(new Date());
   const [finishDate, setFinishDate] = useState();
   const [settingStart, setSettingStart] = useState(true);
@@ -82,8 +96,6 @@ const CreateMeeting = () => {
   const dateToStrign = (d) => `${d.getDate()}-${d.getMonth() + 1}-${d.getFullYear()} `
     + `${d.getHours() < 10 ? 0 : ''}${d.getHours()}:`
     + `${d.getMinutes() < 10 ? 0 : ''}${d.getMinutes()}`;
-
-  const [name, setName] = useState('');
 
   return (
     <ScrollView>

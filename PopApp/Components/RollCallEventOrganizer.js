@@ -9,8 +9,15 @@ import { Buttons, Spacing } from '../Styles';
 import PROPS_TYPE from '../res/Props';
 
 /**
- * Roll-call component
- */
+ * Organizer Roll-call component: a status (Future, Open, Closed), the number of participants,
+ * an open button and a list of the nested events
+ *
+ * The open button allow the organizer to scan the attendee
+ *
+ * TODO use data of the organizer server
+ * TODO send open request when click on the open button
+*/
+
 const styles = StyleSheet.create({
   view: {
     marginHorizontal: Spacing.s,

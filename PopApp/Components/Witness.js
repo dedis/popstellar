@@ -8,9 +8,8 @@ import { Buttons, Typography } from '../Styles';
 import Attendee from './Attendee';
 
 /**
-* The Witness component
-*
-* Manage the Witness screen
+ * Manage the Witness screen: button to navigate to the witness video screen,
+ * a section list of events and propreties (see attendee for more details)
 */
 const styles = StyleSheet.create({
   container: {

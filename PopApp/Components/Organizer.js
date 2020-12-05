@@ -6,9 +6,14 @@ import { Typography } from '../Styles';
 import OrganizerEventsCollapsableList from './OrganizerCollapsableList';
 
 /**
-* The Organizer component
-*
-* Manage the Organizer screen
+ * Manage the Organizer screen: A section list of propreties and events
+ *
+ * The section list show the events and propreties of the LAO open in
+ * the organitation UI.
+ *
+ * By default only the past and present section are open.
+ *
+ * TODO use the data receive by the organization server
 */
 const styles = StyleSheet.create({
   container: {

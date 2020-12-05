@@ -7,7 +7,9 @@ import { Spacing } from '../Styles';
 import PROPS_TYPE from '../res/Props';
 
 /**
- * Organization name property component
+ * Organization name property component: a name text
+ *
+ * Show the name of the LAO
  */
 const styles = StyleSheet.create({
   view: {

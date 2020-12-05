@@ -1,3 +1,4 @@
+// fake events to show how the app works
 const data = [
   {
     title: '',

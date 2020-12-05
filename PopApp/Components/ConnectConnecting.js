@@ -8,9 +8,16 @@ import { Buttons, Colors, Typography } from '../Styles';
 import PROPS_TYPE from '../res/Props';
 
 /**
- *  Connect to a LAO
+ * Connect to a LAO: An activity indicator, a cancel button and a simulate validation button
  *
- *  Currently, just simulate waiting for a response
+ * Currently, just simulate waiting for a response
+ *
+ * The cancel button go back to the ConnectScanning component
+ * The simulate connection button go to the ConnectConfirm component
+ *
+ * TODO make the screen to perform a request to the organizer
+ * server to verify if the user can connect and go to the ConnectConfirm with the information
+ * receive by the server
 */
 const styles = StyleSheet.create({
   container: {

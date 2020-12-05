@@ -8,7 +8,10 @@ import RollCallScanning from '../Components/RollCallScanning';
 import STRINGS from '../res/strings';
 
 /**
-* Define the Organizer stack navigation
+ * Define the Organizer stack navigation
+ * four different screen (Organizer, CreateEvent, WitnessScanning, RollCallScanning)
+ *
+ * The app are not use in the stack order, only organizer to one of the other screen
 */
 
 const Stack = createStackNavigator();

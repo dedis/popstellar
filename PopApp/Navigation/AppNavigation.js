@@ -11,7 +11,8 @@ import Navigation from './Navigation';
 import OrganizationNavigation from './OrganizationNavigation';
 
 /**
-* Define the App stack navigation
+ * Define the App stack navigation
+ * Contains to navigation: the home navigation and the organization navigation
 */
 
 const Stack = createStackNavigator();
