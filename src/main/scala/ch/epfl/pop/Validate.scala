@@ -91,8 +91,8 @@ object Validate {
     val midLevelMsg = msg.params.message.get
     val createMsg = midLevelMsg.data
     val id = Hash.computeMeetingId(laoId, createMsg.creation, createMsg.name)
-    if (!(id == createMsg.id))
-      getError("Invalid message id.")
+    if (!(Arrays.equals(id, createMsg.id)))
+      getError("Invalid event id.")
     else if (!(createMsg.creation > 0))
       getError("Creation timestamp should be positive.")
     else if (!(createMsg.creation == createMsg.last_modified))
