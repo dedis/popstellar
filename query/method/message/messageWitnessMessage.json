@@ -19,7 +19,7 @@
 			"$comment": "Note: the string is encoded in Base64"
 		},
 		"signature": {
-			"description": "[Base64String] witness' signature on data : Sign(Hash(data))",
+			"description": "[Base64String] witness' signature on data : Sign(data)",
 			"type": "string",
 			"contentEncoding": "base64",
 			"$comment": "Note: the string is encoded in Base64"
@@ -32,11 +32,11 @@
 		},
 		"witness_signatures": {
 			"description": "[Array[Base64String]] list of witnesses' signatures",
-			"type": "array", 
+			"type": "array",
 			"maxItems": 0,
 			"$comment": "Note: should always be empty"
 		}
-	}, 
+	},
 	"additionalProperties": false,
 	"required": ["data", "sender", "signature", "message_id", "witness_signatures"]
 }
