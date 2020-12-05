@@ -7,10 +7,12 @@ import { Typography } from '../Styles';
 import RecorderButton from './RecorderButton';
 
 /**
-* The witness video component
-*
-* In the future will store photo and video to the device to later share
-* then with the attendee, not just a dummy button
+ * The witness video component: camer view, camera button and a record button
+ *
+ * The buttons do nothing
+ *
+ * TODO store photo and video to the device
+ * TODO later share the video to everyone
 */
 
 const styles = StyleSheet.create({

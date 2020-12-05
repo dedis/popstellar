@@ -1,3 +1,4 @@
+// fake LAOsto to show how the app works
 const data = [
   {
     id: 1,

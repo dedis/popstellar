@@ -3,14 +3,21 @@ import {
   StyleSheet, View, ScrollView, Text, Button,
 } from 'react-native';
 
-import STRINGS from '../res/strings';
 import { Spacing, Typography } from '../Styles';
+import STRINGS from '../res/strings';
 import PROPS_TYPE from '../res/Props';
 
 /**
-* Ask for confirmation to connect to LAO
-*
-* Currently, just go to the Launch tab.
+ * Ask for confirmation to connect to LAO: An info ScrollView,
+ * a confirm button and a cancel button
+ *
+ * The ScrollView show information for the user can verify it
+ * connect to the good organization server
+ *
+ * The confirm button navigates to the Lauch tab.
+ * The cancel button navigates back to the ConnectScanning component
+ *
+ * TODO Make the confirm button make the action require in the UI specification
 */
 const styles = StyleSheet.create({
   container: {

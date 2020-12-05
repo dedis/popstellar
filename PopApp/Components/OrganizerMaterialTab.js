@@ -15,6 +15,11 @@ import PROPS_TYPE from '../res/Props';
 /**
  * Organizer tab bar
  *
+ * Add a home tab at left and the name of the LAO at the right
+ *
+ * The home tab allow the user to go back to the Home UI
+ * THe LAO name is non pressable
+ *
  * Design is only correct on Android
  */
 

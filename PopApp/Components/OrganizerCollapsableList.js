@@ -10,10 +10,13 @@ import EventItem from './EventItem';
 import STRINGS from '../res/strings';
 
 /**
-* The Collapsable list component for the organizer
-*
-* It is assume that the nested events are already been calculated.
-* They shoud be in the childrens value of the event
+ * Manage the collapsable list of events for a organizer: contain a section list of events
+ *
+ * By default all sections are open, you can set the closed section by putting their names in the
+ *  closedList
+ *
+ * It is assume that the nested events are already been calculated.
+ * They shoud be in the childrens value of the event
 */
 const styles = StyleSheet.create({
   container: {
@@ -38,6 +41,15 @@ const styles = StyleSheet.create({
   },
 });
 
+/**
+ * List of events of the same section
+ *
+ * If the section is the proprety one (empty name) show an edit button in the section name bar and
+ * allow the organizer to add/remove witness and edit the LAO name
+ *
+ * TODO confirm button need to send modification to the server
+ * TODO the process to add witness must use the camera to scan a QR code
+ */
 const Item = ({ events, closedList }) => {
   const [open, setopen] = closedList.includes(events.title) ? useState(false) : useState(true);
   const [isPropretyEditing, setPropretyEditing] = useState(false);
@@ -102,6 +114,7 @@ const Item = ({ events, closedList }) => {
     );
   };
 
+  // the part to manage the edition of the propreties
   const renderPropretiesEditing = (item) => {
     switch (item.type) {
       case 'organization_name':
@@ -231,6 +244,11 @@ Item.propTypes = {
   closedList: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
+/**
+ * List of all section of the data
+ *
+ * Data must have a title (String) and a data (List of event object) field
+ */
 const OrganizerEventsCollapsableList = ({ data, closedList }) => (
   <FlatList
     data={data}

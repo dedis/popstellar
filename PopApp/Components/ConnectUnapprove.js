@@ -8,9 +8,13 @@ import { Spacing, Typography } from '../Styles';
 import PROPS_TYPE from '../res/Props';
 
 /**
-* The unapproved component
-*
-* In the future will ask for camera permission
+ * The unapproved component: a explain string and a persmission button
+ *
+ * The explain string say the app need to use the camera
+ * The permission button naviagtes to the ConnectScanning component
+ *
+ * TODO ask the user for the camera permission when click on the permission button
+ * if he accept navigates to the ConnectScanning component
 */
 const styles = StyleSheet.create({
   container: {

@@ -9,7 +9,21 @@ import { Buttons, Typography, Spacing } from '../Styles';
 import STRINGS from '../res/strings';
 
 /**
- * Screen to create a roll-call event
+ * Screen to create a roll-call event: a text to explain the meanig of the date field,
+ * a deadline date and its button, a description text input, a confirm button, a open button
+ * and a cancel buton
+ *
+ * The deadline time can be choose when the user press on the button on the same row
+ *  and it is compulsory
+ * The confirm button does noting
+ * The open button does noting
+ * The cancel button redirect to the organizer component
+ *
+ * TODO give appropriate name for the button that manage the dates
+ * TODO Send the Roll-call event in a future state to the organization server
+ *  when the confirm button is press
+ * TODO Send the Roll-call event in an open state to the organization server
+ *  when the confirm button is press
  */
 
 const styles = StyleSheet.create({
@@ -28,6 +42,7 @@ const styles = StyleSheet.create({
 const CreateRollCall = () => {
   const navigation = useNavigation();
 
+  // all the function to manage the date object
   const [startDate, setStartDate] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);

@@ -7,6 +7,7 @@ import EventItem from './EventItem';
 import { Spacing } from '../Styles';
 import PROPS_TYPE from '../res/Props';
 
+// Fake data to simulate the fonctionality of the component
 const QUESTION = [
   {
     id: 1,
@@ -26,7 +27,12 @@ const QUESTION = [
 ];
 
 /**
- * Discussion compononent
+ * Discussion compononent: a name string, a list of questions,
+ * if open a text input for send question, and a list of nested events
+ *
+ * TODO must be modify when the discussion event will be describe in UI Specifications
+ * TODO the send question button must send the question to the organizer server
+ * TODO the data and the open state must be ask to the organizer server
  */
 const styles = StyleSheet.create({
   view: {
