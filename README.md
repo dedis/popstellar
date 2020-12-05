@@ -18,12 +18,9 @@ To make sure that the protocol is understood by everyone equally and to ensure t
 The JSON Schema description is not part of this document and will be provided in a dedicated branch of the project’s Github repository.
 
 ## Representation of complex data types in the protocol
-Please note that || denotes a concatenation.
 
-Hex: hexadecimal (base 16) in string format. Example: 0x5932
-Public Key: Hex
-Signature: Hex (Point 1) || Hex (Point 2). Example: 0x59...0x78...
-Take the fields specified that the signature is supposed to be on, hash it and then call Sign API on the hash. Equivalent to Sign(Hash(content))
-Hash: Hex
-Encrypted Vote: ElGamal encryption of a message. Hex (Point 1) || Hex (Point 2)
-Timestamp: uint64 representation of the Unix timestamp (seconds since January 1st, 1970)
+base64: base64 in string format  
+Public Key: base64  
+Signature: base64  
+Hash: base64  
+Timestamp: uint64 representation of the Unix timestamp (seconds since January 1st, 1970)  

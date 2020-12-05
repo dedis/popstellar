@@ -7,7 +7,7 @@
 	"properties": {
 		"object": { "const": "meeting" },
 		"action": { "const": "state" },
-		"id": { 
+		"id": {
 			"type": "string",
 			"contentEncoding": "base64",
 			"$comment": "Hash : SHA256(lao_id||creation||name)"
@@ -31,12 +31,40 @@
 			"description": "[JsObject] arbitrary object for extra information",
 			"type": "object",
 			"$comment": "Note: optional"
+		},
+		"modification_id": {
+			"description": "[Base64String] id of the modification (either creation/update)",
+			"type": "string",
+			"contentEncoding": "base64"
+		},
+		"modification_signatures": {
+			"description": "[Array[Base64String]] signatures of the witnesses on the modification message (either creation/update)",
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"witness": {
+						"description": "[Base64String] public key of the witness",
+						"type": "string",
+						"contentEncoding": "base64",
+						"$comment": "Note: the string is encoded in Base64"
+					},
+					"signature": {
+						"description": "[Base64String] witness' signature : Sign(message_id)",
+						"type": "string",
+						"contentEncoding": "base64",
+						"$comment": "Note: the strings are encoded in Base64"
+					}
+				},
+				"additionalProperties": false,
+				"required": ["witness", "signature"]
+			}
 		}
 	},
 	"additionalProperties": false,
-	"required": ["object", "action", "id", "name", "creation", "last_modified", "start"],
+	"required": ["object", "action", "id", "name", "creation", "last_modified", "start", "modification_id", "modification_signatures"],
 	"note": [
-		"When a meeting is created, modified or attested to by a witness, the server is expected to publish the ",
+		"When a meeting is created or modified, the organizer is expected to publish the ",
 		"meeting/state message to the LAO’s main channel (LAO's id)"
 	]
 }

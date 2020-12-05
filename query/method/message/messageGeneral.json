@@ -19,7 +19,7 @@
 			"$comment": "Note: the string is encoded in Base64"
 		},
 		"signature": {
-			"description": "[Base64String] organizer's signature on data : Sign(Hash(data))",
+			"description": "[Base64String] organizer's signature on data : Sign(data)",
 			"type": "string",
 			"contentEncoding": "base64",
 			"$comment": "Note: the string is encoded in Base64"
@@ -31,16 +31,29 @@
 			"$comment": "Note: the string is encoded in Base64"
 		},
 		"witness_signatures": {
-			"description": "[Array[Base64String]] list of witnesses' signatures",
-			"type": "array", 
-			"items": { 
-				"description": "[Base64String] witness' signature : Sign(sender||data)",
-				"type": "string",
-				"contentEncoding": "base64",
-				"$comment": "Note: the strings are encoded in Base64"
+			"description": "[Array[Base64String]] signatures of the witnesses on the modification message (either creation/update)",
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"witness": {
+						"description": "[Base64String] public key of the witness",
+						"type": "string",
+						"contentEncoding": "base64",
+						"$comment": "Note: the string is encoded in Base64"
+					},
+					"signature": {
+						"description": "[Base64String] witness' signature : Sign(message_id)",
+						"type": "string",
+						"contentEncoding": "base64",
+						"$comment": "Note: the strings are encoded in Base64"
+					}
+				},
+				"additionalProperties": false,
+				"required": ["witness", "signature"]
 			}
 		}
-	}, 
+	},
 	"additionalProperties": false,
 	"required": ["data", "sender", "signature", "message_id", "witness_signatures"]
 }
