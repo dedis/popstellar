@@ -61,6 +61,9 @@ public final class HomeFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Adapter class required to display the list of LAOs in a ListView
+     */
     private class LaoListAdapter extends BaseAdapter {
         private Context context;
 
@@ -110,7 +113,7 @@ public final class HomeFragment extends Fragment {
     }
 
     private ArrayList<Lao> getLaos(){
-        //Now: for testing
+        //Now: for testing, later: retrieve from Person's list of Lao
         String notMyPublicKey = new Keys().getPublicKey();
         ArrayList<Lao> result = new ArrayList<>();
         result.add(new Lao("LAO 1", new Date(), notMyPublicKey));
@@ -122,12 +125,23 @@ public final class HomeFragment extends Fragment {
         return result;
     }
 
+
+    /**
+     * Method to start the organizer UI in the case when the user is the organizer of
+     * the selected Lao
+     * @param lao
+     */
     private void startOrganizerUI(Lao lao){
         Intent intent = new Intent(this.getActivity(), OrganizerActivity.class);
         //TODO: put lao in intent (or PopContext)
         startActivity(intent);
     }
 
+    /**
+     * Method to start the attendee UI in the case when the user is not the organizer of
+     * the selected Lao
+     * @param lao
+     */
     private void startAttendeeUI(Lao lao){
         Intent intent = new Intent(this.getActivity(), AttendeeActivity.class);
         //TODO: put lao in intent (or PopContext)
