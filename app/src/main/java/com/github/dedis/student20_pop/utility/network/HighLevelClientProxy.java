@@ -14,36 +14,84 @@ import java.util.concurrent.CompletableFuture;
 
 import javax.websocket.Session;
 
+/**
+ * A proxy of a connection to a websocket. It encapsulate the high level protocol
+ */
 public final class HighLevelClientProxy {
 
     private final LowLevelClientProxy lowLevelClientProxy;
     private final String publicKey, privateKey;
 
-    public HighLevelClientProxy(Session session, Person person) {
+    HighLevelClientProxy(Session session, Person person) {
+        lowLevelClientProxy = new LowLevelClientProxy(session);
         this.publicKey = person.getId();
         this.privateKey = person.getAuthentication();
-        lowLevelClientProxy = new LowLevelClientProxy(session);
     }
 
+    /**
+     * @return the low level proxy tied to this one
+     */
     public LowLevelClientProxy lowLevel() {
         return lowLevelClientProxy;
     }
 
+    /**
+     * Sends a create lao message to the back end
+     *
+     * @param name of the lao
+     * @param creation time
+     * @param lastModified time (should be equal to creation)
+     * @param organizer id
+     *
+     * @return a CompletableFuture that will be complete once the back end responses
+     */
     public CompletableFuture<Integer> createLoa(String name, long creation, long lastModified, String organizer) {
         return lowLevelClientProxy.publish(publicKey, privateKey, "/root",
                 new CreateLao(Hash.hash(organizer + creation + name), name, creation, lastModified, organizer, new ArrayList<>()));
     }
 
+    /**
+     * Sends an update lao message to the back end
+     *
+     * @param laoId id of the updated lao
+     * @param name of the lao
+     * @param lastModified time
+     * @param witnesses ids of the witnesses
+     *
+     * @return a CompletableFuture that will be complete once the back end responses
+     */
     public CompletableFuture<Integer> updateLao(String laoId, String name, long lastModified, List<String> witnesses) {
         return lowLevelClientProxy.publish(publicKey, privateKey, "/root/" + laoId,
                 new UpdateLao(name, lastModified, witnesses));
     }
 
+    /**
+     * Sends a message as a witness to attest the validity of an other message
+     *
+     * @param laoId id of the lao
+     * @param messageId id of the witnessed message
+     * @param data of the message
+     *
+     * @return a CompletableFuture that will be complete once the back end responses
+     */
     public CompletableFuture<Integer> witnessMessage(String laoId, String messageId, String data) {
         return lowLevelClientProxy.publish(publicKey, privateKey, "/root/" + laoId,
                 new WitnessMessage(messageId, Signature.sign(privateKey, data)));
     }
 
+    /**
+     * Sends a create meeting message
+     *
+     * @param laoId id of the lao
+     * @param name of the meeting
+     * @param creation time
+     * @param lastModified time
+     * @param location of the meeting
+     * @param start time of the meeting
+     * @param end time of the meeting
+     *
+     * @return a CompletableFuture that will be complete once the back end responses
+     */
     public CompletableFuture<Integer> createMeeting(String laoId, String name, long creation, long lastModified, String location, long start, long end) {
         return lowLevelClientProxy.publish(publicKey, privateKey, "/root/" + laoId,
                 new CreateMeeting(Hash.hash(laoId + creation + name), name, creation, lastModified, location, start, end));
