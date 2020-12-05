@@ -1,4 +1,4 @@
-package crypto
+package ch.epfl.pop.tests.crypto
 
 import java.nio.charset.StandardCharsets
 

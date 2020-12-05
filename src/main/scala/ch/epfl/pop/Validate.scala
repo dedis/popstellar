@@ -47,10 +47,8 @@ object Validate {
     val midLevelMsg = msg.params.message.get
     val laoUpdate = midLevelMsg.data
 
-    if (!(laoUpdate.last_modified > laoUpdate.creation))
-      getError("Last modified should be bigger than creation")
-    else if (! Arrays.equals(midLevelMsg.sender, laoUpdate.organizer))
-      getError("The sender of the message should be the same as the organizer of the LAO.")
+    if (!(laoUpdate.last_modified > 0))
+      getError("Last modified should be positive")
     else None
   }
 

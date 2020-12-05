@@ -1,4 +1,4 @@
-package json
+package ch.epfl.pop.tests.json
 
 import ch.epfl.pop.json.JsonMessages.{JsonMessagePublishClient, _}
 import ch.epfl.pop.json.JsonUtils.{JsonMessageParserException, MessageContentDataBuilder}

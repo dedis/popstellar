@@ -1,4 +1,6 @@
-package pubsub
+package ch.epfl.pop.tests.pubsub
+
+import ch.epfl.pop.tests.MessageCreationUtils.getMessageParams
 
 import java.io.File
 import java.security.MessageDigest
@@ -18,8 +20,6 @@ import ch.epfl.pop.json.{Actions, Base64String, ChannelMessages, ChannelName, Me
 import ch.epfl.pop.pubsub.{ChannelActor, PublishSubscribe}
 import org.iq80.leveldb.Options
 import org.scalatest.FunSuite
-import spray.json._
-import ch.epfl.pop.json.JsonCommunicationProtocol.MessageContentDataFormat
 import ch.epfl.pop.json.JsonUtils.MessageContentDataBuilder
 import scorex.crypto.signatures.{Curve25519, PrivateKey, PublicKey}
 
@@ -63,7 +63,7 @@ class PubSubTest extends FunSuite {
         case Some(m) => println("Sending: " + m.toString); Source.single(m)
         case None => Source.empty
       }
-      val future = source.initialDelay(1.milli).via(flows(flowNumber)).log("logging pubsub").runWith(sinkHead)
+      val future = source.initialDelay(1.milli).via(flows(flowNumber)).log("logging ch.epfl.pop.tests.pubsub").runWith(sinkHead)
       response match {
         case Some(json) => assert(Await.result(future, 1.seconds) == json)
         case None =>
@@ -90,22 +90,6 @@ class PubSubTest extends FunSuite {
     (sk, pk)
   }
 
-  private def b64Encode(b: Array[Byte]): Array[Byte] = Base64.getEncoder.encode(b)
-
-  private def getMessageParams(data : MessageContentData, pk: PublicKey, sk: PrivateKey, channel: ChannelName): MessageParameters = {
-    val encodedData = b64Encode(data.toJson.compactPrint.getBytes).map(_.toChar).mkString
-    val signature = Curve25519.sign(sk, encodedData.getBytes())
-    val md = MessageDigest.getInstance("SHA-256")
-    md.update(encodedData.getBytes())
-    md.update(signature)
-    val messageId = md.digest()
-    val sender = supertagged.untag(pk)
-    val witnessSignature: List[Signature] = Nil
-
-    val content =  MessageContent(encodedData, data, sender, signature, messageId, witnessSignature)
-    val params = MessageParameters(channel, Some(content))
-    params
-  }
 
   private def getCreateLao(pk : PublicKey,
                                    sk : PrivateKey,
