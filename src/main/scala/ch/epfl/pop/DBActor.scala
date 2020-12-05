@@ -1,12 +1,18 @@
 package ch.epfl.pop
 
 import java.io.File
+import java.nio.charset.StandardCharsets
 
+import akka.NotUsed
 import akka.actor.typed.scaladsl.Behaviors
-import akka.actor.typed.{ActorRef, Behavior}
-import ch.epfl.pop.json.JsonMessages.{AnswerMessageServer, FetchChannelServer, JsonMessage, NotifyChannelServer}
-import org.iq80.leveldb.{DB, Options}
+import akka.actor.typed.{ActorRef, ActorSystem, Behavior}
+import akka.stream.scaladsl.{Sink, Source}
+import ch.epfl.pop.json.JsonMessages._
+import ch.epfl.pop.json._
+import ch.epfl.pop.json.JsonMessageParser.serializeMessage
 import org.iq80.leveldb.impl.Iq80DBFactory.factory
+import org.iq80.leveldb.{DB, Options}
+
 
 /**
  * The role of a DBActor is to serve write and read requests to the database.
@@ -15,21 +21,28 @@ object DBActor {
 
   sealed trait DBMessage
 
-  final case class Write(channel: String, id: String, event: String, replyTo: ActorRef[NotifyChannelServer]) extends DBMessage
+  /**
+   * Request to write a message in the database
+   * @param message the message to write in the database
+   * @param rid the id of the client request
+   * @param replyTo the actor to respond to
+   */
+  final case class Write(message: MessageParameters, rid : Int,propagate: Boolean, replyTo: ActorRef[JsonMessageAnswerServer]) extends DBMessage
 
-  final case class Read(channel: String, id: String, replyTo: ActorRef[JsonMessage]) extends DBMessage
+  final case class Catchup(channel: String, rid: Int, replyTo: ActorRef[JsonMessageAnswerServer]) extends DBMessage
 
   /**
    * Create an actor handling the database
    * @param path the path of the database
    * @return an actor handling the database
    */
-  def apply(path: String): Behavior[DBMessage] = database(path, Map.empty)
+  def apply(path: String, pubEntry: Sink[PropagateMessageServer, NotUsed]): Behavior[DBMessage] = database(path, Map.empty, pubEntry)
 
-  private def database(path : String, channelsDB: Map[String, DB]): Behavior[DBMessage] = Behaviors.receiveMessage { message: DBMessage =>
+  private def database(path : String, channelsDB: Map[String, DB], pubEntry: Sink[PropagateMessageServer, NotUsed]): Behavior[DBMessage] = Behaviors.receive { (ctx, message) =>
      message match {
 
-      case Write(channel, id, event, replyTo) =>
+      case Write(params, rid, propagate, replyTo) =>
+        val channel = params.channel
         val (newChannelsDB, db) = channelsDB.get(channel) match {
           case Some(db) => (channelsDB, db)
           case None =>
@@ -38,26 +51,41 @@ object DBActor {
             val db = factory.open(new File(path + "/" + channel), options)
             (channelsDB + (channel -> db), db)
         }
-        db.put(id.getBytes(), event.getBytes())
-        replyTo ! NotifyChannelServer(channel, id)
 
-        database(path, newChannelsDB)
 
-      case Read(channel, id, replyTo) =>
+
+        val message: MessageContent = params.message.get
+        val id = message.message_id
+        db.put(id, serializeMessage(message).getBytes)
+
+        if(propagate) {
+          val prop = PropagateMessageServer(params)
+          implicit val system: ActorSystem[Nothing] = ctx.system
+          Source.single(prop).runWith(pubEntry)
+        }
+
+        replyTo ! AnswerResultIntMessageServer(id = rid)
+
+        database(path, newChannelsDB, pubEntry)
+
+      case Catchup(channel, rid, replyTo) =>
         if(channelsDB.contains(channel)) {
           val db = channelsDB(channel)
-          val event = db.get(id.getBytes())
-          val answer =
-            if(event == null) {
-            AnswerMessageServer(false, Some("Event does not exist"))
+          val it = db.iterator()
+          var messages : List[ChannelMessage] = Nil
+          while(it.hasNext) {
+            val message: Array[Byte] = it.next().getValue
+            ctx.log.debug(new String(message, StandardCharsets.UTF_8))
+            val messageParsed: ChannelMessage = JsonMessageParser.parseChannelMessage(message)
+            messages =  messageParsed :: messages
           }
-          else {
-            FetchChannelServer(channel, id, new String(event))
-          }
-          replyTo ! answer
+          replyTo ! AnswerResultArrayMessageServer(result = ChannelMessages(messages.reverse), id = rid)
+
         }
         else {
-          replyTo ! AnswerMessageServer(false, Some("Event does not exist"))
+          ctx.log.debug("Error invalid channel " + channel + "on catchup.")
+          val error = MessageErrorContent(-2, "Invalid resource: channel " + channel + " does not exist.")
+          replyTo ! AnswerErrorMessageServer(error = error, id = rid)
         }
         Behaviors.same
      }

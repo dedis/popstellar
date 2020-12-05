@@ -1,13 +1,16 @@
-#scala
+# scala
 target
 *.class
 
-#sbt
+# sbt
 
 
-#IntelliJ
+# IntelliJ
 *.iml
 *.ipr
 *.iws
 .idea
 out
+
+# Test
+database_test

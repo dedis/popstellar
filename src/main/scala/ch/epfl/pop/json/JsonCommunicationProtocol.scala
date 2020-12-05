@@ -1,7 +1,14 @@
 package ch.epfl.pop.json
 
+import ch.epfl.pop.json.Actions.Actions
 import ch.epfl.pop.json.JsonMessages._
+import ch.epfl.pop.json.JsonUtils._
+import ch.epfl.pop.json.Methods.Methods
+import ch.epfl.pop.json.Objects.Objects
 import spray.json._
+
+import scala.collection.immutable
+import scala.util.{Failure, Success, Try}
 
 
 /**
@@ -9,29 +16,296 @@ import spray.json._
  */
 object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
-  /*
-   * ------------ Administration messages ------------
-   */
+  /* implicit used to parse/serialize a Methods enumeration value */
+  implicit object jsonEnumMethodsFormat extends RootJsonFormat[Methods] {
+    override def read(json: JsValue): Methods = Try(Methods.withName(json.convertTo[String])) match {
+      case Success(v) => v
+      case _ => throw DeserializationException("invalid \"method\" field : unrecognized")
+    }
+    override def write(obj: Methods): JsValue = JsString(obj.toString)
+  }
 
-  implicit val createLaoMessageClientFormat: RootJsonFormat[CreateLaoMessageClient] = jsonFormat5(CreateLaoMessageClient)
-  implicit val joinLaoMessageClientFormat: RootJsonFormat[JoinLaoMessageClient] = jsonFormat3(JoinLaoMessageClient)
-  implicit val createEventMessageClientFormat: RootJsonFormat[CreateEventMessageClient] = jsonFormat4(CreateEventMessageClient)
-  implicit val createElectionMessageClientFormat: RootJsonFormat[CreateElectionMessageClient] = jsonFormat3(CreateElectionMessageClient)
-  implicit val castVoteMessageClientFormat: RootJsonFormat[CastVoteMessageClient] = jsonFormat4(CastVoteMessageClient)
+  /* implicit used to parse/serialize a Objects enumeration value */
+  implicit object jsonEnumObjectsFormat extends RootJsonFormat[Objects] {
+    override def read(json: JsValue): Objects = Try(Objects.withName(json.convertTo[String])) match {
+      case Success(v) => v
+      case _ => throw DeserializationException("invalid \"object\" field : unrecognized")
+    }
+    override def write(obj: Objects): JsValue = JsString(obj.toString)
+  }
 
-  implicit val answerMessageServerFormat: RootJsonFormat[AnswerMessageServer] = jsonFormat2(AnswerMessageServer)
+  /* implicit used to parse/serialize a Actions enumeration value */
+  implicit object jsonEnumActionsFormat extends RootJsonFormat[Actions] {
+    override def read(json: JsValue): Actions = Try(Actions.withName(json.convertTo[String])) match {
+      case Success(v) => v
+      case _ => throw DeserializationException("invalid \"action\" field : unrecognized")
+    }
+    override def write(obj: Actions): JsValue = JsString(obj.toString)
+  }
+
+  /* implicit used to parse/serialize a String encoded in Base64 */
+  implicit object ByteArrayFormat extends RootJsonFormat[ByteArray] {
+    override def read(json: JsValue): ByteArray = JsonUtils.DECODER.decode(json.convertTo[String])
+    override def write(obj: ByteArray): JsValue = JsString(JsonUtils.ENCODER.encode(obj).map(_.toChar).mkString)
+  }
 
 
-  /*
-   * ---------------- PubSub messages ----------------
-   */
+  /* ------------------- ADMIN MESSAGES CLIENT ------------------- */
 
-  implicit val createChannelClientFormat: RootJsonFormat[CreateChannelClient] = jsonFormat2(CreateChannelClient)
-  implicit val publishChannelClientFormat: RootJsonFormat[PublishChannelClient] = jsonFormat2(PublishChannelClient)
-  implicit val subscribeChannelClientFormat: RootJsonFormat[SubscribeChannelClient] = jsonFormat1(SubscribeChannelClient)
-  implicit val fetchChannelClientFormat: RootJsonFormat[FetchChannelClient] = jsonFormat2(FetchChannelClient)
+  implicit object MessageContentDataFormat extends RootJsonFormat[MessageContentData] {
+    override def read(json: JsValue): MessageContentData = {
+      val jsonObject: JsObject = json.asJsObject
+      jsonObject.getFields("object").head.convertTo[String] match {
 
-  implicit val notifyChannelServerFormat: RootJsonFormat[NotifyChannelServer] = jsonFormat2(NotifyChannelServer)
-  implicit val fetchChannelServerFormat: RootJsonFormat[FetchChannelServer] = jsonFormat3(FetchChannelServer)
+        /* create LAO, update LAO's properties and broadcast LAO's state */
+        case Objects.Lao() =>
+          jsonObject.getFields("action", "id", "name", "creation", "last_modified", "organizer", "witnesses") match {
 
+            // create LAO and broadcast LAO's state
+            case Seq(a@JsString(_), id@JsString(_), JsString(n), c@JsNumber(_), lm@JsNumber(_), orgKey@JsString(_), JsArray(w)) =>
+              val action: Actions = a.convertTo[Actions]
+              val mcb = new MessageContentDataBuilder()
+                .setHeader(Objects.Lao, action)
+                .setId(id.convertTo[ByteArray])
+                .setName(n)
+                .setCreation(c.convertTo[TimeStamp])
+                .setLastModified(lm.convertTo[TimeStamp])
+                .setOrganizer(orgKey.convertTo[Key])
+                .setWitnesses(w.map(_.convertTo[Key]).toList)
+
+              action match {
+                case Actions.State =>
+                  jsonObject.getFields("modification_id", "modification_signatures") match {
+                    case Seq(mid@JsString(_), JsArray(ms)) =>
+                      mcb.setModificationId(mid.convertTo[ByteArray])
+                        .setModificationSignatures(ms.map(_.convertTo[Signature]).toList)
+                        .build()
+
+                    case _ => throw JsonMessageParserException(
+                      "invalid \"StateBroadcastLao\" query : fields (\"modification_id\" and/or " +
+                      "\"modification_signatures\") missing or wrongly formatted"
+                    )
+                  }
+
+                case _ => mcb.build()
+              }
+
+
+            // update LAO's properties
+            case Seq(action@JsString(_), JsString(name), lastModified@JsNumber(_), JsArray(witnesses)) =>
+              new MessageContentDataBuilder()
+                .setHeader(Objects.Lao, action.convertTo[Actions])
+                .setName(name)
+                .setLastModified(lastModified.convertTo[TimeStamp])
+                .setWitnesses(witnesses.map(_.convertTo[Key]).toList)
+                .build()
+
+
+            // parsing error : invalid message content data fields
+            case _ => throw JsonMessageParserException("invalid \"MessageContentData\" : fields missing or wrongly formatted")
+        }
+
+        /* witness a message */
+        case Objects.Message() =>
+          jsonObject.getFields("action", "message_id", "signature") match {
+            case Seq(action@JsString(_), mid@JsString(_), signature@JsString(_)) =>
+              new MessageContentDataBuilder()
+                .setHeader(Objects.Message, action.convertTo[Actions])
+                .setMessageId(mid.convertTo[ByteArray])
+                .setSignature(signature.convertTo[Signature])
+                .build()
+
+            // parsing error : invalid message content data fields
+            case _ => throw JsonMessageParserException("invalid \"MessageContentData\" : fields missing or wrongly formatted")
+          }
+
+        /* create meeting and broadcast meeting's state */
+        case Objects.Meeting() =>
+          jsonObject.getFields("action", "id", "name", "creation", "last_modified", "start") match {
+            case Seq(a@JsString(_), id@JsString(_), JsString(n), c@JsNumber(_), lm@JsNumber(_), st@JsNumber(_)) =>
+
+              val location: Seq[JsValue] = jsonObject.getFields("location")
+              val end: Seq[JsValue] = jsonObject.getFields("end")
+              val extra: Seq[JsValue] = jsonObject.getFields("extra")
+
+              val mcd = new MessageContentDataBuilder()
+                .setHeader(Objects.Meeting, a.convertTo[Actions])
+                .setId(id.convertTo[ByteArray])
+                .setName(n)
+                .setCreation(c.convertTo[TimeStamp])
+                .setLastModified(lm.convertTo[TimeStamp])
+                .setStart(st.convertTo[TimeStamp])
+
+              location match {
+                case Seq(JsString(l)) => mcd.setLocation(l)
+                case _ =>
+              }
+              end match {
+                case Seq(end@JsNumber(_)) => mcd.setEnd(end.convertTo[TimeStamp])
+                case _ =>
+              }
+              extra match { case _ => mcd.setExtra("extra: TODO in JsonCommunicationProtocol") }
+
+              mcd.build()
+
+            // parsing error : invalid message content data fields
+            case _ => throw JsonMessageParserException("invalid \"MessageContentData\" : fields missing or wrongly formatted")
+          }
+
+        /* parsing error : object field not recognized */
+        case _ => throw JsonMessageParserException("invalid \"MessageContentData\" : invalid \"object\" field (unrecognized)")
+      }
+    }
+
+    override def write(obj: MessageContentData): JsValue = {
+
+      var jsObjectContent: immutable.ListMap[String, JsValue] = immutable.ListMap[String, JsValue]()
+
+      jsObjectContent += ("object" -> JsString(obj._object.toString))
+      jsObjectContent += ("action" -> JsString(obj.action.toString))
+
+      if (!obj.id.isEmpty) jsObjectContent += ("id" -> obj.id.toJson)
+      if (obj.name != "") jsObjectContent += ("name" -> obj.name.toJson)
+      if (obj.creation != -1L) jsObjectContent += ("creation" -> obj.creation.toJson)
+      if (obj.last_modified != -1L) jsObjectContent += ("last_modified" -> obj.last_modified.toJson)
+      if (!obj.organizer.isEmpty) jsObjectContent += ("organizer" -> obj.organizer.toJson)
+      if (obj._object == Objects.Lao) jsObjectContent += ("witnesses" -> JsArray(obj.witnesses.map(w => w.toJson).toVector))
+      if (!obj.modification_id.isEmpty) jsObjectContent += ("modification_id" -> obj.modification_id.toJson)
+      if (obj._object == Objects.Lao && obj.action == Actions.State)
+        jsObjectContent += ("modification_signatures" -> JsArray(obj.modification_signatures.map(s => s.toJson).toVector))
+      if (!obj.message_id.isEmpty) jsObjectContent += ("message_id" -> obj.message_id.toJson)
+      if (!obj.signature.isEmpty) jsObjectContent += ("signature" -> obj.signature.toJson)
+      if (obj.location != "") jsObjectContent += ("location" -> obj.location.toJson)
+      if (obj.start != -1L) jsObjectContent += ("start" -> obj.start.toJson)
+      if (obj.end != -1L) jsObjectContent += ("end" -> obj.end.toJson)
+      if (obj.extra != "") jsObjectContent += ("extra" -> obj.extra.toJson) // TODO modify extra's type
+
+      JsObject(jsObjectContent)
+    }
+  }
+
+  implicit object MessageContentFormat extends RootJsonFormat[MessageContent] {
+    override def read(json: JsValue): MessageContent =
+      json.asJsObject.getFields("data", "sender", "signature", "message_id", "witness_signatures") match {
+        case Seq(data, sender, signature, message_id, JsArray(witnesses)) =>
+          val string64Data: Base64String = data.convertTo[Base64String]
+          val decodedData: String = JsonUtils.DECODER.decode(string64Data).map(_.toChar).mkString
+
+          MessageContent(
+            string64Data,
+            decodedData.parseJson.convertTo[MessageContentData],
+            sender.convertTo[Key],
+            signature.convertTo[Signature],
+            message_id.convertTo[Hash],
+            witnesses.map(_.convertTo[Key]).toList
+          )
+
+        // parsing error : invalid message content fields
+        case _ => throw JsonMessageParserException("invalid \"MessageContent\" : fields missing or wrongly formatted")
+      }
+
+    override def write(obj: MessageContent): JsValue =
+      JsObject(
+        "data" -> obj.encodedData.toJson,
+        "sender" -> obj.sender.toJson,
+        "signature" -> obj.signature.toJson,
+        "message_id" -> obj.message_id.toJson,
+        "witness_signatures" -> JsArray(obj.witness_signatures.map(_.toJson).toVector)
+      )
+  }
+
+  implicit val messageParametersFormat: RootJsonFormat[MessageParameters] = jsonFormat2(MessageParameters)
+
+  implicit object JsonMessagePublishClientFormat extends RootJsonFormat[JsonMessagePublishClient] {
+    override def read(json: JsValue): JsonMessagePublishClient = {
+      json.asJsObject.getFields("jsonrpc", "method", "params", "id") match {
+        case Seq(JsString(version), method@JsString(_), params@JsObject(_), JsNumber(id)) =>
+
+          val parsed: Try[JsonMessagePublishClient] = Try {
+            val parsedParams: MessageParameters = params.convertTo[MessageParameters]
+
+            parsedParams.message match {
+              case Some(messageContent) => (messageContent.data._object, messageContent.data.action) match {
+
+                /* CreateLaoMessageClient, UpdateLaoMessageClient and BroadcastLaoMessageClient */
+                case (Objects.Lao, action) => action match {
+                  // CreateLaoMessageClient
+                  case Actions.Create => CreateLaoMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
+                  // UpdateLaoMessageClient
+                  case Actions.UpdateProperties => UpdateLaoMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
+                  // BroadcastLaoMessageClient
+                  case Actions.State => BroadcastLaoMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
+                }
+
+                /* WitnessMessageMessageClient */
+                case (Objects.Message, Actions.Witness) => WitnessMessageMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
+
+                /* CreateMeetingMessageClient and BroadcastMeetingMessageClient */
+                case (Objects.Meeting, action) => action match {
+                  // CreateMeetingMessageClient
+                  case Actions.Create => CreateMeetingMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
+                  // BroadcastMeetingMessageClient
+                  case Actions.State => BroadcastMeetingMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
+                }
+
+                /* parsing error : invalid object/action pair */
+                case _ => throw JsonMessageParserException(
+                  s"invalid message : invalid (object = ${messageContent.data._object}, action = ${messageContent.data.action}) pair",
+                  id.toInt
+                )
+              }
+
+              // Should never happen missing MessageContent in MessageParameters
+              case _ => throw JsonMessageParserException(
+                "missing MessageContent in MessageParameter for JsonMessagePublishClient", id.toInt
+              )
+            }
+          }
+
+          parsed match {
+            case Success(mpc) => mpc
+            case Failure(s) => s match {
+              case DeserializationException(msg, _, _) => throw JsonUtils.JsonMessageParserException(msg, id.toInt)
+              case _ => throw s
+            }
+          }
+
+        // parsing error : invalid message parameters fields
+        case _ =>
+          val msg: String = "invalid MessageParameters : fields missing or wrongly formatted"
+          json.asJsObject.getFields("id") match {
+            case Seq(JsNumber(id)) => throw JsonUtils.JsonMessageParserException(msg, id.toInt)
+            case _ => throw JsonUtils.JsonMessageParserException(msg)
+          }
+      }
+    }
+
+
+    override def write(obj: JsonMessagePublishClient): JsValue =
+      JsObject(
+        "jsonrpc" -> obj.jsonrpc.toJson,
+        "method" -> obj.method.toJson,
+        "params" -> obj.params.toJson,
+        "id" -> obj.id.toJson
+      )
+  }
+
+
+  /* ------------------- ANSWER MESSAGES SERVER ------------------- */
+
+  implicit val channelMessagesFormat: RootJsonFormat[ChannelMessages] = jsonFormat1(ChannelMessages)
+  implicit val messageErrorContentFormat: RootJsonFormat[MessageErrorContent] = jsonFormat2(MessageErrorContent)
+
+  implicit val propagateMessageServerFormat: RootJsonFormat[PropagateMessageServer] = jsonFormat3(PropagateMessageServer)
+
+  implicit val answerResultIntMessageServerFormat: RootJsonFormat[AnswerResultIntMessageServer] = jsonFormat3(AnswerResultIntMessageServer)
+  implicit val answerResultArrayMessageServerFormat: RootJsonFormat[AnswerResultArrayMessageServer] = jsonFormat3(AnswerResultArrayMessageServer)
+  implicit val answerErrorMessageServerFormat: RootJsonFormat[AnswerErrorMessageServer] = jsonFormat3(AnswerErrorMessageServer)
+
+
+  /* ------------------- PUBSUB MESSAGES CLIENT ------------------- */
+
+  implicit val subscribeMessageClientFormat: RootJsonFormat[SubscribeMessageClient] = jsonFormat4(SubscribeMessageClient)
+  implicit val unsubscribeMessageClientFormat: RootJsonFormat[UnsubscribeMessageClient] = jsonFormat4(UnsubscribeMessageClient)
+  implicit val catchupMessageClientFormat: RootJsonFormat[CatchupMessageClient] = jsonFormat4(CatchupMessageClient)
 }
