@@ -1,3 +1,4 @@
+/*useful functions, "missing in the standard library". Currently only finding an elem in a slice */
 package define
 
 /* helper function to find an elem. in a slice.  returns index of elem + bool in slice*/

@@ -1,10 +1,13 @@
+/* This file implements the functionalities an organizer must provide. It uses the package db to interact with
+a database.*/
+
 package actors
 
 import (
 	"encoding/json"
+	"fmt"
 	"student20_pop/db"
 	"student20_pop/define"
-	"fmt"
 )
 
 type Organizer struct {

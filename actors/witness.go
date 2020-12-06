@@ -1,3 +1,5 @@
+/* This file implements the functionalities a witness must provide. It uses the package db to interact with
+a database.*/
 package actors
 
 import (

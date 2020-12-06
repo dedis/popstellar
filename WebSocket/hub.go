@@ -1,3 +1,5 @@
+/* file that implements the publish subscribe paradigm. Inspired from the chat example of github.com/websocket */
+
 package WebSocket
 
 import (

@@ -1,10 +1,11 @@
+/* This file implements useful functions to work with channels in the database, such as Create/edit and GetInfos */
 package db
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/boltdb/bolt"
 	"student20_pop/define"
-	"fmt"
 )
 
 const bucketChannel = "channels"

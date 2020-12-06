@@ -1,3 +1,4 @@
+/* INTERNAL CONSTANTS TO SIMPLIFY ERROR HANDLING*/
 package define
 
 import (
