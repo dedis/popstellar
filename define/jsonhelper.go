@@ -180,6 +180,12 @@ func AnalyseMessage(message json.RawMessage) (Message, error) {
 	if err != nil {
 		return m, ErrEncodingFault
 	}
+	//TODO super bizarre, il decode correctement la deuxieme fois dans le tests?
+	d, err = Decode(string(d))
+	if err != nil {
+		return m, ErrEncodingFault
+	}
+	//
 	m.Data = d
 
 	for i := 0; i < len(m.WitnessSignatures); i++ {
