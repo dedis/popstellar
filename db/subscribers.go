@@ -1,3 +1,5 @@
+/* This file contains functions to manage subscribers of one channel. */
+
 package db
 
 import (

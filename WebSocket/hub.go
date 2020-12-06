@@ -1,3 +1,6 @@
+/* file to implement manage opened websockets. Implements the publish-subscribe paradigm.
+inspired from the chat example of github.com/gorilla */
+
 package WebSocket
 
 import (
@@ -11,7 +14,7 @@ import (
 	"time"
 )
 
-const SIG_TRESHOLD = 4
+const SIG_THRESHOLD = 4
 
 /*
 TODO
@@ -53,13 +56,12 @@ type hub struct {
 	logMx sync.RWMutex
 	log   [][]byte
 
-	organizer *actors.Organizer
-	witness   *actors.Witness
+	actor actors.Actor
 
 	connIndex int
 }
 
-func NewHub() *hub {
+func NewOrganizerHub() *hub {
 
 	h := &hub{
 		connectionsMx:   sync.RWMutex{},
@@ -67,8 +69,7 @@ func NewHub() *hub {
 		connections:     make(map[*connection]struct{}),
 		connIndex:       0,
 		idOfSender:      -1,
-		organizer:       actors.NewOrganizer("", "orgDatabase.db"),
-		witness:         actors.NewWitness("", "witDatabase.db"),
+		actor:           actors.NewOrganizer("", "orgDatabase.db"),
 	}
 	//publish subscribe go routine !
 
@@ -81,25 +82,41 @@ func NewHub() *hub {
 			var message []byte = nil
 			var channel []byte = nil
 			var response []byte = nil
-			//handle the message and generate the response, if error, print it in console
-			/*check1, err := h.isForOrganizer(msg)
-			if err != nil {
-				fmt.Print(err)
-			}
-			check2, err2 := h.isForWitness(msg)
-			if err2 != nil {
-				fmt.Print(err2)
-			}
-			if check1 && check2 {
-				fmt.Print("cannot be both witness and organizer")
-			} else if check1 {
-				message, channel, response = h.organizer.HandleWholeMessage(msg, h.idOfSender)
-				fmt.Print(err)
-			} else if check2 {
-				//TODO
-			}*/
+			//handle the message and generate the response
+			message, channel, response = h.actor.HandleWholeMessage(msg, h.idOfSender)
 
-			message, channel, response = h.organizer.HandleWholeMessage(msg, h.idOfSender)
+			h.connectionsMx.RLock()
+			h.publishOnChannel(message, channel)
+			h.sendResponse(response, h.idOfSender)
+			h.connectionsMx.RUnlock()
+		}
+	}()
+	return h
+}
+
+func NewWitnessHub() *hub {
+
+	h := &hub{
+		connectionsMx:   sync.RWMutex{},
+		receivedMessage: make(chan []byte),
+		connections:     make(map[*connection]struct{}),
+		connIndex:       0,
+		idOfSender:      -1,
+		actor:           actors.NewWitness("", "witDatabase.db"),
+	}
+	//publish subscribe go routine !
+
+	go func() {
+		for {
+			//get msg from connection
+			msg := <-h.receivedMessage
+
+			// check if messages concerns organizer
+			var message []byte = nil
+			var channel []byte = nil
+			var response []byte = nil
+			//handle the message and generate the response
+			message, channel, response = h.actor.HandleWholeMessage(msg, h.idOfSender)
 
 			h.connectionsMx.RLock()
 			h.publishOnChannel(message, channel)
@@ -115,7 +132,7 @@ func (h *hub) publishOnChannel(msg []byte, channel []byte) {
 
 	var subscribers []int = nil
 	var err error = nil
-	if bytes.Equal(channel, []byte("/root")) {
+	if !bytes.Equal(channel, []byte("/root")) {
 		subscribers, err = db.GetSubscribers(channel)
 		if err != nil {
 			log.Fatal("can't get subscribers", err)
@@ -173,33 +190,4 @@ func (h *hub) removeConnection(conn *connection) {
 		delete(h.connections, conn)
 		close(conn.send)
 	}
-}
-
-/*returns whether the Hub's organizer has the same public key as the organizer of the channel of the message*/
-func (h *hub) isForOrganizer(message []byte) (bool, error) {
-
-	gen, err := define.AnalyseGeneric(message)
-	if err != nil {
-		return false, err
-	}
-	params, err := define.AnalyseParamsFull(gen.Params)
-	if err != nil {
-		return false, err
-	}
-	//TODO extract parent channel if subChannel
-	return h.organizer.IsOrganizer(params.Channel)
-}
-
-/*returns whether the Hub's Witness can witness the received message*/
-func (h *hub) isForWitness(message []byte) (bool, error) {
-	gen, err := define.AnalyseGeneric(message)
-	if err != nil {
-		return false, err
-	}
-	params, err := define.AnalyseParamsFull(gen.Params)
-	if err != nil {
-		return false, err
-	}
-
-	return h.witness.IsWitness(params.Channel)
 }
