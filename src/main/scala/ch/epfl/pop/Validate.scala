@@ -1,12 +1,13 @@
 package ch.epfl.pop
 
 import java.util.Arrays
-import akka.routing.Broadcast
 import ch.epfl.pop.crypto.{Hash, Signature}
-import ch.epfl.pop.json.{ByteArray, Hash, Key, MessageContent, MessageContentData, MessageErrorContent}
+import ch.epfl.pop.json.{Hash, Key, MessageContent, MessageContentData, MessageErrorContent}
 import ch.epfl.pop.crypto.Signature.verify
 import ch.epfl.pop.json.JsonMessages.{BroadcastLaoMessageClient, BroadcastMeetingMessageClient, CreateLaoMessageClient, CreateMeetingMessageClient, UpdateLaoMessageClient, WitnessMessageMessageClient}
 import ch.epfl.pop.json.JsonUtils.ErrorCodes.InvalidData
+
+import java.util
 
 object Validate {
 
@@ -21,7 +22,7 @@ object Validate {
     }
     else {
       val id = Hash.computeMessageId(content.encodedData, content.signature)
-      if(Arrays.equals(id, content.message_id)) {
+      if(util.Arrays.equals(id, content.message_id)) {
         None
       }
       else {
@@ -90,7 +91,7 @@ object Validate {
     val createMsg = midLevelMsg.data
     val id = Hash.computeMeetingId(laoId, createMsg.creation, createMsg.name)
     if (!(Arrays.equals(id, createMsg.id)))
-      getError("Invalid event id.")
+      getError("Invalid meeting id.")
     else if (!(createMsg.creation > 0))
       getError("Creation timestamp should be positive.")
     else if (!(createMsg.creation == createMsg.last_modified))
