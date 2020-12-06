@@ -1,3 +1,4 @@
+/*functions to manage received Json messages. Unmarshalls and decode messages.*/
 package define
 
 import (

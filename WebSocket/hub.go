@@ -1,3 +1,6 @@
+/* file to implement manage opened websockets. Implements the publish-subscribe paradigm.
+inspired from the chat example of github.com/gorilla */
+
 package WebSocket
 
 import (
@@ -55,6 +58,7 @@ type hub struct {
 
 	organizer *actors.Organizer
 	witness   *actors.Witness
+	actor     actors.Actor
 
 	connIndex int
 }
@@ -67,8 +71,7 @@ func NewOrganizerHub() *hub {
 		connections:     make(map[*connection]struct{}),
 		connIndex:       0,
 		idOfSender:      -1,
-		organizer:       actors.NewOrganizer("", "orgDatabase.db"),
-		witness:         nil,
+		actor:           actors.NewOrganizer("", "orgDatabase.db"),
 	}
 	//publish subscribe go routine !
 
@@ -101,8 +104,7 @@ func NewWitnessHub() *hub {
 		connections:     make(map[*connection]struct{}),
 		connIndex:       0,
 		idOfSender:      -1,
-		organizer:       nil,
-		witness:         actors.NewWitness("", "witDatabase.db"),
+		actor:           actors.NewWitness("", "witDatabase.db"),
 	}
 	//publish subscribe go routine !
 
