@@ -1,3 +1,9 @@
+/*
+This class implements the functions an organizer provides. It stores messages in the database using the db package.
+Currently it does not do send response to channels (only ack messages as defined in the protocol) as we decided thought
+the front-end should implement "witness a message".
+*/
+
 package actors
 
 import (

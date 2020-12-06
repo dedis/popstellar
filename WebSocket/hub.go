@@ -132,7 +132,7 @@ func (h *hub) publishOnChannel(msg []byte, channel []byte) {
 
 	var subscribers []int = nil
 	var err error = nil
-	if bytes.Equal(channel, []byte("/root")) {
+	if !bytes.Equal(channel, []byte("/root")) {
 		subscribers, err = db.GetSubscribers(channel)
 		if err != nil {
 			log.Fatal("can't get subscribers", err)
