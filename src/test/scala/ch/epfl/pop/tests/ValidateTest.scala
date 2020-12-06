@@ -321,6 +321,4 @@ class ValidateTest extends FunSuite {
     val state = broadcastMeeting(meetingMsg.message_id, end = meetingEnd - 1)
     assert(Validate.validate(state, meetingMsg.data).nonEmpty)
   }
-
-
 }

@@ -9,6 +9,9 @@ import ch.epfl.pop.json.JsonUtils.ErrorCodes.InvalidData
 
 import java.util
 
+/**
+ * Methods used to verify that messages follow the protocol
+ */
 object Validate {
 
   /**
@@ -31,6 +34,11 @@ object Validate {
     }
   }
 
+  /**
+   * Verify that the message parameters are valid, according to the protocol
+   * @param msg the message to validate
+   * @return None if correct, an error otherwise
+   */
   def validate(msg: CreateLaoMessageClient): Option[MessageErrorContent] = {
     val midLevelMsg = msg.params.message.get
     val lao = midLevelMsg.data
@@ -44,6 +52,11 @@ object Validate {
     else None
   }
 
+  /**
+   * Verify that the message parameters are valid, according to the protocol
+   * @param msg the message to validate
+   * @return None if correct, an error otherwise
+   */
   def validate(msg: UpdateLaoMessageClient): Option[MessageErrorContent] = {
     val midLevelMsg = msg.params.message.get
     val laoUpdate = midLevelMsg.data
@@ -53,6 +66,12 @@ object Validate {
     else None
   }
 
+  /**
+   * Verify that the message parameters are valid, according to the protocol
+   * @param msg the message to validate
+   * @param laoMod the creation/update message this message refers to
+   * @return None if correct, an error otherwise
+   */
   def validate(msg: BroadcastLaoMessageClient, laoMod : MessageContentData): Option[MessageErrorContent] = {
     val midLevelMsg = msg.params.message.get
     val laoState = midLevelMsg.data
@@ -77,6 +96,11 @@ object Validate {
     else None
   }
 
+  /**
+   * Verify that the message parameters are valid, according to the protocol
+   * @param msg the message to validate
+   * @return None if correct, an error otherwise
+   */
   def validate(msg: WitnessMessageMessageClient): Option[MessageErrorContent] = {
     val midLevelMsg = msg.params.message.get
     val witnessMsg = midLevelMsg.data
@@ -86,6 +110,12 @@ object Validate {
       None
   }
 
+  /**
+   * Verify that the message parameters are valid, according to the protocol
+   * @param msg the message to validate
+   * @param laoId the id of the LAO
+   * @return None if correct, an error otherwise
+   */
   def validate(msg: CreateMeetingMessageClient, laoId: Hash): Option[MessageErrorContent] = {
     val midLevelMsg = msg.params.message.get
     val createMsg = midLevelMsg.data
@@ -103,6 +133,12 @@ object Validate {
     else None
   }
 
+  /**
+   * Verify that the message parameters are valid, according to the protocol
+   * @param msg the message to validate
+   * @param meetingMod the creation/update message this message refers to
+   * @return None if correct, an error otherwise
+   */
   def validate(msg: BroadcastMeetingMessageClient, meetingMod : MessageContentData): Option[MessageErrorContent] = {
     val midLevelMsg = msg.params.message.get
     val stateMsg = midLevelMsg.data
@@ -119,7 +155,6 @@ object Validate {
     else if (!(stateMsg.end == meetingMod.end))
       getError("The end timestamp")
     else None
-
   }
 
   private def compareWitnesses(w1: List[Key], w2: List[Key]): Boolean = {
