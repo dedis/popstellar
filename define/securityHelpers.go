@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const MaxTimeBetweenLAOCreationAndPublish = 600
+const MaxPropagationDelay = 600
 
 func LAOCreatedIsValid(data DataCreateLAO, message Message) bool {
 	//the last modified timestamp is equal to the creation timestamp,
@@ -20,7 +20,7 @@ func LAOCreatedIsValid(data DataCreateLAO, message Message) bool {
 		return false
 	}
 	//the timestamp is reasonably recent with respect to the server’s clock,
-	if data.Creation > time.Now().Unix() || data.Creation < time.Now().Unix()-MaxTimeBetweenLAOCreationAndPublish {
+	if data.Creation > time.Now().Unix() || data.Creation < time.Now().Unix()-MaxPropagationDelay {
 		fmt.Printf("timestamp invalid, either too old or in the future : %v", data.Creation)
 		return false
 	}
@@ -46,7 +46,7 @@ func LAOStateIsValid(data DataCreateLAO, message Message) bool {
 		return false
 	}
 	//the timestamp is reasonably recent with respect to the server’s clock,
-	if data.Last_modified > time.Now().Unix() || data.Last_modified < time.Now().Unix()-MaxTimeBetweenLAOCreationAndPublish {
+	if data.Last_modified > time.Now().Unix() || data.Last_modified < time.Now().Unix()-MaxPropagationDelay {
 		fmt.Printf("sec2")
 		return false
 	}
@@ -62,7 +62,7 @@ func MeetingCreatedIsValid(data DataCreateMeeting, message Message) bool {
 		return false
 	}
 	//the timestamp is reasonably recent with respect to the server’s clock,
-	if data.Creation > time.Now().Unix() || data.Creation-time.Now().Unix() > MaxTimeBetweenLAOCreationAndPublish {
+	if data.Creation > time.Now().Unix() || data.Creation-time.Now().Unix() > MaxPropagationDelay {
 		return false
 	}
 

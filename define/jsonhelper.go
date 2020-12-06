@@ -138,6 +138,12 @@ type DataCreatePoll struct {
 	End   int64  /* Timestamp, optional */
 	Extra string /* arbitrary object, optional */
 }
+type DataWitnessMessage struct {
+	Object     string
+	Action     string
+	Message_id string
+	Signature  string
+}
 
 /**
  * Function that takes a byte array as input and returns
@@ -236,6 +242,21 @@ func AnalyseDataCreateLAO(data json.RawMessage) (DataCreateLAO, error) {
 			return m, ErrEncodingFault
 		}
 		m.Witnesses[i] = string(d)
+	}
+	return m, err
+}
+
+func AnalyseDataWitnessMessage(data json.RawMessage) (DataWitnessMessage, error) {
+	m := DataWitnessMessage{}
+	d, err := b64.StdEncoding.DecodeString(strings.Trim(string(data), `"`))
+	if err != nil {
+		fmt.Printf("error decoding the string : %v", err)
+		return m, err
+	}
+	err = json.Unmarshal(d, &m)
+	if err != nil {
+		fmt.Printf("error unmarshalling the string : %v", err)
+		return m, err
 	}
 	return m, err
 }
