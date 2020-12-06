@@ -75,11 +75,11 @@ func  MessageIsValid(msg Message) error {
 	// the message_id is valid
 	str := []byte(msg.Data)
 	str = append(str, []byte(msg.Signature)...)
-	//hash := sha256.Sum256(str)
+	hash := sha256.Sum256(str)
 
-	//if !bytes.Equal([]byte(msg.Message_id), hash[:]) {
-	//	return ErrInvalidResource
-	//}
+	if !bytes.Equal([]byte(msg.Message_id), hash[:]) {
+		return ErrInvalidResource
+	}
 
 	// the signature is valid
 	err := VerifySignature(msg.Sender,(msg.Data),msg.Signature)
@@ -99,6 +99,32 @@ func  MessageIsValid(msg Message) error {
 	}
 	return nil
 }
+
+/*
+	we check that Sign(sender||data) is the given signature
+*/
+func VerifySignature(publicKey string, data []byte,signature string ) error{
+	//check the size of the key as it will panic if we plug it in Verify
+	if len(publicKey) != ed.PublicKeySize{
+		return ErrRequestDataInvalid
+	}
+
+	//data is in base64 so we need to decrypt it before using it
+	//d :=  strings.Replace(data, "\n", "", -1)
+	//dataDecoded,err := Decode(string(data))
+	//if err!=nil{
+	//		return ErrEncodingFault
+	//}
+	//hash := sha256.Sum256(data)
+
+	if ed.Verify([]byte(publicKey), data, []byte(signature)){
+		return nil
+	}
+	//invalid signature
+	return ErrRequestDataInvalid
+}
+
+
 /*
 	we check that Sign(sender||data) is the given signature
 */
@@ -116,29 +142,6 @@ func VerifyWitnessSignature(publicKey string, data []byte,signature string ) err
 	//	return ErrEncodingFault
 	//}
 	if ed.Verify([]byte(publicKey), data, []byte(signature)){
-		return nil
-	}
-	//invalid signature
-	return ErrRequestDataInvalid
-}
-/*
-	we check that Sign(sender||data) is the given signature
-*/
-func VerifySignature(publicKey string, data []byte,signature string ) error{
-	//check the size of the key as it will panic if we plug it in Verify
-	if len(publicKey) != ed.PublicKeySize{
-		return ErrRequestDataInvalid
-	}
-
-	//data is in base64 so we need to decrypt it before using it
-	//d :=  strings.Replace(data, "\n", "", -1)
-	//dataDecoded,err := Decode(string(data))
-	//if err!=nil{
-	//	return ErrEncodingFault
-	//}
-	hash := sha256.Sum256(data)
-
-	if ed.Verify([]byte(publicKey), hash[:], []byte(signature)){
 		return nil
 	}
 	//invalid signature
