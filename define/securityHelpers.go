@@ -12,12 +12,12 @@ import (
 const MaxPropagationDelay = 600
 
 // TODO if we use the json Schema, don't need to check structure correctness
-func LAOCreatedIsValid(data DataCreateLAO, message Message) error {
+func LAOCreatedIsValid(data DataCreateLAO, message Message) bool {
 	//the last modified timestamp is equal to the creation timestamp,
 	if data.Creation != data.Last_modified {
 		fmt.Printf("%v, %v", data, data.Last_modified)
 		fmt.Printf("sec1")
-		return ErrInvalidResource
+		return false
 	}
 	//the timestamp is reasonably recent with respect to the server’s clock,
 	if data.Creation > time.Now().Unix() || data.Creation < time.Now().Unix()-MaxPropagationDelay {
@@ -35,7 +35,7 @@ func LAOCreatedIsValid(data DataCreateLAO, message Message) error {
 		//if(hash64 != data.ID) {
 		fmt.Printf("sec3 \n")
 		fmt.Printf("%v, %v", hash, data.ID)
-		return ErrInvalidResource
+		return false
 	}
 	//the timestamp is reasonably recent with respect to the server’s clock,
 	if data.Last_modified > time.Now().Unix() || data.Last_modified < time.Now().Unix()-MaxPropagationDelay {
@@ -45,13 +45,13 @@ func LAOCreatedIsValid(data DataCreateLAO, message Message) error {
 
 	//TODO any more checks to perform ?
 
-	return nil
+	return true
 }
 
-func MeetingCreatedIsValid(data DataCreateMeeting, message Message) error {
+func MeetingCreatedIsValid(data DataCreateMeeting, message Message) bool {
 	//the last modified timestamp is equal to the creation timestamp,
 	if data.Creation != data.Last_modified {
-		return ErrInvalidResource
+		return false
 	}
 	//the timestamp is reasonably recent with respect to the server’s clock,
 	if data.Creation > time.Now().Unix() || data.Creation-time.Now().Unix() > MaxPropagationDelay {
@@ -60,21 +60,21 @@ func MeetingCreatedIsValid(data DataCreateMeeting, message Message) error {
 
 	//we start after the creation and we end after the start
 	if data.Start < data.Creation || data.End < data.Start {
-		return ErrInvalidResource
+		return false
 	}
 	//need to meet some	where
 	if data.Location == "" {
-		return ErrInvalidResource
+		return false
 	}
-	return nil
+	return true
 }
 
-func PollCreatedIsValid(data DataCreatePoll, message Message) error {
-	return nil
+func PollCreatedIsValid(data DataCreatePoll, message Message) bool {
+	return true
 }
 
-func RollCallCreatedIsValid(data DataCreateRollCall, message Message) error {
-	return nil
+func RollCallCreatedIsValid(data DataCreateRollCall, message Message) bool {
+	return true
 }
 
 func MessageIsValid(msg Message) error {
