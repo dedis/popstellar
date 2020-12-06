@@ -56,9 +56,7 @@ type hub struct {
 	logMx sync.RWMutex
 	log   [][]byte
 
-	organizer *actors.Organizer
-	witness   *actors.Witness
-	actor     actors.Actor
+	actor actors.Actor
 
 	connIndex int
 }
@@ -85,7 +83,7 @@ func NewOrganizerHub() *hub {
 			var channel []byte = nil
 			var response []byte = nil
 			//handle the message and generate the response
-			message, channel, response = h.organizer.HandleWholeMessage(msg, h.idOfSender)
+			message, channel, response = h.actor.HandleWholeMessage(msg, h.idOfSender)
 
 			h.connectionsMx.RLock()
 			h.publishOnChannel(message, channel)
@@ -118,7 +116,7 @@ func NewWitnessHub() *hub {
 			var channel []byte = nil
 			var response []byte = nil
 			//handle the message and generate the response
-			message, channel, response = h.witness.HandleWholeMessage(msg, h.idOfSender)
+			message, channel, response = h.actor.HandleWholeMessage(msg, h.idOfSender)
 
 			h.connectionsMx.RLock()
 			h.publishOnChannel(message, channel)

@@ -144,9 +144,8 @@ func (w *Witness) handleCreateLAO(message define.Message, channel string, generi
 		return nil, nil, define.ErrInvalidResource
 	}
 
-	err = define.LAOCreatedIsValid(data, message)
-	if err != nil {
-		return nil, nil, err
+	if !define.LAOCreatedIsValid(data, message) {
+		return nil, nil, define.ErrInvalidResource
 	}
 
 	canalLAO := channel + data.ID
@@ -175,9 +174,8 @@ func (w *Witness) handleUpdateProperties(message define.Message, channel string,
 	if err != nil {
 		return nil, nil, define.ErrInvalidResource
 	}
-	err = define.LAOCreatedIsValid(data, message)
-	if err != nil {
-		return nil, nil, err
+	if !define.LAOCreatedIsValid(data, message) {
+		return nil, nil, define.ErrInvalidResource
 	}
 
 	//stores received message in DB
@@ -187,9 +185,7 @@ func (w *Witness) handleUpdateProperties(message define.Message, channel string,
 		return nil, nil, err
 	}
 
-	//toSign := message.Sender + string(message.Data)
-
-	//TODO create a response signing the message
+	//TODO create a response signing the message -- or not ? should it be front-end ?
 
 	return nil, nil, err
 }
@@ -202,13 +198,38 @@ func (w *Witness) handleWitnessMessage(message define.Message, channel string, g
 	if err != nil {
 		return nil, nil, define.ErrInvalidResource
 	}
-	err = define.LAOCreatedIsValid(data, message)
-	if err != nil {
-		return nil, nil, err
+	if !define.LAOCreatedIsValid(data, message) {
+		return nil, nil, define.ErrInvalidResource
 	}
 
 	//stores received message in DB
 	canalLAO := channel + data.ID
 	err = db.CreateMessage(message, canalLAO, w.database)
+	return nil, nil, err
+}
+
+func (w *Witness) handleLAOState(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error) {
+	data, err := define.AnalyseDataCreateLAO(message.Data)
+	if err != nil {
+		return nil, nil, define.ErrInvalidResource
+	}
+
+	if !define.LAOStateIsValid(data, message) {
+		return nil, nil, define.ErrInvalidResource
+	}
+
+	//TODO is the action valid ? was there enough witness signatures ?
+
+	lao := define.LAO{
+		ID:            data.ID,
+		Name:          data.Name,
+		Creation:      data.Creation,
+		LastModified:  data.Last_modified,
+		OrganizerPKey: data.Organizer,
+		Witnesses:     data.Witnesses,
+	}
+
+	err = db.UpdateChannel(lao, w.database)
+
 	return nil, nil, err
 }
