@@ -10,7 +10,7 @@ import (
 /**
 * Writes a message to the database. If safe is true and a message with this ID already exists, returns an error
  */
-func writeMessage(message define.MessageAnalysed, channel string, database string, creating bool) error {
+func writeMessage(message define.Message, channel string, database string, creating bool) error {
 
 	db, e := OpenDB(database)
 	defer db.Close()
@@ -45,12 +45,12 @@ func writeMessage(message define.MessageAnalysed, channel string, database strin
 }
 
 /*writes a message to the DB, returns an error if ID already is key in DB*/
-func CreateMessage(message define.MessageAnalysed, channel string, database string) error {
+func CreateMessage(message define.Message, channel string, database string) error {
 	return writeMessage(message, channel, database, true)
 }
 
 /*writes a message to the DB, regardless of ID already exists*/
-func UpdateMessage(message define.MessageAnalysed, channel string, database string) error {
+func UpdateMessage(message define.Message, channel string, database string) error {
 	return writeMessage(message, channel, database, false)
 }
 

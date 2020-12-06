@@ -142,7 +142,7 @@ func (w *Witness) handlePublish(generic define.Generic) ([]byte, []byte, error) 
 	return nil, nil, nil
 }
 
-func (w *Witness) handleCreateLAO(message define.MessageAnalysed, channel string, generic define.Generic) ([]byte, []byte, error) {
+func (w *Witness) handleCreateLAO(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error) {
 	if channel != "/root" {
 		return nil, nil, define.ErrInvalidResource
 	}
@@ -178,7 +178,7 @@ func (w *Witness) handleCreateLAO(message define.MessageAnalysed, channel string
 }
 
 /*witness does not yet send stuff to channel*/
-func (w *Witness) handleUpdateProperties(message define.MessageAnalysed, channel string, generic define.Generic) ([]byte, []byte, error) {
+func (w *Witness) handleUpdateProperties(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error) {
 	data, err := define.AnalyseDataCreateLAO(message.Data)
 	if err != nil {
 		return nil, nil, define.ErrInvalidResource
@@ -202,7 +202,7 @@ func (w *Witness) handleUpdateProperties(message define.MessageAnalysed, channel
 	return nil, nil, err
 }
 
-func (w *Witness) handleWitnessMessage(message define.MessageAnalysed, channel string, generic define.Generic) ([]byte, []byte, error) {
+func (w *Witness) handleWitnessMessage(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error) {
 
 	//shall a witness increment count on base message as well ?
 
