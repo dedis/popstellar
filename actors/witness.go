@@ -1,3 +1,9 @@
+/*
+This class implements the functions an organizer provides. It stores messages in the database using the db package.
+Currently it does not do send response to channels (only ack messages as defined in the protocol) as we decided thought
+the front-end should implement "witness a message".
+*/
+
 package actors
 
 import (
@@ -17,20 +23,6 @@ func NewWitness(pkey string, db string) *Witness {
 		PublicKey: pkey,
 		database:  db,
 	}
-}
-
-/*returns true if w is in the witness list of the event*/
-func (w *Witness) IsWitness(id string) (bool, error) {
-	data := db.GetChannel([]byte(id), w.database)
-	lao := define.LAO{} //TODO currently is only for LAO. Need generic type for channel
-	err := json.Unmarshal(data, &lao)
-	if err != nil {
-		return false, define.ErrEncodingFault
-	}
-
-	_, found := define.FindStr(lao.Witnesses, w.PublicKey)
-
-	return found, nil
 }
 
 /** processes what is received from the WebSocket
@@ -80,10 +72,13 @@ func (w *Witness) handlePublish(generic define.Generic) ([]byte, []byte, error) 
 
 	data := define.Data{}
 	base64Text := make([]byte, b64.StdEncoding.DecodedLen(len(message.Data)))
-	l, _ := b64.StdEncoding.Decode(base64Text, message.Data)
-	err = json.Unmarshal(base64Text[:l], &data)
 
-	//data, err := define.AnalyseData(message.Data)
+	l, err := b64.StdEncoding.Decode(base64Text, message.Data)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	err = json.Unmarshal(base64Text[:l], &data)
 	if err != nil {
 		return nil, nil, define.ErrRequestDataInvalid
 	}
@@ -96,7 +91,7 @@ func (w *Witness) handlePublish(generic define.Generic) ([]byte, []byte, error) 
 		case "update_properties":
 			return w.handleUpdateProperties(message, params.Channel, generic)
 		case "state":
-			// just store in DB
+			return w.handleLAOState(message, params.Channel, generic)
 		default:
 			return nil, nil, define.ErrInvalidAction
 		}
@@ -111,7 +106,7 @@ func (w *Witness) handlePublish(generic define.Generic) ([]byte, []byte, error) 
 	case "roll call":
 		switch data["action"] {
 		case "create":
-			//return w.handleCreateRollCall(message, params.Channel, generic)
+			return w.handleCreateRollCall(message, params.Channel, generic)
 		case "state":
 
 		default:
@@ -152,9 +147,8 @@ func (w *Witness) handleCreateLAO(message define.Message, channel string, generi
 		return nil, nil, define.ErrInvalidResource
 	}
 
-	err = define.LAOCreatedIsValid(data, message)
-	if err != nil {
-		return nil, nil, err
+	if !define.LAOCreatedIsValid(data, message) {
+		return nil, nil, define.ErrInvalidResource
 	}
 
 	canalLAO := channel + data.ID
@@ -183,9 +177,8 @@ func (w *Witness) handleUpdateProperties(message define.Message, channel string,
 	if err != nil {
 		return nil, nil, define.ErrInvalidResource
 	}
-	err = define.LAOCreatedIsValid(data, message)
-	if err != nil {
-		return nil, nil, err
+	if !define.LAOCreatedIsValid(data, message) {
+		return nil, nil, define.ErrInvalidResource
 	}
 
 	//stores received message in DB
@@ -195,9 +188,7 @@ func (w *Witness) handleUpdateProperties(message define.Message, channel string,
 		return nil, nil, err
 	}
 
-	//toSign := message.Sender + string(message.Data)
-
-	//TODO create a response signing the message
+	//TODO create a response signing the message -- or not ? should it be front-end ?
 
 	return nil, nil, err
 }
@@ -210,13 +201,42 @@ func (w *Witness) handleWitnessMessage(message define.Message, channel string, g
 	if err != nil {
 		return nil, nil, define.ErrInvalidResource
 	}
-	err = define.LAOCreatedIsValid(data, message)
-	if err != nil {
-		return nil, nil, err
+	if !define.LAOCreatedIsValid(data, message) {
+		return nil, nil, define.ErrInvalidResource
 	}
 
 	//stores received message in DB
 	canalLAO := channel + data.ID
 	err = db.CreateMessage(message, canalLAO, w.database)
 	return nil, nil, err
+}
+
+func (w *Witness) handleLAOState(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error) {
+	data, err := define.AnalyseDataCreateLAO(message.Data)
+	if err != nil {
+		return nil, nil, define.ErrInvalidResource
+	}
+
+	if !define.LAOStateIsValid(data, message) {
+		return nil, nil, define.ErrInvalidResource
+	}
+
+	//TODO is the action valid ? was there enough witness signatures ?
+
+	lao := define.LAO{
+		ID:            data.ID,
+		Name:          data.Name,
+		Creation:      data.Creation,
+		LastModified:  data.Last_modified,
+		OrganizerPKey: data.Organizer,
+		Witnesses:     data.Witnesses,
+	}
+
+	err = db.UpdateChannel(lao, w.database)
+
+	return nil, nil, err
+}
+
+func (w *Witness) handleCreateRollCall(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error) {
+	return nil, nil, db.CreateMessage(message, channel, w.database)
 }

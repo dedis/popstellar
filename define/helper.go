@@ -1,3 +1,5 @@
+/* GENERAL USEFUL FUNCTIONS
+Currently only find elem in array */
 package define
 
 /* helper function to find an elem. in a slice.  returns index of elem + bool in slice*/

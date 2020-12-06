@@ -2,7 +2,9 @@
 Proof-of-personhood, fall 2020
 
 # overview
-We defined the basic structure that mainly follow the publish subscribe paradigm
+Back-end for the Proof-of-personhood application. To run the backend simply : `go run main.go <mode> <address>` where
+`<mode>` can be either 'o' or 'w' (for organizer and witness respectively) and address is the address and port on which 
+the server should run (e.g. localhost:8080)
 
 # Packages
 

@@ -1,10 +1,14 @@
+/*
+This class implements the functions an organizer provides. It stores messages in the database using the db package
+and create and sends appropriate response depending on what message was received.
+*/
+
 package actors
 
 import (
-	"encoding/json"
+	"fmt"
 	"student20_pop/db"
 	"student20_pop/define"
-	"fmt"
 )
 
 type Organizer struct {
@@ -31,10 +35,10 @@ func NewOrganizer(pkey string, db string) *Organizer {
  * response to the sender, or nil
  */
 func (o *Organizer) HandleWholeMessage(msg []byte, userId int) ([]byte, []byte, []byte) {
+
 	generic, err := define.AnalyseGeneric(msg)
 	if err != nil {
-		fmt.Printf("1")
-		return nil, nil, define.CreateResponse(define.ErrRequestDataInvalid, nil, generic)
+		return nil, nil, define.CreateResponse(define.ErrIdNotDecoded, nil, generic)
 	}
 
 	var history []byte = nil
@@ -54,29 +58,11 @@ func (o *Organizer) HandleWholeMessage(msg []byte, userId int) ([]byte, []byte, 
 	case "catchup":
 		history, err = o.handleCatchup(generic)
 	default:
-		fmt.Printf("2")
+		fmt.Printf("method not recognized, generating default response")
 		message, channel, err = nil, nil, define.ErrRequestDataInvalid
 	}
 
 	return message, channel, define.CreateResponse(err, history, generic)
-}
-
-func handleSubscribe(generic define.Generic, userId int) error {
-	params, err := define.AnalyseParamsLight(generic.Params)
-	if err != nil {
-		fmt.Printf("3")
-		return define.ErrRequestDataInvalid
-	}
-	return db.Subscribe(userId, []byte(params.Channel))
-}
-
-func handleUnsubscribe(generic define.Generic, userId int) error {
-	params, err := define.AnalyseParamsLight(generic.Params)
-	if err != nil {
-		fmt.Printf("4")
-		return define.ErrRequestDataInvalid
-	}
-	return db.Unsubscribe(userId, []byte(params.Channel))
 }
 
 /** @returns, in order
@@ -87,13 +73,13 @@ func handleUnsubscribe(generic define.Generic, userId int) error {
 func (o *Organizer) handlePublish(generic define.Generic) ([]byte, []byte, error) {
 	params, err := define.AnalyseParamsFull(generic.Params)
 	if err != nil {
-		fmt.Printf("5")
+		fmt.Printf("unable to analyse paramsLight in handlePublish()")
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
 	message, err := define.AnalyseMessage(params.Message)
 	if err != nil {
-		fmt.Printf("6")
+		fmt.Printf("unable to analyse Message in handlePublish()")
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
@@ -105,7 +91,7 @@ func (o *Organizer) handlePublish(generic define.Generic) ([]byte, []byte, error
 
 	data, err := define.AnalyseData(string(message.Data))
 	if err != nil {
-		fmt.Printf("7")
+		fmt.Printf("unable to analyse data in handlePublish()")
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
@@ -158,7 +144,7 @@ func (o *Organizer) handlePublish(generic define.Generic) ([]byte, []byte, error
 			return nil, nil, define.ErrInvalidAction
 		}
 	default:
-		fmt.Printf("8")
+		fmt.Printf("data[action] not recognized in handlepublish, generating default response ")
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
@@ -181,9 +167,8 @@ func (o *Organizer) handleCreateLAO(message define.Message, canal string, generi
 		return nil, nil, define.ErrInvalidResource
 	}
 
-	err = define.LAOCreatedIsValid(data, message)
-	if err != nil {
-		return nil, nil, err
+	if !define.LAOCreatedIsValid(data, message) {
+		return nil, nil, define.ErrInvalidResource
 	}
 
 	canalLAO := canal + data.ID
@@ -224,8 +209,7 @@ func (o *Organizer) handleCreateRollCall(message define.Message, canal string, g
 		return nil, nil, define.ErrInvalidResource
 	}
 
-	err = define.RollCallCreatedIsValid(data, message)
-	if err != nil {
+	if !define.RollCallCreatedIsValid(data, message) {
 		return nil, nil, err
 	}
 
@@ -319,15 +303,14 @@ func handleMessage(msg []byte, userId int) error {
 	return nil
 }
 
-// This is organizer implementation. If Witness, should return a witness msg on object
-//TODO check correctness
+//TODO check workflow correctness
 /** @returns, in order
  * message
  * channel
  */
 func (o *Organizer) handleUpdateProperties(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
 	channel, msg := finalizeHandling(message, canal, generic)
-	return channel, msg, db.UpdateMessage(message, canal, o.database)
+	return channel, msg, db.CreateMessage(message, canal, o.database)
 }
 
 /** @returns, in order
@@ -349,7 +332,7 @@ func (o *Organizer) handleWitnessMessage(message define.Message, canal string, g
 
 	toSignStruct, err := define.AnalyseMessage(toSign)
 	if err != nil {
-		fmt.Printf("9")
+		fmt.Printf("unable to analyse Message in handleWitnessMessage()")
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
@@ -381,7 +364,7 @@ func (o *Organizer) handleCatchup(generic define.Generic) ([]byte, error) {
 	// TODO maybe pass userId as an arg in order to check access rights later on?
 	params, err := define.AnalyseParamsLight(generic.Params)
 	if err != nil {
-		fmt.Printf("10")
+		fmt.Printf("unable to analyse paramsLight in handleCatchup()")
 		return nil, define.ErrRequestDataInvalid
 	}
 	history := db.GetChannel([]byte(params.Channel), o.database)
@@ -395,19 +378,4 @@ func (o *Organizer) handleCatchup(generic define.Generic) ([]byte, error) {
  */
 func finalizeHandling(message define.Message, canal string, generic define.Generic) ([]byte, []byte) {
 	return define.CreateBroadcastMessage(generic), []byte(canal)
-}
-
-/*returns true if o is the organizer of the event*/
-func (o *Organizer) IsOrganizer(id string) (bool, error) {
-	data := db.GetChannel([]byte(id), o.database)
-	if data == nil {
-		return false, nil
-	}
-	lao := define.LAO{} //TODO currently is only for LAO. Need generic type for channel
-	err := json.Unmarshal(data, &lao)
-	if err != nil {
-		return false, define.ErrEncodingFault
-	}
-
-	return lao.OrganizerPKey == o.PublicKey, nil
 }

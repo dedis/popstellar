@@ -1,3 +1,5 @@
+/* Just global functions used for every databases. Write is currently not used but we keep it as a syntactic guide. */
+
 package db
 
 import (

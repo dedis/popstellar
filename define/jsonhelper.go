@@ -1,3 +1,4 @@
+/*functions to manage received Json messages. Unmarshalls and decode messages.*/
 package define
 
 import (
@@ -81,6 +82,12 @@ type ResponseWithError struct {
 	ErrorResponse json.RawMessage
 	Id            int
 }
+type ResponseIDNotDecoded struct {
+	Jsonrpc       string
+	ErrorResponse json.RawMessage
+	Id            []byte
+}
+
 type DataCreateMeeting struct {
 	Object string
 	Action string
@@ -212,6 +219,7 @@ func Decode(data string) ([]byte, error) {
 	return d, err
 }
 
+// TODO : Change name to AnalyseDataLAO ? Because creation / state are the same.
 func AnalyseDataCreateLAO(data json.RawMessage) (DataCreateLAO, error) {
 	m := DataCreateLAO{}
 	err := json.Unmarshal(data, &m)
@@ -297,23 +305,37 @@ func CreateBroadcastMessage(generic Generic) []byte {
 }
 
 /*
-* Function that converts a Lao to a Json byte array
-* we suppose error is in the good range
+ * Function that create the response to the sender
+ * we suppose error is in the good range
  */
-
 func CreateResponse(err error, messages []byte, generic Generic) []byte {
 	if err != nil {
-		resp := ResponseWithError{
-			Jsonrpc:       "2.0",
-			ErrorResponse: selectDescriptionError(err),
-			Id:            generic.Id,
-		}
-		b, err := json.Marshal(resp)
-		if err != nil {
-			fmt.Println("couldn't Marshal the response")
-		}
-		return b
+		if err == ErrIdNotDecoded {
+			resp := ResponseIDNotDecoded{
+				Jsonrpc:       "2.0",
+				ErrorResponse: selectDescriptionError(err),
+				Id:            nil,
+			}
 
+			b, err := json.Marshal(resp)
+			if err != nil {
+				fmt.Println("couldn't Marshal the response")
+			}
+			return b
+		} else {
+			resp := ResponseWithError{
+				Jsonrpc:       "2.0",
+				ErrorResponse: selectDescriptionError(err),
+				Id:            generic.Id,
+			}
+
+			b, err := json.Marshal(resp)
+			if err != nil {
+				fmt.Println("couldn't Marshal the response")
+			}
+			return b
+
+		}
 	} else {
 		if messages == nil {
 			resp := ResponseWithGenResult{
@@ -375,6 +397,12 @@ func selectDescriptionError(err error) []byte {
 		errResp = ErrorResponse{
 			Code:        -5,
 			Description: "access denied",
+		}
+		//(e.g. subscribing to a “restricted” channel)
+	case ErrIdNotDecoded:
+		errResp = ErrorResponse{
+			Code:        -2,
+			Description: "",
 		}
 		//(e.g. subscribing to a “restricted” channel)
 
