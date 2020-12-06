@@ -35,14 +35,20 @@ type ParamsFull struct {
 	Message json.RawMessage
 }
 
-type Message struct {
+type MessageReceived struct {
+	Data              string // in base 64
+	Sender            string
+	Signature         string
+	Message_id        string
+	WitnessSignatures []string
+}
+type MessageAnalysed struct {
 	Data              json.RawMessage // in base 64
 	Sender            string
 	Signature         string
 	Message_id        string
 	WitnessSignatures []string
 }
-
 type Data map[string]interface{}
 
 type DataCreateLAO struct {
@@ -154,36 +160,37 @@ func AnalyseParamsFull(params json.RawMessage) (ParamsFull, error) {
 	return m, err
 }
 
-func AnalyseMessage(message json.RawMessage) (Message, error) {
-	m := Message{}
-	err := json.Unmarshal(message, &m)
+func AnalyseMessage(message json.RawMessage) (MessageAnalysed, error) {
+	mR := MessageReceived{}
+	m := MessageAnalysed{}
+	err := json.Unmarshal(message, &mR)
 
-	d, err := Decode(m.Sender)
+	d, err := Decode(mR.Sender)
 	if err != nil {
 		return m, ErrEncodingFault
 	}
 	m.Sender = string(d)
 
-	d, err = Decode(m.Message_id)
+	d, err = Decode(mR.Message_id)
 	if err != nil {
 		return m, ErrEncodingFault
 	}
 	m.Message_id = string(d)
 
-	d, err = Decode(m.Signature)
+	d, err = Decode(mR.Signature)
 	if err != nil {
 		return m, ErrEncodingFault
 	}
 	m.Signature = string(d)
 
-	d, err = Decode(string(m.Data))
+	d, err = Decode(mR.Data)
 	if err != nil {
 		return m, ErrEncodingFault
 	}
 	m.Data = d
 
-	for i := 0; i < len(m.WitnessSignatures); i++ {
-		d, err = Decode(m.WitnessSignatures[i])
+	for i := 0; i < len(mR.WitnessSignatures); i++ {
+		d, err = Decode(mR.WitnessSignatures[i])
 		if err != nil {
 			return m, ErrEncodingFault
 		}
