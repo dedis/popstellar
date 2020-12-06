@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-const MaxTimeBetweenLAOCreationAndPublish = 600
+const MaxPropagationDelay = 600
 
 // TODO if we use the json Schema, don't need to check structure correctness
 func LAOCreatedIsValid(data DataCreateLAO, message Message) error {
@@ -20,9 +20,9 @@ func LAOCreatedIsValid(data DataCreateLAO, message Message) error {
 		return ErrInvalidResource
 	}
 	//the timestamp is reasonably recent with respect to the server’s clock,
-	if data.Creation > time.Now().Unix() || data.Creation-time.Now().Unix() > MaxTimeBetweenLAOCreationAndPublish {
-		fmt.Printf("sec2")
-		return ErrInvalidResource
+	if data.Creation > time.Now().Unix() || data.Creation < time.Now().Unix()-MaxPropagationDelay {
+		fmt.Printf("timestamp invalid, either too old or in the future : %v", data.Creation)
+		return false
 	}
 	//the attestation is valid,
 	str := []byte(data.Organizer)
@@ -30,14 +30,20 @@ func LAOCreatedIsValid(data DataCreateLAO, message Message) error {
 	str = append(str, []byte(data.Name)...)
 	hash := sha256.Sum256(str)
 	//hash64 := b64.StdEncoding.EncodeToString(hash[:])
-	
 
 	if !bytes.Equal([]byte(data.ID), hash[:]) {
-	//if(hash64 != data.ID) {
+		//if(hash64 != data.ID) {
 		fmt.Printf("sec3 \n")
 		fmt.Printf("%v, %v", hash, data.ID)
 		return ErrInvalidResource
 	}
+	//the timestamp is reasonably recent with respect to the server’s clock,
+	if data.Last_modified > time.Now().Unix() || data.Last_modified < time.Now().Unix()-MaxPropagationDelay {
+		fmt.Printf("sec2")
+		return false
+	}
+
+	//TODO any more checks to perform ?
 
 	return nil
 }
@@ -48,8 +54,8 @@ func MeetingCreatedIsValid(data DataCreateMeeting, message Message) error {
 		return ErrInvalidResource
 	}
 	//the timestamp is reasonably recent with respect to the server’s clock,
-	if data.Creation > time.Now().Unix() || data.Creation-time.Now().Unix() > MaxTimeBetweenLAOCreationAndPublish {
-		return ErrInvalidResource
+	if data.Creation > time.Now().Unix() || data.Creation-time.Now().Unix() > MaxPropagationDelay {
+		return false
 	}
 
 	//we start after the creation and we end after the start
@@ -71,7 +77,7 @@ func RollCallCreatedIsValid(data DataCreateRollCall, message Message) error {
 	return nil
 }
 
-func  MessageIsValid(msg Message) error {
+func MessageIsValid(msg Message) error {
 	// the message_id is valid
 	str := []byte(msg.Data)
 	str = append(str, []byte(msg.Signature)...)
@@ -82,20 +88,20 @@ func  MessageIsValid(msg Message) error {
 	}
 
 	// the signature is valid
-	err := VerifySignature(msg.Sender,(msg.Data),msg.Signature)
-	if(err != nil) {
+	err := VerifySignature(msg.Sender, (msg.Data), msg.Signature)
+	if err != nil {
 		return err
 	}
 
 	// the witness signatures are valid (check on every message??)
-	publicKeys,err := AnalyseData(string(msg.Data))
-	if(publicKeys["object"] == "lao" && publicKeys["action"] == "create"){
+	publicKeys, err := AnalyseData(string(msg.Data))
+	if publicKeys["object"] == "lao" && publicKeys["action"] == "create" {
 		data, err := AnalyseDataCreateLAO(msg.Data)
 		if err != nil {
 			return ErrInvalidResource
 		}
 		print("Hello in publik")
-		return VerifyWitnessSignatures(data.Witnesses , msg.WitnessSignatures,string(msg.Data),msg.Sender)
+		return VerifyWitnessSignatures(data.Witnesses, msg.WitnessSignatures, string(msg.Data), msg.Sender)
 	}
 	return nil
 }
@@ -103,9 +109,9 @@ func  MessageIsValid(msg Message) error {
 /*
 	we check that Sign(sender||data) is the given signature
 */
-func VerifySignature(publicKey string, data []byte,signature string ) error{
+func VerifySignature(publicKey string, data []byte, signature string) error {
 	//check the size of the key as it will panic if we plug it in Verify
-	if len(publicKey) != ed.PublicKeySize{
+	if len(publicKey) != ed.PublicKeySize {
 		return ErrRequestDataInvalid
 	}
 
@@ -117,20 +123,19 @@ func VerifySignature(publicKey string, data []byte,signature string ) error{
 	//}
 	//hash := sha256.Sum256(data)
 
-	if ed.Verify([]byte(publicKey), data, []byte(signature)){
+	if ed.Verify([]byte(publicKey), data, []byte(signature)) {
 		return nil
 	}
 	//invalid signature
 	return ErrRequestDataInvalid
 }
 
-
 /*
 	we check that Sign(sender||data) is the given signature
 */
-func VerifyWitnessSignature(publicKey string, data []byte,signature string ) error{
+func VerifyWitnessSignature(publicKey string, data []byte, signature string) error {
 	//check the size of the key as it will panic if we plug it in Verify
-	if len(publicKey) != ed.PublicKeySize{
+	if len(publicKey) != ed.PublicKeySize {
 		return ErrRequestDataInvalid
 	}
 	//TODO method is defined supposing args are encrypted
@@ -141,7 +146,7 @@ func VerifyWitnessSignature(publicKey string, data []byte,signature string ) err
 	//if err!=nil{
 	//	return ErrEncodingFault
 	//}
-	if ed.Verify([]byte(publicKey), data, []byte(signature)){
+	if ed.Verify([]byte(publicKey), data, []byte(signature)) {
 		return nil
 	}
 	//invalid signature
@@ -159,19 +164,19 @@ of the witness id in witness[]
 	witnessSignature[_,_,_./.]
 	WitnessSignatures[3,6,2,1]
 */
-func VerifyWitnessSignatures(publicKeys []string, signatures []string,data string,sender string) error {
-	senderDecoded,err := Decode(sender)
-	if err!=nil{
+func VerifyWitnessSignatures(publicKeys []string, signatures []string, data string, sender string) error {
+	senderDecoded, err := Decode(sender)
+	if err != nil {
 		return ErrEncodingFault
 	}
-	dataDecoded,err := Decode(data)
-	if err!=nil{
+	dataDecoded, err := Decode(data)
+	if err != nil {
 		return ErrEncodingFault
 	}
 	toCheck := append(senderDecoded, dataDecoded...)
 	for i := 0; i < len(signatures); i++ {
-		err := VerifyWitnessSignature(publicKeys[i], toCheck ,signatures[i])
-		if err!= nil{
+		err := VerifyWitnessSignature(publicKeys[i], toCheck, signatures[i])
+		if err != nil {
 			return err
 		}
 	}
