@@ -41,7 +41,6 @@ func writeChannel(obj interface{}, database string, secure bool) error {
 		case define.RollCall:
 			objID = []byte(obj.(define.RollCall).ID)
 		default:
-			//TODO not sure for the error type
 			return define.ErrRequestDataInvalid
 		}
 		//checks if there is already an entry with that ID if secure is true
