@@ -213,6 +213,7 @@ func Decode(data string) ([]byte, error) {
 	return d, err
 }
 
+// TODO : Change name to AnalyseDataLAO ? Because creation / state are the same.
 func AnalyseDataCreateLAO(data json.RawMessage) (DataCreateLAO, error) {
 	m := DataCreateLAO{}
 	err := json.Unmarshal(data, &m)
