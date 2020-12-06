@@ -299,10 +299,9 @@ func CreateBroadcastMessage(generic Generic) []byte {
 }
 
 /*
- * Function that converts a Lao to a Json byte array
+ * Function that create the response to the sender
  * we suppose error is in the good range
  */
-
 func CreateResponse(err error, messages []byte, generic Generic) []byte {
 	if err != nil {
 		if err == ErrIdNotDecoded {

@@ -72,10 +72,13 @@ func (w *Witness) handlePublish(generic define.Generic) ([]byte, []byte, error) 
 
 	data := define.Data{}
 	base64Text := make([]byte, b64.StdEncoding.DecodedLen(len(message.Data)))
-	l, _ := b64.StdEncoding.Decode(base64Text, message.Data)
-	err = json.Unmarshal(base64Text[:l], &data)
 
-	//data, err := define.AnalyseData(message.Data)
+	l, err := b64.StdEncoding.Decode(base64Text, message.Data)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	err = json.Unmarshal(base64Text[:l], &data)
 	if err != nil {
 		return nil, nil, define.ErrRequestDataInvalid
 	}
@@ -88,7 +91,7 @@ func (w *Witness) handlePublish(generic define.Generic) ([]byte, []byte, error) 
 		case "update_properties":
 			return w.handleUpdateProperties(message, params.Channel, generic)
 		case "state":
-			// just store in DB
+			return w.handleLAOState(message, params.Channel, generic)
 		default:
 			return nil, nil, define.ErrInvalidAction
 		}
@@ -103,7 +106,7 @@ func (w *Witness) handlePublish(generic define.Generic) ([]byte, []byte, error) 
 	case "roll call":
 		switch data["action"] {
 		case "create":
-			//return w.handleCreateRollCall(message, params.Channel, generic)
+			return w.handleCreateRollCall(message, params.Channel, generic)
 		case "state":
 
 		default:
@@ -232,4 +235,8 @@ func (w *Witness) handleLAOState(message define.Message, channel string, generic
 	err = db.UpdateChannel(lao, w.database)
 
 	return nil, nil, err
+}
+
+func (w *Witness) handleCreateRollCall(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error) {
+	return nil, nil, db.CreateMessage(message, channel, w.database)
 }

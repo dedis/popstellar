@@ -65,24 +65,6 @@ func (o *Organizer) HandleWholeMessage(msg []byte, userId int) ([]byte, []byte, 
 	return message, channel, define.CreateResponse(err, history, generic)
 }
 
-func handleSubscribe(generic define.Generic, userId int) error {
-	params, err := define.AnalyseParamsLight(generic.Params)
-	if err != nil {
-		fmt.Printf("unable to analyse paramsLight in handleSubscribe()")
-		return define.ErrRequestDataInvalid
-	}
-	return db.Subscribe(userId, []byte(params.Channel))
-}
-
-func handleUnsubscribe(generic define.Generic, userId int) error {
-	params, err := define.AnalyseParamsLight(generic.Params)
-	if err != nil {
-		fmt.Printf("unable to analyse paramsLight in handleUnsubscribe()")
-		return define.ErrRequestDataInvalid
-	}
-	return db.Unsubscribe(userId, []byte(params.Channel))
-}
-
 /** @returns, in order
  * message
  * channel
@@ -221,8 +203,7 @@ func (o *Organizer) handleCreateRollCall(message define.Message, canal string, g
 		return nil, nil, define.ErrInvalidResource
 	}
 
-	err = define.RollCallCreatedIsValid(data, message)
-	if err != nil {
+	if !define.RollCallCreatedIsValid(data, message) {
 		return nil, nil, err
 	}
 
@@ -316,7 +297,6 @@ func handleMessage(msg []byte, userId int) error {
 	return nil
 }
 
-// This is organizer implementation. If Witness, should return a witness msg on object
 //TODO check workflow correctness
 /** @returns, in order
  * message
