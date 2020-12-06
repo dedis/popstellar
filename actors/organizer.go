@@ -170,7 +170,7 @@ func (o *Organizer) handlePublish(generic define.Generic) ([]byte, []byte, error
  * channel
  * error
  */
-func (o *Organizer) handleCreateLAO(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
+func (o *Organizer) handleCreateLAO(message define.MessageAnalysed, canal string, generic define.Generic) ([]byte, []byte, error) {
 
 	if canal != "/root" {
 		return nil, nil, define.ErrInvalidResource
@@ -214,7 +214,7 @@ func (o *Organizer) handleCreateLAO(message define.Message, canal string, generi
  * channel
  * error
  */
-func (o *Organizer) handleCreateRollCall(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
+func (o *Organizer) handleCreateRollCall(message define.MessageAnalysed, canal string, generic define.Generic) ([]byte, []byte, error) {
 	if canal == "/root" {
 		return nil, nil, define.ErrInvalidResource
 	}
@@ -252,7 +252,7 @@ func (o *Organizer) handleCreateRollCall(message define.Message, canal string, g
  * channel
  * error
  */
-func (o *Organizer) handleCreateMeeting(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
+func (o *Organizer) handleCreateMeeting(message define.MessageAnalysed, canal string, generic define.Generic) ([]byte, []byte, error) {
 
 	if canal == "/root" {
 		return nil, nil, define.ErrInvalidResource
@@ -286,7 +286,7 @@ func (o *Organizer) handleCreateMeeting(message define.Message, canal string, ge
  * channel
  * error
  */
-func (o *Organizer) handleCreatePoll(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
+func (o *Organizer) handleCreatePoll(message define.MessageAnalysed, canal string, generic define.Generic) ([]byte, []byte, error) {
 
 	if canal == "/root" {
 		return nil, nil, define.ErrInvalidResource
@@ -325,7 +325,7 @@ func handleMessage(msg []byte, userId int) error {
  * message
  * channel
  */
-func (o *Organizer) handleUpdateProperties(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
+func (o *Organizer) handleUpdateProperties(message define.MessageAnalysed, canal string, generic define.Generic) ([]byte, []byte, error) {
 	channel, msg := finalizeHandling(message, canal, generic)
 	return channel, msg, db.UpdateMessage(message, canal, o.database)
 }
@@ -335,7 +335,7 @@ func (o *Organizer) handleUpdateProperties(message define.Message, canal string,
  * channel
  * error
  */
-func (o *Organizer) handleWitnessMessage(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
+func (o *Organizer) handleWitnessMessage(message define.MessageAnalysed, canal string, generic define.Generic) ([]byte, []byte, error) {
 	//TODO verify signature correctness
 	// decrypt msg and compare with hash of "local" data
 
@@ -393,7 +393,7 @@ func (o *Organizer) handleCatchup(generic define.Generic) ([]byte, error) {
  * message
  * channel
  */
-func finalizeHandling(message define.Message, canal string, generic define.Generic) ([]byte, []byte) {
+func finalizeHandling(message define.MessageAnalysed, canal string, generic define.Generic) ([]byte, []byte) {
 	return define.CreateBroadcastMessage(generic), []byte(canal)
 }
 
