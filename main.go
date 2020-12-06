@@ -1,3 +1,4 @@
+/*makes the server run. Insipired from the chat example of github.com/gorilla/websocket */
 package main
 
 import (

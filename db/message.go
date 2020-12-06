@@ -1,10 +1,12 @@
+/* This file implements useful functions to work with messages in the database, such as Create/edit and GetInfos */
+
 package db
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/boltdb/bolt"
 	"student20_pop/define"
-	"fmt"
 )
 
 /**

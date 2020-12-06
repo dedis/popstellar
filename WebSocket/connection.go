@@ -1,3 +1,4 @@
+/* file that implements a websocket. Comes from the chat example of github.com/websocket with minor changes */
 package WebSocket
 
 import (

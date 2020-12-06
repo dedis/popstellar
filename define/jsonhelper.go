@@ -1,3 +1,4 @@
+/* helper functions to read the messages received. Unmarshall and decode the messages into HR structures */
 package define
 
 import (

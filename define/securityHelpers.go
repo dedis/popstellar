@@ -1,14 +1,15 @@
+/* functions to check signatures and verify data correctness */
 package define
 
 import (
 	//b64 "encoding/base64"
 	"bytes"
-	"crypto/sha256"
 	ed "crypto/ed25519"
+	"crypto/sha256"
+	"fmt"
 	"github.com/rogpeppe/godef/go/ast"
 	"strconv"
 	"time"
-	"fmt"
 )
 
 const MaxTimeBetweenLAOCreationAndPublish = 600
@@ -32,10 +33,9 @@ func LAOCreatedIsValid(data DataCreateLAO, message Message) error {
 	str = append(str, []byte(data.Name)...)
 	hash := sha256.Sum256(str)
 	//hash64 := b64.StdEncoding.EncodeToString(hash[:])
-	
 
 	if !bytes.Equal([]byte(data.ID), hash[:]) {
-	//if(hash64 != data.ID) {
+		//if(hash64 != data.ID) {
 		fmt.Printf("sec3 \n")
 		fmt.Printf("%v, %v", hash, data.ID)
 		return ErrInvalidResource
@@ -85,34 +85,35 @@ func MessageIsValid(msg Message) error {
 
 	// the signature is valid
 	err := VerifySignature(msg.Sender, msg.Data, msg.Signature)
-	if(err != nil) {
+	if err != nil {
 		return err
 	}
 
 	// the witness signatures are valid (check on every message??)
 	return VerifyWitnessSignatures()
 }
+
 /*
 	we check that Sign(sender||data) is the given signature
 */
-func VerifySignature(publicKey string, data []byte,signature string ) error{
+func VerifySignature(publicKey string, data []byte, signature string) error {
 	//check the size of the key as it will panic if we plug it in Verify
-	if len(publicKey) != ed.PublicKeySize{
+	if len(publicKey) != ed.PublicKeySize {
 		return ErrRequestDataInvalid
 	}
 	//check the validity of the signature
 	//TODO method is defined supposing args are encrypted
 	//the key is in base64 so we need to decrypt it before using it
-	keyDecoded,err := Decode(publicKey)
-	if err!=nil{
+	keyDecoded, err := Decode(publicKey)
+	if err != nil {
 		return ErrEncodingFault
 	}
 	//data is also in base64 so we need to decrypt it before using it
-	dataDecoded,err := Decode(string(data))
-	if err!=nil{
+	dataDecoded, err := Decode(string(data))
+	if err != nil {
 		return ErrEncodingFault
 	}
-	if ed.Verify(keyDecoded, dataDecoded, []byte(signature)){
+	if ed.Verify(keyDecoded, dataDecoded, []byte(signature)) {
 		return nil
 	}
 	//invalid signature
@@ -130,19 +131,19 @@ of the witness id in witness[]
 	witnessSignature[_,_,_./.]
 	WitnessSignatures[3,6,2,1]
 */
-func VerifyWitnessSignatures(publicKeys []byte, signatures []byte,data string,sender string) error {
-	senderDecoded,err := Decode(sender)
-	if err!=nil{
+func VerifyWitnessSignatures(publicKeys []byte, signatures []byte, data string, sender string) error {
+	senderDecoded, err := Decode(sender)
+	if err != nil {
 		return ErrEncodingFault
 	}
-	dataDecoded,err := Decode(data)
-	if err!=nil{
+	dataDecoded, err := Decode(data)
+	if err != nil {
 		return ErrEncodingFault
 	}
 	toCheck := append(senderDecoded, dataDecoded...)
 	for i := 0; i < len(signatures); i++ {
-		err := VerifySignature(string (publicKeys[i]), toCheck ,string (signatures[i]))
-		if err!= nil{
+		err := VerifySignature(string(publicKeys[i]), toCheck, string(signatures[i]))
+		if err != nil {
 			return err
 		}
 	}

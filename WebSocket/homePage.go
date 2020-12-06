@@ -1,3 +1,5 @@
+/* file that serves a webpage. Comes from the chat example of github.com/websocket with minor changes */
+
 package WebSocket
 
 import (

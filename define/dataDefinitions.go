@@ -1,3 +1,4 @@
+/* STRUCTURES OF REAL LIFE EVENTS */
 package define
 
 import "hash"

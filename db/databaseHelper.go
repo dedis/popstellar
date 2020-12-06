@@ -1,3 +1,4 @@
+/*global helper for the database, currently Write is not used but we keep it as a syntactic helper */
 package db
 
 import (

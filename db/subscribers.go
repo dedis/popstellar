@@ -1,3 +1,5 @@
+/* This file implements useful functions for the publish-subscribe paradigm. */
+
 package db
 
 import (
