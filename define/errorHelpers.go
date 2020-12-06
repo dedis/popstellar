@@ -1,3 +1,4 @@
+/* INTERNAL ERRORS */
 package define
 
 import (

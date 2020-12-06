@@ -1,7 +1,8 @@
+/* Functions to verify signature correctness and fields correctness. */
+
 package define
 
 import (
-	//b64 "encoding/base64"
 	"bytes"
 	ed "crypto/ed25519"
 	"crypto/sha256"

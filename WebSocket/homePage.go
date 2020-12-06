@@ -1,3 +1,4 @@
+/* file to serve a webserver. Comes from the chat example of github.com/gorilla */
 package WebSocket
 
 import (
