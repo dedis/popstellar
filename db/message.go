@@ -1,3 +1,6 @@
+/* This file contains functions used to deal with messages in the database. Like create/update a channel and
+get a message in particular. */
+
 package db
 
 import (

@@ -1,3 +1,8 @@
+/*
+This class implements the functions an organizer provides. It stores messages in the database using the db package
+and create and sends appropriate response depending on what message was received.
+*/
+
 package actors
 
 import (
