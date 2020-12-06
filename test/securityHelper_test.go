@@ -30,7 +30,7 @@ func TestMessageIsValid(t *testing.T) {
 		Creation:      creation,
 		Last_modified: lastMod,
 		Organizer:     (b64.StdEncoding.EncodeToString([]byte(pubkey))),
-		Witnesses:     nil,
+		Witnesses:     emptyTabString,
 		}
 
 	dataFlat ,err := json.Marshal(data)
@@ -40,18 +40,17 @@ func TestMessageIsValid(t *testing.T) {
 	signed := ed.Sign(privkey,dataFlat)
 	id := sha256.Sum256(append(dataFlat, signed...))
 
-	var message = define.MessageReceived {
-		Data  :            (b64.StdEncoding.EncodeToString(dataFlat)),
+	var message = define.Message {
+		Data  :            []byte(b64.StdEncoding.EncodeToString(dataFlat)),// in base 64
 		Sender :           (b64.StdEncoding.EncodeToString([]byte(pubkey))),
 		Signature:         (b64.StdEncoding.EncodeToString(signed)),
 		Message_id:        (b64.StdEncoding.EncodeToString(id[:])),
 		WitnessSignatures: emptyTabString,
 	}
-	messageFlat ,err := json.Marshal(message)
+	messageFlat ,err := json.Marshal(data)
 	if err != nil{
 		t.Errorf("Error : %+v\n ,Impossible to marshal message",err)
 	}
-
 	messProcessed,err :=define.AnalyseMessage(messageFlat)
 	if err != nil{
 		t.Errorf("Error : %+v\n encoutered, Analyse Message failed",err)
