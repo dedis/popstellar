@@ -9,6 +9,7 @@ package actors
 import (
 	b64 "encoding/base64"
 	"encoding/json"
+	"fmt"
 	"student20_pop/db"
 	"student20_pop/define"
 )
@@ -47,6 +48,8 @@ func (w *Witness) HandleWholeMessage(msg []byte, userId int) ([]byte, []byte, []
 	switch generic.Method {
 	case "publish":
 		message, channel, err = w.handlePublish(generic)
+	case "message":
+		message, channel, err = w.handleMessage(generic)
 	default:
 		message, channel, err = nil, nil, define.ErrRequestDataInvalid
 	}
@@ -54,12 +57,16 @@ func (w *Witness) HandleWholeMessage(msg []byte, userId int) ([]byte, []byte, []
 	return message, channel, define.CreateResponse(err, history, generic)
 }
 
+func (w *Witness) handlePublish(generic define.Generic) ([]byte, []byte, error) {
+	return nil, nil, define.ErrInvalidAction //a witness cannot handle a publish request
+}
+
 /** @returns, in order
  * message
  * channel
  * error
  */
-func (w *Witness) handlePublish(generic define.Generic) ([]byte, []byte, error) {
+func (w *Witness) handleMessage(generic define.Generic) ([]byte, []byte, error) {
 	params, err := define.AnalyseParamsFull(generic.Params)
 	if err != nil {
 		return nil, nil, define.ErrRequestDataInvalid
@@ -108,7 +115,7 @@ func (w *Witness) handlePublish(generic define.Generic) ([]byte, []byte, error) 
 		case "create":
 			return w.handleCreateRollCall(message, params.Channel, generic)
 		case "state":
-
+			//TODO
 		default:
 			return nil, nil, define.ErrInvalidAction
 		}
@@ -117,7 +124,7 @@ func (w *Witness) handlePublish(generic define.Generic) ([]byte, []byte, error) 
 		case "create":
 			//return w.handleCreateMeeting(message, params.Channel, generic)
 		case "state":
-
+			//TODO
 		default:
 			return nil, nil, define.ErrInvalidAction
 		}
@@ -126,7 +133,7 @@ func (w *Witness) handlePublish(generic define.Generic) ([]byte, []byte, error) 
 		case "create":
 			//return w.handleCreatePoll(message, params.Channel, generic)
 		case "state":
-
+			//TODO
 		default:
 			return nil, nil, define.ErrInvalidAction
 		}
@@ -151,9 +158,7 @@ func (w *Witness) handleCreateLAO(message define.Message, channel string, generi
 		return nil, nil, define.ErrInvalidResource
 	}
 
-	canalLAO := channel + data.ID
-
-	err = db.CreateMessage(message, canalLAO, w.database)
+	err = db.CreateMessage(message, channel, w.database)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -177,37 +182,54 @@ func (w *Witness) handleUpdateProperties(message define.Message, channel string,
 	if err != nil {
 		return nil, nil, define.ErrInvalidResource
 	}
-	if !define.LAOCreatedIsValid(data, message) {
+	if !define.LAOStateIsValid(data, message) {
 		return nil, nil, define.ErrInvalidResource
 	}
 
 	//stores received message in DB
-	canalLAO := channel + data.ID
-	err = db.CreateMessage(message, canalLAO, w.database)
+	err = db.CreateMessage(message, channel, w.database)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	//TODO create a response signing the message -- or not ? should it be front-end ?
-
 	return nil, nil, err
 }
 
 func (w *Witness) handleWitnessMessage(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error) {
 
-	//shall a witness increment count on base message as well ?
-
-	data, err := define.AnalyseDataCreateLAO(message.Data)
+	data, err := define.AnalyseDataWitnessMessage(message.Data)
 	if err != nil {
 		return nil, nil, define.ErrInvalidResource
 	}
-	if !define.LAOCreatedIsValid(data, message) {
+
+	msg := db.GetMessage([]byte(channel), []byte(data.Message_id), w.database)
+	if msg == nil {
+		fmt.Printf("no message with ID %v in the database", data.Message_id)
+		return nil, nil, define.ErrInvalidResource
+	}
+	storedMessage, err := define.AnalyseMessage(msg)
+
+	if err != nil {
+		fmt.Printf("unable to unmarshall the message stored in the database")
+		return nil, nil, define.ErrDBFault
+	}
+
+	check, err := define.VerifySignature(message.Sender, storedMessage.Data, data.Signature)
+	if !check || err != nil {
 		return nil, nil, define.ErrInvalidResource
 	}
 
+	//adds the signature to signature list
+	storedMessage.WitnessSignatures = append(storedMessage.WitnessSignatures, data.Signature)
+
+	//update message in DB
+	err = db.UpdateMessage(storedMessage, channel, w.database)
+	if err != nil {
+		return nil, nil, err
+	}
 	//stores received message in DB
-	canalLAO := channel + data.ID
-	err = db.CreateMessage(message, canalLAO, w.database)
+	err = db.CreateMessage(message, channel, w.database)
 	return nil, nil, err
 }
 
@@ -238,5 +260,35 @@ func (w *Witness) handleLAOState(message define.Message, channel string, generic
 }
 
 func (w *Witness) handleCreateRollCall(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error) {
-	return nil, nil, db.CreateMessage(message, channel, w.database)
+
+	data, err := define.AnalyseDataCreateRollCall(message.Data)
+	if err != nil {
+		return nil, nil, define.ErrInvalidResource
+	}
+
+	if !define.RollCallCreatedIsValid(data, message) {
+		return nil, nil, define.ErrInvalidResource
+	}
+
+	rollCall := define.RollCall{
+		ID:           data.ID,
+		Name:         data.Name,
+		Creation:     data.Creation,
+		LastModified: data.Last_modified,
+		Location:     data.Location,
+		Start:        data.Start,
+		End:          data.End,
+	}
+
+	err = db.CreateChannel(rollCall, w.database)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	err = db.CreateMessage(message, channel, w.database)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return nil, nil, err
 }

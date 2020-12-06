@@ -19,7 +19,7 @@ type Actor interface {
 	handleCreateRollCall(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error)
 }
 
-//general actors functions, act only in the database
+//general actors functions, act only in the "Sub" database
 func handleSubscribe(generic define.Generic, userId int) error {
 	params, err := define.AnalyseParamsLight(generic.Params)
 	if err != nil {
@@ -36,4 +36,13 @@ func handleUnsubscribe(generic define.Generic, userId int) error {
 		return define.ErrRequestDataInvalid
 	}
 	return db.Unsubscribe(userId, []byte(params.Channel))
+}
+
+/** creates a message to publish on a channel from a received message.
+@returns, in order
+ * message
+ * channel
+*/
+func finalizeHandling(canal string, generic define.Generic) ([]byte, []byte) {
+	return define.CreateBroadcastMessage(generic), []byte(canal)
 }
