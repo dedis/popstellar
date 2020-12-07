@@ -89,9 +89,9 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
     @Override
     public void onAddWitnessListener() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            showFragment(new ConnectFragment(), ConnectFragment.TAG);
+            showFragment(new ConnectFragment(R.id.fragment_container_organizer), ConnectFragment.TAG);
         } else {
-            showFragment(new CameraPermissionFragment(), CameraPermissionFragment.TAG);
+            showFragment(new CameraPermissionFragment(R.id.fragment_container_organizer), CameraPermissionFragment.TAG);
         }
         // TODO : Get witness id from the QR code, add witness to witness list and send info to backend
     }
