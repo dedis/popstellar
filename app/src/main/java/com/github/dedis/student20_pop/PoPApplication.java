@@ -25,7 +25,8 @@ public class PoPApplication extends Application {
         appContext = getApplicationContext();
 
         if(person == null) {
-            setPerson(new Person(""));
+            // TODO: when can the user change/choose its name
+            setPerson(new Person("USER"));
         }
         if(laos == null) {
             setLaos(new ArrayList<>());
