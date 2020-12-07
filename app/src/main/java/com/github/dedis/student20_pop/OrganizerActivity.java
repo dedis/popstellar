@@ -33,6 +33,11 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        // Prevent going back to MainActivity
+    }
+
     /**
      * Manage the fragment change after clicking a specific view.
      *
