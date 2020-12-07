@@ -203,6 +203,12 @@ func (w *Witness) handleWitnessMessage(message define.Message, channel string, g
 		return nil, nil, define.ErrInvalidResource
 	}
 
+	//stores received message in DB
+	err = db.CreateMessage(message, channel, w.database)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	msg := db.GetMessage([]byte(channel), []byte(data.Message_id), w.database)
 	if msg == nil {
 		fmt.Printf("no message with ID %v in the database", data.Message_id)
@@ -225,11 +231,7 @@ func (w *Witness) handleWitnessMessage(message define.Message, channel string, g
 
 	//update message in DB
 	err = db.UpdateMessage(storedMessage, channel, w.database)
-	if err != nil {
-		return nil, nil, err
-	}
-	//stores received message in DB
-	err = db.CreateMessage(message, channel, w.database)
+
 	return nil, nil, err
 }
 
