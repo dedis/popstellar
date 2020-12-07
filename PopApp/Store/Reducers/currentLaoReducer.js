@@ -9,7 +9,6 @@ function currentLaoReducer(state = initialState, action) {
         lao: action.value,
       };
       return nextState || state;
-    //case 'GET_CURRENT_LAO':
     default:
       return state;
   }

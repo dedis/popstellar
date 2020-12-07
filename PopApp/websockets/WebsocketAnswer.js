@@ -1,6 +1,8 @@
 import WebsocketLink from './WebsocketLink';
-import { actions, JSON_RPC_VERSION, objects, PendingRequest, SERVER_ANSWER_FIELD_COUNT } from './WebsocketUtils';
-import { getStore } from "../Store/configureStore";
+import {
+  actions, JSON_RPC_VERSION, objects, PendingRequest, SERVER_ANSWER_FIELD_COUNT, fromString64, getCurrentLao
+} from './WebsocketUtils';
+import { getStore } from '../Store/configureStore';
 
 const MAX_QUERY_RETRIES = 3;
 const answerProperties = Object.freeze({
@@ -38,15 +40,47 @@ export const handleServerAnswer = (message) => {
     // processes positive server answer
     if (obj.result === 0) {
       // general positive answer
-      const answer = WebsocketLink.getPendingProperties().get(obj.id);
+      let answer = WebsocketLink.getPendingProperties().get(obj.id);
 
       // handle "callbacks" if needed
-      switch (answer.requestObject) {
+      switch (answer.requestObject) { // update_lao
+
         case objects.LAO:
           if (answer.requestAction === actions.CREATE) {
             // callback for a successful create LAO request
-            getStore().dispatch({ type: 'SET_CURRENT_LAO', value: answer.message });
+            let jsonMessage = answer.message;
+            jsonMessage.params.channel = fromString64(jsonMessage.params.channel);
+            jsonMessage.params.message.data = JSON.parse(fromString64(jsonMessage.params.message.data));
+
+            // store new LAO
+            getStore().dispatch({ type: 'SET_CURRENT_LAO', value: jsonMessage });
+
+
+          } else if (answer.requestAction === actions.UPDATE_PROPERTIES) {
+            // callback for a successful update LAO request
+            const jsonMessageData = answer.message.params.message.data;
+            let updatedLao = JSON.parse(JSON.stringify(getCurrentLao()));
+
+            // modify elements
+            updatedLao.params.message.data.name = jsonMessageData.name;
+            updatedLao.params.message.data.last_modified = jsonMessageData.last_modified;
+            updatedLao.params.message.data.witnesses = jsonMessageData.witnesses;
+
+            // store updated LAO
+            getStore().dispatch({ type: 'SET_CURRENT_LAO', value: updatedLao });
+
+
+          } else if (answer.requestAction === actions.STATE) {
+            console.error("TODO (in WebsocketAnswer) : case (answer.requestAction === actions.STATE)")
           }
+          break;
+
+        case objects.MESSAGE:
+          console.error("TODO (in WebsocketAnswer) : case (objects.MESSAGE)");
+          break;
+
+        case objects.MEETING:
+          console.error("TODO (in WebsocketAnswer) : case (objects.MEETING)");
           break;
 
         default:
@@ -55,7 +89,7 @@ export const handleServerAnswer = (message) => {
 
       WebsocketLink.getPendingProperties().delete(obj.id);
     } else {
-      // TODO handle propagate (+ what if none of those two possibilities, silent return?)
+      console.error("TODO handle propagate (+ what if none of those two possibilities, silent return?)");
 
     }
   } else {
@@ -79,12 +113,4 @@ export const handleServerAnswer = (message) => {
       WebsocketLink.getPendingProperties().delete(obj.id);
     }
   }
-
-  // ------------------- ALG ----------------------------------
-
-  // Idea : check that the generated id is not already in the map
-
-  // ---------------- TODO --------------------------------------
-  // Builder for data object (building json objects iteratively?)
-  // Wrapper for Jsonrpc, method, params, id
 };
