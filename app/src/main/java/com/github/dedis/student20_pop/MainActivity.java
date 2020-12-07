@@ -2,7 +2,6 @@ package com.github.dedis.student20_pop;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -67,7 +66,6 @@ public final class MainActivity extends FragmentActivity {
                 break;
             case R.id.button_launch:
                 String name = ((EditText) findViewById(R.id.entry_box_launch)).getText().toString();
-                // TODO: send LAO and organizer information
                 Person organizer = new Person("name");
                 // Creating the LAO and adding it to the organizer's LAO
                 Lao lao = new Lao(name, new Date(), organizer.getId());
@@ -75,6 +73,10 @@ public final class MainActivity extends FragmentActivity {
                 // Store the private key of the organizer
                 if (PrivateInfoStorage.storeData(this, organizer.getId(), organizer.getAuthentication()))
                     Log.d(TAG, "Stored private key of organizer");
+                // TODO: send LAO and organizer information to backend
+                // Set LAO and organizer information locally
+                ((PoPApplication) getApplication()).setPerson(organizer);
+                ((PoPApplication) getApplication()).setLaos(Collections.singletonList(lao));
                 // Start the Organizer Activity (user is considered an organizer)
                 Intent intent = new Intent(this, OrganizerActivity.class);
                 startActivity(intent);

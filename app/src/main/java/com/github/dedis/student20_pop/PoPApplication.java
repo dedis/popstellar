@@ -56,7 +56,7 @@ public class PoPApplication extends Application {
         return laos;
     }
 
-    public  void setPerson(Person person) {
+    public void setPerson(Person person) {
         if(person != null) {
             this.person = person;
         }
