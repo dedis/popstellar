@@ -171,7 +171,7 @@ public class OrganizerFragment extends Fragment {
                             editPropertiesButton.setVisibility(View.VISIBLE);
                             addWitnessButton.setVisibility(View.GONE);
                         } else {
-                            Toast.makeText(getContext(), "hallo", Toast.LENGTH_SHORT);
+                            Toast.makeText(getContext(), getString(R.string.exception_message_empty_lao_name), Toast.LENGTH_SHORT).show();
                         }
                 }
         );

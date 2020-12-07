@@ -1,14 +1,17 @@
 package com.github.dedis.student20_pop.ui;
 
+import android.view.View;
+
 import androidx.test.core.app.ActivityScenario;
-import androidx.test.espresso.PerformException;
 import androidx.test.espresso.matcher.ViewMatchers;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import com.github.dedis.student20_pop.OrganizerActivity;
 import com.github.dedis.student20_pop.R;
 
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
@@ -18,6 +21,7 @@ import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -28,10 +32,26 @@ import static org.hamcrest.Matchers.not;
 
 
 public class OrganizerFragmentTest {
+    private View decorView;
+
+    @Rule
+    public ActivityScenarioRule<OrganizerActivity> activityScenarioRule =
+            new ActivityScenarioRule<>(OrganizerActivity.class);
 
     @Before
-    public void launchActivity() {
-        ActivityScenario.launch(OrganizerActivity.class);
+    public void setUp() {
+        activityScenarioRule.getScenario().onActivity(new ActivityScenario.ActivityAction<OrganizerActivity>() {
+
+            /**
+             * This method is invoked on the main thread with the reference to the Activity.
+             *
+             * @param activity an Activity instrumented by the {@link ActivityScenario}. It never be null.
+             */
+            @Override
+            public void perform(OrganizerActivity activity) {
+                decorView = activity.getWindow().getDecorView();
+            }
+        });
     }
 
     @Test
@@ -136,13 +156,17 @@ public class OrganizerFragmentTest {
         onView(withText(R.string.button_confirm)).perform(click());
     }
 
-    @Test(expected = PerformException.class)
-    public void confirmEmptyLaoTitleThrowsException() {
+    @Test
+    public void confirmEmptyLaoTitleShowsToast() {
+        String expectedWarning = getApplicationContext().getString(R.string.exception_message_empty_lao_name);
         onView(withId(R.id.tab_properties)).perform(click());
         onView(withId(R.id.properties_view)).check(matches(isDisplayed()));
         onView(withId(R.id.edit_button)).perform(click());
         onView(withId(R.id.organization_name_editText)).perform(clearText());
         onView(withId(R.id.properties_edit_confirm)).perform(click());
+        onView(withText(expectedWarning))
+                .inRoot(withDecorView(not(decorView)))
+                .check(matches(isDisplayed()));
     }
 
     @Test
