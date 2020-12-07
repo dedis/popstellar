@@ -83,6 +83,11 @@ public class LaoTest {
     }
 
     @Test
+    public void setEmptyNameTest() {
+        assertThrows(IllegalArgumentException.class, () -> lao1.setName(""));
+    }
+
+    @Test
     public void setNullWitnessesTest() {
         assertThrows(IllegalArgumentException.class, () -> lao1.setWitnesses(null));
         assertThrows(IllegalArgumentException.class, () -> lao1.setWitnesses(listWithNull));
