@@ -35,7 +35,7 @@ func NewOrganizer(pkey string, db string) *Organizer {
  * response to the sender, or nil
  */
 func (o *Organizer) HandleWholeMessage(msg []byte, userId int) ([]byte, []byte, []byte) {
-	//this cannot handle an error message and will send an erorr message bak, resulting in an infinite loop TODO
+	//this cannot handle an error message and will send an error message bak, resulting in an infinite loop TODO
 	generic, err := define.AnalyseGeneric(msg)
 	if err != nil {
 		return nil, nil, define.CreateResponse(define.ErrIdNotDecoded, nil, generic)
