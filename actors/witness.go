@@ -167,7 +167,6 @@ func (w *Witness) handleCreateLAO(message define.Message, channel string, generi
 		ID:            data.ID,
 		Name:          data.Name,
 		Creation:      data.Creation,
-		LastModified:  data.Last_modified,
 		OrganizerPKey: data.Organizer,
 		Witnesses:     data.Witnesses,
 	}
@@ -251,7 +250,6 @@ func (w *Witness) handleLAOState(message define.Message, channel string, generic
 		ID:            data.ID,
 		Name:          data.Name,
 		Creation:      data.Creation,
-		LastModified:  data.Last_modified,
 		OrganizerPKey: data.Organizer,
 		Witnesses:     data.Witnesses,
 	}
@@ -276,7 +274,6 @@ func (w *Witness) handleCreateRollCall(message define.Message, channel string, g
 		ID:           data.ID,
 		Name:         data.Name,
 		Creation:     data.Creation,
-		LastModified: data.Last_modified,
 		Location:     data.Location,
 		Start:        data.Start,
 		End:          data.End,

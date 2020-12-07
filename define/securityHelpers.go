@@ -14,11 +14,11 @@ const MaxPropagationDelay = 600
 // TODO if we use the json Schema, don't need to check structure correctness
 func LAOCreatedIsValid(data DataCreateLAO, message Message) bool {
 	//the last modified timestamp is equal to the creation timestamp,
-	if data.Creation != data.Last_modified {
+	/*/if data.Creation != data.Last_modified {
 		fmt.Printf("%v, %v", data, data.Last_modified)
 		fmt.Printf("sec1")
 		return false
-	}
+	}*/
 	//the timestamp is reasonably recent with respect to the server’s clock,
 	if data.Creation > time.Now().Unix() || data.Creation < time.Now().Unix()-MaxPropagationDelay {
 		fmt.Printf("timestamp invalid, either too old or in the future : %v", data.Creation)
@@ -37,11 +37,11 @@ func LAOCreatedIsValid(data DataCreateLAO, message Message) bool {
 		fmt.Printf("%v, %v", hash, data.ID)
 		return false
 	}
-	//the timestamp is reasonably recent with respect to the server’s clock,
+	/*the timestamp is reasonably recent with respect to the server’s clock,
 	if data.Last_modified > time.Now().Unix() || data.Last_modified < time.Now().Unix()-MaxPropagationDelay {
 		fmt.Printf("sec2")
 		return false
-	}
+	}*/
 
 	//TODO any more checks to perform ?
 
@@ -50,9 +50,9 @@ func LAOCreatedIsValid(data DataCreateLAO, message Message) bool {
 
 func MeetingCreatedIsValid(data DataCreateMeeting, message Message) bool {
 	//the last modified timestamp is equal to the creation timestamp,
-	if data.Creation != data.Last_modified {
+	/*if data.Creation != data.Last_modified {
 		return false
-	}
+	}*/
 	//the timestamp is reasonably recent with respect to the server’s clock,
 	if data.Creation > time.Now().Unix() || data.Creation-time.Now().Unix() > MaxPropagationDelay {
 		return false
@@ -88,9 +88,9 @@ func MessageIsValid(msg Message) error {
 	}
 
 	// the signature is valid
-	err := VerifySignature(msg.Sender, (msg.Data), msg.Signature)
-	if err != nil {
-		return err
+	correct,err := VerifySignature(msg.Sender, (msg.Data), msg.Signature)
+	if  !correct {
+		return err//err
 	}
 
 	// the witness signatures are valid (check on every message??)
@@ -100,8 +100,12 @@ func MessageIsValid(msg Message) error {
 		if err != nil {
 			return ErrInvalidResource
 		}
-		print("Hello in publik")
-		return VerifyWitnessSignatures(data.Witnesses, msg.WitnessSignatures, string(msg.Data), msg.Sender)
+		print("Hello in public")
+		// the signature of witnesses are valid
+		correct,err := VerifyWitnessSignatures(data.Witnesses, msg.WitnessSignatures,msg.Sender)
+		if  !correct {
+			return err//err
+		}
 	}
 	return nil
 }
@@ -109,10 +113,10 @@ func MessageIsValid(msg Message) error {
 /*
 	we check that Sign(sender||data) is the given signature
 */
-func VerifySignature(publicKey string, data []byte, signature string) error {
+func VerifySignature(publicKey string, data []byte, signature string) (bool,error) {
 	//check the size of the key as it will panic if we plug it in Verify
 	if len(publicKey) != ed.PublicKeySize {
-		return ErrRequestDataInvalid
+		return false ,ErrRequestDataInvalid
 	}
 
 	//data is in base64 so we need to decrypt it before using it
@@ -124,61 +128,67 @@ func VerifySignature(publicKey string, data []byte, signature string) error {
 	//hash := sha256.Sum256(data)
 
 	if ed.Verify([]byte(publicKey), data, []byte(signature)) {
-		return nil
+		return true ,nil
 	}
 	//invalid signature
-	return ErrRequestDataInvalid
+	return false ,  ErrRequestDataInvalid
 }
 
 /*
 	we check that Sign(sender||data) is the given signature
 */
-func VerifyWitnessSignature(publicKey string, data []byte, signature string) error {
+func VerifyWitnessSignature(publicKey string, data []byte, signature string) (bool,error) {
 	//check the size of the key as it will panic if we plug it in Verify
 	if len(publicKey) != ed.PublicKeySize {
-		return ErrRequestDataInvalid
+		return false, ErrRequestDataInvalid
 	}
-	//TODO method is defined supposing args are encrypted
-	//the key is already decrypted
 
-	//data is in base64 so we need to decrypt it before using it
-	//dataDecoded,err := Decode(string(data))
-	//if err!=nil{
-	//	return ErrEncodingFault
-	//}
 	if ed.Verify([]byte(publicKey), data, []byte(signature)) {
-		return nil
+		return true,nil
 	}
 	//invalid signature
-	return ErrRequestDataInvalid
+	return false,ErrRequestDataInvalid
 }
 
-//TODO be careful about the size and the order !
-/*Maybe have a fixed size byte ?
-To handle checks while the slice is in construction, the slice must have full space
-from the beginning. We should check how to create fixed length arrays in go. And
-instead of appending in witness_message, put them in the slot which matches the slot
-of the witness id in witness[]
-
-	Witness[1,2,3...]
-	witnessSignature[_,_,_./.]
-	WitnessSignatures[3,6,2,1]
+/*
+	handling of dynamic updates with object as item and not just string
+	*publicKeys is already decoded
+    *sender and signature are not already decoded
 */
-func VerifyWitnessSignatures(publicKeys []string, signatures []string, data string, sender string) error {
+func VerifyWitnessSignatures(publicKeys []string, witnessSignaturesEnc []string, sender string) (bool,error) {
 	senderDecoded, err := Decode(sender)
 	if err != nil {
-		return ErrEncodingFault
+		return false,ErrEncodingFault
 	}
-	dataDecoded, err := Decode(data)
-	if err != nil {
-		return ErrEncodingFault
-	}
-	toCheck := append(senderDecoded, dataDecoded...)
-	for i := 0; i < len(signatures); i++ {
-		err := VerifyWitnessSignature(publicKeys[i], toCheck, signatures[i])
-		if err != nil {
-			return err
+	//TODO do we only check the pairs in witnessSignaturesEnc (1) or do need to verify that the publicKey
+	// of the pair is in the publicKeys before (2)?
+	for i := 0; i < len(witnessSignaturesEnc); i++ {
+		witnessSignatures, err := AnalyseWitnessSignatures(witnessSignaturesEnc[i])
+		if err != nil{
+			return false,err
+		}
+		//right now we apply the first option and publickeys is then usless here
+		correct,err := VerifyWitnessSignature(witnessSignatures.Witness, senderDecoded, witnessSignatures.Signature)
+		if !correct {
+			return false,err
 		}
 	}
-	return nil
+	return true,nil
+}
+
+func LAOStateIsValid(data DataCreateLAO, message Message) bool {
+	//the last modified timestamp is bigger than the creation timestamp,
+	/*if data.Creation > data.Last_modified {
+		fmt.Printf("creation time : %v, update time : %v . Creation cannot be bigger than update", data, data.Last_modified)
+		return false
+	}
+	the timestamp is reasonably recent with respect to the server’s clock,
+	if data.Last_modified > time.Now().Unix() || data.Last_modified < time.Now().Unix()-MaxPropagationDelay {
+		fmt.Printf("sec2")
+		return false
+	}*/
+
+	//TODO any more checks to perform ?
+
+	return true
 }
