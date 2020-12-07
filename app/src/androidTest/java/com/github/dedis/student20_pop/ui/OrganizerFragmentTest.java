@@ -134,18 +134,7 @@ public class OrganizerFragmentTest {
         onView(withText("Delete ?")).check(matches(isDisplayed()));
         onView(withText(R.string.button_confirm)).perform(click());
     }
-
-    @Test(expected = IllegalArgumentException.class)
-    @Ignore("TODO : Is it right to allow empty string for a lao's name ?")
-    public void confirmNullLaoTitleThrowsException() {
-        onView(withId(R.id.tab_properties)).perform(click());
-        onView(withId(R.id.properties_view)).check(matches(isDisplayed()));
-        onView(withId(R.id.edit_button)).perform(click());
-        onView(withId(R.id.organization_name_editText)).perform(clearText());
-        onView(withId(R.id.properties_edit_confirm)).perform(click());
-    }
-
-
+    
     @Test
     @Ignore("TODO : Check that scanning a Witness QR code adds witness to witness list")
     public void canAddWitness() {
