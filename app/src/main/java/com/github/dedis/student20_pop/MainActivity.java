@@ -41,7 +41,7 @@ public final class MainActivity extends FragmentActivity {
             }
 
             getSupportFragmentManager().beginTransaction()
-                        .add(R.id.fragment_container_main, new HomeFragment()).commit();
+                    .add(R.id.fragment_container_main, new HomeFragment()).commit();
         }
     }
 

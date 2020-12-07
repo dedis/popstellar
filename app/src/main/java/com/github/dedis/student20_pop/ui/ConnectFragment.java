@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -34,9 +35,21 @@ public final class ConnectFragment extends Fragment implements QRCodeListener {
     public static final String TAG = ConnectFragment.class.getSimpleName();
 
     private static final int HANDLE_GMS = 9001;
+    private static final String CONTAINER = "container";
+
 
     private CameraSource camera;
     private CameraPreview preview;
+    private int container;
+
+    public ConnectFragment() {
+        this(R.id.fragment_container_main);
+    }
+
+    public ConnectFragment(int resource){
+        super();
+        container = resource;
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -124,7 +137,7 @@ public final class ConnectFragment extends Fragment implements QRCodeListener {
         Log.i(TAG, "Received qrcode url : " + url);
         requireFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container_main, ConnectingFragment.newInstance(url), ConnectingFragment.TAG)
+                .replace(container, ConnectingFragment.newInstance(url), ConnectingFragment.TAG)
                 .addToBackStack(TAG).commit();
     }
 }
