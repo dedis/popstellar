@@ -133,6 +133,8 @@ public final class Lao {
     public Lao setName(String name) {
         if (name == null) {
             throw new IllegalArgumentException("Trying to set null as the name of the LAO");
+        } else if (name.isEmpty()){
+            throw new IllegalArgumentException("Trying to set an empty name for the LAO");
         }
         return new Lao(name, time, organizer, witnesses, members, events);
     }
