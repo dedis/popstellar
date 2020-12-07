@@ -29,7 +29,6 @@ func TestMessageIsValid(t *testing.T) {
 		privkey := ed.NewKeyFromSeed(randomSeed)
 		var pubkey = string(privkey.Public().(ed.PublicKey))
 		var creation int64 = 123
-		var lastMod int64 = 123
 		name := "My LAO"
 		if ((len(pubkey)!=ed.PublicKeySize) || len(privkey)!=ed.PrivateKeySize){
 		t.Error("wrong argument -> size don't respected ")
@@ -41,7 +40,6 @@ func TestMessageIsValid(t *testing.T) {
 		ID:            b64.StdEncoding.EncodeToString(idData[:]),
 		Name:          name,
 		Creation:      creation,
-		Last_modified: lastMod,
 		Organizer:     (b64.StdEncoding.EncodeToString([]byte(pubkey))),
 		Witnesses:     []string{},
 	}
