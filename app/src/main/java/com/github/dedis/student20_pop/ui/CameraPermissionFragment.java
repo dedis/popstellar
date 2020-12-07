@@ -22,6 +22,16 @@ public final class CameraPermissionFragment extends Fragment implements View.OnC
     public static final String TAG = ConnectFragment.class.getSimpleName();
 
     private static final int HANDLE_CAMERA_PERM = 2;
+    private int container;
+
+    public CameraPermissionFragment(){
+        this(R.id.fragment_container_main);
+    }
+
+    public CameraPermissionFragment(int container){
+        super();
+        this.container = container;
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -39,7 +49,7 @@ public final class CameraPermissionFragment extends Fragment implements View.OnC
     private void switchToConnectFragment() {
         requireFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container_main, new ConnectFragment(), ConnectFragment.TAG)
+                .replace(container, new ConnectFragment(), ConnectFragment.TAG)
                 .commit();
     }
 
