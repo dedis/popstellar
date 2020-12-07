@@ -163,7 +163,7 @@ public class OrganizerFragment extends Fragment {
 
         confirmButton.setOnClickListener(
                 clicked -> {
-                        String title = laoNameEditText.getText().toString();
+                        String title = laoNameEditText.getText().toString().trim();
                         if( title != null && !title.isEmpty()){
                             lao = lao.setName(title);
                             viewSwitcher.showNext();
