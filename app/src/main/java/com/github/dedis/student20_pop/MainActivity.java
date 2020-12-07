@@ -2,6 +2,7 @@ package com.github.dedis.student20_pop;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,7 +29,7 @@ import java.util.Date;
  **/
 public final class MainActivity extends FragmentActivity {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    public static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +67,7 @@ public final class MainActivity extends FragmentActivity {
                 break;
             case R.id.button_launch:
                 String name = ((EditText) findViewById(R.id.entry_box_launch)).getText().toString();
-                // For later: send LAO and organizer information
+                // TODO: send LAO and organizer information
                 Person organizer = new Person("name");
                 // Creating the LAO and adding it to the organizer's LAO
                 Lao lao = new Lao(name, new Date(), organizer.getId());
@@ -76,7 +77,6 @@ public final class MainActivity extends FragmentActivity {
                     Log.d(TAG, "Stored private key of organizer");
                 // Start the Organizer Activity (user is considered an organizer)
                 Intent intent = new Intent(this, OrganizerActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 break;
             case R.id.button_cancel_launch:

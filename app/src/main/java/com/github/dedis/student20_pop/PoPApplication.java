@@ -56,20 +56,15 @@ public class PoPApplication extends Application {
         return laos;
     }
 
-    private void setPerson(Person person) {
+    public  void setPerson(Person person) {
         if(person != null) {
             this.person = person;
         }
     }
 
-    private void setLaos(List<Lao> laos) {
+    public void setLaos(List<Lao> laos) {
         if(laos != null) {
             this.laos = laos;
         }
-    }
-
-    @VisibleForTesting
-    public static void setAppContext(Context context) {
-        appContext = context;
     }
 }
