@@ -33,6 +33,8 @@ public final class Lao {
     public Lao(String name, Date time, String organizer) {
         if (name == null || time == null || organizer == null) {
             throw new IllegalArgumentException("Trying to  create a LAO with a null value");
+        } else if (name.isEmpty()) {
+            throw new IllegalArgumentException("Trying to set an empty name for the LAO");
         }
         this.name = name;
         this.time = time.getTime() / 1000L;
