@@ -16,11 +16,11 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.student20_pop.R;
+import com.github.dedis.student20_pop.model.Event;
 import com.github.dedis.student20_pop.model.Keys;
+import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.Person;
 import com.github.dedis.student20_pop.utility.ui.AttendeeExpandableListViewEventAdapter;
-import com.github.dedis.student20_pop.model.Event;
-import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.utility.ui.WitnessListAdapter;
 
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ public class AttendeeFragment extends Fragment {
 
         //Display Events
         expandableListView = rootView.findViewById(R.id.exp_list_view);
-        listViewEventAdapter = new AttendeeExpandableListViewEventAdapter(this.getActivity(),getEvents());
+        listViewEventAdapter = new AttendeeExpandableListViewEventAdapter(this.getActivity(), getEvents());
         expandableListView.setAdapter(listViewEventAdapter);
         expandableListView.expandGroup(0);
         expandableListView.expandGroup(1);
@@ -72,10 +72,9 @@ public class AttendeeFragment extends Fragment {
         propertiesButton = rootView.findViewById(R.id.tab_properties);
 
         propertiesButton.setOnClickListener(clicked -> {
-            if (propertiesView.getVisibility() == View.GONE){
+            if (propertiesView.getVisibility() == View.GONE) {
                 propertiesView.setVisibility(View.VISIBLE);
-            }
-            else{
+            } else {
                 propertiesView.setVisibility(View.GONE);
             }
         });
@@ -84,7 +83,7 @@ public class AttendeeFragment extends Fragment {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private List<Event> getEvents(){
+    private List<Event> getEvents() {
         /*
         //Later:
         List<String> eventsIds = lao.getEvents();
@@ -96,13 +95,13 @@ public class AttendeeFragment extends Fragment {
 
         //Now (for testing) :
         ArrayList<Event> events = new ArrayList<>();
-        events.add(new Event("Past Event 1", new Date(10*1000L), new Keys().getPublicKey(), "EPFL", "Poll"));
-        events.add(new Event("Past Event 2", new Date(20*1000L), new Keys().getPublicKey(), "CE-6", "Meeting"));
-        events.add(new Event("Present Event 1", new Date(500*1000L),
+        events.add(new Event("Past Event 1", new Date(10 * 1000L), new Keys().getPublicKey(), "EPFL", "Poll"));
+        events.add(new Event("Past Event 2", new Date(20 * 1000L), new Keys().getPublicKey(), "CE-6", "Meeting"));
+        events.add(new Event("Present Event 1", new Date(500 * 1000L),
                 new Keys().getPublicKey(), "Geneva", "Roll-Call"));
-        events.add(new Event("Present Event 2", new Date(600*1000L),
+        events.add(new Event("Present Event 2", new Date(600 * 1000L),
                 new Keys().getPublicKey(), "Lausanne", "Discussion"));
-        events.add(new Event("Future Event 1", new Date(5000*1000L),
+        events.add(new Event("Future Event 1", new Date(5000 * 1000L),
                 new Keys().getPublicKey(), "i don't know where yet", "Poll"));
 
         return events;

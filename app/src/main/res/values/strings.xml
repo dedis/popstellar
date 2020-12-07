@@ -42,4 +42,5 @@
 
     <!-- Roll-Call Event -->
     <string name="roll_call_event">Roll-Call Event</string>
+    <string name="exception_message_empty_lao_name">Trying to set an empty name for the LAO</string>
 </resources>
