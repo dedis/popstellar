@@ -15,6 +15,7 @@ import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import androidx.annotation.NonNull;
@@ -162,11 +163,16 @@ public class OrganizerFragment extends Fragment {
 
         confirmButton.setOnClickListener(
                 clicked -> {
-                    viewSwitcher.showNext();
-                    lao = lao.setName(laoNameEditText.getText().toString());
-                    laoNameTextView.setText(laoNameEditText.getText());
-                    editPropertiesButton.setVisibility(View.VISIBLE);
-                    addWitnessButton.setVisibility(View.GONE);
+                        String title = laoNameEditText.getText().toString();
+                        if( title != null && !title.isEmpty()){
+                            lao = lao.setName(title);
+                            viewSwitcher.showNext();
+                            laoNameTextView.setText(laoNameEditText.getText());
+                            editPropertiesButton.setVisibility(View.VISIBLE);
+                            addWitnessButton.setVisibility(View.GONE);
+                        } else {
+                            Toast.makeText(getContext(), "hallo", Toast.LENGTH_SHORT);
+                        }
                 }
         );
 

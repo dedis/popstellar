@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,9 +17,11 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Keys;
+import com.github.dedis.student20_pop.model.Person;
 import com.github.dedis.student20_pop.utility.ui.AttendeeExpandableListViewEventAdapter;
 import com.github.dedis.student20_pop.model.Event;
 import com.github.dedis.student20_pop.model.Lao;
+import com.github.dedis.student20_pop.utility.ui.WitnessListAdapter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,6 +37,7 @@ public class AttendeeFragment extends Fragment {
     ExpandableListView expandableListView;
     Lao lao;  //should be given from intent or previous fragment
     Button propertiesButton;
+    private ListView witnessesListView;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -54,18 +58,25 @@ public class AttendeeFragment extends Fragment {
         expandableListView.expandGroup(1);
 
         //Display Properties
-        View properties = rootView.findViewById(R.id.properties_view);
-        ((TextView) properties.findViewById(R.id.organization_name)).setText(lao.getName());
-        ((TextView) properties.findViewById(R.id.witness_list)).setText("Witnesses: [id, id, id]");
-
+        View propertiesView = rootView.findViewById(R.id.properties_view);
+        ((TextView) propertiesView.findViewById(R.id.organization_name)).setText(lao.getName());
+        //TODO : Connect to Backend and retrieve the list of witnesses
+        final ArrayList<Person> witnesses = new ArrayList<>();
+        witnesses.add(new Person("Alphonse"));
+        witnesses.add(new Person("Barbara"));
+        witnesses.add(new Person("Charles"));
+        witnesses.add(new Person("Deborah"));
+        final WitnessListAdapter adapter = new WitnessListAdapter(getActivity(), witnesses);
+        witnessesListView = propertiesView.findViewById(R.id.witness_list);
+        witnessesListView.setAdapter(adapter);
         propertiesButton = rootView.findViewById(R.id.tab_properties);
 
         propertiesButton.setOnClickListener(clicked -> {
-            if (properties.getVisibility() == View.GONE){
-                properties.setVisibility(View.VISIBLE);
+            if (propertiesView.getVisibility() == View.GONE){
+                propertiesView.setVisibility(View.VISIBLE);
             }
             else{
-                properties.setVisibility(View.GONE);
+                propertiesView.setVisibility(View.GONE);
             }
         });
 
