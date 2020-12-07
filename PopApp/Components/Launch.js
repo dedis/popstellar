@@ -6,7 +6,7 @@ import {
 import STRINGS from '../res/strings';
 import { Spacing, Typography } from '../Styles';
 import PROPS_TYPE from '../res/Props';
-import { requestCreateLao, requestUpdateLao, requestStateLao, requestWitnessMessage, requestCreateMeeting, requestStateMeeting } from '../websockets/WebsocketApi'
+import { requestCreateLao } from '../websockets/WebsocketApi'
 import { getStore } from '../Store/configureStore';
 
 /*
@@ -76,7 +76,7 @@ const Launch = ({ navigation }) => {
         <View style={styles.button}>
           <Button
             title={"TEST print store"}
-            onPress={() => console.log("printing store ", getStore().getState())}
+            onPress={() => console.log("printing store ", getStore().getState().currentLaoReducer.lao)}
           />
         </View>
         <View style={styles.button}>

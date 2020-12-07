@@ -6,6 +6,13 @@ import { PendingRequest } from './WebsocketUtils';
 const WEBSOCKET_READYSTATE_INTERVAL_MS = 10;
 const WEBSOCKET_READYSTATE_MAX_ATTEMPTS = 100;
 
+/* TEMP */
+const SERVER_ADDRESS = {
+  address: '127.0.0.1',
+  port: '8000', //'8080',
+  path: ''//'ps'
+};
+
 export default class WebsocketLink {
 
   static #ws;
@@ -13,7 +20,7 @@ export default class WebsocketLink {
 
 
   static sendRequestToServer(message, requestObject, requestAction, retry = false) {
-    if (this.#ws == null) WebsocketLink._initWebsocket();
+    if (this.#ws == null) WebsocketLink._initWebsocket(SERVER_ADDRESS.address, SERVER_ADDRESS.port, SERVER_ADDRESS.path);
 
     WebsocketLink._sendMessage(message, requestObject, requestAction, retry);
   }
@@ -22,8 +29,9 @@ export default class WebsocketLink {
   static getPendingProperties() { return this.#pendingQueries; }
 
 
-  static _initWebsocket(address = '127.0.0.1', port = '8000') {
-    const ws = new W3CWebSocket('ws://' + address + ':' + port);
+  static _initWebsocket(address = '127.0.0.1', port = '8000', path = '') {
+    if (path !== '') path = '/' + path;
+    const ws = new W3CWebSocket('ws://' + address + ':' + port + path);
 
     ws.onopen = () => { console.log(`initiating web socket : ws://${address}:${port}`); };
     ws.onmessage = (message) => { handleServerAnswer(message) };
@@ -76,7 +84,6 @@ export default class WebsocketLink {
     } else {
       // websocket ready to be used, message can be sent
       if (!retry) this.#pendingQueries.set(message.id, new PendingRequest(message, requestObject, requestAction));
-      //console.log("sending this message ", JSON.stringify(message));
       this.#ws.send(JSON.stringify(message));
     }
   }
