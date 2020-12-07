@@ -19,7 +19,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertFalse;
 
 public class LaunchFragmentTest {
 
@@ -40,6 +39,7 @@ public class LaunchFragmentTest {
             PoPApplication app = (PoPApplication) a.getApplication();
             assertThat(app.getLaos().get(0).getName(), is("LAO"));
             assertThat(app.getPerson().getName(), is("name"));
+            assertThat(app.getPerson().getLaos().get(0), is(app.getLaos().get(0).getId()));
         });
     }
 }
