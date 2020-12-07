@@ -66,7 +66,7 @@ public final class MainActivity extends FragmentActivity {
                 break;
             case R.id.button_launch:
                 String name = ((EditText) findViewById(R.id.entry_box_launch)).getText().toString();
-                Person organizer = new Person("name");
+                Person organizer = ((PoPApplication) getApplication()).getPerson();
                 // Creating the LAO and adding it to the organizer's LAO
                 Lao lao = new Lao(name, new Date(), organizer.getId());
                 organizer = organizer.setLaos(Collections.singletonList(lao.getId()));
