@@ -69,7 +69,7 @@ public final class MainActivity extends FragmentActivity {
                 Person organizer = new Person("name");
                 // Creating the LAO and adding it to the organizer's LAO
                 Lao lao = new Lao(name, new Date(), organizer.getId());
-                organizer.setLaos(Collections.singletonList(lao.getId()));
+                organizer = organizer.setLaos(Collections.singletonList(lao.getId()));
                 // Store the private key of the organizer
                 if (PrivateInfoStorage.storeData(this, organizer.getId(), organizer.getAuthentication()))
                     Log.d(TAG, "Stored private key of organizer");
