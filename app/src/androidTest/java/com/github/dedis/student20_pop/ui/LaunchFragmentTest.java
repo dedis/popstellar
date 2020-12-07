@@ -30,8 +30,7 @@ public class LaunchFragmentTest {
     @Test
     public void launchNewLaoSetsInfoTest() {
         onView(withId(R.id.tab_launch)).perform(click());
-        onView(withId(R.id.entry_box_launch)).perform(typeText("LAO"));
-        onView(withId(R.id.entry_box_launch)).perform(closeSoftKeyboard());
+        onView(withId(R.id.entry_box_launch)).perform(typeText("LAO"), closeSoftKeyboard());
         onView(withId(R.id.button_launch)).perform(click());
         onView(withId(R.id.fragment_organizer)).check(matches(isDisplayed()));
 
