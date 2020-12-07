@@ -62,39 +62,14 @@ type hub struct {
 }
 
 func NewOrganizerHub() *hub {
-
-	h := &hub{
-		connectionsMx:   sync.RWMutex{},
-		receivedMessage: make(chan []byte),
-		connections:     make(map[*connection]struct{}),
-		connIndex:       0,
-		idOfSender:      -1,
-		actor:           actors.NewOrganizer("", "orgDatabase.db"),
-	}
-	//publish subscribe go routine !
-
-	go func() {
-		for {
-			//get msg from connection
-			msg := <-h.receivedMessage
-
-			// check if messages concerns organizer
-			var message []byte = nil
-			var channel []byte = nil
-			var response []byte = nil
-			//handle the message and generate the response
-			message, channel, response = h.actor.HandleWholeMessage(msg, h.idOfSender)
-
-			h.connectionsMx.RLock()
-			h.publishOnChannel(message, channel)
-			h.sendResponse(response, h.idOfSender)
-			h.connectionsMx.RUnlock()
-		}
-	}()
-	return h
+	return newHub("o")
 }
 
 func NewWitnessHub() *hub {
+	return newHub("w")
+}
+
+func newHub(mode string) *hub {
 
 	h := &hub{
 		connectionsMx:   sync.RWMutex{},
@@ -102,7 +77,14 @@ func NewWitnessHub() *hub {
 		connections:     make(map[*connection]struct{}),
 		connIndex:       0,
 		idOfSender:      -1,
-		actor:           actors.NewWitness("", "witDatabase.db"),
+	}
+
+	if mode == "o" {
+		h.actor = actors.NewOrganizer("", "orgdatabase.db")
+	} else if mode == "w" {
+		h.actor = actors.NewWitness("", "witdatabase.db")
+	} else {
+		log.Fatal("actor mode not recognized")
 	}
 	//publish subscribe go routine !
 
