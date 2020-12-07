@@ -25,13 +25,13 @@ public final class Lao {
     /**
      * Constructor for a LAO
      *
-     * @param name the name of the LAO, can be empty
-     * @param time the creation time, can't be modified
+     * @param name      the name of the LAO, can be empty
+     * @param time      the creation time, can't be modified
      * @param organizer the public key of the organizer
      * @throws IllegalArgumentException if any of the parameters is null
      */
     public Lao(String name, Date time, String organizer) {
-        if(name == null || time == null || organizer == null) {
+        if (name == null || time == null || organizer == null) {
             throw new IllegalArgumentException("Trying to  create a LAO with a null value");
         }
         this.name = name;
@@ -49,12 +49,12 @@ public final class Lao {
      * Private constructor used to create new LAO when the name is modified,
      * forces to recompute the id and attestation using the new name
      *
-     * @param name the name of the LAO, can be empty
-     * @param time the creation time
+     * @param name      the name of the LAO, can be empty
+     * @param time      the creation time
      * @param organizer the public key of the organizer
      * @param witnesses the list of the public keys of the witnesses
-     * @param members the list of the public keys of the members
-     * @param events the list of the ids of the events
+     * @param members   the list of the public keys of the members
+     * @param events    the list of the ids of the events
      */
     private Lao(String name, long time, String organizer, List<String> witnesses,
                 List<String> members, List<String> events) {
@@ -75,7 +75,6 @@ public final class Lao {
     }
 
     /**
-     *
      * @return creation time of the LAO as Unix Timestamp, can't be modified
      */
     public long getTime() {
@@ -83,7 +82,6 @@ public final class Lao {
     }
 
     /**
-     *
      * @return ID of the LAO, can't be modified
      */
     public String getId() {
@@ -91,7 +89,6 @@ public final class Lao {
     }
 
     /**
-     *
      * @return public key of the organizer, can't be modified
      */
     public String getOrganizer() {
@@ -99,7 +96,6 @@ public final class Lao {
     }
 
     /**
-     *
      * @return list of public keys where each public key belongs to one witness
      */
     public List<String> getWitnesses() {
@@ -107,7 +103,6 @@ public final class Lao {
     }
 
     /**
-     *
      * @return list of public keys where each public key belongs to one member
      */
     public List<String> getMembers() {
@@ -115,7 +110,6 @@ public final class Lao {
     }
 
     /**
-     *
      * @return list of public keys where each public key belongs to an event
      */
     public List<String> getEvents() {
@@ -123,7 +117,6 @@ public final class Lao {
     }
 
     /**
-     *
      * @return signature by the organizer
      */
     public String getAttestation() {
@@ -138,43 +131,40 @@ public final class Lao {
      * @throws IllegalArgumentException if the name is null
      */
     public Lao setName(String name) {
-        if(name == null) {
+        if (name == null) {
             throw new IllegalArgumentException("Trying to set null as the name of the LAO");
         }
         return new Lao(name, time, organizer, witnesses, members, events);
     }
 
     /**
-     *
      * @param witnesses list of public keys of witnesses, can be empty
      * @throws IllegalArgumentException if the list is null or at least one public key is null
      */
     public void setWitnesses(List<String> witnesses) {
-        if(witnesses == null || witnesses.contains(null)) {
+        if (witnesses == null || witnesses.contains(null)) {
             throw new IllegalArgumentException("Trying to add a null witness to the LAO " + name);
         }
         this.witnesses = witnesses;
     }
 
     /**
-     *
      * @param members list of public keys of members, can be empty
      * @throws IllegalArgumentException if the list is null or at least one public key is null
      */
     public void setMembers(List<String> members) {
-        if(members == null || members.contains(null)) {
+        if (members == null || members.contains(null)) {
             throw new IllegalArgumentException("Trying to add a null member to the LAO " + name);
         }
         this.members = members;
     }
 
     /**
-     *
      * @param events list of public keys of events, can be empty
      * @throws IllegalArgumentException if the list is null or at least one public key is null
      */
     public void setEvents(List<String> events) {
-        if(events == null || events.contains(null)) {
+        if (events == null || events.contains(null)) {
             throw new IllegalArgumentException("Trying to add a null event to the LAO " + name);
         }
         this.events = events;
