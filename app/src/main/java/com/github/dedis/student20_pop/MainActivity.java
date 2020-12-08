@@ -19,16 +19,11 @@ import com.github.dedis.student20_pop.ui.ConnectFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
 import com.github.dedis.student20_pop.utility.network.PoPClientEndpoint;
-import com.github.dedis.student20_pop.utility.network.PoPClientEndpoint;
 import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
 
 import java.net.URI;
-import java.net.URI;
 import java.util.Collections;
 import java.util.Date;
-import java.util.concurrent.CompletableFuture;
-
-import javax.websocket.DeploymentException;
 import java.util.concurrent.CompletableFuture;
 
 import javax.websocket.DeploymentException;
@@ -76,25 +71,25 @@ public final class MainActivity extends FragmentActivity {
                 break;
             case R.id.button_launch:
                 String name = ((EditText) findViewById(R.id.entry_box_launch)).getText().toString();
-                Person organizer = ((PoPApplication) getApplication()).getPerson();
+                final PoPApplication app = ((PoPApplication) getApplication());
                 // Creating the LAO and adding it to the organizer's LAO
-                Lao lao = new Lao(name, new Date(), organizer.getId());
-                organizer = organizer.setLaos(Collections.singletonList(lao.getId()));
+                Lao lao = new Lao(name, new Date(), app.getPerson().getId());
                 // Store the private key of the organizer
-                if (PrivateInfoStorage.storeData(this, organizer.getId(), organizer.getAuthentication()))
+                //TODO Move it into app onCreate()
+                if (PrivateInfoStorage.storeData(this, app.getPerson().getId(), app.getPerson().getAuthentication()))
                     Log.d(TAG, "Stored private key of organizer");
 
                 CompletableFuture.supplyAsync(() -> {
                     try {
                         //TODO Get URL dynamically
-                        return PoPClientEndpoint.connectToServer(URI.create("ws://10.0.2.2:2020/"), organizer);
+                        return PoPClientEndpoint.connectToServer(URI.create("ws://10.0.2.2:2020/"), app.getPerson());
                     } catch (DeploymentException e) {
                         e.printStackTrace();
                         return null;
                     }
                 }).thenCompose(p -> {
                     if(p != null)
-                        return p.createLoa(lao.getName(), lao.getTime(), lao.getTime(), organizer.getId());
+                        return p.createLoa(lao.getName(), lao.getTime(), lao.getTime(), app.getPerson().getId());
                     else
                         return null;
                 }).whenComplete((errCode, t) -> {
@@ -102,6 +97,7 @@ public final class MainActivity extends FragmentActivity {
                         //TODO Show toast
                         Log.e(TAG, "Error while creating the lao", t);
                     else {
+                        Person organizer = app.getPerson().setLaos(Collections.singletonList(lao.getId()));
                         // Set LAO and organizer information locally
                         ((PoPApplication) getApplication()).setPerson(organizer);
                         ((PoPApplication) getApplication()).setLaos(Collections.singletonList(lao));
