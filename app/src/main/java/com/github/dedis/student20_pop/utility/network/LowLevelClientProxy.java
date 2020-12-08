@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.SplittableRandom;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
 import javax.websocket.Session;
@@ -69,7 +70,9 @@ public final class LowLevelClientProxy {
         }while(requests.putIfAbsent(id, entry) != null);
 
         Request request = requestSupplier.apply(id);
-        session.getAsyncRemote().sendText(gson.toJson(request, ChanneledMessage.class));
+        String txt = gson.toJson(request, ChanneledMessage.class);
+        System.out.println("Sending ... " + txt);
+        session.getAsyncRemote().sendText(txt);
 
         return entry.requests.thenApply(elem -> gson.fromJson(elem, responseType));
     }
@@ -187,8 +190,10 @@ public final class LowLevelClientProxy {
         Iterator<Map.Entry<Integer, RequestEntry>> it = requests.entrySet().iterator();
         while (it.hasNext()) {
             RequestEntry entry = it.next().getValue();
-            if(currentTime - entry.timestamp > TIMEOUT)
+            if(currentTime - entry.timestamp > TIMEOUT) {
+                entry.requests.completeExceptionally(new TimeoutException("Request timeout"));
                 it.remove();
+            }
         }
     }
 

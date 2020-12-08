@@ -62,7 +62,7 @@ public class SimpleSocketTest {
 
         waiter.await(10000, toSend.size() + 1);
 
-        //server.stop();
+        server.stop();
     }
 
     @ServerEndpoint("/")

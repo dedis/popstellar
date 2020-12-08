@@ -45,8 +45,7 @@ public class WebSocketServer {
 
         @OnMessage
         public void onMessage(String message, Session session) {
-            System.out.println(format("Received a message from %s : %s", session.getId(), message));
-            Pattern pattern = Pattern.compile("\"id\":(\\d+)");
+            Pattern pattern = Pattern.compile("\"id\":(-?\\d+)");
             Matcher matcher = pattern.matcher(message);
             if(matcher.find()) {
                 try {
