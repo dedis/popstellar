@@ -15,10 +15,20 @@ const SERVER_ADDRESS = {
 
 export default class WebsocketLink {
 
+  // websocket connexion
   static #ws;
+  // map of pending queries sent to server
   static #pendingQueries;
 
 
+  /**
+   * Send a request (query) to the server
+   *
+   * @param message (JsonObject) message for the server
+   * @param requestObject (objects enum) object of the message
+   * @param requestAction (actions enum) action of the message
+   * @param retry (boolean) is the query a retry?
+   */
   static sendRequestToServer(message, requestObject, requestAction, retry = false) {
     if (this.#ws == null) WebsocketLink._initWebsocket(SERVER_ADDRESS.address, SERVER_ADDRESS.port, SERVER_ADDRESS.path);
 
@@ -26,21 +36,25 @@ export default class WebsocketLink {
   }
 
 
+  /** Return a map of (id -> PendingRequest) which are pending requests sent to the server */
   static getPendingProperties() { return this.#pendingQueries; }
 
 
+  /** Initialize a websocket connexion */
   static _initWebsocket(address = '127.0.0.1', port = '8000', path = '') {
     if (path !== '') path = '/' + path;
     const ws = new W3CWebSocket('ws://' + address + ':' + port + path);
 
     ws.onopen = () => { console.log(`initiating web socket : ws://${address}:${port}`); };
     ws.onmessage = (message) => { handleServerAnswer(message) };
+    // TODO on error
 
     this.#ws = ws;
     this.#pendingQueries = new Map();
   }
 
 
+  /** Signal when an open websocket connexion is ready to be used */
   static _waitWebsocketReady(resolveWebsocketReady, rejectWebsocketReady) {
 
     if (!this.#ws.readyState) {
@@ -67,6 +81,15 @@ export default class WebsocketLink {
     }
   }
 
+
+  /**
+   * Effectively send a message to the server
+   *
+   * @param message (JsonObject) message for the server
+   * @param requestObject (objects enum) object of the message
+   * @param requestAction (actions enum) action of the message
+   * @param retry (boolean) is the query a retry?
+   */
   static _sendMessage(message, requestObject, requestAction, retry) {
 
     // Check that the websocket connection is ready

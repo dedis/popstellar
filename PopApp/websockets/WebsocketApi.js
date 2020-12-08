@@ -6,6 +6,7 @@ import {
 import WebsocketLink from './WebsocketLink';
 
 
+/** Generate a client query from a method (methods enum), a params object (Json Object) and an optional id (number) */
 const _generateQuery = (method, params, id) => {
   let tid = id;
   if (id === undefined) tid = generateId();
@@ -18,6 +19,7 @@ const _generateQuery = (method, params, id) => {
   }
 };
 
+/** Generate a params object from a channel (string) and a message object (Json Object) */
 const _generateParams = (channel, message) => {
   return {
     channel: toString64(channel),
@@ -25,6 +27,7 @@ const _generateParams = (channel, message) => {
   }
 };
 
+/** Generate a message object from some json data (json string) and an array of witnesses (arrays of public keys) */
 const _generateMessage = (jsonData, witness_signatures = []) => {
   const sign = signStrings(jsonData);
 
@@ -37,7 +40,7 @@ const _generateMessage = (jsonData, witness_signatures = []) => {
   }
 };
 
-
+/** Builder for a data object */
 class DataBuilder {
   constructor() {
     this._object = undefined;
@@ -103,7 +106,7 @@ class DataBuilder {
 
 
 
-/** send a server query asking for the creation of a LAO with a given name (String) */
+/** Send a server query asking for the creation of a LAO with a given name (String) */
 export const requestCreateLao = (name) => {
   const time = getCurrentTime();
 
@@ -123,7 +126,7 @@ export const requestCreateLao = (name) => {
 };
 
 
-/** send a server query asking for a LAO update providing a new name (String) */
+/** Send a server query asking for a LAO update providing a new name (String) */
 export const requestUpdateLao = (name) => {
   const time = getCurrentTime();
   const currentParams = getCurrentLao().params;
@@ -142,7 +145,7 @@ export const requestUpdateLao = (name) => {
 };
 
 
-/** send a server query asking for the current state of a LAO */
+/** Send a server query asking for the current state of a LAO */
 export const requestStateLao = () => {
   const currentData = getCurrentLao().params.message.data;
 
@@ -179,7 +182,7 @@ export const requestWitnessMessage = () => {
 };
 
 
-/** send a server query asking for the creation of a meeting given a certain name (String), startTime (Date), optional
+/** Send a server query asking for the creation of a meeting given a certain name (String), startTime (Date), optional
  *  location (String), optional end time (Date) and optional extra information (Json object) */
 export const requestCreateMeeting = (name, startTime, location = "", endTime = 0, extra = {}) => {
   const time = getCurrentTime();
@@ -206,7 +209,7 @@ export const requestCreateMeeting = (name, startTime, location = "", endTime = 0
 };
 
 
-/** send a server query asking for the state of a meeting */
+/** Send a server query asking for the state of a meeting */
 export const requestStateMeeting = () => {
   const currentData = getCurrentLao().params.message.data;
 
