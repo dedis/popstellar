@@ -36,6 +36,7 @@ public class LaoTest {
     @Test
     public void createLaoEmptyNameTest() {
         assertThrows(IllegalArgumentException.class, () -> new Lao("", time, organizer));
+        assertThrows(IllegalArgumentException.class, () -> new Lao("     ", time, organizer));
     }
 
     @Test
