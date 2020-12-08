@@ -4,6 +4,7 @@ import storage from 'redux-persist/lib/storage'
 
 import toggleAppNavigationScreen from './Reducers/appToggleReducer';
 import currentLaoReducer from './Reducers/currentLaoReducer';
+import keypairReducer from "./Reducers/keypairReducer";
 
 /**
  * Create the redux persistent store for the app
@@ -18,6 +19,7 @@ const persistConfig = {
 const appReducer = persistCombineReducers(persistConfig, {
   toggleAppNavigationScreenReducer: toggleAppNavigationScreen,
   currentLaoReducer: currentLaoReducer,
+  keypairReducer: keypairReducer,
 });
 
 /** Trick used to clear local persistent storage */

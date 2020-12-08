@@ -76,7 +76,7 @@ const Launch = ({ navigation }) => {
         <View style={styles.button}>
           <Button
             title={"TEST print store"}
-            onPress={() => console.log("printing store ", getStore().getState().currentLaoReducer.lao)}
+            onPress={() => console.log("printing store ", getStore().getState())}
           />
         </View>
         <View style={styles.button}>
