@@ -1,24 +1,34 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import {
+  StyleSheet, View,
+} from 'react-native';
 
-import STRINGS from '../res/strings';
-import { Views } from '../Styles';
+import eventsData from '../res/EventData'; // fake data to show how the component works
+import EventsCollapsableList from './EventsCollapsableList';
 
 /**
-* The Attendee component
-*
-* Manage the Attendee screen
+ * Manage the Attendee screen: A section list of propreties and events
+ *
+ * The section list show the events and propreties of the LAO open in
+ * the organitation UI.
+ *
+ * By default only the past and present section are open.
+ *
+ * TODO use the data receive by the organization server
 */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    ...Views.base,
+    justifyContent: 'center',
   },
 });
 
 const Attendee = () => (
   <View style={styles.container}>
-    <Text>{STRINGS.attendee_description}</Text>
+    <EventsCollapsableList
+      data={eventsData}
+      closedList={['Future', '']}
+    />
   </View>
 );
 

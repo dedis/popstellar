@@ -9,7 +9,13 @@ import ConnectConnecting from '../Components/ConnectConnecting';
 import ConnectConfirm from '../Components/ConnectConfirm';
 
 /**
-* Define the Connect stack navigation
+ * Define the Connect stack navigation
+ *
+ * Contains four screen:
+ *  - The ConnectUnapprove
+ *  - The ConnectScanning
+ *  - The ConnectConnecting
+ *  - The ConnectConfirm
 */
 
 const Stack = createStackNavigator();

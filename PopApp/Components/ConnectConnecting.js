@@ -2,15 +2,22 @@ import React from 'react';
 import {
   StyleSheet, View, Text, Button, ActivityIndicator,
 } from 'react-native';
-import PropTypes from 'prop-types';
 
 import STRINGS from '../res/strings';
 import { Buttons, Colors, Typography } from '../Styles';
+import PROPS_TYPE from '../res/Props';
 
 /**
- *  Connect to a LAO
+ * Connect to a LAO: An activity indicator, a cancel button and a simulate validation button
  *
- *  Currently, just simulate waiting for a response
+ * Currently, just simulate waiting for a response
+ *
+ * The cancel button go back to the ConnectScanning component
+ * The simulate connection button go to the ConnectConfirm component
+ *
+ * TODO make the screen to perform a request to the organizer
+ * server to verify if the user can connect and go to the ConnectConfirm with the information
+ * receive by the server
 */
 const styles = StyleSheet.create({
   container: {
@@ -40,7 +47,7 @@ const ConnectConnecting = ({ navigation }) => (
         <Button
           title={STRINGS.general_button_cancel}
           onPress={() => {
-            navigation.navigate('Scanning');
+            navigation.navigate(STRINGS.connect_scanning_title);
           }}
         />
       </View>
@@ -48,7 +55,7 @@ const ConnectConnecting = ({ navigation }) => (
         <Button
           title={STRINGS.connect_connecting_validate}
           onPress={() => {
-            navigation.navigate('Confirm');
+            navigation.navigate(STRINGS.connect_confirm_title);
           }}
         />
       </View>
@@ -57,9 +64,7 @@ const ConnectConnecting = ({ navigation }) => (
 );
 
 ConnectConnecting.propTypes = {
-  navigation: PropTypes.shape({
-    navigate: PropTypes.func.isRequired,
-  }).isRequired,
+  navigation: PROPS_TYPE.navigation.isRequired,
 };
 
 export default ConnectConnecting;

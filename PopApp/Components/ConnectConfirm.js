@@ -2,15 +2,22 @@ import React from 'react';
 import {
   StyleSheet, View, ScrollView, Text, Button,
 } from 'react-native';
-import PropTypes from 'prop-types';
 
-import STRINGS from '../res/strings';
 import { Spacing, Typography } from '../Styles';
+import STRINGS from '../res/strings';
+import PROPS_TYPE from '../res/Props';
 
 /**
-* Ask for confirmation to connect to LAO
-*
-* Currently, just go to the Launch tab.
+ * Ask for confirmation to connect to LAO: An info ScrollView,
+ * a confirm button and a cancel button
+ *
+ * The ScrollView show information for the user can verify it
+ * connect to the good organization server
+ *
+ * The confirm button navigates to the Lauch tab.
+ * The cancel button navigates back to the ConnectScanning component
+ *
+ * TODO Make the confirm button make the action require in the UI specification
 */
 const styles = StyleSheet.create({
   container: {
@@ -57,23 +64,24 @@ const ConnectConfirm = ({ navigation }) => (
           onPress={() => {
             const parentNavigation = navigation.dangerouslyGetParent();
             if (parentNavigation !== undefined) {
-              parentNavigation.navigate('Launch');
+              parentNavigation.navigate(STRINGS.navigation_tab_launch);
             }
           }}
         />
       </View>
       <View style={styles.button}>
-        <Button title={STRINGS.general_button_cancel} style={styles.button} onPress={() => { navigation.navigate('Scanning'); }} />
+        <Button
+          title={STRINGS.general_button_cancel}
+          style={styles.button}
+          onPress={() => { navigation.navigate(STRINGS.connect_scanning_title); }}
+        />
       </View>
     </View>
   </View>
 );
 
 ConnectConfirm.propTypes = {
-  navigation: PropTypes.shape({
-    navigate: PropTypes.func.isRequired,
-    dangerouslyGetParent: PropTypes.func.isRequired,
-  }).isRequired,
+  navigation: PROPS_TYPE.navigation.isRequired,
 };
 
 export default ConnectConfirm;

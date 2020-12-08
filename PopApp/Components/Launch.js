@@ -5,11 +5,16 @@ import {
 
 import STRINGS from '../res/strings';
 import { Spacing, Typography } from '../Styles';
+import PROPS_TYPE from '../res/Props';
 
-/*
-* The Launch component
-*
-* Manage the Launch screen
+/**
+ * Manage the Launch screen: a decrtiption string, a LAO noame text input, a launch LAO button,
+ * and cancel button
+ *
+ * The Launch button does nothing
+ * The cancel button clear the LAO name field and redirect to the Home screen
+ *
+ * TODO implement the launch button action
 */
 const styles = StyleSheet.create({
   container: {
@@ -32,23 +37,43 @@ const styles = StyleSheet.create({
   },
 });
 
-const Connect = () => (
-  <View style={styles.container}>
-    <View style={styles.viewTop}>
-      <Text style={styles.text}>{STRINGS.launch_description}</Text>
-      <View style={styles.button}>
-        <TextInput style={styles.textInput} placeholder={STRINGS.launch_organization_name} />
-      </View>
-    </View>
-    <View style={styles.viewBottom}>
-      <View style={styles.button}>
-        <Button title={STRINGS.launch_button_launch} />
-      </View>
-      <View style={styles.button}>
-        <Button title={STRINGS.general_button_cancel} />
-      </View>
-    </View>
-  </View>
-);
+const Launch = ({ navigation }) => {
+  const LAOName = React.useRef();
 
-export default Connect;
+  const cancelAction = () => {
+    LAOName.current.clear();
+    navigation.navigate('Home');
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.viewTop}>
+        <Text style={styles.text}>{STRINGS.launch_description}</Text>
+        <View style={styles.button}>
+          <TextInput
+            ref={LAOName}
+            style={styles.textInput}
+            placeholder={STRINGS.launch_organization_name}
+          />
+        </View>
+      </View>
+      <View style={styles.viewBottom}>
+        <View style={styles.button}>
+          <Button title={STRINGS.launch_button_launch} />
+        </View>
+        <View style={styles.button}>
+          <Button
+            title={STRINGS.general_button_cancel}
+            onPress={() => cancelAction()}
+          />
+        </View>
+      </View>
+    </View>
+  );
+};
+
+Launch.propTypes = {
+  navigation: PROPS_TYPE.navigation.isRequired,
+};
+
+export default Launch;
