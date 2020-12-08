@@ -19,11 +19,16 @@ import com.github.dedis.student20_pop.ui.ConnectFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
 import com.github.dedis.student20_pop.utility.network.PoPClientEndpoint;
+import com.github.dedis.student20_pop.utility.network.PoPClientEndpoint;
 import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
 
 import java.net.URI;
+import java.net.URI;
 import java.util.Collections;
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
+
+import javax.websocket.DeploymentException;
 import java.util.concurrent.CompletableFuture;
 
 import javax.websocket.DeploymentException;
@@ -33,7 +38,7 @@ import javax.websocket.DeploymentException;
  **/
 public final class MainActivity extends FragmentActivity {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    public static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +51,7 @@ public final class MainActivity extends FragmentActivity {
             }
 
             getSupportFragmentManager().beginTransaction()
-                        .add(R.id.fragment_container_main, new HomeFragment()).commit();
+                    .add(R.id.fragment_container_main, new HomeFragment()).commit();
         }
     }
 
@@ -71,14 +76,17 @@ public final class MainActivity extends FragmentActivity {
                 break;
             case R.id.button_launch:
                 String name = ((EditText) findViewById(R.id.entry_box_launch)).getText().toString();
-                // For later: send LAO and organizer information
-                Person organizer = new Person("name");
+                Person organizer = ((PoPApplication) getApplication()).getPerson();
                 // Creating the LAO and adding it to the organizer's LAO
                 Lao lao = new Lao(name, new Date(), organizer.getId());
-                organizer.setLaos(Collections.singletonList(lao.getId()));
+                organizer = organizer.setLaos(Collections.singletonList(lao.getId()));
+                // Store the private key of the organizer
+                if (PrivateInfoStorage.storeData(this, organizer.getId(), organizer.getAuthentication()))
+                    Log.d(TAG, "Stored private key of organizer");
 
                 CompletableFuture.supplyAsync(() -> {
                     try {
+                        //TODO Get URL dynamically
                         return PoPClientEndpoint.connectToServer(URI.create("ws://10.0.2.2:2020/"), organizer);
                     } catch (DeploymentException e) {
                         e.printStackTrace();
@@ -90,19 +98,18 @@ public final class MainActivity extends FragmentActivity {
                     else
                         return null;
                 }).whenComplete((errCode, t) -> {
-                        if(t != null)
-                            Log.e(TAG, "Error while creating the lao", t);
-                        else {
-                            // Start the Organizer Activity (user is considered an organizer)
-                            Intent intent = new Intent(this, OrganizerActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(intent);
-                        }
-                    });
-
-                // Store the private key of the organizer
-                if (PrivateInfoStorage.storeData(this, organizer.getId(), organizer.getAuthentication()))
-                    Log.d(TAG, "Stored private key of organizer");
+                    if(t != null)
+                        //TODO Show toast
+                        Log.e(TAG, "Error while creating the lao", t);
+                    else {
+                        // Set LAO and organizer information locally
+                        ((PoPApplication) getApplication()).setPerson(organizer);
+                        ((PoPApplication) getApplication()).setLaos(Collections.singletonList(lao));
+                        // Start the Organizer Activity (user is considered an organizer)
+                        Intent intent = new Intent(this, OrganizerActivity.class);
+                        startActivity(intent);
+                    }
+                });
                 break;
             case R.id.button_cancel_launch:
                 ((EditText) findViewById(R.id.entry_box_launch)).getText().clear();
