@@ -51,7 +51,7 @@
 				},
 				"additionalProperties": false,
 				"required": ["witness", "signature"]
-			}
+			},
 			"$comment": "Note: the items are encoded in Base64"
 		}
 	},
