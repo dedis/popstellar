@@ -78,9 +78,14 @@ public final class MainActivity extends FragmentActivity {
                     // Store the private key of the organizer
                     if (PrivateInfoStorage.storeData(this, organizer.getId(), organizer.getAuthentication()))
                         Log.d(TAG, "Stored private key of organizer");
+
+                    // TODO: send LAO and organizer information to backend
+                    // Set LAO and organizer information locally
+                    ((PoPApplication) getApplication()).setPerson(organizer);
+                    ((PoPApplication) getApplication()).setLaos(Collections.singletonList(lao));
+
                     // Start the Organizer Activity (user is considered an organizer)
                     Intent intent = new Intent(this, OrganizerActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                 }
                 break;
