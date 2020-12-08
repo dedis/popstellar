@@ -22,7 +22,7 @@ import com.github.dedis.student20_pop.utility.ui.OnEventTypeSelectedListener;
  **/
 public class OrganizerActivity extends FragmentActivity implements OnEventTypeSelectedListener, OnAddWitnessListener {
 
-    private static final String TAG = OrganizerActivity.class.getSimpleName();
+    public static final String TAG = OrganizerActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +37,11 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container_organizer, new OrganizerFragment()).commit();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Prevent going back to MainActivity
     }
 
     /**
