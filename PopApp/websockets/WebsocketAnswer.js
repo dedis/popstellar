@@ -4,7 +4,10 @@ import {
 } from './WebsocketUtils';
 import { getStore } from '../Store/configureStore';
 
+
+/** Maximum amount of identical queries retries */
 const MAX_QUERY_RETRIES = 3;
+/** Enumeration of all message object fields in a server answer */
 const answerProperties = Object.freeze({
   JSONRPC: 'jsonrpc',
   RESULT: 'result',
@@ -12,11 +15,14 @@ const answerProperties = Object.freeze({
   ID: 'id',
 });
 
+/** Enumeration of all error object fields in a server answer */
 const errorProperties = Object.freeze({
   CODE: 'code',
   DESCRIPTION: 'description',
 });
 
+
+/** Handles callbacks when receiving a server answer */
 export const handleServerAnswer = (message) => {
   const obj = JSON.parse(message.data);
 
