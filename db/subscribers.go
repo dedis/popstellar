@@ -1,4 +1,4 @@
-/* This file implements useful functions for the publish-subscribe paradigm. */
+/* This file contains functions to manage subscribers of one channel. */
 
 package db
 

@@ -1,4 +1,6 @@
-/* This file implements useful functions to work with channels in the database, such as Create/edit and GetInfos */
+/* This file contains functions used to deal with channels in the database. Like create/update a channel and
+get infos about a channel. */
+
 package db
 
 import (
@@ -16,10 +18,10 @@ const bucketChannel = "channels"
  */
 func writeChannel(obj interface{}, database string, secure bool) error {
 	db, e := OpenDB(database)
-	defer db.Close()
 	if e != nil {
 		return e
 	}
+	defer db.Close()
 
 	err := db.Update(func(tx *bolt.Tx) error {
 		b, err1 := tx.CreateBucketIfNotExists([]byte(bucketChannel))
@@ -39,7 +41,6 @@ func writeChannel(obj interface{}, database string, secure bool) error {
 		case define.RollCall:
 			objID = []byte(obj.(define.RollCall).ID)
 		default:
-			//TODO not sure for the error type
 			return define.ErrRequestDataInvalid
 		}
 		//checks if there is already an entry with that ID if secure is true
@@ -51,7 +52,7 @@ func writeChannel(obj interface{}, database string, secure bool) error {
 		} else {
 			exists := b.Get(objID)
 			if exists == nil {
-				fmt.Printf("11")
+				fmt.Printf("Could not find (key, val) pair to update in write channel with param secure=false")
 				return define.ErrInvalidResource
 			}
 		}
@@ -68,7 +69,6 @@ func writeChannel(obj interface{}, database string, secure bool) error {
 		case define.RollCall:
 			dt, err2 = json.Marshal(obj.(define.RollCall).ID)
 		default:
-			//TODO not sure for the error type
 			return define.ErrRequestDataInvalid
 		}
 		// Marshal the Obj and store it
@@ -95,10 +95,10 @@ func UpdateChannel(obj interface{}, database string) error {
 /*returns channel data from a given ID */
 func GetChannel(id []byte, database string) []byte {
 	db, e := OpenDB(database)
-	defer db.Close()
 	if e != nil {
 		return nil
 	}
+	defer db.Close()
 	var data []byte
 	e = db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucketChannel))
