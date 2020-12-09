@@ -31,6 +31,7 @@ import java.util.SplittableRandom;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import javax.websocket.Session;
@@ -46,7 +47,7 @@ public final class LowLevelClientProxy {
 
     private final Gson gson = JsonUtils.createGson();
     private final Map<Integer, RequestEntry> requests = new ConcurrentHashMap<>();
-    private SplittableRandom rand = new SplittableRandom();
+    private final AtomicInteger counter = new AtomicInteger();
 
     public LowLevelClientProxy(Session session) {
         this.session = session;
@@ -64,10 +65,13 @@ public final class LowLevelClientProxy {
      */
     private <T> CompletableFuture<T> makeRequest(Class<T> responseType, Function<Integer, Request> requestSupplier) {
         RequestEntry entry = new RequestEntry();
-        // Put the result to a random id, if it is already taken, generate a new id until it fits
+        // Put the result to a new id, if it is already taken, generate a new id until it fits in.
+        // Uses overflows to get back to the start.
+        // It might create an infinite loop. But only if there are already 2^32 pending requests.
+        // Which is very unlikely and the timeout system will take care of them
         int id;
         do {
-            id = rand.nextInt();
+            id = counter.incrementAndGet();
         }while(requests.putIfAbsent(id, entry) != null);
 
         Request request = requestSupplier.apply(id);
