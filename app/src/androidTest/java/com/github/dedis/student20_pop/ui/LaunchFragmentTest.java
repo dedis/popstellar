@@ -32,7 +32,6 @@ public class LaunchFragmentTest {
         onView(withId(R.id.tab_launch)).perform(click());
         onView(withId(R.id.entry_box_launch)).perform(typeText("LAO"), closeSoftKeyboard());
         onView(withId(R.id.button_launch)).perform(click());
-        onView(withId(R.id.fragment_organizer)).check(matches(isDisplayed()));
 
         ActivityScenario.launch(OrganizerActivity .class).onActivity(a -> {
             PoPApplication app = (PoPApplication) a.getApplication();
