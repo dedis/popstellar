@@ -7,7 +7,9 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -25,6 +27,8 @@ public class LaoTest {
     private final ArrayList<String> listWithNull = new ArrayList<>(Arrays.asList("0x3939", null, "0x4747"));
     private final Lao lao1 = new Lao(lao1_name, time, organizer);
     private final Lao lao2 = new Lao(lao2_name, time, organizer);
+    private final List<Lao> laos = new ArrayList<>(Arrays.asList(lao1, lao2));
+    private final List<Lao> laosWithNull = new ArrayList<>(Arrays.asList(lao1, null, lao2));
 
     @Test
     public void createLaoNullParametersTest() {
@@ -109,6 +113,17 @@ public class LaoTest {
     public void setNullEventsTest() {
         assertThrows(IllegalArgumentException.class, () -> lao1.setEvents(null));
         assertThrows(IllegalArgumentException.class, () -> lao1.setEvents(listWithNull));
+    }
+
+    @Test
+    public void getNullIdsTest() {
+        assertThrows(IllegalArgumentException.class, () -> Lao.getIds(null));
+        assertThrows(IllegalArgumentException.class, () -> Lao.getIds(laosWithNull));
+    }
+
+    @Test
+    public void getIdsTest() {
+        assertThat(Lao.getIds(laos), is(new ArrayList<>(Arrays.asList(lao1.getId(), lao2.getId()))));
     }
 
     @Test
