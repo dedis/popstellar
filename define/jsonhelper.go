@@ -1,4 +1,4 @@
-/* helper functions to read the messages received. Unmarshall and decode the messages into HR structures */
+/*functions to manage received Json messages. Unmarshalls and decode messages.*/
 package define
 
 import (
@@ -37,11 +37,16 @@ type ParamsFull struct {
 }
 
 type Message struct {
-	Data              json.RawMessage //in base 64
+	Data              json.RawMessage // in base 64
 	Sender            string
 	Signature         string
 	Message_id        string
 	WitnessSignatures []string
+}
+
+type ItemWitnessSignatures struct {
+	Witness   string
+	Signature string
 }
 
 type Data map[string]interface{}
@@ -54,8 +59,7 @@ type DataCreateLAO struct {
 	// name of LAO
 	Name string
 	//Creation Date/Time
-	Creation      int64 //  Unix timestamp (uint64)
-	Last_modified int64 //timestamp
+	Creation int64 //  Unix timestamp (uint64)
 	//Organiser: Public Key
 	Organizer string
 	//List of public keys where each public key belongs to one witness
@@ -82,6 +86,12 @@ type ResponseWithError struct {
 	ErrorResponse json.RawMessage
 	Id            int
 }
+type ResponseIDNotDecoded struct {
+	Jsonrpc       string
+	ErrorResponse json.RawMessage
+	Id            []byte
+}
+
 type DataCreateMeeting struct {
 	Object string
 	Action string
@@ -90,9 +100,9 @@ type DataCreateMeeting struct {
 	// name of LAO
 	Name string
 	//Creation Date/Time
-	Creation      int64  //  Unix timestamp (uint64)
-	Last_modified int64  //timestamp
-	Location      string //optional
+	Creation int64 //  Unix timestamp (uint64)
+	//Last_modified int64  //timestamp
+	Location string //optional
 	//Organiser: Public Key
 	Start int64  /* Timestamp */
 	End   int64  /* Timestamp, optional */
@@ -107,9 +117,9 @@ type DataCreateRollCall struct {
 	// name of LAO
 	Name string
 	//Creation Date/Time
-	Creation      int64  //  Unix timestamp (uint64)
-	Last_modified int64  //timestamp
-	Location      string //optional
+	Creation int64 //  Unix timestamp (uint64)
+	//Last_modified int64  //timestamp
+	Location string //optional
 	//Organiser: Public Key
 	Start int64  /* Timestamp */
 	End   int64  /* Timestamp, optional */
@@ -124,13 +134,19 @@ type DataCreatePoll struct {
 	// name of LAO
 	Name string
 	//Creation Date/Time
-	Creation      int64  //  Unix timestamp (uint64)
-	Last_modified int64  //timestamp
-	Location      string //optional
+	Creation int64 //  Unix timestamp (uint64)
+	//Last_modified int64  //timestamp
+	Location string //optional
 	//Organiser: Public Key
 	Start int64  /* Timestamp */
 	End   int64  /* Timestamp, optional */
 	Extra string /* arbitrary object, optional */
+}
+type DataWitnessMessage struct {
+	Object     string
+	Action     string
+	Message_id string
+	Signature  string
 }
 
 /**
@@ -181,6 +197,12 @@ func AnalyseMessage(message json.RawMessage) (Message, error) {
 	if err != nil {
 		return m, ErrEncodingFault
 	}
+	//TODO super bizarre, il decode correctement la deuxieme fois dans le tests?
+	d, err = Decode(string(d))
+	if err != nil {
+		return m, ErrEncodingFault
+	}
+	//
 	m.Data = d
 
 	for i := 0; i < len(m.WitnessSignatures); i++ {
@@ -192,7 +214,24 @@ func AnalyseMessage(message json.RawMessage) (Message, error) {
 	}
 	return m, err
 }
+func AnalyseWitnessSignatures(witnessSignatures string) (ItemWitnessSignatures, error) {
+	m := ItemWitnessSignatures{}
+	err := json.Unmarshal([]byte(witnessSignatures), &m)
 
+	d, err := Decode(m.Signature)
+	if err != nil {
+		return m, ErrEncodingFault
+	}
+	m.Signature = string(d)
+
+	d, err = Decode(m.Witness)
+	if err != nil {
+		return m, ErrEncodingFault
+	}
+	m.Witness = string(d)
+
+	return m, err
+}
 func AnalyseData(data string) (Data, error) {
 	m := Data{}
 	err := json.Unmarshal([]byte(data), &m)
@@ -207,6 +246,7 @@ func Decode(data string) ([]byte, error) {
 	return d, err
 }
 
+// TODO : Change name to AnalyseDataLAO ? Because creation / state are the same.
 func AnalyseDataCreateLAO(data json.RawMessage) (DataCreateLAO, error) {
 	m := DataCreateLAO{}
 	err := json.Unmarshal(data, &m)
@@ -229,6 +269,21 @@ func AnalyseDataCreateLAO(data json.RawMessage) (DataCreateLAO, error) {
 			return m, ErrEncodingFault
 		}
 		m.Witnesses[i] = string(d)
+	}
+	return m, err
+}
+
+func AnalyseDataWitnessMessage(data json.RawMessage) (DataWitnessMessage, error) {
+	m := DataWitnessMessage{}
+	d, err := b64.StdEncoding.DecodeString(strings.Trim(string(data), `"`))
+	if err != nil {
+		fmt.Printf("error decoding the string : %v", err)
+		return m, err
+	}
+	err = json.Unmarshal(d, &m)
+	if err != nil {
+		fmt.Printf("error unmarshalling the string : %v", err)
+		return m, err
 	}
 	return m, err
 }
@@ -259,22 +314,6 @@ func AnalyseDataCreatePoll(data json.RawMessage) (DataCreatePoll, error) {
 	return m, err
 }
 
-/**
- * Function that reads a JSON message in order to create a new LAO
- */
-/*
-func JsonLaoCreate(message []byte) (MessageLaoCreate, error) {
-	m := MessageLaoCreate{}
-	err := json.Unmarshal(message, &m)
-	return m, err
-}
-
-func DataToMessageEventCreate(data []byte) (MessageEventCreate, error) {
-	m := MessageEventCreate{}
-	err := json.Unmarshal(data, &m)
-	return m, err
-}*/
-
 func CreateBroadcastMessage(generic Generic) []byte {
 	broadcast := Generic{
 		Jsonrpc: generic.Jsonrpc,
@@ -292,23 +331,37 @@ func CreateBroadcastMessage(generic Generic) []byte {
 }
 
 /*
-* Function that converts a Lao to a Json byte array
-* we suppose error is in the good range
+ * Function that create the response to the sender
+ * we suppose error is in the good range
  */
-
 func CreateResponse(err error, messages []byte, generic Generic) []byte {
 	if err != nil {
-		resp := ResponseWithError{
-			Jsonrpc:       "2.0",
-			ErrorResponse: selectDescriptionError(err),
-			Id:            generic.Id,
-		}
-		b, err := json.Marshal(resp)
-		if err != nil {
-			fmt.Println("couldn't Marshal the response")
-		}
-		return b
+		if err == ErrIdNotDecoded {
+			resp := ResponseIDNotDecoded{
+				Jsonrpc:       "2.0",
+				ErrorResponse: selectDescriptionError(err),
+				Id:            nil,
+			}
 
+			b, err := json.Marshal(resp)
+			if err != nil {
+				fmt.Println("couldn't Marshal the response")
+			}
+			return b
+		} else {
+			resp := ResponseWithError{
+				Jsonrpc:       "2.0",
+				ErrorResponse: selectDescriptionError(err),
+				Id:            generic.Id,
+			}
+
+			b, err := json.Marshal(resp)
+			if err != nil {
+				fmt.Println("couldn't Marshal the response")
+			}
+			return b
+
+		}
 	} else {
 		if messages == nil {
 			resp := ResponseWithGenResult{
@@ -372,12 +425,18 @@ func selectDescriptionError(err error) []byte {
 			Description: "access denied",
 		}
 		//(e.g. subscribing to a “restricted” channel)
+	case ErrIdNotDecoded:
+		errResp = ErrorResponse{
+			Code:        -2,
+			Description: "",
+		}
 
 	default:
 		fmt.Printf("%v", err)
-		// TODO decide if we crash everything or not
-		// log.Fatal("type of error unrecognized")
-		return nil //should never arrive here
+		errResp = ErrorResponse{
+			Code:        -4,
+			Description: "request data is invalid",
+		}
 	}
 
 	b, err := json.Marshal(errResp)
