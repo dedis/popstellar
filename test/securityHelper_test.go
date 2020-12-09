@@ -84,7 +84,7 @@ func CheckMessageIsValid( witnessSignatures []define.ItemWitnessSignatures )erro
 }
 
 
-func TestMessageIsValid(t *testing.T) {
+func TestMessageIsValidWithoutWitnesses(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
 		witnessSignatures := []define.ItemWitnessSignatures {}
