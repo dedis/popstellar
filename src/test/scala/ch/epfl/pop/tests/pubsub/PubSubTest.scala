@@ -21,6 +21,7 @@ import ch.epfl.pop.pubsub.{ChannelActor, PublishSubscribe}
 import org.iq80.leveldb.Options
 import org.scalatest.FunSuite
 import ch.epfl.pop.json.JsonUtils.{ErrorCodes, MessageContentDataBuilder}
+import org.scalactic.Equality
 import scorex.crypto.signatures.{Curve25519, PrivateKey, PublicKey}
 
 import java.nio.ByteBuffer
@@ -65,12 +66,40 @@ class PubSubTest extends FunSuite {
       }
       val future = source.initialDelay(1.milli).via(flows(flowNumber)).log("logging ch.epfl.pop.tests.pubsub").runWith(sinkHead)
       response match {
-        case Some(json) => assert(Await.result(future, 1.seconds) == json)
+        case Some(json) => assert(Await.result(future, 1.seconds) === json)
         case None =>
       }
     }
 
   }
+
+  //We need a special case for catchup, because arrays are compared by reference by default
+  private implicit val catchupEq = new Equality[JsonMessageAnswerServer] {
+    override def areEqual(a: JsonMessageAnswerServer, b: Any): Boolean = (a, b) match {
+      case (
+        AnswerResultArrayMessageServer(id1, ChannelMessages(messages1), _),
+        AnswerResultArrayMessageServer(id2, ChannelMessages(messages2), _)
+        ) =>
+        id1 == id2 &&
+          messages1.length == messages2.length &&
+          messages1.forall(
+            //As there is no specified order in the list, we need to check at least one element is equals
+            m1 => messages2.exists(m2 => messageEqual(m1, m2))
+          )
+      case _ => a == b
+    }
+
+    private def messageEqual(msg1: MessageContent, msg2: MessageContent): Boolean = {
+      msg1.encodedData == msg2.encodedData &&
+      util.Arrays.equals(msg1.sender, msg2.sender) &&
+        util.Arrays.equals(msg1.signature, msg2.signature) &&
+        util.Arrays.equals(msg1.message_id, msg2.message_id) &&
+        msg1.witness_signatures.length == msg2.witness_signatures.length &&
+        msg1.witness_signatures.zip(msg2.witness_signatures).forall(s => util.Arrays.equals(s._1, s._2))
+    }
+
+  }
+
 
   private def setup(databasePath : String)(implicit system: ActorSystem[SpawnProtocol.Command], timeout: Timeout) = {
     implicit val ec: ExecutionContext = system.executionContext
@@ -358,7 +387,7 @@ class PubSubTest extends FunSuite {
     sendAndVerify(l)
   }
 
-  test("Create a LAO and witness it") {
+  private def createLaoAndWitness() = {
     val (skOrganizer, pkOrganizer) = generateKeyPair()
     val (skWitness, pkWitness) = generateKeyPair()
 
@@ -367,6 +396,12 @@ class PubSubTest extends FunSuite {
     val channel = "/root/" + new String(b64Encode(createLao.params.message.get.data.id))
     val witnessLaoCreation = getWitnessMessage(messageId, pkWitness, skWitness, channel, 0)
 
+    (createLao, witnessLaoCreation)
+
+  }
+
+  test("Create a LAO and witness it") {
+    val (createLao, witnessLaoCreation) = createLaoAndWitness()
     val l = List(
       (Some(createLao), Some(AnswerResultIntMessageServer(0))),
       (Some(witnessLaoCreation), Some(AnswerResultIntMessageServer(0)))
@@ -380,6 +415,24 @@ class PubSubTest extends FunSuite {
     val l = List(
       (Some(witnessInvalid),
         Some(AnswerErrorMessageServer(0, MessageErrorContent(ErrorCodes.InvalidData.id, "The id the witness message refers to does not exist."))))
+    )
+    sendAndVerify(l)
+  }
+
+  test("Signatures are added to messages when witnessing") {
+    val (createLao, witnessLaoCreation) = createLaoAndWitness()
+    val signature = witnessLaoCreation.params.message.get.data.signature
+    val createLaoUpdated = createLao.params.message.get.updateWitnesses(signature)
+
+    val catchup = CatchupMessageClient(MessageParameters(witnessLaoCreation.params.channel, None), 1)
+    val res = ChannelMessages(
+      List(createLaoUpdated, witnessLaoCreation.params.message.get)
+    )
+
+    val l = List(
+      (Some(createLao), Some(AnswerResultIntMessageServer(0))),
+      (Some(witnessLaoCreation), Some(AnswerResultIntMessageServer(0))),
+      (Some(catchup), Some(AnswerResultArrayMessageServer(1, res)))
     )
     sendAndVerify(l)
   }
