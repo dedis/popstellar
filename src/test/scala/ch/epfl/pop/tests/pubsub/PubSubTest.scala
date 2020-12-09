@@ -1,6 +1,6 @@
 package ch.epfl.pop.tests.pubsub
 
-import ch.epfl.pop.tests.MessageCreationUtils.getMessageParams
+import ch.epfl.pop.tests.MessageCreationUtils.{b64Encode, getMessageParams}
 
 import java.io.File
 import java.security.MessageDigest
@@ -20,7 +20,7 @@ import ch.epfl.pop.json.{Actions, Base64String, ChannelMessages, ChannelName, Me
 import ch.epfl.pop.pubsub.{ChannelActor, PublishSubscribe}
 import org.iq80.leveldb.Options
 import org.scalatest.FunSuite
-import ch.epfl.pop.json.JsonUtils.MessageContentDataBuilder
+import ch.epfl.pop.json.JsonUtils.{ErrorCodes, MessageContentDataBuilder}
 import scorex.crypto.signatures.{Curve25519, PrivateKey, PublicKey}
 
 import java.nio.ByteBuffer
@@ -49,14 +49,14 @@ class PubSubTest extends FunSuite {
 
     implicit val system: ActorSystem[SpawnProtocol.Command] = ActorSystem[SpawnProtocol.Command](root, "test")
     implicit val timeout = Timeout(1, TimeUnit.SECONDS)
-    val (_, actor, dbActor) = setup(DatabasePath)
+    val (pubEntry, actor, dbActor) = setup(DatabasePath)
 
     val sinkHead = Sink.head[JsonMessageAnswerServer]
 
     val options: Options = new Options()
     options.createIfMissing(true)
 
-    val flows = (1 to numberProcesses).map(_ => PublishSubscribe.jsonFlow(actor, dbActor))
+    val flows = (1 to numberProcesses).map(_ => PublishSubscribe.jsonFlow(actor, dbActor)(timeout, system, pubEntry))
 
     messages.foreach { case (message, response, flowNumber) =>
       val source = message match {
@@ -79,7 +79,7 @@ class PubSubTest extends FunSuite {
     val futureActor: Future[ActorRef[ChannelActor.ChannelMessage]] = system.ask(SpawnProtocol.Spawn(pop.pubsub.ChannelActor(exit),
       "actor", Props.empty, _))
     val actor = Await.result(futureActor, 1.seconds)
-    val futureDBActor: Future[ActorRef[DBMessage]] = system.ask(SpawnProtocol.Spawn(DBActor(databasePath, entry), "actorDB", Props.empty, _))
+    val futureDBActor: Future[ActorRef[DBMessage]] = system.ask(SpawnProtocol.Spawn(DBActor(databasePath), "actorDB", Props.empty, _))
     val dbActor = Await.result(futureDBActor, 1.seconds)
 
     (entry, actor, dbActor)
@@ -195,6 +195,18 @@ class PubSubTest extends FunSuite {
     CreateMeetingMessageClient(params, id, Methods.Publish)
   }
 
+  private def getWitnessMessage(messageId: Base64String, pk: PublicKey, sk: PrivateKey, channel: ChannelName, id: Int) = {
+    val signature = Curve25519.sign(sk, messageId.getBytes())
+
+    val data = new MessageContentDataBuilder()
+      .setHeader(Objects.Message, Actions.Witness)
+      .setMessageId(messageId)
+      .setSignature(signature)
+      .build()
+    val params = getMessageParams(data, pk, sk, channel)
+    WitnessMessageMessageClient(params, id, Methods.Publish)
+  }
+
   test("Create a LAO, subscribe to its channel and publish the state") {
     val (sk, pk): (PrivateKey, PublicKey) = Curve25519.createKeyPair
     val (l, _) = createLaoSetup(sk, pk)
@@ -303,7 +315,7 @@ class PubSubTest extends FunSuite {
 
     implicit val system: ActorSystem[SpawnProtocol.Command] = ActorSystem[SpawnProtocol.Command](root, "test")
     implicit val timeout = Timeout(1, TimeUnit.SECONDS)
-    val (_, actor, dbActor) = setup(DatabasePath)
+    val (pubEntry, actor, dbActor) = setup(DatabasePath)
 
     val options: Options = new Options()
     options.createIfMissing(true)
@@ -311,7 +323,7 @@ class PubSubTest extends FunSuite {
     val in = l.map(_._1).flatten
     val out = l.map(_._2).flatten
 
-    val flow = PublishSubscribe.jsonFlow(actor, dbActor).take(out.length)
+    val flow = PublishSubscribe.jsonFlow(actor, dbActor)(timeout, system, pubEntry).take(out.length)
     val sink: Sink[JsonMessage, Future[Seq[JsonMessage]]] = Sink.fold(Seq.empty[JsonMessage])(_ :+ _)
 
     val future = Source(in).throttle(1, 200.milli).via(flow).runWith(sink)
@@ -342,6 +354,32 @@ class PubSubTest extends FunSuite {
       (Some(createLao), Some(AnswerResultIntMessageServer(0))),
       (Some(state), Some(AnswerResultIntMessageServer(1))),
       (Some(catchup), Some(AnswerResultArrayMessageServer(2, res)))
+    )
+    sendAndVerify(l)
+  }
+
+  test("Create a LAO and witness it") {
+    val (skOrganizer, pkOrganizer) = generateKeyPair()
+    val (skWitness, pkWitness) = generateKeyPair()
+
+    val createLao = getCreateLao(pkOrganizer, skOrganizer,0, "LAOOOOO")
+    val messageId = new String(b64Encode(createLao.params.message.get.message_id))
+    val channel = "/root/" + new String(b64Encode(createLao.params.message.get.data.id))
+    val witnessLaoCreation = getWitnessMessage(messageId, pkWitness, skWitness, channel, 0)
+
+    val l = List(
+      (Some(createLao), Some(AnswerResultIntMessageServer(0))),
+      (Some(witnessLaoCreation), Some(AnswerResultIntMessageServer(0)))
+    )
+    sendAndVerify(l)
+  }
+
+  test("Witness an unknown message") {
+    val (skWitness, pkWitness) = generateKeyPair()
+    val witnessInvalid = getWitnessMessage("", pkWitness, skWitness, "", 0)
+    val l = List(
+      (Some(witnessInvalid),
+        Some(AnswerErrorMessageServer(0, MessageErrorContent(ErrorCodes.InvalidData.id, "The id the witness message refers to does not exist."))))
     )
     sendAndVerify(l)
   }

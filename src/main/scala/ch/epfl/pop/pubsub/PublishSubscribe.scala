@@ -5,7 +5,7 @@ import akka.NotUsed
 import akka.actor.typed.scaladsl.AskPattern.{Askable, schedulerFromActorSystem}
 import akka.actor.typed.{ActorRef, ActorSystem}
 import akka.http.scaladsl.model.ws.{Message, TextMessage}
-import akka.stream.scaladsl.{BroadcastHub, Flow, GraphDSL, Keep, Merge, MergeHub, Partition}
+import akka.stream.scaladsl.{BroadcastHub, Flow, GraphDSL, Keep, Merge, MergeHub, Partition, Sink, Source}
 import akka.stream.typed.scaladsl.ActorFlow
 import akka.stream.{FlowShape, UniformFanInShape, UniqueKillSwitch}
 import akka.util.Timeout
@@ -14,12 +14,12 @@ import ch.epfl.pop.DBActor.{DBMessage, Read, Write}
 import ch.epfl.pop.json.JsonMessageParser.{parseMessage, serializeMessage}
 import ch.epfl.pop.json.JsonMessages.{JsonMessagePublishClient, _}
 import ch.epfl.pop.json.JsonUtils.ErrorCodes.InvalidData
-import ch.epfl.pop.json.JsonUtils.JsonMessageParserError
-import ch.epfl.pop.json.{MessageErrorContent, MessageParameters}
+import ch.epfl.pop.json.JsonUtils.{ErrorCodes, JsonMessageParserError}
+import ch.epfl.pop.json.{MessageContent, MessageErrorContent, MessageParameters}
 import ch.epfl.pop.pubsub.ChannelActor._
 
 import java.util
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 
 
 
@@ -33,7 +33,7 @@ object PublishSubscribe {
   def jsonFlow(channelActor: ActorRef[ChannelMessage],
                dbActor : ActorRef[DBMessage])
               (implicit timeout: Timeout,
-               system: ActorSystem[Nothing]): Flow[JsonMessagePubSubClient, JsonMessageAnswerServer, NotUsed] = {
+               system: ActorSystem[Nothing], pubEntry: Sink[PropagateMessageServer, NotUsed]): Flow[JsonMessagePubSubClient, JsonMessageAnswerServer, NotUsed] = {
 
     val (userSink, userSource) = MergeHub.source[PropagateMessageServer].toMat(BroadcastHub.sink)(Keep.both).run()
 
@@ -98,12 +98,16 @@ object PublishSubscribe {
   private def publish(actor: ActorRef[ChannelMessage],
                       dbActor: ActorRef[DBMessage])
                      (implicit timeout: Timeout,
-                      system: ActorSystem[Nothing]): JsonMessage => JsonMessageAnswerServer = {
+                      system: ActorSystem[Nothing], pubEntry: Sink[PropagateMessageServer, NotUsed]): JsonMessage => JsonMessageAnswerServer = {
 
-    def pub(params: MessageParameters, id: Int, propagate: Boolean) = {
+    def pub(params: MessageParameters, propagate: Boolean) = {
       system.log.debug("Publishing: " + util.Arrays.toString(params.message.get.message_id))
-      val future = dbActor.ask(ref => Write(params, id, propagate, ref))
+      val future = dbActor.ask(ref => Write(params.channel, params.message.get, ref))
       Await.result(future, timeout.duration)
+      if(propagate) {
+        val prop = PropagateMessageServer(params)
+        Source.single(prop).runWith(pubEntry)
+      }
     }
 
     def errorOrPublish(params: MessageParameters, id: Int, error: Option[MessageErrorContent]) = {
@@ -116,7 +120,9 @@ object PublishSubscribe {
           system.log.debug("Sender: " + util.Arrays.toString(content.sender))*/
           Validate.validate(content) match {
             case Some(error) => AnswerErrorMessageServer(id, error)
-            case None => pub(params, id, true)
+            case None =>
+              pub(params, true)
+              AnswerResultIntMessageServer(id)
           }
       }
     }
@@ -136,7 +142,8 @@ object PublishSubscribe {
               }
               else {
                 //Publish on the LAO main channel
-                pub(MessageParameters(channel, params.message), id, false)
+                pub(MessageParameters(channel, params.message), false)
+                AnswerResultIntMessageServer(id)
               }
           }
         case m @ UpdateLaoMessageClient(params,id,_,_) =>
@@ -151,7 +158,25 @@ object PublishSubscribe {
               errorOrPublish(params, id, Validate.validate(m, msgContent.data))
           }
         case m @ WitnessMessageMessageClient(params, id, _, _) =>
+          val message = params.message.get.data
+          val messageId = message.message_id
+          val signature = message.signature
+          implicit val ec = system.executionContext
+          val future = dbActor.ask(ref => Read(params.channel, Base64.getDecoder.decode(messageId), ref))
+            .flatMap {
+              case Some(message) =>
+                dbActor.ask(ref => Write(params.channel, message.updateWitnesses(signature), ref))
+              case None =>
+                system.log.debug("Message id not found in db.")
+                Future(false)
+            }
+          if (Await.result(future, timeout.duration))
            errorOrPublish(params, id, Validate.validate(m))
+          else {
+            val error = MessageErrorContent(ErrorCodes.InvalidData.id, "The id the witness message refers to does not exist.")
+            AnswerErrorMessageServer(id, error)
+          }
+
         case m @ CreateMeetingMessageClient(params, id, _, _) =>
           val laoId = Base64.getDecoder.decode(params.channel.slice(6,params.channel.length).getBytes)
           system.log.debug("Create meeting")
@@ -214,7 +239,7 @@ object PublishSubscribe {
   def messageFlow(actor: ActorRef[ChannelMessage],
                   dbActor : ActorRef[DBMessage])
                  (implicit timeout: Timeout,
-                  system: ActorSystem[Nothing]): Flow[Message, Message, NotUsed] = {
+                  system: ActorSystem[Nothing], pubEntry: Sink[PropagateMessageServer, NotUsed]): Flow[Message, Message, NotUsed] = {
     val jFlow = jsonFlow(actor, dbActor)
     Flow.fromGraph(GraphDSL.create() {
       implicit builder =>

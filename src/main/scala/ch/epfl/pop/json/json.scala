@@ -50,7 +50,12 @@ package object json {
                                    signature: Signature,
                                    message_id: Hash,
                                    witness_signatures: List[Signature]
-                                 )
+                                 ) {
+
+    def updateWitnesses(s: Signature): MessageContent =
+      MessageContent(encodedData, data, sender, signature, message_id, s :: witness_signatures)
+
+  }
 
   final case class ChannelMessages(messages: List[ChannelMessage])
   final case class MessageErrorContent(code: Int, description: String)

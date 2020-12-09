@@ -2,7 +2,6 @@ package ch.epfl.pop
 
 import java.io.File
 import java.nio.charset.StandardCharsets
-
 import akka.NotUsed
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.{ActorRef, ActorSystem, Behavior}
@@ -12,6 +11,8 @@ import ch.epfl.pop.json._
 import ch.epfl.pop.json.JsonMessageParser.serializeMessage
 import org.iq80.leveldb.impl.Iq80DBFactory.factory
 import org.iq80.leveldb.{DB, Options}
+
+import java.util
 
 
 /**
@@ -27,24 +28,24 @@ object DBActor {
    * @param rid the id of the client request
    * @param replyTo the actor to respond to
    */
-  final case class Write(message: MessageParameters, rid : Int,propagate: Boolean, replyTo: ActorRef[JsonMessageAnswerServer]) extends DBMessage
+  final case class Write(channel: ChannelName, message : MessageContent, replyTo: ActorRef[Boolean]) extends DBMessage
 
-  final case class Catchup(channel: String, rid: Int, replyTo: ActorRef[JsonMessageAnswerServer]) extends DBMessage
+  final case class Catchup(channel: ChannelName, rid: Int, replyTo: ActorRef[JsonMessageAnswerServer]) extends DBMessage
 
-  final case class Read(channel: String, id: Hash, replyTo: ActorRef[Option[MessageContent]]) extends DBMessage
+  final case class Read(channel: ChannelName, id: Hash, replyTo: ActorRef[Option[MessageContent]]) extends DBMessage
+
 
   /**
    * Create an actor handling the database
    * @param path the path of the database
    * @return an actor handling the database
    */
-  def apply(path: String, pubEntry: Sink[PropagateMessageServer, NotUsed]): Behavior[DBMessage] = database(path, Map.empty, pubEntry)
+  def apply(path: String): Behavior[DBMessage] = database(path, Map.empty)
 
-  private def database(path : String, channelsDB: Map[String, DB], pubEntry: Sink[PropagateMessageServer, NotUsed]): Behavior[DBMessage] = Behaviors.receive { (ctx, message) =>
+  private def database(path : String, channelsDB: Map[String, DB]): Behavior[DBMessage] = Behaviors.receive { (ctx, message) =>
      message match {
 
-      case Write(params, rid, propagate, replyTo) =>
-        val channel = params.channel
+      case Write(channel, message, replyTo) =>
         val (newChannelsDB, db) = channelsDB.get(channel) match {
           case Some(db) => (channelsDB, db)
           case None =>
@@ -54,21 +55,13 @@ object DBActor {
             (channelsDB + (channel -> db), db)
         }
 
-
-
-        val message: MessageContent = params.message.get
         val id = message.message_id
+        ctx.log.debug("Writing message with id: " + util.Arrays.toString(id) + " on channel " + channel)
         db.put(id, serializeMessage(message).getBytes)
 
-        if(propagate) {
-          val prop = PropagateMessageServer(params)
-          implicit val system: ActorSystem[Nothing] = ctx.system
-          Source.single(prop).runWith(pubEntry)
-        }
+        replyTo ! true
 
-        replyTo ! AnswerResultIntMessageServer(id = rid)
-
-        database(path, newChannelsDB, pubEntry)
+        database(path, newChannelsDB)
 
       case Catchup(channel, rid, replyTo) =>
         if(channelsDB.contains(channel)) {
@@ -92,6 +85,7 @@ object DBActor {
         Behaviors.same
 
       case Read(channel, id, replyTo) =>
+        ctx.log.debug("Writing message with id: " + util.Arrays.toString(id) + " on channel " + channel)
          if(channelsDB.contains(channel)) {
            val db = channelsDB(channel)
            val res = db.get(id) match {
