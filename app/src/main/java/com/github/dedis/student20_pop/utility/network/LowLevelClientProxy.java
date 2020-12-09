@@ -41,6 +41,7 @@ import javax.websocket.Session;
 public final class LowLevelClientProxy {
 
     private static final long TIMEOUT = 5000L; // 5 secs
+
     private final Session session;
 
     private final Gson gson = JsonUtils.createGson();
@@ -71,7 +72,6 @@ public final class LowLevelClientProxy {
 
         Request request = requestSupplier.apply(id);
         String txt = gson.toJson(request, ChanneledMessage.class);
-        System.out.println("Sending ... " + txt);
         session.getAsyncRemote().sendText(txt);
 
         return entry.requests.thenApply(elem -> gson.fromJson(elem, responseType));

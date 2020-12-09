@@ -1,5 +1,7 @@
 package com.github.dedis.student20_pop.utility.network;
 
+import android.util.Log;
+
 import com.github.dedis.student20_pop.model.Person;
 
 import org.glassfish.tyrus.client.ClientManager;
@@ -27,7 +29,10 @@ import javax.websocket.Session;
 @ClientEndpoint()
 public final class PoPClientEndpoint {
 
+    private static final String TAG = PoPClientEndpoint.class.getName();
+
     private static final ClientManager client = ClientManager.createClient();
+    private static final Map<Session, LowLevelClientProxy> listeners = new HashMap<>();
 
     /**
      * Create a new HighLevelClientProxy that will encapsulate the socket
@@ -39,19 +44,23 @@ public final class PoPClientEndpoint {
     public static HighLevelClientProxy connectToServer(URI host, Person person) throws DeploymentException {
         Session session = client.connectToServer(PoPClientEndpoint.class, host);
         HighLevelClientProxy client = new HighLevelClientProxy(session, person);
-        listeners.put(session, client.lowLevel());
+
+        synchronized (listeners) {
+            listeners.put(session, client.lowLevel());
+        }
         return client;
     }
 
-    private static final Map<Session, LowLevelClientProxy> listeners = new HashMap<>();
 
     @OnOpen
     public void onOpen(Session session) {
-        System.out.println("Client successfully connected to " + session.getId());
+        Log.i(TAG, "Client successfully connected to " + session.getId());
     }
 
     @OnMessage
     public void onMessage(String message, Session session) {
+        // Messages from a session are taken care one at the time to avoid any problem
+        // In the future, we could improve this
         synchronized (listeners) {
             LowLevelClientProxy client = listeners.get(session);
             if(client == null)
@@ -63,6 +72,8 @@ public final class PoPClientEndpoint {
 
     @OnClose
     public void onClose(Session session, CloseReason reason) {
-        listeners.remove(session);
+        synchronized (listeners) {
+            listeners.remove(session);
+        }
     }
 }

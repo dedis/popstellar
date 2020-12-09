@@ -20,9 +20,12 @@ import static java.lang.String.format;
 
 public class WebSocketServer {
 
+    public static final String LOCALHOST = "localhost";
+    public static final int PORT = 2020;
+
     public static void main(String[] args) {
 
-        Server server = new Server("localhost", 2020, "", PoPServerEndpoint.class);
+        Server server = new Server(LOCALHOST, PORT, "", PoPServerEndpoint.class);
 
         try {
             server.start();
@@ -38,6 +41,9 @@ public class WebSocketServer {
     @ServerEndpoint(value = "/")
     public static class PoPServerEndpoint {
 
+        public static final String JSONRPC_FORMAT = "{\"jsonrpc\": \"2.0\",\"result\": 0,\"id\": %d}";
+        public static final String ID_REGEX = "\"id\":(-?\\d+)";
+
         @OnOpen
         public void onOpen(Session session) {
             System.out.println(format("Connected with %s", session.getId()));
@@ -45,14 +51,15 @@ public class WebSocketServer {
 
         @OnMessage
         public void onMessage(String message, Session session) {
-            Pattern pattern = Pattern.compile("\"id\":(-?\\d+)");
+            Pattern pattern = Pattern.compile(ID_REGEX);
             Matcher matcher = pattern.matcher(message);
-            if(matcher.find()) {
+            String id = matcher.group(0);
+            if(id != null) {
                 try {
                     session.getBasicRemote().sendText(
                             String.format(Locale.US,
-                                    "{\"jsonrpc\": \"2.0\",\"result\": 0,\"id\": %d}",
-                                    Integer.parseInt(matcher.group(1))));
+                                    JSONRPC_FORMAT,
+                                    Integer.parseInt(id)));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
