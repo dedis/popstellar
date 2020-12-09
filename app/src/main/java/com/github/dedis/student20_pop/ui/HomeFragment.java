@@ -31,7 +31,7 @@ public final class HomeFragment extends Fragment {
 
     public static final String TAG = HomeFragment.class.getSimpleName();
 
-    //retrieved from the backend, more specifically from the Person's list of Lao's
+    //TODO: retrieve from the backend, more specifically from the Person's list of Lao's
     private ArrayList<Lao> laos;
     //Now: for testing, later: retrieve from Person
     private Keys keys = new Keys();
@@ -113,7 +113,7 @@ public final class HomeFragment extends Fragment {
     }
 
     private ArrayList<Lao> getLaos(){
-        //Now: for testing, later: retrieve from Person's list of Lao
+        //Now: for testing, later: TODO: retrieve from Person's list of Lao
         String notMyPublicKey = new Keys().getPublicKey();
         ArrayList<Lao> result = new ArrayList<>();
         result.add(new Lao("LAO 1", new Date(), notMyPublicKey));
