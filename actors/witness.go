@@ -167,7 +167,6 @@ func (w *Witness) handleCreateLAO(message define.Message, channel string, generi
 		ID:            data.ID,
 		Name:          data.Name,
 		Creation:      data.Creation,
-		LastModified:  data.Last_modified,
 		OrganizerPKey: data.Organizer,
 		Witnesses:     data.Witnesses,
 	}
@@ -221,8 +220,8 @@ func (w *Witness) handleWitnessMessage(message define.Message, channel string, g
 		return nil, nil, define.ErrDBFault
 	}
 
-	check, err := define.VerifySignature(message.Sender, storedMessage.Data, data.Signature)
-	if !check || err != nil {
+	err = define.VerifySignature(message.Sender, storedMessage.Data, data.Signature)
+	if err != nil {
 		return nil, nil, define.ErrInvalidResource
 	}
 
@@ -255,7 +254,6 @@ func (w *Witness) handleLAOState(message define.Message, channel string, generic
 		ID:            data.ID,
 		Name:          data.Name,
 		Creation:      data.Creation,
-		LastModified:  data.Last_modified,
 		OrganizerPKey: data.Organizer,
 		Witnesses:     data.Witnesses,
 	}
@@ -277,13 +275,12 @@ func (w *Witness) handleCreateRollCall(message define.Message, channel string, g
 	}
 
 	rollCall := define.RollCall{
-		ID:           data.ID,
-		Name:         data.Name,
-		Creation:     data.Creation,
-		LastModified: data.Last_modified,
-		Location:     data.Location,
-		Start:        data.Start,
-		End:          data.End,
+		ID:       data.ID,
+		Name:     data.Name,
+		Creation: data.Creation,
+		Location: data.Location,
+		Start:    data.Start,
+		End:      data.End,
 	}
 
 	err = db.CreateChannel(rollCall, w.database)

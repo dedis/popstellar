@@ -37,16 +37,22 @@ type ParamsFull struct {
 }
 
 type Message struct {
-	Data              json.RawMessage //in base 64
+	Data              json.RawMessage // in base 64
 	Sender            string
 	Signature         string
 	Message_id        string
 	WitnessSignatures []string
 }
 
+type ItemWitnessSignatures struct {
+	Witness string
+	Signature string
+}
+
 type Data map[string]interface{}
 
 type DataCreateLAO struct {
+	//TODO info: LastModified plus dans le nouveau proto
 	Object string
 	Action string
 	//ID hash : Name || Creation Date/Time Unix Timestamp
@@ -55,7 +61,7 @@ type DataCreateLAO struct {
 	Name string
 	//Creation Date/Time
 	Creation      int64 //  Unix timestamp (uint64)
-	Last_modified int64 //timestamp
+	//Last_modified int64 //timestamp plus dans le nouveau proto
 	//Organiser: Public Key
 	Organizer string
 	//List of public keys where each public key belongs to one witness
@@ -97,7 +103,7 @@ type DataCreateMeeting struct {
 	Name string
 	//Creation Date/Time
 	Creation      int64  //  Unix timestamp (uint64)
-	Last_modified int64  //timestamp
+	//Last_modified int64  //timestamp
 	Location      string //optional
 	//Organiser: Public Key
 	Start int64  /* Timestamp */
@@ -114,7 +120,7 @@ type DataCreateRollCall struct {
 	Name string
 	//Creation Date/Time
 	Creation      int64  //  Unix timestamp (uint64)
-	Last_modified int64  //timestamp
+	//Last_modified int64  //timestamp
 	Location      string //optional
 	//Organiser: Public Key
 	Start int64  /* Timestamp */
@@ -131,7 +137,7 @@ type DataCreatePoll struct {
 	Name string
 	//Creation Date/Time
 	Creation      int64  //  Unix timestamp (uint64)
-	Last_modified int64  //timestamp
+	//Last_modified int64  //timestamp
 	Location      string //optional
 	//Organiser: Public Key
 	Start int64  /* Timestamp */
@@ -193,6 +199,12 @@ func AnalyseMessage(message json.RawMessage) (Message, error) {
 	if err != nil {
 		return m, ErrEncodingFault
 	}
+	//TODO super bizarre, il decode correctement la deuxieme fois dans le tests?
+	d, err = Decode(string(d))
+	if err != nil {
+		return m, ErrEncodingFault
+	}
+	//
 	m.Data = d
 
 	for i := 0; i < len(m.WitnessSignatures); i++ {
@@ -204,7 +216,24 @@ func AnalyseMessage(message json.RawMessage) (Message, error) {
 	}
 	return m, err
 }
+func AnalyseWitnessSignatures(witnessSignatures string) (ItemWitnessSignatures, error) {
+	m := ItemWitnessSignatures{}
+	err := json.Unmarshal([]byte (witnessSignatures), &m)
 
+	d, err := Decode(m.Signature)
+	if err != nil {
+		return m, ErrEncodingFault
+	}
+	m.Signature = string(d)
+
+	d, err = Decode(m.Witness)
+	if err != nil {
+		return m, ErrEncodingFault
+	}
+	m.Witness = string(d)
+
+	return m, err
+}
 func AnalyseData(data string) (Data, error) {
 	m := Data{}
 	err := json.Unmarshal([]byte(data), &m)
