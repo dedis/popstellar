@@ -47,7 +47,7 @@ public final class HighLevelClientProxy {
      *
      * @return a CompletableFuture that will be complete once the back end responses
      */
-    public CompletableFuture<Integer> createLoa(String name, long creation, long lastModified, String organizer) {
+    public CompletableFuture<Integer> createLao(String name, long creation, long lastModified, String organizer) {
         return lowLevelClientProxy.publish(publicKey, privateKey, ROOT,
                 new CreateLao(Hash.hash(organizer + creation + name), name, creation, lastModified, organizer, new ArrayList<>()));
     }
