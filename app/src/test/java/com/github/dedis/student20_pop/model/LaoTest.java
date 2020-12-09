@@ -34,6 +34,12 @@ public class LaoTest {
     }
 
     @Test
+    public void createLaoEmptyNameTest() {
+        assertThrows(IllegalArgumentException.class, () -> new Lao("", time, organizer));
+        assertThrows(IllegalArgumentException.class, () -> new Lao("     ", time, organizer));
+    }
+
+    @Test
     public void setAndGetNameTest() {
         assertThat(lao1.getName(), is(lao1_name));
         assertThat((lao1.setName(lao2_name)).getName(), is(lao2_name));
@@ -80,6 +86,11 @@ public class LaoTest {
     @Test
     public void setNullNameTest() {
         assertThrows(IllegalArgumentException.class, () -> lao1.setName(null));
+    }
+
+    @Test
+    public void setEmptyNameTest() {
+        assertThrows(IllegalArgumentException.class, () -> lao1.setName(""));
     }
 
     @Test
