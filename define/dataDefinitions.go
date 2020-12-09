@@ -6,18 +6,18 @@ import "hash"
 /*
 Data Types:
 For readability (human) and proper encoding for JSON, these data types must be transmitted
-and/or displayed in the given format but may be stored in bytes.
+and/or displayed in the given format but are stored in bytes.
 */
 
 const SubscribeDB = "sub.db"
 
 type LAO struct {
-	//ID hash : Name || Creation Date/Time Unix Timestamp
+	//ID hash : Name || Creation(Date/Time Unix Timestamp), not updated on name update.
 	ID string
 	// name of LAO
 	Name string
 	//Creation Date/Time
-	Creation     int64 //  Unix timestamp (uint64)
+	Creation int64 //  Unix timestamp (uint64)
 	//LastModified int64 //timestamp
 	//Organiser: Public Key
 	OrganizerPKey string
