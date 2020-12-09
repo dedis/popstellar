@@ -33,8 +33,10 @@ public final class Lao {
     public Lao(String name, Date time, String organizer) {
         if (name == null || time == null || organizer == null) {
             throw new IllegalArgumentException("Trying to  create a LAO with a null value");
+        } else if (name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Trying to set an empty name for the LAO");
         }
-        this.name = name;
+        this.name = name.trim();
         this.time = time.getTime() / 1000L;
         this.id = Hash.hash(name + time);
         this.organizer = organizer;
@@ -133,6 +135,8 @@ public final class Lao {
     public Lao setName(String name) {
         if (name == null) {
             throw new IllegalArgumentException("Trying to set null as the name of the LAO");
+        } else if (name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Trying to set an empty name for the LAO");
         }
         return new Lao(name, time, organizer, witnesses, members, events);
     }
