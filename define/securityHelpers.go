@@ -11,14 +11,8 @@ import (
 
 const MaxPropagationDelay = 600
 
-// TODO if we use the json Schema, don't need to check structure correctness
-func LAOCreatedIsValid(data DataCreateLAO, message Message) bool {
-	//the last modified timestamp is equal to the creation timestamp,
-	/*/if data.Creation != data.Last_modified {
-		fmt.Printf("%v, %v", data, data.Last_modified)
-		fmt.Printf("sec1")
-		return false
-	}*/
+/* used for both creation and state update */
+func LAOIsValid(data DataCreateLAO, message Message, create bool) bool {
 	//the timestamp is reasonably recent with respect to the server’s clock,
 	if data.Creation > time.Now().Unix() || data.Creation < time.Now().Unix()-MaxPropagationDelay {
 		fmt.Printf("timestamp invalid, either too old or in the future : %v", data.Creation)
@@ -31,17 +25,12 @@ func LAOCreatedIsValid(data DataCreateLAO, message Message) bool {
 	hash := sha256.Sum256(str)
 	//hash64 := b64.StdEncoding.EncodeToString(hash[:])
 
-	if !bytes.Equal([]byte(data.ID), hash[:]) {
+	if create && !bytes.Equal([]byte(data.ID), hash[:]) {
 		//if(hash64 != data.ID) {
 		fmt.Printf("sec3 \n")
 		fmt.Printf("%v, %v", hash, data.ID)
 		return false
 	}
-	/*the timestamp is reasonably recent with respect to the server’s clock,
-	if data.Last_modified > time.Now().Unix() || data.Last_modified < time.Now().Unix()-MaxPropagationDelay {
-		fmt.Printf("sec2")
-		return false
-	}*/
 
 	//TODO any more checks to perform ?
 
@@ -174,21 +163,4 @@ func VerifyWitnessSignatures(publicKeys []string, witnessSignaturesEnc []string,
 		}
 	}
 	return nil
-}
-
-func LAOStateIsValid(data DataCreateLAO, message Message) bool {
-	//the last modified timestamp is bigger than the creation timestamp,
-	/*if data.Creation > data.Last_modified {
-		fmt.Printf("creation time : %v, update time : %v . Creation cannot be bigger than update", data, data.Last_modified)
-		return false
-	}
-	the timestamp is reasonably recent with respect to the server’s clock,
-	if data.Last_modified > time.Now().Unix() || data.Last_modified < time.Now().Unix()-MaxPropagationDelay {
-		fmt.Printf("sec2")
-		return false
-	}*/
-
-	//TODO any more checks to perform ?
-
-	return true
 }

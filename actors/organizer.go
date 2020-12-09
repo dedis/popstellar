@@ -204,7 +204,7 @@ func (o *Organizer) handleCreateLAO(message define.Message, canal string, generi
 		return nil, nil, define.ErrInvalidResource
 	}
 
-	if !define.LAOCreatedIsValid(data, message) {
+	if !define.LAOIsValid(data, message, true) {
 		return nil, nil, define.ErrInvalidResource
 	}
 

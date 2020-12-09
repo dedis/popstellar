@@ -1,7 +1,7 @@
 /*
 This class implements the functions an organizer provides. It stores messages in the database using the db package.
-Currently it does not do send response to channels (only ack messages as defined in the protocol) as we decided thought
-the front-end should implement "witness a message".
+Currently it does not do send response to channels (only ack messages as defined in the protocol). Implementation not
+finished as it is not the most important class for now. Does not support publish method.
 */
 
 package actors
@@ -58,7 +58,7 @@ func (w *Witness) HandleWholeMessage(msg []byte, userId int) ([]byte, []byte, []
 }
 
 func (w *Witness) handlePublish(generic define.Generic) ([]byte, []byte, error) {
-	return nil, nil, define.ErrInvalidAction //a witness cannot handle a publish request
+	return nil, nil, define.ErrInvalidAction //a witness cannot handle a publish request for now
 }
 
 /** @returns, in order
@@ -115,33 +115,31 @@ func (w *Witness) handleMessage(generic define.Generic) ([]byte, []byte, error) 
 		case "create":
 			return w.handleCreateRollCall(message, params.Channel, generic)
 		case "state":
-			//TODO
+			return nil, nil, define.ErrInvalidAction
 		default:
 			return nil, nil, define.ErrInvalidAction
 		}
 	case "meeting":
 		switch data["action"] {
 		case "create":
-			//return w.handleCreateMeeting(message, params.Channel, generic)
+			return nil, nil, define.ErrInvalidAction
 		case "state":
-			//TODO
+			return nil, nil, define.ErrInvalidAction
 		default:
 			return nil, nil, define.ErrInvalidAction
 		}
 	case "poll":
 		switch data["action"] {
 		case "create":
-			//return w.handleCreatePoll(message, params.Channel, generic)
+			return nil, nil, define.ErrInvalidAction
 		case "state":
-			//TODO
+			return nil, nil, define.ErrInvalidAction
 		default:
 			return nil, nil, define.ErrInvalidAction
 		}
 	default:
 		return nil, nil, define.ErrRequestDataInvalid
 	}
-
-	return nil, nil, nil
 }
 
 func (w *Witness) handleCreateLAO(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error) {
@@ -154,7 +152,7 @@ func (w *Witness) handleCreateLAO(message define.Message, channel string, generi
 		return nil, nil, define.ErrInvalidResource
 	}
 
-	if !define.LAOCreatedIsValid(data, message) {
+	if !define.LAOIsValid(data, message, true) {
 		return nil, nil, define.ErrInvalidResource
 	}
 
@@ -181,7 +179,7 @@ func (w *Witness) handleUpdateProperties(message define.Message, channel string,
 	if err != nil {
 		return nil, nil, define.ErrInvalidResource
 	}
-	if !define.LAOStateIsValid(data, message) {
+	if !define.LAOIsValid(data, message, false) {
 		return nil, nil, define.ErrInvalidResource
 	}
 
@@ -191,7 +189,6 @@ func (w *Witness) handleUpdateProperties(message define.Message, channel string,
 		return nil, nil, err
 	}
 
-	//TODO create a response signing the message -- or not ? should it be front-end ?
 	return nil, nil, err
 }
 
@@ -240,7 +237,7 @@ func (w *Witness) handleLAOState(message define.Message, channel string, generic
 		return nil, nil, define.ErrInvalidResource
 	}
 
-	if !define.LAOStateIsValid(data, message) {
+	if !define.LAOIsValid(data, message, false) {
 		return nil, nil, define.ErrInvalidResource
 	}
 
