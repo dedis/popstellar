@@ -203,13 +203,12 @@ public class ProtocolTest {
         public void onMessage(String message, Session session) {
             Pattern pattern = Pattern.compile(ID_REGEX);
             Matcher matcher = pattern.matcher(message);
-            String id = matcher.group(0);
-            if(id != null) {
+            if(matcher.find()) {
                 try {
                     session.getBasicRemote().sendText(
                             String.format(Locale.US,
                                     JSONRPC_FORMAT,
-                                    Integer.parseInt(id)));
+                                    Integer.parseInt(matcher.group(1))));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
