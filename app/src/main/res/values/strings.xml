@@ -16,6 +16,8 @@
     <!-- Home -->
     <string name="text_title_welcome">Welcome to Personhood.Online!</string>
     <string name="text_body_welcome">\n\n To connect to a local organization (LAO), please tap Connect above. \n\n To launch a new LAO as an organizer, please tap Launch tab above.</string>
+    <string name="attendee">Attendee</string>
+    <string name="organizer">Organizer</string>
 
     <!-- Connect -->
     <string name="allow_camera_text">Please allow the camera to be used by the app</string>
