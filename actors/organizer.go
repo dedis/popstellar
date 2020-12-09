@@ -2,7 +2,6 @@
 This class implements the functions an organizer provides. It stores messages in the database using the db package
 and create and sends appropriate response depending on what message was received.
 */
-//TODO check every "handle" possible flow does store message in database, and just once
 package actors
 
 import (
@@ -23,12 +22,8 @@ func NewOrganizer(pkey string, db string) *Organizer {
 	}
 }
 
-// Test json input to create LAO:
-//  careful with base64 needed to remove
-//  careful with comma after witnesses[] and witnesses_signatures[] needed to remove
-
 /** processes what is received from the WebSocket
- * msg : receivedMessage
+ * msg : received message
  * returns, in order :
  * message to send on channel, or nil
  * channel for the message, or nil
@@ -84,16 +79,27 @@ func (o *Organizer) handleMessage(generic define.Generic) ([]byte, []byte, error
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
+	err = db.CreateMessage(message, params.Channel, o.database)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	switch data["object"] {
 	case "message":
 		switch data["action"] {
 		case "witness":
 			return o.handleWitnessMessage(message, params.Channel, generic)
+		default:
+			return nil, nil, define.ErrRequestDataInvalid
 		}
+	case "state":
+		{
+			return o.handleLAOState(message, params.Channel, generic)
+		}
+	default:
+		return nil, nil, define.ErrRequestDataInvalid
 	}
 
-	err = db.CreateMessage(message, params.Channel, o.database)
-	return nil, nil, err
 }
 
 /** @returns, in order
@@ -144,6 +150,7 @@ func (o *Organizer) handlePublish(generic define.Generic) ([]byte, []byte, error
 		case "witness":
 			return o.handleWitnessMessage(message, params.Channel, generic)
 			//TODO: update state and send state broadcast
+			// TODO : state broadcast done on root/ or on LAO channel
 		default:
 			return nil, nil, define.ErrInvalidAction
 		}
@@ -151,8 +158,7 @@ func (o *Organizer) handlePublish(generic define.Generic) ([]byte, []byte, error
 		switch data["action"] {
 		case "create":
 			return o.handleCreateRollCall(message, params.Channel, generic)
-		case "state":
-
+		//case "state":  TODO : waiting on protocol definition
 		default:
 			return nil, nil, define.ErrInvalidAction
 		}
@@ -160,8 +166,9 @@ func (o *Organizer) handlePublish(generic define.Generic) ([]byte, []byte, error
 		switch data["action"] {
 		case "create":
 			return o.handleCreateMeeting(message, params.Channel, generic)
-		case "state":
-
+		case "state": //
+			// TODO: waiting on protocol definition
+			return nil, nil, define.ErrInvalidAction
 		default:
 			return nil, nil, define.ErrInvalidAction
 		}
@@ -170,7 +177,8 @@ func (o *Organizer) handlePublish(generic define.Generic) ([]byte, []byte, error
 		case "create":
 			return o.handleCreatePoll(message, params.Channel, generic)
 		case "state":
-
+			// TODO: waiting on protocol definition
+			return nil, nil, define.ErrInvalidAction
 		default:
 			return nil, nil, define.ErrInvalidAction
 		}
@@ -178,8 +186,6 @@ func (o *Organizer) handlePublish(generic define.Generic) ([]byte, []byte, error
 		fmt.Printf("data[action] not recognized in handlepublish, generating default response ")
 		return nil, nil, define.ErrRequestDataInvalid
 	}
-
-	return nil, nil, nil
 }
 
 /** @returns, in order
@@ -202,9 +208,7 @@ func (o *Organizer) handleCreateLAO(message define.Message, canal string, generi
 		return nil, nil, define.ErrInvalidResource
 	}
 
-	canalLAO := canal + data.ID
-
-	err = db.CreateMessage(message, canalLAO, o.database)
+	err = db.CreateMessage(message, canal, o.database)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -221,10 +225,6 @@ func (o *Organizer) handleCreateLAO(message define.Message, canal string, generi
 		return nil, nil, err
 	}
 
-	err = db.CreateMessage(message, canal, o.database)
-	if err != nil {
-		return nil, nil, err
-	}
 	msg, channel := finalizeHandling(canal, generic)
 	return msg, channel, nil
 }
@@ -250,12 +250,12 @@ func (o *Organizer) handleCreateRollCall(message define.Message, canal string, g
 
 	// don't need to check for validity if we use json schema
 	event := define.RollCall{ID: data.ID,
-		Name:         data.Name,
-		Creation:     data.Creation,
-		Location:     data.Location,
-		Start:        data.Start,
-		End:          data.End,
-		Extra:        data.Extra,
+		Name:     data.Name,
+		Creation: data.Creation,
+		Location: data.Location,
+		Start:    data.Start,
+		End:      data.End,
+		Extra:    data.Extra,
 	}
 	err = db.CreateChannel(event, o.database)
 	if err != nil {
@@ -288,12 +288,12 @@ func (o *Organizer) handleCreateMeeting(message define.Message, canal string, ge
 
 	// don't need to check for validity if we use json schema
 	event := define.Meeting{ID: data.ID,
-		Name:         data.Name,
-		Creation:     data.Creation,
-		Location:     data.Location,
-		Start:        data.Start,
-		End:          data.End,
-		Extra:        data.Extra,
+		Name:     data.Name,
+		Creation: data.Creation,
+		Location: data.Location,
+		Start:    data.Start,
+		End:      data.End,
+		Extra:    data.Extra,
 	}
 	err = db.CreateChannel(event, o.database)
 	if err != nil {
@@ -324,12 +324,12 @@ func (o *Organizer) handleCreatePoll(message define.Message, canal string, gener
 	}
 
 	event := define.Poll{ID: data.ID,
-		Name:         data.Name,
-		Creation:     data.Creation,
-		Location:     data.Location,
-		Start:        data.Start,
-		End:          data.End,
-		Extra:        data.Extra,
+		Name:     data.Name,
+		Creation: data.Creation,
+		Location: data.Location,
+		Start:    data.Start,
+		End:      data.End,
+		Extra:    data.Extra,
 	}
 
 	err = db.CreateChannel(event, o.database)
@@ -339,15 +339,12 @@ func (o *Organizer) handleCreatePoll(message define.Message, canal string, gener
 	channel, msg := finalizeHandling(canal, generic)
 	return channel, msg, nil
 }
-func handleMessage(msg []byte, userId int) error {
-	return nil
-}
 
-//TODO check workflow correctness
-/** @returns, in order
- * message
- * channel
- */
+/**
+@returns, in order
+* message
+* channel
+*/
 func (o *Organizer) handleUpdateProperties(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
 	channel, msg := finalizeHandling(canal, generic)
 	return channel, msg, db.CreateMessage(message, canal, o.database)
@@ -361,8 +358,6 @@ func (o *Organizer) handleUpdateProperties(message define.Message, canal string,
 func (o *Organizer) handleWitnessMessage(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
 	//TODO verify signature correctness
 	// decrypt msg and compare with hash of "local" data
-
-	//add signature to already stored message:
 
 	//retrieve message to sign from database
 	toSign := db.GetMessage([]byte(canal), []byte(message.Message_id), o.database)
