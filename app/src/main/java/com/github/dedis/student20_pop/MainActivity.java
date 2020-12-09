@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
+import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -71,42 +73,46 @@ public final class MainActivity extends FragmentActivity {
                 break;
             case R.id.button_launch:
                 String name = ((EditText) findViewById(R.id.entry_box_launch)).getText().toString();
-                final PoPApplication app = ((PoPApplication) getApplication());
-                // Creating the LAO and adding it to the organizer's LAO
-                Lao lao = new Lao(name, new Date(), app.getPerson().getId());
-                // Store the private key of the organizer
-                //TODO Move it into app onCreate()
-                if (PrivateInfoStorage.storeData(this, app.getPerson().getId(), app.getPerson().getAuthentication()))
-                    Log.d(TAG, "Stored private key of organizer");
+                if (name.isEmpty()) {
+                    Toast.makeText(this, getString(R.string.exception_message_empty_lao_name), Toast.LENGTH_SHORT).show();
+                } else {
+                    final PoPApplication app = ((PoPApplication) getApplication());
+                    // Creating the LAO and adding it to the organizer's LAO
+                    Lao lao = new Lao(name, new Date(), app.getPerson().getId());
+                    // Store the private key of the organizer
+                    //TODO Move it into app onCreate()
+                    if (PrivateInfoStorage.storeData(this, app.getPerson().getId(), app.getPerson().getAuthentication()))
+                        Log.d(TAG, "Stored private key of organizer");
 
-                CompletableFuture.supplyAsync(() -> {
-                    try {
-                        //TODO Get URL dynamically
-                        return PoPClientEndpoint.connectToServer(URI.create("ws://10.0.2.2:2020/"), app.getPerson());
-                    } catch (DeploymentException e) {
-                        e.printStackTrace();
-                        return null;
-                    }
-                }).thenCompose(p -> {
-                    if(p != null)
-                        return p.createLao(lao.getName(), lao.getTime(), lao.getTime(), app.getPerson().getId());
-                    else
-                        return null;
-                }).whenComplete((errCode, t) -> {
-                    if(t != null)
-                        //TODO Show toast for error
-                        Log.e(TAG, "Error while creating the lao", t);
-                    else {
-                        //TODO Show toast for success
-                        Person organizer = app.getPerson().setLaos(Collections.singletonList(lao.getId()));
-                        // Set LAO and organizer information locally
-                        ((PoPApplication) getApplication()).setPerson(organizer);
-                        ((PoPApplication) getApplication()).setLaos(Collections.singletonList(lao));
-                        // Start the Organizer Activity (user is considered an organizer)
-                        Intent intent = new Intent(this, OrganizerActivity.class);
-                        startActivity(intent);
-                    }
-                });
+                    CompletableFuture.supplyAsync(() -> {
+                        try {
+                            //TODO Get URL dynamically
+                            return PoPClientEndpoint.connectToServer(URI.create("ws://10.0.2.2:2020/"), app.getPerson());
+                        } catch (DeploymentException e) {
+                            e.printStackTrace();
+                            return null;
+                        }
+                    }).thenCompose(p -> {
+                        if (p != null)
+                            return p.createLao(lao.getName(), lao.getTime(), lao.getTime(), app.getPerson().getId());
+                        else
+                            return null;
+                    }).whenComplete((errCode, t) -> {
+                        if (t != null)
+                            //TODO Show toast for error
+                            Log.e(TAG, "Error while creating the lao", t);
+                        else {
+                            //TODO Show toast for success
+                            Person organizer = app.getPerson().setLaos(Collections.singletonList(lao.getId()));
+                            // Set LAO and organizer information locally
+                            ((PoPApplication) getApplication()).setPerson(organizer);
+                            ((PoPApplication) getApplication()).setLaos(Collections.singletonList(lao));
+                            // Start the Organizer Activity (user is considered an organizer)
+                            Intent intent = new Intent(this, OrganizerActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+                }
                 break;
             case R.id.button_cancel_launch:
                 ((EditText) findViewById(R.id.entry_box_launch)).getText().clear();
