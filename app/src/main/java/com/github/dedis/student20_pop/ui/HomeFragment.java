@@ -52,7 +52,7 @@ public final class HomeFragment extends Fragment {
         if (laos.isEmpty()) {
             welcome.setVisibility(View.VISIBLE);
             list.setVisibility(View.GONE);
-        }else{
+        } else {
             welcome.setVisibility(View.GONE);
             list.setVisibility(View.VISIBLE);
         }
