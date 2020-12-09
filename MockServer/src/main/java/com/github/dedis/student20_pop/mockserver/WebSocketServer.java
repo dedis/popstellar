@@ -18,6 +18,9 @@ import javax.websocket.server.ServerEndpoint;
 
 import static java.lang.String.format;
 
+/**
+ * Simple WebSocket server used to debug
+ */
 public class WebSocketServer {
 
     public static final String LOCALHOST = "localhost";
