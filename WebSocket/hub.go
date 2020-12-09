@@ -61,15 +61,15 @@ type hub struct {
 	connIndex int
 }
 
-func NewOrganizerHub() *hub {
-	return newHub("o")
+func NewOrganizerHub(pkey string) *hub {
+	return newHub("o", pkey)
 }
 
-func NewWitnessHub() *hub {
-	return newHub("w")
+func NewWitnessHub(pkey string) *hub {
+	return newHub("w", pkey)
 }
 
-func newHub(mode string) *hub {
+func newHub(mode string, pkey string) *hub {
 
 	h := &hub{
 		connectionsMx:   sync.RWMutex{},
@@ -80,9 +80,9 @@ func newHub(mode string) *hub {
 	}
 
 	if mode == "o" {
-		h.actor = actors.NewOrganizer("", "orgdatabase.db")
+		h.actor = actors.NewOrganizer(pkey, "orgdatabase.db")
 	} else if mode == "w" {
-		h.actor = actors.NewWitness("", "witdatabase.db")
+		h.actor = actors.NewWitness(pkey, "witdatabase.db")
 	} else {
 		log.Fatal("actor mode not recognized")
 	}
