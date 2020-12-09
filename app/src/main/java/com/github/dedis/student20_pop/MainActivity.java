@@ -89,14 +89,15 @@ public final class MainActivity extends FragmentActivity {
                     }
                 }).thenCompose(p -> {
                     if(p != null)
-                        return p.createLoa(lao.getName(), lao.getTime(), lao.getTime(), app.getPerson().getId());
+                        return p.createLao(lao.getName(), lao.getTime(), lao.getTime(), app.getPerson().getId());
                     else
                         return null;
                 }).whenComplete((errCode, t) -> {
                     if(t != null)
-                        //TODO Show toast
+                        //TODO Show toast for error
                         Log.e(TAG, "Error while creating the lao", t);
                     else {
+                        //TODO Show toast for success
                         Person organizer = app.getPerson().setLaos(Collections.singletonList(lao.getId()));
                         // Set LAO and organizer information locally
                         ((PoPApplication) getApplication()).setPerson(organizer);

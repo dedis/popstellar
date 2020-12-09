@@ -61,7 +61,7 @@ public class ProtocolTest {
         Person bob = new Person(PERSON_NAME);
         HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
-        proxy.createLoa(LAO_NAME, 0, 0, bob.getId())
+        proxy.createLao(LAO_NAME, 0, 0, bob.getId())
             .whenComplete((i, t) -> {
                 waiter.assertTrue(t != null);
                 waiter.resume();
@@ -85,7 +85,7 @@ public class ProtocolTest {
         Person bob = new Person(PERSON_NAME);
         HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
-        proxy.createLoa(LAO_NAME, 0, 0, bob.getId())
+        proxy.createLao(LAO_NAME, 0, 0, bob.getId())
             .whenComplete((i, t) -> {
                 waiter.assertTrue(t == null);
                 waiter.assertEquals(i, 0);
@@ -161,7 +161,7 @@ public class ProtocolTest {
         Person bob = new Person(PERSON_NAME);
         HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
-        proxy.createLoa(LAO_NAME, 0, 0, bob.getId())
+        proxy.createLao(LAO_NAME, 0, 0, bob.getId())
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
