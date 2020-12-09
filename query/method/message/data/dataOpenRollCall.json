@@ -1,0 +1,22 @@
+{
+	"$schema": "http://json-schema.org/draft/2019-09/schema#",
+	"$id": "https://github.com/dedis/student20_pop/tree/proto-specs/query/method/message/data/dataOpenRollCall.json",
+	"description": "Match a open roll-call query",
+	"type": "object",
+
+	"properties": {
+		"object": { "const": "roll_call" },
+		"action": { "const": "open" },
+		"id": {
+			"type": "string",
+			"contentEncoding": "base64",
+			"$comment": "Hash : SHA256('roll_call'||lao_id||creation||name)"
+		},
+		"start": { "description": "[Timestamp] start time", "type": "integer", "minimum": 0 }
+	},
+	"additionalProperties": false,
+	"required": ["object", "action", "id", "start"],
+	"note": [
+
+	]
+}
