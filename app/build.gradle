@@ -46,7 +46,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-vision:20.1.2'
     implementation 'com.google.crypto.tink:tink-android:1.5.0'
 
-    implementation 'javax.websocket:javax.websocket-api:1.0'
+    implementation 'javax.websocket:javax.websocket-api:1.1'
     implementation 'org.glassfish.tyrus:tyrus-client:1.1'
     implementation 'org.glassfish.tyrus:tyrus-container-grizzly:1.1'
     implementation 'com.google.code.gson:gson:2.8.6'
@@ -54,11 +54,15 @@ dependencies {
     testImplementation 'junit:junit:4.13'
     testImplementation 'net.jodah:concurrentunit:0.4.6'
     testImplementation 'org.glassfish.tyrus:tyrus-server:1.1'
+    testImplementation 'com.github.java-json-tools:json-schema-validator:2.2.14'
 
     androidTestImplementation 'androidx.test:core:1.3.0'
     androidTestImplementation 'androidx.test:runner:1.3.0'
     androidTestImplementation 'androidx.test:rules:1.3.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestImplementation 'net.jodah:concurrentunit:0.4.6'
+    androidTestImplementation 'org.glassfish.tyrus:tyrus-server:1.1'
+
     androidTestUtil 'androidx.test:orchestrator:1.3.0'
 }
