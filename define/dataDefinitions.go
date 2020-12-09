@@ -18,7 +18,7 @@ type LAO struct {
 	Name string
 	//Creation Date/Time
 	Creation     int64 //  Unix timestamp (uint64)
-	LastModified int64 //timestamp
+	//LastModified int64 //timestamp
 	//Organiser: Public Key
 	OrganizerPKey string
 	//List of public keys where each public key belongs to one witness

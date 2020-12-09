@@ -114,6 +114,12 @@ func (o *Organizer) handlePublish(generic define.Generic) ([]byte, []byte, error
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
+	err = define.MessageIsValid(message)
+	if err != nil {
+		fmt.Printf("7")
+		return nil, nil, define.ErrRequestDataInvalid
+	}
+
 	data, err := define.AnalyseData(string(message.Data))
 	if err != nil {
 		fmt.Printf("unable to analyse data in handlePublish()")
@@ -207,7 +213,6 @@ func (o *Organizer) handleCreateLAO(message define.Message, canal string, generi
 		ID:            data.ID,
 		Name:          data.Name,
 		Creation:      data.Creation,
-		LastModified:  data.Last_modified,
 		OrganizerPKey: data.Organizer,
 		Witnesses:     data.Witnesses,
 	}
@@ -247,7 +252,6 @@ func (o *Organizer) handleCreateRollCall(message define.Message, canal string, g
 	event := define.RollCall{ID: data.ID,
 		Name:         data.Name,
 		Creation:     data.Creation,
-		LastModified: data.Last_modified,
 		Location:     data.Location,
 		Start:        data.Start,
 		End:          data.End,
@@ -286,7 +290,6 @@ func (o *Organizer) handleCreateMeeting(message define.Message, canal string, ge
 	event := define.Meeting{ID: data.ID,
 		Name:         data.Name,
 		Creation:     data.Creation,
-		LastModified: data.Last_modified,
 		Location:     data.Location,
 		Start:        data.Start,
 		End:          data.End,
@@ -323,7 +326,6 @@ func (o *Organizer) handleCreatePoll(message define.Message, canal string, gener
 	event := define.Poll{ID: data.ID,
 		Name:         data.Name,
 		Creation:     data.Creation,
-		LastModified: data.Last_modified,
 		Location:     data.Location,
 		Start:        data.Start,
 		End:          data.End,

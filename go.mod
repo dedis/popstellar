@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/boltdb/bolt v1.3.1
-	github.com/gorilla/mux v1.8.0 // indirect
+	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/santhosh-tekuri/jsonschema v1.2.4 // indirect
 	golang.org/x/sys v0.0.0-20201020230747-6e5568b54d1a // indirect
