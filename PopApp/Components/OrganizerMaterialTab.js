@@ -9,7 +9,6 @@ import { connect } from 'react-redux';
 
 import { useTheme } from '@react-navigation/native';
 import STRINGS from '../res/strings';
-import LAOs from '../res/laoData';
 import PROPS_TYPE from '../res/Props';
 
 /**
@@ -45,6 +44,7 @@ const styles = StyleSheet.create({
 const MytabBar = (props) => {
   const { colors } = useTheme();
   const inactiveColor = Color(colors.text).alpha(0.5).rgb().string();
+  const { LAOs } = props;
   const LAO = LAOs.find((x) => x.id === props.LAO_ID);
   const { navigation, dispatch, navigationState } = props;
   const nbRoutes = navigationState.routes.length;
@@ -80,6 +80,7 @@ MytabBar.propTypes = {
   navigationState: PROPS_TYPE.navigationState.isRequired,
   dispatch: PropTypes.func.isRequired,
   LAO_ID: PropTypes.number,
+  LAOs: PropTypes.arrayOf(PROPS_TYPE.LAO).isRequired,
 };
 
 MytabBar.defaultProps = {
@@ -88,6 +89,7 @@ MytabBar.defaultProps = {
 
 const mapStateToProps = (state) => ({
   LAO_ID: state.toggleAppNavigationScreenReducer.LAO_ID,
+  LAOs: state.connectLAOsReducer.LAOs,
 });
 
 export default connect(mapStateToProps)(MytabBar);

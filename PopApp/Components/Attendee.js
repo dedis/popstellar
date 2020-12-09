@@ -2,9 +2,11 @@ import React from 'react';
 import {
   StyleSheet, View,
 } from 'react-native';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
-import eventsData from '../res/EventData';
 import EventsCollapsableList from './EventsCollapsableList';
+import PROPS_TYPE from '../res/Props';
 
 /**
 * The Attendee component
@@ -18,13 +20,24 @@ const styles = StyleSheet.create({
   },
 });
 
-const Attendee = () => (
+const Attendee = ({ events }) => (
   <View style={styles.container}>
     <EventsCollapsableList
-      data={eventsData}
+      data={events}
       closedList={['Future', '']}
     />
   </View>
 );
 
-export default Attendee;
+Attendee.propTypes = {
+  events: PropTypes.arrayOf(PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    data: PropTypes.arrayOf(PROPS_TYPE.event).isRequired,
+  })).isRequired,
+};
+
+const mapStateToProps = (state) => ({
+  events: state.currentEventsReducer.events,
+});
+
+export default connect(mapStateToProps)(Attendee);
