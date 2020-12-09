@@ -102,8 +102,8 @@ func MessageIsValid(msg Message) error {
 		}
 		print("Hello in public")
 		// the signature of witnesses are valid
-		correct, err := VerifyWitnessSignatures(data.Witnesses, msg.WitnessSignatures, msg.Sender)
-		if !correct {
+		err = VerifyWitnessSignatures(data.Witnesses, msg.WitnessSignatures, msg.Sender)
+		if err != nil {
 			return err //err
 		}
 	}
@@ -137,17 +137,17 @@ func VerifySignature(publicKey string, data []byte, signature string) error {
 /*
 	we check that Sign(sender||data) is the given signature
 */
-func VerifyWitnessSignature(publicKey string, data []byte, signature string) (bool, error) {
+func VerifyWitnessSignature(publicKey string, data []byte, signature string) error {
 	//check the size of the key as it will panic if we plug it in Verify
 	if len(publicKey) != ed.PublicKeySize {
-		return false, ErrRequestDataInvalid
+		return ErrRequestDataInvalid
 	}
 
 	if ed.Verify([]byte(publicKey), data, []byte(signature)) {
-		return true, nil
+		return nil
 	}
 	//invalid signature
-	return false, ErrRequestDataInvalid
+	return ErrRequestDataInvalid
 }
 
 /*
@@ -155,25 +155,25 @@ func VerifyWitnessSignature(publicKey string, data []byte, signature string) (bo
 	*publicKeys is already decoded
     *sender and signature are not already decoded
 */
-func VerifyWitnessSignatures(publicKeys []string, witnessSignaturesEnc []string, sender string) (bool, error) {
+func VerifyWitnessSignatures(publicKeys []string, witnessSignaturesEnc []string, sender string) error {
 	senderDecoded, err := Decode(sender)
 	if err != nil {
-		return false, ErrEncodingFault
+		return ErrEncodingFault
 	}
 	//TODO do we only check the pairs in witnessSignaturesEnc (1) or do need to verify that the publicKey
 	// of the pair is in the publicKeys before (2)?
 	for i := 0; i < len(witnessSignaturesEnc); i++ {
 		witnessSignatures, err := AnalyseWitnessSignatures(witnessSignaturesEnc[i])
 		if err != nil {
-			return false, err
+			return err
 		}
 		//right now we apply the first option and publickeys is then usless here
-		correct, err := VerifyWitnessSignature(witnessSignatures.Witness, senderDecoded, witnessSignatures.Signature)
-		if !correct {
-			return false, err
+		err = VerifyWitnessSignature(witnessSignatures.Witness, senderDecoded, witnessSignatures.Signature)
+		if err != nil {
+			return err
 		}
 	}
-	return true, nil
+	return nil
 }
 
 func LAOStateIsValid(data DataCreateLAO, message Message) bool {

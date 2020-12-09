@@ -245,8 +245,8 @@ func (w *Witness) handleLAOState(message define.Message, channel string, generic
 	}
 
 	//TODO correct usage of VerifyWitnessSignatures
-	check, err := define.VerifyWitnessSignatures(nil, []byte(message.Signature), string(message.Data), message.Sender)
-	if !check || err != nil {
+	err = define.VerifyWitnessSignatures(nil, message.WitnessSignatures, message.Sender)
+	if err != nil {
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
