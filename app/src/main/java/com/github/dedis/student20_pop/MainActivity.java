@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -19,10 +20,15 @@ import com.github.dedis.student20_pop.ui.CameraPermissionFragment;
 import com.github.dedis.student20_pop.ui.ConnectFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
+import com.github.dedis.student20_pop.utility.network.PoPClientEndpoint;
 import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
+
+import javax.websocket.DeploymentException;
 
 /**
  * Activity used to display the different UIs
@@ -70,23 +76,42 @@ public final class MainActivity extends FragmentActivity {
                 if (name.isEmpty()) {
                     Toast.makeText(this, getString(R.string.exception_message_empty_lao_name), Toast.LENGTH_SHORT).show();
                 } else {
-                    // For later: send LAO and organizer information
-                    Person organizer = ((PoPApplication) getApplication()).getPerson();
+                    final PoPApplication app = ((PoPApplication) getApplication());
                     // Creating the LAO and adding it to the organizer's LAO
-                    Lao lao = new Lao(name, new Date(), organizer.getId());
-                    organizer.setLaos(Collections.singletonList(lao.getId()));
+                    Lao lao = new Lao(name, new Date(), app.getPerson().getId());
                     // Store the private key of the organizer
-                    if (PrivateInfoStorage.storeData(this, organizer.getId(), organizer.getAuthentication()))
+                    //TODO Move it into app onCreate()
+                    if (PrivateInfoStorage.storeData(this, app.getPerson().getId(), app.getPerson().getAuthentication()))
                         Log.d(TAG, "Stored private key of organizer");
 
-                    // TODO: send LAO and organizer information to backend
-                    // Set LAO and organizer information locally
-                    ((PoPApplication) getApplication()).setPerson(organizer);
-                    ((PoPApplication) getApplication()).setLaos(Collections.singletonList(lao));
-
-                    // Start the Organizer Activity (user is considered an organizer)
-                    Intent intent = new Intent(this, OrganizerActivity.class);
-                    startActivity(intent);
+                    CompletableFuture.supplyAsync(() -> {
+                        try {
+                            //TODO Get URL dynamically
+                            return PoPClientEndpoint.connectToServer(URI.create("ws://10.0.2.2:2020/"), app.getPerson());
+                        } catch (DeploymentException e) {
+                            e.printStackTrace();
+                            return null;
+                        }
+                    }).thenCompose(p -> {
+                        if (p != null)
+                            return p.createLao(lao.getName(), lao.getTime(), lao.getTime(), app.getPerson().getId());
+                        else
+                            return null;
+                    }).whenComplete((errCode, t) -> {
+                        if (t != null)
+                            //TODO Show toast for error
+                            Log.e(TAG, "Error while creating the lao", t);
+                        else {
+                            //TODO Show toast for success
+                            Person organizer = app.getPerson().setLaos(Collections.singletonList(lao.getId()));
+                            // Set LAO and organizer information locally
+                            ((PoPApplication) getApplication()).setPerson(organizer);
+                            ((PoPApplication) getApplication()).setLaos(Collections.singletonList(lao));
+                            // Start the Organizer Activity (user is considered an organizer)
+                            Intent intent = new Intent(this, OrganizerActivity.class);
+                            startActivity(intent);
+                        }
+                    });
                 }
                 break;
             case R.id.button_cancel_launch:

@@ -1,0 +1,4 @@
+[submodule "app/src/test/resources/schema"]
+	path = app/src/test/resources/schema
+	url = git@github.com:dedis/student20_pop.git
+	branch = proto-specs
