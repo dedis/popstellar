@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,13 +17,17 @@ import com.github.dedis.student20_pop.utility.ui.OnEventTypeSelectedListener;
  **/
 public class AttendeeActivity extends FragmentActivity implements OnEventTypeSelectedListener {
 
-    private static final String TAG = AttendeeActivity.class.getSimpleName();
+    public static final String TAG = AttendeeActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_attendee);
+
+        //TODO: retrieve lao/PopContext
+        Intent intent = getIntent();
+
         if (findViewById(R.id.fragment_container_attendee) != null) {
             if (savedInstanceState != null) {
                 return;
