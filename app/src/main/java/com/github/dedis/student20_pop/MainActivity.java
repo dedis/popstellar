@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -66,20 +67,27 @@ public final class MainActivity extends FragmentActivity {
                 break;
             case R.id.button_launch:
                 String name = ((EditText) findViewById(R.id.entry_box_launch)).getText().toString();
-                Person organizer = ((PoPApplication) getApplication()).getPerson();
-                // Creating the LAO and adding it to the organizer's LAO
-                Lao lao = new Lao(name, new Date(), organizer.getId());
-                organizer = organizer.setLaos(Collections.singletonList(lao.getId()));
-                // Store the private key of the organizer
-                if (PrivateInfoStorage.storeData(this, organizer.getId(), organizer.getAuthentication()))
-                    Log.d(TAG, "Stored private key of organizer");
-                // TODO: send LAO and organizer information to backend
-                // Set LAO and organizer information locally
-                ((PoPApplication) getApplication()).setPerson(organizer);
-                ((PoPApplication) getApplication()).setLaos(Collections.singletonList(lao));
-                // Start the Organizer Activity (user is considered an organizer)
-                Intent intent = new Intent(this, OrganizerActivity.class);
-                startActivity(intent);
+                if (name.isEmpty()) {
+                    Toast.makeText(this, getString(R.string.exception_message_empty_lao_name), Toast.LENGTH_SHORT).show();
+                } else {
+                    // For later: send LAO and organizer information
+                    Person organizer = ((PoPApplication) getApplication()).getPerson();
+                    // Creating the LAO and adding it to the organizer's LAO
+                    Lao lao = new Lao(name, new Date(), organizer.getId());
+                    organizer.setLaos(Collections.singletonList(lao.getId()));
+                    // Store the private key of the organizer
+                    if (PrivateInfoStorage.storeData(this, organizer.getId(), organizer.getAuthentication()))
+                        Log.d(TAG, "Stored private key of organizer");
+
+                    // TODO: send LAO and organizer information to backend
+                    // Set LAO and organizer information locally
+                    ((PoPApplication) getApplication()).setPerson(organizer);
+                    ((PoPApplication) getApplication()).setLaos(Collections.singletonList(lao));
+
+                    // Start the Organizer Activity (user is considered an organizer)
+                    Intent intent = new Intent(this, OrganizerActivity.class);
+                    startActivity(intent);
+                }
                 break;
             case R.id.button_cancel_launch:
                 ((EditText) findViewById(R.id.entry_box_launch)).getText().clear();
