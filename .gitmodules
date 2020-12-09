@@ -1,0 +1,4 @@
+[submodule "PopApp/res/proto-specs"]
+	path = PopApp/res/proto-specs
+	url = https://github.com/dedis/student20_pop.git
+	branch = proto-specs
