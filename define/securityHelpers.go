@@ -88,9 +88,9 @@ func MessageIsValid(msg Message) error {
 	}
 
 	// the signature is valid
-	correct,err := VerifySignature(msg.Sender, (msg.Data), msg.Signature)
-	if  !correct {
-		return err//err
+	err := VerifySignature(msg.Sender, (msg.Data), msg.Signature)
+	if err != nil {
+		return err //err
 	}
 
 	// the witness signatures are valid (check on every message??)
@@ -102,9 +102,9 @@ func MessageIsValid(msg Message) error {
 		}
 		print("Hello in public")
 		// the signature of witnesses are valid
-		correct,err := VerifyWitnessSignatures(data.Witnesses, msg.WitnessSignatures,msg.Sender)
-		if  !correct {
-			return err//err
+		correct, err := VerifyWitnessSignatures(data.Witnesses, msg.WitnessSignatures, msg.Sender)
+		if !correct {
+			return err //err
 		}
 	}
 	return nil
@@ -113,10 +113,10 @@ func MessageIsValid(msg Message) error {
 /*
 	we check that Sign(sender||data) is the given signature
 */
-func VerifySignature(publicKey string, data []byte, signature string) (bool,error) {
+func VerifySignature(publicKey string, data []byte, signature string) error {
 	//check the size of the key as it will panic if we plug it in Verify
 	if len(publicKey) != ed.PublicKeySize {
-		return false ,ErrRequestDataInvalid
+		return ErrRequestDataInvalid
 	}
 
 	//data is in base64 so we need to decrypt it before using it
@@ -128,26 +128,26 @@ func VerifySignature(publicKey string, data []byte, signature string) (bool,erro
 	//hash := sha256.Sum256(data)
 
 	if ed.Verify([]byte(publicKey), data, []byte(signature)) {
-		return true ,nil
+		return nil
 	}
 	//invalid signature
-	return false ,  ErrRequestDataInvalid
+	return ErrRequestDataInvalid
 }
 
 /*
 	we check that Sign(sender||data) is the given signature
 */
-func VerifyWitnessSignature(publicKey string, data []byte, signature string) (bool,error) {
+func VerifyWitnessSignature(publicKey string, data []byte, signature string) (bool, error) {
 	//check the size of the key as it will panic if we plug it in Verify
 	if len(publicKey) != ed.PublicKeySize {
 		return false, ErrRequestDataInvalid
 	}
 
 	if ed.Verify([]byte(publicKey), data, []byte(signature)) {
-		return true,nil
+		return true, nil
 	}
 	//invalid signature
-	return false,ErrRequestDataInvalid
+	return false, ErrRequestDataInvalid
 }
 
 /*
@@ -155,25 +155,25 @@ func VerifyWitnessSignature(publicKey string, data []byte, signature string) (bo
 	*publicKeys is already decoded
     *sender and signature are not already decoded
 */
-func VerifyWitnessSignatures(publicKeys []string, witnessSignaturesEnc []string, sender string) (bool,error) {
+func VerifyWitnessSignatures(publicKeys []string, witnessSignaturesEnc []string, sender string) (bool, error) {
 	senderDecoded, err := Decode(sender)
 	if err != nil {
-		return false,ErrEncodingFault
+		return false, ErrEncodingFault
 	}
 	//TODO do we only check the pairs in witnessSignaturesEnc (1) or do need to verify that the publicKey
 	// of the pair is in the publicKeys before (2)?
 	for i := 0; i < len(witnessSignaturesEnc); i++ {
 		witnessSignatures, err := AnalyseWitnessSignatures(witnessSignaturesEnc[i])
-		if err != nil{
-			return false,err
+		if err != nil {
+			return false, err
 		}
 		//right now we apply the first option and publickeys is then usless here
-		correct,err := VerifyWitnessSignature(witnessSignatures.Witness, senderDecoded, witnessSignatures.Signature)
+		correct, err := VerifyWitnessSignature(witnessSignatures.Witness, senderDecoded, witnessSignatures.Signature)
 		if !correct {
-			return false,err
+			return false, err
 		}
 	}
-	return true,nil
+	return true, nil
 }
 
 func LAOStateIsValid(data DataCreateLAO, message Message) bool {
