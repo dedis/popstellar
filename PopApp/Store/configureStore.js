@@ -1,10 +1,12 @@
 import { createStore } from 'redux';
 import { persistStore, persistCombineReducers } from 'redux-persist'
-import storage from 'redux-persist/lib/storage'
+import AsyncStorage from '@react-native-community/async-storage';
 
 import toggleAppNavigationScreen from './Reducers/appToggleReducer';
+import currentEventsReducer from './Reducers/currentEventsReducer';
 import currentLaoReducer from './Reducers/currentLaoReducer';
 import keypairReducer from "./Reducers/keypairReducer";
+import connectLAOsReducer from './Reducers/connectLAOsReducer';
 
 /**
  * Create the redux persistent store for the app
@@ -12,7 +14,7 @@ import keypairReducer from "./Reducers/keypairReducer";
 
 const persistConfig = {
   key: 'root',
-  storage,
+  storage: AsyncStorage,
 };
 
 /** Persistent collection of reducers */
@@ -20,6 +22,8 @@ const appReducer = persistCombineReducers(persistConfig, {
   toggleAppNavigationScreenReducer: toggleAppNavigationScreen,
   currentLaoReducer: currentLaoReducer,
   keypairReducer: keypairReducer,
+  currentEventsReducer: currentEventsReducer,
+  connectLAOsReducer: connectLAOsReducer,
 });
 
 /** Trick used to clear local persistent storage */

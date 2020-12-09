@@ -1,9 +1,11 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import data from '../res/EventData';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 import { Typography } from '../Styles';
 import OrganizerEventsCollapsableList from './OrganizerCollapsableList';
+import PROPS_TYPE from '../res/Props';
 
 /**
 * The Organizer component
@@ -20,10 +22,21 @@ const styles = StyleSheet.create({
   },
 });
 
-const Organizer = () => (
+const Organizer = ({ events }) => (
   <View style={styles.container}>
-    <OrganizerEventsCollapsableList data={data} closedList={['Future', '']} />
+    <OrganizerEventsCollapsableList data={events} closedList={['Future', '']} />
   </View>
 );
 
-export default Organizer;
+Organizer.propTypes = {
+  events: PropTypes.arrayOf(PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    data: PropTypes.arrayOf(PROPS_TYPE.event).isRequired,
+  })).isRequired,
+};
+
+const mapStateToProps = (state) => ({
+  events: state.currentEventsReducer.events,
+});
+
+export default connect(mapStateToProps)(Organizer);
