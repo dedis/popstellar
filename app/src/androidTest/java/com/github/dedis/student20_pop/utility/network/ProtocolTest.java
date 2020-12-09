@@ -26,15 +26,29 @@ import javax.websocket.server.ServerEndpoint;
  */
 public class ProtocolTest {
 
+    public static final String LAO_NAME = "name";
+    public static final String MEETING_NAME = "name";
+    public static final String PERSON_NAME = "Bob";
+
+    public static final String HOST_NAME = "localhost";
+    public static final int PORT = 2020;
+
+    public static final int REQUEST_TIMEOUT = 6000;
+    public static final int TEST_TIMEOUT = 10000;
+    public static final String LAO_ID = "id";
+    public static final String MESSAGE_ID = "mId";
+    public static final String MESSAGE_DATA = "data";
+    public static final String LOCATION = "loc";
+
     private Server startAcceptEverythingServer() throws DeploymentException {
-        Server server = new Server("localhost", 2020, "", PerfectServer.class);
+        Server server = new Server(HOST_NAME, PORT, "", PerfectServer.class);
         server.start();
         return server;
     }
 
     // Test timeouts
     private Server startNoAnswerServer() throws DeploymentException {
-        Server server = new Server("localhost", 2020, "", TimeoutServer.class);
+        Server server = new Server(HOST_NAME, PORT, "", TimeoutServer.class);
         server.start();
         return server;
     }
@@ -44,22 +58,22 @@ public class ProtocolTest {
         Server server = startNoAnswerServer();
         Waiter waiter = new Waiter();
 
-        Person bob = new Person("Bob");
-        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://localhost:2020/"), bob);
+        Person bob = new Person(PERSON_NAME);
+        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
-        proxy.createLoa("name", 0, 0, bob.getId())
+        proxy.createLoa(LAO_NAME, 0, 0, bob.getId())
             .whenComplete((i, t) -> {
                 waiter.assertTrue(t != null);
                 waiter.resume();
             });
 
         synchronized (this) {
-            wait(6000);
+            wait(REQUEST_TIMEOUT);
         }
 
         proxy.lowLevel().purge();
 
-        waiter.await(10000, 1);
+        waiter.await(TEST_TIMEOUT, 1);
         server.stop();
     }
 
@@ -68,17 +82,17 @@ public class ProtocolTest {
         Server server = startAcceptEverythingServer();
         Waiter waiter = new Waiter();
 
-        Person bob = new Person("Bob");
-        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://localhost:2020/"), bob);
+        Person bob = new Person(PERSON_NAME);
+        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
-        proxy.createLoa("name", 0, 0, bob.getId())
+        proxy.createLoa(LAO_NAME, 0, 0, bob.getId())
             .whenComplete((i, t) -> {
                 waiter.assertTrue(t == null);
                 waiter.assertEquals(i, 0);
                 waiter.resume();
             });
 
-        waiter.await(10000, 1);
+        waiter.await(TEST_TIMEOUT, 1);
         server.stop();
     }
 
@@ -87,17 +101,17 @@ public class ProtocolTest {
         Server server = startAcceptEverythingServer();
         Waiter waiter = new Waiter();
 
-        Person bob = new Person("Bob");
-        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://localhost:2020/"), bob);
+        Person bob = new Person(PERSON_NAME);
+        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
-        proxy.updateLao("id", "name", 0, Collections.singletonList(bob.getId()))
+        proxy.updateLao(LAO_ID, LAO_NAME, 0, Collections.singletonList(bob.getId()))
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
                     waiter.resume();
                 });
 
-        waiter.await(10000, 1);
+        waiter.await(TEST_TIMEOUT, 1);
         server.stop();
     }
 
@@ -106,17 +120,17 @@ public class ProtocolTest {
         Server server = startAcceptEverythingServer();
         Waiter waiter = new Waiter();
 
-        Person bob = new Person("Bob");
-        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://localhost:2020/"), bob);
+        Person bob = new Person(PERSON_NAME);
+        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
-        proxy.createMeeting("id", "name", 0, 0, "loc", 0, 0)
+        proxy.createMeeting(LAO_ID, MEETING_NAME, 0, 0, "loc", 0, 0)
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
                     waiter.resume();
                 });
 
-        waiter.await(10000, 1);
+        waiter.await(TEST_TIMEOUT, 1);
         server.stop();
     }
 
@@ -125,17 +139,17 @@ public class ProtocolTest {
         Server server = startAcceptEverythingServer();
         Waiter waiter = new Waiter();
 
-        Person bob = new Person("Bob");
-        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://localhost:2020/"), bob);
+        Person bob = new Person(PERSON_NAME);
+        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
-        proxy.witnessMessage("id", "mId", "data")
+        proxy.witnessMessage(LAO_ID, "mId", "data")
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
                     waiter.resume();
                 });
 
-        waiter.await(10000, 1);
+        waiter.await(TEST_TIMEOUT, 1);
         server.stop();
     }
 
@@ -144,55 +158,58 @@ public class ProtocolTest {
         Server server = startAcceptEverythingServer();
         Waiter waiter = new Waiter();
 
-        Person bob = new Person("Bob");
-        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://localhost:2020/"), bob);
+        Person bob = new Person(PERSON_NAME);
+        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
-        proxy.createLoa("name", 0, 0, bob.getId())
+        proxy.createLoa(LAO_NAME, 0, 0, bob.getId())
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
                     waiter.resume();
                 });
 
-        proxy.updateLao("id", "name", 0, Collections.singletonList(bob.getId()))
+        proxy.updateLao(LAO_ID, LAO_NAME, 0, Collections.singletonList(bob.getId()))
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
                     waiter.resume();
                 });
 
-        proxy.createMeeting("id", "name", 0, 0, "loc", 0, 0)
+        proxy.createMeeting(LAO_ID, MEETING_NAME, 0, 0, LOCATION, 0, 0)
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
                     waiter.resume();
                 });
 
-        proxy.witnessMessage("id", "mId", "data")
+        proxy.witnessMessage(LAO_ID, MESSAGE_ID, MESSAGE_DATA)
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
                     waiter.resume();
                 });
 
-        waiter.await(10000, 4);
+        waiter.await(TEST_TIMEOUT, 4);
         server.stop();
     }
 
     @ServerEndpoint("/")
     public static class PerfectServer {
 
+        public static final String JSONRPC_FORMAT = "{\"jsonrpc\": \"2.0\",\"result\": 0,\"id\": %d}";
+        public static final String ID_REGEX = "\"id\":(-?\\d+)";
+
         @OnMessage
         public void onMessage(String message, Session session) {
-            System.out.println("===========================================0 R: " + message);
-            Pattern pattern = Pattern.compile("\"id\":(-?\\d+)");
+            Pattern pattern = Pattern.compile(ID_REGEX);
             Matcher matcher = pattern.matcher(message);
-            if(matcher.find()) {
+            String id = matcher.group(0);
+            if(id != null) {
                 try {
                     session.getBasicRemote().sendText(
                             String.format(Locale.US,
-                                    "{\"jsonrpc\": \"2.0\",\"result\": 0,\"id\": %d}",
-                                    Integer.parseInt(matcher.group(1))));
+                                    JSONRPC_FORMAT,
+                                    Integer.parseInt(id)));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

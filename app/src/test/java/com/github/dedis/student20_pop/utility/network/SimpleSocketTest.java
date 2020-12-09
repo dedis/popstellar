@@ -25,6 +25,10 @@ import javax.websocket.server.ServerEndpoint;
  */
 public class SimpleSocketTest {
 
+    public static final String HOST_NAME = "localhost";
+    public static final int PORT = 2020;
+    public static final int TIMEOUT = 10000;
+
     private static Waiter waiter;
     private static Queue<String> messages;
 
@@ -43,12 +47,12 @@ public class SimpleSocketTest {
         waiter = new Waiter();
         messages = new LinkedList<>(toSend);
 
-        Server server = new Server("localhost", 2020, "", MockServerEndpoint.class);
+        Server server = new Server(HOST_NAME, PORT, "", MockServerEndpoint.class);
         server.start();
 
         Thread t = new Thread(() -> {
             try {
-                LowLevelClientProxy session = PoPClientEndpoint.connectToServer(URI.create("ws://localhost:2020/"), new Person("tester")).lowLevel();
+                LowLevelClientProxy session = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), new Person("tester")).lowLevel();
                 for(String s : toSend)
                     session.getSession().getBasicRemote().sendText(s);
                 session.getSession().close();
@@ -60,9 +64,9 @@ public class SimpleSocketTest {
         t.setDaemon(true);
         t.start();
 
-        waiter.await(10000, toSend.size() + 1);
+        waiter.await(TIMEOUT, toSend.size() + 1);
 
-        //server.stop();
+        server.stop();
     }
 
     @ServerEndpoint("/")

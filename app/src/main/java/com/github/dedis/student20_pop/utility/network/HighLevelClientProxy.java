@@ -19,6 +19,8 @@ import javax.websocket.Session;
  */
 public final class HighLevelClientProxy {
 
+    public static final String ROOT = "/root";
+
     private final LowLevelClientProxy lowLevelClientProxy;
     private final String publicKey, privateKey;
 
@@ -46,7 +48,7 @@ public final class HighLevelClientProxy {
      * @return a CompletableFuture that will be complete once the back end responses
      */
     public CompletableFuture<Integer> createLoa(String name, long creation, long lastModified, String organizer) {
-        return lowLevelClientProxy.publish(publicKey, privateKey, "/root",
+        return lowLevelClientProxy.publish(publicKey, privateKey, ROOT,
                 new CreateLao(Hash.hash(organizer + creation + name), name, creation, lastModified, organizer, new ArrayList<>()));
     }
 
@@ -61,7 +63,7 @@ public final class HighLevelClientProxy {
      * @return a CompletableFuture that will be complete once the back end responses
      */
     public CompletableFuture<Integer> updateLao(String laoId, String name, long lastModified, List<String> witnesses) {
-        return lowLevelClientProxy.publish(publicKey, privateKey, "/root/" + laoId,
+        return lowLevelClientProxy.publish(publicKey, privateKey, ROOT + "/" + laoId,
                 new UpdateLao(name, lastModified, witnesses));
     }
 
@@ -75,7 +77,7 @@ public final class HighLevelClientProxy {
      * @return a CompletableFuture that will be complete once the back end responses
      */
     public CompletableFuture<Integer> witnessMessage(String laoId, String messageId, String data) {
-        return lowLevelClientProxy.publish(publicKey, privateKey, "/root/" + laoId,
+        return lowLevelClientProxy.publish(publicKey, privateKey, ROOT + "/" + laoId,
                 new WitnessMessage(messageId, Signature.sign(privateKey, data)));
     }
 
@@ -93,7 +95,7 @@ public final class HighLevelClientProxy {
      * @return a CompletableFuture that will be complete once the back end responses
      */
     public CompletableFuture<Integer> createMeeting(String laoId, String name, long creation, long lastModified, String location, long start, long end) {
-        return lowLevelClientProxy.publish(publicKey, privateKey, "/root/" + laoId,
+        return lowLevelClientProxy.publish(publicKey, privateKey, ROOT + "/" + laoId,
                 new CreateMeeting(Hash.hash(laoId + creation + name), name, creation, lastModified, location, start, end));
     }
 }
