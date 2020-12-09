@@ -35,14 +35,18 @@ public class PoPApplication extends Application {
         if(person == null && laos == null) {
             // Verify if the user already exists
             if(sp.contains(SP_PERSON_ID_KEY) && sp.contains(SP_LAOS_KEY)) {
+                // Recover user's information
                 String id = sp.getString(SP_PERSON_ID_KEY, "");
                 String authentication = PrivateInfoStorage.readData(this, id);
-                if(authentication == null) {
+                if (authentication == null) {
                     person = new Person(USERNAME);
                     Log.d(TAG, "Private key of user cannot be accessed, new key pair is created");
                 }
+                else {
+                    person = new Person(USERNAME, id, authentication, Lao.getIds(laos));
+                }
+                // Recover LAO's information
                 laos = gson.fromJson(sp.getString(SP_LAOS_KEY, ""), List.class);
-                person = new Person(USERNAME, id, authentication, Lao.getIds(laos));
             }
             else {
                 // Create new user and list of LAOs
