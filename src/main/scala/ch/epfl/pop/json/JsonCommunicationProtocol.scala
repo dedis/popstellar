@@ -17,7 +17,7 @@ import scala.util.{Failure, Success, Try}
 object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
   /* implicit used to parse/serialize a Methods enumeration value */
-  implicit object jsonEnumMethodsFormat extends RootJsonFormat[Methods] {
+  implicit object JsonEnumMethodsFormat extends RootJsonFormat[Methods] {
     override def read(json: JsValue): Methods = Try(Methods.withName(json.convertTo[String])) match {
       case Success(v) => v
       case _ => throw DeserializationException("invalid \"method\" field : unrecognized")
@@ -26,7 +26,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
   }
 
   /* implicit used to parse/serialize a Objects enumeration value */
-  implicit object jsonEnumObjectsFormat extends RootJsonFormat[Objects] {
+  implicit object JsonEnumObjectsFormat extends RootJsonFormat[Objects] {
     override def read(json: JsValue): Objects = Try(Objects.withName(json.convertTo[String])) match {
       case Success(v) => v
       case _ => throw DeserializationException("invalid \"object\" field : unrecognized")
@@ -35,7 +35,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
   }
 
   /* implicit used to parse/serialize a Actions enumeration value */
-  implicit object jsonEnumActionsFormat extends RootJsonFormat[Actions] {
+  implicit object JsonEnumActionsFormat extends RootJsonFormat[Actions] {
     override def read(json: JsValue): Actions = Try(Actions.withName(json.convertTo[String])) match {
       case Success(v) => v
       case _ => throw DeserializationException("invalid \"action\" field : unrecognized")
