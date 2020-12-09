@@ -24,7 +24,6 @@ public class WebSocketServer {
     public static final int PORT = 2020;
 
     public static void main(String[] args) {
-
         Server server = new Server(LOCALHOST, PORT, "", PoPServerEndpoint.class);
 
         try {
