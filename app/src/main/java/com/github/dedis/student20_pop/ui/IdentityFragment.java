@@ -13,14 +13,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.github.dedis.student20_pop.OrganizerActivity;
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.model.Keys;
 
 import net.glxn.qrgen.android.QRCode;
 
 /**
- * Represents the identity of a user within an organisation
+ * Represents the identity of a user within an organization
  * (which allows users to “wear different hats” in different organizations)
+ *
+ *
+ * TODO : For te moment, the goal of this UI is just to show a QR code,
+ * but in the future, it will be needed to store identity information somewhere
+ * to make it dependent of the current user and LAO
  */
 public class IdentityFragment extends Fragment {
     public static final String TAG = IdentityFragment.class.getSimpleName();
@@ -64,16 +69,13 @@ public class IdentityFragment extends Fragment {
                     }
                 });
 
-        //TODO : get User personal key
         //NOTE : I was not sure which unique id to use to generate the QR code
         //User identity is composed of :
         //User's public key
         //Organization's ID
-        String key = new Keys().getPublicKey();
-        String lao = "";
-        if (this.getArguments() != null) {
-            lao = this.getArguments().getString("ID");
-        }
+        String key = this.getArguments().getString(OrganizerActivity.PRIVATE_KEY_TAG);
+        String lao = this.getArguments().getString(OrganizerActivity.LAO_ID_TAG);
+
         String uniqueIdentity = key + lao;
 
         Bitmap myBitmap = QRCode.from(uniqueIdentity).bitmap();
