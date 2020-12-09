@@ -1,8 +1,0 @@
-{
-	"$schema": "http://json-schema.org/draft/2019-09/schema#",
-	"$id": "https://github.com/dedis/student20_pop/tree/proto-specs/query/method/channel/rootChannel.json",
-	"description": "Match a root-channel",
-
-	"const": "/root",
-	"$comment": "Note: default server channel (should always be \"/root\")"
-}

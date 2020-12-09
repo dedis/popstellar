@@ -245,7 +245,11 @@ func (w *Witness) handleLAOState(message define.Message, channel string, generic
 		return nil, nil, define.ErrInvalidResource
 	}
 
-	//TODO is the action valid ? was there enough witness signatures ?
+	//TODO correct usage of VerifyWitnessSignatures
+	check, err := define.VerifyWitnessSignatures(nil, []byte(message.Signature), string(message.Data), message.Sender)
+	if !check || err != nil {
+		return nil, nil, define.ErrRequestDataInvalid
+	}
 
 	lao := define.LAO{
 		ID:            data.ID,
