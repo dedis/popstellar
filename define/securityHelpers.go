@@ -66,7 +66,7 @@ func RollCallCreatedIsValid(data DataCreateRollCall, message Message) bool {
 	return true
 }
 
-func MessageIsValid(msg Message) error {
+func MessageIsValid(msg Message) error { //TODO remove ID hash check
 	// the message_id is valid
 	str := []byte(msg.Data)
 	str = append(str, []byte(msg.Signature)...)
@@ -107,15 +107,6 @@ func VerifySignature(publicKey string, data []byte, signature string) error {
 	if len(publicKey) != ed.PublicKeySize {
 		return ErrRequestDataInvalid
 	}
-
-	//data is in base64 so we need to decrypt it before using it
-	//d :=  strings.Replace(data, "\n", "", -1)
-	//dataDecoded,err := Decode(string(data))
-	//if err!=nil{
-	//		return ErrEncodingFault
-	//}
-	//hash := sha256.Sum256(data)
-
 	if ed.Verify([]byte(publicKey), data, []byte(signature)) {
 		return nil
 	}

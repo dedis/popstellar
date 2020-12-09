@@ -45,14 +45,13 @@ type Message struct {
 }
 
 type ItemWitnessSignatures struct {
-	Witness string
+	Witness   string
 	Signature string
 }
 
 type Data map[string]interface{}
 
 type DataCreateLAO struct {
-	//TODO info: LastModified plus dans le nouveau proto
 	Object string
 	Action string
 	//ID hash : Name || Creation Date/Time Unix Timestamp
@@ -60,8 +59,7 @@ type DataCreateLAO struct {
 	// name of LAO
 	Name string
 	//Creation Date/Time
-	Creation      int64 //  Unix timestamp (uint64)
-	//Last_modified int64 //timestamp plus dans le nouveau proto
+	Creation int64 //  Unix timestamp (uint64)
 	//Organiser: Public Key
 	Organizer string
 	//List of public keys where each public key belongs to one witness
@@ -102,9 +100,9 @@ type DataCreateMeeting struct {
 	// name of LAO
 	Name string
 	//Creation Date/Time
-	Creation      int64  //  Unix timestamp (uint64)
+	Creation int64 //  Unix timestamp (uint64)
 	//Last_modified int64  //timestamp
-	Location      string //optional
+	Location string //optional
 	//Organiser: Public Key
 	Start int64  /* Timestamp */
 	End   int64  /* Timestamp, optional */
@@ -119,9 +117,9 @@ type DataCreateRollCall struct {
 	// name of LAO
 	Name string
 	//Creation Date/Time
-	Creation      int64  //  Unix timestamp (uint64)
+	Creation int64 //  Unix timestamp (uint64)
 	//Last_modified int64  //timestamp
-	Location      string //optional
+	Location string //optional
 	//Organiser: Public Key
 	Start int64  /* Timestamp */
 	End   int64  /* Timestamp, optional */
@@ -136,9 +134,9 @@ type DataCreatePoll struct {
 	// name of LAO
 	Name string
 	//Creation Date/Time
-	Creation      int64  //  Unix timestamp (uint64)
+	Creation int64 //  Unix timestamp (uint64)
 	//Last_modified int64  //timestamp
-	Location      string //optional
+	Location string //optional
 	//Organiser: Public Key
 	Start int64  /* Timestamp */
 	End   int64  /* Timestamp, optional */
@@ -218,7 +216,7 @@ func AnalyseMessage(message json.RawMessage) (Message, error) {
 }
 func AnalyseWitnessSignatures(witnessSignatures string) (ItemWitnessSignatures, error) {
 	m := ItemWitnessSignatures{}
-	err := json.Unmarshal([]byte (witnessSignatures), &m)
+	err := json.Unmarshal([]byte(witnessSignatures), &m)
 
 	d, err := Decode(m.Signature)
 	if err != nil {
@@ -315,22 +313,6 @@ func AnalyseDataCreatePoll(data json.RawMessage) (DataCreatePoll, error) {
 	err = json.Unmarshal(d, &m)
 	return m, err
 }
-
-/**
- * Function that reads a JSON message in order to create a new LAO
- */
-/*
-func JsonLaoCreate(message []byte) (MessageLaoCreate, error) {
-	m := MessageLaoCreate{}
-	err := json.Unmarshal(message, &m)
-	return m, err
-}
-
-func DataToMessageEventCreate(data []byte) (MessageEventCreate, error) {
-	m := MessageEventCreate{}
-	err := json.Unmarshal(data, &m)
-	return m, err
-}*/
 
 func CreateBroadcastMessage(generic Generic) []byte {
 	broadcast := Generic{
@@ -448,13 +430,13 @@ func selectDescriptionError(err error) []byte {
 			Code:        -2,
 			Description: "",
 		}
-		//(e.g. subscribing to a “restricted” channel)
 
 	default:
 		fmt.Printf("%v", err)
-		// TODO decide if we crash everything or not
-		// log.Fatal("type of error unrecognized")
-		return nil //should never arrive here
+		errResp = ErrorResponse{
+			Code:        -4,
+			Description: "request data is invalid",
+		}
 	}
 
 	b, err := json.Marshal(errResp)
