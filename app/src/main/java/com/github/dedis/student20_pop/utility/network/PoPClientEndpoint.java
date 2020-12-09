@@ -24,7 +24,7 @@ import javax.websocket.Session;
  *
  * TODO link onOpen and onRemove to the UI
  */
-@ClientEndpoint(encoders = PoPClientEndpoint.SimpleEncoder.class, decoders = PoPClientEndpoint.SimpleDecoder.class)
+@ClientEndpoint()
 public final class PoPClientEndpoint {
 
     private static final ClientManager client = ClientManager.createClient();
@@ -64,38 +64,5 @@ public final class PoPClientEndpoint {
     @OnClose
     public void onClose(Session session, CloseReason reason) {
         listeners.remove(session);
-    }
-
-    static class SimpleDecoder implements Decoder.Text<String> {
-
-        @Override
-        public String decode(String s) {
-            return s;
-        }
-
-        @Override
-        public boolean willDecode(String s) {
-            return true;
-        }
-
-        @Override
-        public void init(EndpointConfig config) {}
-
-        @Override
-        public void destroy() {}
-    }
-
-    static class SimpleEncoder implements Encoder.Text<String> {
-
-        @Override
-        public String encode(String object) {
-            return object;
-        }
-
-        @Override
-        public void init(EndpointConfig config) {}
-
-        @Override
-        public void destroy() {}
     }
 }

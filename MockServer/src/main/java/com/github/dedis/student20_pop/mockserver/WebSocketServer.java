@@ -35,7 +35,7 @@ public class WebSocketServer {
         }
     }
 
-    @ServerEndpoint(value = "/", encoders = SimpleEncoder.class, decoders = SimpleDecoder.class)
+    @ServerEndpoint(value = "/")
     public static class PoPServerEndpoint {
 
         @OnOpen
