@@ -211,15 +211,17 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
         if (source.contains("\"data\":")) {
           checkBatchWithNonBase64(source, "data")
 
-          // TODO check inside
+          // could also check inside
         }
         if (source.contains("\"sender\":")) checkBatchWithNonBase64(source, "sender")
         if (source.contains("\"signature\":")) checkBatchWithNonBase64(source, "signature")
         if (source.contains("\"message_id\":")) checkBatchWithNonBase64(source, "message_id")
         if (source.contains("\"witness_signatures\":")) {
-          // TODO check that all values are base64 strings
+          // could check that all values are base64 strings
         }
       }
     }
+    if (source.contains("\"result\":")) checkBatchTestsInt("result")
+    if (source.contains("\"error\":")) { /* no bogus test possible : checks done later */ }
   }
 }

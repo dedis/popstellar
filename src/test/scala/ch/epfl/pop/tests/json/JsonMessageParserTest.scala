@@ -1,7 +1,7 @@
 package ch.epfl.pop.tests.json
 
 import ch.epfl.pop.json.JsonMessages.{JsonMessagePublishClient, _}
-import ch.epfl.pop.json.JsonUtils.{JsonMessageParserException, MessageContentDataBuilder}
+import ch.epfl.pop.json.JsonUtils.{JsonMessageParserError, JsonMessageParserException, MessageContentDataBuilder}
 import ch.epfl.pop.json._
 import spray.json._
 import ch.epfl.pop.json.JsonCommunicationProtocol._
@@ -389,11 +389,21 @@ class JsonMessageParserTest extends FunSuite with Matchers {
 
   test("JsonMessageParser.parseMessage|encodeMessage:AnswerResultIntMessageServer") {
     val source: String = embeddedServerAnswer(Some(0), None, id = 13)
+    val sp: JsonMessage = JsonMessageParser.parseMessage(source) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
-    val sp: JsonMessages.JsonMessage = AnswerResultIntMessageServer(13, 0,  "2.0")
-    val spd: String = JsonMessageParser.serializeMessage(sp).filterNot((c: Char) => c.isWhitespace)
+    val spd: String = JsonMessageParser.serializeMessage(sp)
+    val spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
+    sp shouldBe a [AnswerResultIntMessageServer]
+    spdp shouldBe a [AnswerResultIntMessageServer]
     assertResult(source)(spd)
+    checkBogusInputs(source)
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:AnswerResultArrayMessageServer") {
@@ -452,13 +462,48 @@ class JsonMessageParserTest extends FunSuite with Matchers {
                             |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
 
     for (i <- -5 until 0) {
-      val sp: JsonMessages.JsonMessage = AnswerErrorMessageServer(99, MessageErrorContent(i, "err"),  "2.0")
-      val spd: String = JsonMessageParser.serializeMessage(sp)
+      val s: String = source.replaceAll("ERR_CODE", String.valueOf(i))
 
-      assertResult(source.replaceAll("ERR_CODE", String.valueOf(i)))(spd)
+      val sp: JsonMessage = JsonMessageParser.parseMessage(s) match {
+        case Left(m) => m
+        case _ => fail()
+      }
+
+      val spd: String = JsonMessageParser.serializeMessage(sp)
+      val spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
+        case Left(m) => m
+        case _ => fail()
+      }
+
+      assertResult(s)(spd)
+      sp shouldBe a [AnswerErrorMessageServer]
+      spdp shouldBe a [AnswerErrorMessageServer]
+      assertResult(s)(spd)
+      checkBogusInputs(s)
+    }
+  }
+
+  test("JsonMessageParser.parseMessage|encodeMessage:\"bogus answer message\"") {
+    val source: String = s"""{
+                            |    "error": {
+                            |       "code": ERR_CODE,
+                            |       "description": "err"
+                            |    },
+                            |    "id": 99,
+                            |    "jsonrpc": "2.0",
+                            |    "result": 0
+                            |  }
+                            |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
+
+    for (i <- -20 to 20) {
+      val s: String = source.replaceAll("ERR_CODE", String.valueOf(i))
+
+      val sp: JsonMessageParserError = JsonMessageParser.parseMessage(s) match {
+        case Right(m) => m
+        case _ => fail()
+      }
+
+      sp shouldBe a [JsonMessageParserError]
     }
   }
 }
-
-
-
