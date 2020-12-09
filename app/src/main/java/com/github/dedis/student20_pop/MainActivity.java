@@ -80,9 +80,6 @@ public final class MainActivity extends FragmentActivity {
                     // Creating the LAO and adding it to the organizer's LAO
                     Lao lao = new Lao(name, new Date(), app.getPerson().getId());
                     // Store the private key of the organizer
-                    //TODO Move it into app onCreate()
-                    if (PrivateInfoStorage.storeData(this, app.getPerson().getId(), app.getPerson().getAuthentication()))
-                        Log.d(TAG, "Stored private key of organizer");
 
                     CompletableFuture.supplyAsync(() -> {
                         try {
@@ -103,7 +100,7 @@ public final class MainActivity extends FragmentActivity {
                             Log.e(TAG, "Error while creating the lao", t);
                         else {
                             //TODO Show toast for success
-                            Person organizer = app.getPerson().setLaos(Collections.singletonList(lao.getId()));
+                            Person organizer = app.getPerson().addLao(lao.getId());
                             // Set LAO and organizer information locally
                             ((PoPApplication) getApplication()).setPerson(organizer);
                             ((PoPApplication) getApplication()).setLaos(Collections.singletonList(lao));

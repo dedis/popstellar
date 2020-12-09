@@ -37,7 +37,7 @@ public class LaunchFragmentTest {
         ActivityScenario.launch(OrganizerActivity .class).onActivity(a -> {
             PoPApplication app = (PoPApplication) a.getApplication();
             assertThat(app.getLaos().get(0).getName(), is("LAO"));
-            assertThat(app.getPerson().getName(), is("USER"));
+            assertThat(app.getPerson().getName(), is(PoPApplication.USERNAME));
             assertThat(app.getPerson().getLaos().get(0), is(app.getLaos().get(0).getId()));
         });
     }
