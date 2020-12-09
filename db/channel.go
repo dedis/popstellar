@@ -69,7 +69,6 @@ func writeChannel(obj interface{}, database string, secure bool) error {
 		case define.RollCall:
 			dt, err2 = json.Marshal(obj.(define.RollCall).ID)
 		default:
-			//TODO not sure for the error type
 			return define.ErrRequestDataInvalid
 		}
 		// Marshal the Obj and store it
