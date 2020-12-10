@@ -3,6 +3,7 @@ import { sign } from 'tweetnacl';
 import { getStore } from '../Store/configureStore';
 
 /* global btoa, atob */ // do not touch! EsLint required comment!
+/* eslint-disable no-underscore-dangle */
 
 /** JSON rpc version used by our protocol */
 export const JSON_RPC_VERSION = '2.0';
@@ -89,7 +90,7 @@ export const PendingRequest = class {
 /** Sign an array of strings using the client private key */
 export const signStrings = (...strs) => {
   let str = '';
-  strs.forEach((item) => str += item);
+  strs.forEach((item) => { str += item; });
 
   return encodeBase64(sign(decodeUTF8(str), decodeBase64(getSecretKey())));
 };
@@ -99,7 +100,7 @@ const hashLib = require('hash.js');
 
 export const hashStrings = (...strs) => {
   let str = '';
-  strs.forEach((item) => str += item);
+  strs.forEach((item) => { str += item; });
 
   return toString64(hashLib.sha256().update(str).digest('hex'));
 };

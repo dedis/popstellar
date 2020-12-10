@@ -63,7 +63,9 @@ const handleServerAnswer = (message) => {
             // callback for a successful create LAO request
             const jsonMessage = answer.message;
             jsonMessage.params.channel = fromString64(jsonMessage.params.channel);
-            jsonMessage.params.message.data = JSON.parse(fromString64(jsonMessage.params.message.data));
+            jsonMessage.params.message.data = JSON.parse(
+              fromString64(jsonMessage.params.message.data),
+            );
 
             // store new LAO
             getStore().dispatch({ type: 'SET_CURRENT_LAO', value: jsonMessage });
