@@ -22,7 +22,7 @@ func NewOrganizer(pkey string, db string) *Organizer {
 	}
 }
 
-/** processes what is received from the WebSocket
+/** processes what is received from the websocket
  * msg : received message
  * returns, in order :
  * message to send on channel, or nil
@@ -360,7 +360,7 @@ func (o *Organizer) handleWitnessMessage(message define.Message, canal string, g
 	// decrypt msg and compare with hash of "local" data
 
 	//retrieve message to sign from database
-	toSign := db.GetMessage([]byte(canal), []byte(message.Message_id), o.database)
+	toSign := db.GetMessage([]byte(canal), []byte(message.MessageId), o.database)
 	if toSign == nil {
 		return nil, nil, define.ErrInvalidResource
 	}

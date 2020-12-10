@@ -1,7 +1,7 @@
 /* file to implement manage opened websockets. Implements the publish-subscribe paradigm.
 inspired from the chat example of github.com/gorilla */
 
-package WebSocket
+package websocket
 
 import (
 	"bytes"
@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-const SIG_THRESHOLD = 4
+const SigThreshold = 4
 
 /*
 TODO

@@ -40,7 +40,7 @@ type Message struct {
 	Data              json.RawMessage // in base 64
 	Sender            string
 	Signature         string
-	Message_id        string
+	MessageId         string
 	WitnessSignatures []string
 }
 
@@ -181,11 +181,11 @@ func AnalyseMessage(message json.RawMessage) (Message, error) {
 	}
 	m.Sender = string(d)
 
-	d, err = Decode(m.Message_id)
+	d, err = Decode(m.MessageId)
 	if err != nil {
 		return m, ErrEncodingFault
 	}
-	m.Message_id = string(d)
+	m.MessageId = string(d)
 
 	d, err = Decode(m.Signature)
 	if err != nil {

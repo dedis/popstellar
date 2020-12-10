@@ -10,6 +10,7 @@ import (
 )
 
 const MaxPropagationDelay = 600
+const MinTimeOfCreation = 100
 
 /* used for both creation and state update */
 func LAOIsValid(data DataCreateLAO, message Message, create bool) bool {
@@ -43,7 +44,7 @@ func MeetingCreatedIsValid(data DataCreateMeeting, message Message) bool {
 		return false
 	}*/
 	//the timestamp is reasonably recent with respect to the server’s clock,
-	if data.Creation > time.Now().Unix() || data.Creation-time.Now().Unix() > MaxPropagationDelay {
+	if data.Creation < MinTimeOfCreation || data.Creation > time.Now().Unix() || data.Creation > time.Now().Unix() + MaxPropagationDelay{
 		return false
 	}
 
@@ -72,19 +73,19 @@ func MessageIsValid(msg Message) error { //TODO remove ID hash check
 	str = append(str, []byte(msg.Signature)...)
 	hash := sha256.Sum256(str)
 
-	if !bytes.Equal([]byte(msg.Message_id), hash[:]) {
+	if !bytes.Equal([]byte(msg.MessageId), hash[:]) {
 		return ErrInvalidResource
 	}
 
 	// the signature is valid
-	err := VerifySignature(msg.Sender, (msg.Data), msg.Signature)
+	err := VerifySignature(msg.Sender, msg.Data, msg.Signature)
 	if err != nil {
-		return err //err
+		return err
 	}
 
 	// the witness signatures are valid (check on every message??)
-	publicKeys, err := AnalyseData(string(msg.Data))
-	if publicKeys["object"] == "lao" && publicKeys["action"] == "create" {
+	dataAnalysed, err := AnalyseData(string(msg.Data))
+	if dataAnalysed["object"] == "lao" && dataAnalysed["action"] == "create" {
 		data, err := AnalyseDataCreateLAO(msg.Data)
 		if err != nil {
 			return ErrInvalidResource
