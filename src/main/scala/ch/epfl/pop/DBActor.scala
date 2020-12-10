@@ -31,6 +31,8 @@ object DBActor {
 
   final case class Catchup(channel: String, rid: Int, replyTo: ActorRef[JsonMessageAnswerServer]) extends DBMessage
 
+  final case class Read(channel: String, id: Hash, replyTo: ActorRef[Option[MessageContent]]) extends DBMessage
+
   /**
    * Create an actor handling the database
    * @param path the path of the database
@@ -88,6 +90,20 @@ object DBActor {
           replyTo ! AnswerErrorMessageServer(error = error, id = rid)
         }
         Behaviors.same
+
+      case Read(channel, id, replyTo) =>
+         if(channelsDB.contains(channel)) {
+           val db = channelsDB(channel)
+           val res = db.get(id) match {
+             case null => None
+             case value => Some(JsonMessageParser.parseChannelMessage(value))
+           }
+           replyTo ! res
+         }
+         else {
+           replyTo ! None
+         }
+         Behaviors.same
      }
   }
 

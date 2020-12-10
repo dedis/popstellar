@@ -1,4 +1,4 @@
-package json
+package ch.epfl.pop.tests.json
 
 import java.util.Base64
 

@@ -1,10 +1,11 @@
-package pubsub
+package ch.epfl.pop.tests.pubsub
+
+import ch.epfl.pop.tests.MessageCreationUtils.getMessageParams
 
 import java.io.File
 import java.security.MessageDigest
 import java.util.Base64
 import java.util.concurrent.TimeUnit
-
 import akka.actor.typed.scaladsl.AskPattern._
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.{ActorRef, ActorSystem, Props, SpawnProtocol}
@@ -13,16 +14,17 @@ import akka.util.Timeout
 import ch.epfl.pop
 import ch.epfl.pop.DBActor
 import ch.epfl.pop.DBActor.DBMessage
+import ch.epfl.pop.crypto.{Hash, Signature}
 import ch.epfl.pop.json.JsonMessages._
-import ch.epfl.pop.json.{Actions, ChannelMessages, ChannelName, MessageContent, MessageContentData, MessageErrorContent, MessageParameters, Methods, Objects, Signature}
+import ch.epfl.pop.json.{Actions, Base64String, ChannelMessages, ChannelName, MessageContent, MessageContentData, MessageErrorContent, MessageParameters, Methods, Objects, Signature}
 import ch.epfl.pop.pubsub.{ChannelActor, PublishSubscribe}
 import org.iq80.leveldb.Options
 import org.scalatest.FunSuite
-import spray.json._
-import ch.epfl.pop.json.JsonCommunicationProtocol.MessageContentDataFormat
 import ch.epfl.pop.json.JsonUtils.MessageContentDataBuilder
 import scorex.crypto.signatures.{Curve25519, PrivateKey, PublicKey}
 
+import java.nio.ByteBuffer
+import java.util
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.math.pow
@@ -61,7 +63,7 @@ class PubSubTest extends FunSuite {
         case Some(m) => println("Sending: " + m.toString); Source.single(m)
         case None => Source.empty
       }
-      val future = source.initialDelay(1.milli).via(flows(flowNumber)).log("logging pubsub").runWith(sinkHead)
+      val future = source.initialDelay(1.milli).via(flows(flowNumber)).log("logging ch.epfl.pop.tests.pubsub").runWith(sinkHead)
       response match {
         case Some(json) => assert(Await.result(future, 1.seconds) == json)
         case None =>
@@ -88,18 +90,6 @@ class PubSubTest extends FunSuite {
     (sk, pk)
   }
 
-  private def b64Encode(b: Array[Byte]): Array[Byte] = Base64.getEncoder.encode(b)
-
-  private def getMessageParams(data : MessageContentData, pk: PublicKey, sk: PrivateKey, channel: ChannelName): MessageParameters = {
-    val messageId = b64Encode(data.toJson.toString().getBytes())
-    val signature = b64Encode(Curve25519.sign(sk, messageId))
-    val sender = b64Encode(supertagged.untag(pk))
-    val witnessSignature: List[Signature] = Nil
-    val encodedData = b64Encode(data.toJson.compactPrint.getBytes).map(_.toChar).mkString
-    val content =  MessageContent(encodedData, data, sender, signature, messageId, witnessSignature)
-    val params = MessageParameters(channel, Some(content))
-    params
-  }
 
   private def getCreateLao(pk : PublicKey,
                                    sk : PrivateKey,
@@ -107,10 +97,10 @@ class PubSubTest extends FunSuite {
 
     val creationTime = pow(2,24).toLong
     val digest = MessageDigest.getInstance("SHA-256")
-    digest.update(b64Encode(supertagged.untag(pk)))
-    digest.update(BigInt(creationTime).toByteArray)
+    digest.update(supertagged.untag(pk))
+    digest.update(ByteBuffer.allocate(8).putLong(creationTime))
     digest.update(laoName.getBytes)
-    val laoID = b64Encode(digest.digest())
+    val laoID = digest.digest()
 
     val laoData : MessageContentData = new MessageContentDataBuilder()
       .setHeader(Objects.Lao, Actions.Create)
@@ -118,7 +108,7 @@ class PubSubTest extends FunSuite {
       .setName(laoName)
       .setCreation(creationTime)
       .setLastModified(creationTime)
-      .setOrganizer(b64Encode(pk))
+      .setOrganizer(pk)
       .setWitnesses(Nil)
       .build()
 
@@ -158,12 +148,17 @@ class PubSubTest extends FunSuite {
       .setLastModified(dataCreate.creation)
       .setOrganizer(dataCreate.organizer)
       .setWitnesses(Nil)
-      .setModificationId(dataCreate.id)
+      .setModificationId(create.params.message.get.message_id)
       .setModificationSignatures(Nil)
       .build()
 
     val params = getMessageParams(dataBroadcast, pk, sk, channel)
-
+    val content = params.message.get
+    println("Broadcast info")
+    println("Content: " + content.encodedData)
+    println("Signature: " + util.Arrays.toString(content.signature))
+    println("Sender: " + util.Arrays.toString(content.sender))
+    println(Signature.verify(content.encodedData, content.signature, content.sender))
     BroadcastLaoMessageClient(params, id, Methods.Publish)
   }
 
@@ -171,18 +166,23 @@ class PubSubTest extends FunSuite {
     PropagateMessageServer(params)
   }
 
-  def getCreateMeeting(laoId: String, sk: PrivateKey, pk: PublicKey, id: Int) : CreateMeetingMessageClient = {
+  def getCreateMeeting(laoId: Base64String, sk: PrivateKey, pk: PublicKey, id: Int) : CreateMeetingMessageClient = {
     val name = "My awesome meeting"
     val creationTime = pow(2,24).toLong
     val location = "Zoom"
     val digest = MessageDigest.getInstance("SHA-256")
-    digest.update(laoId.getBytes())
-    digest.update(BigInt(creationTime).toByteArray)
+    println("Create meeting")
+    println("LaoId: " + util.Arrays.toString(Base64.getDecoder.decode(laoId.getBytes())))
+    println("Creation time: " + creationTime)
+    println("Name: " + name)
+    digest.update(Base64.getDecoder.decode(laoId.getBytes()))
+    digest.update(ByteBuffer.allocate(8).putLong(creationTime))
     digest.update(name.getBytes)
-    val eventID = b64Encode(digest.digest())
+    val eventID = digest.digest()
     val data = new MessageContentDataBuilder()
       .setHeader(Objects.Meeting, Actions.Create)
       .setId(eventID)
+      .setName(name)
       .setCreation(creationTime)
       .setLastModified(creationTime)
       .setLocation(location)
@@ -191,6 +191,7 @@ class PubSubTest extends FunSuite {
       .build()
     val channel = "/root/" + laoId
     val params = getMessageParams(data, pk, sk, channel)
+    println(util.Arrays.equals(Hash.computeMeetingId(Base64.getDecoder.decode(laoId.getBytes()), creationTime, name), params.message.get.data.id))
     CreateMeetingMessageClient(params, id, Methods.Publish)
   }
 

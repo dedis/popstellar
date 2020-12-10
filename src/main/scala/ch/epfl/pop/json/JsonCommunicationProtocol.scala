@@ -111,7 +111,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
             case Seq(action@JsString(_), mid@JsString(_), signature@JsString(_)) =>
               new MessageContentDataBuilder()
                 .setHeader(Objects.Message, action.convertTo[Actions])
-                .setMessageId(mid.convertTo[ByteArray])
+                .setMessageId(mid.convertTo[Base64String])
                 .setSignature(signature.convertTo[Signature])
                 .build()
 
