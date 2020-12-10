@@ -1,4 +1,3 @@
-import React from 'react';
 import { w3cwebsocket as W3CWebSocket } from 'websocket';
 // eslint-disable-next-line import/no-cycle
 import handleServerAnswer from './WebsocketAnswer';
@@ -13,7 +12,7 @@ const WEBSOCKET_READYSTATE_MAX_ATTEMPTS = 100;
 const SERVER_ADDRESS = {
   address: '127.0.0.1',
   port: '8000', // '8080',
-  path: '', // 'ps's
+  path: '', // 'ps'
 };
 
 export default class WebsocketLink {

@@ -7,12 +7,15 @@ import STRINGS from '../res/strings';
 import { Spacing, Typography } from '../Styles';
 import PROPS_TYPE from '../res/Props';
 import { requestCreateLao } from '../websockets/WebsocketApi';
-import { getStore } from '../Store/configureStore';
 
-/*
-* The Launch component
-*
-* Manage the Launch screen
+/**
+ * Manage the Launch screen: a description string, a LAO name text input, a launch LAO button,
+ * and cancel button
+ *
+ * The Launch button does nothing
+ * The cancel button clear the LAO name field and redirect to the Home screen
+ *
+ * TODO implement the launch button action
 */
 const styles = StyleSheet.create({
   container: {
@@ -68,7 +71,10 @@ const Launch = ({ navigation }) => {
           />
         </View>
         <View style={styles.button}>
-          <Button title={STRINGS.general_button_cancel}/>
+          <Button
+            title={STRINGS.general_button_cancel}
+            onPress={() => cancelAction()}
+          />
         </View>
       </View>
     </View>
