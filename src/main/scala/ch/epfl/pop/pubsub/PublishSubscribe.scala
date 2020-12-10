@@ -262,8 +262,10 @@ object PublishSubscribe {
         val parser = Flow[Message].map {
           case TextMessage.Strict(s) => parseMessage(s) match {
             case Left(m) => m
-            case Right(JsonMessageParserError(description, id, errorCode)) =>
-              AnswerErrorMessageServer(id, MessageErrorContent(errorCode.id, description))
+            case Right(JsonMessageParserError(description, id, errorCode)) => id match {
+              case Some(idx) => AnswerErrorMessageServer(idx, MessageErrorContent(errorCode.id, description))
+              case _ => ??? // TODO @SFULPIUS
+            }
           }
         }
         val formatter = Flow[JsonMessage].map(m => TextMessage.Strict(serializeMessage(m)))

@@ -285,13 +285,13 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
                 /* parsing error : invalid object/action pair */
                 case _ => throw JsonMessageParserException(
                   s"invalid message : invalid (object = ${messageContent.data._object}, action = ${messageContent.data.action}) pair",
-                  id.toInt
+                  Some(id.toInt)
                 )
               }
 
               // Should never happen missing MessageContent in MessageParameters
               case _ => throw JsonMessageParserException(
-                "missing MessageContent in MessageParameter for JsonMessagePublishClient", id.toInt
+                "missing MessageContent in MessageParameter for JsonMessagePublishClient", Some(id.toInt)
               )
             }
           }
@@ -299,7 +299,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
           parsed match {
             case Success(mpc) => mpc
             case Failure(s) => s match {
-              case DeserializationException(msg, _, _) => throw JsonUtils.JsonMessageParserException(msg, id.toInt)
+              case DeserializationException(msg, _, _) => throw JsonUtils.JsonMessageParserException(msg, Some(id.toInt))
               case _ => throw s
             }
           }
@@ -308,7 +308,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
         case _ =>
           val msg: String = "invalid MessageParameters : fields missing or wrongly formatted"
           json.asJsObject.getFields("id") match {
-            case Seq(JsNumber(id)) => throw JsonUtils.JsonMessageParserException(msg, id.toInt)
+            case Seq(JsNumber(id)) => throw JsonUtils.JsonMessageParserException(msg, Some(id.toInt))
             case _ => throw JsonUtils.JsonMessageParserException(msg)
           }
       }

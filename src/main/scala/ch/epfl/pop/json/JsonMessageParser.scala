@@ -24,15 +24,15 @@ object JsonMessageParser {
 
     def buildJsonMessageParserException(
                                          obj: JsObject,
-                                         id: Int = JsonUtils.ID_NOT_FOUND,
+                                         id: Option[Int] = None,
                                          errorCode: ErrorCodes = ErrorCodes.InvalidData,
                                          description: String = ""): JsonMessageParserError = {
 
       val msg: String = if (description == "") errorCode.toString else description
 
       obj.getFields("id") match {
-        case Seq(JsNumber(id)) => JsonMessageParserError(msg, id.toInt, errorCode)
-        case _ => JsonMessageParserError(msg, JsonUtils.ID_NOT_FOUND, errorCode)
+        case Seq(JsNumber(id)) => JsonMessageParserError(msg, Some(id.toInt), errorCode)
+        case _ => JsonMessageParserError(msg, None, errorCode)
       }
     }
 

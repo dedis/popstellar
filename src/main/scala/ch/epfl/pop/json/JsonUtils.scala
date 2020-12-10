@@ -17,17 +17,17 @@ object JsonUtils {
   val DECODER: Base64.Decoder = Base64.getDecoder
 
   /** Default id field value if the id field cannot be parsed */
-  val ID_NOT_FOUND: Int = -1
+  val ID_NOT_FOUND: Int = -1 // TODO remove?
 
   /** Parsing exception, always caught by the parser */
   final case class JsonMessageParserException(
                                                description: String,
-                                               id: Int = ID_NOT_FOUND,
+                                               id: Option[Int] = None,
                                                errorCode: ErrorCodes = ErrorCodes.InvalidData
                                              ) extends Exception(description) {}
 
   /** Object sent back to PubSub if a parsing error occurred */
-  final case class JsonMessageParserError(description: String, id: Int = ID_NOT_FOUND, errorCode: ErrorCodes = ErrorCodes.InvalidData)
+  final case class JsonMessageParserError(description: String, id: Option[Int] = None, errorCode: ErrorCodes = ErrorCodes.InvalidData)
 
   object ErrorCodes extends Enumeration {
     type ErrorCodes = Value
