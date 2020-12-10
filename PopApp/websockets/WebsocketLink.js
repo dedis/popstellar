@@ -44,7 +44,14 @@ export default class WebsocketLink {
   /** Return a map of (id -> PendingRequest) which are pending requests sent to the server */
   static getPendingProperties() { return this.#pendingQueries; }
 
-  /** Initialize a websocket connexion */
+  /**
+   * Initialize a websocket connexion
+   *
+   * @param address address of the server
+   * @param port port the server is listen to
+   * @param path (optional) path the server is listen to
+   * @private private method
+   */
   static _initWebsocket(address = '127.0.0.1', port = '8000', path = '') {
     let p = path;
     if (path !== '') { p = `/${path}`; }
@@ -58,7 +65,13 @@ export default class WebsocketLink {
     this.#pendingQueries = new Map();
   }
 
-  /** Signal when an open websocket connexion is ready to be used */
+  /**
+   * Signal when an open websocket connexion is ready to be used
+   *
+   * @param resolveWebsocketReady positive executor of the caller's promise
+   * @param rejectWebsocketReady negative executor of the caller's promise
+   * @private private method
+   */
   static _waitWebsocketReady(resolveWebsocketReady, rejectWebsocketReady) {
     if (!this.#ws.readyState) {
       let count = 0;
@@ -67,6 +80,7 @@ export default class WebsocketLink {
         if (!this.#ws.readyState && count < WEBSOCKET_READYSTATE_MAX_ATTEMPTS) {
           count += 1;
         } else {
+          // abandon if we reached too many attempts
           if (count === WEBSOCKET_READYSTATE_MAX_ATTEMPTS) {
             rejectWebsocketReady(
               `Maximum waiting time for websocket to be ready reached : 
@@ -89,6 +103,7 @@ export default class WebsocketLink {
    * @param requestObject (objects enum) object of the message
    * @param requestAction (actions enum) action of the message
    * @param retry (boolean) is the query a retry?
+   * @private private method
    */
   static _sendMessage(message, requestObject, requestAction, retry) {
     // Check that the websocket connection is ready

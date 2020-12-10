@@ -5,7 +5,7 @@ const initialState = { organizationNavigation: false, LAO_ID: -1 };
  *
  * Pass the LAO id to the organization UI
  *
- * Two different action:
+ * Action types:
  *  - APP_NAVIGATION_ON: activate the organization UI and set LAO_ID to the value of the action
  *  - APP_NAVIGATION_OFF: activate the home UI and set LAO_ID to -1
  */

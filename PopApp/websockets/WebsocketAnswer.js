@@ -22,7 +22,10 @@ const errorProperties = Object.freeze({
   DESCRIPTION: 'description',
 });
 
-/** Handles callbacks when receiving a server answer */
+/**
+ * Handles callbacks when receiving a server answer
+ * Note : message is a websocket message (!= JsonMessage)!
+ */
 const handleServerAnswer = (message) => {
   const obj = JSON.parse(message.data);
 
