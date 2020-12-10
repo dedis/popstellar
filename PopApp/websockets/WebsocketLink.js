@@ -4,6 +4,7 @@ import handleServerAnswer from './WebsocketAnswer';
 import { PendingRequest } from './WebsocketUtils';
 
 /* global window */ // do not touch! EsLint required comment!
+/* eslint-disable no-underscore-dangle */
 
 const WEBSOCKET_READYSTATE_INTERVAL_MS = 10;
 const WEBSOCKET_READYSTATE_MAX_ATTEMPTS = 100;
@@ -59,7 +60,6 @@ export default class WebsocketLink {
 
   /** Signal when an open websocket connexion is ready to be used */
   static _waitWebsocketReady(resolveWebsocketReady, rejectWebsocketReady) {
-
     if (!this.#ws.readyState) {
       let count = 0;
 
@@ -91,10 +91,9 @@ export default class WebsocketLink {
    * @param retry (boolean) is the query a retry?
    */
   static _sendMessage(message, requestObject, requestAction, retry) {
-
     // Check that the websocket connection is ready
     if (!this.#ws.readyState) {
-      let promise = new Promise((resolveWebsocketReady, rejectWebsocketReady) => {
+      const promise = new Promise((resolveWebsocketReady, rejectWebsocketReady) => {
         this._waitWebsocketReady(resolveWebsocketReady, rejectWebsocketReady);
       });
 

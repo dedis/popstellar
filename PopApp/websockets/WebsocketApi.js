@@ -5,6 +5,8 @@ import {
 } from './WebsocketUtils';
 import WebsocketLink from './WebsocketLink';
 
+/* eslint-disable no-underscore-dangle */
+
 /** Generate a client query from a method (methods enum),
  * a params object (Json Object) and an optional id (number) */
 const _generateQuery = (method, params, id) => {
@@ -49,16 +51,16 @@ class DataBuilder {
     this._id = undefined;
     this._name = undefined;
     this._creation = undefined;
-    this._last_modified = undefined;
+    this._lastModified = undefined;
     this._organizer = undefined;
     this._witnesses = undefined;
-    this._mod_id = undefined;
-    this._mod_sign = undefined;
+    this._modId = undefined;
+    this._modSign = undefined;
     this._location = undefined;
     this._start = undefined;
     this._end = undefined;
     this._extra = undefined;
-    this._message_id = undefined;
+    this._messageId = undefined;
     this._signature = undefined;
   }
 
@@ -70,16 +72,16 @@ class DataBuilder {
     if (this._id !== 'undefined') obj.id = this._id;
     if (this._name !== 'undefined') obj.name = this._name;
     if (this._creation !== 'undefined') obj.creation = this._creation;
-    if (this._last_modified !== 'undefined') obj.last_modified = this._last_modified;
+    if (this._lastModified !== 'undefined') obj.last_modified = this._lastModified;
     if (this._organizer !== 'undefined') obj.organizer = this._organizer;
     if (this._witnesses !== 'undefined') obj.witnesses = this._witnesses;
-    if (this._mod_id !== 'undefined') obj.modification_id = this._mod_id;
-    if (this._mod_sign !== 'undefined') obj.modification_signature = this._mod_sign;
+    if (this._modId !== 'undefined') obj.modification_id = this._modId;
+    if (this._modSign !== 'undefined') obj.modification_signature = this._modSign;
     if (this._location !== 'undefined') obj.location = this._location;
     if (this._start !== 'undefined') obj.start = this._start;
     if (this._end !== 'undefined') obj.end = this._end;
     if (this._extra !== 'undefined') obj.extra = this._extra;
-    if (this._message_id !== 'undefined') obj.message_id = this._message_id;
+    if (this._messageId !== 'undefined') obj.message_id = this._messageId;
     if (this._signature !== 'undefined') obj.signature = this._signature;
 
     return obj;
@@ -97,15 +99,15 @@ class DataBuilder {
 
   setCreation(_creation) { this._creation = _creation; return this; }
 
-  setLastModified(_last_modified) { this._last_modified = _last_modified; return this; }
+  setLastModified(_lastModified) { this._lastModified = _lastModified; return this; }
 
   setOrganizer(_organizer) { this._organizer = _organizer; return this; }
 
   setWitnesses(_witnesses) { this._witnesses = _witnesses; return this; }
 
-  setModificationId(_mod_id) { this._mod_id = _mod_id; return this; }
+  setModificationId(_modId) { this._modId = _modId; return this; }
 
-  setModificationSignature(_mod_sign) { this._mod_sign = _mod_sign; return this; }
+  setModificationSignature(_modSign) { this._modSign = _modSign; return this; }
 
   setLocation(_location) { this._location = _location; return this; }
 
@@ -115,7 +117,7 @@ class DataBuilder {
 
   setExtra(_extra) { this._extra = _extra; return this; }
 
-  setMessageId(_message_id) { this._message_id = _message_id; return this; }
+  setMessageId(_messageId) { this._messageId = _messageId; return this; }
 
   setSignature(_signature) { this._signature = _signature; return this; }
 }
@@ -171,7 +173,7 @@ export const requestStateLao = () => {
     .setOrganizer(encodeBase64(currentData.organizer))
     .setWitnesses(currentData.witnesses)
     .setModificationId(0)
-    .setModificationSignature([]) // TODO modif id? modif_signatures
+    .setModificationSignature([]) // TODO modification_id? modification_signatures
     .buildJson();
 
   const m = _generateMessage(jsonData, getCurrentLao().params.message.witness_signatures);
