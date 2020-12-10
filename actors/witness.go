@@ -26,7 +26,7 @@ func NewWitness(pkey string, db string) *Witness {
 	}
 }
 
-/** processes what is received from the WebSocket
+/** processes what is received from the websocket
  * Currently only supports updateProperties
  * msg : receivedMessage
  * returns, in order :
