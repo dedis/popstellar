@@ -44,10 +44,10 @@ object Validate {
     val lao = midLevelMsg.data
     val id = Hash.computeLAOId(lao.organizer, lao.creation, lao.name)
 
-    if (!Arrays.equals(id, lao.id)) getError("Invalid LAO id.")
+    if (!util.Arrays.equals(id, lao.id)) getError("Invalid LAO id.")
     else if (! (lao.creation > 0)) getError("Creation timestamp should be positive.")
     else if (! (lao.creation == lao.last_modified)) getError("Creation time should be the same as last modified.")
-    else if (! Arrays.equals(midLevelMsg.sender, lao.organizer))
+    else if (! util.Arrays.equals(midLevelMsg.sender, lao.organizer))
       getError("The sender of the message should be the same as the organizer of the LAO.")
     else None
   }
@@ -77,7 +77,7 @@ object Validate {
     val laoState = midLevelMsg.data
 
     val same = " should be the same in the state and the creation/modification message."
-    if (! Arrays.equals(laoMod.id, laoState.id))
+    if (!util.Arrays.equals(laoMod.id, laoState.id))
       getError("LAO id" + same)
     else if (! (laoState.creation == laoMod.creation))
       getError("The creation timestamp" + same )
@@ -85,13 +85,13 @@ object Validate {
       getError("The name" + same)
     else if (!(laoState.last_modified == laoMod.last_modified))
       getError("The last modified timestamp" + same)
-    else if (!Arrays.equals(laoState.organizer, laoMod.organizer))
+    else if (!util.Arrays.equals(laoState.organizer, laoMod.organizer))
       getError("The organizer" + same)
     else if (!(laoState.witnesses.length == laoMod.witnesses.length))
       getError("The number of witnesses" + same)
     else if (!compareWitnesses(laoState.witnesses, laoMod.witnesses))
       getError("Witnesses" + same)
-    else if (! Arrays.equals(midLevelMsg.sender, laoState.organizer))
+    else if (!util.Arrays.equals(midLevelMsg.sender, laoState.organizer))
       getError("The sender of the message should be the same as the organizer of the LAO.")
     else None
   }
@@ -120,7 +120,7 @@ object Validate {
     val midLevelMsg = msg.params.message.get
     val createMsg = midLevelMsg.data
     val id = Hash.computeMeetingId(laoId, createMsg.creation, createMsg.name)
-    if (!(Arrays.equals(id, createMsg.id)))
+    if (!(util.Arrays.equals(id, createMsg.id)))
       getError("Invalid meeting id.")
     else if (!(createMsg.creation > 0))
       getError("Creation timestamp should be positive.")
@@ -144,7 +144,7 @@ object Validate {
     val stateMsg = midLevelMsg.data
     val same = " should be the same in the state and the creation/modification message."
 
-    if (!(Arrays.equals(stateMsg.id, meetingMod.id)))
+    if (!(util.Arrays.equals(stateMsg.id, meetingMod.id)))
       getError("The meeting id" + same)
     else if (!(stateMsg.name == meetingMod.name))
       getError("The meeting name" + same)
@@ -159,7 +159,7 @@ object Validate {
 
   private def compareWitnesses(w1: List[Key], w2: List[Key]): Boolean = {
     assert(w1.length == w2.length)
-    w1.zip(w2).forall(p => Arrays.equals(p._1, p._2))
+    w1.zip(w2).forall(p => util.Arrays.equals(p._1, p._2))
   }
   private def getError(error: String): Some[MessageErrorContent] = {
     Some(MessageErrorContent(InvalidData.id, error))

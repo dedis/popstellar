@@ -64,7 +64,7 @@ object JsonUtils {
 
     /* state LAO broadcast fields */
     var modification_id: ByteArray = Array[Byte]()
-    var modification_signatures: List[Signature] = List()
+    var modification_signatures: List[KeySignPair] = List()
 
     /* witness a message related fields */
     var message_id: Base64String = ""
@@ -103,8 +103,8 @@ object JsonUtils {
     def setOrganizer(organizer: Key): MessageContentDataBuilder = { this.organizer = organizer; this }
     def setWitnesses(witnesses: List[Key]): MessageContentDataBuilder = { this.witnesses = witnesses; this }
     def setModificationId(modification_id: ByteArray): MessageContentDataBuilder = { this.modification_id = modification_id; this }
-    def setModificationSignatures(modification_sig: List[Signature]): MessageContentDataBuilder = { this.modification_signatures = modification_sig; this}
     def setMessageId(id: Base64String): MessageContentDataBuilder = { this.message_id = id; this }
+    def setModificationSignatures(modification_sig: List[KeySignPair]): MessageContentDataBuilder = { this.modification_signatures = modification_sig; this}
     def setSignature(signature: Signature): MessageContentDataBuilder = { this.signature = signature; this }
     def setLocation(location: String): MessageContentDataBuilder = { this.location = location; this }
     def setStart(start: TimeStamp): MessageContentDataBuilder = { this.start = start; this }

@@ -27,6 +27,19 @@ class JsonMessageParserTest extends FunSuite with Matchers {
         }
       }
 
+      @scala.annotation.tailrec
+      def checkListOfKeySigPair(l1: List[KeySignPair], l2: List[KeySignPair]): Unit = {
+        l1.length should equal (l2.length)
+
+        (l1, l2) match {
+          case _ if l1.isEmpty =>
+          case (h1 :: tail1, h2 :: tail2) =>
+            h1.witness should equal (h2.witness)
+            h1.signature should equal (h2.signature)
+            checkListOfKeySigPair(tail1, tail2)
+        }
+      }
+
 
       val o1 = this.m
       val o2 = o
@@ -62,7 +75,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
               mc1.sender should equal (mc2.sender)
               mc1.signature should equal (mc2.signature)
               mc1.message_id should equal (mc2.message_id)
-              checkListOfByteArray(mc1.witness_signatures, mc2.witness_signatures)
+              checkListOfKeySigPair(mc1.witness_signatures, mc2.witness_signatures)
 
               mc1.data._object should equal (mc2.data._object)
               mc1.data.action should equal (mc2.data.action)
@@ -89,12 +102,16 @@ class JsonMessageParserTest extends FunSuite with Matchers {
 
 
   @scala.annotation.tailrec
-  final def listStringify(value: List[Key], acc: String = ""): String = {
+  final def listStringify(value: List[KeySignPair], acc: String = ""): String = {
     if (value.nonEmpty) {
       var sep = ""
       if (value.length > 1) sep = ","
 
-      listStringify(value.tail, acc + "\"" + encodeBase64String(value.head.map(_.toChar).mkString) + "\"" + sep)
+      listStringify(
+        value.tail,
+        acc + "{\"signature\":\"" + encodeBase64String(value.head.signature.map(_.toChar).mkString) +
+        "\",\"witness\":\"" + encodeBase64String(value.head.witness.map(_.toChar).mkString) + "\"}" + sep
+      )
     }
     else "[" + acc + "]"
   }
@@ -438,7 +455,11 @@ class JsonMessageParserTest extends FunSuite with Matchers {
 
 
     // 1 message and non-empty witness list
-    val sig: List[Key] = List("witnessKey1".getBytes, "witnessKey2".getBytes, "witnessKey3".getBytes)
+    val sig: List[KeySignPair] = List(
+      KeySignPair("ceb_prop_1".getBytes, "ceb_1".getBytes),
+      KeySignPair("ceb_prop_2".getBytes, "ceb_2".getBytes),
+      KeySignPair("ceb_prop_3".getBytes, "ceb_3".getBytes)
+    )
     m = MessageContent(encodedData, data, "skey".getBytes, "sign".getBytes, "mid".getBytes, sig)
     sp = AnswerResultArrayMessageServer(99, ChannelMessages(List(m)))
     spd = JsonMessageParser.serializeMessage(sp)

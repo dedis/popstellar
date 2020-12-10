@@ -21,7 +21,7 @@ object MessageCreationUtils {
     md.update(signature)
     val messageId = md.digest()
     val sender = supertagged.untag(pk)
-    val witnessSignature: List[Signature] = Nil
+    val witnessSignature: List[KeySignPair] = Nil
 
     val content = MessageContent(encodedData, data, sender, signature, messageId, witnessSignature)
     val params = MessageParameters(channel, Some(content))

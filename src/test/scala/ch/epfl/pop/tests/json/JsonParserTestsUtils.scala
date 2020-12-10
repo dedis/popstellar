@@ -23,7 +23,11 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
                                         |            "sender": "NTMwZEU4",
                                         |            "signature": "NTEwMA==",
                                         |            "message_id": "MWQw",
-                                        |            "witness_signatures": ["Y2ViMQ==", "Y2ViMg==", "Y2ViMw=="]
+                                        |            "witness_signatures": [
+                                        |              { "signature": "Y2ViMQ==", "witness": "Y2ViX3Byb3BfMQ==" },
+                                        |              { "signature": "Y2ViMg==", "witness": "Y2ViX3Byb3BfMg==" },
+                                        |              { "signature": "Y2ViMw==", "witness": "Y2ViX3Byb3BfMw==" }
+                                        |            ]
                                         |        }""".stripMargin.filterNot((c: Char) => c.isWhitespace)
 
 
@@ -42,6 +46,7 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
   val _dataMeeting: String = s"""{
                                 |    "object": "${Objects.Meeting.toString}",
                                 |    "action": "F_ACTION",
+                                |    FF_MODIFICATION
                                 |    "id": "ODg4",
                                 |    "name": "nameMeeting",
                                 |    "creation": 333,
@@ -57,6 +62,7 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
                                  |    "object": "${Objects.Lao.toString}",
                                  |    "action": "${Actions.UpdateProperties.toString}",
                                  |    "name": "name6",
+                                 |    "id": "ODg4",
                                  |    "last_modified": 2226,
                                  |    "witnesses": ["MTEx", "MTExNgo="]
                                  |}""".stripMargin.filterNot((c: Char) => c.isWhitespace)
@@ -72,14 +78,23 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
   val dataCreateLao: String = _dataLao
     .replaceAll("F_ACTION", Actions.Create.toString)
     .replaceAll("FF_MODIFICATION", "")
+    .replaceAll("\"last_modified\":[0-9]*,", "")
   val dataBroadcastLao: String = _dataLao
     .replaceAll("F_ACTION", Actions.State.toString)
     .replaceAll(
       "FF_MODIFICATION",
-      "\"modification_id\":\"NDU2\",\"modification_signatures\":[\"amUgc2lnbmU=\",\"amUgc2lnbmUgYXVzc2k=\"],"
+      "\"modification_id\":\"NDU2\",\"modification_signatures\":[{\"witness\":\"Y2xlZjE=\",\"signature\":\"amUgc2lnbmU=\"},{\"witness\":\"Y2xlZjI=\",\"signature\":\"amUgc2lnbmUgYXVzc2k=\"}],"
     )
-  val dataCreateMeeting: String = _dataMeeting.replaceAll("F_ACTION", Actions.Create.toString)
-  val dataBroadcastMeeting: String = _dataMeeting.replaceAll("F_ACTION", Actions.State.toString)
+  val dataCreateMeeting: String = _dataMeeting
+    .replaceAll("F_ACTION", Actions.Create.toString)
+    .replaceAll("FF_MODIFICATION", "")
+    .replaceAll("\"last_modified\":[0-9]*,", "")
+  val dataBroadcastMeeting: String = _dataMeeting
+    .replaceAll("F_ACTION", Actions.State.toString)
+    .replaceAll(
+      "FF_MODIFICATION",
+      "\"modification_id\":\"NDU2\",\"modification_signatures\":[{\"witness\":\"Y2xlZjE=\",\"signature\":\"amUgc2lnbmU=\"},{\"witness\":\"Y2xlZjI=\",\"signature\":\"amUgc2lnbmUgYXVzc2k=\"}],"
+    )
 
 
   def embeddedMessage(
@@ -98,7 +113,11 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
        |            "sender": "NTMwZEU4",
        |            "signature": "NTEwMA==",
        |            "message_id": "MWQw",
-       |            "witness_signatures": ["Y2ViMQ==", "Y2ViMg==", "Y2ViMw=="]
+       |            "witness_signatures": [
+       |              { "signature": "Y2ViMQ==", "witness": "Y2ViX3Byb3BfMQ==" },
+       |              { "signature": "Y2ViMg==", "witness": "Y2ViX3Byb3BfMg==" },
+       |              { "signature": "Y2ViMw==", "witness": "Y2ViX3Byb3BfMw==" }
+       |            ]
        |        }
        |    },
        |    "id": $id

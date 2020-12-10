@@ -1,6 +1,7 @@
 package ch.epfl.pop.pubsub
 
 import java.util.Base64
+
 import akka.NotUsed
 import akka.actor.typed.scaladsl.AskPattern.{Askable, schedulerFromActorSystem}
 import akka.actor.typed.{ActorRef, ActorSystem}
@@ -15,10 +16,10 @@ import ch.epfl.pop.json.JsonMessageParser.{parseMessage, serializeMessage}
 import ch.epfl.pop.json.JsonMessages.{JsonMessagePublishClient, _}
 import ch.epfl.pop.json.JsonUtils.ErrorCodes.InvalidData
 import ch.epfl.pop.json.JsonUtils.{ErrorCodes, JsonMessageParserError}
-import ch.epfl.pop.json.{MessageContent, MessageErrorContent, MessageParameters}
+import ch.epfl.pop.json.{KeySignPair, MessageContent, MessageContentData, MessageErrorContent, MessageParameters}
 import ch.epfl.pop.pubsub.ChannelActor._
-
 import java.util
+
 import scala.concurrent.{Await, Future}
 
 
@@ -151,12 +152,13 @@ object PublishSubscribe {
       val id = m.id
       val message = params.message.get.data
       val messageId = message.message_id
+      val witnessKey = params.message.get.sender
       val signature = message.signature
       implicit val ec = system.executionContext
       val future = dbActor.ask(ref => Read(params.channel, Base64.getDecoder.decode(messageId), ref))
         .flatMap {
-          case Some(message) =>
-            dbActor.ask(ref => Write(params.channel, message.updateWitnesses(signature), ref))
+          case Some(message: MessageContent) =>
+            dbActor.ask(ref => Write(params.channel, message.updateWitnesses(KeySignPair(witnessKey, signature)), ref))
           case None =>
             system.log.debug("Message id not found in db.")
             Future(false)
@@ -180,7 +182,7 @@ object PublishSubscribe {
             case None =>
              // system.log.debug("Reading: " + params.message.get.data.modification_id)
               AnswerErrorMessageServer(id, MessageErrorContent(InvalidData.id, "Invalid reference to a message_id"))
-            case Some(msgContent) =>
+            case Some(msgContent: MessageContent) =>
               errorOrPublish(params, id, Validate.validate(m, msgContent.data))
           }
         case m @ WitnessMessageMessageClient(_, _, _, _) =>
@@ -192,7 +194,7 @@ object PublishSubscribe {
           val future = dbActor.ask(ref => Read(params.channel, params.message.get.data.modification_id, ref))
           Await.result(future, timeout.duration) match {
             case None => AnswerErrorMessageServer(id, MessageErrorContent(InvalidData.id, "Invalid reference to a message_id"))
-            case Some(msgContent) =>
+            case Some(msgContent: MessageContent) =>
               errorOrPublish(params, id, Validate.validate(m, msgContent.data))
           }
       }

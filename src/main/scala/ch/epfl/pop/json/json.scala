@@ -49,16 +49,17 @@ package object json {
                                    sender: Key,
                                    signature: Signature,
                                    message_id: Hash,
-                                   witness_signatures: List[Signature]
+                                   witness_signatures: List[KeySignPair]
                                  ) {
 
-    def updateWitnesses(s: Signature): MessageContent =
+    def updateWitnesses(s: KeySignPair): MessageContent =
       MessageContent(encodedData, data, sender, signature, message_id, s :: witness_signatures)
-
   }
 
   final case class ChannelMessages(messages: List[ChannelMessage])
   final case class MessageErrorContent(code: Int, description: String)
+
+  final case class KeySignPair(witness: Key, signature: Signature)
 
   /* --------------------------------------------------------- */
   /* ---------------------- ADMIN TYPES ---------------------- */
@@ -105,7 +106,7 @@ package object json {
 
     /* state LAO broadcast fields */
     modification_id: Array[Byte],
-    modification_signatures: List[Signature],
+    modification_signatures: List[KeySignPair],
 
     /* witness a message related fields */
     message_id: Base64String,

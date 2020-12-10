@@ -1,11 +1,11 @@
 package ch.epfl.pop.tests.pubsub
 
 import ch.epfl.pop.tests.MessageCreationUtils.{b64Encode, getMessageParams}
-
 import java.io.File
-import java.security.MessageDigest
+import java.security.{KeyPair, MessageDigest}
 import java.util.Base64
 import java.util.concurrent.TimeUnit
+
 import akka.actor.typed.scaladsl.AskPattern._
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.{ActorRef, ActorSystem, Props, SpawnProtocol}
@@ -16,16 +16,16 @@ import ch.epfl.pop.DBActor
 import ch.epfl.pop.DBActor.DBMessage
 import ch.epfl.pop.crypto.{Hash, Signature}
 import ch.epfl.pop.json.JsonMessages._
-import ch.epfl.pop.json.{Actions, Base64String, ChannelMessages, ChannelName, MessageContent, MessageContentData, MessageErrorContent, MessageParameters, Methods, Objects, Signature}
+import ch.epfl.pop.json.{Actions, Base64String, ChannelMessages, ChannelName, KeySignPair, MessageContent, MessageContentData, MessageErrorContent, MessageParameters, Methods, Objects, Signature}
 import ch.epfl.pop.pubsub.{ChannelActor, PublishSubscribe}
 import org.iq80.leveldb.Options
 import org.scalatest.FunSuite
 import ch.epfl.pop.json.JsonUtils.{ErrorCodes, MessageContentDataBuilder}
 import org.scalactic.Equality
 import scorex.crypto.signatures.{Curve25519, PrivateKey, PublicKey}
-
 import java.nio.ByteBuffer
 import java.util
+
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.math.pow
@@ -49,7 +49,7 @@ class PubSubTest extends FunSuite {
     directory.deleteRecursively()
 
     implicit val system: ActorSystem[SpawnProtocol.Command] = ActorSystem[SpawnProtocol.Command](root, "test")
-    implicit val timeout = Timeout(1, TimeUnit.SECONDS)
+    implicit val timeout: Timeout = Timeout(1, TimeUnit.SECONDS)
     val (pubEntry, actor, dbActor) = setup(DatabasePath)
 
     val sinkHead = Sink.head[JsonMessageAnswerServer]
@@ -74,7 +74,7 @@ class PubSubTest extends FunSuite {
   }
 
   //We need a special case for catchup, because arrays are compared by reference by default
-  private implicit val catchupEq = new Equality[JsonMessageAnswerServer] {
+  private implicit val catchupEq: Equality[JsonMessageAnswerServer] = new Equality[JsonMessageAnswerServer] {
     override def areEqual(a: JsonMessageAnswerServer, b: Any): Boolean = (a, b) match {
       case (
         AnswerResultArrayMessageServer(id1, ChannelMessages(messages1), _),
@@ -95,7 +95,9 @@ class PubSubTest extends FunSuite {
         util.Arrays.equals(msg1.signature, msg2.signature) &&
         util.Arrays.equals(msg1.message_id, msg2.message_id) &&
         msg1.witness_signatures.length == msg2.witness_signatures.length &&
-        msg1.witness_signatures.zip(msg2.witness_signatures).forall(s => util.Arrays.equals(s._1, s._2))
+        msg1.witness_signatures.zip(msg2.witness_signatures).forall(s => util.Arrays.equals(s._1.witness, s._2.witness)
+          && util.Arrays.equals(s._1.signature, s._2.signature)
+        )
     }
 
   }
@@ -118,7 +120,6 @@ class PubSubTest extends FunSuite {
     val (sk, pk): (PrivateKey, PublicKey) = Curve25519.createKeyPair
     (sk, pk)
   }
-
 
   private def getCreateLao(pk : PublicKey,
                                    sk : PrivateKey,
@@ -343,7 +344,7 @@ class PubSubTest extends FunSuite {
     directory.deleteRecursively()
 
     implicit val system: ActorSystem[SpawnProtocol.Command] = ActorSystem[SpawnProtocol.Command](root, "test")
-    implicit val timeout = Timeout(1, TimeUnit.SECONDS)
+    implicit val timeout: Timeout = Timeout(1, TimeUnit.SECONDS)
     val (pubEntry, actor, dbActor) = setup(DatabasePath)
 
     val options: Options = new Options()
@@ -421,8 +422,9 @@ class PubSubTest extends FunSuite {
 
   test("Signatures are added to messages when witnessing") {
     val (createLao, witnessLaoCreation) = createLaoAndWitness()
+    val key = witnessLaoCreation.params.message.get.sender
     val signature = witnessLaoCreation.params.message.get.data.signature
-    val createLaoUpdated = createLao.params.message.get.updateWitnesses(signature)
+    val createLaoUpdated = createLao.params.message.get.updateWitnesses(KeySignPair(key, signature))
 
     val catchup = CatchupMessageClient(MessageParameters(witnessLaoCreation.params.channel, None), 1)
     val res = ChannelMessages(

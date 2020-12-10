@@ -49,6 +49,8 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
     override def write(obj: ByteArray): JsValue = JsString(JsonUtils.ENCODER.encode(obj).map(_.toChar).mkString)
   }
 
+  implicit val keySignPairFormat: RootJsonFormat[KeySignPair] = jsonFormat2(KeySignPair)
+
 
   /* ------------------- ADMIN MESSAGES CLIENT ------------------- */
 
@@ -59,46 +61,63 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
         /* create LAO, update LAO's properties and broadcast LAO's state */
         case Objects.Lao() =>
-          jsonObject.getFields("action", "id", "name", "creation", "last_modified", "organizer", "witnesses") match {
+          jsonObject.getFields("action", "id", "name", "creation", "organizer", "witnesses") match {
 
             // create LAO and broadcast LAO's state
-            case Seq(a@JsString(_), id@JsString(_), JsString(n), c@JsNumber(_), lm@JsNumber(_), orgKey@JsString(_), JsArray(w)) =>
+            case Seq(a@JsString(_), id@JsString(_), JsString(n), c@JsNumber(_), orgKey@JsString(_), JsArray(w)) =>
               val action: Actions = a.convertTo[Actions]
               val mcb = new MessageContentDataBuilder()
                 .setHeader(Objects.Lao, action)
                 .setId(id.convertTo[ByteArray])
                 .setName(n)
                 .setCreation(c.convertTo[TimeStamp])
-                .setLastModified(lm.convertTo[TimeStamp])
                 .setOrganizer(orgKey.convertTo[Key])
                 .setWitnesses(w.map(_.convertTo[Key]).toList)
 
+
               action match {
+                case Actions.UpdateProperties =>
+                  jsonObject.getFields("last_modified") match {
+                    case Seq(lm@JsNumber(_)) => mcb.setLastModified(lm.convertTo[TimeStamp])
+                    case _ => throw JsonMessageParserException(
+                      s"""invalid "$action" query : field "last_modified" missing or wrongly formatted"""
+                    )
+                  }
                 case Actions.State =>
-                  jsonObject.getFields("modification_id", "modification_signatures") match {
-                    case Seq(mid@JsString(_), JsArray(ms)) =>
-                      mcb.setModificationId(mid.convertTo[ByteArray])
-                        .setModificationSignatures(ms.map(_.convertTo[Signature]).toList)
-                        .build()
+                  jsonObject.getFields("last_modified", "modification_id", "modification_signatures") match {
+                    case Seq(lm@JsNumber(_), mid@JsString(_), JsArray(ms)) =>
+                      mcb.setLastModified(lm.convertTo[TimeStamp])
+                        .setModificationId(mid.convertTo[ByteArray])
+                        .setModificationSignatures(ms.map(_.convertTo[KeySignPair]).toList)
 
                     case _ => throw JsonMessageParserException(
                       "invalid \"StateBroadcastLao\" query : fields (\"modification_id\" and/or " +
-                      "\"modification_signatures\") missing or wrongly formatted"
+                      "\"modification_signatures\" and/or \"last_modified\") missing or wrongly formatted"
                     )
                   }
 
-                case _ => mcb.build()
+                case _ =>
               }
+
+              mcb.build()
 
 
             // update LAO's properties
-            case Seq(action@JsString(_), JsString(name), lastModified@JsNumber(_), JsArray(witnesses)) =>
-              new MessageContentDataBuilder()
+            case Seq(action@JsString(_), id@JsString(_), JsString(name), JsArray(witnesses)) =>
+              val mcb = new MessageContentDataBuilder()
                 .setHeader(Objects.Lao, action.convertTo[Actions])
+                .setId(id.convertTo[ByteArray])
                 .setName(name)
-                .setLastModified(lastModified.convertTo[TimeStamp])
                 .setWitnesses(witnesses.map(_.convertTo[Key]).toList)
-                .build()
+
+              jsonObject.getFields("last_modified") match {
+                case Seq(lm@JsNumber(_)) => mcb.setLastModified(lm.convertTo[TimeStamp])
+                case _ => throw JsonMessageParserException(
+                  """invalid "updateLaoProperties" query : field "last_modified" missing or wrongly formatted"""
+                )
+              }
+
+              mcb.build()
 
 
             // parsing error : invalid message content data fields
@@ -121,20 +140,35 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
         /* create meeting and broadcast meeting's state */
         case Objects.Meeting() =>
-          jsonObject.getFields("action", "id", "name", "creation", "last_modified", "start") match {
-            case Seq(a@JsString(_), id@JsString(_), JsString(n), c@JsNumber(_), lm@JsNumber(_), st@JsNumber(_)) =>
+          jsonObject.getFields("action", "id", "name", "creation", "start") match {
+            case Seq(a@JsString(_), id@JsString(_), JsString(n), c@JsNumber(_), st@JsNumber(_)) =>
+              val action: Actions = a.convertTo[Actions]
 
               val location: Seq[JsValue] = jsonObject.getFields("location")
               val end: Seq[JsValue] = jsonObject.getFields("end")
               val extra: Seq[JsValue] = jsonObject.getFields("extra")
 
               val mcd = new MessageContentDataBuilder()
-                .setHeader(Objects.Meeting, a.convertTo[Actions])
+                .setHeader(Objects.Meeting, action)
                 .setId(id.convertTo[ByteArray])
                 .setName(n)
                 .setCreation(c.convertTo[TimeStamp])
-                .setLastModified(lm.convertTo[TimeStamp])
                 .setStart(st.convertTo[TimeStamp])
+
+              action match {
+                case Actions.State =>
+                  jsonObject.getFields("last_modified", "modification_id", "modification_signatures") match {
+                    case Seq(lm@JsNumber(_), mid@JsString(_), JsArray(ms)) =>
+                      mcd.setLastModified(lm.convertTo[TimeStamp])
+                        .setModificationId(mid.convertTo[ByteArray])
+                        .setModificationSignatures(ms.map(_.convertTo[KeySignPair]).toList)
+                    case _ => throw JsonMessageParserException(
+                      "invalid \"StateBroadcastMeeting\" query : fields (\"modification_id\" and/or " +
+                        "\"modification_signatures\" and/or \"last_modified\") missing or wrongly formatted"
+                    )
+                  }
+                case _ =>
+              }
 
               location match {
                 case Seq(JsString(l)) => mcd.setLocation(l)
@@ -197,7 +231,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
             sender.convertTo[Key],
             signature.convertTo[Signature],
             message_id.convertTo[Hash],
-            witnesses.map(_.convertTo[Key]).toList
+            witnesses.map(_.convertTo[KeySignPair]).toList
           )
 
         // parsing error : invalid message content fields
