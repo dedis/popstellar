@@ -24,14 +24,26 @@ object DBActor {
 
   /**
    * Request to write a message in the database
+   * @param channel the channel where the message must be published
    * @param message the message to write in the database
-   * @param rid the id of the client request
    * @param replyTo the actor to respond to
    */
   final case class Write(channel: ChannelName, message : MessageContent, replyTo: ActorRef[Boolean]) extends DBMessage
 
+  /**
+   * Request to read all messages on a channel
+   * @param channel the channel we want to read
+   * @param rid the id of the request
+   * @param replyTo the actor to reply to
+   */
   final case class Catchup(channel: ChannelName, rid: Int, replyTo: ActorRef[JsonMessageAnswerServer]) extends DBMessage
 
+  /**
+   * Request to read a specific messages on a channel
+   * @param channel the channel where the message was published
+   * @param id the id of the message we want to read
+   * @param replyTo the actor to reply to
+   */
   final case class Read(channel: ChannelName, id: Hash, replyTo: ActorRef[Option[MessageContent]]) extends DBMessage
 
 

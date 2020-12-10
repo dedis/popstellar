@@ -115,9 +115,6 @@ object PublishSubscribe {
         case Some(error) => AnswerErrorMessageServer(id, error)
         case None =>
           val content = params.message.get
-         /* system.log.debug("Content: " + content.encodedData)
-          system.log.debug("Signature: " + util.Arrays.toString(content.signature))
-          system.log.debug("Sender: " + util.Arrays.toString(content.sender))*/
           Validate.validate(content) match {
             case Some(error) => AnswerErrorMessageServer(id, error)
             case None =>
@@ -127,25 +124,54 @@ object PublishSubscribe {
       }
     }
 
+    def pubCreateLao(m: CreateLaoMessageClient) = {
+      val params = m.params
+      val id = m.id
+      Validate.validate(m) match {
+        case Some(error) => AnswerErrorMessageServer(id, error)
+        case None =>
+          val highLevelMessage = params.message.get.data
+          val channel = "/root/" + new String(Base64.getEncoder.encode(highLevelMessage.id))
+          val future = actor.ask(ref => CreateMessage(channel, ref))
+
+          if (!Await.result(future, timeout.duration)) {
+            val error = MessageErrorContent(-3, "Channel " + channel + " already exists.")
+            AnswerErrorMessageServer(error = error, id = id)
+          }
+          else {
+            //Publish on the LAO main channel
+            pub(MessageParameters(channel, params.message), false)
+            AnswerResultIntMessageServer(id)
+          }
+      }
+    }
+
+    def pubWitness(m: WitnessMessageMessageClient) = {
+      val params = m.params
+      val id = m.id
+      val message = params.message.get.data
+      val messageId = message.message_id
+      val signature = message.signature
+      implicit val ec = system.executionContext
+      val future = dbActor.ask(ref => Read(params.channel, Base64.getDecoder.decode(messageId), ref))
+        .flatMap {
+          case Some(message) =>
+            dbActor.ask(ref => Write(params.channel, message.updateWitnesses(signature), ref))
+          case None =>
+            system.log.debug("Message id not found in db.")
+            Future(false)
+        }
+      if (Await.result(future, timeout.duration))
+        errorOrPublish(params, id, Validate.validate(m))
+      else {
+        val error = MessageErrorContent(ErrorCodes.InvalidData.id, "The id the witness message refers to does not exist.")
+        AnswerErrorMessageServer(id, error)
+      }
+    }
+
     _ match {
         case m @ CreateLaoMessageClient(params, id, _, _) =>
-          Validate.validate(m) match {
-            case Some(error) => AnswerErrorMessageServer(id, error)
-            case None =>
-              val highLevelMessage = params.message.get.data
-              val channel = "/root/" + new String(Base64.getEncoder.encode( highLevelMessage.id))
-              val future = actor.ask(ref => CreateMessage(channel, ref))
-
-              if (!Await.result(future, timeout.duration)) {
-                val error = MessageErrorContent(-3, "Channel " + channel + " already exists.")
-                AnswerErrorMessageServer(error = error, id = id)
-              }
-              else {
-                //Publish on the LAO main channel
-                pub(MessageParameters(channel, params.message), false)
-                AnswerResultIntMessageServer(id)
-              }
-          }
+          pubCreateLao(m)
         case m @ UpdateLaoMessageClient(params,id,_,_) =>
           errorOrPublish(params, id, Validate.validate(m))
         case m @ BroadcastLaoMessageClient(params, id,_,_) =>
@@ -157,32 +183,10 @@ object PublishSubscribe {
             case Some(msgContent) =>
               errorOrPublish(params, id, Validate.validate(m, msgContent.data))
           }
-        case m @ WitnessMessageMessageClient(params, id, _, _) =>
-          val message = params.message.get.data
-          val messageId = message.message_id
-          val signature = message.signature
-          implicit val ec = system.executionContext
-          val future = dbActor.ask(ref => Read(params.channel, Base64.getDecoder.decode(messageId), ref))
-            .flatMap {
-              case Some(message) =>
-                dbActor.ask(ref => Write(params.channel, message.updateWitnesses(signature), ref))
-              case None =>
-                system.log.debug("Message id not found in db.")
-                Future(false)
-            }
-          if (Await.result(future, timeout.duration))
-           errorOrPublish(params, id, Validate.validate(m))
-          else {
-            val error = MessageErrorContent(ErrorCodes.InvalidData.id, "The id the witness message refers to does not exist.")
-            AnswerErrorMessageServer(id, error)
-          }
-
+        case m @ WitnessMessageMessageClient(_, _, _, _) =>
+          pubWitness(m)
         case m @ CreateMeetingMessageClient(params, id, _, _) =>
           val laoId = Base64.getDecoder.decode(params.channel.slice(6,params.channel.length).getBytes)
-          system.log.debug("Create meeting")
-          system.log.debug("LaoId: " + util.Arrays.toString(laoId))
-          system.log.debug("Creation time: " + m.params.message.get.data.creation)
-          system.log.debug("Name: " + m.params.message.get.data.name)
           errorOrPublish(params, id, Validate.validate(m, laoId))
         case m @ BroadcastMeetingMessageClient(params, id, _ ,_) =>
           val future = dbActor.ask(ref => Read(params.channel, params.message.get.data.modification_id, ref))
