@@ -43,7 +43,7 @@ const _createKeyPair = () => {
   return keys;
 };
 
-/** Return the user public key (string) or create it if missing */
+/** Return the user public key (base64 string) or create it if missing */
 export const getPublicKey = () => {
   const { pubKey } = getStore().getState().keypairReducer;
 
@@ -52,7 +52,7 @@ export const getPublicKey = () => {
   return pubKey;
 };
 
-/** Return the user secret key (string) or create it if missing */ // TODO how to do better?
+/** Return the user secret key (base64 string) or create it if missing */ // TODO how to do better?
 export const getSecretKey = () => {
   const { secKey } = getStore().getState().keypairReducer;
 
@@ -74,7 +74,7 @@ export const fromString64 = (str) => atob(str);
  * See https://gist.github.com/gordonbrander/2230317
  */
 export const generateId = () => parseInt(Math.random().toString(16).substr(2, 9), 16) & 0xfffffff;
-/** Return the current time (UNIX number of seconds from 1st january 1970) */
+/** Return the current time (Number - UNIX number of seconds from 1st january 1970) */
 export const getCurrentTime = () => Math.floor(Date.now() / 1000);
 
 /** Represent an already sent query to the server on which the client is waiting for an answer */
@@ -87,20 +87,28 @@ export const PendingRequest = class {
   }
 };
 
-/** Sign an array of strings using the client private key */
-export const signStrings = (...strs) => {
+/**
+ * Sign an array of strings using the client private key
+ *
+ * @param strings variable number of strings to sign
+ * @returns {string} base64 encoded signature over the strings using client secret key
+ */
+export const signStrings = (...strings) => {
   let str = '';
-  strs.forEach((item) => { str += item; });
+  strings.forEach((item) => { str += item; });
 
   return encodeBase64(sign(decodeUTF8(str), decodeBase64(getSecretKey())));
 };
 
-/** Hash an array of strings using SHA-256 then convert it into a base64 string */
 const hashLib = require('hash.js');
-
-export const hashStrings = (...strs) => {
+/**
+ * Hash an array of strings using SHA-256 then convert it into a base64 string
+ * @param strings variable number of strings to hash
+ * @returns {string} base64 encoded SHA-256 hash of the strings
+ */
+export const hashStrings = (...strings) => {
   let str = '';
-  strs.forEach((item) => { str += item; });
+  strings.forEach((item) => { str += item; });
 
   return toString64(hashLib.sha256().update(str).digest('hex'));
 };
