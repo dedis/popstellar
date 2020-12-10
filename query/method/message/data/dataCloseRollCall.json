@@ -1,0 +1,29 @@
+{
+	"$schema": "http://json-schema.org/draft/2019-09/schema#",
+	"$id": "https://github.com/dedis/student20_pop/tree/proto-specs/query/method/message/data/dataCloseRollCall.json",
+	"description": "Match a close roll-call query",
+	"type": "object",
+
+	"properties": {
+		"object": { "const": "roll_call" },
+		"action": { "const": "close" },
+		"id": {
+			"type": "string",
+			"contentEncoding": "base64",
+			"$comment": "Hash : SHA256('roll_call'||lao_id||creation||name)"
+		},
+		"start": { "description": "[Timestamp] start time", "type": "integer", "minimum": 0 },
+		"end": { "description": "[Timestamp] end time", "type": "integer", "minimum": 0 },
+		"attendees": {
+			"description": "[Array[Base64String]] list of public keys of attendees",
+			"type": "array",
+			"uniqueItems": true,
+			"items": { "type": "string", "contentEncoding": "base64" }
+		}
+	},
+	"additionalProperties": false,
+	"required": ["object", "action", "id", "start", "end", "attendees"],
+	"note": [
+
+	]
+}
