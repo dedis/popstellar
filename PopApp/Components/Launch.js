@@ -6,15 +6,13 @@ import {
 import STRINGS from '../res/strings';
 import { Spacing, Typography } from '../Styles';
 import PROPS_TYPE from '../res/Props';
+import { requestCreateLao } from '../websockets/WebsocketApi';
+import { getStore } from '../Store/configureStore';
 
-/**
- * Manage the Launch screen: a decrtiption string, a LAO noame text input, a launch LAO button,
- * and cancel button
- *
- * The Launch button does nothing
- * The cancel button clear the LAO name field and redirect to the Home screen
- *
- * TODO implement the launch button action
+/*
+* The Launch component
+*
+* Manage the Launch screen
 */
 const styles = StyleSheet.create({
   container: {
@@ -37,11 +35,16 @@ const styles = StyleSheet.create({
   },
 });
 
+const onButtonLaunchPress = (inputLaoName) => {
+  if (inputLaoName.current.value) requestCreateLao(inputLaoName.current.value);
+  else console.error('empty lao name...?');
+};
+
 const Launch = ({ navigation }) => {
-  const LAOName = React.useRef();
+  const inputLaoName = React.useRef();
 
   const cancelAction = () => {
-    LAOName.current.clear();
+    inputLaoName.current.clear();
     navigation.navigate('Home');
   };
 
@@ -51,7 +54,7 @@ const Launch = ({ navigation }) => {
         <Text style={styles.text}>{STRINGS.launch_description}</Text>
         <View style={styles.button}>
           <TextInput
-            ref={LAOName}
+            ref={inputLaoName}
             style={styles.textInput}
             placeholder={STRINGS.launch_organization_name}
           />
@@ -59,13 +62,13 @@ const Launch = ({ navigation }) => {
       </View>
       <View style={styles.viewBottom}>
         <View style={styles.button}>
-          <Button title={STRINGS.launch_button_launch} />
+          <Button
+            title={STRINGS.launch_button_launch}
+            onPress={() => onButtonLaunchPress(inputLaoName)}
+          />
         </View>
         <View style={styles.button}>
-          <Button
-            title={STRINGS.general_button_cancel}
-            onPress={() => cancelAction()}
-          />
+          <Button title={STRINGS.general_button_cancel}/>
         </View>
       </View>
     </View>
