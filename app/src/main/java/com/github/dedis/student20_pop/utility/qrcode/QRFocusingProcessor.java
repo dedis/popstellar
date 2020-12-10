@@ -2,6 +2,7 @@ package com.github.dedis.student20_pop.utility.qrcode;
 
 import android.util.SparseArray;
 
+import com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.FocusingProcessor;
 import com.google.android.gms.vision.Tracker;
@@ -15,8 +16,8 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
  */
 public class QRFocusingProcessor extends FocusingProcessor<Barcode> {
 
-    public QRFocusingProcessor(BarcodeDetector detector, QRCodeListener listener) {
-        super(detector, new BarcodeTracker(listener));
+    public QRFocusingProcessor(BarcodeDetector detector, QRCodeListener listener, QRCodeScanningType qrCodeScanningType) {
+        super(detector, new BarcodeTracker(listener, qrCodeScanningType));
     }
 
     @Override
@@ -53,15 +54,17 @@ public class QRFocusingProcessor extends FocusingProcessor<Barcode> {
     private static class BarcodeTracker extends Tracker<Barcode> {
 
         private final QRCodeListener listener;
+        private final QRCodeScanningType qrCodeScanningType;
 
-        public BarcodeTracker(QRCodeListener listener) {
+        public BarcodeTracker(QRCodeListener listener, QRCodeScanningType qrCodeScanningType) {
             this.listener = listener;
+            this.qrCodeScanningType = qrCodeScanningType;
         }
 
         @Override
         public void onNewItem(int id, Barcode barcode) {
             if(barcode.valueFormat == Barcode.URL)
-                listener.onQRCodeDetected(barcode.url.url);
+                listener.onQRCodeDetected(barcode.url.url, qrCodeScanningType);
         }
     }
 }
