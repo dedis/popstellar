@@ -10,7 +10,7 @@
 		"id": {
 			"type": "string",
 			"contentEncoding": "base64",
-			"$comment": "Hash : SHA256('roll_call'||lao_id||creation||name)"
+			"$comment": "Hash : SHA256('R'||lao_id||creation||name)"
 		},
 		"name": { "type": "string" },
 		"creation": { "description": "[Timestamp] creation time", "type": "integer", "minimum": 0 },
