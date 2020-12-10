@@ -22,7 +22,8 @@
 		},
 		"roll_call_description": {
 			"description":"An optional description of the meeting",
-			"type": "string"
+			"type": "string",
+			"$comment": "Optional"
 		}
 	},
 	"additionalProperties": false,
@@ -32,6 +33,7 @@
 		{"required": ["scheduled"] }
 	],
 	"note": [
-
+		"The roll-call can be scheduled in the future. In this case, the scheduled field should be provided",
+		"It can also be started immediately, in which case the start field should be provided"
 	]
 }
