@@ -5,7 +5,9 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "startServer": "node websockets/LocalMockServer.js",
+    "startMonitorServer": "nodemon websockets/LocalMockServer.js"
   },
   "dependencies": {
     "@react-native-community/datetimepicker": "^3.0.5",
@@ -17,6 +19,7 @@
     "expo": "~39.0.2",
     "expo-cli": "^3.28.5",
     "expo-status-bar": "~1.0.2",
+    "hash.js": "^1.1.7",
     "prop-types": "^15.7.2",
     "react": "16.13.1",
     "react-dom": "16.13.1",
@@ -31,7 +34,11 @@
     "react-native-web": "~0.13.12",
     "react-navigation": "^4.4.1",
     "react-redux": "^7.2.2",
-    "redux": "^4.0.5"
+    "redux": "^4.0.5",
+    "redux-persist": "^6.0.0",
+    "tweetnacl": "^1.0.3",
+    "tweetnacl-util": "^0.15.1",
+    "websocket": "^1.0.32"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",
