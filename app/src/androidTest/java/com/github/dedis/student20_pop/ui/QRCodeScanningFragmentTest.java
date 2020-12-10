@@ -25,7 +25,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 /**
  * Class handling connect fragment tests
  */
-public class ConnectFragmentTest {
+public class QRCodeScanningFragmentTest {
 
     private static final String TEST_URL = "Test url";
 
@@ -41,10 +41,10 @@ public class ConnectFragmentTest {
 
         // Simulate a detected url
         scenario.onActivity(a -> {
-            Fragment fragment = a.getSupportFragmentManager().findFragmentByTag(ConnectFragment.TAG);
+            Fragment fragment = a.getSupportFragmentManager().findFragmentByTag(QRCodeScanningFragment.TAG);
             Assert.assertNotNull(fragment);
-            Assert.assertTrue(fragment instanceof ConnectFragment);
-            ((ConnectFragment) fragment).onQRCodeDetected(TEST_URL);
+            Assert.assertTrue(fragment instanceof QRCodeScanningFragment);
+            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_URL);
         });
 
         // Check everything
