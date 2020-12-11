@@ -26,9 +26,7 @@ func NewWitness(pkey string, db string) *Witness {
 	}
 }
 
-/* processes what is received from the websocket
- * msg : receivedMessage
- */
+/* processes what is received from the websocket */
 func (w *Witness) HandleWholeMessage(receivedMsg []byte, userId int) (message, channel, responseToSender []byte) {
 	generic, err := define.AnalyseGeneric(receivedMsg)
 	if err != nil {
@@ -56,32 +54,27 @@ func (w *Witness) handlePublish(generic define.Generic) (messsage, channel []byt
 	return nil, nil, define.ErrInvalidAction //a witness cannot handle a publish request for now
 }
 
-/** @returns, in order
- * message
- * channel
- * error
- */
-func (w *Witness) handleMessage(generic define.Generic) ([]byte, []byte, error) {
-	params, err := define.AnalyseParamsFull(generic.Params)
-	if err != nil {
+func (w *Witness) handleMessage(generic define.Generic) (message, channel []byte, err error) {
+	params, errs := define.AnalyseParamsFull(generic.Params)
+	if errs != nil {
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
-	message, err := define.AnalyseMessage(params.Message)
-	if err != nil {
+	msg, errs := define.AnalyseMessage(params.Message)
+	if errs != nil {
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
 	data := define.Data{}
-	base64Text := make([]byte, b64.StdEncoding.DecodedLen(len(message.Data)))
+	base64Text := make([]byte, b64.StdEncoding.DecodedLen(len(msg.Data)))
 
-	l, err := b64.StdEncoding.Decode(base64Text, message.Data)
-	if err != nil {
-		return nil, nil, err
+	l, errs := b64.StdEncoding.Decode(base64Text, msg.Data)
+	if errs != nil {
+		return nil, nil, errs
 	}
 
-	err = json.Unmarshal(base64Text[:l], &data)
-	if err != nil {
+	errs = json.Unmarshal(base64Text[:l], &data)
+	if errs != nil {
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
@@ -89,11 +82,11 @@ func (w *Witness) handleMessage(generic define.Generic) ([]byte, []byte, error) 
 	case "lao":
 		switch data["action"] {
 		case "create":
-			return w.handleCreateLAO(message, params.Channel, generic)
+			return w.handleCreateLAO(msg, params.Channel, generic)
 		case "update_properties":
-			return w.handleUpdateProperties(message, params.Channel, generic)
+			return w.handleUpdateProperties(msg, params.Channel, generic)
 		case "state":
-			return w.handleLAOState(message, params.Channel, generic)
+			return w.handleLAOState(msg, params.Channel, generic)
 		default:
 			return nil, nil, define.ErrInvalidAction
 		}
@@ -101,14 +94,14 @@ func (w *Witness) handleMessage(generic define.Generic) ([]byte, []byte, error) 
 	case "message":
 		switch data["action"] {
 		case "witness":
-			return w.handleWitnessMessage(message, params.Channel, generic)
+			return w.handleWitnessMessage(msg, params.Channel, generic)
 		default:
 			return nil, nil, define.ErrInvalidAction
 		}
 	case "roll call":
 		switch data["action"] {
 		case "create":
-			return w.handleCreateRollCall(message, params.Channel, generic)
+			return w.handleCreateRollCall(msg, params.Channel, generic)
 		case "state":
 			return nil, nil, define.ErrInvalidAction
 		default:
