@@ -26,13 +26,8 @@ func NewWitness(pkey string, db string) *Witness {
 	}
 }
 
-/** processes what is received from the websocket
- * Currently only supports updateProperties
+/* processes what is received from the websocket
  * msg : receivedMessage
- * returns, in order :
- * message to send on channel, or nil
- * channel for the message, or nil
- * response to the sender, or nil
  */
 func (w *Witness) HandleWholeMessage(receivedMsg []byte, userId int) (message, channel, responseToSender []byte) {
 	generic, err := define.AnalyseGeneric(receivedMsg)
