@@ -331,9 +331,9 @@ func (o *Organizer) handleCreatePoll(message define.Message, canal string, gener
 * message
 * channel
 */
-func (o *Organizer) handleUpdateProperties(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
-	channel, msg := finalizeHandling(canal, generic)
-	return channel, msg, db.CreateMessage(message, canal, o.database)
+func (o *Organizer) handleUpdateProperties(msg define.Message, canal string, generic define.Generic) (message, channel []byte, err error) {
+	chann, sendMsg := finalizeHandling(canal, generic)
+	return chann, sendMsg, db.CreateMessage(msg, canal, o.database)
 }
 
 /** @returns, in order
