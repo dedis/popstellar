@@ -11,7 +11,7 @@ type Actor interface {
 	//Public functions
 	HandleWholeMessage(msg []byte, userId int) (message, channel, responseToSender []byte)
 	//Private functions
-	handlePublish(generic define.Generic) ([]byte, []byte, error)
+	handlePublish(generic define.Generic) (message, channel []byte, err error)
 	handleCreateLAO(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error)
 	handleUpdateProperties(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error)
 	handleWitnessMessage(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error)

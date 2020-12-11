@@ -57,7 +57,7 @@ func (w *Witness) HandleWholeMessage(receivedMsg []byte, userId int) (message, c
 	return msg, chann, define.CreateResponse(err, history, generic)
 }
 
-func (w *Witness) handlePublish(generic define.Generic) ([]byte, []byte, error) {
+func (w *Witness) handlePublish(generic define.Generic) (messsage, channel []byte, err error) {
 	return nil, nil, define.ErrInvalidAction //a witness cannot handle a publish request for now
 }
 
