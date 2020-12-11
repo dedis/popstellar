@@ -8,6 +8,7 @@ import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -28,6 +29,7 @@ public class LaunchFragmentTest {
     }
 
     @Test
+    @Ignore("TODO : Modify test because it requires connection to backend")
     public void launchNewLaoSetsInfoTest() {
         onView(withId(R.id.tab_launch)).perform(click());
         onView(withId(R.id.entry_box_launch)).perform(typeText("LAO"), closeSoftKeyboard());
