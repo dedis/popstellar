@@ -45,4 +45,13 @@
     <!-- Roll-Call Event -->
     <string name="roll_call_event">Roll-Call Event</string>
     <string name="exception_message_empty_lao_name">Trying to set an empty name for the LAO</string>
+    <string name="anonymous_explanation">You can participate in organizations and meetings anonymously by leaving this box checked.\nIf you wish to reveal your identity to other participants in this organization,\nyou may un-check this box and enter the information you wish to reveal below.\nYou must enter identity information in order to play an Organizer or Witness role in an organization.</string>
+
+    <!-- Identity -->
+    <string name="identity_name">Name</string>
+    <string name="identity_title">Title</string>
+    <string name="identity_email">Email</string>
+    <string name="identity_organization">Organization</string>
+    <string name="identity_phone">Phone</string>
+    <string name="identity_anonymous">Anonymous</string>
 </resources>
