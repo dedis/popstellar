@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-//wrapper for the web socket connection
+//wrapper for the web socket 	connection
 type connection struct {
 	// Buffered channel of outbound messages.
 	send chan []byte

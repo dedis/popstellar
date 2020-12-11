@@ -40,7 +40,7 @@ type Message struct {
 	Data              json.RawMessage // in base 64
 	Sender            string
 	Signature         string
-	MessageId         string
+	Message_id        string
 	WitnessSignatures []string
 }
 
@@ -168,6 +168,11 @@ func AnalyseParamsLight(params json.RawMessage) (ParamsLight, error) {
 func AnalyseParamsFull(params json.RawMessage) (ParamsFull, error) {
 	m := ParamsFull{}
 	err := json.Unmarshal(params, &m)
+	if err != nil {
+		return m, ErrEncodingFault
+	}
+	d, err := Decode(m.Channel)
+	m.Channel = string(d)
 	return m, err
 }
 
@@ -181,11 +186,11 @@ func AnalyseMessage(message json.RawMessage) (Message, error) {
 	}
 	m.Sender = string(d)
 
-	d, err = Decode(m.MessageId)
+	d, err = Decode(m.Message_id)
 	if err != nil {
 		return m, ErrEncodingFault
 	}
-	m.MessageId = string(d)
+	m.Message_id = string(d)
 
 	d, err = Decode(m.Signature)
 	if err != nil {
@@ -198,11 +203,11 @@ func AnalyseMessage(message json.RawMessage) (Message, error) {
 		return m, ErrEncodingFault
 	}
 	//TODO super bizarre, il decode correctement la deuxieme fois dans le tests?
-	d, err = Decode(string(d))
+	/*d, err = Decode(string(d))
 	if err != nil {
 		return m, ErrEncodingFault
 	}
-	//
+	*/
 	m.Data = d
 
 	for i := 0; i < len(m.WitnessSignatures); i++ {
