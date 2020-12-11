@@ -29,7 +29,7 @@ func LAOIsValid(data DataCreateLAO, message Message, create bool) bool {
 	if create && !bytes.Equal([]byte(data.ID), hash[:]) {
 		//if(hash64 != data.ID) {
 		fmt.Printf("sec3 \n")
-		fmt.Printf("%v, %v", hash, data.ID)
+		fmt.Printf("expecting %v, got %v", hash, data.ID)
 		return false
 	}
 
@@ -44,7 +44,7 @@ func MeetingCreatedIsValid(data DataCreateMeeting, message Message) bool {
 		return false
 	}*/
 	//the timestamp is reasonably recent with respect to the server’s clock,
-	if data.Creation < MinTimeOfCreation || data.Creation > time.Now().Unix() || data.Creation > time.Now().Unix() + MaxPropagationDelay{
+	if data.Creation < MinTimeOfCreation || data.Creation > time.Now().Unix() || data.Creation > time.Now().Unix()+MaxPropagationDelay {
 		return false
 	}
 
@@ -73,7 +73,7 @@ func MessageIsValid(msg Message) error { //TODO remove ID hash check
 	str = append(str, []byte(msg.Signature)...)
 	hash := sha256.Sum256(str)
 
-	if !bytes.Equal([]byte(msg.MessageId), hash[:]) {
+	if !bytes.Equal([]byte(msg.Message_id), hash[:]) {
 		return ErrInvalidResource
 	}
 

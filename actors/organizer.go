@@ -100,13 +100,13 @@ func (o *Organizer) handleMessage(generic define.Generic) (message, channel []by
 func (o *Organizer) handlePublish(generic define.Generic) (message, channel []byte, err error) {
 	params, errs := define.AnalyseParamsFull(generic.Params)
 	if errs != nil {
-		fmt.Printf("unable to analyse paramsLight in handlePublish()")
+		fmt.Printf("1. unable to analyse paramsLight in handlePublish()")
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
 	msg, errs := define.AnalyseMessage(params.Message)
 	if errs != nil {
-		fmt.Printf("unable to analyse Message in handlePublish()")
+		fmt.Printf("2. unable to analyse Message in handlePublish()")
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
@@ -118,7 +118,7 @@ func (o *Organizer) handlePublish(generic define.Generic) (message, channel []by
 
 	data, errs := define.AnalyseData(string(msg.Data))
 	if errs != nil {
-		fmt.Printf("unable to analyse data in handlePublish()")
+		fmt.Printf("3. unable to analyse data in handlePublish()")
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
@@ -321,7 +321,7 @@ func (o *Organizer) handleWitnessMessage(msg define.Message, canal string, gener
 	// decrypt msg and compare with hash of "local" data
 
 	//retrieve message to sign from database
-	toSign := db.GetMessage([]byte(canal), []byte(msg.MessageId), o.database)
+	toSign := db.GetMessage([]byte(canal), []byte(msg.Message_id), o.database)
 	if toSign == nil {
 		return nil, nil, define.ErrInvalidResource
 	}

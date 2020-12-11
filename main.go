@@ -23,8 +23,8 @@ func main() {
 	case "o":
 		h := network.NewOrganizerHub(os.Args[3], os.Args[4])
 		router := http.NewServeMux()
-		router.Handle("/", network.HomeHandler(tpl))
-		router.Handle("/ws", network.NewWSHandler(h))
+		//router.Handle("/", network.HomeHandler(tpl))
+		router.Handle("/", network.NewWSHandler(h))
 		log.Printf("serving organizer on address " + os.Args[2])
 		log.Fatal(http.ListenAndServe(os.Args[2], router)) //here to change the srv address
 
