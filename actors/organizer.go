@@ -178,28 +178,24 @@ func (o *Organizer) handlePublish(generic define.Generic) (message, channel []by
 	}
 }
 
-/** @returns, in order
- * message
- * channel
- * error
- */
-func (o *Organizer) handleCreateLAO(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
+/* handles the creation of a LAO */
+func (o *Organizer) handleCreateLAO(msg define.Message, canal string, generic define.Generic) (message, channel []byte, err error) {
 
 	if canal != "/root" {
 		return nil, nil, define.ErrInvalidResource
 	}
 
-	data, err := define.AnalyseDataCreateLAO(message.Data)
-	if err != nil {
+	data, errs := define.AnalyseDataCreateLAO(msg.Data)
+	if errs != nil {
 		return nil, nil, define.ErrInvalidResource
 	}
 
-	if !define.LAOIsValid(data, message, true) {
+	if !define.LAOIsValid(data, msg, true) {
 		return nil, nil, define.ErrInvalidResource
 	}
 
-	err = db.CreateMessage(message, canal, o.database)
-	if err != nil {
+	errs = db.CreateMessage(msg, canal, o.database)
+	if errs != nil {
 		return nil, nil, err
 	}
 
@@ -210,13 +206,13 @@ func (o *Organizer) handleCreateLAO(message define.Message, canal string, generi
 		OrganizerPKey: data.Organizer,
 		Witnesses:     data.Witnesses,
 	}
-	err = db.CreateChannel(lao, o.database)
-	if err != nil {
+	errs = db.CreateChannel(lao, o.database)
+	if errs != nil {
 		return nil, nil, err
 	}
 
-	msg, channel := finalizeHandling(canal, generic)
-	return msg, channel, nil
+	msgToSend, chann := finalizeHandling(canal, generic)
+	return msgToSend, chann, nil
 }
 
 /** @returns, in order
