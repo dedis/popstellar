@@ -5,7 +5,7 @@ import (
 	"flag"
 	"os"
 	"strings"
-	"student20_pop/websocket"
+	"student20_pop/network"
 	"text/template"
 
 	"log"
@@ -21,18 +21,18 @@ func main() {
 
 	switch strings.ToLower(mode) {
 	case "o":
-		h := websocket.NewOrganizerHub(os.Args[3], os.Args[4])
+		h := network.NewOrganizerHub(os.Args[3], os.Args[4])
 		router := http.NewServeMux()
-		router.Handle("/", websocket.HomeHandler(tpl))
-		router.Handle("/ws", websocket.NewWSHandler(h))
+		router.Handle("/", network.HomeHandler(tpl))
+		router.Handle("/ws", network.NewWSHandler(h))
 		log.Printf("serving organizer on address " + os.Args[2])
 		log.Fatal(http.ListenAndServe(os.Args[2], router)) //here to change the srv address
 
 	case "w":
-		h := websocket.NewWitnessHub(os.Args[3], os.Args[4])
+		h := network.NewWitnessHub(os.Args[3], os.Args[4])
 		router := http.NewServeMux()
-		router.Handle("/", websocket.HomeHandler(tpl))
-		router.Handle("/ws", websocket.NewWSHandler(h))
+		router.Handle("/", network.HomeHandler(tpl))
+		router.Handle("/ws", network.NewWSHandler(h))
 		log.Printf("serving witness on adress " + os.Args[2])
 		log.Fatal(http.ListenAndServe(os.Args[2], router)) //here to change the srv address
 

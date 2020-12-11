@@ -1,7 +1,7 @@
 /* file to implement manage opened websockets. Implements the publish-subscribe paradigm.
 inspired from the chat example of github.com/gorilla */
 
-package websocket
+package network
 
 import (
 	"bytes"

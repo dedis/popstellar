@@ -1,5 +1,5 @@
 /* file that implement a websocket. Comes from the chat example of github.com/gorilla */
-package websocket
+package network
 
 import (
 	"fmt"
