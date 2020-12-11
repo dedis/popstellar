@@ -227,19 +227,19 @@ func (w *Witness) handleWitnessMessage(msg define.Message, chann string, generic
 	return nil, nil, errs
 }
 
-func (w *Witness) handleLAOState(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error) {
-	data, err := define.AnalyseDataCreateLAO(message.Data)
-	if err != nil {
+func (w *Witness) handleLAOState(msg define.Message, chann string, generic define.Generic) (message, channel []byte, err error) {
+	data, errs := define.AnalyseDataCreateLAO(msg.Data)
+	if errs != nil {
 		return nil, nil, define.ErrInvalidResource
 	}
 
-	if !define.LAOIsValid(data, message, false) {
+	if !define.LAOIsValid(data, msg, false) {
 		return nil, nil, define.ErrInvalidResource
 	}
 
 	//TODO correct usage of VerifyWitnessSignatures
-	err = define.VerifyWitnessSignatures(nil, message.WitnessSignatures, message.Sender)
-	if err != nil {
+	errs = define.VerifyWitnessSignatures(nil, msg.WitnessSignatures, msg.Sender)
+	if errs != nil {
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
@@ -251,9 +251,9 @@ func (w *Witness) handleLAOState(message define.Message, channel string, generic
 		Witnesses:     data.Witnesses,
 	}
 
-	err = db.UpdateChannel(lao, w.database)
+	errs = db.UpdateChannel(lao, w.database)
 
-	return nil, nil, err
+	return nil, nil, errs
 }
 
 func (w *Witness) handleCreateRollCall(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error) {
