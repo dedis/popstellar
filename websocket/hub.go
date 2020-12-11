@@ -14,8 +14,6 @@ import (
 	"time"
 )
 
-const SigThreshold = 4
-
 /*
 TODO
 faire des tests
