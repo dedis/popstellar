@@ -170,22 +170,22 @@ func (w *Witness) handleCreateLAO(msg define.Message, chann string, generic defi
 }
 
 /*witness does not yet send stuff to channel*/
-func (w *Witness) handleUpdateProperties(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error) {
-	data, err := define.AnalyseDataCreateLAO(message.Data)
-	if err != nil {
+func (w *Witness) handleUpdateProperties(msg define.Message, chann string, generic define.Generic) (message, channel []byte, err error) {
+	data, errs := define.AnalyseDataCreateLAO(msg.Data)
+	if errs != nil {
 		return nil, nil, define.ErrInvalidResource
 	}
-	if !define.LAOIsValid(data, message, false) {
+	if !define.LAOIsValid(data, msg, false) {
 		return nil, nil, define.ErrInvalidResource
 	}
 
 	//stores received message in DB
-	err = db.CreateMessage(message, channel, w.database)
-	if err != nil {
+	errs = db.CreateMessage(msg, chann, w.database)
+	if errs != nil {
 		return nil, nil, err
 	}
 
-	return nil, nil, err
+	return nil, nil, errs
 }
 
 func (w *Witness) handleWitnessMessage(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error) {

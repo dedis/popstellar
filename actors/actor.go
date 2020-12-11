@@ -13,10 +13,10 @@ type Actor interface {
 	//Private functions
 	handlePublish(generic define.Generic) (message, channel []byte, err error)
 	handleCreateLAO(msg define.Message, canal string, generic define.Generic) (message, channel []byte, err error)
-	handleUpdateProperties(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error)
-	handleWitnessMessage(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error)
-	handleLAOState(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error)
-	handleCreateRollCall(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error)
+	handleUpdateProperties(msg define.Message, canal string, generic define.Generic) (message, channel []byte, err error)
+	handleWitnessMessage(msg define.Message, canal string, generic define.Generic) ([]byte, []byte, error)
+	handleLAOState(msg define.Message, canal string, generic define.Generic) ([]byte, []byte, error)
+	handleCreateRollCall(mag define.Message, canal string, generic define.Generic) ([]byte, []byte, error)
 }
 
 //general actors functions, act only in the "Sub" database
