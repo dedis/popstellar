@@ -69,8 +69,7 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
                 final PoPApplication app = ((PoPApplication) getApplication());
                 bundle.putString(PRIVATE_KEY_TAG, app.getPerson().getAuthentication());
 
-                //TODO : Retrieve this LAO from the Intent
-                Lao lao = new Lao("LAO I just joined", new Date(), new Keys().getPublicKey());
+                Lao lao = app.getCurrentLao();
                 bundle.putString(LAO_ID_TAG, lao.getId());
 
                 // set Fragmentclass Arguments

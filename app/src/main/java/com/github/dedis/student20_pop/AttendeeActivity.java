@@ -30,7 +30,6 @@ public class AttendeeActivity extends FragmentActivity implements OnEventTypeSel
 
         setContentView(R.layout.activity_attendee);
 
-        //TODO: retrieve lao/PopContext
         Intent intent = getIntent();
 
         if (findViewById(R.id.fragment_container_attendee) != null) {
@@ -56,8 +55,8 @@ public class AttendeeActivity extends FragmentActivity implements OnEventTypeSel
                 break;
             case R.id.tab_identity:
                 Bundle bundle = new Bundle();
-                //TODO : Retrieve this LAO from the Intent
-                Lao lao = new Lao("LAO I just joined", new Date(), new Keys().getPublicKey());
+                final PoPApplication app = ((PoPApplication) getApplication());
+                Lao lao = app.getCurrentLao();
                 bundle.putString("ID", lao.getId());
                 // set Fragmentclass Arguments
                 IdentityFragment identityFragment = new IdentityFragment();
