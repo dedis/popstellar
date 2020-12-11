@@ -389,6 +389,6 @@ func (o *Organizer) handleCatchup(generic define.Generic) ([]byte, error) {
 }
 
 //just to implement the interface, this function is not needed for the Organizer (as he's the one sending this message)
-func (o *Organizer) handleLAOState(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error) {
+func (o *Organizer) handleLAOState(msg define.Message, chann string, generic define.Generic) (message, channel []byte, err error) {
 	return nil, nil, define.ErrInvalidAction
 }
