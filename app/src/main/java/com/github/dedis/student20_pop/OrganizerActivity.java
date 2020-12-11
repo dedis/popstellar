@@ -146,6 +146,7 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
                 break;
             case ADD_WITNESS:
                 //TODO
+                Log.d("DEBUG", "URL Received : " + url);
                 break;
             case CONNECT_LAO:
                 showFragment(ConnectingFragment.newInstance(url), ConnectingFragment.TAG);

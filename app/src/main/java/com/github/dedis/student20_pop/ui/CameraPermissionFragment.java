@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
 
@@ -23,11 +24,11 @@ public final class CameraPermissionFragment extends Fragment implements View.OnC
 
     public static final String TAG = CameraPermissionFragment.class.getSimpleName();
     private static final int HANDLE_CAMERA_PERM = 2;
-    private final QRCodeScanningFragment.QRCodeScanningType qrCodeScanningType;
+    private final QRCodeScanningType qrCodeScanningType;
 
     private OnCameraAllowedListener onCameraAllowedListener;
 
-    public CameraPermissionFragment(QRCodeScanningFragment.QRCodeScanningType qrCodeScanningType){
+    public CameraPermissionFragment(QRCodeScanningType qrCodeScanningType){
         super();
         this.qrCodeScanningType = qrCodeScanningType;
     }
