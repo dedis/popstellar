@@ -188,33 +188,33 @@ func (w *Witness) handleUpdateProperties(msg define.Message, chann string, gener
 	return nil, nil, errs
 }
 
-func (w *Witness) handleWitnessMessage(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error) {
+func (w *Witness) handleWitnessMessage(msg define.Message, chann string, generic define.Generic) (message, channel []byte, err error) {
 
-	data, err := define.AnalyseDataWitnessMessage(message.Data)
-	if err != nil {
+	data, errs := define.AnalyseDataWitnessMessage(msg.Data)
+	if errs != nil {
 		return nil, nil, define.ErrInvalidResource
 	}
 
 	//stores received message in DB
-	err = db.CreateMessage(message, channel, w.database)
-	if err != nil {
-		return nil, nil, err
+	errs = db.CreateMessage(msg, chann, w.database)
+	if errs != nil {
+		return nil, nil, errs
 	}
 
-	msg := db.GetMessage([]byte(channel), []byte(data.Message_id), w.database)
-	if msg == nil {
+	sendMsg := db.GetMessage([]byte(chann), []byte(data.Message_id), w.database)
+	if sendMsg == nil {
 		fmt.Printf("no message with ID %v in the database", data.Message_id)
 		return nil, nil, define.ErrInvalidResource
 	}
-	storedMessage, err := define.AnalyseMessage(msg)
+	storedMessage, errs := define.AnalyseMessage(sendMsg)
 
-	if err != nil {
+	if errs != nil {
 		fmt.Printf("unable to unmarshall the message stored in the database")
 		return nil, nil, define.ErrDBFault
 	}
 
-	err = define.VerifySignature(message.Sender, storedMessage.Data, data.Signature)
-	if err != nil {
+	errs = define.VerifySignature(msg.Sender, storedMessage.Data, data.Signature)
+	if errs != nil {
 		return nil, nil, define.ErrInvalidResource
 	}
 
@@ -222,9 +222,9 @@ func (w *Witness) handleWitnessMessage(message define.Message, channel string, g
 	storedMessage.WitnessSignatures = append(storedMessage.WitnessSignatures, data.Signature)
 
 	//update message in DB
-	err = db.UpdateMessage(storedMessage, channel, w.database)
+	errs = db.UpdateMessage(storedMessage, chann, w.database)
 
-	return nil, nil, err
+	return nil, nil, errs
 }
 
 func (w *Witness) handleLAOState(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error) {

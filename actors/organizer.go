@@ -336,49 +336,44 @@ func (o *Organizer) handleUpdateProperties(msg define.Message, canal string, gen
 	return chann, sendMsg, db.CreateMessage(msg, canal, o.database)
 }
 
-/** @returns, in order
- * message
- * channel
- * error
- */
-func (o *Organizer) handleWitnessMessage(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
+func (o *Organizer) handleWitnessMessage(msg define.Message, canal string, generic define.Generic) (message, channel []byte, err error) {
 	//TODO verify signature correctness
 	// decrypt msg and compare with hash of "local" data
 
 	//retrieve message to sign from database
-	toSign := db.GetMessage([]byte(canal), []byte(message.MessageId), o.database)
+	toSign := db.GetMessage([]byte(canal), []byte(msg.MessageId), o.database)
 	if toSign == nil {
 		return nil, nil, define.ErrInvalidResource
 	}
 
-	toSignStruct, err := define.AnalyseMessage(toSign)
-	if err != nil {
+	toSignStruct, errs := define.AnalyseMessage(toSign)
+	if errs != nil {
 		fmt.Printf("unable to analyse Message in handleWitnessMessage()")
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
 	//if message was already signed by this witness, returns an error
-	_, found := define.FindStr(toSignStruct.WitnessSignatures, message.Signature)
+	_, found := define.FindStr(toSignStruct.WitnessSignatures, msg.Signature)
 	if found {
 		return nil, nil, define.ErrResourceAlreadyExists
 	}
 
-	toSignStruct.WitnessSignatures = append(toSignStruct.WitnessSignatures, message.Signature)
+	toSignStruct.WitnessSignatures = append(toSignStruct.WitnessSignatures, msg.Signature)
 
 	// update "LAOUpdateProperties" message in DB
-	err = db.UpdateMessage(toSignStruct, canal, o.database)
-	if err != nil {
+	errs = db.UpdateMessage(toSignStruct, canal, o.database)
+	if errs != nil {
 		return nil, nil, define.ErrDBFault
 	}
 	//store received message in DB
-	err = db.CreateMessage(message, canal, o.database)
-	if err != nil {
+	errs = db.CreateMessage(msg, canal, o.database)
+	if errs != nil {
 		return nil, nil, define.ErrDBFault
 	}
 
 	//broadcast received message
-	channel, msg := finalizeHandling(canal, generic)
-	return channel, msg, nil
+	chann, sendMsg := finalizeHandling(canal, generic)
+	return chann, sendMsg, nil
 }
 
 func (o *Organizer) handleCatchup(generic define.Generic) ([]byte, error) {
