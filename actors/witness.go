@@ -256,14 +256,14 @@ func (w *Witness) handleLAOState(msg define.Message, chann string, generic defin
 	return nil, nil, errs
 }
 
-func (w *Witness) handleCreateRollCall(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error) {
+func (w *Witness) handleCreateRollCall(msg define.Message, chann string, generic define.Generic) (message, channel []byte, err error) {
 
-	data, err := define.AnalyseDataCreateRollCall(message.Data)
-	if err != nil {
+	data, errs := define.AnalyseDataCreateRollCall(msg.Data)
+	if errs != nil {
 		return nil, nil, define.ErrInvalidResource
 	}
 
-	if !define.RollCallCreatedIsValid(data, message) {
+	if !define.RollCallCreatedIsValid(data, msg) {
 		return nil, nil, define.ErrInvalidResource
 	}
 
@@ -276,15 +276,15 @@ func (w *Witness) handleCreateRollCall(message define.Message, channel string, g
 		End:      data.End,
 	}
 
-	err = db.CreateChannel(rollCall, w.database)
-	if err != nil {
-		return nil, nil, err
+	errs = db.CreateChannel(rollCall, w.database)
+	if errs != nil {
+		return nil, nil, errs
 	}
 
-	err = db.CreateMessage(message, channel, w.database)
-	if err != nil {
-		return nil, nil, err
+	errs = db.CreateMessage(msg, chann, w.database)
+	if errs != nil {
+		return nil, nil, errs
 	}
 
-	return nil, nil, err
+	return nil, nil, errs
 }
