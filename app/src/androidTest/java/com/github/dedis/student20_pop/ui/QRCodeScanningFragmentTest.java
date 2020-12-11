@@ -21,6 +21,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO;
 
 /**
  * Class handling connect fragment tests
@@ -44,7 +45,7 @@ public class QRCodeScanningFragmentTest {
             Fragment fragment = a.getSupportFragmentManager().findFragmentByTag(QRCodeScanningFragment.TAG);
             Assert.assertNotNull(fragment);
             Assert.assertTrue(fragment instanceof QRCodeScanningFragment);
-            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_URL);
+            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_URL, CONNECT_LAO);
         });
 
         // Check everything
