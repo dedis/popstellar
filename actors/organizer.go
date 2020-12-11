@@ -96,32 +96,28 @@ func (o *Organizer) handleMessage(generic define.Generic) ([]byte, []byte, error
 
 }
 
-/** @returns, in order
- * message
- * channel
- * error
- */
-func (o *Organizer) handlePublish(generic define.Generic) ([]byte, []byte, error) {
-	params, err := define.AnalyseParamsFull(generic.Params)
-	if err != nil {
+/* handles a received publish message */
+func (o *Organizer) handlePublish(generic define.Generic) (message, channel []byte, err error) {
+	params, errs := define.AnalyseParamsFull(generic.Params)
+	if errs != nil {
 		fmt.Printf("unable to analyse paramsLight in handlePublish()")
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
-	message, err := define.AnalyseMessage(params.Message)
+	msg, errs := define.AnalyseMessage(params.Message)
 	if err != nil {
 		fmt.Printf("unable to analyse Message in handlePublish()")
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
-	err = define.MessageIsValid(message)
-	if err != nil {
+	err = define.MessageIsValid(msg)
+	if errs != nil {
 		fmt.Printf("7")
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
-	data, err := define.AnalyseData(string(message.Data))
-	if err != nil {
+	data, errs := define.AnalyseData(string(msg.Data))
+	if errs != nil {
 		fmt.Printf("unable to analyse data in handlePublish()")
 		return nil, nil, define.ErrRequestDataInvalid
 	}
@@ -130,11 +126,11 @@ func (o *Organizer) handlePublish(generic define.Generic) ([]byte, []byte, error
 	case "lao":
 		switch data["action"] {
 		case "create":
-			return o.handleCreateLAO(message, params.Channel, generic)
+			return o.handleCreateLAO(msg, params.Channel, generic)
 		case "update_properties":
-			return o.handleUpdateProperties(message, params.Channel, generic)
+			return o.handleUpdateProperties(msg, params.Channel, generic)
 		case "state":
-			return o.handleLAOState(message, params.Channel, generic) // should never happen
+			return o.handleLAOState(msg, params.Channel, generic) // should never happen
 		default:
 			return nil, nil, define.ErrInvalidAction
 		}
@@ -142,7 +138,7 @@ func (o *Organizer) handlePublish(generic define.Generic) ([]byte, []byte, error
 	case "message":
 		switch data["action"] {
 		case "witness":
-			return o.handleWitnessMessage(message, params.Channel, generic)
+			return o.handleWitnessMessage(msg, params.Channel, generic)
 			//TODO: update state and send state broadcast
 			// TODO : state broadcast done on root/ or on LAO channel
 		default:
@@ -151,7 +147,7 @@ func (o *Organizer) handlePublish(generic define.Generic) ([]byte, []byte, error
 	case "roll call":
 		switch data["action"] {
 		case "create":
-			return o.handleCreateRollCall(message, params.Channel, generic)
+			return o.handleCreateRollCall(msg, params.Channel, generic)
 		//case "state":  TODO : waiting on protocol definition
 		default:
 			return nil, nil, define.ErrInvalidAction
@@ -159,7 +155,7 @@ func (o *Organizer) handlePublish(generic define.Generic) ([]byte, []byte, error
 	case "meeting":
 		switch data["action"] {
 		case "create":
-			return o.handleCreateMeeting(message, params.Channel, generic)
+			return o.handleCreateMeeting(msg, params.Channel, generic)
 		case "state": //
 			// TODO: waiting on protocol definition
 			return nil, nil, define.ErrInvalidAction
@@ -169,7 +165,7 @@ func (o *Organizer) handlePublish(generic define.Generic) ([]byte, []byte, error
 	case "poll":
 		switch data["action"] {
 		case "create":
-			return o.handleCreatePoll(message, params.Channel, generic)
+			return o.handleCreatePoll(msg, params.Channel, generic)
 		case "state":
 			// TODO: waiting on protocol definition
 			return nil, nil, define.ErrInvalidAction
