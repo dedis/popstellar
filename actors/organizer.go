@@ -215,23 +215,18 @@ func (o *Organizer) handleCreateLAO(msg define.Message, canal string, generic de
 	return msgToSend, chann, nil
 }
 
-/** @returns, in order
- * message
- * channel
- * error
- */
-func (o *Organizer) handleCreateRollCall(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
+func (o *Organizer) handleCreateRollCall(msg define.Message, canal string, generic define.Generic) (message, channel []byte, err error) {
 	if canal == "/root" {
 		return nil, nil, define.ErrInvalidResource
 	}
 
-	data, err := define.AnalyseDataCreateRollCall(message.Data)
-	if err != nil {
+	data, errs := define.AnalyseDataCreateRollCall(msg.Data)
+	if errs != nil {
 		return nil, nil, define.ErrInvalidResource
 	}
 
-	if !define.RollCallCreatedIsValid(data, message) {
-		return nil, nil, err
+	if !define.RollCallCreatedIsValid(data, msg) {
+		return nil, nil, errs
 	}
 
 	// don't need to check for validity if we use json schema
@@ -243,17 +238,17 @@ func (o *Organizer) handleCreateRollCall(message define.Message, canal string, g
 		End:      data.End,
 		Extra:    data.Extra,
 	}
-	err = db.CreateChannel(event, o.database)
-	if err != nil {
-		return nil, nil, err
+	errs = db.CreateChannel(event, o.database)
+	if errs != nil {
+		return nil, nil, errs
 	}
 
-	err = db.CreateMessage(message, canal, o.database)
-	if err != nil {
-		return nil, nil, err
+	errs = db.CreateMessage(msg, canal, o.database)
+	if errs != nil {
+		return nil, nil, errs
 	}
-	msg, channel := finalizeHandling(canal, generic)
-	return msg, channel, nil
+	sendMsg, chann := finalizeHandling(canal, generic)
+	return sendMsg, chann, nil
 }
 
 /** @returns, in order
