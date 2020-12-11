@@ -11,7 +11,9 @@ import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class PoPApplication extends Application {
 
@@ -46,7 +48,10 @@ public class PoPApplication extends Application {
                     person = new Person(USERNAME, id, authentication, Lao.getIds(laos));
                 }
                 // Recover LAO's information
-                laos = gson.fromJson(sp.getString(SP_LAOS_KEY, ""), List.class);
+                laos = new ArrayList<>();
+                for(int i = 0; i < laos.size(); i++) {
+                    laos.add(gson.fromJson(sp.getString(SP_LAOS_KEY + i, ""), Lao.class));
+                }
             }
             else {
                 // Create new user and list of LAOs
@@ -67,7 +72,9 @@ public class PoPApplication extends Application {
 
         // Use commit for information to be stored immediately
         sp.edit().putString(SP_PERSON_ID_KEY, person.getId()).commit();
-        sp.edit().putString(SP_LAOS_KEY, (new Gson()).toJson(laos)).commit();
+        for(int i = 0; i < laos.size(); i++) {
+            sp.edit().putString(SP_LAOS_KEY + i, (new Gson()).toJson(laos.get(i))).commit();
+        }
     }
 
     /**
