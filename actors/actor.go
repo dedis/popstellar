@@ -14,7 +14,7 @@ type Actor interface {
 	handlePublish(generic define.Generic) (message, channel []byte, err error)
 	handleCreateLAO(msg define.Message, canal string, generic define.Generic) (message, channel []byte, err error)
 	handleUpdateProperties(msg define.Message, canal string, generic define.Generic) (message, channel []byte, err error)
-	handleWitnessMessage(msg define.Message, canal string, generic define.Generic) ([]byte, []byte, error)
+	handleWitnessMessage(msg define.Message, canal string, generic define.Generic) (message, channel []byte, err error)
 	handleLAOState(msg define.Message, canal string, generic define.Generic) ([]byte, []byte, error)
 	handleCreateRollCall(mag define.Message, canal string, generic define.Generic) ([]byte, []byte, error)
 }
