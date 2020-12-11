@@ -137,23 +137,24 @@ func (w *Witness) handleMessage(generic define.Generic) ([]byte, []byte, error) 
 	}
 }
 
-func (w *Witness) handleCreateLAO(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error) {
-	if channel != "/root" {
+/*handles the creation of an LAO*/
+func (w *Witness) handleCreateLAO(msg define.Message, chann string, generic define.Generic) (message, channel []byte, err error) {
+	if chann != "/root" {
 		return nil, nil, define.ErrInvalidResource
 	}
 
-	data, err := define.AnalyseDataCreateLAO(message.Data)
-	if err != nil {
+	data, errs := define.AnalyseDataCreateLAO(msg.Data)
+	if errs != nil {
 		return nil, nil, define.ErrInvalidResource
 	}
 
-	if !define.LAOIsValid(data, message, true) {
+	if !define.LAOIsValid(data, msg, true) {
 		return nil, nil, define.ErrInvalidResource
 	}
 
-	err = db.CreateMessage(message, channel, w.database)
-	if err != nil {
-		return nil, nil, err
+	errs = db.CreateMessage(msg, chann, w.database)
+	if errs != nil {
+		return nil, nil, errs
 	}
 
 	lao := define.LAO{
@@ -163,9 +164,9 @@ func (w *Witness) handleCreateLAO(message define.Message, channel string, generi
 		OrganizerPKey: data.Organizer,
 		Witnesses:     data.Witnesses,
 	}
-	err = db.CreateChannel(lao, w.database)
+	errs = db.CreateChannel(lao, w.database)
 
-	return nil, nil, err
+	return nil, nil, errs
 }
 
 /*witness does not yet send stuff to channel*/
