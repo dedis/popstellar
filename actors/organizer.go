@@ -54,41 +54,41 @@ func (o *Organizer) HandleWholeMessage(receivedMsg []byte, userId int) (message,
 	return msg, chann, define.CreateResponse(err, history, generic)
 }
 
-func (o *Organizer) handleMessage(generic define.Generic) ([]byte, []byte, error) {
-	params, err := define.AnalyseParamsFull(generic.Params)
-	if err != nil {
+func (o *Organizer) handleMessage(generic define.Generic) (message, channel []byte, err error) {
+	params, errs := define.AnalyseParamsFull(generic.Params)
+	if errs != nil {
 		fmt.Printf("unable to analyse paramsLight in handleMessage()")
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
-	message, err := define.AnalyseMessage(params.Message)
-	if err != nil {
+	msg, errs := define.AnalyseMessage(params.Message)
+	if errs != nil {
 		fmt.Printf("unable to analyse Message in handleMessage()")
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
-	data, err := define.AnalyseData(string(message.Data))
-	if err != nil {
+	data, errs := define.AnalyseData(string(msg.Data))
+	if errs != nil {
 		fmt.Printf("unable to analyse data in handleMessage()")
 		return nil, nil, define.ErrRequestDataInvalid
 	}
 
-	err = db.CreateMessage(message, params.Channel, o.database)
-	if err != nil {
-		return nil, nil, err
+	errs = db.CreateMessage(msg, params.Channel, o.database)
+	if errs != nil {
+		return nil, nil, errs
 	}
 
 	switch data["object"] {
 	case "message":
 		switch data["action"] {
 		case "witness":
-			return o.handleWitnessMessage(message, params.Channel, generic)
+			return o.handleWitnessMessage(msg, params.Channel, generic)
 		default:
 			return nil, nil, define.ErrRequestDataInvalid
 		}
 	case "state":
 		{
-			return o.handleLAOState(message, params.Channel, generic)
+			return o.handleLAOState(msg, params.Channel, generic)
 		}
 	default:
 		return nil, nil, define.ErrRequestDataInvalid
@@ -105,7 +105,7 @@ func (o *Organizer) handlePublish(generic define.Generic) (message, channel []by
 	}
 
 	msg, errs := define.AnalyseMessage(params.Message)
-	if err != nil {
+	if errs != nil {
 		fmt.Printf("unable to analyse Message in handlePublish()")
 		return nil, nil, define.ErrRequestDataInvalid
 	}
@@ -251,19 +251,14 @@ func (o *Organizer) handleCreateRollCall(msg define.Message, canal string, gener
 	return sendMsg, chann, nil
 }
 
-/** @returns, in order
- * message
- * channel
- * error
- */
-func (o *Organizer) handleCreateMeeting(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
+func (o *Organizer) handleCreateMeeting(msg define.Message, canal string, generic define.Generic) (message, channel []byte, err error) {
 
 	if canal == "/root" {
 		return nil, nil, define.ErrInvalidResource
 	}
 
-	data, err := define.AnalyseDataCreateMeeting(message.Data)
-	if err != nil {
+	data, errs := define.AnalyseDataCreateMeeting(msg.Data)
+	if errs != nil {
 		return nil, nil, define.ErrInvalidResource
 	}
 
@@ -276,31 +271,26 @@ func (o *Organizer) handleCreateMeeting(message define.Message, canal string, ge
 		End:      data.End,
 		Extra:    data.Extra,
 	}
-	err = db.CreateChannel(event, o.database)
-	if err != nil {
-		return nil, nil, err
+	errs = db.CreateChannel(event, o.database)
+	if errs != nil {
+		return nil, nil, errs
 	}
-	err = db.CreateMessage(message, canal, o.database)
-	if err != nil {
-		return nil, nil, err
+	errs = db.CreateMessage(msg, canal, o.database)
+	if errs != nil {
+		return nil, nil, errs
 	}
-	channel, msg := finalizeHandling(canal, generic)
-	return channel, msg, nil
+	sendMsg, chann := finalizeHandling(canal, generic)
+	return sendMsg, chann, nil
 }
 
-/** @returns, in order
- * message
- * channel
- * error
- */
-func (o *Organizer) handleCreatePoll(message define.Message, canal string, generic define.Generic) ([]byte, []byte, error) {
+func (o *Organizer) handleCreatePoll(msg define.Message, canal string, generic define.Generic) (message, channel []byte, err error) {
 
 	if canal == "/root" {
 		return nil, nil, define.ErrInvalidResource
 	}
 
-	data, err := define.AnalyseDataCreatePoll(message.Data)
-	if err != nil {
+	data, errs := define.AnalyseDataCreatePoll(msg.Data)
+	if errs != nil {
 		return nil, nil, define.ErrInvalidResource
 	}
 
@@ -313,22 +303,17 @@ func (o *Organizer) handleCreatePoll(message define.Message, canal string, gener
 		Extra:    data.Extra,
 	}
 
-	err = db.CreateChannel(event, o.database)
-	if err != nil {
+	errs = db.CreateChannel(event, o.database)
+	if errs != nil {
 		return nil, nil, err
 	}
-	channel, msg := finalizeHandling(canal, generic)
-	return channel, msg, nil
+	sendMsg, chann := finalizeHandling(canal, generic)
+	return sendMsg, chann, nil
 }
 
-/**
-@returns, in order
-* message
-* channel
-*/
 func (o *Organizer) handleUpdateProperties(msg define.Message, canal string, generic define.Generic) (message, channel []byte, err error) {
-	chann, sendMsg := finalizeHandling(canal, generic)
-	return chann, sendMsg, db.CreateMessage(msg, canal, o.database)
+	sendMsg, chann := finalizeHandling(canal, generic)
+	return sendMsg, chann, db.CreateMessage(msg, canal, o.database)
 }
 
 func (o *Organizer) handleWitnessMessage(msg define.Message, canal string, generic define.Generic) (message, channel []byte, err error) {
@@ -367,8 +352,8 @@ func (o *Organizer) handleWitnessMessage(msg define.Message, canal string, gener
 	}
 
 	//broadcast received message
-	chann, sendMsg := finalizeHandling(canal, generic)
-	return chann, sendMsg, nil
+	sendMsg, chann := finalizeHandling(canal, generic)
+	return sendMsg, chann, nil
 }
 
 func (o *Organizer) handleCatchup(generic define.Generic) ([]byte, error) {
