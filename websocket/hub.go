@@ -77,15 +77,16 @@ func newHub(mode string, pkey string, database string) *hub {
 		idOfSender:      -1,
 	}
 
-	if mode == "o" {
+	switch mode {
+	case "o":
 		h.actor = actors.NewOrganizer(pkey, database)
-	} else if mode == "w" {
+	case "w":
 		h.actor = actors.NewWitness(pkey, database)
-	} else {
+	default:
 		log.Fatal("actor mode not recognized")
 	}
-	//publish subscribe go routine !
 
+	//publish subscribe go routine
 	go func() {
 		for {
 			//get msg from connection
@@ -104,7 +105,9 @@ func newHub(mode string, pkey string, database string) *hub {
 			h.connectionsMx.RUnlock()
 		}
 	}()
+
 	return h
+
 }
 
 /* sends the message msg to every subscribers of the channel channel */
