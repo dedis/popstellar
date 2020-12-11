@@ -22,42 +22,36 @@ func NewOrganizer(pkey string, db string) *Organizer {
 	}
 }
 
-/** processes what is received from the websocket
- * msg : received message
- * returns, in order :
- * message to send on channel, or nil
- * channel for the message, or nil
- * response to the sender, or nil
- */
-func (o *Organizer) HandleWholeMessage(msg []byte, userId int) ([]byte, []byte, []byte) {
+/** processes what is received from the websocket */
+func (o *Organizer) HandleWholeMessage(receivedMsg []byte, userId int) (message, channel, responseToSender []byte) {
 	//this cannot handle an error message and will send an error message bak, resulting in an infinite loop TODO
-	generic, err := define.AnalyseGeneric(msg)
+	generic, err := define.AnalyseGeneric(receivedMsg)
 	if err != nil {
 		return nil, nil, define.CreateResponse(define.ErrIdNotDecoded, nil, generic)
 	}
 
 	var history []byte = nil
-	var message []byte = nil
-	var channel []byte = nil
+	var msg []byte = nil
+	var chann []byte = nil
 
 	switch generic.Method {
 	case "subscribe":
-		message, channel, err = nil, nil, handleSubscribe(generic, userId)
+		msg, chann, err = nil, nil, handleSubscribe(generic, userId)
 	case "unsubscribe":
-		message, channel, err = nil, nil, handleUnsubscribe(generic, userId)
+		msg, chann, err = nil, nil, handleUnsubscribe(generic, userId)
 	case "publish":
-		message, channel, err = o.handlePublish(generic)
+		msg, chann, err = o.handlePublish(generic)
 	case "message":
-		message, channel, err = o.handleMessage(generic)
+		msg, chann, err = o.handleMessage(generic)
 	//Or they are only notification, and we just want to check that it was a success
 	case "catchup":
 		history, err = o.handleCatchup(generic)
 	default:
 		fmt.Printf("method not recognized, generating default response")
-		message, channel, err = nil, nil, define.ErrRequestDataInvalid
+		msg, chann, err = nil, nil, define.ErrRequestDataInvalid
 	}
 
-	return message, channel, define.CreateResponse(err, history, generic)
+	return msg, chann, define.CreateResponse(err, history, generic)
 }
 
 func (o *Organizer) handleMessage(generic define.Generic) ([]byte, []byte, error) {

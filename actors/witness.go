@@ -34,27 +34,27 @@ func NewWitness(pkey string, db string) *Witness {
  * channel for the message, or nil
  * response to the sender, or nil
  */
-func (w *Witness) HandleWholeMessage(msg []byte, userId int) ([]byte, []byte, []byte) {
-	generic, err := define.AnalyseGeneric(msg)
+func (w *Witness) HandleWholeMessage(receivedMsg []byte, userId int) (message, channel, responseToSender []byte) {
+	generic, err := define.AnalyseGeneric(receivedMsg)
 	if err != nil {
 		return nil, nil, define.CreateResponse(define.ErrRequestDataInvalid, nil, generic)
 
 	}
 
 	var history []byte = nil
-	var message []byte = nil
-	var channel []byte = nil
+	var msg []byte = nil
+	var chann []byte = nil
 
 	switch generic.Method {
 	case "publish":
-		message, channel, err = w.handlePublish(generic)
+		msg, chann, err = w.handlePublish(generic)
 	case "message":
-		message, channel, err = w.handleMessage(generic)
+		msg, chann, err = w.handleMessage(generic)
 	default:
-		message, channel, err = nil, nil, define.ErrRequestDataInvalid
+		msg, chann, err = nil, nil, define.ErrRequestDataInvalid
 	}
 
-	return message, channel, define.CreateResponse(err, history, generic)
+	return msg, chann, define.CreateResponse(err, history, generic)
 }
 
 func (w *Witness) handlePublish(generic define.Generic) ([]byte, []byte, error) {

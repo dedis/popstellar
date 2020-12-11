@@ -9,7 +9,7 @@ import (
 
 type Actor interface {
 	//Public functions
-	HandleWholeMessage(msg []byte, userId int) ([]byte, []byte, []byte)
+	HandleWholeMessage(msg []byte, userId int) (message, channel, responseToSender []byte)
 	//Private functions
 	handlePublish(generic define.Generic) ([]byte, []byte, error)
 	handleCreateLAO(message define.Message, channel string, generic define.Generic) ([]byte, []byte, error)
@@ -38,11 +38,7 @@ func handleUnsubscribe(generic define.Generic, userId int) error {
 	return db.Unsubscribe(userId, []byte(params.Channel))
 }
 
-/** creates a message to publish on a channel from a received message.
-@returns, in order
- * message
- * channel
-*/
-func finalizeHandling(canal string, generic define.Generic) ([]byte, []byte) {
+/* creates a message to publish on a channel from a received message. */
+func finalizeHandling(canal string, generic define.Generic) (message []byte, channel []byte) {
 	return define.CreateBroadcastMessage(generic), []byte(canal)
 }
