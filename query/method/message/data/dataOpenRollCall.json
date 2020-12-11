@@ -6,7 +6,7 @@
 
 	"properties": {
 		"object": { "const": "roll_call" },
-		"action": { "const": "open" },
+		"action": { "enum": ["open", "reopen"] },
 		"id": {
 			"type": "string",
 			"contentEncoding": "base64",
