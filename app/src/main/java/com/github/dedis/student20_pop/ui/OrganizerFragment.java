@@ -42,7 +42,6 @@ import java.util.List;
 
 public class OrganizerFragment extends Fragment {
 
-
     public static final String TAG = AttendeeFragment.class.getSimpleName();
     private OrganizerExpandableListViewEventAdapter listViewEventAdapter;
     private ExpandableListView expandableListView;
