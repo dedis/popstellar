@@ -21,7 +21,7 @@ func main() {
 
 	switch strings.ToLower(mode) {
 	case "o":
-		h := websocket.NewOrganizerHub(os.Args[3])
+		h := websocket.NewOrganizerHub(os.Args[3], os.Args[4])
 		router := http.NewServeMux()
 		router.Handle("/", websocket.HomeHandler(tpl))
 		router.Handle("/ws", websocket.NewWSHandler(h))
@@ -29,7 +29,7 @@ func main() {
 		log.Fatal(http.ListenAndServe(os.Args[2], router)) //here to change the srv address
 
 	case "w":
-		h := websocket.NewWitnessHub(os.Args[3])
+		h := websocket.NewWitnessHub(os.Args[3], os.Args[4])
 		router := http.NewServeMux()
 		router.Handle("/", websocket.HomeHandler(tpl))
 		router.Handle("/ws", websocket.NewWSHandler(h))
