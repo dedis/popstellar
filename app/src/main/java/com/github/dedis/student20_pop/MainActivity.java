@@ -106,7 +106,8 @@ public final class MainActivity extends FragmentActivity {
                             Person organizer = app.getPerson().setLaos(Collections.singletonList(lao.getId()));
                             // Set LAO and organizer information locally
                             ((PoPApplication) getApplication()).setPerson(organizer);
-                            ((PoPApplication) getApplication()).setLaos(Collections.singletonList(lao));
+                            ((PoPApplication) getApplication()).addLao(lao);
+                            ((PoPApplication) getApplication()).setCurrentLao(lao);
                             // Start the Organizer Activity (user is considered an organizer)
                             Intent intent = new Intent(this, OrganizerActivity.class);
                             startActivity(intent);

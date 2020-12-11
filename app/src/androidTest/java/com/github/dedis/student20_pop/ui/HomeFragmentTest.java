@@ -48,7 +48,7 @@ public class HomeFragmentTest {
     }
 
     @Test
-    public void clickOnLaoWhichOfIAmOrganizerStartsOrganizer(){
+    public void  clickOnLaoWhichOfIAmOrganizerStartsOrganizer(){
         onData(allOf(is(instanceOf(Lao.class)))).atPosition(1).perform(click());
         onView(withId(R.id.fragment_organizer)).check(matches(isDisplayed()));
     }
