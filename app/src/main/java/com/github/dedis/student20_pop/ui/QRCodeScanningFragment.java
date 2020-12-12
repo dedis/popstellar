@@ -1,6 +1,7 @@
 package com.github.dedis.student20_pop.ui;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.utility.qrcode.CameraPreview;
+import com.github.dedis.student20_pop.utility.qrcode.OnCameraNotAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
 import com.github.dedis.student20_pop.utility.qrcode.QRFocusingProcessor;
 import com.google.android.gms.common.ConnectionResult;
@@ -26,28 +28,60 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
 
+import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO;
+
 /**
  * Fragment used to display the Connect UI
  **/
-public final class ConnectFragment extends Fragment implements QRCodeListener {
+public final class QRCodeScanningFragment extends Fragment implements QRCodeListener {
 
-    public static final String TAG = ConnectFragment.class.getSimpleName();
-
+    public static final String TAG = QRCodeScanningFragment.class.getSimpleName();
     private static final int HANDLE_GMS = 9001;
-    private static final String CONTAINER = "container";
-
 
     private CameraSource camera;
     private CameraPreview preview;
-    private int container;
+    private OnCameraNotAllowedListener onCameraNotAllowedListener;
+    private QRCodeListener qrCodeListener;
+    private QRCodeScanningType qrCodeScanningType;
 
-    public ConnectFragment() {
-        this(R.id.fragment_container_main);
+    /**
+     * Enum representing QR code functionality
+     * If QRCodeScanningFragment is launched to add a witness
+     * or connect to a lao or to add an attendee to a roll call event
+     */
+    public enum QRCodeScanningType {
+        ADD_ROLL_CALL,
+        ADD_WITNESS,
+        CONNECT_LAO
+
     }
 
-    public ConnectFragment(int resource){
+    /**
+     * Default Fragment constructor
+     */
+    public QRCodeScanningFragment() {
+        new QRCodeScanningFragment(CONNECT_LAO);
+    }
+
+    /**
+     * Fragment constructor
+     *
+     * @param qrCodeScanningType tell what should be done with QR code information
+     */
+    public QRCodeScanningFragment(QRCodeScanningType qrCodeScanningType) {
         super();
-        container = resource;
+        this.qrCodeScanningType = qrCodeScanningType;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            onCameraNotAllowedListener = (OnCameraNotAllowedListener) context;
+            qrCodeListener = (QRCodeListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement listeners");
+        }
     }
 
     @Override
@@ -60,7 +94,7 @@ public final class ConnectFragment extends Fragment implements QRCodeListener {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
             camera = createCamera();
         else
-            switchToCameraPermissionFragment();
+            onCameraNotAllowedListener.onCameraNotAllowedListener(qrCodeScanningType);
 
         return view;
     }
@@ -70,7 +104,7 @@ public final class ConnectFragment extends Fragment implements QRCodeListener {
                 .setBarcodeFormats(Barcode.QR_CODE)
                 .build();
 
-        qrDetector.setProcessor(new QRFocusingProcessor(qrDetector, this));
+        qrDetector.setProcessor(new QRFocusingProcessor(qrDetector, this, qrCodeScanningType));
 
         return new CameraSource.Builder(requireContext(), qrDetector)
                 .setFacing(CameraSource.CAMERA_FACING_BACK)
@@ -79,14 +113,6 @@ public final class ConnectFragment extends Fragment implements QRCodeListener {
                 .setRequestedFps(15.0f)
                 .setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)
                 .build();
-    }
-
-
-    private void switchToCameraPermissionFragment() {
-        requireFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container_main, new CameraPermissionFragment(), CameraPermissionFragment.TAG)
-                .commit();
     }
 
     private void startCamera() throws SecurityException {
@@ -114,29 +140,25 @@ public final class ConnectFragment extends Fragment implements QRCodeListener {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
             startCamera();
         else
-            switchToCameraPermissionFragment();
+            onCameraNotAllowedListener.onCameraNotAllowedListener(qrCodeScanningType);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if(preview != null)
+        if (preview != null)
             preview.stop();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(preview != null)
+        if (preview != null)
             preview.release();
     }
 
     @Override
-    public void onQRCodeDetected(String url) {
-        Log.i(TAG, "Received qrcode url : " + url);
-        requireFragmentManager()
-                .beginTransaction()
-                .replace(container, ConnectingFragment.newInstance(url), ConnectingFragment.TAG)
-                .addToBackStack(TAG).commit();
+    public void onQRCodeDetected(String data, QRCodeScanningType qrCodeScanningType) {
+        qrCodeListener.onQRCodeDetected(data, qrCodeScanningType);
     }
 }
