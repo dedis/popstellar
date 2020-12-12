@@ -4,41 +4,43 @@ package actors
 import (
 	"fmt"
 	"student20_pop/db"
-	"student20_pop/define"
+	"student20_pop/lib"
+	"student20_pop/message"
+	"student20_pop/parser"
 )
 
 type Actor interface {
 	//Public functions
 	HandleWholeMessage(msg []byte, userId int) (message, channel, responseToSender []byte)
 	//Private functions
-	handlePublish(generic define.Generic) (message, channel []byte, err error)
-	handleCreateLAO(msg define.Message, canal string, generic define.Generic) (message, channel []byte, err error)
-	handleUpdateProperties(msg define.Message, canal string, generic define.Generic) (message, channel []byte, err error)
-	handleWitnessMessage(msg define.Message, canal string, generic define.Generic) (message, channel []byte, err error)
-	handleLAOState(msg define.Message, canal string, generic define.Generic) (message, channel []byte, err error)
-	handleCreateRollCall(mag define.Message, canal string, generic define.Generic) (message, channel []byte, err error)
+	handlePublish(generic message.Generic) (message, channel []byte, err error)
+	handleCreateLAO(msg message.Message, canal string, generic message.Generic) (message, channel []byte, err error)
+	handleUpdateProperties(msg message.Message, canal string, generic message.Generic) (message, channel []byte, err error)
+	handleWitnessMessage(msg message.Message, canal string, generic message.Generic) (message, channel []byte, err error)
+	handleLAOState(msg message.Message, canal string, generic message.Generic) (message, channel []byte, err error)
+	handleCreateRollCall(mag message.Message, canal string, generic message.Generic) (message, channel []byte, err error)
 }
 
 //general actors functions, act only in the "Sub" database
-func handleSubscribe(generic define.Generic, userId int) error {
-	params, err := define.AnalyseParamsLight(generic.Params)
+func handleSubscribe(generic message.Generic, userId int) error {
+	params, err := parser.ParseParamsLight(generic.Params)
 	if err != nil {
 		fmt.Printf("unable to analyse paramsLight in handleSubscribe()")
-		return define.ErrRequestDataInvalid
+		return lib.ErrRequestDataInvalid
 	}
 	return db.Subscribe(userId, []byte(params.Channel))
 }
 
-func handleUnsubscribe(generic define.Generic, userId int) error {
-	params, err := define.AnalyseParamsLight(generic.Params)
+func handleUnsubscribe(generic message.Generic, userId int) error {
+	params, err := parser.ParseParamsLight(generic.Params)
 	if err != nil {
 		fmt.Printf("unable to analyse paramsLight in handleUnsubscribe()")
-		return define.ErrRequestDataInvalid
+		return lib.ErrRequestDataInvalid
 	}
 	return db.Unsubscribe(userId, []byte(params.Channel))
 }
 
 /* creates a message to publish on a channel from a received message. */
-func finalizeHandling(canal string, generic define.Generic) (message []byte, channel []byte) {
-	return define.CreateBroadcastMessage(generic), []byte(canal)
+func finalizeHandling(canal string, generic message.Generic) (message []byte, channel []byte) {
+	return parser.ComposeBroadcastMessage(generic), []byte(canal)
 }

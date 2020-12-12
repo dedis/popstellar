@@ -11,7 +11,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"student20_pop/db"
-	"student20_pop/define"
+	"student20_pop/event"
+	"student20_pop/lib"
+	"student20_pop/message"
+	"student20_pop/parser"
+	"student20_pop/security"
 )
 
 type Witness struct {
@@ -28,9 +32,9 @@ func NewWitness(pkey string, db string) *Witness {
 
 /* processes what is received from the websocket */
 func (w *Witness) HandleWholeMessage(receivedMsg []byte, userId int) (message, channel, responseToSender []byte) {
-	generic, err := define.AnalyseGeneric(receivedMsg)
+	generic, err := parser.ParseGeneric(receivedMsg)
 	if err != nil {
-		return nil, nil, define.CreateResponse(define.ErrRequestDataInvalid, nil, generic)
+		return nil, nil, parser.ComposeResponse(lib.ErrRequestDataInvalid, nil, generic)
 
 	}
 
@@ -44,28 +48,28 @@ func (w *Witness) HandleWholeMessage(receivedMsg []byte, userId int) (message, c
 	case "message":
 		msg, chann, err = w.handleMessage(generic)
 	default:
-		msg, chann, err = nil, nil, define.ErrRequestDataInvalid
+		msg, chann, err = nil, nil, lib.ErrRequestDataInvalid
 	}
 
-	return msg, chann, define.CreateResponse(err, history, generic)
+	return msg, chann, parser.ComposeResponse(err, history, generic)
 }
 
-func (w *Witness) handlePublish(generic define.Generic) (messsage, channel []byte, err error) {
-	return nil, nil, define.ErrInvalidAction //a witness cannot handle a publish request for now
+func (w *Witness) handlePublish(generic message.Generic) (messsage, channel []byte, err error) {
+	return nil, nil, lib.ErrInvalidAction //a witness cannot handle a publish request for now
 }
 
-func (w *Witness) handleMessage(generic define.Generic) (message, channel []byte, err error) {
-	params, errs := define.AnalyseParamsFull(generic.Params)
+func (w *Witness) handleMessage(generic message.Generic) (returnMessage, channel []byte, err error) {
+	params, errs := parser.ParseParamsFull(generic.Params)
 	if errs != nil {
-		return nil, nil, define.ErrRequestDataInvalid
+		return nil, nil, lib.ErrRequestDataInvalid
 	}
 
-	msg, errs := define.AnalyseMessage(params.Message)
+	msg, errs := parser.ParseMessage(params.Message)
 	if errs != nil {
-		return nil, nil, define.ErrRequestDataInvalid
+		return nil, nil, lib.ErrRequestDataInvalid
 	}
 
-	data := define.Data{}
+	data := message.Data{}
 	base64Text := make([]byte, b64.StdEncoding.DecodedLen(len(msg.Data)))
 
 	l, errs := b64.StdEncoding.Decode(base64Text, msg.Data)
@@ -75,7 +79,7 @@ func (w *Witness) handleMessage(generic define.Generic) (message, channel []byte
 
 	errs = json.Unmarshal(base64Text[:l], &data)
 	if errs != nil {
-		return nil, nil, define.ErrRequestDataInvalid
+		return nil, nil, lib.ErrRequestDataInvalid
 	}
 
 	switch data["object"] {
@@ -88,7 +92,7 @@ func (w *Witness) handleMessage(generic define.Generic) (message, channel []byte
 		case "state":
 			return w.handleLAOState(msg, params.Channel, generic)
 		default:
-			return nil, nil, define.ErrInvalidAction
+			return nil, nil, lib.ErrInvalidAction
 		}
 
 	case "message":
@@ -96,53 +100,53 @@ func (w *Witness) handleMessage(generic define.Generic) (message, channel []byte
 		case "witness":
 			return w.handleWitnessMessage(msg, params.Channel, generic)
 		default:
-			return nil, nil, define.ErrInvalidAction
+			return nil, nil, lib.ErrInvalidAction
 		}
 	case "roll call":
 		switch data["action"] {
 		case "create":
 			return w.handleCreateRollCall(msg, params.Channel, generic)
 		case "state":
-			return nil, nil, define.ErrInvalidAction
+			return nil, nil, lib.ErrInvalidAction
 		default:
-			return nil, nil, define.ErrInvalidAction
+			return nil, nil, lib.ErrInvalidAction
 		}
 	case "meeting":
 		switch data["action"] {
 		case "create":
-			return nil, nil, define.ErrInvalidAction
+			return nil, nil, lib.ErrInvalidAction
 		case "state":
-			return nil, nil, define.ErrInvalidAction
+			return nil, nil, lib.ErrInvalidAction
 		default:
-			return nil, nil, define.ErrInvalidAction
+			return nil, nil, lib.ErrInvalidAction
 		}
 	case "poll":
 		switch data["action"] {
 		case "create":
-			return nil, nil, define.ErrInvalidAction
+			return nil, nil, lib.ErrInvalidAction
 		case "state":
-			return nil, nil, define.ErrInvalidAction
+			return nil, nil, lib.ErrInvalidAction
 		default:
-			return nil, nil, define.ErrInvalidAction
+			return nil, nil, lib.ErrInvalidAction
 		}
 	default:
-		return nil, nil, define.ErrRequestDataInvalid
+		return nil, nil, lib.ErrRequestDataInvalid
 	}
 }
 
 /*handles the creation of an LAO*/
-func (w *Witness) handleCreateLAO(msg define.Message, chann string, generic define.Generic) (message, channel []byte, err error) {
+func (w *Witness) handleCreateLAO(msg message.Message, chann string, generic message.Generic) (message, channel []byte, err error) {
 	if chann != "/root" {
-		return nil, nil, define.ErrInvalidResource
+		return nil, nil, lib.ErrInvalidResource
 	}
 
-	data, errs := define.AnalyseDataCreateLAO(msg.Data)
+	data, errs := parser.ParseDataCreateLAO(msg.Data)
 	if errs != nil {
-		return nil, nil, define.ErrInvalidResource
+		return nil, nil, lib.ErrInvalidResource
 	}
 
-	if !define.LAOIsValid(data, msg, true) {
-		return nil, nil, define.ErrInvalidResource
+	if !security.LAOIsValid(data, msg, true) {
+		return nil, nil, lib.ErrInvalidResource
 	}
 
 	errs = db.CreateMessage(msg, chann, w.database)
@@ -150,7 +154,7 @@ func (w *Witness) handleCreateLAO(msg define.Message, chann string, generic defi
 		return nil, nil, errs
 	}
 
-	lao := define.LAO{
+	lao := event.LAO{
 		ID:            data.ID,
 		Name:          data.Name,
 		Creation:      data.Creation,
@@ -163,13 +167,13 @@ func (w *Witness) handleCreateLAO(msg define.Message, chann string, generic defi
 }
 
 /*witness does not yet send stuff to channel*/
-func (w *Witness) handleUpdateProperties(msg define.Message, chann string, generic define.Generic) (message, channel []byte, err error) {
-	data, errs := define.AnalyseDataCreateLAO(msg.Data)
+func (w *Witness) handleUpdateProperties(msg message.Message, chann string, generic message.Generic) (message, channel []byte, err error) {
+	data, errs := parser.ParseDataCreateLAO(msg.Data)
 	if errs != nil {
-		return nil, nil, define.ErrInvalidResource
+		return nil, nil, lib.ErrInvalidResource
 	}
-	if !define.LAOIsValid(data, msg, false) {
-		return nil, nil, define.ErrInvalidResource
+	if !security.LAOIsValid(data, msg, false) {
+		return nil, nil, lib.ErrInvalidResource
 	}
 
 	//stores received message in DB
@@ -181,11 +185,11 @@ func (w *Witness) handleUpdateProperties(msg define.Message, chann string, gener
 	return nil, nil, errs
 }
 
-func (w *Witness) handleWitnessMessage(msg define.Message, chann string, generic define.Generic) (message, channel []byte, err error) {
+func (w *Witness) handleWitnessMessage(msg message.Message, chann string, generic message.Generic) (message, channel []byte, err error) {
 
-	data, errs := define.AnalyseDataWitnessMessage(msg.Data)
+	data, errs := parser.ParseDataWitnessMessage(msg.Data)
 	if errs != nil {
-		return nil, nil, define.ErrInvalidResource
+		return nil, nil, lib.ErrInvalidResource
 	}
 
 	//stores received message in DB
@@ -197,18 +201,18 @@ func (w *Witness) handleWitnessMessage(msg define.Message, chann string, generic
 	sendMsg := db.GetMessage([]byte(chann), []byte(data.Message_id), w.database)
 	if sendMsg == nil {
 		fmt.Printf("no message with ID %v in the database", data.Message_id)
-		return nil, nil, define.ErrInvalidResource
+		return nil, nil, lib.ErrInvalidResource
 	}
-	storedMessage, errs := define.AnalyseMessage(sendMsg)
+	storedMessage, errs := parser.ParseMessage(sendMsg)
 
 	if errs != nil {
 		fmt.Printf("unable to unmarshall the message stored in the database")
-		return nil, nil, define.ErrDBFault
+		return nil, nil, lib.ErrDBFault
 	}
 
-	errs = define.VerifySignature(msg.Sender, storedMessage.Data, data.Signature)
+	errs = security.VerifySignature(msg.Sender, storedMessage.Data, data.Signature)
 	if errs != nil {
-		return nil, nil, define.ErrInvalidResource
+		return nil, nil, lib.ErrInvalidResource
 	}
 
 	//adds the signature to signature list
@@ -220,23 +224,23 @@ func (w *Witness) handleWitnessMessage(msg define.Message, chann string, generic
 	return nil, nil, errs
 }
 
-func (w *Witness) handleLAOState(msg define.Message, chann string, generic define.Generic) (message, channel []byte, err error) {
-	data, errs := define.AnalyseDataCreateLAO(msg.Data)
+func (w *Witness) handleLAOState(msg message.Message, chann string, generic message.Generic) (message, channel []byte, err error) {
+	data, errs := parser.ParseDataCreateLAO(msg.Data)
 	if errs != nil {
-		return nil, nil, define.ErrInvalidResource
+		return nil, nil, lib.ErrInvalidResource
 	}
 
-	if !define.LAOIsValid(data, msg, false) {
-		return nil, nil, define.ErrInvalidResource
+	if !security.LAOIsValid(data, msg, false) {
+		return nil, nil, lib.ErrInvalidResource
 	}
 
 	//TODO correct usage of VerifyWitnessSignatures
-	errs = define.VerifyWitnessSignatures(nil, msg.WitnessSignatures, msg.Sender)
+	errs = security.VerifyWitnessSignatures(nil, msg.WitnessSignatures, msg.Sender)
 	if errs != nil {
-		return nil, nil, define.ErrRequestDataInvalid
+		return nil, nil, lib.ErrRequestDataInvalid
 	}
 
-	lao := define.LAO{
+	lao := event.LAO{
 		ID:            data.ID,
 		Name:          data.Name,
 		Creation:      data.Creation,
@@ -249,18 +253,18 @@ func (w *Witness) handleLAOState(msg define.Message, chann string, generic defin
 	return nil, nil, errs
 }
 
-func (w *Witness) handleCreateRollCall(msg define.Message, chann string, generic define.Generic) (message, channel []byte, err error) {
+func (w *Witness) handleCreateRollCall(msg message.Message, chann string, generic message.Generic) (message, channel []byte, err error) {
 
-	data, errs := define.AnalyseDataCreateRollCall(msg.Data)
+	data, errs := parser.ParseDataCreateRollCall(msg.Data)
 	if errs != nil {
-		return nil, nil, define.ErrInvalidResource
+		return nil, nil, lib.ErrInvalidResource
 	}
 
-	if !define.RollCallCreatedIsValid(data, msg) {
-		return nil, nil, define.ErrInvalidResource
+	if !security.RollCallCreatedIsValid(data, msg) {
+		return nil, nil, lib.ErrInvalidResource
 	}
 
-	rollCall := define.RollCall{
+	rollCall := event.RollCall{
 		ID:       data.ID,
 		Name:     data.Name,
 		Creation: data.Creation,

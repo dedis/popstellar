@@ -1,5 +1,5 @@
 /* STRUCTURES OF REAL LIFE EVENTS */
-package define
+package event
 
 import "hash"
 

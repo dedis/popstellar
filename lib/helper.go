@@ -1,6 +1,11 @@
 /* GENERAL USEFUL FUNCTIONS
 Currently only find elem in array */
-package define
+package lib
+
+import (
+	b64 "encoding/base64"
+	"strings"
+)
 
 /* helper function to find an elem. in a slice.  returns index of elem + bool in slice*/
 func Find(slice []int, val int) (int, bool) {
@@ -19,4 +24,9 @@ func FindStr(slice []string, val string) (int, bool) {
 		}
 	}
 	return -1, false
+}
+
+func Decode(data string) ([]byte, error) {
+	d, err := b64.StdEncoding.DecodeString(strings.Trim(data, `"`))
+	return d, err
 }

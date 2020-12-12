@@ -8,7 +8,9 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
-	"student20_pop/define"
+	message2 "student20_pop/message"
+	"student20_pop/parser"
+	"student20_pop/security"
 	"testing"
 )
 
@@ -34,13 +36,13 @@ func TestMessageIsValid(t *testing.T) {
 			t.Error("wrong argument -> size don't respected ")
 		}
 		idData := sha256.Sum256([]byte(pubkey + fmt.Sprint(creation) + name))
-		var data = define.DataCreateLAO{
+		var data = message2.DataCreateLAO{
 			Object:    "lao",
 			Action:    "create",
 			ID:        b64.StdEncoding.EncodeToString(idData[:]),
 			Name:      name,
 			Creation:  creation,
-			Organizer: (b64.StdEncoding.EncodeToString([]byte(pubkey))),
+			Organizer: b64.StdEncoding.EncodeToString([]byte(pubkey)),
 			Witnesses: []string{},
 		}
 
@@ -53,20 +55,20 @@ func TestMessageIsValid(t *testing.T) {
 
 		var message = MessageSend{
 			Data:              []byte(b64.StdEncoding.EncodeToString(dataFlat)), // in base 64
-			Sender:            (b64.StdEncoding.EncodeToString([]byte(pubkey))),
-			Signature:         (b64.StdEncoding.EncodeToString(signed)),
-			Message_id:        (b64.StdEncoding.EncodeToString(id[:])),
+			Sender:            b64.StdEncoding.EncodeToString([]byte(pubkey)),
+			Signature:         b64.StdEncoding.EncodeToString(signed),
+			Message_id:        b64.StdEncoding.EncodeToString(id[:]),
 			WitnessSignatures: []string{},
 		}
 		messageFlat, err := json.Marshal(message)
 		if err != nil {
 			t.Errorf("Error : %+v\n ,Impossible to marshal message", err)
 		}
-		messProcessed, err := define.AnalyseMessage(messageFlat)
+		messProcessed, err := parser.ParseMessage(messageFlat)
 		if err != nil {
 			t.Errorf("Error : %+v\n encoutered, Analyse Message failed", err)
 		}
-		err = define.MessageIsValid(messProcessed)
+		err = security.MessageIsValid(messProcessed)
 		if err != nil {
 			t.Errorf("Error, message %+v\n should be valid", message)
 		}
