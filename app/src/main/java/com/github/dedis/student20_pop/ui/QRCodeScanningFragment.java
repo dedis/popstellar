@@ -158,7 +158,7 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
     }
 
     @Override
-    public void onQRCodeDetected(String url, QRCodeScanningType qrCodeScanningType) {
-        qrCodeListener.onQRCodeDetected(url, qrCodeScanningType);
+    public void onQRCodeDetected(String data, QRCodeScanningType qrCodeScanningType) {
+        qrCodeListener.onQRCodeDetected(data, qrCodeScanningType);
     }
 }
