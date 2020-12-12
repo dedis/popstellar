@@ -40,6 +40,11 @@ public class PoPApplication extends Application {
     private Map<Lao, List<Event>> dummyLaoEventsMap;
     private CompletableFuture<HighLevelClientProxy> localProxy;
 
+    /**
+     * Map from Lao's id to List of witnesses'id
+     */
+    private HashMap<String, List<String>> laoWitnessesHashMap;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -48,20 +53,25 @@ public class PoPApplication extends Application {
 
         appContext = getApplicationContext();
 
-        if(person == null) {
+        if (person == null) {
             // TODO: when can the user change/choose its name
             setPerson(new Person("USER"));
         }
+
         if(laoEventsMap == null){
             laoEventsMap = new HashMap<>();
         }
         dummyPerson =  new Person("name");
         dummyLao = new Lao("LAO I just joined", new Date(), dummyPerson.getId());
         dummyLaoEventsMap = dummyMap();
+
+        if (laoWitnessesHashMap == null) {
+            this.laoWitnessesHashMap = new HashMap<>();
+        }
+
     }
 
     /**
-     *
      * @return PoP Application Context
      */
     public static Context getAppContext() {
@@ -69,7 +79,6 @@ public class PoPApplication extends Application {
     }
 
     /**
-     *
      * @return Person corresponding to the user
      */
     public Person getPerson() {
@@ -79,7 +88,6 @@ public class PoPApplication extends Application {
     }
 
     /**
-     *
      * @return list of LAOs corresponding to the user
      */
     public List<Lao> getLaos() {
@@ -94,7 +102,7 @@ public class PoPApplication extends Application {
      * @param person
      */
     public void setPerson(Person person) {
-        if(person != null) {
+        if (person != null) {
             this.person = person;
         }
     }
@@ -169,10 +177,10 @@ public class PoPApplication extends Application {
      * If the connection was lost, retry
      */
     private void refreshLocalProxy() {
-        if(localProxy == null)
+        if (localProxy == null)
             // If there was no attempt yet, try
             localProxy = PoPClientEndpoint.connectAsync(URI.create(LOCAL_BACKEND_URI), person);
-        else if(localProxy.isDone()) {
+        else if (localProxy.isDone()) {
             try {
                 // If it succeeded, but it is now closed, retry
                 HighLevelClientProxy currentSession = localProxy.getNow(null);
@@ -221,4 +229,52 @@ public class PoPApplication extends Application {
         return map;
     }
 
+    /**
+     * Add witness' id to lao
+     * @param lao
+     * @param witness
+     */
+    public void addWitness(Lao lao, String witness) {
+        addWitness(lao.getId(), witness);
+    }
+
+    /**
+     * Add witness' id to lao
+     * @param lao
+     * @param witness
+     */
+    public void addWitness(Lao lao, Person witness) {
+        addWitness(lao, witness.getId());
+    }
+
+    /**
+     * Add witness' id to lao
+     * @param laoId
+     * @param witness
+     */
+    public void addWitness(String laoId, String witness){
+        List<String> laoWitnesses = laoWitnessesHashMap.get(laoId);
+        if (laoWitnesses == null) {
+            laoWitnesses = new ArrayList<>();
+            laoWitnessesHashMap.put(laoId, laoWitnesses);
+        }
+        laoWitnesses.add(witness);
+    }
+
+    /**
+     * Get witnesses of a LAO
+     * @param lao
+     * @return
+     */
+    public List<String> getWitnesses(Lao lao) {
+        return laoWitnessesHashMap.get(lao.getId());
+    }
+
+    /**
+     * Get Lao -> Witnesses HashMap
+     *
+     */
+    public HashMap<Lao, List<String>> getLaoWitnessesHashMap(){
+        return (HashMap<Lao, List<String>>) laoWitnessesHashMap.clone();
+    }
 }

@@ -128,7 +128,6 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
         } else {
             showFragment(new CameraPermissionFragment(ADD_WITNESS), CameraPermissionFragment.TAG);
         }
-        // TODO : Get witness id from the QR code, add witness to witness list and send info to backend
     }
 
     @Override
@@ -137,18 +136,29 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
     }
 
     @Override
-    public void onQRCodeDetected(String url, QRCodeScanningType qrCodeScanningType) {
-        Log.i(TAG, "Received qrcode url : " + url);
+    public void onQRCodeDetected(String data, QRCodeScanningType qrCodeScanningType) {
+        Log.i(TAG, "Received qrcode url : " + data);
         switch (qrCodeScanningType) {
             case ADD_ROLL_CALL:
                 //TODO
                 break;
             case ADD_WITNESS:
                 //TODO
-                Log.d("DEBUG", "URL Received : " + url);
+                int keyLength = new Keys().getPublicKey().length();
+                String witnessId = data.substring(0, keyLength);
+                String laoId = data.substring(keyLength);
+
+                PoPApplication app = (PoPApplication) getApplication();
+                app.addWitness(laoId, witnessId);
+
+                // TODO : send info to backend
+
+                // TODO : If witness has been added
+                getSupportFragmentManager().popBackStackImmediate();
+
                 break;
             case CONNECT_LAO:
-                showFragment(ConnectingFragment.newInstance(url), ConnectingFragment.TAG);
+                showFragment(ConnectingFragment.newInstance(data), ConnectingFragment.TAG);
                 break;
             default:
                 break;

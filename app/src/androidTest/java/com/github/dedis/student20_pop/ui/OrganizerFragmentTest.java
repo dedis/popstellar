@@ -9,15 +9,19 @@ import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.rule.GrantPermissionRule;
 
-import com.github.dedis.student20_pop.MainActivity;
 import com.github.dedis.student20_pop.OrganizerActivity;
+import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
+import com.github.dedis.student20_pop.model.Lao;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+
+import java.util.List;
+import java.util.Map.Entry;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static androidx.test.espresso.Espresso.onData;
@@ -32,9 +36,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibilit
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.ADD_WITNESS;
-import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.not;
 
 
@@ -45,7 +49,8 @@ public class OrganizerFragmentTest {
     public ActivityScenarioRule<OrganizerActivity> activityScenarioRule =
             new ActivityScenarioRule<>(OrganizerActivity.class);
 
-    @Rule public final GrantPermissionRule rule = GrantPermissionRule.grant(Manifest.permission.CAMERA);
+    @Rule
+    public final GrantPermissionRule rule = GrantPermissionRule.grant(Manifest.permission.CAMERA);
 
     @Before
     public void setUp() {
@@ -179,9 +184,11 @@ public class OrganizerFragmentTest {
     }
 
     @Test
-    @Ignore("TODO : Check that scanning a Witness QR code adds witness to witness list")
     public void canAddWitness() {
-        final String TEST_URL = "Test new witness";
+        final String LAO_ID = "sikTQjDnc2pZre8VgTu74LvyNr3V8RBw7IWcHJwcEiU=";
+        final String WITNESS_ID = "t9Ed+TEwDM0+u0ZLdS4ZB/Vrrnga0Lu2iMkAQtyFRrQ=";
+        final String TEST_IDS = WITNESS_ID + LAO_ID;
+
         onView(withId(R.id.tab_properties)).perform(click());
         onView(withId(R.id.properties_view)).check(matches(isDisplayed()));
         onView(withId(R.id.edit_button)).perform(click());
@@ -192,10 +199,16 @@ public class OrganizerFragmentTest {
             Fragment fragment = a.getSupportFragmentManager().findFragmentByTag(QRCodeScanningFragment.TAG);
             Assert.assertNotNull(fragment);
             Assert.assertTrue(fragment instanceof QRCodeScanningFragment);
-            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_URL, ADD_WITNESS);
-        });
+            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_WITNESS);
 
-        //TODO 
+            PoPApplication app = (PoPApplication) a.getApplication();
+            for (Entry<Lao, List<String>> laoListEntry : app.getLaoWitnessesHashMap().entrySet()) {
+                if (laoListEntry.getKey().toString().equals(LAO_ID)) {
+                    List<String> witnesses = laoListEntry.getValue();
+                    Assert.assertThat(witnesses, contains(WITNESS_ID));
+                }
+            }
+        });
     }
 
     @Test
