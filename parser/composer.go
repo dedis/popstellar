@@ -28,58 +28,44 @@ func ComposeBroadcastMessage(query message.Query) []byte {
  * we suppose error is in the good range
  */
 func ComposeResponse(err error, messages []byte, query message.Query) []byte {
+	var resp interface{}
 	if err != nil {
 		if err == lib.ErrIdNotDecoded {
-			resp := message.ResponseIDNotDecoded{
+			resp = message.ResponseIDNotDecoded{
 				Jsonrpc:       "2.0",
 				ErrorResponse: selectDescriptionError(err),
 				Id:            nil,
 			}
 
-			b, err := json.Marshal(resp)
-			if err != nil {
-				log.Println("couldn't Marshal the response")
-			}
-			return b
 		} else {
-			resp := message.ResponseWithError{
+			resp = message.ResponseWithError{
 				Jsonrpc:       "2.0",
 				ErrorResponse: selectDescriptionError(err),
 				Id:            query.Id,
 			}
 
-			b, err := json.Marshal(resp)
-			if err != nil {
-				log.Println("couldn't Marshal the response")
-			}
-			return b
-
 		}
 	} else {
 		if messages == nil {
-			resp := message.ResponseWithGenResult{
+			resp = message.ResponseWithGenResult{
 				Jsonrpc: "2.0",
 				Result:  0,
 				Id:      query.Id,
 			}
-			b, err := json.Marshal(resp)
-			if err != nil {
-				log.Println("couldn't Marshal the response")
-			}
-			return b
 		} else {
-			resp := message.ResponseWithCatchupResult{
+			resp = message.ResponseWithCatchupResult{
 				Jsonrpc: "2.0",
 				Result:  string(messages),
 				Id:      query.Id,
 			}
-			b, err := json.Marshal(resp)
-			if err != nil {
-				log.Println("couldn't Marshal the response")
-			}
-			return b
 		}
 	}
+
+	b, err := json.Marshal(resp)
+	if err != nil {
+		log.Println("couldn't Marshal the response")
+	}
+	return b
 }
 
 /*
