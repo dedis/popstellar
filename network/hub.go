@@ -9,7 +9,7 @@ import (
 	"log"
 	"student20_pop/actors"
 	"student20_pop/db"
-	"student20_pop/define"
+	"student20_pop/lib"
 	"sync"
 	"time"
 )
@@ -124,7 +124,7 @@ func (h *hub) publishOnChannel(msg []byte, channel []byte) {
 
 	for c := range h.connections {
 		//send msgBroadcast to that connection if channel is main channel or is in channel subscribers
-		_, found := define.Find(subscribers, c.id)
+		_, found := lib.Find(subscribers, c.id)
 
 		if (bytes.Equal(channel, []byte("/root")) || found) && msg != nil {
 			select {

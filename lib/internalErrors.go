@@ -1,5 +1,5 @@
 /* INTERNAL ERRORS */
-package define
+package lib
 
 import (
 	"errors"

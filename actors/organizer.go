@@ -7,7 +7,11 @@ package actors
 import (
 	"fmt"
 	"student20_pop/db"
-	"student20_pop/define"
+	"student20_pop/event"
+	"student20_pop/lib"
+	"student20_pop/message"
+	"student20_pop/parser"
+	"student20_pop/security"
 )
 
 type Organizer struct {
@@ -25,9 +29,9 @@ func NewOrganizer(pkey string, db string) *Organizer {
 /** processes what is received from the websocket */
 func (o *Organizer) HandleWholeMessage(receivedMsg []byte, userId int) (message, channel, responseToSender []byte) {
 	//this cannot handle an error message and will send an error message bak, resulting in an infinite loop TODO
-	generic, err := define.AnalyseGeneric(receivedMsg)
+	generic, err := parser.ParseGeneric(receivedMsg)
 	if err != nil {
-		return nil, nil, define.CreateResponse(define.ErrIdNotDecoded, nil, generic)
+		return nil, nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, generic)
 	}
 
 	var history []byte = nil
@@ -48,29 +52,29 @@ func (o *Organizer) HandleWholeMessage(receivedMsg []byte, userId int) (message,
 		history, err = o.handleCatchup(generic)
 	default:
 		fmt.Printf("method not recognized, generating default response")
-		msg, chann, err = nil, nil, define.ErrRequestDataInvalid
+		msg, chann, err = nil, nil, lib.ErrRequestDataInvalid
 	}
 
-	return msg, chann, define.CreateResponse(err, history, generic)
+	return msg, chann, parser.ComposeResponse(err, history, generic)
 }
 
-func (o *Organizer) handleMessage(generic define.Generic) (message, channel []byte, err error) {
-	params, errs := define.AnalyseParamsFull(generic.Params)
+func (o *Organizer) handleMessage(generic message.Generic) (message, channel []byte, err error) {
+	params, errs := parser.ParseParamsFull(generic.Params)
 	if errs != nil {
 		fmt.Printf("unable to analyse paramsLight in handleMessage()")
-		return nil, nil, define.ErrRequestDataInvalid
+		return nil, nil, lib.ErrRequestDataInvalid
 	}
 
-	msg, errs := define.AnalyseMessage(params.Message)
+	msg, errs := parser.ParseMessage(params.Message)
 	if errs != nil {
 		fmt.Printf("unable to analyse Message in handleMessage()")
-		return nil, nil, define.ErrRequestDataInvalid
+		return nil, nil, lib.ErrRequestDataInvalid
 	}
 
-	data, errs := define.AnalyseData(string(msg.Data))
+	data, errs := parser.ParseData(string(msg.Data))
 	if errs != nil {
 		fmt.Printf("unable to analyse data in handleMessage()")
-		return nil, nil, define.ErrRequestDataInvalid
+		return nil, nil, lib.ErrRequestDataInvalid
 	}
 
 	errs = db.CreateMessage(msg, params.Channel, o.database)
@@ -84,42 +88,42 @@ func (o *Organizer) handleMessage(generic define.Generic) (message, channel []by
 		case "witness":
 			return o.handleWitnessMessage(msg, params.Channel, generic)
 		default:
-			return nil, nil, define.ErrRequestDataInvalid
+			return nil, nil, lib.ErrRequestDataInvalid
 		}
 	case "state":
 		{
 			return o.handleLAOState(msg, params.Channel, generic)
 		}
 	default:
-		return nil, nil, define.ErrRequestDataInvalid
+		return nil, nil, lib.ErrRequestDataInvalid
 	}
 
 }
 
 /* handles a received publish message */
-func (o *Organizer) handlePublish(generic define.Generic) (message, channel []byte, err error) {
-	params, errs := define.AnalyseParamsFull(generic.Params)
+func (o *Organizer) handlePublish(generic message.Generic) (message, channel []byte, err error) {
+	params, errs := parser.ParseParamsFull(generic.Params)
 	if errs != nil {
 		fmt.Printf("1. unable to analyse paramsLight in handlePublish()")
-		return nil, nil, define.ErrRequestDataInvalid
+		return nil, nil, lib.ErrRequestDataInvalid
 	}
 
-	msg, errs := define.AnalyseMessage(params.Message)
+	msg, errs := parser.ParseMessage(params.Message)
 	if errs != nil {
 		fmt.Printf("2. unable to analyse Message in handlePublish()")
-		return nil, nil, define.ErrRequestDataInvalid
+		return nil, nil, lib.ErrRequestDataInvalid
 	}
 
-	err = define.MessageIsValid(msg)
+	err = security.MessageIsValid(msg)
 	if errs != nil {
 		fmt.Printf("7")
-		return nil, nil, define.ErrRequestDataInvalid
+		return nil, nil, lib.ErrRequestDataInvalid
 	}
 
-	data, errs := define.AnalyseData(string(msg.Data))
+	data, errs := parser.ParseData(string(msg.Data))
 	if errs != nil {
 		fmt.Printf("3. unable to analyse data in handlePublish()")
-		return nil, nil, define.ErrRequestDataInvalid
+		return nil, nil, lib.ErrRequestDataInvalid
 	}
 
 	switch data["object"] {
@@ -132,7 +136,7 @@ func (o *Organizer) handlePublish(generic define.Generic) (message, channel []by
 		case "state":
 			return o.handleLAOState(msg, params.Channel, generic) // should never happen
 		default:
-			return nil, nil, define.ErrInvalidAction
+			return nil, nil, lib.ErrInvalidAction
 		}
 
 	case "message":
@@ -142,7 +146,7 @@ func (o *Organizer) handlePublish(generic define.Generic) (message, channel []by
 			//TODO: update state and send state broadcast
 			// TODO : state broadcast done on root/ or on LAO channel
 		default:
-			return nil, nil, define.ErrInvalidAction
+			return nil, nil, lib.ErrInvalidAction
 		}
 	case "roll call":
 		switch data["action"] {
@@ -150,7 +154,7 @@ func (o *Organizer) handlePublish(generic define.Generic) (message, channel []by
 			return o.handleCreateRollCall(msg, params.Channel, generic)
 		//case "state":  TODO : waiting on protocol definition
 		default:
-			return nil, nil, define.ErrInvalidAction
+			return nil, nil, lib.ErrInvalidAction
 		}
 	case "meeting":
 		switch data["action"] {
@@ -158,9 +162,9 @@ func (o *Organizer) handlePublish(generic define.Generic) (message, channel []by
 			return o.handleCreateMeeting(msg, params.Channel, generic)
 		case "state": //
 			// TODO: waiting on protocol definition
-			return nil, nil, define.ErrInvalidAction
+			return nil, nil, lib.ErrInvalidAction
 		default:
-			return nil, nil, define.ErrInvalidAction
+			return nil, nil, lib.ErrInvalidAction
 		}
 	case "poll":
 		switch data["action"] {
@@ -168,30 +172,30 @@ func (o *Organizer) handlePublish(generic define.Generic) (message, channel []by
 			return o.handleCreatePoll(msg, params.Channel, generic)
 		case "state":
 			// TODO: waiting on protocol definition
-			return nil, nil, define.ErrInvalidAction
+			return nil, nil, lib.ErrInvalidAction
 		default:
-			return nil, nil, define.ErrInvalidAction
+			return nil, nil, lib.ErrInvalidAction
 		}
 	default:
 		fmt.Printf("data[action] not recognized in handlepublish, generating default response ")
-		return nil, nil, define.ErrRequestDataInvalid
+		return nil, nil, lib.ErrRequestDataInvalid
 	}
 }
 
 /* handles the creation of a LAO */
-func (o *Organizer) handleCreateLAO(msg define.Message, canal string, generic define.Generic) (message, channel []byte, err error) {
+func (o *Organizer) handleCreateLAO(msg message.Message, canal string, generic message.Generic) (message, channel []byte, err error) {
 
 	if canal != "/root" {
-		return nil, nil, define.ErrInvalidResource
+		return nil, nil, lib.ErrInvalidResource
 	}
 
-	data, errs := define.AnalyseDataCreateLAO(msg.Data)
+	data, errs := parser.ParseDataCreateLAO(msg.Data)
 	if errs != nil {
-		return nil, nil, define.ErrInvalidResource
+		return nil, nil, lib.ErrInvalidResource
 	}
 
-	if !define.LAOIsValid(data, msg, true) {
-		return nil, nil, define.ErrInvalidResource
+	if !security.LAOIsValid(data, msg, true) {
+		return nil, nil, lib.ErrInvalidResource
 	}
 
 	errs = db.CreateMessage(msg, canal, o.database)
@@ -199,7 +203,7 @@ func (o *Organizer) handleCreateLAO(msg define.Message, canal string, generic de
 		return nil, nil, err
 	}
 
-	lao := define.LAO{
+	lao := event.LAO{
 		ID:            data.ID,
 		Name:          data.Name,
 		Creation:      data.Creation,
@@ -215,22 +219,22 @@ func (o *Organizer) handleCreateLAO(msg define.Message, canal string, generic de
 	return msgToSend, chann, nil
 }
 
-func (o *Organizer) handleCreateRollCall(msg define.Message, canal string, generic define.Generic) (message, channel []byte, err error) {
+func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, generic message.Generic) (message, channel []byte, err error) {
 	if canal == "/root" {
-		return nil, nil, define.ErrInvalidResource
+		return nil, nil, lib.ErrInvalidResource
 	}
 
-	data, errs := define.AnalyseDataCreateRollCall(msg.Data)
+	data, errs := parser.ParseDataCreateRollCall(msg.Data)
 	if errs != nil {
-		return nil, nil, define.ErrInvalidResource
+		return nil, nil, lib.ErrInvalidResource
 	}
 
-	if !define.RollCallCreatedIsValid(data, msg) {
+	if !security.RollCallCreatedIsValid(data, msg) {
 		return nil, nil, errs
 	}
 
 	// don't need to check for validity if we use json schema
-	event := define.RollCall{ID: data.ID,
+	event := event.RollCall{ID: data.ID,
 		Name:     data.Name,
 		Creation: data.Creation,
 		Location: data.Location,
@@ -251,19 +255,19 @@ func (o *Organizer) handleCreateRollCall(msg define.Message, canal string, gener
 	return sendMsg, chann, nil
 }
 
-func (o *Organizer) handleCreateMeeting(msg define.Message, canal string, generic define.Generic) (message, channel []byte, err error) {
+func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, generic message.Generic) (message, channel []byte, err error) {
 
 	if canal == "/root" {
-		return nil, nil, define.ErrInvalidResource
+		return nil, nil, lib.ErrInvalidResource
 	}
 
-	data, errs := define.AnalyseDataCreateMeeting(msg.Data)
+	data, errs := parser.ParseDataCreateMeeting(msg.Data)
 	if errs != nil {
-		return nil, nil, define.ErrInvalidResource
+		return nil, nil, lib.ErrInvalidResource
 	}
 
 	// don't need to check for validity if we use json schema
-	event := define.Meeting{ID: data.ID,
+	event := event.Meeting{ID: data.ID,
 		Name:     data.Name,
 		Creation: data.Creation,
 		Location: data.Location,
@@ -283,18 +287,18 @@ func (o *Organizer) handleCreateMeeting(msg define.Message, canal string, generi
 	return sendMsg, chann, nil
 }
 
-func (o *Organizer) handleCreatePoll(msg define.Message, canal string, generic define.Generic) (message, channel []byte, err error) {
+func (o *Organizer) handleCreatePoll(msg message.Message, canal string, generic message.Generic) (message, channel []byte, err error) {
 
 	if canal == "/root" {
-		return nil, nil, define.ErrInvalidResource
+		return nil, nil, lib.ErrInvalidResource
 	}
 
-	data, errs := define.AnalyseDataCreatePoll(msg.Data)
+	data, errs := parser.ParseDataCreatePoll(msg.Data)
 	if errs != nil {
-		return nil, nil, define.ErrInvalidResource
+		return nil, nil, lib.ErrInvalidResource
 	}
 
-	event := define.Poll{ID: data.ID,
+	event := event.Poll{ID: data.ID,
 		Name:     data.Name,
 		Creation: data.Creation,
 		Location: data.Location,
@@ -311,31 +315,31 @@ func (o *Organizer) handleCreatePoll(msg define.Message, canal string, generic d
 	return sendMsg, chann, nil
 }
 
-func (o *Organizer) handleUpdateProperties(msg define.Message, canal string, generic define.Generic) (message, channel []byte, err error) {
+func (o *Organizer) handleUpdateProperties(msg message.Message, canal string, generic message.Generic) (message, channel []byte, err error) {
 	sendMsg, chann := finalizeHandling(canal, generic)
 	return sendMsg, chann, db.CreateMessage(msg, canal, o.database)
 }
 
-func (o *Organizer) handleWitnessMessage(msg define.Message, canal string, generic define.Generic) (message, channel []byte, err error) {
+func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, generic message.Generic) (message, channel []byte, err error) {
 	//TODO verify signature correctness
 	// decrypt msg and compare with hash of "local" data
 
 	//retrieve message to sign from database
 	toSign := db.GetMessage([]byte(canal), []byte(msg.Message_id), o.database)
 	if toSign == nil {
-		return nil, nil, define.ErrInvalidResource
+		return nil, nil, lib.ErrInvalidResource
 	}
 
-	toSignStruct, errs := define.AnalyseMessage(toSign)
+	toSignStruct, errs := parser.ParseMessage(toSign)
 	if errs != nil {
 		fmt.Printf("unable to analyse Message in handleWitnessMessage()")
-		return nil, nil, define.ErrRequestDataInvalid
+		return nil, nil, lib.ErrRequestDataInvalid
 	}
 
 	//if message was already signed by this witness, returns an error
-	_, found := define.FindStr(toSignStruct.WitnessSignatures, msg.Signature)
+	_, found := lib.FindStr(toSignStruct.WitnessSignatures, msg.Signature)
 	if found {
-		return nil, nil, define.ErrResourceAlreadyExists
+		return nil, nil, lib.ErrResourceAlreadyExists
 	}
 
 	toSignStruct.WitnessSignatures = append(toSignStruct.WitnessSignatures, msg.Signature)
@@ -343,12 +347,12 @@ func (o *Organizer) handleWitnessMessage(msg define.Message, canal string, gener
 	// update "LAOUpdateProperties" message in DB
 	errs = db.UpdateMessage(toSignStruct, canal, o.database)
 	if errs != nil {
-		return nil, nil, define.ErrDBFault
+		return nil, nil, lib.ErrDBFault
 	}
 	//store received message in DB
 	errs = db.CreateMessage(msg, canal, o.database)
 	if errs != nil {
-		return nil, nil, define.ErrDBFault
+		return nil, nil, lib.ErrDBFault
 	}
 
 	//broadcast received message
@@ -356,12 +360,12 @@ func (o *Organizer) handleWitnessMessage(msg define.Message, canal string, gener
 	return sendMsg, chann, nil
 }
 
-func (o *Organizer) handleCatchup(generic define.Generic) ([]byte, error) {
+func (o *Organizer) handleCatchup(generic message.Generic) ([]byte, error) {
 	// TODO maybe pass userId as an arg in order to check access rights later on?
-	params, err := define.AnalyseParamsLight(generic.Params)
+	params, err := parser.ParseParamsLight(generic.Params)
 	if err != nil {
 		fmt.Printf("unable to analyse paramsLight in handleCatchup()")
-		return nil, define.ErrRequestDataInvalid
+		return nil, lib.ErrRequestDataInvalid
 	}
 	history := db.GetChannel([]byte(params.Channel), o.database)
 
@@ -369,6 +373,6 @@ func (o *Organizer) handleCatchup(generic define.Generic) ([]byte, error) {
 }
 
 //just to implement the interface, this function is not needed for the Organizer (as he's the one sending this message)
-func (o *Organizer) handleLAOState(msg define.Message, chann string, generic define.Generic) (message, channel []byte, err error) {
-	return nil, nil, define.ErrInvalidAction
+func (o *Organizer) handleLAOState(msg message.Message, chann string, generic message.Generic) (message, channel []byte, err error) {
+	return nil, nil, lib.ErrInvalidAction
 }
