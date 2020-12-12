@@ -17,6 +17,9 @@ import com.github.dedis.student20_pop.utility.ui.OnEventTypeSelectedListener;
 
 import java.util.Date;
 
+import static com.github.dedis.student20_pop.OrganizerActivity.LAO_ID_TAG;
+import static com.github.dedis.student20_pop.OrganizerActivity.PRIVATE_KEY_TAG;
+
 /**
  * Activity used to display the different UIs for attendees
  **/
@@ -56,9 +59,14 @@ public class AttendeeActivity extends FragmentActivity implements OnEventTypeSel
                 break;
             case R.id.tab_identity:
                 Bundle bundle = new Bundle();
+
+                final PoPApplication app = ((PoPApplication) getApplication());
+                bundle.putString(PRIVATE_KEY_TAG, app.getPerson().getAuthentication());
+
                 //TODO : Retrieve this LAO from the Intent
                 Lao lao = new Lao("LAO I just joined", new Date(), new Keys().getPublicKey());
-                bundle.putString("ID", lao.getId());
+                bundle.putString(LAO_ID_TAG, lao.getId());
+
                 // set Fragmentclass Arguments
                 IdentityFragment identityFragment = new IdentityFragment();
                 identityFragment.setArguments(bundle);
