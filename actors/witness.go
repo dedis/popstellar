@@ -31,35 +31,48 @@ func NewWitness(pkey string, db string) *Witness {
 }
 
 /* processes what is received from the websocket */
-func (w *Witness) HandleWholeMessage(receivedMsg []byte, userId int) (message, channel, responseToSender []byte) {
-	generic, err := parser.ParseGeneric(receivedMsg)
+func (w *Witness) HandleWholeMessage(receivedMsg []byte, userId int) (message_, channel, responseToSender []byte) {
+	// in case the message is already an answer message (positive ack or error), ignore and answer noting to avoid falling into infinite error loops
+	// TODO: in the future, might consider acting differently in case of error (like retrying the last action)
+	isAnswer, err := filterAnswers(receivedMsg)
 	if err != nil {
-		return nil, nil, parser.ComposeResponse(lib.ErrRequestDataInvalid, nil, generic)
-
+		return nil, nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, message.Query{})
+	} 
+	if isAnswer {
+		return nil, nil, nil
 	}
+
+	query, err := parser.ParseQuery(receivedMsg)
+	if err != nil {
+		return nil, nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, query)
+	}
+
 
 	var history []byte = nil
 	var msg []byte = nil
 	var chann []byte = nil
 
-	switch generic.Method {
+	switch query.Method {
 	case "publish":
-		msg, chann, err = w.handlePublish(generic)
+		msg, chann, err = w.handlePublish(query)
 	case "message":
-		msg, chann, err = w.handleMessage(generic)
+		msg, chann, err = w.handleMessage(query)
+	case "subscribe", "unsubscribe", "catchup":
+		// Even though witness do nothing for some methods, it should not return an error
+		return nil, nil, nil
 	default:
 		msg, chann, err = nil, nil, lib.ErrRequestDataInvalid
 	}
 
-	return msg, chann, parser.ComposeResponse(err, history, generic)
+	return msg, chann, parser.ComposeResponse(err, history, query)
 }
 
-func (w *Witness) handlePublish(generic message.Generic) (messsage, channel []byte, err error) {
+func (w *Witness) handlePublish(query message.Query) (messsage, channel []byte, err error) {
 	return nil, nil, lib.ErrInvalidAction //a witness cannot handle a publish request for now
 }
 
-func (w *Witness) handleMessage(generic message.Generic) (returnMessage, channel []byte, err error) {
-	params, errs := parser.ParseParamsFull(generic.Params)
+func (w *Witness) handleMessage(query message.Query) (returnMessage, channel []byte, err error) {
+	params, errs := parser.ParseParamsIncludingMessage(query.Params)
 	if errs != nil {
 		return nil, nil, lib.ErrRequestDataInvalid
 	}
@@ -86,11 +99,11 @@ func (w *Witness) handleMessage(generic message.Generic) (returnMessage, channel
 	case "lao":
 		switch data["action"] {
 		case "create":
-			return w.handleCreateLAO(msg, params.Channel, generic)
+			return w.handleCreateLAO(msg, params.Channel, query)
 		case "update_properties":
-			return w.handleUpdateProperties(msg, params.Channel, generic)
+			return w.handleUpdateProperties(msg, params.Channel, query)
 		case "state":
-			return w.handleLAOState(msg, params.Channel, generic)
+			return w.handleLAOState(msg, params.Channel, query)
 		default:
 			return nil, nil, lib.ErrInvalidAction
 		}
@@ -98,14 +111,14 @@ func (w *Witness) handleMessage(generic message.Generic) (returnMessage, channel
 	case "message":
 		switch data["action"] {
 		case "witness":
-			return w.handleWitnessMessage(msg, params.Channel, generic)
+			return w.handleWitnessMessage(msg, params.Channel, query)
 		default:
 			return nil, nil, lib.ErrInvalidAction
 		}
 	case "roll call":
 		switch data["action"] {
 		case "create":
-			return w.handleCreateRollCall(msg, params.Channel, generic)
+			return w.handleCreateRollCall(msg, params.Channel, query)
 		case "state":
 			return nil, nil, lib.ErrInvalidAction
 		default:
@@ -135,7 +148,7 @@ func (w *Witness) handleMessage(generic message.Generic) (returnMessage, channel
 }
 
 /*handles the creation of an LAO*/
-func (w *Witness) handleCreateLAO(msg message.Message, chann string, generic message.Generic) (message, channel []byte, err error) {
+func (w *Witness) handleCreateLAO(msg message.Message, chann string, query message.Query) (message, channel []byte, err error) {
 	if chann != "/root" {
 		return nil, nil, lib.ErrInvalidResource
 	}
@@ -167,7 +180,7 @@ func (w *Witness) handleCreateLAO(msg message.Message, chann string, generic mes
 }
 
 /*witness does not yet send stuff to channel*/
-func (w *Witness) handleUpdateProperties(msg message.Message, chann string, generic message.Generic) (message, channel []byte, err error) {
+func (w *Witness) handleUpdateProperties(msg message.Message, chann string, query message.Query) (message, channel []byte, err error) {
 	data, errs := parser.ParseDataCreateLAO(msg.Data)
 	if errs != nil {
 		return nil, nil, lib.ErrInvalidResource
@@ -185,7 +198,7 @@ func (w *Witness) handleUpdateProperties(msg message.Message, chann string, gene
 	return nil, nil, errs
 }
 
-func (w *Witness) handleWitnessMessage(msg message.Message, chann string, generic message.Generic) (message, channel []byte, err error) {
+func (w *Witness) handleWitnessMessage(msg message.Message, chann string, query message.Query) (message, channel []byte, err error) {
 
 	data, errs := parser.ParseDataWitnessMessage(msg.Data)
 	if errs != nil {
@@ -224,7 +237,7 @@ func (w *Witness) handleWitnessMessage(msg message.Message, chann string, generi
 	return nil, nil, errs
 }
 
-func (w *Witness) handleLAOState(msg message.Message, chann string, generic message.Generic) (message, channel []byte, err error) {
+func (w *Witness) handleLAOState(msg message.Message, chann string, query message.Query) (message, channel []byte, err error) {
 	data, errs := parser.ParseDataCreateLAO(msg.Data)
 	if errs != nil {
 		return nil, nil, lib.ErrInvalidResource
@@ -253,7 +266,7 @@ func (w *Witness) handleLAOState(msg message.Message, chann string, generic mess
 	return nil, nil, errs
 }
 
-func (w *Witness) handleCreateRollCall(msg message.Message, chann string, generic message.Generic) (message, channel []byte, err error) {
+func (w *Witness) handleCreateRollCall(msg message.Message, chann string, query message.Query) (message, channel []byte, err error) {
 
 	data, errs := parser.ParseDataCreateRollCall(msg.Data)
 	if errs != nil {

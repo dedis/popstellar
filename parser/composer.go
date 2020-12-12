@@ -7,12 +7,12 @@ import (
 	"student20_pop/message"
 )
 
-func ComposeBroadcastMessage(generic message.Generic) []byte {
-	broadcast := message.Generic{
-		Jsonrpc: generic.Jsonrpc,
+func ComposeBroadcastMessage(query message.Query) []byte {
+	broadcast := message.Query{
+		Jsonrpc: query.Jsonrpc,
 		Method:  "message",
-		Params:  generic.Params,
-		Id:      generic.Id,
+		Params:  query.Params,
+		Id:      query.Id,
 	}
 	b, err := json.Marshal(broadcast)
 
@@ -27,7 +27,7 @@ func ComposeBroadcastMessage(generic message.Generic) []byte {
  * Function that create the response to the sender
  * we suppose error is in the good range
  */
-func ComposeResponse(err error, messages []byte, generic message.Generic) []byte {
+func ComposeResponse(err error, messages []byte, query message.Query) []byte {
 	if err != nil {
 		if err == lib.ErrIdNotDecoded {
 			resp := message.ResponseIDNotDecoded{
@@ -45,7 +45,7 @@ func ComposeResponse(err error, messages []byte, generic message.Generic) []byte
 			resp := message.ResponseWithError{
 				Jsonrpc:       "2.0",
 				ErrorResponse: selectDescriptionError(err),
-				Id:            generic.Id,
+				Id:            query.Id,
 			}
 
 			b, err := json.Marshal(resp)
@@ -60,7 +60,7 @@ func ComposeResponse(err error, messages []byte, generic message.Generic) []byte
 			resp := message.ResponseWithGenResult{
 				Jsonrpc: "2.0",
 				Result:  0,
-				Id:      generic.Id,
+				Id:      query.Id,
 			}
 			b, err := json.Marshal(resp)
 			if err != nil {
@@ -71,7 +71,7 @@ func ComposeResponse(err error, messages []byte, generic message.Generic) []byte
 			resp := message.ResponseWithCatchupResult{
 				Jsonrpc: "2.0",
 				Result:  string(messages),
-				Id:      generic.Id,
+				Id:      query.Id,
 			}
 			b, err := json.Marshal(resp)
 			if err != nil {

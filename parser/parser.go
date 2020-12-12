@@ -7,24 +7,30 @@ import (
 	"student20_pop/message"
 )
 
+func ParseGenericMessage(genericMessage []byte) (message.GenericMessage, error) {
+	m := message.GenericMessage{}
+	err := json.Unmarshal(genericMessage, &m)
+	return m, err
+}
+
 /**
  * Function that takes a byte array as input and returns
  * a Message struct
  */
-func ParseGeneric(generic []byte) (message.Generic, error) {
-	m := message.Generic{}
-	err := json.Unmarshal(generic, &m)
+func ParseQuery(query []byte) (message.Query, error) {
+	m := message.Query{}
+	err := json.Unmarshal(query, &m)
 	return m, err
 }
 
-func ParseParamsLight(params json.RawMessage) (message.ParamsLight, error) {
-	m := message.ParamsLight{}
+func ParseParams(params json.RawMessage) (message.Params, error) {
+	m := message.Params{}
 	err := json.Unmarshal(params, &m)
 	return m, err
 }
 
-func ParseParamsFull(params json.RawMessage) (message.ParamsFull, error) {
-	m := message.ParamsFull{}
+func ParseParamsIncludingMessage(params json.RawMessage) (message.ParamsIncludingMessage, error) {
+	m := message.ParamsIncludingMessage{}
 	err := json.Unmarshal(params, &m)
 	if err != nil {
 		return m, lib.ErrEncodingFault

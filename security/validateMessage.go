@@ -93,7 +93,7 @@ func MessageIsValid(msg message.Message) error { //TODO remove ID hash check
 		// the signature of witnesses are valid
 		err = VerifyWitnessSignatures(data.Witnesses, msg.WitnessSignatures, msg.Sender)
 		if err != nil {
-			return err //err
+			return err
 		}
 	}
 	return nil
