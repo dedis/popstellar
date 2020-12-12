@@ -16,18 +16,20 @@ const(
 )*/
 
 /*Most generic message structure*/
-type Generic struct {
+type GenericMessage map[string]interface{}
+
+type Query struct {
 	Jsonrpc string
 	Method  string
 	Params  json.RawMessage
 	Id      int
 }
 
-type ParamsLight struct {
+type Params struct {
 	Channel string
 }
 
-type ParamsFull struct {
+type ParamsIncludingMessage struct {
 	Channel string
 	Message json.RawMessage
 }

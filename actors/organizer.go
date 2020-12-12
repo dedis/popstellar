@@ -27,39 +27,49 @@ func NewOrganizer(pkey string, db string) *Organizer {
 }
 
 /** processes what is received from the websocket */
-func (o *Organizer) HandleWholeMessage(receivedMsg []byte, userId int) (message, channel, responseToSender []byte) {
-	//this cannot handle an error message and will send an error message bak, resulting in an infinite loop TODO
-	generic, err := parser.ParseGeneric(receivedMsg)
+// message_ stands for message but renamed to avoid clashing with package name
+func (o *Organizer) HandleWholeMessage(receivedMsg []byte, userId int) (message_, channel, responseToSender []byte) {
+	// in case the message is already an answer message (positive ack or error), ignore and answer noting to avoid falling into infinite error loops
+	// TODO: in the future, might consider acting differently in case of error (like retrying the last action)
+	isAnswer, err := filterAnswers(receivedMsg)
 	if err != nil {
-		return nil, nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, generic)
+		return nil, nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, message.Query{})
+	} 
+	if isAnswer {
+		return nil, nil, nil
+	}
+
+	query, err := parser.ParseQuery(receivedMsg)
+	if err != nil {
+		return nil, nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, query)
 	}
 
 	var history []byte = nil
 	var msg []byte = nil
 	var chann []byte = nil
 
-	switch generic.Method {
+	switch query.Method {
 	case "subscribe":
-		msg, chann, err = nil, nil, handleSubscribe(generic, userId)
+		msg, chann, err = nil, nil, handleSubscribe(query, userId)
 	case "unsubscribe":
-		msg, chann, err = nil, nil, handleUnsubscribe(generic, userId)
+		msg, chann, err = nil, nil, handleUnsubscribe(query, userId)
 	case "publish":
-		msg, chann, err = o.handlePublish(generic)
+		msg, chann, err = o.handlePublish(query)
 	case "message":
-		msg, chann, err = o.handleMessage(generic)
+		msg, chann, err = o.handleMessage(query)
 	//Or they are only notification, and we just want to check that it was a success
 	case "catchup":
-		history, err = o.handleCatchup(generic)
+		history, err = o.handleCatchup(query)
 	default:
 		fmt.Printf("method not recognized, generating default response")
 		msg, chann, err = nil, nil, lib.ErrRequestDataInvalid
 	}
 
-	return msg, chann, parser.ComposeResponse(err, history, generic)
+	return msg, chann, parser.ComposeResponse(err, history, query)
 }
 
-func (o *Organizer) handleMessage(generic message.Generic) (message, channel []byte, err error) {
-	params, errs := parser.ParseParamsFull(generic.Params)
+func (o *Organizer) handleMessage(query message.Query) (message, channel []byte, err error) {
+	params, errs := parser.ParseParamsIncludingMessage(query.Params)
 	if errs != nil {
 		fmt.Printf("unable to analyse paramsLight in handleMessage()")
 		return nil, nil, lib.ErrRequestDataInvalid
@@ -86,13 +96,13 @@ func (o *Organizer) handleMessage(generic message.Generic) (message, channel []b
 	case "message":
 		switch data["action"] {
 		case "witness":
-			return o.handleWitnessMessage(msg, params.Channel, generic)
+			return o.handleWitnessMessage(msg, params.Channel, query)
 		default:
 			return nil, nil, lib.ErrRequestDataInvalid
 		}
 	case "state":
 		{
-			return o.handleLAOState(msg, params.Channel, generic)
+			return o.handleLAOState(msg, params.Channel, query)
 		}
 	default:
 		return nil, nil, lib.ErrRequestDataInvalid
@@ -101,8 +111,8 @@ func (o *Organizer) handleMessage(generic message.Generic) (message, channel []b
 }
 
 /* handles a received publish message */
-func (o *Organizer) handlePublish(generic message.Generic) (message, channel []byte, err error) {
-	params, errs := parser.ParseParamsFull(generic.Params)
+func (o *Organizer) handlePublish(query message.Query) (message, channel []byte, err error) {
+	params, errs := parser.ParseParamsIncludingMessage(query.Params)
 	if errs != nil {
 		fmt.Printf("1. unable to analyse paramsLight in handlePublish()")
 		return nil, nil, lib.ErrRequestDataInvalid
@@ -130,11 +140,11 @@ func (o *Organizer) handlePublish(generic message.Generic) (message, channel []b
 	case "lao":
 		switch data["action"] {
 		case "create":
-			return o.handleCreateLAO(msg, params.Channel, generic)
+			return o.handleCreateLAO(msg, params.Channel, query)
 		case "update_properties":
-			return o.handleUpdateProperties(msg, params.Channel, generic)
+			return o.handleUpdateProperties(msg, params.Channel, query)
 		case "state":
-			return o.handleLAOState(msg, params.Channel, generic) // should never happen
+			return o.handleLAOState(msg, params.Channel, query) // should never happen
 		default:
 			return nil, nil, lib.ErrInvalidAction
 		}
@@ -142,7 +152,7 @@ func (o *Organizer) handlePublish(generic message.Generic) (message, channel []b
 	case "message":
 		switch data["action"] {
 		case "witness":
-			return o.handleWitnessMessage(msg, params.Channel, generic)
+			return o.handleWitnessMessage(msg, params.Channel, query)
 			//TODO: update state and send state broadcast
 			// TODO : state broadcast done on root/ or on LAO channel
 		default:
@@ -151,7 +161,7 @@ func (o *Organizer) handlePublish(generic message.Generic) (message, channel []b
 	case "roll call":
 		switch data["action"] {
 		case "create":
-			return o.handleCreateRollCall(msg, params.Channel, generic)
+			return o.handleCreateRollCall(msg, params.Channel, query)
 		//case "state":  TODO : waiting on protocol definition
 		default:
 			return nil, nil, lib.ErrInvalidAction
@@ -159,7 +169,7 @@ func (o *Organizer) handlePublish(generic message.Generic) (message, channel []b
 	case "meeting":
 		switch data["action"] {
 		case "create":
-			return o.handleCreateMeeting(msg, params.Channel, generic)
+			return o.handleCreateMeeting(msg, params.Channel, query)
 		case "state": //
 			// TODO: waiting on protocol definition
 			return nil, nil, lib.ErrInvalidAction
@@ -169,7 +179,7 @@ func (o *Organizer) handlePublish(generic message.Generic) (message, channel []b
 	case "poll":
 		switch data["action"] {
 		case "create":
-			return o.handleCreatePoll(msg, params.Channel, generic)
+			return o.handleCreatePoll(msg, params.Channel, query)
 		case "state":
 			// TODO: waiting on protocol definition
 			return nil, nil, lib.ErrInvalidAction
@@ -183,7 +193,7 @@ func (o *Organizer) handlePublish(generic message.Generic) (message, channel []b
 }
 
 /* handles the creation of a LAO */
-func (o *Organizer) handleCreateLAO(msg message.Message, canal string, generic message.Generic) (message, channel []byte, err error) {
+func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query message.Query) (message, channel []byte, err error) {
 
 	if canal != "/root" {
 		return nil, nil, lib.ErrInvalidResource
@@ -215,11 +225,11 @@ func (o *Organizer) handleCreateLAO(msg message.Message, canal string, generic m
 		return nil, nil, err
 	}
 
-	msgToSend, chann := finalizeHandling(canal, generic)
+	msgToSend, chann := finalizeHandling(canal, query)
 	return msgToSend, chann, nil
 }
 
-func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, generic message.Generic) (message, channel []byte, err error) {
+func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, query message.Query) (message, channel []byte, err error) {
 	if canal == "/root" {
 		return nil, nil, lib.ErrInvalidResource
 	}
@@ -251,11 +261,11 @@ func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, gene
 	if errs != nil {
 		return nil, nil, errs
 	}
-	sendMsg, chann := finalizeHandling(canal, generic)
+	sendMsg, chann := finalizeHandling(canal, query)
 	return sendMsg, chann, nil
 }
 
-func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, generic message.Generic) (message, channel []byte, err error) {
+func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, query message.Query) (message, channel []byte, err error) {
 
 	if canal == "/root" {
 		return nil, nil, lib.ErrInvalidResource
@@ -283,11 +293,11 @@ func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, gener
 	if errs != nil {
 		return nil, nil, errs
 	}
-	sendMsg, chann := finalizeHandling(canal, generic)
+	sendMsg, chann := finalizeHandling(canal, query)
 	return sendMsg, chann, nil
 }
 
-func (o *Organizer) handleCreatePoll(msg message.Message, canal string, generic message.Generic) (message, channel []byte, err error) {
+func (o *Organizer) handleCreatePoll(msg message.Message, canal string, query message.Query) (message, channel []byte, err error) {
 
 	if canal == "/root" {
 		return nil, nil, lib.ErrInvalidResource
@@ -311,16 +321,16 @@ func (o *Organizer) handleCreatePoll(msg message.Message, canal string, generic 
 	if errs != nil {
 		return nil, nil, err
 	}
-	sendMsg, chann := finalizeHandling(canal, generic)
+	sendMsg, chann := finalizeHandling(canal, query)
 	return sendMsg, chann, nil
 }
 
-func (o *Organizer) handleUpdateProperties(msg message.Message, canal string, generic message.Generic) (message, channel []byte, err error) {
-	sendMsg, chann := finalizeHandling(canal, generic)
+func (o *Organizer) handleUpdateProperties(msg message.Message, canal string, query message.Query) (message, channel []byte, err error) {
+	sendMsg, chann := finalizeHandling(canal, query)
 	return sendMsg, chann, db.CreateMessage(msg, canal, o.database)
 }
 
-func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, generic message.Generic) (message, channel []byte, err error) {
+func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, query message.Query) (message, channel []byte, err error) {
 	//TODO verify signature correctness
 	// decrypt msg and compare with hash of "local" data
 
@@ -356,13 +366,13 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, gene
 	}
 
 	//broadcast received message
-	sendMsg, chann := finalizeHandling(canal, generic)
+	sendMsg, chann := finalizeHandling(canal, query)
 	return sendMsg, chann, nil
 }
 
-func (o *Organizer) handleCatchup(generic message.Generic) ([]byte, error) {
+func (o *Organizer) handleCatchup(query message.Query) ([]byte, error) {
 	// TODO maybe pass userId as an arg in order to check access rights later on?
-	params, err := parser.ParseParamsLight(generic.Params)
+	params, err := parser.ParseParams(query.Params)
 	if err != nil {
 		fmt.Printf("unable to analyse paramsLight in handleCatchup()")
 		return nil, lib.ErrRequestDataInvalid
@@ -373,6 +383,6 @@ func (o *Organizer) handleCatchup(generic message.Generic) ([]byte, error) {
 }
 
 //just to implement the interface, this function is not needed for the Organizer (as he's the one sending this message)
-func (o *Organizer) handleLAOState(msg message.Message, chann string, generic message.Generic) (message, channel []byte, err error) {
+func (o *Organizer) handleLAOState(msg message.Message, chann string, query message.Query) (message, channel []byte, err error) {
 	return nil, nil, lib.ErrInvalidAction
 }
