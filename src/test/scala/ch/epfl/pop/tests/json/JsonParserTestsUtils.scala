@@ -187,7 +187,7 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
       }
     }
 
-    def checkBatchTestsInt(kw: String): Unit = {
+    def checkBatchTestsInt(kw: String, canBeNull: Boolean = false): Unit = {
       val pattern: String = s""""$kw":[0-9]*"""
       def patternAfter(newValue: String): String = s""""$kw":$newValue"""
 
@@ -195,8 +195,7 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
         performBogusTest(source.replaceAll(pattern, patternAfter("\"3.0\"")))
         performBogusTest(source.replaceAll(pattern, patternAfter("\"3\"")))
         performBogusTest(source.replaceAll(pattern, patternAfter("\"string\"")))
-        //performBogusTest(source.replaceAll(pattern, patternAfter("2.0")))
-        performBogusTest(source.replaceAll(pattern, patternAfter("")))
+        if (!canBeNull) performBogusTest(source.replaceAll(pattern, patternAfter("")))
         performBogusTest(source.replaceAll(pattern, patternAfter("s|{@sopOIJ34≠")))
       }
     }
@@ -216,7 +215,8 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
       checkBatchTestsString(kw)
     }
     if (source.contains("\"method\":")) checkBatchTestsString("method")
-    if (source.contains("\"id\":")) checkBatchTestsInt("id")
+    if (source.contains("\"id\":") && source.contains("\"error\":")) checkBatchTestsInt("id", canBeNull = true)
+    else if (source.contains("\"id\":")) checkBatchTestsInt("id")
 
     if (source.contains("\"params\":")) {
       if (source.contains("\"channel\":")) {

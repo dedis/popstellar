@@ -1,6 +1,6 @@
 package ch.epfl.pop.tests.json
 
-import ch.epfl.pop.json.JsonMessages.{JsonMessagePublishClient, _}
+import ch.epfl.pop.json.JsonMessages._
 import ch.epfl.pop.json.JsonUtils.{JsonMessageParserError, JsonMessageParserException, MessageContentDataBuilder}
 import ch.epfl.pop.json._
 import spray.json._
@@ -14,6 +14,9 @@ class JsonMessageParserTest extends FunSuite with Matchers {
 
   implicit class RichJsonMessage(m: JsonMessage) {
     def shouldBeEqualUntilMessageContent(o: JsonMessage): Unit = {
+
+      // Note: this function is useful because ScalaTest cannot compare List of arrays of bytes :/
+      // thus we can't test two messages by using "m1 should equal (m2)"
 
       @scala.annotation.tailrec
       def checkListOfByteArray(l1: List[Array[Byte]], l2: List[Array[Byte]]): Unit = {
@@ -477,30 +480,50 @@ class JsonMessageParserTest extends FunSuite with Matchers {
                             |       "code": ERR_CODE,
                             |       "description": "err"
                             |    },
-                            |    "id": 99,
+                            |    ID
                             |    "jsonrpc": "2.0"
                             |  }
                             |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
 
     for (i <- -5 until 0) {
-      val s: String = source.replaceAll("ERR_CODE", String.valueOf(i))
+      val sourceErrorCode: String = source.replaceAll("ERR_CODE", String.valueOf(i))
+      val sourceSomeId: String = sourceErrorCode.replaceAll("ID", "\"id\":" + String.valueOf(3 * i) + ",")
+      val sourceNoneId: String = sourceErrorCode.replaceAll("ID", "\"id\":null,")
 
-      val sp: JsonMessage = JsonMessageParser.parseMessage(s) match {
+      var sp: JsonMessage = JsonMessageParser.parseMessage(sourceSomeId) match {
         case Left(m) => m
         case _ => fail()
       }
 
-      val spd: String = JsonMessageParser.serializeMessage(sp)
-      val spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
+      var spd: String = JsonMessageParser.serializeMessage(sp)
+      var spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
         case Left(m) => m
         case _ => fail()
       }
 
-      assertResult(s)(spd)
+      assertResult(sourceSomeId)(spd)
       sp shouldBe a [AnswerErrorMessageServer]
       spdp shouldBe a [AnswerErrorMessageServer]
-      assertResult(s)(spd)
-      checkBogusInputs(s)
+      assertResult(sourceSomeId)(spd)
+      checkBogusInputs(sourceSomeId)
+
+
+      sp = JsonMessageParser.parseMessage(sourceNoneId) match {
+        case Left(m) => m
+        case _ => fail()
+      }
+
+      spd = JsonMessageParser.serializeMessage(sp)
+      spdp = JsonMessageParser.parseMessage(spd) match {
+        case Left(m) => m
+        case _ => fail()
+      }
+
+      assertResult(sourceNoneId)(spd)
+      sp shouldBe a [AnswerErrorMessageServer]
+      spdp shouldBe a [AnswerErrorMessageServer]
+      assertResult(sourceNoneId)(spd)
+      checkBogusInputs(sourceNoneId)
     }
   }
 
@@ -510,20 +533,27 @@ class JsonMessageParserTest extends FunSuite with Matchers {
                             |       "code": ERR_CODE,
                             |       "description": "err"
                             |    },
-                            |    "id": 99,
+                            |    ID
                             |    "jsonrpc": "2.0",
                             |    "result": 0
                             |  }
                             |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
 
     for (i <- -20 to 20) {
-      val s: String = source.replaceAll("ERR_CODE", String.valueOf(i))
+      val sourceErrorCode: String = source.replaceAll("ERR_CODE", String.valueOf(i))
+      val sourceSomeId: String = sourceErrorCode.replaceAll("ID", "\"id\":" + String.valueOf(3 * i) + ",")
+      val sourceNoneId: String = sourceErrorCode.replaceAll("ID", "\"id\":null,")
 
-      val sp: JsonMessageParserError = JsonMessageParser.parseMessage(s) match {
+      var sp: JsonMessageParserError = JsonMessageParser.parseMessage(sourceSomeId) match {
         case Right(m) => m
         case _ => fail()
       }
+      sp shouldBe a [JsonMessageParserError]
 
+      sp = JsonMessageParser.parseMessage(sourceNoneId) match {
+        case Right(m) => m
+        case _ => fail()
+      }
       sp shouldBe a [JsonMessageParserError]
     }
   }

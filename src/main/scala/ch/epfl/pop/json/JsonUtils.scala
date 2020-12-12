@@ -24,7 +24,11 @@ object JsonUtils {
                                              ) extends Exception(description) {}
 
   /** Object sent back to PubSub if a parsing error occurred */
-  final case class JsonMessageParserError(description: String, id: Option[Int] = None, errorCode: ErrorCodes = ErrorCodes.InvalidData)
+  final case class JsonMessageParserError(
+                                           description: String,
+                                           id: Option[Int] = None,
+                                           errorCode: ErrorCodes = ErrorCodes.InvalidData
+                                         )
 
   object ErrorCodes extends Enumeration {
     type ErrorCodes = Value
