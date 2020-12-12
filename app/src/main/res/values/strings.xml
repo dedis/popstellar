@@ -54,4 +54,8 @@
     <string name="identity_organization">Organization</string>
     <string name="identity_phone">Phone</string>
     <string name="identity_anonymous">Anonymous</string>
+
+    <!-- QR code -->
+    <string name="qrcode_scanning_add_witness">Scan personal QR code of the witness to add</string>
+    <string name="qrcode_scanning_connect_lao">Scan a QR code to connect to a LAO</string>
 </resources>

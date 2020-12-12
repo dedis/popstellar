@@ -97,12 +97,23 @@ public class OrganizerFragment extends Fragment {
         laoNameTextView.setText(lao.getName());
 
         //TODO : Connect to Backend and retrieve the list of witnesses
-        final ArrayList<Person> witnesses = new ArrayList<>();
-        witnesses.add(new Person("Alphonse"));
-        witnesses.add(new Person("Barbara"));
-        witnesses.add(new Person("Charles"));
-        witnesses.add(new Person("Deborah"));
-        final WitnessListAdapter adapter = new WitnessListAdapter(getActivity(), witnesses);
+
+        PoPApplication app = null;
+        List<String> witnesses = null;
+        if (getActivity() != null) {
+            app = (PoPApplication) getActivity().getApplication();
+        }
+        if (app != null) {
+            //This is just on a testing purpose
+            app.addWitness(lao, new Person("Alphonse"));
+            app.addWitness(lao, new Person("Barbara"));
+            app.addWitness(lao, new Person("Charles"));
+            app.addWitness(lao, new Person("Deborah"));
+
+            witnesses = app.getWitnesses(lao);
+        }
+
+        final WitnessListAdapter adapter = new WitnessListAdapter(getActivity(), (ArrayList<String>) witnesses);
         witnessesListView = propertiesView.findViewById(R.id.witness_list);
         witnessesListView.setAdapter(adapter);
 
@@ -165,16 +176,17 @@ public class OrganizerFragment extends Fragment {
 
         confirmButton.setOnClickListener(
                 clicked -> {
-                        String title = laoNameEditText.getText().toString().trim();
-                        if( title != null && !title.isEmpty()){
-                            lao = lao.setName(title);
-                            viewSwitcher.showNext();
-                            laoNameTextView.setText(laoNameEditText.getText());
-                            editPropertiesButton.setVisibility(View.VISIBLE);
-                            addWitnessButton.setVisibility(View.GONE);
-                        } else {
-                            Toast.makeText(getContext(), getString(R.string.exception_message_empty_lao_name), Toast.LENGTH_SHORT).show();
-                        }
+                    String title = laoNameEditText.getText().toString().trim();
+                    if (!title.isEmpty()) {
+                        lao = lao.setName(title);
+                        viewSwitcher.showNext();
+                        laoNameTextView.setText(laoNameEditText.getText());
+                        editPropertiesButton.setVisibility(View.VISIBLE);
+                        addWitnessButton.setVisibility(View.GONE);
+                        // TODO : If LAO's name has changed : tell backend to update it
+                    } else {
+                        Toast.makeText(getContext(), getString(R.string.exception_message_empty_lao_name), Toast.LENGTH_SHORT).show();
+                    }
                 }
         );
 

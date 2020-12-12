@@ -60,13 +60,23 @@ public class AttendeeFragment extends Fragment {
         //Display Properties
         View propertiesView = rootView.findViewById(R.id.properties_view);
         ((TextView) propertiesView.findViewById(R.id.organization_name)).setText(lao.getName());
+
         //TODO : Connect to Backend and retrieve the list of witnesses
-        final ArrayList<Person> witnesses = new ArrayList<>();
-        witnesses.add(new Person("Alphonse"));
-        witnesses.add(new Person("Barbara"));
-        witnesses.add(new Person("Charles"));
-        witnesses.add(new Person("Deborah"));
-        final WitnessListAdapter adapter = new WitnessListAdapter(getActivity(), witnesses);
+        PoPApplication app = null;
+        List<String> witnesses = null;
+        if(getActivity() != null) {
+            app = (PoPApplication) getActivity().getApplication();
+        }
+        if (app != null) {
+            app.addWitness(lao, new Person("Alphonse"));
+            app.addWitness(lao,new Person("Barbara"));
+            app.addWitness(lao,new Person("Charles"));
+            app.addWitness(lao,new Person("Deborah"));
+            witnesses = app.getWitnesses(lao);
+        }
+
+        final WitnessListAdapter adapter = new WitnessListAdapter(getActivity(), (ArrayList<String>) witnesses);
+
         witnessesListView = propertiesView.findViewById(R.id.witness_list);
         witnessesListView.setAdapter(adapter);
         propertiesButton = rootView.findViewById(R.id.tab_properties);
