@@ -225,8 +225,8 @@ func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query mes
 		return nil, nil, err
 	}
 
-	msgToSend, chann := finalizeHandling(canal, query)
-	return msgToSend, chann, nil
+	//msgToSend, chann := finalizeHandling(canal, query)
+	return parser.ComposeBroadcastMessage(query), []byte(canal), nil
 }
 
 func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, query message.Query) (message, channel []byte, err error) {
@@ -261,8 +261,8 @@ func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, quer
 	if errs != nil {
 		return nil, nil, errs
 	}
-	sendMsg, chann := finalizeHandling(canal, query)
-	return sendMsg, chann, nil
+	//sendMsg, chann := finalizeHandling(canal, query)
+	return parser.ComposeBroadcastMessage(query), []byte(canal), nil
 }
 
 func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, query message.Query) (message, channel []byte, err error) {
@@ -293,8 +293,8 @@ func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, query
 	if errs != nil {
 		return nil, nil, errs
 	}
-	sendMsg, chann := finalizeHandling(canal, query)
-	return sendMsg, chann, nil
+	//sendMsg, chann := finalizeHandling(canal, query)
+	return parser.ComposeBroadcastMessage(query), []byte(canal), nil
 }
 
 func (o *Organizer) handleCreatePoll(msg message.Message, canal string, query message.Query) (message, channel []byte, err error) {
@@ -321,13 +321,13 @@ func (o *Organizer) handleCreatePoll(msg message.Message, canal string, query me
 	if errs != nil {
 		return nil, nil, err
 	}
-	sendMsg, chann := finalizeHandling(canal, query)
-	return sendMsg, chann, nil
+	//sendMsg, chann := finalizeHandling(canal, query)
+	return parser.ComposeBroadcastMessage(query), []byte(canal), nil
 }
 
 func (o *Organizer) handleUpdateProperties(msg message.Message, canal string, query message.Query) (message, channel []byte, err error) {
-	sendMsg, chann := finalizeHandling(canal, query)
-	return sendMsg, chann, db.CreateMessage(msg, canal, o.database)
+	//sendMsg, chann := finalizeHandling(canal, query)
+	return parser.ComposeBroadcastMessage(query), []byte(canal), db.CreateMessage(msg, canal, o.database)
 }
 
 func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, query message.Query) (message, channel []byte, err error) {
@@ -366,8 +366,8 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 	}
 
 	//broadcast received message
-	sendMsg, chann := finalizeHandling(canal, query)
-	return sendMsg, chann, nil
+	//sendMsg, chann := finalizeHandling(canal, query)
+	return parser.ComposeBroadcastMessage(query), []byte(canal), nil
 }
 
 func (o *Organizer) handleCatchup(query message.Query) ([]byte, error) {
