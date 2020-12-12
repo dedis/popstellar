@@ -299,7 +299,7 @@ class PubSubTest extends FunSuite {
   test("Error when subscribing to a channel that does not exist") {
     val l = List(
       (Some(SubscribeMessageClient(MessageParameters("/root/unknow", None), 0)),
-      Some(AnswerErrorMessageServer(0, MessageErrorContent(-2, "Invalid resource: channel /root/unknow does not exist."))))
+      Some(AnswerErrorMessageServer(Some(0), MessageErrorContent(-2, "Invalid resource: channel /root/unknow does not exist."))))
     )
     sendAndVerify(l)
   }
@@ -311,7 +311,7 @@ class PubSubTest extends FunSuite {
     val createMsg = getCreateLao(pk, sk, 3, laoName)
     val laoID =  new String(Base64.getEncoder.encode(createMsg.params.message.get.data.id))
     val l = List(
-      (Some(createMsg), Some(AnswerErrorMessageServer(3, MessageErrorContent(-3, "Channel /root/"
+      (Some(createMsg), Some(AnswerErrorMessageServer(Some(3), MessageErrorContent(-3, "Channel /root/"
         + laoID +  " already exists."))))
     )
     sendAndVerify(l1 ::: l)
@@ -364,7 +364,7 @@ class PubSubTest extends FunSuite {
   test("Unsubscribe from a channel you are not subscribed to fails") {
     val l = List(
       (Some(UnsubscribeMessageClient(MessageParameters("/root/notsubscribed", None), 0)),
-        Some(AnswerErrorMessageServer(0, MessageErrorContent(-2, "Invalid resource: you are not subscribed to channel /root/notsubscribed."))))
+        Some(AnswerErrorMessageServer(Some(0), MessageErrorContent(-2, "Invalid resource: you are not subscribed to channel /root/notsubscribed."))))
     )
     sendAndVerify(l)
   }

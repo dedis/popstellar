@@ -16,9 +16,6 @@ object JsonUtils {
   val ENCODER: Base64.Encoder = Base64.getEncoder
   val DECODER: Base64.Decoder = Base64.getDecoder
 
-  /** Default id field value if the id field cannot be parsed */
-  val ID_NOT_FOUND: Int = -1 // TODO remove?
-
   /** Parsing exception, always caught by the parser */
   final case class JsonMessageParserException(
                                                description: String,

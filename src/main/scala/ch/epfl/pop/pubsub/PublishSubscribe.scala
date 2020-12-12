@@ -137,7 +137,7 @@ object PublishSubscribe {
 
           if (!Await.result(future, timeout.duration)) {
             val error = MessageErrorContent(-3, "Channel " + channel + " already exists.")
-            AnswerErrorMessageServer(error = error, id = id)
+            AnswerErrorMessageServer(error = error, id = Some(id))
           }
           else {
             //Publish on the LAO main channel
@@ -225,7 +225,7 @@ object PublishSubscribe {
             }
             else {
               val error = MessageErrorContent(-2, "Invalid resource: you are not subscribed to channel " + channel + ".")
-              AnswerErrorMessageServer(error = error, id = id)
+              AnswerErrorMessageServer(error = error, id = Some(id))
             }
           List(message)
       }
@@ -262,10 +262,8 @@ object PublishSubscribe {
         val parser = Flow[Message].map {
           case TextMessage.Strict(s) => parseMessage(s) match {
             case Left(m) => m
-            case Right(JsonMessageParserError(description, id, errorCode)) => id match {
-              case Some(idx) => AnswerErrorMessageServer(idx, MessageErrorContent(errorCode.id, description))
-              case _ => ??? // TODO @SFULPIUS
-            }
+            case Right(JsonMessageParserError(description, id, errorCode)) =>
+              AnswerErrorMessageServer(id, MessageErrorContent(errorCode.id, description))
           }
         }
         val formatter = Flow[JsonMessage].map(m => TextMessage.Strict(serializeMessage(m)))

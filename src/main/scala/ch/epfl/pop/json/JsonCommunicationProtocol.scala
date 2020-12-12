@@ -299,7 +299,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
           parsed match {
             case Success(mpc) => mpc
             case Failure(s) => s match {
-              case DeserializationException(msg, _, _) => throw JsonUtils.JsonMessageParserException(msg, Some(id.toInt))
+              case DeserializationException(msg, _, _) => throw JsonMessageParserException(msg, Some(id.toInt))
               case _ => throw s
             }
           }
@@ -308,8 +308,8 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
         case _ =>
           val msg: String = "invalid MessageParameters : fields missing or wrongly formatted"
           json.asJsObject.getFields("id") match {
-            case Seq(JsNumber(id)) => throw JsonUtils.JsonMessageParserException(msg, Some(id.toInt))
-            case _ => throw JsonUtils.JsonMessageParserException(msg)
+            case Seq(JsNumber(id)) => throw JsonMessageParserException(msg, Some(id.toInt))
+            case _ => throw JsonMessageParserException(msg)
           }
       }
     }
@@ -334,7 +334,33 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
   implicit val answerResultIntMessageServerFormat: RootJsonFormat[AnswerResultIntMessageServer] = jsonFormat3(AnswerResultIntMessageServer)
   implicit val answerResultArrayMessageServerFormat: RootJsonFormat[AnswerResultArrayMessageServer] = jsonFormat3(AnswerResultArrayMessageServer)
-  implicit val answerErrorMessageServerFormat: RootJsonFormat[AnswerErrorMessageServer] = jsonFormat3(AnswerErrorMessageServer)
+
+  implicit object AnswerErrorMessageServerFormat extends RootJsonFormat[AnswerErrorMessageServer] {
+    override def read(json: JsValue): AnswerErrorMessageServer = {
+      json.asJsObject.getFields("jsonrpc", "error") match {
+        case Seq(JsString(version), err@JsObject(_)) =>
+          json.asJsObject.getFields("id") match {
+            case Seq(JsNumber(id)) => AnswerErrorMessageServer(Some(id.toInt), err.convertTo[MessageErrorContent], version)
+            case Seq(JsNull) => AnswerErrorMessageServer(None, err.convertTo[MessageErrorContent], version)
+            case _ => throw JsonMessageParserException("invalid \"AnswerErrorMessageServer\" : id field wrongly formatted")
+          }
+        case _ => throw JsonMessageParserException("invalid \"AnswerErrorMessageServer\" : fields missing or wrongly formatted")
+      }
+    }
+
+    override def write(obj: AnswerErrorMessageServer): JsValue = {
+      val optId: JsValue = obj.id match {
+        case Some(idx) => idx.toJson
+        case _ => JsNull
+      }
+
+      JsObject(
+        "jsonrpc" -> obj.jsonrpc.toJson,
+        "error" -> obj.error.toJson,
+        "id" -> optId
+      )
+    }
+  }
 
 
   /* ------------------- PUBSUB MESSAGES CLIENT ------------------- */

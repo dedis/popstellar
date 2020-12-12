@@ -37,7 +37,9 @@ object JsonMessages {
 
   /** Parsed error answer Json message from the server */
   final case class AnswerErrorMessageServer(
-                                             id: Int, error: MessageErrorContent, jsonrpc: String = JSON_RPC_VERSION
+                                             id: Option[Int],
+                                             error: MessageErrorContent,
+                                             jsonrpc: String = JSON_RPC_VERSION
                                            ) extends JsonMessageAnswerServer
 
   /** Parsed client propagate a message on a channel query */
