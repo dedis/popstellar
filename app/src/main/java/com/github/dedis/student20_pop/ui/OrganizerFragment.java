@@ -86,14 +86,6 @@ public class OrganizerFragment extends Fragment {
         PoPApplication app = (PoPApplication)(getActivity().getApplication());
 
         lao = app.getCurrentLao();
-        //lao will be null in the tests, as Attendee UI is tested "on its own"
-        //so we set a dummy lao with dummy events for the tests to work correctly
-        if (lao == null){
-            lao = new Lao("LAO I just joined", new Date(), new Keys().getPublicKey());
-            app.addLao(lao);
-            app.setCurrentLao(lao);
-            app.addEvent(lao, new Event("Future Event 1", new Date(2617547969000L), new Keys().getPublicKey(), "EPFL", "Poll"));
-        }
         List<Event> events = app.getEvents(lao);
         //Display Properties
         View rootView = inflater.inflate(R.layout.fragment_organizer, container, false);
@@ -399,16 +391,17 @@ public class OrganizerFragment extends Fragment {
          * @param eventsMap
          */
         private void putEventsInMap(List<Event> events, HashMap<EventCategory, List<Event>> eventsMap) {
+            //TODO: make the difference clear between PAST and PRESENT
             //For now, the event are put in the different categories according to their time attribute
             //Later, according to the start/end-time
             for (Event event : events) {
                 //for now (testing purposes)
                 //later: event.getEndTime() < now
-                if (event.getTime() < 50) {
+                if (event.getTime() < (System.currentTimeMillis()/1000L)) {
                     eventsMap.get(EventCategory.PAST).add(event);
                 }
                 //later: event.getStartTime()<now && event.getEndTime() > now
-                else if (event.getTime() < 1000) {
+                else if (event.getTime() <= (System.currentTimeMillis()/1000L)) {
                     eventsMap.get(EventCategory.PRESENT).add(event);
                 } else { //if e.getStartTime() > now
                     eventsMap.get(EventCategory.FUTURE).add(event);
