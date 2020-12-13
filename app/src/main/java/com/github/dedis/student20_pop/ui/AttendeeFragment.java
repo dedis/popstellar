@@ -49,14 +49,6 @@ public class AttendeeFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_attendee, container, false);
         PoPApplication app = (PoPApplication)(this.getActivity().getApplication());
         lao = app.getCurrentLao();
-        //lao will be null in the tests, as Attendee UI is tested "on its own"
-        //so we set a dummy lao with dummy events for the tests to work correctly
-        if (lao == null){
-           lao = new Lao("LAO I just joined", new Date(), new Keys().getPublicKey());
-            app.addLao(lao);
-            app.setCurrentLao(lao);
-            app.addEvent(lao, new Event("Future Event 1", new Date(2617547969000L), new Keys().getPublicKey(), "EPFL", "Poll"));
-        }
         List<Event> events = app.getEvents(lao);
         //Display Events
         expandableListView = rootView.findViewById(R.id.exp_list_view);

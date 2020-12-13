@@ -43,15 +43,8 @@ public final class HomeFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         PoPApplication app = (PoPApplication)(getActivity().getApplication());
-        //when testing, there will be no laos and no person so we create dummy laos for the tests to work correctly
-        if (app.getPerson() == null){
-            app.setPerson(new Person("name"));
-        }
         id = app.getPerson().getId();
-        if (app.getLaos().isEmpty()){
-            testValues(app);
-        }
-        laos = getLaos(app);
+        laos = app.getLaos();
         LinearLayout welcome = view.findViewById(R.id.welcome_screen);
         LinearLayout list = view.findViewById(R.id.list_screen);
 
@@ -102,55 +95,14 @@ public final class HomeFragment extends Fragment {
             Lao lao = laos.get(position);
             ((TextView) convertView.findViewById(R.id.lao_name)).setText(lao.getName());
             ((TextView) convertView.findViewById(R.id.date)).setText("last interacted with ...");
-            boolean isOrganizer = lao.getOrganizer().equals(id);
-            if (isOrganizer){
-                ((TextView) convertView.findViewById(R.id.role)).setText(R.string.organizer);
-            }else {
-                ((TextView) convertView.findViewById(R.id.role)).setText(R.string.attendee);
-            }
+            boolean isOrganizer = (lao.getOrganizer()).equals(id);
+            ((TextView) convertView.findViewById(R.id.role)).setText(isOrganizer ? R.string.organizer : R.string.attendee);
             convertView.setOnClickListener(clicked -> {
-               if (isOrganizer){
-                   startOrganizerUI(app, lao);
-               }else {
-                   startAttendeeUI(app, lao);
-               }
+               app.setCurrentLao(lao);
+               Intent intent = new Intent(getActivity(), isOrganizer ? OrganizerActivity.class : AttendeeActivity.class);
+               startActivity(intent);
             });
             return convertView;
         }
-    }
-
-    private List<Lao> getLaos(PoPApplication app){
-        return app.getLaos();
-    }
-
-
-    /**
-     * Method to start the organizer UI in the case when the user is the organizer of
-     * the selected Lao
-     * @param lao
-     */
-    private void startOrganizerUI(PoPApplication app, Lao lao){
-        app.setCurrentLao(lao);
-        Intent intent = new Intent(this.getActivity(), OrganizerActivity.class);
-        startActivity(intent);
-    }
-
-    /**
-     * Method to start the attendee UI in the case when the user is not the organizer of
-     * the selected Lao
-     * @param lao
-     */
-    private void startAttendeeUI(PoPApplication app, Lao lao){
-        app.setCurrentLao(lao);
-        Intent intent = new Intent(this.getActivity(), AttendeeActivity.class);
-        startActivity(intent);
-    }
-
-    private void testValues(PoPApplication app) {
-        String notMyPublicKey = new Keys().getPublicKey();
-        app.addLao(new Lao("LAO 1", new Date(), notMyPublicKey));
-        app.addLao(new Lao("LAO 2", new Date(), notMyPublicKey));
-        app.addLao(new Lao("My LAO 3", new Date(), id));
-        app.addLao(new Lao("LAO 4", new Date(), notMyPublicKey));
     }
 }
