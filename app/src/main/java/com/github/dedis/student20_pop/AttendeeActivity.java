@@ -17,6 +17,9 @@ import com.github.dedis.student20_pop.utility.ui.OnEventTypeSelectedListener;
 
 import java.util.Date;
 
+import static com.github.dedis.student20_pop.OrganizerActivity.LAO_ID_TAG;
+import static com.github.dedis.student20_pop.OrganizerActivity.PRIVATE_KEY_TAG;
+
 /**
  * Activity used to display the different UIs for attendees
  **/
@@ -57,7 +60,8 @@ public class AttendeeActivity extends FragmentActivity implements OnEventTypeSel
                 Bundle bundle = new Bundle();
                 final PoPApplication app = ((PoPApplication) getApplication());
                 Lao lao = app.getCurrentLao();
-                bundle.putString("ID", lao.getId());
+                bundle.putString(PRIVATE_KEY_TAG, app.getPerson().getAuthentication());
+                bundle.putString(LAO_ID_TAG, lao.getId());
                 // set Fragmentclass Arguments
                 IdentityFragment identityFragment = new IdentityFragment();
                 identityFragment.setArguments(bundle);
