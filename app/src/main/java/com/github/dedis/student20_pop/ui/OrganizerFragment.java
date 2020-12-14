@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
+import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Event;
 import com.github.dedis.student20_pop.model.Keys;
@@ -45,7 +46,7 @@ public class OrganizerFragment extends Fragment {
     public static final String TAG = AttendeeFragment.class.getSimpleName();
     private OrganizerExpandableListViewEventAdapter listViewEventAdapter;
     private ExpandableListView expandableListView;
-    private Lao lao;  //should be given from intent or previous fragment
+    private Lao lao;
     private Button propertiesButton;
     private ImageButton editPropertiesButton;
     private ImageButton addWitnessButton;
@@ -56,6 +57,7 @@ public class OrganizerFragment extends Fragment {
     private TextView laoNameTextView;
     private ListView witnessesListView;
     private ListView witnessesEditListView;
+
 
 
     /**
@@ -81,9 +83,10 @@ public class OrganizerFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        //TODO : Retrieve this LAO from the Intent
-        lao = new Lao("LAO I just joined", new Date(), new Keys().getPublicKey());
+        PoPApplication app = (PoPApplication)(getActivity().getApplication());
 
+        lao = app.getCurrentLao();
+        List<Event> events = app.getEvents(lao);
         //Display Properties
         View rootView = inflater.inflate(R.layout.fragment_organizer, container, false);
 
@@ -134,7 +137,7 @@ public class OrganizerFragment extends Fragment {
 
         //Display Events
         expandableListView = rootView.findViewById(R.id.organizer_expandable_list_view);
-        listViewEventAdapter = new OrganizerExpandableListViewEventAdapter(this.getActivity(), getEvents());
+        listViewEventAdapter = new OrganizerExpandableListViewEventAdapter(this.getActivity(), events);
         expandableListView.setAdapter(listViewEventAdapter);
         expandableListView.expandGroup(0);
         expandableListView.expandGroup(1);
@@ -176,31 +179,6 @@ public class OrganizerFragment extends Fragment {
         );
 
         return rootView;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private List<Event> getEvents() {
-        /*
-        //Later:
-        List<String> eventsIds = lao.getEvents();
-        events = new ArrayList<>();
-        for (String id: eventsIds){
-            events.add(???.getEventFromId(id))
-        }
-         */
-
-        //Now (for testing) :
-        ArrayList<Event> events = new ArrayList<>();
-        events.add(new Event("Past Event 1", new Date(10 * 1000L), new Keys().getPublicKey(), "EPFL", "Poll"));
-        events.add(new Event("Past Event 2", new Date(20 * 1000L), new Keys().getPublicKey(), "CE-6", "Meeting"));
-        events.add(new Event("Present Event 1", new Date(500 * 1000L),
-                new Keys().getPublicKey(), "Geneva", "Roll-Call"));
-        events.add(new Event("Present Event 2", new Date(600 * 1000L),
-                new Keys().getPublicKey(), "Lausanne", "Discussion"));
-        events.add(new Event("Future Event 1", new Date(5000 * 1000L),
-                new Keys().getPublicKey(), "i don't know where yet", "Poll"));
-
-        return events;
     }
 
     public class OrganizerExpandableListViewEventAdapter extends BaseExpandableListAdapter {
@@ -413,16 +391,17 @@ public class OrganizerFragment extends Fragment {
          * @param eventsMap
          */
         private void putEventsInMap(List<Event> events, HashMap<EventCategory, List<Event>> eventsMap) {
+            //TODO: make the difference clear between PAST and PRESENT
             //For now, the event are put in the different categories according to their time attribute
             //Later, according to the start/end-time
             for (Event event : events) {
                 //for now (testing purposes)
                 //later: event.getEndTime() < now
-                if (event.getTime() < 50) {
+                if (event.getTime() < (System.currentTimeMillis()/1000L)) {
                     eventsMap.get(EventCategory.PAST).add(event);
                 }
                 //later: event.getStartTime()<now && event.getEndTime() > now
-                else if (event.getTime() < 1000) {
+                else if (event.getTime() <= (System.currentTimeMillis()/1000L)) {
                     eventsMap.get(EventCategory.PRESENT).add(event);
                 } else { //if e.getStartTime() > now
                     eventsMap.get(EventCategory.FUTURE).add(event);
