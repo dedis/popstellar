@@ -21,11 +21,12 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO;
 
 /**
  * Class handling connect fragment tests
  */
-public class ConnectFragmentTest {
+public class QRCodeScanningFragmentTest {
 
     private static final String TEST_URL = "Test url";
 
@@ -41,10 +42,10 @@ public class ConnectFragmentTest {
 
         // Simulate a detected url
         scenario.onActivity(a -> {
-            Fragment fragment = a.getSupportFragmentManager().findFragmentByTag(ConnectFragment.TAG);
+            Fragment fragment = a.getSupportFragmentManager().findFragmentByTag(QRCodeScanningFragment.TAG);
             Assert.assertNotNull(fragment);
-            Assert.assertTrue(fragment instanceof ConnectFragment);
-            ((ConnectFragment) fragment).onQRCodeDetected(TEST_URL);
+            Assert.assertTrue(fragment instanceof QRCodeScanningFragment);
+            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_URL, CONNECT_LAO);
         });
 
         // Check everything

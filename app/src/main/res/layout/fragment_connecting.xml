@@ -37,6 +37,27 @@
             android:gravity="center"
             android:textSize="@dimen/size_title"
             android:textStyle="bold" />
+
+        <RelativeLayout
+            android:id="@+id/loadingPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center" >
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                />
+        </RelativeLayout>
+
     </LinearLayout>
 
+    <Button
+        android:id="@+id/button_cancel_connecting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_cancel"
+        android:layout_gravity="bottom|right"
+        />
 </FrameLayout>
