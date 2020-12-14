@@ -9,13 +9,11 @@ import org.glassfish.tyrus.client.ClientManager;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import javax.websocket.ClientEndpoint;
 import javax.websocket.CloseReason;
-import javax.websocket.Decoder;
 import javax.websocket.DeploymentException;
-import javax.websocket.Encoder;
-import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
@@ -38,17 +36,32 @@ public final class PoPClientEndpoint {
      * Create a new HighLevelClientProxy that will encapsulate the socket
      *
      * @param host to connect to
-     * @return the proxy
-     * @throws DeploymentException if an error occurs during the deployment
+     * @param issuer the person whose device issued the connection
+     *
+     * @return A completable future that will complete with the proxy once connection is established.
+     *         If the connection cannot be established, the future with complete with an exception
      */
-    public static HighLevelClientProxy connectToServer(URI host, Person person) throws DeploymentException {
-        Session session = client.connectToServer(PoPClientEndpoint.class, host);
-        HighLevelClientProxy client = new HighLevelClientProxy(session, person);
+    public static CompletableFuture<HighLevelClientProxy> connectToServerAsync(URI host, Person issuer) {
+        CompletableFuture<HighLevelClientProxy> proxyFuture = new CompletableFuture<>();
 
-        synchronized (listeners) {
-            listeners.put(session, client.lowLevel());
-        }
-        return client;
+        Thread t = new Thread(() -> {
+            try {
+                Session session = client.connectToServer(PoPClientEndpoint.class, host);
+                HighLevelClientProxy client = new HighLevelClientProxy(session, issuer);
+
+                synchronized (listeners) {
+                    listeners.put(session, client.lowLevel());
+                }
+
+                proxyFuture.complete(client);
+            } catch (DeploymentException e) {
+                proxyFuture.completeExceptionally(e);
+            }
+        });
+        t.setDaemon(true);
+        t.start();
+
+        return proxyFuture;
     }
 
 
