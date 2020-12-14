@@ -254,6 +254,4 @@ public class AttendeeExpandableListViewEventAdapter extends BaseExpandableListAd
             return Long.compare(event1.getTime(), event2.getTime());
         }
     }
-
-
 }

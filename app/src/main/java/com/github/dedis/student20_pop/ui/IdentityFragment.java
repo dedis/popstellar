@@ -21,8 +21,8 @@ import net.glxn.qrgen.android.QRCode;
 /**
  * Represents the identity of a user within an organization
  * (which allows users to “wear different hats” in different organizations)
- *
- *
+ * <p>
+ * <p>
  * TODO : For te moment, the goal of this UI is just to show a QR code,
  * but in the future, it will be needed to store identity information somewhere
  * to make it dependent of the current user and LAO
@@ -75,7 +75,6 @@ public class IdentityFragment extends Fragment {
         //Organization's ID
         String key = this.getArguments().getString(OrganizerActivity.PRIVATE_KEY_TAG);
         String lao = this.getArguments().getString(OrganizerActivity.LAO_ID_TAG);
-
         String uniqueIdentity = key + lao;
 
         Bitmap myBitmap = QRCode.from(uniqueIdentity).bitmap();
