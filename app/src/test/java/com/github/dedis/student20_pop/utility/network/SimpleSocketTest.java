@@ -53,12 +53,12 @@ public class SimpleSocketTest {
 
         Thread t = new Thread(() -> {
             try {
-                LowLevelClientProxy session = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), new Person("tester")).get().lowLevel();
+                LowLevelClientProxy session = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), new Person("tester")).lowLevel();
                 for(String s : toSend)
                     session.getSession().getBasicRemote().sendText(s);
                 session.getSession().close();
                 waiter.resume();
-            } catch (IOException | InterruptedException | ExecutionException e) {
+            } catch (IOException | DeploymentException e) {
                 waiter.fail(e.getMessage());
                 e.printStackTrace();
             }

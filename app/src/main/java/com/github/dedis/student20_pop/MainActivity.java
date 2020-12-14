@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -21,18 +22,13 @@ import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
 import com.github.dedis.student20_pop.ui.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType;
-import com.github.dedis.student20_pop.utility.network.PoPClientEndpoint;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraNotAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
 import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
 
-import java.net.URI;
 import java.util.Collections;
 import java.util.Date;
-import java.util.concurrent.CompletableFuture;
-
-import javax.websocket.DeploymentException;
 
 import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO;
 
@@ -93,8 +89,6 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
                     app.getLocalProxy()
                         .thenCompose(p -> p.createLao(lao.getName(), lao.getTime(), lao.getTime(), app.getPerson().getId()))
                         .thenAccept(code -> {
-                            Toast.makeText(this, "Lao successfully connected", Toast.LENGTH_SHORT).show();
-
                             Person organizer = app.getPerson().setLaos(Collections.singletonList(lao.getId()));
                             // Set LAO and organizer information locally
                             ((PoPApplication) getApplication()).setPerson(organizer);
@@ -105,7 +99,10 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
                             startActivity(intent);
                         })
                         .exceptionally(t -> {
-                            Toast.makeText(this, "An error occurred : " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast toast = Toast.makeText(this, "An error occurred : \n" + t.getMessage(), Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL, 0, 0);
+                            toast.show();
+
                             Log.e(TAG, "Error while creating Lao", t);
                             return null;
                         });
