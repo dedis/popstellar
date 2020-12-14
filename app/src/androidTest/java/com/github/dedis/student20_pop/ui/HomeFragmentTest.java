@@ -48,14 +48,14 @@ public class HomeFragmentTest {
     }
 
     @Test
-    public void clickOnLaoWhichOfIAmOrganizerStartsOrganizer(){
-        onData(allOf(is(instanceOf(Lao.class)))).atPosition(1).perform(click());
+    public void  clickOnLaoWhichOfIAmOrganizerStartsOrganizer(){
+        onData(allOf(is(instanceOf(Lao.class)))).atPosition(0).perform(click());
         onView(withId(R.id.fragment_organizer)).check(matches(isDisplayed()));
     }
 
     @Test
     public void clickOnLaoWhichOfIAmAttendeeStartsAttendee(){
-        onData(allOf(is(instanceOf(Lao.class)))).atPosition(0).perform(click());
+        onData(allOf(is(instanceOf(Lao.class)))).atPosition(1).perform(click());
         onView(withId(R.id.fragment_attendee)).check(matches(isDisplayed()));
     }
 }
