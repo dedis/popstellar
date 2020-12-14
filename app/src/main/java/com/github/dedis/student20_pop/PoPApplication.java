@@ -25,7 +25,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public class PoPApplication extends Application {
 
-    private static final String LOCAL_BACKEND_URI = "ws://localhost:2000";
+    private static final String LOCAL_BACKEND_URI = "ws://10.0.2.2:2000";
 
     private static Context appContext;
     private Person person;
@@ -44,7 +44,7 @@ public class PoPApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        PoPClientEndpoint.startPurgeRoutine(Handler.createAsync(Looper.getMainLooper()));
+        PoPClientEndpoint.startPurgeRoutine(new Handler(Looper.getMainLooper()));
 
         appContext = getApplicationContext();
 
@@ -171,16 +171,16 @@ public class PoPApplication extends Application {
     private void refreshLocalProxy() {
         if(localProxy == null)
             // If there was no attempt yet, try
-            localProxy = PoPClientEndpoint.connectToServer(URI.create(LOCAL_BACKEND_URI), person);
+            localProxy = PoPClientEndpoint.connectAsync(URI.create(LOCAL_BACKEND_URI), person);
         else if(localProxy.isDone()) {
-            // If it was not completed normally, retry
-            if (localProxy.isCompletedExceptionally() && localProxy.isCancelled())
-                localProxy = PoPClientEndpoint.connectToServer(URI.create(LOCAL_BACKEND_URI), person);
-            else {
+            try {
                 // If it succeeded, but it is now closed, retry
                 HighLevelClientProxy currentSession = localProxy.getNow(null);
                 if (currentSession == null || !currentSession.isOpen())
-                    localProxy = PoPClientEndpoint.connectToServer(URI.create(LOCAL_BACKEND_URI), person);
+                    localProxy = PoPClientEndpoint.connectAsync(URI.create(LOCAL_BACKEND_URI), person);
+            } catch (Exception e) {
+                //There was an error during competition, retry
+                localProxy = PoPClientEndpoint.connectAsync(URI.create(LOCAL_BACKEND_URI), person);
             }
         }
     }

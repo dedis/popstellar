@@ -1,6 +1,7 @@
 package com.github.dedis.student20_pop.utility.network;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.github.dedis.student20_pop.model.Person;
@@ -34,7 +35,7 @@ public final class PoPClientEndpoint {
     private static final Map<Session, LowLevelClientProxy> listeners = new HashMap<>();
 
     /**
-     * Create a new HighLevelClientProxy that will encapsulate the socket
+     * Create asynchronously a new HighLevelClientProxy that will encapsulate the socket
      *
      * @param host to connect to
      * @param issuer the person whose device issued the connection
@@ -42,27 +43,41 @@ public final class PoPClientEndpoint {
      * @return A completable future that will complete with the proxy once connection is established.
      *         If the connection cannot be established, the future with complete with an exception
      */
-    public static CompletableFuture<HighLevelClientProxy> connectToServer(URI host, Person issuer) {
+    public static CompletableFuture<HighLevelClientProxy> connectAsync(URI host, Person issuer) {
         CompletableFuture<HighLevelClientProxy> proxyFuture = new CompletableFuture<>();
 
         Thread t = new Thread(() -> {
+            Looper.prepare();
             try {
-                Session session = client.connectToServer(PoPClientEndpoint.class, host);
-                HighLevelClientProxy client = new HighLevelClientProxy(session, issuer);
-
-                synchronized (listeners) {
-                    listeners.put(session, client.lowLevel());
-                }
-
-                proxyFuture.complete(client);
+                proxyFuture.complete(connect(host, issuer));
             } catch (DeploymentException e) {
                 proxyFuture.completeExceptionally(e);
             }
+            Looper.loop();
         });
         t.setDaemon(true);
         t.start();
 
         return proxyFuture;
+    }
+
+    /**
+     * Create a new HighLevelClientProxy that will encapsulate the socket
+     *
+     * @param host to connect to
+     * @param issuer the person whose device issued the connection
+     *
+     * @return the proxy holding the connection
+     */
+    public static HighLevelClientProxy connect(URI host, Person issuer) throws DeploymentException {
+        Session session = client.connectToServer(PoPClientEndpoint.class, host);
+        HighLevelClientProxy client = new HighLevelClientProxy(session, issuer);
+
+        synchronized (listeners) {
+            listeners.put(session, client.lowLevel());
+        }
+
+        return client;
     }
 
     public static void startPurgeRoutine(Handler handler) {

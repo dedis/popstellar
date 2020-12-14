@@ -49,7 +49,7 @@ public class SimpleSocketTest {
 
         Thread t = new Thread(() -> {
             try {
-                LowLevelClientProxy session = PoPClientEndpoint.connectToServer(URI.create("ws://localhost:2020/"), new Person("tester")).get().lowLevel();
+                LowLevelClientProxy session = PoPClientEndpoint.connectAsync(URI.create("ws://localhost:2020/"), new Person("tester")).get().lowLevel();
                 for(String s : toSend)
                     session.getSession().getBasicRemote().sendText(s);
                 session.getSession().close();

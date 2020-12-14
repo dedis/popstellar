@@ -24,7 +24,7 @@ import static java.lang.String.format;
 public class WebSocketServer {
 
     public static final String LOCALHOST = "localhost";
-    public static final int PORT = 2020;
+    public static final int PORT = 2000;
 
     public static void main(String[] args) {
         Server server = new Server(LOCALHOST, PORT, "", PoPServerEndpoint.class);
