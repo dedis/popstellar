@@ -10,19 +10,34 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.github.dedis.student20_pop.model.Keys;
+import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.ui.CameraPermissionFragment;
-import com.github.dedis.student20_pop.ui.ConnectFragment;
+import com.github.dedis.student20_pop.ui.ConnectingFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
+import com.github.dedis.student20_pop.ui.IdentityFragment;
 import com.github.dedis.student20_pop.ui.OrganizerFragment;
+import com.github.dedis.student20_pop.ui.QRCodeScanningFragment;
+import com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType;
+import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
+import com.github.dedis.student20_pop.utility.qrcode.OnCameraNotAllowedListener;
+import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
 import com.github.dedis.student20_pop.utility.ui.OnAddWitnessListener;
 import com.github.dedis.student20_pop.utility.ui.OnEventTypeSelectedListener;
+
+import java.util.Date;
+
+import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.ADD_WITNESS;
 
 /**
  * Activity used to display the different UIs for organizers
  **/
-public class OrganizerActivity extends FragmentActivity implements OnEventTypeSelectedListener, OnAddWitnessListener {
+public class OrganizerActivity extends FragmentActivity implements OnEventTypeSelectedListener, OnAddWitnessListener,
+        OnCameraNotAllowedListener, QRCodeListener, OnCameraAllowedListener {
 
     public static final String TAG = OrganizerActivity.class.getSimpleName();
+    public static final String PRIVATE_KEY_TAG = "PRIVATE_KEY";
+    public static final String LAO_ID_TAG = "LAO_ID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +70,21 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
                 //Future: different Home UI for organizer (without connect UI?)
                 showFragment(new HomeFragment(), HomeFragment.TAG);
                 break;
+            case R.id.tab_identity:
+                Bundle bundle = new Bundle();
+
+                final PoPApplication app = ((PoPApplication) getApplication());
+                bundle.putString(PRIVATE_KEY_TAG, app.getPerson().getAuthentication());
+
+                Lao lao = app.getCurrentLao();
+                bundle.putString(LAO_ID_TAG, lao.getId());
+
+                // set Fragmentclass Arguments
+                IdentityFragment identityFragment = new IdentityFragment();
+                identityFragment.setArguments(bundle);
+                showFragment(identityFragment, IdentityFragment.TAG);
+                break;
+
             default:
                 break;
         }
@@ -94,10 +124,39 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
     @Override
     public void onAddWitnessListener() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            showFragment(new ConnectFragment(R.id.fragment_container_organizer), ConnectFragment.TAG);
+            showFragment(new QRCodeScanningFragment(ADD_WITNESS), QRCodeScanningFragment.TAG);
         } else {
-            showFragment(new CameraPermissionFragment(R.id.fragment_container_organizer), CameraPermissionFragment.TAG);
+            showFragment(new CameraPermissionFragment(ADD_WITNESS), CameraPermissionFragment.TAG);
         }
         // TODO : Get witness id from the QR code, add witness to witness list and send info to backend
+    }
+
+    @Override
+    public void onCameraNotAllowedListener(QRCodeScanningType qrCodeScanningType) {
+        showFragment(new CameraPermissionFragment(qrCodeScanningType), CameraPermissionFragment.TAG);
+    }
+
+    @Override
+    public void onQRCodeDetected(String url, QRCodeScanningType qrCodeScanningType) {
+        Log.i(TAG, "Received qrcode url : " + url);
+        switch (qrCodeScanningType) {
+            case ADD_ROLL_CALL:
+                //TODO
+                break;
+            case ADD_WITNESS:
+                //TODO
+                Log.d("DEBUG", "URL Received : " + url);
+                break;
+            case CONNECT_LAO:
+                showFragment(ConnectingFragment.newInstance(url), ConnectingFragment.TAG);
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onCameraAllowedListener(QRCodeScanningType qrCodeScanningType) {
+        showFragment(new QRCodeScanningFragment(qrCodeScanningType), QRCodeScanningFragment.TAG);
     }
 }
