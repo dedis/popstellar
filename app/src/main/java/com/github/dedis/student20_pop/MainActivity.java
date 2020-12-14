@@ -90,25 +90,11 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
                     if (PrivateInfoStorage.storeData(this, app.getPerson().getId(), app.getPerson().getAuthentication()))
                         Log.d(TAG, "Stored private key of organizer");
 
-                    CompletableFuture.supplyAsync(() -> {
-                        try {
-                            //TODO Get URL dynamically
-                            return PoPClientEndpoint.connectToServer(URI.create("ws://10.0.2.2:2020/"), app.getPerson());
-                        } catch (DeploymentException e) {
-                            e.printStackTrace();
-                            return null;
-                        }
-                    }).thenCompose(p -> {
-                        if (p != null)
-                            return p.createLao(lao.getName(), lao.getTime(), lao.getTime(), app.getPerson().getId());
-                        else
-                            return null;
-                    }).whenComplete((errCode, t) -> {
-                        if (t != null)
-                            //TODO Show toast for error
-                            Log.e(TAG, "Error while creating the lao", t);
-                        else {
-                            //TODO Show toast for success
+                    app.getLocalProxy()
+                        .thenCompose(p -> p.createLao(lao.getName(), lao.getTime(), lao.getTime(), app.getPerson().getId()))
+                        .thenAccept(code -> {
+                            Toast.makeText(this, "Lao successfully connected", Toast.LENGTH_SHORT).show();
+
                             Person organizer = app.getPerson().setLaos(Collections.singletonList(lao.getId()));
                             // Set LAO and organizer information locally
                             ((PoPApplication) getApplication()).setPerson(organizer);
@@ -117,8 +103,12 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
                             // Start the Organizer Activity (user is considered an organizer)
                             Intent intent = new Intent(this, OrganizerActivity.class);
                             startActivity(intent);
-                        }
-                    });
+                        })
+                        .exceptionally(t -> {
+                            Toast.makeText(this, "An error occurred : " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                            Log.e(TAG, "Error while creating Lao", t);
+                            return null;
+                        });
                 }
                 break;
             case R.id.button_cancel_launch:
