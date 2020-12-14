@@ -44,6 +44,8 @@ public class PoPApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
+        PoPClientEndpoint.startPurgeRoutine(Handler.createAsync(Looper.getMainLooper()));
+
         appContext = getApplicationContext();
 
         if(person == null) {
