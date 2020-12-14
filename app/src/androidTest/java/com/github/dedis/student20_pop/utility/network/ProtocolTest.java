@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -54,12 +55,12 @@ public class ProtocolTest {
     }
 
     @Test
-    public void testTimeout() throws DeploymentException, TimeoutException, InterruptedException {
+    public void testTimeout() throws DeploymentException, TimeoutException, InterruptedException, ExecutionException {
         Server server = startNoAnswerServer();
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob).get();
 
         proxy.createLao(LAO_NAME, 0, 0, bob.getId())
             .whenComplete((i, t) -> {
@@ -78,12 +79,12 @@ public class ProtocolTest {
     }
 
     @Test
-    public void testCreateLao() throws DeploymentException, TimeoutException, InterruptedException {
+    public void testCreateLao() throws DeploymentException, TimeoutException, InterruptedException, ExecutionException {
         Server server = startAcceptEverythingServer();
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob).get();
 
         proxy.createLao(LAO_NAME, 0, 0, bob.getId())
             .whenComplete((i, t) -> {
@@ -97,12 +98,12 @@ public class ProtocolTest {
     }
 
     @Test
-    public void testUpdateLao() throws DeploymentException, TimeoutException, InterruptedException {
+    public void testUpdateLao() throws DeploymentException, TimeoutException, InterruptedException, ExecutionException {
         Server server = startAcceptEverythingServer();
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob).get();
 
         proxy.updateLao(LAO_ID, LAO_NAME, 0, Collections.singletonList(bob.getId()))
                 .whenComplete((i, t) -> {
@@ -116,12 +117,12 @@ public class ProtocolTest {
     }
 
     @Test
-    public void testCreateMeeting() throws DeploymentException, TimeoutException, InterruptedException {
+    public void testCreateMeeting() throws DeploymentException, TimeoutException, InterruptedException, ExecutionException {
         Server server = startAcceptEverythingServer();
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob).get();
 
         proxy.createMeeting(LAO_ID, MEETING_NAME, 0, 0, "loc", 0, 0)
                 .whenComplete((i, t) -> {
@@ -135,12 +136,12 @@ public class ProtocolTest {
     }
 
     @Test
-    public void testWitnessMeeting() throws DeploymentException, TimeoutException, InterruptedException {
+    public void testWitnessMeeting() throws DeploymentException, TimeoutException, InterruptedException, ExecutionException {
         Server server = startAcceptEverythingServer();
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob).get();
 
         proxy.witnessMessage(LAO_ID, "mId", "data")
                 .whenComplete((i, t) -> {
@@ -154,12 +155,12 @@ public class ProtocolTest {
     }
 
     @Test
-    public void testProtocol() throws DeploymentException, TimeoutException, InterruptedException {
+    public void testProtocol() throws DeploymentException, TimeoutException, InterruptedException, ExecutionException {
         Server server = startAcceptEverythingServer();
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob).get();
 
         proxy.createLao(LAO_NAME, 0, 0, bob.getId())
                 .whenComplete((i, t) -> {

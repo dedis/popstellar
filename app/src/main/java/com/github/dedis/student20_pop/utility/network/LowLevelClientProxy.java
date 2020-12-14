@@ -41,7 +41,7 @@ import javax.websocket.Session;
  */
 public final class LowLevelClientProxy {
 
-    private static final long TIMEOUT = 5000L; // 5 secs
+    public static final long TIMEOUT = 5000L; // 5 secs
 
     private final Session session;
 
