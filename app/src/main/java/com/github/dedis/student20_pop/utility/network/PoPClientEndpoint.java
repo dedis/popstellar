@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.utility.network;
 
+import android.os.Handler;
 import android.util.Log;
 
 import com.github.dedis.student20_pop.model.Person;
@@ -41,7 +42,7 @@ public final class PoPClientEndpoint {
      * @return A completable future that will complete with the proxy once connection is established.
      *         If the connection cannot be established, the future with complete with an exception
      */
-    public static CompletableFuture<HighLevelClientProxy> connectToServerAsync(URI host, Person issuer) {
+    public static CompletableFuture<HighLevelClientProxy> connectToServer(URI host, Person issuer) {
         CompletableFuture<HighLevelClientProxy> proxyFuture = new CompletableFuture<>();
 
         Thread t = new Thread(() -> {
@@ -64,6 +65,17 @@ public final class PoPClientEndpoint {
         return proxyFuture;
     }
 
+    public static void startPurgeRoutine(Handler handler) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (listeners) {
+                    listeners.values().forEach(LowLevelClientProxy::purge);
+                    handler.postDelayed(this, LowLevelClientProxy.TIMEOUT);
+                }
+            }
+        });
+    }
 
     @OnOpen
     public void onOpen(Session session) {
