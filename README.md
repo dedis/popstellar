@@ -10,6 +10,8 @@ Proof-of-personhood, fall 2020: Android native front-end
 * The [R class in Android](https://stackoverflow.com/questions/4953077/what-is-the-class-r-in-android) is an auto-generated class containing the resource IDs all the resources of res/directory.
 
 ## Setup
+For cloning, use `--recursive` as the project contains submodules.
+
 #### Usage
 Import the project to Android Studio or IntelliJ and run the app.
 
