@@ -7,7 +7,7 @@ import (
 )
 
 const MaxPropagationDelay = 600
-const MinTimeOfCreation = 100
+const MaxClockDifference = 100
 
 /*
 	we check that Sign(sender||data) is the given signature
