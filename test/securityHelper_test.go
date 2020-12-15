@@ -54,7 +54,8 @@ func TestMessageIsValid(t *testing.T) {
 		id := sha256.Sum256(append(dataFlat, signed...))
 
 		var message = MessageSend{
-			Data:              []byte(b64.StdEncoding.EncodeToString(dataFlat)), // in base 64
+			//Marshall automatically encode data (Json.rawMessage) in Base64
+			Data:              dataFlat,
 			Sender:            b64.StdEncoding.EncodeToString([]byte(pubkey)),
 			Signature:         b64.StdEncoding.EncodeToString(signed),
 			Message_id:        b64.StdEncoding.EncodeToString(id[:]),
