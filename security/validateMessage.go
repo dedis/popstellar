@@ -89,7 +89,6 @@ func MessageIsValid(msg message.Message) error { //TODO remove ID hash check
 		if err != nil {
 			return lib.ErrInvalidResource
 		}
-		print("Hello in public")
 		// the signature of witnesses are valid
 		err = VerifyWitnessSignatures(data.Witnesses, msg.WitnessSignatures, msg.Sender)
 		if err != nil {

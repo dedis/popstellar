@@ -13,16 +13,16 @@ const SubscribeDB = "sub.db"
 
 type LAO struct {
 	//ID hash : Name || Creation(Date/Time Unix Timestamp), not updated on name update.
-	ID string
+	ID string `json:"id"`
 	// name of LAO
-	Name string
+	Name string `json:"name"`
 	//Creation Date/Time
-	Creation int64 //  Unix timestamp (uint64)
+	Creation int64 `json:"creation"`//  Unix timestamp (uint64)
 	//LastModified int64 //timestamp
 	//Organiser: Public Key
-	OrganizerPKey string
+	OrganizerPKey string `json:"organizerPublicKey"`
 	//List of public keys where each public key belongs to one witness
-	Witnesses []string
+	Witnesses []string `json:"witnesses"`
 	//List of public keys where each public key belongs to one member (physical person) (subscriber)
 }
 
