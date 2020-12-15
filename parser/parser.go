@@ -62,16 +62,11 @@ func ParseMessage(msg json.RawMessage) (message.Message, error) {
 	}
 	m.Signature = string(d)
 
+	//Marshall automatically encode Json.rawMessage in Base64
 	d, err = lib.Decode(string(m.Data))
 	if err != nil {
 		return m, lib.ErrEncodingFault
 	}
-	//TODO super bizarre, il decode correctement la deuxieme fois dans le tests?
-	/*d, err = lib.Decode(string(d))
-	if err != nil {
-		return m, ErrEncodingFault
-	}
-	*/
 	m.Data = d
 
 	for i := 0; i < len(m.WitnessSignatures); i++ {
