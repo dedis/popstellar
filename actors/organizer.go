@@ -34,7 +34,7 @@ func (o *Organizer) HandleWholeMessage(receivedMsg []byte, userId int) (message_
 	isAnswer, err := filterAnswers(receivedMsg)
 	if err != nil {
 		return nil, nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, message.Query{})
-	} 
+	}
 	if isAnswer {
 		return nil, nil, nil
 	}
@@ -187,7 +187,7 @@ func (o *Organizer) handlePublish(query message.Query) (message, channel []byte,
 			return nil, nil, lib.ErrInvalidAction
 		}
 	default:
-		fmt.Printf("data[action] not recognized in handlepublish, generating default response ")
+		fmt.Printf("data[action] (%v) not recognized in handlepublish, generating default response ", data["action"])
 		return nil, nil, lib.ErrRequestDataInvalid
 	}
 }
@@ -224,7 +224,6 @@ func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query mes
 	if errs != nil {
 		return nil, nil, err
 	}
-
 
 	return parser.ComposeBroadcastMessage(query), []byte(canal), nil
 }
