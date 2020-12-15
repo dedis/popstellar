@@ -1,7 +1,5 @@
 package com.github.dedis.student20_pop.utility.network;
 
-import android.util.Base64;
-
 import com.github.dedis.student20_pop.model.network.level.high.Message;
 import com.github.dedis.student20_pop.model.network.level.low.Catchup;
 import com.github.dedis.student20_pop.model.network.level.low.ChanneledMessage;
@@ -24,10 +22,10 @@ import com.google.gson.JsonObject;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.SplittableRandom;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeoutException;
@@ -110,7 +108,7 @@ public final class LowLevelClientProxy {
      * @return a completable future holding the response value
      */
     public CompletableFuture<Integer> publish(String sender, String key, String channel, Message message) {
-        String data = Base64.encodeToString(gson.toJson(message, Message.class).getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);
+        String data = Base64.getEncoder().encodeToString(gson.toJson(message, Message.class).getBytes(StandardCharsets.UTF_8));
         String signature = Signature.sign(key, data);
         String msgId = Hash.hash(data + signature);
         MessageContainer container = new MessageContainer(sender, data, signature, msgId, new ArrayList<>());
@@ -174,7 +172,7 @@ public final class LowLevelClientProxy {
         MessageContainer container = lowLevelMessage.getMessage();
         Message message = gson.fromJson(
                 new String(
-                        Base64.decode(container.getData(), Base64.DEFAULT),
+                        Base64.getDecoder().decode(container.getData()),
                         StandardCharsets.UTF_8),
                 Message.class);
         System.out.println(message);
