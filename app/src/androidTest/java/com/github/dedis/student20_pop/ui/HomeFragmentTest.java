@@ -52,6 +52,11 @@ public class HomeFragmentTest {
         onView(withId(R.id.lao_list)).check(matches(isDisplayed()));
     }
 
+    /**
+     * Matches a Lao with a given lao name
+     * @param title
+     * @return
+     */
     public static Matcher<Object> titleMatches(String title){
         return new BoundedMatcher<Object, Lao>(Lao.class) {
 
