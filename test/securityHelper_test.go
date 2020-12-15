@@ -15,11 +15,11 @@ import (
 )
 
 type MessageSend struct {
-	Data              []byte // in base 64
-	Sender            string
-	Signature         string
-	Message_id        string
-	WitnessSignatures []string
+	Data              []byte `json:"data"` // in base 64
+	Sender            string          `json:"sender"`
+	Signature         string          `json:"signature"`
+	Message_id        string          `json:"messageId"`
+	WitnessSignatures []string        `json:"witnessSignatures"`
 }
 
 func TestMessageIsValid(t *testing.T) {

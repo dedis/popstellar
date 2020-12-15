@@ -35,11 +35,11 @@ type ParamsIncludingMessage struct {
 }
 
 type Message struct {
-	Data              json.RawMessage // in base 64
-	Sender            string
-	Signature         string
-	Message_id        string
-	WitnessSignatures []string
+	Data              json.RawMessage `json:"data"` // in base 64
+	Sender            string          `json:"sender"`
+	Signature         string          `json:"signature"`
+	Message_id        string          `json:"messageId"`
+	WitnessSignatures []string        `json:"witnessSignatures"`
 }
 
 type ItemWitnessSignatures struct {

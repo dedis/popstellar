@@ -27,3 +27,10 @@ type ResponseIDNotDecoded struct {
 	ErrorResponse json.RawMessage
 	Id            []byte
 }
+type GeneralResponse struct {
+	Jsonrpc       string
+	ErrorResponse json.RawMessage
+	GenResult     string
+	CatchupResult string
+	Id            []byte
+}
