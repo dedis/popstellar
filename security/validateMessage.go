@@ -68,7 +68,7 @@ func RollCallCreatedIsValid(data message.DataCreateRollCall, message message.Mes
 
 func MessageIsValid(msg message.Message) error { //TODO remove ID hash check
 	// the message_id is valid
-	str := []byte(msg.Data)
+	str := []byte(*msg.Data)
 	str = append(str, []byte(msg.Signature)...)
 	hash := sha256.Sum256(str)
 
@@ -77,15 +77,15 @@ func MessageIsValid(msg message.Message) error { //TODO remove ID hash check
 	}
 
 	// the signature is valid
-	err := VerifySignature(msg.Sender, msg.Data, msg.Signature)
+	err := VerifySignature(msg.Sender, *msg.Data, msg.Signature)
 	if err != nil {
 		return err
 	}
 
 	// the witness signatures are valid (check on every message??)
-	data, err := parser.ParseData(string(msg.Data))
+	data, err := parser.ParseData(string(*msg.Data))
 	if data["object"] == "lao" && data["action"] == "create" {
-		data, err := parser.ParseDataCreateLAO(msg.Data)
+		data, err := parser.ParseDataCreateLAO(*msg.Data)
 		if err != nil {
 			return lib.ErrInvalidResource
 		}
