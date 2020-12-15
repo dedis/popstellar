@@ -15,7 +15,7 @@ import (
 )
 
 type MessageSend struct {
-	Data              *[]byte // in base 64
+	Data              []byte // in base 64
 	Sender            string
 	Signature         string
 	Message_id        string
@@ -32,9 +32,9 @@ func TestMessageIsValid(t *testing.T) {
 		var pubkey = string(privkey.Public().(ed.PublicKey))
 		var creation int64 = 123
 		name := "My LAO"
-		//if (len(pubkey) != ed.PublicKeySize) || len(privkey) != ed.PrivateKeySize {
-		//	t.Error("wrong argument -> size don't respected ")
-		//}
+		if (len(pubkey) != ed.PublicKeySize) || len(privkey) != ed.PrivateKeySize {
+			t.Error("wrong argument -> size don't respected ")
+		}
 		idData := sha256.Sum256([]byte(pubkey + fmt.Sprint(creation) + name))
 		var data = message2.DataCreateLAO{
 			Object:    "lao",
@@ -54,7 +54,7 @@ func TestMessageIsValid(t *testing.T) {
 		id := sha256.Sum256(append(dataFlat, signed...))
 
 		var message = MessageSend{
-			Data:             &dataFlat, // in base 64
+			Data:              []byte(b64.StdEncoding.EncodeToString(dataFlat)), // in base 64
 			Sender:            b64.StdEncoding.EncodeToString([]byte(pubkey)),
 			Signature:         b64.StdEncoding.EncodeToString(signed),
 			Message_id:        b64.StdEncoding.EncodeToString(id[:]),
