@@ -62,7 +62,7 @@ func ParseMessage(msg json.RawMessage) (message.Message, error) {
 	}
 	m.Signature = string(d)
 
-	d, err = lib.Decode(string(*m.Data))
+	d, err = lib.Decode(string(m.Data))
 	if err != nil {
 		return m, lib.ErrEncodingFault
 	}
@@ -72,7 +72,7 @@ func ParseMessage(msg json.RawMessage) (message.Message, error) {
 		return m, ErrEncodingFault
 	}
 	*/
-	m.Data = &d
+	m.Data = d
 
 	for i := 0; i < len(m.WitnessSignatures); i++ {
 		d, err = lib.Decode(m.WitnessSignatures[i])

@@ -35,7 +35,7 @@ type ParamsIncludingMessage struct {
 }
 
 type Message struct {
-	Data              *[]byte // in base 64
+	Data              json.RawMessage // in base 64
 	Sender            string
 	Signature         string
 	Message_id        string
