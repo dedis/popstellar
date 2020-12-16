@@ -31,10 +31,10 @@ const styles = StyleSheet.create({
 });
 
 const EventItem = ({ event, isOrganizer }) => {
-  switch (event.type) {
+  switch (event.object) {
     case 'meeting':
       return (<MeetingEvent event={event} />);
-    case 'rollCall':
+    case 'roll-call':
       if (isOrganizer) {
         return (<RollCallEventOrganizer event={event} />);
       }
@@ -53,7 +53,7 @@ const EventItem = ({ event, isOrganizer }) => {
           <Text style={styles.text}>{event.name}</Text>
           <FlatList
             data={event.childrens}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => item.id}
             renderItem={({ item }) => <EventItem event={item} />}
             listKey={event.id.toString()}
           />
@@ -63,7 +63,7 @@ const EventItem = ({ event, isOrganizer }) => {
 };
 
 EventItem.propTypes = {
-  event: PROPS_TYPE.event.isRequired,
+  event: PropTypes.oneOfType([PROPS_TYPE.event, PROPS_TYPE.property]).isRequired,
   isOrganizer: PropTypes.bool,
 };
 

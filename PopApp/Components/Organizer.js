@@ -31,7 +31,9 @@ const Organizer = ({ events }) => (
 Organizer.propTypes = {
   events: PropTypes.arrayOf(PropTypes.shape({
     title: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(PROPS_TYPE.event).isRequired,
+    data: PropTypes.arrayOf(
+      PropTypes.oneOfType([PROPS_TYPE.event, PROPS_TYPE.property]),
+    ).isRequired,
   })).isRequired,
 };
 

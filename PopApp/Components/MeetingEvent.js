@@ -25,24 +25,34 @@ const styles = StyleSheet.create({
   },
 });
 
-const MeetingEvent = ({ event }) => (
-  <View style={styles.view}>
-    <Text style={styles.text}>{event.name}</Text>
-    <Text style={styles.text}>Start time</Text>
-    <Text style={styles.text}>Optionnal end time</Text>
-    <Text style={styles.text} dataDetectorType="link">Location, test.com</Text>
-    <FlatList
-      data={event.childrens}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => <EventItem event={item} />}
-      listKey={event.id.toString()}
-      style={styles.flatList}
-    />
-  </View>
-);
+const MeetingEvent = ({ event }) => {
+  const dateToString = (timestamp) => {
+    const d = new Date(timestamp * 1000);
+    return `${d.getDate()}-${d.getMonth() + 1}-${d.getFullYear()} `
+    + `${d.getHours() < 10 ? 0 : ''}${d.getHours()}:`
+    + `${d.getMinutes() < 10 ? 0 : ''}${d.getMinutes()}`;
+  };
+
+  return (
+    <View style={styles.view}>
+      <Text style={styles.text}>{event.name}</Text>
+      <Text style={styles.text}>{`Start at ${dateToString(event.start)}`}</Text>
+      {event.end && <Text style={styles.text}>{`End at ${dateToString(event.end)}`}</Text>}
+      {event.location && event.location.trim() !== ''
+        && <Text style={styles.text} dataDetectorType="link">{event.location}</Text>}
+      <FlatList
+        data={event.childrens}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => <EventItem event={item} />}
+        listKey={event.id.toString()}
+        style={styles.flatList}
+      />
+    </View>
+  );
+};
 
 MeetingEvent.propTypes = {
-  event: PROPS_TYPE.event.isRequired,
+  event: PROPS_TYPE.meeting.isRequired,
 };
 
 export default MeetingEvent;

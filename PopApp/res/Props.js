@@ -1,34 +1,80 @@
-import PropTypes from 'prop-types';
+import {
+  shape, func, number, arrayOf, string, oneOf, object,
+} from 'prop-types';
 
 const PROPS_TYPE = {
 
   // --- LAO type ---
-  LAO: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-    date: PropTypes.string.isRequired,
+  LAO: shape({
+    object: oneOf(['lao']).isRequired,
+    action: oneOf(['state']).isRequired,
+    id: string.isRequired,
+    name: string.isRequired,
+    creation: number.isRequired,
+    last_modified: number.isRequired,
+    organizer: string.isRequired,
+    witnesses: arrayOf(string).isRequired,
+    modification_id: string.isRequired,
+    modification_signatures: arrayOf(shape({
+      witness: string.isRequired,
+      signature: string.isRequired,
+    })).isRequired,
   }),
 
   // --- event type ---
-  event: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    type: PropTypes.string.isRequired,
-    name: PropTypes.string,
-    date: PropTypes.string,
-    children: PropTypes.arrayOf(this),
-    witnesses: PropTypes.arrayOf(PropTypes.string),
+  event: shape({
+    object: oneOf(['lao', 'message', 'meeting', 'roll-call', 'poll', 'discussion']).isRequired,
+    action: oneOf(['create', 'update_properties', 'state', 'witness']).isRequired,
+    id: string.isRequired,
+    name: string.isRequired,
+    creation: number.isRequired,
+    last_modified: number.isRequired,
+    organizer: string.isRequired,
+    witnesses: arrayOf(string).isRequired,
+    children: arrayOf(this),
+  }),
+
+  // --- Meeting type ---
+  meeting: shape({
+    object: oneOf(['meeting']).isRequired,
+    action: oneOf(['state']).isRequired,
+    id: string.isRequired,
+    name: string.isRequired,
+    creation: number.isRequired,
+    last_modified: number.isRequired,
+    location: string,
+    start: number.isRequired,
+    end: number,
+    // eslint-disable-next-line react/forbid-prop-types
+    extra: object,
+    organizer: string.isRequired,
+    witnesses: arrayOf(string).isRequired,
+    modification_id: string.isRequired,
+    modification_signatures: arrayOf(shape({
+      witness: string.isRequired,
+      signature: string.isRequired,
+    })).isRequired,
+    // children: arrayOf(PROPS_TYPE.event), TODO find a way to implement this
+  }),
+
+  // --- property type ---
+  property: shape({
+    object: string.isRequired,
+    id: string.isRequired,
+    name: string,
+    witnesses: arrayOf(string),
   }),
 
   // --- navigation type of react-navigation (simplified) ---
-  navigation: PropTypes.shape({
-    navigate: PropTypes.func.isRequired,
-    dangerouslyGetParent: PropTypes.func.isRequired,
-    addListener: PropTypes.func.isRequired,
+  navigation: shape({
+    navigate: func.isRequired,
+    dangerouslyGetParent: func.isRequired,
+    addListener: func.isRequired,
   }),
 
   // --- navigationState type of react-navigation (simplified) ---
-  navigationState: PropTypes.shape({
-    routes: PropTypes.arrayOf.isRequired,
+  navigationState: shape({
+    routes: arrayOf.isRequired,
   }),
 };
 

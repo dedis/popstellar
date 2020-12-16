@@ -11,7 +11,7 @@ import STRINGS from '../res/strings';
 
 /**
  * Screen to create a poll event
- * 
+ *
  * It is possible to put a finish time before the start time => to fix
  */
 
