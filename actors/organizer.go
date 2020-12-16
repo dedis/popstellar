@@ -172,7 +172,7 @@ func (o *Organizer) handlePublish(query message.Query) (message, channel []byte,
 			return o.handleCreateMeeting(msg, params.Channel, query)
 		case "state": //
 			// TODO: waiting on protocol definition
-			return nil, nil, lib.ErrInvalidAction
+			return nil, nil, lib.ErrNotYetImplemented
 		default:
 			return nil, nil, lib.ErrInvalidAction
 		}
@@ -182,7 +182,7 @@ func (o *Organizer) handlePublish(query message.Query) (message, channel []byte,
 			return o.handleCreatePoll(msg, params.Channel, query)
 		case "state":
 			// TODO: waiting on protocol definition
-			return nil, nil, lib.ErrInvalidAction
+			return nil, nil, lib.ErrNotYetImplemented
 		default:
 			return nil, nil, lib.ErrInvalidAction
 		}

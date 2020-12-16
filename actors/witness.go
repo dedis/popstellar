@@ -37,7 +37,7 @@ func (w *Witness) HandleWholeMessage(receivedMsg []byte, userId int) (message_, 
 	isAnswer, err := filterAnswers(receivedMsg)
 	if err != nil {
 		return nil, nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, message.Query{})
-	} 
+	}
 	if isAnswer {
 		return nil, nil, nil
 	}
@@ -46,7 +46,6 @@ func (w *Witness) HandleWholeMessage(receivedMsg []byte, userId int) (message_, 
 	if err != nil {
 		return nil, nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, query)
 	}
-
 
 	var history []byte = nil
 	var msg []byte = nil
@@ -120,25 +119,25 @@ func (w *Witness) handleMessage(query message.Query) (returnMessage, channel []b
 		case "create":
 			return w.handleCreateRollCall(msg, params.Channel, query)
 		case "state":
-			return nil, nil, lib.ErrInvalidAction
+			return nil, nil, lib.ErrNotYetImplemented
 		default:
 			return nil, nil, lib.ErrInvalidAction
 		}
 	case "meeting":
 		switch data["action"] {
 		case "create":
-			return nil, nil, lib.ErrInvalidAction
+			return nil, nil, lib.ErrNotYetImplemented
 		case "state":
-			return nil, nil, lib.ErrInvalidAction
+			return nil, nil, lib.ErrNotYetImplemented
 		default:
 			return nil, nil, lib.ErrInvalidAction
 		}
 	case "poll":
 		switch data["action"] {
 		case "create":
-			return nil, nil, lib.ErrInvalidAction
+			return nil, nil, lib.ErrNotYetImplemented
 		case "state":
-			return nil, nil, lib.ErrInvalidAction
+			return nil, nil, lib.ErrNotYetImplemented
 		default:
 			return nil, nil, lib.ErrInvalidAction
 		}

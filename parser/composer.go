@@ -109,6 +109,11 @@ func selectDescriptionError(err error) []byte {
 			Code:        -4,
 			Description: "request data is invalid",
 		}
+	case lib.ErrIdNotDecoded:
+		errResp = message.ErrorResponse{
+			Code:        -4,
+			Description: "Id could not be decoded",
+		}
 		//(e.g. message is invalid)
 	case lib.ErrAccessDenied:
 		errResp = message.ErrorResponse{
@@ -116,10 +121,10 @@ func selectDescriptionError(err error) []byte {
 			Description: "access denied",
 		}
 		//(e.g. subscribing to a “restricted” channel)
-	case lib.ErrIdNotDecoded:
+	case lib.ErrNotYetImplemented:
 		errResp = message.ErrorResponse{
-			Code:        -4,
-			Description: "Id could not be decoded",
+			Code:        -6,
+			Description: "Feature not implemented",
 		}
 
 	default:
