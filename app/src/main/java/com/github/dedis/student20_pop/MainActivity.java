@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -21,18 +22,13 @@ import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
 import com.github.dedis.student20_pop.ui.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType;
-import com.github.dedis.student20_pop.utility.network.PoPClientEndpoint;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraNotAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
 import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
 
-import java.net.URI;
 import java.util.Collections;
 import java.util.Date;
-import java.util.concurrent.CompletableFuture;
-
-import javax.websocket.DeploymentException;
 
 import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO;
 
@@ -90,25 +86,9 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
                     if (PrivateInfoStorage.storeData(this, app.getPerson().getId(), app.getPerson().getAuthentication()))
                         Log.d(TAG, "Stored private key of organizer");
 
-                    CompletableFuture.supplyAsync(() -> {
-                        try {
-                            //TODO Get URL dynamically
-                            return PoPClientEndpoint.connectToServer(URI.create("ws://10.0.2.2:2020/"), app.getPerson());
-                        } catch (DeploymentException e) {
-                            e.printStackTrace();
-                            return null;
-                        }
-                    }).thenCompose(p -> {
-                        if (p != null)
-                            return p.createLao(lao.getName(), lao.getTime(), lao.getTime(), app.getPerson().getId());
-                        else
-                            return null;
-                    }).whenComplete((errCode, t) -> {
-                        if (t != null)
-                            //TODO Show toast for error
-                            Log.e(TAG, "Error while creating the lao", t);
-                        else {
-                            //TODO Show toast for success
+                    app.getLocalProxy()
+                        .thenCompose(p -> p.createLao(lao.getName(), lao.getTime(), lao.getTime(), app.getPerson().getId()))
+                        .thenAccept(code -> {
                             Person organizer = app.getPerson().setLaos(Collections.singletonList(lao.getId()));
                             // Set LAO and organizer information locally
                             ((PoPApplication) getApplication()).setPerson(organizer);
@@ -117,8 +97,15 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
                             // Start the Organizer Activity (user is considered an organizer)
                             Intent intent = new Intent(this, OrganizerActivity.class);
                             startActivity(intent);
-                        }
-                    });
+                        })
+                        .exceptionally(t -> {
+                            Toast toast = Toast.makeText(this, "An error occurred : \n" + t.getMessage(), Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL, 0, 0);
+                            toast.show();
+
+                            Log.e(TAG, "Error while creating Lao", t);
+                            return null;
+                        });
                 }
                 break;
             case R.id.button_cancel_launch:

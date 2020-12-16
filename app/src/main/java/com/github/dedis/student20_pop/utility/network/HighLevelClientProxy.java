@@ -98,4 +98,13 @@ public final class HighLevelClientProxy {
         return lowLevelClientProxy.publish(publicKey, privateKey, ROOT + "/" + laoId,
                 new CreateMeeting(Hash.hash(laoId + creation + name), name, creation, lastModified, location, start, end));
     }
+
+    /**
+     * Check whether or not the connection is open or closed
+     *
+     * @return true if it is
+     */
+    public boolean isOpen() {
+        return lowLevelClientProxy.getSession().isOpen();
+    }
 }
