@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"fmt"
+	"log"
 	"strconv"
 	"student20_pop/lib"
 	"student20_pop/message"
@@ -15,7 +16,7 @@ import (
 func LAOIsValid(data message.DataCreateLAO, message message.Message, create bool) bool {
 	//the timestamp is reasonably recent with respect to the server’s clock,
 	if data.Creation < time.Now().Unix()-MaxClockDifference || data.Creation > time.Now().Unix()+MaxPropagationDelay {
-		fmt.Printf("timestamp invalid, either too old or in the future : %v", data.Creation)
+		log.Printf("timestamp invalid, either too old or in the future : %v", data.Creation)
 		return false
 	}
 	//the attestation is valid,
@@ -28,7 +29,7 @@ func LAOIsValid(data message.DataCreateLAO, message message.Message, create bool
 	if create && !bytes.Equal([]byte(data.ID), hash[:]) {
 		//if(hash64 != data.ID) {
 		fmt.Printf("sec3 \n")
-		fmt.Printf("expecting %v, got %v", hash, data.ID)
+		log.Printf("expecting %v, got %v", hash, data.ID)
 		return false
 	}
 
@@ -40,15 +41,19 @@ func LAOIsValid(data message.DataCreateLAO, message message.Message, create bool
 func MeetingCreatedIsValid(data message.DataCreateMeeting, message message.Message) bool {
 	//the timestamp is reasonably recent with respect to the server’s clock,
 	if data.Creation < time.Now().Unix()-MaxClockDifference || data.Creation > time.Now().Unix()+MaxPropagationDelay {
+		log.Printf("timestamp unvalid : got %d but need to be between %d and %d",
+			data.Creation, time.Now().Unix()-MaxClockDifference, time.Now().Unix()+MaxPropagationDelay)
 		return false
 	}
 
 	//we start after the creation and we end after the start
 	if data.Start < data.Creation || data.End < data.Start {
+		log.Printf("timestamps not logic. Either end is before start, or start before creation.")
 		return false
 	}
 	//need to meet some	where
 	if data.Location == "" {
+		log.Printf("location can not be empty")
 		return false
 	}
 	return true
