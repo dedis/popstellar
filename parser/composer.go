@@ -28,44 +28,56 @@ func ComposeBroadcastMessage(query message.Query) []byte {
  * we suppose error is in the good range
  */
 func ComposeResponse(err error, messages []byte, query message.Query) []byte {
-	var resp interface{}
+	var resp []byte
+	var internalErr error
 	if err != nil {
-		if err == lib.ErrIdNotDecoded {
-			resp = message.ResponseIDNotDecoded{
-				Jsonrpc:       "2.0",
-				ErrorResponse: selectDescriptionError(err),
-				Id:            nil,
-			}
-
-		} else {
-			resp = message.ResponseWithError{
-				Jsonrpc:       "2.0",
-				ErrorResponse: selectDescriptionError(err),
-				Id:            query.Id,
-			}
-
-		}
+		resp, internalErr = composeErrorResponse(err, query)
 	} else {
-		if messages == nil {
-			resp = message.ResponseWithGenResult{
-				Jsonrpc: "2.0",
-				Result:  0,
-				Id:      query.Id,
-			}
-		} else {
-			resp = message.ResponseWithCatchupResult{
-				Jsonrpc: "2.0",
-				Result:  string(messages),
-				Id:      query.Id,
-			}
-		}
+		resp, internalErr = composeResponse(messages, query)
 	}
 
-	b, err := json.Marshal(resp)
-	if err != nil {
+	if internalErr != nil {
 		log.Println("couldn't Marshal the response")
 	}
-	return b
+	return resp
+}
+
+func composeErrorResponse(err error, query message.Query) ([]byte, error) {
+	var resp interface{}
+	if err == lib.ErrIdNotDecoded {
+		resp = message.ResponseIDNotDecoded{
+			Jsonrpc:       "2.0",
+			ErrorResponse: selectDescriptionError(err),
+			Id:            nil,
+		}
+
+	} else {
+		resp = message.ResponseWithError{
+			Jsonrpc:       "2.0",
+			ErrorResponse: selectDescriptionError(err),
+			Id:            query.Id,
+		}
+
+	}
+	return json.Marshal(resp)
+}
+
+func composeResponse(messages []byte, query message.Query) ([]byte, error) {
+	var resp interface{}
+	if messages == nil {
+		resp = message.ResponseWithGenResult{
+			Jsonrpc: "2.0",
+			Result:  0,
+			Id:      query.Id,
+		}
+	} else {
+		resp = message.ResponseWithCatchupResult{
+			Jsonrpc: "2.0",
+			Result:  string(messages),
+			Id:      query.Id,
+		}
+	}
+	return json.Marshal(resp)
 }
 
 /*
