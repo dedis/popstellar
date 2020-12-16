@@ -46,10 +46,12 @@ const Item = ({ events, closedList }) => {
   };
   const navigation = useNavigation();
 
-  const organizationNameBase = events.title === '' ? events.data.filter((e) => e.type === 'organization_name')[0].name : '';
+  const tempOrganizationName = events.data.filter((e) => e.type === 'organization_name');
+  const organizationNameBase = events.title === '' && tempOrganizationName.length > 0 ? tempOrganizationName[0].name : '';
   const [organizationName, setOrganizationName] = useState(organizationNameBase);
 
-  const witnessesBase = events.title === '' ? [...events.data.filter((e) => e.type === 'witness')[0].witnesses].map((w) => ({ name: w, isRemove: false })) : [];
+  const tempWitnesses = events.data.filter((e) => e.type === 'witness');
+  const witnessesBase = events.title === '' && tempWitnesses.length > 0 ? [...tempWitnesses[0].witnesses].map((w) => ({ name: w, isRemove: false })) : [];
   const [witnesses, setWitnesses] = useState(witnessesBase);
 
   const removeElement = (index) => {

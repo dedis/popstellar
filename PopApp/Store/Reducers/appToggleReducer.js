@@ -1,4 +1,4 @@
-const initialState = { organizationNavigation: false, LAO_ID: -1 };
+const initialState = { organizationNavigation: false, LAO_ID: '-1' };
 
 /**
  * Reducer to switch between organization UI and home UI
@@ -20,7 +20,7 @@ function toggleAppNavigationScreen(state = initialState, action) {
       nextState = {
         ...state,
         organizationNavigation: !state.organizationNavigation,
-        LAO_ID: -1,
+        LAO_ID: '-1',
       };
       return nextState || state;
     default:

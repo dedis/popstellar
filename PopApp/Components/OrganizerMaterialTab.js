@@ -79,7 +79,7 @@ MytabBar.propTypes = {
   navigation: PROPS_TYPE.navigation.isRequired,
   navigationState: PROPS_TYPE.navigationState.isRequired,
   dispatch: PropTypes.func.isRequired,
-  LAO_ID: PropTypes.number,
+  LAO_ID: PropTypes.string,
   LAOs: PropTypes.arrayOf(PROPS_TYPE.LAO).isRequired,
 };
 
