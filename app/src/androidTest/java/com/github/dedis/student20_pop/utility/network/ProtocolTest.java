@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -59,7 +60,7 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelClientProxy proxy = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
         proxy.createLao(LAO_NAME, 0, 0, bob.getId())
             .whenComplete((i, t) -> {
@@ -83,7 +84,7 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelClientProxy proxy = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
         proxy.createLao(LAO_NAME, 0, 0, bob.getId())
             .whenComplete((i, t) -> {
@@ -102,7 +103,7 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelClientProxy proxy = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
         proxy.updateLao(LAO_ID, LAO_NAME, 0, Collections.singletonList(bob.getId()))
                 .whenComplete((i, t) -> {
@@ -121,7 +122,7 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelClientProxy proxy = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
         proxy.createMeeting(LAO_ID, MEETING_NAME, 0, 0, "loc", 0, 0)
                 .whenComplete((i, t) -> {
@@ -140,7 +141,7 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelClientProxy proxy = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
         proxy.witnessMessage(LAO_ID, "mId", "data")
                 .whenComplete((i, t) -> {
@@ -159,7 +160,7 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelClientProxy proxy = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelClientProxy proxy = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
         proxy.createLao(LAO_NAME, 0, 0, bob.getId())
                 .whenComplete((i, t) -> {

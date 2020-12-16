@@ -2,26 +2,30 @@ package com.github.dedis.student20_pop;
 
 import android.app.Application;
 import android.content.Context;
-
-import androidx.annotation.VisibleForTesting;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.github.dedis.student20_pop.model.Event;
 import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.Person;
-import com.github.dedis.student20_pop.utility.security.Hash;
+import com.github.dedis.student20_pop.utility.network.HighLevelClientProxy;
+import com.github.dedis.student20_pop.utility.network.PoPClientEndpoint;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Class modelling the application : a unique person associated with LAOs
  */
 public class PoPApplication extends Application {
+
+    private static final String LOCAL_BACKEND_URI = "ws://10.0.2.2:2000";
 
     private static Context appContext;
     private Person person;
@@ -34,10 +38,13 @@ public class PoPApplication extends Application {
     private Person dummyPerson;
     private Lao dummyLao;
     private Map<Lao, List<Event>> dummyLaoEventsMap;
+    private CompletableFuture<HighLevelClientProxy> localProxy;
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        PoPClientEndpoint.startPurgeRoutine(new Handler(Looper.getMainLooper()));
 
         appContext = getApplicationContext();
 
@@ -140,6 +147,42 @@ public class PoPApplication extends Application {
      */
     public void setCurrentLao(Lao lao){
         this.currentLao = lao;
+    }
+
+    /**
+     * Get the proxy of the local device's backend
+     *
+     * Create it if needed
+     * @return a completable future that will hold the proxy once the connection the backend is established
+     */
+    public CompletableFuture<HighLevelClientProxy> getLocalProxy() {
+        refreshLocalProxy();
+
+        return localProxy;
+    }
+
+    /**
+     * Refresh the local proxy future.
+     *
+     * If there was no connections yet, start one.
+     * If there was an attempt but it failed, retry.
+     * If the connection was lost, retry
+     */
+    private void refreshLocalProxy() {
+        if(localProxy == null)
+            // If there was no attempt yet, try
+            localProxy = PoPClientEndpoint.connectAsync(URI.create(LOCAL_BACKEND_URI), person);
+        else if(localProxy.isDone()) {
+            try {
+                // If it succeeded, but it is now closed, retry
+                HighLevelClientProxy currentSession = localProxy.getNow(null);
+                if (currentSession == null || !currentSession.isOpen())
+                    localProxy = PoPClientEndpoint.connectAsync(URI.create(LOCAL_BACKEND_URI), person);
+            } catch (Exception e) {
+                //There was an error during competition, retry
+                localProxy = PoPClientEndpoint.connectAsync(URI.create(LOCAL_BACKEND_URI), person);
+            }
+        }
     }
 
     /**

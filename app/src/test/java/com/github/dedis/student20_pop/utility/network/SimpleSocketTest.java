@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import javax.websocket.DeploymentException;
@@ -52,12 +53,13 @@ public class SimpleSocketTest {
 
         Thread t = new Thread(() -> {
             try {
-                LowLevelClientProxy session = PoPClientEndpoint.connectToServer(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), new Person("tester")).lowLevel();
+                LowLevelClientProxy session = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), new Person("tester")).lowLevel();
                 for(String s : toSend)
                     session.getSession().getBasicRemote().sendText(s);
                 session.getSession().close();
                 waiter.resume();
-            } catch (DeploymentException | IOException e) {
+            } catch (IOException | DeploymentException e) {
+                waiter.fail(e.getMessage());
                 e.printStackTrace();
             }
         });
