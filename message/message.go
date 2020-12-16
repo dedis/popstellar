@@ -38,7 +38,7 @@ type Message struct {
 	Data              json.RawMessage `json:"data"` // in base 64
 	Sender            string          `json:"sender"`
 	Signature         string          `json:"signature"`
-	Message_id        string          `json:"messageId"`
+	MessageId         string          `json:"message_id"`
 	WitnessSignatures []string        `json:"witnessSignatures"`
 }
 
