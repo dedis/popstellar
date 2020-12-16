@@ -11,7 +11,7 @@ import java.util.Base64
 
 object MessageCreationUtils {
 
-  private def b64Encode(b: Array[Byte]): Array[Byte] = Base64.getEncoder.encode(b)
+  def b64Encode(b: Array[Byte]): Array[Byte] = Base64.getEncoder.encode(b)
 
   def getMessageParams(data: MessageContentData, pk: PublicKey, sk: PrivateKey, channel: ChannelName): MessageParameters = {
     val encodedData = b64Encode(data.toJson.compactPrint.getBytes).map(_.toChar).mkString
