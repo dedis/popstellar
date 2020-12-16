@@ -14,7 +14,7 @@ import (
 /* used for both creation and state update */
 func LAOIsValid(data message.DataCreateLAO, message message.Message, create bool) bool {
 	//the timestamp is reasonably recent with respect to the server’s clock,
-	if data.Creation > time.Now().Unix() || data.Creation < time.Now().Unix()-MaxPropagationDelay {
+	if data.Creation < time.Now().Unix()-MaxClockDifference || data.Creation > time.Now().Unix()+MaxPropagationDelay {
 		fmt.Printf("timestamp invalid, either too old or in the future : %v", data.Creation)
 		return false
 	}
