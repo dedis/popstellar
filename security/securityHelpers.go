@@ -50,8 +50,8 @@ func VerifyWitnessSignatures(publicKeys []string, witnessSignaturesEnc []string,
 	if err != nil {
 		return lib.ErrEncodingFault
 	}
-	//TODO do we only check the pairs in witnessSignaturesEnc (1) or do need to verify that the publicKey
-	// of the pair is in the publicKeys before (2)?
+	//TODO  : Do we only check the pairs in witnessSignaturesEnc (1) or do need to verify that the publicKey
+	// of the pair is in the witnesses publicKeys before (2)?
 	for i := 0; i < len(witnessSignaturesEnc); i++ {
 		witnessSignatures, err := parser.ParseWitnessSignature(witnessSignaturesEnc[i])
 		if err != nil {
