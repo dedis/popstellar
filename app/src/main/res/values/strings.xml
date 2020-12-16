@@ -58,4 +58,6 @@
     <!-- QR code -->
     <string name="qrcode_scanning_add_witness">Scan personal QR code of the witness to add</string>
     <string name="qrcode_scanning_connect_lao">Scan a QR code to connect to a LAO</string>
+    <string name="add_witness_successful">Witness has been added</string>
+    <string name="add_witness_unsuccessful">Witness could not be added</string>
 </resources>

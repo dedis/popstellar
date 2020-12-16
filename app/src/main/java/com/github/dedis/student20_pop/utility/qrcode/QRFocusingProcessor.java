@@ -1,6 +1,5 @@
 package com.github.dedis.student20_pop.utility.qrcode;
 
-import android.util.Log;
 import android.util.SparseArray;
 
 import com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType;
@@ -66,12 +65,9 @@ public class QRFocusingProcessor extends FocusingProcessor<Barcode> {
         public void onNewItem(int id, Barcode barcode) {
             //TODO : In some particular usage, we don't want to scan an URL but text
             // or other type of data
-            Log.d("DEBUG", "Neeeeeeeeeeeeew item");
             if (barcode.valueFormat == Barcode.URL) {
-                Log.d("DEBUG", "--------------------------> URL format : Connecting to a new LAO");
                 listener.onQRCodeDetected(barcode.url.url, qrCodeScanningType);
             } else if (barcode.valueFormat == Barcode.TEXT) {
-                Log.d("DEBUG", "--------------------> TEXT format : Adding Witness");
                 listener.onQRCodeDetected(barcode.displayValue, qrCodeScanningType);
             }
         }

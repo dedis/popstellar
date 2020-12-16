@@ -82,7 +82,7 @@ public class WitnessListAdapter extends BaseAdapter {
         }
 
         ((TextView) convertView.findViewById(R.id.text_view_witness_name))
-                .setText("Witness " + (position + 1) + " : \n" + witnesses.get(position));
+                .setText(witnesses.get(position));
         ImageButton deleteButton = convertView.findViewById(R.id.image_button_delete_witness);
         deleteButton.setVisibility(parent.getId() == R.id.witness_edit_list ? View.VISIBLE : View.GONE);
         deleteButton.setOnClickListener(

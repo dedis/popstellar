@@ -2,7 +2,6 @@ package com.github.dedis.student20_pop.ui;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.github.dedis.student20_pop.OrganizerActivity;
+import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 
 import net.glxn.qrgen.android.QRCode;
@@ -22,8 +21,6 @@ import net.glxn.qrgen.android.QRCode;
 /**
  * Represents the identity of a user within an organization
  * (which allows users to “wear different hats” in different organizations)
- * <p>
- * <p>
  * TODO : For te moment, the goal of this UI is just to show a QR code,
  * but in the future, it will be needed to store identity information somewhere
  * to make it dependent of the current user and LAO
@@ -74,9 +71,12 @@ public class IdentityFragment extends Fragment {
         //User identity is composed of :
         //User's public key
         //Organization's ID
-        String key = this.getArguments().getString(OrganizerActivity.PRIVATE_KEY_TAG);
-        String lao = this.getArguments().getString(OrganizerActivity.LAO_ID_TAG);
-        String uniqueIdentity = key + lao;
+        final PoPApplication app = ((PoPApplication) this.getActivity().getApplication());
+        String key = app.getPerson().getAuthentication();
+        String laoId = app.getCurrentLao().getId();
+        String uniqueIdentity = key + laoId;
+
+        identityNameEditText.setText(app.getPerson().getName());
 
         Bitmap myBitmap = QRCode.from(uniqueIdentity).bitmap();
         qrCode.setImageBitmap(myBitmap);
