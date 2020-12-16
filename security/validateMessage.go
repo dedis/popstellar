@@ -38,10 +38,6 @@ func LAOIsValid(data message.DataCreateLAO, message message.Message, create bool
 }
 
 func MeetingCreatedIsValid(data message.DataCreateMeeting, message message.Message) bool {
-	//the last modified timestamp is equal to the creation timestamp,
-	/*if data.Creation != data.Last_modified {
-		return false
-	}*/
 	//the timestamp is reasonably recent with respect to the server’s clock,
 	if data.Creation < time.Now().Unix()-MaxClockDifference || data.Creation > time.Now().Unix()+MaxPropagationDelay {
 		return false
