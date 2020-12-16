@@ -68,7 +68,7 @@ func MessageIsValid(msg message.Message) error { //TODO remove ID hash check
 	str = append(str, []byte(msg.Signature)...)
 	hash := sha256.Sum256(str)
 
-	if !bytes.Equal([]byte(msg.Message_id), hash[:]) {
+	if !bytes.Equal([]byte(msg.MessageId), hash[:]) {
 		return lib.ErrInvalidResource
 	}
 

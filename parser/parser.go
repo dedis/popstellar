@@ -50,11 +50,11 @@ func ParseMessage(msg json.RawMessage) (message.Message, error) {
 	}
 	m.Sender = string(d)
 
-	d, err = lib.Decode(m.Message_id)
+	d, err = lib.Decode(m.MessageId)
 	if err != nil {
 		return m, lib.ErrEncodingFault
 	}
-	m.Message_id = string(d)
+	m.MessageId = string(d)
 
 	d, err = lib.Decode(m.Signature)
 	if err != nil {

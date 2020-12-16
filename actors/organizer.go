@@ -331,7 +331,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 	// decrypt msg and compare with hash of "local" data
 
 	//retrieve message to sign from database
-	toSign := db.GetMessage([]byte(canal), []byte(msg.Message_id), o.database)
+	toSign := db.GetMessage([]byte(canal), []byte(msg.MessageId), o.database)
 	if toSign == nil {
 		return nil, nil, lib.ErrInvalidResource
 	}
