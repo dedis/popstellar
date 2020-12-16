@@ -38,7 +38,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.ADD_WITNESS;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
-import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.isIn;
 import static org.hamcrest.Matchers.not;
 
 
@@ -185,10 +185,6 @@ public class OrganizerFragmentTest {
 
     @Test
     public void canAddWitness() {
-        final String LAO_ID = "sikTQjDnc2pZre8VgTu74LvyNr3V8RBw7IWcHJwcEiU=";
-        final String WITNESS_ID = "t9Ed+TEwDM0+u0ZLdS4ZB/Vrrnga0Lu2iMkAQtyFRrQ=";
-        final String TEST_IDS = WITNESS_ID + LAO_ID;
-
         onView(withId(R.id.tab_properties)).perform(click());
         onView(withId(R.id.properties_view)).check(matches(isDisplayed()));
         onView(withId(R.id.edit_button)).perform(click());
@@ -199,16 +195,25 @@ public class OrganizerFragmentTest {
             Fragment fragment = a.getSupportFragmentManager().findFragmentByTag(QRCodeScanningFragment.TAG);
             Assert.assertNotNull(fragment);
             Assert.assertTrue(fragment instanceof QRCodeScanningFragment);
-            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_WITNESS);
 
             PoPApplication app = (PoPApplication) a.getApplication();
-            for (Entry<Lao, List<String>> laoListEntry : app.getLaoWitnessesHashMap().entrySet()) {
-                if (laoListEntry.getKey().toString().equals(LAO_ID)) {
+            final String LAO_ID = app.getCurrentLao().getId();
+            final String WITNESS_ID = "t9Ed+TEwDM0+u0ZLdS4ZB/Vrrnga0Lu2iMkAQtyFRrQ=";
+            final String TEST_IDS = WITNESS_ID + LAO_ID;
+
+            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_WITNESS);
+
+            for (Entry<Lao, List<String>> laoListEntry : app.getDummyLaoWitnessesHashMap().entrySet()) {
+                if (laoListEntry.getKey().getId().equals(LAO_ID)) {
                     List<String> witnesses = laoListEntry.getValue();
-                    Assert.assertThat(witnesses, contains(WITNESS_ID));
+                    Assert.assertThat(WITNESS_ID, isIn(witnesses));
                 }
             }
         });
+
+        onView(withText(getApplicationContext().getString(R.string.add_witness_successful)))
+                .inRoot(withDecorView(not(decorView)))
+                .check(matches(isDisplayed()));
     }
 
     @Test

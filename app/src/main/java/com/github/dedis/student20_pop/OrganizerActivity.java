@@ -5,13 +5,13 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.github.dedis.student20_pop.model.Keys;
-import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.ui.CameraPermissionFragment;
 import com.github.dedis.student20_pop.ui.ConnectingFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
@@ -24,8 +24,6 @@ import com.github.dedis.student20_pop.utility.qrcode.OnCameraNotAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
 import com.github.dedis.student20_pop.utility.ui.OnAddWitnessListener;
 import com.github.dedis.student20_pop.utility.ui.OnEventTypeSelectedListener;
-
-import java.util.Date;
 
 import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.ADD_WITNESS;
 
@@ -71,18 +69,7 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
                 showFragment(new HomeFragment(), HomeFragment.TAG);
                 break;
             case R.id.tab_identity:
-                Bundle bundle = new Bundle();
-
-                final PoPApplication app = ((PoPApplication) getApplication());
-                bundle.putString(PRIVATE_KEY_TAG, app.getPerson().getAuthentication());
-
-                Lao lao = app.getCurrentLao();
-                bundle.putString(LAO_ID_TAG, lao.getId());
-
-                // set Fragmentclass Arguments
-                IdentityFragment identityFragment = new IdentityFragment();
-                identityFragment.setArguments(bundle);
-                showFragment(identityFragment, IdentityFragment.TAG);
+                showFragment(new IdentityFragment(), IdentityFragment.TAG);
                 break;
 
             default:
@@ -146,15 +133,16 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
                 //TODO
                 int keyLength = new Keys().getPublicKey().length();
                 String witnessId = data.substring(0, keyLength);
-                String laoId = data.substring(keyLength);
 
                 PoPApplication app = (PoPApplication) getApplication();
-                app.addWitness(laoId, witnessId);
+                boolean hasBeenAdded = app.addWitness(witnessId);
 
-                // TODO : send info to backend
-
-                // TODO : If witness has been added
-                getSupportFragmentManager().popBackStackImmediate();
+                if (hasBeenAdded) {
+                    Toast.makeText(this, getString(R.string.add_witness_successful), Toast.LENGTH_SHORT).show();
+                    getSupportFragmentManager().popBackStackImmediate();
+                } else {
+                    Toast.makeText(this, getString(R.string.add_witness_unsuccessful), Toast.LENGTH_SHORT).show();
+                }
 
                 break;
             case CONNECT_LAO:
