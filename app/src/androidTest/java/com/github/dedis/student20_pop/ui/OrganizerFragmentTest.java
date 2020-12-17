@@ -9,6 +9,7 @@ import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.rule.GrantPermissionRule;
 
+import com.github.dedis.student20_pop.MainActivity;
 import com.github.dedis.student20_pop.OrganizerActivity;
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
@@ -20,6 +21,9 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -31,19 +35,27 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.github.dedis.student20_pop.PoPApplication.ADD_WITNESS_SUCCESSFUL;
 import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.ADD_WITNESS;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isIn;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertNull;
 
 
 public class OrganizerFragmentTest {
     private View decorView;
+    private final String witness1 = "Alphonse";
+    private final String witness2 = "Bertrand";
+    private final ArrayList<String> witnesses = new ArrayList<>(Arrays.asList(witness1, witness2));
 
     @Rule
     public ActivityScenarioRule<OrganizerActivity> activityScenarioRule =
@@ -64,6 +76,11 @@ public class OrganizerFragmentTest {
             @Override
             public void perform(OrganizerActivity activity) {
                 decorView = activity.getWindow().getDecorView();
+                PoPApplication app = (PoPApplication) activity.getApplication();
+                assertThat(app.getWitnesses(), is(empty()));
+                int result = app.addWitness(witness1);
+                assertThat(app.getWitnesses(), is(Collections.singletonList(witness1)));
+                assertThat(result, is(ADD_WITNESS_SUCCESSFUL));
             }
         });
     }
@@ -203,7 +220,7 @@ public class OrganizerFragmentTest {
 
             ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_WITNESS);
 
-            for (Entry<Lao, List<String>> laoListEntry : app.getDummyLaoWitnessesHashMap().entrySet()) {
+            for (Entry<Lao, List<String>> laoListEntry : app.getLaoWitnessMap().entrySet()) {
                 if (laoListEntry.getKey().getId().equals(LAO_ID)) {
                     List<String> witnesses = laoListEntry.getValue();
                     Assert.assertThat(WITNESS_ID, isIn(witnesses));
@@ -212,6 +229,41 @@ public class OrganizerFragmentTest {
         });
 
         onView(withText(getApplicationContext().getString(R.string.add_witness_successful)))
+                .inRoot(withDecorView(not(decorView)))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void addingTwiceSameWitnessShowsToast() {
+        onView(withId(R.id.tab_properties)).perform(click());
+        onView(withId(R.id.properties_view)).check(matches(isDisplayed()));
+        onView(withId(R.id.edit_button)).perform(click());
+        onView(withId(R.id.add_witness_button)).perform(click());
+
+        // Simulate a detected url
+        activityScenarioRule.getScenario().onActivity(a -> {
+            Fragment fragment = a.getSupportFragmentManager().findFragmentByTag(QRCodeScanningFragment.TAG);
+            Assert.assertNotNull(fragment);
+            Assert.assertTrue(fragment instanceof QRCodeScanningFragment);
+
+            PoPApplication app = (PoPApplication) a.getApplication();
+            final String LAO_ID = app.getCurrentLao().getId();
+            final String WITNESS_ID = "t9Ed+TEwDM0+u0ZLdS4ZB/Vrrnga0Lu2iMkAQtyFRrQ=";
+            final String TEST_IDS = WITNESS_ID + LAO_ID;
+
+            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_WITNESS);
+
+            for (Entry<Lao, List<String>> laoListEntry : app.getLaoWitnessMap().entrySet()) {
+                if (laoListEntry.getKey().getId().equals(LAO_ID)) {
+                    List<String> witnesses = laoListEntry.getValue();
+                    Assert.assertThat(WITNESS_ID, isIn(witnesses));
+                }
+            }
+
+            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_WITNESS);
+        });
+
+        onView(withText(getApplicationContext().getString(R.string.add_witness_already_exists)))
                 .inRoot(withDecorView(not(decorView)))
                 .check(matches(isDisplayed()));
     }

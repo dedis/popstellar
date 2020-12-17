@@ -24,9 +24,13 @@ import java.util.concurrent.CompletableFuture;
  * Class modelling the application : a unique person associated with LAOs
  */
 public class PoPApplication extends Application {
+    public static final String TAG = PoPApplication.class.getSimpleName();
 
     private static final String LOCAL_BACKEND_URI = "ws://10.0.2.2:2000";
+    public static final int ADD_WITNESS_SUCCESSFUL = 0;
+    public static final int ADD_WITNESS_ALREADY_EXISTS = 1;
 
+    public static final String USERNAME = "USERNAME"; //TODO: let user choose/change its name
     private static Context appContext;
     private Person person;
     private Map<Lao, List<Event>> laoEventsMap;
@@ -40,7 +44,6 @@ public class PoPApplication extends Application {
     private Lao dummyLao;
     private Map<Lao, List<Event>> dummyLaoEventsMap;
     private CompletableFuture<HighLevelClientProxy> localProxy;
-    private Map<Lao, List<String>> dummyLaoWitnessesHashMap;
 
     @Override
     public void onCreate() {
@@ -52,7 +55,7 @@ public class PoPApplication extends Application {
 
         if (person == null) {
             // TODO: when can the user change/choose its name
-            setPerson(new Person("USER"));
+            setPerson(new Person(USERNAME));
         }
 
         if (laoEventsMap == null) {
@@ -66,7 +69,7 @@ public class PoPApplication extends Application {
         dummyPerson = new Person("name");
         dummyLao = new Lao("LAO I just joined", new Date(), dummyPerson.getId());
         dummyLaoEventsMap = dummyLaoEventMap();
-        dummyLaoWitnessesHashMap = dummyLaoWitnessesMap();
+        laoWitnessMap.put(dummyLao, new ArrayList<>());
 
     }
 
@@ -227,79 +230,92 @@ public class PoPApplication extends Application {
     }
 
     /**
-     * This method creates a map for testing, when no backend is connected
-     *
-     * @return the dummy map from Lao to Witnesses
-     */
-    private Map<Lao, List<String>> dummyLaoWitnessesMap() {
-        Map<Lao, List<String>> map = new HashMap<>();
-
-        List<String> witnesses = new ArrayList<>();
-        String person1 = "Alphonse";
-        String person2 = "Barbara";
-        String person3 = "Charles";
-        String person4 = "Deborah";
-        witnesses.add(person1);
-        witnesses.add(person2);
-        witnesses.add(person3);
-        witnesses.add(person4);
-
-        map.put(dummyLao, witnesses);
-
-        return map;
-    }
-
-    /**
      * Add witness' id to lao
      *
      * @param lao
      * @param witness
-     * @return true if witness has been added
+     * @return ADD_WITNESS_SUCCESSFUL if witness has been added
+     * ADD_WITNESS_ALREADY_EXISTS if witness already exists
      */
-    public boolean addWitness(Lao lao, String witness) {
+    public int addWitness(Lao lao, String witness) {
         //TODO when connected to backend
         // send info to backend
         // If witness has been added return true, otherwise false
 
         // List<String> laoWitnesses = laoWitnessMap.get(laoId);
-        List<String> laoWitnesses = dummyLaoWitnessesHashMap.get(lao);
+        List<String> laoWitnesses = laoWitnessMap.get(lao);
         if (laoWitnesses == null) {
             laoWitnesses = new ArrayList<>();
-            dummyLaoWitnessesHashMap.put(lao, laoWitnesses);
+            laoWitnessMap.put(lao, laoWitnesses);
             //laoWitnessMap.put(laoId, laoWitnesses);
         }
+
+        if (laoWitnesses.contains(witness))
+            return ADD_WITNESS_ALREADY_EXISTS;
+
+
         laoWitnesses.add(witness);
 
-        return true;
+        return ADD_WITNESS_SUCCESSFUL;
     }
 
     /**
      * @param witness add witness to current lao
-     * @return true if witness has been added
+     * @return ADD_WITNESS_SUCCESSFUL if witness has been added
+     * ADD_WITNESS_ALREADY_EXISTS if witness already exists
      */
-    public boolean addWitness(String witness) {
+    public int addWitness(String witness) {
         return addWitness(dummyLao, witness);
+        //TODO when connected to backend
         //addWitness(currentLao, witness);
+    }
+
+    /**
+     * @param witnesses add witness to current lao
+     * @return corresponding result for each witness in the list
+     */
+    public List<Integer> addWitnesses(List<String> witnesses) {
+        return addWitnesses(dummyLao, witnesses);
+        //TODO when connected to backend
+        //addWitnesses(currentLao, witness);
+    }
+
+    /**
+     * @param witnesses add witness to current lao
+     * @return corresponding result for each witness in the list
+     */
+    public List<Integer> addWitnesses(Lao lao, List<String> witnesses){
+        List<Integer> results = new ArrayList<>();
+        for (String witness : witnesses) {
+            results.add(addWitness(lao, witness));
+        }
+        return results;
     }
 
     /**
      * Get witnesses of a LAO
      *
      * @param lao
-     * @return
+     * @return lao's corresponding list of witnesses
      */
     public List<String> getWitnesses(Lao lao) {
-        return dummyLaoWitnessesHashMap.get(lao);
+        return laoWitnessMap.get(lao);
+    }
+
+    /**
+     * Get witnesses of current LAO
+     * @return lao's corresponding list of witnesses
+     */
+    public List<String> getWitnesses() {
+        return laoWitnessMap.get(dummyLao);
         //TODO when connected to backend
-        //return laoWitnessesMap.get(lao.getId());
+        //return laoWitnessMap.get(currentLao);
     }
 
     /**
      * Get Lao -> Witnesses HashMap
      */
-    public Map<Lao, List<String>> getDummyLaoWitnessesHashMap() {
-        return dummyLaoWitnessesHashMap;
-        //TODO when connected to backend
-        //return laoWitnessMap;
+    public Map<Lao, List<String>> getLaoWitnessMap() {
+        return laoWitnessMap;
     }
 }

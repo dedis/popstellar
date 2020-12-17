@@ -25,6 +25,8 @@ import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
 import com.github.dedis.student20_pop.utility.ui.OnAddWitnessListener;
 import com.github.dedis.student20_pop.utility.ui.OnEventTypeSelectedListener;
 
+import static com.github.dedis.student20_pop.PoPApplication.ADD_WITNESS_ALREADY_EXISTS;
+import static com.github.dedis.student20_pop.PoPApplication.ADD_WITNESS_SUCCESSFUL;
 import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.ADD_WITNESS;
 
 /**
@@ -135,13 +137,16 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
                 String witnessId = data.substring(0, keyLength);
 
                 PoPApplication app = (PoPApplication) getApplication();
-                boolean hasBeenAdded = app.addWitness(witnessId);
+                int hasBeenAdded = app.addWitness(witnessId);
 
-                if (hasBeenAdded) {
+                if (hasBeenAdded == ADD_WITNESS_SUCCESSFUL) {
                     Toast.makeText(this, getString(R.string.add_witness_successful), Toast.LENGTH_SHORT).show();
                     getSupportFragmentManager().popBackStackImmediate();
+                } else if (hasBeenAdded == ADD_WITNESS_ALREADY_EXISTS) {
+                    Toast.makeText(this, getString(R.string.add_witness_already_exists), Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(this, getString(R.string.add_witness_unsuccessful), Toast.LENGTH_SHORT).show();
+
                 }
 
                 break;
