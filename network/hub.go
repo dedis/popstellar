@@ -46,7 +46,6 @@ type hub struct {
 	// Registered connections.
 	connections map[*connection]struct{}
 
-	//Response for the sender
 	idOfSender int
 	//msg received from the sender through the websocket
 	receivedMessage chan []byte
