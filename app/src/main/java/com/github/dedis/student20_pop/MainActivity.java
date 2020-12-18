@@ -39,7 +39,7 @@ import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeSca
 /**
  * Activity used to display the different UIs
  **/
-public final class MainActivity extends FragmentActivity implements OnCameraNotAllowedListener, QRCodeListener, OnCameraAllowedListener, OnEventTypeSelectedListener, OnEventCreatedListener {
+public final class MainActivity extends FragmentActivity implements OnCameraNotAllowedListener, QRCodeListener, OnCameraAllowedListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
@@ -157,22 +157,5 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
     @Override
     public void onCameraAllowedListener(QRCodeScanningType qrCodeScanningType) {
         showFragment(new QRCodeScanningFragment(qrCodeScanningType), QRCodeScanningFragment.TAG);
-    }
-
-    /**
-     * only an Organizer can select an event to create
-     *
-     * @param eventType
-     */
-    public void OnEventTypeSelectedListener(EventType eventType) {
-    }
-
-    /**
-     * Only an Organizer can create an event
-     *
-     * @param event
-     */
-    @Override
-    public void OnEventCreatedListener(Event event) {
     }
 }

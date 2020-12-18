@@ -13,7 +13,7 @@ import com.github.dedis.student20_pop.R;
 
 import java.util.Calendar;
 
-import static com.github.dedis.student20_pop.ui.event.MeetingEventFragment.DATE_FORMAT;
+import static com.github.dedis.student20_pop.ui.event.MeetingEventCreationFragment.DATE_FORMAT;
 
 
 /**

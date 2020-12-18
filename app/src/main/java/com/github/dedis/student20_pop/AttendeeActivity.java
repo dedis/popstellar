@@ -16,7 +16,7 @@ import com.github.dedis.student20_pop.utility.ui.organizer.OnEventTypeSelectedLi
 /**
  * Activity used to display the different UIs for attendees
  **/
-public class AttendeeActivity extends FragmentActivity implements OnEventTypeSelectedListener {
+public class AttendeeActivity extends FragmentActivity {
 
     public static final String TAG = AttendeeActivity.class.getSimpleName();
 
@@ -65,14 +65,5 @@ public class AttendeeActivity extends FragmentActivity implements OnEventTypeSel
                     .addToBackStack(TAG)
                     .commit();
         }
-    }
-
-    /**
-     * Only an Organizer can create a new event
-     *
-     * @param eventType
-     */
-    @Override
-    public void OnEventTypeSelectedListener(Event.EventType eventType) {
     }
 }
