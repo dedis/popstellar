@@ -6,6 +6,7 @@ package actors
 
 import (
 	"fmt"
+	"log"
 	"student20_pop/db"
 	"student20_pop/event"
 	"student20_pop/lib"
@@ -30,7 +31,6 @@ func NewOrganizer(pkey string, db string) *Organizer {
 // message_ stands for message but renamed to avoid clashing with package name
 func (o *Organizer) HandleWholeMessage(receivedMsg []byte, userId int) (message_, channel, responseToSender []byte) {
 	// in case the message is already an answer message (positive ack or error), ignore and answer noting to avoid falling into infinite error loops
-	// TODO: in the future, might consider acting differently in case of error (like retrying the last action)
 	isAnswer, err := filterAnswers(receivedMsg)
 	if err != nil {
 		return nil, nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, message.Query{})
@@ -152,9 +152,9 @@ func (o *Organizer) handlePublish(query message.Query) (message, channel []byte,
 	case "message":
 		switch data["action"] {
 		case "witness":
+			// TODO : send state broadcast if more signatures than threshold
 			return o.handleWitnessMessage(msg, params.Channel, query)
-			//TODO: update state and send state broadcast
-			// TODO : state broadcast done on root/ or on LAO channel
+			// TODO : state broadcast done on root
 		default:
 			return nil, nil, lib.ErrInvalidAction
 		}
@@ -327,28 +327,37 @@ func (o *Organizer) handleUpdateProperties(msg message.Message, canal string, qu
 }
 
 func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, query message.Query) (message, channel []byte, err error) {
-	//TODO verify signature correctness
-	// decrypt msg and compare with hash of "local" data
+
+	data, errs := parser.ParseDataWitnessMessage(msg.Data)
+	if errs != nil {
+		log.Printf("unable to parse received Message in handleWitnessMessage()")
+		return nil, nil, errs
+	}
 
 	//retrieve message to sign from database
-	toSign := db.GetMessage([]byte(canal), []byte(msg.MessageId), o.database)
+	toSign := db.GetMessage([]byte(canal), []byte(data.Message_id), o.database)
 	if toSign == nil {
 		return nil, nil, lib.ErrInvalidResource
 	}
 
 	toSignStruct, errs := parser.ParseMessage(toSign)
 	if errs != nil {
-		fmt.Printf("unable to analyse Message in handleWitnessMessage()")
+		log.Printf("unable to parse stored Message in handleWitnessMessage()")
 		return nil, nil, lib.ErrRequestDataInvalid
 	}
 
+	errs = security.VerifySignature(msg.Sender, toSignStruct.Data, data.Signature)
+	if errs != nil {
+		return nil, nil, errs
+	}
+
 	//if message was already signed by this witness, returns an error
-	_, found := lib.FindStr(toSignStruct.WitnessSignatures, msg.Signature)
+	_, found := lib.FindStr(toSignStruct.WitnessSignatures, data.Signature)
 	if found {
 		return nil, nil, lib.ErrResourceAlreadyExists
 	}
 
-	toSignStruct.WitnessSignatures = append(toSignStruct.WitnessSignatures, msg.Signature)
+	toSignStruct.WitnessSignatures = append(toSignStruct.WitnessSignatures, data.Signature)
 
 	// update "LAOUpdateProperties" message in DB
 	errs = db.UpdateMessage(toSignStruct, canal, o.database)

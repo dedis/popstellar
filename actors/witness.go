@@ -31,9 +31,8 @@ func NewWitness(pkey string, db string) *Witness {
 }
 
 /* processes what is received from the websocket */
-func (w *Witness) HandleWholeMessage(receivedMsg []byte, userId int) (message_, channel, responseToSender []byte) {
+func (w *Witness) HandleWholeMessage(receivedMsg []byte, userId int) (message_, channel_, responseToSender []byte) {
 	// in case the message is already an answer message (positive ack or error), ignore and answer noting to avoid falling into infinite error loops
-	// TODO: in the future, might consider acting differently in case of error (like retrying the last action)
 	isAnswer, err := filterAnswers(receivedMsg)
 	if err != nil {
 		return nil, nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, message.Query{})
@@ -49,21 +48,21 @@ func (w *Witness) HandleWholeMessage(receivedMsg []byte, userId int) (message_, 
 
 	var history []byte = nil
 	var msg []byte = nil
-	var chann []byte = nil
+	var channel []byte = nil
 
 	switch query.Method {
 	case "publish":
-		msg, chann, err = w.handlePublish(query)
+		msg, channel, err = w.handlePublish(query)
 	case "message":
-		msg, chann, err = w.handleMessage(query)
+		msg, channel, err = w.handleMessage(query)
 	case "subscribe", "unsubscribe", "catchup":
 		// Even though witness do nothing for some methods, it should not return an error
 		return nil, nil, nil
 	default:
-		msg, chann, err = nil, nil, lib.ErrRequestDataInvalid
+		msg, channel, err = nil, nil, lib.ErrRequestDataInvalid
 	}
 
-	return msg, chann, parser.ComposeResponse(err, history, query)
+	return msg, channel, parser.ComposeResponse(err, history, query)
 }
 
 func (w *Witness) handlePublish(query message.Query) (messsage, channel []byte, err error) {

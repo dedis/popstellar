@@ -102,7 +102,6 @@ func ParseData(data string) (message.Data, error) {
 	return m, err
 }
 
-// TODO : Change name toParseDataLAO ? Because creation / state are the same. Or not ?
 func ParseDataCreateLAO(data json.RawMessage) (message.DataCreateLAO, error) {
 	m := message.DataCreateLAO{}
 	err := json.Unmarshal(data, &m)
