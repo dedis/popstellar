@@ -1,0 +1,4 @@
+[submodule "jsonRPC"]
+	path = jsonRPC
+	url = https://github.com/dedis/student20_pop
+	branch = proto-specs
