@@ -4,6 +4,8 @@ const STRINGS = {
   general_button_cancel: 'Cancel',
   general_button_confirm: 'Confirm',
   general_button_open: 'Open',
+  general_button_yes: 'Yes',
+  general_button_no: 'No',
 
   /* --- Navigation Strings --- */
   navigation_tab_home: 'Home',
@@ -93,6 +95,7 @@ const STRINGS = {
   roll_call_scan_description: 'Please scan each participant’s Roll-call QR code exactly once.',
   roll_call_scan_participant: 'participants scanned',
   roll_call_scan_close: 'Close Roll-Call',
+  roll_call_scan_confirmation: 'Do you confirm to close the roll-call ?',
 
   /* --- Poll creation Strings --- */
   poll_create_question: 'Question*',

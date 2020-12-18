@@ -46,11 +46,11 @@ const Item = ({ events, closedList }) => {
   };
   const navigation = useNavigation();
 
-  const tempOrganizationName = events.data.filter((e) => e.type === 'organization_name');
+  const tempOrganizationName = events.data.filter((e) => e.object === 'organization_name');
   const organizationNameBase = events.title === '' && tempOrganizationName.length > 0 ? tempOrganizationName[0].name : '';
   const [organizationName, setOrganizationName] = useState(organizationNameBase);
 
-  const tempWitnesses = events.data.filter((e) => e.type === 'witness');
+  const tempWitnesses = events.data.filter((e) => e.object === 'witness');
   const witnessesBase = events.title === '' && tempWitnesses.length > 0 ? [...tempWitnesses[0].witnesses].map((w) => ({ name: w, isRemove: false })) : [];
   const [witnesses, setWitnesses] = useState(witnessesBase);
 
@@ -105,7 +105,7 @@ const Item = ({ events, closedList }) => {
   };
 
   const renderPropretiesEditing = (item) => {
-    switch (item.type) {
+    switch (item.object) {
       case 'organization_name':
         return (
           <TextInput

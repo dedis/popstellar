@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   StyleSheet, View, Text, Button, Modal, TouchableOpacity,
+  Platform,
 } from 'react-native';
 
 import { Buttons, Colors, Typography } from '../Styles';
@@ -67,8 +68,20 @@ const RollCallScanning = ({ navigation }) => {
   const [nbPartipants, setNbPartipant] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
 
+  const closeRollCall = () => {
+    if (Platform.OS === 'web') {
+      if (window.confirm(STRINGS.roll_call_scan_confirmation)) {
+        navigation.goBack();
+      }
+    } else {
+      setModalVisible(true);
+    }
+  };
+
   return (
     <View style={styles.container}>
+      {Platform.OS !== 'web'
+      && (
       <Modal
         animationType="fade"
         transparent
@@ -77,7 +90,7 @@ const RollCallScanning = ({ navigation }) => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Do you confirm to close the roll-call ?</Text>
+            <Text style={styles.modalText}>{STRINGS.roll_call_scan_confirmation}</Text>
             <View style={{ flexDirection: 'row' }}>
               <TouchableOpacity
                 style={{ ...styles.openButton, backgroundColor: Colors.blue }}
@@ -85,7 +98,7 @@ const RollCallScanning = ({ navigation }) => {
                   setModalVisible(!modalVisible);
                 }}
               >
-                <Text style={styles.textStyle}>No</Text>
+                <Text style={styles.textStyle}>{STRINGS.general_button_no}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={{ ...styles.openButton, backgroundColor: Colors.blue }}
@@ -94,12 +107,13 @@ const RollCallScanning = ({ navigation }) => {
                   navigation.goBack();
                 }}
               >
-                <Text style={styles.textStyle}>Yes</Text>
+                <Text style={styles.textStyle}>{STRINGS.general_button_yes}</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
+      )}
       <Text style={styles.text}>
         {STRINGS.roll_call_scan_description}
       </Text>
@@ -113,7 +127,7 @@ const RollCallScanning = ({ navigation }) => {
         <Button
           style={styles.buttons}
           title={STRINGS.roll_call_scan_close}
-          onPress={() => setModalVisible(true)}
+          onPress={() => closeRollCall()}
         />
       </View>
     </View>
