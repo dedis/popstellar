@@ -26,9 +26,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-public final class MeetingEventFragment extends AbstractEventFragment {
+public final class MeetingEventCreationFragment extends AbstractEventCreationFragment {
 
-    public static final String TAG = MeetingEventFragment.class.getSimpleName();
+    public static final String TAG = MeetingEventCreationFragment.class.getSimpleName();
     public static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm", Locale.FRENCH);
     public static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH);
 
@@ -57,7 +57,7 @@ public final class MeetingEventFragment extends AbstractEventFragment {
         final FragmentManager fragmentManager = (getActivity()).getSupportFragmentManager();
         View view = inflater.inflate(R.layout.fragment_meeting_event, container, false);
 
-        setDateAndTimeView(view, MeetingEventFragment.this, fragmentManager);
+        setDateAndTimeView(view, MeetingEventCreationFragment.this, fragmentManager);
         addDateAndTimeListener(confirmTextWatcher);
 
 

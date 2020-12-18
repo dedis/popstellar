@@ -14,7 +14,7 @@ import com.github.dedis.student20_pop.R;
 
 import java.util.Calendar;
 
-import static com.github.dedis.student20_pop.ui.event.MeetingEventFragment.TIME_FORMAT;
+import static com.github.dedis.student20_pop.ui.event.MeetingEventCreationFragment.TIME_FORMAT;
 
 public class TimePickerFragment extends AppCompatDialogFragment implements TimePickerDialog.OnTimeSetListener {
     public static final String TAG = TimePickerFragment.class.getSimpleName();

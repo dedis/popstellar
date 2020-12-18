@@ -20,7 +20,7 @@ import com.github.dedis.student20_pop.ui.IdentityFragment;
 import com.github.dedis.student20_pop.ui.OrganizerFragment;
 import com.github.dedis.student20_pop.ui.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType;
-import com.github.dedis.student20_pop.ui.event.MeetingEventFragment;
+import com.github.dedis.student20_pop.ui.event.MeetingEventCreationFragment;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraNotAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
@@ -102,7 +102,7 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
     public void OnEventTypeSelectedListener(Event.EventType eventType) {
         switch (eventType) {
             case MEETING:
-                showFragment(new MeetingEventFragment(), MeetingEventFragment.TAG);
+                showFragment(new MeetingEventCreationFragment(), MeetingEventCreationFragment.TAG);
                 break;
             case ROLL_CALL:
                 //TODO

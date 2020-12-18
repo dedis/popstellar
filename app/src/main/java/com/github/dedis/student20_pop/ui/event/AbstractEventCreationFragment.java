@@ -28,7 +28,7 @@ import java.util.Locale;
  *
  * This class handles these fields.
  */
-abstract class AbstractEventFragment extends Fragment {
+abstract class AbstractEventCreationFragment extends Fragment {
     public static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm", Locale.FRENCH);
     public static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH);
 
