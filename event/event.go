@@ -3,6 +3,8 @@ package event
 
 import "hash"
 
+//TODO refaire les comments de cette page
+
 /*
 Data Types:
 For readability (human) and proper encoding for JSON, these data types must be transmitted
@@ -35,9 +37,9 @@ type Meeting struct {
 	Creation     int64 //  Unix timestamp (uint64)
 	LastModified int64 //timestamp
 	Location     string
-	Start        int64  //  Unix timestamp (uint64)
-	End          int64  //timestamp
-	Extra        string //TODO if this is json no need to stick to []byte
+	Start        int64 //  Unix timestamp (uint64)
+	End          int64 //timestamp
+	Extra        string
 }
 
 type RollCall struct {
@@ -49,9 +51,9 @@ type RollCall struct {
 	Creation     int64 //  Unix timestamp (uint64)
 	LastModified int64 //timestamp
 	Location     string
-	Start        int64  //  Unix timestamp (uint64)
-	End          int64  //timestamp
-	Extra        string //TODO if this is json no need to stick to []byte
+	Start        int64 //  Unix timestamp (uint64)
+	End          int64 //timestamp
+	Extra        string
 }
 
 type Poll struct {
@@ -63,9 +65,9 @@ type Poll struct {
 	Creation     int64 //  Unix timestamp (uint64)
 	LastModified int64 //timestamp
 	Location     string
-	Start        int64  //  Unix timestamp (uint64)
-	End          int64  //timestamp
-	Extra        string //TODO if this is json no need to stick to []byte
+	Start        int64 //  Unix timestamp (uint64)
+	End          int64 //timestamp
+	Extra        string
 }
 
 type Election struct {

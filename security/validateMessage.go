@@ -3,7 +3,6 @@ package security
 import (
 	"bytes"
 	"crypto/sha256"
-	"fmt"
 	"log"
 	"strconv"
 	"student20_pop/lib"
@@ -11,6 +10,8 @@ import (
 	"student20_pop/parser"
 	"time"
 )
+
+//TODO check with be-2 that we have the same requirements
 
 /* used for both creation and state update */
 func LAOIsValid(data message.DataCreateLAO, message message.Message, create bool) bool {
@@ -24,16 +25,11 @@ func LAOIsValid(data message.DataCreateLAO, message message.Message, create bool
 	str = append(str, []byte(strconv.FormatInt(data.Creation, 10))...)
 	str = append(str, []byte(data.Name)...)
 	hash := sha256.Sum256(str)
-	//hash64 := b64.StdEncoding.EncodeToString(hash[:])
 
 	if create && !bytes.Equal([]byte(data.ID), hash[:]) {
-		//if(hash64 != data.ID) {
-		fmt.Printf("sec3 \n")
 		log.Printf("expecting %v, got %v", hash, data.ID)
 		return false
 	}
-
-	//TODO any more checks to perform ?
 
 	return true
 }
@@ -67,7 +63,7 @@ func RollCallCreatedIsValid(data message.DataCreateRollCall, message message.Mes
 	return true
 }
 
-func MessageIsValid(msg message.Message) error { //TODO remove ID hash check
+func MessageIsValid(msg message.Message) error {
 	// the message_id is valid
 	str := []byte(msg.Data)
 	str = append(str, []byte(msg.Signature)...)

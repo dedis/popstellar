@@ -3,6 +3,7 @@ package actors
 
 import (
 	"fmt"
+	"log"
 	"student20_pop/db"
 	"student20_pop/lib"
 	"student20_pop/message"
@@ -29,13 +30,13 @@ func filterAnswers(receivedMsg []byte) (bool, error) {
 
 	_, isAnswerMsg := genericMsg["result"]
 	if isAnswerMsg {
-		fmt.Printf("an answer has been received, with %v", string(receivedMsg))
+		log.Printf("an answer has been received, with %v", string(receivedMsg))
 		return true, nil
 	}
 
 	_, isErrorMsg := genericMsg["error"]
 	if isErrorMsg {
-		fmt.Printf("an answer has been received, with %v", string(receivedMsg))
+		log.Printf("an answer has been received, with %v", string(receivedMsg))
 		return true, nil
 	}
 	return false, nil
