@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const MeetingEvent = ({ event }) => (
+const WitnessProperty = ({ event }) => (
   <View style={styles.view}>
     <Text style={styles.text}>{STRINGS.witness_name}</Text>
     <FlatList
@@ -38,8 +38,8 @@ const MeetingEvent = ({ event }) => (
   </View>
 );
 
-MeetingEvent.propTypes = {
-  event: PROPS_TYPE.event.isRequired,
+WitnessProperty.propTypes = {
+  event: PROPS_TYPE.property.isRequired,
 };
 
-export default MeetingEvent;
+export default WitnessProperty;
