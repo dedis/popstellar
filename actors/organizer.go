@@ -124,7 +124,7 @@ func (o *Organizer) handlePublish(query message.Query) (message, channel []byte,
 		return nil, nil, lib.ErrRequestDataInvalid
 	}
 
-	err = security.MessageIsValid(msg)
+	errs = security.MessageIsValid(msg)
 	if errs != nil {
 		fmt.Printf("7")
 		return nil, nil, lib.ErrRequestDataInvalid
