@@ -14,31 +14,6 @@ import (
 	"time"
 )
 
-/*
-TODO
-faire des tests
--Subscribing
--Unsubscribing
-
-Propagating a message on a channel
-Catching up on past messages on a channel /RAOUl
-
-Publish a message on a channel:
-Update LAO properties ->
-LAO state broadcast ->
-Witness a message ->
-
-Creating a 'event' !
-#check from witness
-#verify if witnessed
--meeting/ Ouriel
--roll call/ ouriel
--discussion(?)
--poll/ouriel
--cast vote
--register attendance
-Meeting state broadcast
-*/
 type hub struct {
 	// the mutex to protect connections
 	connectionsMx sync.RWMutex
