@@ -74,12 +74,14 @@ func MessageIsValid(msg message.Message) error { //TODO remove ID hash check
 	hash := sha256.Sum256(str)
 
 	if !bytes.Equal([]byte(msg.MessageId), hash[:]) {
+		log.Printf("id of message invalid")
 		return lib.ErrInvalidResource
 	}
 
 	// the signature is valid
 	err := VerifySignature(msg.Sender, msg.Data, msg.Signature)
 	if err != nil {
+		log.Printf("invalid message signature")
 		return err
 	}
 
@@ -88,11 +90,13 @@ func MessageIsValid(msg message.Message) error { //TODO remove ID hash check
 	if data["object"] == "lao" && data["action"] == "create" {
 		data, err := parser.ParseDataCreateLAO(msg.Data)
 		if err != nil {
+			log.Printf("test 3")
 			return lib.ErrInvalidResource
 		}
 		// the signature of witnesses are valid
 		err = VerifyWitnessSignatures(data.Witnesses, msg.WitnessSignatures, msg.Sender)
 		if err != nil {
+			log.Printf("invalid witness signatures")
 			return err
 		}
 	}

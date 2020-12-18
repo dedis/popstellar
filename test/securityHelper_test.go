@@ -15,11 +15,11 @@ import (
 )
 
 type MessageSend struct {
-	Data              []byte `json:"data"` // in base 64
-	Sender            string          `json:"sender"`
-	Signature         string          `json:"signature"`
-	Message_id        string          `json:"messageId"`
-	WitnessSignatures []string        `json:"witnessSignatures"`
+	Data              []byte   `json:"data"` // in base 64
+	Sender            string   `json:"sender"`
+	Signature         string   `json:"signature"`
+	Message_id        string   `json:"messageId"`
+	WitnessSignatures []string `json:"witnessSignatures"`
 }
 
 func TestMessageIsValid(t *testing.T) {
@@ -71,7 +71,7 @@ func TestMessageIsValid(t *testing.T) {
 		}
 		err = security.MessageIsValid(messProcessed)
 		if err != nil {
-			t.Errorf("Error, message %+v\n should be valid", message)
+			t.Errorf("Error, message %+v\n should be valid %v", message, err)
 		}
 	}
 }
