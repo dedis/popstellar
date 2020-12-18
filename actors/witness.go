@@ -156,7 +156,7 @@ func (w *Witness) handleCreateLAO(msg message.Message, chann string, query messa
 		return nil, nil, lib.ErrInvalidResource
 	}
 
-	if !security.LAOIsValid(data, msg, true) {
+	if !security.LAOIsValid(data, true) {
 		return nil, nil, lib.ErrInvalidResource
 	}
 
@@ -183,7 +183,7 @@ func (w *Witness) handleUpdateProperties(msg message.Message, chann string, quer
 	if errs != nil {
 		return nil, nil, lib.ErrInvalidResource
 	}
-	if !security.LAOIsValid(data, msg, false) {
+	if !security.LAOIsValid(data, false) {
 		return nil, nil, lib.ErrInvalidResource
 	}
 
@@ -241,7 +241,7 @@ func (w *Witness) handleLAOState(msg message.Message, chann string, query messag
 		return nil, nil, lib.ErrInvalidResource
 	}
 
-	if !security.LAOIsValid(data, msg, false) {
+	if !security.LAOIsValid(data, false) {
 		return nil, nil, lib.ErrInvalidResource
 	}
 
