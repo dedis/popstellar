@@ -18,16 +18,28 @@ This package implements the actors defined by the PoP project, and their reactio
 ### db 
 This package's purpose is to handle interaction with databases. The databases structure is described in the section "Back-end" components.
 
-### websocket 
+### network 
 This package is to handle interactions with the websocket. It has a hub, which handles the publish-subscribe paradigm, and
 the hub has an actor (either Organizer or Witness), that implements the PoP concept.
 
-### define
+### event
 This package provides structure for "real world events" and corresponding jsonRPC messages,  methods to convert byte received arrays into theses structures
 and function to check validity of the messages and signatures we received.
 
 ### jsonRPC
 This package is not used at all, but is defines the protocol we use to format the messages we send and receive.
+
+### lib
+This package defines gloabal useful functions, like find an element in an array, etc.
+
+### message
+This package implements the messages that can be sent or received as defined in the jsonRPC package.
+
+### parser
+This package implements all functions to parse received messages into structs, and compose messages from structs.
+
+### security
+This package implements all the checks we do on messages, from timestamp age to validity of hashes and signatures.
 
 ### test
 This package is, as its name says it, for the tests.
