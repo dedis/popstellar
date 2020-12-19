@@ -3,6 +3,8 @@ package parser
 import (
 	"encoding/json"
 	"fmt"
+	"log"
+	"strings"
 	"student20_pop/lib"
 	"student20_pop/message"
 )
@@ -10,6 +12,10 @@ import (
 func ParseGenericMessage(genericMessage []byte) (message.GenericMessage, error) {
 	m := message.GenericMessage{}
 	err := json.Unmarshal(genericMessage, &m)
+	if m["jsonrpc"] != "2.0" {
+		log.Printf("jsonrpc field is not 2.0 but %v", m["jsonrpc"])
+		return m, lib.ErrRequestDataInvalid
+	}
 	return m, err
 }
 
@@ -20,12 +26,22 @@ func ParseGenericMessage(genericMessage []byte) (message.GenericMessage, error) 
 func ParseQuery(query []byte) (message.Query, error) {
 	m := message.Query{}
 	err := json.Unmarshal(query, &m)
-	return m, err
+	switch m.Method {
+	case "subscribe", "unsubscribe", "message", "publish", "catchup":
+		return m, err
+	default:
+		log.Printf("the method is not valid, it is instead %v", m.Method)
+		return m, lib.ErrRequestDataInvalid
+	}
 }
 
 func ParseParams(params json.RawMessage) (message.Params, error) {
 	m := message.Params{}
 	err := json.Unmarshal(params, &m)
+	if !strings.HasPrefix(m.Channel, "/root") {
+		log.Printf("channel id doesn't start with /root but is %v", m.Channel)
+		return m, lib.ErrRequestDataInvalid
+	}
 	return m, err
 }
 
@@ -37,6 +53,10 @@ func ParseParamsIncludingMessage(params json.RawMessage) (message.ParamsIncludin
 	}
 	d, err := lib.Decode(m.Channel)
 	m.Channel = string(d)
+	if !strings.HasPrefix(m.Channel, "/root") {
+		log.Printf("channel id doesn't start with /root but is %v", m.Channel)
+		return m, lib.ErrRequestDataInvalid
+	}
 	return m, err
 }
 
@@ -96,10 +116,37 @@ func ParseWitnessSignature(witnessSignatures string) (message.ItemWitnessSignatu
 
 	return m, err
 }
+
 func ParseData(data string) (message.Data, error) {
 	m := message.Data{}
 	err := json.Unmarshal([]byte(data), &m)
-	return m, err
+	if dataConstAreValid(m) {
+		return m, err
+	} else {
+		return m, lib.ErrRequestDataInvalid
+	}
+}
+
+func dataConstAreValid(m message.Data) bool {
+	switch m["object"] {
+	case "lao", "message", "meeting":
+		switch m["action"] {
+		case "create", "update_properties", "state", "witness":
+		default:
+			log.Printf("the action is not valid, it is instead %v", m["action"])
+			return false
+		}
+	default:
+		log.Printf("the object is not valid, it is instead %v", m["object"])
+		return false
+	}
+	creation, okC := m["creation"].(int)
+	lastm, okL := m["last_modified"].(int)
+	if !okC || !okL || creation < 0 || lastm < 0 {
+		log.Printf("the timestamps are smaller than 0")
+		return false
+	}
+	return true
 }
 
 func ParseDataCreateLAO(data json.RawMessage) (message.DataCreateLAO, error) {

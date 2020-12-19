@@ -2,6 +2,21 @@ package message
 
 type Data map[string]interface{}
 
+/* potential enums, but doesn't typecheck in go, the checks must still be manual, so kinda useless
+type Object string
+const(
+	Lao Object = "lao"
+	Message Object = "message"
+	Meeting Object = "meeting"
+
+type Action string
+const(
+	Create Action = "create"
+	Update_properties Action = "update_properties"
+	State Action = "state"
+	Witness Action = "witness"
+)*/
+
 type DataCreateLAO struct {
 	Object string
 	Action string //if we put "action" with little a it crashes

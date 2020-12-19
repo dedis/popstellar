@@ -10,7 +10,7 @@ type Method string
 const(
 	Subscribe Method = "subscribe"
 	Unsubscribe Method = "unsubscribe"
-	Message Method = "message"
+	Broadcast Method = "message"
 	Publish Method = "publish"
 	Catchup Method = "catchup"
 )*/
