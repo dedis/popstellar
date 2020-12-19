@@ -166,11 +166,11 @@ func (w *Witness) handleCreateLAO(msg message.Message, chann string, query messa
 	}
 
 	lao := event.LAO{
-		ID:            data.ID,
+		ID:            string(data.ID),
 		Name:          data.Name,
 		Creation:      data.Creation,
-		OrganizerPKey: data.Organizer,
-		Witnesses:     data.Witnesses,
+		OrganizerPKey: string(data.Organizer),
+		Witnesses:     lib.ConvertSliceSliceByteToSliceString(data.Witnesses),
 	}
 	errs = db.CreateChannel(lao, w.database)
 
@@ -252,11 +252,11 @@ func (w *Witness) handleLAOState(msg message.Message, chann string, query messag
 	}
 
 	lao := event.LAO{
-		ID:            data.ID,
+		ID:            string(data.ID),
 		Name:          data.Name,
 		Creation:      data.Creation,
-		OrganizerPKey: data.Organizer,
-		Witnesses:     data.Witnesses,
+		OrganizerPKey: string(data.Organizer),
+		Witnesses:     lib.ConvertSliceSliceByteToSliceString(data.Witnesses),
 	}
 
 	errs = db.UpdateChannel(lao, w.database)
@@ -276,7 +276,7 @@ func (w *Witness) handleCreateRollCall(msg message.Message, chann string, query 
 	}
 
 	rollCall := event.RollCall{
-		ID:       data.ID,
+		ID:       string(data.ID),
 		Name:     data.Name,
 		Creation: data.Creation,
 		Location: data.Location,

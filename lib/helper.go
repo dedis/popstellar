@@ -30,3 +30,11 @@ func Decode(data string) ([]byte, error) {
 	d, err := b64.StdEncoding.DecodeString(strings.Trim(data, `"`))
 	return d, err
 }
+
+func ConvertSliceSliceByteToSliceString(slice [][]byte) []string {
+	sliceString := []string{}
+	for _, item := range slice {
+		sliceString = append(sliceString, string(item))
+	}
+	return sliceString
+}
