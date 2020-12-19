@@ -54,8 +54,8 @@ func (w *Witness) HandleWholeMessage(receivedMsg []byte, userId int) (msgAndChan
 	case "message":
 		msg, err = w.handleMessage(query)
 	case "subscribe", "unsubscribe", "catchup":
-		// Even though witness do nothing for some methods, it should not return an error TODO response to sender
-		return nil, nil
+		// Even though witness do nothing for some methods, it should not return an error
+		return nil, parser.ComposeResponse(nil, receivedMsg, query)
 	default:
 		err = lib.ErrRequestDataInvalid
 	}
