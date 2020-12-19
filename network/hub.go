@@ -67,15 +67,16 @@ func newHub(mode string, pkey string, database string) *hub {
 			msg := <-h.receivedMessage
 
 			// check if messages concerns organizer
-			var message []byte = nil
-			var channel []byte = nil
+			var messageAndChannel []lib.MessageAndChannel = nil
 			var response []byte = nil
 			//handle the message and generate the response
-			message, channel, response = h.actor.HandleWholeMessage(msg, h.idOfSender)
+			messageAndChannel, response = h.actor.HandleWholeMessage(msg, h.idOfSender)
 
 			h.connectionsMx.RLock()
-			h.publishOnChannel(message, channel)
-			h.sendResponse(response, h.idOfSender)
+			for _, pair := range messageAndChannel {
+				h.publishOnChannel(pair.Message, pair.Channel)
+				h.sendResponse(response, h.idOfSender)
+			}
 			h.connectionsMx.RUnlock()
 		}
 	}()
