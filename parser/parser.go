@@ -57,8 +57,8 @@ func ParseParamsIncludingMessage(params json.RawMessage) (message.ParamsIncludin
 	if err != nil {
 		return m, lib.ErrEncodingFault
 	}
-	d, err := lib.Decode(m.Channel)
-	m.Channel = string(d)
+	//d, err := lib.Decode(m.Channel)
+	//m.Channel = string(d)
 	if !strings.HasPrefix(m.Channel, "/root") {
 		log.Printf("channel id doesn't start with /root but is %v", m.Channel)
 		return m, lib.ErrRequestDataInvalid
