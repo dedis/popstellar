@@ -1,6 +1,6 @@
 import { encodeBase64, decodeBase64 } from 'tweetnacl-util';
 import {
-  JSON_RPC_VERSION, objects, actions, methods, getCurrentTime, generateId, toString64,
+  JSON_RPC_VERSION, objects, actions, methods, getCurrentTime, toString64,
   getCurrentLao, signStrings, hashStrings, getPublicKey,
 } from './WebsocketUtils';
 import WebsocketLink from './WebsocketLink';
@@ -9,17 +9,12 @@ import WebsocketLink from './WebsocketLink';
 
 /** Generate a client query from a method (methods enum),
  * a params object (Json Object) and an optional id (number) */
-const _generateQuery = (method, params, id) => {
-  let tid = id;
-  if (id === undefined) tid = generateId();
-
-  return {
-    jsonrpc: JSON_RPC_VERSION,
-    method,
-    params,
-    id: tid,
-  };
-};
+const _generateQuery = (method, params, id) => ({
+  jsonrpc: JSON_RPC_VERSION,
+  method,
+  params,
+  id: (id === undefined) ? -1 : id,
+});
 
 /** Generate a params object from a channel (string) and a message object (Json Object) */
 const _generateParams = (channel, message) => ({

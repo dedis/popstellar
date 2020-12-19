@@ -69,11 +69,6 @@ export const toString64 = (str) => btoa(str);
 /** Transform a base64 string to a regular string */
 export const fromString64 = (str) => atob(str);
 
-/**
- * Generate a pseudo-random id (32 bit number) for server requests
- * See https://gist.github.com/gordonbrander/2230317
- */
-export const generateId = () => parseInt(Math.random().toString(16).substr(2, 9), 16) & 0xfffffff;
 /** Return the current time (Number - UNIX number of seconds from 1st january 1970) */
 export const getCurrentTime = () => Math.floor(Date.now() / 1000);
 
