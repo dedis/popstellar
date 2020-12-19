@@ -24,6 +24,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 public final class MeetingEventCreationFragment extends AbstractEventCreationFragment {
@@ -95,6 +96,7 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
             today = DATE_FORMAT.parse(DATE_FORMAT.format(Calendar.getInstance().getTime()));
         } catch (ParseException e) {
             e.printStackTrace();
+            today = new Date();
         }
 
         return view;
