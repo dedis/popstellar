@@ -131,7 +131,6 @@ export const requestCreateLao = (name) => {
     .setId(hashStrings(decodeBase64(getPublicKey()), time, name))
     .setName(name)
     .setCreation(time)
-    .setLastModified(time)
     .setOrganizer(getPublicKey())
     .setWitnesses([])
     .buildJson();
@@ -149,6 +148,9 @@ export const requestUpdateLao = (name) => {
 
   const jsonData = new DataBuilder()
     .setObject(objects.LAO).setAction(actions.UPDATE_PROPERTIES)
+    .setId(
+      hashStrings(currentParams.message.data.organizer, currentParams.message.data.creation, name),
+    )
     .setName(name)
     .setLastModified(time)
     .setWitnesses(currentParams.message.data.witnesses)
@@ -172,8 +174,8 @@ export const requestStateLao = () => {
     .setLastModified(currentData.last_modified)
     .setOrganizer(encodeBase64(currentData.organizer))
     .setWitnesses(currentData.witnesses)
-    .setModificationId(0)
-    .setModificationSignature([]) // TODO modification_id? modification_signatures
+    .setModificationId('TODO modification id in base64') // TODO modification_id from storage (waiting for storage)
+    .setModificationSignature([]) // TODO modification_signatures from storage (waiting for storage)
     .buildJson();
 
   const m = _generateMessage(jsonData, getCurrentLao().params.message.witness_signatures);
@@ -208,7 +210,6 @@ export const requestCreateMeeting = (name, startTime, location = '', endTime = 0
     .setId(hashStrings(laoId, time, name))
     .setName(name)
     .setCreation(time)
-    .setLastModified(time)
     .setLocation(location)
     .setStartTime(startTime);
 
@@ -233,7 +234,9 @@ export const requestStateMeeting = () => {
     .setId(hashStrings(currentData.id, currentData.creation, currentData.name))
     .setName(currentData.name)
     .setCreation(currentData.creation)
-    .setLastModified(currentData.last_modified);
+    .setLastModified(currentData.last_modified)
+    .setModificationId('TODO modification id in base64') // TODO modification_id from storage (waiting for storage)
+    .setModificationSignature([]); // TODO modification_signatures fro storage (waiting for storage)
 
   if (Object.prototype.hasOwnProperty.call(currentData, 'location')) json.setLocation(currentData.location);
   if (Object.prototype.hasOwnProperty.call(currentData, 'end')) json.setEndTime(currentData.end);
