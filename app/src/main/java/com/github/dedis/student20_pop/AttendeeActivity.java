@@ -8,17 +8,10 @@ import android.view.View;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.github.dedis.student20_pop.model.Keys;
-import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.ui.AttendeeFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.IdentityFragment;
 import com.github.dedis.student20_pop.utility.ui.OnEventTypeSelectedListener;
-
-import java.util.Date;
-
-import static com.github.dedis.student20_pop.OrganizerActivity.LAO_ID_TAG;
-import static com.github.dedis.student20_pop.OrganizerActivity.PRIVATE_KEY_TAG;
 
 /**
  * Activity used to display the different UIs for attendees
@@ -57,15 +50,8 @@ public class AttendeeActivity extends FragmentActivity implements OnEventTypeSel
                 showFragment(new HomeFragment(), HomeFragment.TAG);
                 break;
             case R.id.tab_identity:
-                Bundle bundle = new Bundle();
-                final PoPApplication app = ((PoPApplication) getApplication());
-                Lao lao = app.getCurrentLao();
-                bundle.putString(PRIVATE_KEY_TAG, app.getPerson().getAuthentication());
-                bundle.putString(LAO_ID_TAG, lao.getId());
-                // set Fragmentclass Arguments
-                IdentityFragment identityFragment = new IdentityFragment();
-                identityFragment.setArguments(bundle);
-                showFragment(identityFragment, IdentityFragment.TAG);
+                showFragment(new IdentityFragment(), IdentityFragment.TAG);
+                break;
             default:
                 break;
         }

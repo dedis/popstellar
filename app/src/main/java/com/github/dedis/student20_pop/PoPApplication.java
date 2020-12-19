@@ -20,16 +20,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.*;
+
 /**
  * Class modelling the application : a unique person associated with LAOs
  */
 public class PoPApplication extends Application {
+    public static final String TAG = PoPApplication.class.getSimpleName();
 
     private static final String LOCAL_BACKEND_URI = "ws://10.0.2.2:2000";
 
+    public static final String USERNAME = "USERNAME"; //TODO: let user choose/change its name
     private static Context appContext;
     private Person person;
     private Map<Lao, List<Event>> laoEventsMap;
+    private Map<Lao, List<String>> laoWitnessMap;
 
     //represents the Lao which we are connected to, can be null
     private Lao currentLao;
@@ -40,6 +45,11 @@ public class PoPApplication extends Application {
     private Map<Lao, List<Event>> dummyLaoEventsMap;
     private CompletableFuture<HighLevelClientProxy> localProxy;
 
+    public enum AddWitnessResult {
+        ADD_WITNESS_SUCCESSFUL,
+        ADD_WITNESS_ALREADY_EXISTS
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -48,20 +58,27 @@ public class PoPApplication extends Application {
 
         appContext = getApplicationContext();
 
-        if(person == null) {
+        if (person == null) {
             // TODO: when can the user change/choose its name
-            setPerson(new Person("USER"));
+            setPerson(new Person(USERNAME));
         }
-        if(laoEventsMap == null){
+
+        if (laoEventsMap == null) {
             laoEventsMap = new HashMap<>();
         }
-        dummyPerson =  new Person("name");
+
+        if (laoWitnessMap == null) {
+            this.laoWitnessMap = new HashMap<>();
+        }
+
+        dummyPerson = new Person("name");
         dummyLao = new Lao("LAO I just joined", new Date(), dummyPerson.getId());
-        dummyLaoEventsMap = dummyMap();
+        dummyLaoEventsMap = dummyLaoEventMap();
+        laoWitnessMap.put(dummyLao, new ArrayList<>());
+
     }
 
     /**
-     *
      * @return PoP Application Context
      */
     public static Context getAppContext() {
@@ -69,7 +86,6 @@ public class PoPApplication extends Application {
     }
 
     /**
-     *
      * @return Person corresponding to the user
      */
     public Person getPerson() {
@@ -79,7 +95,6 @@ public class PoPApplication extends Application {
     }
 
     /**
-     *
      * @return list of LAOs corresponding to the user
      */
     public List<Lao> getLaos() {
@@ -89,70 +104,69 @@ public class PoPApplication extends Application {
     }
 
     /**
-     *
      * sets the person for this Application, can only be done once
+     *
      * @param person
      */
     public void setPerson(Person person) {
-        if(person != null) {
+        if (person != null) {
             this.person = person;
         }
     }
 
     /**
-     *
      * adds a Lao to the app
+     *
      * @param lao
      */
-    public void addLao(Lao lao){
+    public void addLao(Lao lao) {
         if (!laoEventsMap.containsKey(lao)) {
             this.laoEventsMap.put(lao, new ArrayList<>());
         }
     }
 
     /**
-     *
      * @return the list of Events associated with the given LAO, null if lao is not in the map
      */
-    public List<Event> getEvents(Lao lao){
+    public List<Event> getEvents(Lao lao) {
         return dummyLaoEventsMap.get(lao);
         //TODO when connected to backend
         //return laoEventsMap.get(lao);
     }
 
     /**
-     *
      * adds an event e to the list of events of the LAO lao
+     *
      * @param lao
      * @param e
      */
-    public void addEvent(Lao lao, Event e){
+    public void addEvent(Lao lao, Event e) {
         getEvents(lao).add(e);
     }
 
     /**
-     *
      * @return the current lao
      */
-    public Lao getCurrentLao(){
+    public Lao getCurrentLao() {
         return dummyLao;
         //TODO when connected to backend
         //return currentLao;
     }
 
     /**
-     *
      * sets the current lao
+     *
      * @param lao
      */
-    public void setCurrentLao(Lao lao){
+    public void setCurrentLao(Lao lao) {
         this.currentLao = lao;
     }
 
     /**
      * Get the proxy of the local device's backend
-     *
+     * <p>
      * Create it if needed
+     *
      * @return a completable future that will hold the proxy once the connection the backend is established
      */
     public CompletableFuture<HighLevelClientProxy> getLocalProxy() {
@@ -163,16 +177,16 @@ public class PoPApplication extends Application {
 
     /**
      * Refresh the local proxy future.
-     *
+     * <p>
      * If there was no connections yet, start one.
      * If there was an attempt but it failed, retry.
      * If the connection was lost, retry
      */
     private void refreshLocalProxy() {
-        if(localProxy == null)
+        if (localProxy == null)
             // If there was no attempt yet, try
             localProxy = PoPClientEndpoint.connectAsync(URI.create(LOCAL_BACKEND_URI), person);
-        else if(localProxy.isDone()) {
+        else if (localProxy.isDone()) {
             try {
                 // If it succeeded, but it is now closed, retry
                 HighLevelClientProxy currentSession = localProxy.getNow(null);
@@ -186,10 +200,9 @@ public class PoPApplication extends Application {
     }
 
     /**
-     *
      * @return map of LAOs as keys and lists of events corresponding to the lao as values
      */
-    public Map<Lao, List<Event>> getLaoEventsMap(){
+    public Map<Lao, List<Event>> getLaoEventsMap() {
         return dummyLaoEventsMap;
         //TODO when connected to backend
         //return laoEventsMap;
@@ -197,11 +210,11 @@ public class PoPApplication extends Application {
 
 
     /**
-     *
      * This method creates a map for testing, when no backend is connected
+     *
      * @return the dummy map
      */
-    private Map<Lao, List<Event>> dummyMap(){
+    private Map<Lao, List<Event>> dummyLaoEventMap() {
         Map<Lao, List<Event>> map = new HashMap<>();
         List<Event> events = new ArrayList<>();
         Event event1 = new Event("Future Event 1", new Date(2617547969000L), new Keys().getPublicKey(), "EPFL", "Poll");
@@ -221,4 +234,93 @@ public class PoPApplication extends Application {
         return map;
     }
 
+    /**
+     * Add witness' id to lao
+     *
+     * @param lao
+     * @param witness
+     * @return ADD_WITNESS_SUCCESSFUL if witness has been added
+     * ADD_WITNESS_ALREADY_EXISTS if witness already exists
+     */
+    public AddWitnessResult addWitness(Lao lao, String witness) {
+        //TODO when connected to backend
+        // send info to backend
+        // If witness has been added return true, otherwise false
+
+        // List<String> laoWitnesses = laoWitnessMap.get(laoId);
+        List<String> laoWitnesses = laoWitnessMap.get(lao);
+        if (laoWitnesses == null) {
+            laoWitnesses = new ArrayList<>();
+            laoWitnessMap.put(lao, laoWitnesses);
+            //laoWitnessMap.put(laoId, laoWitnesses);
+        }
+
+        if (laoWitnesses.contains(witness))
+            return ADD_WITNESS_ALREADY_EXISTS;
+
+
+        laoWitnesses.add(witness);
+
+        return ADD_WITNESS_SUCCESSFUL;
+    }
+
+    /**
+     * @param witness add witness to current lao
+     * @return ADD_WITNESS_SUCCESSFUL if witness has been added
+     * ADD_WITNESS_ALREADY_EXISTS if witness already exists
+     */
+    public AddWitnessResult addWitness(String witness) {
+        return addWitness(dummyLao, witness);
+        //TODO when connected to backend
+        //addWitness(currentLao, witness);
+    }
+
+    /**
+     * @param witnesses add witness to current lao
+     * @return corresponding result for each witness in the list
+     */
+    public List<AddWitnessResult> addWitnesses(List<String> witnesses) {
+        return addWitnesses(dummyLao, witnesses);
+        //TODO when connected to backend
+        //addWitnesses(currentLao, witness);
+    }
+
+    /**
+     * @param witnesses add witness to current lao
+     * @return corresponding result for each witness in the list
+     */
+    public List<AddWitnessResult> addWitnesses(Lao lao, List<String> witnesses){
+        List<AddWitnessResult> results = new ArrayList<>();
+        for (String witness : witnesses) {
+            results.add(addWitness(lao, witness));
+        }
+        return results;
+    }
+
+    /**
+     * Get witnesses of a LAO
+     *
+     * @param lao
+     * @return lao's corresponding list of witnesses
+     */
+    public List<String> getWitnesses(Lao lao) {
+        return laoWitnessMap.get(lao);
+    }
+
+    /**
+     * Get witnesses of current LAO
+     * @return lao's corresponding list of witnesses
+     */
+    public List<String> getWitnesses() {
+        return laoWitnessMap.get(dummyLao);
+        //TODO when connected to backend
+        //return laoWitnessMap.get(currentLao);
+    }
+
+    /**
+     * Get Lao -> Witnesses HashMap
+     */
+    public Map<Lao, List<String>> getLaoWitnessMap() {
+        return laoWitnessMap;
+    }
 }

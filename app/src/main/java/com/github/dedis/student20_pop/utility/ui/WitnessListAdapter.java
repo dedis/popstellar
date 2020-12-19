@@ -16,9 +16,9 @@ import java.util.ArrayList;
 
 public class WitnessListAdapter extends BaseAdapter {
     private final Context context;
-    private final ArrayList<Person> witnesses;
+    private final ArrayList<String> witnesses;
 
-    public WitnessListAdapter(Context context, ArrayList<Person> witnesses) {
+    public WitnessListAdapter(Context context, ArrayList<String> witnesses) {
         this.context = context;
         this.witnesses = witnesses;
     }
@@ -82,7 +82,7 @@ public class WitnessListAdapter extends BaseAdapter {
         }
 
         ((TextView) convertView.findViewById(R.id.text_view_witness_name))
-                .setText(witnesses.get(position).getName());
+                .setText(witnesses.get(position));
         ImageButton deleteButton = convertView.findViewById(R.id.image_button_delete_witness);
         deleteButton.setVisibility(parent.getId() == R.id.witness_edit_list ? View.VISIBLE : View.GONE);
         deleteButton.setOnClickListener(

@@ -26,9 +26,7 @@ import androidx.fragment.app.Fragment;
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Event;
-import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
-import com.github.dedis.student20_pop.model.Person;
 import com.github.dedis.student20_pop.utility.ui.OnAddWitnessListener;
 import com.github.dedis.student20_pop.utility.ui.OnEventTypeSelectedListener;
 import com.github.dedis.student20_pop.utility.ui.OnEventTypeSelectedListener.EventType;
@@ -37,7 +35,6 @@ import com.github.dedis.student20_pop.utility.ui.WitnessListAdapter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -57,7 +54,6 @@ public class OrganizerFragment extends Fragment {
     private TextView laoNameTextView;
     private ListView witnessesListView;
     private ListView witnessesEditListView;
-
 
 
     /**
@@ -83,7 +79,7 @@ public class OrganizerFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        PoPApplication app = (PoPApplication)(getActivity().getApplication());
+        PoPApplication app = (PoPApplication) (getActivity().getApplication());
 
         lao = app.getCurrentLao();
         List<Event> events = app.getEvents(lao);
@@ -96,13 +92,7 @@ public class OrganizerFragment extends Fragment {
         laoNameTextView = propertiesView.findViewById(R.id.organization_name);
         laoNameTextView.setText(lao.getName());
 
-        //TODO : Connect to Backend and retrieve the list of witnesses
-        final ArrayList<Person> witnesses = new ArrayList<>();
-        witnesses.add(new Person("Alphonse"));
-        witnesses.add(new Person("Barbara"));
-        witnesses.add(new Person("Charles"));
-        witnesses.add(new Person("Deborah"));
-        final WitnessListAdapter adapter = new WitnessListAdapter(getActivity(), witnesses);
+        final WitnessListAdapter adapter = new WitnessListAdapter(getActivity(), (ArrayList<String>) app.getWitnesses(lao));
         witnessesListView = propertiesView.findViewById(R.id.witness_list);
         witnessesListView.setAdapter(adapter);
 
@@ -165,16 +155,17 @@ public class OrganizerFragment extends Fragment {
 
         confirmButton.setOnClickListener(
                 clicked -> {
-                        String title = laoNameEditText.getText().toString().trim();
-                        if( title != null && !title.isEmpty()){
-                            lao = lao.setName(title);
-                            viewSwitcher.showNext();
-                            laoNameTextView.setText(laoNameEditText.getText());
-                            editPropertiesButton.setVisibility(View.VISIBLE);
-                            addWitnessButton.setVisibility(View.GONE);
-                        } else {
-                            Toast.makeText(getContext(), getString(R.string.exception_message_empty_lao_name), Toast.LENGTH_SHORT).show();
-                        }
+                    String title = laoNameEditText.getText().toString().trim();
+                    if (!title.isEmpty()) {
+                        lao = lao.setName(title);
+                        viewSwitcher.showNext();
+                        laoNameTextView.setText(laoNameEditText.getText());
+                        editPropertiesButton.setVisibility(View.VISIBLE);
+                        addWitnessButton.setVisibility(View.GONE);
+                        // TODO : If LAO's name has changed : tell backend to update it
+                    } else {
+                        Toast.makeText(getContext(), getString(R.string.exception_message_empty_lao_name), Toast.LENGTH_SHORT).show();
+                    }
                 }
         );
 
@@ -397,11 +388,11 @@ public class OrganizerFragment extends Fragment {
             for (Event event : events) {
                 //for now (testing purposes)
                 //later: event.getEndTime() < now
-                if (event.getTime() < (System.currentTimeMillis()/1000L)) {
+                if (event.getTime() < (System.currentTimeMillis() / 1000L)) {
                     eventsMap.get(EventCategory.PAST).add(event);
                 }
                 //later: event.getStartTime()<now && event.getEndTime() > now
-                else if (event.getTime() <= (System.currentTimeMillis()/1000L)) {
+                else if (event.getTime() <= (System.currentTimeMillis() / 1000L)) {
                     eventsMap.get(EventCategory.PRESENT).add(event);
                 } else { //if e.getStartTime() > now
                     eventsMap.get(EventCategory.FUTURE).add(event);

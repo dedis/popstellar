@@ -65,8 +65,11 @@ public class QRFocusingProcessor extends FocusingProcessor<Barcode> {
         public void onNewItem(int id, Barcode barcode) {
             //TODO : In some particular usage, we don't want to scan an URL but text
             // or other type of data
-            if (barcode.valueFormat == Barcode.URL)
+            if (barcode.valueFormat == Barcode.URL) {
                 listener.onQRCodeDetected(barcode.url.url, qrCodeScanningType);
+            } else if (barcode.valueFormat == Barcode.TEXT) {
+                listener.onQRCodeDetected(barcode.displayValue, qrCodeScanningType);
+            }
         }
     }
 }
