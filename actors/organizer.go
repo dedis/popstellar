@@ -224,7 +224,7 @@ func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query mes
 		return nil, err
 	}
 
-	msgAndChan := []lib.MessageAndChannel{lib.MessageAndChannel{
+	msgAndChan := []lib.MessageAndChannel{{
 		Message: parser.ComposeBroadcastMessage(query),
 		Channel: []byte(canal),
 	}}
@@ -265,7 +265,7 @@ func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, quer
 		return nil, errs
 	}
 
-	msgAndChan := []lib.MessageAndChannel{lib.MessageAndChannel{
+	msgAndChan := []lib.MessageAndChannel{{
 		Message: parser.ComposeBroadcastMessage(query),
 		Channel: []byte(canal),
 	}}
@@ -302,7 +302,7 @@ func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, query
 		return nil, errs
 	}
 
-	msgAndChan := []lib.MessageAndChannel{lib.MessageAndChannel{
+	msgAndChan := []lib.MessageAndChannel{{
 		Message: parser.ComposeBroadcastMessage(query),
 		Channel: []byte(canal),
 	}}
@@ -335,7 +335,7 @@ func (o *Organizer) handleCreatePoll(msg message.Message, canal string, query me
 		return nil, err
 	}
 
-	msgAndChan := []lib.MessageAndChannel{lib.MessageAndChannel{
+	msgAndChan := []lib.MessageAndChannel{{
 		Message: parser.ComposeBroadcastMessage(query),
 		Channel: []byte(canal),
 	}}
@@ -344,7 +344,7 @@ func (o *Organizer) handleCreatePoll(msg message.Message, canal string, query me
 }
 
 func (o *Organizer) handleUpdateProperties(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
-	msgAndChan := []lib.MessageAndChannel{lib.MessageAndChannel{
+	msgAndChan := []lib.MessageAndChannel{{
 		Message: parser.ComposeBroadcastMessage(query),
 		Channel: []byte(canal),
 	}}
@@ -394,7 +394,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 	if errs != nil {
 		return nil, lib.ErrDBFault
 	}
-	msgAndChan := []lib.MessageAndChannel{lib.MessageAndChannel{
+	msgAndChan := []lib.MessageAndChannel{{
 		Message: parser.ComposeBroadcastMessage(query),
 		Channel: []byte(canal),
 	}}
