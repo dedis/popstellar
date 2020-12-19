@@ -29,67 +29,66 @@ func NewOrganizer(pkey string, db string) *Organizer {
 
 /** processes what is received from the websocket */
 // message_ stands for message but renamed to avoid clashing with package name
-func (o *Organizer) HandleWholeMessage(receivedMsg []byte, userId int) (message_, channel, responseToSender []byte) {
+func (o *Organizer) HandleWholeMessage(receivedMsg []byte, userId int) (msgAndChannel []lib.MessageAndChannel, responseToSender []byte) {
 	// in case the message is already an answer message (positive ack or error), ignore and answer noting to avoid falling into infinite error loops
 	isAnswer, err := filterAnswers(receivedMsg)
 	if err != nil {
-		return nil, nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, message.Query{})
+		return nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, message.Query{})
 	}
 	if isAnswer {
-		return nil, nil, nil
+		return nil, nil
 	}
 
 	query, err := parser.ParseQuery(receivedMsg)
 	if err != nil {
-		return nil, nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, query)
+		return nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, query)
 	}
 
 	var history []byte = nil
-	var msg []byte = nil
-	var chann []byte = nil
+	var msg []lib.MessageAndChannel = nil
 
 	switch query.Method {
 	case "subscribe":
-		msg, chann, err = nil, nil, handleSubscribe(query, userId)
+		msg, err = nil, handleSubscribe(query, userId)
 	case "unsubscribe":
-		msg, chann, err = nil, nil, handleUnsubscribe(query, userId)
+		msg, err = nil, handleUnsubscribe(query, userId)
 	case "publish":
-		msg, chann, err = o.handlePublish(query)
+		msg, err = o.handlePublish(query)
 	case "message":
-		msg, chann, err = o.handleMessage(query)
+		msg, err = o.handleMessage(query)
 	//Or they are only notification, and we just want to check that it was a success
 	case "catchup":
 		history, err = o.handleCatchup(query)
 	default:
 		fmt.Printf("method not recognized, generating default response")
-		msg, chann, err = nil, nil, lib.ErrRequestDataInvalid
+		msg, err = nil, lib.ErrRequestDataInvalid
 	}
 
-	return msg, chann, parser.ComposeResponse(err, history, query)
+	return msg, parser.ComposeResponse(err, history, query)
 }
 
-func (o *Organizer) handleMessage(query message.Query) (message, channel []byte, err error) {
+func (o *Organizer) handleMessage(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	params, errs := parser.ParseParamsIncludingMessage(query.Params)
 	if errs != nil {
 		fmt.Printf("unable to analyse paramsLight in handleMessage()")
-		return nil, nil, lib.ErrRequestDataInvalid
+		return nil, lib.ErrRequestDataInvalid
 	}
 
 	msg, errs := parser.ParseMessage(params.Message)
 	if errs != nil {
 		fmt.Printf("unable to analyse Message in handleMessage()")
-		return nil, nil, lib.ErrRequestDataInvalid
+		return nil, lib.ErrRequestDataInvalid
 	}
 
 	data, errs := parser.ParseData(string(msg.Data))
 	if errs != nil {
 		fmt.Printf("unable to analyse data in handleMessage()")
-		return nil, nil, lib.ErrRequestDataInvalid
+		return nil, lib.ErrRequestDataInvalid
 	}
 
 	errs = db.CreateMessage(msg, params.Channel, o.database)
 	if errs != nil {
-		return nil, nil, errs
+		return nil, errs
 	}
 
 	switch data["object"] {
@@ -98,42 +97,42 @@ func (o *Organizer) handleMessage(query message.Query) (message, channel []byte,
 		case "witness":
 			return o.handleWitnessMessage(msg, params.Channel, query)
 		default:
-			return nil, nil, lib.ErrRequestDataInvalid
+			return nil, lib.ErrRequestDataInvalid
 		}
 	case "state":
 		{
 			return o.handleLAOState(msg, params.Channel, query)
 		}
 	default:
-		return nil, nil, lib.ErrRequestDataInvalid
+		return nil, lib.ErrRequestDataInvalid
 	}
 
 }
 
 /* handles a received publish message */
-func (o *Organizer) handlePublish(query message.Query) (message, channel []byte, err error) {
+func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	params, errs := parser.ParseParamsIncludingMessage(query.Params)
 	if errs != nil {
 		fmt.Printf("1. unable to analyse paramsLight in handlePublish()")
-		return nil, nil, lib.ErrRequestDataInvalid
+		return nil, lib.ErrRequestDataInvalid
 	}
 
 	msg, errs := parser.ParseMessage(params.Message)
 	if errs != nil {
 		fmt.Printf("2. unable to analyse Message in handlePublish()")
-		return nil, nil, lib.ErrRequestDataInvalid
+		return nil, lib.ErrRequestDataInvalid
 	}
 
 	errs = security.MessageIsValid(msg)
 	if errs != nil {
 		fmt.Printf("7")
-		return nil, nil, lib.ErrRequestDataInvalid
+		return nil, lib.ErrRequestDataInvalid
 	}
 
 	data, errs := parser.ParseData(string(msg.Data))
 	if errs != nil {
 		fmt.Printf("3. unable to analyse data in handlePublish()")
-		return nil, nil, lib.ErrRequestDataInvalid
+		return nil, lib.ErrRequestDataInvalid
 	}
 
 	switch data["object"] {
@@ -146,7 +145,7 @@ func (o *Organizer) handlePublish(query message.Query) (message, channel []byte,
 		case "state":
 			return o.handleLAOState(msg, params.Channel, query) // should never happen
 		default:
-			return nil, nil, lib.ErrInvalidAction
+			return nil, lib.ErrInvalidAction
 		}
 
 	case "message":
@@ -156,7 +155,7 @@ func (o *Organizer) handlePublish(query message.Query) (message, channel []byte,
 			return o.handleWitnessMessage(msg, params.Channel, query)
 			// TODO : state broadcast done on root
 		default:
-			return nil, nil, lib.ErrInvalidAction
+			return nil, lib.ErrInvalidAction
 		}
 	case "roll call":
 		switch data["action"] {
@@ -164,7 +163,7 @@ func (o *Organizer) handlePublish(query message.Query) (message, channel []byte,
 			return o.handleCreateRollCall(msg, params.Channel, query)
 		//case "state":  TODO : waiting on protocol definition
 		default:
-			return nil, nil, lib.ErrInvalidAction
+			return nil, lib.ErrInvalidAction
 		}
 	case "meeting":
 		switch data["action"] {
@@ -172,9 +171,9 @@ func (o *Organizer) handlePublish(query message.Query) (message, channel []byte,
 			return o.handleCreateMeeting(msg, params.Channel, query)
 		case "state": //
 			// TODO: waiting on protocol definition
-			return nil, nil, lib.ErrNotYetImplemented
+			return nil, lib.ErrNotYetImplemented
 		default:
-			return nil, nil, lib.ErrInvalidAction
+			return nil, lib.ErrInvalidAction
 		}
 	case "poll":
 		switch data["action"] {
@@ -182,35 +181,35 @@ func (o *Organizer) handlePublish(query message.Query) (message, channel []byte,
 			return o.handleCreatePoll(msg, params.Channel, query)
 		case "state":
 			// TODO: waiting on protocol definition
-			return nil, nil, lib.ErrNotYetImplemented
+			return nil, lib.ErrNotYetImplemented
 		default:
-			return nil, nil, lib.ErrInvalidAction
+			return nil, lib.ErrInvalidAction
 		}
 	default:
 		fmt.Printf("data[action] (%v) not recognized in handlepublish, generating default response ", data["action"])
-		return nil, nil, lib.ErrRequestDataInvalid
+		return nil, lib.ErrRequestDataInvalid
 	}
 }
 
 /* handles the creation of a LAO */
-func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query message.Query) (message, channel []byte, err error) {
+func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 
 	if canal != "/root" {
-		return nil, nil, lib.ErrInvalidResource
+		return nil, lib.ErrInvalidResource
 	}
 
 	data, errs := parser.ParseDataCreateLAO(msg.Data)
 	if errs != nil {
-		return nil, nil, lib.ErrInvalidResource
+		return nil, lib.ErrInvalidResource
 	}
 
 	if !security.LAOIsValid(data, true) {
-		return nil, nil, lib.ErrInvalidResource
+		return nil, lib.ErrInvalidResource
 	}
 
 	errs = db.CreateMessage(msg, canal, o.database)
 	if errs != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	lao := event.LAO{
@@ -222,28 +221,33 @@ func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query mes
 	}
 	errs = db.CreateChannel(lao, o.database)
 	if errs != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	return parser.ComposeBroadcastMessage(query), []byte(canal), nil
+	msgAndChan := []lib.MessageAndChannel{lib.MessageAndChannel{
+		Message: parser.ComposeBroadcastMessage(query),
+		Channel: []byte(canal),
+	}}
+
+	return msgAndChan, nil
 }
 
-func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, query message.Query) (message, channel []byte, err error) {
+func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	if canal == "/root" {
-		return nil, nil, lib.ErrInvalidResource
+		return nil, lib.ErrInvalidResource
 	}
 
 	data, errs := parser.ParseDataCreateRollCall(msg.Data)
 	if errs != nil {
-		return nil, nil, lib.ErrInvalidResource
+		return nil, lib.ErrInvalidResource
 	}
 
 	if !security.RollCallCreatedIsValid(data, msg) {
-		return nil, nil, errs
+		return nil, errs
 	}
 
 	// don't need to check for validity if we use json schema
-	event := event.RollCall{ID: data.ID,
+	rollCall := event.RollCall{ID: data.ID,
 		Name:     data.Name,
 		Creation: data.Creation,
 		Location: data.Location,
@@ -251,31 +255,37 @@ func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, quer
 		End:      data.End,
 		Extra:    data.Extra,
 	}
-	errs = db.CreateChannel(event, o.database)
+	errs = db.CreateChannel(rollCall, o.database)
 	if errs != nil {
-		return nil, nil, errs
+		return nil, errs
 	}
 
 	errs = db.CreateMessage(msg, canal, o.database)
 	if errs != nil {
-		return nil, nil, errs
+		return nil, errs
 	}
-	return parser.ComposeBroadcastMessage(query), []byte(canal), nil
+
+	msgAndChan := []lib.MessageAndChannel{lib.MessageAndChannel{
+		Message: parser.ComposeBroadcastMessage(query),
+		Channel: []byte(canal),
+	}}
+
+	return msgAndChan, nil
 }
 
-func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, query message.Query) (message, channel []byte, err error) {
+func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 
 	if canal == "/root" {
-		return nil, nil, lib.ErrInvalidResource
+		return nil, lib.ErrInvalidResource
 	}
 
 	data, errs := parser.ParseDataCreateMeeting(msg.Data)
 	if errs != nil {
-		return nil, nil, lib.ErrInvalidResource
+		return nil, lib.ErrInvalidResource
 	}
 
 	// don't need to check for validity if we use json schema
-	event := event.Meeting{ID: data.ID,
+	meeting := event.Meeting{ID: data.ID,
 		Name:     data.Name,
 		Creation: data.Creation,
 		Location: data.Location,
@@ -283,29 +293,35 @@ func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, query
 		End:      data.End,
 		Extra:    data.Extra,
 	}
-	errs = db.CreateChannel(event, o.database)
+	errs = db.CreateChannel(meeting, o.database)
 	if errs != nil {
-		return nil, nil, errs
+		return nil, errs
 	}
 	errs = db.CreateMessage(msg, canal, o.database)
 	if errs != nil {
-		return nil, nil, errs
+		return nil, errs
 	}
-	return parser.ComposeBroadcastMessage(query), []byte(canal), nil
+
+	msgAndChan := []lib.MessageAndChannel{lib.MessageAndChannel{
+		Message: parser.ComposeBroadcastMessage(query),
+		Channel: []byte(canal),
+	}}
+
+	return msgAndChan, nil
 }
 
-func (o *Organizer) handleCreatePoll(msg message.Message, canal string, query message.Query) (message, channel []byte, err error) {
+func (o *Organizer) handleCreatePoll(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 
 	if canal == "/root" {
-		return nil, nil, lib.ErrInvalidResource
+		return nil, lib.ErrInvalidResource
 	}
 
 	data, errs := parser.ParseDataCreatePoll(msg.Data)
 	if errs != nil {
-		return nil, nil, lib.ErrInvalidResource
+		return nil, lib.ErrInvalidResource
 	}
 
-	event := event.Poll{ID: data.ID,
+	poll := event.Poll{ID: data.ID,
 		Name:     data.Name,
 		Creation: data.Creation,
 		Location: data.Location,
@@ -314,47 +330,56 @@ func (o *Organizer) handleCreatePoll(msg message.Message, canal string, query me
 		Extra:    data.Extra,
 	}
 
-	errs = db.CreateChannel(event, o.database)
+	errs = db.CreateChannel(poll, o.database)
 	if errs != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	return parser.ComposeBroadcastMessage(query), []byte(canal), nil
+	msgAndChan := []lib.MessageAndChannel{lib.MessageAndChannel{
+		Message: parser.ComposeBroadcastMessage(query),
+		Channel: []byte(canal),
+	}}
+
+	return msgAndChan, nil
 }
 
-func (o *Organizer) handleUpdateProperties(msg message.Message, canal string, query message.Query) (message, channel []byte, err error) {
-	return parser.ComposeBroadcastMessage(query), []byte(canal), db.CreateMessage(msg, canal, o.database)
+func (o *Organizer) handleUpdateProperties(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+	msgAndChan := []lib.MessageAndChannel{lib.MessageAndChannel{
+		Message: parser.ComposeBroadcastMessage(query),
+		Channel: []byte(canal),
+	}}
+	return msgAndChan, db.CreateMessage(msg, canal, o.database)
 }
 
-func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, query message.Query) (message, channel []byte, err error) {
+func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 
 	data, errs := parser.ParseDataWitnessMessage(msg.Data)
 	if errs != nil {
 		log.Printf("unable to parse received Message in handleWitnessMessage()")
-		return nil, nil, errs
+		return nil, errs
 	}
 
 	//retrieve message to sign from database
 	toSign := db.GetMessage([]byte(canal), []byte(data.Message_id), o.database)
 	if toSign == nil {
-		return nil, nil, lib.ErrInvalidResource
+		return nil, lib.ErrInvalidResource
 	}
 
 	toSignStruct, errs := parser.ParseMessage(toSign)
 	if errs != nil {
 		log.Printf("unable to parse stored Message in handleWitnessMessage()")
-		return nil, nil, lib.ErrRequestDataInvalid
+		return nil, lib.ErrRequestDataInvalid
 	}
 
 	errs = security.VerifySignature(msg.Sender, toSignStruct.Data, data.Signature)
 	if errs != nil {
-		return nil, nil, errs
+		return nil, errs
 	}
 
 	//if message was already signed by this witness, returns an error
 	_, found := lib.FindStr(toSignStruct.WitnessSignatures, data.Signature)
 	if found {
-		return nil, nil, lib.ErrResourceAlreadyExists
+		return nil, lib.ErrResourceAlreadyExists
 	}
 
 	toSignStruct.WitnessSignatures = append(toSignStruct.WitnessSignatures, data.Signature)
@@ -362,16 +387,19 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 	// update "LAOUpdateProperties" message in DB
 	errs = db.UpdateMessage(toSignStruct, canal, o.database)
 	if errs != nil {
-		return nil, nil, lib.ErrDBFault
+		return nil, lib.ErrDBFault
 	}
 	//store received message in DB
 	errs = db.CreateMessage(msg, canal, o.database)
 	if errs != nil {
-		return nil, nil, lib.ErrDBFault
+		return nil, lib.ErrDBFault
 	}
-
+	msgAndChan := []lib.MessageAndChannel{lib.MessageAndChannel{
+		Message: parser.ComposeBroadcastMessage(query),
+		Channel: []byte(canal),
+	}}
 	//broadcast received message
-	return parser.ComposeBroadcastMessage(query), []byte(canal), nil
+	return msgAndChan, nil
 }
 
 func (o *Organizer) handleCatchup(query message.Query) ([]byte, error) {
@@ -387,6 +415,6 @@ func (o *Organizer) handleCatchup(query message.Query) ([]byte, error) {
 }
 
 //just to implement the interface, this function is not needed for the Organizer (as he's the one sending this message)
-func (o *Organizer) handleLAOState(msg message.Message, chann string, query message.Query) (message, channel []byte, err error) {
-	return nil, nil, lib.ErrInvalidAction
+func (o *Organizer) handleLAOState(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+	return nil, lib.ErrInvalidAction
 }
