@@ -118,12 +118,22 @@ const handleServerAnswer = (message) => {
 
     const query = WebsocketLink.getPendingProperties().get(obj.id);
     const { retryCount } = WebsocketLink.getPendingProperties().get(obj.id);
+    const newQuery = new PendingRequest(
+      query.message,
+      query.requestObject,
+      query.requestAction,
+      retryCount + 1,
+    );
+
+    // check if the message should be resent once again
     if (retryCount < MAX_QUERY_RETRIES) {
-      WebsocketLink.getPendingProperties().set(
-        obj.id,
-        new PendingRequest(query.message, query.requestObject, query.requestAction, retryCount + 1),
+      WebsocketLink.getPendingProperties().set(obj.id, newQuery);
+      WebsocketLink.sendRequestToServer(
+        newQuery.message,
+        newQuery.requestObject,
+        newQuery.requestAction,
+        true,
       );
-      WebsocketLink.sendRequestToServer(query.message, true);
     } else {
       console.error(`max retryCount (${MAX_QUERY_RETRIES}) reached! Failing query : `, query);
       WebsocketLink.getPendingProperties().delete(obj.id);
