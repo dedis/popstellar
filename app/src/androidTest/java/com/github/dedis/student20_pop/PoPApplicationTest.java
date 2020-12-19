@@ -14,8 +14,8 @@ import java.util.Date;
 import java.util.List;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
-import static com.github.dedis.student20_pop.PoPApplication.ADD_WITNESS_ALREADY_EXISTS;
-import static com.github.dedis.student20_pop.PoPApplication.ADD_WITNESS_SUCCESSFUL;
+import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult;
+import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.*;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNull;
@@ -38,7 +38,7 @@ public class PoPApplicationTest {
         ActivityScenario.launch(MainActivity.class).onActivity(a -> {
             PoPApplication app = (PoPApplication) a.getApplication();
             assertNull(app.getWitnesses(lao1));
-            int result = app.addWitness(lao1, witness1);
+            AddWitnessResult result = app.addWitness(lao1, witness1);
             assertThat(app.getWitnesses(lao1), is(Collections.singletonList(witness1)));
             assertThat(result, is(ADD_WITNESS_SUCCESSFUL));
         });
@@ -49,7 +49,7 @@ public class PoPApplicationTest {
         ActivityScenario.launch(MainActivity.class).onActivity(a -> {
             PoPApplication app = (PoPApplication) a.getApplication();
             assertThat(app.getWitnesses(), is(empty()));
-            int result = app.addWitness(witness1);
+            AddWitnessResult result = app.addWitness(witness1);
             assertThat(app.getWitnesses(), is(Collections.singletonList(witness1)));
             assertThat(result, is(ADD_WITNESS_SUCCESSFUL));
         });
@@ -60,9 +60,9 @@ public class PoPApplicationTest {
         ActivityScenario.launch(MainActivity.class).onActivity(a -> {
             PoPApplication app = (PoPApplication) a.getApplication();
             assertNull(app.getWitnesses(lao1));
-            List<Integer> results = app.addWitnesses(lao1, witnesses);
+            List<AddWitnessResult> results = app.addWitnesses(lao1, witnesses);
             assertThat(app.getWitnesses(lao1), is(witnesses));
-            for (int result : results) {
+            for (AddWitnessResult result : results) {
                 assertThat(result, is(ADD_WITNESS_SUCCESSFUL));
             }
         });
@@ -73,9 +73,9 @@ public class PoPApplicationTest {
         ActivityScenario.launch(MainActivity.class).onActivity(a -> {
             PoPApplication app = (PoPApplication) a.getApplication();
             assertThat(app.getWitnesses(), is(empty()));
-            List<Integer> results = app.addWitnesses(witnesses);
+            List<AddWitnessResult> results = app.addWitnesses(witnesses);
             assertThat(app.getWitnesses(), is(witnesses));
-            for (int result : results) {
+            for (AddWitnessResult result : results) {
                 assertThat(result, is(ADD_WITNESS_SUCCESSFUL));
             }
         });
@@ -86,8 +86,8 @@ public class PoPApplicationTest {
         ActivityScenario.launch(MainActivity.class).onActivity(a -> {
             PoPApplication app = (PoPApplication) a.getApplication();
             assertNull(app.getWitnesses(lao1));
-            int result1 = app.addWitness(lao1, witness1);
-            int result2 = app.addWitness(lao1, witness1);
+            AddWitnessResult result1 = app.addWitness(lao1, witness1);
+            AddWitnessResult result2 = app.addWitness(lao1, witness1);
 
             assertThat(app.getWitnesses(lao1), is(Collections.singletonList(witness1)));
             assertThat(result1, is(ADD_WITNESS_SUCCESSFUL));
@@ -100,8 +100,8 @@ public class PoPApplicationTest {
         ActivityScenario.launch(MainActivity.class).onActivity(a -> {
             PoPApplication app = (PoPApplication) a.getApplication();
             assertThat(app.getWitnesses(), is(empty()));
-            int result1 = app.addWitness(witness1);
-            int result2 = app.addWitness(witness1);
+            AddWitnessResult result1 = app.addWitness(witness1);
+            AddWitnessResult result2 = app.addWitness(witness1);
 
             assertThat(app.getWitnesses(), is(Collections.singletonList(witness1)));
             assertThat(result1, is(ADD_WITNESS_SUCCESSFUL));
@@ -114,14 +114,14 @@ public class PoPApplicationTest {
         ActivityScenario.launch(MainActivity.class).onActivity(a -> {
             PoPApplication app = (PoPApplication) a.getApplication();
             assertNull(app.getWitnesses(lao1));
-            List<Integer> results1 = app.addWitnesses(lao1, witnesses);
-            List<Integer> results2 = app.addWitnesses(lao1, witnesses);
+            List<AddWitnessResult> results1 = app.addWitnesses(lao1, witnesses);
+            List<AddWitnessResult> results2 = app.addWitnesses(lao1, witnesses);
 
             assertThat(app.getWitnesses(lao1), is(witnesses));
-            for (int result : results1) {
+            for (AddWitnessResult result : results1) {
                 assertThat(result, is(ADD_WITNESS_SUCCESSFUL));
             }
-            for (int result : results2) {
+            for (AddWitnessResult result : results2) {
                 assertThat(result, is(ADD_WITNESS_ALREADY_EXISTS));
             }
         });
@@ -132,14 +132,14 @@ public class PoPApplicationTest {
         ActivityScenario.launch(MainActivity.class).onActivity(a -> {
             PoPApplication app = (PoPApplication) a.getApplication();
             assertThat(app.getWitnesses(), is(empty()));
-            List<Integer> results1 = app.addWitnesses(witnesses);
-            List<Integer> results2 = app.addWitnesses(witnesses);
+            List<AddWitnessResult> results1 = app.addWitnesses(witnesses);
+            List<AddWitnessResult> results2 = app.addWitnesses(witnesses);
 
             assertThat(app.getWitnesses(), is(witnesses));
-            for (int result : results1) {
+            for (AddWitnessResult result : results1) {
                 assertThat(result, is(ADD_WITNESS_SUCCESSFUL));
             }
-            for (int result : results2) {
+            for (AddWitnessResult result : results2) {
                 assertThat(result, is(ADD_WITNESS_ALREADY_EXISTS));
             }
         });
