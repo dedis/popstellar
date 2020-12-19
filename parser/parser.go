@@ -146,9 +146,10 @@ func dataConstAreValid(m message.Data) bool {
 		log.Printf("the object is not valid, it is instead %v", m["object"])
 		return false
 	}
+
 	creation, okC := m["creation"].(int)
 	lastm, okL := m["last_modified"].(int)
-	if !okC || !okL || creation < 0 || lastm < 0 {
+	if (okC && creation < 0) || (okL && lastm < 0) {
 		log.Printf("the timestamps are smaller than 0")
 		return false
 	}
