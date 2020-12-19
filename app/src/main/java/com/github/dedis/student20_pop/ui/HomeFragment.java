@@ -19,17 +19,13 @@ import com.github.dedis.student20_pop.AttendeeActivity;
 import com.github.dedis.student20_pop.OrganizerActivity;
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
-import com.github.dedis.student20_pop.model.Person;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
  * Fragment used to display the Home UI
-**/
+ **/
 public final class HomeFragment extends Fragment {
 
     public static final String TAG = HomeFragment.class.getSimpleName();
@@ -42,7 +38,7 @@ public final class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        PoPApplication app = (PoPApplication)(getActivity().getApplication());
+        PoPApplication app = (PoPApplication) (getActivity().getApplication());
         id = app.getPerson().getId();
         laos = app.getLaos();
         LinearLayout welcome = view.findViewById(R.id.welcome_screen);
@@ -51,7 +47,7 @@ public final class HomeFragment extends Fragment {
         if (laos.isEmpty()) {
             welcome.setVisibility(View.VISIBLE);
             list.setVisibility(View.GONE);
-        }else{
+        } else {
             welcome.setVisibility(View.GONE);
             list.setVisibility(View.VISIBLE);
         }
@@ -64,9 +60,9 @@ public final class HomeFragment extends Fragment {
      * Adapter class required to display the list of LAOs in a ListView
      */
     private class LaoListAdapter extends BaseAdapter {
-        private Context context;
+        private final Context context;
 
-        public LaoListAdapter(Context context){
+        public LaoListAdapter(Context context) {
             this.context = context;
         }
 
@@ -87,7 +83,7 @@ public final class HomeFragment extends Fragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            PoPApplication app = (PoPApplication)(getActivity().getApplication());
+            PoPApplication app = (PoPApplication) (getActivity().getApplication());
             if (convertView == null) {
                 LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = inflater.inflate(R.layout.layout_lao_home, null);
@@ -98,9 +94,9 @@ public final class HomeFragment extends Fragment {
             boolean isOrganizer = (lao.getOrganizer()).equals(id);
             ((TextView) convertView.findViewById(R.id.role)).setText(isOrganizer ? R.string.organizer : R.string.attendee);
             convertView.setOnClickListener(clicked -> {
-               app.setCurrentLao(lao);
-               Intent intent = new Intent(getActivity(), isOrganizer ? OrganizerActivity.class : AttendeeActivity.class);
-               startActivity(intent);
+                app.setCurrentLao(lao);
+                Intent intent = new Intent(getActivity(), isOrganizer ? OrganizerActivity.class : AttendeeActivity.class);
+                startActivity(intent);
             });
             return convertView;
         }

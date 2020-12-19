@@ -16,7 +16,7 @@ import java.security.GeneralSecurityException;
 
 /**
  * Private Information Storage Class
- *
+ * <p>
  * The private information is stored in an EncryptedFile, generated with a MasterKey.
  */
 public class PrivateInfoStorage {
@@ -27,14 +27,14 @@ public class PrivateInfoStorage {
      * Store private information in a file,
      * overwrite existing data if the file already exists
      *
-     * @param context of the Application
+     * @param context  of the Application
      * @param fileName name of file
-     * @param data to store
+     * @param data     to store
      * @return true if successful, false if problem
      * @throws IllegalArgumentException if one of the inputs are null or the file doesn't exist
      */
     public static Boolean storeData(Context context, String fileName, String data) {
-        if(context == null || fileName == null || data == null) {
+        if (context == null || fileName == null || data == null) {
             throw new IllegalArgumentException("Can't have null parameters");
         }
         try {
@@ -53,13 +53,13 @@ public class PrivateInfoStorage {
     /**
      * Read the private data stored in a given file.
      *
-     * @param context of the Application
+     * @param context  of the Application
      * @param fileName name of file
      * @return the private data read, null if problem
      * @throws IllegalArgumentException if one of the inputs are null
      */
     public static String readData(Context context, String fileName) {
-        if(context == null || fileName == null) {
+        if (context == null || fileName == null) {
             throw new IllegalArgumentException("Can't have null parameters");
         }
         try {
@@ -85,7 +85,7 @@ public class PrivateInfoStorage {
     }
 
     private static EncryptedFile buildEncryptedFile(Context context, String fileName) throws GeneralSecurityException, IOException {
-        if(fileName.contains("/")) {
+        if (fileName.contains("/")) {
             fileName = fileName.replaceAll("/", "");
         }
 
@@ -96,7 +96,7 @@ public class PrivateInfoStorage {
                 new File(context.getFilesDir(), file),
                 // get primary master key for the given context
                 new MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build(),
-                EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB );
+                EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB);
         return encryptedFileBuilder.build();
     }
 }

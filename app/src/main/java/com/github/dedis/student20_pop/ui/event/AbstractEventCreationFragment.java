@@ -31,23 +31,19 @@ import java.util.Locale;
 abstract class AbstractEventCreationFragment extends Fragment {
     public static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm", Locale.FRENCH);
     public static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH);
-
-    private EditText startDateEditText;
-    private EditText endDateEditText;
-    private EditText startTimeEditText;
-    private EditText endTimeEditText;
-
     public static final int START_DATE_REQUEST_CODE = 11; //Used to identify the request
     public static final int END_DATE_REQUEST_CODE = 12;
     public static final int START_TIME_REQUEST_CODE = 13;
     public static final int END_TIME_REQUEST_CODE = 14;
-
     public static Date startDate;
     public static Date endDate;
     public static Date startTime;
     public static Date endTime;
     public static Date today;
-
+    private EditText startDateEditText;
+    private EditText endDateEditText;
+    private EditText startTimeEditText;
+    private EditText endTimeEditText;
     private String selection;
 
     public void setDateAndTimeView(View view, Fragment fragment, FragmentManager fragmentManager) {

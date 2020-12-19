@@ -7,11 +7,9 @@ import android.view.View;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.github.dedis.student20_pop.model.Event;
 import com.github.dedis.student20_pop.ui.AttendeeFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.IdentityFragment;
-import com.github.dedis.student20_pop.utility.ui.organizer.OnEventTypeSelectedListener;
 
 /**
  * Activity used to display the different UIs for attendees

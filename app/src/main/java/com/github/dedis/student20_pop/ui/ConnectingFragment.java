@@ -31,7 +31,7 @@ public final class ConnectingFragment extends Fragment {
      * @param url to connect to
      * @return A new instance of fragment ConnectingFragment.
      */
-    public static ConnectingFragment   newInstance(String url) {
+    public static ConnectingFragment newInstance(String url) {
         ConnectingFragment fragment = new ConnectingFragment();
         Bundle args = new Bundle();
         args.putString(URL_EXTRA, url);

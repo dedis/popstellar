@@ -38,8 +38,25 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
     private EditText meetingDescriptionEditText;
 
     private Button confirmButton;
-    private Button cancelButton;
+    private final TextWatcher confirmTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
 
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            String meetingTitle = meetingTitleEditText.getText().toString().trim();
+
+            confirmButton.setEnabled(!meetingTitle.isEmpty() &&
+                    !getStartDate().isEmpty() &&
+                    !getStartTime().isEmpty());
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+        }
+    };
+    private Button cancelButton;
     private OnEventCreatedListener eventCreatedListener;
 
     @Override
@@ -101,25 +118,6 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
 
         return view;
     }
-
-    private final TextWatcher confirmTextWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            String meetingTitle = meetingTitleEditText.getText().toString().trim();
-
-            confirmButton.setEnabled(!meetingTitle.isEmpty() &&
-                    !getStartDate().isEmpty() &&
-                    !getStartTime().isEmpty());
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-        }
-    };
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -14,8 +14,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.github.dedis.student20_pop.model.Event;
-import com.github.dedis.student20_pop.model.Event.EventType;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.Person;
 import com.github.dedis.student20_pop.ui.CameraPermissionFragment;
@@ -28,8 +26,6 @@ import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraNotAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
 import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
-import com.github.dedis.student20_pop.utility.ui.organizer.OnEventCreatedListener;
-import com.github.dedis.student20_pop.utility.ui.organizer.OnEventTypeSelectedListener;
 
 import java.util.Collections;
 import java.util.Date;

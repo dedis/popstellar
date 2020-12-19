@@ -46,18 +46,6 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
     private QRCodeScanningType qrCodeScanningType;
 
     /**
-     * Enum representing QR code functionality
-     * If QRCodeScanningFragment is launched to add a witness
-     * or connect to a lao or to add an attendee to a roll call event
-     */
-    public enum QRCodeScanningType {
-        ADD_ROLL_CALL,
-        ADD_WITNESS,
-        CONNECT_LAO
-
-    }
-
-    /**
      * Default Fragment constructor
      */
     public QRCodeScanningFragment() {
@@ -174,5 +162,17 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
     @Override
     public void onQRCodeDetected(String data, QRCodeScanningType qrCodeScanningType) {
         qrCodeListener.onQRCodeDetected(data, qrCodeScanningType);
+    }
+
+    /**
+     * Enum representing QR code functionality
+     * If QRCodeScanningFragment is launched to add a witness
+     * or connect to a lao or to add an attendee to a roll call event
+     */
+    public enum QRCodeScanningType {
+        ADD_ROLL_CALL,
+        ADD_WITNESS,
+        CONNECT_LAO
+
     }
 }
