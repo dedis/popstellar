@@ -12,6 +12,9 @@ import (
 func ParseGenericMessage(genericMessage []byte) (message.GenericMessage, error) {
 	m := message.GenericMessage{}
 	err := json.Unmarshal(genericMessage, &m)
+	if err != nil {
+		return m, lib.ErrIdNotDecoded
+	}
 	if m["jsonrpc"] != "2.0" {
 		log.Printf("jsonrpc field is not 2.0 but %v", m["jsonrpc"])
 		return m, lib.ErrRequestDataInvalid
@@ -26,6 +29,9 @@ func ParseGenericMessage(genericMessage []byte) (message.GenericMessage, error) 
 func ParseQuery(query []byte) (message.Query, error) {
 	m := message.Query{}
 	err := json.Unmarshal(query, &m)
+	if err != nil {
+		return m, lib.ErrIdNotDecoded
+	}
 	switch m.Method {
 	case "subscribe", "unsubscribe", "message", "publish", "catchup":
 		return m, err

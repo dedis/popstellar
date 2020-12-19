@@ -33,7 +33,7 @@ func (o *Organizer) HandleWholeMessage(receivedMsg []byte, userId int) (message_
 	// in case the message is already an answer message (positive ack or error), ignore and answer noting to avoid falling into infinite error loops
 	isAnswer, err := filterAnswers(receivedMsg)
 	if err != nil {
-		return nil, nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, message.Query{})
+		return nil, nil, parser.ComposeResponse(err, nil, message.Query{})
 	}
 	if isAnswer {
 		return nil, nil, nil
@@ -41,7 +41,7 @@ func (o *Organizer) HandleWholeMessage(receivedMsg []byte, userId int) (message_
 
 	query, err := parser.ParseQuery(receivedMsg)
 	if err != nil {
-		return nil, nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, query)
+		return nil, nil, parser.ComposeResponse(err, nil, query)
 	}
 
 	var history []byte = nil
