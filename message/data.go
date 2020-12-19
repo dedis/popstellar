@@ -44,7 +44,6 @@ type DataCreateMeeting struct {
 	Creation int64 //  Unix timestamp (uint64)
 	//Last_modified int64  //timestamp
 	Location string //optional
-	//Organiser: Public Key
 	Start int64  /* Timestamp */
 	End   int64  /* Timestamp, optional */
 	Extra string /* arbitrary object, optional */
@@ -61,7 +60,6 @@ type DataCreateRollCall struct {
 	Creation int64 //  Unix timestamp (uint64)
 	//Last_modified int64  //timestamp
 	Location string //optional
-	//Organiser: Public Key
 	Start int64  /* Timestamp */
 	End   int64  /* Timestamp, optional */
 	Extra string /* arbitrary object, optional */
@@ -78,7 +76,6 @@ type DataCreatePoll struct {
 	Creation int64 //  Unix timestamp (uint64)
 	//Last_modified int64  //timestamp
 	Location string //optional
-	//Organiser: Public Key
 	Start int64  /* Timestamp */
 	End   int64  /* Timestamp, optional */
 	Extra string /* arbitrary object, optional */
@@ -88,4 +85,63 @@ type DataWitnessMessage struct {
 	Action     string
 	Message_id string
 	Signature  string
+}
+
+type DataUpdateLAO struct {
+	Object string
+	Action string //if we put "action" with little a it crashes
+	//ID hash : Name || Creation Date/Time Unix Timestamp
+	ID string
+	// name of LAO
+	Name string
+	//Last_modified Date/Time
+	Last_modified int64 //  Unix timestamp (uint64)
+	//List of public keys where each public key belongs to one witness
+	Witnesses []string
+}
+
+type DataStateLAO struct {
+	Object string
+	Action string //if we put "action" with little a it crashes
+	//ID hash : Name || Creation Date/Time Unix Timestamp
+	ID string
+	// name of LAO
+	Name string
+	//Creation Date/Time
+	Creation int64 //  Unix timestamp (uint64)
+	//Last_modified Date/Time
+	Last_modified int64 //  Unix timestamp (uint64)
+	//Organiser: Public Key
+	Organizer string
+	//List of public keys where each public key belongs to one witness
+	Witnesses []string
+	// id of the modification (either creation/update)
+	Modification_id string
+	// signatures of the witnesses on the modification message (either creation/update)
+	Modification_signatures []ItemWitnessSignatures
+}
+
+type DataStateMeeting struct {
+	Object string
+	Action string //if we put "action" with little a it crashes
+	//ID hash : Name || Creation Date/Time Unix Timestamp
+	ID string
+	// name of LAO
+	Name string
+	//Creation Date/Time
+	Creation int64 //  Unix timestamp (uint64)
+	//Last_modified Date/Time
+	Last_modified int64 //  Unix timestamp (uint64)
+	Location string //optional
+	Start int64  /* Timestamp */
+	End   int64  /* Timestamp, optional */
+	Extra string /* arbitrary object, optional */
+	//Organiser: Public Key
+	Organizer string
+	//List of public keys where each public key belongs to one witness
+	Witnesses []string
+	// id of the modification (either creation/update)
+	Modification_id string
+	// signatures of the witnesses on the modification message (either creation/update)
+	Modification_signatures []ItemWitnessSignatures
 }
