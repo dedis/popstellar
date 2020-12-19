@@ -28,6 +28,10 @@ func filterAnswers(receivedMsg []byte) (bool, error) {
 		return false, err
 	}
 
+	/* TODO we *could* check that the int is correctly 0 for answers and [-5;-1] for errors. 
+	But is it really worth it? Anyways, not sure we want to answer with "error:request data invalid" to an error with an out-of-range errId...
+	We're already logging the msg received, that should be enough to debug?
+	*/
 	_, isAnswerMsg := genericMsg["result"]
 	if isAnswerMsg {
 		log.Printf("an answer has been received, with %v", string(receivedMsg))
