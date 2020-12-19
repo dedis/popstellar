@@ -1,5 +1,7 @@
-/*functions to manage received Json messages. Unmarshalls and decode messages.*/
+/*structs to manage received Json messages while Unmarshalling and decoding messages.*/
 package message
+
+// []byte are automatically decoded from base64 when unmarshalled, while string (and json.RawMessage) are NOT
 
 import (
 	"encoding/json"
@@ -35,14 +37,14 @@ type ParamsIncludingMessage struct {
 }
 
 type Message struct {
-	Data              json.RawMessage `json:"data"` // in base 64
-	Sender            string          `json:"sender"`
-	Signature         string          `json:"signature"`
-	MessageId         string          `json:"message_id"`
-	WitnessSignatures []string        `json:"witnessSignatures"`
+	Data              []byte `json:"data"` // in base 64
+	Sender            []byte          `json:"sender"`
+	Signature         []byte          `json:"signature"`
+	MessageId         []byte          `json:"message_id"`
+	WitnessSignatures []json.RawMessage       `json:"witnessSignatures"`
 }
 
 type ItemWitnessSignatures struct {
-	Witness   string
-	Signature string
+	Witness   []byte
+	Signature []byte
 }
