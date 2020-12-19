@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.*;
+
 /**
  * Class modelling the application : a unique person associated with LAOs
  */
@@ -27,8 +29,6 @@ public class PoPApplication extends Application {
     public static final String TAG = PoPApplication.class.getSimpleName();
 
     private static final String LOCAL_BACKEND_URI = "ws://10.0.2.2:2000";
-    public static final int ADD_WITNESS_SUCCESSFUL = 0;
-    public static final int ADD_WITNESS_ALREADY_EXISTS = 1;
 
     public static final String USERNAME = "USERNAME"; //TODO: let user choose/change its name
     private static Context appContext;
@@ -44,6 +44,11 @@ public class PoPApplication extends Application {
     private Lao dummyLao;
     private Map<Lao, List<Event>> dummyLaoEventsMap;
     private CompletableFuture<HighLevelClientProxy> localProxy;
+
+    public enum AddWitnessResult {
+        ADD_WITNESS_SUCCESSFUL,
+        ADD_WITNESS_ALREADY_EXISTS
+    }
 
     @Override
     public void onCreate() {
@@ -237,7 +242,7 @@ public class PoPApplication extends Application {
      * @return ADD_WITNESS_SUCCESSFUL if witness has been added
      * ADD_WITNESS_ALREADY_EXISTS if witness already exists
      */
-    public int addWitness(Lao lao, String witness) {
+    public AddWitnessResult addWitness(Lao lao, String witness) {
         //TODO when connected to backend
         // send info to backend
         // If witness has been added return true, otherwise false
@@ -264,7 +269,7 @@ public class PoPApplication extends Application {
      * @return ADD_WITNESS_SUCCESSFUL if witness has been added
      * ADD_WITNESS_ALREADY_EXISTS if witness already exists
      */
-    public int addWitness(String witness) {
+    public AddWitnessResult addWitness(String witness) {
         return addWitness(dummyLao, witness);
         //TODO when connected to backend
         //addWitness(currentLao, witness);
@@ -274,7 +279,7 @@ public class PoPApplication extends Application {
      * @param witnesses add witness to current lao
      * @return corresponding result for each witness in the list
      */
-    public List<Integer> addWitnesses(List<String> witnesses) {
+    public List<AddWitnessResult> addWitnesses(List<String> witnesses) {
         return addWitnesses(dummyLao, witnesses);
         //TODO when connected to backend
         //addWitnesses(currentLao, witness);
@@ -284,8 +289,8 @@ public class PoPApplication extends Application {
      * @param witnesses add witness to current lao
      * @return corresponding result for each witness in the list
      */
-    public List<Integer> addWitnesses(Lao lao, List<String> witnesses){
-        List<Integer> results = new ArrayList<>();
+    public List<AddWitnessResult> addWitnesses(Lao lao, List<String> witnesses){
+        List<AddWitnessResult> results = new ArrayList<>();
         for (String witness : witnesses) {
             results.add(addWitness(lao, witness));
         }

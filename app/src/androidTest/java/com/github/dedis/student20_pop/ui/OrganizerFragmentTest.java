@@ -40,7 +40,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.dedis.student20_pop.PoPApplication.ADD_WITNESS_SUCCESSFUL;
+import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.*;
+import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult;
 import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.ADD_WITNESS;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
@@ -78,7 +79,7 @@ public class OrganizerFragmentTest {
                 decorView = activity.getWindow().getDecorView();
                 PoPApplication app = (PoPApplication) activity.getApplication();
                 assertThat(app.getWitnesses(), is(empty()));
-                int result = app.addWitness(witness1);
+                AddWitnessResult result = app.addWitness(witness1);
                 assertThat(app.getWitnesses(), is(Collections.singletonList(witness1)));
                 assertThat(result, is(ADD_WITNESS_SUCCESSFUL));
             }
