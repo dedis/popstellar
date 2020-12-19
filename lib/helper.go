@@ -30,3 +30,8 @@ func Decode(data string) ([]byte, error) {
 	d, err := b64.StdEncoding.DecodeString(strings.Trim(data, `"`))
 	return d, err
 }
+
+type MessageAndChannel struct {
+	Channel []byte
+	Message []byte
+}

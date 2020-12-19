@@ -12,14 +12,14 @@ import (
 
 type Actor interface {
 	//Public functions
-	HandleWholeMessage(msg []byte, userId int) (message, channel, responseToSender []byte)
+	HandleWholeMessage(msg []byte, userId int) (msgAndChannel []lib.MessageAndChannel, responseToSender []byte)
 	//Private functions
-	handlePublish(query message.Query) (message, channel []byte, err error)
-	handleCreateLAO(msg message.Message, canal string, query message.Query) (message, channel []byte, err error)
-	handleUpdateProperties(msg message.Message, canal string, query message.Query) (message, channel []byte, err error)
-	handleWitnessMessage(msg message.Message, canal string, query message.Query) (message, channel []byte, err error)
-	handleLAOState(msg message.Message, canal string, query message.Query) (message, channel []byte, err error)
-	handleCreateRollCall(mag message.Message, canal string, query message.Query) (message, channel []byte, err error)
+	handlePublish(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error)
+	handleCreateLAO(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error)
+	handleUpdateProperties(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error)
+	handleWitnessMessage(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error)
+	handleLAOState(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error)
+	handleCreateRollCall(mag message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error)
 }
 
 func filterAnswers(receivedMsg []byte) (bool, error) {
