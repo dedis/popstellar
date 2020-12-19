@@ -5,13 +5,13 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.github.dedis.student20_pop.model.Keys;
-import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.ui.CameraPermissionFragment;
 import com.github.dedis.student20_pop.ui.ConnectingFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
@@ -25,8 +25,9 @@ import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
 import com.github.dedis.student20_pop.utility.ui.OnAddWitnessListener;
 import com.github.dedis.student20_pop.utility.ui.OnEventTypeSelectedListener;
 
-import java.util.Date;
-
+import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult;
+import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_ALREADY_EXISTS;
+import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_SUCCESSFUL;
 import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.ADD_WITNESS;
 
 /**
@@ -71,18 +72,7 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
                 showFragment(new HomeFragment(), HomeFragment.TAG);
                 break;
             case R.id.tab_identity:
-                Bundle bundle = new Bundle();
-
-                final PoPApplication app = ((PoPApplication) getApplication());
-                bundle.putString(PRIVATE_KEY_TAG, app.getPerson().getAuthentication());
-
-                Lao lao = app.getCurrentLao();
-                bundle.putString(LAO_ID_TAG, lao.getId());
-
-                // set Fragmentclass Arguments
-                IdentityFragment identityFragment = new IdentityFragment();
-                identityFragment.setArguments(bundle);
-                showFragment(identityFragment, IdentityFragment.TAG);
+                showFragment(new IdentityFragment(), IdentityFragment.TAG);
                 break;
 
             default:
@@ -128,7 +118,6 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
         } else {
             showFragment(new CameraPermissionFragment(ADD_WITNESS), CameraPermissionFragment.TAG);
         }
-        // TODO : Get witness id from the QR code, add witness to witness list and send info to backend
     }
 
     @Override
@@ -137,18 +126,33 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
     }
 
     @Override
-    public void onQRCodeDetected(String url, QRCodeScanningType qrCodeScanningType) {
-        Log.i(TAG, "Received qrcode url : " + url);
+    public void onQRCodeDetected(String data, QRCodeScanningType qrCodeScanningType) {
+        Log.i(TAG, "Received qrcode url : " + data);
         switch (qrCodeScanningType) {
             case ADD_ROLL_CALL:
                 //TODO
                 break;
             case ADD_WITNESS:
                 //TODO
-                Log.d("DEBUG", "URL Received : " + url);
+                int keyLength = new Keys().getPublicKey().length();
+                String witnessId = data.substring(0, keyLength);
+
+                PoPApplication app = (PoPApplication) getApplication();
+                AddWitnessResult hasBeenAdded = app.addWitness(witnessId);
+
+                if (hasBeenAdded == ADD_WITNESS_SUCCESSFUL) {
+                    Toast.makeText(this, getString(R.string.add_witness_successful), Toast.LENGTH_SHORT).show();
+                    getSupportFragmentManager().popBackStackImmediate();
+                } else if (hasBeenAdded == ADD_WITNESS_ALREADY_EXISTS) {
+                    Toast.makeText(this, getString(R.string.add_witness_already_exists), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, getString(R.string.add_witness_unsuccessful), Toast.LENGTH_SHORT).show();
+
+                }
+
                 break;
             case CONNECT_LAO:
-                showFragment(ConnectingFragment.newInstance(url), ConnectingFragment.TAG);
+                showFragment(ConnectingFragment.newInstance(data), ConnectingFragment.TAG);
                 break;
             default:
                 break;

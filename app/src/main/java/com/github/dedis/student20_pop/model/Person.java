@@ -21,7 +21,7 @@ public final class Person {
      * @throws IllegalArgumentException if the name is null
      */
     public Person(String name) {
-        if(name == null) {
+        if (name == null) {
             throw new IllegalArgumentException("Trying to create a person with a null name");
         }
         this.name = name;
@@ -35,10 +35,10 @@ public final class Person {
     /**
      * Private constructor to maintain immutability, only used when want to modify the list of LAOs.
      *
-     * @param name the name of the person
-     * @param id the public key of the person
+     * @param name           the name of the person
+     * @param id             the public key of the person
      * @param authentication the private key of the person
-     * @param laos the new list of LAOs
+     * @param laos           the new list of LAOs
      */
     private Person(String name, String id, String authentication, List<String> laos) {
         this.name = name;
@@ -52,7 +52,6 @@ public final class Person {
     }
 
     /**
-     *
      * @return public key of the Person, can't be modified
      */
     public String getId() {
@@ -60,7 +59,6 @@ public final class Person {
     }
 
     /**
-     *
      * @return private key of the Person
      */
     public String getAuthentication() {
@@ -68,7 +66,6 @@ public final class Person {
     }
 
     /**
-     *
      * @return list of LAOs the Person is subscribed to and/or owns
      */
     public List<String> getLaos() {
@@ -76,13 +73,12 @@ public final class Person {
     }
 
     /**
-     *
      * @param laos the list of LAOs the Person owns/is a member to
      * @return a new Person with the same name, public and private key, but new list of laos
      * @throws IllegalArgumentException if the list is null or at least one lao value is null
      */
     public Person setLaos(List<String> laos) {
-        if(laos == null || laos.contains(null)) {
+        if (laos == null || laos.contains(null)) {
             throw new IllegalArgumentException("Trying to add a null lao to the Person " + name);
         }
         Person person = new Person(name, id, authentication, laos);

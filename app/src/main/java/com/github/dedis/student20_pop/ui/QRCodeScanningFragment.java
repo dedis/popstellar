@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -86,9 +87,22 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_connect, container, false);
+        View view = inflater.inflate(R.layout.fragment_qrcode, container, false);
 
         preview = view.findViewById(R.id.qr_camera_preview);
+        TextView scanDescription = view.findViewById(R.id.scan_description);
+
+        switch (qrCodeScanningType) {
+            case CONNECT_LAO:
+                scanDescription.setText(R.string.qrcode_scanning_connect_lao);
+                break;
+            case ADD_ROLL_CALL:
+                scanDescription.setText("TODO");
+                break;
+            case ADD_WITNESS:
+                scanDescription.setText(R.string.qrcode_scanning_add_witness);
+                break;
+        }
 
         // Check for the camera permission, if is is not granted, switch to CameraPermissionFragment
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
