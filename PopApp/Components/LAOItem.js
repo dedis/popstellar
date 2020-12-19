@@ -51,7 +51,7 @@ LAOItem.propTypes = {
 
 const mapStateToProps = (state) => (
   {
-    organizationNavigation: state.organizationNavigation,
+    organizationNavigation: state.toggleAppNavigationScreenReducer.organizationNavigation,
   }
 );
 
