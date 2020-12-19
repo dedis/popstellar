@@ -6,9 +6,10 @@ import {
 import STRINGS from '../res/strings';
 import { Spacing, Typography } from '../Styles';
 import PROPS_TYPE from '../res/Props';
+import { requestCreateLao } from '../websockets/WebsocketApi';
 
 /**
- * Manage the Launch screen: a decrtiption string, a LAO noame text input, a launch LAO button,
+ * Manage the Launch screen: a description string, a LAO name text input, a launch LAO button,
  * and cancel button
  *
  * The Launch button does nothing
@@ -37,11 +38,16 @@ const styles = StyleSheet.create({
   },
 });
 
+const onButtonLaunchPress = (inputLaoName) => {
+  if (inputLaoName.current.value) requestCreateLao(inputLaoName.current.value);
+  else console.error('empty lao name...?');
+};
+
 const Launch = ({ navigation }) => {
-  const LAOName = React.useRef();
+  const inputLaoName = React.useRef();
 
   const cancelAction = () => {
-    LAOName.current.clear();
+    inputLaoName.current.clear();
     navigation.navigate('Home');
   };
 
@@ -51,7 +57,7 @@ const Launch = ({ navigation }) => {
         <Text style={styles.text}>{STRINGS.launch_description}</Text>
         <View style={styles.button}>
           <TextInput
-            ref={LAOName}
+            ref={inputLaoName}
             style={styles.textInput}
             placeholder={STRINGS.launch_organization_name}
           />
@@ -59,7 +65,10 @@ const Launch = ({ navigation }) => {
       </View>
       <View style={styles.viewBottom}>
         <View style={styles.button}>
-          <Button title={STRINGS.launch_button_launch} />
+          <Button
+            title={STRINGS.launch_button_launch}
+            onPress={() => onButtonLaunchPress(inputLaoName)}
+          />
         </View>
         <View style={styles.button}>
           <Button

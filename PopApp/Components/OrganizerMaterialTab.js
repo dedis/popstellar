@@ -91,10 +91,8 @@ MytabBar.defaultProps = {
   LAO_ID: '-1',
 };
 
-const mapStateToProps = (state) => (
-  {
-    LAO_ID: state.LAO_ID,
-  }
-);
+const mapStateToProps = (state) => ({
+  LAO_ID: state.toggleAppNavigationScreenReducer.LAO_ID,
+});
 
 export default connect(mapStateToProps)(MytabBar);
