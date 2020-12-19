@@ -29,13 +29,6 @@ public class OrganizerExpandableListViewEventAdapter extends BaseExpandableListA
     private final OnEventTypeSelectedListener onEventTypeSelectedListener;
 
     /**
-     * Enum class for each event category
-     */
-    private enum EventCategory {
-        PAST, PRESENT, FUTURE
-    }
-
-    /**
      * Constructor for the expandable list view adapter to display the events
      * in the organizer UI
      *
@@ -267,6 +260,13 @@ public class OrganizerExpandableListViewEventAdapter extends BaseExpandableListA
             Collections.sort(eventsMap.get(category), new EventComparator());
         }
         //2 possibilities: B strictly after A or B nested within A
+    }
+
+    /**
+     * Enum class for each event category
+     */
+    private enum EventCategory {
+        PAST, PRESENT, FUTURE
     }
 
     private static class EventComparator implements Comparator<Event> {

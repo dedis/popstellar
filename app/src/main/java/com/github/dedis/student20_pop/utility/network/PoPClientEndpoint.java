@@ -23,7 +23,7 @@ import javax.websocket.Session;
 
 /**
  * A client endpoint to a web socket using jsr 365 library
- *
+ * <p>
  * TODO link onOpen and onRemove to the UI
  */
 @ClientEndpoint()
@@ -37,11 +37,10 @@ public final class PoPClientEndpoint {
     /**
      * Create asynchronously a new HighLevelClientProxy that will encapsulate the socket
      *
-     * @param host to connect to
+     * @param host   to connect to
      * @param issuer the person whose device issued the connection
-     *
      * @return A completable future that will complete with the proxy once connection is established.
-     *         If the connection cannot be established, the future with complete with an exception
+     * If the connection cannot be established, the future with complete with an exception
      */
     public static CompletableFuture<HighLevelClientProxy> connectAsync(URI host, Person issuer) {
         CompletableFuture<HighLevelClientProxy> proxyFuture = new CompletableFuture<>();
@@ -64,9 +63,8 @@ public final class PoPClientEndpoint {
     /**
      * Create a new HighLevelClientProxy that will encapsulate the socket
      *
-     * @param host to connect to
+     * @param host   to connect to
      * @param issuer the person whose device issued the connection
-     *
      * @return the proxy holding the connection
      */
     public static HighLevelClientProxy connect(URI host, Person issuer) throws DeploymentException {
@@ -103,7 +101,7 @@ public final class PoPClientEndpoint {
         // In the future, we could improve this
         synchronized (listeners) {
             LowLevelClientProxy client = listeners.get(session);
-            if(client == null)
+            if (client == null)
                 throw new IllegalArgumentException();
 
             client.onMessage(message);

@@ -5,7 +5,7 @@ import java.util.Objects;
 
 /**
  * An abstract result from a request
- *
+ * <p>
  * Is linked to an earlier request with a unique id
  */
 public abstract class Result {

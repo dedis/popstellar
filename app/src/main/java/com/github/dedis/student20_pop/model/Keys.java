@@ -1,9 +1,10 @@
 package com.github.dedis.student20_pop.model;
 
+import com.google.crypto.tink.subtle.Ed25519Sign;
+
 import java.security.GeneralSecurityException;
 import java.util.Base64;
 import java.util.Objects;
-import com.google.crypto.tink.subtle.Ed25519Sign;
 
 /**
  * Class modeling a set of Public and Private Keys

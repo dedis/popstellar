@@ -1,7 +1,6 @@
 package com.github.dedis.student20_pop.utility.ui;
 
 import android.content.Context;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,14 +23,6 @@ public class AttendeeExpandableListViewEventAdapter extends BaseExpandableListAd
     private final Context context;
     private final List<EventCategory> categories;
     private final HashMap<EventCategory, List<Event>> eventsMap;
-
-
-    /**
-     * Enum class for each event category
-     */
-    private enum EventCategory {
-        PAST, PRESENT, FUTURE
-    }
 
 
     /**
@@ -223,11 +214,11 @@ public class AttendeeExpandableListViewEventAdapter extends BaseExpandableListAd
         for (Event event : events) {
             //for now (testing purposes)
             //later: event.getEndTime() < now
-            if (event.getTime() < (System.currentTimeMillis()/1000L)) {
+            if (event.getTime() < (System.currentTimeMillis() / 1000L)) {
                 eventsMap.get(EventCategory.PAST).add(event);
             }
             //later: event.getStartTime()<now && event.getEndTime() > now
-            else if (event.getTime() <= System.currentTimeMillis()/1000L) {
+            else if (event.getTime() <= System.currentTimeMillis() / 1000L) {
                 eventsMap.get(EventCategory.PRESENT).add(event);
             } else { //if e.getStartTime() > now
                 eventsMap.get(EventCategory.FUTURE).add(event);
@@ -246,6 +237,13 @@ public class AttendeeExpandableListViewEventAdapter extends BaseExpandableListAd
             Collections.sort(eventsMap.get(category), new EventComparator());
         }
         //2 possibilities: B strictly after A or B nested within A
+    }
+
+    /**
+     * Enum class for each event category
+     */
+    private enum EventCategory {
+        PAST, PRESENT, FUTURE
     }
 
     private class EventComparator implements Comparator<Event> {

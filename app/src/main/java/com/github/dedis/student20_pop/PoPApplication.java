@@ -20,17 +20,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.*;
+import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_ALREADY_EXISTS;
+import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_SUCCESSFUL;
 
 /**
  * Class modelling the application : a unique person associated with LAOs
  */
 public class PoPApplication extends Application {
     public static final String TAG = PoPApplication.class.getSimpleName();
-
-    private static final String LOCAL_BACKEND_URI = "ws://10.0.2.2:2000";
-
     public static final String USERNAME = "USERNAME"; //TODO: let user choose/change its name
+    private static final String LOCAL_BACKEND_URI = "ws://10.0.2.2:2000";
     private static Context appContext;
     private Person person;
     private Map<Lao, List<Event>> laoEventsMap;
@@ -45,9 +44,11 @@ public class PoPApplication extends Application {
     private Map<Lao, List<Event>> dummyLaoEventsMap;
     private CompletableFuture<HighLevelClientProxy> localProxy;
 
-    public enum AddWitnessResult {
-        ADD_WITNESS_SUCCESSFUL,
-        ADD_WITNESS_ALREADY_EXISTS
+    /**
+     * @return PoP Application Context
+     */
+    public static Context getAppContext() {
+        return appContext;
     }
 
     @Override
@@ -79,28 +80,12 @@ public class PoPApplication extends Application {
     }
 
     /**
-     * @return PoP Application Context
-     */
-    public static Context getAppContext() {
-        return appContext;
-    }
-
-    /**
      * @return Person corresponding to the user
      */
     public Person getPerson() {
         return dummyPerson;
         //TODO when connected to backend
         //return person;
-    }
-
-    /**
-     * @return list of LAOs corresponding to the user
-     */
-    public List<Lao> getLaos() {
-        return new ArrayList<>(dummyLaoEventsMap.keySet());
-        //TODO when connected to backend
-        //return new ArrayList<>(laoEventsMap.keySet());
     }
 
     /**
@@ -112,6 +97,15 @@ public class PoPApplication extends Application {
         if (person != null) {
             this.person = person;
         }
+    }
+
+    /**
+     * @return list of LAOs corresponding to the user
+     */
+    public List<Lao> getLaos() {
+        return new ArrayList<>(dummyLaoEventsMap.keySet());
+        //TODO when connected to backend
+        //return new ArrayList<>(laoEventsMap.keySet());
     }
 
     /**
@@ -145,9 +139,8 @@ public class PoPApplication extends Application {
     }
 
     /**
-<<<<<<< HEAD
-=======
      * adds an event e to the list of events of current lao
+     *
      * @param event
      */
     public void addEvent(Event event) {
@@ -155,7 +148,6 @@ public class PoPApplication extends Application {
     }
 
     /**
->>>>>>> 6fd9d1d9... Add Fragments to choose date and time
      * @return the current lao
      */
     public Lao getCurrentLao() {
@@ -218,7 +210,6 @@ public class PoPApplication extends Application {
         //TODO when connected to backend
         //return laoEventsMap;
     }
-
 
     /**
      * This method creates a map for testing, when no backend is connected
@@ -300,7 +291,7 @@ public class PoPApplication extends Application {
      * @param witnesses add witness to current lao
      * @return corresponding result for each witness in the list
      */
-    public List<AddWitnessResult> addWitnesses(Lao lao, List<String> witnesses){
+    public List<AddWitnessResult> addWitnesses(Lao lao, List<String> witnesses) {
         List<AddWitnessResult> results = new ArrayList<>();
         for (String witness : witnesses) {
             results.add(addWitness(lao, witness));
@@ -320,6 +311,7 @@ public class PoPApplication extends Application {
 
     /**
      * Get witnesses of current LAO
+     *
      * @return lao's corresponding list of witnesses
      */
     public List<String> getWitnesses() {
@@ -333,5 +325,10 @@ public class PoPApplication extends Application {
      */
     public Map<Lao, List<String>> getLaoWitnessMap() {
         return laoWitnessMap;
+    }
+
+    public enum AddWitnessResult {
+        ADD_WITNESS_SUCCESSFUL,
+        ADD_WITNESS_ALREADY_EXISTS
     }
 }

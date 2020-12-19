@@ -24,12 +24,12 @@ public class JsonLowMessageSerializer implements JsonSerializer<ChanneledMessage
         JsonUtils.testRPCVersion(container.jsonrpc);
 
         Method method = Method.find(container.method);
-        if(method == null)
+        if (method == null)
             throw new JsonParseException("Unknown method type " + container.method);
         JsonObject params = container.params;
 
         // If the Channeled Message is a Request, we need to give the params the id the the request
-        if(method.expectResult())
+        if (method.expectResult())
             params.add(JsonUtils.JSON_REQUEST_ID, json.getAsJsonObject().get(JsonUtils.JSON_REQUEST_ID));
 
         return context.deserialize(params, method.getDataClass());
@@ -41,7 +41,7 @@ public class JsonLowMessageSerializer implements JsonSerializer<ChanneledMessage
 
         JsonObject obj = context.serialize(new JsonRPCRequest(JsonUtils.JSON_RPC_VERSION, src.getMethod(), params)).getAsJsonObject();
 
-        if(src instanceof Request)
+        if (src instanceof Request)
             obj.addProperty(JsonUtils.JSON_REQUEST_ID, ((Request) src).getRequestID());
 
         return obj;

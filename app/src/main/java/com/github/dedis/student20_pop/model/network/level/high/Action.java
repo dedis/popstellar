@@ -21,15 +21,15 @@ public enum Action {
         this.action = action;
     }
 
-    public String getAction() {
-        return action;
-    }
-
     public static Action find(String searched) {
-        for(Action action : ALL)
-            if(action.getAction().equals(searched))
+        for (Action action : ALL)
+            if (action.getAction().equals(searched))
                 return action;
 
         return null;
+    }
+
+    public String getAction() {
+        return action;
     }
 }

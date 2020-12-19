@@ -23,9 +23,9 @@ public class JsonResultSerializer implements JsonSerializer<Result>, JsonDeseria
         JsonObject obj = json.getAsJsonObject();
         JsonUtils.testRPCVersion(obj);
 
-        if(obj.has(RESULT))
+        if (obj.has(RESULT))
             return context.deserialize(json, Success.class);
-        else if(obj.has(ERROR))
+        else if (obj.has(ERROR))
             return context.deserialize(json, Failure.class);
         else
             throw new JsonParseException("A result must contain one of the field result or error");
