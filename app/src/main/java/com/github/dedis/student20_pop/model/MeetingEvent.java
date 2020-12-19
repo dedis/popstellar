@@ -11,7 +11,6 @@ public class MeetingEvent extends Event {
     private final String description;
 
     /**
-     *
      * @param name
      * @param startDate
      * @param endDate

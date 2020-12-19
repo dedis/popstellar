@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Event;
-import com.github.dedis.student20_pop.utility.ui.organizer.OnEventTypeSelectedListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,7 +56,6 @@ public class OrganizerExpandableListViewEventAdapter extends BaseExpandableListA
 
         putEventsInMap(events, this.eventsMap);
         orderEventsInMap(this.eventsMap);
-
     }
 
     /**

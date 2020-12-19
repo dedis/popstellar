@@ -25,7 +25,7 @@ import java.util.Locale;
 /**
  * Multiples Event Creation Fragment have in common
  * that they implement start/end date and start/end time.
- *
+ * <p>
  * This class handles these fields.
  */
 abstract class AbstractEventCreationFragment extends Fragment {
