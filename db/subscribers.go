@@ -1,5 +1,7 @@
 /* This file contains functions to manage subscribers of one channel. */
 
+/*THIS FILE IS NOW OBSOLETE AND UNUSED. DONT REMOVE UNTIL FULLY TESTED*/
+
 package db
 
 import (

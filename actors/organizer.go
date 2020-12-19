@@ -18,12 +18,14 @@ import (
 type Organizer struct {
 	PublicKey string
 	database  string
+	channels  map[string][]int
 }
 
 func NewOrganizer(pkey string, db string) *Organizer {
 	return &Organizer{
 		PublicKey: pkey,
 		database:  db,
+		channels:  make(map[string][]int),
 	}
 }
 
@@ -49,9 +51,9 @@ func (o *Organizer) HandleWholeMessage(receivedMsg []byte, userId int) (msgAndCh
 
 	switch query.Method {
 	case "subscribe":
-		msg, err = nil, handleSubscribe(query, userId)
+		msg, err = nil, o.handleSubscribe(query, userId)
 	case "unsubscribe":
-		msg, err = nil, handleUnsubscribe(query, userId)
+		msg, err = nil, o.handleUnsubscribe(query, userId)
 	case "publish":
 		msg, err = o.handlePublish(query)
 	case "message":
@@ -60,7 +62,7 @@ func (o *Organizer) HandleWholeMessage(receivedMsg []byte, userId int) (msgAndCh
 	case "catchup":
 		history, err = o.handleCatchup(query)
 	default:
-		fmt.Printf("method not recognized, generating default response")
+		log.Printf("method not recognized, generating default response")
 		msg, err = nil, lib.ErrRequestDataInvalid
 	}
 

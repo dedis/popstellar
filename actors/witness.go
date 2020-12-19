@@ -21,12 +21,14 @@ import (
 type Witness struct {
 	PublicKey string
 	database  string
+	channels  map[string][]int
 }
 
 func NewWitness(pkey string, db string) *Witness {
 	return &Witness{
 		PublicKey: pkey,
 		database:  db,
+		channels:  make(map[string][]int),
 	}
 }
 
