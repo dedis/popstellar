@@ -7,7 +7,7 @@
 	"properties": {
 		"method": { 
 			"description": "[String] operation to be performed by the query",
-			"const": "message" 
+			"const": "broadcast" 
 		},
 		"params": {
 			"type": "object",
