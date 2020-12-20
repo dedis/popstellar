@@ -37,11 +37,10 @@ public final class CameraPermissionFragment extends Fragment implements View.OnC
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        try {
+        if (context instanceof  OnCameraAllowedListener)
             onCameraAllowedListener = (OnCameraAllowedListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement listeners");
-        }
+        else
+            throw new ClassCastException(context.toString() + " must implement OnCameraAllowedListener");
     }
 
     @Override

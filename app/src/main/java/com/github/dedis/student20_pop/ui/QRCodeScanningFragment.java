@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.utility.qrcode.CameraPreview;
+import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraNotAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
 import com.github.dedis.student20_pop.utility.qrcode.QRFocusingProcessor;
@@ -65,12 +66,15 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        try {
+        if (context instanceof OnCameraAllowedListener)
             onCameraNotAllowedListener = (OnCameraNotAllowedListener) context;
+        else
+            throw new ClassCastException(context.toString() + " must implement OnCameraNotAllowedListener");
+
+        if (context instanceof QRCodeListener)
             qrCodeListener = (QRCodeListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement listeners");
-        }
+        else
+            throw new ClassCastException(context.toString() + " must implement QRCodeListener");
     }
 
     @Override
