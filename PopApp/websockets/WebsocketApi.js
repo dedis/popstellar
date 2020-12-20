@@ -179,20 +179,6 @@ export const requestStateLao = () => {
   WebsocketLink.sendRequestToServer(obj, objects.LAO, actions.STATE);
 };
 
-// TODO remove?
-export const requestWitnessMessage = () => {
-  const jsonData = new DataBuilder()
-    .setObject(objects.MESSAGE).setAction(actions.WITNESS)
-    .setMessageId('Hash') // TODO
-    .setSignature(signStrings('jsonData from message received')) // TODO
-    .buildJson();
-
-  const m = _generateMessage(jsonData, []);
-  const obj = _generateQuery(methods.PUBLISH, _generateParams(`/root/${getCurrentLao().params.message.data.id}`, m));
-
-  WebsocketLink.sendRequestToServer(obj, objects.MESSAGE, actions.WITNESS);
-};
-
 /** Send a server query asking for the creation of a meeting given a certain name (String),
  *  startTime (Date), optional location (String), optional end time (Date) and optional
  *  extra information (Json object) */
