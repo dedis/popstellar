@@ -354,10 +354,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 		return nil, nil, errs
 	}
 
-	_, found := lib.FindStr(signaturesOnly, string(data.Signature))
-	if found {
-		return nil, nil, lib.ErrResourceAlreadyExists
-	}
+
 
 	//if message was already signed by this witness, returns an error
 	var signaturesOnly []string
@@ -368,7 +365,10 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 		}
 		signaturesOnly = append(signaturesOnly, string(witnessSignature.Signature))
 	}
-
+	_, found := lib.FindStr(signaturesOnly, string(data.Signature))
+	if found {
+		return nil, nil, lib.ErrResourceAlreadyExists
+	}
 
 	iws, err := json.Marshal(message.ItemWitnessSignatures{Witness: msg.Sender, Signature: data.Signature})
 	if err != nil {
