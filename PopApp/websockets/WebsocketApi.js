@@ -231,10 +231,11 @@ export const requestStateMeeting = () => {
   WebsocketLink.sendRequestToServer(obj, objects.MEETING, actions.STATE);
 };
 
-/** Send a server message to acknowledge witnessing the message message passed as parameter */
+/** Send a server message to acknowledge witnessing the message message (JS object) */
 export const requestWitnessMessage = (message) => {
-  // Note: message is a mid-level message
-  const messageId = message.message_id;
+  // Note: message full message (with jsonrpc, method, ... fields) in order to be able
+  // to retrieve the channel (composed of "/root/ + lao_id")
+  const messageId = message.params.message.message_id;
 
   const jsonData = new DataBuilder()
     .setObject(objects.MESSAGE).setAction(actions.WITNESS)
@@ -243,7 +244,10 @@ export const requestWitnessMessage = (message) => {
     .buildJson();
 
   const m = _generateMessage(jsonData, []);
-  const obj = _generateQuery(methods.PUBLISH, _generateParams(`/root/${getCurrentLao().params.message.data.id}`, m));
+  const obj = _generateQuery(
+    methods.PUBLISH,
+    _generateParams(fromString64(message.params.channel), m),
+  );
 
   WebsocketLink.sendRequestToServer(obj, objects.MESSAGE, actions.WITNESS);
 };
