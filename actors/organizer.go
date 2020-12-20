@@ -219,7 +219,6 @@ func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query mes
 		Name:          data.Name,
 		Creation:      data.Creation,
 		OrganizerPKey: string(data.Organizer),
-		// TODO potential bug here (casting the whole array instead of each individual item of the array?)
 		Witnesses:     lib.ConvertSliceSliceByteToSliceString(data.Witnesses),
 	}
 	errs = db.CreateChannel(lao, o.database)
