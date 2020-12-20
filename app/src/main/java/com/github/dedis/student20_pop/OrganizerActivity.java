@@ -31,6 +31,7 @@ import com.github.dedis.student20_pop.utility.ui.organizer.OnEventTypeSelectedLi
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult;
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_ALREADY_EXISTS;
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_SUCCESSFUL;
+import static com.github.dedis.student20_pop.PoPApplication.getAppContext;
 import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.ADD_WITNESS;
 
 /**
@@ -40,8 +41,6 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
         OnCameraNotAllowedListener, QRCodeListener, OnCameraAllowedListener {
 
     public static final String TAG = OrganizerActivity.class.getSimpleName();
-    public static final String PRIVATE_KEY_TAG = "PRIVATE_KEY";
-    public static final String LAO_ID_TAG = "LAO_ID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,15 +146,17 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
                 PoPApplication app = (PoPApplication) getApplication();
                 AddWitnessResult hasBeenAdded = app.addWitness(witnessId);
 
-                if (hasBeenAdded == ADD_WITNESS_SUCCESSFUL) {
-                    Toast.makeText(this, getString(R.string.add_witness_successful), Toast.LENGTH_SHORT).show();
-                    getSupportFragmentManager().popBackStackImmediate();
-                } else if (hasBeenAdded == ADD_WITNESS_ALREADY_EXISTS) {
-                    Toast.makeText(this, getString(R.string.add_witness_already_exists), Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, getString(R.string.add_witness_unsuccessful), Toast.LENGTH_SHORT).show();
-
-                }
+                this.runOnUiThread(
+                        () -> {
+                            if (hasBeenAdded == ADD_WITNESS_SUCCESSFUL) {
+                                Toast.makeText(this, getString(R.string.add_witness_successful), Toast.LENGTH_SHORT).show();
+                                getSupportFragmentManager().popBackStackImmediate();
+                            } else if (hasBeenAdded == ADD_WITNESS_ALREADY_EXISTS) {
+                                Toast.makeText(getAppContext(), getString(R.string.add_witness_already_exists), Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(this, getString(R.string.add_witness_unsuccessful), Toast.LENGTH_SHORT).show();
+                            }
+                        });
 
                 break;
             case CONNECT_LAO:
