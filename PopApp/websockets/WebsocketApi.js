@@ -1,7 +1,7 @@
 import { encodeBase64, decodeBase64 } from 'tweetnacl-util';
 import {
   JSON_RPC_VERSION, objects, actions, methods, getCurrentTime, toString64,
-  getCurrentLao, signStrings, hashStrings, getPublicKey,
+  getCurrentLao, signStrings, hashStrings, getPublicKey, fromString64,
 } from './WebsocketUtils';
 import WebsocketLink from './WebsocketLink';
 
@@ -229,4 +229,21 @@ export const requestStateMeeting = () => {
   const obj = _generateQuery(methods.PUBLISH, _generateParams(`/root/${currentData.id}`, m));
 
   WebsocketLink.sendRequestToServer(obj, objects.MEETING, actions.STATE);
+};
+
+/** Send a server message to acknowledge witnessing the message message passed as parameter */
+export const requestWitnessMessage = (message) => {
+  // Note: message is a mid-level message
+  const messageId = message.message_id;
+
+  const jsonData = new DataBuilder()
+    .setObject(objects.MESSAGE).setAction(actions.WITNESS)
+    .setMessageId(messageId)
+    .setSignature(signStrings(fromString64(messageId)))
+    .buildJson();
+
+  const m = _generateMessage(jsonData, []);
+  const obj = _generateQuery(methods.PUBLISH, _generateParams(`/root/${getCurrentLao().params.message.data.id}`, m));
+
+  WebsocketLink.sendRequestToServer(obj, objects.MESSAGE, actions.WITNESS);
 };
