@@ -6,6 +6,10 @@ import {
   getCurrentLao, methods, hashStrings,
 } from './WebsocketUtils';
 import { getStore } from '../Store/configureStore';
+import {
+  validateWebsocketInput, validatePropagateMessage, validateServerAnswer, validateDataCreateLao,
+  validateDataUpdateLao, validateData,
+} from './JsonSchemaValidation';
 
 /* eslint-disable no-underscore-dangle */
 
@@ -57,11 +61,23 @@ const handleServerAnswer = (message) => {
             fromString64(jsonMessage.params.message.data),
           );
 
+          if (!validateDataCreateLao(jsonMessage.params.message.data)) {
+            throw new Error(
+              '(_handlePositiveServerAnswer) parsed dataCreateLao doesn\'t conform to JsonSchema',
+            );
+          }
+
           // store new LAO
           getStore().dispatch({ type: 'SET_CURRENT_LAO', value: jsonMessage });
         } else if (answer.requestAction === actions.UPDATE_PROPERTIES) {
           // callback for a successful update LAO request
           const jsonMessageData = answer.message.params.message.data;
+          if (!validateDataUpdateLao(jsonMessageData)) {
+            throw new Error(
+              '(_handlePositiveServerAnswer) parsed dataUpdateLao doesn\'t conform to JsonSchema',
+            );
+          }
+
           const updatedLao = JSON.parse(JSON.stringify(getCurrentLao())); // defensive copy
 
           // modify elements
@@ -87,6 +103,59 @@ const handleServerAnswer = (message) => {
     }
 
     if (!isPropagation) _delPendingQuery(obj.id);
+  };
+
+  /** handles a negative server answer */
+  const _handleNegativeServerAnswer = (obj) => {
+    const { error } = obj;
+
+    if (typeof error !== 'object' || error === null) {
+      throw new Error('(handleServerAnswer) error object is not a JS object or is null');
+    }
+    if (!Object.prototype.hasOwnProperty.call(error, errorProperties.CODE)
+      || !Object.prototype.hasOwnProperty.call(error, errorProperties.DESCRIPTION)
+    ) throw new Error('(handleServerAnswer) error object\'s fields missing or wrongly formatted');
+    if (Object.keys(error).length !== Object.keys(errorProperties).length) {
+      throw new Error(
+        `(handleServerAnswer) error object has missing/additional fields (expected: 
+        ${Object.keys(errorProperties).length}, actual: ${Object.keys(error).length})`,
+      );
+    }
+    if (!Number.isInteger(error.code) || error.code < -5 || error.code > -1) {
+      throw new Error(
+        `(handleServerAnswer) error object's error code is wrong formatted (expected: 
+        integer between -5 and -1, actual: ${error.code}`,
+      );
+    }
+    if (typeof error.description !== 'string') {
+      throw new Error(
+        `(handleServerAnswer) error object's is wrongly formatted (expected: 
+        string, actual: ${typeof error.description})`,
+      );
+    }
+
+    const query = _getPendingQuery(obj.id);
+    const { retryCount } = _getPendingQuery(obj.id);
+    const newQuery = new PendingRequest(
+      query.message,
+      query.requestObject,
+      query.requestAction,
+      retryCount + 1,
+    );
+
+    // check if the message should be resent once again
+    if (retryCount < MAX_QUERY_RETRIES) {
+      _setPendingQuery(obj.id, newQuery);
+      WebsocketLink.sendRequestToServer(
+        newQuery.message,
+        newQuery.requestObject,
+        newQuery.requestAction,
+        true,
+      );
+    } else {
+      console.error(`max retryCount (${MAX_QUERY_RETRIES}) reached! Failing query : `, query);
+      _delPendingQuery(obj.id);
+    }
   };
 
   /** handles a propagate message */
@@ -151,7 +220,7 @@ const handleServerAnswer = (message) => {
     // TODO check that the witness_signatures array is correct
     //
 
-    // check data is correct (partially)
+    // check data is correct
     const dataObject = JSON.parse(decodedMessage.data);
     if (typeof dataObject !== 'object'
       || !Object.prototype.hasOwnProperty.call(dataObject, 'object')
@@ -159,6 +228,12 @@ const handleServerAnswer = (message) => {
       || !Object.prototype.hasOwnProperty.call(dataObject, 'action')
       || typeof dataObject.action !== 'string'
     ) throw new Error('(_handlePropagateMessage) data\'s object/action field is missing or wrongly formatted');
+
+    if (!validateData(dataObject)) {
+      throw new Error(
+        '(_handlePositiveServerAnswer) parsed data from propagation message doesn\'t conform to JsonSchema',
+      );
+    }
 
     const reconstructedQuery = {
       jsonrpc: JSON_RPC_VERSION,
@@ -208,12 +283,17 @@ const handleServerAnswer = (message) => {
   const obj = JSON.parse(message.data);
   console.log('handling a new answer : ', obj);
 
+  // check that the input is validated by the JsonSchema specifications
+  if (!validateWebsocketInput(obj)) {
+    throw new Error('(handleServerAnswer) parsed websocket input message doesn\'t conform to JsonSchema');
+  }
+
   /* check that the answer is of a valid format (positive or negative) */
 
   // check that the object has exactly SERVER_ANSWER_FIELD_COUNT fields
   if (Object.keys(obj).length !== SERVER_ANSWER_FIELD_COUNT) {
     throw new Error(
-      `(_handlePositiveServerAnswer) server answer has missing/additional fields 
+      `(handleServerAnswer) server answer has missing/additional fields 
       (expected: ${SERVER_ANSWER_FIELD_COUNT}, actual: ${Object.keys(obj).length}`,
     );
   }
@@ -221,7 +301,7 @@ const handleServerAnswer = (message) => {
   // check that the object has both required field and that the protocol used is correct
   if (!Object.prototype.hasOwnProperty.call(obj, answerProperties.JSONRPC)
       || obj.jsonrpc !== JSON_RPC_VERSION
-  ) throw new Error(`(_handlePositiveServerAnswer) jsonrpc field "${obj.jsonrpc}" is missing or wrongly formatted`);
+  ) throw new Error(`(handleServerAnswer) jsonrpc field "${obj.jsonrpc}" is missing or wrongly formatted`);
 
   // check if we have a propagate message query (no id field and no error/result field)
   if (!Object.prototype.hasOwnProperty.call(obj, answerProperties.ID)) {
@@ -233,26 +313,37 @@ const handleServerAnswer = (message) => {
       && Object.prototype.hasOwnProperty.call(obj.params, 'message')
       && typeof obj.params.message === 'object'
       && obj.params.message !== null
-    ) { _handlePropagateMessage(obj.params); return; }
+    ) {
+      // check that the propagate message also pass the JsonSchema test
+      if (validatePropagateMessage(obj)) {
+        _handlePropagateMessage(obj.params);
+        return;
+      }
+      throw new Error('(handleServerAnswer) propagate message doesn\'t conform to JsonSchema');
+    }
 
-    throw new Error('(_handlePositiveServerAnswer) query has no id field and is not a propagate message');
+    throw new Error('(handleServerAnswer) query has no id field and is not a propagate message');
   }
 
   if (!Object.prototype.hasOwnProperty.call(obj, answerProperties.ID)
     || !Number.isInteger(obj.id)
-  ) throw new Error(`(_handlePositiveServerAnswer) id field "${obj.id}" is missing or wrongly formatted`);
+  ) throw new Error(`(handleServerAnswer) id field "${obj.id}" is missing or wrongly formatted`);
 
   // check that the object has exactly one of the two optional fields (XOR)
   if (Object.prototype.hasOwnProperty.call(obj, answerProperties.RESULT)
       === Object.prototype.hasOwnProperty.call(obj, answerProperties.ERROR)
-  ) throw new Error('(_handlePositiveServerAnswer) query has both a result and error field');
+  ) throw new Error('(handleServerAnswer) query has both a result and error field');
 
   // if the message answers un unknown request, then drop the message
   if (!_hasPendingQuery(obj.id)) {
-    throw new Error('(_handlePositiveServerAnswer) query was not sent by the client or has timed out');
+    throw new Error('(handleServerAnswer) query was not sent by the client or has timed out');
   }
 
   // processes server answer
+  if (!validateServerAnswer(obj)) {
+    throw new Error('(handleServerAnswer) parsed websocket server answer doesn\'t conform to JsonSchema');
+  }
+
   if (Object.prototype.hasOwnProperty.call(obj, answerProperties.RESULT)) {
     // processes positive server answer
     if (obj.result === 0) {
@@ -260,61 +351,13 @@ const handleServerAnswer = (message) => {
       _handlePositiveServerAnswer(obj);
     } else {
       throw new Error(
-        `(_handlePositiveServerAnswer) result field value wrongly formatted 
+        `(handleServerAnswer) result field value wrongly formatted 
         (expected: ${0}, actual: ${obj.result})`,
       );
     }
   } else {
     // processes negative server answer (error)
-    const { error } = obj;
-
-    if (typeof error !== 'object' || error === null) {
-      throw new Error('(_handlePositiveServerAnswer) error object is not a JS object or is null');
-    }
-    if (!Object.prototype.hasOwnProperty.call(error, errorProperties.CODE)
-        || !Object.prototype.hasOwnProperty.call(error, errorProperties.DESCRIPTION)
-    ) throw new Error('(_handlePositiveServerAnswer) error object\'s fields missing or wrongly formatted');
-    if (Object.keys(error).length !== Object.keys(errorProperties).length) {
-      throw new Error(
-        `(_handlePositiveServerAnswer) error object has missing/additional fields (expected: 
-        ${Object.keys(errorProperties).length}, actual: ${Object.keys(error).length})`,
-      );
-    }
-    if (!Number.isInteger(error.code) || error.code < -5 || error.code > -1) {
-      throw new Error(
-        `(_handlePositiveServerAnswer) error object's error code is wrong formatted (expected: 
-        integer between -5 and -1, actual: ${error.code}`,
-      );
-    }
-    if (typeof error.description !== 'string') {
-      throw new Error(
-        `(_handlePositiveServerAnswer) error object's is wrongly formatted (expected: 
-        string, actual: ${typeof error.description})`,
-      );
-    }
-
-    const query = _getPendingQuery(obj.id);
-    const { retryCount } = _getPendingQuery(obj.id);
-    const newQuery = new PendingRequest(
-      query.message,
-      query.requestObject,
-      query.requestAction,
-      retryCount + 1,
-    );
-
-    // check if the message should be resent once again
-    if (retryCount < MAX_QUERY_RETRIES) {
-      _setPendingQuery(obj.id, newQuery);
-      WebsocketLink.sendRequestToServer(
-        newQuery.message,
-        newQuery.requestObject,
-        newQuery.requestAction,
-        true,
-      );
-    } else {
-      console.error(`max retryCount (${MAX_QUERY_RETRIES}) reached! Failing query : `, query);
-      _delPendingQuery(obj.id);
-    }
+    _handleNegativeServerAnswer(obj);
   }
 };
 
