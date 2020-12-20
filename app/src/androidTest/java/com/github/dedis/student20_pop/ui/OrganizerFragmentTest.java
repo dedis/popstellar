@@ -9,12 +9,14 @@ import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.rule.GrantPermissionRule;
 
-import com.github.dedis.student20_pop.MainActivity;
 import com.github.dedis.student20_pop.OrganizerActivity;
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Lao;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -97,8 +99,38 @@ public class OrganizerFragmentTest {
         onView(withText(getApplicationContext().getString(R.string.past_events))).perform(click());
         onView(withText(getApplicationContext().getString(R.string.present_events))).perform(click());
         onView(withText(getApplicationContext().getString(R.string.future_events))).perform(click());
-        onView(withId(R.id.event_layout)).check(matches(isDisplayed()));
+        onView(withIndex(withId(R.id.event_layout), 0)).check(matches(isDisplayed()));
     }
+
+    /**
+     * This is a simple matcher to avoid error when multiple views match in hierarchy
+     * (such as in a ListView)
+     * <p>
+     * More infp here :
+     * https://stackoverflow.com/questions/29378552/in-espresso-how-to-avoid-ambiguousviewmatcherexception-when-multiple-views-matc/39756832#39756832
+     *
+     * @param matcher
+     * @param index
+     * @return
+     */
+    public static Matcher<View> withIndex(final Matcher<View> matcher, final int index) {
+        return new TypeSafeMatcher<View>() {
+            int currentIndex = 0;
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("with index: ");
+                description.appendValue(index);
+                matcher.describeTo(description);
+            }
+
+            @Override
+            public boolean matchesSafely(View view) {
+                return matcher.matches(view) && currentIndex++ == index;
+            }
+        };
+    }
+
 
     @Test
     public void clickOnAddEventButtonOpensDialog() {
@@ -270,13 +302,13 @@ public class OrganizerFragmentTest {
     }
 
     @Test
-    @Ignore("TODO : Check that the corresponding Fragment has been launched")
     public void canLaunchCreateMeetingEventFragment() {
         onView(allOf(withId(R.id.add_future_event_button),
                 withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
                 .perform(click());
         onView(withText(getApplicationContext().getString(R.string.meeting_event))).check(matches(isDisplayed()));
         onView(withText(getApplicationContext().getString(R.string.meeting_event))).perform(click());
+        onView(withId(R.id.fragment_meeting_event)).check(matches(isDisplayed()));
     }
 
     @Test

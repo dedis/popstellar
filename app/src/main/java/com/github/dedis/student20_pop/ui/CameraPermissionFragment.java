@@ -13,8 +13,8 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
-import com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType;
 import com.github.dedis.student20_pop.R;
+import com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
 
 /**
@@ -28,7 +28,7 @@ public final class CameraPermissionFragment extends Fragment implements View.OnC
 
     private OnCameraAllowedListener onCameraAllowedListener;
 
-    public CameraPermissionFragment(QRCodeScanningType qrCodeScanningType){
+    public CameraPermissionFragment(QRCodeScanningType qrCodeScanningType) {
         super();
         this.qrCodeScanningType = qrCodeScanningType;
     }
@@ -37,11 +37,10 @@ public final class CameraPermissionFragment extends Fragment implements View.OnC
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        try {
+        if (context instanceof  OnCameraAllowedListener)
             onCameraAllowedListener = (OnCameraAllowedListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement listeners");
-        }
+        else
+            throw new ClassCastException(context.toString() + " must implement OnCameraAllowedListener");
     }
 
     @Override

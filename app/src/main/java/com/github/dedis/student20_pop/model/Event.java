@@ -18,31 +18,31 @@ import java.util.Objects;
 /**
  * Class modeling an Event
  */
-public final class Event {
+public class Event {
 
     private final String name;
     private final long time;
     private final String id;
     private final String lao;
-    private List<String> attendees;
     // Can use GeoLocation in the future
     private final String location;
     // Can use enums in the future
     private final String type;
     private final JSONObject other;
     private final List<String> attestation;
+    private List<String> attendees;
 
     /**
      * Constructor for an Event
      *
      * @param name the name of the event, can be empty
      * @param time the creation time, can't be modified
-     * @param lao the public key of the associated LAO
+     * @param lao  the public key of the associated LAO
      * @throws IllegalArgumentException if any of the parameters is null
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, Date time, String lao, String location, String type) {
-        if(name == null || time == null || lao == null || location == null || type == null) {
+        if (name == null || time == null || lao == null || location == null || type == null) {
             throw new IllegalArgumentException("Trying to create an event with null parameters");
         }
         this.name = name;
@@ -69,7 +69,6 @@ public final class Event {
     }
 
     /**
-     *
      * @return creation time of the LAO as Unix Timestamp, can't be modified
      */
     public long getTime() {
@@ -77,7 +76,6 @@ public final class Event {
     }
 
     /**
-     *
      * @return ID of the event, can't be modified
      */
     public String getId() {
@@ -85,7 +83,6 @@ public final class Event {
     }
 
     /**
-     *
      * @return ID of the associated LAO
      */
     public String getLao() {
@@ -93,11 +90,21 @@ public final class Event {
     }
 
     /**
-     *
      * @return list of public keys of the attendees
      */
     public List<String> getAttendees() {
         return attendees;
+    }
+
+    /**
+     * @param attendees list of public keys of attendees, can be empty
+     * @throws IllegalArgumentException if the list is null or at least one public key is null
+     */
+    public void setAttendees(List<String> attendees) {
+        if (attendees == null || attendees.contains(null)) {
+            throw new IllegalArgumentException("Trying to add a null attendee to the event " + name);
+        }
+        this.attendees = attendees;
     }
 
     public String getLocation() {
@@ -109,23 +116,10 @@ public final class Event {
     }
 
     /**
-     *
      * @return list of signatures by the organizer and the witnesses of the corresponding LAO
      */
     public List<String> getAttestation() {
         return attestation;
-    }
-
-    /**
-     *
-     * @param attendees list of public keys of attendees, can be empty
-     * @throws IllegalArgumentException if the list is null or at least one public key is null
-     */
-    public void setAttendees(List<String> attendees) {
-        if(attendees == null || attendees.contains(null)) {
-            throw new IllegalArgumentException("Trying to add a null attendee to the event " + name);
-        }
-        this.attendees = attendees;
     }
 
     @Override
@@ -147,5 +141,12 @@ public final class Event {
     @Override
     public int hashCode() {
         return Objects.hash(name, time, id, lao, attendees, location, type, other, attestation);
+    }
+
+    /**
+     * Enum class for each event type
+     */
+    public enum EventType {
+        MEETING, ROLL_CALL, POLL
     }
 }

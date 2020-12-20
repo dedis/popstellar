@@ -15,17 +15,18 @@ public final class JsonUtils {
 
     public static final String JSON_REQUEST_ID = "id";
 
-    private JsonUtils() {}
+    private JsonUtils() {
+    }
 
     public static void testRPCVersion(JsonObject object) throws JsonParseException {
-        if(!object.has(JSON_RPC))
+        if (!object.has(JSON_RPC))
             throw new JsonParseException("Unable to find jsonrpc version");
 
         testRPCVersion(object.get(JSON_RPC).getAsString());
     }
 
     public static void testRPCVersion(String version) throws JsonParseException {
-        if(!version.equals(JSON_RPC_VERSION))
+        if (!version.equals(JSON_RPC_VERSION))
             throw new JsonParseException("Unable to parse jsonrpc version : " + version);
     }
 

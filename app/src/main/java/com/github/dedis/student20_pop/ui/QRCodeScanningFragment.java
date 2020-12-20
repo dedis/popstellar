@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.utility.qrcode.CameraPreview;
+import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraNotAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
 import com.github.dedis.student20_pop.utility.qrcode.QRFocusingProcessor;
@@ -46,18 +47,6 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
     private QRCodeScanningType qrCodeScanningType;
 
     /**
-     * Enum representing QR code functionality
-     * If QRCodeScanningFragment is launched to add a witness
-     * or connect to a lao or to add an attendee to a roll call event
-     */
-    public enum QRCodeScanningType {
-        ADD_ROLL_CALL,
-        ADD_WITNESS,
-        CONNECT_LAO
-
-    }
-
-    /**
      * Default Fragment constructor
      */
     public QRCodeScanningFragment() {
@@ -77,12 +66,15 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        try {
+        if (context instanceof OnCameraAllowedListener)
             onCameraNotAllowedListener = (OnCameraNotAllowedListener) context;
+        else
+            throw new ClassCastException(context.toString() + " must implement OnCameraNotAllowedListener");
+
+        if (context instanceof QRCodeListener)
             qrCodeListener = (QRCodeListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement listeners");
-        }
+        else
+            throw new ClassCastException(context.toString() + " must implement QRCodeListener");
     }
 
     @Override
@@ -174,5 +166,17 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
     @Override
     public void onQRCodeDetected(String data, QRCodeScanningType qrCodeScanningType) {
         qrCodeListener.onQRCodeDetected(data, qrCodeScanningType);
+    }
+
+    /**
+     * Enum representing QR code functionality
+     * If QRCodeScanningFragment is launched to add a witness
+     * or connect to a lao or to add an attendee to a roll call event
+     */
+    public enum QRCodeScanningType {
+        ADD_ROLL_CALL,
+        ADD_WITNESS,
+        CONNECT_LAO
+
     }
 }

@@ -10,10 +10,12 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.model.Person;
 
 import java.util.ArrayList;
 
+/**
+ * Adapter to show witnesses of an Event
+ */
 public class WitnessListAdapter extends BaseAdapter {
     private final Context context;
     private final ArrayList<String> witnesses;

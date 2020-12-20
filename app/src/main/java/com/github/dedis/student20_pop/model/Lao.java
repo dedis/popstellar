@@ -17,10 +17,10 @@ public final class Lao {
     private final long time;
     private final String id;
     private final String organizer;
+    private final String attestation;
     private List<String> witnesses;
     private List<String> members;
     private List<String> events;
-    private final String attestation;
 
     /**
      * Constructor for a LAO
@@ -77,6 +77,22 @@ public final class Lao {
     }
 
     /**
+     * Modifying the name of the LAO creates a new id and attestation
+     *
+     * @param name new name for the LAO, can be empty
+     * @return new LAO with the new name, id and attestation
+     * @throws IllegalArgumentException if the name is null
+     */
+    public Lao setName(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Trying to set null as the name of the LAO");
+        } else if (name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Trying to set an empty name for the LAO");
+        }
+        return new Lao(name, time, organizer, witnesses, members, events);
+    }
+
+    /**
      * @return creation time of the LAO as Unix Timestamp, can't be modified
      */
     public long getTime() {
@@ -105,43 +121,6 @@ public final class Lao {
     }
 
     /**
-     * @return list of public keys where each public key belongs to one member
-     */
-    public List<String> getMembers() {
-        return members;
-    }
-
-    /**
-     * @return list of public keys where each public key belongs to an event
-     */
-    public List<String> getEvents() {
-        return events;
-    }
-
-    /**
-     * @return signature by the organizer
-     */
-    public String getAttestation() {
-        return attestation;
-    }
-
-    /**
-     * Modifying the name of the LAO creates a new id and attestation
-     *
-     * @param name new name for the LAO, can be empty
-     * @return new LAO with the new name, id and attestation
-     * @throws IllegalArgumentException if the name is null
-     */
-    public Lao setName(String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("Trying to set null as the name of the LAO");
-        } else if (name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Trying to set an empty name for the LAO");
-        }
-        return new Lao(name, time, organizer, witnesses, members, events);
-    }
-
-    /**
      * @param witnesses list of public keys of witnesses, can be empty
      * @throws IllegalArgumentException if the list is null or at least one public key is null
      */
@@ -150,6 +129,13 @@ public final class Lao {
             throw new IllegalArgumentException("Trying to add a null witness to the LAO " + name);
         }
         this.witnesses = witnesses;
+    }
+
+    /**
+     * @return list of public keys where each public key belongs to one member
+     */
+    public List<String> getMembers() {
+        return members;
     }
 
     /**
@@ -164,6 +150,13 @@ public final class Lao {
     }
 
     /**
+     * @return list of public keys where each public key belongs to an event
+     */
+    public List<String> getEvents() {
+        return events;
+    }
+
+    /**
      * @param events list of public keys of events, can be empty
      * @throws IllegalArgumentException if the list is null or at least one public key is null
      */
@@ -172,6 +165,13 @@ public final class Lao {
             throw new IllegalArgumentException("Trying to add a null event to the LAO " + name);
         }
         this.events = events;
+    }
+
+    /**
+     * @return signature by the organizer
+     */
+    public String getAttestation() {
+        return attestation;
     }
 
     @Override
