@@ -65,11 +65,11 @@ func RollCallCreatedIsValid(data message.DataCreateRollCall, message message.Mes
 
 func MessageIsValid(msg message.Message) error {
 	// the message_id is valid
-	str := []byte(msg.Data)
-	str = append(str, []byte(msg.Signature)...)
+	str := msg.Data
+	str = append(str, msg.Signature...)
 	hash := sha256.Sum256(str)
 
-	if !bytes.Equal([]byte(msg.MessageId), hash[:]) {
+	if !bytes.Equal(msg.MessageId, hash[:]) {
 		log.Printf("id of message invalid: %v should be: %v", string(msg.MessageId), string(hash[:]))
 		return lib.ErrInvalidResource
 	}
@@ -82,7 +82,7 @@ func MessageIsValid(msg message.Message) error {
 	}
 
 	// the witness signatures are valid (check on every message??)
-	data, err := parser.ParseData(string(msg.Data))
+	data, err := parser.ParseData(msg.Data)
 	if data["object"] == "lao" && data["action"] == "create" {
 		data, err := parser.ParseDataCreateLAO(msg.Data)
 		if err != nil {

@@ -1,4 +1,4 @@
-package parser
+	package parser
 
 import (
 	"encoding/json"
@@ -77,9 +77,9 @@ func ParseWitnessSignature(witnessSignatures json.RawMessage) (message.ItemWitne
 	return m, err
 }
 
-func ParseData(data string) (message.Data, error) {
+func ParseData(data []byte) (message.Data, error) {
 	m := message.Data{}
-	err := json.Unmarshal([]byte(data), &m)
+	err := json.Unmarshal(data, &m)
 	if dataConstAreValid(m) {
 		return m, err
 	} else {
@@ -102,9 +102,8 @@ func dataConstAreValid(m message.Data) bool {
 	}
 
 	creation, okC := m["creation"].(int)
-	lastm, okL := m["last_modified"].(int)
-	if (okC && creation < 0) || (okL && lastm < 0) {
-		log.Printf("the timestamps are smaller than 0")
+	if (okC && creation < 0) {
+		log.Printf("the creation timestamp is smaller than 0")
 		return false
 	}
 	return true
