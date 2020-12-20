@@ -142,3 +142,23 @@ func ParseDataCreatePoll(data json.RawMessage) (message.DataCreatePoll, error) {
 	err := json.Unmarshal(data, &m)
 	return m, err
 }
+
+func ParseDataUpdateLAO(data json.RawMessage) (message.DataUpdateLAO, error) {
+	m := message.DataUpdateLAO{}
+	err := json.Unmarshal(data, &m)
+	return m, err
+}
+
+func ParseDataStateLAO(data json.RawMessage) (message.DataStateLAO, error) {
+	m := message.DataStateLAO{}
+	err := json.Unmarshal(data, &m)
+	return m, err
+}
+
+func ParseDataStateMeeting(data json.RawMessage) (message.DataStateMeeting, error) {
+	m := message.DataStateMeeting{}
+	err := json.Unmarshal(data, &m)
+	return m, err
+}
+
+

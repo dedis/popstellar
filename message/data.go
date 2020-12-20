@@ -96,7 +96,7 @@ type DataWitnessMessage struct {
 type DataUpdateLAO struct {
 	Object string
 	Action string //if we put "action" with little a it crashes
-	//ID hash : Name || Creation Date/Time Unix Timestamp
+	//ID hash : OriginalName || Creation Date/Time Unix Timestamp
 	ID []byte
 	// name of LAO
 	Name string
@@ -109,7 +109,7 @@ type DataUpdateLAO struct {
 type DataStateLAO struct {
 	Object string
 	Action string //if we put "action" with little a it crashes
-	//ID hash : Name || Creation Date/Time Unix Timestamp
+	//ID hash : OriginalName || Creation Date/Time Unix Timestamp
 	ID []byte
 	// name of LAO
 	Name string
@@ -130,7 +130,7 @@ type DataStateLAO struct {
 type DataStateMeeting struct {
 	Object string
 	Action string //if we put "action" with little a it crashes
-	//ID hash : Name || Creation Date/Time Unix Timestamp
+	//ID hash : OriginalName || Creation Date/Time Unix Timestamp
 	ID []byte
 	// name of LAO
 	Name string
