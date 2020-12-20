@@ -7,13 +7,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/boltdb/bolt"
-	"student20_pop/define"
+	"student20_pop/lib"
+	"student20_pop/message"
 )
 
 /**
 * Writes a message to the database. If safe is true and a message with this ID already exists, returns an error
  */
-func writeMessage(message define.Message, channel string, database string, creating bool) error {
+func writeMessage(message message.Message, channel string, database string, creating bool) error {
 	db, e := OpenDB(database)
 	if e != nil {
 		return e
@@ -23,21 +24,21 @@ func writeMessage(message define.Message, channel string, database string, creat
 	err := db.Update(func(tx *bolt.Tx) error {
 		b, err1 := tx.CreateBucketIfNotExists([]byte(channel))
 		if err1 != nil {
-			return define.ErrDBFault
+			return lib.ErrDBFault
 		}
 
-		if check := b.Get([]byte(message.Message_id)); check != nil && creating {
-			return define.ErrResourceAlreadyExists
+		if check := b.Get([]byte(message.MessageId)); check != nil && creating {
+			return lib.ErrResourceAlreadyExists
 		}
 
 		// Marshal the message and store it
 		msg, err2 := json.Marshal(message)
 		if err2 != nil {
-			return define.ErrRequestDataInvalid
+			return lib.ErrRequestDataInvalid
 		}
-		err := b.Put([]byte(message.Message_id), msg)
+		err := b.Put([]byte(message.MessageId), msg)
 		if err != nil {
-			return define.ErrDBFault
+			return lib.ErrDBFault
 		}
 
 		return nil
@@ -47,12 +48,12 @@ func writeMessage(message define.Message, channel string, database string, creat
 }
 
 /*writes a message to the DB, returns an error if ID already is key in DB*/
-func CreateMessage(message define.Message, channel string, database string) error {
+func CreateMessage(message message.Message, channel string, database string) error {
 	return writeMessage(message, channel, database, true)
 }
 
 /*writes a message to the DB, regardless of ID already exists*/
-func UpdateMessage(message define.Message, channel string, database string) error {
+func UpdateMessage(message message.Message, channel string, database string) error {
 	return writeMessage(message, channel, database, false)
 }
 
@@ -69,7 +70,7 @@ func GetMessage(channel []byte, message []byte, database string) []byte {
 		b := tx.Bucket(channel)
 		if b == nil {
 			fmt.Printf("Could not find bucket with corresponding channel ID in GetMessage()")
-			return define.ErrInvalidResource
+			return lib.ErrInvalidResource
 		}
 
 		data = b.Get(message)
