@@ -62,11 +62,10 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        try {
+        if (context instanceof OnEventCreatedListener)
             eventCreatedListener = (OnEventCreatedListener) context;
-        } catch (ClassCastException e) {
+        else
             throw new ClassCastException(context.toString() + " must implement OnEventCreatedListener");
-        }
     }
 
     @Nullable

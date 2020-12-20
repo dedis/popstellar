@@ -24,6 +24,7 @@ import com.github.dedis.student20_pop.model.Event;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.utility.ui.WitnessListAdapter;
 import com.github.dedis.student20_pop.utility.ui.organizer.OnAddWitnessListener;
+import com.github.dedis.student20_pop.utility.ui.organizer.OnEventCreatedListener;
 import com.github.dedis.student20_pop.utility.ui.organizer.OnEventTypeSelectedListener;
 import com.github.dedis.student20_pop.utility.ui.organizer.OrganizerExpandableListViewEventAdapter;
 
@@ -51,12 +52,16 @@ public class OrganizerFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        try {
+        if (context instanceof OnEventCreatedListener)
             onEventTypeSelectedListener = (OnEventTypeSelectedListener) context;
+        else
+            throw new ClassCastException(context.toString() + " must implement OnEventTypeSelectedListener");
+
+        if (context instanceof OnAddWitnessListener)
             onAddWitnessListener = (OnAddWitnessListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement listeners");
-        }
+        else
+            throw new ClassCastException(context.toString() + " must implement OnAddWitnessListener");
+
     }
 
     @Nullable
