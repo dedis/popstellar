@@ -87,25 +87,25 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
                         Log.d(TAG, "Stored private key of organizer");
 
                     app.getLocalProxy()
-                        .thenCompose(p -> p.createLao(lao.getName(), lao.getTime(), lao.getTime(), app.getPerson().getId()))
-                        .thenAccept(code -> {
-                            Person organizer = app.getPerson().setLaos(Collections.singletonList(lao.getId()));
-                            // Set LAO and organizer information locally
-                            ((PoPApplication) getApplication()).setPerson(organizer);
-                            ((PoPApplication) getApplication()).addLao(lao);
-                            ((PoPApplication) getApplication()).setCurrentLao(lao);
-                            // Start the Organizer Activity (user is considered an organizer)
-                            Intent intent = new Intent(this, OrganizerActivity.class);
-                            startActivity(intent);
-                        })
-                        .exceptionally(t -> {
-                            Toast toast = Toast.makeText(this, "An error occurred : \n" + t.getMessage(), Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL, 0, 0);
-                            toast.show();
+                            .thenCompose(p -> p.createLao(lao.getName(), lao.getTime(), lao.getTime(), app.getPerson().getId()))
+                            .thenAccept(code -> {
+                                Person organizer = app.getPerson().setLaos(Collections.singletonList(lao.getId()));
+                                // Set LAO and organizer information locally
+                                ((PoPApplication) getApplication()).setPerson(organizer);
+                                ((PoPApplication) getApplication()).addLao(lao);
+                                ((PoPApplication) getApplication()).setCurrentLao(lao);
+                                // Start the Organizer Activity (user is considered an organizer)
+                                Intent intent = new Intent(this, OrganizerActivity.class);
+                                startActivity(intent);
+                            })
+                            .exceptionally(t -> {
+                                Toast toast = Toast.makeText(this, "An error occurred : \n" + t.getMessage(), Toast.LENGTH_LONG);
+                                toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 0);
+                                toast.show();
 
-                            Log.e(TAG, "Error while creating Lao", t);
-                            return null;
-                        });
+                                Log.e(TAG, "Error while creating Lao", t);
+                                return null;
+                            });
                 }
                 break;
             case R.id.button_cancel_launch:
@@ -125,6 +125,7 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
                     .commit();
         }
     }
+
 
     @Override
     public void onCameraNotAllowedListener(QRCodeScanningType qrCodeScanningType) {

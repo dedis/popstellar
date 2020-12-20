@@ -22,7 +22,7 @@ public class Hash {
      * @throws IllegalArgumentException if the data is null
      */
     public static String hash(String data) {
-        if(data == null) {
+        if (data == null) {
             throw new IllegalArgumentException("Can't hash a null data");
         }
         String encoded = null;

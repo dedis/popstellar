@@ -27,19 +27,19 @@ public enum Method {
         this.expectResult = expectResult;
     }
 
+    public static Method find(String method) {
+        for (Method a : ALL)
+            if (a.method.equals(method))
+                return a;
+        return null;
+    }
+
     public String getMethod() {
         return method;
     }
 
     public Class<? extends ChanneledMessage> getDataClass() {
         return dataClass;
-    }
-
-    public static Method find(String method) {
-        for(Method a : ALL)
-            if(a.method.equals(method))
-                return a;
-        return null;
     }
 
     public boolean expectResult() {

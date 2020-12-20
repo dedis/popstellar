@@ -28,17 +28,17 @@ public class JsonMessageSerializer implements JsonSerializer<Message>, JsonDeser
         Objects object = Objects.find(obj.get(OBJECT).getAsString());
         Action action = Action.find(obj.get(ACTION).getAsString());
 
-        if(object == null)
+        if (object == null)
             throw new JsonParseException("Unknown object type : " + obj.get(OBJECT).getAsString());
-        if(action == null)
+        if (action == null)
             throw new JsonParseException("Unknown action type : " + obj.get(ACTION).getAsString());
 
         Map<Action, Class<? extends Message>> actionClassMap = Message.messages.get(object);
-        if(actionClassMap == null)
+        if (actionClassMap == null)
             throw new JsonParseException("Unknown object type : " + obj.get(OBJECT).getAsString());
 
         Class<? extends Message> clazz = actionClassMap.get(action);
-        if(clazz == null)
+        if (clazz == null)
             throw new JsonParseException("The pair " + object.getObject() + "/" + action.getAction() + " does not exists");
 
         return context.deserialize(json, clazz);

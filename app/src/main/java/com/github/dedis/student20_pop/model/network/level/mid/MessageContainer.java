@@ -5,7 +5,7 @@ import java.util.Objects;
 
 /**
  * Container of a high level message.
- *
+ * <p>
  * It is encapsulated inside low level messages
  */
 public class MessageContainer {
