@@ -1,7 +1,7 @@
 /* file to implement manage opened websockets. Implements the publish-subscribe paradigm.
 inspired from the chat example of github.com/gorilla */
 
-package WebSocket
+package network
 
 import (
 	"bytes"
@@ -9,38 +9,11 @@ import (
 	"log"
 	"student20_pop/actors"
 	"student20_pop/db"
-	"student20_pop/define"
+	"student20_pop/lib"
 	"sync"
 	"time"
 )
 
-const SIG_THRESHOLD = 4
-
-/*
-TODO
-faire des tests
--Subscribing
--Unsubscribing
-
-Propagating a message on a channel
-Catching up on past messages on a channel /RAOUl
-
-Publish a message on a channel:
-Update LAO properties ->
-LAO state broadcast ->
-Witness a message ->
-
-Creating a 'event' !
-#check from witness
-#verify if witnessed
--meeting/ Ouriel
--roll call/ ouriel
--discussion(?)
--poll/ouriel
--cast vote
--register attendance
-Meeting state broadcast
-*/
 type hub struct {
 	// the mutex to protect connections
 	connectionsMx sync.RWMutex
@@ -48,7 +21,6 @@ type hub struct {
 	// Registered connections.
 	connections map[*connection]struct{}
 
-	//Response for the sender
 	idOfSender int
 	//msg received from the sender through the websocket
 	receivedMessage chan []byte
@@ -61,15 +33,15 @@ type hub struct {
 	connIndex int
 }
 
-func NewOrganizerHub() *hub {
-	return newHub("o")
+func NewOrganizerHub(pkey string, database string) *hub {
+	return newHub("o", pkey, database)
 }
 
-func NewWitnessHub() *hub {
-	return newHub("w")
+func NewWitnessHub(pkey string, database string) *hub {
+	return newHub("w", pkey, database)
 }
 
-func newHub(mode string) *hub {
+func newHub(mode string, pkey string, database string) *hub {
 
 	h := &hub{
 		connectionsMx:   sync.RWMutex{},
@@ -79,15 +51,16 @@ func newHub(mode string) *hub {
 		idOfSender:      -1,
 	}
 
-	if mode == "o" {
-		h.actor = actors.NewOrganizer("", "orgdatabase.db")
-	} else if mode == "w" {
-		h.actor = actors.NewWitness("", "witdatabase.db")
-	} else {
+	switch mode {
+	case "o":
+		h.actor = actors.NewOrganizer(pkey, database)
+	case "w":
+		h.actor = actors.NewWitness(pkey, database)
+	default:
 		log.Fatal("actor mode not recognized")
 	}
-	//publish subscribe go routine !
 
+	//publish subscribe go routine
 	go func() {
 		for {
 			//get msg from connection
@@ -106,7 +79,9 @@ func newHub(mode string) *hub {
 			h.connectionsMx.RUnlock()
 		}
 	}()
+
 	return h
+
 }
 
 /* sends the message msg to every subscribers of the channel channel */
@@ -123,7 +98,7 @@ func (h *hub) publishOnChannel(msg []byte, channel []byte) {
 
 	for c := range h.connections {
 		//send msgBroadcast to that connection if channel is main channel or is in channel subscribers
-		_, found := define.Find(subscribers, c.id)
+		_, found := lib.Find(subscribers, c.id)
 
 		if (bytes.Equal(channel, []byte("/root")) || found) && msg != nil {
 			select {
