@@ -82,7 +82,7 @@ func (o *Organizer) handleMessage(query message.Query) (message, channel []byte,
 		return nil, nil, lib.ErrRequestDataInvalid
 	}
 
-	data, errs := parser.ParseData(string(msg.Data))
+	data, errs := parser.ParseData(msg.Data)
 	if errs != nil {
 		fmt.Printf("unable to analyse data in handleMessage()")
 		return nil, nil, lib.ErrRequestDataInvalid
@@ -131,7 +131,7 @@ func (o *Organizer) handlePublish(query message.Query) (message, channel []byte,
 		return nil, nil, lib.ErrRequestDataInvalid
 	}
 
-	data, errs := parser.ParseData(string(msg.Data))
+	data, errs := parser.ParseData(msg.Data)
 	if errs != nil {
 		fmt.Printf("3. unable to analyse data in handlePublish()")
 		return nil, nil, lib.ErrRequestDataInvalid
