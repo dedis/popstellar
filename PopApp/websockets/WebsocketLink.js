@@ -61,7 +61,13 @@ export default class WebsocketLink {
     const ws = new W3CWebSocket(`ws://${address}:${port}${p}`);
 
     ws.onopen = () => { console.log(`initiating web socket : ws://${address}:${port}`); };
-    ws.onmessage = (message) => { handleServerAnswer(message); };
+    ws.onmessage = (message) => {
+      try {
+        handleServerAnswer(message);
+      } catch (e) {
+        console.error(`Exception in handleServerAnswer: ${e.message}`);
+      }
+    };
     // TODO on error
 
     this.#ws = ws;

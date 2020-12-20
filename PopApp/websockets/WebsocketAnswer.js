@@ -83,7 +83,7 @@ const handleServerAnswer = (message) => {
       default:
         // note: callback for the reception of a propagation message (object == objects.MESSAGE)
         // was caught sooner while checking for message correctness
-        break;
+        throw new Error(`(_handlePositiveServerAnswer) requestObject "${answer.requestObject}" is unknown`);
     }
 
     if (!isPropagation) _delPendingQuery(obj.id);
@@ -120,8 +120,7 @@ const handleServerAnswer = (message) => {
       && Object.prototype.hasOwnProperty.call(queryMessage, 'signature')
       && Object.prototype.hasOwnProperty.call(queryMessage, 'message_id')
       && Object.prototype.hasOwnProperty.call(queryMessage, 'witness_signatures')
-      && _checkBase64Strings(queryMessage.witness_signatures)
-    )) return;
+    )) throw new Error('(_handlePropagateMessage) message fields missing or wrongly formatted');
 
     try {
       decodedMessage.data = fromString64(queryMessage.data); // still a json string
@@ -129,7 +128,11 @@ const handleServerAnswer = (message) => {
       decodedMessage.signature = fromString64(queryMessage.signature);
       decodedMessage.message_id = fromString64(queryMessage.message_id);
     } catch (e) {
-      return;
+      throw new Error('(_handlePropagateMessage) message fields are not valid base64 strings');
+    }
+
+    if (!_checkBase64Strings(queryMessage.witness_signatures)) {
+      throw new Error('(_handlePropagateMessage) witness_signatures values are not valid base64 strings');
     }
 
     // TODO check that the sender is the server's key
@@ -138,12 +141,12 @@ const handleServerAnswer = (message) => {
     // check that the signature is correct
     if (
       sign.open(decodedMessage.signature, decodedMessage.sender) !== decodedMessage.data
-    ) return;
+    ) throw new Error('(_handlePropagateMessage) message signature is incorrect');
 
     // check that the message_id is correct
     if (
       decodedMessage.message_id !== hashStrings(decodedMessage.data, decodedMessage.signature)
-    ) return;
+    ) throw new Error('(_handlePropagateMessage) message_id is incorrect');
 
     // TODO check that the witness_signatures array is correct
     //
@@ -155,7 +158,7 @@ const handleServerAnswer = (message) => {
       || typeof dataObject.object !== 'string'
       || !Object.prototype.hasOwnProperty.call(dataObject, 'action')
       || typeof dataObject.action !== 'string'
-    ) return;
+    ) throw new Error('(_handlePropagateMessage) data\'s object/action field is missing or wrongly formatted');
 
     const reconstructedQuery = {
       jsonrpc: JSON_RPC_VERSION,
@@ -189,7 +192,12 @@ const handleServerAnswer = (message) => {
       }
     }(dataObject.action));
 
-    if (requestObject === undefined || requestAction === undefined) return;
+    if (requestObject === undefined) {
+      throw new Error(`(_handlePropagateMessage) data's object field "${dataObject.object}" is unknown`);
+    }
+    if (requestAction === undefined) {
+      throw new Error(`(_handlePropagateMessage) data's action field "${dataObject.action}" is unknown`);
+    }
 
     _handlePositiveServerAnswer(
       new PendingRequest(reconstructedQuery, requestObject, requestAction),
@@ -203,12 +211,17 @@ const handleServerAnswer = (message) => {
   /* check that the answer is of a valid format (positive or negative) */
 
   // check that the object has exactly SERVER_ANSWER_FIELD_COUNT fields
-  if (Object.keys(obj).length !== SERVER_ANSWER_FIELD_COUNT) return;
+  if (Object.keys(obj).length !== SERVER_ANSWER_FIELD_COUNT) {
+    throw new Error(
+      `(_handlePositiveServerAnswer) server answer has missing/additional fields 
+      (expected: ${SERVER_ANSWER_FIELD_COUNT}, actual: ${Object.keys(obj).length}`,
+    );
+  }
 
   // check that the object has both required field and that the protocol used is correct
   if (!Object.prototype.hasOwnProperty.call(obj, answerProperties.JSONRPC)
       || obj.jsonrpc !== JSON_RPC_VERSION
-  ) return;
+  ) throw new Error(`(_handlePositiveServerAnswer) jsonrpc field "${obj.jsonrpc}" is missing or wrongly formatted`);
 
   // check if we have a propagate message query (no id field and no error/result field)
   if (!Object.prototype.hasOwnProperty.call(obj, answerProperties.ID)) {
@@ -220,22 +233,24 @@ const handleServerAnswer = (message) => {
       && Object.prototype.hasOwnProperty.call(obj.params, 'message')
       && typeof obj.params.message === 'object'
       && obj.params.message !== null
-    ) { _handlePropagateMessage(obj.params); }
+    ) { _handlePropagateMessage(obj.params); return; }
 
-    return;
+    throw new Error('(_handlePositiveServerAnswer) query has no id field and is not a propagate message');
   }
 
   if (!Object.prototype.hasOwnProperty.call(obj, answerProperties.ID)
     || !Number.isInteger(obj.id)
-  ) return;
+  ) throw new Error(`(_handlePositiveServerAnswer) id field "${obj.id}" is missing or wrongly formatted`);
 
   // check that the object has exactly one of the two optional fields (XOR)
   if (Object.prototype.hasOwnProperty.call(obj, answerProperties.RESULT)
       === Object.prototype.hasOwnProperty.call(obj, answerProperties.ERROR)
-  ) return;
+  ) throw new Error('(_handlePositiveServerAnswer) query has both a result and error field');
 
   // if the message answers un unknown request, then drop the message
-  if (!_hasPendingQuery(obj.id)) return;
+  if (!_hasPendingQuery(obj.id)) {
+    throw new Error('(_handlePositiveServerAnswer) query was not sent by the client or has timed out');
+  }
 
   // processes server answer
   if (Object.prototype.hasOwnProperty.call(obj, answerProperties.RESULT)) {
@@ -244,19 +259,39 @@ const handleServerAnswer = (message) => {
       // general positive answer
       _handlePositiveServerAnswer(obj);
     } else {
-      console.error('TODO handle propagate (+ what if none of those two possibilities, silent return?)');
+      throw new Error(
+        `(_handlePositiveServerAnswer) result field value wrongly formatted 
+        (expected: ${0}, actual: ${obj.result})`,
+      );
     }
   } else {
     // processes negative server answer (error)
     const { error } = obj;
 
-    if (typeof error !== 'object' || error === null) return;
+    if (typeof error !== 'object' || error === null) {
+      throw new Error('(_handlePositiveServerAnswer) error object is not a JS object or is null');
+    }
     if (!Object.prototype.hasOwnProperty.call(error, errorProperties.CODE)
         || !Object.prototype.hasOwnProperty.call(error, errorProperties.DESCRIPTION)
-        || Object.keys(error).length !== Object.keys(errorProperties).length
-    ) return;
-    if (!Number.isInteger(error.code) || error.code < -5 || error.code > -1) return;
-    if (typeof error.description !== 'string') return;
+    ) throw new Error('(_handlePositiveServerAnswer) error object\'s fields missing or wrongly formatted');
+    if (Object.keys(error).length !== Object.keys(errorProperties).length) {
+      throw new Error(
+        `(_handlePositiveServerAnswer) error object has missing/additional fields (expected: 
+        ${Object.keys(errorProperties).length}, actual: ${Object.keys(error).length})`,
+      );
+    }
+    if (!Number.isInteger(error.code) || error.code < -5 || error.code > -1) {
+      throw new Error(
+        `(_handlePositiveServerAnswer) error object's error code is wrong formatted (expected: 
+        integer between -5 and -1, actual: ${error.code}`,
+      );
+    }
+    if (typeof error.description !== 'string') {
+      throw new Error(
+        `(_handlePositiveServerAnswer) error object's is wrongly formatted (expected: 
+        string, actual: ${typeof error.description})`,
+      );
+    }
 
     const query = _getPendingQuery(obj.id);
     const { retryCount } = _getPendingQuery(obj.id);
