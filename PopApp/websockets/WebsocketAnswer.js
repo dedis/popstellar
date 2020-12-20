@@ -96,6 +96,11 @@ const handleServerAnswer = (message) => {
         console.error('TODO (in WebsocketAnswer) : case (objects.MEETING)');
         break;
 
+      case objects.MESSAGE:
+        // if the answer is positive for a WitnessMessage, then we do nothing except
+        // removing the message from the pending queue
+        break;
+
       default:
         // note: callback for the reception of a propagation message (object == objects.MESSAGE)
         // was caught sooner while checking for message correctness
