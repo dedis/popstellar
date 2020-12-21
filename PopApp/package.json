@@ -7,7 +7,8 @@
     "web": "expo start --web",
     "eject": "expo eject",
     "startServer": "node websockets/LocalMockServer.js",
-    "startMonitorServer": "nodemon websockets/LocalMockServer.js"
+    "startMonitorServer": "nodemon websockets/LocalMockServer.js",
+    "test": "mocha --recursive"
   },
   "dependencies": {
     "@react-native-community/datetimepicker": "^3.0.5",
@@ -43,12 +44,15 @@
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",
+    "@types/chai": "^4.2.14",
     "babel-eslint": "^10.1.0",
+    "chai": "^4.2.0",
     "eslint": "^7.11.0",
     "eslint-config-airbnb": "^18.2.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsx-a11y": "^6.3.1",
-    "eslint-plugin-react": "^7.21.5"
+    "eslint-plugin-react": "^7.21.5",
+    "mocha": "^8.2.1"
   },
   "private": true
 }
