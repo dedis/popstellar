@@ -19,6 +19,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +39,7 @@ import javax.websocket.Session;
 /**
  * A proxy of a connection to a websocket. It encapsulate the publish-subscribe protocol
  */
-public final class LowLevelClientProxy {
+public final class LowLevelClientProxy implements Closeable {
 
     public static final long TIMEOUT = 5000L; // 5 secs
 
@@ -197,6 +199,11 @@ public final class LowLevelClientProxy {
                 it.remove();
             }
         }
+    }
+
+    @Override
+    public void close() throws IOException {
+        session.close();
     }
 
     private final static class RequestEntry {
