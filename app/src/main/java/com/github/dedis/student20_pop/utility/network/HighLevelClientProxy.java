@@ -96,7 +96,7 @@ public final class HighLevelClientProxy implements Closeable {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         lowLevelClientProxy.close();
     }
 }

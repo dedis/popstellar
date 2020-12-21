@@ -223,22 +223,23 @@ public final class LowLevelClientProxy implements Closeable {
     }
 
     private Optional<Session> getSessionNow() {
-        if(sessionFuture.isDone())
-            try {
-                return Optional.ofNullable(sessionFuture.getNow(null));
-            } catch (Throwable t) {
-                return Optional.empty();
-            }
-        else
+        try {
+            return Optional.ofNullable(sessionFuture.getNow(null));
+        } catch (Throwable t) {
             return Optional.empty();
+        }
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         synchronized (SESSION_LOCK) {
-            Optional<Session> session = getSessionNow();
-            if(session.isPresent())
-                session.get().close();
+            sessionFuture.thenAccept(s -> {
+                try {
+                    s.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
         }
     }
 
