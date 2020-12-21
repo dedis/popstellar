@@ -7,6 +7,7 @@ package actors
 import (
 	"fmt"
 	"log"
+	"encoding/json"
 	"student20_pop/db"
 	"student20_pop/event"
 	"student20_pop/lib"
@@ -189,7 +190,7 @@ func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.Mess
 		}
 	default:
 		fmt.Printf("data[action] (%v) not recognized in handlepublish, generating default response ", data["action"])
-		return nil, lib.ErrRequestDataInvalid
+		return nil, nil, lib.ErrRequestDataInvalid
 	}
 }
 
@@ -202,7 +203,7 @@ func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query mes
 
 	data, errs := parser.ParseDataCreateLAO(msg.Data)
 	if errs != nil {
-		return nil, lib.ErrInvalidResource
+		return nil, nil, lib.ErrInvalidResource
 	}
 
 	if !security.LAOIsValid(data, true) {
@@ -215,11 +216,11 @@ func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query mes
 	}
 
 	lao := event.LAO{
-		ID:            data.ID,
+		ID:            string(data.ID),
 		Name:          data.Name,
 		Creation:      data.Creation,
-		OrganizerPKey: data.Organizer,
-		Witnesses:     data.Witnesses,
+		OrganizerPKey: string(data.Organizer),
+		Witnesses:     lib.ConvertSliceSliceByteToSliceString(data.Witnesses),
 	}
 
 	msgAndChan := []lib.MessageAndChannel{{
@@ -261,7 +262,7 @@ func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, quer
 	}
 
 	if !security.RollCallCreatedIsValid(data, msg) {
-		return nil, errs
+		return nil, nil, errs
 	}
 
 	// don't need to check for validity if we use json schema
@@ -339,7 +340,8 @@ func (o *Organizer) handleCreatePoll(msg message.Message, canal string, query me
 		return nil, lib.ErrInvalidResource
 	}
 
-	poll := event.Poll{ID: data.ID,
+	poll := event.Poll{
+		ID: string(data.ID),
 		Name:     data.Name,
 		Creation: data.Creation,
 		Location: data.Location,
@@ -395,12 +397,24 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 	}
 
 	//if message was already signed by this witness, returns an error
-	_, found := lib.FindStr(toSignStruct.WitnessSignatures, data.Signature)
+	var signaturesOnly []string
+	for _, item := range toSignStruct.WitnessSignatures {
+		witnessSignature, err := parser.ParseWitnessSignature(item)
+		if err != nil {
+			log.Println("couldn't unMarshal the ItemWitnessSignatures from the DB")
+		}
+		signaturesOnly = append(signaturesOnly, string(witnessSignature.Signature))
+	}
+	_, found := lib.FindStr(signaturesOnly, string(data.Signature))
 	if found {
 		return nil, lib.ErrResourceAlreadyExists
 	}
 
-	toSignStruct.WitnessSignatures = append(toSignStruct.WitnessSignatures, data.Signature)
+	iws, err := json.Marshal(message.ItemWitnessSignatures{Witness: msg.Sender, Signature: data.Signature})
+	if err != nil {
+		log.Println("couldn't Marshal the ItemWitnessSignatures")
+	}
+	toSignStruct.WitnessSignatures = append(toSignStruct.WitnessSignatures, iws)
 
 	// update "LAOUpdateProperties" message in DB
 	errs = db.UpdateMessage(toSignStruct, canal, o.database)
