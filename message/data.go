@@ -39,24 +39,6 @@ type DataCreateLAO struct {
 	//List of public keys where each public key belongs to one member (physical person) (subscriber)
 }
 
-type DataStateLAO struct {
-	Object string
-	Action string //if we put "action" with little a it crashes
-	//ID hash : Name || Creation Date/Time Unix Timestamp
-	ID string
-	// name of LAO
-	Name string
-	//Creation Date/Time
-	Creation     int64 //  Unix timestamp (uint64)
-	LastModified int64
-	//Organiser: Public Key
-	Organizer string
-	//List of public keys where each public key belongs to one witness
-	Witnesses []string
-	//List of public keys where each public key belongs to one member (physical person) (subscriber)
-
-}
-
 type DataCreateMeeting struct {
 	Object string
 	Action string
@@ -68,9 +50,9 @@ type DataCreateMeeting struct {
 	Creation int64 //  Unix timestamp (uint64)
 	//Last_modified int64  //timestamp
 	Location string //optional
-	Start int64  /* Timestamp */
-	End   int64  /* Timestamp, optional */
-	Extra string /* arbitrary object, optional */
+	Start    int64  /* Timestamp */
+	End      int64  /* Timestamp, optional */
+	Extra    string /* arbitrary object, optional */
 }
 type DataCreateRollCall struct {
 	//TODO right now same attribute as meeting
@@ -84,9 +66,9 @@ type DataCreateRollCall struct {
 	Creation int64 //  Unix timestamp (uint64)
 	//Last_modified int64  //timestamp
 	Location string //optional
-	Start int64  /* Timestamp */
-	End   int64  /* Timestamp, optional */
-	Extra string /* arbitrary object, optional */
+	Start    int64  /* Timestamp */
+	End      int64  /* Timestamp, optional */
+	Extra    string /* arbitrary object, optional */
 }
 type DataCreatePoll struct {
 	//TODO right now same attribute as meeting
@@ -100,9 +82,9 @@ type DataCreatePoll struct {
 	Creation int64 //  Unix timestamp (uint64)
 	//Last_modified int64  //timestamp
 	Location string //optional
-	Start int64  /* Timestamp */
-	End   int64  /* Timestamp, optional */
-	Extra string /* arbitrary object, optional */
+	Start    int64  /* Timestamp */
+	End      int64  /* Timestamp, optional */
+	Extra    string /* arbitrary object, optional */
 }
 type DataWitnessMessage struct {
 	Object     string
@@ -155,11 +137,11 @@ type DataStateMeeting struct {
 	//Creation Date/Time
 	Creation int64 //  Unix timestamp (uint64)
 	//Last_modified Date/Time
-	Last_modified int64 //  Unix timestamp (uint64)
-	Location string //optional
-	Start int64  /* Timestamp */
-	End   int64  /* Timestamp, optional */
-	Extra string /* arbitrary object, optional */
+	Last_modified int64  //  Unix timestamp (uint64)
+	Location      string //optional
+	Start         int64  /* Timestamp */
+	End           int64  /* Timestamp, optional */
+	Extra         string /* arbitrary object, optional */
 	//Organiser: Public Key
 	Organizer string
 	//List of public keys where each public key belongs to one witness

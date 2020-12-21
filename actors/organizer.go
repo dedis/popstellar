@@ -5,9 +5,11 @@ and create and sends appropriate response depending on what message was received
 package actors
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
-	"encoding/json"
+	"math/rand" //just to generate jsonRPC message's ID, no need for crypto rand
+	"strconv"
 	"student20_pop/db"
 	"student20_pop/event"
 	"student20_pop/lib"
@@ -190,7 +192,7 @@ func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.Mess
 		}
 	default:
 		fmt.Printf("data[action] (%v) not recognized in handlepublish, generating default response ", data["action"])
-		return nil, nil, lib.ErrRequestDataInvalid
+		return nil, lib.ErrRequestDataInvalid
 	}
 }
 
@@ -203,7 +205,7 @@ func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query mes
 
 	data, errs := parser.ParseDataCreateLAO(msg.Data)
 	if errs != nil {
-		return nil, nil, lib.ErrInvalidResource
+		return nil, lib.ErrInvalidResource
 	}
 
 	if !security.LAOIsValid(data, true) {
@@ -233,19 +235,58 @@ func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query mes
 		if errs != nil {
 			return nil, err
 		}
-
+		//compose state update message
 		state := message.DataStateLAO{
-			Object:       "lao",
-			Action:       "state",
-			ID:           lao.ID,
-			Name:         lao.Name,
-			Creation:     lao.Creation,
-			LastModified: lao.Creation,
-			Organizer:    lao.OrganizerPKey,
-			Witnesses:    lao.Witnesses,
+			Object:        "lao",
+			Action:        "state",
+			ID:            []byte(lao.ID),
+			Name:          lao.Name,
+			Creation:      lao.Creation,
+			Last_modified: lao.Creation,
+			Organizer:     []byte(lao.OrganizerPKey),
+			Witnesses:     data.Witnesses,
 		}
 
-		msgAndChan = append(msgAndChan, lib.MessageAndChannel{Channel: []byte(canal), Message: parser.ComposeBroadcastMessage(query)})
+		stateStr, errs := json.Marshal(state)
+		if errs != nil {
+			return nil, errs
+		}
+
+		content := message.Message{
+			Data:              stateStr,
+			Sender:            []byte(o.PublicKey),
+			Signature:         nil, //TODO should implement a function to sign the message's content
+			MessageId:         []byte(strconv.Itoa(rand.Int())),
+			WitnessSignatures: nil,
+		}
+
+		contentStr, errs := json.Marshal(content)
+		if errs != nil {
+			return nil, errs
+		}
+
+		sendParams := message.ParamsIncludingMessage{
+			Channel: "/root",
+			Message: contentStr,
+		}
+
+		paramsStr, errs := json.Marshal(sendParams)
+		if errs != nil {
+			return nil, errs
+		}
+
+		sendQuery := message.Query{
+			Jsonrpc: "2.0",
+			Method:  "message",
+			Params:  paramsStr,
+			Id:      rand.Int(),
+		}
+
+		queryStr, errs := json.Marshal(sendQuery)
+		if errs != nil {
+			return nil, errs
+		}
+		msgAndChan = append(msgAndChan, lib.MessageAndChannel{Channel: []byte(canal), Message: queryStr})
 	}
 
 	return msgAndChan, nil
@@ -262,11 +303,12 @@ func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, quer
 	}
 
 	if !security.RollCallCreatedIsValid(data, msg) {
-		return nil, nil, errs
+		return nil, errs
 	}
 
 	// don't need to check for validity if we use json schema
-	rollCall := event.RollCall{ID: data.ID,
+	rollCall := event.RollCall{
+		ID:       string(data.ID),
 		Name:     data.Name,
 		Creation: data.Creation,
 		Location: data.Location,
@@ -304,7 +346,8 @@ func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, query
 	}
 
 	// don't need to check for validity if we use json schema
-	meeting := event.Meeting{ID: data.ID,
+	meeting := event.Meeting{
+		ID:       string(data.ID),
 		Name:     data.Name,
 		Creation: data.Creation,
 		Location: data.Location,
@@ -341,7 +384,7 @@ func (o *Organizer) handleCreatePoll(msg message.Message, canal string, query me
 	}
 
 	poll := event.Poll{
-		ID: string(data.ID),
+		ID:       string(data.ID),
 		Name:     data.Name,
 		Creation: data.Creation,
 		Location: data.Location,
@@ -371,12 +414,12 @@ func (o *Organizer) handleUpdateProperties(msg message.Message, canal string, qu
 	return msgAndChan, db.CreateMessage(msg, canal, o.database)
 }
 
-func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
 
-	data, errs := parser.ParseDataWitnessMessage(msg.Data)
-	if errs != nil {
+	data, err := parser.ParseDataWitnessMessage(msg.Data)
+	if err != nil {
 		log.Printf("unable to parse received Message in handleWitnessMessage()")
-		return nil, errs
+		return nil, err
 	}
 
 	//retrieve message to sign from database
@@ -385,26 +428,41 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 		return nil, lib.ErrInvalidResource
 	}
 
-	toSignStruct, errs := parser.ParseMessage(toSign)
-	if errs != nil {
+	toSignStruct, err := parser.ParseMessage(toSign)
+	if err != nil {
 		log.Printf("unable to parse stored Message in handleWitnessMessage()")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
-	errs = security.VerifySignature(msg.Sender, toSignStruct.Data, data.Signature)
-	if errs != nil {
-		return nil, errs
+	laoData, err := parser.ParseDataCreateLAO(toSignStruct.Data)
+	if err != nil {
+		log.Printf("unable to parse stored LAO infos in handleWitnessMessage()")
+		return nil, err
 	}
 
-	//if message was already signed by this witness, returns an error
+	err = security.VerifySignature(msg.Sender, toSignStruct.Data, data.Signature)
+	if err != nil {
+		return nil, err
+	}
+
+	//retrieves all the existing signatures for this message
 	var signaturesOnly []string
-	for _, item := range toSignStruct.WitnessSignatures {
-		witnessSignature, err := parser.ParseWitnessSignature(item)
-		if err != nil {
+	count := 0
+	for i, item := range toSignStruct.WitnessSignatures {
+		witnessSignature, errs := parser.ParseWitnessSignature(item)
+		if errs != nil {
 			log.Println("couldn't unMarshal the ItemWitnessSignatures from the DB")
+			continue
 		}
+		err = security.VerifySignature(witnessSignature.Witness, toSignStruct.Data, witnessSignature.Signature)
+		if err != nil {
+			count--
+			log.Printf("Invalid signature found in signature lists, with index %d", i)
+		}
+		count++
 		signaturesOnly = append(signaturesOnly, string(witnessSignature.Signature))
 	}
+	//if new signature already exists, returns error
 	_, found := lib.FindStr(signaturesOnly, string(data.Signature))
 	if found {
 		return nil, lib.ErrResourceAlreadyExists
@@ -417,20 +475,90 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 	toSignStruct.WitnessSignatures = append(toSignStruct.WitnessSignatures, iws)
 
 	// update "LAOUpdateProperties" message in DB
-	errs = db.UpdateMessage(toSignStruct, canal, o.database)
-	if errs != nil {
+	err = db.UpdateMessage(toSignStruct, canal, o.database)
+	if err != nil {
 		return nil, lib.ErrDBFault
 	}
 	//store received message in DB
-	errs = db.CreateMessage(msg, canal, o.database)
-	if errs != nil {
+	err = db.CreateMessage(msg, canal, o.database)
+	if err != nil {
 		return nil, lib.ErrDBFault
 	}
+
+	//broadcast received message
 	msgAndChan := []lib.MessageAndChannel{{
 		Message: parser.ComposeBroadcastMessage(query),
 		Channel: []byte(canal),
 	}}
-	//broadcast received message
+
+	//Same as in HANDLE CREATE LAO, TODO FACTORIZE
+	if count == SIG_THRESHOLD-1 {
+		lao := event.LAO{
+			ID:            string(laoData.ID),
+			Name:          laoData.Name,
+			Creation:      laoData.Creation,
+			OrganizerPKey: string(laoData.Organizer),
+			Witnesses:     lib.ConvertSliceSliceByteToSliceString(laoData.Witnesses),
+		}
+
+		err = db.CreateChannel(lao, o.database)
+		if err != nil {
+			return nil, err
+		}
+		//compose state update message
+		state := message.DataStateLAO{
+			Object:        "lao",
+			Action:        "state",
+			ID:            []byte(lao.ID),
+			Name:          lao.Name,
+			Creation:      lao.Creation,
+			Last_modified: lao.Creation,
+			Organizer:     []byte(lao.OrganizerPKey),
+			Witnesses:     laoData.Witnesses,
+		}
+
+		stateStr, errs := json.Marshal(state)
+		if errs != nil {
+			return nil, errs
+		}
+
+		content := message.Message{
+			Data:              stateStr,
+			Sender:            []byte(o.PublicKey),
+			Signature:         nil, //TODO should implement a function to sign the message's content
+			MessageId:         []byte(strconv.Itoa(rand.Int())),
+			WitnessSignatures: nil,
+		}
+
+		contentStr, errs := json.Marshal(content)
+		if errs != nil {
+			return nil, errs
+		}
+
+		sendParams := message.ParamsIncludingMessage{
+			Channel: "/root",
+			Message: contentStr,
+		}
+
+		paramsStr, errs := json.Marshal(sendParams)
+		if errs != nil {
+			return nil, errs
+		}
+
+		sendQuery := message.Query{
+			Jsonrpc: "2.0",
+			Method:  "message",
+			Params:  paramsStr,
+			Id:      rand.Int(),
+		}
+
+		queryStr, errs := json.Marshal(sendQuery)
+		if errs != nil {
+			return nil, errs
+		}
+		msgAndChan = append(msgAndChan, lib.MessageAndChannel{Channel: []byte(canal), Message: queryStr})
+	}
+
 	return msgAndChan, nil
 }
 
