@@ -221,15 +221,31 @@ func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query mes
 		OrganizerPKey: data.Organizer,
 		Witnesses:     data.Witnesses,
 	}
-	errs = db.CreateChannel(lao, o.database)
-	if errs != nil {
-		return nil, err
-	}
 
 	msgAndChan := []lib.MessageAndChannel{{
 		Message: parser.ComposeBroadcastMessage(query),
 		Channel: []byte(canal),
 	}}
+
+	if SIG_THRESHOLD == 0 {
+		errs = db.CreateChannel(lao, o.database)
+		if errs != nil {
+			return nil, err
+		}
+
+		state := message.DataStateLAO{
+			Object:       "lao",
+			Action:       "state",
+			ID:           lao.ID,
+			Name:         lao.Name,
+			Creation:     lao.Creation,
+			LastModified: lao.Creation,
+			Organizer:    lao.OrganizerPKey,
+			Witnesses:    lao.Witnesses,
+		}
+
+		msgAndChan = append(msgAndChan, lib.MessageAndChannel{Channel: []byte(canal), Message: parser.ComposeBroadcastMessage(query)})
+	}
 
 	return msgAndChan, nil
 }
