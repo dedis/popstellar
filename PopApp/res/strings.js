@@ -103,7 +103,8 @@ const STRINGS = {
 
   /* --- Meeting creation Strings --- */
   meeting_create_name: 'Name*',
-  meeting_create_finish_time: 'Finish time',
+  meeting_create_start_time: 'Start time: ',
+  meeting_create_finish_time: 'Finish time: ',
   meeting_create_location: 'Location',
 
   /* --- General creation Strings --- */

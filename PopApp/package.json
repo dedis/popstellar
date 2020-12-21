@@ -7,7 +7,9 @@
     "web": "expo start --web",
     "eject": "expo eject",
     "startServer": "node websockets/LocalMockServer.js",
-    "startMonitorServer": "nodemon websockets/LocalMockServer.js"
+    "startMonitorServer": "nodemon websockets/LocalMockServer.js",
+    "test": "jest",
+    "test:watch": "npm test -- --watch"
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.12.1",
@@ -23,6 +25,7 @@
     "hash.js": "^1.1.7",
     "prop-types": "^15.7.2",
     "react": "16.13.1",
+    "react-datepicker": "^3.3.0",
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-39.0.2.tar.gz",
     "react-native-elements": "^3.0.0-alpha.1",
@@ -37,7 +40,6 @@
     "react-redux": "^7.2.2",
     "redux": "^4.0.5",
     "redux-persist": "^6.0.0",
-    "tweet-nacl-react-native-expo": "^1.0.3",
     "tweetnacl": "^1.0.3",
     "tweetnacl-util": "^0.15.1",
     "websocket": "^1.0.32"
@@ -45,11 +47,13 @@
   "devDependencies": {
     "@babel/core": "~7.9.0",
     "babel-eslint": "^10.1.0",
+    "babel-jest": "^26.6.3",
     "eslint": "^7.11.0",
     "eslint-config-airbnb": "^18.2.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsx-a11y": "^6.3.1",
-    "eslint-plugin-react": "^7.21.5"
+    "eslint-plugin-react": "^7.21.5",
+    "jest": "^26.6.3"
   },
   "private": true
 }
