@@ -208,14 +208,6 @@ public final class LowLevelClientProxy implements Closeable {
         System.out.println(message);
     }
 
-    /**
-     * Only used for testing purpose
-     */
-    @Deprecated
-    public Session getSession() {
-        return getSessionNow().orElse(null);
-    }
-
     //TODO Call this periodically
     public void purge() {
         long currentTime = System.currentTimeMillis();
