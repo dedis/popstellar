@@ -3,9 +3,13 @@ import {
   View, Button, Platform, TextInput, StyleSheet, ScrollView, Text,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigation } from '@react-navigation/native';
 
-import { Buttons, Typography, Spacing } from '../Styles';
+import {
+  Buttons, Typography, Spacing, Views,
+} from '../Styles';
 import STRINGS from '../res/strings';
 
 /**
@@ -22,6 +26,11 @@ const styles = StyleSheet.create({
   },
   buttonTime: {
     marginHorizontal: Spacing.m,
+  },
+  view: {
+    ...Views.base,
+    flexDirection: 'row',
+    zIndex: 3,
   },
 });
 
@@ -68,17 +77,35 @@ const CreateRollCall = () => {
 
   return (
     <ScrollView>
-      <Text style={[styles.text, { textAlign: 'left' }]}>{STRINGS.roll_call_create_deadline}</Text>
-      <View style={{ flexDirection: 'row' }}>
-        <Text
-          style={[styles.text, { flex: 10 }]}
-        >
-          {dateToStrign(startDate)}
-        </Text>
-        <View style={[styles.buttonTime, { flex: 1 }]}>
-          <Button onPress={() => { showDatepicker(); }} title="S" />
+      {Platform.OS !== 'web'
+      && (
+      <View>
+        <Text style={[styles.text, { textAlign: 'left' }]}>{STRINGS.roll_call_create_deadline}</Text>
+        <View style={{ flexDirection: 'row' }}>
+          <Text
+            style={[styles.text, { flex: 10 }]}
+          >
+            {dateToStrign(startDate)}
+          </Text>
+          <View style={[styles.buttonTime, { flex: 1 }]}>
+            <Button onPress={() => { showDatepicker(); }} title="S" />
+          </View>
         </View>
       </View>
+      )}
+      {Platform.OS === 'web'
+      && (
+      <View style={[styles.view, styles.zIndexBooster]}>
+        <Text style={styles.text}>{STRINGS.roll_call_create_deadline}</Text>
+        <DatePicker
+          selected={startDate}
+          onChange={(date) => setStartDate(date)}
+          imeInputLabel="Time:"
+          dateFormat="MM/dd/yyyy HH:mm"
+          showTimeInput
+        />
+      </View>
+      )}
       {show && (
         <DateTimePicker
           value={startDate}

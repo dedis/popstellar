@@ -30,7 +30,7 @@ const MeetingEvent = ({ event }) => {
     const d = new Date(timestamp * 1000);
     return `${d.getDate()}-${d.getMonth() + 1}-${d.getFullYear()} `
     + `${d.getHours() < 10 ? 0 : ''}${d.getHours()}:`
-    + `${d.getMinutes() < 10 ? 0 : ''}${d.getMinutes()}`;
+    + `${d.getMinutes() < 10 ? 0 : ''}${d.getMinutes()}:${d.getSeconds()}`;
   };
 
   return (
