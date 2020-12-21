@@ -8,6 +8,8 @@ import (
 	"student20_pop/parser"
 )
 
+const SIG_THRESHOLD = 0
+
 type Actor interface {
 	//Public functions
 	HandleWholeMessage(msg []byte, userId int) (msgAndChannel []lib.MessageAndChannel, responseToSender []byte)

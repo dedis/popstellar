@@ -18,6 +18,24 @@ type DataCreateLAO struct {
 	//List of public keys where each public key belongs to one member (physical person) (subscriber)
 }
 
+type DataStateLAO struct {
+	Object string
+	Action string //if we put "action" with little a it crashes
+	//ID hash : Name || Creation Date/Time Unix Timestamp
+	ID string
+	// name of LAO
+	Name string
+	//Creation Date/Time
+	Creation     int64 //  Unix timestamp (uint64)
+	LastModified int64
+	//Organiser: Public Key
+	Organizer string
+	//List of public keys where each public key belongs to one witness
+	Witnesses []string
+	//List of public keys where each public key belongs to one member (physical person) (subscriber)
+
+}
+
 type DataCreateMeeting struct {
 	Object string
 	Action string
