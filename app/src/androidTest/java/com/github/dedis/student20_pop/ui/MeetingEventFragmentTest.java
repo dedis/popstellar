@@ -39,7 +39,6 @@ import static org.hamcrest.Matchers.isIn;
 import static org.hamcrest.Matchers.not;
 
 public class MeetingEventFragmentTest {
-    private View decorView;
     private final int YEAR = 2022;
     private final int MONTH_OF_YEAR = 10;
     private final int DAY_OF_MONTH = 10;
@@ -47,10 +46,10 @@ public class MeetingEventFragmentTest {
     private final int HOURS = 12;
     private final int MINUTES = 15;
     private final String TIME = "" + HOURS + ":" + MINUTES;
-
     @Rule
     public ActivityScenarioRule<OrganizerActivity> activityScenarioRule =
             new ActivityScenarioRule<>(OrganizerActivity.class);
+    private View decorView;
 
     @Before
     public void setUp() {
