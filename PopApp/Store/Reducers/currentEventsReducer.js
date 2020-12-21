@@ -1,3 +1,4 @@
+import { func } from 'prop-types';
 import eventsData from '../../res/EventData';
 
 const initialState = { events: eventsData };
@@ -6,7 +7,8 @@ const initialState = { events: eventsData };
  * Reducer to manage the events of the current LAO of the user
  *
  * Three differents actions:
- *  ADD_EVENT: add or update the event given in action.value in the events list
+ *  ADD_EVENT: add the event given in action.value in the events list, must not be in the store
+ *  UPDATE_EVENT: update the event given in action.value in the events list
  *  REMOVE_EVENT: remove the event with ID given in action.value
  *  CLEAR_EVENTS: delete all the store event
  *  UPDATE_EVENTS: move the event to the correct categories
@@ -19,17 +21,32 @@ function removeEventAnEvent(event, id) {
     }
     return event.childrens;
   }
-  if (event.children !== undefined) {
+  if (event.childrens !== undefined) {
     return { ...event, childrens: event.childrens.flatMap((c) => removeEventAnEvent(c, id)) };
   }
   return [event];
 }
 
 function removeEvent(state, id) {
-  state.events.map((period) => ({
+  const s = state.map((period) => ({
     title: period.title,
     data: period.data.flatMap((event) => removeEventAnEvent(event, id)),
   }));
+  return s;
+}
+
+function checkFutureNestedEvent(data, event, n) {
+  if (event.end && event.start < data[n].start && event.end > data[n].start) {
+    let j = n + 1;
+    while (j < data.length && event.start < data[j].start && event.end > data[j].start) {
+      j += 1;
+    }
+    const newChildrens = data.splice(n, j - n);
+    const parentEvent = { ...event, childrens: newChildrens };
+    data.splice(n, 0, parentEvent);
+    return data;
+  }
+  return data;
 }
 
 function addEventAnEvent(data, event) {
@@ -38,18 +55,15 @@ function addEventAnEvent(data, event) {
       if (data[i].end && data[i].start < event.start && data[i].end > event.start) {
         if (data[i].childrens) {
           const parentEvent = { ...data[i], childrens: addEventAnEvent(data[i].childrens, event) };
-          data.splice(i, 0, parentEvent);
+          data.splice(i, 1, parentEvent);
           return data;
         }
         const parentEvent = { ...data[i], childrens: [event] };
-        data.splice(i, 0, parentEvent);
-        return data;
-      } if (data[i].end && data[i].end < event.start) {
-        data.splice(i, 0, event);
-        return data;
-      } if (data[i].start < event.start) {
-        data.splice(i, 0, event);
-        return data;
+        data.splice(i, 1, parentEvent);
+      } if (data[i].end && data[i].end > event.start) {
+        return checkFutureNestedEvent(data, event, i);
+      } if (data[i].start > event.start) {
+        return checkFutureNestedEvent(data, event, i);
       }
     }
     data.push(event);
@@ -76,7 +90,7 @@ function addEvent(state, event) {
   } else {
     title = 'Future';
   }
-  state.map((period) => {
+  const s = state.map((period) => {
     if (period.title === title) {
       return {
         title: period.title,
@@ -85,7 +99,7 @@ function addEvent(state, event) {
     }
     return period;
   });
-  return state;
+  return s;
 }
 
 function updateEvent(state) {
@@ -114,7 +128,7 @@ function updateEvent(state) {
   const present2 = future.slice(0, i);
   present.push(present2);
   future = future.slice(i);
-  state.map((period) => {
+  const s = state.map((period) => {
     switch (period.title) {
       case 'Past':
         return {
@@ -135,7 +149,7 @@ function updateEvent(state) {
         return period;
     }
   });
-  return state;
+  return s;
 }
 
 function currentEventsReducer(state = initialState, action) {
@@ -145,6 +159,12 @@ function currentEventsReducer(state = initialState, action) {
       nextState = {
         ...state,
         events: [...addEvent(state.events, action.value)],
+      };
+      return nextState || state;
+    case 'UPDATE_EVENT':
+      nextState = {
+        ...state,
+        events: [...addEvent(removeEvent(state.events, action.value), action.value)],
       };
       return nextState || state;
     case 'REMOVE_EVENT':
