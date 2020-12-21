@@ -151,7 +151,7 @@ export const requestCreateLao = (name) => {
 };
 
 /** Send a server query asking for a LAO update providing a new name (String) */
-export const requestUpdateLao = (name) => {
+export const requestUpdateLao = (name, witnesses = undefined) => {
   const time = getCurrentTime();
   const currentParams = getCurrentLao().params;
 
@@ -162,7 +162,7 @@ export const requestUpdateLao = (name) => {
     )
     .setName(name)
     .setLastModified(time)
-    .setWitnesses(currentParams.message.data.witnesses)
+    .setWitnesses(witnesses || currentParams.message.data.witnesses)
     .buildJson();
 
   const m = _generateMessage(jsonData, currentParams.message.witness_signatures);
