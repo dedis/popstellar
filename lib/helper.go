@@ -31,6 +31,11 @@ func Decode(data string) ([]byte, error) {
 	return d, err
 }
 
+type MessageAndChannel struct {
+	Channel []byte
+	Message []byte
+}
+
 func ConvertSliceSliceByteToSliceString(slice [][]byte) []string {
 	sliceString := []string{}
 	for _, item := range slice {
