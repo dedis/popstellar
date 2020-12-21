@@ -27,7 +27,7 @@ public class Event {
     // Can use GeoLocation in the future
     private final String location;
     // Can use enums in the future
-    private final String type;
+    private final EventType type;
     private final JSONObject other;
     private final List<String> attestation;
     private List<String> attendees;
@@ -41,7 +41,7 @@ public class Event {
      * @throws IllegalArgumentException if any of the parameters is null
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Event(String name, Date time, String lao, String location, String type) {
+    public Event(String name, Date time, String lao, String location, EventType type) {
         if (name == null || time == null || lao == null || location == null || type == null) {
             throw new IllegalArgumentException("Trying to create an event with null parameters");
         }
@@ -111,7 +111,7 @@ public class Event {
         return location;
     }
 
-    public String getType() {
+    public EventType getType() {
         return type;
     }
 
@@ -147,6 +147,13 @@ public class Event {
      * Enum class for each event type
      */
     public enum EventType {
-        MEETING, ROLL_CALL, POLL
+        MEETING, ROLL_CALL, POLL, DISCUSSION
+    }
+
+    /**
+     * Enum class for each event category
+     */
+    public enum EventCategory {
+        PAST, PRESENT, FUTURE
     }
 }
