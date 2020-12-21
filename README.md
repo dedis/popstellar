@@ -44,6 +44,17 @@ The mock server can be run from the `PopApp` folder using:
 
 
 
+## Unit tests
+
+Unit tests can be run from the `PopApp` folder using:
+
+- `npm test` or
+- `./node_modules/mocha/bin/mocha --recursive`
+
+---
+
+
+
 ## Modules npm choices
 
 - **app dependencies**:
