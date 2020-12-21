@@ -30,19 +30,21 @@ public class PoPApplication extends Application {
     public static final String TAG = PoPApplication.class.getSimpleName();
     public static final String USERNAME = "USERNAME"; //TODO: let user choose/change its name
     private static final String LOCAL_BACKEND_URI = "ws://10.0.2.2:2000";
+
     private static Context appContext;
     private Person person;
     private Map<Lao, List<Event>> laoEventsMap;
     private Map<Lao, List<String>> laoWitnessMap;
+    private Map<URI, HighLevelClientProxy> openSessions;
 
     //represents the Lao which we are connected to, can be null
     private Lao currentLao;
+    private HighLevelClientProxy localProxy;
 
     //TODO: person/laos used for testing when we don't have a backend connected
     private Person dummyPerson;
     private Lao dummyLao;
     private Map<Lao, List<Event>> dummyLaoEventsMap;
-    private CompletableFuture<HighLevelClientProxy> localProxy;
 
     /**
      * @return PoP Application Context
@@ -77,6 +79,7 @@ public class PoPApplication extends Application {
         dummyLaoEventsMap = dummyLaoEventMap();
         laoWitnessMap.put(dummyLao, new ArrayList<>());
 
+        localProxy = PoPClientEndpoint.connect(URI.create(LOCAL_BACKEND_URI), person);
     }
 
     /**
@@ -167,39 +170,11 @@ public class PoPApplication extends Application {
 
     /**
      * Get the proxy of the local device's backend
-     * <p>
-     * Create it if needed
      *
-     * @return a completable future that will hold the proxy once the connection the backend is established
+     * @return the proxy
      */
-    public CompletableFuture<HighLevelClientProxy> getLocalProxy() {
-        refreshLocalProxy();
-
+    public HighLevelClientProxy getLocalProxy() {
         return localProxy;
-    }
-
-    /**
-     * Refresh the local proxy future.
-     * <p>
-     * If there was no connections yet, start one.
-     * If there was an attempt but it failed, retry.
-     * If the connection was lost, retry
-     */
-    private void refreshLocalProxy() {
-        if (localProxy == null)
-            // If there was no attempt yet, try
-            localProxy = PoPClientEndpoint.connectAsync(URI.create(LOCAL_BACKEND_URI), person);
-        else if (localProxy.isDone()) {
-            try {
-                // If it succeeded, but it is now closed, retry
-                HighLevelClientProxy currentSession = localProxy.getNow(null);
-                if (currentSession == null || !currentSession.isOpen())
-                    localProxy = PoPClientEndpoint.connectAsync(URI.create(LOCAL_BACKEND_URI), person);
-            } catch (Exception e) {
-                //There was an error during competition, retry
-                localProxy = PoPClientEndpoint.connectAsync(URI.create(LOCAL_BACKEND_URI), person);
-            }
-        }
     }
 
     /**
