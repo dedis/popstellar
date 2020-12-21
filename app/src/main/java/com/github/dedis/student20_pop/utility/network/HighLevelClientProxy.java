@@ -8,6 +8,8 @@ import com.github.dedis.student20_pop.model.network.level.high.message.WitnessMe
 import com.github.dedis.student20_pop.utility.security.Hash;
 import com.github.dedis.student20_pop.utility.security.Signature;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -17,7 +19,7 @@ import javax.websocket.Session;
 /**
  * A proxy of a connection to a websocket. It encapsulate the high level protocol
  */
-public final class HighLevelClientProxy {
+public final class HighLevelClientProxy implements Closeable {
 
     public static final String ROOT = "/root";
 
@@ -102,5 +104,10 @@ public final class HighLevelClientProxy {
      */
     public boolean isOpen() {
         return lowLevelClientProxy.getSession().isOpen();
+    }
+
+    @Override
+    public void close() throws IOException {
+        lowLevelClientProxy.close();
     }
 }
