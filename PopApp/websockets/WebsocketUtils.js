@@ -24,6 +24,7 @@ export const objects = Object.freeze({
   LAO: 'lao',
   MESSAGE: 'message',
   MEETING: 'meeting',
+  ROLL_CALL: 'roll_call',
 });
 
 /** Enumeration of all possible "action" fields in JsonMessages */
@@ -32,6 +33,15 @@ export const actions = Object.freeze({
   UPDATE_PROPERTIES: 'update_properties',
   STATE: 'state',
   WITNESS: 'witness',
+  OPEN: 'open',
+  REOPEN: 'reopen',
+  CLOSE: 'close',
+});
+
+/** Enumeration of all possible event tags used in hash creation */
+export const eventTags = Object.freeze({
+  MEETING: 'M',
+  ROLL_CALL: 'R',
 });
 
 /** Set a new key pair for the client in the local storage */

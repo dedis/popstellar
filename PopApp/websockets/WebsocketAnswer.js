@@ -51,7 +51,7 @@ const handleServerAnswer = (message) => {
     const answer = isPropagation ? obj : _getPendingQuery(obj.id);
 
     // handle "callbacks" if needed
-    switch (answer.requestObject) { // update_lao
+    switch (answer.requestObject) {
       case objects.LAO:
         if (answer.requestAction === actions.CREATE) {
           // callback for a successful create LAO request
@@ -96,9 +96,14 @@ const handleServerAnswer = (message) => {
         console.error('TODO (in WebsocketAnswer) : case (objects.MEETING)');
         break;
 
+      case objects.ROLL_CALL:
+        // if the answer is positive for a roll_call message (any type), then we do
+        // nothing except remove the message from the pending queue
+        break;
+
       case objects.MESSAGE:
         // if the answer is positive for a WitnessMessage, then we do nothing except
-        // removing the message from the pending queue
+        // remove the message from the pending queue
         break;
 
       default:
