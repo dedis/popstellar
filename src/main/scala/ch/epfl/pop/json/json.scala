@@ -71,6 +71,7 @@ package object json {
     val Lao: json.Objects.Value with Matching = MatchingValue("lao")
     val Message: json.Objects.Value with Matching = MatchingValue("message")
     val Meeting: json.Objects.Value with Matching = MatchingValue("meeting")
+    val RollCall: json.Objects.Value with Matching = MatchingValue("roll_call")
 
     def MatchingValue(v: String): Value with Matching = new Val(nextId, v) with Matching
     def unapply(s: String): Option[Value] = values.find(s == _.toString)
@@ -84,6 +85,10 @@ package object json {
     val UpdateProperties: json.Actions.Value = MatchingValue("update_properties")
     val State: json.Actions.Value = MatchingValue("state")
     val Witness: json.Actions.Value = MatchingValue("witness")
+    /* roll call related actions */
+    val Open: json.Actions.Value = MatchingValue("open")
+    val Reopen: json.Actions.Value = MatchingValue("reopen")
+    val Close: json.Actions.Value = MatchingValue("close")
 
     def MatchingValue(v: String): Value with Matching =  new Val(nextId, v) with Matching
     def unapply(s: String): Option[Value] = values.find(s == _.toString)
@@ -117,5 +122,10 @@ package object json {
     start: TimeStamp,
     end: TimeStamp,
     extra: UNKNOWN,
+
+    /* roll call related fields */
+    scheduled: TimeStamp,
+    roll_call_description: String,
+    attendees: List[Key],
   )
 }

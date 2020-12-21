@@ -186,6 +186,75 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
             case _ => throw JsonMessageParserException("invalid \"MessageContentData\" : fields missing or wrongly formatted")
           }
 
+        /* create/open/reopen/close roll call */
+        case Objects.RollCall() =>
+          jsonObject.getFields("action", "id") match {
+            case Seq(a@JsString(_), id@JsString(_)) =>
+              val action: Actions = a.convertTo[Actions]
+
+              val mcd = new MessageContentDataBuilder()
+                .setHeader(Objects.RollCall, action)
+                .setId(id.convertTo[ByteArray])
+
+              action match {
+                case Actions.Create =>
+                  jsonObject.getFields("name", "creation", "location") match {
+                    case Seq(JsString(name), creation@JsNumber(_), JsString(location)) =>
+                      mcd.setName(name)
+                        .setCreation(creation.convertTo[TimeStamp])
+                        .setLocation(location)
+
+                      jsonObject.getFields("start") match {
+                        case Seq(s@JsNumber(_)) => mcd.setStart(s.convertTo[TimeStamp])
+                        case _ =>
+                      }
+                      jsonObject.getFields("scheduled") match {
+                        case Seq(s@JsNumber(_)) => mcd.setScheduled(s.convertTo[TimeStamp])
+                        case _ =>
+                      }
+                      jsonObject.getFields("roll_call_description") match {
+                        case Seq(JsString(description)) => mcd.setRollCallDescription(description)
+                        case _ =>
+                      }
+
+                    case _ => throw JsonMessageParserException(
+                      "invalid \"CreateRollCall\" query : fields (\"name\" and/or " +
+                        "\"creation\" and/or \"location\") missing or wrongly formatted"
+                    )
+                  }
+
+                case Actions.Open | Actions.Reopen =>
+                  jsonObject.getFields("start") match {
+                    case Seq(start@JsNumber(_)) =>
+                      mcd.setStart(start.convertTo[TimeStamp])
+
+                    case _ => throw JsonMessageParserException(
+                      "invalid \"OpenRollCall/ReopenRollCall\" query : field (\"start\") missing or wrongly formatted"
+                    )
+                  }
+
+                case Actions.Close =>
+                  jsonObject.getFields("start", "end", "attendees") match {
+                    case Seq(start@JsNumber(_), end@JsNumber(_), JsArray(attendees)) =>
+                      mcd.setStart(start.convertTo[TimeStamp])
+                        .setEnd(end.convertTo[TimeStamp])
+                        .setAttendees(attendees.map(_.convertTo[Key]).toList)
+
+                    case _ => throw JsonMessageParserException(
+                      "invalid \"CloseRollCall\" query : fields (\"start\" and/or " +
+                        "\"end\" and/or \"attendees\") missing or wrongly formatted"
+                    )
+                  }
+                case _ =>
+              }
+
+              mcd.build()
+
+
+            // parsing error : invalid message content data fields
+            case _ => throw JsonMessageParserException("invalid \"MessageContentData\" : fields missing or wrongly formatted")
+          }
+
         /* parsing error : object field not recognized */
         case _ => throw JsonMessageParserException("invalid \"MessageContentData\" : invalid \"object\" field (unrecognized)")
       }
@@ -213,6 +282,10 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
       if (obj.start != -1L) jsObjectContent += ("start" -> obj.start.toJson)
       if (obj.end != -1L) jsObjectContent += ("end" -> obj.end.toJson)
       if (obj.extra != "") jsObjectContent += ("extra" -> obj.extra.toJson) // TODO modify extra's type
+      if (obj.scheduled != -1L) jsObjectContent += ("scheduled" -> obj.scheduled.toJson)
+      if (obj.roll_call_description != "") jsObjectContent += ("roll_call_description" -> obj.end.toJson)
+      if (obj._object == Objects.RollCall && obj.action == Actions.Close)
+        jsObjectContent += ("attendees" -> JsArray(obj.attendees.map(a => a.toJson).toVector))
 
       JsObject(jsObjectContent)
     }
@@ -280,6 +353,16 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
                   case Actions.Create => CreateMeetingMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
                   // BroadcastMeetingMessageClient
                   case Actions.State => BroadcastMeetingMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
+                }
+
+                /* CreateRollCallMessageClient, OpenRollCallMessageClient and CloseRollCallMessageClient */
+                case (Objects.RollCall, action) => action match {
+                  // CreateRollCallMessageClient
+                  case Actions.Create => CreateRollCallMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
+                  // OpenRollCallMessageClient
+                  case Actions.Open | Actions.Reopen => OpenRollCallMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
+                  // CloseRollCallMessageClient
+                  case Actions.Close => CloseRollCallMessageClient(parsedParams, id.toInt, method.convertTo[Methods], version)
                 }
 
                 /* parsing error : invalid object/action pair */

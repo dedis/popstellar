@@ -58,6 +58,14 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
                                 |}""".stripMargin.filterNot((c: Char) => c.isWhitespace)
 
 
+  val _dataRollCall: String = s"""{
+                            |    "object": "${Objects.RollCall.toString}",
+                            |    "action": "F_ACTION",
+                            |    FF_MODIFICATION
+                            |    "id": "OTk5"
+                            |}""".stripMargin.filterNot((c: Char) => c.isWhitespace)
+
+
   val dataUpdateLao: String = s"""{
                                  |    "object": "${Objects.Lao.toString}",
                                  |    "action": "${Actions.UpdateProperties.toString}",
@@ -95,6 +103,18 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
       "FF_MODIFICATION",
       "\"modification_id\":\"NDU2\",\"modification_signatures\":[{\"witness\":\"Y2xlZjE=\",\"signature\":\"amUgc2lnbmU=\"},{\"witness\":\"Y2xlZjI=\",\"signature\":\"amUgc2lnbmUgYXVzc2k=\"}],"
     )
+  val dataCreateRollCall: String = _dataRollCall
+    .replaceAll("F_ACTION", Actions.Create.toString)
+    .replaceAll("FF_MODIFICATION", "\"name\":\"MonRollCall\",\"creation\":1234,\"start\":1500,\"scheduled\":1450,\"location\":\"INF\",\"roll_call_description\":\"description\",")
+  val dataOpenRollCall: String = _dataRollCall
+    .replaceAll("F_ACTION", Actions.Open.toString)
+    .replaceAll("FF_MODIFICATION", "\"start\":2000,")
+  val dataReopenRollCall: String = _dataRollCall
+    .replaceAll("F_ACTION", Actions.Reopen.toString)
+    .replaceAll("FF_MODIFICATION", "\"start\":3000,")
+  val dataCloseRollCall: String = _dataRollCall
+    .replaceAll("F_ACTION", Actions.Close.toString)
+    .replaceAll("FF_MODIFICATION", "\"start\":4000,\"end\":5000,\"attendees\":[\"Y2xlZjE=\",\"Y2xlZjI=\"],")
 
 
   def embeddedMessage(

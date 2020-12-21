@@ -77,6 +77,11 @@ object JsonUtils {
     var end: TimeStamp = -1L
     var extra: UNKNOWN = ""
 
+    /* roll call related fields */
+    var scheduled: TimeStamp = -1L
+    var roll_call_description: String = ""
+    var attendees: List[Key] = List()
+
 
     def build(): MessageContentData = {
       if (_object == null || action == null) {
@@ -88,7 +93,8 @@ object JsonUtils {
           id, name, creation, last_modified, organizer, witnesses,
           modification_id, modification_signatures,
           message_id, signature,
-          location, start, end, extra
+          location, start, end, extra,
+          scheduled, roll_call_description, attendees
         )
       }
     }
@@ -111,5 +117,8 @@ object JsonUtils {
     def setStart(start: TimeStamp): MessageContentDataBuilder = { this.start = start; this }
     def setEnd(end: TimeStamp): MessageContentDataBuilder = { this.end = end; this }
     def setExtra(extra: UNKNOWN): MessageContentDataBuilder = { this.extra = extra; this }
+    def setScheduled(scheduled: TimeStamp): MessageContentDataBuilder = { this.scheduled = scheduled; this }
+    def setRollCallDescription(description: String): MessageContentDataBuilder = { this.roll_call_description = description; this }
+    def setAttendees(attendees: List[Key]): MessageContentDataBuilder = { this.attendees = attendees; this }
   }
 }

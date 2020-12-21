@@ -130,6 +130,9 @@ object JsonMessageParser {
       case m: WitnessMessageMessageClient => m.toJson(JsonMessagePublishClientFormat.write).toString
       case m: CreateMeetingMessageClient => m.toJson(JsonMessagePublishClientFormat.write).toString
       case m: BroadcastMeetingMessageClient => m.toJson(JsonMessagePublishClientFormat.write).toString
+      case m: CreateRollCallMessageClient => m.toJson(JsonMessagePublishClientFormat.write).toString
+      case m: OpenRollCallMessageClient => m.toJson(JsonMessagePublishClientFormat.write).toString
+      case m: CloseRollCallMessageClient => m.toJson(JsonMessagePublishClientFormat.write).toString
     }
 
     case _: JsonMessagePubSubClient => message match {

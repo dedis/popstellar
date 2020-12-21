@@ -295,6 +295,251 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     checkBogusInputs(source)
   }
 
+  test("JsonMessageParser.parseMessage|encodeMessage:CreateRollCallMessageClient") {
+    // roll call with every argument
+    var data: String = dataCreateRollCall
+    var sp: JsonMessage = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    var spd: String = JsonMessageParser.serializeMessage(sp)
+    var spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    sp shouldBe a [CreateRollCallMessageClient]
+    spdp shouldBe a [CreateRollCallMessageClient]
+    sp shouldBeEqualUntilMessageContent spdp
+    sp.asInstanceOf[CreateRollCallMessageClient].params.message match {
+      case Some(mc) => mc.data.action.toString should fullyMatch regex """create"""
+      case None => fail()
+    }
+
+    // roll call without description
+    data = data.replaceAll(",\"roll_call_description\":\"[a-zA-Z]*\"", "")
+    sp = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    spd = JsonMessageParser.serializeMessage(sp)
+    spdp = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    sp shouldBe a [CreateRollCallMessageClient]
+    spdp shouldBe a [CreateRollCallMessageClient]
+    sp shouldBeEqualUntilMessageContent spdp
+
+    // roll call without description and scheduled
+    data = data.replaceAll(",\"scheduled\":[0-9]*", "")
+    sp = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    spd = JsonMessageParser.serializeMessage(sp)
+    spdp = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    sp shouldBe a [CreateRollCallMessageClient]
+    spdp shouldBe a [CreateRollCallMessageClient]
+    sp shouldBeEqualUntilMessageContent spdp
+
+    // roll call without description, scheduled and start
+    data = data.replaceAll(",\"start\":[0-9]*", "")
+    sp = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    spd = JsonMessageParser.serializeMessage(sp)
+    spdp = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    sp shouldBe a [CreateRollCallMessageClient]
+    spdp shouldBe a [CreateRollCallMessageClient]
+    sp shouldBeEqualUntilMessageContent spdp
+
+    // roll call without description, scheduled, start and location (should fail)
+    var dataW: String = data.replaceAll(",\"location\":\"[A-Za-z]*\"", "")
+    try {
+      sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
+        case Left(_) => fail()
+        case Right(_) => throw JsonMessageParserException("")
+      }
+    }
+    catch { case _: JsonMessageParserException => }
+
+    // roll call without description, scheduled, start and action (should fail)
+    dataW = data.replaceAll(",\"action\":\"[A-Za-z]*\"", "")
+    try {
+      sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
+        case Left(_) => fail()
+        case Right(_) => throw JsonMessageParserException("")
+      }
+    }
+    catch { case _: JsonMessageParserException => }
+  }
+
+  test("JsonMessageParser.parseMessage|encodeMessage:OpenRollCallMessageClient") {
+    // roll call with every argument
+    val data: String = dataOpenRollCall
+    var sp: JsonMessage = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    val spd: String = JsonMessageParser.serializeMessage(sp)
+    val spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    sp shouldBe a [OpenRollCallMessageClient]
+    spdp shouldBe a [OpenRollCallMessageClient]
+    sp shouldBeEqualUntilMessageContent spdp
+    sp.asInstanceOf[OpenRollCallMessageClient].params.message match {
+      case Some(mc) => mc.data.action.toString should fullyMatch regex """open"""
+      case None => fail()
+    }
+
+    // roll call without start (should fail)
+    var dataW: String = data.replaceAll(",\"start\":[0-9]*", "")
+    try {
+      sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
+        case Left(_) => fail()
+        case Right(_) => throw JsonMessageParserException("")
+      }
+    }
+    catch { case _: JsonMessageParserException => }
+
+    // roll call without id (should fail)
+    dataW = data.replaceAll(",\"id\":\"[A-Za-z0-9=+/]*\"", "")
+    try {
+      sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
+        case Left(_) => fail()
+        case Right(_) => throw JsonMessageParserException("")
+      }
+    }
+    catch { case _: JsonMessageParserException => }
+  }
+
+  test("JsonMessageParser.parseMessage|encodeMessage:ReopenRollCallMessageClient") {
+    // Note: this message doesn't really exit. It is part of "OpenRollCallMessageClient"
+
+    // roll call with every argument
+    val data: String = dataReopenRollCall
+    var sp: JsonMessage = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    val spd: String = JsonMessageParser.serializeMessage(sp)
+    val spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    sp shouldBe a [OpenRollCallMessageClient]
+    spdp shouldBe a [OpenRollCallMessageClient]
+    sp shouldBeEqualUntilMessageContent spdp
+    sp.asInstanceOf[OpenRollCallMessageClient].params.message match {
+      case Some(mc) => mc.data.action.toString should fullyMatch regex """reopen"""
+      case None => fail()
+    }
+
+    // roll call without start (should fail)
+    var dataW: String = data.replaceAll(",\"start\":[0-9]*", "")
+    try {
+      sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
+        case Left(_) => fail()
+        case Right(_) => throw JsonMessageParserException("")
+      }
+    }
+    catch { case _: JsonMessageParserException => }
+
+    // roll call without id (should fail)
+    dataW = data.replaceAll(",\"id\":\"[A-Za-z0-9=+/]*\"", "")
+    try {
+      sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
+        case Left(_) => fail()
+        case Right(_) => throw JsonMessageParserException("")
+      }
+    }
+    catch { case _: JsonMessageParserException => }
+  }
+
+  test("JsonMessageParser.parseMessage|encodeMessage:CloseRollCallMessageClient") {
+    // roll call with every argument
+    val data: String = dataCloseRollCall
+    var sp: JsonMessage = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    val spd: String = JsonMessageParser.serializeMessage(sp)
+    val spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    sp shouldBe a [CloseRollCallMessageClient]
+    spdp shouldBe a [CloseRollCallMessageClient]
+    sp shouldBeEqualUntilMessageContent spdp
+    sp.asInstanceOf[CloseRollCallMessageClient].params.message match {
+      case Some(mc) => mc.data.action.toString should fullyMatch regex """close"""
+      case None => fail()
+    }
+
+    // roll call without start (should fail)
+    var dataW: String = data.replaceAll(",\"start\":[0-9]*", "")
+    try {
+      sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
+        case Left(_) => fail()
+        case Right(_) => throw JsonMessageParserException("")
+      }
+    }
+    catch { case _: JsonMessageParserException => }
+
+    // roll call without end (should fail)
+    dataW = data.replaceAll(",\"end\":[0-9]*", "")
+    try {
+      sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
+        case Left(_) => fail()
+        case Right(_) => throw JsonMessageParserException("")
+      }
+    }
+    catch { case _: JsonMessageParserException => }
+
+    // roll call without attendees (should fail)
+    dataW = data.replaceAll(",\"attendees\":\\[[A-Za-z0-9,\"=]*\\]", "")
+    try {
+      sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
+        case Left(_) => fail()
+        case Right(_) => throw JsonMessageParserException("")
+      }
+    }
+    catch { case _: JsonMessageParserException => }
+
+    // roll call without id (should fail)
+    dataW = data.replaceAll(",\"id\":\"[A-Za-z0-9=+/]*\"", "")
+    try {
+      sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
+        case Left(_) => fail()
+        case Right(_) => throw JsonMessageParserException("")
+      }
+    }
+    catch { case _: JsonMessageParserException => }
+  }
+
   test("JsonMessageParser.parseMessage|encodeMessage:PropagateMessageServer") {
     val source: String = s"""{
                             |    "jsonrpc": "2.0",
