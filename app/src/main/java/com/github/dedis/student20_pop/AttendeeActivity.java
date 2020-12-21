@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.github.dedis.student20_pop.ui.AttendeeFragment;
-import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.IdentityFragment;
 
 /**
@@ -45,7 +44,8 @@ public class AttendeeActivity extends FragmentActivity {
         switch (view.getId()) {
             case R.id.tab_home:
                 //Future: different Home UI for organizer (without connect UI?)
-                showFragment(new HomeFragment(), HomeFragment.TAG);
+                Intent mainActivityIntent = new Intent(this, MainActivity.class);
+                startActivity(mainActivityIntent);
                 break;
             case R.id.tab_identity:
                 showFragment(new IdentityFragment(), IdentityFragment.TAG);
