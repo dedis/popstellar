@@ -68,7 +68,7 @@ func MessageIsValid(msg message.Message) error {
 	hash := sha256.Sum256(str)
 
 	if !bytes.Equal([]byte(msg.MessageId), hash[:]) {
-		log.Printf("id of message invalid")
+		log.Printf("id of message invalid: %v should be: %v", string(msg.MessageId), string(hash[:]))
 		return lib.ErrInvalidResource
 	}
 

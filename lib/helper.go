@@ -35,3 +35,11 @@ type MessageAndChannel struct {
 	Channel []byte
 	Message []byte
 }
+
+func ConvertSliceSliceByteToSliceString(slice [][]byte) []string {
+	sliceString := []string{}
+	for _, item := range slice {
+		sliceString = append(sliceString, string(item))
+	}
+	return sliceString
+}

@@ -39,10 +39,10 @@ func TestMessageIsValid(t *testing.T) {
 		var data = message2.DataCreateLAO{
 			Object:    "lao",
 			Action:    "create",
-			ID:        b64.StdEncoding.EncodeToString(idData[:]),
+			ID:        idData[:],
 			Name:      name,
 			Creation:  creation,
-			Organizer: b64.StdEncoding.EncodeToString([]byte(pubkey)),
+			Organizer: []byte(pubkey),
 			Witnesses: []string{},
 		}
 
