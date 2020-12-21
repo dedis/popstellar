@@ -1,6 +1,6 @@
 import { encodeBase64, decodeBase64 } from 'tweetnacl-util';
 import {
-  JSON_RPC_VERSION, objects, actions, methods, getCurrentTime, toString64,
+  JSON_RPC_VERSION, objects, actions, methods, eventTags, getCurrentTime, toString64,
   getCurrentLao, signStrings, hashStrings, getPublicKey, fromString64,
 } from './WebsocketUtils';
 import WebsocketLink from './WebsocketLink';
@@ -57,6 +57,9 @@ class DataBuilder {
     this._extra = undefined;
     this._messageId = undefined;
     this._signature = undefined;
+    this._scheduled = undefined;
+    this._rollCallDescription = undefined;
+    this._attendees = undefined;
   }
 
   build() {
@@ -77,7 +80,10 @@ class DataBuilder {
     if (this._end !== 'undefined') obj.end = this._end;
     if (this._extra !== 'undefined') obj.extra = this._extra;
     if (this._messageId !== 'undefined') obj.message_id = this._messageId;
-    if (this._signature !== 'undefined') obj.signature = this._signature;
+    if (this._scheduled !== 'undefined') obj.signature = this._signature;
+    if (this._signature !== 'undefined') obj.scheduled = this._scheduled;
+    if (this._rollCallDescription !== 'undefined') obj.roll_call_description = this._rollCallDescription;
+    if (this._attendees !== 'undefined') obj.attendees = this._attendees;
 
     return obj;
   }
@@ -115,6 +121,14 @@ class DataBuilder {
   setMessageId(_messageId) { this._messageId = _messageId; return this; }
 
   setSignature(_signature) { this._signature = _signature; return this; }
+
+  setScheduleTime(_scheduled) { this._scheduled = _scheduled; return this; }
+
+  setRollCallDescription(_rollCallDescription) {
+    this._rollCallDescription = _rollCallDescription; return this;
+  }
+
+  setAttendees(_attendees) { this._attendees = _attendees; return this; }
 }
 
 /** Send a server query asking for the creation of a LAO with a given name (String) */
@@ -188,7 +202,7 @@ export const requestCreateMeeting = (name, startTime, location = '', endTime = 0
 
   const json = new DataBuilder()
     .setObject(objects.MEETING).setAction(actions.CREATE)
-    .setId(hashStrings(laoId, time, name))
+    .setId(hashStrings(eventTags.MEETING, laoId, time, name))
     .setName(name)
     .setCreation(time)
     .setLocation(location)
@@ -212,7 +226,7 @@ export const requestStateMeeting = () => {
 
   const json = new DataBuilder()
     .setObject(objects.MEETING).setAction(actions.STATE)
-    .setId(hashStrings(currentData.id, currentData.creation, currentData.name))
+    .setId(hashStrings(eventTags.MEETING, currentData.id, currentData.creation, currentData.name))
     .setName(currentData.name)
     .setCreation(currentData.creation)
     .setLastModified(currentData.last_modified)
@@ -250,4 +264,84 @@ export const requestWitnessMessage = (message) => {
   );
 
   WebsocketLink.sendRequestToServer(obj, objects.MESSAGE, actions.WITNESS);
+};
+
+/** Send a server query asking for the creation of a roll call with a given name (String) and a
+ *  given location (String). An optional start time (Number), scheduled time (Number) or
+ *  description (String) can be specified */
+export const requestCreateRollCall = (name, location, start = -1, scheduled = -1, description = '') => {
+  const time = getCurrentTime();
+  const laoId = getCurrentLao().params.message.data.id;
+
+  const json = new DataBuilder()
+    .setObject(objects.ROLL_CALL).setAction(actions.CREATE)
+    .setId(hashStrings(eventTags.ROLL_CALL, laoId, time, name))
+    .setName(name)
+    .setCreation(time)
+    .setLocation(location);
+
+  if (start !== -1) json.setStartTime(start);
+  else if (scheduled !== -1) json.setScheduleTime(scheduled);
+
+  if (description !== '') json.setRollCallDescription(description);
+
+  const jsonData = json.buildJson();
+
+  const m = _generateMessage(jsonData);
+  const obj = _generateQuery(methods.PUBLISH, _generateParams(`/root/${laoId}`, m));
+
+  WebsocketLink.sendRequestToServer(obj, objects.ROLL_CALL, actions.CREATE);
+};
+
+/** handles both re/opening roll calls requests for code reuse */
+const _requestRollCall = (isReopening, rollCallId, start) => {
+  const rollCall = rollCallId; // TODO get roll call by id from localStorage (waiting next PR)
+  const laoId = getCurrentLao().params.message.data.id;
+  const startTime = start === -1 ? getCurrentTime() : start;
+  const action = isReopening ? actions.REOPEN : actions.OPEN;
+
+  const jsonData = new DataBuilder()
+    .setObject(objects.ROLL_CALL).setAction(action)
+    .setId(hashStrings(eventTags.ROLL_CALL, laoId, rollCall.creation, rollCall.name))
+    .setStartTime(startTime)
+    .buildJson();
+
+  const m = _generateMessage(jsonData);
+  const obj = _generateQuery(methods.PUBLISH, _generateParams(`/root/${laoId}`, m));
+
+  WebsocketLink.sendRequestToServer(obj, objects.ROLL_CALL, action);
+};
+
+/** Send a server query asking for the opening of a roll call given its id (Number) and an
+ * optional start time (Number). If the start time is not specified, then the current time
+ * will be used instead */
+export const requestOpenRollCall = (rollCallId, start = -1) => (
+  _requestRollCall(false, rollCallId, start)
+);
+
+/** Send a server query asking for the reopening of a roll call given its id (Number) and an
+ * optional start time (Number). If the start time is not specified, then the current time
+ * will be used instead */
+export const requestReopenRollCall = (rollCallId, start = -1) => (
+  _requestRollCall(true, rollCallId, start)
+);
+
+/** Send a server query asking for the closing of a roll call given its id (Number) and the
+ * list of attendees (Array of public keys) */
+export const requestCloseRollCall = (rollCallId, attendees) => {
+  const rollCall = rollCallId; // TODO get roll call by id from localStorage (waiting next PR)
+  const laoId = getCurrentLao().params.message.data.id;
+
+  const jsonData = new DataBuilder()
+    .setObject(objects.ROLL_CALL).setAction(actions.CLOSE)
+    .setId(hashStrings(eventTags.ROLL_CALL, laoId, rollCall.creation, rollCall.name))
+    .setStartTime(rollCall.start)
+    .setEndTime(getCurrentTime())
+    .setAttendees(attendees)
+    .buildJson();
+
+  const m = _generateMessage(jsonData);
+  const obj = _generateQuery(methods.PUBLISH, _generateParams(`/root/${laoId}`, m));
+
+  WebsocketLink.sendRequestToServer(obj, objects.ROLL_CALL, actions.CLOSE);
 };

@@ -42,6 +42,30 @@ const validateDataStateMeeting = (data) => {
   return validate(data);
 };
 
+/** returns true iff data (JS object) is a dataCreateRollCall */
+const validateDataCreateRollCall = (data) => {
+  const validate = ajv.compile(EMPTY_SCHEMA);
+  return validate(data);
+};
+
+/** returns true iff data (JS object) is a dataOpenRollCall */
+const validateDataOpenRollCall = (data) => {
+  const validate = ajv.compile(EMPTY_SCHEMA);
+  return validate(data);
+};
+
+/** returns true iff data (JS object) is a dataReopenRollCall */
+const validateDataReopenRollCall = (data) => {
+  const validate = ajv.compile(EMPTY_SCHEMA);
+  return validate(data);
+};
+
+/** returns true iff data (JS object) is a dataCloseRollCall */
+const validateDataCloseRollCall = (data) => {
+  const validate = ajv.compile(EMPTY_SCHEMA);
+  return validate(data);
+};
+
 /** returns true iff data (JS object) is a valid data object */
 export const validateData = (data) => (validateDataCreateLao(data)
   || validateDataUpdateLao(data)
@@ -49,6 +73,10 @@ export const validateData = (data) => (validateDataCreateLao(data)
   || validateDataWitnessMessage(data)
   || validateDataCreateMeeting(data)
   || validateDataStateMeeting(data)
+  || validateDataCreateRollCall(data)
+  || validateDataOpenRollCall(data)
+  || validateDataReopenRollCall(data)
+  || validateDataCloseRollCall(data)
 );
 
 /** returns true iff data (JS object) is a valid server answer */
