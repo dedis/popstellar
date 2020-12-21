@@ -3,6 +3,8 @@ package com.github.dedis.student20_pop.model;
 import java.util.Calendar;
 import java.util.Date;
 
+import static com.github.dedis.student20_pop.model.Event.EventType.MEETING;
+
 public class MeetingEvent extends Event {
     private final Date startDate;
     private final Date endDate;
@@ -20,7 +22,7 @@ public class MeetingEvent extends Event {
      * @param location
      */
     public MeetingEvent(String name, Date startDate, Date endDate, Date startTime, Date endTime, String lao, String location, String description) {
-        super(name, Calendar.getInstance().getTime(), lao, location, "Meeting");
+        super(name, Calendar.getInstance().getTime(), lao, location, MEETING);
         this.startDate = startDate;
         this.endDate = endDate;
         this.startTime = startTime;

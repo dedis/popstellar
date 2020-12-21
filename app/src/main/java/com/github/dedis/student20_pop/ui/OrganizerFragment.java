@@ -26,7 +26,7 @@ import com.github.dedis.student20_pop.utility.ui.WitnessListAdapter;
 import com.github.dedis.student20_pop.utility.ui.organizer.OnAddWitnessListener;
 import com.github.dedis.student20_pop.utility.ui.organizer.OnEventCreatedListener;
 import com.github.dedis.student20_pop.utility.ui.organizer.OnEventTypeSelectedListener;
-import com.github.dedis.student20_pop.utility.ui.organizer.OrganizerExpandableListViewEventAdapter;
+import com.github.dedis.student20_pop.utility.ui.EventAdapter.OrganizerExpandableListViewEventAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
