@@ -113,11 +113,11 @@ object PublishSubscribe {
 
     def errorOrPublish(params: MessageParameters, id: Int, error: Option[MessageErrorContent]) = {
       error match {
-        case Some(error) => AnswerErrorMessageServer(id, error)
+        case Some(error) => AnswerErrorMessageServer(Some(id), error)
         case None =>
           val content = params.message.get
           Validate.validate(content) match {
-            case Some(error) => AnswerErrorMessageServer(id, error)
+            case Some(error) => AnswerErrorMessageServer(Some(id), error)
             case None =>
               pub(params, true)
               AnswerResultIntMessageServer(id)
@@ -129,7 +129,7 @@ object PublishSubscribe {
       val params = m.params
       val id = m.id
       Validate.validate(m) match {
-        case Some(error) => AnswerErrorMessageServer(id, error)
+        case Some(error) => AnswerErrorMessageServer(Some(id), error)
         case None =>
           val highLevelMessage = params.message.get.data
           val channel = "/root/" + new String(Base64.getEncoder.encode(highLevelMessage.id))
@@ -167,7 +167,7 @@ object PublishSubscribe {
         errorOrPublish(params, id, Validate.validate(m))
       else {
         val error = MessageErrorContent(ErrorCodes.InvalidData.id, "The id the witness message refers to does not exist.")
-        AnswerErrorMessageServer(id, error)
+        AnswerErrorMessageServer(Some(id), error)
       }
     }
 
@@ -181,7 +181,7 @@ object PublishSubscribe {
           Await.result(future, timeout.duration) match {
             case None =>
              // system.log.debug("Reading: " + params.message.get.data.modification_id)
-              AnswerErrorMessageServer(id, MessageErrorContent(InvalidData.id, "Invalid reference to a message_id"))
+              AnswerErrorMessageServer(Some(id), MessageErrorContent(InvalidData.id, "Invalid reference to a message_id"))
             case Some(msgContent: MessageContent) =>
               errorOrPublish(params, id, Validate.validate(m, msgContent.data))
           }
@@ -193,7 +193,7 @@ object PublishSubscribe {
         case m @ BroadcastMeetingMessageClient(params, id, _ ,_) =>
           val future = dbActor.ask(ref => Read(params.channel, params.message.get.data.modification_id, ref))
           Await.result(future, timeout.duration) match {
-            case None => AnswerErrorMessageServer(id, MessageErrorContent(InvalidData.id, "Invalid reference to a message_id"))
+            case None => AnswerErrorMessageServer(Some(id), MessageErrorContent(InvalidData.id, "Invalid reference to a message_id"))
             case Some(msgContent: MessageContent) =>
               errorOrPublish(params, id, Validate.validate(m, msgContent.data))
           }

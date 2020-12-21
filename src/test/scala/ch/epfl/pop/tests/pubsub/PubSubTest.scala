@@ -415,7 +415,7 @@ class PubSubTest extends FunSuite {
     val witnessInvalid = getWitnessMessage("", pkWitness, skWitness, "", 0)
     val l = List(
       (Some(witnessInvalid),
-        Some(AnswerErrorMessageServer(0, MessageErrorContent(ErrorCodes.InvalidData.id, "The id the witness message refers to does not exist."))))
+        Some(AnswerErrorMessageServer(Some(0), MessageErrorContent(ErrorCodes.InvalidData.id, "The id the witness message refers to does not exist."))))
     )
     sendAndVerify(l)
   }
