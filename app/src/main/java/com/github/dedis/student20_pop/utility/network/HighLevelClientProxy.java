@@ -14,8 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import javax.websocket.Session;
-
 /**
  * A proxy of a connection to a websocket. It encapsulate the high level protocol
  */
@@ -26,10 +24,10 @@ public final class HighLevelClientProxy implements Closeable {
     private final LowLevelClientProxy lowLevelClientProxy;
     private final String publicKey, privateKey;
 
-    HighLevelClientProxy(Session session, Person person) {
-        lowLevelClientProxy = new LowLevelClientProxy(session);
-        this.publicKey = person.getId();
-        this.privateKey = person.getAuthentication();
+    public HighLevelClientProxy(Person owner, LowLevelClientProxy lowLevelClientProxy) {
+        this.publicKey = owner.getId();
+        this.privateKey = owner.getAuthentication();
+        this.lowLevelClientProxy = lowLevelClientProxy;
     }
 
     /**
@@ -95,15 +93,6 @@ public final class HighLevelClientProxy implements Closeable {
     public CompletableFuture<Integer> createMeeting(String laoId, String name, long creation, long lastModified, String location, long start, long end) {
         return lowLevelClientProxy.publish(publicKey, privateKey, ROOT + "/" + laoId,
                 new CreateMeeting(Hash.hash(laoId + creation + name), name, creation, lastModified, location, start, end));
-    }
-
-    /**
-     * Check whether or not the connection is open or closed
-     *
-     * @return true if it is
-     */
-    public boolean isOpen() {
-        return lowLevelClientProxy.getSession().isOpen();
     }
 
     @Override

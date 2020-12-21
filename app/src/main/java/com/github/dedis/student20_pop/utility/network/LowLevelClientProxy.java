@@ -21,6 +21,7 @@ import com.google.gson.JsonObject;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +29,7 @@ import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeoutException;
@@ -43,14 +45,19 @@ public final class LowLevelClientProxy implements Closeable {
 
     public static final long TIMEOUT = 5000L; // 5 secs
 
-    private final Session session;
+    // Lock to prevent multiple threads to access the session
+    private final Object SESSION_LOCK = new Object();
+
+    private final URI sessionURI;
+    private CompletableFuture<Session> sessionFuture;
 
     private final Gson gson = JsonUtils.createGson();
     private final Map<Integer, RequestEntry> requests = new ConcurrentHashMap<>();
     private final AtomicInteger counter = new AtomicInteger();
 
-    public LowLevelClientProxy(Session session) {
-        this.session = session;
+    public LowLevelClientProxy(URI host) {
+        this.sessionURI = host;
+        this.sessionFuture = PoPClientEndpoint.connect(host, this);
     }
 
     /**
@@ -75,9 +82,30 @@ public final class LowLevelClientProxy implements Closeable {
 
         Request request = requestSupplier.apply(id);
         String txt = gson.toJson(request, ChanneledMessage.class);
-        session.getAsyncRemote().sendText(txt);
+        // Refreshing the session if needed
+        refreshSession();
+
+        sessionFuture.thenAccept(session -> {
+            synchronized (SESSION_LOCK) {
+                session.getAsyncRemote().sendText(txt);
+            }
+        }).exceptionally(t -> {
+            entry.requests.completeExceptionally(t);
+            return null; // Java cannot parse void to Void. So this is sadly needed
+        });
 
         return entry.requests.thenApply(elem -> gson.fromJson(elem, responseType));
+    }
+
+    private void refreshSession() {
+        synchronized (SESSION_LOCK) {
+            if(sessionFuture.isDone()) {
+                Optional<Session> session = getSessionNow();
+                if (!session.isPresent() || !session.get().isOpen())
+                    //There was an error during competition, retry
+                    sessionFuture = PoPClientEndpoint.connect(sessionURI, this);
+            }
+        }
     }
 
     /**
@@ -181,10 +209,11 @@ public final class LowLevelClientProxy implements Closeable {
     }
 
     /**
-     * @return the web socket session
+     * Only used for testing purpose
      */
+    @Deprecated
     public Session getSession() {
-        return session;
+        return getSessionNow().orElse(null);
     }
 
     //TODO Call this periodically
@@ -201,9 +230,24 @@ public final class LowLevelClientProxy implements Closeable {
         }
     }
 
+    private Optional<Session> getSessionNow() {
+        if(sessionFuture.isDone())
+            try {
+                return Optional.ofNullable(sessionFuture.getNow(null));
+            } catch (Throwable t) {
+                return Optional.empty();
+            }
+        else
+            return Optional.empty();
+    }
+
     @Override
     public void close() throws IOException {
-        session.close();
+        synchronized (SESSION_LOCK) {
+            Optional<Session> session = getSessionNow();
+            if(session.isPresent())
+                session.get().close();
+        }
     }
 
     private final static class RequestEntry {
