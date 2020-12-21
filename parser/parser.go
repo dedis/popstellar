@@ -1,4 +1,4 @@
-	package parser
+package parser
 
 import (
 	"encoding/json"
@@ -77,9 +77,9 @@ func ParseWitnessSignature(witnessSignatures json.RawMessage) (message.ItemWitne
 	return m, err
 }
 
-func ParseData(data []byte) (message.Data, error) {
+func ParseData(data string) (message.Data, error) {
 	m := message.Data{}
-	err := json.Unmarshal(data, &m)
+	err := json.Unmarshal([]byte(data), &m)
 	if dataConstAreValid(m) {
 		return m, err
 	} else {
@@ -102,8 +102,9 @@ func dataConstAreValid(m message.Data) bool {
 	}
 
 	creation, okC := m["creation"].(int)
-	if (okC && creation < 0) {
-		log.Printf("the creation timestamp is smaller than 0")
+	lastm, okL := m["last_modified"].(int)
+	if (okC && creation < 0) || (okL && lastm < 0) {
+		log.Printf("the timestamps are smaller than 0")
 		return false
 	}
 	return true
@@ -138,6 +139,24 @@ func ParseDataCreateRollCall(data json.RawMessage) (message.DataCreateRollCall, 
 
 func ParseDataCreatePoll(data json.RawMessage) (message.DataCreatePoll, error) {
 	m := message.DataCreatePoll{}
+	err := json.Unmarshal(data, &m)
+	return m, err
+}
+
+func ParseDataUpdateLAO(data json.RawMessage) (message.DataUpdateLAO, error) {
+	m := message.DataUpdateLAO{}
+	err := json.Unmarshal(data, &m)
+	return m, err
+}
+
+func ParseDataStateLAO(data json.RawMessage) (message.DataStateLAO, error) {
+	m := message.DataStateLAO{}
+	err := json.Unmarshal(data, &m)
+	return m, err
+}
+
+func ParseDataStateMeeting(data json.RawMessage) (message.DataStateMeeting, error) {
+	m := message.DataStateMeeting{}
 	err := json.Unmarshal(data, &m)
 	return m, err
 }

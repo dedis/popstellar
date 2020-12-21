@@ -26,13 +26,13 @@ const(
 type DataCreateLAO struct {
 	//Necessary to re write names because the map data["Object"] is not the same as data["object"]
 	Object string `json:"object"`
-	Action string `json:"action"`//if we put "action" with little a it crashes
+	Action string `json:"action"` //if we put "action" with little a it crashes
 	//ID hash : Name || Creation Date/Time Unix Timestamp
 	ID []byte `json:"id"`
 	// name of LAO
 	Name string
 	//Creation Date/Time
-	Creation int64 `json:"creation"`//  Unix timestamp (uint64)
+	Creation int64 `json:"creation"` //  Unix timestamp (uint64)
 	//Organiser: Public Key
 	Organizer []byte
 	//List of public keys where each public key belongs to one witness
@@ -51,9 +51,9 @@ type DataCreateMeeting struct {
 	Creation int64 //  Unix timestamp (uint64)
 	//Last_modified int64  //timestamp
 	Location string //optional
-	Start int64  /* Timestamp */
-	End   int64  /* Timestamp, optional */
-	Extra string /* arbitrary object, optional */
+	Start    int64  /* Timestamp */
+	End      int64  /* Timestamp, optional */
+	Extra    string /* arbitrary object, optional */
 }
 type DataCreateRollCall struct {
 	//TODO right now same attribute as meeting
@@ -67,9 +67,9 @@ type DataCreateRollCall struct {
 	Creation int64 //  Unix timestamp (uint64)
 	//Last_modified int64  //timestamp
 	Location string //optional
-	Start int64  /* Timestamp */
-	End   int64  /* Timestamp, optional */
-	Extra string /* arbitrary object, optional */
+	Start    int64  /* Timestamp */
+	End      int64  /* Timestamp, optional */
+	Extra    string /* arbitrary object, optional */
 }
 type DataCreatePoll struct {
 	//TODO right now same attribute as meeting
@@ -83,15 +83,74 @@ type DataCreatePoll struct {
 	Creation int64 //  Unix timestamp (uint64)
 	//Last_modified int64  //timestamp
 	Location string //optional
-	Start int64  /* Timestamp */
-	End   int64  /* Timestamp, optional */
-	Extra string /* arbitrary object, optional */
+	Start    int64  /* Timestamp */
+	End      int64  /* Timestamp, optional */
+	Extra    string /* arbitrary object, optional */
 }
 type DataWitnessMessage struct {
 	Object     string
 	Action     string
 	Message_id []byte
 	Signature  []byte
+}
+
+type DataUpdateLAO struct {
+	Object string
+	Action string //if we put "action" with little a it crashes
+	//ID hash : OriginalName || Creation Date/Time Unix Timestamp
+	ID []byte
+	// name of LAO
+	Name string
+	//Last_modified Date/Time
+	Last_modified int64 //  Unix timestamp (uint64)
+	//List of public keys where each public key belongs to one witness
+	Witnesses [][]byte
+}
+
+type DataStateLAO struct {
+	Object string
+	Action string //if we put "action" with little a it crashes
+	//ID hash : OriginalName || Creation Date/Time Unix Timestamp
+	ID []byte
+	// name of LAO
+	Name string
+	//Creation Date/Time
+	Creation int64 //  Unix timestamp (uint64)
+	//Last_modified Date/Time
+	Last_modified int64 //  Unix timestamp (uint64)
+	//Organiser: Public Key
+	Organizer []byte
+	//List of public keys where each public key belongs to one witness
+	Witnesses [][]byte
+	// id of the modification (either creation/update)
+	Modification_id []byte
+	// signatures of the witnesses on the modification message (either creation/update)
+	Modification_signatures []json.RawMessage
+}
+
+type DataStateMeeting struct {
+	Object string
+	Action string //if we put "action" with little a it crashes
+	//ID hash : OriginalName || Creation Date/Time Unix Timestamp
+	ID []byte
+	// name of LAO
+	Name string
+	//Creation Date/Time
+	Creation int64 //  Unix timestamp (uint64)
+	//Last_modified Date/Time
+	Last_modified int64  //  Unix timestamp (uint64)
+	Location      string //optional
+	Start         int64  /* Timestamp */
+	End           int64  /* Timestamp, optional */
+	Extra         string /* arbitrary object, optional */
+	//Organiser: Public Key
+	Organizer string
+	//List of public keys where each public key belongs to one witness
+	Witnesses []string
+	// id of the modification (either creation/update)
+	Modification_id []byte
+	// signatures of the witnesses on the modification message (either creation/update)
+	Modification_signatures []json.RawMessage
 }
 
 type DataUpdateLAO struct {
@@ -138,11 +197,11 @@ type DataStateMeeting struct {
 	//Creation Date/Time
 	Creation int64 //  Unix timestamp (uint64)
 	//Last_modified Date/Time
-	Last_modified int64 //  Unix timestamp (uint64)
-	Location string //optional
-	Start int64  /* Timestamp */
-	End   int64  /* Timestamp, optional */
-	Extra string /* arbitrary object, optional */
+	Last_modified int64  //  Unix timestamp (uint64)
+	Location      string //optional
+	Start         int64  /* Timestamp */
+	End           int64  /* Timestamp, optional */
+	Extra         string /* arbitrary object, optional */
 	//Organiser: Public Key
 	Organizer string
 	//List of public keys where each public key belongs to one witness
