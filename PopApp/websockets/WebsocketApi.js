@@ -80,8 +80,8 @@ class DataBuilder {
     if (this._end !== 'undefined') obj.end = this._end;
     if (this._extra !== 'undefined') obj.extra = this._extra;
     if (this._messageId !== 'undefined') obj.message_id = this._messageId;
-    if (this._scheduled !== 'undefined') obj.signature = this._signature;
-    if (this._signature !== 'undefined') obj.scheduled = this._scheduled;
+    if (this._signature !== 'undefined') obj.signature = this._signature;
+    if (this._scheduled !== 'undefined') obj.scheduled = this._scheduled;
     if (this._rollCallDescription !== 'undefined') obj.roll_call_description = this._rollCallDescription;
     if (this._attendees !== 'undefined') obj.attendees = this._attendees;
 
