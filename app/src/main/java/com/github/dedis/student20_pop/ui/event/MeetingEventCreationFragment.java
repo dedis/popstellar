@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
+import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Event;
 import com.github.dedis.student20_pop.model.MeetingEvent;
@@ -73,6 +74,7 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final FragmentManager fragmentManager = (getActivity()).getSupportFragmentManager();
         View view = inflater.inflate(R.layout.fragment_meeting_event, container, false);
+        PoPApplication app = (PoPApplication) getActivity().getApplication();
 
         setDateAndTimeView(view, MeetingEventCreationFragment.this, fragmentManager);
         addDateAndTimeListener(confirmTextWatcher);
@@ -93,7 +95,7 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
                     endDate,
                     startTime,
                     endTime,
-                    "",
+                    app.getCurrentLao().getId(),
                     meetingLocationEditText.getText().toString(),
                     meetingDescriptionEditText.getText().toString());
 
