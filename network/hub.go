@@ -99,7 +99,7 @@ func (h *hub) publishOnChannel(msg []byte, channel []byte) {
 	for c := range h.connections {
 		//send msgBroadcast to that connection if channel is main channel or is in channel subscribers
 		_, found := lib.Find(subscribers, c.id)
-
+		// && !emptyChannel seems useless
 		if (bytes.Equal(channel, []byte("/root")) || found) && msg != nil && !emptyChannel {
 			select {
 			case c.send <- msg:
@@ -134,7 +134,6 @@ func (h *hub) addConnection(conn *connection) {
 	fmt.Println("new client connected")
 	h.connectionsMx.Lock()
 	defer h.connectionsMx.Unlock()
-	// QUESTION what if connection is already in the map ?
 	h.connections[conn] = struct{}{}
 	h.connIndex++ //WARNING do not decrement on remove connection. is used as ID for pub/sub
 }

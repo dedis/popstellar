@@ -82,7 +82,7 @@ func MessageIsValid(msg message.Message) error {
 	}
 
 	// the witness signatures are valid (check on every message??)
-	data, err := parser.ParseData(msg.Data)
+	data, err := parser.ParseData(string(msg.Data))
 	if data["object"] == "lao" && data["action"] == "create" {
 		data, err := parser.ParseDataCreateLAO(msg.Data)
 		if err != nil {
