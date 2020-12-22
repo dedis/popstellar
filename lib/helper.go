@@ -52,3 +52,10 @@ func ConvertSliceSliceByteToSliceString(slice [][]byte) []string {
 	}
 	return sliceString
 }
+/*
+`"` and `\` characters must be escaped by adding a `\` characters before them.
+`"` becomes `\"` and `\` becomes `\\`.
+*/
+func Escape(s string) string{
+	return strings.ReplaceAll(strings.ReplaceAll(s, "\\", "\\\\"), "\"", "\\\"")
+}
