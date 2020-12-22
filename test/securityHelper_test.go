@@ -69,6 +69,7 @@ func TestMessageIsValidWithoutWitnesses(t *testing.T) {
 		}
 	}
 }
+/* Basically following the last meeting (22/12/20) we are not supposed to have this case
 func TestMessageIsValidWithAssessedWitnesses(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
@@ -90,6 +91,7 @@ func TestMessageIsValidWithAssessedWitnesses(t *testing.T) {
 		}
 	}
 }
+*/
 func plugWitnessesInArray(witnessKeysAndSignatures []message2.ItemWitnessSignatures)([]json.RawMessage,error){
 	ArrayOfWitnessSignatures := []json.RawMessage{}
 	for i := 0; i < len(witnessKeysAndSignatures); i++ {

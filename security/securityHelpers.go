@@ -31,14 +31,19 @@ func VerifySignature(publicKey []byte, data []byte, signature []byte) error {
     *sender and signature are not already decoded
 */
 func VerifyWitnessSignatures(authorizedWitnesses [][]byte, witnessSignaturesEnc []json.RawMessage, message_id []byte) error {
-	//TODO verify witnesses are in event's witness list (@ouriel)
-	for i := 0; i < len(witnessSignaturesEnc); i++ {
-		witnessSignatures, err := parser.ParseWitnessSignature(witnessSignaturesEnc[i])
+	for _,item := range witnessSignaturesEnc {
+		witnessSignature, err := parser.ParseWitnessSignature(item)
 		if err != nil {
 			return err
 		}
 		//We check that the signature belong to an assigned witness
-		err = VerifySignature(witnessSignatures.Witness, message_id, witnessSignatures.Signature)
+		_,isAssigned := lib.FindBytarr(authorizedWitnesses, witnessSignature.Signature)
+		//TODO do we stop if one signature came from a witness which is not in the list ?
+		if !isAssigned {
+			return lib.ErrRequestDataInvalid
+		}
+		//then we check correctness of the signature
+		err = VerifySignature(witnessSignature.WitnessKey, message_id, witnessSignature.Signature)
 		if err != nil {
 			return err
 		}

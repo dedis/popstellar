@@ -19,7 +19,7 @@ const(
 	Create Action = "create"
 	Update_properties Action = "update_properties"
 	State Action = "state"
-	Witness Action = "witness"
+	WitnessKey Action = "witness"
 )*/
 
 type DataCreateLAO struct {
