@@ -108,7 +108,7 @@ public final class LowLevelClientProxy {
     public CompletableFuture<Integer> publish(String sender, String key, String channel, Data message) {
         String data = Base64.getEncoder().encodeToString(gson.toJson(message, Data.class).getBytes(StandardCharsets.UTF_8));
         String signature = Signature.sign(key, data);
-        String msgId = Hash.hash(data + signature);
+        String msgId = Hash.hash(data, signature);
         MessageGeneral container = new MessageGeneral(sender, data, signature, msgId, new ArrayList<>());
         return makeRequest(Integer.class, id -> new Publish(channel, id, container));
     }

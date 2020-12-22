@@ -52,7 +52,7 @@ public class LaoTest {
 
     @Test
     public void getIdTest() {
-        assertThat(lao1.getId(), is(Hash.hash(lao1_name+time)));
+        assertThat(lao1.getId(), is(Hash.hash(lao1_name, time.getTime())));
     }
 
     @Test
