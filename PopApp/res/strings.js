@@ -90,6 +90,8 @@ const STRINGS = {
   /* --- Roll-call creation Strings --- */
   roll_call_create_deadline: 'Deadline:',
   roll_call_create_description: 'Description',
+  roll_call_create_location: 'Location*',
+  roll_call_create_name: 'Name*',
 
   /* --- Roll-call scanning Strings --- */
   roll_call_scan_description: 'Please scan each participant’s Roll-call QR code exactly once.',

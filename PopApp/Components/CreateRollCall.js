@@ -11,6 +11,7 @@ import {
   Buttons, Typography, Spacing, Views,
 } from '../Styles';
 import STRINGS from '../res/strings';
+import { requestCreateRollCall } from '../websockets/WebsocketApi';
 
 /**
  * Screen to create a roll-call event
@@ -75,6 +76,10 @@ const CreateRollCall = () => {
     + `${d.getHours() < 10 ? 0 : ''}${d.getHours()}:`
     + `${d.getMinutes() < 10 ? 0 : ''}${d.getMinutes()}`;
 
+  const [description, setDescription] = useState('');
+  const [name, setName] = useState('');
+  const [location, setLocation] = useState('');
+
   return (
     <ScrollView>
       {Platform.OS !== 'web'
@@ -122,13 +127,38 @@ const CreateRollCall = () => {
       )}
       <TextInput
         style={styles.text}
+        placeholder={STRINGS.roll_call_create_name}
+        onChangeText={(text) => { setName(text); }}
+      />
+      <TextInput
+        style={styles.text}
+        placeholder={STRINGS.roll_call_create_location}
+        onChangeText={(text) => { setLocation(text); }}
+      />
+      <TextInput
+        style={styles.text}
         placeholder={STRINGS.roll_call_create_description}
+        onChangeText={(text) => { setDescription(text); }}
       />
       <View style={styles.button}>
-        <Button title={STRINGS.general_button_confirm} />
+        <Button
+          title={STRINGS.general_button_confirm}
+          onPress={() => {
+            requestCreateRollCall(name, location, -1, startDate, description);
+            navigation.goBack();
+          }}
+          disabled={name.trim() === '' || location.trim() === ''}
+        />
       </View>
       <View style={styles.button}>
-        <Button title={STRINGS.general_button_open} />
+        <Button
+          title={STRINGS.general_button_open}
+          onPress={() => {
+            requestCreateRollCall(name, location, Math.floor(Date.now() / 1000), -1, description);
+            navigation.goBack();
+          }}
+          disabled={name.trim() === '' || location.trim() === ''}
+        />
       </View>
       <View style={styles.button}>
         <Button title={STRINGS.general_button_cancel} onPress={() => { navigation.goBack(); }} />

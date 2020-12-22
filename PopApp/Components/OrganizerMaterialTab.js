@@ -50,6 +50,8 @@ const MytabBar = (props) => {
   const nbRoutes = navigationState.routes.length;
 
   const homePress = () => {
+    const action2 = { type: 'SET_CURRENT_LAO', value: {} };
+    dispatch(action2);
     const action = { type: 'APP_NAVIGATION_OFF' };
     dispatch(action);
     navigation.navigate(STRINGS.app_navigation_tab_home);

@@ -1,4 +1,3 @@
-import { func } from 'prop-types';
 import eventsData from '../../res/EventData';
 
 const initialState = { events: eventsData };
@@ -177,10 +176,6 @@ function currentEventsReducer(state = initialState, action) {
       nextState = {
         ...state,
         events: [
-          {
-            title: '',
-            data: [],
-          },
           {
             title: 'Past',
             data: [],
