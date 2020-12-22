@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.model.network.level.low.result;
+package com.github.dedis.student20_pop.model.network.level.low.answer;
 
 
 import java.util.Objects;
@@ -8,11 +8,11 @@ import java.util.Objects;
  * <p>
  * Is linked to an earlier request with a unique id
  */
-public abstract class Result {
+public abstract class Answer {
 
     private final int id;
 
-    public Result(int id) {
+    public Answer(int id) {
         this.id = id;
     }
 
@@ -24,8 +24,8 @@ public abstract class Result {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Result result = (Result) o;
-        return getId() == result.getId();
+        Answer answer = (Answer) o;
+        return getId() == answer.getId();
     }
 
     @Override

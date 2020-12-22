@@ -1,17 +1,17 @@
 package com.github.dedis.student20_pop.model.network.level.low;
 
-import com.github.dedis.student20_pop.model.network.level.mid.MessageContainer;
+import com.github.dedis.student20_pop.model.network.level.mid.MessageGeneral;
 
 import java.util.Objects;
 
 /**
  * Publish a message on a channel
  */
-public final class Publish extends Request {
+public final class Publish extends Query {
 
-    private final MessageContainer message;
+    private final MessageGeneral message;
 
-    public Publish(String channel, int id, MessageContainer message) {
+    public Publish(String channel, int id, MessageGeneral message) {
         super(channel, id);
         this.message = message;
     }
@@ -21,7 +21,7 @@ public final class Publish extends Request {
         return Method.PUBLISH.getMethod();
     }
 
-    public MessageContainer getMessage() {
+    public MessageGeneral getMessage() {
         return message;
     }
 

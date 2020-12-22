@@ -1,17 +1,17 @@
-package com.github.dedis.student20_pop.model.network.level.low.result;
+package com.github.dedis.student20_pop.model.network.level.low.answer;
 
 import com.google.gson.JsonElement;
 
 import java.util.Objects;
 
 /**
- * A succeed request result
+ * A succeed query's answer
  */
-public final class Success extends Result {
+public final class Result extends Answer {
 
     private final JsonElement result;
 
-    public Success(int id, JsonElement result) {
+    public Result(int id, JsonElement result) {
         super(id);
         this.result = result;
     }
@@ -25,8 +25,8 @@ public final class Success extends Result {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        Success success = (Success) o;
-        return Objects.equals(getResult(), success.getResult());
+        Result result = (Result) o;
+        return Objects.equals(getResult(), result.getResult());
     }
 
     @Override

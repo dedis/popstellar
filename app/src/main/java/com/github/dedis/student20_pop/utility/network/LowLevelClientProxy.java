@@ -1,17 +1,17 @@
 package com.github.dedis.student20_pop.utility.network;
 
-import com.github.dedis.student20_pop.model.network.level.high.Message;
+import com.github.dedis.student20_pop.model.network.level.high.Data;
 import com.github.dedis.student20_pop.model.network.level.low.Catchup;
-import com.github.dedis.student20_pop.model.network.level.low.ChanneledMessage;
-import com.github.dedis.student20_pop.model.network.level.low.LowLevelMessage;
+import com.github.dedis.student20_pop.model.network.level.low.Query;
+import com.github.dedis.student20_pop.model.network.level.low.Message;
+import com.github.dedis.student20_pop.model.network.level.low.Broadcast;
 import com.github.dedis.student20_pop.model.network.level.low.Publish;
-import com.github.dedis.student20_pop.model.network.level.low.Request;
 import com.github.dedis.student20_pop.model.network.level.low.Subscribe;
 import com.github.dedis.student20_pop.model.network.level.low.Unsubscribe;
-import com.github.dedis.student20_pop.model.network.level.low.result.Failure;
-import com.github.dedis.student20_pop.model.network.level.low.result.Result;
-import com.github.dedis.student20_pop.model.network.level.low.result.Success;
-import com.github.dedis.student20_pop.model.network.level.mid.MessageContainer;
+import com.github.dedis.student20_pop.model.network.level.low.answer.Answer;
+import com.github.dedis.student20_pop.model.network.level.low.answer.Error;
+import com.github.dedis.student20_pop.model.network.level.low.answer.Result;
+import com.github.dedis.student20_pop.model.network.level.mid.MessageGeneral;
 import com.github.dedis.student20_pop.utility.json.JsonUtils;
 import com.github.dedis.student20_pop.utility.security.Hash;
 import com.github.dedis.student20_pop.utility.security.Signature;
@@ -60,7 +60,7 @@ public final class LowLevelClientProxy {
      * @param <T>             generic type of the expected response data
      * @return a CompletableFuture that will be completed when the response is received (or if it timeouts)
      */
-    private <T> CompletableFuture<T> makeRequest(Class<T> responseType, Function<Integer, Request> requestSupplier) {
+    private <T> CompletableFuture<T> makeRequest(Class<T> responseType, Function<Integer, Query> requestSupplier) {
         RequestEntry entry = new RequestEntry();
         // Put the result to a new id, if it is already taken, generate a new id until it fits in.
         // Uses overflows to get back to the start.
@@ -71,8 +71,8 @@ public final class LowLevelClientProxy {
             id = counter.incrementAndGet();
         } while (requests.putIfAbsent(id, entry) != null);
 
-        Request request = requestSupplier.apply(id);
-        String txt = gson.toJson(request, ChanneledMessage.class);
+        Query query = requestSupplier.apply(id);
+        String txt = gson.toJson(query, Message.class);
         session.getAsyncRemote().sendText(txt);
 
         return entry.requests.thenApply(elem -> gson.fromJson(elem, responseType));
@@ -105,11 +105,11 @@ public final class LowLevelClientProxy {
      * @param message to publish
      * @return a completable future holding the response value
      */
-    public CompletableFuture<Integer> publish(String sender, String key, String channel, Message message) {
-        String data = Base64.getEncoder().encodeToString(gson.toJson(message, Message.class).getBytes(StandardCharsets.UTF_8));
+    public CompletableFuture<Integer> publish(String sender, String key, String channel, Data message) {
+        String data = Base64.getEncoder().encodeToString(gson.toJson(message, Data.class).getBytes(StandardCharsets.UTF_8));
         String signature = Signature.sign(key, data);
         String msgId = Hash.hash(data + signature);
-        MessageContainer container = new MessageContainer(sender, data, signature, msgId, new ArrayList<>());
+        MessageGeneral container = new MessageGeneral(sender, data, signature, msgId, new ArrayList<>());
         return makeRequest(Integer.class, id -> new Publish(channel, id, container));
     }
 
@@ -118,8 +118,8 @@ public final class LowLevelClientProxy {
      *
      * @param channel to fetch from
      */
-    public CompletableFuture<List<Message>> catchup(String channel) {
-        CompletableFuture<Message[]> future = makeRequest(Message[].class, id -> new Catchup(channel, id));
+    public CompletableFuture<List<Data>> catchup(String channel) {
+        CompletableFuture<Data[]> future = makeRequest(Data[].class, id -> new Catchup(channel, id));
         return future.thenApply(Arrays::asList);
     }
 
@@ -131,33 +131,33 @@ public final class LowLevelClientProxy {
     void onMessage(String msg) {
         JsonObject obj = gson.fromJson(msg, JsonObject.class);
         if (obj.has("method")) {
-            handleMessage(gson.fromJson(obj, LowLevelMessage.class));
+            handleMessage(gson.fromJson(obj, Broadcast.class));
         } else {
-            handleResult(gson.fromJson(obj, Result.class));
+            handleResult(gson.fromJson(obj, Answer.class));
         }
     }
 
     /**
-     * Handles a received response. Find tis matching request and complete it.
+     * Handles a received Answer. Find tis matching request and complete it.
      *
-     * @param result received
+     * @param answer received
      */
-    private void handleResult(Result result) {
-        RequestEntry entry = requests.remove(result.getId());
+    private void handleResult(Answer answer) {
+        RequestEntry entry = requests.remove(answer.getId());
         if (entry == null)
-            throw new Error("Received unknown result id");
+            throw new java.lang.Error("Received unknown Answer id");
 
 
-        // There is a way this is the wrong answer : if there was a timeout and the message came back while another was generated on the same id.
+        // There is a way this is the wrong Answer : if there was a timeout and the message came back while another was generated on the same id.
         // But this is a very rare case and we could add a timestamp to the protocol to fix this issue
-        if (result instanceof Success) {
-            Success success = (Success) result;
-            entry.requests.complete(success.getResult());
-        } else if (result instanceof Failure) {
-            Failure failure = (Failure) result;
-            entry.requests.completeExceptionally(new RuntimeException("Error code " + failure.getError().getCode() + " : " + failure.getError().getDescription()));
+        if (answer instanceof Result) {
+            Result result = (Result) answer;
+            entry.requests.complete(result.getResult());
+        } else if (answer instanceof Error) {
+            Error error = (Error) answer;
+            entry.requests.completeExceptionally(new RuntimeException("Error code " + error.getError().getCode() + " : " + error.getError().getDescription()));
         } else {
-            throw new Error("Unknown result class");
+            throw new java.lang.Error("Unknown Answer class");
         }
     }
 
@@ -166,16 +166,16 @@ public final class LowLevelClientProxy {
      * <p>
      * TODO Handle the messages
      *
-     * @param lowLevelMessage the low level message received
+     * @param broadcast the low level message received
      */
-    private void handleMessage(LowLevelMessage lowLevelMessage) {
-        MessageContainer container = lowLevelMessage.getMessage();
-        Message message = gson.fromJson(
+    private void handleMessage(Broadcast broadcast) {
+        MessageGeneral container = broadcast.getMessage();
+        Data data = gson.fromJson(
                 new String(
                         Base64.getDecoder().decode(container.getData()),
                         StandardCharsets.UTF_8),
-                Message.class);
-        System.out.println(message);
+                Data.class);
+        System.out.println(data);
     }
 
     /**
@@ -193,7 +193,7 @@ public final class LowLevelClientProxy {
         while (it.hasNext()) {
             RequestEntry entry = it.next().getValue();
             if (currentTime - entry.timestamp > TIMEOUT) {
-                entry.requests.completeExceptionally(new TimeoutException("Request timeout"));
+                entry.requests.completeExceptionally(new TimeoutException("Query timeout"));
                 it.remove();
             }
         }

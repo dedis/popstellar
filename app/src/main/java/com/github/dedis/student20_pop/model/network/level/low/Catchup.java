@@ -1,9 +1,9 @@
 package com.github.dedis.student20_pop.model.network.level.low;
 
 /**
- * Request to catchup on missed messages.
+ * Query to catchup on missed messages.
  */
-public final class Catchup extends Request {
+public final class Catchup extends Query {
 
     public Catchup(String channel, int id) {
         super(channel, id);

@@ -5,11 +5,11 @@ import java.util.Objects;
 /**
  * An abstract low level message that is sent over a specific channel
  */
-public abstract class ChanneledMessage {
+public abstract class Message {
 
     private final String channel;
 
-    protected ChanneledMessage(String channel) {
+    protected Message(String channel) {
         this.channel = channel;
     }
 
@@ -19,7 +19,7 @@ public abstract class ChanneledMessage {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ChanneledMessage that = (ChanneledMessage) o;
+        Message that = (Message) o;
         return Objects.equals(channel, that.channel);
     }
 
