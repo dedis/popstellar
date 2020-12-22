@@ -8,6 +8,8 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"strings"
+	"student20_pop/lib"
 	message2 "student20_pop/message"
 	"student20_pop/parser"
 	"student20_pop/security"
@@ -19,12 +21,10 @@ type keys struct{
 }
 
 func CheckMessageIsValid(pubkey []byte,privkey ed.PrivateKey,data message2.DataCreateLAO,witnessKeysAndSignatures []message2.ItemWitnessSignatures,WitnesseKeys [][]byte) error {
-	dataFlat, err := json.Marshal(data)
-	if err != nil {
-		return errors.New("Error : %+v\n ,Impossible to marshal data")
+	dataFlat,signed,id,err :=getIdofMessage(data ,privkey)
+	if err != nil{
+		return err
 	}
-	signed := ed.Sign(privkey, dataFlat)
-	id := sha256.Sum256(append(dataFlat, signed...))
 
 	//witness signatures
 	ArrayOfWitnessSignatures,err := plugWitnessesInArray(witnessKeysAndSignatures)
@@ -154,12 +154,20 @@ func arrayOfWitnessSignatures(ks []keys,id []byte) []message2.ItemWitnessSignatu
 	}
 	return acc
 }
-func getIdofMessage(data message2.DataCreateLAO,privkey ed.PrivateKey) ([]byte,error){
-	dataFlat, err := json.Marshal(data)
+func getIdofMessage(data message2.DataCreateLAO,privkey ed.PrivateKey) (dataFlat,signed,id[]byte,err error){
+	dataFlat, err = json.Marshal(data)
 	if err != nil {
-		return nil,errors.New("Error : Impossible to marshal data")
+		return nil,nil,nil,errors.New("Error : Impossible to marshal data")
 	}
-	signed := ed.Sign(privkey, dataFlat)
-	id:= sha256.Sum256(append(dataFlat, signed...))
-	return id[:],nil
+	signed = ed.Sign(privkey, dataFlat)
+	/*idt := sha256.Sum256(append(dataFlat, signed...))
+	*/
+	var str []string
+	dataStr := lib.Escape(string(dataFlat))
+	signStr := lib.Escape(string(signed))
+	str = append(str, dataStr, signStr)
+	a := strings.Join(str, ",")
+	//TODO the PR has not been validated yet
+	hash := sha256.Sum256([]byte(a))
+	return dataFlat,signed,hash[:],nil
 }
