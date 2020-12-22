@@ -1,7 +1,7 @@
 package com.github.dedis.student20_pop.utility.json;
 
 import com.github.dedis.student20_pop.model.network.level.high.Action;
-import com.github.dedis.student20_pop.model.network.level.high.Message;
+import com.github.dedis.student20_pop.model.network.level.high.Data;
 import com.github.dedis.student20_pop.model.network.level.high.Objects;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -17,13 +17,13 @@ import java.util.Map;
 /**
  * Json serializer and deserializer for the high level messages
  */
-public class JsonMessageSerializer implements JsonSerializer<Message>, JsonDeserializer<Message> {
+public class JsonMessageSerializer implements JsonSerializer<Data>, JsonDeserializer<Data> {
 
     private static final String OBJECT = "object";
     private static final String ACTION = "action";
 
     @Override
-    public Message deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    public Data deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject obj = json.getAsJsonObject();
         Objects object = Objects.find(obj.get(OBJECT).getAsString());
         Action action = Action.find(obj.get(ACTION).getAsString());
@@ -33,11 +33,11 @@ public class JsonMessageSerializer implements JsonSerializer<Message>, JsonDeser
         if (action == null)
             throw new JsonParseException("Unknown action type : " + obj.get(ACTION).getAsString());
 
-        Map<Action, Class<? extends Message>> actionClassMap = Message.messages.get(object);
+        Map<Action, Class<? extends Data>> actionClassMap = Data.messages.get(object);
         if (actionClassMap == null)
             throw new JsonParseException("Unknown object type : " + obj.get(OBJECT).getAsString());
 
-        Class<? extends Message> clazz = actionClassMap.get(action);
+        Class<? extends Data> clazz = actionClassMap.get(action);
         if (clazz == null)
             throw new JsonParseException("The pair " + object.getObject() + "/" + action.getAction() + " does not exists");
 
@@ -45,7 +45,7 @@ public class JsonMessageSerializer implements JsonSerializer<Message>, JsonDeser
     }
 
     @Override
-    public JsonElement serialize(Message src, Type typeOfSrc, JsonSerializationContext context) {
+    public JsonElement serialize(Data src, Type typeOfSrc, JsonSerializationContext context) {
         JsonObject obj = context.serialize(src).getAsJsonObject();
         obj.addProperty(OBJECT, src.getObject());
         obj.addProperty(ACTION, src.getAction());

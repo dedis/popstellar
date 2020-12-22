@@ -5,16 +5,16 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import com.github.dedis.student20_pop.model.network.level.high.Action;
-import com.github.dedis.student20_pop.model.network.level.high.Message;
+import com.github.dedis.student20_pop.model.network.level.high.Data;
 import com.github.dedis.student20_pop.model.network.level.high.Objects;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Message sent to update the lao specifications
+ * Data sent to update the lao specifications
  */
-public class UpdateLao extends Message {
+public class UpdateLao extends Data {
 
     private final String name;
     private final long last_modified;

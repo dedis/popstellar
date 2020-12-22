@@ -1,16 +1,16 @@
 package com.github.dedis.student20_pop.model.network.level.high.lao;
 
 import com.github.dedis.student20_pop.model.network.level.high.Action;
-import com.github.dedis.student20_pop.model.network.level.high.Message;
+import com.github.dedis.student20_pop.model.network.level.high.Data;
 import com.github.dedis.student20_pop.model.network.level.high.Objects;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Message sent when creating a new lao
+ * Data sent when creating a new lao
  */
-public class CreateLao extends Message {
+public class CreateLao extends Data {
 
     private final String id; //Hash (organizer + creation + name)
     private final String name;

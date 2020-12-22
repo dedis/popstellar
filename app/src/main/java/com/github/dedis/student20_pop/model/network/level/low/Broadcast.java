@@ -1,19 +1,19 @@
 package com.github.dedis.student20_pop.model.network.level.low;
 
-import com.github.dedis.student20_pop.model.network.level.mid.MessageContainer;
+import com.github.dedis.student20_pop.model.network.level.mid.MessageGeneral;
 
 import java.util.Objects;
 
 /**
- * A Low level message, carry a high level message inside a container.
+ * Broadcast a high level message inside a container.
  * <p>
- * Does not expect any result
+ * Does not expect any answer
  */
-public final class LowLevelMessage extends ChanneledMessage {
+public final class Broadcast extends Message {
 
-    private final MessageContainer message;
+    private final MessageGeneral message;
 
-    public LowLevelMessage(String channel, MessageContainer message) {
+    public Broadcast(String channel, MessageGeneral message) {
         super(channel);
         this.message = message;
     }
@@ -23,7 +23,7 @@ public final class LowLevelMessage extends ChanneledMessage {
         return Method.MESSAGE.getMethod();
     }
 
-    public MessageContainer getMessage() {
+    public MessageGeneral getMessage() {
         return message;
     }
 
@@ -32,7 +32,7 @@ public final class LowLevelMessage extends ChanneledMessage {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        LowLevelMessage that = (LowLevelMessage) o;
+        Broadcast that = (Broadcast) o;
         return Objects.equals(getMessage(), that.getMessage());
     }
 
