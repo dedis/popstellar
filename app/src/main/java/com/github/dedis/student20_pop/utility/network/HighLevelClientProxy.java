@@ -48,7 +48,7 @@ public final class HighLevelClientProxy {
      */
     public CompletableFuture<Integer> createLao(String name, long creation, long lastModified, String organizer) {
         return lowLevelClientProxy.publish(publicKey, privateKey, ROOT,
-                new CreateLao(Hash.hash(organizer + creation + name), name, creation, lastModified, organizer, new ArrayList<>()));
+                new CreateLao(Hash.hash(organizer, creation, name), name, creation, lastModified, organizer, new ArrayList<>()));
     }
 
     /**
@@ -92,7 +92,7 @@ public final class HighLevelClientProxy {
      */
     public CompletableFuture<Integer> createMeeting(String laoId, String name, long creation, long lastModified, String location, long start, long end) {
         return lowLevelClientProxy.publish(publicKey, privateKey, ROOT + "/" + laoId,
-                new CreateMeeting(Hash.hash(laoId + creation + name), name, creation, lastModified, location, start, end));
+                new CreateMeeting(Hash.hash(laoId, creation, name), name, creation, lastModified, location, start, end));
     }
 
     /**
