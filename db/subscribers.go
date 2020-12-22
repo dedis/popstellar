@@ -1,4 +1,4 @@
-/* This file implements useful functions for the publish-subscribe paradigm. */
+/* This file contains functions to manage subscribers of one channel. */
 
 package db
 
@@ -7,10 +7,11 @@ import (
 	"fmt"
 	"github.com/boltdb/bolt"
 	"strings"
-	"student20_pop/define"
+	"student20_pop/lib"
 )
 
 const bucketSubscribers = "sub"
+const SubscribeDB = "sub.db"
 
 /**
  * Function that subscribe a user to a channel. ONLY AT THE PUB/SUB LAYER
@@ -19,7 +20,7 @@ const bucketSubscribers = "sub"
  */
 func Subscribe(userId int, channelId []byte) error {
 
-	db, err := OpenDB(define.SubscribeDB)
+	db, err := OpenDB(SubscribeDB)
 	if err != nil {
 		return err
 	}
@@ -41,9 +42,9 @@ func Subscribe(userId int, channelId []byte) error {
 		}
 
 		//check if was already susbscribed
-		if _, found := define.Find(ints, userId); found {
+		if _, found := lib.Find(ints, userId); found {
 			fmt.Println("user was already subscribed")
-			return define.ErrResourceAlreadyExists
+			return lib.ErrResourceAlreadyExists
 		}
 		ints = append(ints, userId)
 		//converts []int to string to []byte
@@ -63,7 +64,7 @@ func Subscribe(userId int, channelId []byte) error {
 */
 func Unsubscribe(userId int, channelId []byte) error {
 
-	db, err := OpenDB(define.SubscribeDB)
+	db, err := OpenDB(SubscribeDB)
 	if err != nil {
 		return err
 	}
@@ -85,10 +86,10 @@ func Unsubscribe(userId int, channelId []byte) error {
 		}
 
 		//check if was already susbscribed
-		i, found := define.Find(ints, userId)
+		i, found := lib.Find(ints, userId)
 		if !found {
 			fmt.Println("this user was not subscribed to this channel")
-			return define.ErrInvalidResource
+			return lib.ErrInvalidResource
 		}
 		//remove elem from array
 		ints[i] = ints[len(ints)-1]
@@ -106,7 +107,7 @@ func Unsubscribe(userId int, channelId []byte) error {
 
 /*helper function to find a channel's subscribers */
 func GetSubscribers(channel []byte) ([]int, error) {
-	db, err := OpenDB(define.SubscribeDB)
+	db, err := OpenDB(SubscribeDB)
 	if err != nil {
 		return nil, err
 	}

@@ -1,7 +1,8 @@
-/* file that implements a websocket. Comes from the chat example of github.com/websocket with minor changes */
-package WebSocket
+/* file that implement a websocket. Comes from the chat example of github.com/gorilla */
+package network
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"sync"
@@ -9,7 +10,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-//wrapper for the web socket connection
+//wrapper for the web socket 	connection
 type connection struct {
 	// Buffered channel of outbound messages.
 	send chan []byte
@@ -66,5 +67,8 @@ func (wsh WsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	go c.writer(&wg, wsConn)
 	go c.reader(&wg, wsConn)
 	wg.Wait()
-	wsConn.Close()
+	err = wsConn.Close()
+	if err != nil {
+		fmt.Print(err)
+	}
 }
