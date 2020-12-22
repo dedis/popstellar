@@ -23,18 +23,18 @@ const(
 )*/
 
 type DataCreateLAO struct {
-	Object string
-	Action string //if we put "action" with little a it crashes
+	Object string `json:"object"`
+	Action string `json:"action"`//if we put "action" with little a it crashes
 	//ID hash : Name || Creation Date/Time Unix Timestamp
-	ID []byte
+	ID []byte `json:"id"`
 	// name of LAO
-	Name string
+	Name string `json:"name"`
 	//Creation Date/Time
-	Creation int64 //  Unix timestamp (uint64)
+	Creation int64 `json:"creation"`//  Unix timestamp (uint64)
 	//Organiser: Public Key
-	Organizer []byte
+	Organizer []byte `json:"organizer"`
 	//List of public keys where each public key belongs to one witness
-	Witnesses [][]byte
+	Witnesses [][]byte `json:"witness"`
 	//List of public keys where each public key belongs to one member (physical person) (subscriber)
 }
 
