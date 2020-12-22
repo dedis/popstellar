@@ -52,7 +52,7 @@ func composeErrorResponse(err error, query message.Query) ([]byte, error) {
 		}
 
 	} else {
-		resp = message.ResponseWithError{
+		resp = message.Response{
 			Jsonrpc:       "2.0",
 			ErrorResponse: selectDescriptionError(err),
 			Id:            query.Id,
@@ -71,9 +71,9 @@ func composeResponse(messages []byte, query message.Query) ([]byte, error) {
 			Id:      query.Id,
 		}
 	} else {
-		resp = message.ResponseWithCatchupResult{
+		resp = message.Response{
 			Jsonrpc: "2.0",
-			Result:  string(messages),
+			CatchupResult:  string(messages),
 			Id:      query.Id,
 		}
 	}
@@ -84,7 +84,7 @@ func composeResponse(messages []byte, query message.Query) ([]byte, error) {
 *	return the associate description error
 *	we check the validity (error between -1 and -5) before the function
  */
-func selectDescriptionError(err error) []byte {
+func 	selectDescriptionError(err error) []byte {
 	var errResp message.ErrorResponse
 	switch err {
 	case lib.ErrInvalidAction:

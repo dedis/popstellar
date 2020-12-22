@@ -7,30 +7,20 @@ type ErrorResponse struct {
 	Description string
 }
 
-type ResponseWithGenResult struct {
-	Jsonrpc string
-	Result  int
-	Id      int
-}
-type ResponseWithCatchupResult struct {
-	Jsonrpc string
-	Result  string
-	Id      int
-}
-type ResponseWithError struct {
-	Jsonrpc       string
-	ErrorResponse json.RawMessage
-	Id            int
-}
+//We still need ResponseIDNotDecoded and ResponseWithGenResult because we cannot omit integers
 type ResponseIDNotDecoded struct {
 	Jsonrpc       string
 	ErrorResponse json.RawMessage
 	Id            []byte
 }
-type GeneralResponse struct {
+type ResponseWithGenResult struct {
+	Jsonrpc string
+	Result  int
+	Id      int
+}
+type Response struct {
 	Jsonrpc       string
-	ErrorResponse json.RawMessage
-	GenResult     string
-	CatchupResult string
-	Id            []byte
+	ErrorResponse json.RawMessage `json:",omitempty"`
+	CatchupResult string `json:",omitempty"`
+	Id            int
 }
