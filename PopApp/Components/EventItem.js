@@ -3,6 +3,7 @@ import {
   StyleSheet, View, Text, FlatList,
 } from 'react-native';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 import { Spacing } from '../Styles';
 import PROPS_TYPE from '../res/Props';
@@ -13,7 +14,6 @@ import RollCallEvent from './RollCallEvent';
 import OrganizationNameProperty from './OrganizationNameProperty';
 import WitnessProperty from './WitnessProperty';
 import RollCallEventOrganizer from './RollCallEventOrganizer';
-
 /**
 * The Event item component
 *
@@ -30,7 +30,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const EventItem = ({ event, isOrganizer }) => {
+const EventItem = ({ event, lao, pubKey }) => {
+  const isOrganizer = lao.organizer === pubKey;
+
   switch (event.object) {
     case 'meeting':
       return (<MeetingEvent event={event} />);
@@ -64,11 +66,13 @@ const EventItem = ({ event, isOrganizer }) => {
 
 EventItem.propTypes = {
   event: PropTypes.oneOfType([PROPS_TYPE.event, PROPS_TYPE.property]).isRequired,
-  isOrganizer: PropTypes.bool,
+  lao: PROPS_TYPE.LAO.isRequired,
+  pubKey: PropTypes.string.isRequired,
 };
 
-EventItem.defaultProps = {
-  isOrganizer: false,
-};
+const mapStateToProps = (state) => ({
+  lao: state.currentLaoReducer.lao,
+  pubKey: state.keypairReducer.pubKey,
+});
 
-export default EventItem;
+export default connect(mapStateToProps)(EventItem);

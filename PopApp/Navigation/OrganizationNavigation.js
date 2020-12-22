@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import STRINGS from '../res/strings';
 
@@ -12,6 +13,7 @@ import Identity from '../Components/Identity';
 import MytabBar from '../Components/OrganizerMaterialTab';
 import WitnessNavigation from './WitnessNavigation';
 import OrganizerNavigation from './OrganizerNavigation';
+import PROPS_TYPE from '../res/Props';
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
 
@@ -33,26 +35,37 @@ const styles = StyleSheet.create({
   },
 });
 
-function OrganizationNavigation() {
+function OrganizationNavigation(props) {
+  const { lao, pubKey } = props;
+  const isOrganizer = lao.organizer ? lao.organizer === pubKey : false;
+  const isWitness = lao.witnesses ? lao.witnesses.includes(pubKey) : false;
+  console.log(pubKey);
+
   return (
     <OrganizationTopTabNavigator.Navigator
       style={styles.navigator}
       initialRouteName={STRINGS.organization_navigation_tab_attendee}
       // eslint-disable-next-line react/jsx-props-no-spreading
-      tabBar={(props) => <MytabBar {...props} />}
+      tabBar={(p) => <MytabBar {...p} />}
     >
-      <OrganizationTopTabNavigator.Screen
-        name={STRINGS.organization_navigation_tab_attendee}
-        component={Attendee}
-      />
-      <OrganizationTopTabNavigator.Screen
-        name="Organizer"
-        component={OrganizerNavigation}
-      />
-      <OrganizationTopTabNavigator.Screen
-        name="Witness"
-        component={WitnessNavigation}
-      />
+      {!isOrganizer && !isWitness && (
+        <OrganizationTopTabNavigator.Screen
+          name={STRINGS.organization_navigation_tab_attendee}
+          component={Attendee}
+        />
+      )}
+      {isOrganizer && (
+        <OrganizationTopTabNavigator.Screen
+          name="Organizer"
+          component={OrganizerNavigation}
+        />
+      )}
+      {isWitness && (
+        <OrganizationTopTabNavigator.Screen
+          name="Witness"
+          component={WitnessNavigation}
+        />
+      )}
       <OrganizationTopTabNavigator.Screen
         name={STRINGS.organization_navigation_tab_identity}
         component={Identity}
@@ -61,8 +74,14 @@ function OrganizationNavigation() {
   );
 }
 
+OrganizationNavigation.propTypes = {
+  lao: PROPS_TYPE.LAO.isRequired,
+  pubKey: PropTypes.string.isRequired,
+};
+
 const mapStateToProps = (state) => ({
-    LAO_ID: state.toggleAppNavigationScreenReducer.LAO_ID,
+  lao: state.currentLaoReducer.lao,
+  pubKey: state.keypairReducer.pubKey,
 });
 
 export default connect(mapStateToProps)(OrganizationNavigation);

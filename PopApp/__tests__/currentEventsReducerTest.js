@@ -1,12 +1,11 @@
+/* eslint-disable */
+
 import currentEventsReducer from '../Store/Reducers/currentEventsReducer';
 import eventsData from '../res/EventData';
 
+
 const emptyState = {
   events: [
-    {
-      title: '',
-      data: [],
-    },
     {
       title: 'Past',
       data: [],
@@ -31,7 +30,7 @@ function randomTimestamp(x) {
 }
 
 function createEvent() {
-const objects = ['meeting'/* , 'roll-call', 'poll', 'discussion' */];
+const objects = ['meeting' , 'roll-call'/*, 'poll', 'discussion' */];
   const actions = ['create', 'update_properties', 'state'];
   const object = objects[randomInt(objects.length)];
   const action = actions[randomInt(actions.length)];
@@ -57,8 +56,8 @@ const objects = ['meeting'/* , 'roll-call', 'poll', 'discussion' */];
     //location,
     start,
     end,
-    //organizer,
-    //witnesses,
+    organizer,
+    witnesses,
     //modification_id,
     //modification_signatures,
   };

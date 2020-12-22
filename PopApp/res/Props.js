@@ -24,7 +24,7 @@ const PROPS_TYPE = {
   // --- event type ---
   event: shape({
     object: oneOf(['lao', 'message', 'meeting', 'roll-call', 'poll', 'discussion']).isRequired,
-    action: oneOf(['create', 'update_properties', 'state', 'witness']).isRequired,
+    action: oneOf(['create', 'update_properties', 'state', 'witness', 'close', 'open', 'reopen']).isRequired,
     id: string.isRequired,
     name: string.isRequired,
     creation: number.isRequired,
@@ -54,6 +54,21 @@ const PROPS_TYPE = {
       witness: string.isRequired,
       signature: string.isRequired,
     })).isRequired,
+    // children: arrayOf(PROPS_TYPE.event), TODO find a way to implement this
+  }),
+
+  roll_call: shape({
+    object: oneOf(['roll-call']).isRequired,
+    action: oneOf(['close', 'open', 'reopen']).isRequired,
+    name: string,
+    id: string.isRequired,
+    creation: number.isRequired,
+    location: string,
+    start: number,
+    scheduled: number,
+    end: number,
+    attendees: arrayOf(string),
+    roll_call_description: string,
     // children: arrayOf(PROPS_TYPE.event), TODO find a way to implement this
   }),
 
