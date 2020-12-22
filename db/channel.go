@@ -1,11 +1,14 @@
-/* This file implements useful functions to work with channels in the database, such as Create/edit and GetInfos */
+/* This file contains functions used to deal with channels in the database. Like create/update a channel and
+get infos about a channel. */
+
 package db
 
 import (
 	"encoding/json"
 	"fmt"
 	"github.com/boltdb/bolt"
-	"student20_pop/define"
+	"student20_pop/event"
+	"student20_pop/lib"
 )
 
 const bucketChannel = "channels"
@@ -16,10 +19,10 @@ const bucketChannel = "channels"
  */
 func writeChannel(obj interface{}, database string, secure bool) error {
 	db, e := OpenDB(database)
-	defer db.Close()
 	if e != nil {
 		return e
 	}
+	defer db.Close()
 
 	err := db.Update(func(tx *bolt.Tx) error {
 		b, err1 := tx.CreateBucketIfNotExists([]byte(bucketChannel))
@@ -29,51 +32,49 @@ func writeChannel(obj interface{}, database string, secure bool) error {
 		//generic adaptation
 		var objID []byte
 		switch obj.(type) {
-		case define.LAO:
+		case event.LAO:
 			// type assert
-			objID = []byte(obj.(define.LAO).ID)
-		case define.Meeting:
-			objID = []byte(obj.(define.Meeting).ID)
-		case define.Poll:
-			objID = []byte(obj.(define.Poll).ID)
-		case define.RollCall:
-			objID = []byte(obj.(define.RollCall).ID)
+			objID = []byte(obj.(event.LAO).ID)
+		case event.Meeting:
+			objID = []byte(obj.(event.Meeting).ID)
+		case event.Poll:
+			objID = []byte(obj.(event.Poll).ID)
+		case event.RollCall:
+			objID = []byte(obj.(event.RollCall).ID)
 		default:
-			//TODO not sure for the error type
-			return define.ErrRequestDataInvalid
+			return lib.ErrRequestDataInvalid
 		}
 		//checks if there is already an entry with that ID if secure is true
 		if secure {
 			key := b.Get(objID)
 			if key != nil {
-				return define.ErrResourceAlreadyExists
+				return lib.ErrResourceAlreadyExists
 			}
 		} else {
 			exists := b.Get(objID)
 			if exists == nil {
-				fmt.Printf("11")
-				return define.ErrInvalidResource
+				fmt.Printf("Could not find (key, val) pair to update in write channel with param secure=false")
+				return lib.ErrInvalidResource
 			}
 		}
 		var dt []byte
 		var err2 error
 		switch obj.(type) {
-		case define.LAO:
+		case event.LAO:
 			// type assert
-			dt, err2 = json.Marshal(obj.(define.LAO).ID)
-		case define.Meeting:
-			dt, err2 = json.Marshal(obj.(define.Meeting).ID)
-		case define.Poll:
-			dt, err2 = json.Marshal(obj.(define.Poll).ID)
-		case define.RollCall:
-			dt, err2 = json.Marshal(obj.(define.RollCall).ID)
+			dt, err2 = json.Marshal(obj.(event.LAO).ID)
+		case event.Meeting:
+			dt, err2 = json.Marshal(obj.(event.Meeting).ID)
+		case event.Poll:
+			dt, err2 = json.Marshal(obj.(event.Poll).ID)
+		case event.RollCall:
+			dt, err2 = json.Marshal(obj.(event.RollCall).ID)
 		default:
-			//TODO not sure for the error type
-			return define.ErrRequestDataInvalid
+			return lib.ErrRequestDataInvalid
 		}
 		// Marshal the Obj and store it
 		if err2 != nil {
-			return define.ErrRequestDataInvalid
+			return lib.ErrRequestDataInvalid
 		}
 		err3 := b.Put(objID, dt)
 		return err3
@@ -95,10 +96,10 @@ func UpdateChannel(obj interface{}, database string) error {
 /*returns channel data from a given ID */
 func GetChannel(id []byte, database string) []byte {
 	db, e := OpenDB(database)
-	defer db.Close()
 	if e != nil {
 		return nil
 	}
+	defer db.Close()
 	var data []byte
 	e = db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucketChannel))

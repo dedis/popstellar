@@ -1,4 +1,5 @@
-/*global helper for the database, currently Write is not used but we keep it as a syntactic helper */
+/* Just global functions used for every databases. Write is currently not used but we keep it as a syntactic guide. */
+
 package db
 
 import (
@@ -15,6 +16,7 @@ func OpenDB(dbName string) (*bolt.DB, error) {
 
 /**
  * Functions that writes a pair (key, val) in the bucket "bkt" in the database
+ * Currently not used, but we keep it as syntactic reminder
  */
 func Write(key []byte, val []byte, bkt []byte, database *bolt.DB) error {
 	err := database.Update(func(tx *bolt.Tx) error {
