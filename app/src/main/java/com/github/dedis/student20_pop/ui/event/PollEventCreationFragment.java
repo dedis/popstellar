@@ -180,7 +180,7 @@ public class PollEventCreationFragment extends AbstractEventCreationFragment {
         return !question.isEmpty() &&
                 numberOfChoices >= 2;
     }
-    
+
     public ArrayList<String> getChoices(ListView listView) {
         ArrayList<String> choices = new ArrayList<>();
         ChoicesListViewAdapter adapter = (ChoicesListViewAdapter) listView.getAdapter();
