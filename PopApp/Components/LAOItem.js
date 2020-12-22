@@ -29,6 +29,8 @@ const LAOItem = ({ LAO, dispatch }) => {
   const navigation = useNavigation();
 
   const handlePress = () => {
+    const action2 = { type: 'SET_CURRENT_LAO', value: LAO };
+    dispatch(action2);
     const action = { type: 'APP_NAVIGATION_ON', value: LAO.id };
     dispatch(action);
     navigation.navigate(STRINGS.app_navigation_tab_organizer);

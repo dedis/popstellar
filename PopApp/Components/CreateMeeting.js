@@ -11,6 +11,7 @@ import {
   Buttons, Typography, Spacing, Views,
 } from '../Styles';
 import STRINGS from '../res/strings';
+import { requestCreateMeeting } from '../websockets/WebsocketApi';
 
 /**
  * Screen to create a meeting event
@@ -106,7 +107,20 @@ const CreateMeeting = () => {
     + `${d.getHours() < 10 ? 0 : ''}${d.getHours()}:`
     + `${d.getMinutes() < 10 ? 0 : ''}${d.getMinutes()}`;
 
+  const dateToTimeStamp = (date) => {
+    if (date) {
+      return Math.floor(date / 1000);
+    }
+    return 0;
+  };
+
   const [name, setName] = useState('');
+  const [location, setLocation] = useState('');
+
+  const createMeeting = () => {
+    requestCreateMeeting(name, dateToTimeStamp(startDate), location, dateToTimeStamp(finishDate));
+    navigation.goBack();
+  };
 
   return (
     <ScrollView>
@@ -197,9 +211,10 @@ const CreateMeeting = () => {
       <TextInput
         style={styles.text}
         placeholder={STRINGS.meeting_create_location}
+        onChangeText={(text) => { setLocation(text); }}
       />
       <View style={styles.button}>
-        <Button title={STRINGS.general_button_confirm} disabled={name === ''} />
+        <Button title={STRINGS.general_button_confirm} disabled={name === ''} onPress={() => createMeeting()} />
       </View>
       <View style={styles.button}>
         <Button title={STRINGS.general_button_cancel} onPress={() => { navigation.goBack(); }} />

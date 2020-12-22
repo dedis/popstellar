@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import { Typography, Spacing, Buttons } from '../Styles';
 import EventItem from './EventItem';
 import STRINGS from '../res/strings';
+import { requestUpdateLao } from '../websockets/WebsocketApi';
 
 /**
 * The Collapsable list component for the organizer
@@ -109,6 +110,7 @@ const Item = ({ events, closedList }) => {
       case 'organization_name':
         return (
           <TextInput
+            style={styles.text}
             placeholder={STRINGS.organization_name}
             value={organizationName}
             onChangeText={(text) => setOrganizationName(text)}
@@ -171,6 +173,10 @@ const Item = ({ events, closedList }) => {
                     title={STRINGS.general_button_confirm}
                     disabled={organizationName === organizationNameBase
                       && witnesses.toString() === witnessesBase.toString()}
+                    onPress={() => {
+                      setPropretyEditing(false);
+                      requestUpdateLao(organizationName, witnesses.map((x) => x.name));
+                    }}
                   />
                 </View>
                 <View style={styles.button}>

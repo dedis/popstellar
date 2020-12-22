@@ -25,20 +25,34 @@ const styles = StyleSheet.create({
   },
 });
 
-const RollCallEvent = ({ event }) => (
-  <View style={styles.view}>
-    <Text style={styles.text}>Status (Future, Open or Closed)</Text>
-    <Text style={styles.text}>Participants #</Text>
-    <Text style={styles.text}>QR code</Text>
-    <FlatList
-      data={event.childrens}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => <EventItem event={item} />}
-      listKey={event.id.toString()}
-      style={styles.flatList}
-    />
-  </View>
-);
+const RollCallEvent = ({ event }) => {
+  const getState = () => {
+    if (event.scheduled) {
+      return 'Future';
+    }
+    if (event.end) {
+      return 'Close';
+    }
+    return 'Open';
+  };
+
+  return (
+    <View style={styles.view}>
+      <Text style={styles.text}>{`Status: ${getState()}`}</Text>
+      <Text style={styles.text}>Participants #</Text>
+      {!event.scheduled && !event.end && (
+        <Text style={styles.text}>QR code</Text>
+      )}
+      <FlatList
+        data={event.childrens}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => <EventItem event={item} />}
+        listKey={event.id.toString()}
+        style={styles.flatList}
+      />
+    </View>
+  );
+};
 
 RollCallEvent.propTypes = {
   event: PROPS_TYPE.event.isRequired,
