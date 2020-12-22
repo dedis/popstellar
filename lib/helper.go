@@ -3,6 +3,7 @@ Currently only find elem in array */
 package lib
 
 import (
+	"bytes"
 	b64 "encoding/base64"
 	"strings"
 )
@@ -20,6 +21,14 @@ func Find(slice []int, val int) (int, bool) {
 func FindStr(slice []string, val string) (int, bool) {
 	for i, item := range slice {
 		if item == val {
+			return i, true
+		}
+	}
+	return -1, false
+}
+func FindBytarr(slice [][]byte, val []byte) (int, bool) {
+	for i, item := range slice {
+		if bytes.Equal(item, val) {
 			return i, true
 		}
 	}

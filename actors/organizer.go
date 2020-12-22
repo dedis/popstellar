@@ -454,7 +454,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 			log.Println("couldn't unMarshal the ItemWitnessSignatures from the DB")
 			continue
 		}
-		err = security.VerifySignature(witnessSignature.Witness, toSignStruct.Data, witnessSignature.Signature)
+		err = security.VerifySignature(witnessSignature.WitnessKey, toSignStruct.Data, witnessSignature.Signature)
 		if err != nil {
 			count--
 			log.Printf("Invalid signature found in signature lists, with index %d", i)
@@ -468,7 +468,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 		return nil, lib.ErrResourceAlreadyExists
 	}
 
-	iws, err := json.Marshal(message.ItemWitnessSignatures{Witness: msg.Sender, Signature: data.Signature})
+	iws, err := json.Marshal(message.ItemWitnessSignatures{WitnessKey: msg.Sender, Signature: data.Signature})
 	if err != nil {
 		log.Println("couldn't Marshal the ItemWitnessSignatures")
 	}

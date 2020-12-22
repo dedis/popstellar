@@ -45,6 +45,6 @@ type Message struct {
 }
 
 type ItemWitnessSignatures struct {
-	Witness   []byte
-	Signature []byte
+	WitnessKey []byte
+	Signature  []byte
 }
