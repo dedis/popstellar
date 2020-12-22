@@ -3,7 +3,6 @@ package security
 import (
 	"bytes"
 	"crypto/sha256"
-	"encoding/json"
 	"log"
 	"strconv"
 	"strings"
@@ -66,11 +65,13 @@ func RollCallCreatedIsValid(data message.DataCreateRollCall, message message.Mes
 
 func MessageIsValid(msg message.Message) error {
 	// the message_id is valid
-	str := []json.RawMessage{}
+	var str []string
 	dataStr := lib.Escape(string(msg.Data))
 	signStr := lib.Escape(string(msg.Signature))
-	str = append(str, json.RawMessage(dataStr),json.RawMessage(signStr))
-	hash := sha256.Sum256(str)
+	str = append(str, dataStr, signStr)
+	a := strings.Join(str, ",")
+	//TODO the PR has not been validated yet
+	hash := sha256.Sum256([]byte(a))
 
 	if !bytes.Equal([]byte(msg.MessageId), hash[:]) {
 		log.Printf("id of message invalid: %v should be: %v", string(msg.MessageId), string(hash[:]))
