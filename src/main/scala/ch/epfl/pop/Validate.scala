@@ -2,7 +2,7 @@ package ch.epfl.pop
 
 import java.util.Arrays
 import ch.epfl.pop.crypto.{Hash, Signature}
-import ch.epfl.pop.json.{Hash, Key, MessageContent, MessageContentData, MessageErrorContent}
+import ch.epfl.pop.json.{Actions, Hash, Key, MessageContent, MessageContentData, MessageErrorContent}
 import ch.epfl.pop.crypto.Signature.verify
 import ch.epfl.pop.json.JsonMessages.{BroadcastLaoMessageClient, BroadcastMeetingMessageClient, CreateLaoMessageClient, CreateMeetingMessageClient, UpdateLaoMessageClient, WitnessMessageMessageClient}
 import ch.epfl.pop.json.JsonUtils.ErrorCodes.InvalidData
@@ -79,11 +79,13 @@ object Validate {
     val same = " should be the same in the state and the creation/modification message."
     if (!util.Arrays.equals(laoMod.id, laoState.id))
       getError("LAO id" + same)
-    else if (! (laoState.creation == laoMod.creation))
+    else if (laoMod.action == Actions.Create && !(laoState.creation == laoMod.creation))
       getError("The creation timestamp" + same )
+    else if(laoMod.action == Actions.Create && !(laoState.last_modified == laoState.creation))
+      getError("The creation and last_modified fields should be the same when creating an LAO")
     else if (!(laoState.name == laoMod.name))
       getError("The name" + same)
-    else if (!(laoState.last_modified == laoMod.last_modified))
+    else if (laoMod.action == Actions.UpdateProperties && !(laoState.last_modified == laoMod.last_modified))
       getError("The last modified timestamp" + same)
     else if (!util.Arrays.equals(laoState.organizer, laoMod.organizer))
       getError("The organizer" + same)
