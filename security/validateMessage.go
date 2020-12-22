@@ -3,8 +3,10 @@ package security
 import (
 	"bytes"
 	"crypto/sha256"
+	"encoding/json"
 	"log"
 	"strconv"
+	"strings"
 	"student20_pop/lib"
 	"student20_pop/message"
 	"student20_pop/parser"
@@ -61,10 +63,13 @@ func RollCallCreatedIsValid(data message.DataCreateRollCall, message message.Mes
 	return true
 }
 
+
 func MessageIsValid(msg message.Message) error {
 	// the message_id is valid
-	str := []byte(msg.Data)
-	str = append(str, []byte(msg.Signature)...)
+	str := []json.RawMessage{}
+	dataStr := lib.Escape(string(msg.Data))
+	signStr := lib.Escape(string(msg.Signature))
+	str = append(str, json.RawMessage(dataStr),json.RawMessage(signStr))
 	hash := sha256.Sum256(str)
 
 	if !bytes.Equal([]byte(msg.MessageId), hash[:]) {
@@ -87,7 +92,7 @@ func MessageIsValid(msg message.Message) error {
 			log.Printf("test 3")
 			return lib.ErrInvalidResource
 		}
-		// the signature (OF MESSAGEID)of witnesses are valid
+		// the signatures (on MESSAGEID) of witnesses are valid
 		err = VerifyWitnessSignatures(data.Witnesses, msg.WitnessSignatures, msg.MessageId)
 		if err != nil {
 			log.Printf("invalid witness signatures")
