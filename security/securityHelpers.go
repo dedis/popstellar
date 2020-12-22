@@ -30,15 +30,15 @@ func VerifySignature(publicKey []byte, data []byte, signature []byte) error {
 	*publicKeys is already decoded
     *sender and signature are not already decoded
 */
-func VerifyWitnessSignatures(authorizedWitnesses [][]byte, witnessSignaturesEnc []json.RawMessage, sender []byte) error {
+func VerifyWitnessSignatures(authorizedWitnesses [][]byte, witnessSignaturesEnc []json.RawMessage, message_id []byte) error {
 	//TODO verify witnesses are in event's witness list (@ouriel)
 	for i := 0; i < len(witnessSignaturesEnc); i++ {
 		witnessSignatures, err := parser.ParseWitnessSignature(witnessSignaturesEnc[i])
 		if err != nil {
 			return err
 		}
-		//right now we apply the first option and publickeys is then usless here
-		err = VerifySignature(witnessSignatures.Witness, sender, witnessSignatures.Signature)
+		//We check that the signature belong to an assigned witness
+		err = VerifySignature(witnessSignatures.Witness, message_id, witnessSignatures.Signature)
 		if err != nil {
 			return err
 		}

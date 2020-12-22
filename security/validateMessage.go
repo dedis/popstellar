@@ -87,8 +87,8 @@ func MessageIsValid(msg message.Message) error {
 			log.Printf("test 3")
 			return lib.ErrInvalidResource
 		}
-		// the signature of witnesses are valid
-		err = VerifyWitnessSignatures(data.Witnesses, msg.WitnessSignatures, msg.Sender)
+		// the signature (OF MESSAGEID)of witnesses are valid
+		err = VerifyWitnessSignatures(data.Witnesses, msg.WitnessSignatures, msg.MessageId)
 		if err != nil {
 			log.Printf("invalid witness signatures")
 			return err
