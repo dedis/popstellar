@@ -1,6 +1,6 @@
 package ch.epfl.pop.tests.pubsub
 
-import ch.epfl.pop.tests.MessageCreationUtils.{b64Encode, getMessageParams}
+import ch.epfl.pop.tests.MessageCreationUtils.{b64Encode, b64EncodeToString, getMessageParams}
 
 import java.io.File
 import java.security.MessageDigest
@@ -25,6 +25,7 @@ import org.scalactic.Equality
 import scorex.crypto.signatures.{Curve25519, PrivateKey, PublicKey}
 
 import java.nio.ByteBuffer
+import java.nio.charset.StandardCharsets
 import java.util
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, ExecutionContext, Future}
@@ -126,10 +127,11 @@ class PubSubTest extends FunSuite {
 
     val creationTime = pow(2,24).toLong
     val digest = MessageDigest.getInstance("SHA-256")
-    digest.update(supertagged.untag(pk))
-    digest.update(ByteBuffer.allocate(8).putLong(creationTime))
-    digest.update(laoName.getBytes)
-    val laoID = digest.digest()
+    val data = "[" +
+    '"' + b64EncodeToString(supertagged.untag(pk)) + "\",\"" +
+    creationTime.toString + "\",\"" +
+    laoName + "\"]"
+    val laoID = digest.digest(data.getBytes(StandardCharsets.UTF_8))
 
     val laoData : MessageContentData = new MessageContentDataBuilder()
       .setHeader(Objects.Lao, Actions.Create)
@@ -204,10 +206,9 @@ class PubSubTest extends FunSuite {
     println("LaoId: " + util.Arrays.toString(Base64.getDecoder.decode(laoId.getBytes())))
     println("Creation time: " + creationTime)
     println("Name: " + name)
-    digest.update(Base64.getDecoder.decode(laoId.getBytes()))
-    digest.update(ByteBuffer.allocate(8).putLong(creationTime))
-    digest.update(name.getBytes)
-    val eventID = digest.digest()
+    val idString = "[\"" + laoId + "\",\"" + creationTime.toString + "\",\"" + name + "\"]"
+
+    val eventID = digest.digest(idString.getBytes(StandardCharsets.UTF_8))
     val data = new MessageContentDataBuilder()
       .setHeader(Objects.Meeting, Actions.Create)
       .setId(eventID)

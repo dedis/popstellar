@@ -10,6 +10,7 @@ import org.scalatest.FunSuite
 import scorex.crypto.signatures.{Curve25519, PrivateKey, PublicKey}
 
 import java.nio.ByteBuffer
+import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import java.util.Base64
 class ValidateTest extends FunSuite {
@@ -56,10 +57,9 @@ class ValidateTest extends FunSuite {
   private val (sk, pk): (PrivateKey, PublicKey) = Curve25519.createKeyPair
   private val laoOrganizer = supertagged.untag(pk)
   private val md = MessageDigest.getInstance("SHA-256")
-  md.update(laoOrganizer)
-  md.update(ByteBuffer.allocate(8).putLong(laoCreation))
-  md.update(laoName.getBytes())
-  private val laoId = md.digest()
+  private val laoString = "[" + '"' + Base64.getEncoder.encodeToString(laoOrganizer) + "\",\"" + laoCreation.toString + "\",\"" +
+    laoName + "\"]"
+  private val laoId = md.digest(laoString.getBytes(StandardCharsets.UTF_8))
   private val root = "/root"
   private def createLao(id: Hash = laoId, name: String = laoName, creation: Long = laoCreation,
                         organizer: ByteArray = laoOrganizer, sender: PublicKey = pk): CreateLaoMessageClient = {
