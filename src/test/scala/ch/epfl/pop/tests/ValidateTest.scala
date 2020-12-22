@@ -2,7 +2,7 @@ package ch.epfl.pop.tests
 
 import ch.epfl.pop.Validate
 import ch.epfl.pop.crypto.Hash
-import ch.epfl.pop.json.JsonMessages.{BroadcastLaoMessageClient, BroadcastMeetingMessageClient, CreateLaoMessageClient, CreateMeetingMessageClient, UpdateLaoMessageClient, WitnessMessageMessageClient}
+import ch.epfl.pop.json.JsonMessages.{BroadcastLaoMessageClient, BroadcastMeetingMessageClient, CreateLaoMessageClient, CreateMeetingMessageClient, CreateRollCallMessageClient, UpdateLaoMessageClient, WitnessMessageMessageClient}
 import ch.epfl.pop.json.JsonUtils.MessageContentDataBuilder
 import ch.epfl.pop.json.{Actions, ByteArray, Hash, MessageContent, Methods, Objects}
 import ch.epfl.pop.tests.MessageCreationUtils._
@@ -320,5 +320,30 @@ class ValidateTest extends FunSuite {
     val meetingMsg = createMeeting().params.message.get
     val state = broadcastMeeting(meetingMsg.message_id, end = meetingEnd - 1)
     assert(Validate.validate(state, meetingMsg.data).nonEmpty)
+  }
+
+  /* --------------- VALIDATE CREATE ROLL-CALL --------------- */
+
+  private val rcCreation = 123213213L
+  private val rcStart = rcCreation + 1
+  private val rcName = "My roll-call"
+  private val rcId = Hash.computeRollCallId(laoId, rcCreation, rcName)
+
+  private def createRollCall(id: Hash, creation: Long, start: Long): CreateRollCallMessageClient = {
+  val data = new MessageContentDataBuilder()
+    .setHeader(Objects.RollCall, Actions.Create)
+    .setId(id)
+    .setName(rcName)
+    .setCreation(creation)
+    .setStart(start)
+    .build()
+
+    val params = getMessageParams(data, pk, sk, root)
+    CreateRollCallMessageClient(params, 0, Methods.Publish)
+  }
+
+  test("Create roll-call validation works with valid parameters") {
+    val rcMsg = createRollCall(rcId, rcCreation, rcStart)
+    assert(Validate.validate(rcMsg, laoId).isEmpty)
   }
 }

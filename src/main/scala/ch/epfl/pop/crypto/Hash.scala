@@ -28,21 +28,34 @@ object Hash {
    * @param name the name of the LAO
    * @return the id of the LAO
    */
-  def computeLAOId(organizer: Key, creation: Long, name: String): Hash = computeGenericId(organizer, creation, name)
+  def computeLAOId(organizer: Key, creation: Long, name: String): Hash = {
+    val data = arrayRepr(Base64.getEncoder.encodeToString(organizer), creation.toString, name)
+    val id = getMessageDigest().digest(data.getBytes(StandardCharsets.UTF_8))
+    id
+  }
 
 
   /**
-   * Compute the meeting id, which is Hash(laoId||creation||name)
+   * Compute the meeting id, which is Hash('M'||laoId||creation||name)
    * @param laoID the id of the LAO
-   * @param creation the creation timestamp of the LAO
+   * @param creation the creation timestamp of the meeting
    * @param name the name of the meeting
    * @return the id of the meeting
    */
-  def computeMeetingId(laoID: Hash, creation: Long, name: String): Hash = computeGenericId(laoID, creation, name)
+  def computeMeetingId(laoID: Hash, creation: Long, name: String): Hash = computeGenericId("M", laoID, creation, name)
+
+  /**
+   * Compute the roll-call id, which is Hash('R'||laoId||creation||name)
+   * @param laoID the id of the LAO
+   * @param creation the creation timestamp of the roll-call
+   * @param name the name of the roll-call
+   * @return the id of the roll-call
+   */
+  def computeRollCallId(laoID: Hash, creation: Long, name: String): Hash = computeGenericId("R", laoID, creation, name)
 
 
-  private def computeGenericId(a: Array[Byte], l: Long, s: String): Hash = {
-    val data = arrayRepr(Base64.getEncoder.encodeToString(a), l.toString, s)
+  private def computeGenericId(typ: String, a: Array[Byte], l: Long, s: String): Hash = {
+    val data = arrayRepr(typ, Base64.getEncoder.encodeToString(a), l.toString, s)
     val id = getMessageDigest().digest(data.getBytes(StandardCharsets.UTF_8))
     id
   }

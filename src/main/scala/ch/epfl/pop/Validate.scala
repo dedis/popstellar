@@ -4,7 +4,7 @@ import java.util.Arrays
 import ch.epfl.pop.crypto.{Hash, Signature}
 import ch.epfl.pop.json.{Actions, Hash, Key, MessageContent, MessageContentData, MessageErrorContent}
 import ch.epfl.pop.crypto.Signature.verify
-import ch.epfl.pop.json.JsonMessages.{BroadcastLaoMessageClient, BroadcastMeetingMessageClient, CreateLaoMessageClient, CreateMeetingMessageClient, UpdateLaoMessageClient, WitnessMessageMessageClient}
+import ch.epfl.pop.json.JsonMessages.{BroadcastLaoMessageClient, BroadcastMeetingMessageClient, CloseRollCallMessageClient, CreateLaoMessageClient, CreateMeetingMessageClient, CreateRollCallMessageClient, OpenRollCallMessageClient, UpdateLaoMessageClient, WitnessMessageMessageClient}
 import ch.epfl.pop.json.JsonUtils.ErrorCodes.InvalidData
 
 import java.util
@@ -156,6 +156,44 @@ object Validate {
       getError("The start timestamp" + same)
     else if (!(stateMsg.end == meetingMod.end))
       getError("The end timestamp")
+    else None
+  }
+
+  def validate(msg: CreateRollCallMessageClient, laoId: Hash): Option[MessageErrorContent] = {
+    val midLevelMsg = msg.params.message.get
+    val createMsg = midLevelMsg.data
+
+    if(!util.Arrays.equals(Hash.computeRollCallId(laoId, createMsg.creation, createMsg.name), createMsg.id))
+      getError("Invalid roll-call id.")
+    else if (!(createMsg.creation > 0))
+      getError("Creation timestamp should be positive.")
+    else if(!(createMsg.start > createMsg.creation || createMsg.scheduled > createMsg.creation))
+      getError("The start/scheduled time should be greater than the creation time")
+    else
+      None
+  }
+
+  def validate(msg: OpenRollCallMessageClient, laoId: Hash): Option[MessageErrorContent] = {
+    val midLevelMsg = msg.params.message.get
+    val openMessage = midLevelMsg.data
+
+    if(!util.Arrays.equals(Hash.computeRollCallId(laoId, openMessage.creation, openMessage.name), openMessage.id))
+      getError("Invalid roll-call id")
+    else if (!(openMessage.creation > 0))
+      getError("Creation timestamp should be positive.")
+    else None
+  }
+
+  def validate(msg: CloseRollCallMessageClient, laoId: Hash): Option[MessageErrorContent] = {
+    val midLevelMsg = msg.params.message.get
+    val closeMessage = midLevelMsg.data
+
+    if(!util.Arrays.equals(Hash.computeRollCallId(laoId, closeMessage.creation, closeMessage.name), closeMessage.id))
+      getError("Invalid roll-call id")
+    else if (!(closeMessage.start > 0))
+      getError("Start timestamp should be positive.")
+    else if (!(closeMessage.end > closeMessage.start))
+      getError("End time should be greater than start time.")
     else None
   }
 
