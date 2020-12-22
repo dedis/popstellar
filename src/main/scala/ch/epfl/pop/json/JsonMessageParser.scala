@@ -48,51 +48,67 @@ object JsonMessageParser {
             case _ => throw DeserializationException("invalid message : jsonrpc field missing or wrongly formatted")
           }
 
-          obj.getFields("method") match {
-            case Seq(JsString(m)) => m match {
-              /* Subscribing to a channel */
-              case Methods.Subscribe() => return Left(obj.convertTo[SubscribeMessageClient])
+          val fields: Set[String] = obj.fields.keySet
 
-              /* Unsubscribe from a channel */
-              case Methods.Unsubscribe() => return Left(obj.convertTo[UnsubscribeMessageClient])
+          if (fields.contains("method")) {
+            /* parse a client query message */
+            obj.getFields("method") match {
+              case Seq(JsString(m)) => m match {
+                /* Subscribe to a channel */
+                case Methods.Subscribe() => Left(obj.convertTo[SubscribeMessageClient])
 
-              /* Propagate message on a channel */
-              case Methods.Message() => return Left(obj.convertTo[PropagateMessageServer])
+                /* Unsubscribe from a channel */
+                case Methods.Unsubscribe() => Left(obj.convertTo[UnsubscribeMessageClient])
 
-              /* Catch up on past message on a channel */
-              case Methods.Catchup() => return Left(obj.convertTo[CatchupMessageClient])
+                /* Propagate message on a channel */
+                case Methods.Message() => Left(obj.convertTo[PropagateMessageServer])
 
-              /* Publish on a channel + All Higher-level communication */
-              case Methods.Publish() => return Left(obj.convertTo[JsonMessagePublishClient])
+                /* Catchup on past message on a channel */
+                case Methods.Catchup() => Left(obj.convertTo[CatchupMessageClient])
 
-              /* parsing error : invalid method value */
-              case _ => throw JsonMessageParserException("invalid message : method value unrecognized")
+                /* Publish on a channel + All Higher-level communication */
+                case Methods.Publish() => Left(obj.convertTo[JsonMessagePublishClient])
+
+                /* parsing error : invalid method value */
+                case _ => throw JsonMessageParserException("invalid message : method value unrecognized")
+              }
+              case _ => throw JsonMessageParserException(
+                "invalid message : message contains a \"method\" field, but its type is unknown"
+              )
             }
-            case _ =>
-          }
 
-
-          // check that an answer message it either positive (x)or negative
-          obj.getFields("result", "error") match {
-            case Seq(JsNumber(_), JsObject(_)) =>
+          } else if (fields.contains("result")) {
+            // check that an answer message it either positive (x)or negative
+            if (fields.contains("error"))
               throw JsonMessageParserException("invalid message : an answer cannot have both \"result\" and \"error\" fields")
-            case _ =>
-          }
 
-          /* parse a positive answer message */
-          obj.getFields("result") match {
-            case Seq(JsNumber(_)) => return Left(obj.convertTo[AnswerResultIntMessageServer])
-            case Seq(JsArray(_)) => return Left(obj.convertTo[AnswerResultArrayMessageServer])
-            case _ =>
-          }
+            /* parse a positive answer message */
+            obj.getFields("result") match {
+              case Seq(JsNumber(_)) => Left(obj.convertTo[AnswerResultIntMessageServer])
+              case Seq(JsArray(_)) => Left(obj.convertTo[AnswerResultArrayMessageServer])
+              case _ => throw JsonMessageParserException(
+                "invalid message : message contains a \"result\" field, but its type is unknown"
+              )
+            }
 
-          /* parse a negative answer message */
-          obj.getFields("error") match {
-            case Seq(JsObject(_)) => return Left(obj.convertTo[AnswerErrorMessageServer])
-            case _ =>
-          }
+          } else if (fields.contains("error")) {
 
-          throw JsonMessageParserException("invalid message : fields missing or wrongly formatted")
+            // check that an answer message it either positive (x)or negative
+            if (fields.contains("result"))
+              throw JsonMessageParserException("invalid message : an answer cannot have both \"result\" and \"error\" fields")
+
+            /* parse a negative answer message */
+            obj.getFields("error") match {
+              case Seq(JsObject(_)) => Left(obj.convertTo[AnswerErrorMessageServer])
+              case _ => throw JsonMessageParserException(
+                "invalid message : message contains a \"error\" field, but its type is unknown"
+              )
+            }
+
+          } else {
+            /* parsing error : the message doesn't fall in any of the above categories */
+            throw JsonMessageParserException("invalid message : fields missing or wrongly formatted")
+          }
 
         } catch {
           case JsonMessageParserException(msg, id, code) => Right(buildJsonMessageParserException(obj, id, code, msg))
