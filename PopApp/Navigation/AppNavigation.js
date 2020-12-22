@@ -3,12 +3,12 @@ import { StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 
 import STRINGS from '../res/strings';
 
 import Navigation from './Navigation';
 import OrganizationNavigation from './OrganizationNavigation';
+import PROPS_TYPE from '../res/Props';
 
 /**
 * Define the App stack navigation
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   },
 });
 
-function AppNavigation({ organizationNavigation }) {
+function AppNavigation({ lao }) {
   return (
     <SafeAreaView style={styles.view}>
       <Stack.Navigator
@@ -30,7 +30,7 @@ function AppNavigation({ organizationNavigation }) {
           headerShown: false,
         }}
         initialRouteName={
-          organizationNavigation
+          lao
             ? STRINGS.app_navigation_tab_organizer : STRINGS.app_navigation_tab_home
         }
       >
@@ -48,11 +48,11 @@ function AppNavigation({ organizationNavigation }) {
 }
 
 AppNavigation.propTypes = {
-  organizationNavigation: PropTypes.bool.isRequired,
+  lao: PROPS_TYPE.LAO.isRequired,
 };
 
 const mapStateToProps = (state) => ({
-  organizationNavigation: state.toggleAppNavigationScreenReducer.organizationNavigation,
+  lao: state.currentLaoReducer.lao,
 });
 
 export default connect(mapStateToProps)(AppNavigation);

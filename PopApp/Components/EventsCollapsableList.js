@@ -63,7 +63,7 @@ const Item = ({ events, closedList }) => {
 Item.propTypes = {
   events: PropTypes.shape({
     title: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(EventItem.propTypes.event).isRequired,
+    //data: PropTypes.arrayOf(EventItem.propTypes.event).isRequired,
   }).isRequired,
   closedList: PropTypes.arrayOf(PropTypes.string).isRequired,
 };

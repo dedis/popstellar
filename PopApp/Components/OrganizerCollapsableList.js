@@ -198,7 +198,7 @@ const Item = ({ events, closedList }) => {
         <FlatList
           data={events.data}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <EventItem event={item} isOrganizer />}
+          renderItem={({ item }) => <EventItem event={item} />}
           listKey={events.title}
         />
       );
@@ -207,7 +207,7 @@ const Item = ({ events, closedList }) => {
         <FlatList
           data={events.data}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <EventItem event={item} isOrganizer />}
+          renderItem={({ item }) => <EventItem event={item} />}
           listKey={events.title}
         />
       );
@@ -234,7 +234,7 @@ const Item = ({ events, closedList }) => {
 Item.propTypes = {
   events: PropTypes.shape({
     title: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(EventItem.propTypes.event).isRequired,
+    //data: PropTypes.arrayOf(EventItem.propTypes.event).isRequired,
   }).isRequired,
   closedList: PropTypes.arrayOf(PropTypes.string).isRequired,
 };

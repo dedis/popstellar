@@ -9,7 +9,8 @@
     "startServer": "node websockets/LocalMockServer.js",
     "startMonitorServer": "nodemon websockets/LocalMockServer.js",
     "test": "jest",
-    "test:watch": "npm test -- --watch"
+    "test:watch": "npm test -- --watch",
+    "eslint": "node_modules/.bin/eslint ."
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.12.1",

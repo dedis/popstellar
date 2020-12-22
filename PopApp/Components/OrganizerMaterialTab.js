@@ -44,15 +44,12 @@ const styles = StyleSheet.create({
 const MytabBar = (props) => {
   const { colors } = useTheme();
   const inactiveColor = Color(colors.text).alpha(0.5).rgb().string();
-  const { LAOs } = props;
-  const LAO = LAOs.find((x) => x.id === props.LAO_ID);
+  const { lao } = props;
   const { navigation, dispatch, navigationState } = props;
   const nbRoutes = navigationState.routes.length;
 
   const homePress = () => {
-    const action2 = { type: 'SET_CURRENT_LAO', value: {} };
-    dispatch(action2);
-    const action = { type: 'APP_NAVIGATION_OFF' };
+    const action = { type: 'SET_CURRENT_LAO', value: {} };
     dispatch(action);
     navigation.navigate(STRINGS.app_navigation_tab_home);
   };
@@ -71,7 +68,7 @@ const MytabBar = (props) => {
         style={{ flex: nbRoutes, elevation: 0 }}
       />
       <Text style={[{ flex: 1 }, styles.text]}>
-        {LAO !== undefined ? LAO.name : STRINGS.unused }
+        {lao !== undefined ? lao.name : STRINGS.unused }
       </Text>
     </View>
   );
@@ -81,17 +78,11 @@ MytabBar.propTypes = {
   navigation: PROPS_TYPE.navigation.isRequired,
   navigationState: PROPS_TYPE.navigationState.isRequired,
   dispatch: PropTypes.func.isRequired,
-  LAO_ID: PropTypes.string,
-  LAOs: PropTypes.arrayOf(PROPS_TYPE.LAO).isRequired,
-};
-
-MytabBar.defaultProps = {
-  LAO_ID: '-1',
+  lao: PROPS_TYPE.LAO.isRequired,
 };
 
 const mapStateToProps = (state) => ({
-  LAO_ID: state.toggleAppNavigationScreenReducer.LAO_ID,
-  LAOs: state.connectLAOsReducer.LAOs,
+  lao: state.currentLaoReducer.lao,
 });
 
 export default connect(mapStateToProps)(MytabBar);

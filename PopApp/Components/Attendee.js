@@ -26,7 +26,6 @@ const laoToProperties = (events, lao) => {
   const name = { id: 'organization_name', object: 'organization_name', name: lao.name };
   const witness = { id: 'witness', object: 'witness', witnesses: lao.witnesses };
   const properties = { title: '', data: [name, witness] };
-  console.log(properties);
   return [properties, ...events];
 };
 
