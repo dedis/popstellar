@@ -11,8 +11,6 @@ import (
 	"time"
 )
 
-//TODO check with be-2 that we have the same requirements
-
 /* used for both creation and state update */
 func LAOIsValid(data message.DataCreateLAO, create bool) bool {
 	//the timestamp is reasonably recent with respect to the server’s clock,
@@ -65,11 +63,11 @@ func RollCallCreatedIsValid(data message.DataCreateRollCall, message message.Mes
 
 func MessageIsValid(msg message.Message) error {
 	// the message_id is valid
-	str := msg.Data
-	str = append(str, msg.Signature...)
+	str := []byte(msg.Data)
+	str = append(str, []byte(msg.Signature)...)
 	hash := sha256.Sum256(str)
 
-	if !bytes.Equal(msg.MessageId, hash[:]) {
+	if !bytes.Equal([]byte(msg.MessageId), hash[:]) {
 		log.Printf("id of message invalid: %v should be: %v", string(msg.MessageId), string(hash[:]))
 		return lib.ErrInvalidResource
 	}
