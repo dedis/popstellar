@@ -1,22 +1,21 @@
-/* This file contains functions used to deal with channels in the database. Like create/update a channel and
-get infos about a channel. */
-
+// db is a package defining and implementing methods to store read and manage an Actor's database
 package db
+
+//This file contains functions used to deal with channels in the database. Like create/update a channel and
+//get infos about a channel.
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/boltdb/bolt"
+	"log"
 	"student20_pop/event"
 	"student20_pop/lib"
 )
 
 const bucketChannel = "channels"
 
-/**
- * Function to create a new Object (LAO,Event...) and store it in the DB
- * @returns : error
- */
+// writeChannel is a function that stores a channel in the Database. The argument "secure" is to specify whether or not
+// we want to update a channel, which means overwriting existing data.
 func writeChannel(obj interface{}, database string, secure bool) error {
 	db, e := OpenDB(database)
 	if e != nil {
@@ -32,8 +31,8 @@ func writeChannel(obj interface{}, database string, secure bool) error {
 		//generic adaptation
 		var objID []byte
 		switch obj.(type) {
+		// type assert
 		case event.LAO:
-			// type assert
 			objID = []byte(obj.(event.LAO).ID)
 		case event.Meeting:
 			objID = []byte(obj.(event.Meeting).ID)
@@ -53,15 +52,15 @@ func writeChannel(obj interface{}, database string, secure bool) error {
 		} else {
 			exists := b.Get(objID)
 			if exists == nil {
-				fmt.Printf("Could not find (key, val) pair to update in write channel with param secure=false")
+				log.Printf("Could not find (key, val) pair to update in write channel with param secure=false")
 				return lib.ErrInvalidResource
 			}
 		}
 		var dt []byte
 		var err2 error
 		switch obj.(type) {
+		// type assert
 		case event.LAO:
-			// type assert
 			dt, err2 = json.Marshal(obj.(event.LAO).ID)
 		case event.Meeting:
 			dt, err2 = json.Marshal(obj.(event.Meeting).ID)
@@ -83,17 +82,19 @@ func writeChannel(obj interface{}, database string, secure bool) error {
 	return err
 }
 
-/*writes a channel (LAO, meeting, rollCall, etc.) to the DB, returns an error if ID already is key in DB*/
+//CreateChannel writes a channel (LAO, meeting, rollCall, etc.) to the DB. It will return an error if
+// the obj ID is already a key in DB the database. It just calls writeChannel with secure = true
 func CreateChannel(obj interface{}, database string) error {
 	return writeChannel(obj, database, true)
 }
 
-/*writes a channel (LAO, meeting, rollCall, etc.) to the DB, only if ID already exists, otherwise return an error*/
+// UpdateChannel overwrites a channel (LAO, meeting, rollCall, etc.) to the DB, only if the obj 's ID ID already exists.
+// Otherwise it will return an error. It just calls writeChannel with secure = false
 func UpdateChannel(obj interface{}, database string) error {
 	return writeChannel(obj, database, false)
 }
 
-/*returns channel data from a given ID */
+// GetChannel returns a channel's infos from a given ID. Returns ni if the channel does not exists.
 func GetChannel(id []byte, database string) []byte {
 	db, e := OpenDB(database)
 	if e != nil {
