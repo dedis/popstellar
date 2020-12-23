@@ -1,19 +1,18 @@
-/* This file contains functions used to deal with messages in the database. Like create/update a channel and
-get a message in particular. */
-
 package db
+
+// This file contains functions used to deal with messages in the database. Like create/update a channel and
+//get a message in particular.
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/boltdb/bolt"
+	"log"
 	"student20_pop/lib"
 	"student20_pop/message"
 )
 
-/**
-* Writes a message to the database. If safe is true and a message with this ID already exists, returns an error
- */
+// writeMessage  writes a message to the database. The argument "creating" is to specify whether or not
+// we want to update a message, which means overwriting existing data
 func writeMessage(message message.Message, channel string, database string, creating bool) error {
 	db, e := OpenDB(database)
 	if e != nil {
@@ -27,8 +26,13 @@ func writeMessage(message message.Message, channel string, database string, crea
 			return lib.ErrDBFault
 		}
 
-		if check := b.Get([]byte(message.MessageId)); check != nil && creating {
+		check := b.Get(message.MessageId)
+
+		if check != nil && creating {
 			return lib.ErrResourceAlreadyExists
+		}
+		if check == nil && !creating {
+			return lib.ErrInvalidResource
 		}
 
 		// Marshal the message and store it
@@ -36,7 +40,7 @@ func writeMessage(message message.Message, channel string, database string, crea
 		if err2 != nil {
 			return lib.ErrRequestDataInvalid
 		}
-		err := b.Put([]byte(message.MessageId), msg)
+		err := b.Put(message.MessageId, msg)
 		if err != nil {
 			return lib.ErrDBFault
 		}
@@ -47,17 +51,19 @@ func writeMessage(message message.Message, channel string, database string, crea
 	return err
 }
 
-/*writes a message to the DB, returns an error if ID already is key in DB*/
+//CreateMessage stores a new message in the database. It returns an error if a message with the same ID already existed
+// in the same channel. It just calls writeMessage with creating = true
 func CreateMessage(message message.Message, channel string, database string) error {
 	return writeMessage(message, channel, database, true)
 }
 
-/*writes a message to the DB, regardless of ID already exists*/
+// UpdateMessage overwrites a message in the database. It returns an error if there was no message with the same ID in
+// that channel. It just calls writeMessage with creating = false
 func UpdateMessage(message message.Message, channel string, database string) error {
 	return writeMessage(message, channel, database, false)
 }
 
-/*returns the content of a message sent on a channel. Nil if channel or DB does not exist*/
+// GetMessage returns the content of a message sent on a channel. Nil if the message, channel or DB does not exist
 func GetMessage(channel []byte, message []byte, database string) []byte {
 	db, err := OpenDB(database)
 	if err != nil {
@@ -69,7 +75,7 @@ func GetMessage(channel []byte, message []byte, database string) []byte {
 	err = db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket(channel)
 		if b == nil {
-			fmt.Printf("Could not find bucket with corresponding channel ID in GetMessage()")
+			log.Printf("Could not find bucket with corresponding channel ID in GetMessage()")
 			return lib.ErrInvalidResource
 		}
 
@@ -80,6 +86,5 @@ func GetMessage(channel []byte, message []byte, database string) []byte {
 	if err != nil {
 		return nil
 	}
-
 	return data
 }
