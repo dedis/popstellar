@@ -35,7 +35,7 @@ func NewWitness(pkey string, db string) *Witness {
 /* processes what is received from the websocket */
 func (w *Witness) HandleWholeMessage(receivedMsg []byte, userId int) (msgAndChannel []lib.MessageAndChannel, responseToSender []byte) {
 	// in case the message is already an answer message (positive ack or error), ignore and answer noting to avoid falling into infinite error loops
-	isAnswer, err := filterAnswers(receivedMsg)
+	isAnswer, err := parser.FilterAnswers(receivedMsg)
 	if err != nil {
 		return nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, message.Query{})
 	}
