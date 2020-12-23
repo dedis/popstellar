@@ -1,10 +1,8 @@
-/*
-This class implements the functions an organizer provides. It stores messages in the database using the db package.
-Currently it does not do send response to channels (only ack messages as defined in the protocol). Implementation not
-finished as it is not the most important class for now. Does not support publish method.
-*/
-
 package actors
+
+// This class implements the functions an organizer provides. It stores messages in the database using the db package.
+// Currently it does not do send response to channels (only ack messages as defined in the protocol). Implementation not
+// finished as it is not the most important class for now. Does not support publish method.
 
 import (
 	b64 "encoding/base64"
@@ -18,12 +16,16 @@ import (
 	"student20_pop/security"
 )
 
+// Witness implements how the Witness's backend server is supposed to behave. It currently only acts as a remote
+// database, storing received messages.
 type Witness struct {
 	PublicKey string
 	database  string
 	channels  map[string][]int
 }
 
+// NewWitness is the constructor for the Witness struct. db should be a a file path (existing or not) and pkey is
+// the Witness's public key.
 func NewWitness(pkey string, db string) *Witness {
 	return &Witness{
 		PublicKey: pkey,
@@ -32,9 +34,10 @@ func NewWitness(pkey string, db string) *Witness {
 	}
 }
 
-/* processes what is received from the websocket */
+// HandleWholeMessage processes the received message. It parses it and calls sub-handler functions depending
+// on the message's method field.
 func (w *Witness) HandleWholeMessage(receivedMsg []byte, userId int) (msgAndChannel []lib.MessageAndChannel, responseToSender []byte) {
-	// in case the message is already an answer message (positive ack or error), ignore and answer noting to avoid falling into infinite error loops
+	// if the message is an answer message just ignore it
 	isAnswer, err := parser.FilterAnswers(receivedMsg)
 	if err != nil {
 		return nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, message.Query{})
@@ -65,10 +68,15 @@ func (w *Witness) HandleWholeMessage(receivedMsg []byte, userId int) (msgAndChan
 	return msg, parser.ComposeResponse(err, history, query)
 }
 
+// handlePublish is called by HandleWholeMessage and is only here to implement Actor's interface. Currently a Witness
+// only supports messages with method "message", "subscribe" and "unsubscribe".
 func (w *Witness) handlePublish(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	return nil, lib.ErrInvalidAction //a witness cannot handle a publish request for now
 }
 
+// handleMessage is the function that handles a received message with the method "message". It is called from
+// HandleWholeMessage. It parses the received message, and delegates the handling to sub-handler functions, depending
+// on the "object" and "action" fields.
 func (w *Witness) handleMessage(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	params, errs := parser.ParseParamsIncludingMessage(query.Params)
 	if errs != nil {
@@ -145,7 +153,8 @@ func (w *Witness) handleMessage(query message.Query) (msgAndChannel []lib.Messag
 	}
 }
 
-/*handles the creation of an LAO*/
+// handleCreateLAO is the function that handles the creation of a LAO. It checks the message's validity,
+// creates a new Channel in the Witness's database and stores the received message
 func (w *Witness) handleCreateLAO(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	if chann != "/root" {
 		return nil, lib.ErrInvalidResource
@@ -177,7 +186,8 @@ func (w *Witness) handleCreateLAO(msg message.Message, chann string, query messa
 	return nil, errs
 }
 
-/*witness does not yet send stuff to channel*/
+// handleUpdateProperties handles a received message with field object and action set respectively to "lao" and
+// "update_properties". It checks the message's validity and stores it in the Witness's database.
 func (w *Witness) handleUpdateProperties(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	data, errs := parser.ParseDataCreateLAO(msg.Data)
 	if errs != nil {
@@ -196,6 +206,10 @@ func (w *Witness) handleUpdateProperties(msg message.Message, chann string, quer
 	return nil, errs
 }
 
+// handleWitnessMessage handles a received message with fields object and action set respectively to "message" and
+// "witness". It checks the message's validity, retrieves the message to be signed from the database,
+// verifies signature's correctness and eventually appends the new signature to the original message, before writing it
+// back to the database, along with received message.
 func (w *Witness) handleWitnessMessage(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	data, errs := parser.ParseDataWitnessMessage(msg.Data)
 	if errs != nil {
@@ -234,6 +248,9 @@ func (w *Witness) handleWitnessMessage(msg message.Message, chann string, query 
 	return nil, errs
 }
 
+// handleLAOState is the function that handles a received message with fields object and action set respectively to
+// "lao" and "state". It verify that the message is correct, retrieves the LAO to update and updates it in the Witness's
+// database, and stores the received message.
 func (w *Witness) handleLAOState(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	data, errs := parser.ParseDataCreateLAO(msg.Data)
 	if errs != nil {
@@ -263,6 +280,9 @@ func (w *Witness) handleLAOState(msg message.Message, chann string, query messag
 	return nil, errs
 }
 
+// handleCreateRollCall is the function that handles a received message with fields object and action set respectively
+// to "roll call" and "create". It  verifies the message's validity, creates a new channel in the Witness's database and
+// stores the received message.
 func (w *Witness) handleCreateRollCall(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	data, errs := parser.ParseDataCreateRollCall(msg.Data)
 	if errs != nil {
