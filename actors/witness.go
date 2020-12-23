@@ -179,7 +179,7 @@ func (w *Witness) handleCreateLAO(msg message.Message, chann string, query messa
 		Name:          data.Name,
 		Creation:      data.Creation,
 		OrganizerPKey: string(data.Organizer),
-		Witnesses:     lib.ConvertSliceSliceByteToSliceString(data.Witnesses),
+		Witnesses:     lib.ArrayArrayByteToArrayString(data.Witnesses),
 	}
 	errs = db.CreateChannel(lao, w.database)
 
@@ -272,7 +272,7 @@ func (w *Witness) handleLAOState(msg message.Message, chann string, query messag
 		Name:          data.Name,
 		Creation:      data.Creation,
 		OrganizerPKey: string(data.Organizer),
-		Witnesses:     lib.ConvertSliceSliceByteToSliceString(data.Witnesses),
+		Witnesses:     lib.ArrayArrayByteToArrayString(data.Witnesses),
 	}
 
 	errs = db.UpdateChannel(lao, w.database)
