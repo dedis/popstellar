@@ -15,11 +15,11 @@ import (
 const bucketSubscribers = "sub"
 const SubscribeDB = "sub.db"
 
-/**
- * Function that subscribe a user to a channel. ONLY AT THE PUB/SUB LAYER
- * if user was already subscribed, does nothing
- * does not change LAO's member field
- */
+// DEPRECATED : Subscribers are not stored in a database anymore
+// Function that subscribe a user to a channel. ONLY AT THE PUB/SUB LAYER
+// if user was already subscribed, does nothing
+// does not change LAO's member field
+
 func Subscribe(userId int, channelId []byte) error {
 
 	db, err := OpenDB(SubscribeDB)
@@ -59,11 +59,11 @@ func Subscribe(userId int, channelId []byte) error {
 	return err
 }
 
-/*
- function that unsubscribes a user from a channel. ONLY AT THE PUB/SUB LAYER
- does nothing if that user was not already subscribed
- does not change LAO's member field
-*/
+// DEPRECATED : Subscribers are not stored in a database anymore
+// function that unsubscribes a user from a channel. ONLY AT THE PUB/SUB LAYER
+// does nothing if that user was not already subscribed
+// does not change LAO's member field
+
 func Unsubscribe(userId int, channelId []byte) error {
 
 	db, err := OpenDB(SubscribeDB)
@@ -107,7 +107,8 @@ func Unsubscribe(userId int, channelId []byte) error {
 	return err
 }
 
-/*helper function to find a channel's subscribers */
+// DEPRECATED : Subscribers are not stored in a database anymore
+// helper function to find a channel's subscribers
 func GetSubscribers(channel []byte) ([]int, error) {
 	db, err := OpenDB(SubscribeDB)
 	if err != nil {
