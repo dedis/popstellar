@@ -11,7 +11,8 @@ import (
 	"time"
 )
 
-/* used for both creation and state update */
+// LAOIsValid checks wether the infos given upon creation or update of a LAO are valid. That is it checks the timestamp
+// and if it's a creation it verifies that the ID is the right one.
 func LAOIsValid(data message.DataCreateLAO, create bool) bool {
 	//the timestamp is reasonably recent with respect to the server’s clock,
 	if data.Creation < time.Now().Unix()-MaxClockDifference || data.Creation > time.Now().Unix()+MaxPropagationDelay {
@@ -19,12 +20,12 @@ func LAOIsValid(data message.DataCreateLAO, create bool) bool {
 		return false
 	}
 	//the attestation is valid,
-	str := []byte(data.Organizer)
+	str := data.Organizer
 	str = append(str, []byte(strconv.FormatInt(data.Creation, 10))...)
 	str = append(str, []byte(data.Name)...)
 	hash := sha256.Sum256(str)
 
-	if create && !bytes.Equal([]byte(data.ID), hash[:]) {
+	if create && !bytes.Equal(data.ID, hash[:]) {
 		log.Printf("expecting %v, got %v", hash, data.ID)
 		return false
 	}
@@ -32,6 +33,8 @@ func LAOIsValid(data message.DataCreateLAO, create bool) bool {
 	return true
 }
 
+//MeetingCreatedIsValid checks wether a meeting is valid when it is created. It checks if the ID is correctly computed,
+// and if the timestamps are coherent. (Start < End for example)
 func MeetingCreatedIsValid(data message.DataCreateMeeting, message message.Message) bool {
 	//the timestamp is reasonably recent with respect to the server’s clock,
 	if data.Creation < time.Now().Unix()-MaxClockDifference || data.Creation > time.Now().Unix()+MaxPropagationDelay {
@@ -53,21 +56,25 @@ func MeetingCreatedIsValid(data message.DataCreateMeeting, message message.Messa
 	return true
 }
 
+// not implemented yet
 func PollCreatedIsValid(data message.DataCreatePoll, message message.Message) bool {
 	return true
 }
 
+// not implemented yet
 func RollCallCreatedIsValid(data message.DataCreateRollCall, message message.Message) bool {
 	return true
 }
 
+// MessageIsValid checks upon reception that the message data is valid, that is that the ID is correctly computed, and
+// that the signature is correct as well
 func MessageIsValid(msg message.Message) error {
 	// the message_id is valid
-	str := []byte(msg.Data)
-	str = append(str, []byte(msg.Signature)...)
+	str := msg.Data
+	str = append(str, msg.Signature...)
 	hash := sha256.Sum256(str)
 
-	if !bytes.Equal([]byte(msg.MessageId), hash[:]) {
+	if !bytes.Equal(msg.MessageId, hash[:]) {
 		log.Printf("id of message invalid: %v should be: %v", string(msg.MessageId), string(hash[:]))
 		return lib.ErrInvalidResource
 	}

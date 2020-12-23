@@ -1,3 +1,4 @@
+// security contains all the function to perform checks on Data, from timestamp coherence to signature validation
 package security
 
 import (
@@ -10,9 +11,7 @@ import (
 const MaxPropagationDelay = 600
 const MaxClockDifference = 100
 
-/*
-	we check that Sign(sender||data) is the given signature
-*/
+// VerifySignature checks that Sign(sender||data) corresponds to the given signature
 func VerifySignature(publicKey []byte, data []byte, signature []byte) error {
 	//check the size of the key as it will panic if we plug it in Verify
 	if len(publicKey) != ed.PublicKeySize {
@@ -25,12 +24,9 @@ func VerifySignature(publicKey []byte, data []byte, signature []byte) error {
 	return lib.ErrRequestDataInvalid
 }
 
-/*
-	handling of dynamic updates with object as item and not just string
-	*publicKeys is already decoded
-    *sender and signature are not already decoded
-*/
-func VerifyWitnessSignatures(authorizedWitnesses [][]byte, witnessSignaturesEnc []json.RawMessage, message_id []byte) error {
+// VerifyWitnessSignatures verify that for each WitnessSignatureEnc, the public key belongs to authorizedWitnesses and
+// verifies that the signature is correct
+func VerifyWitnessSignatures(authorizedWitnesses [][]byte, witnessSignaturesEnc []json.RawMessage, messageId []byte) error {
 	for _, item := range witnessSignaturesEnc {
 		witnessSignature, err := parser.ParseWitnessSignature(item)
 		if err != nil {
@@ -43,7 +39,7 @@ func VerifyWitnessSignatures(authorizedWitnesses [][]byte, witnessSignaturesEnc 
 			return lib.ErrRequestDataInvalid
 		}
 		//then we check correctness of the signature
-		err = VerifySignature(witnessSignature.WitnessKey, message_id, witnessSignature.Signature)
+		err = VerifySignature(witnessSignature.WitnessKey, messageId, witnessSignature.Signature)
 		if err != nil {
 			return err
 		}
