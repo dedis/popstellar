@@ -85,3 +85,13 @@ We use the protocol as defined in the branch `proto-specs`, which is in the `jso
 
 ### Useful links :
 * https://stackoverflow.com/questions/20101954/json-unmarshal-nested-object-into-string-or-byte
+
+## Potential improvements:
+### Database :
+The library we currently use is not maintained anymore, this is why we should consider upgrading to https://github.com/etcd-io/bbolt
+It would also be great to switch to something more complete than a key-value storage. For example switching to a simple relational DB, 
+like SQLite, would provide features that we currently do not support (indexing on different values than ID for example).
+### Project Structure :
+Currently, the project biggest, and "all-containing" entity in the project is the Hub (package network). Then the hub has
+an actor (either organizer or witness). It would make more sense to turn things around, in order to make the Actor the 
+principal entity, and to let the actor have a hub.
