@@ -73,7 +73,7 @@ func newHub(mode string, pkey string, database string) *hub {
 			var messageAndChannel []lib.MessageAndChannel = nil
 			var response []byte = nil
 			//handle the message and generate the response
-			messageAndChannel, response = h.actor.HandleWholeMessage(msg, h.idOfSender)
+			messageAndChannel, response = h.actor.HandleReceivedMessage(msg, h.idOfSender)
 
 			h.connectionsMx.RLock()
 			for _, pair := range messageAndChannel {

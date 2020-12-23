@@ -12,7 +12,7 @@ const SIG_THRESHOLD = 0
 // Actor is an interface representing either an Organizer or a Witness.
 type Actor interface {
 	//Public functions
-	HandleWholeMessage(msg []byte, userId int) (msgAndChannel []lib.MessageAndChannel, responseToSender []byte)
+	HandleReceivedMessage(msg []byte, userId int) (msgAndChannel []lib.MessageAndChannel, responseToSender []byte)
 	GetSubscribers(channel string) []int
 	//Private functions
 	handleSubscribe(query message.Query, userId int) error

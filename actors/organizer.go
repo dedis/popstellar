@@ -34,7 +34,7 @@ func NewOrganizer(pkey string, db string) *Organizer {
 
 // HandleWholeMessage processes the received message. It parses it and calls sub-handler functions depending on
 // 	the message's method field.
-func (o *Organizer) HandleWholeMessage(receivedMsg []byte, userId int) (msgAndChannel []lib.MessageAndChannel, responseToSender []byte) {
+func (o *Organizer) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAndChannel []lib.MessageAndChannel, responseToSender []byte) {
 	// if the message is an answer message (positive ack or error), ignore it
 	isAnswer, err := parser.FilterAnswers(receivedMsg)
 	if err != nil {

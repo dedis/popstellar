@@ -36,7 +36,7 @@ func NewWitness(pkey string, db string) *Witness {
 
 // HandleWholeMessage processes the received message. It parses it and calls sub-handler functions depending
 // on the message's method field.
-func (w *Witness) HandleWholeMessage(receivedMsg []byte, userId int) (msgAndChannel []lib.MessageAndChannel, responseToSender []byte) {
+func (w *Witness) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAndChannel []lib.MessageAndChannel, responseToSender []byte) {
 	// if the message is an answer message just ignore it
 	isAnswer, err := parser.FilterAnswers(receivedMsg)
 	if err != nil {
