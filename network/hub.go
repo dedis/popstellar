@@ -86,21 +86,22 @@ func newHub(mode string, pkey string, database string) *hub {
 
 /* sends the message msg to every subscribers of the channel channel */
 func (h *hub) publishOnChannel(msg []byte, channel []byte) {
-	emptyChannel := false
 	var subscribers []int = nil
-	if !bytes.Equal(channel, []byte("/root")) {
-		subscribers = h.actor.GetSubscribers(string(channel))
-		if subscribers == nil {
-			log.Printf("no subscribers to this channel")
-			emptyChannel = true
-		}
+	if bytes.Equal(channel, []byte("/root")) {
+		return
+	}
+
+	subscribers = h.actor.GetSubscribers(string(channel))
+	if subscribers == nil {
+		log.Printf("no subscribers to this channel")
+		return
 	}
 
 	for c := range h.connections {
 		//send msgBroadcast to that connection if channel is main channel or is in channel subscribers
 		_, found := lib.Find(subscribers, c.id)
 		// && !emptyChannel seems useless
-		if (bytes.Equal(channel, []byte("/root")) || found) && msg != nil && !emptyChannel {
+		if (bytes.Equal(channel, []byte("/root")) || found) && msg != nil {
 			select {
 			case c.send <- msg:
 			// stop trying to send to this connection after trying for 1 second.
