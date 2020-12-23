@@ -161,28 +161,3 @@ type DataWitnessMessage struct {
 	Message_id []byte
 	Signature  []byte
 }
-type DataExchanged struct {
-	Object string `json:"object"`
-	Action string `json:"action"`
-
-	// hash : Name || Creation
-	ID []byte `json:"id,omitempty"`
-	// Name of the LAO,Meeting...
-	Name string `json:"name,omitempty"`
-	//Creation's timestamp (Unix) (uint64)
-	Creation int64 `json:"creation,omitempty"`
-	//Organizer's Public Key
-	Organizer []byte `json:"organizer,omitempty"`
-	//List of Witnesses' Public keys
-	Witnesses [][]byte `json:"witness,omitempty"`
-	//Last_modified Date/Time
-	Last_modified int64 `json:"last_modified,omitempty"` //  Unix timestamp (uint64)
-
-	// in the case of a witness message we want a message_id and not an id
-	MessageID []byte `json:"message_id,omitempty"`
-	Signature  []byte `json:"signature,omitempty"`
-
-	// in the case of a meeting
-
-
-}
