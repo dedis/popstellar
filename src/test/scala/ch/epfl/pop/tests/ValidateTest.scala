@@ -2,7 +2,7 @@ package ch.epfl.pop.tests
 
 import ch.epfl.pop.Validate
 import ch.epfl.pop.crypto.Hash
-import ch.epfl.pop.json.JsonMessages.{BroadcastLaoMessageClient, BroadcastMeetingMessageClient, CreateLaoMessageClient, CreateMeetingMessageClient, CreateRollCallMessageClient, UpdateLaoMessageClient, WitnessMessageMessageClient}
+import ch.epfl.pop.json.JsonMessages.{BroadcastLaoMessageClient, BroadcastMeetingMessageClient, CloseRollCallMessageClient, CreateLaoMessageClient, CreateMeetingMessageClient, CreateRollCallMessageClient, OpenRollCallMessageClient, UpdateLaoMessageClient, WitnessMessageMessageClient}
 import ch.epfl.pop.json.JsonUtils.MessageContentDataBuilder
 import ch.epfl.pop.json.{Actions, ByteArray, Hash, MessageContent, Methods, Objects}
 import ch.epfl.pop.tests.MessageCreationUtils._
@@ -346,4 +346,70 @@ class ValidateTest extends FunSuite {
     val rcMsg = createRollCall(rcId, rcCreation, rcStart)
     assert(Validate.validate(rcMsg, laoId).isEmpty)
   }
+
+  test("Create roll-call validation fails with invalid id") {
+    //Replacing roll-call id by lao id
+    val rcMsg = createRollCall(laoId, rcCreation, rcStart)
+    assert(Validate.validate(rcMsg, laoId).isDefined)
+  }
+
+  test("Create roll-call validation fails with invalid start timestamp") {
+    val rcMsg = createRollCall(laoId, rcCreation, rcCreation - 1)
+    assert(Validate.validate(rcMsg, laoId).isDefined)
+  }
+
+  /* --------------- VALIDATE OPEN ROLL-CALL --------------- */
+
+  private def openRollCall(start: Long): OpenRollCallMessageClient = {
+    val data = new MessageContentDataBuilder()
+      .setHeader(Objects.RollCall, Actions.Open)
+      .setId(rcId)
+      .setStart(start)
+      .build()
+
+    val params = getMessageParams(data, pk, sk, root)
+    OpenRollCallMessageClient(params, 0, Methods.Publish)
+  }
+
+  test("Open roll-call validation works with valid parameters") {
+    val rcMsg = openRollCall(rcStart)
+    assert(Validate.validate(rcMsg).isEmpty)
+  }
+
+  test("Open roll-call validation fails with invalid start timestamp") {
+    val rcMsg = openRollCall(0)
+    assert(Validate.validate(rcMsg).isDefined)
+  }
+
+  /* --------------- VALIDATE CLOSE ROLL-CALL --------------- */
+
+  private val rcEnd = rcStart + 1
+  private def closeRollCall(start: Long, end: Long): CloseRollCallMessageClient = {
+    val data = new MessageContentDataBuilder()
+      .setHeader(Objects.RollCall, Actions.Close)
+      .setId(rcId)
+      .setStart(start)
+      .setEnd(end)
+      .setAttendees(List())
+      .build()
+
+    val params = getMessageParams(data, pk, sk, root)
+    CloseRollCallMessageClient(params, 0, Methods.Publish)
+  }
+
+  test("Close roll-call validation works with valid parameters") {
+    val rcMsg = closeRollCall(rcStart, rcEnd)
+    assert(Validate.validate(rcMsg).isEmpty)
+  }
+
+  test("Close roll-call validation fails with invalid start timestamp") {
+    val rcMsg = closeRollCall(0, rcEnd)
+    assert(Validate.validate(rcMsg).isDefined)
+  }
+
+  test("Close roll-call validation fails with invalid end timestamp") {
+    val rcMsg = closeRollCall(rcStart, rcStart)
+    assert(Validate.validate(rcMsg).isDefined)
+  }
+
 }
