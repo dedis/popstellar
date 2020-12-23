@@ -225,69 +225,15 @@ func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query mes
 		Witnesses:     lib.ConvertSliceSliceByteToSliceString(data.Witnesses),
 	}
 
+	errs = db.CreateChannel(lao, o.database)
+	if errs != nil {
+		return nil, err
+	}
+
 	msgAndChan := []lib.MessageAndChannel{{
 		Message: parser.ComposeBroadcastMessage(query),
 		Channel: []byte(canal),
 	}}
-
-	if SIG_THRESHOLD == 0 {
-		errs = db.CreateChannel(lao, o.database)
-		if errs != nil {
-			return nil, err
-		}
-		//compose state update message
-		state := message.DataStateLAO{
-			Object:        "lao",
-			Action:        "state",
-			ID:            []byte(lao.ID),
-			Name:          lao.Name,
-			Creation:      lao.Creation,
-			Last_modified: lao.Creation,
-			Organizer:     []byte(lao.OrganizerPKey),
-			Witnesses:     data.Witnesses,
-		}
-
-		stateStr, errs := json.Marshal(state)
-		if errs != nil {
-			return nil, errs
-		}
-
-		content := message.Message{
-			Data:              stateStr,
-			Sender:            []byte(o.PublicKey),
-			Signature:         nil, //TODO should implement a function to sign the message's content
-			MessageId:         []byte(strconv.Itoa(rand.Int())),
-			WitnessSignatures: nil,
-		}
-
-		contentStr, errs := json.Marshal(content)
-		if errs != nil {
-			return nil, errs
-		}
-
-		sendParams := message.ParamsIncludingMessage{
-			Channel: "/root",
-			Message: contentStr,
-		}
-
-		paramsStr, errs := json.Marshal(sendParams)
-		if errs != nil {
-			return nil, errs
-		}
-
-		sendQuery := message.Query{
-			Jsonrpc: "2.0",
-			Method:  "message",
-			Params:  paramsStr,
-			Id:      rand.Int(),
-		}
-
-		queryStr, errs := json.Marshal(sendQuery)
-		if errs != nil {
-			return nil, errs
-		}
-		msgAndChan = append(msgAndChan, lib.MessageAndChannel{Channel: []byte(canal), Message: queryStr})
-	}
 
 	return msgAndChan, nil
 }
@@ -423,7 +369,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 	}
 
 	//retrieve message to sign from database
-	toSign := db.GetMessage([]byte(canal), []byte(data.Message_id), o.database)
+	toSign := db.GetMessage([]byte(canal), data.Message_id, o.database)
 	if toSign == nil {
 		return nil, lib.ErrInvalidResource
 	}
@@ -491,7 +437,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 		Channel: []byte(canal),
 	}}
 
-	//Same as in HANDLE CREATE LAO, TODO FACTORIZE
+	//TODO switch on event type. Think of clever code
 	if count == SIG_THRESHOLD-1 {
 		lao := event.LAO{
 			ID:            string(laoData.ID),
