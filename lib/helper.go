@@ -54,7 +54,7 @@ type MessageAndChannel struct {
 
 // ArrayArrayByteToArrayString converts an array of array of bytes into an array of string
 func ArrayArrayByteToArrayString(slice [][]byte) []string {
-	sliceString := []string{}
+	var sliceString []string
 	for _, item := range slice {
 		sliceString = append(sliceString, string(item))
 	}
