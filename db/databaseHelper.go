@@ -1,6 +1,6 @@
-/* Just global functions used for every databases. Write is currently not used but we keep it as a syntactic guide. */
-
 package db
+
+// Just global functions used for every databases. Write is currently not used but we keep it as a syntactic guide.
 
 import (
 	"github.com/boltdb/bolt"
@@ -14,10 +14,8 @@ func OpenDB(dbName string) (*bolt.DB, error) {
 	return db, nil
 }
 
-/**
- * Functions that writes a pair (key, val) in the bucket "bkt" in the database
- * Currently not used, but we keep it as syntactic reminder
- */
+// Write is a function that writes a pair (key, val) in the bucket "bkt" in the database
+// DEPRECATED : we only keep it as syntactic reminder
 func Write(key []byte, val []byte, bkt []byte, database *bolt.DB) error {
 	err := database.Update(func(tx *bolt.Tx) error {
 		b, err1 := tx.CreateBucketIfNotExists(bkt)
