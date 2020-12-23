@@ -160,3 +160,26 @@ func ParseDataStateMeeting(data json.RawMessage) (message.DataStateMeeting, erro
 	err := json.Unmarshal(data, &m)
 	return m, err
 }
+
+func FilterAnswers(receivedMsg []byte) (bool, error) {
+	genericMsg, err := ParseGenericMessage(receivedMsg)
+	if err != nil {
+		return false, err
+	}
+
+	// We don't check that the int is correctly 0 for answers and [-5;-1] for errors.
+	// We don't want to answer to an error with another error, and we're already logging the message for debugging.
+
+	_, isAnswerMsg := genericMsg["result"]
+	if isAnswerMsg {
+		log.Printf("positive response received : %v", string(receivedMsg))
+		return true, nil
+	}
+
+	_, isErrorMsg := genericMsg["error"]
+	if isErrorMsg {
+		log.Printf("error response received : %v", string(receivedMsg))
+		return true, nil
+	}
+	return false, nil
+}
