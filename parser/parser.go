@@ -8,6 +8,8 @@ import (
 	"student20_pop/message"
 )
 
+// ParseGenericMessage parses a json []byte into a message.GenericMessage struct.
+// it also checks that the "jsonrpc" field is equal to "2.0"
 func ParseGenericMessage(genericMessage []byte) (message.GenericMessage, error) {
 	m := message.GenericMessage{}
 	err := json.Unmarshal(genericMessage, &m)
@@ -21,10 +23,8 @@ func ParseGenericMessage(genericMessage []byte) (message.GenericMessage, error) 
 	return m, err
 }
 
-/**
- * Function that takes a byte array as input and returns
- * a Message struct
- */
+// ParseQuery parses a json []byte into a message.Query structure. It checks that the field "method" is correctly set
+// according to the protocol defined in jsonRPC
 func ParseQuery(query []byte) (message.Query, error) {
 	m := message.Query{}
 	err := json.Unmarshal(query, &m)
@@ -40,6 +40,8 @@ func ParseQuery(query []byte) (message.Query, error) {
 	}
 }
 
+// ParseParams parses a json.RawMessage into a message.Params structure. It checks that the field "Channel" starts with
+// "/root"
 func ParseParams(params json.RawMessage) (message.Params, error) {
 	m := message.Params{}
 	err := json.Unmarshal(params, &m)
@@ -50,6 +52,8 @@ func ParseParams(params json.RawMessage) (message.Params, error) {
 	return m, err
 }
 
+// ParseParamsIncludingMessage parses a json.RawMessage into a message.ParamsIncludingMessage structure.
+// It checks that the field "channel" starts with "/root"
 func ParseParamsIncludingMessage(params json.RawMessage) (message.ParamsIncludingMessage, error) {
 	m := message.ParamsIncludingMessage{}
 	err := json.Unmarshal(params, &m)
@@ -65,18 +69,22 @@ func ParseParamsIncludingMessage(params json.RawMessage) (message.ParamsIncludin
 	return m, err
 }
 
+// ParseMessage parses a json.RawMessage into a message.Message structure.
 func ParseMessage(msg json.RawMessage) (message.Message, error) {
 	m := message.Message{}
 	err := json.Unmarshal(msg, &m)
 	return m, err
 }
 
+// ParseWitnessSignature parses a json.RawMessage into a message.ItemWitnessSignatures structure.
 func ParseWitnessSignature(witnessSignatures json.RawMessage) (message.ItemWitnessSignatures, error) {
 	m := message.ItemWitnessSignatures{}
 	err := json.Unmarshal(witnessSignatures, &m)
 	return m, err
 }
 
+// ParseData parses a json.RawMessage into a message.Data structure. It calls dataConstAreValid to check restrictions
+// defined in the jsonRPC protocol.
 func ParseData(data string) (message.Data, error) {
 	m := message.Data{}
 	err := json.Unmarshal([]byte(data), &m)
@@ -87,6 +95,10 @@ func ParseData(data string) (message.Data, error) {
 	}
 }
 
+// dataConstAreValid verifies following constraints :
+// * object is one of "lao", "message", "meeting"
+// * action is one of "create", update_properties", "state", "witness"
+// * creation and last modified are positive integer
 func dataConstAreValid(m message.Data) bool {
 	switch m["object"] {
 	case "lao", "message", "meeting":
@@ -110,57 +122,63 @@ func dataConstAreValid(m message.Data) bool {
 	return true
 }
 
+// ParseDataCreateLAO parses a json.RawMessage into a message.DataCreateLAO structure.
 func ParseDataCreateLAO(data json.RawMessage) (message.DataCreateLAO, error) {
 	m := message.DataCreateLAO{}
 	err := json.Unmarshal(data, &m)
 	return m, err
 }
 
+// ParseDataWitnessMessage parses a json.RawMessage into a message.DataWitnessMessage structure.
 func ParseDataWitnessMessage(data json.RawMessage) (message.DataWitnessMessage, error) {
 	m := message.DataWitnessMessage{}
 	err := json.Unmarshal(data, &m)
-	if err != nil {
-		log.Printf("error unmarshalling the string : %v", err)
-		return m, err
-	}
 	return m, err
 }
 
+// ParseDataCreateMeeting parses a json.RawMessage into a message.DataCreateMeeting structure.
 func ParseDataCreateMeeting(data json.RawMessage) (message.DataCreateMeeting, error) {
 	m := message.DataCreateMeeting{}
 	err := json.Unmarshal(data, &m)
 	return m, err
 }
+
+// ParseDataCreateRollCall parses a json.RawMessage into a message.DataCreateRollCall structure.
 func ParseDataCreateRollCall(data json.RawMessage) (message.DataCreateRollCall, error) {
 	m := message.DataCreateRollCall{}
 	err := json.Unmarshal(data, &m)
 	return m, err
 }
 
+// ParseDataCreatePoll parses a json.RawMessage into a message.DataCreatePoll structure.
 func ParseDataCreatePoll(data json.RawMessage) (message.DataCreatePoll, error) {
 	m := message.DataCreatePoll{}
 	err := json.Unmarshal(data, &m)
 	return m, err
 }
 
+// ParseDataUpdateLAO parses a json.RawMessage into a message.DataUpdateLAO structure.
 func ParseDataUpdateLAO(data json.RawMessage) (message.DataUpdateLAO, error) {
 	m := message.DataUpdateLAO{}
 	err := json.Unmarshal(data, &m)
 	return m, err
 }
 
+// ParseDataStateLAO parses a json.RawMessage into a message.DataStateLAO structure.
 func ParseDataStateLAO(data json.RawMessage) (message.DataStateLAO, error) {
 	m := message.DataStateLAO{}
 	err := json.Unmarshal(data, &m)
 	return m, err
 }
 
+// ParseDataStateMeeting parses a json.RawMessage into a message.DataStateMeeting structure.
 func ParseDataStateMeeting(data json.RawMessage) (message.DataStateMeeting, error) {
 	m := message.DataStateMeeting{}
 	err := json.Unmarshal(data, &m)
 	return m, err
 }
 
+// FilterAnswers returns true if the message was an answer message
 func FilterAnswers(receivedMsg []byte) (bool, error) {
 	genericMsg, err := ParseGenericMessage(receivedMsg)
 	if err != nil {

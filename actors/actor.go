@@ -1,4 +1,4 @@
-// Package actor defines how witnesses and organizers must behave.
+// actor defines how witnesses and organizers must behave.
 package actors
 
 import (
