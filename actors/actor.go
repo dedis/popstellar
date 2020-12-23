@@ -25,7 +25,7 @@ type Actor interface {
 	handleCreateRollCall(mag message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error)
 }
 
-//TODO cette fonction ferait plus de sens dans le package `message` non ?
+//TODO cette fonction aurait plus de sens dans le package `message` non ?
 func filterAnswers(receivedMsg []byte) (bool, error) {
 	genericMsg, err := parser.ParseGenericMessage(receivedMsg)
 	if err != nil {
