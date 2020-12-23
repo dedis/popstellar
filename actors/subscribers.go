@@ -37,6 +37,11 @@ func (o *Organizer) handleUnsubscribe(query message.Query, userId int) error {
 		return lib.ErrRequestDataInvalid
 	}
 
+	if params.Channel == "/root" {
+		log.Printf("root channel is not subscribable !")
+		return lib.ErrInvalidResource
+	}
+
 	subs := o.channels[params.Channel]
 	if index, found := lib.Find(subs, userId); found {
 		subs = append(subs[:index], subs[index+1:]...)
@@ -54,6 +59,11 @@ func (w *Witness) handleSubscribe(query message.Query, userId int) error {
 	if err != nil {
 		log.Printf("unable to analyse paramsLight in handleSubscribe()")
 		return lib.ErrRequestDataInvalid
+	}
+
+	if params.Channel == "/root" {
+		log.Printf("root channel is not subscribable !")
+		return lib.ErrInvalidResource
 	}
 
 	if _, found := lib.Find(w.channels[params.Channel], userId); found {
