@@ -1,3 +1,4 @@
+// message defines the received Json messages and their nested fields
 package message
 
 import (
@@ -24,18 +25,17 @@ const(
 
 type DataCreateLAO struct {
 	Object string `json:"object"`
-	Action string `json:"action"`//if we put "action" with little a it crashes
-	//ID hash : Name || Creation Date/Time Unix Timestamp
+	Action string `json:"action"`
+	// hash : Name || Creation
 	ID []byte `json:"id"`
-	// name of LAO
+	// Name of the LAO
 	Name string `json:"name"`
-	//Creation Date/Time
-	Creation int64 `json:"creation"`//  Unix timestamp (uint64)
-	//Organiser: Public Key
+	//Creation's timestamp (Unix) (uint64)
+	Creation int64 `json:"creation"`
+	//Organizer's Public Key
 	Organizer []byte `json:"organizer"`
-	//List of public keys where each public key belongs to one witness
+	//List of Witnesses' Public keys
 	Witnesses [][]byte `json:"witness"`
-	//List of public keys where each public key belongs to one member (physical person) (subscriber)
 }
 
 type DataCreateMeeting struct {
@@ -43,15 +43,18 @@ type DataCreateMeeting struct {
 	Action string
 	//ID hash : Name || Creation Date/Time Unix Timestamp
 	ID []byte
-	// name of LAO
+	// Name of the meeting
 	Name string
-	//Creation Date/Time
+	//Creation's timestamp (Unix) (uint64)
 	Creation int64 //  Unix timestamp (uint64)
-	//Last_modified int64  //timestamp
-	Location string //optional
-	Start    int64  /* Timestamp */
-	End      int64  /* Timestamp, optional */
-	Extra    string /* arbitrary object, optional */
+	// meeting's location, optional
+	Location string
+	// meeting's Start time timestamp (Unix) (uint64)
+	Start int64
+	// meeting's End time timestamp (Unix) (uint64)
+	End int64
+	// arbitrary object, optional
+	Extra string
 }
 type DataCreateRollCall struct {
 	//TODO right now same attribute as meeting
@@ -59,15 +62,18 @@ type DataCreateRollCall struct {
 	Action string
 	//ID hash : Name || Creation Date/Time Unix Timestamp
 	ID []byte
-	// name of LAO
+	// Name of the meeting
 	Name string
-	//Creation Date/Time
+	//Creation's timestamp (Unix) (uint64)
 	Creation int64 //  Unix timestamp (uint64)
-	//Last_modified int64  //timestamp
-	Location string //optional
-	Start    int64  /* Timestamp */
-	End      int64  /* Timestamp, optional */
-	Extra    string /* arbitrary object, optional */
+	// meeting's location, optional
+	Location string
+	// meeting's Start time timestamp (Unix) (uint64)
+	Start int64
+	// meeting's End time timestamp (Unix) (uint64)
+	End int64
+	// arbitrary object, optional
+	Extra string
 }
 type DataCreatePoll struct {
 	//TODO right now same attribute as meeting
@@ -75,16 +81,20 @@ type DataCreatePoll struct {
 	Action string
 	//ID hash : Name || Creation Date/Time Unix Timestamp
 	ID []byte
-	// name of LAO
+	// Name of the meeting
 	Name string
-	//Creation Date/Time
+	//Creation's timestamp (Unix) (uint64)
 	Creation int64 //  Unix timestamp (uint64)
-	//Last_modified int64  //timestamp
-	Location string //optional
-	Start    int64  /* Timestamp */
-	End      int64  /* Timestamp, optional */
-	Extra    string /* arbitrary object, optional */
+	// meeting's location, optional
+	Location string
+	// meeting's Start time timestamp (Unix) (uint64)
+	Start int64
+	// meeting's End time timestamp (Unix) (uint64)
+	End int64
+	// arbitrary object, optional
+	Extra string
 }
+
 type DataWitnessMessage struct {
 	Object     string
 	Action     string
@@ -94,31 +104,31 @@ type DataWitnessMessage struct {
 
 type DataUpdateLAO struct {
 	Object string
-	Action string //if we put "action" with little a it crashes
-	//ID hash : OriginalName || Creation Date/Time Unix Timestamp
+	Action string
+	//ID hash : OriginalName || Creation
 	ID []byte
-	// name of LAO
+	// new name of the LAO
 	Name string
-	//Last_modified Date/Time
-	Last_modified int64 //  Unix timestamp (uint64)
-	//List of public keys where each public key belongs to one witness
+	//Last modification's timestamp (Unix) (uint64)
+	Last_modified int64
+	// list of Witnesses' Public keys
 	Witnesses [][]byte
 }
 
 type DataStateLAO struct {
 	Object string
-	Action string //if we put "action" with little a it crashes
-	//ID hash : OriginalName || Creation Date/Time Unix Timestamp
+	Action string
+	//ID hash : OriginalName || Creation
 	ID []byte
-	// name of LAO
+	// new name of the LAO
 	Name string
-	//Creation Date/Time
-	Creation int64 //  Unix timestamp (uint64)
-	//Last_modified Date/Time
-	Last_modified int64 //  Unix timestamp (uint64)
-	//Organiser: Public Key
+	//Creation timestamp (Unix) (uint64)
+	Creation int64
+	//Last modification timestamp (Unix) (uint64)
+	Last_modified int64
+	//Organizer's Public Key
 	Organizer []byte
-	//List of public keys where each public key belongs to one witness
+	// list of Witnesses' Public keys
 	Witnesses [][]byte
 	// id of the modification (either creation/update)
 	Modification_id []byte
@@ -128,7 +138,7 @@ type DataStateLAO struct {
 
 type DataStateMeeting struct {
 	Object string
-	Action string //if we put "action" with little a it crashes
+	Action string
 	//ID hash : OriginalName || Creation Date/Time Unix Timestamp
 	ID []byte
 	// name of LAO
