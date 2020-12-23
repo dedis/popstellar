@@ -28,12 +28,8 @@ type Query struct {
 }
 
 type Params struct {
-	Channel string
-}
-
-type ParamsIncludingMessage struct {
-	Channel string
-	Message json.RawMessage
+	Channel string          `json:"channel"`
+	Message json.RawMessage `json:"message,omitempty"`
 }
 
 type Message struct {

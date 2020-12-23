@@ -78,7 +78,7 @@ func (w *Witness) handlePublish(query message.Query) (msgAndChannel []lib.Messag
 // HandleWholeMessage. It parses the received message, and delegates the handling to sub-handler functions, depending
 // on the "object" and "action" fields.
 func (w *Witness) handleMessage(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
-	params, errs := parser.ParseParamsIncludingMessage(query.Params)
+	params, errs := parser.ParseParams(query.Params)
 	if errs != nil {
 		return nil, lib.ErrRequestDataInvalid
 	}
