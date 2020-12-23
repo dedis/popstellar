@@ -1,7 +1,7 @@
-/* file to implement manage opened websockets. Implements the publish-subscribe paradigm.
-inspired from the chat example of github.com/gorilla */
-
 package network
+
+// file to implement manage opened websockets. Implements the publish-subscribe paradigm.
+// inspired from the chat example of github.com/gorilla.
 
 import (
 	"bytes"
@@ -13,6 +13,7 @@ import (
 	"time"
 )
 
+// hub is the struct that will manage websockets connections
 type hub struct {
 	// the mutex to protect connections
 	connectionsMx sync.RWMutex
@@ -32,14 +33,17 @@ type hub struct {
 	connIndex int
 }
 
+// NewOrganizerHub returns a hub which Actor is an Organizer
 func NewOrganizerHub(pkey string, database string) *hub {
 	return newHub("o", pkey, database)
 }
 
+// NewWitnessHub returns a hub which Actor is a Witness
 func NewWitnessHub(pkey string, database string) *hub {
 	return newHub("w", pkey, database)
 }
 
+// returns a hub. Function made to be used by NewOrganizerHub et NewWitnessHub
 func newHub(mode string, pkey string, database string) *hub {
 
 	h := &hub{
@@ -84,7 +88,7 @@ func newHub(mode string, pkey string, database string) *hub {
 
 }
 
-/* sends the message msg to every subscribers of the channel channel */
+// publishOnChannel sends a message to every subscribers of a channel
 func (h *hub) publishOnChannel(msg []byte, channel []byte) {
 	var subscribers []int = nil
 	if bytes.Equal(channel, []byte("/root")) {
@@ -114,7 +118,7 @@ func (h *hub) publishOnChannel(msg []byte, channel []byte) {
 	}
 }
 
-/*sends the message msg to the connection sender*/
+// sendResponse sends the message msg to the connection "sender"
 func (h *hub) sendResponse(msg []byte, sender int) {
 	for c := range h.connections {
 		//send answer to client

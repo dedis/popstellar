@@ -1,5 +1,7 @@
-/* file that implement a websocket. Comes from the chat example of github.com/gorilla */
+// network implements communication through websockets
 package network
+
+// file that implement a websocket. Strongly inspired from the chat example of github.com/gorilla
 
 import (
 	"fmt"
@@ -10,7 +12,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-//wrapper for the web socket 	connection
+//wrapper for the web socket connection
 type connection struct {
 	// Buffered channel of outbound messages.
 	send chan []byte
