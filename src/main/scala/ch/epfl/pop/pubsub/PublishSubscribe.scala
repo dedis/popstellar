@@ -197,6 +197,14 @@ object PublishSubscribe {
             case Some(msgContent: MessageContent) =>
               errorOrPublish(params, id, Validate.validate(m, msgContent.data))
           }
+        case m @ CreateRollCallMessageClient(params, id, _, _) =>
+          val laoId = Base64.getDecoder.decode(params.channel.slice(6,params.channel.length).getBytes)
+          errorOrPublish(params, id, Validate.validate(m, laoId))
+        case m @ OpenRollCallMessageClient(params, id, _ , _) =>
+          errorOrPublish(params, id, Validate.validate(m))
+        case m @ CloseRollCallMessageClient(params, id, _ , _) =>
+          errorOrPublish(params, id, Validate.validate(m))
+
       }
   }
 

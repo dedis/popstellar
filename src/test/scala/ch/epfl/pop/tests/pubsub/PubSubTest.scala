@@ -209,12 +209,11 @@ class PubSubTest extends FunSuite {
     println("LaoId: " + util.Arrays.toString(Base64.getDecoder.decode(laoId.getBytes())))
     println("Creation time: " + creationTime)
     println("Name: " + name)
-    val idString = "[\"" + laoId + "\",\"" + creationTime.toString + "\",\"" + name + "\"]"
 
-    val eventID = digest.digest(idString.getBytes(StandardCharsets.UTF_8))
+    val eventId = Hash.computeMeetingId(Base64.getDecoder.decode(laoId), creationTime, name)
     val data = new MessageContentDataBuilder()
       .setHeader(Objects.Meeting, Actions.Create)
-      .setId(eventID)
+      .setId(eventId)
       .setName(name)
       .setCreation(creationTime)
       .setLastModified(creationTime)
