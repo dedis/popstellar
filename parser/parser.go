@@ -52,23 +52,6 @@ func ParseParams(params json.RawMessage) (message.Params, error) {
 	return m, err
 }
 
-// ParseParamsIncludingMessage parses a json.RawMessage into a message.ParamsIncludingMessage structure.
-// It checks that the field "channel" starts with "/root"
-func ParseParamsIncludingMessage(params json.RawMessage) (message.ParamsIncludingMessage, error) {
-	m := message.ParamsIncludingMessage{}
-	err := json.Unmarshal(params, &m)
-	if err != nil {
-		return m, lib.ErrEncodingFault
-	}
-	//d, err := lib.Decode(m.Channel)
-	//m.Channel = string(d)
-	if !strings.HasPrefix(m.Channel, "/root") {
-		log.Printf("channel id doesn't start with /root but is %v", m.Channel)
-		return m, lib.ErrRequestDataInvalid
-	}
-	return m, err
-}
-
 // ParseMessage parses a json.RawMessage into a message.Message structure.
 func ParseMessage(msg json.RawMessage) (message.Message, error) {
 	m := message.Message{}

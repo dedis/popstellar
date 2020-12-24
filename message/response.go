@@ -3,34 +3,24 @@ package message
 import "encoding/json"
 
 type ErrorResponse struct {
-	Code        int
-	Description string
+	Code        int    `json:"code"`
+	Description string `json:"description"`
 }
 
-type ResponseWithGenResult struct {
-	Jsonrpc string
-	Result  int
-	Id      int
-}
-type ResponseWithCatchupResult struct {
-	Jsonrpc string
-	Result  string
-	Id      int
-}
-type ResponseWithError struct {
-	Jsonrpc       string
-	ErrorResponse json.RawMessage
-	Id            int
-}
+//We still need ResponseIDNotDecoded and ResponseWithGenResult because we cannot omit integers
 type ResponseIDNotDecoded struct {
-	Jsonrpc       string
-	ErrorResponse json.RawMessage
-	Id            []byte
+	Jsonrpc       string          `json:"jsonrpc"`
+	ErrorResponse json.RawMessage `json:"result,omitempty"`
+	Id            []byte          `json:"id"`
 }
-type GeneralResponse struct {
-	Jsonrpc       string
-	ErrorResponse json.RawMessage
-	GenResult     string
-	CatchupResult string
-	Id            []byte
+type ResponseWithGenResult struct {
+	Jsonrpc string `json:"jsonrpc"`
+	Result  int    `json:"result,omitempty"`
+	Id      int    `json:"id"`
+}
+type Response struct {
+	Jsonrpc       string          `json:"jsonrpc"`
+	ErrorResponse json.RawMessage `json:"error,omitempty"`
+	CatchupResult string          `json:"result,omitempty"`
+	Id            int             `json:"id"`
 }

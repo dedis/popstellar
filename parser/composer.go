@@ -52,7 +52,7 @@ func composeErrorResponse(err error, query message.Query) ([]byte, error) {
 		}
 
 	} else {
-		resp = message.ResponseWithError{
+		resp = message.Response{
 			Jsonrpc:       "2.0",
 			ErrorResponse: selectDescriptionError(err),
 			Id:            query.Id,
@@ -72,10 +72,10 @@ func composeResponse(messages []byte, query message.Query) ([]byte, error) {
 			Id:      query.Id,
 		}
 	} else {
-		resp = message.ResponseWithCatchupResult{
-			Jsonrpc: "2.0",
-			Result:  string(messages),
-			Id:      query.Id,
+		resp = message.Response{
+			Jsonrpc:       "2.0",
+			CatchupResult: string(messages),
+			Id:            query.Id,
 		}
 	}
 	return json.Marshal(resp)
