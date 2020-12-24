@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +47,6 @@ public class PollEventCreationFragment extends AbstractEventCreationFragment {
     private boolean pollTypeIsOneOfN;
 
     private Button scheduleButton;
-    private Button cancelButton;
 
     private ListView choicesListView;
     private ChoicesListViewAdapter listViewAdapter;
@@ -63,6 +63,7 @@ public class PollEventCreationFragment extends AbstractEventCreationFragment {
 
         @Override
         public void afterTextChanged(Editable s) {
+            scheduleButton.setEnabled(isScheduleButtonEnabled());
         }
     };
 
@@ -104,7 +105,7 @@ public class PollEventCreationFragment extends AbstractEventCreationFragment {
 
         //Choices list
         choicesListView = view.findViewById(R.id.choices_list);
-        listViewAdapter = new ChoicesListViewAdapter(this.getContext());
+        listViewAdapter = new ChoicesListViewAdapter(this.getContext(), buttonsTextWatcher);
         choicesListView.setAdapter(listViewAdapter);
         justifyListViewHeightBasedOnChildren(choicesListView);
 
@@ -116,19 +117,6 @@ public class PollEventCreationFragment extends AbstractEventCreationFragment {
             justifyListViewHeightBasedOnChildren(choicesListView);
         });
 
-        //NOT ON POINT YET
-        //TODO pour que la list soit de meme taille que ce qu'on voit !!!
-        choicesListView.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
-            @Override
-            public void onChildViewAdded(View parent, View child) {
-                scheduleButton.setEnabled(isScheduleButtonEnabled());
-            }
-
-            @Override
-            public void onChildViewRemoved(View parent, View child) {
-                scheduleButton.setEnabled(isScheduleButtonEnabled());
-            }
-        });
 
         // formatting today's date
         try {
@@ -158,7 +146,7 @@ public class PollEventCreationFragment extends AbstractEventCreationFragment {
             fragmentManager.popBackStackImmediate();
         });
 
-        cancelButton = view.findViewById(R.id.cancel_button);
+        Button cancelButton = view.findViewById(R.id.cancel_button);
         cancelButton.setOnClickListener(clicked -> {
             fragmentManager.popBackStackImmediate();
         });
@@ -177,10 +165,10 @@ public class PollEventCreationFragment extends AbstractEventCreationFragment {
         String question = questionEditText.getText().toString().trim();
         int numberOfChoices = getChoices(choicesListView).size();
 
-        return !question.isEmpty() &&
-                numberOfChoices >= 2;
+        return !question.isEmpty() && numberOfChoices >= 2;
     }
 
+    //TODO: make it a set so can't have the same choice twice
     public ArrayList<String> getChoices(ListView listView) {
         ArrayList<String> choices = new ArrayList<>();
         ChoicesListViewAdapter adapter = (ChoicesListViewAdapter) listView.getAdapter();
@@ -189,16 +177,18 @@ public class PollEventCreationFragment extends AbstractEventCreationFragment {
         }
         int numberOfChoices = adapter.getCount();
         for (int i = 0; i < numberOfChoices; i++) {
-            View v = listView.getChildAt(i);
-            EditText choiceBox = v.findViewById(R.id.choice_edit_text);
-            String choice = choiceBox.getText().toString();
-            if (!choice.trim().isEmpty()) {
+            String choice = (String) adapter.getItem(i);
+            if (!choice.isEmpty()) {
                 choices.add(choice);
             }
         }
         return choices;
     }
 
+    /**
+     * Method to adapt the size of the view with the number of children
+     * @param listView
+     */
     public static void justifyListViewHeightBasedOnChildren(ListView listView) {
         ListAdapter adapter = listView.getAdapter();
         if (adapter == null) {
