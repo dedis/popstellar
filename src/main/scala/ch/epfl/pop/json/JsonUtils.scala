@@ -16,18 +16,19 @@ object JsonUtils {
   val ENCODER: Base64.Encoder = Base64.getEncoder
   val DECODER: Base64.Decoder = Base64.getDecoder
 
-  /** Default id field value if the id field cannot be parsed */
-  val ID_NOT_FOUND: Int = -1
-
   /** Parsing exception, always caught by the parser */
   final case class JsonMessageParserException(
                                                description: String,
-                                               id: Int = ID_NOT_FOUND,
+                                               id: Option[Int] = None,
                                                errorCode: ErrorCodes = ErrorCodes.InvalidData
                                              ) extends Exception(description) {}
 
   /** Object sent back to PubSub if a parsing error occurred */
-  final case class JsonMessageParserError(description: String, id: Int = ID_NOT_FOUND, errorCode: ErrorCodes = ErrorCodes.InvalidData)
+  final case class JsonMessageParserError(
+                                           description: String,
+                                           id: Option[Int] = None,
+                                           errorCode: ErrorCodes = ErrorCodes.InvalidData
+                                         )
 
   object ErrorCodes extends Enumeration {
     type ErrorCodes = Value
@@ -64,7 +65,7 @@ object JsonUtils {
 
     /* state LAO broadcast fields */
     var modification_id: ByteArray = Array[Byte]()
-    var modification_signatures: List[Signature] = List()
+    var modification_signatures: List[KeySignPair] = List()
 
     /* witness a message related fields */
     var message_id: Base64String = ""
@@ -75,6 +76,11 @@ object JsonUtils {
     var start: TimeStamp = -1L
     var end: TimeStamp = -1L
     var extra: UNKNOWN = ""
+
+    /* roll call related fields */
+    var scheduled: TimeStamp = -1L
+    var roll_call_description: String = ""
+    var attendees: List[Key] = List()
 
 
     def build(): MessageContentData = {
@@ -87,7 +93,8 @@ object JsonUtils {
           id, name, creation, last_modified, organizer, witnesses,
           modification_id, modification_signatures,
           message_id, signature,
-          location, start, end, extra
+          location, start, end, extra,
+          scheduled, roll_call_description, attendees
         )
       }
     }
@@ -103,12 +110,15 @@ object JsonUtils {
     def setOrganizer(organizer: Key): MessageContentDataBuilder = { this.organizer = organizer; this }
     def setWitnesses(witnesses: List[Key]): MessageContentDataBuilder = { this.witnesses = witnesses; this }
     def setModificationId(modification_id: ByteArray): MessageContentDataBuilder = { this.modification_id = modification_id; this }
-    def setModificationSignatures(modification_sig: List[Signature]): MessageContentDataBuilder = { this.modification_signatures = modification_sig; this}
     def setMessageId(id: Base64String): MessageContentDataBuilder = { this.message_id = id; this }
+    def setModificationSignatures(modification_sig: List[KeySignPair]): MessageContentDataBuilder = { this.modification_signatures = modification_sig; this}
     def setSignature(signature: Signature): MessageContentDataBuilder = { this.signature = signature; this }
     def setLocation(location: String): MessageContentDataBuilder = { this.location = location; this }
     def setStart(start: TimeStamp): MessageContentDataBuilder = { this.start = start; this }
     def setEnd(end: TimeStamp): MessageContentDataBuilder = { this.end = end; this }
     def setExtra(extra: UNKNOWN): MessageContentDataBuilder = { this.extra = extra; this }
+    def setScheduled(scheduled: TimeStamp): MessageContentDataBuilder = { this.scheduled = scheduled; this }
+    def setRollCallDescription(description: String): MessageContentDataBuilder = { this.roll_call_description = description; this }
+    def setAttendees(attendees: List[Key]): MessageContentDataBuilder = { this.attendees = attendees; this }
   }
 }

@@ -97,7 +97,7 @@ object ChannelActor {
           else {
             ctx.log.debug(channelsOutputs.toString())
             val error = MessageErrorContent(-2, "Invalid resource: channel " + channel + " does not exist.")
-            replyTo ! AnswerSubscribe(AnswerErrorMessageServer(error = error, id = id), channel, None)
+            replyTo ! AnswerSubscribe(AnswerErrorMessageServer(error = error, id = Some(id)), channel, None)
           }
           Behaviors.same
       }

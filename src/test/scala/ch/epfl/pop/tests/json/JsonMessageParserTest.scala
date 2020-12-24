@@ -1,7 +1,7 @@
 package ch.epfl.pop.tests.json
 
-import ch.epfl.pop.json.JsonMessages.{JsonMessagePublishClient, _}
-import ch.epfl.pop.json.JsonUtils.{JsonMessageParserException, MessageContentDataBuilder}
+import ch.epfl.pop.json.JsonMessages._
+import ch.epfl.pop.json.JsonUtils.{JsonMessageParserError, JsonMessageParserException, MessageContentDataBuilder}
 import ch.epfl.pop.json._
 import spray.json._
 import ch.epfl.pop.json.JsonCommunicationProtocol._
@@ -15,6 +15,9 @@ class JsonMessageParserTest extends FunSuite with Matchers {
   implicit class RichJsonMessage(m: JsonMessage) {
     def shouldBeEqualUntilMessageContent(o: JsonMessage): Unit = {
 
+      // Note: this function is useful because ScalaTest cannot compare List of arrays of bytes :/
+      // thus we can't test two messages by using "m1 should equal (m2)"
+
       @scala.annotation.tailrec
       def checkListOfByteArray(l1: List[Array[Byte]], l2: List[Array[Byte]]): Unit = {
         l1.length should equal (l2.length)
@@ -24,6 +27,19 @@ class JsonMessageParserTest extends FunSuite with Matchers {
           case (h1 :: tail1, h2 :: tail2) =>
             h1 should equal (h2)
             checkListOfByteArray(tail1, tail2)
+        }
+      }
+
+      @scala.annotation.tailrec
+      def checkListOfKeySigPair(l1: List[KeySignPair], l2: List[KeySignPair]): Unit = {
+        l1.length should equal (l2.length)
+
+        (l1, l2) match {
+          case _ if l1.isEmpty =>
+          case (h1 :: tail1, h2 :: tail2) =>
+            h1.witness should equal (h2.witness)
+            h1.signature should equal (h2.signature)
+            checkListOfKeySigPair(tail1, tail2)
         }
       }
 
@@ -62,7 +78,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
               mc1.sender should equal (mc2.sender)
               mc1.signature should equal (mc2.signature)
               mc1.message_id should equal (mc2.message_id)
-              checkListOfByteArray(mc1.witness_signatures, mc2.witness_signatures)
+              checkListOfKeySigPair(mc1.witness_signatures, mc2.witness_signatures)
 
               mc1.data._object should equal (mc2.data._object)
               mc1.data.action should equal (mc2.data.action)
@@ -89,12 +105,16 @@ class JsonMessageParserTest extends FunSuite with Matchers {
 
 
   @scala.annotation.tailrec
-  final def listStringify(value: List[Key], acc: String = ""): String = {
+  final def listStringify(value: List[KeySignPair], acc: String = ""): String = {
     if (value.nonEmpty) {
       var sep = ""
       if (value.length > 1) sep = ","
 
-      listStringify(value.tail, acc + "\"" + encodeBase64String(value.head.map(_.toChar).mkString) + "\"" + sep)
+      listStringify(
+        value.tail,
+        acc + "{\"signature\":\"" + encodeBase64String(value.head.signature.map(_.toChar).mkString) +
+        "\",\"witness\":\"" + encodeBase64String(value.head.witness.map(_.toChar).mkString) + "\"}" + sep
+      )
     }
     else "[" + acc + "]"
   }
@@ -275,6 +295,251 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     checkBogusInputs(source)
   }
 
+  test("JsonMessageParser.parseMessage|encodeMessage:CreateRollCallMessageClient") {
+    // roll call with every argument
+    var data: String = dataCreateRollCall
+    var sp: JsonMessage = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    var spd: String = JsonMessageParser.serializeMessage(sp)
+    var spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    sp shouldBe a [CreateRollCallMessageClient]
+    spdp shouldBe a [CreateRollCallMessageClient]
+    sp shouldBeEqualUntilMessageContent spdp
+    sp.asInstanceOf[CreateRollCallMessageClient].params.message match {
+      case Some(mc) => mc.data.action.toString should fullyMatch regex """create"""
+      case None => fail()
+    }
+
+    // roll call without description
+    data = data.replaceAll(",\"roll_call_description\":\"[a-zA-Z]*\"", "")
+    sp = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    spd = JsonMessageParser.serializeMessage(sp)
+    spdp = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    sp shouldBe a [CreateRollCallMessageClient]
+    spdp shouldBe a [CreateRollCallMessageClient]
+    sp shouldBeEqualUntilMessageContent spdp
+
+    // roll call without description and scheduled
+    data = data.replaceAll(",\"scheduled\":[0-9]*", "")
+    sp = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    spd = JsonMessageParser.serializeMessage(sp)
+    spdp = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    sp shouldBe a [CreateRollCallMessageClient]
+    spdp shouldBe a [CreateRollCallMessageClient]
+    sp shouldBeEqualUntilMessageContent spdp
+
+    // roll call without description, scheduled and start
+    data = data.replaceAll(",\"start\":[0-9]*", "")
+    sp = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    spd = JsonMessageParser.serializeMessage(sp)
+    spdp = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    sp shouldBe a [CreateRollCallMessageClient]
+    spdp shouldBe a [CreateRollCallMessageClient]
+    sp shouldBeEqualUntilMessageContent spdp
+
+    // roll call without description, scheduled, start and location (should fail)
+    var dataW: String = data.replaceAll(",\"location\":\"[A-Za-z]*\"", "")
+    try {
+      sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
+        case Left(_) => fail()
+        case Right(_) => throw JsonMessageParserException("")
+      }
+    }
+    catch { case _: JsonMessageParserException => }
+
+    // roll call without description, scheduled, start and action (should fail)
+    dataW = data.replaceAll(",\"action\":\"[A-Za-z]*\"", "")
+    try {
+      sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
+        case Left(_) => fail()
+        case Right(_) => throw JsonMessageParserException("")
+      }
+    }
+    catch { case _: JsonMessageParserException => }
+  }
+
+  test("JsonMessageParser.parseMessage|encodeMessage:OpenRollCallMessageClient") {
+    // roll call with every argument
+    val data: String = dataOpenRollCall
+    var sp: JsonMessage = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    val spd: String = JsonMessageParser.serializeMessage(sp)
+    val spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    sp shouldBe a [OpenRollCallMessageClient]
+    spdp shouldBe a [OpenRollCallMessageClient]
+    sp shouldBeEqualUntilMessageContent spdp
+    sp.asInstanceOf[OpenRollCallMessageClient].params.message match {
+      case Some(mc) => mc.data.action.toString should fullyMatch regex """open"""
+      case None => fail()
+    }
+
+    // roll call without start (should fail)
+    var dataW: String = data.replaceAll(",\"start\":[0-9]*", "")
+    try {
+      sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
+        case Left(_) => fail()
+        case Right(_) => throw JsonMessageParserException("")
+      }
+    }
+    catch { case _: JsonMessageParserException => }
+
+    // roll call without id (should fail)
+    dataW = data.replaceAll(",\"id\":\"[A-Za-z0-9=+/]*\"", "")
+    try {
+      sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
+        case Left(_) => fail()
+        case Right(_) => throw JsonMessageParserException("")
+      }
+    }
+    catch { case _: JsonMessageParserException => }
+  }
+
+  test("JsonMessageParser.parseMessage|encodeMessage:ReopenRollCallMessageClient") {
+    // Note: this message doesn't really exit. It is part of "OpenRollCallMessageClient"
+
+    // roll call with every argument
+    val data: String = dataReopenRollCall
+    var sp: JsonMessage = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    val spd: String = JsonMessageParser.serializeMessage(sp)
+    val spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    sp shouldBe a [OpenRollCallMessageClient]
+    spdp shouldBe a [OpenRollCallMessageClient]
+    sp shouldBeEqualUntilMessageContent spdp
+    sp.asInstanceOf[OpenRollCallMessageClient].params.message match {
+      case Some(mc) => mc.data.action.toString should fullyMatch regex """reopen"""
+      case None => fail()
+    }
+
+    // roll call without start (should fail)
+    var dataW: String = data.replaceAll(",\"start\":[0-9]*", "")
+    try {
+      sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
+        case Left(_) => fail()
+        case Right(_) => throw JsonMessageParserException("")
+      }
+    }
+    catch { case _: JsonMessageParserException => }
+
+    // roll call without id (should fail)
+    dataW = data.replaceAll(",\"id\":\"[A-Za-z0-9=+/]*\"", "")
+    try {
+      sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
+        case Left(_) => fail()
+        case Right(_) => throw JsonMessageParserException("")
+      }
+    }
+    catch { case _: JsonMessageParserException => }
+  }
+
+  test("JsonMessageParser.parseMessage|encodeMessage:CloseRollCallMessageClient") {
+    // roll call with every argument
+    val data: String = dataCloseRollCall
+    var sp: JsonMessage = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    val spd: String = JsonMessageParser.serializeMessage(sp)
+    val spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    sp shouldBe a [CloseRollCallMessageClient]
+    spdp shouldBe a [CloseRollCallMessageClient]
+    sp shouldBeEqualUntilMessageContent spdp
+    sp.asInstanceOf[CloseRollCallMessageClient].params.message match {
+      case Some(mc) => mc.data.action.toString should fullyMatch regex """close"""
+      case None => fail()
+    }
+
+    // roll call without start (should fail)
+    var dataW: String = data.replaceAll(",\"start\":[0-9]*", "")
+    try {
+      sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
+        case Left(_) => fail()
+        case Right(_) => throw JsonMessageParserException("")
+      }
+    }
+    catch { case _: JsonMessageParserException => }
+
+    // roll call without end (should fail)
+    dataW = data.replaceAll(",\"end\":[0-9]*", "")
+    try {
+      sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
+        case Left(_) => fail()
+        case Right(_) => throw JsonMessageParserException("")
+      }
+    }
+    catch { case _: JsonMessageParserException => }
+
+    // roll call without attendees (should fail)
+    dataW = data.replaceAll(",\"attendees\":\\[[A-Za-z0-9,\"=]*\\]", "")
+    try {
+      sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
+        case Left(_) => fail()
+        case Right(_) => throw JsonMessageParserException("")
+      }
+    }
+    catch { case _: JsonMessageParserException => }
+
+    // roll call without id (should fail)
+    dataW = data.replaceAll(",\"id\":\"[A-Za-z0-9=+/]*\"", "")
+    try {
+      sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
+        case Left(_) => fail()
+        case Right(_) => throw JsonMessageParserException("")
+      }
+    }
+    catch { case _: JsonMessageParserException => }
+  }
+
   test("JsonMessageParser.parseMessage|encodeMessage:PropagateMessageServer") {
     val source: String = s"""{
                             |    "jsonrpc": "2.0",
@@ -389,11 +654,21 @@ class JsonMessageParserTest extends FunSuite with Matchers {
 
   test("JsonMessageParser.parseMessage|encodeMessage:AnswerResultIntMessageServer") {
     val source: String = embeddedServerAnswer(Some(0), None, id = 13)
+    val sp: JsonMessage = JsonMessageParser.parseMessage(source) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
-    val sp: JsonMessages.JsonMessage = AnswerResultIntMessageServer(13, 0,  "2.0")
-    val spd: String = JsonMessageParser.serializeMessage(sp).filterNot((c: Char) => c.isWhitespace)
+    val spd: String = JsonMessageParser.serializeMessage(sp)
+    val spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
+    sp shouldBe a [AnswerResultIntMessageServer]
+    spdp shouldBe a [AnswerResultIntMessageServer]
     assertResult(source)(spd)
+    checkBogusInputs(source)
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:AnswerResultArrayMessageServer") {
@@ -428,7 +703,11 @@ class JsonMessageParserTest extends FunSuite with Matchers {
 
 
     // 1 message and non-empty witness list
-    val sig: List[Key] = List("witnessKey1".getBytes, "witnessKey2".getBytes, "witnessKey3".getBytes)
+    val sig: List[KeySignPair] = List(
+      KeySignPair("ceb_prop_1".getBytes, "ceb_1".getBytes),
+      KeySignPair("ceb_prop_2".getBytes, "ceb_2".getBytes),
+      KeySignPair("ceb_prop_3".getBytes, "ceb_3".getBytes)
+    )
     m = MessageContent(encodedData, data, "skey".getBytes, "sign".getBytes, "mid".getBytes, sig)
     sp = AnswerResultArrayMessageServer(99, ChannelMessages(List(m)))
     spd = JsonMessageParser.serializeMessage(sp)
@@ -446,19 +725,81 @@ class JsonMessageParserTest extends FunSuite with Matchers {
                             |       "code": ERR_CODE,
                             |       "description": "err"
                             |    },
-                            |    "id": 99,
+                            |    ID
                             |    "jsonrpc": "2.0"
                             |  }
                             |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
 
     for (i <- -5 until 0) {
-      val sp: JsonMessages.JsonMessage = AnswerErrorMessageServer(99, MessageErrorContent(i, "err"),  "2.0")
-      val spd: String = JsonMessageParser.serializeMessage(sp)
+      val sourceErrorCode: String = source.replaceAll("ERR_CODE", String.valueOf(i))
+      val sourceSomeId: String = sourceErrorCode.replaceAll("ID", "\"id\":" + String.valueOf(3 * i) + ",")
+      val sourceNoneId: String = sourceErrorCode.replaceAll("ID", "\"id\":null,")
 
-      assertResult(source.replaceAll("ERR_CODE", String.valueOf(i)))(spd)
+      var sp: JsonMessage = JsonMessageParser.parseMessage(sourceSomeId) match {
+        case Left(m) => m
+        case _ => fail()
+      }
+
+      var spd: String = JsonMessageParser.serializeMessage(sp)
+      var spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
+        case Left(m) => m
+        case _ => fail()
+      }
+
+      assertResult(sourceSomeId)(spd)
+      sp shouldBe a [AnswerErrorMessageServer]
+      spdp shouldBe a [AnswerErrorMessageServer]
+      assertResult(sourceSomeId)(spd)
+      checkBogusInputs(sourceSomeId)
+
+
+      sp = JsonMessageParser.parseMessage(sourceNoneId) match {
+        case Left(m) => m
+        case _ => fail()
+      }
+
+      spd = JsonMessageParser.serializeMessage(sp)
+      spdp = JsonMessageParser.parseMessage(spd) match {
+        case Left(m) => m
+        case _ => fail()
+      }
+
+      assertResult(sourceNoneId)(spd)
+      sp shouldBe a [AnswerErrorMessageServer]
+      spdp shouldBe a [AnswerErrorMessageServer]
+      assertResult(sourceNoneId)(spd)
+      checkBogusInputs(sourceNoneId)
+    }
+  }
+
+  test("JsonMessageParser.parseMessage|encodeMessage:\"bogus answer message\"") {
+    val source: String = s"""{
+                            |    "error": {
+                            |       "code": ERR_CODE,
+                            |       "description": "err"
+                            |    },
+                            |    ID
+                            |    "jsonrpc": "2.0",
+                            |    "result": 0
+                            |  }
+                            |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
+
+    for (i <- -20 to 20) {
+      val sourceErrorCode: String = source.replaceAll("ERR_CODE", String.valueOf(i))
+      val sourceSomeId: String = sourceErrorCode.replaceAll("ID", "\"id\":" + String.valueOf(3 * i) + ",")
+      val sourceNoneId: String = sourceErrorCode.replaceAll("ID", "\"id\":null,")
+
+      var sp: JsonMessageParserError = JsonMessageParser.parseMessage(sourceSomeId) match {
+        case Right(m) => m
+        case _ => fail()
+      }
+      sp shouldBe a [JsonMessageParserError]
+
+      sp = JsonMessageParser.parseMessage(sourceNoneId) match {
+        case Right(m) => m
+        case _ => fail()
+      }
+      sp shouldBe a [JsonMessageParserError]
     }
   }
 }
-
-
-

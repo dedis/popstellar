@@ -23,7 +23,11 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
                                         |            "sender": "NTMwZEU4",
                                         |            "signature": "NTEwMA==",
                                         |            "message_id": "MWQw",
-                                        |            "witness_signatures": ["Y2ViMQ==", "Y2ViMg==", "Y2ViMw=="]
+                                        |            "witness_signatures": [
+                                        |              { "signature": "Y2ViMQ==", "witness": "Y2ViX3Byb3BfMQ==" },
+                                        |              { "signature": "Y2ViMg==", "witness": "Y2ViX3Byb3BfMg==" },
+                                        |              { "signature": "Y2ViMw==", "witness": "Y2ViX3Byb3BfMw==" }
+                                        |            ]
                                         |        }""".stripMargin.filterNot((c: Char) => c.isWhitespace)
 
 
@@ -42,6 +46,7 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
   val _dataMeeting: String = s"""{
                                 |    "object": "${Objects.Meeting.toString}",
                                 |    "action": "F_ACTION",
+                                |    FF_MODIFICATION
                                 |    "id": "ODg4",
                                 |    "name": "nameMeeting",
                                 |    "creation": 333,
@@ -53,10 +58,19 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
                                 |}""".stripMargin.filterNot((c: Char) => c.isWhitespace)
 
 
+  val _dataRollCall: String = s"""{
+                            |    "object": "${Objects.RollCall.toString}",
+                            |    "action": "F_ACTION",
+                            |    FF_MODIFICATION
+                            |    "id": "OTk5"
+                            |}""".stripMargin.filterNot((c: Char) => c.isWhitespace)
+
+
   val dataUpdateLao: String = s"""{
                                  |    "object": "${Objects.Lao.toString}",
                                  |    "action": "${Actions.UpdateProperties.toString}",
                                  |    "name": "name6",
+                                 |    "id": "ODg4",
                                  |    "last_modified": 2226,
                                  |    "witnesses": ["MTEx", "MTExNgo="]
                                  |}""".stripMargin.filterNot((c: Char) => c.isWhitespace)
@@ -72,14 +86,35 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
   val dataCreateLao: String = _dataLao
     .replaceAll("F_ACTION", Actions.Create.toString)
     .replaceAll("FF_MODIFICATION", "")
+    .replaceAll("\"last_modified\":[0-9]*,", "")
   val dataBroadcastLao: String = _dataLao
     .replaceAll("F_ACTION", Actions.State.toString)
     .replaceAll(
       "FF_MODIFICATION",
-      "\"modification_id\":\"NDU2\",\"modification_signatures\":[\"amUgc2lnbmU=\",\"amUgc2lnbmUgYXVzc2k=\"],"
+      "\"modification_id\":\"NDU2\",\"modification_signatures\":[{\"witness\":\"Y2xlZjE=\",\"signature\":\"amUgc2lnbmU=\"},{\"witness\":\"Y2xlZjI=\",\"signature\":\"amUgc2lnbmUgYXVzc2k=\"}],"
     )
-  val dataCreateMeeting: String = _dataMeeting.replaceAll("F_ACTION", Actions.Create.toString)
-  val dataBroadcastMeeting: String = _dataMeeting.replaceAll("F_ACTION", Actions.State.toString)
+  val dataCreateMeeting: String = _dataMeeting
+    .replaceAll("F_ACTION", Actions.Create.toString)
+    .replaceAll("FF_MODIFICATION", "")
+    .replaceAll("\"last_modified\":[0-9]*,", "")
+  val dataBroadcastMeeting: String = _dataMeeting
+    .replaceAll("F_ACTION", Actions.State.toString)
+    .replaceAll(
+      "FF_MODIFICATION",
+      "\"modification_id\":\"NDU2\",\"modification_signatures\":[{\"witness\":\"Y2xlZjE=\",\"signature\":\"amUgc2lnbmU=\"},{\"witness\":\"Y2xlZjI=\",\"signature\":\"amUgc2lnbmUgYXVzc2k=\"}],"
+    )
+  val dataCreateRollCall: String = _dataRollCall
+    .replaceAll("F_ACTION", Actions.Create.toString)
+    .replaceAll("FF_MODIFICATION", "\"name\":\"MonRollCall\",\"creation\":1234,\"start\":1500,\"scheduled\":1450,\"location\":\"INF\",\"roll_call_description\":\"description\",")
+  val dataOpenRollCall: String = _dataRollCall
+    .replaceAll("F_ACTION", Actions.Open.toString)
+    .replaceAll("FF_MODIFICATION", "\"start\":2000,")
+  val dataReopenRollCall: String = _dataRollCall
+    .replaceAll("F_ACTION", Actions.Reopen.toString)
+    .replaceAll("FF_MODIFICATION", "\"start\":3000,")
+  val dataCloseRollCall: String = _dataRollCall
+    .replaceAll("F_ACTION", Actions.Close.toString)
+    .replaceAll("FF_MODIFICATION", "\"start\":4000,\"end\":5000,\"attendees\":[\"Y2xlZjE=\",\"Y2xlZjI=\"],")
 
 
   def embeddedMessage(
@@ -98,7 +133,11 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
        |            "sender": "NTMwZEU4",
        |            "signature": "NTEwMA==",
        |            "message_id": "MWQw",
-       |            "witness_signatures": ["Y2ViMQ==", "Y2ViMg==", "Y2ViMw=="]
+       |            "witness_signatures": [
+       |              { "signature": "Y2ViMQ==", "witness": "Y2ViX3Byb3BfMQ==" },
+       |              { "signature": "Y2ViMg==", "witness": "Y2ViX3Byb3BfMg==" },
+       |              { "signature": "Y2ViMw==", "witness": "Y2ViX3Byb3BfMw==" }
+       |            ]
        |        }
        |    },
        |    "id": $id
@@ -168,7 +207,7 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
       }
     }
 
-    def checkBatchTestsInt(kw: String): Unit = {
+    def checkBatchTestsInt(kw: String, canBeNull: Boolean = false): Unit = {
       val pattern: String = s""""$kw":[0-9]*"""
       def patternAfter(newValue: String): String = s""""$kw":$newValue"""
 
@@ -176,8 +215,7 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
         performBogusTest(source.replaceAll(pattern, patternAfter("\"3.0\"")))
         performBogusTest(source.replaceAll(pattern, patternAfter("\"3\"")))
         performBogusTest(source.replaceAll(pattern, patternAfter("\"string\"")))
-        //performBogusTest(source.replaceAll(pattern, patternAfter("2.0")))
-        performBogusTest(source.replaceAll(pattern, patternAfter("")))
+        if (!canBeNull) performBogusTest(source.replaceAll(pattern, patternAfter("")))
         performBogusTest(source.replaceAll(pattern, patternAfter("s|{@sopOIJ34≠")))
       }
     }
@@ -197,7 +235,8 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
       checkBatchTestsString(kw)
     }
     if (source.contains("\"method\":")) checkBatchTestsString("method")
-    if (source.contains("\"id\":")) checkBatchTestsInt("id")
+    if (source.contains("\"id\":") && source.contains("\"error\":")) checkBatchTestsInt("id", canBeNull = true)
+    else if (source.contains("\"id\":")) checkBatchTestsInt("id")
 
     if (source.contains("\"params\":")) {
       if (source.contains("\"channel\":")) {
@@ -211,15 +250,17 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
         if (source.contains("\"data\":")) {
           checkBatchWithNonBase64(source, "data")
 
-          // TODO check inside
+          // could also check inside
         }
         if (source.contains("\"sender\":")) checkBatchWithNonBase64(source, "sender")
         if (source.contains("\"signature\":")) checkBatchWithNonBase64(source, "signature")
         if (source.contains("\"message_id\":")) checkBatchWithNonBase64(source, "message_id")
         if (source.contains("\"witness_signatures\":")) {
-          // TODO check that all values are base64 strings
+          // could check that all values are base64 strings
         }
       }
     }
+    if (source.contains("\"result\":")) checkBatchTestsInt("result")
+    if (source.contains("\"error\":")) { /* no bogus test possible : checks done later */ }
   }
 }

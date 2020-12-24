@@ -1,6 +1,7 @@
 package ch.epfl.pop.pubsub
 
 import java.util.Base64
+
 import akka.NotUsed
 import akka.actor.typed.scaladsl.AskPattern.{Askable, schedulerFromActorSystem}
 import akka.actor.typed.{ActorRef, ActorSystem}
@@ -15,10 +16,10 @@ import ch.epfl.pop.json.JsonMessageParser.{parseMessage, serializeMessage}
 import ch.epfl.pop.json.JsonMessages.{JsonMessagePublishClient, _}
 import ch.epfl.pop.json.JsonUtils.ErrorCodes.InvalidData
 import ch.epfl.pop.json.JsonUtils.{ErrorCodes, JsonMessageParserError}
-import ch.epfl.pop.json.{MessageContent, MessageErrorContent, MessageParameters}
+import ch.epfl.pop.json.{KeySignPair, MessageContent, MessageContentData, MessageErrorContent, MessageParameters}
 import ch.epfl.pop.pubsub.ChannelActor._
-
 import java.util
+
 import scala.concurrent.{Await, Future}
 
 
@@ -112,11 +113,11 @@ object PublishSubscribe {
 
     def errorOrPublish(params: MessageParameters, id: Int, error: Option[MessageErrorContent]) = {
       error match {
-        case Some(error) => AnswerErrorMessageServer(id, error)
+        case Some(error) => AnswerErrorMessageServer(Some(id), error)
         case None =>
           val content = params.message.get
           Validate.validate(content) match {
-            case Some(error) => AnswerErrorMessageServer(id, error)
+            case Some(error) => AnswerErrorMessageServer(Some(id), error)
             case None =>
               pub(params, true)
               AnswerResultIntMessageServer(id)
@@ -128,7 +129,7 @@ object PublishSubscribe {
       val params = m.params
       val id = m.id
       Validate.validate(m) match {
-        case Some(error) => AnswerErrorMessageServer(id, error)
+        case Some(error) => AnswerErrorMessageServer(Some(id), error)
         case None =>
           val highLevelMessage = params.message.get.data
           val channel = "/root/" + new String(Base64.getEncoder.encode(highLevelMessage.id))
@@ -136,7 +137,7 @@ object PublishSubscribe {
 
           if (!Await.result(future, timeout.duration)) {
             val error = MessageErrorContent(-3, "Channel " + channel + " already exists.")
-            AnswerErrorMessageServer(error = error, id = id)
+            AnswerErrorMessageServer(error = error, id = Some(id))
           }
           else {
             //Publish on the LAO main channel
@@ -151,12 +152,13 @@ object PublishSubscribe {
       val id = m.id
       val message = params.message.get.data
       val messageId = message.message_id
+      val witnessKey = params.message.get.sender
       val signature = message.signature
       implicit val ec = system.executionContext
       val future = dbActor.ask(ref => Read(params.channel, Base64.getDecoder.decode(messageId), ref))
         .flatMap {
-          case Some(message) =>
-            dbActor.ask(ref => Write(params.channel, message.updateWitnesses(signature), ref))
+          case Some(message: MessageContent) =>
+            dbActor.ask(ref => Write(params.channel, message.updateWitnesses(KeySignPair(witnessKey, signature)), ref))
           case None =>
             system.log.debug("Message id not found in db.")
             Future(false)
@@ -165,7 +167,7 @@ object PublishSubscribe {
         errorOrPublish(params, id, Validate.validate(m))
       else {
         val error = MessageErrorContent(ErrorCodes.InvalidData.id, "The id the witness message refers to does not exist.")
-        AnswerErrorMessageServer(id, error)
+        AnswerErrorMessageServer(Some(id), error)
       }
     }
 
@@ -179,8 +181,8 @@ object PublishSubscribe {
           Await.result(future, timeout.duration) match {
             case None =>
              // system.log.debug("Reading: " + params.message.get.data.modification_id)
-              AnswerErrorMessageServer(id, MessageErrorContent(InvalidData.id, "Invalid reference to a message_id"))
-            case Some(msgContent) =>
+              AnswerErrorMessageServer(Some(id), MessageErrorContent(InvalidData.id, "Invalid reference to a message_id"))
+            case Some(msgContent: MessageContent) =>
               errorOrPublish(params, id, Validate.validate(m, msgContent.data))
           }
         case m @ WitnessMessageMessageClient(_, _, _, _) =>
@@ -191,8 +193,8 @@ object PublishSubscribe {
         case m @ BroadcastMeetingMessageClient(params, id, _ ,_) =>
           val future = dbActor.ask(ref => Read(params.channel, params.message.get.data.modification_id, ref))
           Await.result(future, timeout.duration) match {
-            case None => AnswerErrorMessageServer(id, MessageErrorContent(InvalidData.id, "Invalid reference to a message_id"))
-            case Some(msgContent) =>
+            case None => AnswerErrorMessageServer(Some(id), MessageErrorContent(InvalidData.id, "Invalid reference to a message_id"))
+            case Some(msgContent: MessageContent) =>
               errorOrPublish(params, id, Validate.validate(m, msgContent.data))
           }
       }
@@ -223,7 +225,7 @@ object PublishSubscribe {
             }
             else {
               val error = MessageErrorContent(-2, "Invalid resource: you are not subscribed to channel " + channel + ".")
-              AnswerErrorMessageServer(error = error, id = id)
+              AnswerErrorMessageServer(error = error, id = Some(id))
             }
           List(message)
       }
