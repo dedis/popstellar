@@ -3,26 +3,18 @@
 	"$id": "https://github.com/dedis/student20_pop/tree/proto-specs/query/method/message/data/dataStateLao.json",
 	"description": "Match a state broadcast LAO query",
 	"type": "object",
+
 	"properties": {
-		"object": {
-			"const": "lao"
-		},
-		"action": {
-			"const": "state"
-		},
+		"object": { "const": "lao" },
+		"action": { "const": "state" },
 		"id": {
 			"type": "string",
 			"contentEncoding": "base64",
 			"$comment": "Hash : SHA256(organizer||creation||name)"
 		},
-		"name": {
-			"type": "string"
-		},
-		"creation": {
-			"description": "[Timestamp] creation time",
-			"type": "integer",
-			"minimum": 0
-		},
+		"name": { "type": "string" },
+		"creation": { "description": "[Timestamp] creation time", "type": "integer", "minimum": 0 },
+		"last_modified": { "description": "[Timestamp] last modification's time", "type": "integer", "minimum": 0 },
 		"organizer": {
 			"description": "[Base64String] public key of the organizer",
 			"type": "string",
@@ -32,10 +24,7 @@
 			"description": "[Array[Base64String]] list of public keys of witnesses",
 			"type": "array",
 			"uniqueItems": true,
-			"items": {
-				"type": "string",
-				"contentEncoding": "base64"
-			}
+			"items": { "type": "string", "contentEncoding": "base64" }
 		},
 		"modification_id": {
 			"description": "[Base64String] id of the modification (either creation/update)",
@@ -62,27 +51,13 @@
 					}
 				},
 				"additionalProperties": false,
-				"required": [
-					"witness",
-					"signature"
-				]
+				"required": ["witness", "signature"]
 			}
 		},
-		"additionalProperties": false,
-		"required": [
-			"object",
-			"action",
-			"id",
-			"name",
-			"creation",
-			"organizer",
-			"witnesses",
-			"modification_id",
-			"modification_signatures"
-		],
-		"note": [
-			"When a LAO is created or modified, the organizer is expected to publish the lao/state message to the ",
-			"LAO’s main channel (LAO's id), once it got the required number of witness signatures"
-		]
-	}
+	"additionalProperties": false,
+	"required": ["object", "action", "id", "name", "creation", "last_modified", "organizer", "witnesses", "modification_id", "modification_signatures"],
+	"note": [
+		"When a LAO is created or modified, the organizer is expected to publish the lao/state message to the ",
+		"LAO’s main channel (LAO's id), once it got the required number of witness signatures"
+	]
 }

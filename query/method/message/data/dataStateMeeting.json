@@ -14,6 +14,7 @@
 		},
 		"name": { "type": "string" },
 		"creation": { "description": "[Timestamp] creation time", "type": "integer", "minimum": 0 },
+		"last_modified": { "description": "[Timestamp] last modification's time", "type": "integer", "minimum": 0 },
 		"location": {
 			"description": "[String] location of the meeting",
 			"type": "string",
@@ -61,7 +62,7 @@
 		}
 	},
 	"additionalProperties": false,
-	"required": ["object", "action", "id", "name", "creation", "start", "modification_id", "modification_signatures"],
+	"required": ["object", "action", "id", "name", "creation", "last_modified", "start", "modification_id", "modification_signatures"],
 	"note": [
 		"When a meeting is created or modified, the organizer is expected to publish the ",
 		"meeting/state message to the LAO’s main channel (LAO's id)"
