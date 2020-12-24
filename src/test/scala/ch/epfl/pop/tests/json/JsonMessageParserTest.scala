@@ -44,34 +44,34 @@ class JsonMessageParserTest extends FunSuite with Matchers {
       }
 
 
-      val o1 = this.m
-      val o2 = o
+      val m_1 = this.m
+      val m_2 = o
 
-      o1 match {
+      m_1 match {
         case _: PropagateMessageServer =>
-          o2 shouldBe a [PropagateMessageServer]
+          m_2 shouldBe a [PropagateMessageServer]
 
-          val o11 = o1.asInstanceOf[PropagateMessageServer]
-          val o22 = o2.asInstanceOf[PropagateMessageServer]
+          val cm_1 = m_1.asInstanceOf[PropagateMessageServer]
+          val cm_2 = m_2.asInstanceOf[PropagateMessageServer]
 
-          val a1 = CreateLaoMessageClient(o11.params, -1, o11.method, o11.jsonrpc)
-          val a2 = CreateLaoMessageClient(o22.params, -1, o22.method, o22.jsonrpc)
+          val a1 = CreateLaoMessageClient(cm_1.params, -1, cm_1.method, cm_1.jsonrpc)
+          val a2 = CreateLaoMessageClient(cm_2.params, -1, cm_2.method, cm_2.jsonrpc)
 
           a1 shouldBeEqualUntilMessageContent a2
 
 
         case _: JsonMessagePublishClient =>
-          o2 shouldBe a [JsonMessagePublishClient]
+          m_2 shouldBe a [JsonMessagePublishClient]
 
-          val o11 = o1.asInstanceOf[JsonMessagePublishClient]
-          val o22 = o2.asInstanceOf[JsonMessagePublishClient]
+          val cm_1 = m_1.asInstanceOf[JsonMessagePublishClient]
+          val cm_2 = m_2.asInstanceOf[JsonMessagePublishClient]
 
-          o11.jsonrpc should equal(o22.jsonrpc)
-          o11.id should equal(o22.id)
-          o11.method should equal(o22.method)
+          cm_1.jsonrpc should equal(cm_2.jsonrpc)
+          cm_1.id should equal(cm_2.id)
+          cm_1.method should equal(cm_2.method)
 
-          o11.params.channel should equal (o22.params.channel)
-          (o11.params.message, o22.params.message) match {
+          cm_1.params.channel should equal (cm_2.params.channel)
+          (cm_1.params.message, cm_2.params.message) match {
             case (None, None) =>
 
             case (Some(mc1), Some(mc2)) =>
