@@ -74,7 +74,7 @@ func (o *Organizer) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAn
 // handleMessage is the function to handle a received message which method was "message"
 // It is called by the function HandleWholeMessage.
 func (o *Organizer) handleMessage(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
-	params, errs := parser.ParseParamsIncludingMessage(query.Params)
+	params, errs := parser.ParseParams(query.Params)
 	if errs != nil {
 		log.Printf("unable to analyse paramsLight in handleMessage()")
 		return nil, lib.ErrRequestDataInvalid
@@ -119,7 +119,7 @@ func (o *Organizer) handleMessage(query message.Query) (msgAndChannel []lib.Mess
 // It is called by the function HandleWholeMessage. It Analyses the message's object and action fields, and delegate the
 // work to other functions.
 func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
-	params, errs := parser.ParseParamsIncludingMessage(query.Params)
+	params, errs := parser.ParseParams(query.Params)
 	if errs != nil {
 		log.Printf("1. unable to analyse paramsLight in handlePublish()")
 		return nil, lib.ErrRequestDataInvalid
@@ -512,7 +512,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 			return nil, errs
 		}
 
-		sendParams := message.ParamsIncludingMessage{
+		sendParams := message.Params{
 			Channel: "/root",
 			Message: contentStr,
 		}
