@@ -255,7 +255,7 @@ class PubSubTest extends FunSuite {
     sendAndVerify(l ::: messages)
   }
 
-  test("Create multiple LAOs, subscribe to their channel and publish multiple messages") {
+  ignore("Create multiple LAOs, subscribe to their channel and publish multiple messages") {
     val (sk, pk): (PrivateKey, PublicKey) = Curve25519.createKeyPair
     val (l1, laoID1) = createLaoSetup(sk, pk)
     val (l2, laoID2) = createLaoSetup(sk, pk, "My new LAO", 3)
@@ -274,7 +274,7 @@ class PubSubTest extends FunSuite {
 
   }
 
-  test("Two process subscribe and publish on the same channel") {
+  ignore("Two process subscribe and publish on the same channel") {
     val (sk1, pk1): (PrivateKey, PublicKey) = Curve25519.createKeyPair
     val (sk2, pk2): (PrivateKey, PublicKey) = Curve25519.createKeyPair
     val (l, laoID) = createLaoSetup(sk1, pk1)
