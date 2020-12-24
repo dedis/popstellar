@@ -42,5 +42,6 @@ type Message struct {
 
 type ItemWitnessSignatures struct {
 	WitnessKey []byte
+	//Sign(message_id)
 	Signature  []byte
 }

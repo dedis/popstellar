@@ -26,7 +26,7 @@ const(
 type DataCreateLAO struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
-	// hash : Name || Creation
+	//ID hash : SHA256(organizer||creation||name)
 	ID []byte `json:"id"`
 	// Name of the LAO
 	Name string `json:"name"`
@@ -41,7 +41,7 @@ type DataCreateLAO struct {
 type DataCreateMeeting struct {
 	Object string
 	Action string
-	//ID hash : Name || Creation Date/Time Unix Timestamp
+	//ID hash : SHA256(lao_id||creation||name)
 	ID []byte
 	// Name of the meeting
 	Name string
@@ -113,7 +113,7 @@ type DataUpdateLAO struct {
 type DataStateLAO struct {
 	Object string
 	Action string
-	//ID hash : OriginalName || Creation
+	//ID hash : SHA256(organizer||creation||name) OriginalName || Creation
 	ID []byte
 	// new name of the LAO
 	Name string
@@ -155,9 +155,11 @@ type DataStateMeeting struct {
 	// signatures of the witnesses on the modification message (either creation/update)
 	Modification_signatures []json.RawMessage
 }
+
 type DataWitnessMessage struct {
 	Object     string
 	Action     string
 	Message_id []byte
+	//signature by the witness over the data field of the message : Sign(data)
 	Signature  []byte
 }
