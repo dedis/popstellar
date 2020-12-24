@@ -33,7 +33,7 @@ package object json {
 
     val Subscribe: json.Methods.Value with Matching = MatchingValue("subscribe")
     val Unsubscribe: json.Methods.Value with Matching = MatchingValue("unsubscribe")
-    val Message: json.Methods.Value with Matching = MatchingValue("message")
+    val Broadcast: json.Methods.Value with Matching = MatchingValue("broadcast")
     val Catchup: json.Methods.Value with Matching = MatchingValue("catchup")
     val Publish: json.Methods.Value with Matching = MatchingValue("publish")
 

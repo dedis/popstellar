@@ -61,7 +61,7 @@ object JsonMessageParser {
                 case Methods.Unsubscribe() => Left(obj.convertTo[UnsubscribeMessageClient])
 
                 /* Propagate message on a channel */
-                case Methods.Message() => Left(obj.convertTo[PropagateMessageServer])
+                case Methods.Broadcast() => Left(obj.convertTo[PropagateMessageServer])
 
                 /* Catchup on past message on a channel */
                 case Methods.Catchup() => Left(obj.convertTo[CatchupMessageClient])

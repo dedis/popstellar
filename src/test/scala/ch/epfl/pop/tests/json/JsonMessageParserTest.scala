@@ -543,7 +543,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
   test("JsonMessageParser.parseMessage|encodeMessage:PropagateMessageServer") {
     val source: String = s"""{
                             |    "jsonrpc": "2.0",
-                            |    "method": "message",
+                            |    "method": "broadcast",
                             |    "params": {
                             |        "channel": "channel_id",
                             |        "message": $MessageContentExample
