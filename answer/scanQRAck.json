@@ -1,0 +1,25 @@
+{
+	"$schema": "http://json-schema.org/draft/2019-09/schema#",
+	"$id": "https://github.com/dedis/student20_pop/tree/proto-specs/answer/scanQRAck.json",
+	"title": "Match a custom JsonRpc 2.0 message answer",
+	"description": "Match a scan QR acknowledgement",
+	"type": "object",
+
+	"properties": {
+		"jsonrpc": { "description": "[String] JsonRpc version", "const": "2.0", "$comment": "should always be \"2.0\"" },
+		"address": { "description": "[String] address of server", "const": "2.0", "$comment": "Organizer's back end server address" },
+		"channel_id": { "description": "[String] channel id", "const": "2.0", "$comment": "Channel id to be subscribed to" },
+		"id": {
+			"oneOf": [
+				{ "type": "integer" },
+				{ "type": "null" }
+			],
+			"$comment": "The id match the request id. If there was an error in detecting the id, it must be null"
+		      }
+	},
+	"additionalProperties": false,
+	"allOf": [
+		{ "required": ["jsonrpc", "address", "channel_id", "id"] }
+	],
+	"$comment": "Note: required fields: (\"jsonrpc\" \\and \"address\" \\and \"channel_id\" \\and \"id\")"
+}
