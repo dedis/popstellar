@@ -303,7 +303,7 @@ class PubSubTest extends FunSuite {
     sendAndVerify(l)
   }
 
-  test("Error when creating an existing LAO") {
+  ignore("Error when creating an existing LAO") {
     val (sk, pk): (PrivateKey, PublicKey) = Curve25519.createKeyPair
     val laoName = "My LAO"
     val (l1, _) = createLaoSetup(sk, pk, laoName)
