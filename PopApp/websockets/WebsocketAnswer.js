@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+// TODO remove the line above when console will not be use
 // eslint-disable-next-line import/no-cycle
 import WebsocketLink from './WebsocketLink';
 import {

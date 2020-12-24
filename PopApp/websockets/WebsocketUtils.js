@@ -73,6 +73,7 @@ export const fromString64 = (str) => atob(str);
  * Generate a pseudo-random id (32 bit number) for server requests
  * See https://gist.github.com/gordonbrander/2230317
  */
+// eslint-disable-next-line no-bitwise
 export const generateId = () => parseInt(Math.random().toString(16).substr(2, 9), 16) & 0xfffffff;
 /** Return the current time (Number - UNIX number of seconds from 1st january 1970) */
 export const getCurrentTime = () => Math.floor(Date.now() / 1000);
