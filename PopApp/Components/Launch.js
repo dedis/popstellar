@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+// TODO remove the line above when console will not be use
 import React from 'react';
 import {
   StyleSheet, View, Text, Button, TextInput,
