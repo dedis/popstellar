@@ -7,7 +7,8 @@
     "web": "expo start --web",
     "eject": "expo eject",
     "startServer": "node websockets/LocalMockServer.js",
-    "startMonitorServer": "nodemon websockets/LocalMockServer.js"
+    "startMonitorServer": "nodemon websockets/LocalMockServer.js",
+    "eslint": "node_modules/.bin/eslint ."
   },
   "dependencies": {
     "@react-native-community/datetimepicker": "^3.0.5",
