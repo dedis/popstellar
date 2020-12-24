@@ -215,7 +215,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
 
 
     // Meeting without location
-    data = data.replaceAll(",\"location\":\"[a-zA-Z]*\"", "")
+    data = data.replaceFirst(",\"location\":\"[a-zA-Z]*\"", "")
     sp = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
       case Left(m) => m
       case _ => fail()
@@ -232,7 +232,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     sp shouldBeEqualUntilMessageContent spdp
 
     // Meeting without location and end
-    data = data.replaceAll(",\"end\":[0-9]*", "")
+    data = data.replaceFirst(",\"end\":[0-9]*", "")
     sp = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
       case Left(m) => m
       case _ => fail()
@@ -249,7 +249,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     sp shouldBeEqualUntilMessageContent spdp
 
     // Meeting without location, end and extra
-    data = data.replaceAll(",\"extra\":\"[a-zA-Z0-9_]*\"", "")
+    data = data.replaceFirst(",\"extra\":\"[a-zA-Z0-9_]*\"", "")
     sp = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
       case Left(m) => m
       case _ => fail()
@@ -266,7 +266,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     sp shouldBeEqualUntilMessageContent spdp
 
     // Meeting without start (should not work)
-    data = data.replaceAll(",\"start\":[0-9]*", "")
+    data = data.replaceFirst(",\"start\":[0-9]*", "")
     try {
       sp = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
         case Left(_) => fail()
@@ -318,7 +318,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     }
 
     // roll call without description
-    data = data.replaceAll(",\"roll_call_description\":\"[a-zA-Z]*\"", "")
+    data = data.replaceFirst(",\"roll_call_description\":\"[a-zA-Z]*\"", "")
     sp = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
       case Left(m) => m
       case _ => fail()
@@ -335,7 +335,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     sp shouldBeEqualUntilMessageContent spdp
 
     // roll call without description and scheduled
-    data = data.replaceAll(",\"scheduled\":[0-9]*", "")
+    data = data.replaceFirst(",\"scheduled\":[0-9]*", "")
     sp = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
       case Left(m) => m
       case _ => fail()
@@ -352,7 +352,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     sp shouldBeEqualUntilMessageContent spdp
 
     // roll call without description, scheduled and start
-    data = data.replaceAll(",\"start\":[0-9]*", "")
+    data = data.replaceFirst(",\"start\":[0-9]*", "")
     sp = JsonMessageParser.parseMessage(embeddedMessage(data)) match {
       case Left(m) => m
       case _ => fail()
@@ -369,7 +369,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     sp shouldBeEqualUntilMessageContent spdp
 
     // roll call without description, scheduled, start and location (should fail)
-    var dataW: String = data.replaceAll(",\"location\":\"[A-Za-z]*\"", "")
+    var dataW: String = data.replaceFirst(",\"location\":\"[A-Za-z]*\"", "")
     try {
       sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
         case Left(_) => fail()
@@ -379,7 +379,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     catch { case _: JsonMessageParserException => }
 
     // roll call without description, scheduled, start and action (should fail)
-    dataW = data.replaceAll(",\"action\":\"[A-Za-z]*\"", "")
+    dataW = data.replaceFirst(",\"action\":\"[A-Za-z]*\"", "")
     try {
       sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
         case Left(_) => fail()
@@ -412,7 +412,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     }
 
     // roll call without start (should fail)
-    var dataW: String = data.replaceAll(",\"start\":[0-9]*", "")
+    var dataW: String = data.replaceFirst(",\"start\":[0-9]*", "")
     try {
       sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
         case Left(_) => fail()
@@ -422,7 +422,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     catch { case _: JsonMessageParserException => }
 
     // roll call without id (should fail)
-    dataW = data.replaceAll(",\"id\":\"[A-Za-z0-9=+/]*\"", "")
+    dataW = data.replaceFirst(",\"id\":\"[A-Za-z0-9=+/]*\"", "")
     try {
       sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
         case Left(_) => fail()
@@ -457,7 +457,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     }
 
     // roll call without start (should fail)
-    var dataW: String = data.replaceAll(",\"start\":[0-9]*", "")
+    var dataW: String = data.replaceFirst(",\"start\":[0-9]*", "")
     try {
       sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
         case Left(_) => fail()
@@ -467,7 +467,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     catch { case _: JsonMessageParserException => }
 
     // roll call without id (should fail)
-    dataW = data.replaceAll(",\"id\":\"[A-Za-z0-9=+/]*\"", "")
+    dataW = data.replaceFirst(",\"id\":\"[A-Za-z0-9=+/]*\"", "")
     try {
       sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
         case Left(_) => fail()
@@ -500,7 +500,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     }
 
     // roll call without start (should fail)
-    var dataW: String = data.replaceAll(",\"start\":[0-9]*", "")
+    var dataW: String = data.replaceFirst(",\"start\":[0-9]*", "")
     try {
       sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
         case Left(_) => fail()
@@ -510,7 +510,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     catch { case _: JsonMessageParserException => }
 
     // roll call without end (should fail)
-    dataW = data.replaceAll(",\"end\":[0-9]*", "")
+    dataW = data.replaceFirst(",\"end\":[0-9]*", "")
     try {
       sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
         case Left(_) => fail()
@@ -520,7 +520,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     catch { case _: JsonMessageParserException => }
 
     // roll call without attendees (should fail)
-    dataW = data.replaceAll(",\"attendees\":\\[[A-Za-z0-9,\"=]*\\]", "")
+    dataW = data.replaceFirst(",\"attendees\":\\[[A-Za-z0-9,\"=]*\\]", "")
     try {
       sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
         case Left(_) => fail()
@@ -530,7 +530,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     catch { case _: JsonMessageParserException => }
 
     // roll call without id (should fail)
-    dataW = data.replaceAll(",\"id\":\"[A-Za-z0-9=+/]*\"", "")
+    dataW = data.replaceFirst(",\"id\":\"[A-Za-z0-9=+/]*\"", "")
     try {
       sp = JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
         case Left(_) => fail()
@@ -684,7 +684,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     var sp: JsonMessages.JsonMessage = AnswerResultArrayMessageServer(99, ChannelMessages(List()))
     var spd: String = JsonMessageParser.serializeMessage(sp)
 
-    assertResult(source.replaceAll("F_MESSAGES", "[]"))(spd)
+    assertResult(source.replaceFirst("F_MESSAGES", "[]"))(spd)
 
 
     // 1 message and empty witness list
@@ -697,7 +697,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     val rd: String = """eyJvYmplY3QiOiJtZXNzYWdlIiwiYWN0aW9uIjoid2l0bmVzcyIsImlkIjoiTWc9PSIsInN0YXJ0IjoyMn0="""
     var r: String = s"""[{"data":"$rd","message_id":"bWlk","sender":"c2tleQ==","signature":"c2lnbg==","witness_signatures":[]}]"""
 
-    assertResult(source.replaceAll("F_MESSAGES", r))(spd)
+    assertResult(source.replaceFirst("F_MESSAGES", r))(spd)
     assert(rd === JsonUtils.ENCODER.encode(data.toJson.toString().getBytes).map(_.toChar).mkString)
     assert(JsonUtils.DECODER.decode(rd).map(_.toChar).mkString === data.toJson.toString())
 
@@ -714,7 +714,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
 
     r = s"""[{"data":"$rd","message_id":"bWlk","sender":"c2tleQ==","signature":"c2lnbg==","witness_signatures":${listStringify(sig)}}]"""
 
-    assertResult(source.replaceAll("F_MESSAGES", r))(spd)
+    assertResult(source.replaceFirst("F_MESSAGES", r))(spd)
     assert(rd === JsonUtils.ENCODER.encode(data.toJson.toString().getBytes).map(_.toChar).mkString)
     assert(JsonUtils.DECODER.decode(rd).map(_.toChar).mkString === data.toJson.toString())
   }
@@ -731,9 +731,9 @@ class JsonMessageParserTest extends FunSuite with Matchers {
                             |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
 
     for (i <- -5 until 0) {
-      val sourceErrorCode: String = source.replaceAll("ERR_CODE", String.valueOf(i))
-      val sourceSomeId: String = sourceErrorCode.replaceAll("ID", "\"id\":" + String.valueOf(3 * i) + ",")
-      val sourceNoneId: String = sourceErrorCode.replaceAll("ID", "\"id\":null,")
+      val sourceErrorCode: String = source.replaceFirst("ERR_CODE", String.valueOf(i))
+      val sourceSomeId: String = sourceErrorCode.replaceFirst("ID", "\"id\":" + String.valueOf(3 * i) + ",")
+      val sourceNoneId: String = sourceErrorCode.replaceFirst("ID", "\"id\":null,")
 
       var sp: JsonMessage = JsonMessageParser.parseMessage(sourceSomeId) match {
         case Left(m) => m
@@ -785,9 +785,9 @@ class JsonMessageParserTest extends FunSuite with Matchers {
                             |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
 
     for (i <- -20 to 20) {
-      val sourceErrorCode: String = source.replaceAll("ERR_CODE", String.valueOf(i))
-      val sourceSomeId: String = sourceErrorCode.replaceAll("ID", "\"id\":" + String.valueOf(3 * i) + ",")
-      val sourceNoneId: String = sourceErrorCode.replaceAll("ID", "\"id\":null,")
+      val sourceErrorCode: String = source.replaceFirst("ERR_CODE", String.valueOf(i))
+      val sourceSomeId: String = sourceErrorCode.replaceFirst("ID", "\"id\":" + String.valueOf(3 * i) + ",")
+      val sourceNoneId: String = sourceErrorCode.replaceFirst("ID", "\"id\":null,")
 
       var sp: JsonMessageParserError = JsonMessageParser.parseMessage(sourceSomeId) match {
         case Right(m) => m

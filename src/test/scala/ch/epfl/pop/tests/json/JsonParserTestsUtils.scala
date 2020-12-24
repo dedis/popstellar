@@ -84,37 +84,37 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
 
 
   val dataCreateLao: String = _dataLao
-    .replaceAll("F_ACTION", Actions.Create.toString)
-    .replaceAll("FF_MODIFICATION", "")
-    .replaceAll("\"last_modified\":[0-9]*,", "")
+    .replaceFirst("F_ACTION", Actions.Create.toString)
+    .replaceFirst("FF_MODIFICATION", "")
+    .replaceFirst("\"last_modified\":[0-9]*,", "")
   val dataBroadcastLao: String = _dataLao
-    .replaceAll("F_ACTION", Actions.State.toString)
-    .replaceAll(
+    .replaceFirst("F_ACTION", Actions.State.toString)
+    .replaceFirst(
       "FF_MODIFICATION",
       "\"modification_id\":\"NDU2\",\"modification_signatures\":[{\"witness\":\"Y2xlZjE=\",\"signature\":\"amUgc2lnbmU=\"},{\"witness\":\"Y2xlZjI=\",\"signature\":\"amUgc2lnbmUgYXVzc2k=\"}],"
     )
   val dataCreateMeeting: String = _dataMeeting
-    .replaceAll("F_ACTION", Actions.Create.toString)
-    .replaceAll("FF_MODIFICATION", "")
-    .replaceAll("\"last_modified\":[0-9]*,", "")
+    .replaceFirst("F_ACTION", Actions.Create.toString)
+    .replaceFirst("FF_MODIFICATION", "")
+    .replaceFirst("\"last_modified\":[0-9]*,", "")
   val dataBroadcastMeeting: String = _dataMeeting
-    .replaceAll("F_ACTION", Actions.State.toString)
-    .replaceAll(
+    .replaceFirst("F_ACTION", Actions.State.toString)
+    .replaceFirst(
       "FF_MODIFICATION",
       "\"modification_id\":\"NDU2\",\"modification_signatures\":[{\"witness\":\"Y2xlZjE=\",\"signature\":\"amUgc2lnbmU=\"},{\"witness\":\"Y2xlZjI=\",\"signature\":\"amUgc2lnbmUgYXVzc2k=\"}],"
     )
   val dataCreateRollCall: String = _dataRollCall
-    .replaceAll("F_ACTION", Actions.Create.toString)
-    .replaceAll("FF_MODIFICATION", "\"name\":\"MonRollCall\",\"creation\":1234,\"start\":1500,\"scheduled\":1450,\"location\":\"INF\",\"roll_call_description\":\"description\",")
+    .replaceFirst("F_ACTION", Actions.Create.toString)
+    .replaceFirst("FF_MODIFICATION", "\"name\":\"MonRollCall\",\"creation\":1234,\"start\":1500,\"scheduled\":1450,\"location\":\"INF\",\"roll_call_description\":\"description\",")
   val dataOpenRollCall: String = _dataRollCall
-    .replaceAll("F_ACTION", Actions.Open.toString)
-    .replaceAll("FF_MODIFICATION", "\"start\":2000,")
+    .replaceFirst("F_ACTION", Actions.Open.toString)
+    .replaceFirst("FF_MODIFICATION", "\"start\":2000,")
   val dataReopenRollCall: String = _dataRollCall
-    .replaceAll("F_ACTION", Actions.Reopen.toString)
-    .replaceAll("FF_MODIFICATION", "\"start\":3000,")
+    .replaceFirst("F_ACTION", Actions.Reopen.toString)
+    .replaceFirst("FF_MODIFICATION", "\"start\":3000,")
   val dataCloseRollCall: String = _dataRollCall
-    .replaceAll("F_ACTION", Actions.Close.toString)
-    .replaceAll("FF_MODIFICATION", "\"start\":4000,\"end\":5000,\"attendees\":[\"Y2xlZjE=\",\"Y2xlZjI=\"],")
+    .replaceFirst("F_ACTION", Actions.Close.toString)
+    .replaceFirst("FF_MODIFICATION", "\"start\":4000,\"end\":5000,\"attendees\":[\"Y2xlZjE=\",\"Y2xlZjI=\"],")
 
 
   def embeddedMessage(
@@ -196,14 +196,14 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
       def patternAfter(newValue: String): String = s""""$kw":$newValue"""
 
       if (source.contains(kw)) {
-        performBogusTest(source.replaceAll(pattern, patternAfter("\"3.0\"")))
-        performBogusTest(source.replaceAll(pattern, patternAfter("\"string\"")))
-        performBogusTest(source.replaceAll(pattern, patternAfter("2.0")))
-        performBogusTest(source.replaceAll(pattern, patternAfter("")))
-        performBogusTest(source.replaceAll(pattern, patternAfter("s|{@sopOIJ34≠")))
-        performBogusTest(source.replaceAll(pattern, patternAfter(arrEmpty)))
-        performBogusTest(source.replaceAll(pattern, patternAfter(arr)))
-        performBogusTest(source.replaceAll(pattern, patternAfter(randomInt.toString)))
+        performBogusTest(source.replaceFirst(pattern, patternAfter("\"3.0\"")))
+        performBogusTest(source.replaceFirst(pattern, patternAfter("\"string\"")))
+        performBogusTest(source.replaceFirst(pattern, patternAfter("2.0")))
+        performBogusTest(source.replaceFirst(pattern, patternAfter("")))
+        performBogusTest(source.replaceFirst(pattern, patternAfter("s|{@sopOIJ34≠")))
+        performBogusTest(source.replaceFirst(pattern, patternAfter(arrEmpty)))
+        performBogusTest(source.replaceFirst(pattern, patternAfter(arr)))
+        performBogusTest(source.replaceFirst(pattern, patternAfter(randomInt.toString)))
       }
     }
 
@@ -212,22 +212,22 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
       def patternAfter(newValue: String): String = s""""$kw":$newValue"""
 
       if (source.contains(kw)) {
-        performBogusTest(source.replaceAll(pattern, patternAfter("\"3.0\"")))
-        performBogusTest(source.replaceAll(pattern, patternAfter("\"3\"")))
-        performBogusTest(source.replaceAll(pattern, patternAfter("\"string\"")))
-        if (!canBeNull) performBogusTest(source.replaceAll(pattern, patternAfter("")))
-        performBogusTest(source.replaceAll(pattern, patternAfter("s|{@sopOIJ34≠")))
+        performBogusTest(source.replaceFirst(pattern, patternAfter("\"3.0\"")))
+        performBogusTest(source.replaceFirst(pattern, patternAfter("\"3\"")))
+        performBogusTest(source.replaceFirst(pattern, patternAfter("\"string\"")))
+        if (!canBeNull) performBogusTest(source.replaceFirst(pattern, patternAfter("")))
+        performBogusTest(source.replaceFirst(pattern, patternAfter("s|{@sopOIJ34≠")))
       }
     }
 
     def checkBatchWithArrays(source: String, kw: String, pattern: String): Unit = {
-      performBogusTest(source.replaceAll(pattern, patternAfterString(kw, randomInt.toString)))
-      performBogusTest(source.replaceAll(pattern, patternAfterString(kw, arrEmpty)))
-      performBogusTest(source.replaceAll(pattern, patternAfterString(kw, arr)))
+      performBogusTest(source.replaceFirst(pattern, patternAfterString(kw, randomInt.toString)))
+      performBogusTest(source.replaceFirst(pattern, patternAfterString(kw, arrEmpty)))
+      performBogusTest(source.replaceFirst(pattern, patternAfterString(kw, arr)))
     }
 
     def checkBatchWithNonBase64(source: String, kw: String): Unit = {
-      performBogusTest(source.replaceAll(patternString(kw), patternAfterString(kw, "not-A-Base64-String")))
+      performBogusTest(source.replaceFirst(patternString(kw), patternAfterString(kw, "not-A-Base64-String")))
     }
 
     if (source.contains("jsonrpc")) {
@@ -241,7 +241,7 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
     if (source.contains("\"params\":")) {
       if (source.contains("\"channel\":")) {
         val kw: String = "channel"
-        val pattern: String = """"KW":"[^,]*"""".replaceAll("KW", kw)
+        val pattern: String = """"KW":"[^,]*"""".replaceFirst("KW", kw)
 
         checkBatchWithArrays(source, kw, pattern)
       }
