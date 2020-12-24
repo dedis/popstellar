@@ -7,7 +7,7 @@ package actors
 import (
 	b64 "encoding/base64"
 	"encoding/json"
-	"fmt"
+	"log"
 	"student20_pop/db"
 	"student20_pop/event"
 	"student20_pop/lib"
@@ -224,13 +224,13 @@ func (w *Witness) handleWitnessMessage(msg message.Message, chann string, query 
 
 	sendMsg := db.GetMessage([]byte(chann), []byte(data.Message_id), w.database)
 	if sendMsg == nil {
-		fmt.Printf("no message with ID %v in the database", data.Message_id)
+		log.Printf("no message with ID %v in the database", data.Message_id)
 		return nil, lib.ErrInvalidResource
 	}
 	storedMessage, errs := parser.ParseMessage(sendMsg)
 
 	if errs != nil {
-		fmt.Printf("unable to unmarshall the message stored in the database")
+		log.Printf("unable to unmarshall the message stored in the database")
 		return nil, lib.ErrDBFault
 	}
 
