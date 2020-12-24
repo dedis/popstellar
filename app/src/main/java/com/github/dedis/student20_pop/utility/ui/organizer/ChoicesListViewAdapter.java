@@ -20,12 +20,14 @@ import java.util.LinkedList;
 public class ChoicesListViewAdapter extends BaseAdapter {
     private Context context;
     private LinkedList<String> choices;
+    private TextWatcher choicesTextWatcher;
 
 
-    public ChoicesListViewAdapter(Context context) {
+    public ChoicesListViewAdapter(Context context, TextWatcher textWatcher) {
         this.context = context;
         this.choices = new LinkedList<>();
         this.choices.add("");
+        this.choicesTextWatcher = textWatcher;
     }
 
     @Override
@@ -58,13 +60,14 @@ public class ChoicesListViewAdapter extends BaseAdapter {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {choices.set(position, s.toString());}
 
             @Override
             public void afterTextChanged(Editable s) {
                 choices.set(position, s.toString());
             }
         });
+        choice.addTextChangedListener(choicesTextWatcher);
 
         Button button = (Button) convertView.findViewById(R.id.delete_choice_button);
         if (position==0){
