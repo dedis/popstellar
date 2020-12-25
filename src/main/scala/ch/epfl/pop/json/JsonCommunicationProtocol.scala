@@ -249,7 +249,9 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
                         "\"end\" and/or \"attendees\") missing or wrongly formatted"
                     )
                   }
-                case _ =>
+                case _ => throw JsonMessageParserException(
+                  s"""invalid roll call query : action "${action.toString}" is unrecognizable"""
+                )
               }
 
               mcd.build()

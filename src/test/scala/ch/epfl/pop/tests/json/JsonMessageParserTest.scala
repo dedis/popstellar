@@ -497,6 +497,16 @@ class JsonMessageParserTest extends FunSuite with Matchers {
       }
     }
     catch { case _: JsonMessageParserException => }
+
+    // roll call with invalid action (should fail)
+    dataW = _dataRollCall
+      .replaceFirst("F_ACTION", Actions.State.toString)
+      .replaceFirst("FF_MODIFICATION", "\"start\":3000,")
+    JsonMessageParser.parseMessage(embeddedMessage(dataW)) match {
+      case Right(e) =>
+        e.description should equal (s"""invalid roll call query : action "${Actions.State.toString}" is unrecognizable""")
+      case _ => fail()
+    }
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:ReopenRollCallMessageClient") {
@@ -847,6 +857,18 @@ class JsonMessageParserTest extends FunSuite with Matchers {
       checkBogusInputs(sourceNoneId)
     }
 
+    // If error has invalid id (not JsNull or JsNumber) => should fail
+    val sCode: String = source.replaceFirst("ERR_CODE", "-3")
+    var s: String = sCode.replaceFirst("ID", "\"id\":\"12\",")
+    var e = the [JsonMessageParserException] thrownBy s.parseJson.convertTo[AnswerErrorMessageServer]
+    e.getMessage should equal ("invalid \"AnswerErrorMessageServer\" : id field wrongly formatted")
+    s = sCode.replaceFirst("ID", "\"id\":[12],")
+    e = the [JsonMessageParserException] thrownBy s.parseJson.convertTo[AnswerErrorMessageServer]
+    e.getMessage should equal ("invalid \"AnswerErrorMessageServer\" : id field wrongly formatted")
+    s = sCode.replaceFirst("ID", "\"id\":{\"id\":12},")
+    e = the [JsonMessageParserException] thrownBy s.parseJson.convertTo[AnswerErrorMessageServer]
+    e.getMessage should equal ("invalid \"AnswerErrorMessageServer\" : id field wrongly formatted")
+
     // If error has wrong type (not JsObject) => should fail
     val errorMatcherRegex: String = "\"error\":\\{[^\\}]*\\}"
     val sourceErrorCode: String = source.replaceFirst("ID", "\"id\":123,")
@@ -857,6 +879,9 @@ class JsonMessageParserTest extends FunSuite with Matchers {
         e.description should equal ("invalid message : message contains a \"error\" field, but its type is unknown")
       case _ => fail()
     }
+
+    e = the [JsonMessageParserException] thrownBy sourceWrongErrorType.parseJson.convertTo[AnswerErrorMessageServer]
+    e.getMessage should equal ("invalid \"AnswerErrorMessageServer\" : fields missing or wrongly formatted")
 
     sourceWrongErrorType = sourceErrorCode.replaceFirst(errorMatcherRegex, "\"error\":\"10\"")
     JsonMessageParser.parseMessage(sourceWrongErrorType) match {
@@ -917,6 +942,42 @@ class JsonMessageParserTest extends FunSuite with Matchers {
 
     JsonMessageParser.parseMessage(source) match {
       case Right(e) => e.description should equal ("invalid message : fields missing or wrongly formatted")
+      case _ => fail()
+    }
+
+
+    // invalid message content type
+    source = "{\"data\":\"myData\"}"
+    val e = the [JsonMessageParserException] thrownBy source.parseJson.convertTo[MessageContent]
+    e.getMessage should equal ("invalid \"MessageContent\" : fields missing or wrongly formatted")
+
+
+    // invalid (object, action) pair
+    val wrongAction: String = Actions.Open.toString
+    source = embeddedMessage(dataWitnessMessage.replaceFirst("\"action\":[^,]*", s""""action":"$wrongAction""""))
+    JsonMessageParser.parseMessage(source) match {
+      case Right(e) =>
+        e.description should equal (s"""invalid message : invalid (object = ${Objects.Message.toString}, action = $wrongAction) pair""")
+      case _ => fail()
+    }
+
+
+    // no MessageContent for a publish method
+    source = """{"jsonrpc":"2.0","method":"publish","params":{"channel":"/root/lao_id"},"id":0}"""
+    JsonMessageParser.parseMessage(source) match {
+      case Right(e) =>
+        e.description should equal ("missing MessageContent in MessageParameter for JsonMessagePublishClient")
+      case _ => fail()
+    }
+
+
+    // no params for a publish method but id readable
+    val newId: Int = 678
+    source = s"""{"jsonrpc":"2.0","method":"publish","id":$newId}"""
+    JsonMessageParser.parseMessage(source) match {
+      case Right(e) =>
+        e.description should equal ("invalid MessageParameters : fields missing or wrongly formatted")
+        e.id should equal (Some(newId))
       case _ => fail()
     }
   }
