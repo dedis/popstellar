@@ -106,9 +106,10 @@ public class OrganizerExpandableListViewEventAdapter extends ExpandableListViewE
         // in the future it could be nice to have a pencil icon to allow organizer to modify an event
         Event event = ((Event) getChild(groupPosition, childPosition));
         String eventTitle = (event.getName() + " : " + event.getType());
+        String eventTime = dateFormat.format(event.getTime()*1000L);
 
         //For now, later: for each specific type of event, show the required content
-        String eventDescription = "Time : " + event.getTime() + "\nLocation : " + event.getLocation();
+        String eventDescription = "Time : " + eventTime + "\nLocation : " + event.getLocation();
 
 
         if (convertView == null) {

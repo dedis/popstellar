@@ -7,6 +7,7 @@ import android.widget.BaseExpandableListAdapter;
 
 import com.github.dedis.student20_pop.model.Event;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,6 +22,7 @@ public abstract class ExpandableListViewEventAdapter extends BaseExpandableListA
     protected final Context context;
     protected final List<Event.EventCategory> categories;
     protected final HashMap<Event.EventCategory, List<Event>> eventsMap;
+    protected final SimpleDateFormat dateFormat;
 
     /**
      * Constructor for the expandable list view adapter to display the events
@@ -39,6 +41,7 @@ public abstract class ExpandableListViewEventAdapter extends BaseExpandableListA
         this.eventsMap.put(PAST, new ArrayList<>());
         this.eventsMap.put(PRESENT, new ArrayList<>());
         this.eventsMap.put(FUTURE, new ArrayList<>());
+        this.dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm");
 
         putEventsInMap(events, this.eventsMap);
         orderEventsInMap(this.eventsMap);
