@@ -5,9 +5,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
@@ -17,23 +17,24 @@ import androidx.fragment.app.FragmentActivity;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.Person;
 import com.github.dedis.student20_pop.ui.CameraPermissionFragment;
-import com.github.dedis.student20_pop.ui.ConnectFragment;
+import com.github.dedis.student20_pop.ui.ConnectingFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
-import com.github.dedis.student20_pop.utility.network.PoPClientEndpoint;
-import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
+import com.github.dedis.student20_pop.ui.QRCodeScanningFragment;
+import com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType;
+import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
+import com.github.dedis.student20_pop.utility.qrcode.OnCameraNotAllowedListener;
+import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
 
-import java.net.URI;
 import java.util.Collections;
 import java.util.Date;
-import java.util.concurrent.CompletableFuture;
 
-import javax.websocket.DeploymentException;
+import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO;
 
 /**
  * Activity used to display the different UIs
  **/
-public final class MainActivity extends FragmentActivity {
+public final class MainActivity extends FragmentActivity implements OnCameraNotAllowedListener, QRCodeListener, OnCameraAllowedListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
@@ -64,9 +65,9 @@ public final class MainActivity extends FragmentActivity {
                 break;
             case R.id.tab_connect:
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
-                    showFragment(new ConnectFragment(), ConnectFragment.TAG);
+                    showFragment(new QRCodeScanningFragment(CONNECT_LAO), QRCodeScanningFragment.TAG);
                 else
-                    showFragment(new CameraPermissionFragment(), CameraPermissionFragment.TAG);
+                    showFragment(new CameraPermissionFragment(CONNECT_LAO), CameraPermissionFragment.TAG);
                 break;
             case R.id.tab_launch:
                 showFragment(new LaunchFragment(), LaunchFragment.TAG);
@@ -80,35 +81,26 @@ public final class MainActivity extends FragmentActivity {
                     // Creating the LAO and adding it to the organizer's LAO
                     Lao lao = new Lao(name, new Date(), app.getPerson().getId());
                     // Store the private key of the organizer
+                    app.getLocalProxy()
+                            .thenCompose(p -> p.createLao(lao.getName(), lao.getTime(), lao.getTime(), app.getPerson().getId()))
+                            .thenAccept(code -> {
+                                Person organizer = app.getPerson().setLaos(Collections.singletonList(lao.getId()));
+                                // Set LAO and organizer information locally
+                                ((PoPApplication) getApplication()).setPerson(organizer);
+                                ((PoPApplication) getApplication()).addLao(lao);
+                                ((PoPApplication) getApplication()).setCurrentLao(lao);
+                                // Start the Organizer Activity (user is considered an organizer)
+                                Intent intent = new Intent(this, OrganizerActivity.class);
+                                startActivity(intent);
+                            })
+                            .exceptionally(t -> {
+                                Toast toast = Toast.makeText(this, "An error occurred : \n" + t.getMessage(), Toast.LENGTH_LONG);
+                                toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 0);
+                                toast.show();
 
-                    CompletableFuture.supplyAsync(() -> {
-                        try {
-                            //TODO Get URL dynamically
-                            return PoPClientEndpoint.connectToServer(URI.create("ws://10.0.2.2:2020/"), app.getPerson());
-                        } catch (DeploymentException e) {
-                            e.printStackTrace();
-                            return null;
-                        }
-                    }).thenCompose(p -> {
-                        if (p != null)
-                            return p.createLao(lao.getName(), lao.getTime(), lao.getTime(), app.getPerson().getId());
-                        else
-                            return null;
-                    }).whenComplete((errCode, t) -> {
-                        if (t != null)
-                            //TODO Show toast for error
-                            Log.e(TAG, "Error while creating the lao", t);
-                        else {
-                            //TODO Show toast for success
-                            Person organizer = app.getPerson().addLao(lao.getId());
-                            // Set LAO and organizer information locally
-                            ((PoPApplication) getApplication()).setPerson(organizer);
-                            ((PoPApplication) getApplication()).setLaos(Collections.singletonList(lao));
-                            // Start the Organizer Activity (user is considered an organizer)
-                            Intent intent = new Intent(this, OrganizerActivity.class);
-                            startActivity(intent);
-                        }
-                    });
+                                Log.e(TAG, "Error while creating Lao", t);
+                                return null;
+                            });
                 }
                 break;
             case R.id.button_cancel_launch:
@@ -127,5 +119,34 @@ public final class MainActivity extends FragmentActivity {
                     .addToBackStack(TAG)
                     .commit();
         }
+    }
+
+
+    @Override
+    public void onCameraNotAllowedListener(QRCodeScanningType qrCodeScanningType) {
+        showFragment(new CameraPermissionFragment(qrCodeScanningType), CameraPermissionFragment.TAG);
+    }
+
+    @Override
+    public void onQRCodeDetected(String url, QRCodeScanningType qrCodeScanningType) {
+        Log.i(TAG, "Received qrcode url : " + url);
+        switch (qrCodeScanningType) {
+            case ADD_ROLL_CALL:
+                //TODO
+                break;
+            case ADD_WITNESS:
+                //TODO
+                break;
+            case CONNECT_LAO:
+                showFragment(ConnectingFragment.newInstance(url), ConnectingFragment.TAG);
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onCameraAllowedListener(QRCodeScanningType qrCodeScanningType) {
+        showFragment(new QRCodeScanningFragment(qrCodeScanningType), QRCodeScanningFragment.TAG);
     }
 }

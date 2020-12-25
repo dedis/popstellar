@@ -17,35 +17,30 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.student20_pop.AttendeeActivity;
 import com.github.dedis.student20_pop.OrganizerActivity;
+import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
 
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.List;
 
 /**
  * Fragment used to display the Home UI
-**/
+ **/
 public final class HomeFragment extends Fragment {
 
     public static final String TAG = HomeFragment.class.getSimpleName();
 
-    //TODO: retrieve from the backend, more specifically from the Person's list of Lao's
-    private ArrayList<Lao> laos;
-    //Now: for testing, later: retrieve from Person
-    private Keys keys = new Keys();
-    private String myPublicKey = keys.getPublicKey();
+    private List<Lao> laos;
+    private String id;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // TODO: retrieve list of LAOs from backend and display them
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-
-        laos = getLaos();
-
+        PoPApplication app = (PoPApplication) (getActivity().getApplication());
+        id = app.getPerson().getId();
+        laos = app.getLaos();
         LinearLayout welcome = view.findViewById(R.id.welcome_screen);
         LinearLayout list = view.findViewById(R.id.list_screen);
 
@@ -65,9 +60,9 @@ public final class HomeFragment extends Fragment {
      * Adapter class required to display the list of LAOs in a ListView
      */
     private class LaoListAdapter extends BaseAdapter {
-        private Context context;
+        private final Context context;
 
-        public LaoListAdapter(Context context){
+        public LaoListAdapter(Context context) {
             this.context = context;
         }
 
@@ -88,6 +83,7 @@ public final class HomeFragment extends Fragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            PoPApplication app = (PoPApplication) (getActivity().getApplication());
             if (convertView == null) {
                 LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = inflater.inflate(R.layout.layout_lao_home, null);
@@ -95,56 +91,14 @@ public final class HomeFragment extends Fragment {
             Lao lao = laos.get(position);
             ((TextView) convertView.findViewById(R.id.lao_name)).setText(lao.getName());
             ((TextView) convertView.findViewById(R.id.date)).setText("last interacted with ...");
-            boolean isOrganizer = lao.getOrganizer().equals(myPublicKey);
-            if (isOrganizer){
-                ((TextView) convertView.findViewById(R.id.role)).setText(R.string.organizer);
-            }else {
-                ((TextView) convertView.findViewById(R.id.role)).setText(R.string.attendee);
-            }
+            boolean isOrganizer = (lao.getOrganizer()).equals(id);
+            ((TextView) convertView.findViewById(R.id.role)).setText(isOrganizer ? R.string.organizer : R.string.attendee);
             convertView.setOnClickListener(clicked -> {
-               if (isOrganizer){
-                   startOrganizerUI(lao);
-               }else {
-                   startAttendeeUI(lao);
-               }
+                app.setCurrentLao(lao);
+                Intent intent = new Intent(getActivity(), isOrganizer ? OrganizerActivity.class : AttendeeActivity.class);
+                startActivity(intent);
             });
             return convertView;
         }
-    }
-
-    private ArrayList<Lao> getLaos(){
-        //Now: for testing, later: TODO: retrieve from Person's list of Lao
-        String notMyPublicKey = new Keys().getPublicKey();
-        ArrayList<Lao> result = new ArrayList<>();
-        result.add(new Lao("LAO 1", new Date(), notMyPublicKey));
-        result.add(new Lao("LAO 2", new Date(), myPublicKey));
-        result.add(new Lao("LAO 3", new Date(), notMyPublicKey));
-        result.add(new Lao("LAO 4", new Date(), notMyPublicKey));
-        result.add(new Lao("LAO 5", new Date(), myPublicKey));
-        result.add(new Lao("LAO 6", new Date(), notMyPublicKey));
-        return result;
-    }
-
-
-    /**
-     * Method to start the organizer UI in the case when the user is the organizer of
-     * the selected Lao
-     * @param lao
-     */
-    private void startOrganizerUI(Lao lao){
-        Intent intent = new Intent(this.getActivity(), OrganizerActivity.class);
-        //TODO: put lao in intent (or PopContext)
-        startActivity(intent);
-    }
-
-    /**
-     * Method to start the attendee UI in the case when the user is not the organizer of
-     * the selected Lao
-     * @param lao
-     */
-    private void startAttendeeUI(Lao lao){
-        Intent intent = new Intent(this.getActivity(), AttendeeActivity.class);
-        //TODO: put lao in intent (or PopContext)
-        startActivity(intent);
     }
 }

@@ -1,9 +1,5 @@
 package com.github.dedis.student20_pop.model;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import com.github.dedis.student20_pop.utility.security.Signature;
 
 import java.util.Objects;
@@ -21,13 +17,13 @@ public final class Vote {
     /**
      * Constructor of a Vote
      *
-     * @param person the public key of the person voting
+     * @param person   the public key of the person voting
      * @param election the id of the election
-     * @param vote the encrypted vote
+     * @param vote     the encrypted vote
      * @throws IllegalArgumentException if any parameter is null
      */
     public Vote(String person, String election, String vote) {
-        if(person == null || election == null || vote == null) {
+        if (person == null || election == null || vote == null) {
             throw new IllegalArgumentException("Trying to create a Vote with a null parameter");
         }
         this.person = person;
@@ -40,7 +36,6 @@ public final class Vote {
     }
 
     /**
-     *
      * @return public key of the person
      */
     public String getPerson() {
@@ -48,7 +43,6 @@ public final class Vote {
     }
 
     /**
-     *
      * @return id of the election
      */
     public String getElection() {
@@ -56,7 +50,6 @@ public final class Vote {
     }
 
     /**
-     *
      * @return encrypted vote
      */
     public String getVote() {
@@ -64,7 +57,6 @@ public final class Vote {
     }
 
     /**
-     *
      * @return signature by the voter
      */
     public String getAttestation() {

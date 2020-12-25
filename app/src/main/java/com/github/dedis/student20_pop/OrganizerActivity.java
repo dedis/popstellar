@@ -1,36 +1,46 @@
 package com.github.dedis.student20_pop;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.github.dedis.student20_pop.model.Event;
 import com.github.dedis.student20_pop.model.Keys;
-import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.ui.CameraPermissionFragment;
-import com.github.dedis.student20_pop.ui.ConnectFragment;
-import com.github.dedis.student20_pop.ui.HomeFragment;
+import com.github.dedis.student20_pop.ui.ConnectingFragment;
 import com.github.dedis.student20_pop.ui.IdentityFragment;
 import com.github.dedis.student20_pop.ui.OrganizerFragment;
-import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
-import com.github.dedis.student20_pop.utility.ui.OnAddWitnessListener;
-import com.github.dedis.student20_pop.utility.ui.OnEventTypeSelectedListener;
+import com.github.dedis.student20_pop.ui.QRCodeScanningFragment;
+import com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType;
+import com.github.dedis.student20_pop.ui.event.MeetingEventCreationFragment;
+import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
+import com.github.dedis.student20_pop.utility.qrcode.OnCameraNotAllowedListener;
+import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
+import com.github.dedis.student20_pop.utility.ui.organizer.OnAddWitnessListener;
+import com.github.dedis.student20_pop.utility.ui.organizer.OnEventCreatedListener;
+import com.github.dedis.student20_pop.utility.ui.organizer.OnEventTypeSelectedListener;
 
-import java.util.Date;
+import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult;
+import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_ALREADY_EXISTS;
+import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_SUCCESSFUL;
+import static com.github.dedis.student20_pop.PoPApplication.getAppContext;
+import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.ADD_WITNESS;
 
 /**
  * Activity used to display the different UIs for organizers
  **/
-public class OrganizerActivity extends FragmentActivity implements OnEventTypeSelectedListener, OnAddWitnessListener {
+public class OrganizerActivity extends FragmentActivity implements OnEventTypeSelectedListener, OnEventCreatedListener, OnAddWitnessListener,
+        OnCameraNotAllowedListener, QRCodeListener, OnCameraAllowedListener {
 
     public static final String TAG = OrganizerActivity.class.getSimpleName();
-    public static final String PRIVATE_KEY_TAG = "PRIVATE_KEY";
-    public static final String LAO_ID_TAG = "LAO_ID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,22 +71,11 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
         switch (view.getId()) {
             case R.id.tab_home:
                 //Future: different Home UI for organizer (without connect UI?)
-                showFragment(new HomeFragment(), HomeFragment.TAG);
+                Intent mainActivityIntent = new Intent(this, MainActivity.class);
+                startActivity(mainActivityIntent);
                 break;
             case R.id.tab_identity:
-                Bundle bundle = new Bundle();
-
-                final PoPApplication app = ((PoPApplication) getApplication());
-                bundle.putString(PRIVATE_KEY_TAG, app.getPerson().getAuthentication());
-
-                //TODO : Retrieve this LAO from the Intent
-                Lao lao = new Lao("LAO I just joined", new Date(), new Keys().getPublicKey());
-                bundle.putString(LAO_ID_TAG, lao.getId());
-
-                // set Fragmentclass Arguments
-                IdentityFragment identityFragment = new IdentityFragment();
-                identityFragment.setArguments(bundle);
-                showFragment(identityFragment, IdentityFragment.TAG);
+                showFragment(new IdentityFragment(), IdentityFragment.TAG);
                 break;
 
             default:
@@ -94,12 +93,16 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
         }
     }
 
+    /**
+     * Launches the fragment corresponding to the event creation the organizer has chosen
+     *
+     * @param eventType
+     */
     @Override
-    public void OnEventTypeSelectedListener(EventType eventType) {
+    public void OnEventTypeSelectedListener(Event.EventType eventType) {
         switch (eventType) {
             case MEETING:
-                //TODO
-                Log.d("Meeting Event Type ", "Launch here Meeting Event Creation Fragment");
+                showFragment(new MeetingEventCreationFragment(), MeetingEventCreationFragment.TAG);
                 break;
             case ROLL_CALL:
                 //TODO
@@ -118,10 +121,59 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
     @Override
     public void onAddWitnessListener() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            showFragment(new ConnectFragment(R.id.fragment_container_organizer), ConnectFragment.TAG);
+            showFragment(new QRCodeScanningFragment(ADD_WITNESS), QRCodeScanningFragment.TAG);
         } else {
-            showFragment(new CameraPermissionFragment(R.id.fragment_container_organizer), CameraPermissionFragment.TAG);
+            showFragment(new CameraPermissionFragment(ADD_WITNESS), CameraPermissionFragment.TAG);
         }
-        // TODO : Get witness id from the QR code, add witness to witness list and send info to backend
+    }
+
+    @Override
+    public void onCameraNotAllowedListener(QRCodeScanningType qrCodeScanningType) {
+        showFragment(new CameraPermissionFragment(qrCodeScanningType), CameraPermissionFragment.TAG);
+    }
+
+    @Override
+    public void onQRCodeDetected(String data, QRCodeScanningType qrCodeScanningType) {
+        Log.i(TAG, "Received qrcode url : " + data);
+        switch (qrCodeScanningType) {
+            case ADD_ROLL_CALL:
+                //TODO
+                break;
+            case ADD_WITNESS:
+                //TODO
+                int keyLength = new Keys().getPublicKey().length();
+                String witnessId = data.substring(0, keyLength);
+
+                PoPApplication app = (PoPApplication) getApplication();
+                AddWitnessResult hasBeenAdded = app.addWitness(witnessId);
+
+                this.runOnUiThread(
+                        () -> {
+                            if (hasBeenAdded == ADD_WITNESS_SUCCESSFUL) {
+                                Toast.makeText(this, getString(R.string.add_witness_successful), Toast.LENGTH_SHORT).show();
+                                getSupportFragmentManager().popBackStackImmediate();
+                            } else if (hasBeenAdded == ADD_WITNESS_ALREADY_EXISTS) {
+                                Toast.makeText(getAppContext(), getString(R.string.add_witness_already_exists), Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(this, getString(R.string.add_witness_unsuccessful), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                break;
+            case CONNECT_LAO:
+                showFragment(ConnectingFragment.newInstance(data), ConnectingFragment.TAG);
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onCameraAllowedListener(QRCodeScanningType qrCodeScanningType) {
+        showFragment(new QRCodeScanningFragment(qrCodeScanningType), QRCodeScanningFragment.TAG);
+    }
+
+    public void OnEventCreatedListener(Event event) {
+        ((PoPApplication) getApplication()).addEvent(event);
     }
 }

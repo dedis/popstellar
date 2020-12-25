@@ -13,7 +13,7 @@ import com.github.dedis.student20_pop.R;
 
 /**
  * Fragment used to display the Launch UI
-**/
+ **/
 public final class LaunchFragment extends Fragment {
 
     public static final String TAG = LaunchFragment.class.getSimpleName();
