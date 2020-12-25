@@ -24,7 +24,7 @@ public class CreateRollCall extends Data {
     private final String location;
     @Nullable private transient final String description;
 
-    public CreateRollCall(String id, String name, long creation, long start, StartType startType, String location, String description) {
+    public CreateRollCall(String id, String name, long creation, long start, StartType startType, String location, @Nullable String description) {
         this.id = id;
         this.name = name;
         this.creation = creation;
