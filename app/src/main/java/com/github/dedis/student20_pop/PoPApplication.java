@@ -49,10 +49,9 @@ public class PoPApplication extends Application {
     private Lao currentLao;
 
     //TODO: person/laos used for testing when we don't have a backend connected
-    private Person dummyPerson;
-    private Lao dummyLao;
     private Map<Lao, List<Event>> dummyLaoEventsMap;
     private CompletableFuture<HighLevelClientProxy> localProxy;
+
 
     /**
      * @return PoP Application Context
@@ -69,11 +68,10 @@ public class PoPApplication extends Application {
 
         appContext = getApplicationContext();
 
-        Gson gson = new Gson();
         SharedPreferences sp = this.getSharedPreferences(TAG, Context.MODE_PRIVATE);
 
         // Verify if the information is not present
-        if(person == null && laoEventsMap == null && laoWitnessMap == null) {
+        if(person == null) {
             // Verify if the user already exists
             if (sp.contains(SP_PERSON_ID_KEY)) {
                 // Recover user's information
@@ -82,24 +80,31 @@ public class PoPApplication extends Application {
                 if (authentication == null) {
                     person = new Person(USERNAME);
                     Log.d(TAG, "Private key of user cannot be accessed, new key pair is created");
+                    if (PrivateInfoStorage.storeData(this, person.getId(), person.getAuthentication()))
+                        Log.d(TAG, "Stored private key of organizer");
                 } else {
                     person = new Person(USERNAME, id, authentication, new ArrayList<>());
                 }
             } else {
-                // Create new user and list of LAOs
+                // Create new user
                 person = new Person(USERNAME);
-                laoEventsMap = new HashMap<>();
-                laoWitnessMap = new HashMap<>();
                 // Store private key of user
                 if (PrivateInfoStorage.storeData(this, person.getId(), person.getAuthentication()))
                     Log.d(TAG, "Stored private key of organizer");
             }
         }
 
-        dummyPerson = new Person("name");
-        dummyLao = new Lao("LAO I just joined", new Date(), dummyPerson.getId());
+        if (laoEventsMap == null) {
+            laoEventsMap = new HashMap<>();
+        }
+
+        if (laoWitnessMap == null) {
+            this.laoWitnessMap = new HashMap<>();
+        }
+
+        currentLao = new Lao("LAO I just joined", new Date(), person.getId());
         dummyLaoEventsMap = dummyLaoEventMap();
-        laoWitnessMap.put(dummyLao, new ArrayList<>());
+        laoWitnessMap.put(currentLao, new ArrayList<>());
     }
 
     @Override
@@ -116,18 +121,14 @@ public class PoPApplication extends Application {
      * @return Person corresponding to the user
      */
     public Person getPerson() {
-        return dummyPerson;
-        //TODO when connected to backend
-        //return person;
+        return person;
     }
 
     /**
      * @return the current lao
      */
     public Lao getCurrentLao() {
-        return dummyLao;
-        //TODO when connected to backend
-        //return currentLao;
+        return currentLao;
     }
 
     /**
@@ -163,9 +164,7 @@ public class PoPApplication extends Application {
      * @return lao's corresponding list of witnesses
      */
     public List<String> getWitnesses() {
-        return laoWitnessMap.get(dummyLao);
-        //TODO when connected to backend
-        //return laoWitnessMap.get(currentLao);
+        return laoWitnessMap.get(currentLao);
     }
 
     /**
@@ -226,9 +225,7 @@ public class PoPApplication extends Application {
      * ADD_WITNESS_ALREADY_EXISTS if witness already exists
      */
     public AddWitnessResult addWitness(String witness) {
-        return addWitness(dummyLao, witness);
-        //TODO when connected to backend
-        //addWitness(currentLao, witness);
+        return addWitness(currentLao, witness);
     }
 
     /**
@@ -262,9 +259,7 @@ public class PoPApplication extends Application {
      * @return corresponding result for each witness in the list
      */
     public List<AddWitnessResult> addWitnesses(List<String> witnesses) {
-        return addWitnesses(dummyLao, witnesses);
-        //TODO when connected to backend
-        //addWitnesses(currentLao, witness);
+        return addWitnesses(currentLao, witnesses);
     }
 
     /**
@@ -280,7 +275,7 @@ public class PoPApplication extends Application {
     }
 
     /**
-     * @param person to be set for this Application, can only be done one
+     * @param person to be set for this Application, can only be done once
      */
     public void setPerson(Person person) {
         if (person != null) {
@@ -346,10 +341,10 @@ public class PoPApplication extends Application {
 
         String notMyPublicKey = new Keys().getPublicKey();
 
-        map.put(dummyLao, events);
+        map.put(currentLao, events);
         map.put(new Lao("LAO 1", new Date(), notMyPublicKey), events);
         map.put(new Lao("LAO 2", new Date(), notMyPublicKey), events);
-        map.put(new Lao("My LAO 3", new Date(), dummyPerson.getId()), events);
+        map.put(new Lao("My LAO 3", new Date(), person.getId()), events);
         map.put(new Lao("LAO 4", new Date(), notMyPublicKey), events);
         return map;
     }
