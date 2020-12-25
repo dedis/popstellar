@@ -28,15 +28,15 @@ public final class Election {
     /**
      * Constructor of an Election
      *
-     * @param name the name of the election, can be empty
-     * @param time the creation time, can't be modified
-     * @param lao the LAO associated to the election
+     * @param name    the name of the election, can be empty
+     * @param time    the creation time, can't be modified
+     * @param lao     the LAO associated to the election
      * @param options the default ballot options
      * @throws IllegalArgumentException if any of the parameters is null
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Election(String name, Date time, String lao, List<String> options) {
-        if(name == null || time == null || lao == null || options == null || options.contains(null)) {
+        if (name == null || time == null || lao == null || options == null || options.contains(null)) {
             throw new IllegalArgumentException("Trying to create an Election with a null value");
         }
         this.name = name;
@@ -58,7 +58,6 @@ public final class Election {
     }
 
     /**
-     *
      * @return creation time of the Election as Unix Timestamp, can't be modified
      */
     public long getTime() {
@@ -66,7 +65,6 @@ public final class Election {
     }
 
     /**
-     *
      * @return ID of the Election, can't be modified
      */
     public String getId() {
@@ -74,7 +72,6 @@ public final class Election {
     }
 
     /**
-     *
      * @return associated LAO
      */
     public String getLao() {
@@ -82,7 +79,6 @@ public final class Election {
     }
 
     /**
-     *
      * @return the default ballot options
      */
     public List<String> getOptions() {
@@ -90,7 +86,6 @@ public final class Election {
     }
 
     /**
-     *
      * @return list of signatures by the organizer and the witnesses of the corresponding LAO
      */
     public List<String> getAttestation() {

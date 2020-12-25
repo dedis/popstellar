@@ -20,15 +20,15 @@ public enum Objects {
         this.object = object;
     }
 
-    public String getObject() {
-        return object;
-    }
-
     public static Objects find(String searched) {
-        for(Objects object : ALL)
-            if(object.getObject().equals(searched))
+        for (Objects object : ALL)
+            if (object.getObject().equals(searched))
                 return object;
 
         return null;
+    }
+
+    public String getObject() {
+        return object;
     }
 }

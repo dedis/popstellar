@@ -32,7 +32,7 @@
 
     <!-- Temp -->
     <string name="connecting">Connecting…</string>
-    
+
     <!-- Poll -->
     <string name="poll_event">Poll Event</string>
     <string name="button_cancel">Cancel</string>
@@ -41,6 +41,29 @@
 
     <!-- Meeting Event -->
     <string name="meeting_event">Meeting Event</string>
+    <string name="create_meeting_event">Create Meeting event</string>
+    <string name="meeting_title_required">Meeting Title*</string>
+
+    <!-- Meeting Event-->
+    <string name="enter_title">Enter Title</string>
+    <string name="start_date_required">Start Date*</string>
+    <string name="enter_date">Enter Date</string>
+    <string name="start_time_required">Start Time*</string>
+    <string name="enter_time">Enter Time</string>
+    <string name="end_date_optional">End Date</string>
+    <string name="location_optional">Location</string>
+    <string name="enter_location">Enter Location</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+    <string name="today">Today</string>
+    <string name="past_date_not_allowed">Event has to start/end today or in the future</string>
+    <string name="end_date_after_start_date_not_allowed">End date has to be after or the same day as the start date</string>
+    <string name="start_date_after_end_date_not_allowed">Start date must be before or the same day as end date</string>
+    <string name="time_before_date_not_allowed">Please, choose start and end dates before choosing time</string>
+    <string name="start_time_after_end_time_not_allowed">Start time must be before end time</string>
+    <string name="end_time_before_start_time_not_allowed">End time must be after start time</string>
+    <string name="end_time_optional">End Time</string>
+    <string name="picker_selection">selection</string>
 
     <!-- Roll-Call Event -->
     <string name="roll_call_event">Roll-Call Event</string>
@@ -54,4 +77,11 @@
     <string name="identity_organization">Organization</string>
     <string name="identity_phone">Phone</string>
     <string name="identity_anonymous">Anonymous</string>
+
+    <!-- QR code -->
+    <string name="qrcode_scanning_add_witness">Scan personal QR code of the witness to add</string>
+    <string name="qrcode_scanning_connect_lao">Scan a QR code to connect to a LAO</string>
+    <string name="add_witness_successful">Witness has been added</string>
+    <string name="add_witness_unsuccessful">Witness could not be added</string>
+    <string name="add_witness_already_exists">Witness you are trying to add is already a witness of this LAO</string>
 </resources>

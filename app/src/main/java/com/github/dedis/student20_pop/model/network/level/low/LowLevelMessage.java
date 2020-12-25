@@ -6,7 +6,7 @@ import java.util.Objects;
 
 /**
  * A Low level message, carry a high level message inside a container.
- *
+ * <p>
  * Does not expect any result
  */
 public final class LowLevelMessage extends ChanneledMessage {
