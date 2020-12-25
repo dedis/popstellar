@@ -21,6 +21,8 @@ import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Lao;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
@@ -32,6 +34,7 @@ public final class HomeFragment extends Fragment {
 
     private List<Lao> laos;
     private String id;
+    private SimpleDateFormat dateFormat;
 
     @Nullable
     @Override
@@ -41,6 +44,7 @@ public final class HomeFragment extends Fragment {
         PoPApplication app = (PoPApplication) (getActivity().getApplication());
         id = app.getPerson().getId();
         laos = app.getLaos();
+        dateFormat = new SimpleDateFormat("dd/mm/yyyy");
         LinearLayout welcome = view.findViewById(R.id.welcome_screen);
         LinearLayout list = view.findViewById(R.id.list_screen);
 
@@ -90,7 +94,7 @@ public final class HomeFragment extends Fragment {
             }
             Lao lao = laos.get(position);
             ((TextView) convertView.findViewById(R.id.lao_name)).setText(lao.getName());
-            ((TextView) convertView.findViewById(R.id.date)).setText("last interacted with ...");
+            ((TextView) convertView.findViewById(R.id.date)).setText(dateFormat.format(lao.getTime()*1000L));
             boolean isOrganizer = (lao.getOrganizer()).equals(id);
             ((TextView) convertView.findViewById(R.id.role)).setText(isOrganizer ? R.string.organizer : R.string.attendee);
             convertView.setOnClickListener(clicked -> {
