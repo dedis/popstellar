@@ -1,6 +1,7 @@
 package com.github.dedis.student20_pop.utility.json;
 
 import com.github.dedis.student20_pop.model.network.level.high.rollcall.CreateRollCall;
+import com.google.gson.Gson;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -15,9 +16,11 @@ public class JsonCreateRollCallSerializer implements JsonSerializer<CreateRollCa
 
     private static final String DESCRIPTION = "roll_call_description";
 
+    private final Gson internalGson = new Gson();
+
     @Override
     public CreateRollCall deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        CreateRollCall temp = context.deserialize(json, CreateRollCall.class);
+        CreateRollCall temp = internalGson.fromJson(json, CreateRollCall.class);
 
         JsonObject object = json.getAsJsonObject();
         String desc = object.has(DESCRIPTION) ? object.get(DESCRIPTION).getAsString() : null;
@@ -34,7 +37,7 @@ public class JsonCreateRollCallSerializer implements JsonSerializer<CreateRollCa
 
     @Override
     public JsonElement serialize(CreateRollCall src, Type typeOfSrc, JsonSerializationContext context) {
-        JsonObject object = context.serialize(src).getAsJsonObject();
+        JsonObject object = internalGson.toJsonTree(src, CreateRollCall.class).getAsJsonObject();
         // Add optional field if needed
         src.getDescription().ifPresent(desc -> object.addProperty(DESCRIPTION, desc));
         // Add start time with the good field

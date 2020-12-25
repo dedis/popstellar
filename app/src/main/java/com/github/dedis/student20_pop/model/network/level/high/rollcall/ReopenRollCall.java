@@ -34,4 +34,26 @@ public class ReopenRollCall extends Data {
     public long getStart() {
         return start;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ReopenRollCall that = (ReopenRollCall) o;
+        return getStart() == that.getStart() &&
+                java.util.Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(getId(), getStart());
+    }
+
+    @Override
+    public String toString() {
+        return "ReopenRollCall{" +
+                "id='" + id + '\'' +
+                ", start=" + start +
+                '}';
+    }
 }

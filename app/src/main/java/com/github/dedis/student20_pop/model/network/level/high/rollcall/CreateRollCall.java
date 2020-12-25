@@ -22,7 +22,8 @@ public class CreateRollCall extends Data {
     private transient final long start;
     private transient final StartType startType;
     private final String location;
-    @Nullable private transient final String description;
+    @Nullable
+    private transient final String description;
 
     public CreateRollCall(String id, String name, long creation, long start, StartType startType, String location, @Nullable String description) {
         this.id = id;
@@ -89,6 +90,19 @@ public class CreateRollCall extends Data {
     @Override
     public int hashCode() {
         return java.util.Objects.hash(getId(), getName(), getCreation(), getStartTime(), getStartType(), getLocation(), getDescription());
+    }
+
+    @Override
+    public String toString() {
+        return "CreateRollCall{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", creation=" + creation +
+                ", start=" + start +
+                ", startType=" + startType +
+                ", location='" + location + '\'' +
+                ", description='" + description + '\'' +
+                '}';
     }
 
     /**

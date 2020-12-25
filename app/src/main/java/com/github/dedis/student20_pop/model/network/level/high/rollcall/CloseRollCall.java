@@ -65,4 +65,14 @@ public class CloseRollCall extends Data {
     public int hashCode() {
         return java.util.Objects.hash(getId(), getStart(), getEnd(), getAttendees());
     }
+
+    @Override
+    public String toString() {
+        return "CloseRollCall{" +
+                "id='" + id + '\'' +
+                ", start=" + start +
+                ", end=" + end +
+                ", attendees=" + attendees +
+                '}';
+    }
 }
