@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import static com.github.dedis.student20_pop.model.Event.EventCategory.FUTURE;
 import static com.github.dedis.student20_pop.model.Event.EventCategory.PAST;
@@ -22,7 +23,7 @@ public abstract class ExpandableListViewEventAdapter extends BaseExpandableListA
     protected final Context context;
     protected final List<Event.EventCategory> categories;
     protected final HashMap<Event.EventCategory, List<Event>> eventsMap;
-    protected final SimpleDateFormat dateFormat;
+    protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm", Locale.US);
 
     /**
      * Constructor for the expandable list view adapter to display the events
@@ -41,7 +42,6 @@ public abstract class ExpandableListViewEventAdapter extends BaseExpandableListA
         this.eventsMap.put(PAST, new ArrayList<>());
         this.eventsMap.put(PRESENT, new ArrayList<>());
         this.eventsMap.put(FUTURE, new ArrayList<>());
-        this.dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm");
 
         putEventsInMap(events, this.eventsMap);
         orderEventsInMap(this.eventsMap);
