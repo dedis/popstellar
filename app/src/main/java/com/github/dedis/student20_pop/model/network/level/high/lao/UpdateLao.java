@@ -1,9 +1,5 @@
 package com.github.dedis.student20_pop.model.network.level.high.lao;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import com.github.dedis.student20_pop.model.network.level.high.Action;
 import com.github.dedis.student20_pop.model.network.level.high.Data;
 import com.github.dedis.student20_pop.model.network.level.high.Objects;
@@ -20,7 +16,6 @@ public class UpdateLao extends Data {
     private final long last_modified;
     private final List<String> witnesses;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public UpdateLao(String name, long last_modified, List<String> witnesses) {
         this.name = name;
         this.last_modified = last_modified;
@@ -62,5 +57,14 @@ public class UpdateLao extends Data {
     @Override
     public int hashCode() {
         return java.util.Objects.hash(getName(), getLast_modified(), getWitnesses());
+    }
+
+    @Override
+    public String toString() {
+        return "UpdateLao{" +
+                "name='" + name + '\'' +
+                ", last_modified=" + last_modified +
+                ", witnesses=" + witnesses +
+                '}';
     }
 }

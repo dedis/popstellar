@@ -79,4 +79,16 @@ public class StateLao extends Data {
     public int hashCode() {
         return java.util.Objects.hash(getId(), getName(), getCreation(), getLast_modified(), getOrganizer(), getWitnesses());
     }
+
+    @Override
+    public String toString() {
+        return "StateLao{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", creation=" + creation +
+                ", last_modified=" + last_modified +
+                ", organizer='" + organizer + '\'' +
+                ", witnesses=" + witnesses +
+                '}';
+    }
 }

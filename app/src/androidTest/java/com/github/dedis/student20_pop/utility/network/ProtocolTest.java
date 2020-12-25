@@ -1,6 +1,7 @@
 package com.github.dedis.student20_pop.utility.network;
 
 import com.github.dedis.student20_pop.model.Person;
+import com.github.dedis.student20_pop.model.network.level.high.rollcall.CreateRollCall;
 
 import net.jodah.concurrentunit.Waiter;
 
@@ -9,9 +10,9 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -136,7 +137,7 @@ public class ProtocolTest {
     }
 
     @Test
-    public void testWitnessMeeting() throws DeploymentException, TimeoutException, InterruptedException {
+    public void testWitnessMessage() throws DeploymentException, TimeoutException, InterruptedException {
         Server server = startAcceptEverythingServer();
         Waiter waiter = new Waiter();
 
@@ -144,6 +145,105 @@ public class ProtocolTest {
         HighLevelClientProxy proxy = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
         proxy.witnessMessage(LAO_ID, "mId", "data")
+                .whenComplete((i, t) -> {
+                    waiter.assertTrue(t == null);
+                    waiter.assertEquals(i, 0);
+                    waiter.resume();
+                });
+
+        waiter.await(TEST_TIMEOUT, 1);
+        server.stop();
+    }
+
+    @Test
+    public void testCreateRollCall() throws DeploymentException, TimeoutException, InterruptedException {
+        Server server = startAcceptEverythingServer();
+        Waiter waiter = new Waiter();
+
+        Person bob = new Person(PERSON_NAME);
+        HighLevelClientProxy proxy = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+
+        proxy.createRollCall(LAO_ID, "roll", 0, 0, CreateRollCall.StartType.NOW, "loc", "desc")
+                .whenComplete((i, t) -> {
+                    waiter.assertTrue(t == null);
+                    waiter.assertEquals(i, 0);
+                    waiter.resume();
+                });
+
+        proxy.createRollCall(LAO_ID, "roll", 0, 0, CreateRollCall.StartType.SCHEDULED, "loc", "desc")
+                .whenComplete((i, t) -> {
+                    waiter.assertTrue(t == null);
+                    waiter.assertEquals(i, 0);
+                    waiter.resume();
+                });
+
+        proxy.createRollCall(LAO_ID, "roll", 0, 0, CreateRollCall.StartType.NOW, "loc")
+                .whenComplete((i, t) -> {
+                    waiter.assertTrue(t == null);
+                    waiter.assertEquals(i, 0);
+                    waiter.resume();
+                });
+
+        proxy.createRollCall(LAO_ID, "roll", 0, 0, CreateRollCall.StartType.SCHEDULED, "loc")
+                .whenComplete((i, t) -> {
+                    waiter.assertTrue(t == null);
+                    waiter.assertEquals(i, 0);
+                    waiter.resume();
+                });
+
+        waiter.await(TEST_TIMEOUT, 4);
+        server.stop();
+    }
+
+    @Test
+    public void testOpenRollCall() throws DeploymentException, TimeoutException, InterruptedException {
+        Server server = startAcceptEverythingServer();
+        Waiter waiter = new Waiter();
+
+        Person bob = new Person(PERSON_NAME);
+        HighLevelClientProxy proxy = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+
+        proxy.openRollCall(LAO_ID, "rollId", 0)
+                .whenComplete((i, t) -> {
+                    waiter.assertTrue(t == null);
+                    waiter.assertEquals(i, 0);
+                    waiter.resume();
+                });
+
+        waiter.await(TEST_TIMEOUT, 1);
+        server.stop();
+    }
+
+    @Test
+    public void testReopenRollCall() throws DeploymentException, TimeoutException, InterruptedException {
+        Server server = startAcceptEverythingServer();
+        Waiter waiter = new Waiter();
+
+        Person bob = new Person(PERSON_NAME);
+        HighLevelClientProxy proxy = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+
+        proxy.reopenRollCall(LAO_ID, "rollId", 0)
+                .whenComplete((i, t) -> {
+                    waiter.assertTrue(t == null);
+                    waiter.assertEquals(i, 0);
+                    waiter.resume();
+                });
+
+        waiter.await(TEST_TIMEOUT, 1);
+        server.stop();
+    }
+
+
+
+    @Test
+    public void testCloseRollCall() throws DeploymentException, TimeoutException, InterruptedException {
+        Server server = startAcceptEverythingServer();
+        Waiter waiter = new Waiter();
+
+        Person bob = new Person(PERSON_NAME);
+        HighLevelClientProxy proxy = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+
+        proxy.closeRollCall(LAO_ID, "rollId", 0, 0, Arrays.asList("attendee1", "attendee2"))
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
@@ -190,7 +290,35 @@ public class ProtocolTest {
                     waiter.resume();
                 });
 
-        waiter.await(TEST_TIMEOUT, 4);
+        proxy.createRollCall(LAO_ID, "roll", 0, 0, CreateRollCall.StartType.NOW, "loc", "desc")
+                .whenComplete((i, t) -> {
+                    waiter.assertTrue(t == null);
+                    waiter.assertEquals(i, 0);
+                    waiter.resume();
+                });
+
+        proxy.openRollCall(LAO_ID, "rollId", 0)
+                .whenComplete((i, t) -> {
+                    waiter.assertTrue(t == null);
+                    waiter.assertEquals(i, 0);
+                    waiter.resume();
+                });
+
+        proxy.reopenRollCall(LAO_ID, "rollId", 0)
+                .whenComplete((i, t) -> {
+                    waiter.assertTrue(t == null);
+                    waiter.assertEquals(i, 0);
+                    waiter.resume();
+                });
+
+        proxy.closeRollCall(LAO_ID, "rollId", 0, 0, Arrays.asList("attendee1", "attendee2"))
+                .whenComplete((i, t) -> {
+                    waiter.assertTrue(t == null);
+                    waiter.assertEquals(i, 0);
+                    waiter.resume();
+                });
+
+        waiter.await(TEST_TIMEOUT, 8);
         server.stop();
     }
 

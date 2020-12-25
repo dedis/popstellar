@@ -48,4 +48,12 @@ public class WitnessMessage extends Data {
     public int hashCode() {
         return java.util.Objects.hash(getMessage_id(), getSignature());
     }
+
+    @Override
+    public String toString() {
+        return "WitnessMessage{" +
+                "message_id='" + message_id + '\'' +
+                ", signature='" + signature + '\'' +
+                '}';
+    }
 }
