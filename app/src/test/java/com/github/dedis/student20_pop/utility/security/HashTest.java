@@ -20,7 +20,7 @@ public class HashTest {
     }
 
     @Test
-    public void objectsHashingWorks() {
+    public void hashObjectsTest() {
         // Hashing : test 0 \fwa"fwa-fwa
         // Expected : ["test","0","\\fwa\"fwa-fwa"]
         assertEquals(Hash.hash("[\"test\",\"0\",\"\\\\fwa\\\"fwa-fwa\"]"), Hash.hash("test", 0, "\\fwa\"fwa-fwa"));
