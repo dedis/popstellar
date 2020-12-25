@@ -66,6 +66,14 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
                             |}""".stripMargin.filterNot((c: Char) => c.isWhitespace)
 
 
+  val _dataRollCallBuggy: String = s"""{
+                                 |    "object": "${Objects.RollCall.toString}",
+                                 |    "action": "F_ACTION",
+                                 |    FF_MODIFICATION
+                                 |    "id": "c2Fsd@XQ="
+                                 |}""".stripMargin.filterNot((c: Char) => c.isWhitespace)
+
+
   val dataUpdateLao: String = s"""{
                                  |    "object": "${Objects.Lao.toString}",
                                  |    "action": "${Actions.UpdateProperties.toString}",
@@ -115,6 +123,9 @@ object JsonParserTestsUtils extends FunSuite with Matchers {
   val dataCloseRollCall: String = _dataRollCall
     .replaceFirst("F_ACTION", Actions.Close.toString)
     .replaceFirst("FF_MODIFICATION", "\"start\":4000,\"end\":5000,\"attendees\":[\"Y2xlZjE=\",\"Y2xlZjI=\"],")
+  val dataOpenRollCallBuggy: String = _dataRollCallBuggy
+    .replaceFirst("F_ACTION", Actions.Open.toString)
+    .replaceFirst("FF_MODIFICATION", "\"start\":2000,")
 
 
   def embeddedMessage(

@@ -45,7 +45,7 @@ object JsonMessageParser {
             case Seq(JsString(v)) =>
               if (v != JsonUtils.JSON_RPC_VERSION)
                 throw JsonMessageParserException("invalid \"jsonrpc\" field : invalid jsonrpc version")
-            case _ => throw DeserializationException("invalid message : jsonrpc field missing or wrongly formatted")
+            case _ => throw JsonMessageParserException("invalid message : jsonrpc field missing or wrongly formatted")
           }
 
           val fields: Set[String] = obj.fields.keySet
@@ -92,10 +92,6 @@ object JsonMessageParser {
             }
 
           } else if (fields.contains("error")) {
-
-            // check that an answer message it either positive (x)or negative
-            if (fields.contains("result"))
-              throw JsonMessageParserException("invalid message : an answer cannot have both \"result\" and \"error\" fields")
 
             /* parse a negative answer message */
             obj.getFields("error") match {

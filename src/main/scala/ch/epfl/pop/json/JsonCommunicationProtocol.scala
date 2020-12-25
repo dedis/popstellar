@@ -18,8 +18,9 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
   /* implicit used to parse/serialize a Methods enumeration value */
   implicit object JsonEnumMethodsFormat extends RootJsonFormat[Methods] {
-    override def read(json: JsValue): Methods = Try(Methods.withName(json.convertTo[String])) match {
-      case Success(v) => v
+    @throws(classOf[DeserializationException])
+    override def read(json: JsValue): Methods = Methods.unapply(json.convertTo[String]) match {
+      case Some(v) => v
       case _ => throw DeserializationException("invalid \"method\" field : unrecognized")
     }
     override def write(obj: Methods): JsValue = JsString(obj.toString)
@@ -27,8 +28,9 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
   /* implicit used to parse/serialize a Objects enumeration value */
   implicit object JsonEnumObjectsFormat extends RootJsonFormat[Objects] {
-    override def read(json: JsValue): Objects = Try(Objects.withName(json.convertTo[String])) match {
-      case Success(v) => v
+    @throws(classOf[DeserializationException])
+    override def read(json: JsValue): Objects = Objects.unapply(json.convertTo[String]) match {
+      case Some(v) => v
       case _ => throw DeserializationException("invalid \"object\" field : unrecognized")
     }
     override def write(obj: Objects): JsValue = JsString(obj.toString)
@@ -36,8 +38,9 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
   /* implicit used to parse/serialize a Actions enumeration value */
   implicit object JsonEnumActionsFormat extends RootJsonFormat[Actions] {
-    override def read(json: JsValue): Actions = Try(Actions.withName(json.convertTo[String])) match {
-      case Success(v) => v
+    @throws(classOf[DeserializationException])
+    override def read(json: JsValue): Actions = Actions.unapply(json.convertTo[String]) match {
+      case Some(v) => v
       case _ => throw DeserializationException("invalid \"action\" field : unrecognized")
     }
     override def write(obj: Actions): JsValue = JsString(obj.toString)
@@ -45,6 +48,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
   /* implicit used to parse/serialize a String encoded in Base64 */
   implicit object ByteArrayFormat extends RootJsonFormat[ByteArray] {
+    @throws(classOf[IllegalArgumentException])
     override def read(json: JsValue): ByteArray = JsonUtils.DECODER.decode(json.convertTo[String])
     override def write(obj: ByteArray): JsValue = JsString(JsonUtils.ENCODER.encode(obj).map(_.toChar).mkString)
   }
@@ -91,7 +95,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
                         .setModificationSignatures(ms.map(_.convertTo[KeySignPair]).toList)
 
                     case _ => throw JsonMessageParserException(
-                      "invalid \"StateBroadcastLao\" query : fields (\"modification_id\" and/or " +
+                      "invalid \"stateBroadcastLao\" query : fields (\"modification_id\" and/or " +
                       "\"modification_signatures\" and/or \"last_modified\") missing or wrongly formatted"
                     )
                   }
@@ -163,7 +167,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
                         .setModificationId(mid.convertTo[ByteArray])
                         .setModificationSignatures(ms.map(_.convertTo[KeySignPair]).toList)
                     case _ => throw JsonMessageParserException(
-                      "invalid \"StateBroadcastMeeting\" query : fields (\"modification_id\" and/or " +
+                      "invalid \"stateBroadcastMeeting\" query : fields (\"modification_id\" and/or " +
                         "\"modification_signatures\" and/or \"last_modified\") missing or wrongly formatted"
                     )
                   }
@@ -410,7 +414,6 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
   /* ------------------- ANSWER MESSAGES SERVER ------------------- */
 
-  implicit val channelMessagesFormat: RootJsonFormat[ChannelMessages] = jsonFormat1(ChannelMessages)
   implicit val messageErrorContentFormat: RootJsonFormat[MessageErrorContent] = jsonFormat2(MessageErrorContent)
 
   implicit val propagateMessageServerFormat: RootJsonFormat[PropagateMessageServer] = jsonFormat3(PropagateMessageServer)

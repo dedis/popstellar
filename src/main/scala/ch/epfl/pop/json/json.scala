@@ -56,7 +56,6 @@ package object json {
       MessageContent(encodedData, data, sender, signature, message_id, s :: witness_signatures)
   }
 
-  final case class ChannelMessages(messages: List[ChannelMessage])
   final case class MessageErrorContent(code: Int, description: String)
 
   final case class KeySignPair(witness: Key, signature: Signature)

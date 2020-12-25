@@ -1,12 +1,17 @@
 package ch.epfl.pop.tests.json
 
 import ch.epfl.pop.json.JsonMessages._
-import ch.epfl.pop.json.JsonUtils.{JsonMessageParserError, JsonMessageParserException, MessageContentDataBuilder}
-import ch.epfl.pop.json._
+import ch.epfl.pop.json.JsonUtils.{ErrorCodes, JsonMessageParserError, JsonMessageParserException, MessageContentDataBuilder}
+import ch.epfl.pop.json.{Actions, Objects, _}
 import spray.json._
 import ch.epfl.pop.json.JsonCommunicationProtocol._
 import org.scalatest.{FunSuite, Matchers}
 import JsonParserTestsUtils._
+import ch.epfl.pop.json.Actions.Actions
+import ch.epfl.pop.json.Methods.Methods
+import ch.epfl.pop.json.Objects.Objects
+
+import scala.util.{Failure, Success, Try}
 
 
 class JsonMessageParserTest extends FunSuite with Matchers {
@@ -121,7 +126,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
 
 
   test("JsonMessageParser.parseMessage|encodeMessage:CreateLaoMessageClient") {
-    val source: String = embeddedMessage(dataCreateLao, channel = "/root")
+    var source: String = embeddedMessage(dataCreateLao, channel = "/root")
     val sp: JsonMessage = JsonMessageParser.parseMessage(source) match {
       case Left(m) => m
       case _ => fail()
@@ -136,10 +141,19 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     sp shouldBe a [CreateLaoMessageClient]
     spdp shouldBe a [CreateLaoMessageClient]
     sp shouldBeEqualUntilMessageContent spdp
+
+
+    // no action field
+    source = embeddedMessage(dataCreateLao.replaceFirst("\"action\":[^,]*,", ""), channel = "/root")
+    JsonMessageParser.parseMessage(source) match {
+      case Right(e) =>
+        e.description should equal ("invalid \"MessageContentData\" : fields missing or wrongly formatted")
+      case _ => fail()
+    }
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:UpdateLaoMessageClient") {
-    val source: String = embeddedMessage(dataUpdateLao)
+    var source: String = embeddedMessage(dataUpdateLao)
     val sp: JsonMessage = JsonMessageParser.parseMessage(source) match {
       case Left(m) => m
       case _ => fail()
@@ -155,10 +169,27 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     spdp shouldBe a [UpdateLaoMessageClient]
     sp shouldBeEqualUntilMessageContent spdp
     checkBogusInputs(source)
+
+
+    // last modified not int value
+    source = embeddedMessage(dataUpdateLao.replaceFirst("\"last_modified\":[0-9]*", "\"last_modified\":\"12\""))
+    JsonMessageParser.parseMessage(source) match {
+      case Right(e) =>
+        e.description should equal ("invalid \"updateLaoProperties\" query : field \"last_modified\" missing or wrongly formatted")
+      case _ => fail()
+    }
+
+    // no action field
+    source = embeddedMessage(dataUpdateLao.replaceFirst("\"action\":[^,]*,", ""))
+    JsonMessageParser.parseMessage(source) match {
+      case Right(e) =>
+        e.description should equal ("invalid \"MessageContentData\" : fields missing or wrongly formatted")
+      case _ => fail()
+    }
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:BroadcastLaoMessageClient") {
-    val source: String = embeddedMessage(dataBroadcastLao)
+    var source: String = embeddedMessage(dataBroadcastLao)
     val sp: JsonMessage = JsonMessageParser.parseMessage(source) match {
       case Left(m) => m
       case _ => fail()
@@ -174,10 +205,27 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     spdp shouldBe a [BroadcastLaoMessageClient]
     sp shouldBeEqualUntilMessageContent spdp
     checkBogusInputs(source)
+
+
+    // last modified not int value
+    source = embeddedMessage(dataBroadcastLao.replaceFirst("\"last_modified\":[0-9]*", "\"last_modified\":\"12\""))
+    JsonMessageParser.parseMessage(source) match {
+      case Right(e) =>
+        e.description should startWith ("invalid \"stateBroadcastLao\" query :")
+      case _ => fail()
+    }
+
+    // no action field
+    source = embeddedMessage(dataBroadcastLao.replaceFirst("\"action\":[^,]*,", ""))
+    JsonMessageParser.parseMessage(source) match {
+      case Right(e) =>
+        e.description should equal ("invalid \"MessageContentData\" : fields missing or wrongly formatted")
+      case _ => fail()
+    }
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:WitnessMessageMessageClient") {
-    val source: String = embeddedMessage(dataWitnessMessage)
+    var source: String = embeddedMessage(dataWitnessMessage)
     val sp: JsonMessage = JsonMessageParser.parseMessage(source) match {
       case Left(m) => m
       case _ => fail()
@@ -193,6 +241,15 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     spdp shouldBe a [WitnessMessageMessageClient]
     sp shouldBeEqualUntilMessageContent spdp
     checkBogusInputs(source)
+
+
+    // no action field
+    source = embeddedMessage(dataWitnessMessage.replaceFirst("\"action\":[^,]*,", ""))
+    JsonMessageParser.parseMessage(source) match {
+      case Right(e) =>
+        e.description should equal ("invalid \"MessageContentData\" : fields missing or wrongly formatted")
+      case _ => fail()
+    }
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:CreateMeetingMessageClient") {
@@ -265,6 +322,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     spdp shouldBe a [CreateMeetingMessageClient]
     sp shouldBeEqualUntilMessageContent spdp
 
+
     // Meeting without start (should not work)
     data = data.replaceFirst(",\"start\":[0-9]*", "")
     try {
@@ -277,7 +335,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:BroadcastMeetingMessageClient") {
-    val source: String = embeddedMessage(dataBroadcastMeeting)
+    var source: String = embeddedMessage(dataBroadcastMeeting)
     val sp: JsonMessage = JsonMessageParser.parseMessage(source) match {
       case Left(m) => m
       case _ => fail()
@@ -293,6 +351,15 @@ class JsonMessageParserTest extends FunSuite with Matchers {
     spdp shouldBe a [BroadcastMeetingMessageClient]
     sp shouldBeEqualUntilMessageContent spdp
     checkBogusInputs(source)
+
+
+    // last modified not int value
+    source = embeddedMessage(dataBroadcastMeeting.replaceFirst("\"last_modified\":[0-9]*", "\"last_modified\":\"12\""))
+    JsonMessageParser.parseMessage(source) match {
+      case Right(e) =>
+        e.description should startWith ("invalid \"stateBroadcastMeeting\" query :")
+      case _ => fail()
+    }
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:CreateRollCallMessageClient") {
@@ -672,26 +739,35 @@ class JsonMessageParserTest extends FunSuite with Matchers {
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:AnswerResultArrayMessageServer") {
-    val source: String = s"""{
+    var source: String = s"""{
                             |    "id": 99,
                             |    "jsonrpc": "2.0",
-                            |    "result": {
-                            |       "messages": F_MESSAGES
-                            |    }
+                            |    "result": F_MESSAGES
                             |  }
                             |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
 
-    var sp: JsonMessages.JsonMessage = AnswerResultArrayMessageServer(99, ChannelMessages(List()))
-    var spd: String = JsonMessageParser.serializeMessage(sp)
+    val sourceFull: String = source.replaceFirst("F_MESSAGES", "[]")
+    var sp: JsonMessage = JsonMessageParser.parseMessage(sourceFull) match {
+      case Left(m) => m
+      case _ => fail()
+    }
 
-    assertResult(source.replaceFirst("F_MESSAGES", "[]"))(spd)
+    var spd: String = JsonMessageParser.serializeMessage(sp)
+    val spdp: JsonMessage = JsonMessageParser.parseMessage(spd) match {
+      case Left(m) => m
+      case _ => fail()
+    }
+
+    sp shouldBe a [AnswerResultArrayMessageServer]
+    spdp shouldBe a [AnswerResultArrayMessageServer]
+    spd should equal (sourceFull)
 
 
     // 1 message and empty witness list
     val data: MessageContentData = new MessageContentDataBuilder().setHeader(Objects.Message, Actions.Witness).setId("2".getBytes).setStart(22L).build()
     val encodedData: Base64String = JsonUtils.ENCODER.encode(data.toJson.compactPrint.getBytes).map(_.toChar).mkString
     var m: MessageContent = MessageContent(encodedData, data, "skey".getBytes, "sign".getBytes, "mid".getBytes, List())
-    sp = AnswerResultArrayMessageServer(99, ChannelMessages(List(m)))
+    sp = AnswerResultArrayMessageServer(99, List(m))
     spd = JsonMessageParser.serializeMessage(sp)
 
     val rd: String = """eyJvYmplY3QiOiJtZXNzYWdlIiwiYWN0aW9uIjoid2l0bmVzcyIsImlkIjoiTWc9PSIsInN0YXJ0IjoyMn0="""
@@ -709,7 +785,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
       KeySignPair("ceb_prop_3".getBytes, "ceb_3".getBytes)
     )
     m = MessageContent(encodedData, data, "skey".getBytes, "sign".getBytes, "mid".getBytes, sig)
-    sp = AnswerResultArrayMessageServer(99, ChannelMessages(List(m)))
+    sp = AnswerResultArrayMessageServer(99, List(m))
     spd = JsonMessageParser.serializeMessage(sp)
 
     r = s"""[{"data":"$rd","message_id":"bWlk","sender":"c2tleQ==","signature":"c2lnbg==","witness_signatures":${listStringify(sig)}}]"""
@@ -770,6 +846,24 @@ class JsonMessageParserTest extends FunSuite with Matchers {
       assertResult(sourceNoneId)(spd)
       checkBogusInputs(sourceNoneId)
     }
+
+    // If error has wrong type (not JsObject) => should fail
+    val errorMatcherRegex: String = "\"error\":\\{[^\\}]*\\}"
+    val sourceErrorCode: String = source.replaceFirst("ID", "\"id\":123,")
+
+    var sourceWrongErrorType: String = sourceErrorCode.replaceFirst(errorMatcherRegex, "\"error\":10")
+    JsonMessageParser.parseMessage(sourceWrongErrorType) match {
+      case Right(e) =>
+        e.description should equal ("invalid message : message contains a \"error\" field, but its type is unknown")
+      case _ => fail()
+    }
+
+    sourceWrongErrorType = sourceErrorCode.replaceFirst(errorMatcherRegex, "\"error\":\"10\"")
+    JsonMessageParser.parseMessage(sourceWrongErrorType) match {
+      case Right(e) =>
+        e.description should equal ("invalid message : message contains a \"error\" field, but its type is unknown")
+      case _ => fail()
+    }
   }
 
   test("JsonMessageParser.parseMessage|encodeMessage:\"bogus answer message\"") {
@@ -800,6 +894,104 @@ class JsonMessageParserTest extends FunSuite with Matchers {
         case _ => fail()
       }
       sp shouldBe a [JsonMessageParserError]
+    }
+  }
+
+  test("JsonMessageParser.parseMessage:Exceptions") {
+    var source: String = embeddedMessage(dataOpenRollCallBuggy)
+    val expected: JsonMessageParserError = JsonMessageParserError(ErrorCodes.InvalidData.toString, Some(0), ErrorCodes.InvalidData)
+    val sp: JsonMessageParserError = JsonMessageParser.parseMessage(source) match {
+      case Right(e) => e
+      case _ => fail()
+    }
+
+    sp shouldBe a [JsonMessageParserError]
+    sp should equal (expected)
+
+
+    source = s"""{
+                |    "jsonrpc": "2.0",
+                |    "id": 12345
+                |  }
+                |""".stripMargin.filterNot((c: Char) => c.isWhitespace)
+
+    JsonMessageParser.parseMessage(source) match {
+      case Right(e) => e.description should equal ("invalid message : fields missing or wrongly formatted")
+      case _ => fail()
+    }
+  }
+
+  test("JsonMessageParser.encodeMessage:Exceptions") {
+    val sp: JsonMessage = null
+
+    try {
+      JsonMessageParser.serializeMessage(sp)
+      fail()
+    } catch {
+      case e: SerializationException => e.getMessage should equal ("Json serializer failed : invalid input message")
+      case _ => fail()
+    }
+  }
+
+  test("JsonMessageParser.parseMessage|encodeMessage:Enumerations") {
+
+    def quoteIfy(str: String): String = s""""$str""""
+    val UNKNOWN_ENUM_VALUE: String = quoteIfy("string-not-in-enum")
+
+    Methods.values.forall(v => {
+      val padded = quoteIfy(v.toString)
+      val converted = padded.parseJson.convertTo[Methods]
+      val reversed  = converted.toJson
+
+      reversed shouldBe a [JsString]
+      reversed.toString should equal (padded)
+      true
+    })
+
+    Try(UNKNOWN_ENUM_VALUE.parseJson.convertTo[Methods]) match {
+      case Success(_) => fail()
+      case Failure(e) =>
+        e shouldBe a [DeserializationException]
+        e.getMessage should equal ("invalid \"method\" field : unrecognized")
+      case _ => fail()
+    }
+
+
+    Objects.values.forall(v => {
+      val padded = quoteIfy(v.toString)
+      val converted = padded.parseJson.convertTo[Objects]
+      val reversed  = converted.toJson
+
+      reversed shouldBe a [JsString]
+      reversed.toString should equal (padded)
+      true
+    })
+
+    Try(UNKNOWN_ENUM_VALUE.parseJson.convertTo[Objects]) match {
+      case Success(_) => fail()
+      case Failure(e) =>
+        e shouldBe a [DeserializationException]
+        e.getMessage should equal ("invalid \"object\" field : unrecognized")
+      case _ => fail()
+    }
+
+
+    Actions.values.forall(v => {
+      val padded = quoteIfy(v.toString)
+      val converted = padded.parseJson.convertTo[Actions]
+      val reversed  = converted.toJson
+
+      reversed shouldBe a [JsString]
+      reversed.toString should equal (padded)
+      true
+    })
+
+    Try(UNKNOWN_ENUM_VALUE.parseJson.convertTo[Actions]) match {
+      case Success(_) => fail()
+      case Failure(e) =>
+        e shouldBe a [DeserializationException]
+        e.getMessage should equal ("invalid \"action\" field : unrecognized")
+      case _ => fail()
     }
   }
 }
