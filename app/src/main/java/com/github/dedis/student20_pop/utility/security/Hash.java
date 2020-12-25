@@ -28,17 +28,18 @@ public class Hash {
      * @throws IllegalArgumentException if the data is null
      */
     public static String hash(Object... data) {
-        if (data == null)
+        if (data == null) {
             throw new IllegalArgumentException("Can't hash a null data");
+        }
 
         StringJoiner joiner = new StringJoiner(",", "[","]");
         for(Object elem : data)
-            joiner.add(DELIMITER + sanitize(elem.toString()) + DELIMITER);
+            joiner.add(DELIMITER + esc(elem.toString()) + DELIMITER);
 
         return hash(joiner.toString());
     }
 
-    private static String sanitize(String input) {
+    private static String esc(String input) {
         return input.replace("\\", "\\\\")
                     .replace("\"", "\\\"");
     }

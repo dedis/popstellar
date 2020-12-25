@@ -10,6 +10,7 @@ public class HashTest {
 
     @Test
     public void hashNullDataTest() {
+        //noinspection ConstantConditions
         assertThrows(IllegalArgumentException.class, () -> Hash.hash((String) null));
     }
 
@@ -18,11 +19,10 @@ public class HashTest {
         assertNotNull(Hash.hash("Data to hash"));
     }
 
-    // Hashing : test 0 \fwa"fwa-fwa
-    // Expected : ["test","0","\\fwa\"fwa-fwa"]
-
     @Test
     public void objectsHashingWorks() {
+        // Hashing : test 0 \fwa"fwa-fwa
+        // Expected : ["test","0","\\fwa\"fwa-fwa"]
         assertEquals(Hash.hash("[\"test\",\"0\",\"\\\\fwa\\\"fwa-fwa\"]"), Hash.hash("test", 0, "\\fwa\"fwa-fwa"));
     }
 }
