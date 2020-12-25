@@ -47,7 +47,6 @@ public class PoPApplicationTest {
             });
     }
 
-
     @Test
     public void canAddOneWitnessToLAO() {
         ActivityScenario.launch(MainActivity.class).onActivity(a -> {
@@ -126,7 +125,7 @@ public class PoPApplicationTest {
     public void startAppCreatesInfoTest() {
         ActivityScenario.launch(MainActivity .class).onActivity(a -> {
             PoPApplication app = (PoPApplication) a.getApplication();
-            assertThat(app.getLaos(), is(new ArrayList<>()));
+            assertThat(app.getLaos(), is(new ArrayList<>(app.getLaoEventsMap().keySet())));
             assertThat(app.getPerson().getName(), is(PoPApplication.USERNAME));
             assertNotNull(app.getPerson());
         });
