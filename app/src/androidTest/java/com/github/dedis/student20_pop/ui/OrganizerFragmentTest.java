@@ -322,12 +322,12 @@ public class OrganizerFragmentTest {
     }
 
     @Test
-    @Ignore("TODO : Check that the corresponding Fragment has been launched")
     public void canLaunchCreatePollEventFragment() {
         onView(allOf(withId(R.id.add_future_event_button),
                 withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
                 .perform(click());
         onView(withText(getApplicationContext().getString(R.string.poll_event))).check(matches(isDisplayed()));
-        onView(withText(getApplicationContext().getString(R.string.roll_call_event))).perform(click());
+        onView(withText(getApplicationContext().getString(R.string.poll_event))).perform(click());
+        onView(withId(R.id.fragment_organizer_poll)).check(matches(isDisplayed()));
     }
 }

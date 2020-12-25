@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,19 +27,14 @@ import com.github.dedis.student20_pop.model.PollEvent;
 import com.github.dedis.student20_pop.utility.ui.organizer.ChoicesListViewAdapter;
 import com.github.dedis.student20_pop.utility.ui.organizer.OnEventCreatedListener;
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
-public class PollEventCreationFragment extends AbstractEventCreationFragment {
+public final class PollEventCreationFragment extends AbstractEventCreationFragment {
 
     public static final String TAG = PollEventCreationFragment.class.getSimpleName();
-    public static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm", Locale.FRENCH);
-    public static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH);
 
     private EditText questionEditText;
 
@@ -72,10 +66,7 @@ public class PollEventCreationFragment extends AbstractEventCreationFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnEventCreatedListener)
-            eventCreatedListener = (OnEventCreatedListener) context;
-        else
-            throw new ClassCastException(context.toString() + " must implement OnEventCreatedListener");
+        eventCreatedListener = (OnEventCreatedListener) context;
     }
 
     @Nullable
@@ -151,10 +142,7 @@ public class PollEventCreationFragment extends AbstractEventCreationFragment {
             fragmentManager.popBackStackImmediate();
         });
         return view;
-
-
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

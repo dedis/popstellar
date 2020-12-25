@@ -111,8 +111,6 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
                 break;
             case POLL:
                 showFragment(new PollEventCreationFragment(), PollEventCreationFragment.TAG);
-                //TODO
-                Log.d("Poll Event Type ", "Launch here Poll Event Creation Fragment");
                 break;
             default:
                 Log.d("Default Event Type :", "Default Behaviour TBD");

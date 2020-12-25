@@ -7,11 +7,17 @@ import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import com.github.dedis.student20_pop.OrganizerActivity;
+import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
+import com.github.dedis.student20_pop.model.Event;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static androidx.test.espresso.Espresso.closeSoftKeyboard;
@@ -26,12 +32,14 @@ import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
+import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isIn;
 import static org.hamcrest.Matchers.not;
 
 public class PollEventCreationFragmentTest {
@@ -123,19 +131,6 @@ public class PollEventCreationFragmentTest {
         closeSoftKeyboard();
         onView(withId(R.id.schedule_button)).check(matches(isEnabled()));
     }
-    @Test
-    public void scheduleButtonIsEnabledWhenCorrectFieldsAreFilled2(){
-        onView(withId(R.id.question)).perform(typeText(question));
-        onData(is(instanceOf(String.class))).atPosition(0).onChildView(withId(R.id.choice_edit_text)).perform(typeText(choice1));
-        closeSoftKeyboard();
-        onView(withId(R.id.button_add)).perform(click());
-        onView(withId(R.id.schedule_button)).check(matches(not(isEnabled())));
-        onView(withId(R.id.button_add)).perform(click());
-        onView(withId(R.id.schedule_button)).check(matches(not(isEnabled())));
-        onData(is(instanceOf(String.class))).atPosition(1).onChildView(withId(R.id.choice_edit_text)).perform(typeText(choice2));
-        closeSoftKeyboard();
-        onView(withId(R.id.schedule_button)).check(matches(isEnabled()));
-    }
 
     @Test
     public void scheduleButtonIsDisabledWhenSomeFieldsAreDeleted(){
@@ -174,5 +169,26 @@ public class PollEventCreationFragmentTest {
         onView(withId(R.id.schedule_button)).check(matches(not(isEnabled())));
     }
 
+    @Test
+    public void confirmAddsEventToEventList() {
+        onView(withId(R.id.question)).perform(typeText(question));
 
+        onData(is(instanceOf(String.class))).atPosition(0).onChildView(withId(R.id.choice_edit_text)).perform(typeText(choice1));
+        closeSoftKeyboard();
+        onView(withId(R.id.button_add)).perform(click());
+        onData(is(instanceOf(String.class))).atPosition(1).onChildView(withId(R.id.choice_edit_text)).perform(typeText(choice2));
+        closeSoftKeyboard();
+
+        onView(withId(R.id.schedule_button)).check(matches(isEnabled()));
+        onView(withId(R.id.schedule_button)).perform(click());
+
+        activityScenarioRule.getScenario().onActivity(
+                activity -> {
+                    PoPApplication app = (PoPApplication) activity.getApplication();
+                    List<Event> events = app.getEvents(app.getCurrentLao());
+                    List<String> eventsName = events.stream().map(Event::getName).collect(Collectors.toList());
+                    Assert.assertThat(question, isIn(eventsName));
+                }
+        );
+    }
 }

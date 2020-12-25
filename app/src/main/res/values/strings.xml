@@ -33,7 +33,7 @@
     <!-- Temp -->
     <string name="connecting">Connecting…</string>
 
-    <!-- Poll -->
+    <!-- Poll Event -->
     <string name="poll_event">Poll Event</string>
     <string name="button_cancel">Cancel</string>
     <string name="button_confirm">Confirm</string>
