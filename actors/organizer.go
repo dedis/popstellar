@@ -58,7 +58,7 @@ func (o *Organizer) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAn
 		msg, err = nil, o.handleUnsubscribe(query, userId)
 	case "publish":
 		msg, err = o.handlePublish(query)
-	case "message":
+	case "broadcast":
 		msg, err = o.handleMessage(query)
 	// Or they are only notification, and we just want to check that it was a success
 	case "catchup":

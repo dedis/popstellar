@@ -32,7 +32,7 @@ func ParseQuery(query []byte) (message.Query, error) {
 		return m, lib.ErrIdNotDecoded
 	}
 	switch m.Method {
-	case "subscribe", "unsubscribe", "message", "publish", "catchup":
+	case "subscribe", "unsubscribe", "broadcast", "publish", "catchup":
 		return m, err
 	default:
 		log.Printf("the method is not valid, it is instead %v", m.Method)
