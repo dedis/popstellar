@@ -1,96 +1,99 @@
-/* STRUCTURES OF REAL LIFE EVENTS */
+// event defines the structures for real-life events
 package event
 
 import "hash"
 
-//TODO refaire les comments de cette page
-
-/*
-Data Types:
-For readability (human) and proper encoding for JSON, these data types must be transmitted
-and/or displayed in the given format but are stored in bytes.
-*/
-
+// DEPRECATED : subscribers are not stored in a database anymore
 const SubscribeDB = "sub.db"
 
 type LAO struct {
-	//ID hash : Name || Creation(Date/Time Unix Timestamp), not updated on name update.
+	// hash : Name || Creation, not updated on update.
 	ID string
-	// name of LAO
+	// Name of the LAO
 	Name string
-	//Creation Date/Time
-	Creation int64 //  Unix timestamp (uint64)
-	//LastModified int64 //timestamp
-	//Organiser: Public Key
+	//Creation timestamp (Unix) (uint64)
+	Creation int64
+	//Organizer's Public Key
 	OrganizerPKey string
-	//List of public keys where each public key belongs to one witness
+	//List of witnesses' public key
 	Witnesses []string
-	//List of public keys where each public key belongs to one member (physical person) (subscriber)
 }
 
 type Meeting struct {
-	//id hash : SHA1(Name + Creation Date/Time Unix Timestamp)
+	// hash : Name || Creation
 	ID string
-	// name of event
+	// Name of the Meeting
 	Name string
-	//Creation Date/Time
-	Creation     int64 //  Unix timestamp (uint64)
-	LastModified int64 //timestamp
+	// Creation timestamp (Unix) (uint64)
+	Creation int64
+	// Last modification's timestamp (Unix) (uint64)
+	LastModified int64
 	Location     string
-	Start        int64 //  Unix timestamp (uint64)
-	End          int64 //timestamp
-	Extra        string
+	// Meeting's Start time timestamp (Unix) (uint64)
+	Start int64
+	// Meeting's End time timestamp (Unix) (uint64)
+	End   int64
+	Extra string
 }
 
 type RollCall struct {
-	//id hash : SHA1(Name + Creation Date/Time Unix Timestamp)
+	// hash : Name || Creation
 	ID string
-	// name of event
+	// Name of the Roll Call
 	Name string
-	//Creation Date/Time
-	Creation     int64 //  Unix timestamp (uint64)
-	LastModified int64 //timestamp
-	Location     string
-	Start        int64 //  Unix timestamp (uint64)
-	End          int64 //timestamp
-	Extra        string
+	// Creation timestamp (Unix) (uint64)
+	Creation int64
+	// Last modification's timestamp (Unix) (uint64)
+	LastModified int64
+	// RollCall's Location
+	Location string
+	// Meeting's Start time timestamp (Unix) (uint64)
+	Start int64 //  Unix timestamp (uint64)
+	// Meeting's End time timestamp (Unix) (uint64)
+	End   int64 //timestamp
+	Extra string
 }
 
 type Poll struct {
-	//id hash : SHA1(Name + Creation Date/Time Unix Timestamp)
+	// hash : Name || Creation
 	ID string
-	// name of event
+	// Name of the poll
 	Name string
-	//Creation Date/Time
-	Creation     int64 //  Unix timestamp (uint64)
-	LastModified int64 //timestamp
-	Location     string
-	Start        int64 //  Unix timestamp (uint64)
-	End          int64 //timestamp
-	Extra        string
+	// Creation timestamp (Unix) (uint64)
+	Creation int64
+	// Last modification's timestamp (Unix) (uint64)
+	LastModified int64
+	// Poll's Location
+	Location string
+	// Meeting's Start time timestamp (Unix) (uint64)
+	Start int64
+	// Meeting's End time timestamp (Unix) (uint64)
+	End   int64 //timestamp
+	Extra string
 }
 
 type Election struct {
+	// hash : Name || Creation
+	ID string
 	// name of election
-	name string
+	Name string
 	//Creation Date/Time
-	timestamp int64 //  Unix timestamp (uint64)
-	//id hash : SHA1(Name + Creation Date/Time Unix Timestamp)
-	id hash.Hash
+	Creation int64 //  Unix timestamp (uint64)
+
 	/*LAO: Hash Associated LAO*/
 	//Default Ballot Options
-	options []string
+	Options []string
 	/*Signature by the organizer and witnesses of the corresponding LAO on (ID) to attest to this event*/
-	attestation [][]byte
+	Attestation [][]byte
 }
 
 type Vote struct {
 	//the voter
-	person []byte
+	Person []byte
 	//Election ID
-	electionId hash.Hash
+	ElectionId hash.Hash
 	//vote are Hex (Point 1) || Hex (Point 2) : ElGamal encryption of a message.
-	vote string
+	Vote string
 	/*Signature by the voter on SHA1(Election ID, LAO ID, Vote) to attest to their vote.*/
-	attestation [][]byte
+	Attestation [][]byte
 }

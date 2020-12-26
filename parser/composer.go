@@ -1,3 +1,4 @@
+// parser implement functions to parse json strings into message structures, and reverse
 package parser
 
 import (
@@ -7,6 +8,7 @@ import (
 	"student20_pop/message"
 )
 
+// ComposeBroadcastMessage outputs a message perfectly similar to query, but changes method to "message"
 func ComposeBroadcastMessage(query message.Query) []byte {
 	broadcast := message.Query{
 		Jsonrpc: query.Jsonrpc,
@@ -23,10 +25,7 @@ func ComposeBroadcastMessage(query message.Query) []byte {
 	return b
 }
 
-/*
- * Function that create the response to the sender
- * we suppose error is in the good range
- */
+// ComposeResponse compose the response to be sent to the sender. It is assumed the error is in the correct range.
 func ComposeResponse(err error, messages []byte, query message.Query) []byte {
 	var resp []byte
 	var internalErr error
@@ -42,6 +41,7 @@ func ComposeResponse(err error, messages []byte, query message.Query) []byte {
 	return resp
 }
 
+// composeErrorResponse composes an error response to be sent to the query sender. Called by ComposeResponse.
 func composeErrorResponse(err error, query message.Query) ([]byte, error) {
 	var resp interface{}
 	if err == lib.ErrIdNotDecoded {
@@ -62,6 +62,7 @@ func composeErrorResponse(err error, query message.Query) ([]byte, error) {
 	return json.Marshal(resp)
 }
 
+// composeResponse composes a positive response to be sent to the query seder. Called by ComposeResponse.
 func composeResponse(messages []byte, query message.Query) ([]byte, error) {
 	var resp interface{}
 	if messages == nil {
@@ -80,10 +81,8 @@ func composeResponse(messages []byte, query message.Query) ([]byte, error) {
 	return json.Marshal(resp)
 }
 
-/*
-*	return the associate description error
-*	we check the validity (error between -1 and -5) before the function
- */
+// selectDescriptionError returns a message.ErrorResponse depending on the error given as argument.
+// The error validity is checked, and by default we return an "error invalid Data"
 func selectDescriptionError(err error) []byte {
 	var errResp message.ErrorResponse
 	switch err {

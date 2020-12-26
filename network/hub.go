@@ -1,19 +1,19 @@
-/* file to implement manage opened websockets. Implements the publish-subscribe paradigm.
-inspired from the chat example of github.com/gorilla */
-
 package network
+
+// file to implement manage opened websockets. Implements the publish-subscribe paradigm.
+// inspired from the chat example of github.com/gorilla.
 
 import (
 	"bytes"
 	"fmt"
 	"log"
 	"student20_pop/actors"
-	"student20_pop/db"
 	"student20_pop/lib"
 	"sync"
 	"time"
 )
 
+// hub is the struct that will manage websockets connections
 type hub struct {
 	// the mutex to protect connections
 	connectionsMx sync.RWMutex
@@ -33,14 +33,17 @@ type hub struct {
 	connIndex int
 }
 
+// NewOrganizerHub returns a hub which Actor is an Organizer
 func NewOrganizerHub(pkey string, database string) *hub {
 	return newHub("o", pkey, database)
 }
 
+// NewWitnessHub returns a hub which Actor is a Witness
 func NewWitnessHub(pkey string, database string) *hub {
 	return newHub("w", pkey, database)
 }
 
+// returns a hub. Function made to be used by NewOrganizerHub et NewWitnessHub
 func newHub(mode string, pkey string, database string) *hub {
 
 	h := &hub{
@@ -67,15 +70,16 @@ func newHub(mode string, pkey string, database string) *hub {
 			msg := <-h.receivedMessage
 
 			// check if messages concerns organizer
-			var message []byte = nil
-			var channel []byte = nil
+			var messageAndChannel []lib.MessageAndChannel = nil
 			var response []byte = nil
 			//handle the message and generate the response
-			message, channel, response = h.actor.HandleWholeMessage(msg, h.idOfSender)
+			messageAndChannel, response = h.actor.HandleReceivedMessage(msg, h.idOfSender)
 
 			h.connectionsMx.RLock()
-			h.publishOnChannel(message, channel)
-			h.sendResponse(response, h.idOfSender)
+			for _, pair := range messageAndChannel {
+				h.publishOnChannel(pair.Message, pair.Channel)
+				h.sendResponse(response, h.idOfSender)
+			}
 			h.connectionsMx.RUnlock()
 		}
 	}()
@@ -84,22 +88,23 @@ func newHub(mode string, pkey string, database string) *hub {
 
 }
 
-/* sends the message msg to every subscribers of the channel channel */
+// publishOnChannel sends a message to every subscribers of a channel
 func (h *hub) publishOnChannel(msg []byte, channel []byte) {
-
 	var subscribers []int = nil
-	var err error = nil
-	if !bytes.Equal(channel, []byte("/root")) {
-		subscribers, err = db.GetSubscribers(channel)
-		if err != nil {
-			log.Fatal("can't get subscribers", err)
-		}
+	if bytes.Equal(channel, []byte("/root")) {
+		return
+	}
+
+	subscribers = h.actor.GetSubscribers(string(channel))
+	if subscribers == nil {
+		log.Printf("no subscribers to this channel")
+		return
 	}
 
 	for c := range h.connections {
 		//send msgBroadcast to that connection if channel is main channel or is in channel subscribers
 		_, found := lib.Find(subscribers, c.id)
-
+		// && !emptyChannel seems useless
 		if (bytes.Equal(channel, []byte("/root")) || found) && msg != nil {
 			select {
 			case c.send <- msg:
@@ -113,7 +118,7 @@ func (h *hub) publishOnChannel(msg []byte, channel []byte) {
 	}
 }
 
-/*sends the message msg to the connection sender*/
+// sendResponse sends the message msg to the connection "sender"
 func (h *hub) sendResponse(msg []byte, sender int) {
 	for c := range h.connections {
 		//send answer to client
@@ -134,7 +139,6 @@ func (h *hub) addConnection(conn *connection) {
 	fmt.Println("new client connected")
 	h.connectionsMx.Lock()
 	defer h.connectionsMx.Unlock()
-	// QUESTION what if connection is already in the map ?
 	h.connections[conn] = struct{}{}
 	h.connIndex++ //WARNING do not decrement on remove connection. is used as ID for pub/sub
 }
