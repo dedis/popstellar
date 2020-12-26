@@ -22,6 +22,9 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_ALREADY_EXISTS;
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_SUCCESSFUL;
+import static com.github.dedis.student20_pop.model.Event.EventType.DISCUSSION;
+import static com.github.dedis.student20_pop.model.Event.EventType.MEETING;
+import static com.github.dedis.student20_pop.model.Event.EventType.POLL;
 
 /**
  * Class modelling the application : a unique person associated with LAOs
@@ -194,9 +197,9 @@ public class PoPApplication extends Application {
     private Map<Lao, List<Event>> dummyLaoEventMap() {
         Map<Lao, List<Event>> map = new HashMap<>();
         List<Event> events = new ArrayList<>();
-        Event event1 = new Event("Future Event 1", new Date(2617547969000L), new Keys().getPublicKey(), "EPFL", "Poll");
-        Event event2 = new Event("Present Event 1", new Date(), new Keys().getPublicKey(), "Somewhere", "Discussion");
-        Event event3 = new Event("Past Event 1", new Date(1481643086000L), new Keys().getPublicKey(), "Here", "Meeting");
+        Event event1 = new Event("Future Event 1", new Date(2617547969000L), new Keys().getPublicKey(), "EPFL", POLL);
+        Event event2 = new Event("Present Event 1", new Date(), new Keys().getPublicKey(), "Somewhere", DISCUSSION);
+        Event event3 = new Event("Past Event 1", new Date(1481643086000L), new Keys().getPublicKey(), "Here", MEETING);
         events.add(event1);
         events.add(event2);
         events.add(event3);

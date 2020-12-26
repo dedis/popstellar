@@ -19,7 +19,7 @@ import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Event;
 import com.github.dedis.student20_pop.model.Lao;
-import com.github.dedis.student20_pop.utility.ui.AttendeeExpandableListViewEventAdapter;
+import com.github.dedis.student20_pop.utility.ui.EventAdapter.AttendeeExpandableListViewEventAdapter;
 import com.github.dedis.student20_pop.utility.ui.WitnessListAdapter;
 
 import java.util.ArrayList;
