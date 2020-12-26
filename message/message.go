@@ -45,6 +45,6 @@ type Message struct {
 }
 
 type ItemWitnessSignatures struct {
-	Witness   []byte // recovered from base 64
-	Signature []byte // recovered from base 64
+	WitnessKey	[]byte // recovered from base 64
+	Signature	[]byte // recovered from base 64
 }
