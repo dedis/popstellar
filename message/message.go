@@ -37,6 +37,7 @@ type ParamsIncludingMessage struct {
 }
 
 type Message struct {
+<<<<<<< HEAD
 	Data              []byte `json:"data"` // recovered from base 64
 	Sender            []byte          `json:"sender"` // recovered from base 64
 	Signature         []byte          `json:"signature"` // recovered from base 64
@@ -47,4 +48,16 @@ type Message struct {
 type ItemWitnessSignatures struct {
 	Witness   []byte // recovered from base 64
 	Signature []byte // recovered from base 64
+=======
+	Data              []byte            `json:"data"` // in base 64
+	Sender            []byte            `json:"sender"`
+	Signature         []byte            `json:"signature"`
+	MessageId         []byte            `json:"message_id"`
+	WitnessSignatures []json.RawMessage `json:"witnessSignatures"`
+}
+
+type ItemWitnessSignatures struct {
+	WitnessKey []byte
+	Signature  []byte
+>>>>>>> work-be1-rpugin
 }
