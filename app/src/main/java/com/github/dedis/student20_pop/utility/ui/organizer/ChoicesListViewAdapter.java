@@ -70,7 +70,7 @@ public class ChoicesListViewAdapter extends BaseAdapter {
         });
         choice.addTextChangedListener(choicesTextWatcher);
 
-        Button button = (Button) convertView.findViewById(R.id.delete_choice_button);
+        Button button = convertView.findViewById(R.id.delete_choice_button);
         if (position==0){
             button.setVisibility(View.INVISIBLE);
         }

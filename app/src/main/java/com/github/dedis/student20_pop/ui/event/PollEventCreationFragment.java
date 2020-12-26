@@ -156,8 +156,7 @@ public final class PollEventCreationFragment extends AbstractEventCreationFragme
 
         return !question.isEmpty() && numberOfChoices >= 2;
     }
-
-    //TODO: make it a set so can't have the same choice twice
+    
     public List<String> getChoices(ListView listView) {
         List<String> choices = new ArrayList<>();
         ChoicesListViewAdapter adapter = (ChoicesListViewAdapter) listView.getAdapter();
