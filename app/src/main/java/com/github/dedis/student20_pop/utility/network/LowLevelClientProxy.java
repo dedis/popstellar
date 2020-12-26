@@ -2,13 +2,12 @@ package com.github.dedis.student20_pop.utility.network;
 
 import android.util.Log;
 
-import com.github.dedis.student20_pop.model.network.level.high.Message;
 import com.github.dedis.student20_pop.model.network.level.high.Data;
-import com.github.dedis.student20_pop.model.network.level.low.Catchup;
-import com.github.dedis.student20_pop.model.network.level.low.Query;
-import com.github.dedis.student20_pop.model.network.level.low.Message;
 import com.github.dedis.student20_pop.model.network.level.low.Broadcast;
+import com.github.dedis.student20_pop.model.network.level.low.Catchup;
+import com.github.dedis.student20_pop.model.network.level.low.Message;
 import com.github.dedis.student20_pop.model.network.level.low.Publish;
+import com.github.dedis.student20_pop.model.network.level.low.Query;
 import com.github.dedis.student20_pop.model.network.level.low.Subscribe;
 import com.github.dedis.student20_pop.model.network.level.low.Unsubscribe;
 import com.github.dedis.student20_pop.model.network.level.low.answer.Answer;
