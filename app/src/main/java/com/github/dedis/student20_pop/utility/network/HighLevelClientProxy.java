@@ -8,26 +8,26 @@ import com.github.dedis.student20_pop.model.network.level.high.message.WitnessMe
 import com.github.dedis.student20_pop.utility.security.Hash;
 import com.github.dedis.student20_pop.utility.security.Signature;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import javax.websocket.Session;
-
 /**
  * A proxy of a connection to a websocket. It encapsulate the high level protocol
  */
-public final class HighLevelClientProxy {
+public final class HighLevelClientProxy implements Closeable {
 
     public static final String ROOT = "/root";
 
     private final LowLevelClientProxy lowLevelClientProxy;
     private final String publicKey, privateKey;
 
-    HighLevelClientProxy(Session session, Person person) {
-        lowLevelClientProxy = new LowLevelClientProxy(session);
-        this.publicKey = person.getId();
-        this.privateKey = person.getAuthentication();
+    public HighLevelClientProxy(Person owner, LowLevelClientProxy lowLevelClientProxy) {
+        this.publicKey = owner.getId();
+        this.privateKey = owner.getAuthentication();
+        this.lowLevelClientProxy = lowLevelClientProxy;
     }
 
     /**
@@ -95,12 +95,8 @@ public final class HighLevelClientProxy {
                 new CreateMeeting(Hash.hash(laoId + creation + name), name, creation, lastModified, location, start, end));
     }
 
-    /**
-     * Check whether or not the connection is open or closed
-     *
-     * @return true if it is
-     */
-    public boolean isOpen() {
-        return lowLevelClientProxy.getSession().isOpen();
+    @Override
+    public void close() {
+        lowLevelClientProxy.close();
     }
 }

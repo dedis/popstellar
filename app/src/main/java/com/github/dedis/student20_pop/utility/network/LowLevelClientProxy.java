@@ -1,5 +1,7 @@
 package com.github.dedis.student20_pop.utility.network;
 
+import android.util.Log;
+
 import com.github.dedis.student20_pop.model.network.level.high.Message;
 import com.github.dedis.student20_pop.model.network.level.low.Catchup;
 import com.github.dedis.student20_pop.model.network.level.low.ChanneledMessage;
@@ -19,6 +21,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.io.Closeable;
+import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +31,7 @@ import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeoutException;
@@ -37,18 +43,32 @@ import javax.websocket.Session;
 /**
  * A proxy of a connection to a websocket. It encapsulate the publish-subscribe protocol
  */
-public final class LowLevelClientProxy {
+public final class LowLevelClientProxy implements Closeable {
 
     public static final long TIMEOUT = 5000L; // 5 secs
 
-    private final Session session;
+    private static final String TAG = LowLevelClientProxy.class.getName();
+
+    // Lock to prevent multiple threads to access the session
+    private final Object SESSION_LOCK = new Object();
+
+    private final URI sessionURI;
+    // Having to different futures to be able to close the session even if it is closed during the opening.
+    // The first future holds the session and it will immediately be passed to the second on completion
+    private CompletableFuture<Session> future1;
+    // The second future is used to make requests.
+    // If the connection is cancelled, this future complete exceptionally but future1 is kept clean
+    // to be able to close the session as soon as it is created.
+    private CompletableFuture<Session> future2;
 
     private final Gson gson = JsonUtils.createGson();
     private final Map<Integer, RequestEntry> requests = new ConcurrentHashMap<>();
     private final AtomicInteger counter = new AtomicInteger();
 
-    public LowLevelClientProxy(Session session) {
-        this.session = session;
+    public LowLevelClientProxy(URI host) {
+        this.sessionURI = host;
+        this.future1 = PoPClientEndpoint.connect(host, this);
+        this.future2 = future1.thenApply(s -> s);
     }
 
     /**
@@ -73,9 +93,33 @@ public final class LowLevelClientProxy {
 
         Request request = requestSupplier.apply(id);
         String txt = gson.toJson(request, ChanneledMessage.class);
-        session.getAsyncRemote().sendText(txt);
+        // Refreshing the session if needed
+        refreshSession();
+
+        future2.thenAccept(session -> {
+            synchronized (SESSION_LOCK) {
+                session.getAsyncRemote().sendText(txt);
+            }
+        }).exceptionally(t -> {
+            entry.requests.completeExceptionally(t);
+            return null; // Java cannot parse void to Void. So this is sadly needed
+        });
 
         return entry.requests.thenApply(elem -> gson.fromJson(elem, responseType));
+    }
+
+    private void refreshSession() {
+        synchronized (SESSION_LOCK) {
+            if(future1.isDone()) {
+                Optional<Session> session = getSession();
+                if (!session.isPresent() || !session.get().isOpen()) {
+                    //There was an error during competition, retry
+                    Log.d(TAG, "Connection to " + sessionURI + " was either lost or never made. Trying to reconnect...");
+                    future1 = PoPClientEndpoint.connect(sessionURI, this);
+                    future2 = future1.thenApply(s -> s);
+                }
+            }
+        }
     }
 
     /**
@@ -175,17 +219,13 @@ public final class LowLevelClientProxy {
                         Base64.getDecoder().decode(container.getData()),
                         StandardCharsets.UTF_8),
                 Message.class);
+
         System.out.println(message);
     }
 
     /**
-     * @return the web socket session
+     * Lookup the request table and remove the request that have timed out.
      */
-    public Session getSession() {
-        return session;
-    }
-
-    //TODO Call this periodically
     public void purge() {
         long currentTime = System.currentTimeMillis();
 
@@ -197,6 +237,37 @@ public final class LowLevelClientProxy {
                 it.remove();
             }
         }
+    }
+
+    private Optional<Session> getSession() {
+        try {
+            return Optional.ofNullable(future2.getNow(null));
+        } catch (Throwable t) {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Close the socket for the given reason.
+     * @param reason of the closing
+     */
+    public void close(Throwable reason) {
+        synchronized (SESSION_LOCK) {
+            future2.completeExceptionally(reason);
+
+            future1.thenAccept(s -> {
+                try {
+                    s.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+    }
+
+    @Override
+    public void close() {
+        close(new IOException("Session closed"));
     }
 
     private final static class RequestEntry {
