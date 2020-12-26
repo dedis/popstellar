@@ -8,7 +8,7 @@ import java.util.Objects;
  * <p>
  * It is encapsulated inside low level messages
  */
-public class MessageContainer {
+public class MessageGeneral {
 
     private final String sender;
     private final String data;
@@ -16,7 +16,7 @@ public class MessageContainer {
     private final String message_id;
     private final List<String> witness_signatures;
 
-    public MessageContainer(String sender, String data, String signature, String message_id, List<String> witness_signatures) {
+    public MessageGeneral(String sender, String data, String signature, String message_id, List<String> witness_signatures) {
         this.sender = sender;
         this.data = data;
         this.signature = signature;
@@ -48,7 +48,7 @@ public class MessageContainer {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MessageContainer that = (MessageContainer) o;
+        MessageGeneral that = (MessageGeneral) o;
         return Objects.equals(getSender(), that.getSender()) &&
                 Objects.equals(getData(), that.getData()) &&
                 Objects.equals(getSignature(), that.getSignature()) &&

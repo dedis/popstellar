@@ -12,7 +12,10 @@ public enum Action {
     CREATE("create"),
     UPDATE("update_properties"),
     STATE("state"),
-    WITNESS("witness");
+    WITNESS("witness"),
+    OPEN("open"),
+    REOPEN("reopen"),
+    CLOSE("close");
 
     private static final List<Action> ALL = Collections.unmodifiableList(Arrays.asList(values()));
     private final String action;

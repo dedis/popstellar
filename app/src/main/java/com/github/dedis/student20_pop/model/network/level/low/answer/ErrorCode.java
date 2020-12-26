@@ -1,16 +1,16 @@
-package com.github.dedis.student20_pop.model.network.level.low.result;
+package com.github.dedis.student20_pop.model.network.level.low.answer;
 
 import java.util.Objects;
 
 /**
  * Error of a failed request
  */
-public final class ResultError {
+public final class ErrorCode {
 
     private final int code;
     private final String description;
 
-    public ResultError(int code, String description) {
+    public ErrorCode(int code, String description) {
         this.code = code;
         this.description = description;
     }
@@ -27,7 +27,7 @@ public final class ResultError {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ResultError that = (ResultError) o;
+        ErrorCode that = (ErrorCode) o;
         return getCode() == that.getCode() &&
                 Objects.equals(getDescription(), that.getDescription());
     }

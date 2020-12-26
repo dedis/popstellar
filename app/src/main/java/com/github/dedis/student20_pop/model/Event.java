@@ -47,7 +47,7 @@ public class Event {
         }
         this.name = name;
         this.time = time.getTime() / 1000L;
-        this.id = Hash.hash(name + time);
+        this.id = Hash.hash(name, time.getTime());
         this.lao = Hash.hash(lao);
         this.attendees = new ArrayList<>();
         this.location = location;
