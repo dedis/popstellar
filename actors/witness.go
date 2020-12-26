@@ -56,7 +56,7 @@ func (w *Witness) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAndC
 	switch query.Method {
 	case "publish":
 		msg, err = w.handlePublish(query)
-	case "message":
+	case "broadcast":
 		msg, err = w.handleMessage(query)
 	case "subscribe", "unsubscribe", "catchup":
 		// Even though witness do nothing for some methods, it should not return an error

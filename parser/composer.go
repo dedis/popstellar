@@ -12,7 +12,7 @@ import (
 func ComposeBroadcastMessage(query message.Query) []byte {
 	broadcast := message.Query{
 		Jsonrpc: query.Jsonrpc,
-		Method:  "message",
+		Method:  "broadcast",
 		Params:  query.Params,
 		Id:      query.Id,
 	}
