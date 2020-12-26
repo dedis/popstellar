@@ -25,16 +25,16 @@ jobs:
     - name: Get dependencies
       run: |
         go get -v -t -d ./...
+        go get -u golang.org/x/lint/golint
         if [ -f Gopkg.toml ]; then
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
             dep ensure
         fi
 
-    - name: Lint
-        run: |
-          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.26.0
-
-          golangci-lint run
+    - name: Run vet & lint
+      run: |
+        go vet .
+        golint .
 
     - name: Build
       run: go build -v ./...
