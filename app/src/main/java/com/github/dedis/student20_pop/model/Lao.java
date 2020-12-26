@@ -38,7 +38,7 @@ public final class Lao {
         }
         this.name = name.trim();
         this.time = time.getTime() / 1000L;
-        this.id = Hash.hash(name + time);
+        this.id = Hash.hash(name, time.getTime());
         this.organizer = organizer;
         this.witnesses = new ArrayList<>();
         this.members = new ArrayList<>();

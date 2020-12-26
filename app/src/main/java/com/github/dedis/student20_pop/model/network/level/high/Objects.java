@@ -11,7 +11,8 @@ public enum Objects {
 
     LAO("lao"),
     MEETING("meeting"),
-    MESSAGE("message");
+    MESSAGE("message"),
+    ROLL_CALL("roll_call");
 
     private static final List<Objects> ALL = Collections.unmodifiableList(Arrays.asList(values()));
     private final String object;

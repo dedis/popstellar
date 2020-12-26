@@ -34,14 +34,13 @@ public final class Election {
      * @param options the default ballot options
      * @throws IllegalArgumentException if any of the parameters is null
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public Election(String name, Date time, String lao, List<String> options) {
         if (name == null || time == null || lao == null || options == null || options.contains(null)) {
             throw new IllegalArgumentException("Trying to create an Election with a null value");
         }
         this.name = name;
         this.time = time.getTime() / 1000L;
-        this.id = Hash.hash(name + time);
+        this.id = Hash.hash(name, time.getTime());
         this.lao = lao;
         this.options = options;
 

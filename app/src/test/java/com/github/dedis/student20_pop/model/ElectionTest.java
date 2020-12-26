@@ -49,7 +49,7 @@ public class ElectionTest {
 
     @Test
     public void getIdTest() {
-        assertThat(election1.getId(), is(Hash.hash(name1 + time)));
+        assertThat(election1.getId(), is(Hash.hash(name1, time.getTime())));
     }
 
     @Test

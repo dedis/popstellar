@@ -24,7 +24,7 @@ public class EventsTest {
     private final Date time = (new Date());
     private final String lao = new Keys().getPublicKey();
     private final String location = "EPFL";
-    private final String type = "Roll-Call";
+    private final Event.EventType type = Event.EventType.ROLL_CALL;
     private final ArrayList<String> attendees = new ArrayList<>(Arrays.asList("0x3434", "0x3333"));
     private final ArrayList<String> attendeesWithNull = new ArrayList<>(Arrays.asList("0x3939", null));
     private final Event event1 = new Event(name1, time, lao, location, type);
@@ -51,7 +51,7 @@ public class EventsTest {
 
     @Test
     public void getIdTest() {
-        assertThat(event1.getId(), is(Hash.hash(name1+time)));
+        assertThat(event1.getId(), is(Hash.hash(name1, time.getTime())));
     }
 
     @Test

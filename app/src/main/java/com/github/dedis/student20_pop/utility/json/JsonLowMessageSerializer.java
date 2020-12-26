@@ -1,8 +1,8 @@
 package com.github.dedis.student20_pop.utility.json;
 
-import com.github.dedis.student20_pop.model.network.level.low.ChanneledMessage;
+import com.github.dedis.student20_pop.model.network.level.low.Query;
+import com.github.dedis.student20_pop.model.network.level.low.Message;
 import com.github.dedis.student20_pop.model.network.level.low.Method;
-import com.github.dedis.student20_pop.model.network.level.low.Request;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -16,10 +16,10 @@ import java.lang.reflect.Type;
 /**
  * Json serializer and deserializer for the low level messages
  */
-public class JsonLowMessageSerializer implements JsonSerializer<ChanneledMessage>, JsonDeserializer<ChanneledMessage> {
+public class JsonLowMessageSerializer implements JsonSerializer<Message>, JsonDeserializer<Message> {
 
     @Override
-    public ChanneledMessage deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    public Message deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonRPCRequest container = context.deserialize(json, JsonRPCRequest.class);
         JsonUtils.testRPCVersion(container.jsonrpc);
 
@@ -28,7 +28,7 @@ public class JsonLowMessageSerializer implements JsonSerializer<ChanneledMessage
             throw new JsonParseException("Unknown method type " + container.method);
         JsonObject params = container.params;
 
-        // If the Channeled Message is a Request, we need to give the params the id the the request
+        // If the Channeled Data is a Query, we need to give the params the id the the request
         if (method.expectResult())
             params.add(JsonUtils.JSON_REQUEST_ID, json.getAsJsonObject().get(JsonUtils.JSON_REQUEST_ID));
 
@@ -36,13 +36,13 @@ public class JsonLowMessageSerializer implements JsonSerializer<ChanneledMessage
     }
 
     @Override
-    public JsonElement serialize(ChanneledMessage src, Type typeOfSrc, JsonSerializationContext context) {
+    public JsonElement serialize(Message src, Type typeOfSrc, JsonSerializationContext context) {
         JsonObject params = context.serialize(src).getAsJsonObject();
 
         JsonObject obj = context.serialize(new JsonRPCRequest(JsonUtils.JSON_RPC_VERSION, src.getMethod(), params)).getAsJsonObject();
 
-        if (src instanceof Request)
-            obj.addProperty(JsonUtils.JSON_REQUEST_ID, ((Request) src).getRequestID());
+        if (src instanceof Query)
+            obj.addProperty(JsonUtils.JSON_REQUEST_ID, ((Query) src).getRequestID());
 
         return obj;
     }

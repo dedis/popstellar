@@ -1,8 +1,9 @@
 package com.github.dedis.student20_pop.utility.json;
 
-import com.github.dedis.student20_pop.model.network.level.high.Message;
-import com.github.dedis.student20_pop.model.network.level.low.ChanneledMessage;
-import com.github.dedis.student20_pop.model.network.level.low.result.Result;
+import com.github.dedis.student20_pop.model.network.level.high.Data;
+import com.github.dedis.student20_pop.model.network.level.high.rollcall.CreateRollCall;
+import com.github.dedis.student20_pop.model.network.level.low.Message;
+import com.github.dedis.student20_pop.model.network.level.low.answer.Answer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -15,8 +16,7 @@ public final class JsonUtils {
 
     public static final String JSON_REQUEST_ID = "id";
 
-    private JsonUtils() {
-    }
+    private JsonUtils() {}
 
     public static void testRPCVersion(JsonObject object) throws JsonParseException {
         if (!object.has(JSON_RPC))
@@ -32,9 +32,10 @@ public final class JsonUtils {
 
     public static Gson createGson() {
         return new GsonBuilder()
-                .registerTypeAdapter(ChanneledMessage.class, new JsonLowMessageSerializer())
-                .registerTypeAdapter(Message.class, new JsonMessageSerializer())
-                .registerTypeAdapter(Result.class, new JsonResultSerializer())
+                .registerTypeAdapter(Message.class, new JsonLowMessageSerializer())
+                .registerTypeAdapter(Data.class, new JsonMessageSerializer())
+                .registerTypeAdapter(Answer.class, new JsonResultSerializer())
+                .registerTypeAdapter(CreateRollCall.class, new JsonCreateRollCallSerializer())
                 .create();
     }
 }
