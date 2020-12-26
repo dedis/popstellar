@@ -31,6 +31,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public final class PollEventCreationFragment extends AbstractEventCreationFragment {
 
@@ -122,7 +123,7 @@ public final class PollEventCreationFragment extends AbstractEventCreationFragme
         scheduleButton.setOnClickListener(clicked -> {
             PoPApplication app = (PoPApplication) (getActivity().getApplication());
             String question = questionEditText.getText().toString();
-            ArrayList<String> choicesList = getChoices(choicesListView);
+            List<String> choicesList = getChoices(choicesListView);
             Event pollEvent = new PollEvent(question,
                                             choicesList,
                                             pollTypeIsOneOfN,
@@ -157,8 +158,8 @@ public final class PollEventCreationFragment extends AbstractEventCreationFragme
     }
 
     //TODO: make it a set so can't have the same choice twice
-    public ArrayList<String> getChoices(ListView listView) {
-        ArrayList<String> choices = new ArrayList<>();
+    public List<String> getChoices(ListView listView) {
+        List<String> choices = new ArrayList<>();
         ChoicesListViewAdapter adapter = (ChoicesListViewAdapter) listView.getAdapter();
         if (adapter == null) {
             return choices;

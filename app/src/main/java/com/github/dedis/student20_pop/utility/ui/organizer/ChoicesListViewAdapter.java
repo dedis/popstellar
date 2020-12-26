@@ -16,10 +16,11 @@ import com.github.dedis.student20_pop.R;
 
 
 import java.util.LinkedList;
+import java.util.List;
 
 public class ChoicesListViewAdapter extends BaseAdapter {
     private Context context;
-    private LinkedList<String> choices;
+    private List<String> choices;
     private TextWatcher choicesTextWatcher;
 
 
@@ -53,7 +54,7 @@ public class ChoicesListViewAdapter extends BaseAdapter {
         }
         ((TextView) convertView.findViewById(R.id.choice_number))
                 .setText(String.valueOf(position+1));
-        EditText choice = (EditText) convertView.findViewById(R.id.choice_edit_text);
+        EditText choice = convertView.findViewById(R.id.choice_edit_text);
         choice.setText(choices.get(position));
         choice.addTextChangedListener(new TextWatcher() {
             @Override
