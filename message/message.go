@@ -37,14 +37,14 @@ type ParamsIncludingMessage struct {
 }
 
 type Message struct {
-	Data              []byte `json:"data"` // in base 64
-	Sender            []byte          `json:"sender"`
-	Signature         []byte          `json:"signature"`
-	MessageId         []byte          `json:"message_id"`
+	Data              []byte `json:"data"` // recovered from base 64
+	Sender            []byte          `json:"sender"` // recovered from base 64
+	Signature         []byte          `json:"signature"` // recovered from base 64
+	MessageId         []byte          `json:"message_id"` // recovered from base 64
 	WitnessSignatures []json.RawMessage       `json:"witnessSignatures"`
 }
 
 type ItemWitnessSignatures struct {
-	Witness   []byte
-	Signature []byte
+	Witness   []byte // recovered from base 64
+	Signature []byte // recovered from base 64
 }
