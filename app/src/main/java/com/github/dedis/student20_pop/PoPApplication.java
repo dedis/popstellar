@@ -3,28 +3,24 @@ package com.github.dedis.student20_pop;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
-
-import com.github.dedis.student20_pop.model.Lao;
-import com.github.dedis.student20_pop.model.Person;
-import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
-import com.google.gson.Gson;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import com.github.dedis.student20_pop.model.Event;
 import com.github.dedis.student20_pop.model.Keys;
+import com.github.dedis.student20_pop.model.Lao;
+import com.github.dedis.student20_pop.model.Person;
 import com.github.dedis.student20_pop.utility.network.HighLevelClientProxy;
 import com.github.dedis.student20_pop.utility.network.PoPClientEndpoint;
+import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_ALREADY_EXISTS;
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_SUCCESSFUL;
