@@ -168,6 +168,23 @@ public final class Lao {
     }
 
     /**
+     * Get the list of ids from a given list of LAOs
+     *
+     * @param laos the list of LAOs
+     * @return list of ids of these LAOs
+     */
+    public static List<String> getIds(List<Lao> laos) {
+        if (laos == null || laos.contains(null)) {
+            throw new IllegalArgumentException("Cannot get ids of null LAOs");
+        }
+        List<String> ids = new ArrayList<>();
+        for (Lao lao : laos) {
+            ids.add(lao.id);
+        }
+        return ids;
+    }
+
+    /**
      * @return signature by the organizer
      */
     public String getAttestation() {

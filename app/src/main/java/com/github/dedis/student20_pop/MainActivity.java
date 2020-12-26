@@ -25,7 +25,6 @@ import com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningTy
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraNotAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
-import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
 
 import java.util.Collections;
 import java.util.Date;
@@ -82,10 +81,6 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
                     // Creating the LAO and adding it to the organizer's LAO
                     Lao lao = new Lao(name, new Date(), app.getPerson().getId());
                     // Store the private key of the organizer
-                    //TODO Move it into app onCreate()
-                    if (PrivateInfoStorage.storeData(this, app.getPerson().getId(), app.getPerson().getAuthentication()))
-                        Log.d(TAG, "Stored private key of organizer");
-
                     app.getLocalProxy()
                             .thenCompose(p -> p.createLao(lao.getName(), lao.getTime(), lao.getTime(), app.getPerson().getId()))
                             .thenAccept(code -> {
