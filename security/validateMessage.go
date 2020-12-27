@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"log"
 	"strconv"
-	"strings"
 	"student20_pop/lib"
 	"student20_pop/message"
 	"student20_pop/parser"
@@ -69,20 +68,21 @@ func RollCallCreatedIsValid(data message.DataCreateRollCall, message message.Mes
 
 // MessageIsValid checks upon reception that the message data is valid, that is that the ID is correctly computed, and
 // that the signature is correct as well
+// IMPORTANT thing : 	For every message the signature is Sign(message_id)
+//						EXCEPT for (the data) witnessMessage which is Sign(data)
 func MessageIsValid(msg message.Message) error {
 	// the message_id is valid
 	//TODO the PR has not been validated yet
-	var str []string
-	str = append(str, "["+string(msg.Data),string(msg.Signature)+"]")
-	concat := lib.Escape(strings.Join(str, ","))
-	hash := sha256.Sum256([]byte(concat))
+	var itemsToHash []string
+	itemsToHash = append(itemsToHash, string(msg.Data), string(msg.Signature))
+	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(itemsToHash)))
 
 	if !bytes.Equal(msg.MessageId, hash[:]) {
 		log.Printf("messId of message invalid: %v should be: %v", string(msg.MessageId), string(hash[:]))
 		return lib.ErrInvalidResource
 	}
 
-	// the signature is valid
+	// the signature of data is valid (we are in the "MESSAGE layer")
 	err := VerifySignature(msg.Sender, msg.Data, msg.Signature)
 	if err != nil {
 		log.Printf("invalid message signature")
@@ -91,17 +91,41 @@ func MessageIsValid(msg message.Message) error {
 
 	// the witness signatures are valid (check on every message??)
 	data, err := parser.ParseData(string(msg.Data))
-	if data["object"] == "lao" && data["action"] == "state" {
-		data, err := parser.ParseDataCreateLAO(msg.Data)
-		if err != nil {
-			log.Printf("test 3")
-			return lib.ErrInvalidResource
+	if err != nil {
+		log.Printf("unable to parse the message data")
+		return err
+	}
+	switch data["object"] {
+	case "lao":
+		switch data["action"] {
+		case "state":
+			data, err := parser.ParseDataCreateLAO(msg.Data)
+			if err != nil {
+				log.Printf("test 3")
+				return lib.ErrInvalidResource
+			}
+			// the signatures (on MESSAGEID) of witnesses are valid
+			err = VerifyWitnessSignatures(data.Witnesses, msg.WitnessSignatures, msg.MessageId)
+			if err != nil {
+				log.Printf("invalid signatures in witness message")
+				return err
+			}
 		}
-		// the signatures (on MESSAGEID) of witnesses are valid
-		err = VerifyWitnessSignatures(data.Witnesses, msg.WitnessSignatures, msg.MessageId)
-		if err != nil {
-			log.Printf("invalid witness signatures")
-			return err
+
+	case "message":
+		switch data["action"] {
+		case "witness":
+			data, err := parser.ParseDataWitnessMessage(msg.Data)
+			if err != nil {
+				log.Printf("test 3")
+				return lib.ErrInvalidResource
+			}
+			// the signature of data is valid (we are in the "DATA layer")
+			err = VerifySignature(msg.Sender, msg.Data, data.Signature)
+			if err != nil {
+				log.Printf("invalid message signature")
+				return err
+			}
 		}
 	}
 	return nil

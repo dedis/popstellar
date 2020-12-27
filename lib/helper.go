@@ -63,6 +63,19 @@ func ArrayArrayByteToArrayString(slice [][]byte) []string {
 
 //`"` and `\` characters must be escaped by adding a `\` characters before them.
 //`"` becomes `\"` and `\` becomes `\\`.
-func Escape(s string) string {
-	return strings.ReplaceAll(strings.ReplaceAll(s, "\\", "\\\\"), "\"", "\\\"")
+func escapeAndQuote(s string) string {
+	str := strings.ReplaceAll(strings.ReplaceAll(s, "\\", "\\\\"), "\"", "\\\"")
+	return `"` + str + `"`
+}
+//typically used in hashed to prevent security troubles due to bad concatenation
+func ComputeAsJsonArray(elements []string)string{
+	str := "["
+	if len(elements)>0 {
+		str = "["+ escapeAndQuote(elements[0])
+		for i := 1; i < len(elements); i++ {
+			str += ","+escapeAndQuote(elements[i])
+		}
+	}
+	str+= "]"
+	return str
 }

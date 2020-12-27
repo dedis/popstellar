@@ -11,13 +11,13 @@ import (
 const MaxPropagationDelay = 600
 const MaxClockDifference = 100
 
-// VerifySignature checks that Sign(sender||data) corresponds to the given signature
-func VerifySignature(publicKey []byte, data []byte, signature []byte) error {
+// VerifySignature checks that Sign(itemToSigned) corresponds to the given signature
+func VerifySignature(publicKey []byte, itemToVerify []byte, signature []byte) error {
 	//check the size of the key as it will panic if we plug it in Verify
 	if len(publicKey) != ed.PublicKeySize {
 		return lib.ErrRequestDataInvalid
 	}
-	if ed.Verify(publicKey, data, signature) {
+	if ed.Verify(publicKey, itemToVerify, signature) {
 		return nil
 	}
 	//invalid signature

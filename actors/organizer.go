@@ -401,7 +401,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 	}
 
 	//retrieve message to sign from database
-	toSign := db.GetMessage([]byte(canal), data.Message_id, o.database)
+	toSign := db.GetMessage([]byte(canal), data.MessageId, o.database)
 	if toSign == nil {
 		return nil, lib.ErrInvalidResource
 	}
@@ -485,14 +485,14 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 		}
 		//compose state update message
 		state := message.DataStateLAO{
-			Object:        "lao",
-			Action:        "state",
-			ID:            []byte(lao.ID),
-			Name:          lao.Name,
-			Creation:      lao.Creation,
-			Last_modified: lao.Creation,
-			Organizer:     []byte(lao.OrganizerPKey),
-			Witnesses:     laoData.Witnesses,
+			Object:       "lao",
+			Action:       "state",
+			ID:           []byte(lao.ID),
+			Name:         lao.Name,
+			Creation:     lao.Creation,
+			LastModified: lao.Creation,
+			Organizer:    []byte(lao.OrganizerPKey),
+			Witnesses:    laoData.Witnesses,
 		}
 
 		stateStr, errs := json.Marshal(state)
