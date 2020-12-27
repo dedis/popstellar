@@ -71,11 +71,11 @@ func RollCallCreatedIsValid(data message.DataCreateRollCall, message message.Mes
 // IMPORTANT thing : 	For every message the signature is Sign(message_id)
 //						EXCEPT for (the data) witnessMessage which is Sign(data)
 func MessageIsValid(msg message.Message) error {
-	// the message_id is valid
-	//TODO the PR has not been validated yet
-	var itemsToHash []string
-	itemsToHash = append(itemsToHash, string(msg.Data), string(msg.Signature))
-	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(itemsToHash)))
+		// check message_id is valid
+	var itemsToHashForMessageId []string
+	itemsToHashForMessageId = append(itemsToHashForMessageId, string(msg.Data), string(msg.Signature))
+	// TODO the PR has not been validated yet
+	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(itemsToHashForMessageId)))
 
 	if !bytes.Equal(msg.MessageId, hash[:]) {
 		log.Printf("messId of message invalid: %v should be: %v", string(msg.MessageId), string(hash[:]))
@@ -89,6 +89,13 @@ func MessageIsValid(msg message.Message) error {
 		return err
 	}
 
+	/*switch data["object"] {
+	// TODO check that correspond id of each data is correct -> not necessary, just a  way to identify
+	case "lao":
+		//organizer||creation||name
+	case "meeting":
+		//lao_id||creation||name
+	}*/
 	// the witness signatures are valid (check on every message??)
 	data, err := parser.ParseData(string(msg.Data))
 	if err != nil {
@@ -111,7 +118,6 @@ func MessageIsValid(msg message.Message) error {
 				return err
 			}
 		}
-
 	case "message":
 		switch data["action"] {
 		case "witness":
