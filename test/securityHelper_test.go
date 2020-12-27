@@ -8,27 +8,28 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
-	"strings"
+
 	"student20_pop/lib"
 	message2 "student20_pop/message"
 	"student20_pop/parser"
 	"student20_pop/security"
 	"testing"
 )
-type keys struct{
+
+type keys struct {
 	private ed.PrivateKey
-	public []byte
+	public  []byte
 }
 
-func CheckMessageIsValid(pubkey []byte,privkey ed.PrivateKey,data message2.DataCreateLAO,witnessKeysAndSignatures []message2.ItemWitnessSignatures,WitnesseKeys [][]byte) error {
-	dataFlat,signed,id,err :=getIdofMessage(data ,privkey)
-	if err != nil{
+func CheckMessageIsValid(pubkey []byte, privkey ed.PrivateKey, data message2.DataCreateLAO, witnessKeysAndSignatures []message2.ItemWitnessSignatures, WitnesseKeys [][]byte) error {
+	dataFlat, signed, id, err := getIdofMessage(data, privkey)
+	if err != nil {
 		return err
 	}
 
 	//witness signatures
-	ArrayOfWitnessSignatures,err := plugWitnessesInArray(witnessKeysAndSignatures)
-	if err != nil{
+	ArrayOfWitnessSignatures, err := plugWitnessesInArray(witnessKeysAndSignatures)
+	if err != nil {
 		return err
 	}
 	var message = message2.Message{
@@ -56,19 +57,20 @@ func CheckMessageIsValid(pubkey []byte,privkey ed.PrivateKey,data message2.DataC
 func TestMessageIsValidWithoutWitnesses(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
-		pubkey,privkey := createKeyPair()
+		pubkey, privkey := createKeyPair()
 		witnessSignatures := []message2.ItemWitnessSignatures{}
 		witnessKeys := [][]byte{}
-		data, err:= createDataLao(pubkey,privkey,witnessKeys)
+		data, err := createDataLao(pubkey, privkey, witnessKeys)
 		if err != nil {
 			t.Error(err)
 		}
-		err = CheckMessageIsValid(pubkey,privkey,data,witnessSignatures,witnessKeys)
+		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures, witnessKeys)
 		if err != nil {
 			t.Error(err)
 		}
 	}
 }
+
 /* Basically following the last meeting (22/12/20) we are not supposed to have this case
 func TestMessageIsValidWithAssessedWitnesses(t *testing.T) {
 	//increase nb of tests
@@ -92,19 +94,19 @@ func TestMessageIsValidWithAssessedWitnesses(t *testing.T) {
 	}
 }
 */
-func plugWitnessesInArray(witnessKeysAndSignatures []message2.ItemWitnessSignatures)([]json.RawMessage,error){
+func plugWitnessesInArray(witnessKeysAndSignatures []message2.ItemWitnessSignatures) ([]json.RawMessage, error) {
 	ArrayOfWitnessSignatures := []json.RawMessage{}
 	for i := 0; i < len(witnessKeysAndSignatures); i++ {
 		witnessSignatureI, err := json.Marshal(witnessKeysAndSignatures[i])
 		if err != nil {
-			return nil ,errors.New("Problem when Marshaling witnessKeysAndSignatures")
+			return nil, errors.New("Problem when Marshaling witnessKeysAndSignatures")
 		}
 		CoupleToAdd := witnessSignatureI[:]
 		ArrayOfWitnessSignatures = append(ArrayOfWitnessSignatures, CoupleToAdd)
 	}
 	return ArrayOfWitnessSignatures, nil
 }
-func createKeyPair()([]byte,ed.PrivateKey){
+func createKeyPair() ([]byte, ed.PrivateKey) {
 	//randomize the key
 	randomSeed := make([]byte, 32)
 	rand.Read(randomSeed)
@@ -112,11 +114,11 @@ func createKeyPair()([]byte,ed.PrivateKey){
 	return privkey.Public().(ed.PublicKey), privkey
 }
 
-func createDataLao(pubkey []byte,privkey ed.PrivateKey,WitnesseKeys [][]byte) (message2.DataCreateLAO,error){
+func createDataLao(pubkey []byte, privkey ed.PrivateKey, WitnesseKeys [][]byte) (message2.DataCreateLAO, error) {
 	var creation int64 = 123
 	name := "My LAO"
 	if (len(pubkey) != ed.PublicKeySize) || len(privkey) != ed.PrivateKeySize {
-		return message2.DataCreateLAO{} ,errors.New("wrong argument -> size of public key don't respected ")
+		return message2.DataCreateLAO{}, errors.New("wrong argument -> size of public key don't respected ")
 	}
 
 	idData := sha256.Sum256([]byte(string(pubkey) + fmt.Sprint(creation) + name))
@@ -129,14 +131,15 @@ func createDataLao(pubkey []byte,privkey ed.PrivateKey,WitnesseKeys [][]byte) (m
 		Organizer: []byte(pubkey),
 		Witnesses: WitnesseKeys,
 	}
-	return data,nil
+	return data, nil
 }
+
 /*10 pair of keys*/
-func createArrayOfkeys() []keys{
+func createArrayOfkeys() []keys {
 	keyz := []keys{}
-	for i:=0; i<10;i++{
-		publicW, privW :=	createKeyPair()
-		keyz = append(keyz,keys{private: privW,public: []byte(publicW)})
+	for i := 0; i < 10; i++ {
+		publicW, privW := createKeyPair()
+		keyz = append(keyz, keys{private: privW, public: []byte(publicW)})
 	}
 	return keyz
 }
@@ -147,27 +150,23 @@ func onlyPublicKeys(ks []keys) [][]byte {
 	}
 	return acc
 }
-func arrayOfWitnessSignatures(ks []keys,id []byte) []message2.ItemWitnessSignatures {
+func arrayOfWitnessSignatures(ks []keys, id []byte) []message2.ItemWitnessSignatures {
 	var acc []message2.ItemWitnessSignatures
 	for _, k := range ks {
-		acc = append(acc, message2.ItemWitnessSignatures{k.public,ed.Sign(k.private, id)})
+		acc = append(acc, message2.ItemWitnessSignatures{k.public, ed.Sign(k.private, id)})
 	}
 	return acc
 }
-func getIdofMessage(data message2.DataCreateLAO,privkey ed.PrivateKey) (dataFlat,signed,id[]byte,err error){
+func getIdofMessage(data message2.DataCreateLAO, privkey ed.PrivateKey) (dataFlat, signed, id []byte, err error) {
 	dataFlat, err = json.Marshal(data)
 	if err != nil {
-		return nil,nil,nil,errors.New("Error : Impossible to marshal data")
+		return nil, nil, nil, errors.New("Error : Impossible to marshal data")
 	}
 	signed = ed.Sign(privkey, dataFlat)
-	/*idt := sha256.Sum256(append(dataFlat, signed...))
-	*/
-	var str []string
-	dataStr := lib.Escape(string(dataFlat))
-	signStr := lib.Escape(string(signed))
-	str = append(str, dataStr, signStr)
-	a := strings.Join(str, ",")
+
+	var itemsToHash []string
+	itemsToHash = append(itemsToHash, string(dataFlat), string(signed))
+	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(itemsToHash)))
 	//TODO the PR has not been validated yet
-	hash := sha256.Sum256([]byte(a))
-	return dataFlat,signed,hash[:],nil
+	return dataFlat, signed, hash[:], nil
 }
