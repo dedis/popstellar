@@ -21,6 +21,7 @@ import com.github.dedis.student20_pop.ui.OrganizerFragment;
 import com.github.dedis.student20_pop.ui.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType;
 import com.github.dedis.student20_pop.ui.event.MeetingEventCreationFragment;
+import com.github.dedis.student20_pop.ui.event.PollEventCreationFragment;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraNotAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
@@ -109,8 +110,7 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
                 Log.d("Roll-Call Event Type ", "Launch here Roll-Call Event Creation Fragment");
                 break;
             case POLL:
-                //TODO
-                Log.d("Poll Event Type ", "Launch here Poll Event Creation Fragment");
+                showFragment(new PollEventCreationFragment(), PollEventCreationFragment.TAG);
                 break;
             default:
                 Log.d("Default Event Type :", "Default Behaviour TBD");
