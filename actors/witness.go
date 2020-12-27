@@ -222,9 +222,9 @@ func (w *Witness) handleWitnessMessage(msg message.Message, chann string, query 
 		return nil, errs
 	}
 
-	sendMsg := db.GetMessage([]byte(chann), []byte(data.Message_id), w.database)
+	sendMsg := db.GetMessage([]byte(chann), []byte(data.MessageId), w.database)
 	if sendMsg == nil {
-		fmt.Printf("no message with ID %v in the database", data.Message_id)
+		fmt.Printf("no message with ID %v in the database", data.MessageId)
 		return nil, lib.ErrInvalidResource
 	}
 	storedMessage, errs := parser.ParseMessage(sendMsg)

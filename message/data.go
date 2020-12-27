@@ -39,127 +39,125 @@ type DataCreateLAO struct {
 }
 
 type DataCreateMeeting struct {
-	Object string
-	Action string
+	Object string `json:"object"`
+	Action string `json:"action"`
 	//ID hash : SHA256(lao_id||creation||name)
-	ID []byte
-	// Name of the meeting
-	Name string
+	ID []byte `json:"id"`
+	// Name of the LAO
+	Name string `json:"name"`
 	//Creation's timestamp (Unix) (uint64)
-	Creation int64 //  Unix timestamp (uint64)
+	Creation int64 `json:"creation"`
 	// meeting's location, optional
-	Location string
+	Location string  `json:"location"`
 	// meeting's Start time timestamp (Unix) (uint64)
-	Start int64
+	Start int64 `json:"start"`
 	// meeting's End time timestamp (Unix) (uint64)
-	End int64
+	End int64 `json:"end"`
 	// arbitrary object, optional
-	Extra string
+	Extra string `json:"extra"`
 }
 type DataCreateRollCall struct {
 	//TODO right now same attribute as meeting
-	Object string
-	Action string
-	//ID hash : Name || Creation Date/Time Unix Timestamp
-	ID []byte
-	// Name of the meeting
-	Name string
+	Object string `json:"object"`
+	Action string `json:"action"`
+	//ID hash : SHA256(lao_id||creation||name)
+	ID []byte `json:"id"`
+	// Name of the LAO
+	Name string `json:"name"`
 	//Creation's timestamp (Unix) (uint64)
-	Creation int64 //  Unix timestamp (uint64)
+	Creation int64 `json:"creation"`
 	// meeting's location, optional
-	Location string
+	Location string  `json:"location"`
 	// meeting's Start time timestamp (Unix) (uint64)
-	Start int64
+	Start int64 `json:"start"`
 	// meeting's End time timestamp (Unix) (uint64)
-	End int64
+	End int64 `json:"end"`
 	// arbitrary object, optional
-	Extra string
+	Extra string `json:"extra"`
 }
 type DataCreatePoll struct {
 	//TODO right now same attribute as meeting
-	Object string
-	Action string
-	//ID hash : Name || Creation Date/Time Unix Timestamp
-	ID []byte
-	// Name of the meeting
-	Name string
+	Object string `json:"object"`
+	Action string `json:"action"`
+	//ID hash : SHA256(lao_id||creation||name)
+	ID []byte `json:"id"`
+	// Name of the LAO
+	Name string `json:"name"`
 	//Creation's timestamp (Unix) (uint64)
-	Creation int64 //  Unix timestamp (uint64)
+	Creation int64 `json:"creation"`
 	// meeting's location, optional
-	Location string
+	Location string  `json:"location"`
 	// meeting's Start time timestamp (Unix) (uint64)
-	Start int64
+	Start int64 `json:"start"`
 	// meeting's End time timestamp (Unix) (uint64)
-	End int64
+	End int64 `json:"end"`
 	// arbitrary object, optional
-	Extra string
+	Extra string `json:"extra"`
 }
 
 
 
 type DataUpdateLAO struct {
-	Object string
-	Action string
-	//ID hash : OriginalName || Creation
-	ID []byte
-	// new name of the LAO
-	Name string
+	Object string `json:"object"`
+	Action string `json:"action"`
+	// hash : (Organizer|| Creation|| Name)" DIFFERENT from create Lao !
+	ID []byte `json:"id"`
+	// Name of the LAO,Meeting...
+	Name string `json:"name"`
 	//Last modification's timestamp (Unix) (uint64)
-	Last_modified int64
+	LastModified int64 `json:"last_modified"`
 	// list of Witnesses' Public keys
-	Witnesses [][]byte
+	Witnesses [][]byte `json:"witnesses"`
 }
 
 type DataStateLAO struct {
-	Object string
-	Action string
-	//ID hash : SHA256(organizer||creation||name) OriginalName || Creation
-	ID []byte
-	// new name of the LAO
-	Name string
-	//Creation timestamp (Unix) (uint64)
-	Creation int64
+	Object string `json:"object"`
+	Action string `json:"action"`
+	// hash : (Organizer|| Creation|| Name)" DIFFERENT from create Lao !
+	ID []byte `json:"id"`
+	// Name of the LAO,Meeting...
+	Name string `json:"name"`
+	//Creation's timestamp (Uni	x) (uint64)
+	Creation int64 `json:"creation"`
 	//Last modification timestamp (Unix) (uint64)
-	Last_modified int64
+	LastModified int64 `json:"last_modified"`
 	//Organizer's Public Key
-	Organizer []byte
+	Organizer []byte  `json:"organizer"`
 	// list of Witnesses' Public keys
-	Witnesses [][]byte
+	Witnesses [][]byte  `json:"witnesses"`
 	// id of the modification (either creation/update)
-	Modification_id []byte
+	ModificationId []byte `json:"modification_id"`
 	// signatures of the witnesses on the modification message (either creation/update)
-	Modification_signatures []json.RawMessage
+	ModificationSignatures []json.RawMessage `json:"modification_signatures"`
 }
 
 type DataStateMeeting struct {
-	Object string
-	Action string
-	//ID hash : OriginalName || Creation Date/Time Unix Timestamp
-	ID []byte
-	// name of LAO
-	Name string
-	//Creation Date/Time
-	Creation int64 //  Unix timestamp (uint64)
-	//Last_modified Date/Time
-	Last_modified int64  //  Unix timestamp (uint64)
-	Location      string //optional
-	Start         int64  /* Timestamp */
-	End           int64  /* Timestamp, optional */
-	Extra         string /* arbitrary object, optional */
+	Object string `json:"object"`
+	Action string `json:"action"`
+	// hash : Name || Creation
+	ID []byte `json:"id"`
+	// Name of the LAO,Meeting...
+	Name string `json:"name"`
+	//Creation's timestamp (Unix) (uint64)
+	Creation int64 `json:"creation"`
+	//LastModified Date/Time
+	LastModified int64  `json:"last_modified,"` //  Unix timestamp (uint64)
+	Location     string `json:"location"`//optional
+	Start        int64  `json:"start"` /* Timestamp */
+	End          int64  `json:"end"`/* Timestamp, optional */
+	Extra        string `json:"extra"`/* arbitrary object, optional */
 	//Organiser: Public Key
-	Organizer string
-	//List of public keys where each public key belongs to one witness
-	Witnesses []string
+	Organizer string `json:"organize"`
 	// id of the modification (either creation/update)
-	Modification_id []byte
+	ModificationId []byte `json:"modification_id"`
 	// signatures of the witnesses on the modification message (either creation/update)
-	Modification_signatures []json.RawMessage
+	ModificationSignatures []json.RawMessage `json:"modification_signatures"`
 }
 
 type DataWitnessMessage struct {
-	Object     string
-	Action     string
-	Message_id []byte
+	Object    string `json:"object"`
+	Action    string `json:"action"`
+	MessageId []byte `json:"message_id"`
 	//signature by the witness over the data field of the message : Sign(data)
-	Signature  []byte
+	Signature  []byte `json:"signature"`
 }
