@@ -34,7 +34,7 @@ func NewWitness(pkey string, db string) *Witness {
 	}
 }
 
-// HandleWholeMessage processes the received message. It parses it and calls sub-handler functions depending
+// HandleReceivedMessage processes the received message. It parses it and calls sub-handler functions depending
 // on the message's method field.
 func (w *Witness) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAndChannel []lib.MessageAndChannel, responseToSender []byte) {
 	// if the message is an answer message just ignore it
@@ -75,7 +75,7 @@ func (w *Witness) handlePublish(query message.Query) (msgAndChannel []lib.Messag
 }
 
 // handleBroadcast is the function that handles a received message with the method "message". It is called from
-// HandleWholeMessage. It parses the received message, and delegates the handling to sub-handler functions, depending
+// HandleReceivedMessage. It parses the received message, and delegates the handling to sub-handler functions, depending
 // on the "object" and "action" fields.
 func (w *Witness) handleBroadcast(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	params, errs := parser.ParseParamsIncludingMessage(query.Params)

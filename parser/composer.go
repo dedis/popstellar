@@ -8,7 +8,7 @@ import (
 	"student20_pop/message"
 )
 
-// ComposeBroadcastMessage outputs a message perfectly similar to query, but changes method to "message"
+// ComposeBroadcastMessage outputs a message perfectly similar to query, but changes method to "broadcast"
 func ComposeBroadcastMessage(query message.Query) []byte {
 	broadcast := message.Query{
 		Jsonrpc: query.Jsonrpc,
