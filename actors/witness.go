@@ -57,7 +57,7 @@ func (w *Witness) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAndC
 	case "publish":
 		msg, err = w.handlePublish(query)
 	case "broadcast":
-		msg, err = w.handleMessage(query)
+		msg, err = w.handleBroadcast(query)
 	case "subscribe", "unsubscribe", "catchup":
 		// Even though witness do nothing for some methods, it should not return an error
 		return nil, parser.ComposeResponse(nil, receivedMsg, query)
@@ -68,16 +68,16 @@ func (w *Witness) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAndC
 	return msg, parser.ComposeResponse(err, history, query)
 }
 
-// handlePublish is called by HandleWholeMessage and is only here to implement Actor's interface. Currently a Witness
+// handlePublish is called by HandleReceivedMessage and is only here to implement Actor's interface. Currently a Witness
 // only supports messages with method "message", "subscribe" and "unsubscribe".
 func (w *Witness) handlePublish(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	return nil, lib.ErrInvalidAction //a witness cannot handle a publish request for now
 }
 
-// handleMessage is the function that handles a received message with the method "message". It is called from
+// handleBroadcast is the function that handles a received message with the method "message". It is called from
 // HandleWholeMessage. It parses the received message, and delegates the handling to sub-handler functions, depending
 // on the "object" and "action" fields.
-func (w *Witness) handleMessage(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+func (w *Witness) handleBroadcast(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	params, errs := parser.ParseParamsIncludingMessage(query.Params)
 	if errs != nil {
 		return nil, lib.ErrRequestDataInvalid

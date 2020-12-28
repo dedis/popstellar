@@ -59,7 +59,7 @@ func (o *Organizer) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAn
 	case "publish":
 		msg, err = o.handlePublish(query)
 	case "broadcast":
-		msg, err = o.handleMessage(query)
+		msg, err = o.handleBroadcast(query)
 	// Or they are only notification, and we just want to check that it was a success
 	case "catchup":
 		history, err = o.handleCatchup(query)
@@ -71,24 +71,24 @@ func (o *Organizer) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAn
 	return msg, parser.ComposeResponse(err, history, query)
 }
 
-// handleMessage is the function to handle a received message which method was "message"
+// handleBroadcast is the function to handle a received message which method was "message"
 // It is called by the function HandleWholeMessage.
-func (o *Organizer) handleMessage(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+func (o *Organizer) handleBroadcast(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	params, errs := parser.ParseParamsIncludingMessage(query.Params)
 	if errs != nil {
-		log.Printf("unable to analyse paramsLight in handleMessage()")
+		log.Printf("unable to analyse paramsLight in handleBroadcast()")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
 	msg, errs := parser.ParseMessage(params.Message)
 	if errs != nil {
-		log.Printf("unable to analyse Message in handleMessage()")
+		log.Printf("unable to analyse Message in handleBroadcast()")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
 	data, errs := parser.ParseData(string(msg.Data))
 	if errs != nil {
-		log.Printf("unable to analyse data in handleMessage()")
+		log.Printf("unable to analyse data in handleBroadcast()")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
