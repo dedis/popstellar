@@ -161,9 +161,7 @@ func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.Mess
 	case "message":
 		switch data["action"] {
 		case "witness":
-			// TODO : send state broadcast if more signatures than threshold
 			return o.handleWitnessMessage(msg, params.Channel, query)
-			// TODO : state broadcast done on root
 		default:
 			return nil, lib.ErrInvalidAction
 		}
@@ -475,61 +473,15 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 			Witnesses:     lib.ArrayArrayByteToArrayString(laoData.Witnesses),
 		}
 
-		err = db.CreateChannel(lao, o.database)
+		err = db.UpdateChannel(lao, o.database)
 		if err != nil {
 			return nil, err
 		}
-		//compose state update message
-		state := message.DataStateLAO{
-			Object:        "lao",
-			Action:        "state",
-			ID:            []byte(lao.ID),
-			Name:          lao.Name,
-			Creation:      lao.Creation,
-			Last_modified: lao.Creation,
-			Organizer:     []byte(lao.OrganizerPKey),
-			Witnesses:     laoData.Witnesses,
+		queryStr, err := parser.ComposeBroadcastStateLAO(lao, laoData, o.PublicKey)
+		if err != nil {
+			return nil, err
 		}
 
-		stateStr, errs := json.Marshal(state)
-		if errs != nil {
-			return nil, errs
-		}
-
-		content := message.Message{
-			Data:              stateStr,
-			Sender:            []byte(o.PublicKey),
-			Signature:         nil, //TODO should implement a function to sign the message's content
-			MessageId:         []byte(strconv.Itoa(rand.Int())),
-			WitnessSignatures: nil,
-		}
-
-		contentStr, errs := json.Marshal(content)
-		if errs != nil {
-			return nil, errs
-		}
-
-		sendParams := message.ParamsIncludingMessage{
-			Channel: "/root",
-			Message: contentStr,
-		}
-
-		paramsStr, errs := json.Marshal(sendParams)
-		if errs != nil {
-			return nil, errs
-		}
-
-		sendQuery := message.Query{
-			Jsonrpc: "2.0",
-			Method:  "message",
-			Params:  paramsStr,
-			Id:      rand.Int(),
-		}
-
-		queryStr, errs := json.Marshal(sendQuery)
-		if errs != nil {
-			return nil, errs
-		}
 		msgAndChan = append(msgAndChan, lib.MessageAndChannel{Channel: []byte(canal), Message: queryStr})
 	}
 
