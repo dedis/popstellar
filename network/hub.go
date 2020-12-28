@@ -78,8 +78,8 @@ func newHub(mode string, pkey string, database string) *hub {
 			h.connectionsMx.RLock()
 			for _, pair := range messageAndChannel {
 				h.publishOnChannel(pair.Message, pair.Channel)
-				h.sendResponse(response, h.idOfSender)
 			}
+			h.sendResponse(response, h.idOfSender)
 			h.connectionsMx.RUnlock()
 		}
 	}()
