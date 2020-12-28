@@ -239,12 +239,7 @@ func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query mes
 		return nil, err
 	}
 
-	msgAndChan := []lib.MessageAndChannel{{
-		Message: parser.ComposeBroadcastMessage(query),
-		Channel: []byte(canal),
-	}}
-
-	return msgAndChan, nil
+	return nil, nil
 }
 
 // handleCreateRollCall is the function to handle a received message requesting a Roll Call Creation.
