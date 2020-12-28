@@ -4,8 +4,11 @@ package parser
 import (
 	"encoding/json"
 	"log"
+	"strconv"
+	"math/rand"
 	"student20_pop/lib"
 	"student20_pop/message"
+	"student20_pop/event"
 )
 
 // ComposeBroadcastMessage outputs a message perfectly similar to query, but changes method to "broadcast"
@@ -23,6 +26,63 @@ func ComposeBroadcastMessage(query message.Query) []byte {
 	}
 
 	return b
+}
+
+// ComposeBroadcastStateLAO outputs a message confirming a LAO update after the signature threshold has been reached
+func ComposeBroadcastStateLAO(lao event.LAO, laoData message.DataCreateLAO, orgPublicKey string) (queryStr []byte, errs_ error) {
+			//compose state update message
+			state := message.DataStateLAO{
+				Object:        "lao",
+				Action:        "state",
+				ID:            []byte(lao.ID),
+				Name:          lao.Name,
+				Creation:      lao.Creation,
+				Last_modified: lao.Creation,
+				Organizer:     []byte(lao.OrganizerPKey),
+				Witnesses:     laoData.Witnesses,
+			}
+	
+			stateStr, errs := json.Marshal(state)
+			if errs != nil {
+				return nil, errs
+			}
+	
+			content := message.Message{
+				Data:              stateStr,
+				Sender:            []byte(orgPublicKey),
+				Signature:         nil, //TODO should implement a function to sign the message's content
+				MessageId:         []byte(strconv.Itoa(rand.Int())),
+				WitnessSignatures: nil,
+			}
+	
+			contentStr, errs := json.Marshal(content)
+			if errs != nil {
+				return nil, errs
+			}
+	
+			sendParams := message.ParamsIncludingMessage{
+				Channel: "/root",
+				// TODO : state broadcast done on root confirmed?
+				Message: contentStr,
+			}
+	
+			paramsStr, errs := json.Marshal(sendParams)
+			if errs != nil {
+				return nil, errs
+			}
+	
+			sendQuery := message.Query{
+				Jsonrpc: "2.0",
+				Method:  "broadcast",
+				Params:  paramsStr,
+				Id:      rand.Int(),
+			}
+	
+			queryStr, errs = json.Marshal(sendQuery)
+			if errs != nil {
+				return nil, errs
+			}
+			return queryStr, errs
 }
 
 // ComposeResponse compose the response to be sent to the sender. It is assumed the error is in the correct range.
