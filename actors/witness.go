@@ -8,6 +8,7 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"log"
+	"strings"
 	"student20_pop/db"
 	"student20_pop/event"
 	"student20_pop/lib"
@@ -284,12 +285,17 @@ func (w *Witness) handleLAOState(msg message.Message, chann string, query messag
 // to "roll call" and "create". It  verifies the message's validity, creates a new channel in the Witness's database and
 // stores the received message.
 func (w *Witness) handleCreateRollCall(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+	if chann != "/root" {
+		return nil, lib.ErrInvalidResource
+	}
+
 	data, errs := parser.ParseDataCreateRollCall(msg.Data)
 	if errs != nil {
 		return nil, lib.ErrInvalidResource
 	}
 
-	if !security.RollCallCreatedIsValid(data, msg) {
+	laoId := strings.TrimPrefix("/root/",chann)
+	if !security.RollCallCreatedIsValid(data,laoId) {
 		return nil, lib.ErrInvalidResource
 	}
 

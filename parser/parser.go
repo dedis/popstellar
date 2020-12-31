@@ -118,6 +118,12 @@ func ParseDataWitnessMessage(data json.RawMessage) (message.DataWitnessMessage, 
 	err := json.Unmarshal(data, &m)
 	return m, err
 }
+// ParseDataWitnessMessage parses a json.RawMessage into a message.DataWitnessMessage structure.
+func ParseDataOpenRollCall(data json.RawMessage) (message.DataOpenRollCall, error) {
+	m := message.DataOpenRollCall{}
+	err := json.Unmarshal(data, &m)
+	return m, err
+}
 
 // ParseDataCreateMeeting parses a json.RawMessage into a message.DataCreateMeeting structure.
 func ParseDataCreateMeeting(data json.RawMessage) (message.DataCreateMeeting, error) {
