@@ -12,7 +12,7 @@ type Method string
 const(
 	Subscribe Method = "subscribe"
 	Unsubscribe Method = "unsubscribe"
-	Broadcast Method = "message"
+	Broadcast Method = "broadcast"
 	Publish Method = "publish"
 	Catchup Method = "catchup"
 )*/
@@ -33,15 +33,15 @@ type Params struct {
 }
 
 type Message struct {
-	Data              []byte            `json:"data"` // in base 64
-	Sender            []byte            `json:"sender"`
-	Signature         []byte            `json:"signature"`
-	MessageId         []byte            `json:"message_id"`
+	Data              []byte            `json:"data"`       // recovered from base 64
+	Sender            []byte            `json:"sender"`     // recovered from base 64
+	Signature         []byte            `json:"signature"`  // recovered from base 64
+	MessageId         []byte            `json:"message_id"` // recovered from base 64
 	WitnessSignatures []json.RawMessage `json:"witnessSignatures"`
 }
 
 type ItemWitnessSignatures struct {
-	WitnessKey []byte
+	WitnessKey []byte // recovered from base 64
 	//Sign(message_id)
-	Signature  []byte
+	Signature []byte // recovered from base 64
 }
