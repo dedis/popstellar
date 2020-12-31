@@ -170,6 +170,9 @@ func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.Mess
 		case "create":
 			return o.handleCreateRollCall(msg, params.Channel, query)
 		//case "state":  TODO : waiting on protocol definition
+		case "open", "reopen":
+			return o.handleOpenRollCall(msg,params.Channel,query)
+			return
 		default:
 			return nil, lib.ErrInvalidAction
 		}
@@ -259,9 +262,9 @@ func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, quer
 	if errs != nil {
 		return nil, lib.ErrInvalidResource
 	}
-
+	//we provide the id of the channel
 	laoId := strings.TrimPrefix(canal,"/root/")
-	if !security.RollCallCreatedIsValid(data, msg,laoId) {
+	if !security.RollCallCreatedIsValid(data,laoId) {
 		return nil, errs
 	}
 
@@ -498,7 +501,7 @@ func (o *Organizer) handleCatchup(query message.Query) ([]byte, error) {
 	// TODO maybe pass userId as an arg in order to check access rights later on?
 	params, err := parser.ParseParams(query.Params)
 	if err != nil {
-		fmt.Printf("unable to analyse paramsLight in handleCatchup()")
+		fmt.Printf("unable to analyse params in handleCatchup()")
 		return nil, lib.ErrRequestDataInvalid
 	}
 	history := db.GetChannel([]byte(params.Channel), o.database)
@@ -510,4 +513,44 @@ func (o *Organizer) handleCatchup(query message.Query) ([]byte, error) {
 // is only one Organizer, and he's the one sending this message. Hence he should not be receiving it.
 func (o *Organizer) handleLAOState(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	return nil, lib.ErrInvalidAction
+}
+
+//If the roll-call was started in future mode (see create roll-call), it can be opened using
+//		the open roll-call query. If it was closed, but it need to be reopened later (e.g. the
+//		organizer forgot to scan the public key of one attendee), then it can reopen it by using
+//		the open query. In this case, the action should be set to reopen.
+func (o *Organizer)  handleOpenRollCall(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+	openRollCall, err := parser.ParseDataOpenRollCall(msg.Data)
+	if err != nil {
+		fmt.Printf("unable to analyse params in handlOpenRollCall()")
+		return nil, lib.ErrRequestDataInvalid
+	}
+	//retrieve roll Call to open from database
+	storedRollCall := db.GetMessage([]byte(chann), openRollCall.ID, o.database)
+
+	rollCallData, err := parser.ParseDataCreateRollCall(storedRollCall)
+	if err != nil {
+		log.Printf("unable to parse stored roll call infos in handleOpenRollRall()")
+		return nil, err
+	}
+
+	updatedRollCall := event.RollCall{
+		ID:            string(rollCallData.ID),
+		Name:          rollCallData.Name,
+		Creation:      rollCallData.Creation,
+		LastModified: rollCallData.Creation,
+		Location: rollCallData.Location,
+		//openRollCall !
+		Start: openRollCall.Start,
+	}
+
+	err = db.UpdateChannel(updatedRollCall, o.database)
+	if err != nil {
+		return nil, err
+	}
+	msgAndChan := []lib.MessageAndChannel{{
+		Message: parser.ComposeBroadcastMessage(query),
+		Channel: []byte(chann),
+	}}
+	return msgAndChan, db.CreateMessage(msg, chann, o.database)
 }

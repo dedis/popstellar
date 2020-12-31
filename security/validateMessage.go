@@ -88,7 +88,7 @@ func RollCallCreatedIsValid(data message.DataCreateRollCallNow, laoId string) bo
 		log.Printf("timestamps not logic.Start before creation.")
 		return false
 	}
-	//check if id is correct  : SHA256('R'||lao_id||creation||name
+	//check if id is correct  : SHA256('R'||lao_id||creation||name)
 	var elementsToHashForDataId []string
 	elementsToHashForDataId = append(elementsToHashForDataId, "R",laoId, string(data.Creation),data.Name)
 	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(elementsToHashForDataId)))
@@ -103,10 +103,9 @@ func RollCallCreatedIsValid(data message.DataCreateRollCallNow, laoId string) bo
 // IMPORTANT thing : 	For every message the signature is Sign(message_id)
 //						EXCEPT for (the data) witnessMessage which is Sign(data)
 func MessageIsValid(msg message.Message) error {
-		// check message_id is valid
+	// check message_id is valid
 	var itemsToHashForMessageId []string
 	itemsToHashForMessageId = append(itemsToHashForMessageId, string(msg.Data), string(msg.Signature))
-	// TODO the PR has not been validated yet
 	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(itemsToHashForMessageId)))
 
 	if !bytes.Equal(msg.MessageId, hash[:]) {
