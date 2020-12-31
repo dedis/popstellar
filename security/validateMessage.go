@@ -29,13 +29,20 @@ func LAOIsValid(data message.DataCreateLAO, create bool) bool {
 		log.Printf("expecting %v, got %v", hash, data.ID)
 		return false
 	}
+	//check if id is correct  : SHA256(organizer||creation||name)
+	var elementsToHashForDataId []string
+	elementsToHashForDataId = append(elementsToHashForDataId, string(data.Organizer), string(data.Creation),data.Name)
+	hash = sha256.Sum256([]byte(lib.ComputeAsJsonArray(elementsToHashForDataId)))
+	if !bytes.Equal(data.ID, hash[:]) {
+		log.Printf("ID od createRollCall invalid: %v should be: %v", string(data.ID), string(hash[:]))
+	}
 
 	return true
 }
 
 //MeetingCreatedIsValid checks wether a meeting is valid when it is created. It checks if the ID is correctly computed,
 // and if the timestamps are coherent. (Start < End for example)
-func MeetingCreatedIsValid(data message.DataCreateMeeting, message message.Message) bool {
+func MeetingCreatedIsValid(data message.DataCreateMeeting, laoId string) bool {
 	//the timestamp is reasonably recent with respect to the server’s clock,
 	if data.Creation < time.Now().Unix()-MaxClockDifference || data.Creation > time.Now().Unix()+MaxPropagationDelay {
 		log.Printf("timestamp unvalid : got %d but need to be between %d and %d",
@@ -53,6 +60,13 @@ func MeetingCreatedIsValid(data message.DataCreateMeeting, message message.Messa
 		log.Printf("location can not be empty")
 		return false
 	}
+	//check if id is correct  : SHA256(lao_id||creation||name)
+	var elementsToHashForDataId []string
+	elementsToHashForDataId = append(elementsToHashForDataId, laoId, string(data.Creation),data.Name)
+	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(elementsToHashForDataId)))
+	if !bytes.Equal(data.ID, hash[:]) {
+		log.Printf("ID od createRollCall invalid: %v should be: %v", string(data.ID), string(hash[:]))
+	}
 	return true
 }
 
@@ -62,7 +76,25 @@ func PollCreatedIsValid(data message.DataCreatePoll, message message.Message) bo
 }
 
 // not implemented yet
-func RollCallCreatedIsValid(data message.DataCreateRollCall, message message.Message) bool {
+func RollCallCreatedIsValid(data message.DataCreateRollCallNow, laoId string) bool {
+	//the timestamp is reasonably recent with respect to the server’s clock,
+	if data.Creation < time.Now().Unix()-MaxClockDifference || data.Creation > time.Now().Unix()+MaxPropagationDelay {
+		log.Printf("timestamp unvalid : got %d but need to be between %d and %d",
+			data.Creation, time.Now().Unix()-MaxClockDifference, time.Now().Unix()+MaxPropagationDelay)
+		return false
+	}
+	//we start after the creation and we end after the start
+	if data.Start < data.Creation {
+		log.Printf("timestamps not logic.Start before creation.")
+		return false
+	}
+	//check if id is correct  : SHA256('R'||lao_id||creation||name
+	var elementsToHashForDataId []string
+	elementsToHashForDataId = append(elementsToHashForDataId, "R",laoId, string(data.Creation),data.Name)
+	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(elementsToHashForDataId)))
+	if !bytes.Equal(data.ID, hash[:]) {
+		log.Printf("ID od createRollCall invalid: %v should be: %v", string(data.ID), string(hash[:]))
+	}
 	return true
 }
 
@@ -89,13 +121,6 @@ func MessageIsValid(msg message.Message) error {
 		return err
 	}
 
-	/*switch data["object"] {
-	// TODO check that correspond id of each data is correct -> not necessary, just a  way to identify
-	case "lao":
-		//organizer||creation||name
-	case "meeting":
-		//lao_id||creation||name
-	}*/
 	// the witness signatures are valid (check on every message??)
 	data, err := parser.ParseData(string(msg.Data))
 	if err != nil {
@@ -111,7 +136,7 @@ func MessageIsValid(msg message.Message) error {
 				log.Printf("test 3")
 				return lib.ErrInvalidResource
 			}
-			// the signatures (on MESSAGEID) of witnesses are valid
+			// the signatures (of MESSAGEID) of witnesses are valid
 			err = VerifyWitnessSignatures(data.Witnesses, msg.WitnessSignatures, msg.MessageId)
 			if err != nil {
 				log.Printf("invalid signatures in witness message")
@@ -126,7 +151,7 @@ func MessageIsValid(msg message.Message) error {
 				log.Printf("test 3")
 				return lib.ErrInvalidResource
 			}
-			// the signature of data is valid (we are in the "DATA layer")
+			// the signature of DATA is valid (we are in the "DATA layer")
 			err = VerifySignature(msg.Sender, msg.Data, data.Signature)
 			if err != nil {
 				log.Printf("invalid message signature")
