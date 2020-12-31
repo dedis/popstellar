@@ -37,7 +37,7 @@ func ComposeBroadcastStateLAO(lao event.LAO, laoData message.DataCreateLAO, orgP
 				ID:            []byte(lao.ID),
 				Name:          lao.Name,
 				Creation:      lao.Creation,
-				Last_modified: lao.Creation,
+				LastModified: lao.Creation,
 				Organizer:     []byte(lao.OrganizerPKey),
 				Witnesses:     laoData.Witnesses,
 			}
@@ -60,7 +60,7 @@ func ComposeBroadcastStateLAO(lao event.LAO, laoData message.DataCreateLAO, orgP
 				return nil, errs
 			}
 	
-			sendParams := message.ParamsIncludingMessage{
+			sendParams := message.Params{
 				Channel: "/root",
 				// TODO : state broadcast done on root confirmed?
 				Message: contentStr,
