@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strings"
 	"student20_pop/db"
 	"student20_pop/event"
 	"student20_pop/lib"
@@ -259,7 +260,8 @@ func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, quer
 		return nil, lib.ErrInvalidResource
 	}
 
-	if !security.RollCallCreatedIsValid(data, msg) {
+	laoId := strings.TrimPrefix(canal,"/root/")
+	if !security.RollCallCreatedIsValid(data, msg,laoId) {
 		return nil, errs
 	}
 
@@ -269,8 +271,6 @@ func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, quer
 		Creation: data.Creation,
 		Location: data.Location,
 		Start:    data.Start,
-		End:      data.End,
-		Extra:    data.Extra,
 	}
 	errs = db.CreateChannel(rollCall, o.database)
 	if errs != nil {

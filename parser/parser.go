@@ -126,9 +126,9 @@ func ParseDataCreateMeeting(data json.RawMessage) (message.DataCreateMeeting, er
 	return m, err
 }
 
-// ParseDataCreateRollCall parses a json.RawMessage into a message.DataCreateRollCall structure.
-func ParseDataCreateRollCall(data json.RawMessage) (message.DataCreateRollCall, error) {
-	m := message.DataCreateRollCall{}
+// ParseDataCreateRollCall parses a json.RawMessage into a message.DataCreateRollCallNow structure.
+func ParseDataCreateRollCall(data json.RawMessage) (message.DataCreateRollCallNow, error) {
+	m := message.DataCreateRollCallNow{}
 	err := json.Unmarshal(data, &m)
 	return m, err
 }
