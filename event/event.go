@@ -37,7 +37,7 @@ type Meeting struct {
 }
 
 type RollCall struct {
-	// hash : Name || Creation
+	// hash : ('R'||lao_id||creation||name)
 	ID string
 	// Name of the Roll Call
 	Name string
@@ -49,9 +49,10 @@ type RollCall struct {
 	Location string
 	// Meeting's Start time timestamp (Unix) (uint64)
 	Start int64 //  Unix timestamp (uint64)
+	// Meeting's Scheduled time timestamp (Unix) (uint64)
+	//Scheduled int64 //  Unix timestamp (uint64)
 	// Meeting's End time timestamp (Unix) (uint64)
 	End   int64 //timestamp
-	Extra string
 }
 
 type Poll struct {

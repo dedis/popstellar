@@ -78,7 +78,7 @@ func (w *Witness) handlePublish(query message.Query) (msgAndChannel []lib.Messag
 // HandleReceivedMessage. It parses the received message, and delegates the handling to sub-handler functions, depending
 // on the "object" and "action" fields.
 func (w *Witness) handleBroadcast(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
-	params, errs := parser.ParseParamsIncludingMessage(query.Params)
+	params, errs := parser.ParseParams(query.Params)
 	if errs != nil {
 		return nil, lib.ErrRequestDataInvalid
 	}
@@ -224,7 +224,7 @@ func (w *Witness) handleWitnessMessage(msg message.Message, chann string, query 
 
 	sendMsg := db.GetMessage([]byte(chann), []byte(data.MessageId), w.database)
 	if sendMsg == nil {
-		log.Printf("no message with ID %v in the database", data.Message_id)
+		log.Printf("no message with ID %v in the database", data.MessageId)
 		return nil, lib.ErrInvalidResource
 	}
 	storedMessage, errs := parser.ParseMessage(sendMsg)
@@ -299,7 +299,6 @@ func (w *Witness) handleCreateRollCall(msg message.Message, chann string, query 
 		Creation: data.Creation,
 		Location: data.Location,
 		Start:    data.Start,
-		End:      data.End,
 	}
 
 	errs = db.CreateChannel(rollCall, w.database)
