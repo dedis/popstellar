@@ -2,7 +2,6 @@ package actors
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"strings"
 	"student20_pop/db"
@@ -76,19 +75,19 @@ func (o *Organizer) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAn
 func (o *Organizer) handleMessage(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	params, errs := parser.ParseParams(query.Params)
 	if errs != nil {
-		fmt.Printf("unable to analyse paramsLight in handleMessage()")
+		log.Printf("unable to analyse paramsLight in handleMessage()")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
 	msg, errs := parser.ParseMessage(params.Message)
 	if errs != nil {
-		fmt.Printf("unable to analyse Message in handleMessage()")
+		log.Printf("unable to analyse Message in handleMessage()")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
 	data, errs := parser.ParseData(string(msg.Data))
 	if errs != nil {
-		fmt.Printf("unable to analyse data in handleMessage()")
+		log.Printf("unable to analyse data in handleMessage()")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
@@ -121,25 +120,25 @@ func (o *Organizer) handleMessage(query message.Query) (msgAndChannel []lib.Mess
 func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
 	params, errs := parser.ParseParams(query.Params)
 	if errs != nil {
-		fmt.Printf("1. unable to analyse paramsLight in handlePublish()")
+		log.Printf("1. unable to analyse paramsLight in handlePublish()")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
 	msg, errs := parser.ParseMessage(params.Message)
 	if errs != nil {
-		fmt.Printf("2. unable to analyse Message in handlePublish()")
+		log.Printf("2. unable to analyse Message in handlePublish()")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
 	errs = security.MessageIsValid(msg)
 	if errs != nil {
-		fmt.Printf("7")
+		log.Printf("7")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
 	data, errs := parser.ParseData(string(msg.Data))
 	if errs != nil {
-		fmt.Printf("3. unable to analyse data in handlePublish()")
+		log.Printf("3. unable to analyse data in handlePublish()")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
@@ -196,7 +195,7 @@ func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.Mess
 			return nil, lib.ErrInvalidAction
 		}
 	default:
-		fmt.Printf("data[obect] (%v) not recognized in handlepublish, generating default response ", data["object"])
+		log.Printf("data[object] (%v) not recognized in handlepublish, generating default response ", data["object"])
 		return nil, lib.ErrRequestDataInvalid
 	}
 }
@@ -500,7 +499,7 @@ func (o *Organizer) handleCatchup(query message.Query) ([]byte, error) {
 	// TODO maybe pass userId as an arg in order to check access rights later on?
 	params, err := parser.ParseParams(query.Params)
 	if err != nil {
-		fmt.Printf("unable to analyse params in handleCatchup()")
+		log.Printf("unable to analyse params in handleCatchup()")
 		return nil, lib.ErrRequestDataInvalid
 	}
 	history := db.GetChannel([]byte(params.Channel), o.database)
@@ -521,7 +520,7 @@ func (o *Organizer) handleLAOState(msg message.Message, chann string, query mess
 func (o *Organizer) handleOpenRollCall(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	openRollCall, err := parser.ParseDataOpenRollCall(msg.Data)
 	if err != nil {
-		fmt.Printf("unable to analyse params in handlOpenRollCall()")
+		log.Printf("unable to analyse params in handlOpenRollCall()")
 		return nil, lib.ErrRequestDataInvalid
 	}
 	//retrieve roll Call to open from database
