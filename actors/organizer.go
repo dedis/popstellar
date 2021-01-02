@@ -118,7 +118,7 @@ func (o *Organizer) handleMessage(query message.Query) (msgAndChannel []lib.Mess
 // handlePublish is the function to handle a received message which method was "publish"
 // It is called by the function HandleWholeMessage. It Analyses the message's object and action fields, and delegate the
 // work to other functions.
-func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
 	params, errs := parser.ParseParams(query.Params)
 	if errs != nil {
 		fmt.Printf("1. unable to analyse paramsLight in handlePublish()")
@@ -171,8 +171,7 @@ func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.Mess
 			return o.handleCreateRollCall(msg, params.Channel, query)
 		//case "state":  TODO : waiting on protocol definition
 		case "open", "reopen":
-			return o.handleOpenRollCall(msg,params.Channel,query)
-			return
+			return o.handleOpenRollCall(msg, params.Channel, query)
 		default:
 			return nil, lib.ErrInvalidAction
 		}
@@ -197,7 +196,7 @@ func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.Mess
 			return nil, lib.ErrInvalidAction
 		}
 	default:
-		fmt.Printf("data[action] (%v) not recognized in handlepublish, generating default response ", data["action"])
+		fmt.Printf("data[obect] (%v) not recognized in handlepublish, generating default response ", data["object"])
 		return nil, lib.ErrRequestDataInvalid
 	}
 }
@@ -263,8 +262,8 @@ func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, quer
 		return nil, lib.ErrInvalidResource
 	}
 	//we provide the id of the channel
-	laoId := strings.TrimPrefix(canal,"/root/")
-	if !security.RollCallCreatedIsValid(data,laoId) {
+	laoId := strings.TrimPrefix(canal, "/root/")
+	if !security.RollCallCreatedIsValid(data, laoId) {
 		return nil, errs
 	}
 
@@ -519,7 +518,7 @@ func (o *Organizer) handleLAOState(msg message.Message, chann string, query mess
 //		the open roll-call query. If it was closed, but it need to be reopened later (e.g. the
 //		organizer forgot to scan the public key of one attendee), then it can reopen it by using
 //		the open query. In this case, the action should be set to reopen.
-func (o *Organizer)  handleOpenRollCall(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+func (o *Organizer) handleOpenRollCall(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	openRollCall, err := parser.ParseDataOpenRollCall(msg.Data)
 	if err != nil {
 		fmt.Printf("unable to analyse params in handlOpenRollCall()")
@@ -535,11 +534,11 @@ func (o *Organizer)  handleOpenRollCall(msg message.Message, chann string, query
 	}
 
 	updatedRollCall := event.RollCall{
-		ID:            string(rollCallData.ID),
-		Name:          rollCallData.Name,
-		Creation:      rollCallData.Creation,
+		ID:           string(rollCallData.ID),
+		Name:         rollCallData.Name,
+		Creation:     rollCallData.Creation,
 		LastModified: rollCallData.Creation,
-		Location: rollCallData.Location,
+		Location:     rollCallData.Location,
 		//openRollCall !
 		Start: openRollCall.Start,
 	}
