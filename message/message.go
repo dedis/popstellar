@@ -41,12 +41,7 @@ type Message struct {
 }
 
 type ItemWitnessSignatures struct {
-<<<<<<< HEAD
-	WitnessKey	[]byte // recovered from base 64
-	Signature 	[]byte // recovered from base 64
-=======
 	WitnessKey []byte // recovered from base 64
 	//Sign(message_id)
 	Signature []byte // recovered from base 64
->>>>>>> work-be1-newArch
 }
