@@ -469,7 +469,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 		Channel: []byte(canal),
 	}}
 
-	//TODO switch on event type. Think of clever code
+	//TODO switch message["object"] on event type
 	if count == SIG_THRESHOLD-1 {
 		lao := event.LAO{
 			ID:            string(laoData.ID),
