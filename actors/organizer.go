@@ -30,7 +30,7 @@ func NewOrganizer(pkey string, db string) *Organizer {
 	}
 }
 
-// HandleWholeMessage processes the received message. It parses it and calls sub-handler functions depending on
+// HandleReceivedMessage processes the received message. It parses it and calls sub-handler functions depending on
 // 	the message's method field.
 func (o *Organizer) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAndChannel []lib.MessageAndChannel, responseToSender []byte) {
 	// if the message is an answer message (positive ack or error), ignore it
@@ -57,8 +57,8 @@ func (o *Organizer) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAn
 		msg, err = nil, o.handleUnsubscribe(query, userId)
 	case "publish":
 		msg, err = o.handlePublish(query)
-	case "message":
-		msg, err = o.handleMessage(query)
+	case "broadcast":
+		msg, err = o.handleBroadcast(query)
 	// Or they are only notification, and we just want to check that it was a success
 	case "catchup":
 		history, err = o.handleCatchup(query)
@@ -70,24 +70,24 @@ func (o *Organizer) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAn
 	return msg, parser.ComposeResponse(err, history, query)
 }
 
-// handleMessage is the function to handle a received message which method was "message"
-// It is called by the function HandleWholeMessage.
-func (o *Organizer) handleMessage(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+// handleBroadcast is the function to handle a received message which method was "broadcast"
+// It is called by the function HandleReceivedMessage.
+func (o *Organizer) handleBroadcast(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	params, errs := parser.ParseParams(query.Params)
 	if errs != nil {
-		log.Printf("unable to analyse paramsLight in handleMessage()")
+		log.Printf("unable to analyse paramsLight in handleBroadcast()")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
 	msg, errs := parser.ParseMessage(params.Message)
 	if errs != nil {
-		log.Printf("unable to analyse Message in handleMessage()")
+		log.Printf("unable to analyse Message in handleBroadcast()")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
 	data, errs := parser.ParseData(string(msg.Data))
 	if errs != nil {
-		log.Printf("unable to analyse data in handleMessage()")
+		log.Printf("unable to analyse data in handleBroadcast()")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
@@ -101,6 +101,8 @@ func (o *Organizer) handleMessage(query message.Query) (msgAndChannel []lib.Mess
 		switch data["action"] {
 		case "witness":
 			return o.handleWitnessMessage(msg, params.Channel, query)
+			// TODO I would remove this case and force witnesses to send their "WitnessMessage" as a publish, and not a broadcasted, do you agree? yes they agree, however, it should still be broadcasted after published
+			// As per line 63, and as only org BEs should emit broadcasts, I'm actually leaning towards treating all broadcasted message to an org BE as either errors, or just checking for correct formatting then ignoring.
 		default:
 			return nil, lib.ErrRequestDataInvalid
 		}
@@ -115,7 +117,7 @@ func (o *Organizer) handleMessage(query message.Query) (msgAndChannel []lib.Mess
 }
 
 // handlePublish is the function to handle a received message which method was "publish"
-// It is called by the function HandleWholeMessage. It Analyses the message's object and action fields, and delegate the
+// It is called by the function HandleReceivedMessage. It Analyses the message's object and action fields, and delegate the
 // work to other functions.
 func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
 	params, errs := parser.ParseParams(query.Params)
@@ -158,9 +160,7 @@ func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.Mess
 	case "message":
 		switch data["action"] {
 		case "witness":
-			// TODO : send state broadcast if more signatures than threshold
 			return o.handleWitnessMessage(msg, params.Channel, query)
-			// TODO : state broadcast done on root
 		default:
 			return nil, lib.ErrInvalidAction
 		}
@@ -238,6 +238,7 @@ func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query mes
 		return nil, err
 	}
 
+	// as per hub.go, this msgAndChan will never be broadcasted as Channel should be on root. We still create it in case this functionality could change in the future.
 	msgAndChan := []lib.MessageAndChannel{{
 		Message: parser.ComposeBroadcastMessage(query),
 		Channel: []byte(canal),
@@ -494,7 +495,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 }
 
 // handleCatchup is the function to handle a received message requesting a catchup on a channel.
-// It is called by HandleWholeMessage, and returns the current state of a channel.
+// It is called by HandleReceivedMessage, and returns the current state of a channel.
 func (o *Organizer) handleCatchup(query message.Query) ([]byte, error) {
 	// TODO maybe pass userId as an arg in order to check access rights later on?
 	params, err := parser.ParseParams(query.Params)
