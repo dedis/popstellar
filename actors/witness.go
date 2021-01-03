@@ -262,8 +262,7 @@ func (w *Witness) handleLAOState(msg message.Message, chann string, query messag
 		return nil, lib.ErrInvalidResource
 	}
 
-	//TODO correct usage of VerifyWitnessSignatures
-	errs = security.VerifyWitnessSignatures(nil, msg.WitnessSignatures, msg.Sender)
+	errs = security.VerifyWitnessSignatures(data.Witnesses, msg.WitnessSignatures, msg.Sender)
 	if errs != nil {
 		return nil, lib.ErrRequestDataInvalid
 	}
@@ -294,8 +293,8 @@ func (w *Witness) handleCreateRollCall(msg message.Message, chann string, query 
 		return nil, lib.ErrInvalidResource
 	}
 
-	laoId := strings.TrimPrefix("/root/",chann)
-	if !security.RollCallCreatedIsValid(data,laoId) {
+	laoId := strings.TrimPrefix("/root/", chann)
+	if !security.RollCallCreatedIsValid(data, laoId) {
 		return nil, lib.ErrInvalidResource
 	}
 

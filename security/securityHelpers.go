@@ -4,6 +4,7 @@ package security
 import (
 	ed "crypto/ed25519"
 	"encoding/json"
+	"log"
 	"student20_pop/lib"
 	"student20_pop/parser"
 )
@@ -34,8 +35,8 @@ func VerifyWitnessSignatures(authorizedWitnesses [][]byte, witnessSignaturesEnc 
 		}
 		//We check that the signature belong to an assigned witness
 		_, isAssigned := lib.FindByteArray(authorizedWitnesses, witnessSignature.Signature)
-		//TODO do we stop if one signature came from a witness which is not in the list ?
 		if !isAssigned {
+			log.Printf("witness public key not recognized")
 			return lib.ErrRequestDataInvalid
 		}
 		//then we check correctness of the signature

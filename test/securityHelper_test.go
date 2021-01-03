@@ -167,6 +167,5 @@ func getIdofMessage(data message2.DataCreateLAO, privkey ed.PrivateKey) (dataFla
 	var itemsToHash []string
 	itemsToHash = append(itemsToHash, string(dataFlat), string(signed))
 	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(itemsToHash)))
-	//TODO the PR has not been validated yet
 	return dataFlat, signed, hash[:], nil
 }
