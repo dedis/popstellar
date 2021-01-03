@@ -95,3 +95,6 @@ like SQLite, would provide features that we currently do not support (indexing o
 Currently, the project biggest, and "all-containing" entity in the project is the Hub (package network). Then the hub has
 an actor (either organizer or witness). It would make more sense to turn things around, in order to make the Actor the
 principal entity, and to let the actor have a hub.
+### WebSockets :
+Maybe we should consider using websocket secure (websocket over TLS) instead of "standards" websocket, it would prevent from Man in 
+the middle attacks.
