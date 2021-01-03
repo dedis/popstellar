@@ -31,7 +31,7 @@ func LAOIsValid(data message.DataCreateLAO, create bool) bool {
 	}
 	//check if id is correct  : SHA256(organizer||creation||name)
 	var elementsToHashForDataId []string
-	elementsToHashForDataId = append(elementsToHashForDataId, string(data.Organizer), string(data.Creation),data.Name)
+	elementsToHashForDataId = append(elementsToHashForDataId, string(data.Organizer), strconv.FormatInt(data.Creation, 10), data.Name)
 	hash = sha256.Sum256([]byte(lib.ComputeAsJsonArray(elementsToHashForDataId)))
 	if !bytes.Equal(data.ID, hash[:]) {
 		log.Printf("ID od createRollCall invalid: %v should be: %v", string(data.ID), string(hash[:]))
@@ -62,7 +62,7 @@ func MeetingCreatedIsValid(data message.DataCreateMeeting, laoId string) bool {
 	}
 	//check if id is correct  : SHA256(lao_id||creation||name)
 	var elementsToHashForDataId []string
-	elementsToHashForDataId = append(elementsToHashForDataId, laoId, string(data.Creation),data.Name)
+	elementsToHashForDataId = append(elementsToHashForDataId, laoId, strconv.FormatInt(data.Creation, 10), data.Name)
 	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(elementsToHashForDataId)))
 	if !bytes.Equal(data.ID, hash[:]) {
 		log.Printf("ID od createRollCall invalid: %v should be: %v", string(data.ID), string(hash[:]))
@@ -90,7 +90,7 @@ func RollCallCreatedIsValid(data message.DataCreateRollCallNow, laoId string) bo
 	}
 	//check if id is correct  : SHA256('R'||lao_id||creation||name)
 	var elementsToHashForDataId []string
-	elementsToHashForDataId = append(elementsToHashForDataId, "R",laoId, string(data.Creation),data.Name)
+	elementsToHashForDataId = append(elementsToHashForDataId, "R", laoId, strconv.FormatInt(data.Creation, 10), data.Name)
 	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(elementsToHashForDataId)))
 	if !bytes.Equal(data.ID, hash[:]) {
 		log.Printf("ID od createRollCall invalid: %v should be: %v", string(data.ID), string(hash[:]))
