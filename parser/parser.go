@@ -32,7 +32,7 @@ func ParseQuery(query []byte) (message.Query, error) {
 		return m, lib.ErrIdNotDecoded
 	}
 	switch m.Method {
-	case "subscribe", "unsubscribe", "message", "publish", "catchup":
+	case "subscribe", "unsubscribe", "broadcast", "publish", "catchup":
 		return m, err
 	default:
 		log.Printf("the method is not valid, it is instead %v", m.Method)
@@ -45,23 +45,6 @@ func ParseQuery(query []byte) (message.Query, error) {
 func ParseParams(params json.RawMessage) (message.Params, error) {
 	m := message.Params{}
 	err := json.Unmarshal(params, &m)
-	if !strings.HasPrefix(m.Channel, "/root") {
-		log.Printf("channel id doesn't start with /root but is %v", m.Channel)
-		return m, lib.ErrRequestDataInvalid
-	}
-	return m, err
-}
-
-// ParseParamsIncludingMessage parses a json.RawMessage into a message.ParamsIncludingMessage structure.
-// It checks that the field "channel" starts with "/root"
-func ParseParamsIncludingMessage(params json.RawMessage) (message.ParamsIncludingMessage, error) {
-	m := message.ParamsIncludingMessage{}
-	err := json.Unmarshal(params, &m)
-	if err != nil {
-		return m, lib.ErrEncodingFault
-	}
-	//d, err := lib.Decode(m.Channel)
-	//m.Channel = string(d)
 	if !strings.HasPrefix(m.Channel, "/root") {
 		log.Printf("channel id doesn't start with /root but is %v", m.Channel)
 		return m, lib.ErrRequestDataInvalid
@@ -135,6 +118,12 @@ func ParseDataWitnessMessage(data json.RawMessage) (message.DataWitnessMessage, 
 	err := json.Unmarshal(data, &m)
 	return m, err
 }
+// ParseDataWitnessMessage parses a json.RawMessage into a message.DataWitnessMessage structure.
+func ParseDataOpenRollCall(data json.RawMessage) (message.DataOpenRollCall, error) {
+	m := message.DataOpenRollCall{}
+	err := json.Unmarshal(data, &m)
+	return m, err
+}
 
 // ParseDataCreateMeeting parses a json.RawMessage into a message.DataCreateMeeting structure.
 func ParseDataCreateMeeting(data json.RawMessage) (message.DataCreateMeeting, error) {
@@ -143,9 +132,9 @@ func ParseDataCreateMeeting(data json.RawMessage) (message.DataCreateMeeting, er
 	return m, err
 }
 
-// ParseDataCreateRollCall parses a json.RawMessage into a message.DataCreateRollCall structure.
-func ParseDataCreateRollCall(data json.RawMessage) (message.DataCreateRollCall, error) {
-	m := message.DataCreateRollCall{}
+// ParseDataCreateRollCall parses a json.RawMessage into a message.DataCreateRollCallNow structure.
+func ParseDataCreateRollCall(data json.RawMessage) (message.DataCreateRollCallNow, error) {
+	m := message.DataCreateRollCallNow{}
 	err := json.Unmarshal(data, &m)
 	return m, err
 }
