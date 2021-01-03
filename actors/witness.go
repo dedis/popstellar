@@ -8,6 +8,7 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"log"
+	"strings"
 	"student20_pop/db"
 	"student20_pop/event"
 	"student20_pop/lib"
@@ -34,7 +35,7 @@ func NewWitness(pkey string, db string) *Witness {
 	}
 }
 
-// HandleWholeMessage processes the received message. It parses it and calls sub-handler functions depending
+// HandleReceivedMessage processes the received message. It parses it and calls sub-handler functions depending
 // on the message's method field.
 func (w *Witness) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAndChannel []lib.MessageAndChannel, responseToSender []byte) {
 	// if the message is an answer message just ignore it
@@ -56,8 +57,8 @@ func (w *Witness) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAndC
 	switch query.Method {
 	case "publish":
 		msg, err = w.handlePublish(query)
-	case "message":
-		msg, err = w.handleMessage(query)
+	case "broadcast":
+		msg, err = w.handleBroadcast(query)
 	case "subscribe", "unsubscribe", "catchup":
 		// Even though witness do nothing for some methods, it should not return an error
 		return nil, parser.ComposeResponse(nil, receivedMsg, query)
@@ -68,17 +69,17 @@ func (w *Witness) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAndC
 	return msg, parser.ComposeResponse(err, history, query)
 }
 
-// handlePublish is called by HandleWholeMessage and is only here to implement Actor's interface. Currently a Witness
+// handlePublish is called by HandleReceivedMessage and is only here to implement Actor's interface. Currently a Witness
 // only supports messages with method "message", "subscribe" and "unsubscribe".
 func (w *Witness) handlePublish(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	return nil, lib.ErrInvalidAction //a witness cannot handle a publish request for now
 }
 
-// handleMessage is the function that handles a received message with the method "message". It is called from
-// HandleWholeMessage. It parses the received message, and delegates the handling to sub-handler functions, depending
+// handleBroadcast is the function that handles a received message with the method "message". It is called from
+// HandleReceivedMessage. It parses the received message, and delegates the handling to sub-handler functions, depending
 // on the "object" and "action" fields.
-func (w *Witness) handleMessage(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
-	params, errs := parser.ParseParamsIncludingMessage(query.Params)
+func (w *Witness) handleBroadcast(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+	params, errs := parser.ParseParams(query.Params)
 	if errs != nil {
 		return nil, lib.ErrRequestDataInvalid
 	}
@@ -222,9 +223,9 @@ func (w *Witness) handleWitnessMessage(msg message.Message, chann string, query 
 		return nil, errs
 	}
 
-	sendMsg := db.GetMessage([]byte(chann), []byte(data.Message_id), w.database)
+	sendMsg := db.GetMessage([]byte(chann), []byte(data.MessageId), w.database)
 	if sendMsg == nil {
-		log.Printf("no message with ID %v in the database", data.Message_id)
+		log.Printf("no message with ID %v in the database", data.MessageId)
 		return nil, lib.ErrInvalidResource
 	}
 	storedMessage, errs := parser.ParseMessage(sendMsg)
@@ -284,12 +285,17 @@ func (w *Witness) handleLAOState(msg message.Message, chann string, query messag
 // to "roll call" and "create". It  verifies the message's validity, creates a new channel in the Witness's database and
 // stores the received message.
 func (w *Witness) handleCreateRollCall(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+	if chann != "/root" {
+		return nil, lib.ErrInvalidResource
+	}
+
 	data, errs := parser.ParseDataCreateRollCall(msg.Data)
 	if errs != nil {
 		return nil, lib.ErrInvalidResource
 	}
 
-	if !security.RollCallCreatedIsValid(data, msg) {
+	laoId := strings.TrimPrefix("/root/",chann)
+	if !security.RollCallCreatedIsValid(data,laoId) {
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -299,7 +305,6 @@ func (w *Witness) handleCreateRollCall(msg message.Message, chann string, query 
 		Creation: data.Creation,
 		Location: data.Location,
 		Start:    data.Start,
-		End:      data.End,
 	}
 
 	errs = db.CreateChannel(rollCall, w.database)

@@ -12,7 +12,7 @@ type Method string
 const(
 	Subscribe Method = "subscribe"
 	Unsubscribe Method = "unsubscribe"
-	Broadcast Method = "message"
+	Broadcast Method = "broadcast"
 	Publish Method = "publish"
 	Catchup Method = "catchup"
 )*/
@@ -28,23 +28,25 @@ type Query struct {
 }
 
 type Params struct {
-	Channel string
-}
-
-type ParamsIncludingMessage struct {
-	Channel string
-	Message json.RawMessage
+	Channel string          `json:"channel"`
+	Message json.RawMessage `json:"message,omitempty"`
 }
 
 type Message struct {
-	Data              []byte `json:"data"` // recovered from base 64
-	Sender            []byte          `json:"sender"` // recovered from base 64
-	Signature         []byte          `json:"signature"` // recovered from base 64
-	MessageId         []byte          `json:"message_id"` // recovered from base 64
-	WitnessSignatures []json.RawMessage       `json:"witnessSignatures"`
+	Data              []byte            `json:"data"`       // recovered from base 64
+	Sender            []byte            `json:"sender"`     // recovered from base 64
+	Signature         []byte            `json:"signature"`  // recovered from base 64
+	MessageId         []byte            `json:"message_id"` // recovered from base 64
+	WitnessSignatures []json.RawMessage `json:"witnessSignatures"`
 }
 
 type ItemWitnessSignatures struct {
+<<<<<<< HEAD
 	WitnessKey	[]byte // recovered from base 64
 	Signature 	[]byte // recovered from base 64
+=======
+	WitnessKey []byte // recovered from base 64
+	//Sign(message_id)
+	Signature []byte // recovered from base 64
+>>>>>>> work-be1-newArch
 }
