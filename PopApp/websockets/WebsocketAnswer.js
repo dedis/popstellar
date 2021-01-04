@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+// TODO remove the line above when console will not be use
 import { sign } from 'tweetnacl';
 // eslint-disable-next-line import/no-cycle
 import WebsocketLink from './WebsocketLink';

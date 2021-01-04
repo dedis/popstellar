@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import React, { useState } from 'react';
 import {
   StyleSheet, View, Text, FlatList,
@@ -59,6 +60,8 @@ const radioPropsPercent = [
 ];
 
 const PollEvent = ({ event }) => {
+  // TODO remove next line when the variable will be use
+  // eslint-disable-next-line no-unused-vars
   const [radioValue, setRadioValue] = useState(0);
   const map = new Map();
   radioProps.forEach((e) => map.set(e.label, false));

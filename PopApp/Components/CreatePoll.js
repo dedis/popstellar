@@ -59,6 +59,8 @@ const CreatePoll = () => {
   const navigation = useNavigation();
   const [name, setName] = useState('');
   const [answers, setAnswers] = useState(['']);
+  // TODO remove next line when the variable will be use
+  // eslint-disable-next-line no-unused-vars
   const [radioOrCheckbox, setRadioOrCheckbox] = useState(0);
 
   // all the funtion to manage the date object, one object to set start and finish time
