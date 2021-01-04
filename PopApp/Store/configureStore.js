@@ -25,8 +25,9 @@ const appReducer = persistCombineReducers(persistConfig, {
 /** Trick used to clear local persistent storage */
 const rootReducer = (state, action) => {
   // clears the local cached storage as well as the state of the storage
-  if (action.type === 'CLEAR_STORAGE') { storage.removeItem('persist:root'); state = undefined; }
-  return appReducer(state, action);
+  let newState = state;
+  if (action.type === 'CLEAR_STORAGE') { storage.removeItem('persist:root'); newState = undefined; }
+  return appReducer(newState, action);
 };
 
 let store;

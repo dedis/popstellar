@@ -8,6 +8,7 @@
     "eject": "expo eject",
     "startServer": "node websockets/LocalMockServer.js",
     "startMonitorServer": "nodemon websockets/LocalMockServer.js",
+    "eslint": "node_modules/.bin/eslint .",
     "test": "mocha --recursive"
   },
   "dependencies": {

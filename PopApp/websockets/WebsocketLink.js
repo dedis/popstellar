@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+// TODO remove the line above when console will not be use
 import { w3cwebsocket as W3CWebSocket } from 'websocket';
 // eslint-disable-next-line import/no-cycle
 import handleServerAnswer from './WebsocketAnswer';
