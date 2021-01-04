@@ -37,7 +37,9 @@ object JsonMessages {
 
   /** Parsed error answer Json message from the server */
   final case class AnswerErrorMessageServer(
-                                             id: Int, error: MessageErrorContent, jsonrpc: String = JSON_RPC_VERSION
+                                             id: Option[Int],
+                                             error: MessageErrorContent,
+                                             jsonrpc: String = JSON_RPC_VERSION
                                            ) extends JsonMessageAnswerServer
 
   /** Parsed client propagate a message on a channel query */
@@ -110,6 +112,29 @@ object JsonMessages {
                                                   override val jsonrpc: String = JSON_RPC_VERSION
                                                 ) extends JsonMessagePublishClient(params, id, method, jsonrpc)
 
+  /** Parsed client roll call creation query */
+  final case class CreateRollCallMessageClient(
+                                                override val params: MessageParameters,
+                                                override val id: Int,
+                                                override val method: Methods,
+                                                override val jsonrpc: String = JSON_RPC_VERSION
+                                              ) extends JsonMessagePublishClient(params, id, method, jsonrpc)
+
+  /** Parsed client roll call re/opening query */
+  final case class OpenRollCallMessageClient(
+                                              override val params: MessageParameters,
+                                              override val id: Int,
+                                              override val method: Methods,
+                                              override val jsonrpc: String = JSON_RPC_VERSION
+                                            ) extends JsonMessagePublishClient(params, id, method, jsonrpc)
+
+  /** Parsed client roll call closing query */
+  final case class CloseRollCallMessageClient(
+                                               override val params: MessageParameters,
+                                               override val id: Int,
+                                               override val method: Methods,
+                                               override val jsonrpc: String = JSON_RPC_VERSION
+                                             ) extends JsonMessagePublishClient(params, id, method, jsonrpc)
 
 
   /* --------------------------------------------------------- */

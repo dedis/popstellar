@@ -49,16 +49,17 @@ package object json {
                                    sender: Key,
                                    signature: Signature,
                                    message_id: Hash,
-                                   witness_signatures: List[Signature]
+                                   witness_signatures: List[KeySignPair]
                                  ) {
 
-    def updateWitnesses(s: Signature): MessageContent =
+    def updateWitnesses(s: KeySignPair): MessageContent =
       MessageContent(encodedData, data, sender, signature, message_id, s :: witness_signatures)
-
   }
 
   final case class ChannelMessages(messages: List[ChannelMessage])
   final case class MessageErrorContent(code: Int, description: String)
+
+  final case class KeySignPair(witness: Key, signature: Signature)
 
   /* --------------------------------------------------------- */
   /* ---------------------- ADMIN TYPES ---------------------- */
@@ -70,6 +71,7 @@ package object json {
     val Lao: json.Objects.Value with Matching = MatchingValue("lao")
     val Message: json.Objects.Value with Matching = MatchingValue("message")
     val Meeting: json.Objects.Value with Matching = MatchingValue("meeting")
+    val RollCall: json.Objects.Value with Matching = MatchingValue("roll_call")
 
     def MatchingValue(v: String): Value with Matching = new Val(nextId, v) with Matching
     def unapply(s: String): Option[Value] = values.find(s == _.toString)
@@ -83,6 +85,10 @@ package object json {
     val UpdateProperties: json.Actions.Value = MatchingValue("update_properties")
     val State: json.Actions.Value = MatchingValue("state")
     val Witness: json.Actions.Value = MatchingValue("witness")
+    /* roll call related actions */
+    val Open: json.Actions.Value = MatchingValue("open")
+    val Reopen: json.Actions.Value = MatchingValue("reopen")
+    val Close: json.Actions.Value = MatchingValue("close")
 
     def MatchingValue(v: String): Value with Matching =  new Val(nextId, v) with Matching
     def unapply(s: String): Option[Value] = values.find(s == _.toString)
@@ -105,7 +111,7 @@ package object json {
 
     /* state LAO broadcast fields */
     modification_id: Array[Byte],
-    modification_signatures: List[Signature],
+    modification_signatures: List[KeySignPair],
 
     /* witness a message related fields */
     message_id: Base64String,
@@ -116,5 +122,10 @@ package object json {
     start: TimeStamp,
     end: TimeStamp,
     extra: UNKNOWN,
+
+    /* roll call related fields */
+    scheduled: TimeStamp,
+    roll_call_description: String,
+    attendees: List[Key],
   )
 }

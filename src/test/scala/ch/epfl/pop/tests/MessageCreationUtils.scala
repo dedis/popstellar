@@ -22,7 +22,7 @@ object MessageCreationUtils {
     val signature = Curve25519.sign(sk, encodedData.getBytes())
     val messageId = Hash.computeMessageId(encodedData, signature)
     val sender = supertagged.untag(pk)
-    val witnessSignature: List[Signature] = Nil
+    val witnessSignature: List[KeySignPair] = Nil
 
     val content = MessageContent(encodedData, data, sender, signature, messageId, witnessSignature)
     val params = MessageParameters(channel, Some(content))

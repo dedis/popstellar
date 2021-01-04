@@ -92,7 +92,7 @@ object DBActor {
         else {
           ctx.log.debug("Error invalid channel " + channel + "on catchup.")
           val error = MessageErrorContent(-2, "Invalid resource: channel " + channel + " does not exist.")
-          replyTo ! AnswerErrorMessageServer(error = error, id = rid)
+          replyTo ! AnswerErrorMessageServer(error = error, id = Some(rid))
         }
         Behaviors.same
 
