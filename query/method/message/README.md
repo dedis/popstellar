@@ -30,3 +30,6 @@ As you can see, the data field is base64 encoded. This derives from the necessit
 
 As a consequence, we decide to encode the sender's preferred representation (any valid representation) in base64, and then use that representation as input to our hash or sign function. A nice side effect of this design is that the message object signature verification is entirely independent from the structure of the data field itself: no matter what message you send, the verification will always work in the same way (compare this to signing the data field-by-field!).
 Once the data field is unencoded and parsed, the receiving peer can simply validate it and process it at the application level.
+
+## Hashes
+Hashes are made on arrays of base64 encoded strings which look like that ["Base64{Foo}", "Base64{Bar}"]. This is necessary to avoid some issues with inner "
