@@ -46,7 +46,8 @@ func ParseParams(params json.RawMessage) (message.Params, error) {
 	m := message.Params{}
 	err := json.Unmarshal(params, &m)
 	//L3Jvb3Q= is b64 for "/root"
-	if !strings.HasPrefix(m.Channel, "L3Jvb3Q=") {
+	decodedChannel, err := lib.Decode(m.Channel)
+	if !strings.HasPrefix(string(decodedChannel), "/root") || err != nil {
 		log.Printf("channel id doesn't start with /root but is %v", m.Channel)
 		return m, lib.ErrRequestDataInvalid
 	}
