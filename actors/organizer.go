@@ -207,7 +207,7 @@ func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.Mess
 // LAO in the database.
 func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 
-	if canal != "/root" {
+	if canal != "L3Jvb3Q=" {
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -253,7 +253,7 @@ func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query mes
 // It will check for the validity of the received message, store the received message in the database, and store the new
 // Roll Call in the database.
 func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
-	if canal == "/root" {
+	if canal == "L3Jvb3Q=" {
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -262,7 +262,7 @@ func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, quer
 		return nil, lib.ErrInvalidResource
 	}
 	//we provide the id of the channel
-	laoId := strings.TrimPrefix(canal, "/root/")
+	laoId := strings.TrimPrefix(canal, "L3Jvb3Qv")
 	if !security.RollCallCreatedIsValid(data, laoId) {
 		return nil, errs
 	}
@@ -299,7 +299,7 @@ func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, quer
 // meeting in the database.
 func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 
-	if canal == "/root" {
+	if canal == "L3Jvb3Q=" {
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -342,7 +342,7 @@ func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, query
 // poll in the database.
 func (o *Organizer) handleCreatePoll(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 
-	if canal == "/root" {
+	if canal == "L3Jvb3Q=" {
 		return nil, lib.ErrInvalidResource
 	}
 
