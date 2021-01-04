@@ -24,6 +24,7 @@ export const objects = Object.freeze({
   LAO: 'lao',
   MESSAGE: 'message',
   MEETING: 'meeting',
+  ROLL_CALL: 'roll_call',
 });
 
 /** Enumeration of all possible "action" fields in JsonMessages */
@@ -32,6 +33,15 @@ export const actions = Object.freeze({
   UPDATE_PROPERTIES: 'update_properties',
   STATE: 'state',
   WITNESS: 'witness',
+  OPEN: 'open',
+  REOPEN: 'reopen',
+  CLOSE: 'close',
+});
+
+/** Enumeration of all possible event tags used in hash creation */
+export const eventTags = Object.freeze({
+  MEETING: 'M',
+  ROLL_CALL: 'R',
 });
 
 /** Set a new key pair for the client in the local storage */
@@ -69,11 +79,6 @@ export const toString64 = (str) => btoa(str);
 /** Transform a base64 string to a regular string */
 export const fromString64 = (str) => atob(str);
 
-/**
- * Generate a pseudo-random id (32 bit number) for server requests
- * See https://gist.github.com/gordonbrander/2230317
- */
-export const generateId = () => parseInt(Math.random().toString(16).substr(2, 9), 16) & 0xfffffff;
 /** Return the current time (Number - UNIX number of seconds from 1st january 1970) */
 export const getCurrentTime = () => Math.floor(Date.now() / 1000);
 
