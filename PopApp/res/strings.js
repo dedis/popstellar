@@ -4,8 +4,8 @@ const STRINGS = {
   general_button_cancel: 'Cancel',
   general_button_confirm: 'Confirm',
   general_button_open: 'Open',
-  general_button_yes: 'Yes',
-  general_button_no: 'No',
+  general_yes: 'Yes',
+  general_no: 'No',
 
   /* --- Navigation Strings --- */
   navigation_tab_home: 'Home',
@@ -19,6 +19,8 @@ const STRINGS = {
   /* --- Organization Navigation Strings --- */
   organization_navigation_tab_home: 'Home',
   organization_navigation_tab_attendee: 'Attendee',
+  organization_navigation_tab_organizer: 'Organizer',
+  organization_navigation_tab_witness: 'Witness',
   organization_navigation_tab_identity: 'My indentity',
 
   /* --- Witness Navigation Strings --- */
@@ -50,7 +52,7 @@ const STRINGS = {
   // Connecting Connect Strings
   connect_connecting_title: 'Connecting',
   connect_connecting_uri: 'Connecting to URI',
-  connect_connecting_validate: 'Simulate Validation',
+  connect_connecting_validate: 'Simulate connection',
 
   // Confirm Connect Strings
   connect_confirm_title: 'Confirm',
@@ -71,7 +73,7 @@ const STRINGS = {
         + 'this box checked. If you wish to reveal your identity to other participants in the organization, you may '
         + 'un-check this box and enter the information you wish to reaveal below. You must enter identity information in '
         + 'order to play an Organizer or Witness role in an organization.',
-  identity_name_placeholder: 'Name',
+  identity_name_placeholder: 'Name*',
   identity_title_placeholder: 'Title',
   identity_organization_placeholder: 'Organization',
   identity_email_placeholder: 'Email',
@@ -97,11 +99,13 @@ const STRINGS = {
   roll_call_scan_description: 'Please scan each participant’s Roll-call QR code exactly once.',
   roll_call_scan_participant: 'participants scanned',
   roll_call_scan_close: 'Close Roll-Call',
-  roll_call_scan_confirmation: 'Do you confirm to close the roll-call ?',
+  roll_call_scan_close_confirmation: 'Do you confirm to close the roll-call ?',
 
   /* --- Poll creation Strings --- */
   poll_create_question: 'Question*',
   poll_create_finish_time: 'Finish time',
+  poll_create_answer_type_any_of_n: 'Approve any of n',
+  poll_create_answer_type_one_of_n: 'Choose one of n',
 
   /* --- Meeting creation Strings --- */
   meeting_create_name: 'Name*',

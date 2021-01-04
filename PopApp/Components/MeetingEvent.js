@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import React from 'react';
 import {
   StyleSheet, View, Text, FlatList,
@@ -8,8 +9,11 @@ import { Spacing } from '../Styles';
 import PROPS_TYPE from '../res/Props';
 
 /**
- * Meeting component
- */
+ * Meeting component: a name text, a start time, an optionnal end time, an optionnal location
+ *  a nested list of event
+ *
+ * TODO connect the field to the data receive by the organizer server
+*/
 const styles = StyleSheet.create({
   view: {
     marginHorizontal: Spacing.s,

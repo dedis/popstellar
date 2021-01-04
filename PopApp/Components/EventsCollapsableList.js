@@ -6,12 +6,16 @@ import PropTypes from 'prop-types';
 
 import { Typography, Spacing } from '../Styles';
 import EventItem from './EventItem';
+import PROPS_TYPE from '../res/Props';
 
 /**
-* The Collapsable list component
-*
-* It is assume that the nested events are already been calculated.
-* They shoud be in the childrens value of the event
+ * Manage the collapsable list of events: contain a section list of event
+ *
+ * By default all sections are open, you can set the closed section by putting their names in the
+ *  closedList
+ *
+ * It is assume that the nested events are already been calculated.
+ * They shoud be in the childrens value of the event
 */
 const styles = StyleSheet.create({
   container: {
@@ -33,6 +37,9 @@ const styles = StyleSheet.create({
   },
 });
 
+/**
+ * List of events of the same section
+ */
 const Item = ({ events, closedList }) => {
   const [open, setopen] = closedList.includes(events.title) ? useState(false) : useState(true);
   const onPress = () => {
@@ -63,11 +70,18 @@ const Item = ({ events, closedList }) => {
 Item.propTypes = {
   events: PropTypes.shape({
     title: PropTypes.string.isRequired,
-    //data: PropTypes.arrayOf(EventItem.propTypes.event).isRequired,
+    data: PropTypes.arrayOf(
+      PropTypes.oneOfType([PROPS_TYPE.event, PROPS_TYPE.property]),
+    ).isRequired,
   }).isRequired,
   closedList: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
+/**
+ * List of all section of the data
+ *
+ * Data must have a title (String) and a data (List of event object) field
+ */
 const EventsCollapsableList = ({ data, closedList }) => (
   <FlatList
     data={data}

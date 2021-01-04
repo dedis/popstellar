@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+// TODO remove the line above when console will not be use
 import React from 'react';
 import {
   StyleSheet, View, Text, Button, TextInput,
@@ -6,13 +8,16 @@ import {
 import STRINGS from '../res/strings';
 import { Spacing, Typography } from '../Styles';
 import PROPS_TYPE from '../res/Props';
-import { requestCreateLao } from '../websockets/WebsocketApi'
-import { getStore } from '../Store/configureStore';
+import { requestCreateLao } from '../websockets/WebsocketApi';
 
-/*
-* The Launch component
-*
-* Manage the Launch screen
+/**
+ * Manage the Launch screen: a description string, a LAO name text input, a launch LAO button,
+ * and cancel button
+ *
+ * The Launch button does nothing
+ * The cancel button clear the LAO name field and redirect to the Home screen
+ *
+ * TODO implement the launch button action
 */
 const styles = StyleSheet.create({
   container: {
@@ -37,14 +42,8 @@ const styles = StyleSheet.create({
 
 const onButtonLaunchPress = (inputLaoName) => {
   if (inputLaoName.current.value) requestCreateLao(inputLaoName.current.value);
-  else requestCreateLao("Ma petite LAO :)"); // TODO temp for testing purposes
-  //requestUpdateLao("Nouveau nom");
-  //requestStateLao();
-  //requestWitnessMessage();
-  //requestCreateMeeting("Nouveau meeting", 123, "Lausanne");
-  //requestStateMeeting();
+  else console.error('empty lao name...?');
 };
-
 
 const Launch = ({ navigation }) => {
   const inputLaoName = React.useRef();
@@ -71,21 +70,6 @@ const Launch = ({ navigation }) => {
           <Button
             title={STRINGS.launch_button_launch}
             onPress={() => onButtonLaunchPress(inputLaoName)}
-          />
-        </View>
-        <View style={styles.button}>
-          <Button
-            title={"TEST print store"}
-            onPress={() => console.log("printing store ", getStore().getState())}
-          />
-        </View>
-        <View style={styles.button}>
-          <Button
-            title={"CLEAR print store"}
-            onPress={() => {
-              const a = { type: 'CLEAR_STORAGE' };
-              getStore().dispatch(a);
-            }}
           />
         </View>
         <View style={styles.button}>

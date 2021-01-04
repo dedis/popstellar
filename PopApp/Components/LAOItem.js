@@ -11,8 +11,9 @@ import { Spacing, Typography } from '../Styles';
 import PROPS_TYPE from '../res/Props';
 
 /**
-* The LAO item component
-*
+  * The LAO item component: name of LAO
+  *
+  * On click go to the organization screen and store the ID of the LAO for the organization screen
 */
 const styles = StyleSheet.create({
   view: {

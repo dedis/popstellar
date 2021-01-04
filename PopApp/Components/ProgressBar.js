@@ -7,9 +7,9 @@ import PropTypes from 'prop-types';
 import { Colors, Spacing } from '../Styles';
 
 /**
- * Progress bar
+ * Progress bar with the percent show at the right
  *
- * progress real number between 0 and 1
+ * progress: real number between 0 and 1
  */
 
 const styles = StyleSheet.create({

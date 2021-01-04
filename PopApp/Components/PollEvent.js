@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import React, { useState } from 'react';
 import {
   StyleSheet, View, Text, FlatList,
@@ -11,7 +12,18 @@ import { Spacing } from '../Styles';
 import PROPS_TYPE from '../res/Props';
 
 /**
- * Poll component
+ * Poll component: a question, a status (future, open, closed), the number of particpants
+ * and a list of nested event
+ *
+ * In future status nothing more is show.
+ *
+ * In open status a radio group or a list of checkbox allow the user to vote
+ *
+ * In future a list of progress bar to show the result
+ *
+ * The number of participants is show only in open and closed state
+ *
+ * TODO use data given byt the organizer server
  */
 const styles = StyleSheet.create({
   view: {
@@ -31,6 +43,7 @@ const styles = StyleSheet.create({
   },
 });
 
+// fake data to show the fonctionalities
 const radioProps = [
   { label: 'param1', value: 0 },
   { label: 'param2', value: 1 },
@@ -38,6 +51,7 @@ const radioProps = [
   { label: 'param4', value: 3 },
 ];
 
+// fake data to show the fonctionalities
 const radioPropsPercent = [
   { label: 'param1', value: 0.5 },
   { label: 'param2', value: 0.3 },
@@ -46,6 +60,8 @@ const radioPropsPercent = [
 ];
 
 const PollEvent = ({ event }) => {
+  // TODO remove next line when the variable will be use
+  // eslint-disable-next-line no-unused-vars
   const [radioValue, setRadioValue] = useState(0);
   const map = new Map();
   radioProps.forEach((e) => map.set(e.label, false));

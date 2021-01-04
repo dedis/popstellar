@@ -6,7 +6,8 @@ import Witness from '../Components/Witness';
 import WitnessVideo from '../Components/WitnessVideo';
 
 /**
-* Define the Witness stack navigation
+ * Define the Witness stack navigation
+ * Allow to switch between the Witness and the WitnessVideo screen
 */
 
 const Stack = createStackNavigator();

@@ -12,7 +12,12 @@ import { Buttons, Typography } from '../Styles';
 import STRINGS from '../res/strings';
 
 /**
-* The Create event component
+ * The Create event component: a explain string, a button for each element in the eventType
+ * and a cancel button or the create screen of the choose event
+ *
+ * The string say to choose the event that the organizer wants to create
+ * The buttons show the coresponding event creation string when press
+ * The cancel button redirects to the the organizer screen
 */
 const styles = StyleSheet.create({
   view: {
