@@ -1,6 +1,7 @@
 package ch.epfl.pop.tests
 
 
+import ch.epfl.pop.crypto.Hash
 import ch.epfl.pop.json._
 import spray.json.enrichAny
 import ch.epfl.pop.json.JsonCommunicationProtocol.MessageContentDataFormat
@@ -19,9 +20,7 @@ object MessageCreationUtils {
   def getMessageParams(data: MessageContentData, pk: PublicKey, sk: PrivateKey, channel: ChannelName): MessageParameters = {
     val encodedData = b64Encode(data.toJson.compactPrint.getBytes).map(_.toChar).mkString
     val signature = Curve25519.sign(sk, encodedData.getBytes())
-    val md = MessageDigest.getInstance("SHA-256")
-    val id = "[\"" + encodedData + "\",\"" + b64EncodeToString(signature) + "\"]"
-    val messageId = md.digest(id.getBytes(StandardCharsets.UTF_8))
+    val messageId = Hash.computeMessageId(encodedData, signature)
     val sender = supertagged.untag(pk)
     val witnessSignature: List[KeySignPair] = Nil
 
