@@ -23,6 +23,11 @@ const(
 	WitnessKey Action = "witness"
 )*/
 
+type DataCommon struct {
+	Object string
+	Action string
+}
+
 type DataCreateLAO struct {
 	Object string `json:"object"`
 	Action string `json:"action"`

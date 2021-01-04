@@ -164,7 +164,7 @@ func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.Mess
 		default:
 			return nil, lib.ErrInvalidAction
 		}
-	case "roll call":
+	case "roll_call":
 		switch data["action"] {
 		case "create":
 			return o.handleCreateRollCall(msg, params.Channel, query)
@@ -249,7 +249,7 @@ func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query mes
 
 // handleCreateRollCall is the function to handle a received message requesting a Roll Call Creation.
 // It is called by the function handlePublish.
-// The received message had the object field set to "roll call" and action field to "create"
+// The received message had the object field set to "roll_call" and action field to "create"
 // It will check for the validity of the received message, store the received message in the database, and store the new
 // Roll Call in the database.
 func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
@@ -412,12 +412,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 		return nil, lib.ErrRequestDataInvalid
 	}
 
-	laoData, err := parser.ParseDataCreateLAO(toSignStruct.Data)
-	if err != nil {
-		log.Printf("unable to parse stored LAO infos in handleWitnessMessage()")
-		return nil, err
-	}
-
+	// verify signature correctness
 	err = security.VerifySignature(msg.Sender, toSignStruct.Data, data.Signature)
 	if err != nil {
 		return nil, err
@@ -427,15 +422,15 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 	var signaturesOnly []string
 	count := 0
 	for i, item := range toSignStruct.WitnessSignatures {
-		witnessSignature, errs := parser.ParseWitnessSignature(item)
-		if errs != nil {
+		witnessSignature, err := parser.ParseWitnessSignature(item)
+		if err != nil {
 			log.Println("couldn't unMarshal the ItemWitnessSignatures from the DB")
 			continue
 		}
 		err = security.VerifySignature(witnessSignature.WitnessKey, toSignStruct.Data, witnessSignature.Signature)
 		if err != nil {
 			count--
-			log.Printf("Invalid signature found in signature lists, with index %d", i)
+			log.Printf("Invalid signature found in signature lists: index %d", i)
 		}
 		count++
 		signaturesOnly = append(signaturesOnly, string(witnessSignature.Signature))
@@ -469,27 +464,49 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 		Channel: []byte(canal),
 	}}
 
-	//TODO switch message["object"] on event type
-	if count == SIG_THRESHOLD-1 {
-		lao := event.LAO{
-			ID:            string(laoData.ID),
-			Name:          laoData.Name,
-			Creation:      laoData.Creation,
-			OrganizerPKey: string(laoData.Organizer),
-			Witnesses:     lib.ArrayArrayByteToArrayString(laoData.Witnesses),
-		}
-
-		err = db.UpdateChannel(lao, o.database)
-		if err != nil {
-			return nil, err
-		}
-		queryStr, err := parser.ComposeBroadcastStateLAO(lao, laoData, o.PublicKey)
-		if err != nil {
-			return nil, err
-		}
-
-		msgAndChan = append(msgAndChan, lib.MessageAndChannel{Channel: []byte(canal), Message: queryStr})
+	common, err := parser.ParseDataCommon(toSignStruct.Data)
+	if err != nil {
+		return nil, lib.ErrDBFault
 	}
+
+	var eventStruct interface{}
+	var queryStr []byte
+
+	if count == SIG_THRESHOLD-1 {
+		switch common.Object {
+		case "lao":
+			laoData, err := parser.ParseDataCreateLAO(toSignStruct.Data)
+			if err != nil {
+				log.Printf("unable to parse stored LAO infos in handleWitnessMessage()")
+				return nil, err
+			}
+
+			eventStruct = event.LAO{
+				ID:            string(laoData.ID),
+				Name:          laoData.Name,
+				Creation:      laoData.Creation,
+				OrganizerPKey: string(laoData.Organizer),
+				Witnesses:     lib.ArrayArrayByteToArrayString(laoData.Witnesses),
+			}
+			queryStr, err = parser.ComposeBroadcastStateLAO(eventStruct.(event.LAO), laoData, o.PublicKey)
+			if err != nil {
+				return nil, err
+			}
+
+		default:
+			log.Printf("Witness not able to witness something else than LAO state update for now")
+			return nil, lib.ErrNotYetImplemented
+
+		}
+
+		err = db.UpdateChannel(eventStruct, o.database)
+		if err != nil {
+			log.Printf("error updating the message in the database")
+			return nil, err
+		}
+	}
+
+	msgAndChan = append(msgAndChan, lib.MessageAndChannel{Channel: []byte(canal), Message: queryStr})
 
 	return msgAndChan, nil
 }
