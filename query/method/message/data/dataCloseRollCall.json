@@ -10,7 +10,7 @@
 		"id": {
 			"type": "string",
 			"contentEncoding": "base64",
-			"$comment": "Hash : SHA256(Array of Base64'R', Base64LAO_id, Base64Creation, Base64Name)"
+			"$comment": "Hash : SHA256(Array of: Base64Encode('R'), Base64LAO_id, Base64Creation, Base64Name)"
 		},
 		"start": { "description": "[Timestamp] start time", "type": "integer", "minimum": 0 },
 		"end": { "description": "[Timestamp] end time", "type": "integer", "minimum": 0 },

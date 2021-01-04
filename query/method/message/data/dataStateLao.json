@@ -10,7 +10,7 @@
 		"id": {
 			"type": "string",
 			"contentEncoding": "base64",
-			"$comment": "Hash : SHA256(Array of Base64Organizer, Base64Creation, Base64Name)"
+			"$comment": "Hash : SHA256(Array of: Base64Organizer, Base64Creation, Base64Name)"
 		},
 		"name": { "type": "string" },
 		"creation": { "description": "[Timestamp] creation time", "type": "integer", "minimum": 0 },

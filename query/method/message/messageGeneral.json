@@ -25,7 +25,7 @@
 			"$comment": "Note: the string is encoded in Base64"
 		},
 		"message_id": {
-			"description": "[Base64String] message id : Hash(Array of Base64Data, Base64Signature)",
+			"description": "[Base64String] message id : Hash : SHA256(Array of: Base64Data, Base64Signature)",
 			"type": "string",
 			"contentEncoding": "base64",
 			"$comment": "Note: the string is encoded in Base64, the array is written with [\"item1\", \"item2\"] without the backslashs (only used for not breaking json here), and items hashed are their base64 representation to avoid the need of escaping the \" "
