@@ -72,7 +72,14 @@ func (o *Organizer) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAn
 
 // handleBroadcast is the function to handle a received message which method was "broadcast"
 // It is called by the function HandleReceivedMessage.
+// It returns an error as, in the current implementation there is only one Organizer, and he's the only one sending broadcast message. Hence he should not be receiving some.
 func (o *Organizer) handleBroadcast(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+	// In the current specification, only organizer BEs should emit broadcasts, so currently, incoming broadcast messages are considered erroneous with requestDataInvalid
+	log.Printf("received a broadcast message on an organizer back-end()")
+	return nil, lib.ErrRequestDataInvalid
+
+	/*
+	Legacy code which might be helpful for future protocol modifications?
 	params, errs := parser.ParseParams(query.Params)
 	if errs != nil {
 		log.Printf("unable to analyse paramsLight in handleBroadcast()")
@@ -101,8 +108,7 @@ func (o *Organizer) handleBroadcast(query message.Query) (msgAndChannel []lib.Me
 		switch data["action"] {
 		case "witness":
 			return o.handleWitnessMessage(msg, params.Channel, query)
-			// TODO I would remove this case and force witnesses to send their "WitnessMessage" as a publish, and not a broadcasted, do you agree? yes they agree, however, it should still be broadcasted after published
-			// As per line 63, and as only org BEs should emit broadcasts, I'm actually leaning towards treating all broadcasted message to an org BE as either errors, or just checking for correct formatting then ignoring.
+			
 		default:
 			return nil, lib.ErrRequestDataInvalid
 		}
@@ -112,7 +118,7 @@ func (o *Organizer) handleBroadcast(query message.Query) (msgAndChannel []lib.Me
 		}
 	default:
 		return nil, lib.ErrRequestDataInvalid
-	}
+	}*/
 
 }
 
