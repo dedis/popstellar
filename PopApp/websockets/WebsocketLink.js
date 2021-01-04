@@ -25,6 +25,9 @@ export default class WebsocketLink {
   // map of pending queries sent to server
   static #pendingQueries;
 
+  // number of queries sent (used for id generation)
+  static #queriesSentCount;
+
   /**
    * Send a request (query) to the server
    *
@@ -60,10 +63,17 @@ export default class WebsocketLink {
     const ws = new W3CWebSocket(`ws://${address}:${port}${p}`);
 
     ws.onopen = () => { console.log(`initiating web socket : ws://${address}:${port}`); };
-    ws.onmessage = (message) => { handleServerAnswer(message); };
+    ws.onmessage = (message) => {
+      try {
+        handleServerAnswer(message);
+      } catch (e) {
+        console.error(`Exception in handleServerAnswer: ${e.message}`);
+      }
+    };
     // TODO on error
 
     this.#ws = ws;
+    this.#queriesSentCount = 0;
     this.#pendingQueries = new Map();
   }
 
@@ -120,13 +130,20 @@ export default class WebsocketLink {
       );
     } else {
       // websocket ready to be used, message can be sent
+      const query = JSON.parse(JSON.stringify(message)); // defensive copy
+      if (query.id === -1) {
+        // Note: this works because react/Js is single threaded
+        query.id = this.#queriesSentCount;
+        this.#queriesSentCount += 1;
+      }
+
       if (!retry) {
         this.#pendingQueries.set(
-          message.id,
-          new PendingRequest(message, requestObject, requestAction),
+          query.id,
+          new PendingRequest(query, requestObject, requestAction),
         );
       }
-      this.#ws.send(JSON.stringify(message));
+      this.#ws.send(JSON.stringify(query));
     }
   }
 }
