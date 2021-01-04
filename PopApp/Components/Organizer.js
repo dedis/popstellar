@@ -2,17 +2,22 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
 
 import { Typography } from '../Styles';
 import OrganizerEventsCollapsableList from './OrganizerCollapsableList';
 import PROPS_TYPE from '../res/Props';
-import { useNavigation } from '@react-navigation/native';
 import STRINGS from '../res/strings';
 
 /**
-* The Organizer component
-*
-* Manage the Organizer screen
+ * Manage the Organizer screen: A section list of propreties and events
+ *
+ * The section list show the events and propreties of the LAO open in
+ * the organitation UI.
+ *
+ * By default only the past and present section are open.
+ *
+ * TODO use the data receive by the organization server
 */
 const styles = StyleSheet.create({
   container: {
@@ -28,7 +33,6 @@ const laoToProperties = (events, lao) => {
   const name = { id: 'organization_name', object: 'organization_name', name: lao.name };
   const witness = { id: 'witness', object: 'witness', witnesses: lao.witnesses };
   const properties = { title: '', data: [name, witness] };
-  console.log(properties);
   return [properties, ...events];
 };
 

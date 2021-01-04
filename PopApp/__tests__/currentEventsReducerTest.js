@@ -92,8 +92,7 @@ describe('Current events reducer', () => {
         value: events[i],
       });
     }
-    console.log(JSON.stringify(state));
-    // expect(state).not.toEqual(emptyState);
+    expect(state).not.toEqual(emptyState);
     for (let i = 0; i < events.length; i += 1) {
       state = currentEventsReducer(state, {
         type: 'REMOVE_EVENT',

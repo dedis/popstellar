@@ -7,9 +7,11 @@ import PROPS_TYPE from '../res/Props';
 import STRINGS from '../res/strings';
 
 /**
-* Scanning witness component
-*
-* In the future will scan a QR code and add a witness, not just a dummy button
+ * Scanning witness component: a camera view and a camera button
+ *
+ * The cammera button do a goBack
+ *
+ * TODO press on the button will scan a QR code and add a witness
 */
 const styles = StyleSheet.create({
   container: {

@@ -11,9 +11,14 @@ import PROPS_TYPE from '../res/Props';
 import STRINGS from '../res/strings';
 
 /**
-* The Attendee component
-*
-* Manage the Attendee screen
+ * Manage the Attendee screen: A section list of propreties and events
+ *
+ * The section list show the events and propreties of the LAO open in
+ * the organitation UI.
+ *
+ * By default only the past and present section are open.
+ *
+ * TODO use the data receive by the organization server
 */
 const styles = StyleSheet.create({
   container: {

@@ -13,9 +13,15 @@ import STRINGS from '../res/strings';
 import { requestCloseRollCall } from '../websockets/WebsocketApi';
 
 /**
-* Scanning roll-call component
-*
-* In the future will scan a QR code and register participant, not just a dummy button
+ * Scanning roll-call component: a description string, the number of participants scanned,
+ * a camera view, a camera button and a closed button
+ *
+ * The camera button fakes the confirmation of a new attende scan
+ * The closed button ask for a confirmation to close the roll-call
+ *
+ * TODO add participant to the organizer server when a QR code is scan
+ * TODO show confirmation of a good scan or say if an attendee is scan more than one time
+ * TODO implement the camera view
 */
 const styles = StyleSheet.create({
   container: {
@@ -88,6 +94,7 @@ const RollCallScanning = ({ navigation, dispatch, roll_call_id }) => {
 
   const closeRollCallConfirmation = () => {
     if (Platform.OS === 'web') {
+      // eslint-disable-next-line no-alert, no-undef
       if (window.confirm(STRINGS.roll_call_scan_confirmation)) {
         closeRollCall();
       }
@@ -108,7 +115,7 @@ const RollCallScanning = ({ navigation, dispatch, roll_call_id }) => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>{STRINGS.roll_call_scan_confirmation}</Text>
+            <Text style={styles.modalText}>{STRINGS.roll_call_scan_close_confirmation}</Text>
             <View style={{ flexDirection: 'row' }}>
               <TouchableOpacity
                 style={{ ...styles.openButton, backgroundColor: Colors.blue }}
@@ -116,7 +123,7 @@ const RollCallScanning = ({ navigation, dispatch, roll_call_id }) => {
                   setModalVisible(!modalVisible);
                 }}
               >
-                <Text style={styles.textStyle}>{STRINGS.general_button_no}</Text>
+                <Text style={styles.textStyle}>{STRINGS.general_no}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={{ ...styles.openButton, backgroundColor: Colors.blue }}
@@ -125,7 +132,7 @@ const RollCallScanning = ({ navigation, dispatch, roll_call_id }) => {
                   closeRollCall();
                 }}
               >
-                <Text style={styles.textStyle}>{STRINGS.general_button_yes}</Text>
+                <Text style={styles.textStyle}>{STRINGS.general_yes}</Text>
               </TouchableOpacity>
             </View>
           </View>

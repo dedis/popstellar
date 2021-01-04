@@ -7,8 +7,12 @@ import PropTypes from 'prop-types';
 import { Colors } from '../Styles';
 
 /**
-* Recorder button
-* use action parameter to define the onPress action
+ * Recorder button component: a design button
+ *
+ * Show a recorder button that apply the function action
+ * when it is press.
+ *
+ * use action parameter to define the onPress action
 */
 
 const styles = StyleSheet.create({

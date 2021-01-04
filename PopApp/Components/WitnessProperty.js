@@ -8,7 +8,7 @@ import PROPS_TYPE from '../res/Props';
 import STRINGS from '../res/strings';
 
 /**
- * Witnesses property component
+ * Witnesses property component: name of the proprety, list of witnesses
  */
 const styles = StyleSheet.create({
   view: {

@@ -10,9 +10,30 @@ import { Buttons, Typography, Spacing } from '../Styles';
 import STRINGS from '../res/strings';
 
 /**
- * Screen to create a poll event
+ * Screen to create a poll event: a question text input, a start time text and its buttons,
+ * a finish time text and its buttons, a radio group to choose between multiple answer or only one,
+ * a dynamic list of answer, a confirm button and a cancel button
  *
+ * The question text input is the question of the poll and it is compulsory
+ * The start time can be choose when the user press on the button on the same row
+ *  and it is compulsory
+ * The finish time can be choose when the user press on the first button on the same row and reset
+ *  when he press on the second button
+ * The radio box allow the user to choose the type of answer (any of n or one of n)
+ * The dynamic list allow the user to add answer, a new line is create when then previous line
+ *  is non empty, and a remove button allow to remove previous answer
+ * The confirm button does noting and it is enable when the question is defined
+ *  and 2 answers are given
+ * The open button does noting and it is enable when the question is defined,
+ *  2 answers are given and the start time is already pass
+ * The cancel button redirect to the organizer component
  * It is possible to put a finish time before the start time => to fix
+ *
+ * TODO makes impossible to set a finish time before the start time
+ * TODO the confirm button should be disable if the the start time is in the past
+ * TODO give appropriate name for the button that manage the dates
+ * TODO Send the poll event to the organization server when the confirm or open button is press
+ * TODO not allow empty answer
  */
 
 const styles = StyleSheet.create({
@@ -28,17 +49,21 @@ const styles = StyleSheet.create({
   },
 });
 
+// data to manage the answer type
 const radioProps = [
-  { label: 'Choose one of n', value: 0 },
-  { label: 'Approve any of n', value: 1 },
+  { label: STRINGS.poll_create_answer_type_one_of_n, value: 0 },
+  { label: STRINGS.poll_create_answer_type_any_of_n, value: 1 },
 ];
 
 const CreatePoll = () => {
   const navigation = useNavigation();
   const [name, setName] = useState('');
   const [answers, setAnswers] = useState(['']);
+  // TODO remove next line when the variable will be use
+  // eslint-disable-next-line no-unused-vars
   const [radioOrCheckbox, setRadioOrCheckbox] = useState(0);
 
+  // all the funtion to manage the date object, one object to set start and finish time
   const [startDate, setStartDate] = useState(new Date());
   const [finishDate, setFinishDate] = useState();
   const [settingStart, setSettingStart] = useState(true);
@@ -87,6 +112,11 @@ const CreatePoll = () => {
     showDatepicker();
   };
 
+  const dateToStrign = (d) => `${d.getDate()}-${d.getMonth() + 1}-${d.getFullYear()} `
+    + `${d.getHours() < 10 ? 0 : ''}${d.getHours()}:`
+    + `${d.getMinutes() < 10 ? 0 : ''}${d.getMinutes()}`;
+
+  // Manage the answer's list
   const removeElement = (index) => {
     if (answers.length > 1) {
       answers.splice(index, 1);
@@ -101,10 +131,6 @@ const CreatePoll = () => {
     }
     setAnswers([...answers]);
   };
-
-  const dateToStrign = (d) => `${d.getDate()}-${d.getMonth() + 1}-${d.getFullYear()} `
-    + `${d.getHours() < 10 ? 0 : ''}${d.getHours()}:`
-    + `${d.getMinutes() < 10 ? 0 : ''}${d.getMinutes()}`;
 
   return (
     <FlatList
@@ -184,8 +210,8 @@ const CreatePoll = () => {
         <View style={{ marginVertical: Spacing.xl }}>
           <View style={styles.button}>
             <Button
-              title={STRINGS.connect_confirm_description}
-              isabled={name === '' || answers.length < 3}
+              title={STRINGS.general_button_confirm}
+              disabled={name === '' || answers.length < 3}
             />
           </View>
           <View style={styles.button}>

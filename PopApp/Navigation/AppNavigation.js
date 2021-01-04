@@ -11,7 +11,8 @@ import OrganizationNavigation from './OrganizationNavigation';
 import PROPS_TYPE from '../res/Props';
 
 /**
-* Define the App stack navigation
+ * Define the App stack navigation
+ * Contains to navigation: the home navigation and the organization navigation
 */
 
 const Stack = createStackNavigator();

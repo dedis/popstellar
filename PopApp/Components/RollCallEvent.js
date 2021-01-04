@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import React from 'react';
 import {
   StyleSheet, View, Text, FlatList,
@@ -8,8 +9,12 @@ import { Spacing } from '../Styles';
 import PROPS_TYPE from '../res/Props';
 
 /**
- * Roll-call component
- */
+ * Roll-call component: a status (Future, Open, Closed), the number of participants,
+ * a QR code to show to the organizer and a list of the nested events
+ *
+ * TODO implement the QR code
+ * TODO use data of the organizer server
+*/
 const styles = StyleSheet.create({
   view: {
     marginHorizontal: Spacing.s,

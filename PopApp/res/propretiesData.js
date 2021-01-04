@@ -1,3 +1,4 @@
+// fake propreties to show the how the app works
 const data = [
   {
     id: 1,

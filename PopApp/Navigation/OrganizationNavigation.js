@@ -18,11 +18,12 @@ import PROPS_TYPE from '../res/Props';
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
 
 /**
-* The organization tab navigation component
-*
-* create a tab navigator between the Home, Attendee, Organizer, Witness and Identity component
-*
-* the SafeAreaView resolves problem with status bar overlap
+ * The organization tab navigation component
+ *
+ * create a tab navigator between the Home (fake tab), Attendee, Organizer, Witness
+ * and Identity component
+ *
+ * TODO show only tab corresponding to the role of the user
 */
 const styles = StyleSheet.create({
   navigator: {
@@ -39,7 +40,6 @@ function OrganizationNavigation(props) {
   const { lao, pubKey } = props;
   const isOrganizer = lao.organizer ? lao.organizer === pubKey : false;
   const isWitness = lao.witnesses ? lao.witnesses.includes(pubKey) : false;
-  console.log(pubKey);
 
   return (
     <OrganizationTopTabNavigator.Navigator
@@ -56,13 +56,13 @@ function OrganizationNavigation(props) {
       )}
       {isOrganizer && (
         <OrganizationTopTabNavigator.Screen
-          name="Organizer"
+          name={STRINGS.organization_navigation_tab_organizer}
           component={OrganizerNavigation}
         />
       )}
       {isWitness && (
         <OrganizationTopTabNavigator.Screen
-          name="Witness"
+          name={STRINGS.organization_navigation_tab_witness}
           component={WitnessNavigation}
         />
       )}

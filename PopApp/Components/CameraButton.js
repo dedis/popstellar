@@ -7,8 +7,12 @@ import PropTypes from 'prop-types';
 import { Colors } from '../Styles';
 
 /**
-* Camera button
-* use action parameter to define the onPress action
+ * Camera button component: a design button
+ *
+ * Show a camera button that apply the function action
+ * when it is press.
+ *
+ * use action parameter to define the onPress action
 */
 
 const cameraIc = require('../res/img/ic_camera.png');

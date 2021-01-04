@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import React from 'react';
 import {
   StyleSheet, View, Text, FlatList,
@@ -15,8 +16,8 @@ import OrganizationNameProperty from './OrganizationNameProperty';
 import WitnessProperty from './WitnessProperty';
 import RollCallEventOrganizer from './RollCallEventOrganizer';
 /**
-* The Event item component
-*
+ * The Event item component: display the correct representation of the event according to its type,
+ * otherwise display its name and in all cases its nested events
 */
 const styles = StyleSheet.create({
   view: {
