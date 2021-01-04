@@ -111,29 +111,6 @@ object JsonMessageParser {
 
           }
 
-
-          // check that an answer message it either positive (x)or negative
-          obj.getFields("result", "error") match {
-            case Seq(JsNumber(_), JsObject(_)) =>
-              throw JsonMessageParserException("invalid message : an answer cannot have both \"result\" and \"error\" fields")
-            case _ =>
-          }
-
-          /* parse a positive answer message */
-          obj.getFields("result") match {
-            case Seq(JsNumber(_)) => return Left(obj.convertTo[AnswerResultIntMessageServer])
-            case Seq(JsArray(_)) => return Left(obj.convertTo[AnswerResultArrayMessageServer])
-            case _ =>
-          }
-
-          /* parse a negative answer message */
-          obj.getFields("error") match {
-            case Seq(JsObject(_)) => return Left(obj.convertTo[AnswerErrorMessageServer])
-            case _ =>
-          }
-
-          throw JsonMessageParserException("invalid message : fields missing or wrongly formatted")
-
         } catch {
           case JsonMessageParserException(msg, id, code) => Right(buildJsonMessageParserException(obj, id, code, msg))
           case DeserializationException(msg, _, _) => Right(buildJsonMessageParserException(obj, description = msg))
