@@ -52,7 +52,7 @@ const RollCallEvent = ({ event }) => {
         data={event.childrens}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => <EventItem event={item} />}
-        listKey={event.id.toString()}
+        listKey={`RollCallEvent-${event.id.toString()}`}
         style={styles.flatList}
       />
     </View>

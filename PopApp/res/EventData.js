@@ -1,21 +1,6 @@
 // fake events to show how the app works
 const data = [
   {
-    title: '',
-    data: [
-      {
-        id: '21',
-        object: 'organization_name',
-        name: 'Property 1',
-      },
-      {
-        id: '22',
-        object: 'witness',
-        witnesses: ['Witness 1', 'Witness 2'],
-      },
-    ],
-  },
-  {
     title: 'Past',
     data: [
       {
@@ -43,7 +28,7 @@ const data = [
         location: 'A location, test.com',
         start: 1607616483,
         end: 1607618490,
-        organizer: 'a organizer signature',
+        organizer: 'i7NMjdW2tkBj4uMCM15rlckmQCdR0anffOTD+MQg3XQ=',
         witnesses: ['witness signature 1', 'witness signature 2'],
         modification_id: 'a modification id',
         modification_signatures: [{ witness: 'Witness 1', signature: 'witness signature 1' }, { witness: 'Witness 2', signature: 'witness signature 2' }],
@@ -59,7 +44,7 @@ const data = [
         start: 1607616483,
         end: 1607618490,
         organizer: 'a organizer signature',
-        witnesses: ['witness signature 1', 'witness signature 2'],
+        witnesses: ['i7NMjdW2tkBj4uMCM15rlckmQCdR0anffOTD+MQg3XQ=', 'witness signature 2'],
         modification_id: 'a modification id',
         modification_signatures: [{ witness: 'Witness 1', signature: 'witness signature 1' }, { witness: 'Witness 2', signature: 'witness signature 2' }],
         childrens: [

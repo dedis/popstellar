@@ -48,7 +48,7 @@ const MeetingEvent = ({ event }) => {
         data={event.childrens}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => <EventItem event={item} />}
-        listKey={event.id.toString()}
+        listKey={`MeetingEvent-${event.id.toString()}`}
         style={styles.flatList}
       />
     </View>
