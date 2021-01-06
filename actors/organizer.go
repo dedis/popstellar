@@ -472,7 +472,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 	var eventStruct interface{}
 	var queryStr []byte
 
-	if count == SIG_THRESHOLD-1 {
+	if count == SigThreshold-1 {
 		switch common.Object {
 		case "lao":
 			laoData, err := parser.ParseDataCreateLAO(toSignStruct.Data)
