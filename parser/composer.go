@@ -38,7 +38,7 @@ func ComposeBroadcastStateLAO(lao event.LAO, laoData message.DataCreateLAO, orgP
 		ID:           []byte(lao.ID),
 		Name:         lao.Name,
 		Creation:     lao.Creation,
-		LastModified: time.Now().Unix(), // TODO is wrong
+		LastModified: time.Now().Unix(),
 		Organizer:    []byte(lao.OrganizerPKey),
 		Witnesses:    laoData.Witnesses,
 	}
