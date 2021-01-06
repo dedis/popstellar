@@ -481,7 +481,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 	var eventStruct interface{}
 	var queryStr []byte
 
-	if count == SIG_THRESHOLD-1 {
+	if count == SigThreshold-1 {
 		switch common.Object {
 		case "lao":
 			laoData, err := parser.ParseDataCreateLAO(toSignStruct.Data)
@@ -570,7 +570,7 @@ func (o *Organizer) handleOpenRollCall(msg message.Message, chann string, query 
 
 	//we provide the id of the channel
 	laoId := strings.TrimPrefix(chann, "/root")
-	if !security.RollCallOpenedIsValid(openRollCall, laoId,rollCallData) {
+	if !security.RollCallOpenedIsValid(openRollCall, laoId, rollCallData) {
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -617,7 +617,7 @@ func (o *Organizer) handleCloseRollCall(msg message.Message, chann string, query
 
 	//we provide the id of the channel
 	laoId := strings.TrimPrefix(chann, "/root")
-	if !security.RollCallClosedIsValid(closeRollCall, laoId,rollCallData) {
+	if !security.RollCallClosedIsValid(closeRollCall, laoId, rollCallData) {
 		return nil, lib.ErrInvalidResource
 	}
 
