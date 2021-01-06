@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"os"
-	"student20_pop/db"
 	"student20_pop/message"
 	"testing"
 )
@@ -20,25 +19,25 @@ func TestWriteMessage(t *testing.T) {
 	msg := getMsg()
 
 	// produces an error as the channel does not exists
-	err1 := db.UpdateMessage(msg, "test channel", "test.db")
+	err1 := UpdateMessage(msg, "test channel", "test.db")
 	if err1 == nil {
 		t.Errorf("Was able to update unexisting message")
 	}
 
 	//produces no error as the channels does not exist yet
-	err1 = db.CreateMessage(msg, "test channel", "test.db")
+	err1 = CreateMessage(msg, "test channel", "test.db")
 	if err1 != nil {
 		t.Errorf("Message creation in database unsuccessful")
 	}
 
 	// produces no errors as the channel already exists
-	err1 = db.UpdateMessage(msg, "test channel", "test.db")
+	err1 = UpdateMessage(msg, "test channel", "test.db")
 	if err1 != nil {
 		t.Errorf("Message update in database unsuccessful")
 	}
 
 	// produces an error as the channel already exists
-	err1 = db.CreateMessage(msg, "test channel", "test.db")
+	err1 = CreateMessage(msg, "test channel", "test.db")
 	if err1 == nil {
 		t.Errorf("Message creation in database unsuccessful")
 	}
@@ -52,12 +51,12 @@ func TestGetMessage(t *testing.T) {
 	_ = os.Remove("test.db")
 	msg := getMsg()
 
-	err1 := db.CreateMessage(msg, "test channel", "test.db")
+	err1 := CreateMessage(msg, "test channel", "test.db")
 	if err1 != nil {
 		t.Errorf("unable to store message %v", err1)
 	}
 
-	dMsg := db.GetMessage([]byte("test channel"), []byte("1"), "test.db")
+	dMsg := GetMessage([]byte("test channel"), []byte("1"), "test.db")
 
 	if dMsg == nil {
 		t.Errorf("could not retrieve entry in the database")

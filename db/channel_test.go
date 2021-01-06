@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"os"
-	"student20_pop/db"
 	"student20_pop/event"
 	"testing"
 	"time"
@@ -22,36 +21,36 @@ func TestWriteChannel(t *testing.T) {
 	lao, meeting, rollCall, poll := getEvents()
 
 	// produces errors errors as the channel already exists
-	err1 := db.UpdateChannel(lao, "test.db")
-	err2 := db.UpdateChannel(meeting, "test.db")
-	err3 := db.UpdateChannel(rollCall, "test.db")
-	err4 := db.UpdateChannel(poll, "test.db")
+	err1 := UpdateChannel(lao, "test.db")
+	err2 := UpdateChannel(meeting, "test.db")
+	err3 := UpdateChannel(rollCall, "test.db")
+	err4 := UpdateChannel(poll, "test.db")
 	if err1 == nil || err2 == nil || err3 == nil || err4 == nil {
 		t.Errorf("able to update unexisting unsuccessful")
 	}
 
 	//produces no error as the channels does not exist yet
-	err1 = db.CreateChannel(lao, "test.db")
-	err2 = db.CreateChannel(meeting, "test.db")
-	err3 = db.CreateChannel(rollCall, "test.db")
-	err4 = db.CreateChannel(poll, "test.db")
+	err1 = CreateChannel(lao, "test.db")
+	err2 = CreateChannel(meeting, "test.db")
+	err3 = CreateChannel(rollCall, "test.db")
+	err4 = CreateChannel(poll, "test.db")
 	if err1 != nil || err2 != nil || err3 != nil || err4 != nil {
 		t.Errorf("Event creation in database unsuccessful")
 	}
 
 	// produces no errors as the channel already exists
-	err1 = db.UpdateChannel(lao, "test.db")
-	err2 = db.UpdateChannel(meeting, "test.db")
-	err3 = db.UpdateChannel(rollCall, "test.db")
-	err4 = db.UpdateChannel(poll, "test.db")
+	err1 = UpdateChannel(lao, "test.db")
+	err2 = UpdateChannel(meeting, "test.db")
+	err3 = UpdateChannel(rollCall, "test.db")
+	err4 = UpdateChannel(poll, "test.db")
 	if err1 != nil || err2 != nil || err3 != nil || err4 != nil {
 		t.Errorf("Event creation in database unsuccessful")
 	}
 
-	err1 = db.CreateChannel(lao, "test.db")
-	err2 = db.CreateChannel(meeting, "test.db")
-	err3 = db.CreateChannel(rollCall, "test.db")
-	err4 = db.CreateChannel(poll, "test.db")
+	err1 = CreateChannel(lao, "test.db")
+	err2 = CreateChannel(meeting, "test.db")
+	err3 = CreateChannel(rollCall, "test.db")
+	err4 = CreateChannel(poll, "test.db")
 	if err1 == nil || err2 == nil || err3 == nil || err4 == nil {
 		t.Errorf("Event creation in database unsuccessful")
 	}
@@ -65,18 +64,18 @@ func TestGetChannel(t *testing.T) {
 	_ = os.Remove("test.db")
 	lao, meeting, rollCall, poll := getEvents()
 
-	err1 := db.CreateChannel(lao, "test.db")
-	err2 := db.CreateChannel(meeting, "test.db")
-	err3 := db.CreateChannel(rollCall, "test.db")
-	err4 := db.CreateChannel(poll, "test.db")
+	err1 := CreateChannel(lao, "test.db")
+	err2 := CreateChannel(meeting, "test.db")
+	err3 := CreateChannel(rollCall, "test.db")
+	err4 := CreateChannel(poll, "test.db")
 	if err1 != nil || err2 != nil || err3 != nil || err4 != nil {
 		t.Errorf("Event creation in database unsuccessful")
 	}
 
-	dLao := db.GetChannel([]byte("1"), "test.db")
-	dMeeting := db.GetChannel([]byte("2"), "test.db")
-	dRollCall := db.GetChannel([]byte("3"), "test.db")
-	dPoll := db.GetChannel([]byte("4"), "test.db")
+	dLao := GetChannel([]byte("1"), "test.db")
+	dMeeting := GetChannel([]byte("2"), "test.db")
+	dRollCall := GetChannel([]byte("3"), "test.db")
+	dPoll := GetChannel([]byte("4"), "test.db")
 
 	if dLao == nil || dMeeting == nil || dRollCall == nil || dPoll == nil {
 		t.Errorf("could not retrieve entry in the database")
