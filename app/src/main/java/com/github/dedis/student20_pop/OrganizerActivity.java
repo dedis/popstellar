@@ -12,7 +12,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.github.dedis.student20_pop.model.Event;
+import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.ui.CameraPermissionFragment;
 import com.github.dedis.student20_pop.ui.ConnectingFragment;
@@ -22,6 +22,7 @@ import com.github.dedis.student20_pop.ui.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType;
 import com.github.dedis.student20_pop.ui.event.MeetingEventCreationFragment;
 import com.github.dedis.student20_pop.ui.event.PollEventCreationFragment;
+import com.github.dedis.student20_pop.ui.event.RollCallEventCreationFragment;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraNotAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
@@ -106,8 +107,7 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
                 showFragment(new MeetingEventCreationFragment(), MeetingEventCreationFragment.TAG);
                 break;
             case ROLL_CALL:
-                //TODO
-                Log.d("Roll-Call Event Type ", "Launch here Roll-Call Event Creation Fragment");
+                showFragment(new RollCallEventCreationFragment(), RollCallEventCreationFragment.TAG);
                 break;
             case POLL:
                 showFragment(new PollEventCreationFragment(), PollEventCreationFragment.TAG);

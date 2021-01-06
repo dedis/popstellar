@@ -12,7 +12,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import com.github.dedis.student20_pop.OrganizerActivity;
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.model.Event;
+import com.github.dedis.student20_pop.model.event.Event;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -38,7 +38,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.isIn;
 import static org.hamcrest.Matchers.not;
 
-public class MeetingEventFragmentTest {
+public class MeetingEventCreationFragmentTest {
     private final int YEAR = 2022;
     private final int MONTH_OF_YEAR = 10;
     private final int DAY_OF_MONTH = 10;

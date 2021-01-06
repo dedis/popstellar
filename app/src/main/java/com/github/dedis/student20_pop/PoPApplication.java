@@ -7,7 +7,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import com.github.dedis.student20_pop.model.Event;
+import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.Person;
@@ -24,9 +24,9 @@ import java.util.Map;
 
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_ALREADY_EXISTS;
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_SUCCESSFUL;
-import static com.github.dedis.student20_pop.model.Event.EventType.DISCUSSION;
-import static com.github.dedis.student20_pop.model.Event.EventType.MEETING;
-import static com.github.dedis.student20_pop.model.Event.EventType.POLL;
+import static com.github.dedis.student20_pop.model.event.Event.EventType.DISCUSSION;
+import static com.github.dedis.student20_pop.model.event.Event.EventType.MEETING;
+import static com.github.dedis.student20_pop.model.event.Event.EventType.POLL;
 
 /**
  * Class modelling the application : a unique person associated with LAOs
@@ -174,6 +174,12 @@ public class PoPApplication extends Application {
      * @return lao's corresponding list of witnesses
      */
     public List<String> getWitnesses(Lao lao) {
+        List<String> laoWitnesses = laoWitnessMap.get(lao);
+        if (laoWitnesses == null) {
+            laoWitnesses = new ArrayList<>();
+            laoWitnessMap.put(lao, laoWitnesses);
+        }
+
         return laoWitnessMap.get(lao);
     }
 

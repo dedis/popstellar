@@ -19,6 +19,7 @@ import com.github.dedis.student20_pop.ui.TimePickerFragment;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -35,6 +36,7 @@ abstract class AbstractEventCreationFragment extends Fragment {
     public static final int END_DATE_REQUEST_CODE = 12;
     public static final int START_TIME_REQUEST_CODE = 13;
     public static final int END_TIME_REQUEST_CODE = 14;
+    public static final String NO_LOCATION = "";
     public static Date startDate;
     public static Date endDate;
     public static Date startTime;
@@ -85,6 +87,14 @@ abstract class AbstractEventCreationFragment extends Fragment {
             timePickerFragment.setTargetFragment(fragment, END_TIME_REQUEST_CODE);
             timePickerFragment.show(fragmentManager, TimePickerFragment.TAG);
         });
+
+        // formatting today's date
+        try {
+            today = DATE_FORMAT.parse(DATE_FORMAT.format(Calendar.getInstance().getTime()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            today = new Date();
+        }
     }
 
     public void addDateAndTimeListener(TextWatcher listener) {
