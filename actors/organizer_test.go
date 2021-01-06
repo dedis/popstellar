@@ -7,7 +7,9 @@ import (
 	"student20_pop/actors"
 	"sync"
 	ed "crypto/ed25519"
+	"crypto/sha256"
 	"math/rand"
+	b64 "encoding/base64"
 )
 
 type hub struct {
@@ -48,17 +50,40 @@ func createKeyPair() ([]byte, ed.PrivateKey) {
 	return privkey.Public().(ed.PublicKey), privkey
 }
 
-func getCorrectPublishCreateLAO() []byte {
+func getCorrectDataCreateLAO(publicKey []byte) string {
+	pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
+	hashid := sha256.Sum256( []byte(`["123","`+pkeyb64+`","my_lao"]`) )
+	id := b64.StdEncoding.EncodeToString( hashid[:] )
+	data := `{
+		"object": "lao",
+		"action": "create",
+		"id": "`+id+`",
+		"name": "my_lao",
+		"creation": 1234,
+		"organizer": "`+pkeyb64+`",
+		"witnesses": {
+	
+		}
+	}`
+	return data
+}
+
+func getCorrectPublishCreateLAO(publicKey []byte, privateKey ed.PrivateKey) []byte {
+	data := b64.StdEncoding.EncodeToString([]byte(getCorrectDataCreateLAO(publicKey)))
+	signature := ed.Sign(privateKey, []byte(data))
+	signatureb64 := b64.StdEncoding.EncodeToString(signature)
+	msgid := sha256.Sum256( []byte(`["`+data+`","`+string(signature)+`"]`))
+	msgidb64 := b64.StdEncoding.EncodeToString(msgid[:])
 	msg := `{
 		"jsonrpc": "2.0",
 		"method": "publish",
 		"params": {
 			"channel": "/root",
 			"message": {
-				"data": "ewogICAgIm9iamVjdCI6ICJsYW8iLAogICAgImFjdGlvbiI6ICJjcmVhdGUiLAogICAgImlkIjogIllUSTVOVFk0TjJNNE1UUTBObVU1WVRJeE1USTNZbU5sTldaaU5ERTRNakJpWkRZNE9HTXlNVEl3WWpNM09HTTBPV1E1TW1RNE56Tm1aV05pTlRVNU9BPT0iLAogICAgIm5hbWUiOiAibXlfbGFvIiwKICAgICJjcmVhdGlvbiI6IDEyMzQsCiAgICAib3JnYW5pemVyIjogIk1USXoiLAogICAgIndpdG5lc3NlcyI6IHsKCiAgICB9Cn0=",
+				"data": "`+data+`",
 				"sender": "MTIz",
-				"signature": "TUVZQ0lRRHdDUFdDcGx0Z1gzVWZCWk5HbVpqQzZLUVh6N2RkLzJvWHZwT3dHaWJSTXdJaEFQVGlBOWJ5aXA2YmZNaVdEemZQS0Q4OW83blNIeEJ4OGtvWVBKMWM1T3pr",
-				"message_id": "OWQ3ZDVmNjFkNDlhYzc5NTE5M2NlMjlmYTRjZTU4MTRlZWUxOTRmY2M4OWFjYzZiMmUyMzNmYjk1ZmMwN2Q5Zg==",
+				"signature": "`+signatureb64+`",
+				"message_id": "`+msgidb64+`",
 				"witness_signatures": {
 	
 				}
@@ -66,21 +91,27 @@ func getCorrectPublishCreateLAO() []byte {
 		},
 		"id": 0
 	}`
+	// MTIz is b64encoded 123
 	return []byte(msg)
 } 
 
 
-func getExpectedMsgAndChannelForPublishCreateLAO() []lib.MessageAndChannel {
+func getExpectedMsgAndChannelForPublishCreateLAO(publicKey []byte, privateKey ed.PrivateKey) []lib.MessageAndChannel {
+	data := b64.StdEncoding.EncodeToString([]byte(getCorrectDataCreateLAO(publicKey)))
+	signature := ed.Sign(privateKey, []byte(data))
+	signatureb64 := b64.StdEncoding.EncodeToString(signature)
+	msgid := sha256.Sum256( []byte(`["`+data+`","`+string(signature)+`"]`))
+	msgidb64 := b64.StdEncoding.EncodeToString(msgid[:])
 	msg := `{
 		"jsonrpc": "2.0",
 		"method": "broadcast",
 		"params": {
 			"channel": "/root",
 			"message": {
-				"data": "ewogICAgIm9iamVjdCI6ICJsYW8iLAogICAgImFjdGlvbiI6ICJjcmVhdGUiLAogICAgImlkIjogIllUSTVOVFk0TjJNNE1UUTBObVU1WVRJeE1USTNZbU5sTldaaU5ERTRNakJpWkRZNE9HTXlNVEl3WWpNM09HTTBPV1E1TW1RNE56Tm1aV05pTlRVNU9BPT0iLAogICAgIm5hbWUiOiAibXlfbGFvIiwKICAgICJjcmVhdGlvbiI6IDEyMzQsCiAgICAib3JnYW5pemVyIjogIk1USXoiLAogICAgIndpdG5lc3NlcyI6IHsKCiAgICB9Cn0=",
+				"data": "`+data+`",
 				"sender": "MTIz",
-				"signature": "TUVZQ0lRRHdDUFdDcGx0Z1gzVWZCWk5HbVpqQzZLUVh6N2RkLzJvWHZwT3dHaWJSTXdJaEFQVGlBOWJ5aXA2YmZNaVdEemZQS0Q4OW83blNIeEJ4OGtvWVBKMWM1T3pr",
-				"message_id": "OWQ3ZDVmNjFkNDlhYzc5NTE5M2NlMjlmYTRjZTU4MTRlZWUxOTRmY2M4OWFjYzZiMmUyMzNmYjk1ZmMwN2Q5Zg==",
+				"signature": "`+signatureb64+`",
+				"message_id": "`+msgidb64+`",
 				"witness_signatures": {
 	
 				}
@@ -97,12 +128,14 @@ func getExpectedMsgAndChannelForPublishCreateLAO() []lib.MessageAndChannel {
 
 
 func TestReceivePublishCreateLAO(t *testing.T) {
-	receivedMsg := getCorrectPublishCreateLAO()
+
+	publicKey, privateKey := createKeyPair()
+
+	receivedMsg := getCorrectPublishCreateLAO(publicKey, privateKey)
 	userId := 5
-	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishCreateLAO()
+	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishCreateLAO(publicKey, privateKey)
 	var expectedResponseToSender []byte = nil
 
-	publicKey, _ := createKeyPair()
 
 	h := &hub{
 		connectionsMx:   sync.RWMutex{},
