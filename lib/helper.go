@@ -39,7 +39,7 @@ func FindByteArray(slice [][]byte, val []byte) (int, bool) {
 }
 
 // Decode is a function that decodes a base-64 encoded string into a []byte.
-// DEPRECATED : This is now done automatically by json.Marshall, kept here just in case.
+// This is done automatically by json.Marshall, still used to compare channel for lao creation.
 func Decode(data string) ([]byte, error) {
 	d, err := b64.StdEncoding.DecodeString(strings.Trim(data, `"`))
 	return d, err
@@ -67,15 +67,16 @@ func EscapeAndQuote(s string) string {
 	str := strings.ReplaceAll(strings.ReplaceAll(s, "\\", "\\\\"), "\"", "\\\"")
 	return `"` + str + `"`
 }
+
 //typically used in hashed to prevent security troubles due to bad concatenation
-func ComputeAsJsonArray(elements []string)string{
+func ComputeAsJsonArray(elements []string) string {
 	str := "["
-	if len(elements)>0 {
-		str = "["+ EscapeAndQuote(elements[0])
+	if len(elements) > 0 {
+		str = "[" + EscapeAndQuote(elements[0])
 		for i := 1; i < len(elements); i++ {
-			str += ","+ EscapeAndQuote(elements[i])
+			str += "," + EscapeAndQuote(elements[i])
 		}
 	}
-	str+= "]"
+	str += "]"
 	return str
 }
