@@ -76,7 +76,7 @@ func PollCreatedIsValid(data message.DataCreatePoll, message message.Message) bo
 	return true
 }
 
-// not implemented yet
+// RollCallCreatedIsValid tell if a Roll call is valid on creation
 func RollCallCreatedIsValid(data message.DataCreateRollCall, laoId string) bool {
 	//the timestamp is reasonably recent with respect to the server’s clock,
 	if data.Creation < time.Now().Unix()-MaxClockDifference || data.Creation > time.Now().Unix()+MaxPropagationDelay {
@@ -99,23 +99,43 @@ func RollCallCreatedIsValid(data message.DataCreateRollCall, laoId string) bool 
 		}
 	}
 
-
-
 	//need to meet some	where
 	if data.Location == "" {
 		log.Printf("location can not be empty")
 		return false
 	}
-	//check if id is correct  : SHA256('R'||lao_id||creation||name)
+	return checkRollCallId(laoId,data.Creation,data.Name, data.ID)
+}
+//checkRollCallId check if id is correct  : SHA256('R'||lao_id||creation||name)
+func checkRollCallId(laoId string,creation int64,name string,id []byte) bool{
 	var elementsToHashForDataId []string
-	elementsToHashForDataId = append(elementsToHashForDataId, "R", laoId, strconv.FormatInt(data.Creation, 10), data.Name)
+	elementsToHashForDataId = append(elementsToHashForDataId, "R", laoId, strconv.FormatInt(creation, 10), name)
 	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(elementsToHashForDataId)))
-	if !bytes.Equal(data.ID, hash[:]) {
-		log.Printf("ID od createRollCall invalid: %v should be: %v", string(data.ID), string(hash[:]))
+	if !bytes.Equal(id, hash[:]) {
+		log.Printf("ID of RollCall invalid: %v should be: %v", string(id), string(hash[:]))
+		return false
 	}
 	return true
 }
+//RollCallOpenedIsValid tell if a Roll call is valid on opening or reopening
+func RollCallOpenedIsValid(data message.DataOpenRollCall, laoId string,rollCall message.DataCreateRollCall) bool {
+	//we start after the creation and we end after the start
+	if data.Start < rollCall.Creation {
+		log.Printf("timestamps not logic.Start before creation.")
+		return false
+	}
+	return checkRollCallId(laoId,rollCall.Creation,rollCall.Name, data.ID)
+}
 
+//RollCallClosedIsValid tell if a Roll call is valid on opening or reopening
+func RollCallClosedIsValid(data message.DataCloseRollCall, laoId string,rollCall message.DataCreateRollCall) bool {
+	//we start after the creation and we end after the start
+	if data.Start < rollCall.Creation || data.End < data.Start{
+		log.Printf("timestamps not logic.Start before creation.")
+		return false
+	}
+	return checkRollCallId(laoId,rollCall.Creation,rollCall.Name, data.ID)
+}
 // MessageIsValid checks upon reception that the message data is valid, that is that the ID is correctly computed, and
 // that the signature is correct as well
 // IMPORTANT thing : 	For every message the signature is Sign(message_id)

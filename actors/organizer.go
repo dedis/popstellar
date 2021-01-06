@@ -128,25 +128,25 @@ func (o *Organizer) handleBroadcast(query message.Query) (msgAndChannel []lib.Me
 func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
 	params, errs := parser.ParseParams(query.Params)
 	if errs != nil {
-		log.Printf("1. unable to analyse paramsLight in handlePublish()")
+		log.Printf("unable to analyse paramsLight in handlePublish()")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
 	msg, errs := parser.ParseMessage(params.Message)
 	if errs != nil {
-		log.Printf("2. unable to analyse Message in handlePublish()")
+		log.Printf("unable to analyse Message in handlePublish()")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
 	errs = security.MessageIsValid(msg)
 	if errs != nil {
-		log.Printf("7")
+		log.Printf("message is not valid")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
 	data, errs := parser.ParseData(string(msg.Data))
 	if errs != nil {
-		log.Printf("3. unable to analyse data in handlePublish()")
+		log.Printf("unable to analyse data in handlePublish()")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
@@ -158,7 +158,8 @@ func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.Mess
 		case "update_properties":
 			return o.handleUpdateProperties(msg, params.Channel, query)
 		case "state":
-			return o.handleLAOState(msg, params.Channel, query) // should never happen
+			// should never happen
+			return o.handleLAOState(msg, params.Channel, query)
 		default:
 			return nil, lib.ErrInvalidAction
 		}
@@ -186,7 +187,7 @@ func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.Mess
 		case "create":
 			return o.handleCreateMeeting(msg, params.Channel, query)
 		case "state": //
-			// TODO: waiting on protocol definition
+			return o.handleLAOState(msg, params.Channel, query)
 			return nil, lib.ErrNotYetImplemented
 		default:
 			return nil, lib.ErrInvalidAction
@@ -214,7 +215,7 @@ func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.Mess
 // LAO in the database.
 func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 
-	if canal != "L3Jvb3Q=" {
+	if canal != "/root" {
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -260,7 +261,7 @@ func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query mes
 // It will check for the validity of the received message, store the received message in the database, and store the new
 // Roll Call in the database.
 func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
-	if canal == "L3Jvb3Q=" {
+	if canal == "/root" {
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -269,7 +270,7 @@ func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, quer
 		return nil, lib.ErrInvalidResource
 	}
 	//we provide the id of the channel
-	laoId := strings.TrimPrefix(canal, "L3Jvb3Qv")
+	laoId := strings.TrimPrefix(canal, "/root")
 	if !security.RollCallCreatedIsValid(data, laoId) {
 		return nil, errs
 	}
@@ -308,7 +309,7 @@ func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, quer
 // meeting in the database.
 func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 
-	if canal == "L3Jvb3Q=" {
+	if canal == "/root" {
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -351,7 +352,7 @@ func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, query
 // poll in the database.
 func (o *Organizer) handleCreatePoll(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 
-	if canal == "L3Jvb3Q=" {
+	if canal == "/root" {
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -545,11 +546,16 @@ func (o *Organizer) handleLAOState(msg message.Message, chann string, query mess
 //		organizer forgot to scan the public key of one attendee), then it can reopen it by using
 //		the open query. In this case, the action should be set to reopen.
 func (o *Organizer) handleOpenRollCall(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+	if chann == "/root" {
+		return nil, lib.ErrInvalidResource
+	}
+
 	openRollCall, err := parser.ParseDataOpenRollCall(msg.Data)
 	if err != nil {
 		log.Printf("unable to analyse params in handlOpenRollCall()")
 		return nil, lib.ErrRequestDataInvalid
 	}
+
 	//retrieve roll Call to open from database
 	storedRollCall := db.GetMessage([]byte(chann), openRollCall.ID, o.database)
 	if storedRollCall == nil {
@@ -561,6 +567,12 @@ func (o *Organizer) handleOpenRollCall(msg message.Message, chann string, query 
 	if err != nil {
 		log.Printf("unable to parse stored roll call infos in handleOpenRollRall()")
 		return nil, err
+	}
+
+	//we provide the id of the channel
+	laoId := strings.TrimPrefix(chann, "/root")
+	if !security.RollCallOpenedIsValid(openRollCall, laoId,rollCallData) {
+		return nil, lib.ErrInvalidResource
 	}
 
 	updatedRollCall := event.RollCall{
@@ -586,6 +598,10 @@ func (o *Organizer) handleOpenRollCall(msg message.Message, chann string, query 
 }
 
 func (o *Organizer) handleCloseRollCall(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+	if chann == "/root" {
+		return nil, lib.ErrInvalidResource
+	}
+
 	closeRollCall, err := parser.ParseDataCloseRollCall(msg.Data)
 	if err != nil {
 		log.Printf("unable to analyse params in handlOpenRollCall()")
@@ -599,6 +615,13 @@ func (o *Organizer) handleCloseRollCall(msg message.Message, chann string, query
 		log.Printf("unable to parse stored roll call infos in handleOpenRollRall()")
 		return nil, err
 	}
+
+	//we provide the id of the channel
+	laoId := strings.TrimPrefix(chann, "/root")
+	if !security.RollCallClosedIsValid(closeRollCall, laoId,rollCallData) {
+		return nil, lib.ErrInvalidResource
+	}
+
 	updatedRollCall := event.RollCall{
 		ID:                  string(rollCallData.ID),
 		Name:                rollCallData.Name,
