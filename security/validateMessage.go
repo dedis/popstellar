@@ -27,6 +27,7 @@ func LAOIsValid(data message.DataCreateLAO, create bool) bool {
 	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(elementsToHashForDataId)))
 	if create && !bytes.Equal(data.ID, hash[:]) {
 		log.Printf("ID of createLAO invalid: %v should be: %v", string(data.ID), string(hash[:]))
+		return false
 	}
 
 	return true
