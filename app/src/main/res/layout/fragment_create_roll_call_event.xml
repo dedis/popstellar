@@ -86,6 +86,12 @@
         app:layout_constraintRight_toRightOf="parent">
 
         <Button
+            android:id="@+id/roll_call_open"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/roll_call_open_attendees" />
+
+        <Button
             android:id="@+id/roll_call_confirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

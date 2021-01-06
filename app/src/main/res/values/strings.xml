@@ -96,4 +96,6 @@
     <string name="add_witness_unsuccessful">Witness could not be added</string>
     <string name="add_witness_already_exists">Witness you are trying to add is already a witness of this LAO</string>
     <string name="event_description">Event Description</string>
+    <string name="roll_call_open_attendees">Open</string>
+    <string name="qrcode_scanning_add_attendee">Scan personal QR code of the attendee to add</string>
 </resources>

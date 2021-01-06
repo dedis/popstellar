@@ -308,7 +308,7 @@ public class OrganizerFragmentTest {
                 .perform(click());
         onView(withText(getApplicationContext().getString(R.string.meeting_event))).check(matches(isDisplayed()));
         onView(withText(getApplicationContext().getString(R.string.meeting_event))).perform(click());
-        onView(withId(R.id.fragment_meeting_event)).check(matches(isDisplayed()));
+        onView(withId(R.id.fragment_meeting_event_creation)).check(matches(isDisplayed()));
     }
 
     @Test

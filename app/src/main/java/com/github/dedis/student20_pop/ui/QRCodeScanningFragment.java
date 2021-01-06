@@ -35,7 +35,7 @@ import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeSca
 /**
  * Fragment used to display the Connect UI
  **/
-public final class QRCodeScanningFragment extends Fragment implements QRCodeListener {
+public class QRCodeScanningFragment extends Fragment implements QRCodeListener {
 
     public static final String TAG = QRCodeScanningFragment.class.getSimpleName();
     private static final int HANDLE_GMS = 9001;
@@ -89,7 +89,7 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
                 scanDescription.setText(R.string.qrcode_scanning_connect_lao);
                 break;
             case ADD_ROLL_CALL:
-                scanDescription.setText("TODO");
+                scanDescription.setText(R.string.qrcode_scanning_add_attendee);
                 break;
             case ADD_WITNESS:
                 scanDescription.setText(R.string.qrcode_scanning_add_witness);
@@ -177,6 +177,5 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
         ADD_ROLL_CALL,
         ADD_WITNESS,
         CONNECT_LAO
-
     }
 }
