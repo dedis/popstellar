@@ -8,12 +8,12 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"testing"
 
 	"student20_pop/lib"
 	message2 "student20_pop/message"
 	"student20_pop/parser"
 	"student20_pop/security"
-	"testing"
 )
 
 type keys struct {
@@ -21,6 +21,39 @@ type keys struct {
 	public  []byte
 }
 
+func TestMessageIsValidWithoutWitnesses(t *testing.T) {
+	//increase nb of tests
+	for i := 0; i < 100; i++ {
+		pubkey, privkey := createKeyPair()
+		witnessSignatures := []message2.ItemWitnessSignatures{}
+		witnessKeys := [][]byte{}
+		data, err := createDataLao(pubkey, privkey, witnessKeys)
+		if err != nil {
+			t.Error(err)
+		}
+		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures, witnessKeys)
+		if err != nil {
+			t.Error(err)
+		}
+	}
+}
+func TestRollCallCreatedIsValid(t *testing.T) {
+	//increase nb of tests
+	for i := 0; i < 100; i++ {
+		pubkey, privkey := createKeyPair()
+		witnessSignatures := []message2.ItemWitnessSignatures{}
+		witnessKeys := [][]byte{}
+		data, err := createDataLao(pubkey, privkey, witnessKeys)
+		if err != nil {
+			t.Error(err)
+		}
+		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures, witnessKeys)
+		if err != nil {
+			t.Error(err)
+		}
+	}
+}
+//===================================================================================//
 func CheckMessageIsValid(pubkey []byte, privkey ed.PrivateKey, data message2.DataCreateLAO, witnessKeysAndSignatures []message2.ItemWitnessSignatures, WitnesseKeys [][]byte) error {
 	dataFlat, signed, id, err := getIdofMessage(data, privkey)
 	if err != nil {
@@ -54,22 +87,7 @@ func CheckMessageIsValid(pubkey []byte, privkey ed.PrivateKey, data message2.Dat
 	return nil
 }
 
-func TestMessageIsValidWithoutWitnesses(t *testing.T) {
-	//increase nb of tests
-	for i := 0; i < 100; i++ {
-		pubkey, privkey := createKeyPair()
-		witnessSignatures := []message2.ItemWitnessSignatures{}
-		witnessKeys := [][]byte{}
-		data, err := createDataLao(pubkey, privkey, witnessKeys)
-		if err != nil {
-			t.Error(err)
-		}
-		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures, witnessKeys)
-		if err != nil {
-			t.Error(err)
-		}
-	}
-}
+
 
 /* Basically following the last meeting (22/12/20) we are not supposed to have this case
 func TestMessageIsValidWithAssessedWitnesses(t *testing.T) {
@@ -130,6 +148,26 @@ func createDataLao(pubkey []byte, privkey ed.PrivateKey, WitnesseKeys [][]byte) 
 		Creation:  creation,
 		Organizer: []byte(pubkey),
 		Witnesses: WitnesseKeys,
+	}
+	return data, nil
+}
+func createRollCallNow(pubkey []byte, privkey ed.PrivateKey, WitnesseKeys [][]byte) (message2.DataCreateRollCall, error) {
+	var creation int64 = 123
+	name := "RollCallNow"
+	if (len(pubkey) != ed.PublicKeySize) || len(privkey) != ed.PrivateKeySize {
+		return message2.DataCreateRollCall{}, errors.New("wrong argument -> size of public key don't respected ")
+	}
+
+	idData := sha256.Sum256([]byte(string(pubkey) + fmt.Sprint(creation) + name))
+	var data = message2.DataCreateRollCall{
+		Object:    "roll_call",
+		Action:    "create",
+		ID:        idData[:],
+		Name:      name,
+		Creation:  creation,
+		Location: "pas loin",
+		Start: 6,
+		RollCallDescription: "un roll call" ,
 	}
 	return data, nil
 }

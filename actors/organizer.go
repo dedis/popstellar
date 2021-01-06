@@ -164,13 +164,14 @@ func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.Mess
 		default:
 			return nil, lib.ErrInvalidAction
 		}
-	case "roll call":
+	case "roll_call":
 		switch data["action"] {
 		case "create":
 			return o.handleCreateRollCall(msg, params.Channel, query)
-		//case "state":  TODO : waiting on protocol definition
 		case "open", "reopen":
 			return o.handleOpenRollCall(msg, params.Channel, query)
+		case "close":
+			return o.handleCloseRollCall(msg, params.Channel, query)
 		default:
 			return nil, lib.ErrInvalidAction
 		}
@@ -273,6 +274,9 @@ func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, quer
 		Creation: data.Creation,
 		Location: data.Location,
 		Start:    data.Start,
+		Scheduled:    data.Scheduled,
+		RollCallDescription: data.RollCallDescription,
+
 	}
 	errs = db.CreateChannel(rollCall, o.database)
 	if errs != nil {
@@ -525,6 +529,10 @@ func (o *Organizer) handleOpenRollCall(msg message.Message, chann string, query 
 	}
 	//retrieve roll Call to open from database
 	storedRollCall := db.GetMessage([]byte(chann), openRollCall.ID, o.database)
+	if storedRollCall == nil{
+		log.Printf("unable to access the stored roll call : message, channel or DB does not exist ")
+		return nil, lib.ErrInvalidResource
+	}
 
 	rollCallData, err := parser.ParseDataCreateRollCall(storedRollCall)
 	if err != nil {
@@ -540,8 +548,46 @@ func (o *Organizer) handleOpenRollCall(msg message.Message, chann string, query 
 		Location:     rollCallData.Location,
 		//openRollCall !
 		Start: openRollCall.Start,
+		RollCallDescription: rollCallData.RollCallDescription,
 	}
 
+	err = db.UpdateChannel(updatedRollCall, o.database)
+	if err != nil {
+		return nil, err
+	}
+	msgAndChan := []lib.MessageAndChannel{{
+		Message: parser.ComposeBroadcastMessage(query),
+		Channel: []byte(chann),
+	}}
+	return msgAndChan, db.CreateMessage(msg, chann, o.database)
+}
+
+func (o *Organizer) handleCloseRollCall(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+	closeRollCall, err := parser.ParseDataCloseRollCall(msg.Data)
+	if err != nil {
+		log.Printf("unable to analyse params in handlOpenRollCall()")
+		return nil, lib.ErrRequestDataInvalid
+	}
+	//retrieve roll Call to open from database
+	storedRollCall := db.GetMessage([]byte(chann), closeRollCall.ID, o.database)
+
+	rollCallData, err := parser.ParseDataCreateRollCall(storedRollCall)
+	if err != nil {
+		log.Printf("unable to parse stored roll call infos in handleOpenRollRall()")
+		return nil, err
+	}
+	updatedRollCall := event.RollCall{
+		ID:           string(rollCallData.ID),
+		Name:         rollCallData.Name,
+		Creation:     rollCallData.Creation,
+		LastModified: rollCallData.Creation,
+		Location:     rollCallData.Location,
+		RollCallDescription: rollCallData.RollCallDescription,
+		// TODO de we always take the new start ? (even when it's not a reopening)
+		Start: closeRollCall.Start,
+		Attendees: closeRollCall.Attendees,
+		End: closeRollCall.End,
+	}
 	err = db.UpdateChannel(updatedRollCall, o.database)
 	if err != nil {
 		return nil, err

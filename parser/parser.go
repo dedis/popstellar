@@ -132,13 +132,19 @@ func ParseDataCreateMeeting(data json.RawMessage) (message.DataCreateMeeting, er
 	return m, err
 }
 
-// ParseDataCreateRollCall parses a json.RawMessage into a message.DataCreateRollCallNow structure.
-func ParseDataCreateRollCall(data json.RawMessage) (message.DataCreateRollCallNow, error) {
-	m := message.DataCreateRollCallNow{}
+// ParseDataCreateRollCall parses a json.RawMessage into a message.DataCreateRollCall structure.
+func ParseDataCreateRollCall(data json.RawMessage) (message.DataCreateRollCall, error) {
+	m := message.DataCreateRollCall{}
 	err := json.Unmarshal(data, &m)
 	return m, err
 }
 
+// ParseDataCloseRollCall parses a json.RawMessage into a message.DataCreateRollCall structure.
+func ParseDataCloseRollCall(data json.RawMessage) (message.DataCloseRollCall, error) {
+	m := message.DataCloseRollCall{}
+	err := json.Unmarshal(data, &m)
+	return m, err
+}
 // ParseDataCreatePoll parses a json.RawMessage into a message.DataCreatePoll structure.
 func ParseDataCreatePoll(data json.RawMessage) (message.DataCreatePoll, error) {
 	m := message.DataCreatePoll{}
