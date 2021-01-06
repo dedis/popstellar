@@ -157,7 +157,7 @@ func (w *Witness) handleBroadcast(query message.Query) (msgAndChannel []lib.Mess
 // handleCreateLAO is the function that handles the creation of a LAO. It checks the message's validity,
 // creates a new Channel in the Witness's database and stores the received message
 func (w *Witness) handleCreateLAO(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
-	if chann != "L3Jvb3Q=" {
+	if chann != "/root" {
 		return nil, lib.ErrInvalidResource
 	}
 
