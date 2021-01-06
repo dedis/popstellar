@@ -19,13 +19,18 @@ import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.RollCallEvent;
+import com.github.dedis.student20_pop.utility.ui.organizer.OnAddAttendeesListener;
 import com.github.dedis.student20_pop.utility.ui.organizer.OnEventCreatedListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RollCallEventCreationFragment extends AbstractEventCreationFragment {
     public static final String TAG = RollCallEventCreationFragment.class.getSimpleName();
 
     private EditText rollCallDescriptionEditText;
     private EditText rollCallTitleEditText;
+    private List<String> attendees;
 
 
     private Button confirmButton;
@@ -47,16 +52,15 @@ public class RollCallEventCreationFragment extends AbstractEventCreationFragment
         public void afterTextChanged(Editable s) {
         }
     };
-
+    private Button openButton;
     private OnEventCreatedListener eventCreatedListener;
+    private OnAddAttendeesListener onAddAttendeesListener;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnEventCreatedListener)
-            eventCreatedListener = (OnEventCreatedListener) context;
-        else
-            throw new ClassCastException(context.toString() + " must implement OnEventCreatedListener");
+        eventCreatedListener = (OnEventCreatedListener) context;
+        onAddAttendeesListener = (OnAddAttendeesListener) context;
     }
 
     @Nullable
@@ -72,6 +76,9 @@ public class RollCallEventCreationFragment extends AbstractEventCreationFragment
         rollCallTitleEditText = view.findViewById(R.id.roll_call_title_text);
         rollCallDescriptionEditText = view.findViewById(R.id.roll_call_event_description_text);
 
+        openButton = view.findViewById(R.id.roll_call_open);
+
+
         confirmButton = view.findViewById(R.id.roll_call_confirm);
         confirmButton.setOnClickListener(v -> {
             Event rollCallEvent = new RollCallEvent(
@@ -82,11 +89,28 @@ public class RollCallEventCreationFragment extends AbstractEventCreationFragment
                     endTime,
                     app.getCurrentLao().getId(),
                     NO_LOCATION,
-                    rollCallDescriptionEditText.getText().toString());
+                    rollCallDescriptionEditText.getText().toString(),
+                    new ArrayList<>()
+            );
 
             eventCreatedListener.OnEventCreatedListener(rollCallEvent);
 
             fragmentManager.popBackStackImmediate();
+        });
+
+        openButton.setOnClickListener(v -> {
+            onAddAttendeesListener.onAddAttendeesListener(
+                    new RollCallEvent(
+                            rollCallTitleEditText.getText().toString(),
+                            startDate,
+                            endDate,
+                            startTime,
+                            endTime,
+                            app.getCurrentLao().getId(),
+                            NO_LOCATION,
+                            rollCallDescriptionEditText.getText().toString(),
+                            new ArrayList<>()
+                    ));
         });
 
         Button cancelButton = view.findViewById(R.id.roll_call_cancel);

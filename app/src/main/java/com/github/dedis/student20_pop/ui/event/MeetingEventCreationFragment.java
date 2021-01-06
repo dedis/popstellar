@@ -71,13 +71,13 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
         addDateAndTimeListener(confirmTextWatcher);
 
 
-        meetingTitleEditText = view.findViewById(R.id.title_text);
+        meetingTitleEditText = view.findViewById(R.id.meeting_title_text);
         meetingLocationEditText = view.findViewById(R.id.meeting_event_location_text);
         meetingDescriptionEditText = view.findViewById(R.id.meeting_event_description_text);
 
         meetingTitleEditText.addTextChangedListener(confirmTextWatcher);
 
-        confirmButton = view.findViewById(R.id.confirm);
+        confirmButton = view.findViewById(R.id.meeting_event_creation_confirm);
         confirmButton.setOnClickListener(v -> {
 
             Event meetingEvent = new MeetingEvent(
@@ -95,7 +95,7 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
             fragmentManager.popBackStackImmediate();
         });
 
-        cancelButton = view.findViewById(R.id.cancel);
+        cancelButton = view.findViewById(R.id.meeting_event_creation_cancel);
         cancelButton.setOnClickListener(v -> {
             fragmentManager.popBackStackImmediate();
         });

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/fragment_meeting_event"
+    android:id="@+id/fragment_meeting_event_creation"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -23,7 +23,7 @@
         app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
 
     <LinearLayout
-        android:id="@+id/meeting_event_title"
+        android:id="@+id/meeting_event_creation_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -31,7 +31,7 @@
         app:layout_constraintTop_toBottomOf="@id/guideline_horizontal">
 
         <TextView
-            android:id="@+id/meeting_event_title_text"
+            android:id="@+id/meeting_event_creation_title_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/create_meeting_event"
@@ -44,11 +44,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constrainedHeight="true"
-        app:layout_constraintTop_toBottomOf="@id/meeting_event_title"
+        app:layout_constraintTop_toBottomOf="@id/meeting_event_creation_title"
         android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/title_text"
+            android:id="@+id/meeting_title_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/meeting_title_required" />
@@ -74,7 +74,7 @@
         />
 
     <LinearLayout
-        android:id="@+id/location"
+        android:id="@+id/meeting_location"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
@@ -97,7 +97,7 @@
         android:gravity="center_vertical"
         android:orientation="vertical"
         app:layout_constrainedHeight="true"
-        app:layout_constraintTop_toBottomOf="@id/location"
+        app:layout_constraintTop_toBottomOf="@id/meeting_location"
         app:layout_constraintLeft_toLeftOf="parent">
 
         <EditText
@@ -113,7 +113,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/confirm_cancel"
+        android:id="@+id/meeting_event_creation_confirm_cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -121,14 +121,14 @@
         app:layout_constraintRight_toRightOf="parent">
 
         <Button
-            android:id="@+id/confirm"
+            android:id="@+id/meeting_event_creation_confirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="false"
             android:text="@string/confirm" />
 
         <Button
-            android:id="@+id/cancel"
+            android:id="@+id/meeting_event_creation_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/cancel" />
