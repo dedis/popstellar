@@ -20,6 +20,6 @@
 # Database files
 *.db
 *.lock
-/test
 /testdata
+/test/localhost_tests_data.json
 
