@@ -4,12 +4,12 @@ import (
 	"testing"
 	"student20_pop/lib"
 	"reflect"
-	"student20_pop/actors"
 	"sync"
 	ed "crypto/ed25519"
 	"crypto/sha256"
 	"math/rand"
 	b64 "encoding/base64"
+	"strings"
 )
 
 type hub struct {
@@ -26,7 +26,7 @@ type hub struct {
 	logMx sync.RWMutex
 	log   [][]byte
 
-	actor actors.Actor
+	actor Actor
 
 	connIndex int
 }
@@ -52,7 +52,8 @@ func createKeyPair() ([]byte, ed.PrivateKey) {
 
 func getCorrectDataCreateLAO(publicKey []byte) string {
 	pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
-	hashid := sha256.Sum256( []byte(`["123","`+pkeyb64+`","my_lao"]`) )
+	tohash := lib.ComputeAsJsonArray([]string{pkeyb64,"1234","my_lao"})
+	hashid := sha256.Sum256( []byte(tohash) )
 	id := b64.StdEncoding.EncodeToString( hashid[:] )
 	data := `{
 		"object": "lao",
@@ -65,14 +66,20 @@ func getCorrectDataCreateLAO(publicKey []byte) string {
 	
 		}
 	}`
+	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
+	data = strings.Join(strings.Fields(data), "")
 	return data
 }
 
 func getCorrectPublishCreateLAO(publicKey []byte, privateKey ed.PrivateKey) []byte {
-	data := b64.StdEncoding.EncodeToString([]byte(getCorrectDataCreateLAO(publicKey)))
+	data := []byte(getCorrectDataCreateLAO(publicKey))
+	datab64 := b64.StdEncoding.EncodeToString(data)
+	pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
 	signature := ed.Sign(privateKey, []byte(data))
 	signatureb64 := b64.StdEncoding.EncodeToString(signature)
-	msgid := sha256.Sum256( []byte(`["`+data+`","`+string(signature)+`"]`))
+	// TODO I think it's weird to hash data in plain and signature in b64, but well, apparently, it's the protocol
+	tohash := lib.ComputeAsJsonArray([]string{string(data),string(signatureb64)})
+	msgid := sha256.Sum256( []byte(tohash))
 	msgidb64 := b64.StdEncoding.EncodeToString(msgid[:])
 	msg := `{
 		"jsonrpc": "2.0",
@@ -80,8 +87,8 @@ func getCorrectPublishCreateLAO(publicKey []byte, privateKey ed.PrivateKey) []by
 		"params": {
 			"channel": "/root",
 			"message": {
-				"data": "`+data+`",
-				"sender": "MTIz",
+				"data": "`+datab64+`",
+				"sender": "`+pkeyb64+`",
 				"signature": "`+signatureb64+`",
 				"message_id": "`+msgidb64+`",
 				"witness_signatures": {
@@ -92,15 +99,20 @@ func getCorrectPublishCreateLAO(publicKey []byte, privateKey ed.PrivateKey) []by
 		"id": 0
 	}`
 	// MTIz is b64encoded 123
+	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
+	msg = strings.Join(strings.Fields(msg), "")
 	return []byte(msg)
 } 
 
 
 func getExpectedMsgAndChannelForPublishCreateLAO(publicKey []byte, privateKey ed.PrivateKey) []lib.MessageAndChannel {
-	data := b64.StdEncoding.EncodeToString([]byte(getCorrectDataCreateLAO(publicKey)))
+	data := []byte(getCorrectDataCreateLAO(publicKey))
+	datab64 := b64.StdEncoding.EncodeToString(data)
+	pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
 	signature := ed.Sign(privateKey, []byte(data))
 	signatureb64 := b64.StdEncoding.EncodeToString(signature)
-	msgid := sha256.Sum256( []byte(`["`+data+`","`+string(signature)+`"]`))
+	tohash := lib.ComputeAsJsonArray([]string{string(data),string(signatureb64)})
+	msgid := sha256.Sum256( []byte(tohash))
 	msgidb64 := b64.StdEncoding.EncodeToString(msgid[:])
 	msg := `{
 		"jsonrpc": "2.0",
@@ -108,8 +120,8 @@ func getExpectedMsgAndChannelForPublishCreateLAO(publicKey []byte, privateKey ed
 		"params": {
 			"channel": "/root",
 			"message": {
-				"data": "`+data+`",
-				"sender": "MTIz",
+				"data": "`+datab64+`",
+				"sender": "`+pkeyb64+`",
 				"signature": "`+signatureb64+`",
 				"message_id": "`+msgidb64+`",
 				"witness_signatures": {
@@ -119,6 +131,9 @@ func getExpectedMsgAndChannelForPublishCreateLAO(publicKey []byte, privateKey ed
 		},
 		"id": 0
 	}`
+	// MTIz is b64encoded 123
+	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
+	msg = strings.Join(strings.Fields(msg), "")
 	answer := []lib.MessageAndChannel{{
 		Message: []byte(msg),
 		Channel: []byte("/root"),
@@ -143,7 +158,7 @@ func TestReceivePublishCreateLAO(t *testing.T) {
 		connections:     make(map[*connection]struct{}),
 		connIndex:       0,
 		idOfSender:      -1,
-		actor: 			actors.NewOrganizer(string(publicKey), "org.db"),
+		actor: 			NewOrganizer(string(publicKey), "org.db"),
 	}
 
 	 
