@@ -3,6 +3,7 @@ package security
 import (
 	"bytes"
 	"crypto/sha256"
+	b64 "encoding/base64"
 	"log"
 	"strconv"
 	"student20_pop/lib"
@@ -34,7 +35,7 @@ func LAOIsValid(data message.DataCreateLAO, create bool) bool {
 	elementsToHashForDataId = append(elementsToHashForDataId, string(data.Organizer), strconv.FormatInt(data.Creation, 10), data.Name)
 	hash = sha256.Sum256([]byte(lib.ComputeAsJsonArray(elementsToHashForDataId)))
 	if !bytes.Equal(data.ID, hash[:]) {
-		log.Printf("ID od createRollCall invalid: %v should be: %v", string(data.ID), string(hash[:]))
+		log.Printf("ID of createLAO invalid: %v should be: %v", string(data.ID), string(hash[:]))
 	}
 
 	return true
@@ -122,11 +123,11 @@ func RollCallCreatedIsValid(data message.DataCreateRollCall, laoId string) bool 
 func MessageIsValid(msg message.Message) error {
 	// check message_id is valid
 	var itemsToHashForMessageId []string
-	itemsToHashForMessageId = append(itemsToHashForMessageId, string(msg.Data), string(msg.Signature))
+	itemsToHashForMessageId = append(itemsToHashForMessageId, string(msg.Data), b64.StdEncoding.EncodeToString(msg.Signature))
 	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(itemsToHashForMessageId)))
 
 	if !bytes.Equal(msg.MessageId, hash[:]) {
-		log.Printf("messId of message invalid: %v should be: %v", string(msg.MessageId), string(hash[:]))
+		log.Printf("Id of message invalid: %v should be: %v", string(msg.MessageId), string(hash[:]))
 		return lib.ErrInvalidResource
 	}
 
