@@ -3,9 +3,6 @@ package event
 
 import "hash"
 
-// DEPRECATED : subscribers are not stored in a database anymore
-const SubscribeDB = "sub.db"
-
 type LAO struct {
 	// hash : Name || Creation, not updated on update.
 	ID string
@@ -56,7 +53,7 @@ type RollCall struct {
 	// An optional description of the roll call
 	RollCallDescription string
 	// Meeting's End time timestamp (Unix) (uint64)
-	End   int64 //timestamp
+	End int64 //timestamp
 }
 
 type Poll struct {

@@ -30,7 +30,7 @@ func ComposeBroadcastMessage(query message.Query) []byte {
 }
 
 // ComposeBroadcastStateLAO outputs a message confirming a LAO update after the signature threshold has been reached
-func ComposeBroadcastStateLAO(lao event.LAO, laoData message.DataCreateLAO, orgPublicKey string,lastSig []byte) (queryStr []byte, err_ error) {
+func ComposeBroadcastStateLAO(lao event.LAO, laoData message.DataCreateLAO, orgPublicKey string, lastSig []byte) (queryStr []byte, err_ error) {
 	//compose state update message
 	state := message.DataStateLAO{
 		Object:       "lao",
@@ -38,7 +38,7 @@ func ComposeBroadcastStateLAO(lao event.LAO, laoData message.DataCreateLAO, orgP
 		ID:           []byte(lao.ID),
 		Name:         lao.Name,
 		Creation:     lao.Creation,
-		LastModified: time.Now().Unix(), // TODO is wrong
+		LastModified: time.Now().Unix(),
 		Organizer:    []byte(lao.OrganizerPKey),
 		Witnesses:    laoData.Witnesses,
 	}
@@ -49,8 +49,8 @@ func ComposeBroadcastStateLAO(lao event.LAO, laoData message.DataCreateLAO, orgP
 	}
 
 	content := message.Message{
-		Data:              stateStr,
-		Sender:            []byte(orgPublicKey),
+		Data:   stateStr,
+		Sender: []byte(orgPublicKey),
 		// signature from received Message
 		Signature:         lastSig,
 		MessageId:         []byte(strconv.Itoa(rand.Int())),
