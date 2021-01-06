@@ -3,9 +3,6 @@ package event
 
 import "hash"
 
-// DEPRECATED : subscribers are not stored in a database anymore
-const SubscribeDB = "sub.db"
-
 type LAO struct {
 	// hash : Name || Creation, not updated on update.
 	ID string
