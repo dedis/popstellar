@@ -7,7 +7,7 @@ import (
 	"student20_pop/parser"
 )
 
-const SIG_THRESHOLD = 0
+const SigThreshold = 0
 
 // Actor is an interface representing either an Organizer or a Witness.
 type Actor interface {
