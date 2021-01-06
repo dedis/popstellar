@@ -3,7 +3,6 @@ package parser
 import (
 	"testing"
 	"student20_pop/message"
-	"student20_pop/parser"
 	"student20_pop/lib"
 	"encoding/json"
 	"reflect"
@@ -86,12 +85,12 @@ func getCorrectCreateLAOQueryStruct() message.Query {
 
 func TestParseGenericMessageAndQuery(t *testing.T) {
 
-	_, err := parser.ParseGenericMessage([]byte(correctCreateLAOString))
+	_, err := ParseGenericMessage([]byte(correctCreateLAOString))
 	if err != nil {
 		t.Error(err)
 	}
 
-	msgquery, err := parser.ParseQuery([]byte(correctCreateLAOString))
+	msgquery, err := ParseQuery([]byte(correctCreateLAOString))
 	if err != nil {
 		t.Error(err)
 	}
@@ -115,12 +114,12 @@ func TestParseGenericMessageAndQuery(t *testing.T) {
 		t.Errorf("correct structs are not as expected, \n%+v\n vs, \n%+v \n%v\n%v", msgquery, referenceStruct, string(msgquery.Params), string(referenceStruct.Params))
 	}
 
-	_, err = parser.ParseGenericMessage([]byte(wrongCreateLAOString1))
+	_, err = ParseGenericMessage([]byte(wrongCreateLAOString1))
 	if err != lib.ErrRequestDataInvalid {
 		t.Errorf("wrong string do not create an error")
 	}
 
-	_, err = parser.ParseGenericMessage([]byte(wrongCreateLAOString2))
+	_, err = ParseGenericMessage([]byte(wrongCreateLAOString2))
 	if err != lib.ErrIdNotDecoded {
 		t.Errorf("wrong string do not create an error")
 	}
