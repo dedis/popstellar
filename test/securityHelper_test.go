@@ -4,6 +4,7 @@ package main
 import (
 	ed "crypto/ed25519"
 	"crypto/sha256"
+	b64 "encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -202,8 +203,9 @@ func getIdofMessage(data message2.DataCreateLAO, privkey ed.PrivateKey) (dataFla
 	}
 	signed = ed.Sign(privkey, dataFlat)
 
-	var itemsToHash []string
-	itemsToHash = append(itemsToHash, string(dataFlat), string(signed))
-	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(itemsToHash)))
+	var itemsToHashForMessageId []string
+	itemsToHashForMessageId = append(itemsToHashForMessageId, string(dataFlat), b64.StdEncoding.EncodeToString(signed))
+	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(itemsToHashForMessageId)))
 	return dataFlat, signed, hash[:], nil
+
 }
