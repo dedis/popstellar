@@ -72,7 +72,8 @@ type DataCreateRollCallNow struct {
 	// An optional description of the roll call
 	RollCallDescription int64 `json:"roll_call_description",omitempty`
 }
-/* TODO need a clever way !
+
+/*
 type DataCreateScheduledRollCall struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
@@ -112,7 +113,6 @@ type DataOpenRollCall struct {
 	Start int64 `json:"start"`
 }
 type DataCreatePoll struct {
-	//TODO right now same attribute as meeting
 	Object string `json:"object"`
 	Action string `json:"action"`
 	//ID hash : SHA256(lao_id||creation||name)
