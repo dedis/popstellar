@@ -417,7 +417,6 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 		log.Printf("unable to parse stored LAO infos in handleWitnessMessage()")
 		return nil, err
 	}
-
 	err = security.VerifySignature(msg.Sender, toSignStruct.Data, data.Signature)
 	if err != nil {
 		return nil, err
@@ -483,7 +482,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 		if err != nil {
 			return nil, err
 		}
-		queryStr, err := parser.ComposeBroadcastStateLAO(lao, laoData, o.PublicKey)
+		queryStr, err := parser.ComposeBroadcastStateLAO(lao, laoData, o.PublicKey,data.Signature)
 		if err != nil {
 			return nil, err
 		}
