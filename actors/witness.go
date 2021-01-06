@@ -122,7 +122,7 @@ func (w *Witness) handleBroadcast(query message.Query) (msgAndChannel []lib.Mess
 		default:
 			return nil, lib.ErrInvalidAction
 		}
-	case "roll call":
+	case "roll_call":
 		switch data["action"] {
 		case "create":
 			return w.handleCreateRollCall(msg, params.Channel, query)
@@ -157,7 +157,7 @@ func (w *Witness) handleBroadcast(query message.Query) (msgAndChannel []lib.Mess
 // handleCreateLAO is the function that handles the creation of a LAO. It checks the message's validity,
 // creates a new Channel in the Witness's database and stores the received message
 func (w *Witness) handleCreateLAO(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
-	if chann != "/root" {
+	if chann != "L3Jvb3Q=" {
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -281,10 +281,10 @@ func (w *Witness) handleLAOState(msg message.Message, chann string, query messag
 }
 
 // handleCreateRollCall is the function that handles a received message with fields object and action set respectively
-// to "roll call" and "create". It  verifies the message's validity, creates a new channel in the Witness's database and
+// to "roll_call" and "create". It  verifies the message's validity, creates a new channel in the Witness's database and
 // stores the received message.
 func (w *Witness) handleCreateRollCall(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
-	if chann != "/root" {
+	if chann != "L3Jvb3Q=" {
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -293,7 +293,7 @@ func (w *Witness) handleCreateRollCall(msg message.Message, chann string, query 
 		return nil, lib.ErrInvalidResource
 	}
 
-	laoId := strings.TrimPrefix("/root/", chann)
+	laoId := strings.TrimPrefix("L3Jvb3Qv", chann)
 	if !security.RollCallCreatedIsValid(data, laoId) {
 		return nil, lib.ErrInvalidResource
 	}

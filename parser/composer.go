@@ -9,6 +9,7 @@ import (
 	"student20_pop/event"
 	"student20_pop/lib"
 	"student20_pop/message"
+	"time"
 )
 
 // ComposeBroadcastMessage outputs a message perfectly similar to query, but changes method to "broadcast"
@@ -37,7 +38,7 @@ func ComposeBroadcastStateLAO(lao event.LAO, laoData message.DataCreateLAO, orgP
 		ID:           []byte(lao.ID),
 		Name:         lao.Name,
 		Creation:     lao.Creation,
-		LastModified: lao.Creation,
+		LastModified: time.Now().Unix(), // TODO is wrong
 		Organizer:    []byte(lao.OrganizerPKey),
 		Witnesses:    laoData.Witnesses,
 	}

@@ -45,7 +45,9 @@ func ParseQuery(query []byte) (message.Query, error) {
 func ParseParams(params json.RawMessage) (message.Params, error) {
 	m := message.Params{}
 	err := json.Unmarshal(params, &m)
-	if !strings.HasPrefix(m.Channel, "/root") {
+	//L3Jvb3Q= is b64 for "/root"
+	decodedChannel, err := lib.Decode(m.Channel)
+	if !strings.HasPrefix(string(decodedChannel), "/root") || err != nil {
 		log.Printf("channel id doesn't start with /root but is %v", m.Channel)
 		return m, lib.ErrRequestDataInvalid
 	}
@@ -105,6 +107,14 @@ func dataConstAreValid(m message.Data) bool {
 	return true
 }
 
+// ParseDataCommon parses a json.RawMessage into a message.DataCommon structure. Used to extract only the fields "object"
+// and "action"
+func ParseDataCommon(data json.RawMessage) (message.DataCommon, error) {
+	m := message.DataCommon{}
+	err := json.Unmarshal(data, &m)
+	return m, err
+}
+
 // ParseDataCreateLAO parses a json.RawMessage into a message.DataCreateLAO structure.
 func ParseDataCreateLAO(data json.RawMessage) (message.DataCreateLAO, error) {
 	m := message.DataCreateLAO{}
@@ -118,6 +128,7 @@ func ParseDataWitnessMessage(data json.RawMessage) (message.DataWitnessMessage, 
 	err := json.Unmarshal(data, &m)
 	return m, err
 }
+
 // ParseDataWitnessMessage parses a json.RawMessage into a message.DataWitnessMessage structure.
 func ParseDataOpenRollCall(data json.RawMessage) (message.DataOpenRollCall, error) {
 	m := message.DataOpenRollCall{}

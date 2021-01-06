@@ -72,47 +72,53 @@ func (o *Organizer) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAn
 
 // handleBroadcast is the function to handle a received message which method was "broadcast"
 // It is called by the function HandleReceivedMessage.
+// It returns an error as, in the current implementation there is only one Organizer, and he's the only one sending broadcast message. Hence he should not be receiving some.
 func (o *Organizer) handleBroadcast(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
-	params, errs := parser.ParseParams(query.Params)
-	if errs != nil {
-		log.Printf("unable to analyse paramsLight in handleBroadcast()")
-		return nil, lib.ErrRequestDataInvalid
-	}
+	// In the current specification, only organizer BEs should emit broadcasts, so currently, incoming broadcast messages are considered erroneous with requestDataInvalid
+	log.Printf("received a broadcast message on an organizer back-end()")
+	return nil, lib.ErrRequestDataInvalid
 
-	msg, errs := parser.ParseMessage(params.Message)
-	if errs != nil {
-		log.Printf("unable to analyse Message in handleBroadcast()")
-		return nil, lib.ErrRequestDataInvalid
-	}
-
-	data, errs := parser.ParseData(string(msg.Data))
-	if errs != nil {
-		log.Printf("unable to analyse data in handleBroadcast()")
-		return nil, lib.ErrRequestDataInvalid
-	}
-
-	errs = db.CreateMessage(msg, params.Channel, o.database)
-	if errs != nil {
-		return nil, errs
-	}
-
-	switch data["object"] {
-	case "message":
-		switch data["action"] {
-		case "witness":
-			return o.handleWitnessMessage(msg, params.Channel, query)
-			// TODO I would remove this case and force witnesses to send their "WitnessMessage" as a publish, and not a broadcasted, do you agree? yes they agree, however, it should still be broadcasted after published
-			// As per line 63, and as only org BEs should emit broadcasts, I'm actually leaning towards treating all broadcasted message to an org BE as either errors, or just checking for correct formatting then ignoring.
-		default:
+	/*
+		Legacy code which might be helpful for future protocol modifications?
+		params, errs := parser.ParseParams(query.Params)
+		if errs != nil {
+			log.Printf("unable to analyse paramsLight in handleBroadcast()")
 			return nil, lib.ErrRequestDataInvalid
 		}
-	case "state":
-		{
-			return o.handleLAOState(msg, params.Channel, query)
+
+		msg, errs := parser.ParseMessage(params.Message)
+		if errs != nil {
+			log.Printf("unable to analyse Message in handleBroadcast()")
+			return nil, lib.ErrRequestDataInvalid
 		}
-	default:
-		return nil, lib.ErrRequestDataInvalid
-	}
+
+		data, errs := parser.ParseData(string(msg.Data))
+		if errs != nil {
+			log.Printf("unable to analyse data in handleBroadcast()")
+			return nil, lib.ErrRequestDataInvalid
+		}
+
+		errs = db.CreateMessage(msg, params.Channel, o.database)
+		if errs != nil {
+			return nil, errs
+		}
+
+		switch data["object"] {
+		case "message":
+			switch data["action"] {
+			case "witness":
+				return o.handleWitnessMessage(msg, params.Channel, query)
+
+			default:
+				return nil, lib.ErrRequestDataInvalid
+			}
+		case "state":
+			{
+				return o.handleLAOState(msg, params.Channel, query)
+			}
+		default:
+			return nil, lib.ErrRequestDataInvalid
+		}*/
 
 }
 
@@ -208,7 +214,7 @@ func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.Mess
 // LAO in the database.
 func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 
-	if canal != "/root" {
+	if canal != "L3Jvb3Q=" {
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -250,11 +256,11 @@ func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query mes
 
 // handleCreateRollCall is the function to handle a received message requesting a Roll Call Creation.
 // It is called by the function handlePublish.
-// The received message had the object field set to "roll call" and action field to "create"
+// The received message had the object field set to "roll_call" and action field to "create"
 // It will check for the validity of the received message, store the received message in the database, and store the new
 // Roll Call in the database.
 func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
-	if canal == "/root" {
+	if canal == "L3Jvb3Q=" {
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -263,20 +269,19 @@ func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, quer
 		return nil, lib.ErrInvalidResource
 	}
 	//we provide the id of the channel
-	laoId := strings.TrimPrefix(canal, "/root/")
+	laoId := strings.TrimPrefix(canal, "L3Jvb3Qv")
 	if !security.RollCallCreatedIsValid(data, laoId) {
 		return nil, errs
 	}
 
 	rollCall := event.RollCall{
-		ID:       string(data.ID),
-		Name:     data.Name,
-		Creation: data.Creation,
-		Location: data.Location,
-		Start:    data.Start,
-		Scheduled:    data.Scheduled,
+		ID:                  string(data.ID),
+		Name:                data.Name,
+		Creation:            data.Creation,
+		Location:            data.Location,
+		Start:               data.Start,
+		Scheduled:           data.Scheduled,
 		RollCallDescription: data.RollCallDescription,
-
 	}
 	errs = db.CreateChannel(rollCall, o.database)
 	if errs != nil {
@@ -303,7 +308,7 @@ func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, quer
 // meeting in the database.
 func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 
-	if canal == "/root" {
+	if canal == "L3Jvb3Q=" {
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -346,7 +351,7 @@ func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, query
 // poll in the database.
 func (o *Organizer) handleCreatePoll(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 
-	if canal == "/root" {
+	if canal == "L3Jvb3Q=" {
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -416,11 +421,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 		return nil, lib.ErrRequestDataInvalid
 	}
 
-	laoData, err := parser.ParseDataCreateLAO(toSignStruct.Data)
-	if err != nil {
-		log.Printf("unable to parse stored LAO infos in handleWitnessMessage()")
-		return nil, err
-	}
+	// verify signature correctness
 	err = security.VerifySignature(msg.Sender, toSignStruct.Data, data.Signature)
 	if err != nil {
 		return nil, err
@@ -430,15 +431,15 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 	var signaturesOnly []string
 	count := 0
 	for i, item := range toSignStruct.WitnessSignatures {
-		witnessSignature, errs := parser.ParseWitnessSignature(item)
-		if errs != nil {
+		witnessSignature, err := parser.ParseWitnessSignature(item)
+		if err != nil {
 			log.Println("couldn't unMarshal the ItemWitnessSignatures from the DB")
 			continue
 		}
 		err = security.VerifySignature(witnessSignature.WitnessKey, toSignStruct.Data, witnessSignature.Signature)
 		if err != nil {
 			count--
-			log.Printf("Invalid signature found in signature lists, with index %d", i)
+			log.Printf("Invalid signature found in signature lists: index %d", i)
 		}
 		count++
 		signaturesOnly = append(signaturesOnly, string(witnessSignature.Signature))
@@ -472,27 +473,49 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 		Channel: []byte(canal),
 	}}
 
-	//TODO switch message["object"] on event type
-	if count == SIG_THRESHOLD-1 {
-		lao := event.LAO{
-			ID:            string(laoData.ID),
-			Name:          laoData.Name,
-			Creation:      laoData.Creation,
-			OrganizerPKey: string(laoData.Organizer),
-			Witnesses:     lib.ArrayArrayByteToArrayString(laoData.Witnesses),
-		}
-
-		err = db.UpdateChannel(lao, o.database)
-		if err != nil {
-			return nil, err
-		}
-		queryStr, err := parser.ComposeBroadcastStateLAO(lao, laoData, o.PublicKey,data.Signature)
-		if err != nil {
-			return nil, err
-		}
-
-		msgAndChan = append(msgAndChan, lib.MessageAndChannel{Channel: []byte(canal), Message: queryStr})
+	common, err := parser.ParseDataCommon(toSignStruct.Data)
+	if err != nil {
+		return nil, lib.ErrDBFault
 	}
+
+	var eventStruct interface{}
+	var queryStr []byte
+
+	if count == SIG_THRESHOLD-1 {
+		switch common.Object {
+		case "lao":
+			laoData, err := parser.ParseDataCreateLAO(toSignStruct.Data)
+			if err != nil {
+				log.Printf("unable to parse stored LAO infos in handleWitnessMessage()")
+				return nil, err
+			}
+
+			eventStruct = event.LAO{
+				ID:            string(laoData.ID),
+				Name:          laoData.Name,
+				Creation:      laoData.Creation,
+				OrganizerPKey: string(laoData.Organizer),
+				Witnesses:     lib.ArrayArrayByteToArrayString(laoData.Witnesses),
+			}
+			queryStr, err = parser.ComposeBroadcastStateLAO(eventStruct.(event.LAO), laoData, o.PublicKey, data.Signature)
+			if err != nil {
+				return nil, err
+			}
+
+		default:
+			log.Printf("Witness not able to witness something else than LAO state update for now")
+			return nil, lib.ErrNotYetImplemented
+
+		}
+
+		err = db.UpdateChannel(eventStruct, o.database)
+		if err != nil {
+			log.Printf("error updating the message in the database")
+			return nil, err
+		}
+	}
+
+	msgAndChan = append(msgAndChan, lib.MessageAndChannel{Channel: []byte(canal), Message: queryStr})
 
 	return msgAndChan, nil
 }
@@ -529,7 +552,7 @@ func (o *Organizer) handleOpenRollCall(msg message.Message, chann string, query 
 	}
 	//retrieve roll Call to open from database
 	storedRollCall := db.GetMessage([]byte(chann), openRollCall.ID, o.database)
-	if storedRollCall == nil{
+	if storedRollCall == nil {
 		log.Printf("unable to access the stored roll call : message, channel or DB does not exist ")
 		return nil, lib.ErrInvalidResource
 	}
@@ -547,7 +570,7 @@ func (o *Organizer) handleOpenRollCall(msg message.Message, chann string, query 
 		LastModified: rollCallData.Creation,
 		Location:     rollCallData.Location,
 		//openRollCall !
-		Start: openRollCall.Start,
+		Start:               openRollCall.Start,
 		RollCallDescription: rollCallData.RollCallDescription,
 	}
 
@@ -577,16 +600,16 @@ func (o *Organizer) handleCloseRollCall(msg message.Message, chann string, query
 		return nil, err
 	}
 	updatedRollCall := event.RollCall{
-		ID:           string(rollCallData.ID),
-		Name:         rollCallData.Name,
-		Creation:     rollCallData.Creation,
-		LastModified: rollCallData.Creation,
-		Location:     rollCallData.Location,
+		ID:                  string(rollCallData.ID),
+		Name:                rollCallData.Name,
+		Creation:            rollCallData.Creation,
+		LastModified:        rollCallData.Creation,
+		Location:            rollCallData.Location,
 		RollCallDescription: rollCallData.RollCallDescription,
 		// TODO de we always take the new start ? (even when it's not a reopening)
-		Start: closeRollCall.Start,
+		Start:     closeRollCall.Start,
 		Attendees: closeRollCall.Attendees,
-		End: closeRollCall.End,
+		End:       closeRollCall.End,
 	}
 	err = db.UpdateChannel(updatedRollCall, o.database)
 	if err != nil {
