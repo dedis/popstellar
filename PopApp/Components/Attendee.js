@@ -34,10 +34,8 @@ const laoToProperties = (events, lao) => {
   return [properties, ...events];
 };
 
-const Attendee = ({ events, lao, dispatch }) => {
+const Attendee = ({ events, lao }) => {
   if (!lao.name || !lao.witnesses) {
-    const action = { type: 'APP_NAVIGATION_OFF' };
-    dispatch(action);
     useNavigation().navigate(STRINGS.app_navigation_tab_home);
   }
   return (
@@ -58,7 +56,6 @@ Attendee.propTypes = {
     ).isRequired,
   })).isRequired,
   lao: PROPS_TYPE.LAO.isRequired,
-  dispatch: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({

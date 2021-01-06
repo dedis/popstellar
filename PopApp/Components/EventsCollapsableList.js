@@ -60,7 +60,7 @@ const Item = ({ events, closedList }) => {
         data={events.data}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => <EventItem event={item} />}
-        listKey={events.title}
+        listKey={`eventsCollapsableList${events.title}`}
       />
       )}
     </View>
@@ -87,7 +87,7 @@ const EventsCollapsableList = ({ data, closedList }) => (
     data={data}
     keyExtractor={(item) => item.title}
     renderItem={({ item }) => <Item events={item} closedList={closedList} />}
-    listKey="Base"
+    listKey="eventsCollapsableList"
   />
 );
 

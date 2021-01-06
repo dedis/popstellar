@@ -15,6 +15,7 @@ import RollCallEvent from './RollCallEvent';
 import OrganizationNameProperty from './OrganizationNameProperty';
 import WitnessProperty from './WitnessProperty';
 import RollCallEventOrganizer from './RollCallEventOrganizer';
+import { getStore } from '../Store/configureStore';
 /**
  * The Event item component: display the correct representation of the event according to its type,
  * otherwise display its name and in all cases its nested events
@@ -31,7 +32,8 @@ const styles = StyleSheet.create({
   },
 });
 
-const EventItem = ({ event, lao, pubKey }) => {
+const EventItem = ({ event, lao }) => {
+  const { pubKey } = getStore().getState().keypairReducer;
   const isOrganizer = lao.organizer === pubKey;
 
   switch (event.object) {
@@ -58,7 +60,7 @@ const EventItem = ({ event, lao, pubKey }) => {
             data={event.childrens}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => <EventItem event={item} />}
-            listKey={event.id.toString()}
+            listKey={`EventItem-${event.id.toString()}`}
           />
         </View>
       );
@@ -68,12 +70,10 @@ const EventItem = ({ event, lao, pubKey }) => {
 EventItem.propTypes = {
   event: PropTypes.oneOfType([PROPS_TYPE.event, PROPS_TYPE.property]).isRequired,
   lao: PROPS_TYPE.LAO.isRequired,
-  pubKey: PropTypes.string.isRequired,
 };
 
 const mapStateToProps = (state) => ({
   lao: state.currentLaoReducer.lao,
-  pubKey: state.keypairReducer.pubKey,
 });
 
 export default connect(mapStateToProps)(EventItem);

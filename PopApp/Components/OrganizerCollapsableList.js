@@ -179,7 +179,7 @@ const Item = ({ events, closedList }) => {
             data={events.data}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => renderPropretiesEditing(item)}
-            listKey={events.title}
+            listKey={`OrganizerEventsCollapsableList-${events.title}-properties-editing`}
             ListFooterComponent={(
               <View>
                 <View style={styles.button}>
@@ -213,7 +213,7 @@ const Item = ({ events, closedList }) => {
           data={events.data}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => <EventItem event={item} />}
-          listKey={events.title}
+          listKey={`OrganizerEventsCollapsableList-${events.title}-properties`}
         />
       );
     } if (open) {
@@ -222,7 +222,7 @@ const Item = ({ events, closedList }) => {
           data={events.data}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => <EventItem event={item} />}
-          listKey={events.title}
+          listKey={`OrganizerEventsCollapsableList-${events.title}-open`}
         />
       );
     }
@@ -265,7 +265,7 @@ const OrganizerEventsCollapsableList = ({ data, closedList }) => (
     data={data}
     keyExtractor={(item) => item.title}
     renderItem={({ item }) => <Item events={item} closedList={closedList} />}
-    listKey="Base"
+    listKey="OrganizerEventsCollapsableList"
   />
 );
 

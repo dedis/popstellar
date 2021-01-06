@@ -32,7 +32,7 @@ const WitnessProperty = ({ event }) => (
       data={event.witnesses}
       keyExtractor={(item) => item}
       renderItem={({ item }) => <Text>{item}</Text>}
-      listKey={event.id.toString()}
+      listKey={`WitnessProperty-${event.id.toString()}`}
       style={styles.flatList}
     />
   </View>

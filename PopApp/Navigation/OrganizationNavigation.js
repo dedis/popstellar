@@ -4,7 +4,6 @@ import {
 } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 
 import STRINGS from '../res/strings';
 
@@ -14,6 +13,7 @@ import MytabBar from '../Components/OrganizerMaterialTab';
 import WitnessNavigation from './WitnessNavigation';
 import OrganizerNavigation from './OrganizerNavigation';
 import PROPS_TYPE from '../res/Props';
+import { getStore } from '../Store/configureStore';
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
 
@@ -37,7 +37,8 @@ const styles = StyleSheet.create({
 });
 
 function OrganizationNavigation(props) {
-  const { lao, pubKey } = props;
+  const { lao } = props;
+  const { pubKey } = getStore().getState().keypairReducer;
   const isOrganizer = lao.organizer ? lao.organizer === pubKey : false;
   const isWitness = lao.witnesses ? lao.witnesses.includes(pubKey) : false;
 
@@ -75,13 +76,15 @@ function OrganizationNavigation(props) {
 }
 
 OrganizationNavigation.propTypes = {
-  lao: PROPS_TYPE.LAO.isRequired,
-  pubKey: PropTypes.string.isRequired,
+  lao: PROPS_TYPE.LAO,
+};
+
+OrganizationNavigation.defaultProps = {
+  lao: undefined,
 };
 
 const mapStateToProps = (state) => ({
   lao: state.currentLaoReducer.lao,
-  pubKey: state.keypairReducer.pubKey,
 });
 
 export default connect(mapStateToProps)(OrganizationNavigation);

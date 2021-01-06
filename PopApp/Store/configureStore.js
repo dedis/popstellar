@@ -2,11 +2,11 @@ import { createStore } from 'redux';
 import { persistStore, persistCombineReducers } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
-import toggleAppNavigationScreen from './Reducers/appToggleReducer';
 import currentEventsReducer from './Reducers/currentEventsReducer';
 import currentLaoReducer from './Reducers/currentLaoReducer';
 import keypairReducer from './Reducers/keypairReducer';
 import connectLAOsReducer from './Reducers/connectLAOsReducer';
+import openRollCallIDReducer from './Reducers/openRollCallIDReducer';
 
 /**
  * Create the redux persistent store for the app
@@ -19,11 +19,11 @@ const persistConfig = {
 
 /** Persistent collection of reducers */
 const appReducer = persistCombineReducers(persistConfig, {
-  toggleAppNavigationScreenReducer: toggleAppNavigationScreen,
   currentLaoReducer,
   keypairReducer,
   currentEventsReducer,
   connectLAOsReducer,
+  openRollCallIDReducer,
 });
 
 /** Trick used to clear local persistent storage */
