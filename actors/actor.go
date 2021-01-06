@@ -20,6 +20,6 @@ type Actor interface {
 	handleCreateLAO(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error)
 	handleUpdateProperties(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error)
 	handleWitnessMessage(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error)
-	handleLAOState(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error)
+	handleLAOState(msg message.Message) (msgAndChannel []lib.MessageAndChannel, err error)
 	handleCreateRollCall(mag message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error)
 }
