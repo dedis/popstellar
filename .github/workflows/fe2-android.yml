@@ -1,4 +1,4 @@
-name: Android CI
+name: PoP CI fe2-android
 
 on:
   push:
