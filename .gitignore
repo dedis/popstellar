@@ -22,4 +22,5 @@
 *.lock
 /testdata
 /test/localhost_tests_data.json
+.vscode/*
 
