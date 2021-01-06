@@ -1,17 +1,18 @@
 package ch.epfl.pop.tests.pubsub
 
 
+import akka.NotUsed
 import ch.epfl.pop.tests.MessageCreationUtils.{b64Encode, b64EncodeToString, getMessageParams}
 
 import java.io.File
 import java.security.{KeyPair, MessageDigest}
 import java.util.Base64
 import java.util.concurrent.TimeUnit
-
 import akka.actor.typed.scaladsl.AskPattern._
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.{ActorRef, ActorSystem, Props, SpawnProtocol}
-import akka.stream.scaladsl.{BroadcastHub, Keep, MergeHub, Sink, Source}
+import akka.stream.{ClosedShape, SourceShape}
+import akka.stream.scaladsl.{Broadcast, BroadcastHub, Flow, GraphDSL, Keep, Merge, MergeHub, Partition, RunnableGraph, Sink, Source}
 import akka.util.Timeout
 import ch.epfl.pop
 import ch.epfl.pop.DBActor
@@ -24,11 +25,12 @@ import org.iq80.leveldb.Options
 import org.scalatest.FunSuite
 import ch.epfl.pop.json.JsonUtils.{ErrorCodes, MessageContentDataBuilder}
 import org.scalactic.Equality
+import org.scalatest.Matchers.{contain, convertToAnyShouldWrapper}
 import scorex.crypto.signatures.{Curve25519, PrivateKey, PublicKey}
+
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 import java.util
-
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.math.pow
@@ -55,25 +57,57 @@ class PubSubTest extends FunSuite {
     implicit val timeout: Timeout = Timeout(1, TimeUnit.SECONDS)
     val (pubEntry, actor, dbActor) = setup(DatabasePath)
 
-    val sinkHead = Sink.head[JsonMessageAnswerServer]
-
     val options: Options = new Options()
     options.createIfMissing(true)
 
     val flows = (1 to numberProcesses).map(_ => PublishSubscribe.jsonFlow(actor, dbActor)(timeout, system, pubEntry))
 
-    messages.foreach { case (message, response, flowNumber) =>
-      val source = message match {
-        case Some(m) => println("Sending: " + m.toString); Source.single(m)
-        case None => Source.empty
-      }
-      val future = source.initialDelay(1.milli).via(flows(flowNumber)).log("logging ch.epfl.pop.tests.pubsub").runWith(sinkHead)
-      response match {
-        case Some(json) => assert(Await.result(future, 5.seconds) === json)
-        case None =>
-      }
-    }
+    //Generates a list of answers from the publish-subscribe given a list of requests
+    val g: Source[JsonMessageAnswerServer, NotUsed] = Source.fromGraph(GraphDSL.create() { implicit builder =>
+      import GraphDSL.Implicits._
 
+      //Send the next message when receiving an answer
+      val tester = Flow[JsonMessageAnswerServer].statefulMapConcat{ () =>
+        var current = messages.tail
+
+        { answer =>
+          current match {
+            case msg :: tail =>
+              current = tail
+              msg._1 match {
+                case Some(clientMsg) => (msg._3, clientMsg) :: Nil
+                case None => Nil
+              }
+            case Nil =>
+              Nil
+          }
+        }
+      }
+      val merge = builder.add(Merge[JsonMessageAnswerServer](flows.length))
+      val mergePart = builder.add(Merge[(Int, JsonMessagePubSubClient)](2))
+      val broadcast = builder.add(Broadcast[JsonMessageAnswerServer](2))
+      val partitioner = builder.add(Partition[(Int, JsonMessagePubSubClient)](flows.length, _._1))
+      val removeIndex = Flow[(Int, JsonMessagePubSubClient)].map(_._2)
+      val start = Source.single((messages.head._3, messages.head._1.get))
+
+      flows.zipWithIndex.foreach(f => partitioner.out(f._2) ~> removeIndex ~> f._1 ~> merge)
+      merge ~> broadcast
+      broadcast.out(0) ~> tester ~> mergePart
+      start ~> mergePart
+      mergePart ~> partitioner
+      SourceShape(broadcast.out(1))
+    }
+    )
+
+    val sink: Sink[JsonMessageAnswerServer, Future[Iterable[JsonMessageAnswerServer]]] = Sink.collection
+    val future = g.take(messages.length).runWith(sink)
+    val rcvMsg = Await.result(future, 5.seconds)
+
+    val expectedMsg = messages.flatMap(_._2)
+    assert(expectedMsg.size == rcvMsg.size)
+    expectedMsg.foreach { msg =>
+      assert(rcvMsg.exists(_ === msg))
+    }
   }
 
   //We need a special case for catchup, because arrays are compared by reference by default
@@ -162,8 +196,6 @@ class PubSubTest extends FunSuite {
     val l: List[(Option[JsonMessagePubSubClient], Option[JsonMessageAnswerServer])] =
       List((Some(createLao), Some(AnswerResultIntMessageServer(startingId + 0))),
         (Some(SubscribeMessageClient(MessageParameters(channel, None), startingId + 1)), Some(AnswerResultIntMessageServer(startingId + 1))),
-        //Temporary second subscribe message
-        //(Some(SubscribeMessageClient(MessageParameters(channel, None), startingId + 2)), Some(AnswerResultIntMessageServer(startingId + 2))),
         (Some(state), Some(AnswerResultIntMessageServer(startingId + 2))),
         (None, Some(prop))
       )
@@ -258,7 +290,7 @@ class PubSubTest extends FunSuite {
     sendAndVerify(l ::: messages)
   }
 
-  ignore("Create multiple LAOs, subscribe to their channel and publish multiple messages") {
+  test("Create multiple LAOs, subscribe to their channel and publish multiple messages") {
     val (sk, pk): (PrivateKey, PublicKey) = Curve25519.createKeyPair
     val (l1, laoID1) = createLaoSetup(sk, pk)
     val (l2, laoID2) = createLaoSetup(sk, pk, "My new LAO", 3)
@@ -277,7 +309,7 @@ class PubSubTest extends FunSuite {
 
   }
 
-  ignore("Two process subscribe and publish on the same channel") {
+  test("Two process subscribe and publish on the same channel") {
     val (sk1, pk1): (PrivateKey, PublicKey) = Curve25519.createKeyPair
     val (sk2, pk2): (PrivateKey, PublicKey) = Curve25519.createKeyPair
     val (l, laoID) = createLaoSetup(sk1, pk1)
@@ -306,7 +338,7 @@ class PubSubTest extends FunSuite {
     sendAndVerify(l)
   }
 
-  ignore("Error when creating an existing LAO") {
+  test("Error when creating an existing LAO") {
     val (sk, pk): (PrivateKey, PublicKey) = Curve25519.createKeyPair
     val laoName = "My LAO"
     val (l1, _) = createLaoSetup(sk, pk, laoName)
