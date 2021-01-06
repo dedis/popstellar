@@ -2,41 +2,9 @@
 package lib
 
 import (
-	"bytes"
 	b64 "encoding/base64"
 	"strings"
 )
-
-// Find is a helper function to find an int in a []int. It returns the index of the element and a bool in slice.
-func Find(slice []int, val int) (int, bool) {
-	for i, item := range slice {
-		if item == val {
-			return i, true
-		}
-	}
-	return -1, false
-}
-
-// FindStr is a helper function to find a string in a []string. It returns the index of the element and a bool in slice.
-func FindStr(slice []string, val string) (int, bool) {
-	for i, item := range slice {
-		if item == val {
-			return i, true
-		}
-	}
-	return -1, false
-}
-
-// FindByteArray is a helper function to find a []byte in a [][]byte. It returns the index of the element and a bool
-// in slice.
-func FindByteArray(slice [][]byte, val []byte) (int, bool) {
-	for i, item := range slice {
-		if bytes.Equal(item, val) {
-			return i, true
-		}
-	}
-	return -1, false
-}
 
 // Decode is a function that decodes a base-64 encoded string into a []byte.
 // This is done automatically by json.Marshall, still used to compare channel for lao creation.
@@ -61,6 +29,7 @@ func ArrayArrayByteToArrayString(slice [][]byte) []string {
 	return sliceString
 }
 
+// EscapeAndQuote escapes the following characters the following way:
 //`"` and `\` characters must be escaped by adding a `\` characters before them.
 //`"` becomes `\"` and `\` becomes `\\`.
 func EscapeAndQuote(s string) string {
@@ -68,7 +37,9 @@ func EscapeAndQuote(s string) string {
 	return `"` + str + `"`
 }
 
-//typically used in hashed to prevent security troubles due to bad concatenation
+// ComputeAsJsonArray creates a json Array with the strings given as arguments. It will escape them with the EscapeAndQuote
+// function first.
+// Typically used in hashed to prevent security troubles due to bad concatenation
 func ComputeAsJsonArray(elements []string) string {
 	str := "["
 	if len(elements) > 0 {
