@@ -3,13 +3,11 @@ package main
 
 import (
 	"flag"
+	"log"
+	"net/http"
 	"strconv"
 	"strings"
 	"student20_pop/network"
-	"text/template"
-
-	"log"
-	"net/http"
 )
 
 // this function basically makes the webserver run
@@ -22,7 +20,7 @@ func main() {
 	var file = flag.String("f", "default", "file for the actor to store it's database. Must end with \".db\" ")
 
 	flag.Parse()
-	tpl := template.Must(template.ParseFiles("index.html"))
+	//tpl := template.Must(template.ParseFiles("index.html"))
 
 	if strings.ToLower(*mode) != "o" && strings.ToLower(*mode) != "w" {
 		log.Fatal("Mode not recognized")
@@ -45,16 +43,16 @@ func main() {
 	case "o":
 		h := network.NewOrganizerHub(*pkey, *file)
 		router := http.NewServeMux()
-		router.Handle("/", network.HomeHandler(tpl))
-		router.Handle("/ws", network.NewWSHandler(h))
+		//router.Handle("/", network.HomeHandler(tpl))
+		router.Handle("/", network.NewWSHandler(h))
 		log.Printf("serving organizer on address " + *address + ":" + strconv.Itoa(*port))
 		log.Fatal(http.ListenAndServe(*address+":"+strconv.Itoa(*port), router)) //here to change the srv address
 
 	case "w":
 		h := network.NewWitnessHub(*pkey, *file)
 		router := http.NewServeMux()
-		router.Handle("/", network.HomeHandler(tpl))
-		router.Handle("/ws", network.NewWSHandler(h))
+		//router.Handle("/", network.HomeHandler(tpl))
+		router.Handle("/", network.NewWSHandler(h))
 		log.Printf("serving witness on adress " + *address + ":" + strconv.Itoa(*port))
 		log.Fatal(http.ListenAndServe(*address+":"+strconv.Itoa(*port), router)) //here to change the srv address
 

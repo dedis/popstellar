@@ -23,6 +23,11 @@ const(
 	WitnessKey Action = "witness"
 )*/
 
+type DataCommon struct {
+	Object string
+	Action string
+}
+
 type DataCreateLAO struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
@@ -70,7 +75,7 @@ type DataCreateRollCallNow struct {
 	// roll call's Start time timestamp (Unix) (uint64)
 	Start int64 `json:"start"`
 	// An optional description of the roll call
-	RollCallDescription int64 `json:"roll_call_description",omitempty`
+	RollCallDescription int64 `json:"roll_call_description,omitempty"`
 }
 
 /*
