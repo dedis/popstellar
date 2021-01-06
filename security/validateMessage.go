@@ -106,7 +106,7 @@ func RollCallCreatedIsValid(data message.DataCreateRollCallNow, laoId string) bo
 func MessageIsValid(msg message.Message) error {
 	// check message_id is valid
 	var itemsToHashForMessageId []string
-	itemsToHashForMessageId = append(itemsToHashForMessageId, b64.StdEncoding.EncodeToString(msg.Data), string(msg.Signature))
+	itemsToHashForMessageId = append(itemsToHashForMessageId, string(msg.Data), b64.StdEncoding.EncodeToString(msg.Signature))
 	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(itemsToHashForMessageId)))
 
 	if !bytes.Equal(msg.MessageId, hash[:]) {
