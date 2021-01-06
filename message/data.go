@@ -56,7 +56,7 @@ type DataCreateMeeting struct {
 	// arbitrary object, optional
 	Extra string `json:"extra"`
 }
-type DataCreateRollCallNow struct {
+type DataCreateRollCall struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
 	//ID hash SHA256('R'||lao_id||creation||name)
@@ -69,27 +69,13 @@ type DataCreateRollCallNow struct {
 	Location string `json:"location"`
 	// roll call's Start time timestamp (Unix) (uint64)
 	Start int64 `json:"start"`
-	// An optional description of the roll call
-	RollCallDescription int64 `json:"roll_call_description",omitempty`
-}
-
-/*
-type DataCreateScheduledRollCall struct {
-	Object string `json:"object"`
-	Action string `json:"action"`
-	//ID hash SHA256('R'||lao_id||creation||name)
-	ID []byte `json:"id"`
-	// Name of the roll ca
-	Name string `json:"name"`
-	//Creation's timestamp (Unix) (uint64)
-	Creation int64 `json:"creation"`
-	// roll call's location, optional
-	Location string `json:"location"`
 	// roll call's scheduled time timestamp (Unix) (uint64)
 	Scheduled int64 `json:"scheduled"`
 	// An optional description of the roll call
-	RollCallDescription int64 `json:"roll_call_description",omitempty`
-}*/
+	RollCallDescription string `json:"roll_call_description",omitempty`
+}
+
+
 type DataCloseRollCall struct {
 	Object string `json:"object"`
 	Action string `json:"action"`

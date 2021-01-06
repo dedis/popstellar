@@ -49,11 +49,14 @@ type RollCall struct {
 	Location string
 	// Meeting's Start time timestamp (Unix) (uint64)
 	Start int64 //  Unix timestamp (uint64)
-	// TODO end and scheduled are not yet integrated
 	// Meeting's Scheduled time timestamp (Unix) (uint64)
-	//Scheduled int64 //  Unix timestamp (uint64)
+	Scheduled int64 //  Unix timestamp (uint64)
+	//List of Attendees' Public keys
+	Attendees [][]byte `json:"attendees"`
+	// An optional description of the roll call
+	RollCallDescription string
 	// Meeting's End time timestamp (Unix) (uint64)
-	//End   int64 //timestamp
+	End   int64 //timestamp
 }
 
 type Poll struct {

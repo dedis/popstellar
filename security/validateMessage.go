@@ -76,16 +76,33 @@ func PollCreatedIsValid(data message.DataCreatePoll, message message.Message) bo
 }
 
 // not implemented yet
-func RollCallCreatedIsValid(data message.DataCreateRollCallNow, laoId string) bool {
+func RollCallCreatedIsValid(data message.DataCreateRollCall, laoId string) bool {
 	//the timestamp is reasonably recent with respect to the server’s clock,
 	if data.Creation < time.Now().Unix()-MaxClockDifference || data.Creation > time.Now().Unix()+MaxPropagationDelay {
 		log.Printf("timestamp unvalid : got %d but need to be between %d and %d",
 			data.Creation, time.Now().Unix()-MaxClockDifference, time.Now().Unix()+MaxPropagationDelay)
 		return false
 	}
-	//we start after the creation and we end after the start
-	if data.Start < data.Creation {
-		log.Printf("timestamps not logic.Start before creation.")
+	//we receive either start either scheduled so the other is set to 0
+	if data.Scheduled ==0{
+		//we start after the creation and we end after the start
+		if data.Scheduled < data.Creation {
+			log.Printf("timestamps not logic.Start before creation.")
+			return false
+		}	}
+	if data.Start ==0{
+		//we start after the creation and we end after the start
+		if data.Start < data.Creation {
+			log.Printf("timestamps not logic.Start before creation.")
+			return false
+		}
+	}
+
+
+
+	//need to meet some	where
+	if data.Location == "" {
+		log.Printf("location can not be empty")
 		return false
 	}
 	//check if id is correct  : SHA256('R'||lao_id||creation||name)
