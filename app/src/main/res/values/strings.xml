@@ -95,4 +95,5 @@
     <string name="add_witness_successful">Witness has been added</string>
     <string name="add_witness_unsuccessful">Witness could not be added</string>
     <string name="add_witness_already_exists">Witness you are trying to add is already a witness of this LAO</string>
+    <string name="event_description">Event Description</string>
 </resources>

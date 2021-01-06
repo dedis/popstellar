@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/fragment_meeting_event"
+    android:id="@+id/fragment_create_roll_call_event"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -16,51 +16,33 @@
         android:layout_height="match_parent" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_horizontal"
+        android:id="@+id/roll_call_guideline_horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
 
     <LinearLayout
-        android:id="@+id/meeting_event_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        app:layout_constrainedHeight="true"
-        app:layout_constraintTop_toBottomOf="@id/guideline_horizontal">
-
-        <TextView
-            android:id="@+id/meeting_event_title_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/create_meeting_event"
-            android:textSize="@dimen/size_title"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/meeting_title"
+        android:id="@+id/roll_call_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constrainedHeight="true"
-        app:layout_constraintTop_toBottomOf="@id/meeting_event_title"
+        app:layout_constraintTop_toBottomOf="@id/roll_call_guideline_horizontal"
         android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/title_text"
+            android:id="@+id/roll_call_title_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/meeting_title_required" />
     </LinearLayout>
-
 
     <include
         layout="@layout/enter_date_layout"
         app:layout_constrainedHeight="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintTop_toBottomOf="@id/meeting_title"
+        app:layout_constraintTop_toBottomOf="@id/roll_call_title"
         app:layout_constraintLeft_toLeftOf="parent"
         />
 
@@ -74,7 +56,7 @@
         />
 
     <LinearLayout
-        android:id="@+id/location"
+        android:id="@+id/roll_call_event_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
@@ -84,36 +66,19 @@
         app:layout_constraintLeft_toLeftOf="parent">
 
         <EditText
-            android:id="@+id/meeting_event_location_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/location_optional" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/meeting_event_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="vertical"
-        app:layout_constrainedHeight="true"
-        app:layout_constraintTop_toBottomOf="@id/location"
-        app:layout_constraintLeft_toLeftOf="parent">
-
-        <EditText
-            android:id="@+id/meeting_event_description_text"
+            android:id="@+id/roll_call_event_description_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
             android:maxLines="10"
             android:gravity="start"
-            android:hint="Event Description"
+            android:hint="@string/event_description"
             />
 
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/confirm_cancel"
+        android:id="@+id/roll_call_confirm_cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -121,14 +86,14 @@
         app:layout_constraintRight_toRightOf="parent">
 
         <Button
-            android:id="@+id/confirm"
+            android:id="@+id/roll_call_confirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="false"
             android:text="@string/confirm" />
 
         <Button
-            android:id="@+id/cancel"
+            android:id="@+id/roll_call_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/cancel" />

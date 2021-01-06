@@ -1,10 +1,10 @@
-package com.github.dedis.student20_pop.model;
+package com.github.dedis.student20_pop.model.event;
 
 import java.util.Date;
 
-import static com.github.dedis.student20_pop.model.Event.EventType.MEETING;
+import static com.github.dedis.student20_pop.model.event.Event.EventType.ROLL_CALL;
 
-public class MeetingEvent extends Event {
+public class RollCallEvent extends Event {
     private final Date startDate;
     private final Date endDate;
     private final Date startTime;
@@ -20,8 +20,8 @@ public class MeetingEvent extends Event {
      * @param lao
      * @param location
      */
-    public MeetingEvent(String name, Date startDate, Date endDate, Date startTime, Date endTime, String lao, String location, String description) {
-        super(name, startDate, lao, location, MEETING);
+    public RollCallEvent(String name, Date startDate, Date endDate, Date startTime, Date endTime, String lao, String location, String description) {
+        super(name, startDate, lao, location, ROLL_CALL);
 
         this.startDate = startDate;
         this.endDate = endDate;

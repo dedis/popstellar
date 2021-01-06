@@ -10,14 +10,14 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.model.Event;
+import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.utility.ui.organizer.OnEventTypeSelectedListener;
 
 import java.util.List;
 
-import static com.github.dedis.student20_pop.model.Event.EventCategory;
-import static com.github.dedis.student20_pop.model.Event.EventCategory.FUTURE;
-import static com.github.dedis.student20_pop.model.Event.EventType.*;
+import static com.github.dedis.student20_pop.model.event.Event.EventCategory;
+import static com.github.dedis.student20_pop.model.event.Event.EventCategory.FUTURE;
+import static com.github.dedis.student20_pop.model.event.Event.EventType.*;
 
 /**
  * Adapter to show events of an Organizer

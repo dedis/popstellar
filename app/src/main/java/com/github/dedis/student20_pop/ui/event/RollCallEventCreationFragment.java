@@ -18,15 +18,15 @@ import androidx.fragment.app.FragmentManager;
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.event.Event;
-import com.github.dedis.student20_pop.model.event.MeetingEvent;
+import com.github.dedis.student20_pop.model.event.RollCallEvent;
 import com.github.dedis.student20_pop.utility.ui.organizer.OnEventCreatedListener;
 
-public final class MeetingEventCreationFragment extends AbstractEventCreationFragment {
-    public static final String TAG = MeetingEventCreationFragment.class.getSimpleName();
+public class RollCallEventCreationFragment extends AbstractEventCreationFragment {
+    public static final String TAG = RollCallEventCreationFragment.class.getSimpleName();
 
-    private EditText meetingTitleEditText;
-    private EditText meetingLocationEditText;
-    private EditText meetingDescriptionEditText;
+    private EditText rollCallDescriptionEditText;
+    private EditText rollCallTitleEditText;
+
 
     private Button confirmButton;
     private final TextWatcher confirmTextWatcher = new TextWatcher() {
@@ -36,7 +36,7 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            String meetingTitle = meetingTitleEditText.getText().toString().trim();
+            String meetingTitle = rollCallTitleEditText.getText().toString().trim();
 
             confirmButton.setEnabled(!meetingTitle.isEmpty() &&
                     !getStartDate().isEmpty() &&
@@ -48,7 +48,6 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
         }
     };
 
-    private Button cancelButton;
     private OnEventCreatedListener eventCreatedListener;
 
     @Override
@@ -64,38 +63,33 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final FragmentManager fragmentManager = (getActivity()).getSupportFragmentManager();
-        View view = inflater.inflate(R.layout.fragment_create_meeting_event, container, false);
+        View view = inflater.inflate(R.layout.fragment_create_roll_call_event, container, false);
         PoPApplication app = (PoPApplication) getActivity().getApplication();
 
-        setDateAndTimeView(view, MeetingEventCreationFragment.this, fragmentManager);
+        setDateAndTimeView(view, RollCallEventCreationFragment.this, fragmentManager);
         addDateAndTimeListener(confirmTextWatcher);
 
+        rollCallTitleEditText = view.findViewById(R.id.roll_call_title_text);
+        rollCallDescriptionEditText = view.findViewById(R.id.roll_call_event_description_text);
 
-        meetingTitleEditText = view.findViewById(R.id.title_text);
-        meetingLocationEditText = view.findViewById(R.id.meeting_event_location_text);
-        meetingDescriptionEditText = view.findViewById(R.id.meeting_event_description_text);
-
-        meetingTitleEditText.addTextChangedListener(confirmTextWatcher);
-
-        confirmButton = view.findViewById(R.id.confirm);
+        confirmButton = view.findViewById(R.id.roll_call_confirm);
         confirmButton.setOnClickListener(v -> {
-
-            Event meetingEvent = new MeetingEvent(
-                    meetingTitleEditText.getText().toString(),
+            Event rollCallEvent = new RollCallEvent(
+                    rollCallTitleEditText.getText().toString(),
                     startDate,
                     endDate,
                     startTime,
                     endTime,
                     app.getCurrentLao().getId(),
-                    meetingLocationEditText.getText().toString(),
-                    meetingDescriptionEditText.getText().toString());
+                    NO_LOCATION,
+                    rollCallDescriptionEditText.getText().toString());
 
-            eventCreatedListener.OnEventCreatedListener(meetingEvent);
+            eventCreatedListener.OnEventCreatedListener(rollCallEvent);
 
             fragmentManager.popBackStackImmediate();
         });
 
-        cancelButton = view.findViewById(R.id.cancel);
+        Button cancelButton = view.findViewById(R.id.roll_call_cancel);
         cancelButton.setOnClickListener(v -> {
             fragmentManager.popBackStackImmediate();
         });

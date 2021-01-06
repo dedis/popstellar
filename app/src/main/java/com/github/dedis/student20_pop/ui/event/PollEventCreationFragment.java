@@ -22,15 +22,12 @@ import androidx.fragment.app.FragmentManager;
 
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.model.Event;
-import com.github.dedis.student20_pop.model.PollEvent;
+import com.github.dedis.student20_pop.model.event.Event;
+import com.github.dedis.student20_pop.model.event.PollEvent;
 import com.github.dedis.student20_pop.utility.ui.organizer.ChoicesListViewAdapter;
 import com.github.dedis.student20_pop.utility.ui.organizer.OnEventCreatedListener;
 
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public final class PollEventCreationFragment extends AbstractEventCreationFragment {
@@ -44,8 +41,6 @@ public final class PollEventCreationFragment extends AbstractEventCreationFragme
     private Button scheduleButton;
 
     private ListView choicesListView;
-    private ChoicesListViewAdapter listViewAdapter;
-
     private final TextWatcher buttonsTextWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -61,8 +56,30 @@ public final class PollEventCreationFragment extends AbstractEventCreationFragme
             scheduleButton.setEnabled(isScheduleButtonEnabled());
         }
     };
-
+    private ChoicesListViewAdapter listViewAdapter;
     private OnEventCreatedListener eventCreatedListener;
+
+    /**
+     * Method to adapt the size of the view with the number of children
+     *
+     * @param listView
+     */
+    public static void justifyListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter adapter = listView.getAdapter();
+        if (adapter == null) {
+            return;
+        }
+        int totalHeight = 0;
+        for (int i = 0; i < adapter.getCount(); i++) {
+            View listItem = adapter.getView(i, null, listView);
+            listItem.measure(0, 0);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+        ViewGroup.LayoutParams par = listView.getLayoutParams();
+        par.height = totalHeight + (listView.getDividerHeight() * (adapter.getCount() - 1));
+        listView.setLayoutParams(par);
+        listView.requestLayout();
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -109,15 +126,6 @@ public final class PollEventCreationFragment extends AbstractEventCreationFragme
             justifyListViewHeightBasedOnChildren(choicesListView);
         });
 
-
-        // formatting today's date
-        try {
-            today = DATE_FORMAT.parse(DATE_FORMAT.format(Calendar.getInstance().getTime()));
-        } catch (ParseException e) {
-            e.printStackTrace();
-            today = new Date();
-        }
-
         // Schedule
         scheduleButton = view.findViewById(R.id.schedule_button);
         scheduleButton.setOnClickListener(clicked -> {
@@ -125,14 +133,14 @@ public final class PollEventCreationFragment extends AbstractEventCreationFragme
             String question = questionEditText.getText().toString();
             List<String> choicesList = getChoices(choicesListView);
             Event pollEvent = new PollEvent(question,
-                                            choicesList,
-                                            pollTypeIsOneOfN,
-                                            startDate,
-                                            endDate,
-                                            startTime,
-                                            endTime,
-                                            app.getCurrentLao().getId(),
-                                            "");
+                    choicesList,
+                    pollTypeIsOneOfN,
+                    startDate,
+                    endDate,
+                    startTime,
+                    endTime,
+                    app.getCurrentLao().getId(),
+                    NO_LOCATION);
             eventCreatedListener.OnEventCreatedListener(pollEvent);
 
             fragmentManager.popBackStackImmediate();
@@ -156,7 +164,7 @@ public final class PollEventCreationFragment extends AbstractEventCreationFragme
 
         return !question.isEmpty() && numberOfChoices >= 2;
     }
-    
+
     public List<String> getChoices(ListView listView) {
         List<String> choices = new ArrayList<>();
         ChoicesListViewAdapter adapter = (ChoicesListViewAdapter) listView.getAdapter();
@@ -171,26 +179,5 @@ public final class PollEventCreationFragment extends AbstractEventCreationFragme
             }
         }
         return choices;
-    }
-
-    /**
-     * Method to adapt the size of the view with the number of children
-     * @param listView
-     */
-    public static void justifyListViewHeightBasedOnChildren(ListView listView) {
-        ListAdapter adapter = listView.getAdapter();
-        if (adapter == null) {
-            return;
-        }
-        int totalHeight = 0;
-        for (int i = 0; i < adapter.getCount(); i++) {
-            View listItem = adapter.getView(i, null, listView);
-            listItem.measure(0, 0);
-            totalHeight += listItem.getMeasuredHeight();
-        }
-        ViewGroup.LayoutParams par = listView.getLayoutParams();
-        par.height = totalHeight + (listView.getDividerHeight() * (adapter.getCount() - 1));
-        listView.setLayoutParams(par);
-        listView.requestLayout();
     }
 }

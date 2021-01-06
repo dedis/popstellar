@@ -5,7 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 
-import com.github.dedis.student20_pop.model.Event;
+import com.github.dedis.student20_pop.model.event.Event;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,9 +13,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.github.dedis.student20_pop.model.Event.EventCategory.FUTURE;
-import static com.github.dedis.student20_pop.model.Event.EventCategory.PAST;
-import static com.github.dedis.student20_pop.model.Event.EventCategory.PRESENT;
+import static com.github.dedis.student20_pop.model.event.Event.EventCategory.FUTURE;
+import static com.github.dedis.student20_pop.model.event.Event.EventCategory.PAST;
+import static com.github.dedis.student20_pop.model.event.Event.EventCategory.PRESENT;
 
 public abstract class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
     protected final Context context;

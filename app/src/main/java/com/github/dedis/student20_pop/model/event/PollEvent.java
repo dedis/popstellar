@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.model;
+package com.github.dedis.student20_pop.model.event;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -24,7 +24,7 @@ public final class PollEvent extends Event {
      * @param lao
      * @param location
      */
-    public PollEvent(String question, List<String> choices, boolean oneOfN, Date startDate, Date endDate, Date startTime, Date endTime, String lao, String location){
+    public PollEvent(String question, List<String> choices, boolean oneOfN, Date startDate, Date endDate, Date startTime, Date endTime, String lao, String location) {
         super(question, Calendar.getInstance().getTime(), lao, location, EventType.POLL);
         this.startDate = startDate;
         this.endDate = endDate;
@@ -50,7 +50,11 @@ public final class PollEvent extends Event {
         return endTime;
     }
 
-    public boolean isOneOfN() { return oneOfN; }
+    public boolean isOneOfN() {
+        return oneOfN;
+    }
 
-    public List<String> getChoices() { return choices; }
+    public List<String> getChoices() {
+        return choices;
+    }
 }
