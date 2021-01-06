@@ -156,6 +156,7 @@ func ParseDataCloseRollCall(data json.RawMessage) (message.DataCloseRollCall, er
 	err := json.Unmarshal(data, &m)
 	return m, err
 }
+
 // ParseDataCreatePoll parses a json.RawMessage into a message.DataCreatePoll structure.
 func ParseDataCreatePoll(data json.RawMessage) (message.DataCreatePoll, error) {
 	m := message.DataCreatePoll{}

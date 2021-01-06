@@ -53,6 +53,7 @@ func TestRollCallCreatedIsValid(t *testing.T) {
 		}
 	}
 }
+
 //===================================================================================//
 func CheckMessageIsValid(pubkey []byte, privkey ed.PrivateKey, data message2.DataCreateLAO, witnessKeysAndSignatures []message2.ItemWitnessSignatures, WitnesseKeys [][]byte) error {
 	dataFlat, signed, id, err := getIdofMessage(data, privkey)
@@ -86,8 +87,6 @@ func CheckMessageIsValid(pubkey []byte, privkey ed.PrivateKey, data message2.Dat
 	}
 	return nil
 }
-
-
 
 /* Basically following the last meeting (22/12/20) we are not supposed to have this case
 func TestMessageIsValidWithAssessedWitnesses(t *testing.T) {
@@ -160,14 +159,14 @@ func createRollCallNow(pubkey []byte, privkey ed.PrivateKey, WitnesseKeys [][]by
 
 	idData := sha256.Sum256([]byte(string(pubkey) + fmt.Sprint(creation) + name))
 	var data = message2.DataCreateRollCall{
-		Object:    "roll_call",
-		Action:    "create",
-		ID:        idData[:],
-		Name:      name,
-		Creation:  creation,
-		Location: "pas loin",
-		Start: 6,
-		RollCallDescription: "un roll call" ,
+		Object:              "roll_call",
+		Action:              "create",
+		ID:                  idData[:],
+		Name:                name,
+		Creation:            creation,
+		Location:            "pas loin",
+		Start:               6,
+		RollCallDescription: "un roll call",
 	}
 	return data, nil
 }

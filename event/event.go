@@ -53,7 +53,7 @@ type RollCall struct {
 	// An optional description of the roll call
 	RollCallDescription string
 	// Meeting's End time timestamp (Unix) (uint64)
-	End   int64 //timestamp
+	End int64 //timestamp
 }
 
 type Poll struct {
