@@ -159,7 +159,7 @@ func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.Mess
 			return o.handleUpdateProperties(msg, params.Channel, query)
 		case "state":
 			// should never happen
-			return o.handleLAOState(msg, params.Channel, query)
+			return o.handleLAOState(msg)
 		default:
 			return nil, lib.ErrInvalidAction
 		}
@@ -187,8 +187,7 @@ func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.Mess
 		case "create":
 			return o.handleCreateMeeting(msg, params.Channel, query)
 		case "state": //
-			return o.handleLAOState(msg, params.Channel, query)
-			return nil, lib.ErrNotYetImplemented
+			return o.handleLAOState(msg)
 		default:
 			return nil, lib.ErrInvalidAction
 		}
@@ -537,7 +536,7 @@ func (o *Organizer) handleCatchup(query message.Query) ([]byte, error) {
 
 //handleLAOState is just here to implement the Actor interface. It returns an error as, in the current implementation there
 // is only one Organizer, and he's the one sending this message. Hence he should not be receiving it.
-func (o *Organizer) handleLAOState(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+func (o *Organizer) handleLAOState(msg message.Message) (msgAndChannel []lib.MessageAndChannel, err error) {
 	return nil, lib.ErrInvalidAction
 }
 
