@@ -23,7 +23,7 @@ func (o *Organizer) handleSubscribe(query message.Query, connectionId int) error
 		return lib.ErrRequestDataInvalid
 	}
 
-	if _, found := lib.Find(o.channels[params.Channel], connectionId); found {
+	if _, found := lib.FindInt(o.channels[params.Channel], connectionId); found {
 		return lib.ErrResourceAlreadyExists
 	}
 
@@ -47,7 +47,7 @@ func (o *Organizer) handleUnsubscribe(query message.Query, userId int) error {
 	}
 
 	subs := o.channels[params.Channel]
-	if index, found := lib.Find(subs, userId); found {
+	if index, found := lib.FindInt(subs, userId); found {
 		subs = append(subs[:index], subs[index+1:]...)
 		o.channels[params.Channel] = subs
 	}
@@ -74,7 +74,7 @@ func (w *Witness) handleSubscribe(query message.Query, userId int) error {
 		return lib.ErrInvalidResource
 	}
 
-	if _, found := lib.Find(w.channels[params.Channel], userId); found {
+	if _, found := lib.FindInt(w.channels[params.Channel], userId); found {
 		return lib.ErrResourceAlreadyExists
 	}
 
@@ -93,7 +93,7 @@ func (w *Witness) handleUnsubscribe(query message.Query, userId int) error {
 	}
 
 	subs := w.channels[params.Channel]
-	if index, found := lib.Find(subs, userId); found {
+	if index, found := lib.FindInt(subs, userId); found {
 		subs = append(subs[:index], subs[index+1:]...)
 		w.channels[params.Channel] = subs
 	}
