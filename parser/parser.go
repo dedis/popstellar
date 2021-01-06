@@ -68,6 +68,7 @@ func ParseWitnessSignature(witnessSignatures json.RawMessage) (message.ItemWitne
 
 // ParseData parses a json.RawMessage into a message.Data structure. It calls dataConstAreValid to check restrictions
 // defined in the jsonRPC protocol.
+// Careful that message.Data is a map and as such fields must be used with m["field"] until it is being decoded in the specific structure (and then m.field)
 func ParseData(data string) (message.Data, error) {
 	m := message.Data{}
 	err := json.Unmarshal([]byte(data), &m)
@@ -83,6 +84,7 @@ func ParseData(data string) (message.Data, error) {
 // * action is one of "create", update_properties", "state", "witness"
 // * creation and last modified are positive integer
 func dataConstAreValid(m message.Data) bool {
+	// TODO need to update as it grows
 	switch m["object"] {
 	case "lao", "message", "meeting":
 		switch m["action"] {
@@ -105,13 +107,6 @@ func dataConstAreValid(m message.Data) bool {
 	return true
 }
 
-// ParseDataCommon parses a json.RawMessage into a message.DataCommon structure. Used to extract only the fields "object"
-// and "action"
-func ParseDataCommon(data json.RawMessage) (message.DataCommon, error) {
-	m := message.DataCommon{}
-	err := json.Unmarshal(data, &m)
-	return m, err
-}
 
 // ParseDataCreateLAO parses a json.RawMessage into a message.DataCreateLAO structure.
 func ParseDataCreateLAO(data json.RawMessage) (message.DataCreateLAO, error) {

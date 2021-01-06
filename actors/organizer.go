@@ -473,7 +473,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 		Channel: []byte(canal),
 	}}
 
-	common, err := parser.ParseDataCommon(toSignStruct.Data)
+	dataToSign, err := parser.ParseData(string(toSignStruct.Data))
 	if err != nil {
 		return nil, lib.ErrDBFault
 	}
@@ -482,7 +482,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 	var queryStr []byte
 
 	if count == SigThreshold-1 {
-		switch common.Object {
+		switch dataToSign["object"] {
 		case "lao":
 			laoData, err := parser.ParseDataCreateLAO(toSignStruct.Data)
 			if err != nil {

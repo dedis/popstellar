@@ -20,21 +20,12 @@ func LAOIsValid(data message.DataCreateLAO, create bool) bool {
 		log.Printf("timestamp invalid, either too old or in the future : %v", data.Creation)
 		return false
 	}
-	//the attestation is valid,
-	str := data.Organizer
-	str = append(str, []byte(strconv.FormatInt(data.Creation, 10))...)
-	str = append(str, []byte(data.Name)...)
-	hash := sha256.Sum256(str)
 
-	if create && !bytes.Equal(data.ID, hash[:]) {
-		log.Printf("expecting %v, got %v", hash, data.ID)
-		return false
-	}
 	//check if id is correct  : SHA256(organizer||creation||name)
 	var elementsToHashForDataId []string
 	elementsToHashForDataId = append(elementsToHashForDataId, string(data.Organizer), strconv.FormatInt(data.Creation, 10), data.Name)
-	hash = sha256.Sum256([]byte(lib.ComputeAsJsonArray(elementsToHashForDataId)))
-	if !bytes.Equal(data.ID, hash[:]) {
+	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(elementsToHashForDataId)))
+	if create && !bytes.Equal(data.ID, hash[:]) {
 		log.Printf("ID of createLAO invalid: %v should be: %v", string(data.ID), string(hash[:]))
 	}
 
