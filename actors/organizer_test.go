@@ -10,6 +10,8 @@ import (
 	"math/rand"
 	b64 "encoding/base64"
 	"strings"
+	"time"
+	"strconv"
 )
 
 type hub struct {
@@ -52,7 +54,8 @@ func createKeyPair() ([]byte, ed.PrivateKey) {
 
 func getCorrectDataCreateLAO(publicKey []byte) string {
 	pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
-	tohash := lib.ComputeAsJsonArray([]string{pkeyb64,"1234","my_lao"})
+	creationstr := strconv.FormatInt(time.Now().Unix(), 10)
+	tohash := lib.ComputeAsJsonArray([]string{string(publicKey),creationstr,"my_lao"})
 	hashid := sha256.Sum256( []byte(tohash) )
 	id := b64.StdEncoding.EncodeToString( hashid[:] )
 	data := `{
@@ -60,7 +63,7 @@ func getCorrectDataCreateLAO(publicKey []byte) string {
 		"action": "create",
 		"id": "`+id+`",
 		"name": "my_lao",
-		"creation": 1234,
+		"creation": `+creationstr+`,
 		"organizer": "`+pkeyb64+`",
 		"witnesses": {
 	
@@ -111,6 +114,7 @@ func getExpectedMsgAndChannelForPublishCreateLAO(publicKey []byte, privateKey ed
 	pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
 	signature := ed.Sign(privateKey, []byte(data))
 	signatureb64 := b64.StdEncoding.EncodeToString(signature)
+	// TODO I think it's weird to hash data in plain and signature in b64, but well, apparently, it's the protocol
 	tohash := lib.ComputeAsJsonArray([]string{string(data),string(signatureb64)})
 	msgid := sha256.Sum256( []byte(tohash))
 	msgidb64 := b64.StdEncoding.EncodeToString(msgid[:])
@@ -148,8 +152,8 @@ func TestReceivePublishCreateLAO(t *testing.T) {
 
 	receivedMsg := getCorrectPublishCreateLAO(publicKey, privateKey)
 	userId := 5
-	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishCreateLAO(publicKey, privateKey)
-	var expectedResponseToSender []byte = nil
+	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishCreateLAO(publicKey, privateKey) // which will never be sent, but still produced)
+	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
 
 
 	h := &hub{
@@ -164,8 +168,9 @@ func TestReceivePublishCreateLAO(t *testing.T) {
 	 
 
 	msgAndChannel, responseToSender := h.actor.HandleReceivedMessage(receivedMsg, userId)
+	// TODO this comparison fails only because of capital letters, which we need to export the fields... and I don't think actually matter in json
 	if !reflect.DeepEqual(msgAndChannel, expectedMsgAndChannel) {
-		t.Errorf("correct msgAndChannel are not as expected, \n%+v\n vs, \n%+v", msgAndChannel, expectedMsgAndChannel)
+		t.Errorf("correct msgAndChannel are not as expected, got :\n %v\n vs expected:\n%v", string(msgAndChannel[0].Message), string(expectedMsgAndChannel[0].Message))
 	}
 
 	if !reflect.DeepEqual(responseToSender, expectedResponseToSender) {
