@@ -21,10 +21,10 @@ const(
 type GenericMessage map[string]interface{}
 
 type Query struct {
-	Jsonrpc string
-	Method  string
-	Params  json.RawMessage
-	Id      int
+	Jsonrpc string `json:"jsonrpc"`
+	Method  string `json:"method"`
+	Params  json.RawMessage `json:"params"`
+	Id      int `json:"id"`
 }
 
 type Params struct {
