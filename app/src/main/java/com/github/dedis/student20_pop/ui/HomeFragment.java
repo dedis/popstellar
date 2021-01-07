@@ -32,7 +32,7 @@ import java.util.Locale;
 public final class HomeFragment extends Fragment {
 
     public static final String TAG = HomeFragment.class.getSimpleName();
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yy", Locale.ENGLISH);
 
     private List<Lao> laos;
     private String id;
