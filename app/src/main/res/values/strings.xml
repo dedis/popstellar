@@ -80,6 +80,11 @@
     <string name="roll_call_event">Roll-Call Event</string>
     <string name="exception_message_empty_lao_name">Trying to set an empty name for the LAO</string>
     <string name="anonymous_explanation">You can participate in organizations and meetings anonymously by leaving this box checked.\nIf you wish to reveal your identity to other participants in this organization,\nyou may un-check this box and enter the information you wish to reveal below.\nYou must enter identity information in order to play an Organizer or Witness role in an organization.</string>
+    <string name="roll_call_open_attendees">Open</string>
+    <string name="add_attendee_successful">AAttendee scanned successfully</string>
+    <string name="add_attendee_already_exists">Attendee already recorded</string>
+    <string name="add_attendee_unsuccessful">Error when adding attendee</string>
+    <string name="add_attendees_number">Number of attendees :  %1$d</string>
 
     <!-- Identity -->
     <string name="identity_name">Name</string>
@@ -96,9 +101,8 @@
     <string name="add_witness_unsuccessful">Witness could not be added</string>
     <string name="add_witness_already_exists">Witness you are trying to add is already a witness of this LAO</string>
     <string name="event_description">Event Description</string>
-    <string name="roll_call_open_attendees">Open</string>
-    <string name="qrcode_scanning_add_attendee">Scan personal QR code of the attendee to add</string>
-    <string name="add_attendee_successful">Attendee was successfully added</string>
-    <string name="add_attendee_already_exists">Attendee already exists</string>
-    <string name="add_attendee_unsuccessful">Error when adding attendee</string>
+    <string name="qrcode_scanning_add_attendee">Please scan each participant’s Roll-call QR code exactly once.</string>
+    <string name="close_roll_call">Close Roll-Call</string>
+    <string name="scan_all_attendees_question">Are you sure you have scan all attendees ?</string>
+
 </resources>

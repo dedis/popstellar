@@ -51,7 +51,7 @@ public class PoPApplicationTest {
     public void canAddOneWitnessToLAO() {
         ActivityScenario.launch(MainActivity.class).onActivity(a -> {
             PoPApplication app = (PoPApplication) a.getApplication();
-            assertNull(app.getWitnesses(lao1));
+            assertThat(app.getWitnesses(lao1), is(empty()));
             AddWitnessResult result = app.addWitness(lao1, witness1);
             assertThat(app.getWitnesses(lao1), is(Collections.singletonList(witness1)));
             assertThat(result, is(ADD_WITNESS_SUCCESSFUL));
@@ -73,7 +73,7 @@ public class PoPApplicationTest {
     public void canAddWitnessesToLAO() {
         ActivityScenario.launch(MainActivity.class).onActivity(a -> {
             PoPApplication app = (PoPApplication) a.getApplication();
-            assertNull(app.getWitnesses(lao1));
+            assertThat(app.getWitnesses(lao1), is(empty()));
             List<AddWitnessResult> results = app.addWitnesses(lao1, witnesses);
             assertThat(app.getWitnesses(lao1), is(witnesses));
             for (AddWitnessResult result : results) {
@@ -111,7 +111,7 @@ public class PoPApplicationTest {
     public void cannotAddTwiceSameWitnessToLAO() {
         ActivityScenario.launch(MainActivity.class).onActivity(a -> {
             PoPApplication app = (PoPApplication) a.getApplication();
-            assertNull(app.getWitnesses(lao1));
+            assertThat(app.getWitnesses(lao1), is(empty()));
             AddWitnessResult result1 = app.addWitness(lao1, witness1);
             AddWitnessResult result2 = app.addWitness(lao1, witness1);
 
@@ -149,7 +149,7 @@ public class PoPApplicationTest {
     public void cannotAddTwiceSameWitnessesToLAO() {
         ActivityScenario.launch(MainActivity.class).onActivity(a -> {
             PoPApplication app = (PoPApplication) a.getApplication();
-            assertNull(app.getWitnesses(lao1));
+            assertThat(app.getWitnesses(lao1), is(empty()));
             List<AddWitnessResult> results1 = app.addWitnesses(lao1, witnesses);
             List<AddWitnessResult> results2 = app.addWitnesses(lao1, witnesses);
 

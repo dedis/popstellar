@@ -13,17 +13,16 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.databinding.ObservableArrayList;
 import androidx.fragment.app.FragmentManager;
 
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.RollCallEvent;
 import com.github.dedis.student20_pop.utility.ui.organizer.OnAddAttendeesListener;
 import com.github.dedis.student20_pop.utility.ui.organizer.OnEventCreatedListener;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 public class RollCallEventCreationFragment extends AbstractEventCreationFragment {
     public static final String TAG = RollCallEventCreationFragment.class.getSimpleName();
@@ -31,9 +30,11 @@ public class RollCallEventCreationFragment extends AbstractEventCreationFragment
     private EditText rollCallDescriptionEditText;
     private EditText rollCallTitleEditText;
     private RollCallEvent rollCallEvent;
-
-
+    private OnEventCreatedListener eventCreatedListener;
+    private OnAddAttendeesListener onAddAttendeesListener;
     private Button confirmButton;
+    private Button openButton;
+
     private final TextWatcher confirmTextWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -42,22 +43,20 @@ public class RollCallEventCreationFragment extends AbstractEventCreationFragment
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             String meetingTitle = rollCallTitleEditText.getText().toString().trim();
-
-            confirmButton.setEnabled(!meetingTitle.isEmpty() &&
+            boolean areFieldsFilled = !meetingTitle.isEmpty() &&
                     !getStartDate().isEmpty() &&
-                    !getStartTime().isEmpty());
+                    !getStartTime().isEmpty();
+            confirmButton.setEnabled(areFieldsFilled);
+            openButton.setEnabled(areFieldsFilled);
         }
 
         @Override
         public void afterTextChanged(Editable s) {
         }
     };
-    private Button openButton;
-    private OnEventCreatedListener eventCreatedListener;
-    private OnAddAttendeesListener onAddAttendeesListener;
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         eventCreatedListener = (OnEventCreatedListener) context;
         onAddAttendeesListener = (OnAddAttendeesListener) context;
@@ -66,7 +65,7 @@ public class RollCallEventCreationFragment extends AbstractEventCreationFragment
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final FragmentManager fragmentManager = (getActivity()).getSupportFragmentManager();
+        final FragmentManager fragmentManager = (Objects.requireNonNull(getActivity())).getSupportFragmentManager();
         View view = inflater.inflate(R.layout.fragment_create_roll_call_event, container, false);
         PoPApplication app = (PoPApplication) getActivity().getApplication();
 
@@ -78,13 +77,22 @@ public class RollCallEventCreationFragment extends AbstractEventCreationFragment
 
         openButton = view.findViewById(R.id.roll_call_open);
 
-
         confirmButton = view.findViewById(R.id.roll_call_confirm);
         confirmButton.setOnClickListener(v -> {
-
-
+            if(rollCallEvent == null){
+                rollCallEvent = new RollCallEvent(
+                        rollCallTitleEditText.getText().toString(),
+                        startDate,
+                        endDate,
+                        startTime,
+                        endTime,
+                        app.getCurrentLao().getId(),
+                        NO_LOCATION,
+                        rollCallDescriptionEditText.getText().toString(),
+                        new ObservableArrayList<>()
+                );
+            }
             eventCreatedListener.OnEventCreatedListener(rollCallEvent);
-
             fragmentManager.popBackStackImmediate();
         });
 
@@ -98,8 +106,9 @@ public class RollCallEventCreationFragment extends AbstractEventCreationFragment
                     app.getCurrentLao().getId(),
                     NO_LOCATION,
                     rollCallDescriptionEditText.getText().toString(),
-                    new ArrayList<>()
+                    new ObservableArrayList<>()
             );
+            eventCreatedListener.OnEventCreatedListener(rollCallEvent);
             onAddAttendeesListener.onAddAttendeesListener(rollCallEvent.getId());
         });
 
