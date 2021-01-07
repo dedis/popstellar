@@ -23,7 +23,7 @@ public abstract class ExpandableListViewEventAdapter extends BaseExpandableListA
     protected final Context context;
     protected final List<Event.EventCategory> categories;
     protected final HashMap<Event.EventCategory, List<Event>> eventsMap;
-    protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm", Locale.US);
+    protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
 
     /**
      * Constructor for the expandable list view adapter to display the events
