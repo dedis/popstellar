@@ -15,7 +15,7 @@ type ResponseIDNotDecoded struct {
 }
 type ResponseWithGenResult struct {
 	Jsonrpc string `json:"jsonrpc"`
-	Result  int    `json:"result,omitempty"`
+	Result  int    `json:"result"`
 	Id      int    `json:"id"`
 }
 type Response struct {

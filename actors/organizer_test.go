@@ -173,7 +173,6 @@ func TestReceivePublishCreateLAO(t *testing.T) {
 		t.Errorf("correct msgAndChannel are not as expected, got :\n %v\n vs expected:\n%v", string(msgAndChannel[0].Message), string(expectedMsgAndChannel[0].Message))
 	}
 
-	// TODO omitempty on Result  int    `json:"result,omitempty"` cause marshall to not add the field, to correct after discussion
 	if !reflect.DeepEqual(responseToSender, expectedResponseToSender) {
 		t.Errorf("correct structs are not as expected, \n%v\n vs, \n%v", string(responseToSender), string(expectedResponseToSender))
 	}
