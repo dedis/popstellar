@@ -32,7 +32,7 @@ public class RollCallEvent extends Event {
         this.startTime = startTime;
         this.endTime = endTime;
         this.description = description;
-        this.attendees = Collections.unmodifiableList(attendees);
+        this.attendees = attendees;
     }
 
     public Date getStartDate() {

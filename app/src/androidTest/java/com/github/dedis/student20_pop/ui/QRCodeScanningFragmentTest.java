@@ -46,7 +46,7 @@ public class QRCodeScanningFragmentTest {
             Fragment fragment = a.getSupportFragmentManager().findFragmentByTag(QRCodeScanningFragment.TAG);
             Assert.assertNotNull(fragment);
             Assert.assertTrue(fragment instanceof QRCodeScanningFragment);
-            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_URL, CONNECT_LAO);
+            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_URL, CONNECT_LAO, null);
         });
 
         // Check everything

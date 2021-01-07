@@ -1,10 +1,14 @@
 package com.github.dedis.student20_pop.ui;
 
 import android.Manifest;
+import android.app.role.RoleManager;
 import android.view.View;
+import android.widget.DatePicker;
+import android.widget.TimePicker;
 
 import androidx.fragment.app.Fragment;
 import androidx.test.core.app.ActivityScenario;
+import androidx.test.espresso.contrib.PickerActions;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.rule.GrantPermissionRule;
@@ -13,21 +17,25 @@ import com.github.dedis.student20_pop.OrganizerActivity;
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Lao;
+import com.github.dedis.student20_pop.model.event.Event;
+import com.github.dedis.student20_pop.model.event.RollCallEvent;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static androidx.test.espresso.Espresso.onData;
@@ -39,11 +47,13 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.*;
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult;
+import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_SUCCESSFUL;
+import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.ADD_ROLL_CALL;
 import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.ADD_WITNESS;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
@@ -51,21 +61,55 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isIn;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertNull;
 
 
 public class OrganizerFragmentTest {
-    private View decorView;
+    @Rule
+    public final GrantPermissionRule rule = GrantPermissionRule.grant(Manifest.permission.CAMERA);
     private final String witness1 = "Alphonse";
     private final String witness2 = "Bertrand";
     private final ArrayList<String> witnesses = new ArrayList<>(Arrays.asList(witness1, witness2));
+    private final int YEAR = 2022;
+    private final int MONTH_OF_YEAR = 10;
+    private final int DAY_OF_MONTH = 10;
+    private final String DATE = "" + DAY_OF_MONTH + "/" + MONTH_OF_YEAR + "/" + YEAR;
+    private final int HOURS = 12;
+    private final int MINUTES = 15;
+    private final String TIME = "" + HOURS + ":" + MINUTES;
 
     @Rule
     public ActivityScenarioRule<OrganizerActivity> activityScenarioRule =
             new ActivityScenarioRule<>(OrganizerActivity.class);
+    private View decorView;
 
-    @Rule
-    public final GrantPermissionRule rule = GrantPermissionRule.grant(Manifest.permission.CAMERA);
+    /**
+     * This is a simple matcher to avoid error when multiple views match in hierarchy
+     * (such as in a ListView)
+     * <p>
+     * More infp here :
+     * https://stackoverflow.com/questions/29378552/in-espresso-how-to-avoid-ambiguousviewmatcherexception-when-multiple-views-matc/39756832#39756832
+     *
+     * @param matcher
+     * @param index
+     * @return
+     */
+    public static Matcher<View> withIndex(final Matcher<View> matcher, final int index) {
+        return new TypeSafeMatcher<View>() {
+            int currentIndex = 0;
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("with index: ");
+                description.appendValue(index);
+                matcher.describeTo(description);
+            }
+
+            @Override
+            public boolean matchesSafely(View view) {
+                return matcher.matches(view) && currentIndex++ == index;
+            }
+        };
+    }
 
     @Before
     public void setUp() {
@@ -101,36 +145,6 @@ public class OrganizerFragmentTest {
         onView(withText(getApplicationContext().getString(R.string.future_events))).perform(click());
         onView(withIndex(withId(R.id.event_layout), 0)).check(matches(isDisplayed()));
     }
-
-    /**
-     * This is a simple matcher to avoid error when multiple views match in hierarchy
-     * (such as in a ListView)
-     * <p>
-     * More infp here :
-     * https://stackoverflow.com/questions/29378552/in-espresso-how-to-avoid-ambiguousviewmatcherexception-when-multiple-views-matc/39756832#39756832
-     *
-     * @param matcher
-     * @param index
-     * @return
-     */
-    public static Matcher<View> withIndex(final Matcher<View> matcher, final int index) {
-        return new TypeSafeMatcher<View>() {
-            int currentIndex = 0;
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("with index: ");
-                description.appendValue(index);
-                matcher.describeTo(description);
-            }
-
-            @Override
-            public boolean matchesSafely(View view) {
-                return matcher.matches(view) && currentIndex++ == index;
-            }
-        };
-    }
-
 
     @Test
     public void clickOnAddEventButtonOpensDialog() {
@@ -251,7 +265,7 @@ public class OrganizerFragmentTest {
             final String WITNESS_ID = "t9Ed+TEwDM0+u0ZLdS4ZB/Vrrnga0Lu2iMkAQtyFRrQ=";
             final String TEST_IDS = WITNESS_ID + LAO_ID;
 
-            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_WITNESS);
+            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_WITNESS, null);
 
             for (Entry<Lao, List<String>> laoListEntry : app.getLaoWitnessMap().entrySet()) {
                 if (laoListEntry.getKey().getId().equals(LAO_ID)) {
@@ -284,7 +298,7 @@ public class OrganizerFragmentTest {
             final String WITNESS_ID = "t9Ed+TEwDM0+u0ZLdS4ZB/Vrrnga0Lu2iMkAQtyFRrQ=";
             final String TEST_IDS = WITNESS_ID + LAO_ID;
 
-            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_WITNESS);
+            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_WITNESS, null);
 
             for (Entry<Lao, List<String>> laoListEntry : app.getLaoWitnessMap().entrySet()) {
                 if (laoListEntry.getKey().getId().equals(LAO_ID)) {
@@ -293,10 +307,72 @@ public class OrganizerFragmentTest {
                 }
             }
 
-            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_WITNESS);
+            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_WITNESS, null);
         });
 
         onView(withText(getApplicationContext().getString(R.string.add_witness_already_exists)))
+                .inRoot(withDecorView(not(decorView)))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void canAddAttendee() {
+        onView(allOf(withId(R.id.add_future_event_button),
+                withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
+                .perform(click());
+        onView(withText(getApplicationContext().getString(R.string.roll_call_event))).perform(click());
+
+        onView(withId(R.id.roll_call_title_text)).perform(typeText("Random meeting title"));
+
+        onView(withId(R.id.start_date_editText)).perform(click());
+        onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
+        onView(withId(android.R.id.button1)).perform(click());
+        onView(withId(R.id.start_date_editText)).check(matches(withText(DATE)));
+
+        onView(withId(R.id.start_time_editText)).perform(click());
+        onView(withClassName(Matchers.equalTo(TimePicker.class.getName()))).perform(PickerActions.setTime(HOURS, MINUTES));
+        onView(withId(android.R.id.button1)).perform(click());
+        onView(withId(R.id.start_time_editText)).check(matches(withText(TIME)));
+
+        onView(withId(R.id.roll_call_open)).perform(click());
+
+        activityScenarioRule.getScenario().onActivity(a -> {
+            Fragment fragment = a.getSupportFragmentManager().findFragmentByTag(QRCodeScanningFragment.TAG);
+            Assert.assertNotNull(fragment);
+            Assert.assertTrue(fragment instanceof QRCodeScanningFragment);
+
+            PoPApplication app = (PoPApplication) a.getApplication();
+            final String LAO_ID = app.getCurrentLao().getId();
+
+            RollCallEvent rollCallEvent = new RollCallEvent(
+                    "Random Name",
+                    new Date(),
+                    new Date(),
+                    new Date(),
+                    new Date(),
+                    LAO_ID,
+                    "",
+                    "No description",
+                    new ArrayList<>()
+            );
+
+            app.addEvent(rollCallEvent);
+
+            final String ATTENDEE_ID = "t9Ed+TEwDM0+u0ZLdS4ZB/Vrrnga0Lu2iMkAQtyFRrQ=";
+            final String TEST_IDS = ATTENDEE_ID + LAO_ID;
+
+            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_ROLL_CALL, rollCallEvent.getId());
+
+            List<String> attendees = app.getEvents(app.getCurrentLao()).parallelStream()
+                    .filter(event -> event.getId().equals(rollCallEvent.getId()))
+                    .map(Event::getAttendees)
+                    .collect(Collectors.toList())
+                    .get(0);
+
+            Assert.assertThat(ATTENDEE_ID, isIn(attendees));
+        });
+
+        onView(withText(getApplicationContext().getString(R.string.add_attendee_successful)))
                 .inRoot(withDecorView(not(decorView)))
                 .check(matches(isDisplayed()));
     }
@@ -312,13 +388,13 @@ public class OrganizerFragmentTest {
     }
 
     @Test
-    @Ignore("TODO : Check that the corresponding Fragment has been launched")
     public void canLaunchCreateRollCallEventFragment() {
         onView(allOf(withId(R.id.add_future_event_button),
                 withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
                 .perform(click());
         onView(withText(getApplicationContext().getString(R.string.roll_call_event))).check(matches(isDisplayed()));
         onView(withText(getApplicationContext().getString(R.string.roll_call_event))).perform(click());
+        onView(withId(R.id.fragment_create_roll_call_event)).check(matches(isDisplayed()));
     }
 
     @Test
