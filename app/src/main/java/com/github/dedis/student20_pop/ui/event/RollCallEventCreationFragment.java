@@ -81,7 +81,15 @@ public class RollCallEventCreationFragment extends AbstractEventCreationFragment
 
         confirmButton = view.findViewById(R.id.roll_call_confirm);
         confirmButton.setOnClickListener(v -> {
-            new RollCallEvent(
+
+
+            eventCreatedListener.OnEventCreatedListener(rollCallEvent);
+
+            fragmentManager.popBackStackImmediate();
+        });
+
+        openButton.setOnClickListener(v -> {
+            rollCallEvent = new RollCallEvent(
                     rollCallTitleEditText.getText().toString(),
                     startDate,
                     endDate,
@@ -92,13 +100,6 @@ public class RollCallEventCreationFragment extends AbstractEventCreationFragment
                     rollCallDescriptionEditText.getText().toString(),
                     new ArrayList<>()
             );
-
-            eventCreatedListener.OnEventCreatedListener(rollCallEvent);
-
-            fragmentManager.popBackStackImmediate();
-        });
-
-        openButton.setOnClickListener(v -> {
             onAddAttendeesListener.onAddAttendeesListener(rollCallEvent.getId());
         });
 

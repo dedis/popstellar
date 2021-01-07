@@ -66,7 +66,7 @@ public class QRCodeScanningFragment extends Fragment implements QRCodeListener {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (context instanceof OnCameraAllowedListener)
             onCameraNotAllowedListener = (OnCameraNotAllowedListener) context;
