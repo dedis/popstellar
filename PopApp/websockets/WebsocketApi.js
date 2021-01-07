@@ -1,7 +1,7 @@
 import { encodeBase64, decodeBase64 } from 'tweetnacl-util';
 import {
   JSON_RPC_VERSION, objects, actions, methods, eventTags, getCurrentTime, toString64,
-  getCurrentLao, signStrings, hashStrings, getPublicKey, fromString64,
+  getCurrentLao, signString, hashStrings, getPublicKey, fromString64,
 } from './WebsocketUtils';
 import WebsocketLink from './WebsocketLink';
 
@@ -27,7 +27,7 @@ const _generateParams = (channel, message) => ({
  * (arrays of public keys)
  */
 const _generateMessage = (jsonData, witness_signatures = []) => {
-  const sign = signStrings(jsonData);
+  const sign = signString(jsonData);
 
   return {
     data: toString64(jsonData),
@@ -254,7 +254,7 @@ export const requestWitnessMessage = (message) => {
   const jsonData = new DataBuilder()
     .setObject(objects.MESSAGE).setAction(actions.WITNESS)
     .setMessageId(messageId)
-    .setSignature(signStrings(fromString64(messageId)))
+    .setSignature(signString(fromString64(messageId)))
     .buildJson();
 
   const m = _generateMessage(jsonData, []);

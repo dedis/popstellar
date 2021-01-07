@@ -94,16 +94,16 @@ export const PendingRequest = class {
 };
 
 /**
- * Sign an array of strings using the client private key
+ * Sign a string using a private key
  *
- * @param strings variable number of strings to sign
+ * @param str string to sign
+ * @param secKey base64 encoded private key used for signing. If not specified, the key
+ * stored in the client's localStorage will be used
  * @returns {string} base64 encoded signature over the strings using client secret key
  */
-export const signStrings = (...strings) => {
-  let str = '';
-  strings.forEach((item) => { str += item; });
-
-  return encodeBase64(sign.detached(decodeUTF8(str), decodeBase64(getSecretKey())));
+export const signString = (str, secKey = undefined) => {
+  const key = (secKey === undefined) ? getSecretKey() : secKey;
+  return encodeBase64(sign.detached(decodeUTF8(str), decodeBase64(key)));
 };
 
 /**
@@ -117,14 +117,7 @@ export const escapeString = (str) => {
   if (typeof strCopy === 'object') { strCopy = fromString64(encodeBase64(strCopy)); }
 
   strCopy = strCopy.toString();
-  return strCopy.split('\\')
-    .join('\\\\')
-    .split('\\')
-    .join('\\\\')
-    .split('"')
-    .join('\\"')
-    .split('"')
-    .join('\\"');
+  return strCopy.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 };
 
 /**
@@ -133,10 +126,8 @@ export const escapeString = (str) => {
  * @returns {string} base64 encoded SHA-256 hash of the strings
  */
 export const hashStrings = (...strings) => {
-  // TODO pas de string en input? juste crochets + quote et vide a l'intérieur
-
   let str = '';
-  strings.forEach((item) => { str = `"${str + escapeString(item)}",`; });
+  strings.forEach((item) => { str = `${str}"${escapeString(item)}",`; });
   // remove the last comma and add square brackets around
   str = `[${str.slice(0, -1)}]`;
 
