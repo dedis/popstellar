@@ -8,5 +8,5 @@ import com.github.dedis.student20_pop.ui.QRCodeScanningFragment;
  * camera permission
  */
 public interface OnCameraNotAllowedListener {
-    void onCameraNotAllowedListener(QRCodeScanningFragment.QRCodeScanningType qrCodeScanningType);
+    void onCameraNotAllowedListener(QRCodeScanningFragment.QRCodeScanningType qrCodeScanningType, String eventId);
 }

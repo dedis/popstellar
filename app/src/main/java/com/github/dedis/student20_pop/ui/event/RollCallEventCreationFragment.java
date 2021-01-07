@@ -30,7 +30,7 @@ public class RollCallEventCreationFragment extends AbstractEventCreationFragment
 
     private EditText rollCallDescriptionEditText;
     private EditText rollCallTitleEditText;
-    private List<String> attendees;
+    private RollCallEvent rollCallEvent;
 
 
     private Button confirmButton;
@@ -81,7 +81,7 @@ public class RollCallEventCreationFragment extends AbstractEventCreationFragment
 
         confirmButton = view.findViewById(R.id.roll_call_confirm);
         confirmButton.setOnClickListener(v -> {
-            Event rollCallEvent = new RollCallEvent(
+            new RollCallEvent(
                     rollCallTitleEditText.getText().toString(),
                     startDate,
                     endDate,
@@ -99,18 +99,7 @@ public class RollCallEventCreationFragment extends AbstractEventCreationFragment
         });
 
         openButton.setOnClickListener(v -> {
-            onAddAttendeesListener.onAddAttendeesListener(
-                    new RollCallEvent(
-                            rollCallTitleEditText.getText().toString(),
-                            startDate,
-                            endDate,
-                            startTime,
-                            endTime,
-                            app.getCurrentLao().getId(),
-                            NO_LOCATION,
-                            rollCallDescriptionEditText.getText().toString(),
-                            new ArrayList<>()
-                    ));
+            onAddAttendeesListener.onAddAttendeesListener(rollCallEvent.getId());
         });
 
         Button cancelButton = view.findViewById(R.id.roll_call_cancel);

@@ -16,8 +16,8 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
  */
 public class QRFocusingProcessor extends FocusingProcessor<Barcode> {
 
-    public QRFocusingProcessor(BarcodeDetector detector, QRCodeListener listener, QRCodeScanningType qrCodeScanningType) {
-        super(detector, new BarcodeTracker(listener, qrCodeScanningType));
+    public QRFocusingProcessor(BarcodeDetector detector, QRCodeListener listener, QRCodeScanningType qrCodeScanningType, String eventId) {
+        super(detector, new BarcodeTracker(listener, qrCodeScanningType, eventId));
     }
 
     @Override
@@ -55,10 +55,12 @@ public class QRFocusingProcessor extends FocusingProcessor<Barcode> {
 
         private final QRCodeListener listener;
         private final QRCodeScanningType qrCodeScanningType;
+        private final String eventId;
 
-        public BarcodeTracker(QRCodeListener listener, QRCodeScanningType qrCodeScanningType) {
+        public BarcodeTracker(QRCodeListener listener, QRCodeScanningType qrCodeScanningType, String eventId) {
             this.listener = listener;
             this.qrCodeScanningType = qrCodeScanningType;
+            this.eventId = eventId;
         }
 
         @Override
@@ -66,9 +68,9 @@ public class QRFocusingProcessor extends FocusingProcessor<Barcode> {
             //TODO : In some particular usage, we don't want to scan an URL but text
             // or other type of data
             if (barcode.valueFormat == Barcode.URL) {
-                listener.onQRCodeDetected(barcode.url.url, qrCodeScanningType);
+                listener.onQRCodeDetected(barcode.url.url, qrCodeScanningType, eventId);
             } else if (barcode.valueFormat == Barcode.TEXT) {
-                listener.onQRCodeDetected(barcode.displayValue, qrCodeScanningType);
+                listener.onQRCodeDetected(barcode.displayValue, qrCodeScanningType, eventId);
             }
         }
     }
