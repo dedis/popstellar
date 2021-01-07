@@ -98,4 +98,7 @@
     <string name="event_description">Event Description</string>
     <string name="roll_call_open_attendees">Open</string>
     <string name="qrcode_scanning_add_attendee">Scan personal QR code of the attendee to add</string>
+    <string name="add_attendee_successful">Attendee was successfully added</string>
+    <string name="add_attendee_already_exists">Attendee already exists</string>
+    <string name="add_attendee_unsuccessful">Error when adding attendee</string>
 </resources>

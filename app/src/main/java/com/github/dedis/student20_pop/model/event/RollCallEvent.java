@@ -73,6 +73,7 @@ public class RollCallEvent extends Event {
      */
     public enum AddAttendeeResult {
         ADD_ATTENDEE_SUCCESSFUL,
-        ADD_ATTENDEE_ALREADY_EXISTS
+        ADD_ATTENDEE_ALREADY_EXISTS,
+        ADD_ATTENDEE_UNSUCCESSFUL
     }
 }

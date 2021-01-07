@@ -65,9 +65,9 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
                 break;
             case R.id.tab_connect:
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
-                    showFragment(new QRCodeScanningFragment(CONNECT_LAO), QRCodeScanningFragment.TAG);
+                    showFragment(new QRCodeScanningFragment(CONNECT_LAO, null), QRCodeScanningFragment.TAG);
                 else
-                    showFragment(new CameraPermissionFragment(CONNECT_LAO), CameraPermissionFragment.TAG);
+                    showFragment(new CameraPermissionFragment(CONNECT_LAO, null), CameraPermissionFragment.TAG);
                 break;
             case R.id.tab_launch:
                 showFragment(new LaunchFragment(), LaunchFragment.TAG);
@@ -123,12 +123,12 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
 
 
     @Override
-    public void onCameraNotAllowedListener(QRCodeScanningType qrCodeScanningType) {
-        showFragment(new CameraPermissionFragment(qrCodeScanningType), CameraPermissionFragment.TAG);
+    public void onCameraNotAllowedListener(QRCodeScanningType qrCodeScanningType, String eventId) {
+        showFragment(new CameraPermissionFragment(qrCodeScanningType, eventId), CameraPermissionFragment.TAG);
     }
 
     @Override
-    public void onQRCodeDetected(String url, QRCodeScanningType qrCodeScanningType) {
+    public void onQRCodeDetected(String url, QRCodeScanningType qrCodeScanningType, String eventId) {
         Log.i(TAG, "Received qrcode url : " + url);
         switch (qrCodeScanningType) {
             case ADD_ROLL_CALL:
@@ -146,7 +146,7 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
     }
 
     @Override
-    public void onCameraAllowedListener(QRCodeScanningType qrCodeScanningType) {
-        showFragment(new QRCodeScanningFragment(qrCodeScanningType), QRCodeScanningFragment.TAG);
+    public void onCameraAllowedListener(QRCodeScanningType qrCodeScanningType, String eventId) {
+        showFragment(new QRCodeScanningFragment(qrCodeScanningType, null), QRCodeScanningFragment.TAG);
     }
 }

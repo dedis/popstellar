@@ -45,12 +45,13 @@ public class QRCodeScanningFragment extends Fragment implements QRCodeListener {
     private OnCameraNotAllowedListener onCameraNotAllowedListener;
     private QRCodeListener qrCodeListener;
     private QRCodeScanningType qrCodeScanningType;
+    private String eventId;
 
     /**
      * Default Fragment constructor
      */
     public QRCodeScanningFragment() {
-        new QRCodeScanningFragment(CONNECT_LAO);
+        new QRCodeScanningFragment(CONNECT_LAO, null);
     }
 
     /**
@@ -58,9 +59,10 @@ public class QRCodeScanningFragment extends Fragment implements QRCodeListener {
      *
      * @param qrCodeScanningType tell what should be done with QR code information
      */
-    public QRCodeScanningFragment(QRCodeScanningType qrCodeScanningType) {
+    public QRCodeScanningFragment(QRCodeScanningType qrCodeScanningType, String eventId) {
         super();
         this.qrCodeScanningType = qrCodeScanningType;
+        this.eventId = eventId;
     }
 
     @Override
@@ -100,7 +102,7 @@ public class QRCodeScanningFragment extends Fragment implements QRCodeListener {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
             camera = createCamera();
         else
-            onCameraNotAllowedListener.onCameraNotAllowedListener(qrCodeScanningType);
+            onCameraNotAllowedListener.onCameraNotAllowedListener(qrCodeScanningType, eventId);
 
         return view;
     }
@@ -110,7 +112,7 @@ public class QRCodeScanningFragment extends Fragment implements QRCodeListener {
                 .setBarcodeFormats(Barcode.QR_CODE)
                 .build();
 
-        qrDetector.setProcessor(new QRFocusingProcessor(qrDetector, this, qrCodeScanningType));
+        qrDetector.setProcessor(new QRFocusingProcessor(qrDetector, this, qrCodeScanningType, eventId));
 
         return new CameraSource.Builder(requireContext(), qrDetector)
                 .setFacing(CameraSource.CAMERA_FACING_BACK)
@@ -146,7 +148,7 @@ public class QRCodeScanningFragment extends Fragment implements QRCodeListener {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
             startCamera();
         else
-            onCameraNotAllowedListener.onCameraNotAllowedListener(qrCodeScanningType);
+            onCameraNotAllowedListener.onCameraNotAllowedListener(qrCodeScanningType, eventId);
     }
 
     @Override
@@ -164,8 +166,8 @@ public class QRCodeScanningFragment extends Fragment implements QRCodeListener {
     }
 
     @Override
-    public void onQRCodeDetected(String data, QRCodeScanningType qrCodeScanningType) {
-        qrCodeListener.onQRCodeDetected(data, qrCodeScanningType);
+    public void onQRCodeDetected(String data, QRCodeScanningType qrCodeScanningType, String eventId) {
+        qrCodeListener.onQRCodeDetected(data, qrCodeScanningType, eventId);
     }
 
     /**

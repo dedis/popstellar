@@ -12,8 +12,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.Keys;
+import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.RollCallEvent;
 import com.github.dedis.student20_pop.ui.AddAttendeeFragment;
 import com.github.dedis.student20_pop.ui.CameraPermissionFragment;
@@ -33,12 +33,16 @@ import com.github.dedis.student20_pop.utility.ui.organizer.OnAddWitnessListener;
 import com.github.dedis.student20_pop.utility.ui.organizer.OnEventCreatedListener;
 import com.github.dedis.student20_pop.utility.ui.organizer.OnEventTypeSelectedListener;
 
+import java.util.Optional;
+
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult;
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_ALREADY_EXISTS;
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_SUCCESSFUL;
-import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult;
-import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.*;
 import static com.github.dedis.student20_pop.PoPApplication.getAppContext;
+import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult;
+import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.ADD_ATTENDEE_ALREADY_EXISTS;
+import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.ADD_ATTENDEE_SUCCESSFUL;
+import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.ADD_ATTENDEE_UNSUCCESSFUL;
 import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.ADD_ROLL_CALL;
 import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.ADD_WITNESS;
 
@@ -49,7 +53,6 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
         OnCameraNotAllowedListener, QRCodeListener, OnCameraAllowedListener {
 
     public static final String TAG = OrganizerActivity.class.getSimpleName();
-    private RollCallEvent rollCallEvent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,36 +131,49 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
     @Override
     public void onAddWitnessListener() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            showFragment(new QRCodeScanningFragment(ADD_WITNESS), QRCodeScanningFragment.TAG);
+            showFragment(new QRCodeScanningFragment(ADD_WITNESS, null), QRCodeScanningFragment.TAG);
         } else {
-            showFragment(new CameraPermissionFragment(ADD_WITNESS), CameraPermissionFragment.TAG);
+            showFragment(new CameraPermissionFragment(ADD_WITNESS, null), CameraPermissionFragment.TAG);
         }
     }
 
     @Override
-    public void onCameraNotAllowedListener(QRCodeScanningType qrCodeScanningType) {
-        showFragment(new CameraPermissionFragment(qrCodeScanningType), CameraPermissionFragment.TAG);
+    public void onCameraNotAllowedListener(QRCodeScanningType qrCodeScanningType, String eventId) {
+        showFragment(new CameraPermissionFragment(qrCodeScanningType, eventId), CameraPermissionFragment.TAG);
     }
 
     @Override
-    public void onQRCodeDetected(String data, QRCodeScanningType qrCodeScanningType) {
+    public void onQRCodeDetected(String data, QRCodeScanningType qrCodeScanningType, String eventId) {
+        Log.i(TAG, "Received qrcode url : " + data);
+
         int keyLength = new Keys().getPublicKey().length();
         String personId = data.substring(0, keyLength);
-
         PoPApplication app = (PoPApplication) getApplication();
-        Log.i(TAG, "Received qrcode url : " + data);
+
         switch (qrCodeScanningType) {
             case ADD_ROLL_CALL:
-                AddAttendeeResult attendeeHasBeenAdded = rollCallEvent.addAttendee(personId);
+                RollCallEvent rollCallEvent;
+                AddAttendeeResult attendeeHasBeenAdded;
+
+                Optional<Event> matchingEvent = app.getEvents(app.getCurrentLao())
+                        .parallelStream().filter(event -> event.getId().equals(eventId)).distinct().findAny();
+
+                if (matchingEvent.isPresent()) {
+                    rollCallEvent = (RollCallEvent) matchingEvent.get();
+                    attendeeHasBeenAdded = rollCallEvent.addAttendee(personId);
+                } else {
+                    attendeeHasBeenAdded = ADD_ATTENDEE_UNSUCCESSFUL;
+                }
+
                 this.runOnUiThread(
                         () -> {
                             if (attendeeHasBeenAdded == ADD_ATTENDEE_SUCCESSFUL) {
-                                Toast.makeText(this, getString(R.string.add_witness_successful), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, getString(R.string.add_attendee_successful), Toast.LENGTH_SHORT).show();
                                 getSupportFragmentManager().popBackStackImmediate();
                             } else if (attendeeHasBeenAdded == ADD_ATTENDEE_ALREADY_EXISTS) {
-                                Toast.makeText(getAppContext(), getString(R.string.add_witness_already_exists), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getAppContext(), getString(R.string.add_attendee_already_exists), Toast.LENGTH_SHORT).show();
                             } else {
-                                Toast.makeText(this, getString(R.string.add_witness_unsuccessful), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, getString(R.string.add_attendee_unsuccessful), Toast.LENGTH_SHORT).show();
                             }
                         });
 
@@ -188,8 +204,8 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
     }
 
     @Override
-    public void onCameraAllowedListener(QRCodeScanningType qrCodeScanningType) {
-        showFragment(new QRCodeScanningFragment(qrCodeScanningType), QRCodeScanningFragment.TAG);
+    public void onCameraAllowedListener(QRCodeScanningType qrCodeScanningType, String eventId) {
+        showFragment(new QRCodeScanningFragment(qrCodeScanningType, eventId), QRCodeScanningFragment.TAG);
     }
 
     @Override
@@ -198,14 +214,11 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
     }
 
     @Override
-    public void onAddAttendeesListener(RollCallEvent rollCallEvent) {
-        this.rollCallEvent = rollCallEvent;
+    public void onAddAttendeesListener(String eventId) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            showFragment(new AddAttendeeFragment(), AddAttendeeFragment.TAG);
-            Fragment newFragment = new QRCodeScanningFragment(ADD_ROLL_CALL);
-            getSupportFragmentManager().beginTransaction().replace(R.id.add_attendee_qr_code_fragment, newFragment, QRCodeScanningFragment.TAG).addToBackStack(null).commit();
+            showFragment(new AddAttendeeFragment(eventId), AddAttendeeFragment.TAG);
         } else {
-            showFragment(new CameraPermissionFragment(ADD_ROLL_CALL), CameraPermissionFragment.TAG);
+            showFragment(new CameraPermissionFragment(ADD_ROLL_CALL, eventId), CameraPermissionFragment.TAG);
         }
     }
 }

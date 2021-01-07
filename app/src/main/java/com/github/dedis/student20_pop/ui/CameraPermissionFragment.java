@@ -27,10 +27,12 @@ public final class CameraPermissionFragment extends Fragment implements View.OnC
     private final QRCodeScanningType qrCodeScanningType;
 
     private OnCameraAllowedListener onCameraAllowedListener;
+    private String eventId;
 
-    public CameraPermissionFragment(QRCodeScanningType qrCodeScanningType) {
+    public CameraPermissionFragment(QRCodeScanningType qrCodeScanningType, String eventId) {
         super();
         this.qrCodeScanningType = qrCodeScanningType;
+        this.eventId = eventId;
     }
 
 
@@ -51,7 +53,7 @@ public final class CameraPermissionFragment extends Fragment implements View.OnC
 
         // Check for the camera permission, if is is granted, switch to QRCodeScanningFragment
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
-            onCameraAllowedListener.onCameraAllowedListener(qrCodeScanningType);
+            onCameraAllowedListener.onCameraAllowedListener(qrCodeScanningType, eventId);
         return view;
     }
 
@@ -63,7 +65,7 @@ public final class CameraPermissionFragment extends Fragment implements View.OnC
                 grantResults.length != 0 &&
                 grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             // we have permission, so we switch to QRCodeScanningFragment
-            onCameraAllowedListener.onCameraAllowedListener(qrCodeScanningType);
+            onCameraAllowedListener.onCameraAllowedListener(qrCodeScanningType, eventId);
         }
     }
 
@@ -73,7 +75,7 @@ public final class CameraPermissionFragment extends Fragment implements View.OnC
         // If the permission was granted while the app was paused, switch to QRCodeScanningFragment
 
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
-            onCameraAllowedListener.onCameraAllowedListener(qrCodeScanningType);
+            onCameraAllowedListener.onCameraAllowedListener(qrCodeScanningType, eventId);
     }
 
     @Override

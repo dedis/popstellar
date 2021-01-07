@@ -7,5 +7,5 @@ import com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningTy
  */
 public interface QRCodeListener {
 
-    void onQRCodeDetected(String data, QRCodeScanningType qrCodeScanningType);
+    void onQRCodeDetected(String data, QRCodeScanningType qrCodeScanningType, String eventId);
 }
