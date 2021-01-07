@@ -110,7 +110,7 @@ func (w *Witness) handleBroadcast(query message.Query) (msgAndChannel []lib.Mess
 		case "update_properties":
 			return w.handleUpdateProperties(msg, params.Channel, query)
 		case "state":
-			return w.handleLAOState(msg, params.Channel, query)
+			return w.handleLAOState(msg)
 		default:
 			return nil, lib.ErrInvalidAction
 		}
@@ -157,7 +157,7 @@ func (w *Witness) handleBroadcast(query message.Query) (msgAndChannel []lib.Mess
 // handleCreateLAO is the function that handles the creation of a LAO. It checks the message's validity,
 // creates a new Channel in the Witness's database and stores the received message
 func (w *Witness) handleCreateLAO(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
-	if chann != "L3Jvb3Q=" {
+	if chann != "/root" {
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -223,7 +223,7 @@ func (w *Witness) handleWitnessMessage(msg message.Message, chann string, query 
 		return nil, errs
 	}
 
-	sendMsg := db.GetMessage([]byte(chann), []byte(data.MessageId), w.database)
+	sendMsg := db.GetMessage([]byte(chann), data.MessageId, w.database)
 	if sendMsg == nil {
 		log.Printf("no message with ID %v in the database", data.MessageId)
 		return nil, lib.ErrInvalidResource
@@ -252,7 +252,7 @@ func (w *Witness) handleWitnessMessage(msg message.Message, chann string, query 
 // handleLAOState is the function that handles a received message with fields object and action set respectively to
 // "lao" and "state". It verify that the message is correct, retrieves the LAO to update and updates it in the Witness's
 // database, and stores the received message.
-func (w *Witness) handleLAOState(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+func (w *Witness) handleLAOState(msg message.Message) (msgAndChannel []lib.MessageAndChannel, err error) {
 	data, errs := parser.ParseDataCreateLAO(msg.Data)
 	if errs != nil {
 		return nil, lib.ErrInvalidResource

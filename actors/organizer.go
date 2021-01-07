@@ -159,7 +159,7 @@ func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.Mess
 			return o.handleUpdateProperties(msg, params.Channel, query)
 		case "state":
 			// should never happen
-			return o.handleLAOState(msg, params.Channel, query)
+			return o.handleLAOState(msg)
 		default:
 			return nil, lib.ErrInvalidAction
 		}
@@ -187,8 +187,7 @@ func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.Mess
 		case "create":
 			return o.handleCreateMeeting(msg, params.Channel, query)
 		case "state": //
-			return o.handleLAOState(msg, params.Channel, query)
-			return nil, lib.ErrNotYetImplemented
+			return o.handleLAOState(msg)
 		default:
 			return nil, lib.ErrInvalidAction
 		}
@@ -474,7 +473,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 		Channel: []byte(canal),
 	}}
 
-	common, err := parser.ParseDataCommon(toSignStruct.Data)
+	dataToSign, err := parser.ParseData(string(toSignStruct.Data))
 	if err != nil {
 		return nil, lib.ErrDBFault
 	}
@@ -482,8 +481,8 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 	var eventStruct interface{}
 	var queryStr []byte
 
-	if count == SIG_THRESHOLD-1 {
-		switch common.Object {
+	if count == SigThreshold-1 {
+		switch dataToSign["object"] {
 		case "lao":
 			laoData, err := parser.ParseDataCreateLAO(toSignStruct.Data)
 			if err != nil {
@@ -537,7 +536,7 @@ func (o *Organizer) handleCatchup(query message.Query) ([]byte, error) {
 
 //handleLAOState is just here to implement the Actor interface. It returns an error as, in the current implementation there
 // is only one Organizer, and he's the one sending this message. Hence he should not be receiving it.
-func (o *Organizer) handleLAOState(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+func (o *Organizer) handleLAOState(msg message.Message) (msgAndChannel []lib.MessageAndChannel, err error) {
 	return nil, lib.ErrInvalidAction
 }
 
@@ -571,7 +570,7 @@ func (o *Organizer) handleOpenRollCall(msg message.Message, chann string, query 
 
 	//we provide the id of the channel
 	laoId := strings.TrimPrefix(chann, "/root")
-	if !security.RollCallOpenedIsValid(openRollCall, laoId,rollCallData) {
+	if !security.RollCallOpenedIsValid(openRollCall, laoId, rollCallData) {
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -618,7 +617,7 @@ func (o *Organizer) handleCloseRollCall(msg message.Message, chann string, query
 
 	//we provide the id of the channel
 	laoId := strings.TrimPrefix(chann, "/root")
-	if !security.RollCallClosedIsValid(closeRollCall, laoId,rollCallData) {
+	if !security.RollCallClosedIsValid(closeRollCall, laoId, rollCallData) {
 		return nil, lib.ErrInvalidResource
 	}
 
