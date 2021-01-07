@@ -73,7 +73,7 @@ type DataCreateRollCall struct {
 	// roll call's scheduled time timestamp (Unix) (uint64)
 	Scheduled int64 `json:"scheduled"`
 	// An optional description of the roll call
-	RollCallDescription string `json:"roll_call_description",omitempty`
+	RollCallDescription string `json:"roll_call_description,omitempty"`
 }
 
 type DataCloseRollCall struct {
