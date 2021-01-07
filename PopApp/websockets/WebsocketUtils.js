@@ -1,5 +1,6 @@
 import { decodeUTF8, encodeBase64, decodeBase64 } from 'tweetnacl-util';
 import { sign } from 'tweetnacl';
+import { sha256 } from 'js-sha256';
 import { getStore } from '../Store/configureStore';
 
 /* global btoa, atob */ // do not touch! EsLint required comment!
@@ -102,18 +103,45 @@ export const signStrings = (...strings) => {
   let str = '';
   strings.forEach((item) => { str += item; });
 
-  return encodeBase64(sign(decodeUTF8(str), decodeBase64(getSecretKey())));
+  return encodeBase64(sign.detached(decodeUTF8(str), decodeBase64(getSecretKey())));
 };
 
-const hashLib = require('hash.js');
+/**
+ * Escape any character '"' and '\' from a string
+ *
+ * @param str string to be escaped
+ * @returns {string} escaped string
+ */
+export const escapeString = (str) => {
+  let strCopy = str;
+  if (typeof strCopy === 'object') { strCopy = fromString64(encodeBase64(strCopy)); }
+
+  strCopy = strCopy.toString();
+  return strCopy.split('\\')
+    .join('\\\\')
+    .split('\\')
+    .join('\\\\')
+    .split('"')
+    .join('\\"')
+    .split('"')
+    .join('\\"');
+};
+
 /**
  * Hash an array of strings using SHA-256 then convert it into a base64 string
  * @param strings variable number of strings to hash
  * @returns {string} base64 encoded SHA-256 hash of the strings
  */
 export const hashStrings = (...strings) => {
-  let str = '';
-  strings.forEach((item) => { str += item; });
+  // TODO pas de string en input? juste crochets + quote et vide a l'intérieur
 
-  return toString64(hashLib.sha256().update(str).digest('hex'));
+  let str = '';
+  strings.forEach((item) => { str = `"${str + escapeString(item)}",`; });
+  // remove the last comma and add square brackets around
+  str = `[${str.slice(0, -1)}]`;
+
+  const hash = sha256.create();
+
+  const bString = hash.update(str).array();
+  return toString64(String.fromCharCode(...bString));
 };

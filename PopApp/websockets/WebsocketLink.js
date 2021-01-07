@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-// TODO remove the line above when console will not be use
 import { w3cwebsocket as W3CWebSocket } from 'websocket';
 // eslint-disable-next-line import/no-cycle
 import handleServerAnswer from './WebsocketAnswer';
@@ -7,6 +5,9 @@ import { PendingRequest } from './WebsocketUtils';
 
 /* global window */ // do not touch! EsLint required comment!
 /* eslint-disable no-underscore-dangle */
+
+/* eslint-disable no-console */
+// TODO remove the line above when console will not be use
 
 const WEBSOCKET_READYSTATE_INTERVAL_MS = 10;
 const WEBSOCKET_READYSTATE_MAX_ATTEMPTS = 100;
@@ -95,7 +96,7 @@ export default class WebsocketLink {
           // abandon if we reached too many attempts
           if (count === WEBSOCKET_READYSTATE_MAX_ATTEMPTS) {
             rejectWebsocketReady(
-              `Maximum waiting time for websocket to be ready reached : 
+              `Maximum waiting time for websocket to be ready reached :
               ${WEBSOCKET_READYSTATE_MAX_ATTEMPTS * WEBSOCKET_READYSTATE_INTERVAL_MS}
               [ms] (_waitWebsocketReady)`,
             );
