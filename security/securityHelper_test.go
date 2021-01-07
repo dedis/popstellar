@@ -1,5 +1,5 @@
 // define/securityHelpers
-package main
+package security
 
 import (
 	ed "crypto/ed25519"
@@ -14,7 +14,6 @@ import (
 	"student20_pop/lib"
 	message2 "student20_pop/message"
 	"student20_pop/parser"
-	"student20_pop/security"
 )
 
 type keys struct {
@@ -82,7 +81,7 @@ func CheckMessageIsValid(pubkey []byte, privkey ed.PrivateKey, data message2.Dat
 	if err != nil {
 		return err
 	}
-	err = security.MessageIsValid(messProcessed)
+	err = MessageIsValid(messProcessed)
 	if err != nil {
 		return err
 	}
