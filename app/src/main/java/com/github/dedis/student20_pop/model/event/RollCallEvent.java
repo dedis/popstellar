@@ -1,11 +1,13 @@
 package com.github.dedis.student20_pop.model.event;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import androidx.databinding.ObservableArrayList;
 
-import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.*;
+import java.util.Date;
+import java.util.Objects;
+
 import static com.github.dedis.student20_pop.model.event.Event.EventType.ROLL_CALL;
+import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.ADD_ATTENDEE_ALREADY_EXISTS;
+import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.ADD_ATTENDEE_SUCCESSFUL;
 
 public class RollCallEvent extends Event {
     private final Date startDate;
@@ -13,7 +15,6 @@ public class RollCallEvent extends Event {
     private final Date startTime;
     private final Date endTime;
     private final String description;
-    private final List<String> attendees;
 
     /**
      * @param name
@@ -24,7 +25,7 @@ public class RollCallEvent extends Event {
      * @param lao
      * @param location
      */
-    public RollCallEvent(String name, Date startDate, Date endDate, Date startTime, Date endTime, String lao, String location, String description, List<String> attendees) {
+    public RollCallEvent(String name, Date startDate, Date endDate, Date startTime, Date endTime, String lao, String location, String description, ObservableArrayList<String> attendees) {
         super(name, startDate, lao, location, ROLL_CALL);
 
         this.startDate = startDate;
@@ -32,7 +33,7 @@ public class RollCallEvent extends Event {
         this.startTime = startTime;
         this.endTime = endTime;
         this.description = description;
-        this.attendees = attendees;
+        this.setAttendees(attendees);
     }
 
     public Date getStartDate() {
@@ -55,15 +56,11 @@ public class RollCallEvent extends Event {
         return description;
     }
 
-    public List<String> getAttendees() {
-        return Collections.unmodifiableList(attendees);
-    }
-
     public AddAttendeeResult addAttendee(String attendeeId) {
-        if (attendees.contains(attendeeId)) {
+        if (Objects.requireNonNull(getAttendees()).contains(attendeeId)) {
             return ADD_ATTENDEE_ALREADY_EXISTS;
         } else {
-            attendees.add(attendeeId);
+            getAttendees().add(attendeeId);
             return ADD_ATTENDEE_SUCCESSFUL;
         }
     }

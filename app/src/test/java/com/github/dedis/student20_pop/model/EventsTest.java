@@ -1,5 +1,7 @@
 package com.github.dedis.student20_pop.model;
 
+import androidx.databinding.ObservableArrayList;
+
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.utility.security.Hash;
 import com.github.dedis.student20_pop.utility.security.Signature;
@@ -26,8 +28,8 @@ public class EventsTest {
     private final String lao = new Keys().getPublicKey();
     private final String location = "EPFL";
     private final Event.EventType type = Event.EventType.ROLL_CALL;
-    private final ArrayList<String> attendees = new ArrayList<>(Arrays.asList("0x3434", "0x3333"));
-    private final ArrayList<String> attendeesWithNull = new ArrayList<>(Arrays.asList("0x3939", null));
+    private final ObservableArrayList<String> attendees = new ObservableArrayList<>();
+    private final ObservableArrayList<String> attendeesWithNull = new ObservableArrayList<>();
     private final Event event1 = new Event(name1, time, lao, location, type);
     private final Event event2 = new Event(name2, time, lao, location, type);
 
@@ -89,6 +91,8 @@ public class EventsTest {
 
     @Test
     public void setNullAttendeesTest() {
+        attendees.addAll(Arrays.asList("0x3434", "0x3333"));
+        attendeesWithNull.addAll(Arrays.asList("0x3323", null));
         assertThrows(IllegalArgumentException.class, () -> event1.setAttendees(null));
         assertThrows(IllegalArgumentException.class, () -> event1.setAttendees(attendeesWithNull));
     }

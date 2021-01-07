@@ -316,68 +316,6 @@ public class OrganizerFragmentTest {
     }
 
     @Test
-    public void canAddAttendee() {
-        onView(allOf(withId(R.id.add_future_event_button),
-                withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
-                .perform(click());
-        onView(withText(getApplicationContext().getString(R.string.roll_call_event))).perform(click());
-
-        onView(withId(R.id.roll_call_title_text)).perform(typeText("Random meeting title"));
-
-        onView(withId(R.id.start_date_editText)).perform(click());
-        onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
-        onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.start_date_editText)).check(matches(withText(DATE)));
-
-        onView(withId(R.id.start_time_editText)).perform(click());
-        onView(withClassName(Matchers.equalTo(TimePicker.class.getName()))).perform(PickerActions.setTime(HOURS, MINUTES));
-        onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.start_time_editText)).check(matches(withText(TIME)));
-
-        onView(withId(R.id.roll_call_open)).perform(click());
-
-        activityScenarioRule.getScenario().onActivity(a -> {
-            Fragment fragment = a.getSupportFragmentManager().findFragmentByTag(QRCodeScanningFragment.TAG);
-            Assert.assertNotNull(fragment);
-            Assert.assertTrue(fragment instanceof QRCodeScanningFragment);
-
-            PoPApplication app = (PoPApplication) a.getApplication();
-            final String LAO_ID = app.getCurrentLao().getId();
-
-            RollCallEvent rollCallEvent = new RollCallEvent(
-                    "Random Name",
-                    new Date(),
-                    new Date(),
-                    new Date(),
-                    new Date(),
-                    LAO_ID,
-                    "",
-                    "No description",
-                    new ArrayList<>()
-            );
-
-            app.addEvent(rollCallEvent);
-
-            final String ATTENDEE_ID = "t9Ed+TEwDM0+u0ZLdS4ZB/Vrrnga0Lu2iMkAQtyFRrQ=";
-            final String TEST_IDS = ATTENDEE_ID + LAO_ID;
-
-            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_ROLL_CALL, rollCallEvent.getId());
-
-            List<String> attendees = app.getEvents(app.getCurrentLao()).parallelStream()
-                    .filter(event -> event.getId().equals(rollCallEvent.getId()))
-                    .map(Event::getAttendees)
-                    .collect(Collectors.toList())
-                    .get(0);
-
-            Assert.assertThat(ATTENDEE_ID, isIn(attendees));
-        });
-
-        onView(withText(getApplicationContext().getString(R.string.add_attendee_successful)))
-                .inRoot(withDecorView(not(decorView)))
-                .check(matches(isDisplayed()));
-    }
-
-    @Test
     public void canLaunchCreateMeetingEventFragment() {
         onView(allOf(withId(R.id.add_future_event_button),
                 withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))

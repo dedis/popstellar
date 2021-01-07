@@ -9,10 +9,11 @@
         android:id="@+id/add_attendee_qr_code_fragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="2"
         android:orientation="vertical"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/add_attendee_confirm_cancel">
     </LinearLayout>
 
     <LinearLayout
@@ -44,13 +45,7 @@
             android:id="@+id/add_attendee_confirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/confirm" />
-
-        <Button
-            android:id="@+id/add_attendee_cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/cancel" />
+            android:text="@string/close_roll_call" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
