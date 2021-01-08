@@ -15,7 +15,6 @@ import com.github.dedis.student20_pop.utility.security.Hash;
 import com.github.dedis.student20_pop.utility.security.Signature;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -104,15 +103,14 @@ public final class HighLevelClientProxy implements Closeable {
     /**
      * Send a create roll call message
      *
-     * @param laoId id of the lao
-     * @param name of the roll call
-     * @param creation time
-     * @param start of the roll call.
-     *              Could be immediate and therefore the startType field should be NOW.
-     *              If it is in the future, startType should be SCHEDULED
+     * @param laoId     id of the lao
+     * @param name      of the roll call
+     * @param creation  time
+     * @param start     of the roll call.
+     *                  Could be immediate and therefore the startType field should be NOW.
+     *                  If it is in the future, startType should be SCHEDULED
      * @param startType of the roll call
-     * @param location of the roll call
-     *
+     * @param location  of the roll call
      * @return a CompletableFuture that will be complete once the back end responses
      */
     public CompletableFuture<Integer> createRollCall(String laoId, String name, long creation, long start, CreateRollCall.StartType startType, String location) {
@@ -122,14 +120,14 @@ public final class HighLevelClientProxy implements Closeable {
     /**
      * Send a create roll call message
      *
-     * @param laoId id of the lao
-     * @param name of the roll call
-     * @param creation time
-     * @param start of the roll call.
-     *              Could be immediate and therefore the startType field should be NOW.
-     *              If it is in the future, startType should be SCHEDULED
-     * @param startType of the roll call
-     * @param location of the roll call
+     * @param laoId       id of the lao
+     * @param name        of the roll call
+     * @param creation    time
+     * @param start       of the roll call.
+     *                    Could be immediate and therefore the startType field should be NOW.
+     *                    If it is in the future, startType should be SCHEDULED
+     * @param startType   of the roll call
+     * @param location    of the roll call
      * @param description of the roll call (Optional)
      * @return a CompletableFuture that will be complete once the back end responses
      */
@@ -141,9 +139,9 @@ public final class HighLevelClientProxy implements Closeable {
     /**
      * Send an open roll call message
      *
-     * @param laoId id of the lao
+     * @param laoId      id of the lao
      * @param rollCallId id of the roll call
-     * @param start of the roll call
+     * @param start      of the roll call
      * @return a CompletableFuture that will be complete once the back end responses
      */
     public CompletableFuture<Integer> openRollCall(String laoId, String rollCallId, long start) {
@@ -154,9 +152,9 @@ public final class HighLevelClientProxy implements Closeable {
     /**
      * Send an reopen roll call message
      *
-     * @param laoId id of the lao
+     * @param laoId      id of the lao
      * @param rollCallId id of the roll call
-     * @param start of the roll call
+     * @param start      of the roll call
      * @return a CompletableFuture that will be complete once the back end responses
      */
     public CompletableFuture<Integer> reopenRollCall(String laoId, String rollCallId, long start) {
@@ -167,15 +165,15 @@ public final class HighLevelClientProxy implements Closeable {
     /**
      * Send a close roll call message
      *
-     * @param laoId id of the lao
+     * @param laoId      id of the lao
      * @param rollCallId id of the roll call
-     * @param start time
-     * @param end time
-     * @param attendees list of scanned attendees
+     * @param start      time
+     * @param end        time
+     * @param attendees  list of scanned attendees
      * @return a CompletableFuture that will be complete once the back end responses
      */
     public CompletableFuture<Integer> closeRollCall(String laoId, String rollCallId, long start, long end, List<String> attendees) {
-        return  lowLevelClientProxy.publish(publicKey, privateKey, ROOT + "/" + laoId,
+        return lowLevelClientProxy.publish(publicKey, privateKey, ROOT + "/" + laoId,
                 new CloseRollCall(rollCallId, start, end, attendees));
     }
 

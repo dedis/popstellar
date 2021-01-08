@@ -64,10 +64,10 @@ public class ProtocolTest {
         HighLevelClientProxy proxy = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
         proxy.createLao(LAO_NAME, 0, 0, bob.getId())
-            .whenComplete((i, t) -> {
-                waiter.assertTrue(t != null);
-                waiter.resume();
-            });
+                .whenComplete((i, t) -> {
+                    waiter.assertTrue(t != null);
+                    waiter.resume();
+                });
 
         synchronized (this) {
             wait(REQUEST_TIMEOUT);
@@ -88,11 +88,11 @@ public class ProtocolTest {
         HighLevelClientProxy proxy = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
         proxy.createLao(LAO_NAME, 0, 0, bob.getId())
-            .whenComplete((i, t) -> {
-                waiter.assertTrue(t == null);
-                waiter.assertEquals(i, 0);
-                waiter.resume();
-            });
+                .whenComplete((i, t) -> {
+                    waiter.assertTrue(t == null);
+                    waiter.assertEquals(i, 0);
+                    waiter.resume();
+                });
 
         waiter.await(TEST_TIMEOUT, 1);
         server.stop();
@@ -234,7 +234,6 @@ public class ProtocolTest {
     }
 
 
-
     @Test
     public void testCloseRollCall() throws DeploymentException, TimeoutException, InterruptedException {
         Server server = startAcceptEverythingServer();
@@ -332,7 +331,7 @@ public class ProtocolTest {
         public void onMessage(String message, Session session) {
             Pattern pattern = Pattern.compile(ID_REGEX);
             Matcher matcher = pattern.matcher(message);
-            if(matcher.find()) {
+            if (matcher.find()) {
                 try {
                     session.getBasicRemote().sendText(
                             String.format(Locale.US,
@@ -346,5 +345,6 @@ public class ProtocolTest {
     }
 
     @ServerEndpoint("/")
-    public static class TimeoutServer {}
+    public static class TimeoutServer {
+    }
 }

@@ -2,6 +2,7 @@ package com.github.dedis.student20_pop;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
 import androidx.test.core.app.ActivityScenario;
 
 import com.github.dedis.student20_pop.model.Lao;
@@ -11,20 +12,19 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult;
+import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_ALREADY_EXISTS;
+import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_SUCCESSFUL;
 import static com.github.dedis.student20_pop.PoPApplication.SP_PERSON_ID_KEY;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import java.util.Collections;
-import java.util.List;
-
-import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult;
-import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.*;
-import static org.hamcrest.Matchers.empty;
-import static org.junit.Assert.assertNull;
 
 public class PoPApplicationTest {
 
@@ -36,7 +36,7 @@ public class PoPApplicationTest {
 
     @Test
     public void terminateAppSavesInfoTest() {
-        ActivityScenario.launch(MainActivity .class).onActivity(a -> {
+        ActivityScenario.launch(MainActivity.class).onActivity(a -> {
             PoPApplication app = (PoPApplication) a.getApplication();
             SharedPreferences sp = app.getSharedPreferences(PoPApplication.TAG, Context.MODE_PRIVATE);
 
@@ -44,7 +44,7 @@ public class PoPApplicationTest {
             app.onTerminate();
 
             assertTrue(sp.contains(SP_PERSON_ID_KEY));
-            });
+        });
     }
 
     @Test
@@ -123,7 +123,7 @@ public class PoPApplicationTest {
 
     @Test
     public void startAppCreatesInfoTest() {
-        ActivityScenario.launch(MainActivity .class).onActivity(a -> {
+        ActivityScenario.launch(MainActivity.class).onActivity(a -> {
             PoPApplication app = (PoPApplication) a.getApplication();
             assertThat(app.getLaos(), is(new ArrayList<>(app.getLaoEventsMap().keySet())));
             assertThat(app.getPerson().getName(), is(PoPApplication.USERNAME));
@@ -164,7 +164,7 @@ public class PoPApplicationTest {
     }
 
     @Test
-    public void cannotAddTwiceSameWitnessesToCurrentLAO(){
+    public void cannotAddTwiceSameWitnessesToCurrentLAO() {
         ActivityScenario.launch(MainActivity.class).onActivity(a -> {
             PoPApplication app = (PoPApplication) a.getApplication();
             assertThat(app.getWitnesses(), is(empty()));

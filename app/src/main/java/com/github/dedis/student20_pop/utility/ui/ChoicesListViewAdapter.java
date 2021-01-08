@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import com.github.dedis.student20_pop.R;
 
-
 import java.util.LinkedList;
 import java.util.List;
 

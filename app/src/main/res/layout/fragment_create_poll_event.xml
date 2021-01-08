@@ -10,11 +10,11 @@
         android:id="@+id/title_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/margin_text"
         android:layout_gravity="center_horizontal"
+        android:layout_marginHorizontal="@dimen/margin_text"
         android:text="@string/create_poll_title"
         android:textSize="@dimen/size_title"
-        android:textStyle="bold"/>
+        android:textStyle="bold" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -23,7 +23,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/question_title"
@@ -31,14 +31,13 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 android:text="@string/question_title"
-                android:textSize="@dimen/size_body"
-                />
+                android:textSize="@dimen/size_body" />
 
             <EditText
                 android:id="@+id/question"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text"/>
+                android:inputType="text" />
 
             <LinearLayout
                 android:id="@+id/date"
@@ -46,8 +45,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="left"
                 app:layout_constrainedHeight="true"
-                app:layout_constraintTop_toBottomOf="@id/meeting_title"
-                app:layout_constraintLeft_toLeftOf="parent">
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/meeting_title">
 
                 <EditText
                     android:id="@+id/start_date_editText"
@@ -79,8 +78,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:focusableInTouchMode="false"
-                    android:hint="@string/start_time_required"
-                    />
+                    android:hint="@string/start_time_required" />
 
                 <EditText
                     android:id="@+id/end_time_editText"
@@ -128,8 +126,8 @@
                     android:id="@+id/button_add"
                     android:layout_width="@dimen/margin_text"
                     android:layout_height="@dimen/margin_text"
-                    android:src="@drawable/ic_baseline_add_24"
                     android:gravity="center_vertical"
+                    android:src="@drawable/ic_baseline_add_24"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 

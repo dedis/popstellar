@@ -20,13 +20,13 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.Lao;
+import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.utility.ui.WitnessListAdapter;
+import com.github.dedis.student20_pop.utility.ui.eventadapter.OrganizerExpandableListViewEventAdapter;
 import com.github.dedis.student20_pop.utility.ui.organizer.OnAddWitnessListener;
 import com.github.dedis.student20_pop.utility.ui.organizer.OnEventCreatedListener;
 import com.github.dedis.student20_pop.utility.ui.organizer.OnEventTypeSelectedListener;
-import com.github.dedis.student20_pop.utility.ui.eventadapter.OrganizerExpandableListViewEventAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -43,9 +43,9 @@
         android:id="@+id/meeting_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         app:layout_constrainedHeight="true"
-        app:layout_constraintTop_toBottomOf="@id/meeting_event_creation_title"
-        android:orientation="horizontal">
+        app:layout_constraintTop_toBottomOf="@id/meeting_event_creation_title">
 
         <EditText
             android:id="@+id/meeting_title_text"
@@ -57,21 +57,19 @@
 
     <include
         layout="@layout/enter_date_layout"
-        app:layout_constrainedHeight="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintTop_toBottomOf="@id/meeting_title"
+        app:layout_constrainedHeight="true"
         app:layout_constraintLeft_toLeftOf="parent"
-        />
+        app:layout_constraintTop_toBottomOf="@id/meeting_title" />
 
     <include
         layout="@layout/enter_time_layout"
-        app:layout_constrainedHeight="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:layout_constrainedHeight="true"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/date"
-        />
+        app:layout_constraintTop_toBottomOf="@id/date" />
 
     <LinearLayout
         android:id="@+id/meeting_location"
@@ -80,8 +78,8 @@
         android:gravity="center_vertical"
         android:orientation="vertical"
         app:layout_constrainedHeight="true"
-        app:layout_constraintTop_toBottomOf="@id/time"
-        app:layout_constraintLeft_toLeftOf="parent">
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/time">
 
         <EditText
             android:id="@+id/meeting_event_location_text"
@@ -97,18 +95,17 @@
         android:gravity="center_vertical"
         android:orientation="vertical"
         app:layout_constrainedHeight="true"
-        app:layout_constraintTop_toBottomOf="@id/meeting_location"
-        app:layout_constraintLeft_toLeftOf="parent">
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/meeting_location">
 
         <EditText
             android:id="@+id/meeting_event_description_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textMultiLine"
-            android:maxLines="10"
             android:gravity="start"
             android:hint="@string/event_description"
-            />
+            android:inputType="textMultiLine"
+            android:maxLines="10" />
 
     </LinearLayout>
 

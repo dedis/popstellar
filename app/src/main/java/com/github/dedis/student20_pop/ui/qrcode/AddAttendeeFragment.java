@@ -28,7 +28,7 @@ import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QR
  * This fragment wraps the QRCodeScanningFragment in order to show the user how many attendees
  * he has added so far and here the QRCode Fragment won't disappear after scanning a QR code,
  * but will stay until user tells he's done scanning attendees.
- *
+ * <p>
  * The attribute eventId represents the Roll-Call Event's id the user wants to add attendees to.
  */
 public final class AddAttendeeFragment extends Fragment {

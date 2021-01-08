@@ -17,7 +17,9 @@ import java.util.List;
 
 import static com.github.dedis.student20_pop.model.event.Event.EventCategory;
 import static com.github.dedis.student20_pop.model.event.Event.EventCategory.FUTURE;
-import static com.github.dedis.student20_pop.model.event.Event.EventType.*;
+import static com.github.dedis.student20_pop.model.event.Event.EventType.MEETING;
+import static com.github.dedis.student20_pop.model.event.Event.EventType.POLL;
+import static com.github.dedis.student20_pop.model.event.Event.EventType.ROLL_CALL;
 
 /**
  * Adapter to show events of an Organizer

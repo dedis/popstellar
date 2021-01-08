@@ -43,9 +43,9 @@
                 android:textSize="@dimen/size_title"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@id/qr_camera_preview"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"/>
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <com.github.dedis.student20_pop.utility.qrcode.CameraPreview
                 android:id="@+id/qr_camera_preview"
