@@ -53,6 +53,9 @@ public final class LowLevelClientProxy implements Closeable {
     private final Object SESSION_LOCK = new Object();
 
     private final URI sessionURI;
+    private final Gson gson = JsonUtils.createGson();
+    private final Map<Integer, RequestEntry> requests = new ConcurrentHashMap<>();
+    private final AtomicInteger counter = new AtomicInteger();
     // Having to different futures to be able to close the session even if it is closed during the opening.
     // The first future holds the session and it will immediately be passed to the second on completion
     private CompletableFuture<Session> future1;
@@ -60,10 +63,6 @@ public final class LowLevelClientProxy implements Closeable {
     // If the connection is cancelled, this future complete exceptionally but future1 is kept clean
     // to be able to close the session as soon as it is created.
     private CompletableFuture<Session> future2;
-
-    private final Gson gson = JsonUtils.createGson();
-    private final Map<Integer, RequestEntry> requests = new ConcurrentHashMap<>();
-    private final AtomicInteger counter = new AtomicInteger();
 
     public LowLevelClientProxy(URI host) {
         this.sessionURI = host;
@@ -110,7 +109,7 @@ public final class LowLevelClientProxy implements Closeable {
 
     private void refreshSession() {
         synchronized (SESSION_LOCK) {
-            if(future1.isDone()) {
+            if (future1.isDone()) {
                 Optional<Session> session = getSession();
                 if (!session.isPresent() || !session.get().isOpen()) {
                     //There was an error during competition, retry
@@ -249,6 +248,7 @@ public final class LowLevelClientProxy implements Closeable {
 
     /**
      * Close the socket for the given reason.
+     *
      * @param reason of the closing
      */
     public void close(Throwable reason) {

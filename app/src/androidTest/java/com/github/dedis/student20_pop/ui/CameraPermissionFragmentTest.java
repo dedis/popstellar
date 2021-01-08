@@ -26,7 +26,8 @@ import static org.hamcrest.Matchers.not;
  */
 public class CameraPermissionFragmentTest {
 
-    @Rule public ActivityScenarioRule<MainActivity> rule = new ActivityScenarioRule<>(MainActivity.class);
+    @Rule
+    public ActivityScenarioRule<MainActivity> rule = new ActivityScenarioRule<>(MainActivity.class);
 
     @Test
     public void checkCorrectTabIsDisplayed() {

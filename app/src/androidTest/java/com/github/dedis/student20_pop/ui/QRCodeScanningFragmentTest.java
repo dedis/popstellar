@@ -1,4 +1,3 @@
-
 package com.github.dedis.student20_pop.ui;
 
 import android.Manifest;
@@ -31,7 +30,8 @@ public class QRCodeScanningFragmentTest {
 
     private static final String TEST_URL = "Test url";
 
-    @Rule public final GrantPermissionRule rule = GrantPermissionRule.grant(Manifest.permission.CAMERA);
+    @Rule
+    public final GrantPermissionRule rule = GrantPermissionRule.grant(Manifest.permission.CAMERA);
 
     @Test
     public void testSimpleBarcodeReaction() {

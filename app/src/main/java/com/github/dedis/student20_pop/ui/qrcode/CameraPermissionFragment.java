@@ -25,9 +25,8 @@ public final class CameraPermissionFragment extends Fragment implements View.OnC
     public static final String TAG = CameraPermissionFragment.class.getSimpleName();
     private static final int HANDLE_CAMERA_PERM = 2;
     private final QRCodeScanningType qrCodeScanningType;
-
-    private OnCameraAllowedListener onCameraAllowedListener;
     private final String eventId;
+    private OnCameraAllowedListener onCameraAllowedListener;
 
     public CameraPermissionFragment(QRCodeScanningType qrCodeScanningType, String eventId) {
         super();
@@ -39,7 +38,7 @@ public final class CameraPermissionFragment extends Fragment implements View.OnC
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof  OnCameraAllowedListener)
+        if (context instanceof OnCameraAllowedListener)
             onCameraAllowedListener = (OnCameraAllowedListener) context;
         else
             throw new ClassCastException(context.toString() + " must implement OnCameraAllowedListener");

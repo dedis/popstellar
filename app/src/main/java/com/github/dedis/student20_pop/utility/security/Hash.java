@@ -24,7 +24,6 @@ public class Hash {
      *
      * @param data : the objects to hash
      * @return the hashed data or null if failed to hash
-     *
      * @throws IllegalArgumentException if the data is null
      */
     public static String hash(Object... data) {
@@ -32,8 +31,8 @@ public class Hash {
             throw new IllegalArgumentException("Can't hash a null data");
         }
 
-        StringJoiner joiner = new StringJoiner(",", "[","]");
-        for(Object elem : data)
+        StringJoiner joiner = new StringJoiner(",", "[", "]");
+        for (Object elem : data)
             joiner.add(DELIMITER + esc(elem.toString()) + DELIMITER);
 
         return hash(joiner.toString());
@@ -41,7 +40,7 @@ public class Hash {
 
     private static String esc(String input) {
         return input.replace("\\", "\\\\")
-                    .replace("\"", "\\\"");
+                .replace("\"", "\\\"");
     }
 
     /**

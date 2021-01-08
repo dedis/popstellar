@@ -7,7 +7,6 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -84,7 +83,7 @@ public class LaoTest {
 
     @Test
     public void getAttestationTest() {
-        assertThat(lao1.getAttestation(), is(Signature.sign(organizer,lao1_name + time + organizer)));
+        assertThat(lao1.getAttestation(), is(Signature.sign(organizer, lao1_name + time + organizer)));
     }
 
     @Test

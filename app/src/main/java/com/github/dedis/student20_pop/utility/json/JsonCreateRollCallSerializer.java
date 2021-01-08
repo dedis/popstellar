@@ -25,8 +25,8 @@ public class JsonCreateRollCallSerializer implements JsonSerializer<CreateRollCa
         JsonObject object = json.getAsJsonObject();
         String desc = object.has(DESCRIPTION) ? object.get(DESCRIPTION).getAsString() : null;
 
-        for(CreateRollCall.StartType type : CreateRollCall.StartType.ALL) {
-            if(object.has(type.getJsonMember())) {
+        for (CreateRollCall.StartType type : CreateRollCall.StartType.ALL) {
+            if (object.has(type.getJsonMember())) {
                 long start = object.get(type.getJsonMember()).getAsLong();
                 return new CreateRollCall(temp.getId(), temp.getName(), temp.getCreation(), start, type, temp.getLocation(), desc);
             }
