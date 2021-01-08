@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.ui.event;
+package com.github.dedis.student20_pop.ui.event.creation;
 
 import android.content.Context;
 import android.content.Intent;
@@ -24,12 +24,15 @@ import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.PollEvent;
-import com.github.dedis.student20_pop.utility.ui.organizer.ChoicesListViewAdapter;
+import com.github.dedis.student20_pop.utility.ui.ChoicesListViewAdapter;
 import com.github.dedis.student20_pop.utility.ui.organizer.OnEventCreatedListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Fragment that shows up when user wants to create a Poll Event
+ */
 public final class PollEventCreationFragment extends AbstractEventCreationFragment {
 
     public static final String TAG = PollEventCreationFragment.class.getSimpleName();

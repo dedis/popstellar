@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.ui.event;
+package com.github.dedis.student20_pop.ui.event.creation;
 
 import android.content.Context;
 import android.content.Intent;
@@ -24,7 +24,10 @@ import com.github.dedis.student20_pop.utility.ui.organizer.OnEventCreatedListene
 
 import java.util.Objects;
 
-public class RollCallEventCreationFragment extends AbstractEventCreationFragment {
+/**
+ * Fragment that shows up when user wants to create a Roll-Call Event
+ */
+public final class RollCallEventCreationFragment extends AbstractEventCreationFragment {
     public static final String TAG = RollCallEventCreationFragment.class.getSimpleName();
 
     private EditText rollCallDescriptionEditText;
@@ -79,7 +82,7 @@ public class RollCallEventCreationFragment extends AbstractEventCreationFragment
 
         confirmButton = view.findViewById(R.id.roll_call_confirm);
         confirmButton.setOnClickListener(v -> {
-            if(rollCallEvent == null){
+            if (rollCallEvent == null) {
                 rollCallEvent = new RollCallEvent(
                         rollCallTitleEditText.getText().toString(),
                         startDate,

@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.ui.event;
+package com.github.dedis.student20_pop.ui.event.creation;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,8 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.ui.DatePickerFragment;
-import com.github.dedis.student20_pop.ui.TimePickerFragment;
+import com.github.dedis.student20_pop.ui.event.creation.pickers.DatePickerFragment;
+import com.github.dedis.student20_pop.ui.event.creation.pickers.TimePickerFragment;
 
 import java.text.DateFormat;
 import java.text.ParseException;

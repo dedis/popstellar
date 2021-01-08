@@ -15,16 +15,16 @@ import androidx.fragment.app.FragmentActivity;
 import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.RollCallEvent;
-import com.github.dedis.student20_pop.ui.AddAttendeeFragment;
-import com.github.dedis.student20_pop.ui.CameraPermissionFragment;
-import com.github.dedis.student20_pop.ui.ConnectingFragment;
 import com.github.dedis.student20_pop.ui.IdentityFragment;
 import com.github.dedis.student20_pop.ui.OrganizerFragment;
-import com.github.dedis.student20_pop.ui.QRCodeScanningFragment;
-import com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType;
-import com.github.dedis.student20_pop.ui.event.MeetingEventCreationFragment;
-import com.github.dedis.student20_pop.ui.event.PollEventCreationFragment;
-import com.github.dedis.student20_pop.ui.event.RollCallEventCreationFragment;
+import com.github.dedis.student20_pop.ui.event.creation.MeetingEventCreationFragment;
+import com.github.dedis.student20_pop.ui.event.creation.PollEventCreationFragment;
+import com.github.dedis.student20_pop.ui.event.creation.RollCallEventCreationFragment;
+import com.github.dedis.student20_pop.ui.qrcode.AddAttendeeFragment;
+import com.github.dedis.student20_pop.ui.qrcode.CameraPermissionFragment;
+import com.github.dedis.student20_pop.ui.qrcode.ConnectingFragment;
+import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
+import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraNotAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
@@ -43,8 +43,8 @@ import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttend
 import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.ADD_ATTENDEE_ALREADY_EXISTS;
 import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.ADD_ATTENDEE_SUCCESSFUL;
 import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.ADD_ATTENDEE_UNSUCCESSFUL;
-import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.ADD_ROLL_CALL;
-import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.ADD_WITNESS;
+import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.ADD_ROLL_CALL;
+import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.ADD_WITNESS;
 
 /**
  * Activity used to display the different UIs for organizers
@@ -169,7 +169,6 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
                         () -> {
                             if (attendeeHasBeenAdded == ADD_ATTENDEE_SUCCESSFUL) {
                                 Toast.makeText(this, getString(R.string.add_attendee_successful), Toast.LENGTH_SHORT).show();
-                                getSupportFragmentManager().popBackStackImmediate();
                             } else if (attendeeHasBeenAdded == ADD_ATTENDEE_ALREADY_EXISTS) {
                                 Toast.makeText(getAppContext(), getString(R.string.add_attendee_already_exists), Toast.LENGTH_SHORT).show();
                             } else {

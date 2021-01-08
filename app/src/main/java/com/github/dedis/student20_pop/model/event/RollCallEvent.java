@@ -9,7 +9,10 @@ import static com.github.dedis.student20_pop.model.event.Event.EventType.ROLL_CA
 import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.ADD_ATTENDEE_ALREADY_EXISTS;
 import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.ADD_ATTENDEE_SUCCESSFUL;
 
-public class RollCallEvent extends Event {
+/**
+ * Class modelling a Roll-Call event
+ */
+public final class RollCallEvent extends Event {
     private final Date startDate;
     private final Date endDate;
     private final Date startTime;

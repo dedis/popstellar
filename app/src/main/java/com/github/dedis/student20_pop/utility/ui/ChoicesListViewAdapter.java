@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.utility.ui.organizer;
+package com.github.dedis.student20_pop.utility.ui;
 
 import android.content.Context;
 import android.text.Editable;
@@ -19,9 +19,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ChoicesListViewAdapter extends BaseAdapter {
-    private Context context;
-    private List<String> choices;
-    private TextWatcher choicesTextWatcher;
+    private final Context context;
+    private final List<String> choices;
+    private final TextWatcher choicesTextWatcher;
 
 
     public ChoicesListViewAdapter(Context context, TextWatcher textWatcher) {
@@ -49,19 +49,22 @@ public class ChoicesListViewAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            LayoutInflater inflater = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.layout_poll_choices, null);
         }
         ((TextView) convertView.findViewById(R.id.choice_number))
-                .setText(String.valueOf(position+1));
+                .setText(String.valueOf(position + 1));
         EditText choice = convertView.findViewById(R.id.choice_edit_text);
         choice.setText(choices.get(position));
         choice.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {choices.set(position, s.toString());}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                choices.set(position, s.toString());
+            }
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -71,13 +74,13 @@ public class ChoicesListViewAdapter extends BaseAdapter {
         choice.addTextChangedListener(choicesTextWatcher);
 
         Button button = convertView.findViewById(R.id.delete_choice_button);
-        if (position==0){
+        if (position == 0) {
             button.setVisibility(View.INVISIBLE);
         }
         View finalConvertView = convertView;
         button.setOnClickListener(clicked -> {
             choice.getText().clear();
-            if (position<getCount()-1) {
+            if (position < getCount() - 1) {
                 choice.setText((String) getItem(position + 1));
             }
             removeChoice(position);
@@ -86,19 +89,19 @@ public class ChoicesListViewAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public void addChoice(){
+    public void addChoice() {
         this.choices.add("");
         this.notifyDataSetChanged();
     }
 
-    public void removeChoice(int position){
-        if (position>0) {
+    public void removeChoice(int position) {
+        if (position > 0) {
             this.choices.remove(position);
             this.notifyDataSetChanged();
         }
     }
 
-    public void justifyHeight(View item, ViewGroup parent){
+    public void justifyHeight(View item, ViewGroup parent) {
         int totalHeight = 0;
         int count = getCount();
         for (int i = 0; i < count; i++) {

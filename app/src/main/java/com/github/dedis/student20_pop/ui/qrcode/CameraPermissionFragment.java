@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.ui;
+package com.github.dedis.student20_pop.ui.qrcode;
 
 import android.Manifest;
 import android.content.Context;
@@ -14,7 +14,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType;
+import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
 
 /**
@@ -27,7 +27,7 @@ public final class CameraPermissionFragment extends Fragment implements View.OnC
     private final QRCodeScanningType qrCodeScanningType;
 
     private OnCameraAllowedListener onCameraAllowedListener;
-    private String eventId;
+    private final String eventId;
 
     public CameraPermissionFragment(QRCodeScanningType qrCodeScanningType, String eventId) {
         super();

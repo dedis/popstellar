@@ -43,9 +43,9 @@ import static org.hamcrest.Matchers.not;
 
 public class PollEventCreationFragmentTest {
 
-    private String question = "Question";
-    private String choice1 = "blabla";
-    private String choice2 = "second choice";
+    private final String question = "Question";
+    private final String choice1 = "blabla";
+    private final String choice2 = "second choice";
 
     @Rule
     public ActivityScenarioRule<OrganizerActivity> activityScenarioRule =

@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.utility.ui.EventAdapter;
+package com.github.dedis.student20_pop.utility.ui.eventadapter;
 
 import android.content.Context;
 import android.view.View;
