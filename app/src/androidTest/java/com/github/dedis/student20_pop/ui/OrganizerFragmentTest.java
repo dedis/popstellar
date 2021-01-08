@@ -56,16 +56,6 @@ import static org.hamcrest.Matchers.not;
 public class OrganizerFragmentTest {
     @Rule
     public final GrantPermissionRule rule = GrantPermissionRule.grant(Manifest.permission.CAMERA);
-    private final String witness1 = "Alphonse";
-    private final String witness2 = "Bertrand";
-    private final ArrayList<String> witnesses = new ArrayList<>(Arrays.asList(witness1, witness2));
-    private final int YEAR = 2022;
-    private final int MONTH_OF_YEAR = 10;
-    private final int DAY_OF_MONTH = 10;
-    private final String DATE = "" + DAY_OF_MONTH + "/" + MONTH_OF_YEAR + "/" + YEAR;
-    private final int HOURS = 12;
-    private final int MINUTES = 15;
-    private final String TIME = "" + HOURS + ":" + MINUTES;
 
     @Rule
     public ActivityScenarioRule<OrganizerActivity> activityScenarioRule =
@@ -114,10 +104,6 @@ public class OrganizerFragmentTest {
             public void perform(OrganizerActivity activity) {
                 decorView = activity.getWindow().getDecorView();
                 PoPApplication app = (PoPApplication) activity.getApplication();
-                assertThat(app.getWitnesses(), is(empty()));
-                AddWitnessResult result = app.addWitness(witness1);
-                assertThat(app.getWitnesses(), is(Collections.singletonList(witness1)));
-                assertThat(result, is(ADD_WITNESS_SUCCESSFUL));
             }
         });
     }
