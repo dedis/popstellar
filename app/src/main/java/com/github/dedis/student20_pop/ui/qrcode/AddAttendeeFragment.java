@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.ui;
+package com.github.dedis.student20_pop.ui.qrcode;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
@@ -22,9 +22,16 @@ import com.github.dedis.student20_pop.model.event.RollCallEvent;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.ADD_ROLL_CALL;
+import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.ADD_ROLL_CALL;
 
-public class AddAttendeeFragment extends Fragment {
+/**
+ * This fragment wraps the QRCodeScanningFragment in order to show the user how many attendees
+ * he has added so far and here the QRCode Fragment won't disappear after scanning a QR code,
+ * but will stay until user tells he's done scanning attendees.
+ *
+ * The attribute eventId represents the Roll-Call Event's id the user wants to add attendees to.
+ */
+public final class AddAttendeeFragment extends Fragment {
 
     public static final String TAG = AddAttendeeFragment.class.getSimpleName();
     private final String eventId;
@@ -100,7 +107,7 @@ public class AddAttendeeFragment extends Fragment {
             builder.setMessage(getString(R.string.scan_all_attendees_question))
                     .setCancelable(false)
                     .setPositiveButton(getString(R.string.confirm), (dialog, id) -> {
-                        getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);;
+                        getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                     })
                     .setNegativeButton(getString(R.string.cancel), (dialog, id) -> {
                     });

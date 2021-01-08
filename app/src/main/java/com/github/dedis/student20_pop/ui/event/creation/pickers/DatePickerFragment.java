@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.ui;
+package com.github.dedis.student20_pop.ui.event.creation.pickers;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -13,14 +13,14 @@ import com.github.dedis.student20_pop.R;
 
 import java.util.Calendar;
 
-import static com.github.dedis.student20_pop.ui.event.MeetingEventCreationFragment.DATE_FORMAT;
+import static com.github.dedis.student20_pop.ui.event.creation.MeetingEventCreationFragment.DATE_FORMAT;
 
 
 /**
  * Help found here :
  * https://brandonlehr.com/android/learn-to-code/2018/08/19/callling-android-datepicker-fragment-from-a-fragment-and-getting-the-date
  */
-public class DatePickerFragment extends AppCompatDialogFragment implements DatePickerDialog.OnDateSetListener {
+public final class DatePickerFragment extends AppCompatDialogFragment implements DatePickerDialog.OnDateSetListener {
     public static final String TAG = DatePickerFragment.class.getSimpleName();
     private final Calendar calendar = Calendar.getInstance();
 

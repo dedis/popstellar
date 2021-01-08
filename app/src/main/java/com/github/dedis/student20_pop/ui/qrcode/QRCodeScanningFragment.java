@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.ui;
+package com.github.dedis.student20_pop.ui.qrcode;
 
 import android.Manifest;
 import android.content.Context;
@@ -30,12 +30,12 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
 
-import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO;
+import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO;
 
 /**
  * Fragment used to display the Connect UI
  **/
-public class QRCodeScanningFragment extends Fragment implements QRCodeListener {
+public final class QRCodeScanningFragment extends Fragment implements QRCodeListener {
 
     public static final String TAG = QRCodeScanningFragment.class.getSimpleName();
     private static final int HANDLE_GMS = 9001;

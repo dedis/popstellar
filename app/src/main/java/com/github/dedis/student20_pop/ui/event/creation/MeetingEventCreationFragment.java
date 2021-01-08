@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.ui.event;
+package com.github.dedis.student20_pop.ui.event.creation;
 
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +21,9 @@ import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.MeetingEvent;
 import com.github.dedis.student20_pop.utility.ui.organizer.OnEventCreatedListener;
 
+/**
+ * Fragment that shows up when user wants to create a Meeting Event
+ */
 public final class MeetingEventCreationFragment extends AbstractEventCreationFragment {
     public static final String TAG = MeetingEventCreationFragment.class.getSimpleName();
 
