@@ -325,8 +325,8 @@ func (w *Witness) handleCreateRollCall(msg message.Message, chann string, query 
 		return nil, lib.ErrInvalidResource
 	}
 
-	laoId := strings.TrimPrefix("/root/", chann)
-	if !security.RollCallCreatedIsValid(data, laoId) {
+	laoID := strings.TrimPrefix(chann, "/root/")
+	if !security.RollCallCreatedIsValid(data, laoID) {
 		log.Printf("Roll Call data not valid. Roll call not created")
 		return nil, lib.ErrInvalidResource
 	}
