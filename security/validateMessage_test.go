@@ -16,11 +16,6 @@ import (
 	"student20_pop/parser"
 )
 
-type keys struct {
-	private ed.PrivateKey
-	public  []byte
-}
-
 func TestMessageIsValidWithoutWitnesses(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
@@ -31,7 +26,7 @@ func TestMessageIsValidWithoutWitnesses(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures, witnessKeys)
+		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures)
 		if err != nil {
 			t.Error(err)
 		}
@@ -42,12 +37,11 @@ func TestRollCallCreatedIsValid(t *testing.T) {
 	for i := 0; i < 100; i++ {
 		pubkey, privkey := createKeyPair()
 		witnessSignatures := []message2.ItemWitnessSignatures{}
-		witnessKeys := [][]byte{}
-		data, err := createDataLao(pubkey, privkey, witnessKeys)
+		data, err := createRollCallNow(pubkey, privkey)
 		if err != nil {
 			t.Error(err)
 		}
-		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures, witnessKeys)
+		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures)
 		if err != nil {
 			t.Error(err)
 		}
@@ -55,14 +49,21 @@ func TestRollCallCreatedIsValid(t *testing.T) {
 }
 
 //===================================================================================//
-func CheckMessageIsValid(pubkey []byte, privkey ed.PrivateKey, data message2.DataCreateLAO, witnessKeysAndSignatures []message2.ItemWitnessSignatures, WitnesseKeys [][]byte) error {
-	dataFlat, signed, id, err := getIdofMessage(data, privkey)
+func CheckMessageIsValid(pubkey []byte, privkey ed.PrivateKey, data interface{}, witnessKeysAndSignatures []message2.ItemWitnessSignatures) error {
+	var dataFlat, signed, id []byte
+	var err error
+	switch data.(type) {
+	case message2.DataCreateLAO:
+		dataFlat, signed, id, err = getIdofMessage(data.(message2.DataCreateLAO), privkey)
+	case message2.DataCreateRollCall:
+		dataFlat, signed, id, err = getIdofMessage(data.(message2.DataCreateRollCall), privkey)
+	}
 	if err != nil {
 		return err
 	}
 
 	//witness signatures
-	ArrayOfWitnessSignatures, err := plugWitnessesInArray(witnessKeysAndSignatures)
+	ArrayOfWitnessSignatures, err := PlugWitnessesInArray(witnessKeysAndSignatures)
 	if err != nil {
 		return err
 	}
@@ -111,7 +112,7 @@ func TestMessageIsValidWithAssessedWitnesses(t *testing.T) {
 	}
 }
 */
-func plugWitnessesInArray(witnessKeysAndSignatures []message2.ItemWitnessSignatures) ([]json.RawMessage, error) {
+func PlugWitnessesInArray(witnessKeysAndSignatures []message2.ItemWitnessSignatures) ([]json.RawMessage, error) {
 	ArrayOfWitnessSignatures := []json.RawMessage{}
 	for i := 0; i < len(witnessKeysAndSignatures); i++ {
 		witnessSignatureI, err := json.Marshal(witnessKeysAndSignatures[i])
@@ -150,7 +151,7 @@ func createDataLao(pubkey []byte, privkey ed.PrivateKey, WitnesseKeys [][]byte) 
 	}
 	return data, nil
 }
-func createRollCallNow(pubkey []byte, privkey ed.PrivateKey, WitnesseKeys [][]byte) (message2.DataCreateRollCall, error) {
+func createRollCallNow(pubkey []byte, privkey ed.PrivateKey) (message2.DataCreateRollCall, error) {
 	var creation int64 = 123
 	name := "RollCallNow"
 	if (len(pubkey) != ed.PublicKeySize) || len(privkey) != ed.PrivateKeySize {
@@ -171,30 +172,7 @@ func createRollCallNow(pubkey []byte, privkey ed.PrivateKey, WitnesseKeys [][]by
 	return data, nil
 }
 
-/*10 pair of keys*/
-func createArrayOfkeys() []keys {
-	keyz := []keys{}
-	for i := 0; i < 10; i++ {
-		publicW, privW := createKeyPair()
-		keyz = append(keyz, keys{private: privW, public: []byte(publicW)})
-	}
-	return keyz
-}
-func onlyPublicKeys(ks []keys) [][]byte {
-	var acc [][]byte
-	for _, k := range ks {
-		acc = append(acc, k.public)
-	}
-	return acc
-}
-func arrayOfWitnessSignatures(ks []keys, id []byte) []message2.ItemWitnessSignatures {
-	var acc []message2.ItemWitnessSignatures
-	for _, k := range ks {
-		acc = append(acc, message2.ItemWitnessSignatures{k.public, ed.Sign(k.private, id)})
-	}
-	return acc
-}
-func getIdofMessage(data message2.DataCreateLAO, privkey ed.PrivateKey) (dataFlat, signed, id []byte, err error) {
+func getIdofMessage(data interface{}, privkey ed.PrivateKey) (dataFlat, signed, id []byte, err error) {
 	dataFlat, err = json.Marshal(data)
 	if err != nil {
 		return nil, nil, nil, errors.New("Error : Impossible to marshal data")
