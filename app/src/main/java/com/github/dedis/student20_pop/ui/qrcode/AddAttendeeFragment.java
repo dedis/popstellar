@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.databinding.ObservableList;
+import androidx.databinding.ObservableArrayList;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -22,7 +22,7 @@ import com.github.dedis.student20_pop.model.event.RollCallEvent;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.ADD_ROLL_CALL;
+import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.ADD_ROLL_CALL_ATTENDEE;
 
 /**
  * This fragment wraps the QRCodeScanningFragment in order to show the user how many attendees
@@ -46,7 +46,7 @@ public final class AddAttendeeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_attendee, container, false);
 
-        Fragment newFragment = new QRCodeScanningFragment(ADD_ROLL_CALL, eventId);
+        Fragment newFragment = new QRCodeScanningFragment(ADD_ROLL_CALL_ATTENDEE, eventId);
         Objects.requireNonNull(getActivity())
                 .getSupportFragmentManager()
                 .beginTransaction()
@@ -67,33 +67,33 @@ public final class AddAttendeeFragment extends Fragment {
             rollCallEvent = (RollCallEvent) matchingEvent.get();
             rollCallEvent.getAttendees()
                     .addOnListChangedCallback(
-                            new ObservableList.OnListChangedCallback<ObservableList<String>>() {
+                            new ObservableArrayList.OnListChangedCallback<ObservableArrayList<String>>() {
                                 @Override
-                                public void onChanged(ObservableList<String> sender) {
+                                public void onChanged(ObservableArrayList<String> sender) {
                                     ((TextView) view.findViewById(R.id.add_attendee_number_text))
                                             .setText(getString(R.string.add_attendees_number, sender.size()));
                                 }
 
                                 @Override
-                                public void onItemRangeChanged(ObservableList<String> sender, int positionStart, int itemCount) {
+                                public void onItemRangeChanged(ObservableArrayList<String> sender, int positionStart, int itemCount) {
                                     ((TextView) view.findViewById(R.id.add_attendee_number_text))
                                             .setText(getString(R.string.add_attendees_number, sender.size()));
                                 }
 
                                 @Override
-                                public void onItemRangeInserted(ObservableList<String> sender, int positionStart, int itemCount) {
+                                public void onItemRangeInserted(ObservableArrayList<String> sender, int positionStart, int itemCount) {
                                     ((TextView) view.findViewById(R.id.add_attendee_number_text))
                                             .setText(getString(R.string.add_attendees_number, sender.size()));
                                 }
 
                                 @Override
-                                public void onItemRangeMoved(ObservableList<String> sender, int fromPosition, int toPosition, int itemCount) {
+                                public void onItemRangeMoved(ObservableArrayList<String> sender, int fromPosition, int toPosition, int itemCount) {
                                     ((TextView) view.findViewById(R.id.add_attendee_number_text))
                                             .setText(getString(R.string.add_attendees_number, sender.size()));
                                 }
 
                                 @Override
-                                public void onItemRangeRemoved(ObservableList<String> sender, int positionStart, int itemCount) {
+                                public void onItemRangeRemoved(ObservableArrayList<String> sender, int positionStart, int itemCount) {
                                     ((TextView) view.findViewById(R.id.add_attendee_number_text))
                                             .setText(getString(R.string.add_attendees_number, sender.size()));
                                 }

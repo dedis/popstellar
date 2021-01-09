@@ -43,7 +43,7 @@ import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttend
 import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.ADD_ATTENDEE_ALREADY_EXISTS;
 import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.ADD_ATTENDEE_SUCCESSFUL;
 import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.ADD_ATTENDEE_UNSUCCESSFUL;
-import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.ADD_ROLL_CALL;
+import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.ADD_ROLL_CALL_ATTENDEE;
 import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.ADD_WITNESS;
 
 /**
@@ -151,25 +151,31 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
         PoPApplication app = (PoPApplication) getApplication();
 
         switch (qrCodeScanningType) {
-            case ADD_ROLL_CALL:
-                RollCallEvent rollCallEvent;
-                AddAttendeeResult attendeeHasBeenAdded;
-
+            case ADD_ROLL_CALL_ATTENDEE:
                 Optional<Event> matchingEvent = app.getEvents(app.getCurrentLao())
-                        .parallelStream().filter(event -> event.getId().equals(eventId)).distinct().findAny();
-
-                if (matchingEvent.isPresent()) {
-                    rollCallEvent = (RollCallEvent) matchingEvent.get();
-                    attendeeHasBeenAdded = rollCallEvent.addAttendee(personId);
-                } else {
-                    attendeeHasBeenAdded = ADD_ATTENDEE_UNSUCCESSFUL;
-                }
+                        .parallelStream()
+                        .filter(event -> event.getId().equals(eventId))
+                        .distinct()
+                        .findAny();
 
                 this.runOnUiThread(
                         () -> {
+                            AddAttendeeResult attendeeHasBeenAdded;
+                            if (matchingEvent.isPresent()) {
+                                attendeeHasBeenAdded = ((RollCallEvent) matchingEvent.get()).addAttendee(personId);
+                            } else {
+                                attendeeHasBeenAdded = ADD_ATTENDEE_UNSUCCESSFUL;
+                            }
+
                             if (attendeeHasBeenAdded == ADD_ATTENDEE_SUCCESSFUL) {
+                                for (String attendee : matchingEvent.get().getAttendees()) {
+                                    Log.d("DEBUG 09.01.2021", "Attendee : " + attendee);
+                                }
                                 Toast.makeText(this, getString(R.string.add_attendee_successful), Toast.LENGTH_SHORT).show();
                             } else if (attendeeHasBeenAdded == ADD_ATTENDEE_ALREADY_EXISTS) {
+                                for (String attendee : matchingEvent.get().getAttendees()) {
+                                    Log.d("DEBUG 09.01.2021", "Attendee : " + attendee);
+                                }
                                 Toast.makeText(getAppContext(), getString(R.string.add_attendee_already_exists), Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(this, getString(R.string.add_attendee_unsuccessful), Toast.LENGTH_SHORT).show();
@@ -217,7 +223,7 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             showFragment(new AddAttendeeFragment(eventId), AddAttendeeFragment.TAG);
         } else {
-            showFragment(new CameraPermissionFragment(ADD_ROLL_CALL, eventId), CameraPermissionFragment.TAG);
+            showFragment(new CameraPermissionFragment(ADD_ROLL_CALL_ATTENDEE, eventId), CameraPermissionFragment.TAG);
         }
     }
 }

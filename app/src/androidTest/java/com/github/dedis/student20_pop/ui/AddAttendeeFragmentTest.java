@@ -41,7 +41,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.ADD_ROLL_CALL;
+import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.ADD_ROLL_CALL_ATTENDEE;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.isIn;
 import static org.hamcrest.Matchers.not;
@@ -125,7 +125,7 @@ public class AddAttendeeFragmentTest {
             final String ATTENDEE_ID = "t9Ed+TEwDM0+u0ZLdS4ZB/Vrrnga0Lu2iMkAQtyFRrQ=";
             final String TEST_IDS = ATTENDEE_ID + LAO_ID;
 
-            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_ROLL_CALL, rollCallEvent.getId());
+            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_ROLL_CALL_ATTENDEE, rollCallEvent.getId());
 
             List<String> attendees = app.getEvents(app.getCurrentLao()).parallelStream()
                     .filter(event -> event.getId().equals(rollCallEvent.getId()))
@@ -187,7 +187,7 @@ public class AddAttendeeFragmentTest {
             final String ATTENDEE_ID = "t9Ed+TEwDM0+u0ZLdS4ZB/Vrrnga0Lu2iMkAQtyFRrQ=";
             final String TEST_IDS = ATTENDEE_ID + LAO_ID;
 
-            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_ROLL_CALL, rollCallEvent.getId());
+            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_ROLL_CALL_ATTENDEE, rollCallEvent.getId());
 
             List<String> attendees = app.getEvents(app.getCurrentLao()).parallelStream()
                     .filter(event -> event.getId().equals(rollCallEvent.getId()))
@@ -197,7 +197,7 @@ public class AddAttendeeFragmentTest {
 
             Assert.assertThat(ATTENDEE_ID, isIn(attendees));
 
-            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_ROLL_CALL, rollCallEvent.getId());
+            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_ROLL_CALL_ATTENDEE, rollCallEvent.getId());
         });
 
         onView(withText(getApplicationContext().getString(R.string.add_attendee_already_exists)))
