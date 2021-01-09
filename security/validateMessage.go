@@ -16,10 +16,7 @@ import (
 // and if it's a creation it verifies that the ID is the right one.
 func LAOIsValid(data message.DataCreateLAO, create bool) bool {
 	//the timestamp is reasonably recent with respect to the server’s clock,
-	if data.Creation < time.Now().Unix()-MaxClockDifference || data.Creation > time.Now().Unix()+MaxPropagationDelay {
-		log.Printf("timestamp invalid, either too old or in the future : %v", data.Creation)
-		return false
-	}
+	creation := checkCreationTimeValidity(data.Creation)
 
 	//check if id is correct  : SHA256(organizer||creation||name)
 	var elementsToHashForDataId []string
@@ -27,20 +24,17 @@ func LAOIsValid(data message.DataCreateLAO, create bool) bool {
 	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(elementsToHashForDataId)))
 	if create && !bytes.Equal(data.ID, hash[:]) {
 		log.Printf("ID of createLAO invalid: %v should be: %v", string(data.ID), string(hash[:]))
+		return false
 	}
 
-	return true
+	return creation
 }
 
 //MeetingCreatedIsValid checks wether a meeting is valid when it is created. It checks if the ID is correctly computed,
 // and if the timestamps are coherent. (Start < End for example)
 func MeetingCreatedIsValid(data message.DataCreateMeeting, laoId string) bool {
 	//the timestamp is reasonably recent with respect to the server’s clock,
-	if data.Creation < time.Now().Unix()-MaxClockDifference || data.Creation > time.Now().Unix()+MaxPropagationDelay {
-		log.Printf("timestamp unvalid : got %d but need to be between %d and %d",
-			data.Creation, time.Now().Unix()-MaxClockDifference, time.Now().Unix()+MaxPropagationDelay)
-		return false
-	}
+	creation := checkCreationTimeValidity(data.Creation)
 
 	//we start after the creation and we end after the start
 	if data.Start < data.Creation || data.End < data.Start {
@@ -48,18 +42,16 @@ func MeetingCreatedIsValid(data message.DataCreateMeeting, laoId string) bool {
 		return false
 	}
 	//need to meet some	where
-	if data.Location == "" {
-		log.Printf("location can not be empty")
-		return false
-	}
-	//check if id is correct  : SHA256(lao_id||creation||name)
+	location := checkLocationNotEmpty(data.Location)
+
+	//check if id is correct  : SHA256('M'||lao_id||creation||name)
 	var elementsToHashForDataId []string
-	elementsToHashForDataId = append(elementsToHashForDataId, laoId, strconv.FormatInt(data.Creation, 10), data.Name)
+	elementsToHashForDataId = append(elementsToHashForDataId, "M", laoId, strconv.FormatInt(data.Creation, 10), data.Name)
 	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(elementsToHashForDataId)))
 	if !bytes.Equal(data.ID, hash[:]) {
-		log.Printf("ID od createRollCall invalid: %v should be: %v", string(data.ID), string(hash[:]))
+		log.Printf("ID of createRollCall invalid: %v should be: %v", string(data.ID), string(hash[:]))
 	}
-	return true
+	return creation && location
 }
 
 // not implemented yet
@@ -70,33 +62,38 @@ func PollCreatedIsValid(data message.DataCreatePoll, message message.Message) bo
 // RollCallCreatedIsValid tell if a Roll call is valid on creation
 func RollCallCreatedIsValid(data message.DataCreateRollCall, laoId string) bool {
 	//the timestamp is reasonably recent with respect to the server’s clock,
-	if data.Creation < time.Now().Unix()-MaxClockDifference || data.Creation > time.Now().Unix()+MaxPropagationDelay {
-		log.Printf("timestamp unvalid : got %d but need to be between %d and %d",
-			data.Creation, time.Now().Unix()-MaxClockDifference, time.Now().Unix()+MaxPropagationDelay)
+	creation := checkCreationTimeValidity(data.Creation)
+
+	//we receive either start either scheduled and the other is set to 0
+	if data.Start != 0 && data.Scheduled != 0 {
+		log.Printf("cannot have both start and scheduled set")
+		return false
+	} else if data.Start == 0 && data.Scheduled == 0 {
+		log.Printf("at least one of Data and Schedule has to be set")
 		return false
 	}
-	//we receive either start either scheduled so the other is set to 0
+
 	if data.Scheduled == 0 {
 		//we start after the creation and we end after the start
-		if data.Scheduled < data.Creation {
-			log.Printf("timestamps not logic.Start before creation.")
-			return false
-		}
-	}
-	if data.Start == 0 {
-		//we start after the creation and we end after the start
 		if data.Start < data.Creation {
-			log.Printf("timestamps not logic.Start before creation.")
+			log.Printf("timestamps not logic. Start cannot be before creation.")
 			return false
 		}
+	} else if data.Start == 0 {
+		//we start after the creation and we end after the start
+		if data.Scheduled < data.Creation {
+			log.Printf("timestamps not logic. Scheduled cannot be before creation.")
+			return false
+		}
+	} else {
+		log.Printf("logical incoherence. Should never come to this point")
+		return false
 	}
 
 	//need to meet some	where
-	if data.Location == "" {
-		log.Printf("location can not be empty")
-		return false
-	}
-	return checkRollCallId(laoId, data.Creation, data.Name, data.ID)
+	location := checkLocationNotEmpty(data.Location)
+
+	return creation && location && checkRollCallId(laoId, data.Creation, data.Name, data.ID)
 }
 
 //checkRollCallId check if id is correct  : SHA256('R'||lao_id||creation||name)
@@ -121,7 +118,7 @@ func RollCallOpenedIsValid(data message.DataOpenRollCall, laoId string, rollCall
 	return checkRollCallId(laoId, rollCall.Creation, rollCall.Name, data.ID)
 }
 
-//RollCallClosedIsValid tell if a Roll call is valid on opening or reopening
+//RollCallClosedIsValid tell if a rollCall timestamps make sense
 func RollCallClosedIsValid(data message.DataCloseRollCall, laoId string, rollCall message.DataCreateRollCall) bool {
 	//we start after the creation and we end after the start
 	if data.Start < rollCall.Creation || data.End < data.Start {
@@ -192,4 +189,25 @@ func MessageIsValid(msg message.Message) error {
 		}
 	}
 	return nil
+}
+
+// checkCreationTimeValidity checks wether the int given as argument is between the server's current time
+// + MaxPropagationDelay and the server's current time - MaxClockDifference. If it's not, it logs an error message
+func checkCreationTimeValidity(ctime int64) bool {
+	//the timestamp is reasonably recent with respect to the server’s clock,
+	if ctime < time.Now().Unix()-MaxClockDifference || ctime > time.Now().Unix()+MaxPropagationDelay {
+		log.Printf("timestamp unvalid : got %d but need to be between %d and %d",
+			ctime, time.Now().Unix()-MaxClockDifference, time.Now().Unix()+MaxPropagationDelay)
+		return false
+	}
+	return true
+}
+
+//checkLocationNotEmpty returns false if the string given as param is empty, and logs an error message
+func checkLocationNotEmpty(loc string) bool {
+	if loc == "" {
+		log.Printf("location cannot be empty")
+		return false
+	}
+	return true
 }
