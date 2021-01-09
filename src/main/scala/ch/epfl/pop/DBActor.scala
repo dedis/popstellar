@@ -49,8 +49,8 @@ object DBActor {
 
   /**
    * Create an actor handling the database
-   * @param path the path of the database
-   * @return an actor handling the database
+   * @param path where to store the database
+   * @return an actor handling requests to the database
    */
   def apply(path: String): Behavior[DBMessage] = database(path, Map.empty)
 

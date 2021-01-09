@@ -36,11 +36,17 @@ object ChannelActor {
     extends ChannelMessage
 
 
-
+  /**
+   * An answer from a ChannelActor to a request
+   */
   sealed trait ChannelActorAnswer
 
-  //final case class AnswerCreate(jsonMessage: JsonMessageAnswerServer) extends ChannelActorAnswer
-
+  /**
+   * An answer from a ChannelActor to a subscribe request
+   * @param jsonMessage the answer to send to the client
+   * @param channel the name of the channel the client requested to subscribe to
+   * @param killSwitch a killSwitch used to disconnect the stream when the client request to unsubscribe to a channel
+   */
   final case class AnswerSubscribe(jsonMessage: JsonMessageAnswerServer, channel : String, killSwitch: Option[UniqueKillSwitch]) extends ChannelActorAnswer with UnsubMessage
 
 
@@ -66,7 +72,6 @@ object ChannelActor {
     Behaviors.receive { (ctx, message) =>
       implicit val system: ActorSystem[Nothing] = ctx.system
       message match {
-
         case CreateMessage(channel,  replyTo) =>
           if (!channelsOutputs.contains(channel)) {
             ctx.log.debug("creating channel: " + channel)
@@ -82,8 +87,6 @@ object ChannelActor {
             replyTo ! false
             Behaviors.same
           }
-
-
 
         case SubscribeMessage(channel, out, id, replyTo) =>
           if (channelsOutputs.contains(channel)) {

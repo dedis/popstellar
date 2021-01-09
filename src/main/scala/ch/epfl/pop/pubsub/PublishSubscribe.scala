@@ -26,10 +26,16 @@ import scala.concurrent.{Await, Future}
 
 object PublishSubscribe {
   /**
-   * Create a flow that handles JSON messages of a publish-subscribe system.
+   * Create a flow handling parsed JSON messages of a publish-subscribe system.
    *
    * @param channelActor    an actor handling channel creation and subscription
-   * @return a flow that handles JSON messages of a publish-subscribe system
+   * @param dbActor an actor handling requests related to the database
+   *
+   * '''Implicit parameters:'''
+   * @param timeout how long should a stream wait for an answer from an actor
+   * @param system the ActorSystem needed to create streams
+   * @param pubEntry a sink where all published messages should be sent
+   * @return a flow handling parsed JSON messages of a publish-subscribe system
    */
   def jsonFlow(channelActor: ActorRef[ChannelMessage],
                dbActor : ActorRef[DBMessage])
@@ -247,7 +253,13 @@ object PublishSubscribe {
   /**
    * Create a flow that handles messages of a publish-subscribe system.
    *
-   * @param actor    an actor handling channel creation and subscription
+   * @param channelActor an actor handling channel creation and subscription
+   * @param dbActor an actor handling requests related to the database
+   *
+   * '''Implicit parameters:'''
+   * @param timeout how long should a stream wait for an answer from an actor
+   * @param system the ActorSystem needed to create streams
+   * @param pubEntry a sink where all published messages should be sent
    * @return a flow that handles messages of a publish-subscribe system
    */
   def messageFlow(actor: ActorRef[ChannelMessage],
