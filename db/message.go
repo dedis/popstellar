@@ -16,7 +16,7 @@ import (
 func writeMessage(message message.Message, channel string, database string, creating bool) error {
 	db, e := OpenDB(database)
 	if e != nil {
-		return e
+		return lib.ErrDBFault
 	}
 	defer db.Close()
 

@@ -4,12 +4,15 @@ package db
 
 import (
 	"github.com/boltdb/bolt"
+	"log"
+	"student20_pop/lib"
 )
 
 func OpenDB(dbName string) (*bolt.DB, error) {
 	db, err := bolt.Open(dbName, 0600, nil)
 	if err != nil {
-		return nil, err
+		log.Printf("could not open database: %v", err)
+		return nil, lib.ErrDBFault
 	}
 	return db, nil
 }
