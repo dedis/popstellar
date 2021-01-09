@@ -68,7 +68,7 @@ func PollCreatedIsValid(data message.DataCreatePoll, message message.Message) bo
 }
 
 // RollCallCreatedIsValid tell if a Roll call is valid on creation
-func RollCallCreatedIsValid(data message.DataCreateRollCall, laoId string) bool {
+func RollCallCreatedIsValid(data message.DataCreateRollCall) bool {
 	//the timestamp is reasonably recent with respect to the server’s clock,
 	if data.Creation < time.Now().Unix()-MaxClockDifference || data.Creation > time.Now().Unix()+MaxPropagationDelay {
 		log.Printf("timestamp unvalid : got %d but need to be between %d and %d",
@@ -78,15 +78,15 @@ func RollCallCreatedIsValid(data message.DataCreateRollCall, laoId string) bool 
 	//we receive either start either scheduled so the other is set to 0
 	if data.Scheduled == 0 {
 		//we start after the creation and we end after the start
-		if data.Scheduled < data.Creation {
-			log.Printf("timestamps not logic.Start before creation.")
+		if data.Start < data.Creation {
+			log.Printf("timestamps not logic. Start must be after creation.")
 			return false
 		}
 	}
 	if data.Start == 0 {
 		//we start after the creation and we end after the start
-		if data.Start < data.Creation {
-			log.Printf("timestamps not logic.Start before creation.")
+		if data.Scheduled < data.Creation {
+			log.Printf("timestamps not logic. Scheduled must be creation.")
 			return false
 		}
 	}
@@ -96,7 +96,7 @@ func RollCallCreatedIsValid(data message.DataCreateRollCall, laoId string) bool 
 		log.Printf("location can not be empty")
 		return false
 	}
-	return checkRollCallId(laoId, data.Creation, data.Name, data.ID)
+	return checkRollCallId(string(data.ID), data.Creation, data.Name, data.ID)
 }
 
 //checkRollCallId check if id is correct  : SHA256('R'||lao_id||creation||name)
