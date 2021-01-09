@@ -96,7 +96,7 @@ public class Event {
     /**
      * @return list of public keys of the attendees
      */
-    public ObservableList<String> getAttendees() {
+    public ObservableArrayList<String> getAttendees() {
         return attendees;
     }
 

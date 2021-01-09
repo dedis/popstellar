@@ -131,7 +131,7 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
     public void onQRCodeDetected(String url, QRCodeScanningType qrCodeScanningType, String eventId) {
         Log.i(TAG, "Received qrcode url : " + url);
         switch (qrCodeScanningType) {
-            case ADD_ROLL_CALL:
+            case ADD_ROLL_CALL_ATTENDEE:
                 //TODO
                 break;
             case ADD_WITNESS:

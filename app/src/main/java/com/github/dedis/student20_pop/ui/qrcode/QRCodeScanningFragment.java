@@ -90,7 +90,7 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
             case CONNECT_LAO:
                 scanDescription.setText(R.string.qrcode_scanning_connect_lao);
                 break;
-            case ADD_ROLL_CALL:
+            case ADD_ROLL_CALL_ATTENDEE:
                 scanDescription.setText(R.string.qrcode_scanning_add_attendee);
                 break;
             case ADD_WITNESS:
@@ -176,7 +176,7 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
      * or connect to a lao or to add an attendee to a roll call event
      */
     public enum QRCodeScanningType {
-        ADD_ROLL_CALL,
+        ADD_ROLL_CALL_ATTENDEE,
         ADD_WITNESS,
         CONNECT_LAO
     }
