@@ -27,7 +27,9 @@ func LAOIsValid(data message.DataCreateLAO, create bool) bool {
 		return false
 	}
 
-	return creation
+	//no default name
+	name := checkStringNotEmpty(data.Name)
+	return creation && name
 }
 
 //MeetingCreatedIsValid checks wether a meeting is valid when it is created. It checks if the ID is correctly computed,
@@ -42,7 +44,7 @@ func MeetingCreatedIsValid(data message.DataCreateMeeting, laoId string) bool {
 		return false
 	}
 	//need to meet some	where
-	location := checkLocationNotEmpty(data.Location)
+	location := checkStringNotEmpty(data.Location)
 
 	//check if id is correct  : SHA256('M'||lao_id||creation||name)
 	var elementsToHashForDataId []string
@@ -91,7 +93,7 @@ func RollCallCreatedIsValid(data message.DataCreateRollCall, laoId string) bool 
 	}
 
 	//need to meet some	where
-	location := checkLocationNotEmpty(data.Location)
+	location := checkStringNotEmpty(data.Location)
 
 	return creation && location && checkRollCallId(laoId, data.Creation, data.Name, data.ID)
 }
@@ -203,10 +205,10 @@ func checkCreationTimeValidity(ctime int64) bool {
 	return true
 }
 
-//checkLocationNotEmpty returns false if the string given as param is empty, and logs an error message
-func checkLocationNotEmpty(loc string) bool {
+//checkStringNotEmpty returns false if the string given as param is empty, and logs an error message
+func checkStringNotEmpty(loc string) bool {
 	if loc == "" {
-		log.Printf("location cannot be empty")
+		log.Printf("string argument cannot be empty")
 		return false
 	}
 	return true
