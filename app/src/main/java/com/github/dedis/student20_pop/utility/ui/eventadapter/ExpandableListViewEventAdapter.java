@@ -1,10 +1,13 @@
 package com.github.dedis.student20_pop.utility.ui.eventadapter;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.TextView;
 
+import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.event.Event;
 
 import java.util.ArrayList;
@@ -174,7 +177,30 @@ public abstract class ExpandableListViewEventAdapter extends BaseExpandableListA
      * @return the View corresponding to the child at the specified position
      */
     @Override
-    public abstract View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent);
+    public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent){
+        //TODO : For the moment, events are displayed the same if user is attendee or organizer,
+        // in the future it could be nice to have a pencil icon to allow organizer to modify an event
+        Event event = ((Event) getChild(groupPosition, childPosition));
+        String eventTitle = (event.getName() + " : " + event.getType());
+        String eventDescription = "Time : " + event.getTime() + "\nLocation : " + event.getLocation();
+
+        if (convertView == null) {
+            LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.layout_event, null);
+        }
+        TextView eventTitleTextView = convertView.findViewById(R.id.event_title);
+        TextView descriptionTextView = convertView.findViewById(R.id.event_description);
+        eventTitleTextView.setText(eventTitle);
+        switch (event.getType()) {
+            case ROLL_CALL:
+                eventDescription += ("\nParticipants: " + event.getAttendees().size());
+                break;
+            default:
+                break;
+        }
+        descriptionTextView.setText(eventDescription);
+        return convertView;
+    }
 
     /**
      * A helper method that places the events in the correct key-value pair
