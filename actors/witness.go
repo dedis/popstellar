@@ -179,12 +179,6 @@ func (w *Witness) handleCreateLAO(msg message.Message, chann string, query messa
 		return nil, lib.ErrInvalidResource
 	}
 
-	errs = db.CreateMessage(msg, chann, w.database)
-	if errs != nil {
-		log.Printf("An error occured, could not store message to the database")
-		return nil, errs
-	}
-
 	lao := event.LAO{
 		ID:            string(data.ID),
 		Name:          data.Name,
@@ -197,6 +191,13 @@ func (w *Witness) handleCreateLAO(msg message.Message, chann string, query messa
 		log.Printf("An error occured, unable to create channel in the database")
 		return nil, errs
 	}
+
+	errs = db.CreateMessage(msg, chann, w.database)
+	if errs != nil {
+		log.Printf("An error occured, could not store message to the database")
+		return nil, errs
+	}
+
 	return nil, nil
 }
 
@@ -234,13 +235,6 @@ func (w *Witness) handleWitnessMessage(msg message.Message, chann string, query 
 		return nil, lib.ErrInvalidResource
 	}
 
-	//stores received message in DB
-	errs = db.CreateMessage(msg, chann, w.database)
-	if errs != nil {
-		log.Printf("could not store received message in the database")
-		return nil, errs
-	}
-
 	sendMsg := db.GetMessage([]byte(chann), data.MessageId, w.database)
 	if sendMsg == nil {
 		log.Printf("no message with ID %v in the database", data.MessageId)
@@ -266,6 +260,13 @@ func (w *Witness) handleWitnessMessage(msg message.Message, chann string, query 
 	errs = db.UpdateMessage(storedMessage, chann, w.database)
 	if errs != nil {
 		log.Printf("Unable to update signature list of message in the database")
+		return nil, errs
+	}
+
+	//stores received message in DB
+	errs = db.CreateMessage(msg, chann, w.database)
+	if errs != nil {
+		log.Printf("could not store received message in the database")
 		return nil, errs
 	}
 
@@ -304,6 +305,12 @@ func (w *Witness) handleLAOState(msg message.Message) (msgAndChannel []lib.Messa
 	errs = db.UpdateChannel(lao, w.database)
 	if errs != nil {
 		log.Printf("could not update the channel in the database")
+		return nil, errs
+	}
+
+	errs = db.CreateMessage(msg, "/root/"+lao.ID, w.database)
+	if errs != nil {
+		log.Printf("could not store received message in the database")
 		return nil, errs
 	}
 
