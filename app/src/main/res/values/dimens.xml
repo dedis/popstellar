@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <resources>
+<resources>
 
     <!-- Tabs -->
     <dimen name="guideline_horizontal_tab">0.08</dimen>
@@ -18,7 +18,7 @@
     <integer name="camera_preview_width">240</integer>
     <integer name="camera_preview_height">320</integer>
     <string name="camera_preview_ratio">3:4</string>
-    <dimen name="camera_preview_margin">50dp</dimen>
+    <dimen name="camera_preview_margin">40dp</dimen>
     <integer name="requested_preview_width">1600</integer>
     <integer name="requested_preview_height">1024</integer>
 

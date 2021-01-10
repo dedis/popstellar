@@ -1,4 +1,3 @@
-
 package com.github.dedis.student20_pop.ui;
 
 import android.Manifest;
@@ -10,6 +9,7 @@ import androidx.test.rule.GrantPermissionRule;
 
 import com.github.dedis.student20_pop.MainActivity;
 import com.github.dedis.student20_pop.R;
+import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -21,8 +21,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.ADD_WITNESS;
-import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO;
+import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO;
 
 /**
  * Class handling connect fragment tests
@@ -31,7 +30,8 @@ public class QRCodeScanningFragmentTest {
 
     private static final String TEST_URL = "Test url";
 
-    @Rule public final GrantPermissionRule rule = GrantPermissionRule.grant(Manifest.permission.CAMERA);
+    @Rule
+    public final GrantPermissionRule rule = GrantPermissionRule.grant(Manifest.permission.CAMERA);
 
     @Test
     public void testSimpleBarcodeReaction() {
@@ -46,7 +46,7 @@ public class QRCodeScanningFragmentTest {
             Fragment fragment = a.getSupportFragmentManager().findFragmentByTag(QRCodeScanningFragment.TAG);
             Assert.assertNotNull(fragment);
             Assert.assertTrue(fragment instanceof QRCodeScanningFragment);
-            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_URL, CONNECT_LAO);
+            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_URL, CONNECT_LAO, null);
         });
 
         // Check everything

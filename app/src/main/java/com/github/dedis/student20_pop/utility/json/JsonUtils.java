@@ -16,7 +16,8 @@ public final class JsonUtils {
 
     public static final String JSON_REQUEST_ID = "id";
 
-    private JsonUtils() {}
+    private JsonUtils() {
+    }
 
     public static void testRPCVersion(JsonObject object) throws JsonParseException {
         if (!object.has(JSON_RPC))

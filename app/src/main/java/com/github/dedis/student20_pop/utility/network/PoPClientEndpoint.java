@@ -37,7 +37,7 @@ public final class PoPClientEndpoint {
     /**
      * Create asynchronously a new HighLevelClientProxy that will encapsulate the socket
      *
-     * @param host   to connect to
+     * @param host  to connect to
      * @param owner the person whose device issued the connection
      * @return A proxy that will be able to handle every high level tasks
      */
@@ -49,8 +49,8 @@ public final class PoPClientEndpoint {
     /**
      * Create a new session with the websocket server
      *
-     * @param host   to connect to
-     * @param proxy  that is issuing the connection
+     * @param host  to connect to
+     * @param proxy that is issuing the connection
      * @return a completable future holding the session. If a fail occurs, the proxy will be responsible
      */
     protected static CompletableFuture<Session> connect(URI host, LowLevelClientProxy proxy) {

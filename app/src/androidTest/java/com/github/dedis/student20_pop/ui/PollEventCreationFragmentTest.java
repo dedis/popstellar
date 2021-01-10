@@ -9,7 +9,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import com.github.dedis.student20_pop.OrganizerActivity;
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.model.Event;
+import com.github.dedis.student20_pop.model.event.Event;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,7 +32,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
-import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -44,9 +43,9 @@ import static org.hamcrest.Matchers.not;
 
 public class PollEventCreationFragmentTest {
 
-    private String question = "Question";
-    private String choice1 = "blabla";
-    private String choice2 = "second choice";
+    private final String question = "Question";
+    private final String choice1 = "blabla";
+    private final String choice2 = "second choice";
 
     @Rule
     public ActivityScenarioRule<OrganizerActivity> activityScenarioRule =
@@ -78,29 +77,29 @@ public class PollEventCreationFragmentTest {
     }
 
     @Test
-    public void chooseOneOfNIsDefault(){
+    public void chooseOneOfNIsDefault() {
         onView(withId(R.id.radio_poll_type_1)).check(matches(isChecked()));
         onView(withId(R.id.radio_poll_type_2)).check(matches(isNotChecked()));
     }
 
     @Test
-    public void oneChoiceByDefault(){
+    public void oneChoiceByDefault() {
         onData(is(instanceOf(String.class))).onChildView(withText("1")).check(matches(isDisplayed()));
         onData(is(instanceOf(String.class))).onChildView(withText("2")).check(doesNotExist());
     }
 
     @Test
-    public void scheduleButtonIsDisabled(){
+    public void scheduleButtonIsDisabled() {
         onView(withId(R.id.schedule_button)).check(matches(not(isEnabled())));
     }
 
     @Test
-    public void cancelButtonWorks(){
+    public void cancelButtonWorks() {
         onView(withId(R.id.cancel_button)).perform(click());
     }
 
     @Test
-    public void plusButtonAddsOneChoice(){
+    public void plusButtonAddsOneChoice() {
         onView(withId(R.id.button_add)).perform(click());
         onData(is(instanceOf(String.class))).atPosition(1).check(matches(isDisplayed()));
         onView(withId(R.id.button_add)).perform(click());
@@ -108,7 +107,7 @@ public class PollEventCreationFragmentTest {
     }
 
     @Test
-    public void deleteChoiceDeletesTheCorrectChoice(){
+    public void deleteChoiceDeletesTheCorrectChoice() {
         onView(withId(R.id.button_add)).perform(click());
         onView(withId(R.id.button_add)).perform(click());
         onData(is(instanceOf(String.class))).atPosition(1).onChildView(withId(R.id.choice_edit_text)).perform(typeText("blabla"));
@@ -118,7 +117,7 @@ public class PollEventCreationFragmentTest {
     }
 
     @Test
-    public void scheduleButtonIsEnabledWhenCorrectFieldsAreFilled(){
+    public void scheduleButtonIsEnabledWhenCorrectFieldsAreFilled() {
         onView(withId(R.id.schedule_button)).check(matches(not(isEnabled())));
         onView(withId(R.id.question)).perform(typeText(question));
         onView(withId(R.id.schedule_button)).check(matches(not(isEnabled())));
@@ -133,7 +132,7 @@ public class PollEventCreationFragmentTest {
     }
 
     @Test
-    public void scheduleButtonIsDisabledWhenSomeFieldsAreDeleted(){
+    public void scheduleButtonIsDisabledWhenSomeFieldsAreDeleted() {
         onView(withId(R.id.question)).perform(typeText(question));
         onData(is(instanceOf(String.class))).atPosition(0).onChildView(withId(R.id.choice_edit_text)).perform(typeText(choice1));
         closeSoftKeyboard();
@@ -146,7 +145,7 @@ public class PollEventCreationFragmentTest {
     }
 
     @Test
-    public void scheduleButtonIsDisabledWhenSomeTextFieldsAreDeleted(){
+    public void scheduleButtonIsDisabledWhenSomeTextFieldsAreDeleted() {
         onView(withId(R.id.question)).perform(typeText(question));
         onData(is(instanceOf(String.class))).atPosition(0).onChildView(withId(R.id.choice_edit_text)).perform(typeText(choice1));
         closeSoftKeyboard();
@@ -158,7 +157,7 @@ public class PollEventCreationFragmentTest {
     }
 
     @Test
-    public void scheduleButtonIsDisabledWhenQuestionFieldIsReplacedWithWhiteSpaces(){
+    public void scheduleButtonIsDisabledWhenQuestionFieldIsReplacedWithWhiteSpaces() {
         onView(withId(R.id.question)).perform(typeText(question));
         onData(is(instanceOf(String.class))).atPosition(0).onChildView(withId(R.id.choice_edit_text)).perform(typeText(choice1));
         closeSoftKeyboard();
