@@ -471,7 +471,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 	}
 	//if new signature already exists, returns error
 	_, found := lib.FindStr(signaturesOnly, string(data.Signature))
-	if found {
+	if found && count < SigThreshold {
 		log.Printf("Signature already exists in message list")
 		return nil, lib.ErrResourceAlreadyExists
 	}
@@ -480,8 +480,9 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 	if err != nil {
 		log.Println("couldn't Marshal the ItemWitnessSignatures")
 	}
-	toSignStruct.WitnessSignatures = append(toSignStruct.WitnessSignatures, iws)
-
+	if !found {
+		toSignStruct.WitnessSignatures = append(toSignStruct.WitnessSignatures, iws)
+	}
 	// update "LAOUpdateProperties" message in DB
 	err = db.UpdateMessage(toSignStruct, canal, o.database)
 	if err != nil {
