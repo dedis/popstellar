@@ -10,6 +10,8 @@ arguments are :
 * `-k` the actor's public key. Default is "oui".
 * `-f` the file we want the backend to store its database on. Default is "org.db" for an organizer and "wit.db" for a witness
 
+You can generate the code documentation using the godoc command: `godoc -http:=6060`.
+
 ## Packages
 ### actors
 This package implements the actors defined by the PoP project (organizer and witness), and their reactions to received messages. 
