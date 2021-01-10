@@ -232,12 +232,6 @@ func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query mes
 		return nil, lib.ErrInvalidResource
 	}
 
-	errs = db.CreateMessage(msg, canal, o.database)
-	if errs != nil {
-		log.Printf("An error occured, could not store message to the database")
-		return nil, errs
-	}
-
 	lao := event.LAO{
 		ID:            string(data.ID),
 		Name:          data.Name,
@@ -249,6 +243,12 @@ func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query mes
 	errs = db.CreateChannel(lao, o.database)
 	if errs != nil {
 		log.Printf("An error occured, could not create new channel in the database")
+		return nil, errs
+	}
+
+	errs = db.CreateMessage(msg, canal, o.database)
+	if errs != nil {
+		log.Printf("An error occured, could not store message to the database")
 		return nil, errs
 	}
 
