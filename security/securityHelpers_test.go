@@ -32,17 +32,43 @@ func TestCorrectSignaturesAndCorrectWitnesses(t *testing.T) {
 func TestCorrectSignaturesAndBadWitnesses(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
-		AuthorisedWitnessKeys, jsonArrayOfWitnessSigntures, id, err := witnessesAndSignatures(false, true)
+		AuthorisedWitnessKeys, jsonArrayOfWitnessSignatures, id, err := witnessesAndSignatures(false, true)
 		if err != nil {
 			t.Errorf("Problem when Marshaling witnessKeysAndSignatures")
 		}
-		err = VerifyWitnessSignatures(AuthorisedWitnessKeys, jsonArrayOfWitnessSigntures, id)
-		if err != lib.ErrInvalidResource {
-			t.Errorf("The verifier  didn't notice wrong signature(s)")
+		err = VerifyWitnessSignatures(AuthorisedWitnessKeys, jsonArrayOfWitnessSignatures, id)
+		if err != lib.ErrRequestDataInvalid {
+			t.Errorf("The verifier  didn't notice unauthenticated witness")
 		}
 	}
 }
 
+func TestBadSignaturesAndBadWitnesses(t *testing.T) {
+	//increase nb of tests
+	for i := 0; i < 100; i++ {
+		AuthorisedWitnessKeys, jsonArrayOfWitnessSignatures, id, err := witnessesAndSignatures(false, false)
+		if err != nil {
+			t.Errorf("Problem when Marshaling witnessKeysAndSignatures")
+		}
+		err = VerifyWitnessSignatures(AuthorisedWitnessKeys, jsonArrayOfWitnessSignatures, id)
+		if err != lib.ErrRequestDataInvalid {
+			t.Errorf("The verifier  didn't notice wrong signature(s) and unauthenticated witness")
+		}
+	}
+}
+func TestBadSignaturesAndCorrectWitnesses(t *testing.T) {
+	//increase nb of tests
+	for i := 0; i < 100; i++ {
+		AuthorisedWitnessKeys, jsonArrayOfWitnessSigantures, id, err := witnessesAndSignatures(false, false)
+		if err != nil {
+			t.Errorf("Problem when Marshaling witnessKeysAndSignatures")
+		}
+		err = VerifyWitnessSignatures(AuthorisedWitnessKeys, jsonArrayOfWitnessSigantures, id)
+		if err !=lib.ErrRequestDataInvalid {
+			t.Errorf("The verifier  didn't notice wrong signature(s)")
+		}
+	}
+}
 //=====================================================================================/
 func witnessesAndSignatures(correctWitnesses bool, correctSignatures bool) (AuthorisedWitnessKeys [][]byte, jsonArrayOfWitnessSigntures []json.RawMessage, id []byte, err error) {
 	id = make([]byte, 32)
