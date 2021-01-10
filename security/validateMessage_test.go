@@ -69,6 +69,7 @@ func TestLAOIsValid(t *testing.T) {
 		//==================invalid Tests========================//
 	}
 }
+// TODO (should be not empty but) not in the protospecs ?
 func TestLAOEmptyLocation(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
