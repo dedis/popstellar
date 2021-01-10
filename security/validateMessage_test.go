@@ -1,5 +1,5 @@
 // define/securityHelpers
-package main
+package security
 
 import (
 	ed "crypto/ed25519"
@@ -10,17 +10,12 @@ import (
 	"fmt"
 	"math/rand"
 	"testing"
+	"time"
 
 	"student20_pop/lib"
 	message2 "student20_pop/message"
 	"student20_pop/parser"
-	"student20_pop/security"
 )
-
-type keys struct {
-	private ed.PrivateKey
-	public  []byte
-}
 
 func TestMessageIsValidWithoutWitnesses(t *testing.T) {
 	//increase nb of tests
@@ -28,11 +23,13 @@ func TestMessageIsValidWithoutWitnesses(t *testing.T) {
 		pubkey, privkey := createKeyPair()
 		witnessSignatures := []message2.ItemWitnessSignatures{}
 		witnessKeys := [][]byte{}
-		data, err := createDataLao(pubkey, privkey, witnessKeys)
+		var creation = time.Now().Unix()
+		name := "My LAO"
+		data, err := createDataLao(pubkey, privkey, witnessKeys, creation, name)
 		if err != nil {
 			t.Error(err)
 		}
-		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures, witnessKeys)
+		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures)
 		if err != nil {
 			t.Error(err)
 		}
@@ -43,27 +40,88 @@ func TestRollCallCreatedIsValid(t *testing.T) {
 	for i := 0; i < 100; i++ {
 		pubkey, privkey := createKeyPair()
 		witnessSignatures := []message2.ItemWitnessSignatures{}
-		witnessKeys := [][]byte{}
-		data, err := createDataLao(pubkey, privkey, witnessKeys)
+		data, err := createRollCallNow(pubkey, privkey)
 		if err != nil {
 			t.Error(err)
 		}
-		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures, witnessKeys)
+		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures)
 		if err != nil {
 			t.Error(err)
 		}
 	}
 }
 
+func TestLAOIsValid(t *testing.T) {
+	//increase nb of tests
+	for i := 0; i < 100; i++ {
+		pubkey, privkey := createKeyPair()
+		witnessKeys := [][]byte{}
+		var creation = time.Now().Unix()
+		name := "My LAO"
+		data, err := createDataLao(pubkey, privkey, witnessKeys, creation, name)
+		if err != nil {
+			t.Error(err)
+		}
+		valid := LAOIsValid(data, true)
+		if valid != true {
+			t.Errorf("Created Lao Should be valid %#v", data)
+		}
+		//==================invalid Tests========================//
+	}
+}
+func TestLAOEmptyLocation(t *testing.T) {
+	//increase nb of tests
+	for i := 0; i < 100; i++ {
+		pubkey, privkey := createKeyPair()
+		witnessKeys := [][]byte{}
+		var creation = time.Now().Unix()
+		name := ""
+		data, err := createDataLao(pubkey, privkey, witnessKeys, creation, name)
+		if err != nil {
+			t.Error(err)
+		}
+		valid := LAOIsValid(data, true)
+		if valid != false {
+			t.Errorf("Created Lao Should be invalid due to empty location %#v", data)
+		}
+	}
+}
+func TestLAOIInvalidCreationTime(t *testing.T) {
+	//increase nb of tests
+	for i := 0; i < 100; i++ {
+		pubkey, privkey := createKeyPair()
+		witnessKeys := [][]byte{}
+		var creation = time.Now().Unix()
+		name := ""
+		name = "ok"
+		creation = time.Now().Unix() - MaxClockDifference - 1
+		data, err := createDataLao(pubkey, privkey, witnessKeys, creation, name)
+		if err != nil {
+			t.Error(err)
+		}
+		valid := LAOIsValid(data, true)
+		if valid != false {
+			t.Errorf("Created Lao Should be invalid due to wrong creation time %#v", data)
+		}
+	}
+}
+
 //===================================================================================//
-func CheckMessageIsValid(pubkey []byte, privkey ed.PrivateKey, data message2.DataCreateLAO, witnessKeysAndSignatures []message2.ItemWitnessSignatures, WitnesseKeys [][]byte) error {
-	dataFlat, signed, id, err := getIdofMessage(data, privkey)
+func CheckMessageIsValid(pubkey []byte, privkey ed.PrivateKey, data interface{}, witnessKeysAndSignatures []message2.ItemWitnessSignatures) error {
+	var dataFlat, signed, id []byte
+	var err error
+	switch data.(type) {
+	case message2.DataCreateLAO:
+		dataFlat, signed, id, err = getIdofMessage(data.(message2.DataCreateLAO), privkey)
+	case message2.DataCreateRollCall:
+		dataFlat, signed, id, err = getIdofMessage(data.(message2.DataCreateRollCall), privkey)
+	}
 	if err != nil {
 		return err
 	}
 
 	//witness signatures
-	ArrayOfWitnessSignatures, err := plugWitnessesInArray(witnessKeysAndSignatures)
+	ArrayOfWitnessSignatures, err := PlugWitnessesInArray(witnessKeysAndSignatures)
 	if err != nil {
 		return err
 	}
@@ -82,7 +140,7 @@ func CheckMessageIsValid(pubkey []byte, privkey ed.PrivateKey, data message2.Dat
 	if err != nil {
 		return err
 	}
-	err = security.MessageIsValid(messProcessed)
+	err = MessageIsValid(messProcessed)
 	if err != nil {
 		return err
 	}
@@ -112,7 +170,7 @@ func TestMessageIsValidWithAssessedWitnesses(t *testing.T) {
 	}
 }
 */
-func plugWitnessesInArray(witnessKeysAndSignatures []message2.ItemWitnessSignatures) ([]json.RawMessage, error) {
+func PlugWitnessesInArray(witnessKeysAndSignatures []message2.ItemWitnessSignatures) ([]json.RawMessage, error) {
 	ArrayOfWitnessSignatures := []json.RawMessage{}
 	for i := 0; i < len(witnessKeysAndSignatures); i++ {
 		witnessSignatureI, err := json.Marshal(witnessKeysAndSignatures[i])
@@ -132,26 +190,25 @@ func createKeyPair() ([]byte, ed.PrivateKey) {
 	return privkey.Public().(ed.PublicKey), privkey
 }
 
-func createDataLao(pubkey []byte, privkey ed.PrivateKey, WitnesseKeys [][]byte) (message2.DataCreateLAO, error) {
-	var creation int64 = 123
-	name := "My LAO"
-	if (len(pubkey) != ed.PublicKeySize) || len(privkey) != ed.PrivateKeySize {
+func createDataLao(orgPubkey []byte, privkey ed.PrivateKey, WitnesseKeys [][]byte, creation int64, name string) (message2.DataCreateLAO, error) {
+	if (len(orgPubkey) != ed.PublicKeySize) || len(privkey) != ed.PrivateKeySize {
 		return message2.DataCreateLAO{}, errors.New("wrong argument -> size of public key don't respected ")
 	}
-
-	idData := sha256.Sum256([]byte(string(pubkey) + fmt.Sprint(creation) + name))
+	var itemsToHashForId []string
+	itemsToHashForId = append(itemsToHashForId, string(orgPubkey), fmt.Sprint(creation), name)
+	idData := hashOfItems(itemsToHashForId)
 	var data = message2.DataCreateLAO{
 		Object:    "lao",
 		Action:    "create",
 		ID:        idData[:],
 		Name:      name,
 		Creation:  creation,
-		Organizer: []byte(pubkey),
+		Organizer: orgPubkey,
 		Witnesses: WitnesseKeys,
 	}
 	return data, nil
 }
-func createRollCallNow(pubkey []byte, privkey ed.PrivateKey, WitnesseKeys [][]byte) (message2.DataCreateRollCall, error) {
+func createRollCallNow(pubkey []byte, privkey ed.PrivateKey) (message2.DataCreateRollCall, error) {
 	var creation int64 = 123
 	name := "RollCallNow"
 	if (len(pubkey) != ed.PublicKeySize) || len(privkey) != ed.PrivateKeySize {
@@ -172,30 +229,7 @@ func createRollCallNow(pubkey []byte, privkey ed.PrivateKey, WitnesseKeys [][]by
 	return data, nil
 }
 
-/*10 pair of keys*/
-func createArrayOfkeys() []keys {
-	keyz := []keys{}
-	for i := 0; i < 10; i++ {
-		publicW, privW := createKeyPair()
-		keyz = append(keyz, keys{private: privW, public: []byte(publicW)})
-	}
-	return keyz
-}
-func onlyPublicKeys(ks []keys) [][]byte {
-	var acc [][]byte
-	for _, k := range ks {
-		acc = append(acc, k.public)
-	}
-	return acc
-}
-func arrayOfWitnessSignatures(ks []keys, id []byte) []message2.ItemWitnessSignatures {
-	var acc []message2.ItemWitnessSignatures
-	for _, k := range ks {
-		acc = append(acc, message2.ItemWitnessSignatures{k.public, ed.Sign(k.private, id)})
-	}
-	return acc
-}
-func getIdofMessage(data message2.DataCreateLAO, privkey ed.PrivateKey) (dataFlat, signed, id []byte, err error) {
+func getIdofMessage(data interface{}, privkey ed.PrivateKey) (dataFlat, signed, id []byte, err error) {
 	dataFlat, err = json.Marshal(data)
 	if err != nil {
 		return nil, nil, nil, errors.New("Error : Impossible to marshal data")
@@ -204,7 +238,12 @@ func getIdofMessage(data message2.DataCreateLAO, privkey ed.PrivateKey) (dataFla
 
 	var itemsToHashForMessageId []string
 	itemsToHashForMessageId = append(itemsToHashForMessageId, string(dataFlat), b64.StdEncoding.EncodeToString(signed))
-	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(itemsToHashForMessageId)))
-	return dataFlat, signed, hash[:], nil
+	hash := hashOfItems(itemsToHashForMessageId)
+	return dataFlat, signed, hash, nil
 
+}
+
+func hashOfItems(itemsToHash []string) []byte {
+	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(itemsToHash)))
+	return hash[:]
 }
