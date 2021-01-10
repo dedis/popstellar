@@ -2,8 +2,8 @@ package com.github.dedis.student20_pop.ui;
 
 import androidx.test.core.app.ActivityScenario;
 
-import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.AttendeeActivity;
+import com.github.dedis.student20_pop.R;
 
 import org.junit.Before;
 import org.junit.Test;

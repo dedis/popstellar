@@ -1,9 +1,12 @@
-package com.github.dedis.student20_pop.model;
+package com.github.dedis.student20_pop.model.event;
 
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
+import androidx.databinding.ObservableArrayList;
+import androidx.databinding.ObservableList;
 
+import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.utility.security.Hash;
 import com.github.dedis.student20_pop.utility.security.Signature;
 
@@ -14,6 +17,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+
 
 /**
  * Class modeling an Event
@@ -30,7 +34,7 @@ public class Event {
     private final EventType type;
     private final JSONObject other;
     private final List<String> attestation;
-    private List<String> attendees;
+    private ObservableArrayList<String> attendees;
 
     /**
      * Constructor for an Event
@@ -49,7 +53,7 @@ public class Event {
         this.time = time.getTime() / 1000L;
         this.id = Hash.hash(name, time.getTime());
         this.lao = Hash.hash(lao);
-        this.attendees = new ArrayList<>();
+        this.attendees = new ObservableArrayList<>();
         this.location = location;
         this.type = type;
         this.other = new JSONObject();
@@ -92,7 +96,7 @@ public class Event {
     /**
      * @return list of public keys of the attendees
      */
-    public List<String> getAttendees() {
+    public ObservableArrayList<String> getAttendees() {
         return attendees;
     }
 
@@ -100,7 +104,7 @@ public class Event {
      * @param attendees list of public keys of attendees, can be empty
      * @throws IllegalArgumentException if the list is null or at least one public key is null
      */
-    public void setAttendees(List<String> attendees) {
+    public void setAttendees(ObservableArrayList<String> attendees) {
         if (attendees == null || attendees.contains(null)) {
             throw new IllegalArgumentException("Trying to add a null attendee to the event " + name);
         }

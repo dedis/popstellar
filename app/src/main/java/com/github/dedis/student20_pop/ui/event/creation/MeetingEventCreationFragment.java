@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.ui.event;
+package com.github.dedis.student20_pop.ui.event.creation;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,22 +17,15 @@ import androidx.fragment.app.FragmentManager;
 
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.model.Event;
-import com.github.dedis.student20_pop.model.MeetingEvent;
+import com.github.dedis.student20_pop.model.event.Event;
+import com.github.dedis.student20_pop.model.event.MeetingEvent;
 import com.github.dedis.student20_pop.utility.ui.organizer.OnEventCreatedListener;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-
+/**
+ * Fragment that shows up when user wants to create a Meeting Event
+ */
 public final class MeetingEventCreationFragment extends AbstractEventCreationFragment {
-
     public static final String TAG = MeetingEventCreationFragment.class.getSimpleName();
-    public static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm", Locale.FRENCH);
-    public static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH);
 
     private EditText meetingTitleEditText;
     private EditText meetingLocationEditText;
@@ -57,6 +50,7 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
         public void afterTextChanged(Editable s) {
         }
     };
+
     private Button cancelButton;
     private OnEventCreatedListener eventCreatedListener;
 
@@ -73,20 +67,20 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final FragmentManager fragmentManager = (getActivity()).getSupportFragmentManager();
-        View view = inflater.inflate(R.layout.fragment_meeting_event, container, false);
+        View view = inflater.inflate(R.layout.fragment_create_meeting_event, container, false);
         PoPApplication app = (PoPApplication) getActivity().getApplication();
 
         setDateAndTimeView(view, MeetingEventCreationFragment.this, fragmentManager);
         addDateAndTimeListener(confirmTextWatcher);
 
 
-        meetingTitleEditText = view.findViewById(R.id.title_text);
+        meetingTitleEditText = view.findViewById(R.id.meeting_title_text);
         meetingLocationEditText = view.findViewById(R.id.meeting_event_location_text);
         meetingDescriptionEditText = view.findViewById(R.id.meeting_event_description_text);
 
         meetingTitleEditText.addTextChangedListener(confirmTextWatcher);
 
-        confirmButton = view.findViewById(R.id.confirm);
+        confirmButton = view.findViewById(R.id.meeting_event_creation_confirm);
         confirmButton.setOnClickListener(v -> {
 
             Event meetingEvent = new MeetingEvent(
@@ -104,18 +98,10 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
             fragmentManager.popBackStackImmediate();
         });
 
-        cancelButton = view.findViewById(R.id.cancel);
+        cancelButton = view.findViewById(R.id.meeting_event_creation_cancel);
         cancelButton.setOnClickListener(v -> {
             fragmentManager.popBackStackImmediate();
         });
-
-        // formatting today's date
-        try {
-            today = DATE_FORMAT.parse(DATE_FORMAT.format(Calendar.getInstance().getTime()));
-        } catch (ParseException e) {
-            e.printStackTrace();
-            today = new Date();
-        }
 
         return view;
     }

@@ -7,10 +7,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import com.github.dedis.student20_pop.model.Event;
 import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.Person;
+import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.utility.network.HighLevelClientProxy;
 import com.github.dedis.student20_pop.utility.network.PoPClientEndpoint;
 import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
@@ -24,9 +24,9 @@ import java.util.Map;
 
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_ALREADY_EXISTS;
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_SUCCESSFUL;
-import static com.github.dedis.student20_pop.model.Event.EventType.DISCUSSION;
-import static com.github.dedis.student20_pop.model.Event.EventType.MEETING;
-import static com.github.dedis.student20_pop.model.Event.EventType.POLL;
+import static com.github.dedis.student20_pop.model.event.Event.EventType.DISCUSSION;
+import static com.github.dedis.student20_pop.model.event.Event.EventType.MEETING;
+import static com.github.dedis.student20_pop.model.event.Event.EventType.POLL;
 
 /**
  * Class modelling the application : a unique person associated with LAOs
@@ -71,7 +71,7 @@ public class PoPApplication extends Application {
         SharedPreferences sp = this.getSharedPreferences(TAG, Context.MODE_PRIVATE);
 
         // Verify if the information is not present
-        if(person == null) {
+        if (person == null) {
             // Verify if the user already exists
             if (sp.contains(SP_PERSON_ID_KEY)) {
                 // Recover user's information
@@ -127,10 +127,28 @@ public class PoPApplication extends Application {
     }
 
     /**
+     * @param person to be set for this Application, can only be done once
+     */
+    public void setPerson(Person person) {
+        if (person != null) {
+            this.person = person;
+        }
+    }
+
+    /**
      * @return the current lao
      */
     public Lao getCurrentLao() {
         return currentLao;
+    }
+
+    /**
+     * sets the current lao
+     *
+     * @param lao
+     */
+    public void setCurrentLao(Lao lao) {
+        this.currentLao = lao;
     }
 
     /**
@@ -174,6 +192,12 @@ public class PoPApplication extends Application {
      * @return lao's corresponding list of witnesses
      */
     public List<String> getWitnesses(Lao lao) {
+        List<String> laoWitnesses = laoWitnessMap.get(lao);
+        if (laoWitnesses == null) {
+            laoWitnesses = new ArrayList<>();
+            laoWitnessMap.put(lao, laoWitnesses);
+        }
+
         return laoWitnessMap.get(lao);
     }
 
@@ -210,7 +234,7 @@ public class PoPApplication extends Application {
     }
 
     /**
-     * @param lao of the new event
+     * @param lao   of the new event
      * @param event to be added
      */
     public void addEvent(Lao lao, Event event) {
@@ -227,7 +251,7 @@ public class PoPApplication extends Application {
     }
 
     /**
-     * @param lao of the new witness
+     * @param lao     of the new witness
      * @param witness id to add on the list of witnesses for the LAO
      * @return ADD_WITNESS_SUCCESSFUL if witness has been added
      * ADD_WITNESS_ALREADY_EXISTS if witness already exists
@@ -273,32 +297,6 @@ public class PoPApplication extends Application {
     }
 
     /**
-     * @param person to be set for this Application, can only be done once
-     */
-    public void setPerson(Person person) {
-        if (person != null) {
-            this.person = person;
-        }
-    }
-
-    /**
-     * sets the current lao
-     *
-     * @param lao
-     */
-    public void setCurrentLao(Lao lao) {
-        this.currentLao = lao;
-    }
-
-    /**
-     * Type of results when adding a witness
-     */
-    public enum AddWitnessResult {
-        ADD_WITNESS_SUCCESSFUL,
-        ADD_WITNESS_ALREADY_EXISTS
-    }
-
-    /**
      * This method creates a map for testing, when no backend is connected
      *
      * @return the dummy map
@@ -321,5 +319,13 @@ public class PoPApplication extends Application {
         map.put(new Lao("My LAO 3", new Date(), person.getId()), events);
         map.put(new Lao("LAO 4", new Date(), notMyPublicKey), events);
         return map;
+    }
+
+    /**
+     * Type of results when adding a witness
+     */
+    public enum AddWitnessResult {
+        ADD_WITNESS_SUCCESSFUL,
+        ADD_WITNESS_ALREADY_EXISTS
     }
 }

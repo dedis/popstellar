@@ -42,7 +42,7 @@ public final class Person {
      * @param laos           the new list of LAOs
      */
     public Person(String name, String id, String authentication, List<String> laos) {
-        if(name == null || id == null || authentication == null || laos == null || laos.contains(null)) {
+        if (name == null || id == null || authentication == null || laos == null || laos.contains(null)) {
             throw new IllegalArgumentException("Trying to create a person with a null parameter");
         }
         this.name = name;
@@ -89,12 +89,11 @@ public final class Person {
     }
 
     /**
-     *
      * @param lao the new LAO to be added to the Person's owner/member list
      * @return a new Person with the same name, public and private key, but new list of LAOs
      */
     public Person addLao(String lao) {
-        if(lao == null) {
+        if (lao == null) {
             throw new IllegalArgumentException("Trying to add a null lao to the Person " + name);
         }
         laos.add(lao);

@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.utility.ui.EventAdapter;
+package com.github.dedis.student20_pop.utility.ui.eventadapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,11 +7,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.model.Event;
+import com.github.dedis.student20_pop.model.event.Event;
 
 import java.util.List;
 
-import static com.github.dedis.student20_pop.model.Event.EventCategory;
+import static com.github.dedis.student20_pop.model.event.Event.EventCategory;
 
 /**
  * Adapter to show events of an Attendee

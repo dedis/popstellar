@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_launch"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/fragment_launch" >
+    android:layout_height="match_parent">
 
     <include layout="@layout/tab_home" />
+
     <include layout="@layout/tab_connect_launch" />
 
     <LinearLayout
@@ -19,32 +19,32 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:text="@string/text_title_launch"
             android:textSize="@dimen/size_title"
-            android:textStyle="bold"
-            android:text="@string/text_title_launch" />
+            android:textStyle="bold" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:text="@string/text_body_launch"
             android:textSize="@dimen/size_body"
-            android:textStyle="italic"
-            android:text="@string/text_body_launch" />
+            android:textStyle="italic" />
 
         <EditText
             android:id="@+id/entry_box_launch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/margin_text"
+            android:autofillHints=""
             android:hint="@string/text_entry_launch"
-            android:inputType="text"
-            android:autofillHints="" />
+            android:inputType="text" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
             android:layout_marginVertical="@dimen/margin_button"
+            android:gravity="center_horizontal"
             android:orientation="horizontal">
 
             <Button
@@ -54,16 +54,16 @@
                 android:layout_marginEnd="@dimen/margin_button"
                 android:layout_marginRight="@dimen/margin_button"
                 android:gravity="center"
-                android:text="@string/text_button_launch"
-                android:onClick="onClick" />
+                android:onClick="onClick"
+                android:text="@string/text_button_launch" />
 
             <Button
                 android:id="@+id/button_cancel_launch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="@string/button_cancel"
-                android:onClick="onClick" />
+                android:onClick="onClick"
+                android:text="@string/button_cancel" />
 
         </LinearLayout>
     </LinearLayout>

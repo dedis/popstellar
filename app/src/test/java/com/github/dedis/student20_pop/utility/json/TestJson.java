@@ -37,7 +37,7 @@ import java.util.Arrays;
 
 /**
  * Test object encoding and decoding with Gson
- *
+ * <p>
  * Also validate generated json objects with the schema defined by the protocol
  */
 public class TestJson {

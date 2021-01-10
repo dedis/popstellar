@@ -63,7 +63,7 @@ public class TimePickerFragmentTest {
 
         onView(allOf(withId(R.id.add_future_event_button), withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))).perform(click());
         onView(withText(getApplicationContext().getString(R.string.meeting_event))).perform(click());
-        onView(withId(R.id.fragment_meeting_event)).check(matches(isDisplayed()));
+        onView(withId(R.id.fragment_meeting_event_creation)).check(matches(isDisplayed()));
     }
 
     @Test

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/tab_home_connect_launch"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/tab_home_connect_launch"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_horizontal_tab"
@@ -22,13 +21,13 @@
 
     <Button
         android:id="@+id/tab_home"
-        android:layout_height="0dp"
         android:layout_width="0dp"
-        android:text="@string/tab_home"
+        android:layout_height="0dp"
         android:onClick="onClick"
-        app:layout_constraintTop_toTopOf="parent"
+        android:text="@string/tab_home"
         app:layout_constraintBottom_toTopOf="@+id/guideline_horizontal_tab"
+        app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_tab_home"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_tab_home" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

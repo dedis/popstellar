@@ -1,11 +1,8 @@
 package com.github.dedis.student20_pop.ui;
 
-import android.widget.Adapter;
-
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.matcher.BoundedMatcher;
 
-import com.github.dedis.student20_pop.AttendeeActivity;
 import com.github.dedis.student20_pop.MainActivity;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Lao;
@@ -15,49 +12,27 @@ import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.anyOf;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.startsWith;
 
 
 //TODO: Update tests when the data between activities will be passed
 public class HomeFragmentTest {
 
-    @Before
-    public void launchActivity() {
-        ActivityScenario.launch(MainActivity.class);
-    }
-
-    @Test
-    public void homeFragmentIsDisplayed(){
-        onView(withId(R.id.fragment_home)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    public void listOfLaosIsDisplayed(){
-        onView(withId(R.id.lao_list)).check(matches(isDisplayed()));
-    }
-
     /**
      * Matches a Lao with a given lao name
+     *
      * @param title
      * @return
      */
-    public static Matcher<Object> titleMatches(String title){
+    public static Matcher<Object> titleMatches(String title) {
         return new BoundedMatcher<Object, Lao>(Lao.class) {
 
             @Override
@@ -72,14 +47,29 @@ public class HomeFragmentTest {
         };
     }
 
+    @Before
+    public void launchActivity() {
+        ActivityScenario.launch(MainActivity.class);
+    }
+
     @Test
-    public void  clickOnLaoWhichOfIAmOrganizerStartsOrganizer(){
+    public void homeFragmentIsDisplayed() {
+        onView(withId(R.id.fragment_home)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void listOfLaosIsDisplayed() {
+        onView(withId(R.id.lao_list)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void clickOnLaoWhichOfIAmOrganizerStartsOrganizer() {
         onData(allOf(is(instanceOf(Lao.class)), titleMatches("LAO I just joined"))).perform(click());
         onView(withId(R.id.fragment_organizer)).check(matches(isDisplayed()));
     }
 
     @Test
-    public void clickOnLaoWhichOfIAmAttendeeStartsAttendee(){
+    public void clickOnLaoWhichOfIAmAttendeeStartsAttendee() {
         onData(allOf(is(instanceOf(Lao.class)), titleMatches("LAO 1"))).perform(click());
         onView(withId(R.id.fragment_attendee)).check(matches(isDisplayed()));
     }

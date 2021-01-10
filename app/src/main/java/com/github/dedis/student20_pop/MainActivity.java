@@ -16,12 +16,12 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.Person;
-import com.github.dedis.student20_pop.ui.CameraPermissionFragment;
-import com.github.dedis.student20_pop.ui.ConnectingFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
-import com.github.dedis.student20_pop.ui.QRCodeScanningFragment;
-import com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType;
+import com.github.dedis.student20_pop.ui.qrcode.CameraPermissionFragment;
+import com.github.dedis.student20_pop.ui.qrcode.ConnectingFragment;
+import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
+import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraNotAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
@@ -29,7 +29,7 @@ import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
 import java.util.Collections;
 import java.util.Date;
 
-import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO;
+import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO;
 
 /**
  * Activity used to display the different UIs
@@ -65,9 +65,9 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
                 break;
             case R.id.tab_connect:
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
-                    showFragment(new QRCodeScanningFragment(CONNECT_LAO), QRCodeScanningFragment.TAG);
+                    showFragment(new QRCodeScanningFragment(CONNECT_LAO, null), QRCodeScanningFragment.TAG);
                 else
-                    showFragment(new CameraPermissionFragment(CONNECT_LAO), CameraPermissionFragment.TAG);
+                    showFragment(new CameraPermissionFragment(CONNECT_LAO, null), CameraPermissionFragment.TAG);
                 break;
             case R.id.tab_launch:
                 showFragment(new LaunchFragment(), LaunchFragment.TAG);
@@ -123,15 +123,15 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
 
 
     @Override
-    public void onCameraNotAllowedListener(QRCodeScanningType qrCodeScanningType) {
-        showFragment(new CameraPermissionFragment(qrCodeScanningType), CameraPermissionFragment.TAG);
+    public void onCameraNotAllowedListener(QRCodeScanningType qrCodeScanningType, String eventId) {
+        showFragment(new CameraPermissionFragment(qrCodeScanningType, eventId), CameraPermissionFragment.TAG);
     }
 
     @Override
-    public void onQRCodeDetected(String url, QRCodeScanningType qrCodeScanningType) {
+    public void onQRCodeDetected(String url, QRCodeScanningType qrCodeScanningType, String eventId) {
         Log.i(TAG, "Received qrcode url : " + url);
         switch (qrCodeScanningType) {
-            case ADD_ROLL_CALL:
+            case ADD_ROLL_CALL_ATTENDEE:
                 //TODO
                 break;
             case ADD_WITNESS:
@@ -146,7 +146,7 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
     }
 
     @Override
-    public void onCameraAllowedListener(QRCodeScanningType qrCodeScanningType) {
-        showFragment(new QRCodeScanningFragment(qrCodeScanningType), QRCodeScanningFragment.TAG);
+    public void onCameraAllowedListener(QRCodeScanningType qrCodeScanningType, String eventId) {
+        showFragment(new QRCodeScanningFragment(qrCodeScanningType, null), QRCodeScanningFragment.TAG);
     }
 }

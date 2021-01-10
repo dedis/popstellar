@@ -72,6 +72,23 @@ public final class Lao {
         this.attestation = name + time + organizer;
     }
 
+    /**
+     * Get the list of ids from a given list of LAOs
+     *
+     * @param laos the list of LAOs
+     * @return list of ids of these LAOs
+     */
+    public static List<String> getIds(List<Lao> laos) {
+        if (laos == null || laos.contains(null)) {
+            throw new IllegalArgumentException("Cannot get ids of null LAOs");
+        }
+        List<String> ids = new ArrayList<>();
+        for (Lao lao : laos) {
+            ids.add(lao.id);
+        }
+        return ids;
+    }
+
     public String getName() {
         return name;
     }
@@ -165,23 +182,6 @@ public final class Lao {
             throw new IllegalArgumentException("Trying to add a null event to the LAO " + name);
         }
         this.events = events;
-    }
-
-    /**
-     * Get the list of ids from a given list of LAOs
-     *
-     * @param laos the list of LAOs
-     * @return list of ids of these LAOs
-     */
-    public static List<String> getIds(List<Lao> laos) {
-        if (laos == null || laos.contains(null)) {
-            throw new IllegalArgumentException("Cannot get ids of null LAOs");
-        }
-        List<String> ids = new ArrayList<>();
-        for (Lao lao : laos) {
-            ids.add(lao.id);
-        }
-        return ids;
     }
 
     /**

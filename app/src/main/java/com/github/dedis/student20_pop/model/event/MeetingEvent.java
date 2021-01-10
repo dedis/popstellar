@@ -1,9 +1,12 @@
-package com.github.dedis.student20_pop.model;
+package com.github.dedis.student20_pop.model.event;
 
 import java.util.Date;
 
-import static com.github.dedis.student20_pop.model.Event.EventType.MEETING;
+import static com.github.dedis.student20_pop.model.event.Event.EventType.MEETING;
 
+/**
+ * Class modelling an Meeting Event
+ */
 public class MeetingEvent extends Event {
     private final Date startDate;
     private final Date endDate;

@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.ui;
+package com.github.dedis.student20_pop.ui.qrcode;
 
 import android.Manifest;
 import android.content.Context;
@@ -30,7 +30,7 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
 
-import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO;
+import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO;
 
 /**
  * Fragment used to display the Connect UI
@@ -45,12 +45,13 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
     private OnCameraNotAllowedListener onCameraNotAllowedListener;
     private QRCodeListener qrCodeListener;
     private QRCodeScanningType qrCodeScanningType;
+    private String eventId;
 
     /**
      * Default Fragment constructor
      */
     public QRCodeScanningFragment() {
-        new QRCodeScanningFragment(CONNECT_LAO);
+        new QRCodeScanningFragment(CONNECT_LAO, null);
     }
 
     /**
@@ -58,13 +59,14 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
      *
      * @param qrCodeScanningType tell what should be done with QR code information
      */
-    public QRCodeScanningFragment(QRCodeScanningType qrCodeScanningType) {
+    public QRCodeScanningFragment(QRCodeScanningType qrCodeScanningType, String eventId) {
         super();
         this.qrCodeScanningType = qrCodeScanningType;
+        this.eventId = eventId;
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (context instanceof OnCameraAllowedListener)
             onCameraNotAllowedListener = (OnCameraNotAllowedListener) context;
@@ -88,8 +90,8 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
             case CONNECT_LAO:
                 scanDescription.setText(R.string.qrcode_scanning_connect_lao);
                 break;
-            case ADD_ROLL_CALL:
-                scanDescription.setText("TODO");
+            case ADD_ROLL_CALL_ATTENDEE:
+                scanDescription.setText(R.string.qrcode_scanning_add_attendee);
                 break;
             case ADD_WITNESS:
                 scanDescription.setText(R.string.qrcode_scanning_add_witness);
@@ -100,7 +102,7 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
             camera = createCamera();
         else
-            onCameraNotAllowedListener.onCameraNotAllowedListener(qrCodeScanningType);
+            onCameraNotAllowedListener.onCameraNotAllowedListener(qrCodeScanningType, eventId);
 
         return view;
     }
@@ -110,7 +112,7 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
                 .setBarcodeFormats(Barcode.QR_CODE)
                 .build();
 
-        qrDetector.setProcessor(new QRFocusingProcessor(qrDetector, this, qrCodeScanningType));
+        qrDetector.setProcessor(new QRFocusingProcessor(qrDetector, this, qrCodeScanningType, eventId));
 
         return new CameraSource.Builder(requireContext(), qrDetector)
                 .setFacing(CameraSource.CAMERA_FACING_BACK)
@@ -146,7 +148,7 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
             startCamera();
         else
-            onCameraNotAllowedListener.onCameraNotAllowedListener(qrCodeScanningType);
+            onCameraNotAllowedListener.onCameraNotAllowedListener(qrCodeScanningType, eventId);
     }
 
     @Override
@@ -164,8 +166,8 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
     }
 
     @Override
-    public void onQRCodeDetected(String data, QRCodeScanningType qrCodeScanningType) {
-        qrCodeListener.onQRCodeDetected(data, qrCodeScanningType);
+    public void onQRCodeDetected(String data, QRCodeScanningType qrCodeScanningType, String eventId) {
+        qrCodeListener.onQRCodeDetected(data, qrCodeScanningType, eventId);
     }
 
     /**
@@ -174,9 +176,8 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
      * or connect to a lao or to add an attendee to a roll call event
      */
     public enum QRCodeScanningType {
-        ADD_ROLL_CALL,
+        ADD_ROLL_CALL_ATTENDEE,
         ADD_WITNESS,
         CONNECT_LAO
-
     }
 }
