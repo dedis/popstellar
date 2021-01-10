@@ -23,8 +23,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
@@ -61,6 +59,7 @@ public class OrganizerFragmentTest {
     public ActivityScenarioRule<OrganizerActivity> activityScenarioRule =
             new ActivityScenarioRule<>(OrganizerActivity.class);
     private View decorView;
+    private final String WITNESS = "Alphonse";
 
     /**
      * This is a simple matcher to avoid error when multiple views match in hierarchy
@@ -104,6 +103,10 @@ public class OrganizerFragmentTest {
             public void perform(OrganizerActivity activity) {
                 decorView = activity.getWindow().getDecorView();
                 PoPApplication app = (PoPApplication) activity.getApplication();
+                assertThat(app.getWitnesses(), is(empty()));
+                AddWitnessResult result = app.addWitness(WITNESS);
+                assertThat(app.getWitnesses(), is(Collections.singletonList(WITNESS)));
+                assertThat(result, is(ADD_WITNESS_SUCCESSFUL));
             }
         });
     }

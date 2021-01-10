@@ -168,14 +168,8 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
                             }
 
                             if (attendeeHasBeenAdded == ADD_ATTENDEE_SUCCESSFUL) {
-                                for (String attendee : matchingEvent.get().getAttendees()) {
-                                    Log.d("DEBUG 09.01.2021", "Attendee : " + attendee);
-                                }
                                 Toast.makeText(this, getString(R.string.add_attendee_successful), Toast.LENGTH_SHORT).show();
                             } else if (attendeeHasBeenAdded == ADD_ATTENDEE_ALREADY_EXISTS) {
-                                for (String attendee : matchingEvent.get().getAttendees()) {
-                                    Log.d("DEBUG 09.01.2021", "Attendee : " + attendee);
-                                }
                                 Toast.makeText(getAppContext(), getString(R.string.add_attendee_already_exists), Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(this, getString(R.string.add_attendee_unsuccessful), Toast.LENGTH_SHORT).show();
