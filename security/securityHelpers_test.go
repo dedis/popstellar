@@ -64,11 +64,12 @@ func TestBadSignaturesAndCorrectWitnesses(t *testing.T) {
 			t.Errorf("Problem when Marshaling witnessKeysAndSignatures")
 		}
 		err = VerifyWitnessSignatures(AuthorisedWitnessKeys, jsonArrayOfWitnessSigantures, id)
-		if err !=lib.ErrRequestDataInvalid {
+		if err != lib.ErrRequestDataInvalid {
 			t.Errorf("The verifier  didn't notice wrong signature(s)")
 		}
 	}
 }
+
 //=====================================================================================/
 func witnessesAndSignatures(correctWitnesses bool, correctSignatures bool) (AuthorisedWitnessKeys [][]byte, jsonArrayOfWitnessSigntures []json.RawMessage, id []byte, err error) {
 	id = make([]byte, 32)
