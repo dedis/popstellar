@@ -30,7 +30,7 @@ public class Signature {
         }
         String signature = null;
         try {
-            byte[] hash = Base64.getDecoder().decode(Hash.hash(data));
+            byte[] hash = Base64.getDecoder().decode(data);
             Ed25519Sign signer = new Ed25519Sign(Base64.getDecoder().decode(privateKey));
             signature = Base64.getEncoder().encodeToString(signer.sign(hash));
         } catch (GeneralSecurityException e) {
