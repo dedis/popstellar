@@ -71,6 +71,19 @@ func getCorrectDataCreateLAO(publicKey []byte) string {
 	return data
 }
 
+func getCorrectDataWitnessMessage(publicKey []byte,messageId string) string {
+	//pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
+	data := `{
+		"object": "message",
+		"action": "witness",
+		"message_id": "`+messageId+`",
+		"signature	": "++"
+	}`
+	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
+	data = strings.Join(strings.Fields(data), "")
+	return data
+}
+
 func getCorrectPublishCreateLAO(publicKey []byte, privateKey ed.PrivateKey) []byte {
 	data := []byte(getCorrectDataCreateLAO(publicKey))
 	datab64 := b64.StdEncoding.EncodeToString(data)
