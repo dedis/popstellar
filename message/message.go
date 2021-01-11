@@ -41,7 +41,7 @@ type Message struct {
 }
 
 type ItemWitnessSignatures struct {
-	WitnessKey []byte // recovered from base 64
+	WitnessKey []byte `json:"witness"`// recovered from base 64
 	//Sign(message_id)
-	Signature []byte // recovered from base 64
+	Signature []byte `json:"signature"`// recovered from base 64
 }
