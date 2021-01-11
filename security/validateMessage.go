@@ -20,7 +20,7 @@ func LAOIsValid(data message.DataCreateLAO, create bool) bool {
 
 	//check if id is correct  : SHA256(organizer||creation||name)
 	var elementsToHashForDataId []string
-	elementsToHashForDataId = append(elementsToHashForDataId, string(data.Organizer), strconv.FormatInt(data.Creation, 10), data.Name)
+	elementsToHashForDataId = append(elementsToHashForDataId, b64.StdEncoding.EncodeToString(data.Organizer), strconv.FormatInt(data.Creation, 10), data.Name)
 	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(elementsToHashForDataId)))
 	if create && !bytes.Equal(data.ID, hash[:]) {
 		log.Printf("ID of createLAO invalid: %v should be: %v", string(data.ID), string(hash[:]))
@@ -137,11 +137,11 @@ func RollCallClosedIsValid(data message.DataCloseRollCall, laoId string, rollCal
 func MessageIsValid(msg message.Message) error {
 	// check message_id is valid
 	var itemsToHashForMessageId []string
-	itemsToHashForMessageId = append(itemsToHashForMessageId, string(msg.Data), b64.StdEncoding.EncodeToString(msg.Signature))
+	itemsToHashForMessageId = append(itemsToHashForMessageId, b64.StdEncoding.EncodeToString(msg.Data), b64.StdEncoding.EncodeToString(msg.Signature))
 	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(itemsToHashForMessageId)))
 
 	if !bytes.Equal(msg.MessageId, hash[:]) {
-		log.Printf("Id of message invalid: %v should be: %v", string(msg.MessageId), string(hash[:]))
+		log.Printf("id of message invalid: %v should be: %v", msg.MessageId, hash[:])
 		return lib.ErrInvalidResource
 	}
 

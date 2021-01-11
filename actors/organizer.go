@@ -258,6 +258,8 @@ func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query mes
 		Channel: []byte(canal),
 	}}
 
+	log.Printf("Sucessfully created lao %s", lao.Name)
+
 	return msgAndChan, nil
 }
 
@@ -309,6 +311,8 @@ func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, quer
 		Channel: []byte(canal),
 	}}
 
+	log.Printf("Sucessfully created lao %s", rollCall.Name)
+
 	return msgAndChan, nil
 }
 
@@ -355,6 +359,8 @@ func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, query
 		Message: parser.ComposeBroadcastMessage(query),
 		Channel: []byte(canal),
 	}}
+
+	log.Printf("Sucessfully created meeting %s", meeting.Name)
 
 	return msgAndChan, nil
 }
@@ -403,6 +409,8 @@ func (o *Organizer) handleCreatePoll(msg message.Message, canal string, query me
 		Message: parser.ComposeBroadcastMessage(query),
 		Channel: []byte(canal),
 	}}
+
+	log.Printf("Sucessfully created poll %s", poll.Name)
 
 	return msgAndChan, nil
 }
