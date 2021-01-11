@@ -15,13 +15,13 @@ import com.github.dedis.student20_pop.model.network.level.low.answer.Error;
 import com.github.dedis.student20_pop.model.network.level.low.answer.Result;
 import com.github.dedis.student20_pop.model.network.level.mid.MessageGeneral;
 import com.github.dedis.student20_pop.utility.json.JsonUtils;
+import com.github.dedis.student20_pop.utility.protocol.LowLevelProxy;
 import com.github.dedis.student20_pop.utility.security.Hash;
 import com.github.dedis.student20_pop.utility.security.Signature;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -43,11 +43,9 @@ import javax.websocket.Session;
 /**
  * A proxy of a connection to a websocket. It encapsulate the publish-subscribe protocol
  */
-public final class LowLevelClientProxy implements Closeable {
+public final class WebSocketLowLevelProxy implements LowLevelProxy, IMessageListener {
 
-    public static final long TIMEOUT = 5000L; // 5 secs
-
-    private static final String TAG = LowLevelClientProxy.class.getName();
+    private static final String TAG = WebSocketLowLevelProxy.class.getName();
 
     // Lock to prevent multiple threads to access the session
     private final Object SESSION_LOCK = new Object();
@@ -58,16 +56,16 @@ public final class LowLevelClientProxy implements Closeable {
     private final AtomicInteger counter = new AtomicInteger();
     // Having to different futures to be able to close the session even if it is closed during the opening.
     // The first future holds the session and it will immediately be passed to the second on completion
-    private CompletableFuture<Session> future1;
+    private CompletableFuture<Session> session;
     // The second future is used to make requests.
     // If the connection is cancelled, this future complete exceptionally but future1 is kept clean
     // to be able to close the session as soon as it is created.
-    private CompletableFuture<Session> future2;
+    private CompletableFuture<Session> sessionUse;
 
-    public LowLevelClientProxy(URI host) {
+    public WebSocketLowLevelProxy(URI host) {
         this.sessionURI = host;
-        this.future1 = PoPClientEndpoint.connect(host, this);
-        this.future2 = future1.thenApply(s -> s);
+        this.session = WebSocketEndpoint.connect(host, this);
+        this.sessionUse = session.thenApply(s -> s);
     }
 
     /**
@@ -95,7 +93,7 @@ public final class LowLevelClientProxy implements Closeable {
         // Refreshing the session if needed
         refreshSession();
 
-        future2.thenAccept(session -> {
+        sessionUse.thenAccept(session -> {
             synchronized (SESSION_LOCK) {
                 session.getAsyncRemote().sendText(txt);
             }
@@ -109,45 +107,30 @@ public final class LowLevelClientProxy implements Closeable {
 
     private void refreshSession() {
         synchronized (SESSION_LOCK) {
-            if (future1.isDone()) {
+            if (session.isDone()) {
                 Optional<Session> session = getSession();
                 if (!session.isPresent() || !session.get().isOpen()) {
                     //There was an error during competition, retry
                     Log.d(TAG, "Connection to " + sessionURI + " was either lost or never made. Trying to reconnect...");
-                    future1 = PoPClientEndpoint.connect(sessionURI, this);
-                    future2 = future1.thenApply(s -> s);
+                    this.session = WebSocketEndpoint.connect(sessionURI, this);
+                    sessionUse = this.session.thenApply(s -> s);
                 }
             }
         }
     }
 
-    /**
-     * Subscribe to a channel
-     *
-     * @param channel to subscribe to
-     * @return a completable future holding the response value
-     */
+    @Override
     public CompletableFuture<Integer> subscribe(String channel) {
         return makeRequest(Integer.class, id -> new Subscribe(channel, id));
     }
 
-    /**
-     * Unsubscribe to a channel
-     *
-     * @param channel to subscribe to
-     * @return a completable future holding the response value
-     */
+    @Override
     public CompletableFuture<Integer> unsubscribe(String channel) {
         return makeRequest(Integer.class, id -> new Unsubscribe(channel, id));
     }
 
-    /**
-     * Publish an event on given channel
-     *
-     * @param channel to publish the event on
-     * @param message to publish
-     * @return a completable future holding the response value
-     */
+
+    @Override
     public CompletableFuture<Integer> publish(String sender, String key, String channel, Data message) {
         String data = Base64.getEncoder().encodeToString(gson.toJson(message, Data.class).getBytes(StandardCharsets.UTF_8));
         String signature = Signature.sign(key, data);
@@ -156,22 +139,14 @@ public final class LowLevelClientProxy implements Closeable {
         return makeRequest(Integer.class, id -> new Publish(channel, id, container));
     }
 
-    /**
-     * Catchup on missed messages from a given channel
-     *
-     * @param channel to fetch from
-     */
+    @Override
     public CompletableFuture<List<Data>> catchup(String channel) {
         CompletableFuture<Data[]> future = makeRequest(Data[].class, id -> new Catchup(channel, id));
         return future.thenApply(Arrays::asList);
     }
 
-    /**
-     * Called by the underlying socket endpoint when a message is received
-     *
-     * @param msg received
-     */
-    void onMessage(String msg) {
+    @Override
+    public void onMessage(String msg) {
         JsonObject obj = gson.fromJson(msg, JsonObject.class);
         if (obj.has("method")) {
             handleMessage(gson.fromJson(obj, Broadcast.class));
@@ -222,16 +197,15 @@ public final class LowLevelClientProxy implements Closeable {
         System.out.println(data);
     }
 
-    /**
-     * Lookup the request table and remove the request that have timed out.
-     */
-    public void purge() {
+
+    @Override
+    public void purgeTimeoutRequests() {
         long currentTime = System.currentTimeMillis();
 
         Iterator<Map.Entry<Integer, RequestEntry>> it = requests.entrySet().iterator();
         while (it.hasNext()) {
             RequestEntry entry = it.next().getValue();
-            if (currentTime - entry.timestamp > TIMEOUT) {
+            if (currentTime - entry.timestamp > LowLevelProxy.REQUEST_TIMEOUT) {
                 entry.requests.completeExceptionally(new TimeoutException("Query timeout"));
                 it.remove();
             }
@@ -240,22 +214,18 @@ public final class LowLevelClientProxy implements Closeable {
 
     private Optional<Session> getSession() {
         try {
-            return Optional.ofNullable(future2.getNow(null));
+            return Optional.ofNullable(sessionUse.getNow(null));
         } catch (Throwable t) {
             return Optional.empty();
         }
     }
 
-    /**
-     * Close the socket for the given reason.
-     *
-     * @param reason of the closing
-     */
+    @Override
     public void close(Throwable reason) {
         synchronized (SESSION_LOCK) {
-            future2.completeExceptionally(reason);
+            sessionUse.completeExceptionally(reason);
 
-            future1.thenAccept(s -> {
+            session.thenAccept(s -> {
                 try {
                     s.close();
                 } catch (IOException e) {
