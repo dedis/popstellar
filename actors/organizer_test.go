@@ -117,38 +117,6 @@ func getCorrectPublishCreateLAO(publicKey []byte, privateKey ed.PrivateKey) []by
 	msg = strings.Join(strings.Fields(msg), "")
 	return []byte(msg)
 }
-func getCorrectWitnessMessage(publicKey []byte, privateKey ed.PrivateKey) []byte {
-	data := []byte(getCorrectDataWitnessMessage(privateKey))
-	datab64 := b64.StdEncoding.EncodeToString(data)
-	pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
-	signature := ed.Sign(privateKey, []byte(data))
-	signatureb64 := b64.StdEncoding.EncodeToString(signature)
-	// TODO I think it's weird to hash data in plain and signature in b64, but well, apparently, it's the protocol
-	tohash := lib.ComputeAsJsonArray([]string{string(data),string(signatureb64)})
-	msgid := sha256.Sum256( []byte(tohash))
-	msgidb64 := b64.StdEncoding.EncodeToString(msgid[:])
-	msg := `{
-		"jsonrpc": "2.0",
-		"method": "publish",
-		"params": {
-			"channel": "/root",
-			"message": {
-				"data": "`+datab64+`",
-				"sender": "`+pkeyb64+`",
-				"signature": "`+signatureb64+`",
-				"message_id": "`+msgidb64+`",
-				"witness_signatures": {
-	
-				}
-			}
-		},
-		"id": 0
-	}`
-	// MTIz is b64encoded 123
-	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
-	msg = strings.Join(strings.Fields(msg), "")
-	return []byte(msg)
-}
 
 func getExpectedMsgAndChannelForPublishCreateLAO(publicKey []byte, privateKey ed.PrivateKey) []lib.MessageAndChannel {
 	data := []byte(getCorrectDataCreateLAO(publicKey))
