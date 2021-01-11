@@ -37,7 +37,7 @@ public final class Lao {
         }
         this.name = name.trim();
         this.time = Instant.now().getEpochSecond();
-        this.id = Hash.hash(name, time, organizer);
+        this.id = Hash.hash(organizer, time, name);
         this.organizer = organizer;
         this.witnesses = new ArrayList<>();
         this.members = new ArrayList<>();
