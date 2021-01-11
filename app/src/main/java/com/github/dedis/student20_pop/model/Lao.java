@@ -3,8 +3,8 @@ package com.github.dedis.student20_pop.model;
 import com.github.dedis.student20_pop.utility.security.Hash;
 import com.github.dedis.student20_pop.utility.security.Signature;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,24 +26,22 @@ public final class Lao {
      * Constructor for a LAO
      *
      * @param name      the name of the LAO, can be empty
-     * @param time      the creation time, can't be modified
      * @param organizer the public key of the organizer
      * @throws IllegalArgumentException if any of the parameters is null
      */
-    public Lao(String name, Date time, String organizer) {
-        if (name == null || time == null || organizer == null) {
+    public Lao(String name, String organizer) {
+        if (name == null || organizer == null) {
             throw new IllegalArgumentException("Trying to  create a LAO with a null value");
         } else if (name.trim().isEmpty()) {
             throw new IllegalArgumentException("Trying to set an empty name for the LAO");
         }
         this.name = name.trim();
-        this.time = time.getTime() / 1000L;
-        this.id = Hash.hash(name, time.getTime());
+        this.time = Instant.now().getEpochSecond();
+        this.id = Hash.hash(name, time, organizer);
         this.organizer = organizer;
         this.witnesses = new ArrayList<>();
         this.members = new ArrayList<>();
         this.events = new ArrayList<>();
-        // Will get organizer's private key in the future
         this.attestation = Signature.sign(organizer, name + time + organizer);
     }
 
@@ -53,23 +51,22 @@ public final class Lao {
      *
      * @param name      the name of the LAO, can be empty
      * @param time      the creation time
+     * @param id        the id of the LAO, Hash(name, creation time, organizer id)
      * @param organizer the public key of the organizer
      * @param witnesses the list of the public keys of the witnesses
      * @param members   the list of the public keys of the members
      * @param events    the list of the ids of the events
      */
-    private Lao(String name, long time, String organizer, List<String> witnesses,
+    private Lao(String name, long time, String id, String organizer, List<String> witnesses,
                 List<String> members, List<String> events) {
         this.name = name;
         this.time = time;
-        // simple for now, will hash in the future
-        this.id = name + time;
+        this.id = id;
         this.organizer = organizer;
         this.witnesses = witnesses;
         this.members = members;
         this.events = events;
-        // simple for now, will hash and sign in the future
-        this.attestation = name + time + organizer;
+        this.attestation = Signature.sign(organizer, name + time + organizer);
     }
 
     /**
@@ -106,7 +103,7 @@ public final class Lao {
         } else if (name.trim().isEmpty()) {
             throw new IllegalArgumentException("Trying to set an empty name for the LAO");
         }
-        return new Lao(name, time, organizer, witnesses, members, events);
+        return new Lao(name, time, id, organizer, witnesses, members, events);
     }
 
     /**
