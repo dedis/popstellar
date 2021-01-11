@@ -1,7 +1,5 @@
 package com.github.dedis.student20_pop.model;
 
-import com.github.dedis.student20_pop.utility.security.Signature;
-
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -39,11 +37,6 @@ public class VoteTest {
     @Test
     public void getVoteTest() {
         assertThat(vote1.getVote(), is(vote));
-    }
-
-    @Test
-    public void getAttestationTest() {
-        assertThat(vote1.getAttestation(), is(Signature.sign(person1, election + "" + vote)));
     }
 
     @Test

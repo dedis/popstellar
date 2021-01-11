@@ -19,7 +19,6 @@ public final class Election {
     private final String id;
     private final String lao;
     private final List<String> options;
-    private final List<String> attestation;
 
     /**
      * Constructor of an Election
@@ -39,13 +38,6 @@ public final class Election {
         this.id = Hash.hash(name, time.getTime());
         this.lao = lao;
         this.options = options;
-
-        // Will get organizer's and witnesses' private keys in the future
-        String organizer = new Keys().getPrivateKey();
-        ArrayList<String> witnesses = new ArrayList<>();
-        ArrayList<String> attestation = new ArrayList<>(Collections.singletonList(Signature.sign(organizer, id)));
-        attestation.addAll(Signature.sign(witnesses, id));
-        this.attestation = attestation;
     }
 
     public String getName() {
@@ -80,13 +72,6 @@ public final class Election {
         return options;
     }
 
-    /**
-     * @return list of signatures by the organizer and the witnesses of the corresponding LAO
-     */
-    public List<String> getAttestation() {
-        return attestation;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -96,12 +81,11 @@ public final class Election {
                 Objects.equals(name, election.name) &&
                 Objects.equals(id, election.id) &&
                 Objects.equals(lao, election.lao) &&
-                Objects.equals(options, election.options) &&
-                Objects.equals(attestation, election.attestation);
+                Objects.equals(options, election.options);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, time, id, lao, options, attestation);
+        return Objects.hash(name, time, id, lao, options);
     }
 }
