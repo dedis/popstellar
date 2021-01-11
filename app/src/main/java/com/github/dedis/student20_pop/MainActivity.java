@@ -92,8 +92,7 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
                                 // Start the Organizer Activity (user is considered an organizer)
                                 Intent intent = new Intent(this, OrganizerActivity.class);
                                 startActivity(intent);
-                            })
-                            .exceptionally(t -> {
+                            }).exceptionally(t -> {
                                 Toast toast = Toast.makeText(this, "An error occurred : \n" + t.getMessage(), Toast.LENGTH_LONG);
                                 toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 0);
                                 toast.show();

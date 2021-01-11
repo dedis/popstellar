@@ -11,10 +11,12 @@ import com.github.dedis.student20_pop.model.network.level.high.rollcall.CloseRol
 import com.github.dedis.student20_pop.model.network.level.high.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.model.network.level.high.rollcall.OpenRollCall;
 import com.github.dedis.student20_pop.model.network.level.high.rollcall.ReopenRollCall;
+import com.github.dedis.student20_pop.utility.protocol.HighLevelProxy;
+import com.github.dedis.student20_pop.utility.protocol.LowLevelProxy;
 import com.github.dedis.student20_pop.utility.security.Hash;
 import com.github.dedis.student20_pop.utility.security.Signature;
 
-import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -22,14 +24,14 @@ import java.util.concurrent.CompletableFuture;
 /**
  * A proxy of a connection to a websocket. It encapsulate the high level protocol
  */
-public final class HighLevelClientProxy implements Closeable {
+public final class WebSocketHighLevelProxy implements HighLevelProxy {
 
     public static final String ROOT = "/root";
 
-    private final LowLevelClientProxy lowLevelClientProxy;
+    private final LowLevelProxy lowLevelClientProxy;
     private final String publicKey, privateKey;
 
-    public HighLevelClientProxy(Person owner, LowLevelClientProxy lowLevelClientProxy) {
+    public WebSocketHighLevelProxy(Person owner, LowLevelProxy lowLevelClientProxy) {
         this.publicKey = owner.getId();
         this.privateKey = owner.getAuthentication();
         this.lowLevelClientProxy = lowLevelClientProxy;
@@ -38,7 +40,7 @@ public final class HighLevelClientProxy implements Closeable {
     /**
      * @return the low level proxy tied to this one
      */
-    public LowLevelClientProxy lowLevel() {
+    public LowLevelProxy lowLevel() {
         return lowLevelClientProxy;
     }
 
@@ -178,7 +180,12 @@ public final class HighLevelClientProxy implements Closeable {
     }
 
     @Override
+    public void close(Throwable reason) {
+        lowLevelClientProxy.close(reason);
+    }
+
+    @Override
     public void close() {
-        lowLevelClientProxy.close();
+        close(new IOException("Socket closed"));
     }
 }
