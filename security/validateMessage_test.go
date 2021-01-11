@@ -12,7 +12,6 @@ import (
 	"testing"
 	"time"
 
-	"student20_pop/lib"
 	message2 "student20_pop/message"
 	"student20_pop/parser"
 )
@@ -70,7 +69,7 @@ func TestLAOIsValid(t *testing.T) {
 	}
 }
 // TODO (should be not empty but) not in the protospecs ?
-func TestLAOEmptyLocation(t *testing.T) {
+func TestLAOEmptyName(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
 		pubkey, privkey := createKeyPair()
@@ -95,7 +94,10 @@ func TestLAOIInvalidCreationTime(t *testing.T) {
 		var creation = time.Now().Unix()
 		name := ""
 		name = "ok"
-		creation = time.Now().Unix() - MaxClockDifference - 1
+		creation = time.Now().Unix() + time.Now().Unix()+MaxPropagationDelay +1
+		if i%2 ==0{
+			creation = time.Now().Unix() - MaxClockDifference - 1
+		}
 		data, err := createDataLao(pubkey, privkey, witnessKeys, creation, name)
 		if err != nil {
 			t.Error(err)
@@ -197,7 +199,7 @@ func createDataLao(orgPubkey []byte, privkey ed.PrivateKey, WitnesseKeys [][]byt
 	}
 	var itemsToHashForId []string
 	itemsToHashForId = append(itemsToHashForId, string(orgPubkey), fmt.Sprint(creation), name)
-	idData := hashOfItems(itemsToHashForId)
+	idData := HashOfItems(itemsToHashForId)
 	var data = message2.DataCreateLAO{
 		Object:    "lao",
 		Action:    "create",
@@ -239,12 +241,8 @@ func getIdofMessage(data interface{}, privkey ed.PrivateKey) (dataFlat, signed, 
 
 	var itemsToHashForMessageId []string
 	itemsToHashForMessageId = append(itemsToHashForMessageId, string(dataFlat), b64.StdEncoding.EncodeToString(signed))
-	hash := hashOfItems(itemsToHashForMessageId)
+	hash := HashOfItems(itemsToHashForMessageId)
 	return dataFlat, signed, hash, nil
 
 }
 
-func hashOfItems(itemsToHash []string) []byte {
-	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(itemsToHash)))
-	return hash[:]
-}

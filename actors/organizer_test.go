@@ -10,8 +10,6 @@ import (
 	"math/rand"
 	b64 "encoding/base64"
 	"strings"
-	"time"
-	"strconv"
 )
 
 type hub struct {
@@ -54,8 +52,7 @@ func createKeyPair() ([]byte, ed.PrivateKey) {
 
 func getCorrectDataCreateLAO(publicKey []byte) string {
 	pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
-	creationstr := strconv.FormatInt(time.Now().Unix(), 10)
-	tohash := lib.ComputeAsJsonArray([]string{string(publicKey),creationstr,"my_lao"})
+	tohash := lib.ComputeAsJsonArray([]string{pkeyb64,"1234","my_lao"})
 	hashid := sha256.Sum256( []byte(tohash) )
 	id := b64.StdEncoding.EncodeToString( hashid[:] )
 	data := `{
@@ -63,7 +60,7 @@ func getCorrectDataCreateLAO(publicKey []byte) string {
 		"action": "create",
 		"id": "`+id+`",
 		"name": "my_lao",
-		"creation": `+creationstr+`,
+		"creation": 1234,
 		"organizer": "`+pkeyb64+`",
 		"witnesses": {
 	
@@ -74,14 +71,28 @@ func getCorrectDataCreateLAO(publicKey []byte) string {
 	return data
 }
 
+func getCorrectDataWitnessMessage(privateKey ed.PrivateKey,messageId string) string {
+	signature := ed.Sign(privateKey, []byte(messageId))
+	signatureb64 := b64.StdEncoding.EncodeToString(signature)
+	data := `{
+		"object": "message",
+		"action": "witness",
+		"message_id": "`+messageId+`",
+		"signature	": "`+signatureb64+`"
+	}`
+	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
+	data = strings.Join(strings.Fields(data), "")
+	return data
+}
+
 func getCorrectPublishCreateLAO(publicKey []byte, privateKey ed.PrivateKey) []byte {
 	data := []byte(getCorrectDataCreateLAO(publicKey))
 	datab64 := b64.StdEncoding.EncodeToString(data)
 	pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
-	signature := ed.Sign(privateKey, []byte(data))
+	signature := ed.Sign(privateKey, data)
 	signatureb64 := b64.StdEncoding.EncodeToString(signature)
-	// TODO I think it's weird to hash data in plain and signature in b64, but well, apparently, it's the protocol
-	tohash := lib.ComputeAsJsonArray([]string{string(data),string(signatureb64)})
+	// I think it's weird to hash data in plain and signature in b64, but well, apparently, it's the protocol
+	tohash := lib.ComputeAsJsonArray([]string{b64.StdEncoding.EncodeToString(data),signatureb64})
 	msgid := sha256.Sum256( []byte(tohash))
 	msgidb64 := b64.StdEncoding.EncodeToString(msgid[:])
 	msg := `{
@@ -105,17 +116,15 @@ func getCorrectPublishCreateLAO(publicKey []byte, privateKey ed.PrivateKey) []by
 	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
 	msg = strings.Join(strings.Fields(msg), "")
 	return []byte(msg)
-} 
-
+}
 
 func getExpectedMsgAndChannelForPublishCreateLAO(publicKey []byte, privateKey ed.PrivateKey) []lib.MessageAndChannel {
 	data := []byte(getCorrectDataCreateLAO(publicKey))
 	datab64 := b64.StdEncoding.EncodeToString(data)
 	pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
-	signature := ed.Sign(privateKey, []byte(data))
+	signature := ed.Sign(privateKey, data)
 	signatureb64 := b64.StdEncoding.EncodeToString(signature)
-	// TODO I think it's weird to hash data in plain and signature in b64, but well, apparently, it's the protocol
-	tohash := lib.ComputeAsJsonArray([]string{string(data),string(signatureb64)})
+	tohash := lib.ComputeAsJsonArray([]string{b64.StdEncoding.EncodeToString(data),signatureb64})
 	msgid := sha256.Sum256( []byte(tohash))
 	msgidb64 := b64.StdEncoding.EncodeToString(msgid[:])
 	msg := `{
@@ -152,8 +161,8 @@ func TestReceivePublishCreateLAO(t *testing.T) {
 
 	receivedMsg := getCorrectPublishCreateLAO(publicKey, privateKey)
 	userId := 5
-	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishCreateLAO(publicKey, privateKey) // which will never be sent, but still produced)
-	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
+	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishCreateLAO(publicKey, privateKey)
+	var expectedResponseToSender []byte = nil
 
 
 	h := &hub{
@@ -162,13 +171,14 @@ func TestReceivePublishCreateLAO(t *testing.T) {
 		connections:     make(map[*connection]struct{}),
 		connIndex:       0,
 		idOfSender:      -1,
-		actor: 			NewOrganizer(string(publicKey), "org_test.db"),
+		actor: 			NewOrganizer(string(publicKey), "org.db"),
 	}
 
+	 
+
 	msgAndChannel, responseToSender := h.actor.HandleReceivedMessage(receivedMsg, userId)
-	// TODO this comparison fails only because of capital letters, which we need to export the fields... and I don't think actually matter in json
 	if !reflect.DeepEqual(msgAndChannel, expectedMsgAndChannel) {
-		t.Errorf("correct msgAndChannel are not as expected, got :\n %v\n vs expected:\n%v", string(msgAndChannel[0].Message), string(expectedMsgAndChannel[0].Message))
+		t.Errorf("correct msgAndChannel are not as expected, \n%+v\n vs, \n%+v", msgAndChannel, expectedMsgAndChannel)
 	}
 
 	if !reflect.DeepEqual(responseToSender, expectedResponseToSender) {
