@@ -148,7 +148,7 @@ public final class WebSocketLowLevelProxy implements LowLevelProxy, MessageListe
     @Override
     public void onMessage(String msg) {
         JsonObject obj = gson.fromJson(msg, JsonObject.class);
-        //TODO not extremely happy about this
+        //TODO not extremely happy about this way
         if (obj.has("method")) {
             handleMessage(gson.fromJson(obj, Broadcast.class));
         } else {
@@ -197,17 +197,16 @@ public final class WebSocketLowLevelProxy implements LowLevelProxy, MessageListe
         System.out.println(data);
     }
 
-
     @Override
     public void purgeTimeoutRequests() {
         long currentTime = System.currentTimeMillis();
 
-        Iterator<Map.Entry<Integer, RequestEntry>> it = requests.entrySet().iterator();
-        while (it.hasNext()) {
-            RequestEntry entry = it.next().getValue();
+        Iterator<Map.Entry<Integer, RequestEntry>> requestsIterator = requests.entrySet().iterator();
+        while (requestsIterator.hasNext()) {
+            RequestEntry entry = requestsIterator.next().getValue();
             if (currentTime - entry.timestamp > LowLevelProxy.REQUEST_TIMEOUT) {
                 entry.requests.completeExceptionally(new TimeoutException("Query timeout"));
-                it.remove();
+                requestsIterator.remove();
             }
         }
     }
@@ -235,10 +234,10 @@ public final class WebSocketLowLevelProxy implements LowLevelProxy, MessageListe
         }
 
         // Complete all pending requests and remove them
-        Iterator<Map.Entry<Integer, RequestEntry>> it = requests.entrySet().iterator();
-        while (it.hasNext()) {
-            it.next().getValue().requests.completeExceptionally(reason);
-            it.remove();
+        Iterator<Map.Entry<Integer, RequestEntry>> requestsIterator = requests.entrySet().iterator();
+        while (requestsIterator.hasNext()) {
+            requestsIterator.next().getValue().requests.completeExceptionally(reason);
+            requestsIterator.remove();
         }
     }
 
