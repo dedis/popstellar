@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.event.Event;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import static com.github.dedis.student20_pop.model.event.Event.EventCategory;
@@ -75,9 +76,10 @@ public class AttendeeExpandableListViewEventAdapter extends ExpandableListViewEv
 
         Event event = ((Event) getChild(groupPosition, childPosition));
         String eventTitle = (event.getName() + " : " + event.getType());
+        String eventTime = DATE_FORMAT.format(event.getTime()*1000L);
 
         //For now, later: for each specific type of event, show the required content
-        String eventDescription = "Time : " + event.getTime() + "\nLocation : " + event.getLocation();
+        String eventDescription = "Time : " + eventTime + "\nLocation : " + event.getLocation();
 
 
         if (convertView == null) {
