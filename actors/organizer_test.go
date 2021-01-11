@@ -44,6 +44,7 @@ type connection struct {
 
 ////////////////////////////////////////////
 
+// createKeyPair generate a new random pair of public/private key
 func createKeyPair() ([]byte, ed.PrivateKey) {
 	//randomize the key
 	randomSeed := make([]byte, 32)
@@ -52,6 +53,7 @@ func createKeyPair() ([]byte, ed.PrivateKey) {
 	return privkey.Public().(ed.PublicKey), privkey
 }
 
+// getCorrectDataCreateLAO generate a example JSON string of the data field of a request for LAO creation
 func getCorrectDataCreateLAO(publicKey []byte) string {
 	pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
 	creationstr := strconv.FormatInt(time.Now().Unix(), 10)
@@ -74,6 +76,7 @@ func getCorrectDataCreateLAO(publicKey []byte) string {
 	return data
 }
 
+
 func getCorrectDataWitnessMessage(privateKey ed.PrivateKey,messageId string) string {
 	signature := ed.Sign(privateKey, []byte(messageId))
 	signatureb64 := b64.StdEncoding.EncodeToString(signature)
@@ -88,6 +91,8 @@ func getCorrectDataWitnessMessage(privateKey ed.PrivateKey,messageId string) str
 	return data
 }
 
+
+// getCorrectPublishCreateLAO generate a example JSON string of the whole request for LAO creation
 func getCorrectPublishCreateLAO(publicKey []byte, privateKey ed.PrivateKey) []byte {
 	data := []byte(getCorrectDataCreateLAO(publicKey))
 	datab64 := b64.StdEncoding.EncodeToString(data)
@@ -121,6 +126,7 @@ func getCorrectPublishCreateLAO(publicKey []byte, privateKey ed.PrivateKey) []by
 	return []byte(msg)
 }
 
+// getExpectedMsgAndChannelForPublishCreateLAO generate a example JSON string of the whole broadcasted struct sent back for LAO creation
 func getExpectedMsgAndChannelForPublishCreateLAO(publicKey []byte, privateKey ed.PrivateKey) []lib.MessageAndChannel {
 	data := []byte(getCorrectDataCreateLAO(publicKey))
 	datab64 := b64.StdEncoding.EncodeToString(data)
@@ -158,6 +164,8 @@ func getExpectedMsgAndChannelForPublishCreateLAO(publicKey []byte, privateKey ed
 }
 
 
+// TestReceivePublishCreateLAO tests if sending a JSON string requesting to publish a LAO creation works 
+// by comparing the messages (response and broadcasted answers) sent back
 func TestReceivePublishCreateLAO(t *testing.T) {
 
 	publicKey, privateKey := createKeyPair()
