@@ -21,7 +21,10 @@ import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Lao;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Fragment used to display the Home UI
@@ -29,6 +32,7 @@ import java.util.List;
 public final class HomeFragment extends Fragment {
 
     public static final String TAG = HomeFragment.class.getSimpleName();
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yy", Locale.ENGLISH);
 
     private List<Lao> laos;
     private String id;
@@ -90,7 +94,7 @@ public final class HomeFragment extends Fragment {
             }
             Lao lao = laos.get(position);
             ((TextView) convertView.findViewById(R.id.lao_name)).setText(lao.getName());
-            ((TextView) convertView.findViewById(R.id.date)).setText("last interacted with ...");
+            ((TextView) convertView.findViewById(R.id.date)).setText(DATE_FORMAT.format(lao.getTime()*1000L));
             boolean isOrganizer = (lao.getOrganizer()).equals(id);
             ((TextView) convertView.findViewById(R.id.role)).setText(isOrganizer ? R.string.organizer : R.string.attendee);
             convertView.setOnClickListener(clicked -> {
