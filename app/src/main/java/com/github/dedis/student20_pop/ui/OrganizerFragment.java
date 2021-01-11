@@ -20,37 +20,29 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.model.Event;
 import com.github.dedis.student20_pop.model.Lao;
+import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.utility.ui.WitnessListAdapter;
+import com.github.dedis.student20_pop.utility.ui.eventadapter.OrganizerExpandableListViewEventAdapter;
 import com.github.dedis.student20_pop.utility.ui.organizer.OnAddWitnessListener;
 import com.github.dedis.student20_pop.utility.ui.organizer.OnEventCreatedListener;
 import com.github.dedis.student20_pop.utility.ui.organizer.OnEventTypeSelectedListener;
-import com.github.dedis.student20_pop.utility.ui.EventAdapter.OrganizerExpandableListViewEventAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Fragment used to display Organizer's UI
+ */
 public class OrganizerFragment extends Fragment {
-
     public static final String TAG = AttendeeFragment.class.getSimpleName();
-    private OrganizerExpandableListViewEventAdapter listViewEventAdapter;
-    private ExpandableListView expandableListView;
     private Lao lao;
-    private Button propertiesButton;
-    private ImageButton editPropertiesButton;
-    private ImageButton addWitnessButton;
-    private Button confirmButton;
+
     private OnEventTypeSelectedListener onEventTypeSelectedListener;
     private OnAddWitnessListener onAddWitnessListener;
-    private EditText laoNameEditText;
-    private TextView laoNameTextView;
-    private ListView witnessesListView;
-    private ListView witnessesEditListView;
-
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (context instanceof OnEventCreatedListener)
             onEventTypeSelectedListener = (OnEventTypeSelectedListener) context;
@@ -67,13 +59,17 @@ public class OrganizerFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_organizer, container, false);
 
         PoPApplication app = (PoPApplication) (getActivity().getApplication());
-
         lao = app.getCurrentLao();
+
+        ImageButton editPropertiesButton;
+        ImageButton addWitnessButton;
+        EditText laoNameEditText;
+        TextView laoNameTextView;
+
         List<Event> events = app.getEvents(lao);
-        //Display Properties
-        View rootView = inflater.inflate(R.layout.fragment_organizer, container, false);
 
         //Layout Properties fields
         ViewSwitcher viewSwitcher = rootView.findViewById(R.id.viewSwitcher);
@@ -82,7 +78,7 @@ public class OrganizerFragment extends Fragment {
         laoNameTextView.setText(lao.getName());
 
         final WitnessListAdapter adapter = new WitnessListAdapter(getActivity(), (ArrayList<String>) app.getWitnesses(lao));
-        witnessesListView = propertiesView.findViewById(R.id.witness_list);
+        ListView witnessesListView = propertiesView.findViewById(R.id.witness_list);
         witnessesListView.setAdapter(adapter);
 
         editPropertiesButton = rootView.findViewById(R.id.edit_button);
@@ -96,13 +92,13 @@ public class OrganizerFragment extends Fragment {
         View propertiesEditView = rootView.findViewById(R.id.properties_edit_view);
         laoNameEditText = propertiesEditView.findViewById(R.id.organization_name_editText);
         laoNameEditText.setText(lao.getName());
-        witnessesEditListView = propertiesEditView.findViewById(R.id.witness_edit_list);
+        ListView witnessesEditListView = propertiesEditView.findViewById(R.id.witness_edit_list);
         witnessesEditListView.setAdapter(adapter);
 
         addWitnessButton = propertiesEditView.findViewById(R.id.add_witness_button);
-        confirmButton = propertiesEditView.findViewById(R.id.properties_edit_confirm);
+        Button confirmButton = propertiesEditView.findViewById(R.id.properties_edit_confirm);
 
-        propertiesButton = rootView.findViewById(R.id.tab_properties);
+        Button propertiesButton = rootView.findViewById(R.id.tab_properties);
         propertiesButton.setOnClickListener(
                 clicked -> {
                     viewSwitcher.setVisibility((viewSwitcher.getVisibility() == View.GONE) ? View.VISIBLE : View.GONE);
@@ -115,8 +111,8 @@ public class OrganizerFragment extends Fragment {
 
 
         //Display Events
-        expandableListView = rootView.findViewById(R.id.organizer_expandable_list_view);
-        listViewEventAdapter = new OrganizerExpandableListViewEventAdapter(this.getActivity(), events, onEventTypeSelectedListener);
+        ExpandableListView expandableListView = rootView.findViewById(R.id.organizer_expandable_list_view);
+        OrganizerExpandableListViewEventAdapter listViewEventAdapter = new OrganizerExpandableListViewEventAdapter(this.getActivity(), events, onEventTypeSelectedListener);
         expandableListView.setAdapter(listViewEventAdapter);
         expandableListView.expandGroup(0);
         expandableListView.expandGroup(1);

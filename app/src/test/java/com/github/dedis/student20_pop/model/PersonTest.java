@@ -10,11 +10,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 public class PersonTest {
 
     private final String name1 = "Person name 1";
     private final String name2 = "Person name 2";
+    private final Keys keys = new Keys();
     private final ArrayList<String> laos = new ArrayList<>(Arrays.asList("0x3939", "0x4747"));
     private final ArrayList<String> laosWithNull = new ArrayList<>(Arrays.asList("0x3939", null, "0x4747"));
     private final Person person1 = new Person(name1);
@@ -23,6 +25,16 @@ public class PersonTest {
     @Test
     public void createPersonWithNullParameters() {
         assertThrows(IllegalArgumentException.class, () -> new Person(null));
+        assertThrows(IllegalArgumentException.class, () ->
+                new Person(null, keys.getPublicKey(), keys.getPrivateKey(), laos));
+        assertThrows(IllegalArgumentException.class, () ->
+                new Person(name1, null, keys.getPrivateKey(), laos));
+        assertThrows(IllegalArgumentException.class, () ->
+                new Person(name1, keys.getPublicKey(), null, laos));
+        assertThrows(IllegalArgumentException.class, () ->
+                new Person(name1, keys.getPublicKey(), keys.getPrivateKey(), null));
+        assertThrows(IllegalArgumentException.class, () ->
+                new Person(name1, keys.getPublicKey(), keys.getPrivateKey(), laosWithNull));
     }
 
     @Test
@@ -49,6 +61,17 @@ public class PersonTest {
     public void setNullLaosTest() {
         assertThrows(IllegalArgumentException.class, () -> person1.setLaos(null));
         assertThrows(IllegalArgumentException.class, () -> person1.setLaos(laosWithNull));
+    }
+
+    @Test
+    public void addNullLaoTest() {
+        assertThrows(IllegalArgumentException.class, () -> person1.addLao(null));
+    }
+
+    @Test
+    public void addLaoTest() {
+        person1.addLao(keys.getPublicKey());
+        assertTrue(person1.getLaos().contains(keys.getPublicKey()));
     }
 
     @Test

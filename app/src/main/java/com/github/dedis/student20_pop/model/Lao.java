@@ -38,7 +38,7 @@ public final class Lao {
         }
         this.name = name.trim();
         this.time = time.getTime() / 1000L;
-        this.id = Hash.hash(name + time);
+        this.id = Hash.hash(name, time.getTime());
         this.organizer = organizer;
         this.witnesses = new ArrayList<>();
         this.members = new ArrayList<>();
@@ -70,6 +70,23 @@ public final class Lao {
         this.events = events;
         // simple for now, will hash and sign in the future
         this.attestation = name + time + organizer;
+    }
+
+    /**
+     * Get the list of ids from a given list of LAOs
+     *
+     * @param laos the list of LAOs
+     * @return list of ids of these LAOs
+     */
+    public static List<String> getIds(List<Lao> laos) {
+        if (laos == null || laos.contains(null)) {
+            throw new IllegalArgumentException("Cannot get ids of null LAOs");
+        }
+        List<String> ids = new ArrayList<>();
+        for (Lao lao : laos) {
+            ids.add(lao.id);
+        }
+        return ids;
     }
 
     public String getName() {

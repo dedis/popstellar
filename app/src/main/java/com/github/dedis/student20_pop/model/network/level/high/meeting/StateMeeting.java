@@ -1,13 +1,13 @@
 package com.github.dedis.student20_pop.model.network.level.high.meeting;
 
 import com.github.dedis.student20_pop.model.network.level.high.Action;
-import com.github.dedis.student20_pop.model.network.level.high.Message;
+import com.github.dedis.student20_pop.model.network.level.high.Data;
 import com.github.dedis.student20_pop.model.network.level.high.Objects;
 
 /**
- * Message received to track the state of a meeting
+ * Data received to track the state of a meeting
  */
-public class StateMeeting extends Message {
+public class StateMeeting extends Data {
 
     private final String id; // Hash(lao_id + creation + name)
     private final String name;
@@ -83,5 +83,18 @@ public class StateMeeting extends Message {
     @Override
     public int hashCode() {
         return java.util.Objects.hash(getId(), getName(), getCreation(), getLast_modified(), getLocation(), getStart(), getEnd());
+    }
+
+    @Override
+    public String toString() {
+        return "StateMeeting{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", creation=" + creation +
+                ", last_modified=" + last_modified +
+                ", location='" + location + '\'' +
+                ", start=" + start +
+                ", end=" + end +
+                '}';
     }
 }

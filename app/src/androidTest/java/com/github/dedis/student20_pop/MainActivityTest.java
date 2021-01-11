@@ -25,14 +25,12 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.not;
 
 public class MainActivityTest {
-    private View decorView;
-
     @Rule
     public final GrantPermissionRule rule = GrantPermissionRule.grant(Manifest.permission.CAMERA);
-
     @Rule
     public ActivityScenarioRule<MainActivity> activityScenarioRule =
             new ActivityScenarioRule<>(MainActivity.class);
+    private View decorView;
 
     @Before
     public void setUp() {

@@ -21,11 +21,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.not;
 
 public class IdentityFragmentTest {
-    private View decorView;
-
     @Rule
     public ActivityScenarioRule<OrganizerActivity> activityScenarioRule =
             new ActivityScenarioRule<>(OrganizerActivity.class);
+    private View decorView;
 
     @Before
     public void setUp() {

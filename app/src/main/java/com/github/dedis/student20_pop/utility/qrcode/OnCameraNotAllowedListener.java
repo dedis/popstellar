@@ -1,6 +1,6 @@
 package com.github.dedis.student20_pop.utility.qrcode;
 
-import com.github.dedis.student20_pop.ui.QRCodeScanningFragment;
+import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
 
 /**
  * Use this listener to tell activity to switch to
@@ -8,5 +8,5 @@ import com.github.dedis.student20_pop.ui.QRCodeScanningFragment;
  * camera permission
  */
 public interface OnCameraNotAllowedListener {
-    void onCameraNotAllowedListener(QRCodeScanningFragment.QRCodeScanningType qrCodeScanningType);
+    void onCameraNotAllowedListener(QRCodeScanningFragment.QRCodeScanningType qrCodeScanningType, String eventId);
 }

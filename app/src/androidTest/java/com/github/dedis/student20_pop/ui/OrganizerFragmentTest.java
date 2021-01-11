@@ -13,18 +13,16 @@ import com.github.dedis.student20_pop.OrganizerActivity;
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Lao;
+import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
@@ -42,65 +40,26 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.*;
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult;
-import static com.github.dedis.student20_pop.ui.QRCodeScanningFragment.QRCodeScanningType.ADD_WITNESS;
+import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_SUCCESSFUL;
+import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.ADD_WITNESS;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isIn;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertNull;
 
 
 public class OrganizerFragmentTest {
-    private View decorView;
-    private final String witness1 = "Alphonse";
-    private final String witness2 = "Bertrand";
-    private final ArrayList<String> witnesses = new ArrayList<>(Arrays.asList(witness1, witness2));
+    @Rule
+    public final GrantPermissionRule rule = GrantPermissionRule.grant(Manifest.permission.CAMERA);
 
     @Rule
     public ActivityScenarioRule<OrganizerActivity> activityScenarioRule =
             new ActivityScenarioRule<>(OrganizerActivity.class);
-
-    @Rule
-    public final GrantPermissionRule rule = GrantPermissionRule.grant(Manifest.permission.CAMERA);
-
-    @Before
-    public void setUp() {
-        activityScenarioRule.getScenario().onActivity(new ActivityScenario.ActivityAction<OrganizerActivity>() {
-
-            /**
-             * This method is invoked on the main thread with the reference to the Activity.
-             *
-             * @param activity an Activity instrumented by the {@link ActivityScenario}. It never be null.
-             */
-            @Override
-            public void perform(OrganizerActivity activity) {
-                decorView = activity.getWindow().getDecorView();
-                PoPApplication app = (PoPApplication) activity.getApplication();
-                assertThat(app.getWitnesses(), is(empty()));
-                AddWitnessResult result = app.addWitness(witness1);
-                assertThat(app.getWitnesses(), is(Collections.singletonList(witness1)));
-                assertThat(result, is(ADD_WITNESS_SUCCESSFUL));
-            }
-        });
-    }
-
-    @Test
-    public void onClickPropertiesTest() {
-        onView(withId(R.id.tab_properties)).perform(click());
-        onView(withId(R.id.properties_view)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    public void onClickListEventsTest() {
-        onView(withText(getApplicationContext().getString(R.string.past_events))).perform(click());
-        onView(withText(getApplicationContext().getString(R.string.present_events))).perform(click());
-        onView(withText(getApplicationContext().getString(R.string.future_events))).perform(click());
-        onView(withIndex(withId(R.id.event_layout), 0)).check(matches(isDisplayed()));
-    }
+    private View decorView;
+    private final String WITNESS = "Alphonse";
 
     /**
      * This is a simple matcher to avoid error when multiple views match in hierarchy
@@ -131,6 +90,40 @@ public class OrganizerFragmentTest {
         };
     }
 
+    @Before
+    public void setUp() {
+        activityScenarioRule.getScenario().onActivity(new ActivityScenario.ActivityAction<OrganizerActivity>() {
+
+            /**
+             * This method is invoked on the main thread with the reference to the Activity.
+             *
+             * @param activity an Activity instrumented by the {@link ActivityScenario}. It never be null.
+             */
+            @Override
+            public void perform(OrganizerActivity activity) {
+                decorView = activity.getWindow().getDecorView();
+                PoPApplication app = (PoPApplication) activity.getApplication();
+                assertThat(app.getWitnesses(), is(empty()));
+                AddWitnessResult result = app.addWitness(WITNESS);
+                assertThat(app.getWitnesses(), is(Collections.singletonList(WITNESS)));
+                assertThat(result, is(ADD_WITNESS_SUCCESSFUL));
+            }
+        });
+    }
+
+    @Test
+    public void onClickPropertiesTest() {
+        onView(withId(R.id.tab_properties)).perform(click());
+        onView(withId(R.id.properties_view)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void onClickListEventsTest() {
+        onView(withText(getApplicationContext().getString(R.string.past_events))).perform(click());
+        onView(withText(getApplicationContext().getString(R.string.present_events))).perform(click());
+        onView(withText(getApplicationContext().getString(R.string.future_events))).perform(click());
+        onView(withIndex(withId(R.id.event_layout), 0)).check(matches(isDisplayed()));
+    }
 
     @Test
     public void clickOnAddEventButtonOpensDialog() {
@@ -251,7 +244,7 @@ public class OrganizerFragmentTest {
             final String WITNESS_ID = "t9Ed+TEwDM0+u0ZLdS4ZB/Vrrnga0Lu2iMkAQtyFRrQ=";
             final String TEST_IDS = WITNESS_ID + LAO_ID;
 
-            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_WITNESS);
+            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_WITNESS, null);
 
             for (Entry<Lao, List<String>> laoListEntry : app.getLaoWitnessMap().entrySet()) {
                 if (laoListEntry.getKey().getId().equals(LAO_ID)) {
@@ -284,7 +277,7 @@ public class OrganizerFragmentTest {
             final String WITNESS_ID = "t9Ed+TEwDM0+u0ZLdS4ZB/Vrrnga0Lu2iMkAQtyFRrQ=";
             final String TEST_IDS = WITNESS_ID + LAO_ID;
 
-            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_WITNESS);
+            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_WITNESS, null);
 
             for (Entry<Lao, List<String>> laoListEntry : app.getLaoWitnessMap().entrySet()) {
                 if (laoListEntry.getKey().getId().equals(LAO_ID)) {
@@ -293,7 +286,7 @@ public class OrganizerFragmentTest {
                 }
             }
 
-            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_WITNESS);
+            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_WITNESS, null);
         });
 
         onView(withText(getApplicationContext().getString(R.string.add_witness_already_exists)))
@@ -308,26 +301,26 @@ public class OrganizerFragmentTest {
                 .perform(click());
         onView(withText(getApplicationContext().getString(R.string.meeting_event))).check(matches(isDisplayed()));
         onView(withText(getApplicationContext().getString(R.string.meeting_event))).perform(click());
-        onView(withId(R.id.fragment_meeting_event)).check(matches(isDisplayed()));
+        onView(withId(R.id.fragment_meeting_event_creation)).check(matches(isDisplayed()));
     }
 
     @Test
-    @Ignore("TODO : Check that the corresponding Fragment has been launched")
     public void canLaunchCreateRollCallEventFragment() {
         onView(allOf(withId(R.id.add_future_event_button),
                 withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
                 .perform(click());
         onView(withText(getApplicationContext().getString(R.string.roll_call_event))).check(matches(isDisplayed()));
         onView(withText(getApplicationContext().getString(R.string.roll_call_event))).perform(click());
+        onView(withId(R.id.fragment_create_roll_call_event)).check(matches(isDisplayed()));
     }
 
     @Test
-    @Ignore("TODO : Check that the corresponding Fragment has been launched")
     public void canLaunchCreatePollEventFragment() {
         onView(allOf(withId(R.id.add_future_event_button),
                 withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
                 .perform(click());
         onView(withText(getApplicationContext().getString(R.string.poll_event))).check(matches(isDisplayed()));
-        onView(withText(getApplicationContext().getString(R.string.roll_call_event))).perform(click());
+        onView(withText(getApplicationContext().getString(R.string.poll_event))).perform(click());
+        onView(withId(R.id.fragment_organizer_poll)).check(matches(isDisplayed()));
     }
 }
