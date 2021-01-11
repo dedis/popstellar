@@ -71,6 +71,20 @@ func getCorrectDataCreateLAO(publicKey []byte) string {
 	return data
 }
 
+func getCorrectDataWitnessMessage(privateKey ed.PrivateKey,messageId string) string {
+	signature := ed.Sign(privateKey, []byte(messageId))
+	signatureb64 := b64.StdEncoding.EncodeToString(signature)
+	data := `{
+		"object": "message",
+		"action": "witness",
+		"message_id": "`+messageId+`",
+		"signature	": "`+signatureb64+`"
+	}`
+	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
+	data = strings.Join(strings.Fields(data), "")
+	return data
+}
+
 func getCorrectPublishCreateLAO(publicKey []byte, privateKey ed.PrivateKey) []byte {
 	data := []byte(getCorrectDataCreateLAO(publicKey))
 	datab64 := b64.StdEncoding.EncodeToString(data)
@@ -102,8 +116,7 @@ func getCorrectPublishCreateLAO(publicKey []byte, privateKey ed.PrivateKey) []by
 	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
 	msg = strings.Join(strings.Fields(msg), "")
 	return []byte(msg)
-} 
-
+}
 
 func getExpectedMsgAndChannelForPublishCreateLAO(publicKey []byte, privateKey ed.PrivateKey) []lib.MessageAndChannel {
 	data := []byte(getCorrectDataCreateLAO(publicKey))

@@ -3,6 +3,7 @@ package security
 
 import (
 	ed "crypto/ed25519"
+	"crypto/sha256"
 	"encoding/json"
 	"log"
 	"student20_pop/lib"
@@ -47,4 +48,8 @@ func VerifyWitnessSignatures(authorizedWitnesses [][]byte, witnessSignaturesEnc 
 		}
 	}
 	return nil
+}
+func HashOfItems(itemsToHash []string) []byte {
+	hash := sha256.Sum256([]byte(lib.ComputeAsJsonArray(itemsToHash)))
+	return hash[:]
 }
