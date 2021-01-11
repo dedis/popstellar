@@ -10,6 +10,8 @@ arguments are :
 * `-k` the actor's public key. Default is "oui".
 * `-f` the file we want the backend to store its database on. Default is "org.db" for an organizer and "wit.db" for a witness
 
+You can generate the code documentation using the godoc command: `godoc -http:=6060`.
+
 ## Packages
 ### actors
 This package implements the actors defined by the PoP project (organizer and witness), and their reactions to received messages. 
@@ -96,5 +98,5 @@ Currently, the project biggest, and "all-containing" entity is the Hub (package 
 principal entity, and to let the actor have a hub.
 
 ### WebSockets
-Maybe we should consider using websocket secure (websocket over TLS) instead of "standards" websocket (over HTTP). It 
+Maybe we should consider using websocket secure (websocket over TLS) instead of "standards" websocket (over TCP). It 
 would prevent from MitM attacks, as we currently don't offer data privacy.

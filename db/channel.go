@@ -19,7 +19,7 @@ const bucketChannel = "channels"
 func writeChannel(obj interface{}, database string, secure bool) error {
 	db, e := OpenDB(database)
 	if e != nil {
-		return e
+		return lib.ErrDBFault
 	}
 	defer db.Close()
 
@@ -58,12 +58,16 @@ func writeChannel(obj interface{}, database string, secure bool) error {
 		}
 		dt, err2 := json.Marshal(obj)
 		if err2 != nil {
+			log.Printf("could not marshall object to store")
 			return lib.ErrRequestDataInvalid
 		}
 		err3 := b.Put(objID, dt)
 		return err3
 	})
 
+	if err != nil {
+		log.Printf("an error occured in the database transaction.")
+	}
 	return err
 }
 

@@ -41,6 +41,7 @@ func (w *Witness) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAndC
 	// if the message is an answer message just ignore it
 	isAnswer, err := parser.FilterAnswers(receivedMsg)
 	if err != nil {
+		log.Printf("unable to parse received message. Cannot decide whether message is answer or is not.")
 		return nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, message.Query{})
 	}
 	if isAnswer {
@@ -49,6 +50,7 @@ func (w *Witness) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAndC
 
 	query, err := parser.ParseQuery(receivedMsg)
 	if err != nil {
+		log.Printf("Unable to parse received message as a query")
 		return nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, query)
 	}
 	var msg []lib.MessageAndChannel = nil
@@ -78,27 +80,31 @@ func (w *Witness) handlePublish(query message.Query) (msgAndChannel []lib.Messag
 // handleBroadcast is the function that handles a received message with the method "message". It is called from
 // HandleReceivedMessage. It parses the received message, and delegates the handling to sub-handler functions, depending
 // on the "object" and "action" fields.
-func (w *Witness) handleBroadcast(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+func (w *Witness) handleBroadcast(query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
 	params, errs := parser.ParseParams(query.Params)
 	if errs != nil {
+		log.Printf("Unable to parse received message as a query")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
 	msg, errs := parser.ParseMessage(params.Message)
 	if errs != nil {
+		log.Printf("Unable to parse received message as a message")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
 	data := message.Data{}
-	base64Text := make([]byte, b64.StdEncoding.DecodedLen(len(msg.Data)))
+	dataDecoded := make([]byte, b64.StdEncoding.DecodedLen(len(msg.Data)))
 
-	l, errs := b64.StdEncoding.Decode(base64Text, msg.Data)
+	l, errs := b64.StdEncoding.Decode(dataDecoded, msg.Data)
 	if errs != nil {
-		return nil, errs
+		log.Printf("Tried to decode invalid B64 string: %s", msg.Data)
+		return nil, lib.ErrEncodingFault
 	}
 
-	errs = json.Unmarshal(base64Text[:l], &data)
+	errs = json.Unmarshal(dataDecoded[:l], &data)
 	if errs != nil {
+		log.Printf("could not parse decoded query.Data into a message.Data structure")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
@@ -158,21 +164,19 @@ func (w *Witness) handleBroadcast(query message.Query) (msgAndChannel []lib.Mess
 // creates a new Channel in the Witness's database and stores the received message
 func (w *Witness) handleCreateLAO(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	if chann != "/root" {
+		log.Printf("Invalid channel. LAO create requests are valid only on the /root channel")
 		return nil, lib.ErrInvalidResource
 	}
 
 	data, errs := parser.ParseDataCreateLAO(msg.Data)
 	if errs != nil {
+		log.Printf("Could not parse received data into a create LAO structure")
 		return nil, lib.ErrInvalidResource
 	}
 
 	if !security.LAOIsValid(data, true) {
+		log.Printf("Received data for LAO Creation not valid")
 		return nil, lib.ErrInvalidResource
-	}
-
-	errs = db.CreateMessage(msg, chann, w.database)
-	if errs != nil {
-		return nil, errs
 	}
 
 	lao := event.LAO{
@@ -183,8 +187,18 @@ func (w *Witness) handleCreateLAO(msg message.Message, chann string, query messa
 		Witnesses:     lib.ArrayArrayByteToArrayString(data.Witnesses),
 	}
 	errs = db.CreateChannel(lao, w.database)
+	if errs != nil {
+		log.Printf("An error occured, unable to create channel in the database")
+		return nil, errs
+	}
 
-	return nil, errs
+	errs = db.CreateMessage(msg, chann, w.database)
+	if errs != nil {
+		log.Printf("An error occured, could not store message to the database")
+		return nil, errs
+	}
+
+	return nil, nil
 }
 
 // handleUpdateProperties handles a received message with field object and action set respectively to "lao" and
@@ -192,15 +206,18 @@ func (w *Witness) handleCreateLAO(msg message.Message, chann string, query messa
 func (w *Witness) handleUpdateProperties(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	data, errs := parser.ParseDataCreateLAO(msg.Data)
 	if errs != nil {
+		log.Printf("could not parse received data in a message.DataCreateLAO structure")
 		return nil, lib.ErrInvalidResource
 	}
 	if !security.LAOIsValid(data, false) {
+		log.Printf("Invalid changes were requested.")
 		return nil, lib.ErrInvalidResource
 	}
 
 	//stores received message in DB
 	errs = db.CreateMessage(msg, chann, w.database)
 	if errs != nil {
+		log.Printf("unable to store received message in the database")
 		return nil, err
 	}
 
@@ -214,13 +231,8 @@ func (w *Witness) handleUpdateProperties(msg message.Message, chann string, quer
 func (w *Witness) handleWitnessMessage(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	data, errs := parser.ParseDataWitnessMessage(msg.Data)
 	if errs != nil {
+		log.Printf("could not parse received data in a message.DataWitnessMessage structure")
 		return nil, lib.ErrInvalidResource
-	}
-
-	//stores received message in DB
-	errs = db.CreateMessage(msg, chann, w.database)
-	if errs != nil {
-		return nil, errs
 	}
 
 	sendMsg := db.GetMessage([]byte(chann), data.MessageId, w.database)
@@ -237,6 +249,7 @@ func (w *Witness) handleWitnessMessage(msg message.Message, chann string, query 
 
 	errs = security.VerifySignature(msg.Sender, storedMessage.Data, data.Signature)
 	if errs != nil {
+		log.Printf("Invalid signature in received witness message.")
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -245,8 +258,19 @@ func (w *Witness) handleWitnessMessage(msg message.Message, chann string, query 
 
 	//update message in DB
 	errs = db.UpdateMessage(storedMessage, chann, w.database)
+	if errs != nil {
+		log.Printf("Unable to update signature list of message in the database")
+		return nil, errs
+	}
 
-	return nil, errs
+	//stores received message in DB
+	errs = db.CreateMessage(msg, chann, w.database)
+	if errs != nil {
+		log.Printf("could not store received message in the database")
+		return nil, errs
+	}
+
+	return nil, nil
 }
 
 // handleLAOState is the function that handles a received message with fields object and action set respectively to
@@ -255,15 +279,18 @@ func (w *Witness) handleWitnessMessage(msg message.Message, chann string, query 
 func (w *Witness) handleLAOState(msg message.Message) (msgAndChannel []lib.MessageAndChannel, err error) {
 	data, errs := parser.ParseDataCreateLAO(msg.Data)
 	if errs != nil {
+		log.Printf("could not parse recieved data in a message.CreateLAO structure")
 		return nil, lib.ErrInvalidResource
 	}
 
 	if !security.LAOIsValid(data, false) {
+		log.Printf("LAO state update is not valid. Changes aborted localy")
 		return nil, lib.ErrInvalidResource
 	}
 
 	errs = security.VerifyWitnessSignatures(data.Witnesses, msg.WitnessSignatures, msg.Sender)
 	if errs != nil {
+		log.Printf("not enough valid witness signatures to accept the state update")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
@@ -276,6 +303,16 @@ func (w *Witness) handleLAOState(msg message.Message) (msgAndChannel []lib.Messa
 	}
 
 	errs = db.UpdateChannel(lao, w.database)
+	if errs != nil {
+		log.Printf("could not update the channel in the database")
+		return nil, errs
+	}
+
+	errs = db.CreateMessage(msg, "/root/"+lao.ID, w.database)
+	if errs != nil {
+		log.Printf("could not store received message in the database")
+		return nil, errs
+	}
 
 	return nil, errs
 }
@@ -284,17 +321,20 @@ func (w *Witness) handleLAOState(msg message.Message) (msgAndChannel []lib.Messa
 // to "roll_call" and "create". It  verifies the message's validity, creates a new channel in the Witness's database and
 // stores the received message.
 func (w *Witness) handleCreateRollCall(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
-	if chann != "/root" {
+	if strings.HasPrefix(chann, "/root/") {
+		log.Printf("Channel name has to begin with /root/")
 		return nil, lib.ErrInvalidResource
 	}
 
 	data, errs := parser.ParseDataCreateRollCall(msg.Data)
 	if errs != nil {
+		log.Printf("could not parse received data into a message.DataCreateRollCall structure")
 		return nil, lib.ErrInvalidResource
 	}
 
-	laoId := strings.TrimPrefix("/root", chann)
-	if !security.RollCallCreatedIsValid(data, laoId) {
+	laoID := strings.TrimPrefix(chann, "/root/")
+	if !security.RollCallCreatedIsValid(data, laoID) {
+		log.Printf("Roll Call data not valid. Roll call not created")
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -308,13 +348,15 @@ func (w *Witness) handleCreateRollCall(msg message.Message, chann string, query 
 
 	errs = db.CreateChannel(rollCall, w.database)
 	if errs != nil {
+		log.Printf("failed to create a new channel in the database")
 		return nil, errs
 	}
 
 	errs = db.CreateMessage(msg, chann, w.database)
 	if errs != nil {
+		log.Printf("failed to store a new message in the database")
 		return nil, errs
 	}
 
-	return nil, errs
+	return nil, nil
 }
