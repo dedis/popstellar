@@ -90,7 +90,7 @@ public class DatePickerFragmentTest {
         int year = currentCalendar.get(Calendar.YEAR);
         int month = currentCalendar.get(Calendar.MONTH) + 1;
         int day = currentCalendar.get(Calendar.DAY_OF_MONTH);
-        final String DATE = (day < 10 ? "0" : "") + day + "/" + month + "/" + year;
+        final String DATE = (day < 10 ? "0" : "") + day + "/" + (month < 10 ? "0" : "") + month + "/" + year;
         onView(withId(R.id.start_date_editText)).perform(click());
         onView(withId(android.R.id.button1)).perform(click());
         onView(withId(R.id.start_date_editText)).check(matches(withText(DATE)));
