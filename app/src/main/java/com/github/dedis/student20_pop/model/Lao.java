@@ -17,7 +17,6 @@ public final class Lao {
     private final long time;
     private final String id;
     private final String organizer;
-    private final String attestation;
     private List<String> witnesses;
     private List<String> members;
     private List<String> events;
@@ -42,7 +41,6 @@ public final class Lao {
         this.witnesses = new ArrayList<>();
         this.members = new ArrayList<>();
         this.events = new ArrayList<>();
-        this.attestation = Signature.sign(organizer, name + time + organizer);
     }
 
     /**
@@ -66,7 +64,6 @@ public final class Lao {
         this.witnesses = witnesses;
         this.members = members;
         this.events = events;
-        this.attestation = Signature.sign(organizer, name + time + organizer);
     }
 
     /**
@@ -181,13 +178,6 @@ public final class Lao {
         this.events = events;
     }
 
-    /**
-     * @return signature by the organizer
-     */
-    public String getAttestation() {
-        return attestation;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -199,12 +189,11 @@ public final class Lao {
                 && Objects.equals(organizer, lao.organizer)
                 && Objects.equals(witnesses, lao.witnesses)
                 && Objects.equals(members, lao.members)
-                && Objects.equals(events, lao.events)
-                && Objects.equals(attestation, lao.attestation);
+                && Objects.equals(events, lao.events);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, time, id, organizer, witnesses, members, events, attestation);
+        return Objects.hash(name, time, id, organizer, witnesses, members, events);
     }
 }
