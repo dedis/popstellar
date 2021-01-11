@@ -102,7 +102,7 @@ public class PoPApplication extends Application {
             this.laoWitnessMap = new HashMap<>();
         }
 
-        currentLao = new Lao("LAO I just joined", new Date(), person.getId());
+        currentLao = new Lao("LAO I just joined", person.getId());
         dummyLaoEventsMap = dummyLaoEventMap();
         laoWitnessMap.put(currentLao, new ArrayList<>());
 
@@ -314,10 +314,10 @@ public class PoPApplication extends Application {
         String notMyPublicKey = new Keys().getPublicKey();
 
         map.put(currentLao, events);
-        map.put(new Lao("LAO 1", new Date(), notMyPublicKey), events);
-        map.put(new Lao("LAO 2", new Date(), notMyPublicKey), events);
-        map.put(new Lao("My LAO 3", new Date(), person.getId()), events);
-        map.put(new Lao("LAO 4", new Date(), notMyPublicKey), events);
+        map.put(new Lao("LAO 1", notMyPublicKey), events);
+        map.put(new Lao("LAO 2", notMyPublicKey), events);
+        map.put(new Lao("My LAO 3", person.getId()), events);
+        map.put(new Lao("LAO 4", notMyPublicKey), events);
         return map;
     }
 
