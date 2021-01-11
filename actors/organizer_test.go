@@ -89,10 +89,10 @@ func getCorrectPublishCreateLAO(publicKey []byte, privateKey ed.PrivateKey) []by
 	data := []byte(getCorrectDataCreateLAO(publicKey))
 	datab64 := b64.StdEncoding.EncodeToString(data)
 	pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
-	signature := ed.Sign(privateKey, []byte(data))
+	signature := ed.Sign(privateKey, data)
 	signatureb64 := b64.StdEncoding.EncodeToString(signature)
-	// TODO I think it's weird to hash data in plain and signature in b64, but well, apparently, it's the protocol
-	tohash := lib.ComputeAsJsonArray([]string{string(data),string(signatureb64)})
+	// I think it's weird to hash data in plain and signature in b64, but well, apparently, it's the protocol
+	tohash := lib.ComputeAsJsonArray([]string{b64.StdEncoding.EncodeToString(data),signatureb64})
 	msgid := sha256.Sum256( []byte(tohash))
 	msgidb64 := b64.StdEncoding.EncodeToString(msgid[:])
 	msg := `{
@@ -122,9 +122,9 @@ func getExpectedMsgAndChannelForPublishCreateLAO(publicKey []byte, privateKey ed
 	data := []byte(getCorrectDataCreateLAO(publicKey))
 	datab64 := b64.StdEncoding.EncodeToString(data)
 	pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
-	signature := ed.Sign(privateKey, []byte(data))
+	signature := ed.Sign(privateKey, data)
 	signatureb64 := b64.StdEncoding.EncodeToString(signature)
-	tohash := lib.ComputeAsJsonArray([]string{string(data),string(signatureb64)})
+	tohash := lib.ComputeAsJsonArray([]string{b64.StdEncoding.EncodeToString(data),signatureb64})
 	msgid := sha256.Sum256( []byte(tohash))
 	msgidb64 := b64.StdEncoding.EncodeToString(msgid[:])
 	msg := `{
