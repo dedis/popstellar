@@ -21,10 +21,10 @@ const(
 type GenericMessage map[string]interface{}
 
 type Query struct {
-	Jsonrpc string
-	Method  string
-	Params  json.RawMessage
-	Id      int
+	Jsonrpc string `json:"jsonrpc"`
+	Method  string `json:"method"`
+	Params  json.RawMessage `json:"params"`
+	Id      int `json:"id"`
 }
 
 type Params struct {
@@ -41,7 +41,7 @@ type Message struct {
 }
 
 type ItemWitnessSignatures struct {
-	WitnessKey []byte // recovered from base 64
+	WitnessKey []byte `json:"witness"`// recovered from base 64
 	//Sign(message_id)
-	Signature []byte // recovered from base 64
+	Signature []byte `json:"signature"`// recovered from base 64
 }

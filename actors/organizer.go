@@ -469,7 +469,8 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 			log.Println("couldn't unMarshal the ItemWitnessSignatures from the DB")
 			continue
 		}
-		err = security.VerifySignature(witnessSignature.WitnessKey, toSignStruct.Data, witnessSignature.Signature)
+		//dataWitnessMessage' signature is Sign(message_id)
+		err = security.VerifySignature(witnessSignature.WitnessKey, toSignStruct.MessageId, witnessSignature.Signature)
 		if err != nil {
 			count--
 			log.Printf("Invalid signature found in signature lists: index %d. Should check if the database has not been tempered with", i)
