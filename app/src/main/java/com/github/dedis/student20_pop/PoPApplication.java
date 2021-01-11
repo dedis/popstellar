@@ -11,8 +11,9 @@ import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.Person;
 import com.github.dedis.student20_pop.model.event.Event;
-import com.github.dedis.student20_pop.utility.network.HighLevelClientProxy;
-import com.github.dedis.student20_pop.utility.network.PoPClientEndpoint;
+import com.github.dedis.student20_pop.utility.protocol.HighLevelProxy;
+import com.github.dedis.student20_pop.utility.protocol.LowLevelProxy;
+import com.github.dedis.student20_pop.utility.protocol.ProtocolProxyFactory;
 import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
 
 import java.net.URI;
@@ -36,18 +37,19 @@ public class PoPApplication extends Application {
     public static final String SP_PERSON_ID_KEY = "SHARED_PREFERENCES_PERSON_ID";
     public static final String USERNAME = "USERNAME"; //TODO: let user choose/change its name
 
-    private static final String LOCAL_BACKEND_URI = "ws://10.0.2.2:2000";
+    private static final URI LOCAL_BACKEND_URI = URI.create("ws://10.0.2.2:2000");
+
+    private final Map<Lao, List<Event>> laoEventsMap = new HashMap<>();
+    private final Map<Lao, List<String>> laoWitnessMap = new HashMap<>();
+    private final Map<URI, HighLevelProxy> openSessions = new HashMap<>();
 
     private static Context appContext;
 
     private Person person;
-    private Map<Lao, List<Event>> laoEventsMap;
-    private Map<Lao, List<String>> laoWitnessMap;
-    private Map<URI, HighLevelClientProxy> openSessions;
 
     //represents the Lao which we are connected to, can be null
     private Lao currentLao;
-    private HighLevelClientProxy localProxy;
+    private HighLevelProxy localProxy;
 
     //TODO: person/laos used for testing when we don't have a backend connected
     private Map<Lao, List<Event>> dummyLaoEventsMap;
@@ -64,7 +66,7 @@ public class PoPApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        PoPClientEndpoint.startPurgeRoutine(new Handler(Looper.getMainLooper()));
+        startPurgeRoutine(new Handler(Looper.getMainLooper()));
 
         appContext = getApplicationContext();
 
@@ -94,19 +96,28 @@ public class PoPApplication extends Application {
             }
         }
 
-        if (laoEventsMap == null) {
-            laoEventsMap = new HashMap<>();
-        }
-
-        if (laoWitnessMap == null) {
-            this.laoWitnessMap = new HashMap<>();
-        }
-
         currentLao = new Lao("LAO I just joined", new Date(), person.getId());
         dummyLaoEventsMap = dummyLaoEventMap();
         laoWitnessMap.put(currentLao, new ArrayList<>());
 
-        localProxy = PoPClientEndpoint.connect(URI.create(LOCAL_BACKEND_URI), person);
+        localProxy = getProxy(LOCAL_BACKEND_URI);
+    }
+
+    /**
+     * Start the routine the will purge periodically every open session to close timeout requests
+     *
+     * @param handler to run the routine on
+     */
+    private void startPurgeRoutine(Handler handler) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (openSessions) {
+                    openSessions.values().forEach(hlp -> hlp.lowLevel().purgeTimeoutRequests());
+                    handler.postDelayed(this, LowLevelProxy.REQUEST_TIMEOUT);
+                }
+            }
+        });
     }
 
     @Override
@@ -143,7 +154,7 @@ public class PoPApplication extends Application {
     }
 
     /**
-     * sets the current lao
+     * Sets the current lao
      *
      * @param lao
      */
@@ -213,8 +224,26 @@ public class PoPApplication extends Application {
      *
      * @return the proxy
      */
-    public HighLevelClientProxy getLocalProxy() {
+    public HighLevelProxy getLocalProxy() {
         return localProxy;
+    }
+
+    /**
+     * Get the proxy for the given host. If the connection was not established yet, creates it.
+     *
+     * @param host of the backend
+     * @return the proxy
+     */
+    public HighLevelProxy getProxy(URI host) {
+        synchronized (openSessions) {
+            if(openSessions.containsKey(host)) {
+                return openSessions.get(host);
+            } else {
+                HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(host, person);
+                openSessions.put(host, proxy);
+                return proxy;
+            }
+        }
     }
 
     /**
