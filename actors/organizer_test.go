@@ -57,7 +57,7 @@ func createKeyPair() ([]byte, ed.PrivateKey) {
 func getCorrectDataCreateLAO(publicKey []byte) string {
 	pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
 	creationstr := strconv.FormatInt(time.Now().Unix(), 10)
-	tohash := lib.ComputeAsJsonArray([]string{string(publicKey),creationstr,"my_lao"})
+	tohash := lib.ComputeAsJsonArray([]string{string(pkeyb64),creationstr,"my_lao"})
 	hashid := sha256.Sum256( []byte(tohash) )
 	id := b64.StdEncoding.EncodeToString( hashid[:] )
 	data := `{
