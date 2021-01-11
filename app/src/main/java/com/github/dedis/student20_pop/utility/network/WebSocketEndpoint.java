@@ -29,7 +29,7 @@ public final class WebSocketEndpoint {
     private static final String TAG = WebSocketEndpoint.class.getName();
 
     private static final ClientManager client = ClientManager.createClient();
-    private static final Map<Session, IMessageListener> listeners = new HashMap<>();
+    private static final Map<Session, MessageListener> listeners = new HashMap<>();
 
     /**
      * Create a new session with the websocket server
@@ -58,7 +58,7 @@ public final class WebSocketEndpoint {
         return sessionFuture;
     }
 
-    private static void registerListener(Session session, IMessageListener listener) {
+    private static void registerListener(Session session, MessageListener listener) {
         synchronized (listeners) {
             listeners.put(session, listener);
         }
@@ -74,7 +74,7 @@ public final class WebSocketEndpoint {
         // Messages from a session are taken care one at the time to avoid any problem
         // In the future, we could improve this
         synchronized (listeners) {
-            IMessageListener listener = listeners.get(session);
+            MessageListener listener = listeners.get(session);
             if (listener == null)
                 throw new IllegalArgumentException();
 

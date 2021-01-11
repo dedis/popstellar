@@ -43,7 +43,7 @@ import javax.websocket.Session;
 /**
  * A proxy of a connection to a websocket. It encapsulate the publish-subscribe protocol
  */
-public final class WebSocketLowLevelProxy implements LowLevelProxy, IMessageListener {
+public final class WebSocketLowLevelProxy implements LowLevelProxy, MessageListener {
 
     private static final String TAG = WebSocketLowLevelProxy.class.getName();
 
