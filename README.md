@@ -24,3 +24,7 @@ Public Key: base64
 Signature: base64  
 Hash: base64  
 Timestamp: uint64 representation of the Unix timestamp (seconds since January 1st, 1970)  
+
+## Concatenation for hashing
+When concatenating strings for hashing, `"` and `\` characters must be escaped by adding a `\` characters before them. `"` becomes `\"` and `\` becomes `\\`. Then each string is put between two `"` and added in a JSON array using compact representation.  
+For example, <code>a<sub>1</sub>||a<sub>2</sub>||...||a<sub>n</sub></code> = <code>["esc(a<sub>1</sub>)","esc(a<sub>2</sub>)",...,"esc(a<sub>n</sub>)"]</code> where <code>a<sub>1</sub>, ..., a<sub>n</sub></code> are strings and `esc` is an escape function.
