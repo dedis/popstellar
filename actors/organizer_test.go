@@ -162,10 +162,8 @@ func TestReceivePublishCreateLAO(t *testing.T) {
 		connections:     make(map[*connection]struct{}),
 		connIndex:       0,
 		idOfSender:      -1,
-		actor: 			NewOrganizer(string(publicKey), "org.db"),
+		actor: 			NewOrganizer(string(publicKey), "org_test.db"),
 	}
-
-	 
 
 	msgAndChannel, responseToSender := h.actor.HandleReceivedMessage(receivedMsg, userId)
 	// TODO this comparison fails only because of capital letters, which we need to export the fields... and I don't think actually matter in json
