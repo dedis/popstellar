@@ -30,9 +30,9 @@ public class Signature {
         }
         String signature = null;
         try {
-            byte[] hash = Base64.getDecoder().decode(data);
+            byte[] dataByte = Base64.getDecoder().decode(data);
             Ed25519Sign signer = new Ed25519Sign(Base64.getDecoder().decode(privateKey));
-            signature = Base64.getEncoder().encodeToString(signer.sign(hash));
+            signature = Base64.getEncoder().encodeToString(signer.sign(dataByte));
         } catch (GeneralSecurityException e) {
             Log.e(TAG, "Failed to sign the data", e);
             e.printStackTrace();
