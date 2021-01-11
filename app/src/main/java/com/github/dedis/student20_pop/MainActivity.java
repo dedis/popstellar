@@ -137,7 +137,8 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
                 //TODO
                 break;
             case CONNECT_LAO:
-                showFragment(ConnectingFragment.newInstance(url), ConnectingFragment.TAG);
+                // TODO extract url and lao id from data
+                showFragment(ConnectingFragment.newInstance(url, "lao_id"), ConnectingFragment.TAG);
                 break;
             default:
                 break;

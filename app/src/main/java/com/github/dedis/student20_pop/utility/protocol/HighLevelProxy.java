@@ -10,6 +10,8 @@ import java.util.concurrent.CompletableFuture;
 
 public interface HighLevelProxy extends Closeable {
 
+    String ROOT = "/root";
+
     /**
      * @return the low level proxy tied to this one
      */
