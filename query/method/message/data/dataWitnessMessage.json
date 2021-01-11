@@ -7,7 +7,10 @@
 	"properties": {
 		"object": { "const": "message" },
 		"action": { "const": "witness" },
-		"message_id": { "type": "string", "contentEncoding": "base64" },
+		"message_id": {
+			"type": "string",
+			"contentEncoding": "base64",
+			"note": "message_id of the higher level messageWitnessMessage"},
 		"signature": {
 			"description": "[Base64String] signature by the witness over the \"message_id\" field of the message",
 			"type": "string",
