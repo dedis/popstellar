@@ -148,6 +148,7 @@ public final class WebSocketLowLevelProxy implements LowLevelProxy, IMessageList
     @Override
     public void onMessage(String msg) {
         JsonObject obj = gson.fromJson(msg, JsonObject.class);
+        //TODO not extremely happy about this
         if (obj.has("method")) {
             handleMessage(gson.fromJson(obj, Broadcast.class));
         } else {
@@ -164,7 +165,6 @@ public final class WebSocketLowLevelProxy implements LowLevelProxy, IMessageList
         RequestEntry entry = requests.remove(answer.getId());
         if (entry == null)
             throw new IllegalStateException("Received unknown Answer id");
-
 
         // There is a way this is the wrong Answer : if there was a timeout and the message came back while another was generated on the same id.
         // But this is a very rare case and we could add a timestamp to the protocol to fix this issue
@@ -232,6 +232,13 @@ public final class WebSocketLowLevelProxy implements LowLevelProxy, IMessageList
                     e.printStackTrace();
                 }
             });
+        }
+
+        // Complete all pending requests and remove them
+        Iterator<Map.Entry<Integer, RequestEntry>> it = requests.entrySet().iterator();
+        while (it.hasNext()) {
+            it.next().getValue().requests.completeExceptionally(reason);
+            it.remove();
         }
     }
 
