@@ -36,6 +36,7 @@ func (o *Organizer) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAn
 	// if the message is an answer message (positive ack or error), ignore it
 	isAnswer, err := parser.FilterAnswers(receivedMsg)
 	if err != nil {
+		log.Printf("could not parse the received message into a message.GenericMessage structure")
 		return nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, message.Query{})
 	}
 	if isAnswer {
@@ -44,6 +45,7 @@ func (o *Organizer) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAn
 
 	query, err := parser.ParseQuery(receivedMsg)
 	if err != nil {
+		log.Printf("could not parse the received message into a message.Query structure")
 		return nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, query)
 	}
 
@@ -212,24 +214,22 @@ func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.Mess
 // The received message had the object field set to "lao" and action field to "create"
 // It will check for the validity of the received message, store the received message in the database, and store the new
 // LAO in the database.
-func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
 
 	if canal != "/root" {
+		log.Printf("Invalid channel. LAO create requests are valid only on the /root channel")
 		return nil, lib.ErrInvalidResource
 	}
 
 	data, errs := parser.ParseDataCreateLAO(msg.Data)
 	if errs != nil {
+		log.Printf("Could not parse received data into a create LAO structure")
 		return nil, lib.ErrInvalidResource
 	}
 
 	if !security.LAOIsValid(data, true) {
+		log.Printf("Received data for LAO Creation not valid")
 		return nil, lib.ErrInvalidResource
-	}
-
-	errs = db.CreateMessage(msg, canal, o.database)
-	if errs != nil {
-		return nil, err
 	}
 
 	lao := event.LAO{
@@ -242,14 +242,23 @@ func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query mes
 
 	errs = db.CreateChannel(lao, o.database)
 	if errs != nil {
-		return nil, err
+		log.Printf("An error occured, could not create new channel in the database")
+		return nil, errs
 	}
 
-	// as per hub.go, this msgAndChan will never be broadcasted as Channel should be on root. We still create it in case this functionality could change in the future.
+	errs = db.CreateMessage(msg, canal, o.database)
+	if errs != nil {
+		log.Printf("An error occured, could not store message to the database")
+		return nil, errs
+	}
+
+	// as per hub.go, this msgAndChan will never be broadcast as Channel should be on root. We still create it in case this functionality could change in the future.
 	msgAndChan := []lib.MessageAndChannel{{
 		Message: parser.ComposeBroadcastMessage(query),
 		Channel: []byte(canal),
 	}}
+
+	log.Printf("Sucessfully created lao %s", lao.Name)
 
 	return msgAndChan, nil
 }
@@ -259,18 +268,20 @@ func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query mes
 // The received message had the object field set to "roll_call" and action field to "create"
 // It will check for the validity of the received message, store the received message in the database, and store the new
 // Roll Call in the database.
-func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
-	if canal == "/root" {
+func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
+	if !strings.HasPrefix(canal, "/root/") {
+		log.Printf("invalid channel name for roll call creation: %s", canal)
 		return nil, lib.ErrInvalidResource
 	}
 
 	data, errs := parser.ParseDataCreateRollCall(msg.Data)
 	if errs != nil {
+		log.Printf("could not parse received message data into a message.DataCreateRollCall strcuture")
 		return nil, lib.ErrInvalidResource
 	}
-	//we provide the id of the channel
-	laoId := strings.TrimPrefix(canal, "/root")
-	if !security.RollCallCreatedIsValid(data, laoId) {
+	laoID := strings.TrimPrefix(canal, "/root/")
+	if !security.RollCallCreatedIsValid(data, laoID) {
+		log.Printf("data for roll call creation invalid")
 		return nil, errs
 	}
 
@@ -285,11 +296,13 @@ func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, quer
 	}
 	errs = db.CreateChannel(rollCall, o.database)
 	if errs != nil {
+		log.Printf("An error occured, unable to create new channel in the database")
 		return nil, errs
 	}
 
 	errs = db.CreateMessage(msg, canal, o.database)
 	if errs != nil {
+		log.Printf("An error occured, unable to store received message in the database")
 		return nil, errs
 	}
 
@@ -297,6 +310,8 @@ func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, quer
 		Message: parser.ComposeBroadcastMessage(query),
 		Channel: []byte(canal),
 	}}
+
+	log.Printf("Sucessfully created lao %s", rollCall.Name)
 
 	return msgAndChan, nil
 }
@@ -306,14 +321,16 @@ func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, quer
 // The received message had the object field set to "meeting" and action field to "create"
 // It will check for the validity of the received message, store the received message in the database, and store the new
 // meeting in the database.
-func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
 
-	if canal == "/root" {
+	if !strings.HasPrefix(canal, "/root/") {
+		log.Printf("invalid channel name for meeting creation: %s", canal)
 		return nil, lib.ErrInvalidResource
 	}
 
 	data, errs := parser.ParseDataCreateMeeting(msg.Data)
 	if errs != nil {
+		log.Printf("unable to parse received message data into a message.DataCreateMeeting structure")
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -329,10 +346,12 @@ func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, query
 
 	errs = db.CreateChannel(meeting, o.database)
 	if errs != nil {
+		log.Printf("An error occured, unable to create channel in the database")
 		return nil, errs
 	}
 	errs = db.CreateMessage(msg, canal, o.database)
 	if errs != nil {
+		log.Printf("An error occured, unable to store received message in the database")
 		return nil, errs
 	}
 
@@ -340,6 +359,8 @@ func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, query
 		Message: parser.ComposeBroadcastMessage(query),
 		Channel: []byte(canal),
 	}}
+
+	log.Printf("Sucessfully created meeting %s", meeting.Name)
 
 	return msgAndChan, nil
 }
@@ -349,14 +370,16 @@ func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, query
 // The received message had the object field set to "poll" and action field to "create"
 // It will check for the validity of the received message, store the received message in the database, and store the new
 // poll in the database.
-func (o *Organizer) handleCreatePoll(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+func (o *Organizer) handleCreatePoll(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
 
-	if canal == "/root" {
+	if !strings.HasPrefix(canal, "/root/") {
+		log.Printf("invalid channel name for meeting creation: %s", canal)
 		return nil, lib.ErrInvalidResource
 	}
 
 	data, errs := parser.ParseDataCreatePoll(msg.Data)
 	if errs != nil {
+		log.Printf("unable to parse received message data into a message.DataCreatePoll structure")
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -372,13 +395,22 @@ func (o *Organizer) handleCreatePoll(msg message.Message, canal string, query me
 
 	errs = db.CreateChannel(poll, o.database)
 	if errs != nil {
-		return nil, err
+		log.Printf("An error occured, unable to create channel in the database")
+		return nil, errs
+	}
+
+	errs = db.CreateMessage(msg, canal, o.database)
+	if errs != nil {
+		log.Printf("An error occured, unable to store received message in the database")
+		return nil, errs
 	}
 
 	msgAndChan := []lib.MessageAndChannel{{
 		Message: parser.ComposeBroadcastMessage(query),
 		Channel: []byte(canal),
 	}}
+
+	log.Printf("Sucessfully created poll %s", poll.Name)
 
 	return msgAndChan, nil
 }
@@ -424,6 +456,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 	// verify signature correctness
 	err = security.VerifySignature(msg.Sender, toSignStruct.Data, data.Signature)
 	if err != nil {
+		log.Printf("invalid message signature")
 		return nil, err
 	}
 
@@ -439,14 +472,16 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 		err = security.VerifySignature(witnessSignature.WitnessKey, toSignStruct.Data, witnessSignature.Signature)
 		if err != nil {
 			count--
-			log.Printf("Invalid signature found in signature lists: index %d", i)
+			log.Printf("Invalid signature found in signature lists: index %d. Should check if the database has not been tempered with", i)
 		}
 		count++
 		signaturesOnly = append(signaturesOnly, string(witnessSignature.Signature))
 	}
+
 	//if new signature already exists, returns error
 	_, found := lib.FindStr(signaturesOnly, string(data.Signature))
-	if found {
+	if found && count < SigThreshold {
+		log.Printf("Signature already exists in message list")
 		return nil, lib.ErrResourceAlreadyExists
 	}
 
@@ -454,16 +489,19 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 	if err != nil {
 		log.Println("couldn't Marshal the ItemWitnessSignatures")
 	}
-	toSignStruct.WitnessSignatures = append(toSignStruct.WitnessSignatures, iws)
-
+	if !found {
+		toSignStruct.WitnessSignatures = append(toSignStruct.WitnessSignatures, iws)
+	}
 	// update "LAOUpdateProperties" message in DB
 	err = db.UpdateMessage(toSignStruct, canal, o.database)
 	if err != nil {
+		log.Printf("An error occured, unable to update message in the database")
 		return nil, lib.ErrDBFault
 	}
 	//store received message in DB
 	err = db.CreateMessage(msg, canal, o.database)
 	if err != nil {
+		log.Printf("An error occured, unable to update message in the database")
 		return nil, lib.ErrDBFault
 	}
 
@@ -475,6 +513,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 
 	dataToSign, err := parser.ParseData(string(toSignStruct.Data))
 	if err != nil {
+		log.Printf("could not parse the data to sign into a message.Data structure")
 		return nil, lib.ErrDBFault
 	}
 
@@ -499,6 +538,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 			}
 			queryStr, err = parser.ComposeBroadcastStateLAO(eventStruct.(event.LAO), laoData, o.PublicKey, data.Signature)
 			if err != nil {
+				log.Printf("could not compose a state update broadcast message")
 				return nil, err
 			}
 
@@ -545,7 +585,8 @@ func (o *Organizer) handleLAOState(msg message.Message) (msgAndChannel []lib.Mes
 //		organizer forgot to scan the public key of one attendee), then it can reopen it by using
 //		the open query. In this case, the action should be set to reopen.
 func (o *Organizer) handleOpenRollCall(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
-	if chann == "/root" {
+	if !strings.HasPrefix(chann, "/root/") {
+		log.Printf("invalid channel name for meeting creation: %s", chann)
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -569,8 +610,9 @@ func (o *Organizer) handleOpenRollCall(msg message.Message, chann string, query 
 	}
 
 	//we provide the id of the channel
-	laoId := strings.TrimPrefix(chann, "/root")
+	laoId := strings.TrimPrefix(chann, "/root/")
 	if !security.RollCallOpenedIsValid(openRollCall, laoId, rollCallData) {
+		log.Printf("roll call data invalid. Roll call not created")
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -587,6 +629,7 @@ func (o *Organizer) handleOpenRollCall(msg message.Message, chann string, query 
 
 	err = db.UpdateChannel(updatedRollCall, o.database)
 	if err != nil {
+		log.Printf("could not update channel in the database")
 		return nil, err
 	}
 	msgAndChan := []lib.MessageAndChannel{{
@@ -596,8 +639,9 @@ func (o *Organizer) handleOpenRollCall(msg message.Message, chann string, query 
 	return msgAndChan, db.CreateMessage(msg, chann, o.database)
 }
 
-func (o *Organizer) handleCloseRollCall(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
-	if chann == "/root" {
+func (o *Organizer) handleCloseRollCall(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
+	if !strings.HasPrefix(chann, "/root/") {
+		log.Printf("invalid channel name for meeting creation: %s", chann)
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -635,11 +679,19 @@ func (o *Organizer) handleCloseRollCall(msg message.Message, chann string, query
 	}
 	err = db.UpdateChannel(updatedRollCall, o.database)
 	if err != nil {
+		log.Printf("unable to update channel in database")
 		return nil, err
 	}
 	msgAndChan := []lib.MessageAndChannel{{
 		Message: parser.ComposeBroadcastMessage(query),
 		Channel: []byte(chann),
 	}}
-	return msgAndChan, db.CreateMessage(msg, chann, o.database)
+
+	err = db.CreateMessage(msg, chann, o.database)
+	if err != nil {
+		log.Printf("unable to store receieved message in the database")
+		return nil, err
+	}
+
+	return msgAndChan, nil
 }

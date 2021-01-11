@@ -93,6 +93,13 @@ func dataConstAreValid(m message.Data) bool {
 			log.Printf("the action is not valid, it is instead %v", m["action"])
 			return false
 		}
+	case "roll_call":
+		switch m["action"] {
+		case "create", "open", "reopen", "close":
+		default:
+			log.Printf("the action is not valid, it is instead %v", m["action"])
+			return false
+		}
 	default:
 		log.Printf("the object is not valid, it is instead %v", m["object"])
 		return false

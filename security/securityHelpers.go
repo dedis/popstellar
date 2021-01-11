@@ -31,10 +31,11 @@ func VerifyWitnessSignatures(authorizedWitnesses [][]byte, witnessSignaturesEnc 
 	for _, item := range witnessSignaturesEnc {
 		witnessSignature, err := parser.ParseWitnessSignature(item)
 		if err != nil {
-			return err
+			log.Println("couldn't unMarshal one of the Item in WitnessSignatures")
+			return lib.ErrInvalidResource
 		}
 		//We check that the signature belong to an assigned witness
-		_, isAssigned := lib.FindByteArray(authorizedWitnesses, witnessSignature.Signature)
+		_, isAssigned := lib.FindByteArray(authorizedWitnesses, witnessSignature.WitnessKey)
 		if !isAssigned {
 			log.Printf("witness public key not recognized")
 			return lib.ErrRequestDataInvalid

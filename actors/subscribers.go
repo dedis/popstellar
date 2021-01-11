@@ -8,6 +8,7 @@ package actors
 
 import (
 	"log"
+	"strings"
 	"student20_pop/lib"
 	"student20_pop/message"
 	"student20_pop/parser"
@@ -67,6 +68,11 @@ func (w *Witness) handleSubscribe(query message.Query, userId int) error {
 	if err != nil {
 		log.Printf("unable to analyse paramsLight in handleSubscribe()")
 		return lib.ErrRequestDataInvalid
+	}
+
+	if !strings.HasPrefix(params.Channel, "/root") {
+		log.Printf("Channel must begin with '/root'")
+		return lib.ErrInvalidResource
 	}
 
 	if params.Channel == "/root" {
