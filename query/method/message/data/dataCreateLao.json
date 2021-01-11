@@ -18,10 +18,16 @@
 			"description": "[Base64String] public key of the organizer",
 			"type": "string",
 			"contentEncoding": "base64"
+		},
+		"witnesses": {
+			"description": "[Array[Base64String]] list of public keys of witnesses",
+			"type": "array",
+			"uniqueItems": true,
+			"items": { "type": "string", "contentEncoding": "base64" }
 		}
 	},
 	"additionalProperties": false,
-	"required": ["object", "action", "id", "name", "creation", "organizer"],
+	"required": ["object", "action", "id", "name", "creation", "organizer", "witnesses"],
 	"note": [
 		"By sending the lao/create message to the organizer’s server’s default channel (\"/root\"), the main channel of ",
 		"the LAO will be created with the identifier id. At that point, any of the clients, including the organizer, can ",
