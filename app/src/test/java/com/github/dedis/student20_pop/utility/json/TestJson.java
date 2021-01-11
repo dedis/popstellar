@@ -30,7 +30,6 @@ import com.google.gson.Gson;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -141,7 +140,6 @@ public class TestJson {
     }
 
     @Test
-    @Ignore("JsonSchema not updated yet")
     public void testCreateRollCall() throws JsonProcessingException, ProcessingException {
         testData(new CreateRollCall("id", "name", 432, 231, CreateRollCall.StartType.NOW, "loc", "desc"));
         testData(new CreateRollCall("id", "name", 432, 231, CreateRollCall.StartType.NOW, "loc", null));
@@ -150,19 +148,16 @@ public class TestJson {
     }
 
     @Test
-    @Ignore("JsonSchema not updated yet")
     public void testOpenRollCall() throws JsonProcessingException, ProcessingException {
         testData(new OpenRollCall("id", 32));
     }
 
     @Test
-    @Ignore("JsonSchema not updated yet")
     public void testReopenRollCall() throws JsonProcessingException, ProcessingException {
         testData(new ReopenRollCall("id", 32));
     }
 
     @Test
-    @Ignore("JsonSchema not updated yet")
     public void testCloseRollCall() throws JsonProcessingException, ProcessingException {
         testData(new CloseRollCall("id", 32, 342, Arrays.asList("1", "2", "3")));
     }
