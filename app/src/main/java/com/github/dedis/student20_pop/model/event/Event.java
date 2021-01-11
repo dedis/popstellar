@@ -1,8 +1,5 @@
 package com.github.dedis.student20_pop.model.event;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableList;
 
@@ -44,7 +41,6 @@ public class Event {
      * @param lao  the public key of the associated LAO
      * @throws IllegalArgumentException if any of the parameters is null
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, Date time, String lao, String location, EventType type) {
         if (name == null || time == null || lao == null || location == null || type == null) {
             throw new IllegalArgumentException("Trying to create an event with null parameters");
