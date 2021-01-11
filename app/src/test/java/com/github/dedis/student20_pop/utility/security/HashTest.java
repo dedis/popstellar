@@ -2,6 +2,8 @@ package com.github.dedis.student20_pop.utility.security;
 
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
@@ -10,8 +12,8 @@ public class HashTest {
 
     @Test
     public void hashNullDataTest() {
-        //noinspection ConstantConditions
         assertThrows(IllegalArgumentException.class, () -> Hash.hash((String) null));
+        assertThrows(IllegalArgumentException.class, () -> Hash.hash(null, null));
     }
 
     @Test
@@ -20,9 +22,9 @@ public class HashTest {
     }
 
     @Test
-    public void hashObjectsTest() {
+    public void hashObjectTest() {
         // Hashing : test 0 \fwa"fwa-fwa
-        // Expected : ["test","0","\\fwa\"fwa-fwa"]
-        assertEquals(Hash.hash("[\"test\",\"0\",\"\\\\fwa\\\"fwa-fwa\"]"), Hash.hash("test", 0, "\\fwa\"fwa-fwa"));
+        String expected = Hash.hash("[\"test\",\"0\",\"\\\\fwa\\\"fwa-fwa\"]");
+        assertThat(Hash.hash("test", 0, "\\fwa\"fwa-fwa"), is(expected));
     }
 }
