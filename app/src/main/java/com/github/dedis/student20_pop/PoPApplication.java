@@ -2,15 +2,18 @@ package com.github.dedis.student20_pop;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
-import com.github.dedis.student20_pop.model.Event;
 import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.Person;
+import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.utility.network.HighLevelClientProxy;
 import com.github.dedis.student20_pop.utility.network.PoPClientEndpoint;
+import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -18,34 +21,37 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_ALREADY_EXISTS;
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_SUCCESSFUL;
-import static com.github.dedis.student20_pop.model.Event.EventType.DISCUSSION;
-import static com.github.dedis.student20_pop.model.Event.EventType.MEETING;
-import static com.github.dedis.student20_pop.model.Event.EventType.POLL;
+import static com.github.dedis.student20_pop.model.event.Event.EventType.DISCUSSION;
+import static com.github.dedis.student20_pop.model.event.Event.EventType.MEETING;
+import static com.github.dedis.student20_pop.model.event.Event.EventType.POLL;
 
 /**
  * Class modelling the application : a unique person associated with LAOs
  */
 public class PoPApplication extends Application {
     public static final String TAG = PoPApplication.class.getSimpleName();
+    public static final String SP_PERSON_ID_KEY = "SHARED_PREFERENCES_PERSON_ID";
     public static final String USERNAME = "USERNAME"; //TODO: let user choose/change its name
+
     private static final String LOCAL_BACKEND_URI = "ws://10.0.2.2:2000";
+
     private static Context appContext;
+
     private Person person;
     private Map<Lao, List<Event>> laoEventsMap;
     private Map<Lao, List<String>> laoWitnessMap;
+    private Map<URI, HighLevelClientProxy> openSessions;
 
     //represents the Lao which we are connected to, can be null
     private Lao currentLao;
+    private HighLevelClientProxy localProxy;
 
     //TODO: person/laos used for testing when we don't have a backend connected
-    private Person dummyPerson;
-    private Lao dummyLao;
     private Map<Lao, List<Event>> dummyLaoEventsMap;
-    private CompletableFuture<HighLevelClientProxy> localProxy;
+
 
     /**
      * @return PoP Application Context
@@ -62,9 +68,30 @@ public class PoPApplication extends Application {
 
         appContext = getApplicationContext();
 
+        SharedPreferences sp = this.getSharedPreferences(TAG, Context.MODE_PRIVATE);
+
+        // Verify if the information is not present
         if (person == null) {
-            // TODO: when can the user change/choose its name
-            setPerson(new Person(USERNAME));
+            // Verify if the user already exists
+            if (sp.contains(SP_PERSON_ID_KEY)) {
+                // Recover user's information
+                String id = sp.getString(SP_PERSON_ID_KEY, "");
+                String authentication = PrivateInfoStorage.readData(this, id);
+                if (authentication == null) {
+                    person = new Person(USERNAME);
+                    Log.d(TAG, "Private key of user cannot be accessed, new key pair is created");
+                    if (PrivateInfoStorage.storeData(this, person.getId(), person.getAuthentication()))
+                        Log.d(TAG, "Stored private key of organizer");
+                } else {
+                    person = new Person(USERNAME, id, authentication, new ArrayList<>());
+                }
+            } else {
+                // Create new user
+                person = new Person(USERNAME);
+                // Store private key of user
+                if (PrivateInfoStorage.storeData(this, person.getId(), person.getAuthentication()))
+                    Log.d(TAG, "Stored private key of organizer");
+            }
         }
 
         if (laoEventsMap == null) {
@@ -75,26 +102,32 @@ public class PoPApplication extends Application {
             this.laoWitnessMap = new HashMap<>();
         }
 
-        dummyPerson = new Person("name");
-        dummyLao = new Lao("LAO I just joined", new Date(), dummyPerson.getId());
+        currentLao = new Lao("LAO I just joined", new Date(), person.getId());
         dummyLaoEventsMap = dummyLaoEventMap();
-        laoWitnessMap.put(dummyLao, new ArrayList<>());
+        laoWitnessMap.put(currentLao, new ArrayList<>());
 
+        localProxy = PoPClientEndpoint.connect(URI.create(LOCAL_BACKEND_URI), person);
+    }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+
+        SharedPreferences sp = this.getSharedPreferences(TAG, Context.MODE_PRIVATE);
+
+        // Use commit for information to be stored immediately
+        sp.edit().putString(SP_PERSON_ID_KEY, person.getId()).commit();
     }
 
     /**
      * @return Person corresponding to the user
      */
     public Person getPerson() {
-        return dummyPerson;
-        //TODO when connected to backend
-        //return person;
+        return person;
     }
 
     /**
-     * sets the person for this Application, can only be done once
-     *
-     * @param person
+     * @param person to be set for this Application, can only be done once
      */
     public void setPerson(Person person) {
         if (person != null) {
@@ -103,60 +136,10 @@ public class PoPApplication extends Application {
     }
 
     /**
-     * @return list of LAOs corresponding to the user
-     */
-    public List<Lao> getLaos() {
-        return new ArrayList<>(dummyLaoEventsMap.keySet());
-        //TODO when connected to backend
-        //return new ArrayList<>(laoEventsMap.keySet());
-    }
-
-    /**
-     * adds a Lao to the app
-     *
-     * @param lao
-     */
-    public void addLao(Lao lao) {
-        if (!laoEventsMap.containsKey(lao)) {
-            this.laoEventsMap.put(lao, new ArrayList<>());
-        }
-    }
-
-    /**
-     * @return the list of Events associated with the given LAO, null if lao is not in the map
-     */
-    public List<Event> getEvents(Lao lao) {
-        return dummyLaoEventsMap.get(lao);
-        //TODO when connected to backend
-        //return laoEventsMap.get(lao);
-    }
-
-    /**
-     * adds an event e to the list of events of the LAO lao
-     *
-     * @param lao
-     * @param e
-     */
-    public void addEvent(Lao lao, Event e) {
-        getEvents(lao).add(e);
-    }
-
-    /**
-     * adds an event e to the list of events of current lao
-     *
-     * @param event
-     */
-    public void addEvent(Event event) {
-        addEvent(getCurrentLao(), event);
-    }
-
-    /**
      * @return the current lao
      */
     public Lao getCurrentLao() {
-        return dummyLao;
-        //TODO when connected to backend
-        //return currentLao;
+        return currentLao;
     }
 
     /**
@@ -169,40 +152,12 @@ public class PoPApplication extends Application {
     }
 
     /**
-     * Get the proxy of the local device's backend
-     * <p>
-     * Create it if needed
-     *
-     * @return a completable future that will hold the proxy once the connection the backend is established
+     * @return list of LAOs corresponding to the user
      */
-    public CompletableFuture<HighLevelClientProxy> getLocalProxy() {
-        refreshLocalProxy();
-
-        return localProxy;
-    }
-
-    /**
-     * Refresh the local proxy future.
-     * <p>
-     * If there was no connections yet, start one.
-     * If there was an attempt but it failed, retry.
-     * If the connection was lost, retry
-     */
-    private void refreshLocalProxy() {
-        if (localProxy == null)
-            // If there was no attempt yet, try
-            localProxy = PoPClientEndpoint.connectAsync(URI.create(LOCAL_BACKEND_URI), person);
-        else if (localProxy.isDone()) {
-            try {
-                // If it succeeded, but it is now closed, retry
-                HighLevelClientProxy currentSession = localProxy.getNow(null);
-                if (currentSession == null || !currentSession.isOpen())
-                    localProxy = PoPClientEndpoint.connectAsync(URI.create(LOCAL_BACKEND_URI), person);
-            } catch (Exception e) {
-                //There was an error during competition, retry
-                localProxy = PoPClientEndpoint.connectAsync(URI.create(LOCAL_BACKEND_URI), person);
-            }
-        }
+    public List<Lao> getLaos() {
+        return new ArrayList<>(dummyLaoEventsMap.keySet());
+        //TODO when connected to backend
+        //return new ArrayList<>(laoEventsMap.keySet());
     }
 
     /**
@@ -212,6 +167,133 @@ public class PoPApplication extends Application {
         return dummyLaoEventsMap;
         //TODO when connected to backend
         //return laoEventsMap;
+    }
+
+    /**
+     * @return the list of Events associated with the given LAO, null if lao is not in the map
+     */
+    public List<Event> getEvents(Lao lao) {
+        return dummyLaoEventsMap.get(lao);
+        //TODO when connected to backend
+        //return laoEventsMap.get(lao);
+    }
+
+    /**
+     * Get witnesses of current LAO
+     *
+     * @return lao's corresponding list of witnesses
+     */
+    public List<String> getWitnesses() {
+        return laoWitnessMap.get(currentLao);
+    }
+
+    /**
+     * @param lao from where we want to get the witnesses
+     * @return lao's corresponding list of witnesses
+     */
+    public List<String> getWitnesses(Lao lao) {
+        List<String> laoWitnesses = laoWitnessMap.get(lao);
+        if (laoWitnesses == null) {
+            laoWitnesses = new ArrayList<>();
+            laoWitnessMap.put(lao, laoWitnesses);
+        }
+
+        return laoWitnessMap.get(lao);
+    }
+
+    /**
+     * Get the map of LAOs and its witnesses
+     */
+    public Map<Lao, List<String>> getLaoWitnessMap() {
+        return laoWitnessMap;
+    }
+
+    /**
+     * Get the proxy of the local device's backend
+     *
+     * @return the proxy
+     */
+    public HighLevelClientProxy getLocalProxy() {
+        return localProxy;
+    }
+
+    /**
+     * @param lao to add to the app
+     */
+    public void addLao(Lao lao) {
+        if (!laoEventsMap.containsKey(lao)) {
+            this.laoEventsMap.put(lao, new ArrayList<>());
+        }
+    }
+
+    /**
+     * @param event to be added to the current lao
+     */
+    public void addEvent(Event event) {
+        addEvent(getCurrentLao(), event);
+    }
+
+    /**
+     * @param lao   of the new event
+     * @param event to be added
+     */
+    public void addEvent(Lao lao, Event event) {
+        getEvents(lao).add(event);
+    }
+
+    /**
+     * @param witness add witness to current lao
+     * @return ADD_WITNESS_SUCCESSFUL if witness has been added
+     * ADD_WITNESS_ALREADY_EXISTS if witness already exists
+     */
+    public AddWitnessResult addWitness(String witness) {
+        return addWitness(currentLao, witness);
+    }
+
+    /**
+     * @param lao     of the new witness
+     * @param witness id to add on the list of witnesses for the LAO
+     * @return ADD_WITNESS_SUCCESSFUL if witness has been added
+     * ADD_WITNESS_ALREADY_EXISTS if witness already exists
+     */
+    public AddWitnessResult addWitness(Lao lao, String witness) {
+        //TODO when connected to backend
+        // send info to backend
+        // If witness has been added return true, otherwise false
+
+        List<String> laoWitnesses = laoWitnessMap.get(lao);
+        if (laoWitnesses == null) {
+            laoWitnesses = new ArrayList<>();
+            laoWitnessMap.put(lao, laoWitnesses);
+        }
+
+        if (laoWitnesses.contains(witness)) {
+            return ADD_WITNESS_ALREADY_EXISTS;
+        }
+
+        laoWitnesses.add(witness);
+
+        return ADD_WITNESS_SUCCESSFUL;
+    }
+
+    /**
+     * @param witnesses add witness to current lao
+     * @return corresponding result for each witness in the list
+     */
+    public List<AddWitnessResult> addWitnesses(List<String> witnesses) {
+        return addWitnesses(currentLao, witnesses);
+    }
+
+    /**
+     * @param witnesses add witness to current lao
+     * @return corresponding result for each witness in the list
+     */
+    public List<AddWitnessResult> addWitnesses(Lao lao, List<String> witnesses) {
+        List<AddWitnessResult> results = new ArrayList<>();
+        for (String witness : witnesses) {
+            results.add(addWitness(lao, witness));
+        }
+        return results;
     }
 
     /**
@@ -231,105 +313,17 @@ public class PoPApplication extends Application {
 
         String notMyPublicKey = new Keys().getPublicKey();
 
-        map.put(dummyLao, events);
+        map.put(currentLao, events);
         map.put(new Lao("LAO 1", new Date(), notMyPublicKey), events);
         map.put(new Lao("LAO 2", new Date(), notMyPublicKey), events);
-        map.put(new Lao("My LAO 3", new Date(), dummyPerson.getId()), events);
+        map.put(new Lao("My LAO 3", new Date(), person.getId()), events);
         map.put(new Lao("LAO 4", new Date(), notMyPublicKey), events);
         return map;
     }
 
     /**
-     * Add witness' id to lao
-     *
-     * @param lao
-     * @param witness
-     * @return ADD_WITNESS_SUCCESSFUL if witness has been added
-     * ADD_WITNESS_ALREADY_EXISTS if witness already exists
+     * Type of results when adding a witness
      */
-    public AddWitnessResult addWitness(Lao lao, String witness) {
-        //TODO when connected to backend
-        // send info to backend
-        // If witness has been added return true, otherwise false
-
-        // List<String> laoWitnesses = laoWitnessMap.get(laoId);
-        List<String> laoWitnesses = laoWitnessMap.get(lao);
-        if (laoWitnesses == null) {
-            laoWitnesses = new ArrayList<>();
-            laoWitnessMap.put(lao, laoWitnesses);
-            //laoWitnessMap.put(laoId, laoWitnesses);
-        }
-
-        if (laoWitnesses.contains(witness))
-            return ADD_WITNESS_ALREADY_EXISTS;
-
-
-        laoWitnesses.add(witness);
-
-        return ADD_WITNESS_SUCCESSFUL;
-    }
-
-    /**
-     * @param witness add witness to current lao
-     * @return ADD_WITNESS_SUCCESSFUL if witness has been added
-     * ADD_WITNESS_ALREADY_EXISTS if witness already exists
-     */
-    public AddWitnessResult addWitness(String witness) {
-        return addWitness(dummyLao, witness);
-        //TODO when connected to backend
-        //addWitness(currentLao, witness);
-    }
-
-    /**
-     * @param witnesses add witness to current lao
-     * @return corresponding result for each witness in the list
-     */
-    public List<AddWitnessResult> addWitnesses(List<String> witnesses) {
-        return addWitnesses(dummyLao, witnesses);
-        //TODO when connected to backend
-        //addWitnesses(currentLao, witness);
-    }
-
-    /**
-     * @param witnesses add witness to current lao
-     * @return corresponding result for each witness in the list
-     */
-    public List<AddWitnessResult> addWitnesses(Lao lao, List<String> witnesses) {
-        List<AddWitnessResult> results = new ArrayList<>();
-        for (String witness : witnesses) {
-            results.add(addWitness(lao, witness));
-        }
-        return results;
-    }
-
-    /**
-     * Get witnesses of a LAO
-     *
-     * @param lao
-     * @return lao's corresponding list of witnesses
-     */
-    public List<String> getWitnesses(Lao lao) {
-        return laoWitnessMap.get(lao);
-    }
-
-    /**
-     * Get witnesses of current LAO
-     *
-     * @return lao's corresponding list of witnesses
-     */
-    public List<String> getWitnesses() {
-        return laoWitnessMap.get(dummyLao);
-        //TODO when connected to backend
-        //return laoWitnessMap.get(currentLao);
-    }
-
-    /**
-     * Get Lao -> Witnesses HashMap
-     */
-    public Map<Lao, List<String>> getLaoWitnessMap() {
-        return laoWitnessMap;
-    }
-
     public enum AddWitnessResult {
         ADD_WITNESS_SUCCESSFUL,
         ADD_WITNESS_ALREADY_EXISTS

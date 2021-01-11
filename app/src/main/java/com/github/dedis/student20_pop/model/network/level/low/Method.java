@@ -12,16 +12,16 @@ public enum Method {
     SUBSCRIBE("subscribe", Subscribe.class, true),
     UNSUBSCRIBE("unsubscribe", Unsubscribe.class, true),
     PUBLISH("publish", Publish.class, true),
-    MESSAGE("message", LowLevelMessage.class, false),
+    MESSAGE("broadcast", Broadcast.class, false),
     CATCHUP("catchup", Catchup.class, true);
 
     private static final List<Method> ALL = Collections.unmodifiableList(Arrays.asList(values()));
 
     private final String method;
-    private final Class<? extends ChanneledMessage> dataClass;
+    private final Class<? extends Message> dataClass;
     private final boolean expectResult;
 
-    Method(String method, Class<? extends ChanneledMessage> dataClass, boolean expectResult) {
+    Method(String method, Class<? extends Message> dataClass, boolean expectResult) {
         this.method = method;
         this.dataClass = dataClass;
         this.expectResult = expectResult;
@@ -38,7 +38,7 @@ public enum Method {
         return method;
     }
 
-    public Class<? extends ChanneledMessage> getDataClass() {
+    public Class<? extends Message> getDataClass() {
         return dataClass;
     }
 

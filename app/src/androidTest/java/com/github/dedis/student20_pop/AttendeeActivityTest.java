@@ -26,13 +26,13 @@ public class AttendeeActivityTest {
     }
 
     @Test
-    public void onClickPropertiesTest(){
+    public void onClickPropertiesTest() {
         onView(withId(R.id.tab_properties)).perform(click());
         onView(withId(R.id.properties_view)).check(matches(isDisplayed()));
     }
 
     @Test
-    public void onClickListEventsTest(){
+    public void onClickListEventsTest() {
         onView(withText("Past Events")).perform(click());
         onView(withText("Present Events")).perform(click());
         onView(withText("Future Events")).perform(click());

@@ -15,7 +15,7 @@ public class PrivateInfoStorageTest {
     @Test
     public void storeAndReadDataTest() {
         ActivityScenario.launch(MainActivity.class).onActivity(activity -> {
-            assertTrue(PrivateInfoStorage.storeData(activity, "TEST","DATA"));
+            assertTrue(PrivateInfoStorage.storeData(activity, "TEST", "DATA"));
             assertThat(PrivateInfoStorage.readData(activity, "TEST"), is("DATA"));
         });
     }

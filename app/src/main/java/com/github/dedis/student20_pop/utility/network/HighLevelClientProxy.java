@@ -1,33 +1,38 @@
 package com.github.dedis.student20_pop.utility.network;
 
+import androidx.annotation.Nullable;
+
 import com.github.dedis.student20_pop.model.Person;
 import com.github.dedis.student20_pop.model.network.level.high.lao.CreateLao;
 import com.github.dedis.student20_pop.model.network.level.high.lao.UpdateLao;
 import com.github.dedis.student20_pop.model.network.level.high.meeting.CreateMeeting;
 import com.github.dedis.student20_pop.model.network.level.high.message.WitnessMessage;
+import com.github.dedis.student20_pop.model.network.level.high.rollcall.CloseRollCall;
+import com.github.dedis.student20_pop.model.network.level.high.rollcall.CreateRollCall;
+import com.github.dedis.student20_pop.model.network.level.high.rollcall.OpenRollCall;
+import com.github.dedis.student20_pop.model.network.level.high.rollcall.ReopenRollCall;
 import com.github.dedis.student20_pop.utility.security.Hash;
 import com.github.dedis.student20_pop.utility.security.Signature;
 
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import javax.websocket.Session;
-
 /**
  * A proxy of a connection to a websocket. It encapsulate the high level protocol
  */
-public final class HighLevelClientProxy {
+public final class HighLevelClientProxy implements Closeable {
 
     public static final String ROOT = "/root";
 
     private final LowLevelClientProxy lowLevelClientProxy;
     private final String publicKey, privateKey;
 
-    HighLevelClientProxy(Session session, Person person) {
-        lowLevelClientProxy = new LowLevelClientProxy(session);
-        this.publicKey = person.getId();
-        this.privateKey = person.getAuthentication();
+    public HighLevelClientProxy(Person owner, LowLevelClientProxy lowLevelClientProxy) {
+        this.publicKey = owner.getId();
+        this.privateKey = owner.getAuthentication();
+        this.lowLevelClientProxy = lowLevelClientProxy;
     }
 
     /**
@@ -48,7 +53,7 @@ public final class HighLevelClientProxy {
      */
     public CompletableFuture<Integer> createLao(String name, long creation, long lastModified, String organizer) {
         return lowLevelClientProxy.publish(publicKey, privateKey, ROOT,
-                new CreateLao(Hash.hash(organizer + creation + name), name, creation, lastModified, organizer, new ArrayList<>()));
+                new CreateLao(Hash.hash(organizer, creation, name), name, creation, lastModified, organizer, new ArrayList<>()));
     }
 
     /**
@@ -92,15 +97,88 @@ public final class HighLevelClientProxy {
      */
     public CompletableFuture<Integer> createMeeting(String laoId, String name, long creation, long lastModified, String location, long start, long end) {
         return lowLevelClientProxy.publish(publicKey, privateKey, ROOT + "/" + laoId,
-                new CreateMeeting(Hash.hash(laoId + creation + name), name, creation, lastModified, location, start, end));
+                new CreateMeeting(Hash.hash("M", laoId, creation, name), name, creation, lastModified, location, start, end));
     }
 
     /**
-     * Check whether or not the connection is open or closed
+     * Send a create roll call message
      *
-     * @return true if it is
+     * @param laoId     id of the lao
+     * @param name      of the roll call
+     * @param creation  time
+     * @param start     of the roll call.
+     *                  Could be immediate and therefore the startType field should be NOW.
+     *                  If it is in the future, startType should be SCHEDULED
+     * @param startType of the roll call
+     * @param location  of the roll call
+     * @return a CompletableFuture that will be complete once the back end responses
      */
-    public boolean isOpen() {
-        return lowLevelClientProxy.getSession().isOpen();
+    public CompletableFuture<Integer> createRollCall(String laoId, String name, long creation, long start, CreateRollCall.StartType startType, String location) {
+        return createRollCall(laoId, name, creation, start, startType, location, null);
+    }
+
+    /**
+     * Send a create roll call message
+     *
+     * @param laoId       id of the lao
+     * @param name        of the roll call
+     * @param creation    time
+     * @param start       of the roll call.
+     *                    Could be immediate and therefore the startType field should be NOW.
+     *                    If it is in the future, startType should be SCHEDULED
+     * @param startType   of the roll call
+     * @param location    of the roll call
+     * @param description of the roll call (Optional)
+     * @return a CompletableFuture that will be complete once the back end responses
+     */
+    public CompletableFuture<Integer> createRollCall(String laoId, String name, long creation, long start, CreateRollCall.StartType startType, String location, @Nullable String description) {
+        return lowLevelClientProxy.publish(publicKey, privateKey, ROOT + "/" + laoId,
+                new CreateRollCall(Hash.hash("R", laoId, creation, name), name, creation, start, startType, location, description));
+    }
+
+    /**
+     * Send an open roll call message
+     *
+     * @param laoId      id of the lao
+     * @param rollCallId id of the roll call
+     * @param start      of the roll call
+     * @return a CompletableFuture that will be complete once the back end responses
+     */
+    public CompletableFuture<Integer> openRollCall(String laoId, String rollCallId, long start) {
+        return lowLevelClientProxy.publish(publicKey, privateKey, ROOT + "/" + laoId,
+                new OpenRollCall(rollCallId, start));
+    }
+
+    /**
+     * Send an reopen roll call message
+     *
+     * @param laoId      id of the lao
+     * @param rollCallId id of the roll call
+     * @param start      of the roll call
+     * @return a CompletableFuture that will be complete once the back end responses
+     */
+    public CompletableFuture<Integer> reopenRollCall(String laoId, String rollCallId, long start) {
+        return lowLevelClientProxy.publish(publicKey, privateKey, ROOT + "/" + laoId,
+                new ReopenRollCall(rollCallId, start));
+    }
+
+    /**
+     * Send a close roll call message
+     *
+     * @param laoId      id of the lao
+     * @param rollCallId id of the roll call
+     * @param start      time
+     * @param end        time
+     * @param attendees  list of scanned attendees
+     * @return a CompletableFuture that will be complete once the back end responses
+     */
+    public CompletableFuture<Integer> closeRollCall(String laoId, String rollCallId, long start, long end, List<String> attendees) {
+        return lowLevelClientProxy.publish(publicKey, privateKey, ROOT + "/" + laoId,
+                new CloseRollCall(rollCallId, start, end, attendees));
+    }
+
+    @Override
+    public void close() {
+        lowLevelClientProxy.close();
     }
 }

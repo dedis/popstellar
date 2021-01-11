@@ -1,13 +1,13 @@
 package com.github.dedis.student20_pop.model.network.level.high.message;
 
 import com.github.dedis.student20_pop.model.network.level.high.Action;
-import com.github.dedis.student20_pop.model.network.level.high.Message;
+import com.github.dedis.student20_pop.model.network.level.high.Data;
 import com.github.dedis.student20_pop.model.network.level.high.Objects;
 
 /**
- * Message sent to attest the message as a witness
+ * Data sent to attest the message as a witness
  */
-public class WitnessMessage extends Message {
+public class WitnessMessage extends Data {
 
     private final String message_id;
     private final String signature;
@@ -47,5 +47,13 @@ public class WitnessMessage extends Message {
     @Override
     public int hashCode() {
         return java.util.Objects.hash(getMessage_id(), getSignature());
+    }
+
+    @Override
+    public String toString() {
+        return "WitnessMessage{" +
+                "message_id='" + message_id + '\'' +
+                ", signature='" + signature + '\'' +
+                '}';
     }
 }
