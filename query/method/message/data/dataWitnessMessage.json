@@ -9,7 +9,7 @@
 		"action": { "const": "witness" },
 		"message_id": { "type": "string", "contentEncoding": "base64" },
 		"signature": {
-			"description": "[Base64String] signature by the witness over the \"data\" field of the message",
+			"description": "[Base64String] signature by the witness over the \"message_id\" field of the message",
 			"type": "string",
 			"contentEncoding": "base64"
 		}
