@@ -195,7 +195,8 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
 
                 break;
             case CONNECT_LAO:
-                showFragment(ConnectingFragment.newInstance(data), ConnectingFragment.TAG);
+                // TODO extract url and lao id from data
+                showFragment(ConnectingFragment.newInstance(data, "lao_id"), ConnectingFragment.TAG);
                 break;
             default:
                 break;
