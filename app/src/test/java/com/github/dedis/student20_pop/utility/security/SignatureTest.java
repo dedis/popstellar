@@ -12,7 +12,7 @@ import static org.junit.Assert.assertThrows;
 public class SignatureTest {
 
     private final String privateKey = new Keys().getPrivateKey();
-    private final String data = "Data to sign";
+    private final String data = Hash.hash("Data to sign");
 
     @Test
     public void signNullKeysTest() {
