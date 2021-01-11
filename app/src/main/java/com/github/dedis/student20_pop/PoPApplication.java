@@ -155,27 +155,21 @@ public class PoPApplication extends Application {
      * @return list of LAOs corresponding to the user
      */
     public List<Lao> getLaos() {
-        return new ArrayList<>(dummyLaoEventsMap.keySet());
-        //TODO when connected to backend
-        //return new ArrayList<>(laoEventsMap.keySet());
+        return new ArrayList<>(laoEventsMap.keySet());
     }
 
     /**
      * @return map of LAOs as keys and lists of events corresponding to the lao as values
      */
     public Map<Lao, List<Event>> getLaoEventsMap() {
-        return dummyLaoEventsMap;
-        //TODO when connected to backend
-        //return laoEventsMap;
+        return laoEventsMap;
     }
 
     /**
      * @return the list of Events associated with the given LAO, null if lao is not in the map
      */
     public List<Event> getEvents(Lao lao) {
-        return dummyLaoEventsMap.get(lao);
-        //TODO when connected to backend
-        //return laoEventsMap.get(lao);
+        return laoEventsMap.get(lao);
     }
 
     /**
