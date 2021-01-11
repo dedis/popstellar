@@ -32,6 +32,8 @@ public interface LowLevelProxy extends Closeable {
     /**
      * Publish an event on given channel
      *
+     * @param sender  of the data
+     * @param key     public key of the sender
      * @param channel to publish the event on
      * @param message to publish
      * @return a completable future holding the response value
