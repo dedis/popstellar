@@ -12,7 +12,6 @@ public final class Vote {
     private final String person;
     private final String election;
     private final String vote;
-    private final String attestation;
 
     /**
      * Constructor of a Vote
@@ -29,10 +28,8 @@ public final class Vote {
         this.person = person;
         this.election = election;
         this.vote = vote;
-        // Get LAO ID in the future
+        // TODO: Get LAO ID in the future
         String lao = "";
-        // Get person's private key in the future
-        this.attestation = Signature.sign(person, election + lao + vote);
     }
 
     /**
@@ -56,13 +53,6 @@ public final class Vote {
         return vote;
     }
 
-    /**
-     * @return signature by the voter
-     */
-    public String getAttestation() {
-        return attestation;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -70,12 +60,11 @@ public final class Vote {
         Vote vote1 = (Vote) o;
         return Objects.equals(person, vote1.person) &&
                 Objects.equals(election, vote1.election) &&
-                Objects.equals(vote, vote1.vote) &&
-                Objects.equals(attestation, vote1.attestation);
+                Objects.equals(vote, vote1.vote);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(person, election, vote, attestation);
+        return Objects.hash(person, election, vote);
     }
 }

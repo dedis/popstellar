@@ -62,16 +62,6 @@ public class ElectionTest {
         assertThat(election1.getOptions(), is(options));
     }
 
-    @Ignore("Need the private key of the organizer, will test later")
-    @Test
-    public void getAttestationTest() {
-        //TODO: get private key of organizer
-        String organizer = new Keys().getPrivateKey();
-        ArrayList<String> attestation = new ArrayList<>(Collections.singletonList(
-                Signature.sign(organizer, election1.getId())));
-        assertThat(election1.getAttestation(), is(attestation));
-    }
-
     @Test
     public void equalsTest() {
         assertEquals(election1, election1);
