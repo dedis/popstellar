@@ -433,7 +433,6 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 		return nil, err
 	}
 
-
 	//retrieve message to sign from database
 	toSign := db.GetMessage([]byte(canal), data.MessageId, o.database)
 	if toSign == nil {

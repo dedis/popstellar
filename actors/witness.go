@@ -5,6 +5,7 @@ package actors
 // finished as it is not the most important class for now. Does not support publish method.
 
 import (
+	"bytes"
 	b64 "encoding/base64"
 	"encoding/json"
 	"log"
@@ -247,10 +248,18 @@ func (w *Witness) handleWitnessMessage(msg message.Message, chann string, query 
 		return nil, lib.ErrInvalidResource
 	}
 	storedMessage, errs := parser.ParseMessage(sendMsg)
-
 	if errs != nil {
 		log.Printf("unable to unmarshall the message stored in the database")
 		return nil, lib.ErrDBFault
+	}
+
+	//check that the field message_id in the dataWitnessMessage is correct
+	signatureb64 := b64.StdEncoding.EncodeToString(	data.Signature)
+	elementsToHashForMessageId := []string{string(storedMessage.Data),signatureb64}
+	messageIdRecomputed := security.HashOfItems(elementsToHashForMessageId)
+	if !bytes.Equal(storedMessage.MessageId, messageIdRecomputed) {
+		log.Printf("message_id of witnessMessage invalid: %v should be: %v", string(data.MessageId), string(messageIdRecomputed))
+		return nil, lib.ErrInvalidResource
 	}
 
 	errs = security.VerifySignature(msg.Sender, storedMessage.Data, data.Signature)
