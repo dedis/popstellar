@@ -469,6 +469,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 		count++
 		signaturesOnly = append(signaturesOnly, string(witnessSignature.Signature))
 	}
+
 	//if new signature already exists, returns error
 	_, found := lib.FindStr(signaturesOnly, string(data.Signature))
 	if found && count < SigThreshold {
