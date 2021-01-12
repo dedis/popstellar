@@ -12,9 +12,23 @@ public class OpenRollCall extends Data {
     private final String id;
     private final long start;
 
+    /**
+     * Constructor of a data Open Roll-Call
+     *
+     * @param id of the open Roll-Call message, Hash("R"||laoId||creation||name)
+     * @param start of the Roll-Call
+     */
     public OpenRollCall(String id, long start) {
         this.id = id;
         this.start = start;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public long getStart() {
+        return start;
     }
 
     @Override
@@ -25,14 +39,6 @@ public class OpenRollCall extends Data {
     @Override
     public String getAction() {
         return Action.OPEN.getAction();
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public long getStart() {
-        return start;
     }
 
     @Override

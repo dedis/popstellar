@@ -17,19 +17,32 @@ public enum Objects {
     private static final List<Objects> ALL = Collections.unmodifiableList(Arrays.asList(values()));
     private final String object;
 
+    /**
+     * Constructor for a message Object
+     * @param object name of the object
+     */
     Objects(String object) {
         this.object = object;
     }
 
+    /**
+     * Returns the name of the Object.
+     */
+    public String getObject() {
+        return object;
+    }
+
+    /**
+     * Find a given Object
+     *
+     * @param searched the searched object
+     * @return the corresponding enum object
+     */
     public static Objects find(String searched) {
         for (Objects object : ALL)
             if (object.getObject().equals(searched))
                 return object;
 
         return null;
-    }
-
-    public String getObject() {
-        return object;
     }
 }

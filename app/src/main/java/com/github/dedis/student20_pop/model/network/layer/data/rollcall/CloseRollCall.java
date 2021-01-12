@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Data sent to close a roll call
+ * Data sent to close a Roll-Call
  */
 public class CloseRollCall extends Data {
 
@@ -17,21 +17,19 @@ public class CloseRollCall extends Data {
     private final long end;
     private final List<String> attendees;
 
+    /**
+     * Constructor for a data Close Roll-Call Event
+     *
+     * @param id of the close Roll-Call message, Hash("R"||laoId||creation||name)
+     * @param start of the Roll-Call
+     * @param end of the Roll-Call
+     * @param attendees list of attendees of the Roll-Call
+     */
     public CloseRollCall(String id, long start, long end, List<String> attendees) {
         this.id = id;
         this.start = start;
         this.end = end;
         this.attendees = new ArrayList<>(attendees);
-    }
-
-    @Override
-    public String getObject() {
-        return Objects.ROLL_CALL.getObject();
-    }
-
-    @Override
-    public String getAction() {
-        return Action.CLOSE.getAction();
     }
 
     public String getId() {
@@ -48,6 +46,16 @@ public class CloseRollCall extends Data {
 
     public List<String> getAttendees() {
         return attendees;
+    }
+
+    @Override
+    public String getObject() {
+        return Objects.ROLL_CALL.getObject();
+    }
+
+    @Override
+    public String getAction() {
+        return Action.CLOSE.getAction();
     }
 
     @Override

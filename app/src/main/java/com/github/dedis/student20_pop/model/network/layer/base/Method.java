@@ -58,13 +58,13 @@ public enum Method {
     /**
      * Find a given Method
      *
-     * @param method to find
-     * @return the enum method
+     * @param searched the searched method
+     * @return the corresponding enum method
      */
-    public static Method find(String method) {
-        for (Method a : ALL)
-            if (a.method.equals(method))
-                return a;
+    public static Method find(String searched) {
+        for (Method method : ALL)
+            if (method.method.equals(searched))
+                return method;
         return null;
     }
 }

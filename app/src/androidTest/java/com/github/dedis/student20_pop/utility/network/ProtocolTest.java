@@ -70,7 +70,7 @@ public class ProtocolTest {
         Person bob = new Person(PERSON_NAME);
         HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
-        proxy.createLao(LAO_NAME, 0, 0, bob.getId())
+        proxy.createLao(LAO_NAME, 0, bob.getId())
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t != null);
                     waiter.resume();
@@ -94,7 +94,7 @@ public class ProtocolTest {
         Person bob = new Person(PERSON_NAME);
         HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
-        proxy.createLao(LAO_NAME, 0, 0, bob.getId())
+        proxy.createLao(LAO_NAME, 0, bob.getId())
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
@@ -113,7 +113,7 @@ public class ProtocolTest {
         Person bob = new Person(PERSON_NAME);
         HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
-        proxy.updateLao(LAO_ID, LAO_NAME, 0, Collections.singletonList(bob.getId()))
+        proxy.updateLao(LAO_ID, bob.getId(), LAO_NAME, 0, Collections.singletonList(bob.getId()))
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
@@ -222,26 +222,6 @@ public class ProtocolTest {
     }
 
     @Test
-    public void testReopenRollCall() throws DeploymentException, TimeoutException, InterruptedException {
-        Server server = startAcceptEverythingServer();
-        Waiter waiter = new Waiter();
-
-        Person bob = new Person(PERSON_NAME);
-        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
-
-        proxy.reopenRollCall(LAO_ID, ROLL_ID, 0)
-                .whenComplete((i, t) -> {
-                    waiter.assertTrue(t == null);
-                    waiter.assertEquals(i, 0);
-                    waiter.resume();
-                });
-
-        waiter.await(TEST_TIMEOUT, 1);
-        server.stop();
-    }
-
-
-    @Test
     public void testCloseRollCall() throws DeploymentException, TimeoutException, InterruptedException {
         Server server = startAcceptEverythingServer();
         Waiter waiter = new Waiter();
@@ -268,14 +248,14 @@ public class ProtocolTest {
         Person bob = new Person(PERSON_NAME);
         HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
-        proxy.createLao(LAO_NAME, 0, 0, bob.getId())
+        proxy.createLao(LAO_NAME, 0, bob.getId())
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
                     waiter.resume();
                 });
 
-        proxy.updateLao(LAO_ID, LAO_NAME, 0, Collections.singletonList(bob.getId()))
+        proxy.updateLao(LAO_ID, bob.getId(), LAO_NAME, 0, Collections.singletonList(bob.getId()))
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
@@ -304,13 +284,6 @@ public class ProtocolTest {
                 });
 
         proxy.openRollCall(LAO_ID, ROLL_ID, 0)
-                .whenComplete((i, t) -> {
-                    waiter.assertTrue(t == null);
-                    waiter.assertEquals(i, 0);
-                    waiter.resume();
-                });
-
-        proxy.reopenRollCall(LAO_ID, ROLL_ID, 0)
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);

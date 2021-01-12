@@ -22,22 +22,22 @@ public interface HighLevelProxy extends Closeable {
      *
      * @param name         of the lao
      * @param creation     time
-     * @param lastModified time (should be equal to creation)
      * @param organizer    id
      * @return a CompletableFuture that will be complete once the back end responses
      */
-    CompletableFuture<Integer> createLao(String name, long creation, long lastModified, String organizer);
+    CompletableFuture<Integer> createLao(String name, long creation, String organizer);
 
     /**
      * Sends an update lao message to the back end
      *
      * @param laoId        id of the updated lao
+     * @param organizer    public key of the organizer
      * @param name         of the lao
      * @param lastModified time
      * @param witnesses    ids of the witnesses
      * @return a CompletableFuture that will be complete once the back end responses
      */
-    CompletableFuture<Integer> updateLao(String laoId, String name, long lastModified, List<String> witnesses);
+    CompletableFuture<Integer> updateLao(String laoId, String organizer, String name, long lastModified, List<String> witnesses);
 
     /**
      * Sends a message as a witness to attest the validity of an other message
@@ -103,16 +103,6 @@ public interface HighLevelProxy extends Closeable {
      * @return a CompletableFuture that will be complete once the back end responses
      */
     CompletableFuture<Integer> openRollCall(String laoId, String rollCallId, long start);
-
-    /**
-     * Send an reopen roll call message
-     *
-     * @param laoId      id of the lao
-     * @param rollCallId id of the roll call
-     * @param start      of the roll call
-     * @return a CompletableFuture that will be complete once the back end responses
-     */
-    CompletableFuture<Integer> reopenRollCall(String laoId, String rollCallId, long start);
 
     /**
      * Send a close roll call message

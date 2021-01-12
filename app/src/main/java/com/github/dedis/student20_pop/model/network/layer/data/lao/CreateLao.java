@@ -8,34 +8,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Data sent when creating a new lao
+ * Data sent when creating a new LAO
  */
 public class CreateLao extends Data {
 
-    private final String id; //Hash (organizer + creation + name)
+    private final String id;
     private final String name;
     private final long creation;
-    private final long last_modified;
     private final String organizer;
     private final List<String> witnesses;
 
-    public CreateLao(String id, String name, long creation, long last_modified, String organizer, List<String> witnesses) {
+    /**
+     * Constructor for a data Create LAO
+     *
+     * @param id of the LAO creation message, Hash(organizer||creation||name)
+     * @param name name of the LAO
+     * @param creation time of creation
+     * @param organizer id of the LAO's organizer
+     * @param witnesses list of witnesses of the LAO
+     */
+    public CreateLao(String id, String name, long creation, String organizer, List<String> witnesses) {
         this.id = id;
         this.name = name;
         this.creation = creation;
-        this.last_modified = last_modified;
         this.organizer = organizer;
         this.witnesses = witnesses;
-    }
-
-    @Override
-    public String getObject() {
-        return Objects.LAO.getObject();
-    }
-
-    @Override
-    public String getAction() {
-        return Action.CREATE.getAction();
     }
 
     public String getId() {
@@ -50,10 +47,6 @@ public class CreateLao extends Data {
         return creation;
     }
 
-    public long getLast_modified() {
-        return last_modified;
-    }
-
     public String getOrganizer() {
         return organizer;
     }
@@ -63,12 +56,21 @@ public class CreateLao extends Data {
     }
 
     @Override
+    public String getObject() {
+        return Objects.LAO.getObject();
+    }
+
+    @Override
+    public String getAction() {
+        return Action.CREATE.getAction();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CreateLao createLao = (CreateLao) o;
         return getCreation() == createLao.getCreation() &&
-                getLast_modified() == createLao.getLast_modified() &&
                 java.util.Objects.equals(getId(), createLao.getId()) &&
                 java.util.Objects.equals(getName(), createLao.getName()) &&
                 java.util.Objects.equals(getOrganizer(), createLao.getOrganizer()) &&
@@ -77,7 +79,7 @@ public class CreateLao extends Data {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(getId(), getName(), getCreation(), getLast_modified(), getOrganizer(), getWitnesses());
+        return java.util.Objects.hash(getId(), getName(), getCreation(), getOrganizer(), getWitnesses());
     }
 
     @Override
@@ -86,7 +88,6 @@ public class CreateLao extends Data {
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", creation=" + creation +
-                ", last_modified=" + last_modified +
                 ", organizer='" + organizer + '\'' +
                 ", witnesses=" + witnesses +
                 '}';
