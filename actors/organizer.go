@@ -588,7 +588,7 @@ func (o *Organizer) handleLAOState(msg message.Message) (msgAndChannel []lib.Mes
 	return nil, lib.ErrInvalidAction
 }
 
-//If the roll-call was started in future mode (see create roll-call), it can be opened using
+//handleOpenRollCall is useful If the roll-call was started in future mode (see create roll-call), it can be opened using
 //		the open roll-call query. If it was closed, but it need to be reopened later (e.g. the
 //		organizer forgot to scan the public key of one attendee), then it can reopen it by using
 //		the open query. In this case, the action should be set to reopen.
@@ -605,13 +605,25 @@ func (o *Organizer) handleOpenRollCall(msg message.Message, chann string, query 
 	}
 
 	//retrieve roll Call to open from database
-	storedRollCall := db.GetMessage([]byte(chann), openRollCall.ID, o.database)
+	/*storedRollCall := db.GetMessage([]byte(chann), openRollCall.ID, o.database)
 	if storedRollCall == nil {
 		log.Printf("unable to access the stored roll call : message, channel or DB does not exist ")
 		return nil, lib.ErrInvalidResource
 	}
 
 	rollCallData, err := parser.ParseDataCreateRollCall(storedRollCall)
+	if err != nil {
+		log.Printf("unable to parse stored roll call infos in handleOpenRollRall()")
+		return nil, err
+	}*/
+	storedRollCall := db.GetChannel(openRollCall.ID, o.database)
+	if storedRollCall == nil {
+		log.Printf("unable to access the stored roll call : ID or DB does not exist ")
+		return nil, lib.ErrInvalidResource
+	}
+
+	rollCallData := event.RollCall{}
+	err = json.Unmarshal(storedRollCall, &rollCallData)
 	if err != nil {
 		log.Printf("unable to parse stored roll call infos in handleOpenRollRall()")
 		return nil, err

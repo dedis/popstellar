@@ -9,6 +9,7 @@ import (
 	"student20_pop/message"
 	"student20_pop/parser"
 	"time"
+	"student20_pop/event"
 )
 
 // LAOIsValid checks wether the infos given upon creation or update of a LAO are valid. That is it checks the timestamp
@@ -110,7 +111,7 @@ func checkRollCallId(laoId string, creation int64, name string, id []byte) bool 
 }
 
 //RollCallOpenedIsValid tell if a Roll call is valid on opening or reopening
-func RollCallOpenedIsValid(data message.DataOpenRollCall, laoId string, rollCall message.DataCreateRollCall) bool {
+func RollCallOpenedIsValid(data message.DataOpenRollCall, laoId string, rollCall event.RollCall) bool {
 	//we start after the creation and we end after the start
 	if data.Start < rollCall.Creation {
 		log.Printf("timestamps not logic.Start before creation.")
