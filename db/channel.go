@@ -98,7 +98,7 @@ func GetChannel(id []byte, database string) []byte {
 		copy(result, data)
 		return nil
 	})
-	if e != nil {
+	if e != nil || len(result) == 0 {
 		log.Printf("error occured while getting channel infos")
 		return nil
 	}

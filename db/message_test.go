@@ -56,7 +56,7 @@ func TestGetMessage(t *testing.T) {
 		t.Errorf("unable to store message %v", err1)
 	}
 
-	dMsg := GetMessage([]byte("test channel"), []byte("1"), "test.db")
+	dMsg := GetMessage([]byte("test channel"), []byte("123"), "test.db")
 
 	if dMsg == nil {
 		t.Errorf("could not retrieve entry in the database")
@@ -78,7 +78,7 @@ func getMsg() message.Message {
 		Data:              []byte("this is some data"),
 		Sender:            []byte("this is the sender"),
 		Signature:         []byte("this is his signature"),
-		MessageId:         []byte("1"),
+		MessageId:         []byte("123"),
 		WitnessSignatures: nil,
 	}
 

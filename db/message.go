@@ -85,7 +85,7 @@ func GetMessage(channel []byte, message []byte, database string) []byte {
 		return nil
 	})
 
-	if err != nil {
+	if err != nil || len(result) == 0 {
 		return nil
 	}
 	return result

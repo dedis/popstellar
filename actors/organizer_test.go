@@ -202,6 +202,7 @@ func getCorrectDataWitnessMessage(privateKey ed.PrivateKey,messageId string) str
 	return data
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // getCorrectPublishOnRoot generate a example JSON string of the whole request for a publish, based on a data []byte
 func getCorrectPublishOnRoot(publicKey []byte, privateKey ed.PrivateKey, data []byte) []byte {
@@ -344,6 +345,7 @@ func getExpectedMsgAndChannelForPublishGeneral(publicKey []byte, privateKey ed.P
 	return answer
 }
 
+/////////////////////////////////////////////////////////////////////////////////////
 
 // TestReceivePublishCreateLAO tests if sending a JSON string requesting to publish a LAO creation works 
 // by comparing the messages (response and broadcasted answers) sent back
@@ -471,7 +473,7 @@ func TestReceivePublishCreateRollCallLater(t *testing.T) {
 		t.Errorf("correct structs are not as expected, \n%v\n vs, \n%v", string(responseToSender), string(expectedResponseToSender))
 	}
 
-	/*receivedMsg = getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataOpenRollCall(publicKey)))
+	receivedMsg = getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataOpenRollCall(publicKey)))
 	userId = 5
 	expectedMsgAndChannel = getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataOpenRollCall(publicKey))) // which will never be sent, but still produced)
 	expectedResponseToSender = []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
@@ -484,7 +486,7 @@ func TestReceivePublishCreateRollCallLater(t *testing.T) {
 
 	if !reflect.DeepEqual(responseToSender, expectedResponseToSender) {
 		t.Errorf("correct structs are not as expected, \n%v\n vs, \n%v", string(responseToSender), string(expectedResponseToSender))
-	}*/
+	}
 
 	_ = os.Remove("org_test.db")
 }
