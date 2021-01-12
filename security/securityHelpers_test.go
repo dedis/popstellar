@@ -30,8 +30,6 @@ func TestCorrectSignaturesAndCorrectWitnesses(t *testing.T) {
 	}
 }
 func TestCorrectSignaturesAndBadWitnesses(t *testing.T) {
-	//increase nb of tests
-	for i := 0; i < 100; i++ {
 		AuthorisedWitnessKeys, jsonArrayOfWitnessSignatures, id, err := witnessesAndSignatures(false, true)
 		if err != nil {
 			t.Errorf("Problem when Marshaling witnessKeysAndSignatures")
@@ -40,12 +38,9 @@ func TestCorrectSignaturesAndBadWitnesses(t *testing.T) {
 		if err != lib.ErrRequestDataInvalid {
 			t.Errorf("The verifier  didn't notice unauthenticated witness")
 		}
-	}
 }
 
 func TestBadSignaturesAndBadWitnesses(t *testing.T) {
-	//increase nb of tests
-	for i := 0; i < 100; i++ {
 		AuthorisedWitnessKeys, jsonArrayOfWitnessSignatures, id, err := witnessesAndSignatures(false, false)
 		if err != nil {
 			t.Errorf("Problem when Marshaling witnessKeysAndSignatures")
@@ -54,11 +49,8 @@ func TestBadSignaturesAndBadWitnesses(t *testing.T) {
 		if err != lib.ErrRequestDataInvalid {
 			t.Errorf("The verifier  didn't notice wrong signature(s) and unauthenticated witness")
 		}
-	}
 }
 func TestBadSignaturesAndCorrectWitnesses(t *testing.T) {
-	//increase nb of tests
-	for i := 0; i < 100; i++ {
 		AuthorisedWitnessKeys, jsonArrayOfWitnessSigantures, id, err := witnessesAndSignatures(false, false)
 		if err != nil {
 			t.Errorf("Problem when Marshaling witnessKeysAndSignatures")
@@ -67,7 +59,6 @@ func TestBadSignaturesAndCorrectWitnesses(t *testing.T) {
 		if err != lib.ErrRequestDataInvalid {
 			t.Errorf("The verifier  didn't notice wrong signature(s)")
 		}
-	}
 }
 
 //=====================================================================================/
