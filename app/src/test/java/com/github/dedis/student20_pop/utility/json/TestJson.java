@@ -55,19 +55,19 @@ public class TestJson {
 
     private void testChanneledMessage(Message msg) throws JsonProcessingException, ProcessingException {
         String json = gson.toJson(msg, Message.class);
-        lowSchema.validInstance(mapper.readTree(json));
+        Assert.assertTrue(lowSchema.validate(mapper.readTree(json)).isSuccess());
         Assert.assertEquals(msg, gson.fromJson(json, Message.class));
     }
 
     private void testResult(Answer msg) throws JsonProcessingException, ProcessingException {
         String json = gson.toJson(msg, Answer.class);
-        lowSchema.validInstance(mapper.readTree(json));
+        Assert.assertTrue(lowSchema.validate(mapper.readTree(json)).isSuccess());
         Assert.assertEquals(msg, gson.fromJson(json, Answer.class));
     }
 
     private void testData(Data msg) throws JsonProcessingException, ProcessingException {
         String json = gson.toJson(msg, Data.class);
-        highSchema.validate(mapper.readTree(json));
+        Assert.assertTrue(highSchema.validate(mapper.readTree(json)).isSuccess());
         Assert.assertEquals(msg, gson.fromJson(json, Data.class));
     }
 

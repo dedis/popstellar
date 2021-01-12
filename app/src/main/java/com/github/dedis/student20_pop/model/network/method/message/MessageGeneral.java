@@ -8,7 +8,7 @@ import java.util.Objects;
  * <p>
  * It is encapsulated inside low level messages
  */
-public class MessageGeneral {
+public final class MessageGeneral {
 
     private final String sender;
     private final String data;
