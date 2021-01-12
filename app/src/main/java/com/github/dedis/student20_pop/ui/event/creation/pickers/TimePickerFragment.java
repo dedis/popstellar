@@ -42,8 +42,6 @@ public final class TimePickerFragment extends AppCompatDialogFragment implements
         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
         calendar.set(Calendar.MINUTE, minute);
 
-        String selectedTime = TIME_FORMAT.format(calendar.getTime());
-
         getTargetFragment().onActivityResult(
                 getTargetRequestCode(),
                 Activity.RESULT_OK,

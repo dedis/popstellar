@@ -223,7 +223,7 @@ abstract class AbstractEventCreationFragment extends Fragment {
             startDate = Calendar.getInstance();
         }
         if (startTime == null){
-            startDate = Calendar.getInstance();
+            startTime = Calendar.getInstance();
         }
         completeStartTime.set(startDate.get(Calendar.YEAR),
                 startDate.get(Calendar.MONTH),
