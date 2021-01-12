@@ -15,6 +15,8 @@ import (
 	"os"
 )
 
+
+// TODO: To not break package encapsulation, it should probably be wise to disable the two followings structs while not testing.
 type hub struct {
 	// the mutex to protect connections
 	connectionsMx sync.RWMutex
@@ -232,7 +234,6 @@ func getCorrectPublishOnRoot(publicKey []byte, privateKey ed.PrivateKey, data []
 	pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
 	signature := ed.Sign(privateKey, data)
 	signatureb64 := b64.StdEncoding.EncodeToString(signature)
-	// I think it's weird to hash data in plain and signature in b64, but well, apparently, it's the protocol
 	tohash := lib.ComputeAsJsonArray([]string{datab64,signatureb64})
 	msgid := sha256.Sum256( []byte(tohash))
 	msgidb64 := b64.StdEncoding.EncodeToString(msgid[:])
@@ -266,7 +267,6 @@ func getCorrectPublishGeneral(publicKey []byte, privateKey ed.PrivateKey, data [
 	pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
 	signature := ed.Sign(privateKey, data)
 	signatureb64 := b64.StdEncoding.EncodeToString(signature)
-	// I think it's weird to hash data in plain and signature in b64, but well, apparently, it's the protocol
 	tohash := lib.ComputeAsJsonArray([]string{datab64,signatureb64})
 	msgid := sha256.Sum256( []byte(tohash))
 	msgidb64 := b64.StdEncoding.EncodeToString(msgid[:])
