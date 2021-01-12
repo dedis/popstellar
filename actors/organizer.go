@@ -605,17 +605,6 @@ func (o *Organizer) handleOpenRollCall(msg message.Message, chann string, query 
 	}
 
 	//retrieve roll Call to open from database
-	/*storedRollCall := db.GetMessage([]byte(chann), openRollCall.ID, o.database)
-	if storedRollCall == nil {
-		log.Printf("unable to access the stored roll call : message, channel or DB does not exist ")
-		return nil, lib.ErrInvalidResource
-	}
-
-	rollCallData, err := parser.ParseDataCreateRollCall(storedRollCall)
-	if err != nil {
-		log.Printf("unable to parse stored roll call infos in handleOpenRollRall()")
-		return nil, err
-	}*/
 	storedRollCall := db.GetChannel(openRollCall.ID, o.database)
 	if storedRollCall == nil {
 		log.Printf("unable to access the stored roll call : ID or DB does not exist ")
@@ -637,7 +626,7 @@ func (o *Organizer) handleOpenRollCall(msg message.Message, chann string, query 
 	}
 
 	updatedRollCall := event.RollCall{
-		ID:           string(rollCallData.ID),
+		ID:           string(openRollCall.ID),
 		Name:         rollCallData.Name,
 		Creation:     rollCallData.Creation,
 		LastModified: rollCallData.Creation,
