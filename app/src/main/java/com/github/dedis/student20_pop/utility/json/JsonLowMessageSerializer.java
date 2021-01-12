@@ -1,8 +1,8 @@
 package com.github.dedis.student20_pop.utility.json;
 
-import com.github.dedis.student20_pop.model.network.layer.base.Message;
-import com.github.dedis.student20_pop.model.network.layer.base.Method;
-import com.github.dedis.student20_pop.model.network.layer.base.Query;
+import com.github.dedis.student20_pop.model.network.query.Message;
+import com.github.dedis.student20_pop.model.network.query.Method;
+import com.github.dedis.student20_pop.model.network.query.Query;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
