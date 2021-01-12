@@ -16,7 +16,7 @@ func main() {
 
 	var mode = flag.String("m", "o", "server mode")
 	var address = flag.String("a", "", "IP on which to run the server")
-	var port = flag.Int("p", 8080, "port on which the server listens for websocket connections")
+	var port = flag.Int("p", 8000, "port on which the server listens for websocket connections")
 	var pkey = flag.String("k", "oui", "actor's public key")
 	var file = flag.String("f", "default", "file for the actor to store it's database. Must end with \".db\" ")
 
