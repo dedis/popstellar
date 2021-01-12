@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.event.Event;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import static com.github.dedis.student20_pop.model.event.Event.EventCategory;
