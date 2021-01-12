@@ -1,8 +1,8 @@
 package com.github.dedis.student20_pop.utility.json;
 
-import com.github.dedis.student20_pop.model.network.level.low.answer.Answer;
-import com.github.dedis.student20_pop.model.network.level.low.answer.Error;
-import com.github.dedis.student20_pop.model.network.level.low.answer.Result;
+import com.github.dedis.student20_pop.model.network.layer.base.answer.Answer;
+import com.github.dedis.student20_pop.model.network.layer.base.answer.Error;
+import com.github.dedis.student20_pop.model.network.layer.base.answer.Result;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;

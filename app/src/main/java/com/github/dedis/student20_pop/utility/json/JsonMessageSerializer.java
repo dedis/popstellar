@@ -1,8 +1,8 @@
 package com.github.dedis.student20_pop.utility.json;
 
-import com.github.dedis.student20_pop.model.network.level.high.Action;
-import com.github.dedis.student20_pop.model.network.level.high.Data;
-import com.github.dedis.student20_pop.model.network.level.high.Objects;
+import com.github.dedis.student20_pop.model.network.layer.data.Action;
+import com.github.dedis.student20_pop.model.network.layer.data.Data;
+import com.github.dedis.student20_pop.model.network.layer.data.Objects;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;

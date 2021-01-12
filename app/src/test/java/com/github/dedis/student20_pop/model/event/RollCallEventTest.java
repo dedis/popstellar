@@ -70,6 +70,7 @@ public class RollCallEventTest {
         event1.addAttendee(attendee);
         attendees.add(attendee);
         assertThat(event1.getAttendees(), is(attendees));
+        assertThat(event1.addAttendee(attendee), is(RollCallEvent.AddAttendeeResult.ADD_ATTENDEE_ALREADY_EXISTS));
     }
 
     @Test

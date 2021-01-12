@@ -2,7 +2,7 @@ package com.github.dedis.student20_pop.utility.protocol;
 
 import androidx.annotation.Nullable;
 
-import com.github.dedis.student20_pop.model.network.level.high.rollcall.CreateRollCall;
+import com.github.dedis.student20_pop.model.network.layer.data.rollcall.CreateRollCall;
 
 import java.io.Closeable;
 import java.util.List;
