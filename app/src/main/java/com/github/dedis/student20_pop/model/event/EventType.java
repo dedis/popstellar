@@ -4,7 +4,10 @@ package com.github.dedis.student20_pop.model.event;
  * Enum class modeling the Event Types
  */
 public enum EventType {
-    MEETING("M"), ROLL_CALL("R"), POLL("P"), DISCUSSION("D");
+    MEETING("M"),
+    ROLL_CALL("R"),
+    POLL("P"),
+    DISCUSSION("D");
 
     private final String suffix;
 
