@@ -143,7 +143,7 @@ func getCorrectDataCreateRollCallLater(publicKey []byte) string {
 	return data
 }
 
-// getCorrectDataCreateRollCallNow generate a example JSON string of the data field of a request for rollcall creation starting at a scheduled time
+// getCorrectDataOpenRollCall generate a example JSON string of the data field of a request for opening a rollcall at a previously scheduled time
 func getCorrectDataOpenRollCall(publicKey []byte) string {
 	//pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
 	creationstr := strconv.FormatInt(time.Now().Unix(), 10)
@@ -161,6 +161,31 @@ func getCorrectDataOpenRollCall(publicKey []byte) string {
 	data = strings.Join(strings.Fields(data), "")
 	return data
 }
+
+// getCorrectDataCloseRollCall generate a example JSON string of the data field of a request for closing a rollcall 
+func getCorrectDataCloseRollCall(publicKey []byte) string {
+	//pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
+	creationstr := strconv.FormatInt(time.Now().Unix(), 10)
+	startstr := strconv.FormatInt(time.Now().Unix()+1000, 10)
+	endstr := strconv.FormatInt(time.Now().Unix()+2000, 10)
+	tohash := lib.ComputeAsJsonArray([]string{"R","LAO_id",creationstr,"my_roll_call"})
+	hashid := sha256.Sum256( []byte(tohash) )
+	id := b64.StdEncoding.EncodeToString( hashid[:] )
+	data := `{
+		"object": "roll_call",
+		"action": "close",
+		"id": "`+id+`",
+		"start": `+startstr+`,
+		"end": `+endstr+`,
+		"attendees": ["1234"] 
+	}`
+	// TODO maybe the attendees field check for a real public key??
+	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
+	data = strings.Join(strings.Fields(data), "")
+	return data
+}
+
+// TODO test stateLAO, stateMeeting, updateLAO, witnessMessage, close/open rollcall. write data for stateLAO, stateMeeting, updateLAO
 
 
 func getCorrectDataWitnessMessage(privateKey ed.PrivateKey,messageId string) string {
