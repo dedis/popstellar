@@ -1,8 +1,5 @@
 package com.github.dedis.student20_pop.model.event;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableList;
 
@@ -33,7 +30,6 @@ public class Event {
     // Can use enums in the future
     private final EventType type;
     private final JSONObject other;
-    private final List<String> attestation;
     private ObservableArrayList<String> attendees;
 
     /**
@@ -44,7 +40,6 @@ public class Event {
      * @param lao  the public key of the associated LAO
      * @throws IllegalArgumentException if any of the parameters is null
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, Date time, String lao, String location, EventType type) {
         if (name == null || time == null || lao == null || location == null || type == null) {
             throw new IllegalArgumentException("Trying to create an event with null parameters");
@@ -57,15 +52,6 @@ public class Event {
         this.location = location;
         this.type = type;
         this.other = new JSONObject();
-
-        // Data to sign
-        String data = name + time + lao + location;
-        // Will get organizer's and witnesses' private keys in the future
-        String organizer = new Keys().getPrivateKey();
-        ArrayList<String> witnesses = new ArrayList<>();
-        ArrayList<String> attestation = new ArrayList<>(Collections.singletonList(Signature.sign(organizer, data)));
-        attestation.addAll(Signature.sign(witnesses, data));
-        this.attestation = attestation;
     }
 
     public String getName() {
@@ -119,13 +105,6 @@ public class Event {
         return type;
     }
 
-    /**
-     * @return list of signatures by the organizer and the witnesses of the corresponding LAO
-     */
-    public List<String> getAttestation() {
-        return attestation;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -138,13 +117,12 @@ public class Event {
                 Objects.equals(attendees, event.attendees) &&
                 Objects.equals(location, event.location) &&
                 Objects.equals(type, event.type) &&
-                Objects.equals(other, event.other) &&
-                Objects.equals(attestation, event.attestation);
+                Objects.equals(other, event.other);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, time, id, lao, attendees, location, type, other, attestation);
+        return Objects.hash(name, time, id, lao, attendees, location, type, other);
     }
 
     /**

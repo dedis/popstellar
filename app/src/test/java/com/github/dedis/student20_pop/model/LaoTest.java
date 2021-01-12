@@ -1,13 +1,9 @@
 package com.github.dedis.student20_pop.model;
 
-import com.github.dedis.student20_pop.utility.security.Hash;
-import com.github.dedis.student20_pop.utility.security.Signature;
-
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -18,28 +14,27 @@ import static org.junit.Assert.assertThrows;
 
 public class LaoTest {
 
+    private final int LENGTH_UNIX_TIMESTAMP = 10;
     private final String lao1_name = "LAO name 1";
     private final String lao2_name = "LAO name 2";
-    private final Date time = (new Date());
     private final String organizer = new Keys().getPublicKey();
     private final ArrayList<String> list = new ArrayList<>(Arrays.asList("0x3434", "0x4747"));
     private final ArrayList<String> listWithNull = new ArrayList<>(Arrays.asList("0x3939", null, "0x4747"));
-    private final Lao lao1 = new Lao(lao1_name, time, organizer);
-    private final Lao lao2 = new Lao(lao2_name, time, organizer);
+    private final Lao lao1 = new Lao(lao1_name, organizer);
+    private final Lao lao2 = new Lao(lao2_name, organizer);
     private final List<Lao> laos = new ArrayList<>(Arrays.asList(lao1, lao2));
     private final List<Lao> laosWithNull = new ArrayList<>(Arrays.asList(lao1, null, lao2));
 
     @Test
     public void createLaoNullParametersTest() {
-        assertThrows(IllegalArgumentException.class, () -> new Lao(null, time, organizer));
-        assertThrows(IllegalArgumentException.class, () -> new Lao(lao1_name, null, organizer));
-        assertThrows(IllegalArgumentException.class, () -> new Lao(lao1_name, time, null));
+        assertThrows(IllegalArgumentException.class, () -> new Lao(null, organizer));
+        assertThrows(IllegalArgumentException.class, () -> new Lao(lao1_name, null));
     }
 
     @Test
     public void createLaoEmptyNameTest() {
-        assertThrows(IllegalArgumentException.class, () -> new Lao("", time, organizer));
-        assertThrows(IllegalArgumentException.class, () -> new Lao("     ", time, organizer));
+        assertThrows(IllegalArgumentException.class, () -> new Lao("", organizer));
+        assertThrows(IllegalArgumentException.class, () -> new Lao("     ", organizer));
     }
 
     @Test
@@ -50,12 +45,7 @@ public class LaoTest {
 
     @Test
     public void getTimeTest() {
-        assertThat(lao1.getTime(), is(time.getTime() / 1000L));
-    }
-
-    @Test
-    public void getIdTest() {
-        assertThat(lao1.getId(), is(Hash.hash(lao1_name, time.getTime())));
+        assertThat(Long.toString(lao1.getTime()).length(), is(LENGTH_UNIX_TIMESTAMP));
     }
 
     @Test
@@ -79,11 +69,6 @@ public class LaoTest {
     public void setAndGetEventsTest() {
         lao1.setEvents(list);
         assertThat(lao1.getEvents(), is(list));
-    }
-
-    @Test
-    public void getAttestationTest() {
-        assertThat(lao1.getAttestation(), is(Signature.sign(organizer, lao1_name + time + organizer)));
     }
 
     @Test

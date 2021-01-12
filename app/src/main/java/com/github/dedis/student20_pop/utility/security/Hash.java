@@ -32,8 +32,12 @@ public class Hash {
         }
 
         StringJoiner joiner = new StringJoiner(",", "[", "]");
-        for (Object elem : data)
+        for (Object elem : data) {
+            if (elem == null) {
+                throw new IllegalArgumentException("Can't hash null data");
+            }
             joiner.add(DELIMITER + esc(elem.toString()) + DELIMITER);
+        }
 
         return hash(joiner.toString());
     }
