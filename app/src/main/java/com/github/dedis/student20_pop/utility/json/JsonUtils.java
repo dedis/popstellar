@@ -1,9 +1,9 @@
 package com.github.dedis.student20_pop.utility.json;
 
 import com.github.dedis.student20_pop.model.network.answer.Answer;
-import com.github.dedis.student20_pop.model.network.query.Message;
-import com.github.dedis.student20_pop.model.network.query.data.Data;
-import com.github.dedis.student20_pop.model.network.query.data.rollcall.CreateRollCall;
+import com.github.dedis.student20_pop.model.network.method.Message;
+import com.github.dedis.student20_pop.model.network.method.message.data.Data;
+import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;

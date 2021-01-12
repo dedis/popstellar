@@ -2,18 +2,18 @@ package com.github.dedis.student20_pop.utility.network;
 
 import android.util.Log;
 
-import com.github.dedis.student20_pop.model.network.query.data.Data;
-import com.github.dedis.student20_pop.model.network.query.method.Broadcast;
-import com.github.dedis.student20_pop.model.network.query.method.Catchup;
-import com.github.dedis.student20_pop.model.network.query.Message;
-import com.github.dedis.student20_pop.model.network.query.method.Publish;
-import com.github.dedis.student20_pop.model.network.query.Query;
-import com.github.dedis.student20_pop.model.network.query.method.Subscribe;
-import com.github.dedis.student20_pop.model.network.query.method.Unsubscribe;
 import com.github.dedis.student20_pop.model.network.answer.Answer;
 import com.github.dedis.student20_pop.model.network.answer.Error;
 import com.github.dedis.student20_pop.model.network.answer.Result;
-import com.github.dedis.student20_pop.model.network.query.MessageGeneral;
+import com.github.dedis.student20_pop.model.network.method.Broadcast;
+import com.github.dedis.student20_pop.model.network.method.Catchup;
+import com.github.dedis.student20_pop.model.network.method.Message;
+import com.github.dedis.student20_pop.model.network.method.Publish;
+import com.github.dedis.student20_pop.model.network.method.Query;
+import com.github.dedis.student20_pop.model.network.method.Subscribe;
+import com.github.dedis.student20_pop.model.network.method.Unsubscribe;
+import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
+import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.utility.json.JsonUtils;
 import com.github.dedis.student20_pop.utility.protocol.LowLevelProxy;
 import com.github.dedis.student20_pop.utility.security.Hash;
