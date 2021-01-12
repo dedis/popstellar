@@ -161,9 +161,8 @@ func getCorrectDataOpenRollCall(publicKey []byte, creationstr string) string {
 }
 
 // getCorrectDataCloseRollCall generate a example JSON string of the data field of a request for closing a rollcall 
-func getCorrectDataCloseRollCall(publicKey []byte) string {
+func getCorrectDataCloseRollCall(publicKey []byte, creationstr string) string {
 	//pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
-	creationstr := strconv.FormatInt(time.Now().Unix(), 10)
 	startstr := strconv.FormatInt(time.Now().Unix()+1000, 10)
 	endstr := strconv.FormatInt(time.Now().Unix()+2000, 10)
 	tohash := lib.ComputeAsJsonArray([]string{"R","LAO_id",creationstr,"my_roll_call"})
@@ -475,6 +474,21 @@ func TestReceivePublishCreateRollCallLater(t *testing.T) {
 	receivedMsg = getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataOpenRollCall(publicKey,creationstr)))
 	userId = 5
 	expectedMsgAndChannel = getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataOpenRollCall(publicKey,creationstr))) // which will never be sent, but still produced)
+	expectedResponseToSender = []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
+
+	msgAndChannel, responseToSender = h.actor.HandleReceivedMessage(receivedMsg, userId)
+	if !reflect.DeepEqual(msgAndChannel, expectedMsgAndChannel) {
+		t.Errorf("correct msgAndChannel are not as expected, \n%+v\n vs, \n%+v", msgAndChannel, expectedMsgAndChannel)
+		//t.Errorf("correct msgAndChannel are not as expected, \n%+v\n vs, \n%+v", string(msgAndChannel[0].Channel), string(expectedMsgAndChannel[0].Channel))
+	}
+
+	if !reflect.DeepEqual(responseToSender, expectedResponseToSender) {
+		t.Errorf("correct structs are not as expected, \n%v\n vs, \n%v", string(responseToSender), string(expectedResponseToSender))
+	}
+
+	receivedMsg = getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCloseRollCall(publicKey,creationstr)))
+	userId = 5
+	expectedMsgAndChannel = getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCloseRollCall(publicKey,creationstr))) // which will never be sent, but still produced)
 	expectedResponseToSender = []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
 
 	msgAndChannel, responseToSender = h.actor.HandleReceivedMessage(receivedMsg, userId)

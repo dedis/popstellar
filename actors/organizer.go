@@ -660,22 +660,23 @@ func (o *Organizer) handleCloseRollCall(msg message.Message, chann string, query
 		return nil, lib.ErrRequestDataInvalid
 	}
 	//retrieve roll Call to open from database
-	storedRollCall := db.GetMessage([]byte(chann), closeRollCall.ID, o.database)
+	storedRollCall := db.GetChannel(closeRollCall.ID, o.database)
 
-	rollCallData, err := parser.ParseDataCreateRollCall(storedRollCall)
+	rollCallData := event.RollCall{}
+	err = json.Unmarshal(storedRollCall, &rollCallData)
 	if err != nil {
 		log.Printf("unable to parse stored roll call infos in handleCloseRollCall()")
 		return nil, err
 	}
 
 	//we provide the id of the channel
-	laoId := strings.TrimPrefix(chann, "/root")
+	laoId := strings.TrimPrefix(chann, "/root/")
 	if !security.RollCallClosedIsValid(closeRollCall, laoId, rollCallData) {
 		return nil, lib.ErrInvalidResource
 	}
 
 	updatedRollCall := event.RollCall{
-		ID:                  string(rollCallData.ID),
+		ID:                  string(closeRollCall.ID),
 		Name:                rollCallData.Name,
 		Creation:            rollCallData.Creation,
 		LastModified:        rollCallData.Creation,
