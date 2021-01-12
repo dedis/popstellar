@@ -19,6 +19,7 @@ import com.github.dedis.student20_pop.ui.event.creation.pickers.TimePickerFragme
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -37,16 +38,20 @@ abstract class AbstractEventCreationFragment extends Fragment {
     public static final int START_TIME_REQUEST_CODE = 13;
     public static final int END_TIME_REQUEST_CODE = 14;
     public static final String NO_LOCATION = "";
-    public static Date startDate;
-    public static Date endDate;
-    public static Date startTime;
-    public static Date endTime;
-    public static Date today;
+    public static Calendar startDate;
+    public static Calendar endDate;
+    public static Calendar startTime;
+    public static Calendar endTime;
+    public static Calendar today = Calendar.getInstance();
+    public static Calendar completeStartTime = Calendar.getInstance();
+    public static Calendar completeEndTime = Calendar.getInstance();
+    public static long startTimeInSeconds;
+    public static long endTimeInSeconds;
     private EditText startDateEditText;
     private EditText endDateEditText;
     private EditText startTimeEditText;
     private EditText endTimeEditText;
-    private String selection;
+    private Calendar selection;
 
     public void setDateAndTimeView(View view, Fragment fragment, FragmentManager fragmentManager) {
         startDateEditText = view.findViewById(R.id.start_date_editText);
@@ -87,14 +92,6 @@ abstract class AbstractEventCreationFragment extends Fragment {
             timePickerFragment.setTargetFragment(fragment, END_TIME_REQUEST_CODE);
             timePickerFragment.show(fragmentManager, TimePickerFragment.TAG);
         });
-
-        // formatting today's date
-        try {
-            today = DATE_FORMAT.parse(DATE_FORMAT.format(Calendar.getInstance().getTime()));
-        } catch (ParseException e) {
-            e.printStackTrace();
-            today = new Date();
-        }
     }
 
     public void addDateAndTimeListener(TextWatcher listener) {
@@ -112,110 +109,143 @@ abstract class AbstractEventCreationFragment extends Fragment {
 
     public void checkDates(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
-            selection = data.getStringExtra(getString(R.string.picker_selection));
-            try {
-                switch (requestCode) {
-                    case START_DATE_REQUEST_CODE:
-                        startDate = DATE_FORMAT.parse(selection);
-                        /*
-                          In Java, two dates can be compared using the compareTo() method of Comparable interface.
-                          This method returns '0' if both the dates are equal,
-                          it returns a value "greater than 0" if date1 is after date2 and
-                          it returns a value "less than 0" if date1 is before date2.
-                         */
-                        if (startDate.compareTo(today) < 0) {
+            selection = (Calendar) data.getSerializableExtra(getString(R.string.picker_selection));
+            switch (requestCode) {
+                case START_DATE_REQUEST_CODE:
+                    startDate = selection;
+                    /*
+                      In Java, two dates can be compared using the compareTo() method of Comparable interface.
+                      This method returns '0' if both the dates are equal,
+                      it returns a value "greater than 0" if date1 is after date2 and
+                      it returns a value "less than 0" if date1 is before date2.
+                     */
+                    if (startDate.compareTo(today) < 0) {
+                        Toast.makeText(getActivity(),
+                                getString(R.string.past_date_not_allowed),
+                                Toast.LENGTH_LONG).show();
+                        startDateEditText.setText("");
+                        startDate = null;
+                    } else {
+                        if ((endDate != null) && (startDate.compareTo(endDate) > 0)) {
                             Toast.makeText(getActivity(),
-                                    getString(R.string.past_date_not_allowed),
+                                    getString(R.string.start_date_after_end_date_not_allowed),
                                     Toast.LENGTH_LONG).show();
                             startDateEditText.setText("");
                             startDate = null;
                         } else {
-                            if ((endDate != null) && (startDate.compareTo(endDate) > 0)) {
-                                Toast.makeText(getActivity(),
-                                        getString(R.string.start_date_after_end_date_not_allowed),
-                                        Toast.LENGTH_LONG).show();
-                                startDateEditText.setText("");
-                                startDate = null;
-                            } else {
-                                startDateEditText.setText(DATE_FORMAT.format(startDate));
-                                startDate = DATE_FORMAT.parse(selection);
-                                if ((endDate != null) && (startDate.compareTo(endDate) == 0)) {
-                                    endTime = null;
-                                    endTimeEditText.setText("");
-                                }
+                            startDate = selection;
+                            startDateEditText.setText(DATE_FORMAT.format(startDate.getTime()));
+                            if ((endDate != null) && (startDate.compareTo(endDate) == 0)) {
+                                endTime = null;
+                                endTimeEditText.setText("");
                             }
                         }
-                        break;
+                    }
+                    break;
 
-                    case END_DATE_REQUEST_CODE:
-                        endDate = DATE_FORMAT.parse(selection);
-                        if (endDate.compareTo(today) < 0) {
+                case END_DATE_REQUEST_CODE:
+                    endDate = selection;
+                    if (endDate.compareTo(today) < 0) {
+                        Toast.makeText(getActivity(),
+                                getString(R.string.past_date_not_allowed),
+                                Toast.LENGTH_LONG).show();
+                        endDateEditText.setText("");
+                        endDate = null;
+                    } else {
+                        if ((startDate != null) && (endDate.compareTo(startDate) < 0)) {
                             Toast.makeText(getActivity(),
-                                    getString(R.string.past_date_not_allowed),
-                                    Toast.LENGTH_LONG).show();
+                                    getString(R.string.end_date_after_start_date_not_allowed),
+                                    Toast.LENGTH_SHORT).show();
                             endDateEditText.setText("");
                             endDate = null;
                         } else {
-                            if ((startDate != null) && (endDate.compareTo(startDate) < 0)) {
-                                Toast.makeText(getActivity(),
-                                        getString(R.string.end_date_after_start_date_not_allowed),
-                                        Toast.LENGTH_SHORT).show();
-                                endDateEditText.setText("");
-                                endDate = null;
-                            } else {
-                                if ((startDate != null) && (startDate.compareTo(endDate) == 0)) {
-                                    endTime = null;
-                                    endTimeEditText.setText("");
-                                }
-                                endDateEditText.setText(DATE_FORMAT.format(endDate));
-                                endDate = DATE_FORMAT.parse(selection);
-                            }
-                        }
-                        break;
-
-                    case START_TIME_REQUEST_CODE:
-                        if (startDate == null || endDate == null) {
-                            startTimeEditText.setText(selection);
-                        } else {
-                            startTime = TIME_FORMAT.parse(selection);
-                            if ((startDate.compareTo(endDate) == 0) &&
-                                    (endTime != null) &&
-                                    (startTime.compareTo(endTime) > 0)) {
-                                Toast.makeText(getActivity(),
-                                        getString(R.string.start_time_after_end_time_not_allowed),
-                                        Toast.LENGTH_SHORT).show();
-                                startTime = null;
-                                startTimeEditText.setText("");
-                            } else {
-                                startTimeEditText.setText(selection);
-                            }
-                        }
-
-                        break;
-
-                    case END_TIME_REQUEST_CODE:
-                        if ((startDate == null) || (endDate == null)) {
-                            endTimeEditText.setText(selection);
-                        } else {
-                            endTime = TIME_FORMAT.parse(selection);
-                            if ((startDate.compareTo(endDate) == 0) &&
-                                    (startTime != null) &&
-                                    (endTime.compareTo(startTime) < 0)) {
-                                Toast.makeText(getActivity(),
-                                        getString(R.string.end_time_before_start_time_not_allowed),
-                                        Toast.LENGTH_SHORT).show();
+                            if ((startDate != null) && (startDate.compareTo(endDate) == 0)) {
                                 endTime = null;
                                 endTimeEditText.setText("");
-                            } else {
-                                endTimeEditText.setText(selection);
                             }
+                            endDate = selection;
+                            endDateEditText.setText(DATE_FORMAT.format(endDate.getTime()));
                         }
-                        break;
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
+                    }
+                    break;
+
+                case START_TIME_REQUEST_CODE:
+                    if (startDate == null || endDate == null) {
+                        startTime = selection;
+                        startTimeEditText.setText(TIME_FORMAT.format(startTime.getTime()));
+                    } else {
+                        startTime = selection;
+                        if ((startDate.compareTo(endDate) == 0) &&
+                                (endTime != null) &&
+                                (startTime.compareTo(endTime) > 0)) {
+                            Toast.makeText(getActivity(),
+                                    getString(R.string.start_time_after_end_time_not_allowed),
+                                    Toast.LENGTH_SHORT).show();
+                            startTime = null;
+                            startTimeEditText.setText("");
+                        } else {
+                            startTimeEditText.setText(TIME_FORMAT.format(selection.getTime()));
+                        }
+                    }
+
+                    break;
+
+                case END_TIME_REQUEST_CODE:
+                    if ((startDate == null) || (endDate == null)) {
+                        endTime = selection;
+                        endTimeEditText.setText(TIME_FORMAT.format(selection.getTime()));
+                    } else {
+                        endTime = selection;
+                        if ((startDate.compareTo(endDate) == 0) &&
+                                (startTime != null) &&
+                                (endTime.compareTo(startTime) < 0)) {
+                            Toast.makeText(getActivity(),
+                                    getString(R.string.end_time_before_start_time_not_allowed),
+                                    Toast.LENGTH_SHORT).show();
+                            endTime = null;
+                            endTimeEditText.setText("");
+                        } else {
+                            endTimeEditText.setText(TIME_FORMAT.format(selection.getTime()));
+                        }
+                    }
+                    break;
             }
         }
+    }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        checkDates(requestCode, resultCode, data);
+    }
+
+    public void computeTimesInSeconds() {
+        if (startDate == null){
+            startDate = Calendar.getInstance();
+        }
+        if (startTime == null){
+            startDate = Calendar.getInstance();
+        }
+        completeStartTime.set(startDate.get(Calendar.YEAR),
+                startDate.get(Calendar.MONTH),
+                startDate.get(Calendar.DAY_OF_MONTH),
+                startTime.get(Calendar.HOUR_OF_DAY),
+                startTime.get(Calendar.MINUTE));
+        Instant start = Instant.ofEpochMilli(completeStartTime.getTimeInMillis());
+        startTimeInSeconds = start.getEpochSecond();
+        if (endDate != null){
+            if (endTime == null){
+                completeEndTime.set(endDate.get(Calendar.YEAR),
+                        endDate.get(Calendar.MONTH),
+                        endDate.get(Calendar.DAY_OF_MONTH));
+            }else{
+                completeEndTime.set(endDate.get(Calendar.YEAR),
+                        endDate.get(Calendar.MONTH),
+                        endDate.get(Calendar.DAY_OF_MONTH),
+                        endTime.get(Calendar.HOUR_OF_DAY),
+                        endTime.get(Calendar.MINUTE));
+            }
+            Instant end = Instant.ofEpochMilli(completeEndTime.getTimeInMillis());
+            endTimeInSeconds = end.getEpochSecond();
+        }
     }
 }

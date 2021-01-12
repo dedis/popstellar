@@ -26,6 +26,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -110,10 +111,8 @@ public class AddAttendeeFragmentTest {
 
             RollCallEvent rollCallEvent = new RollCallEvent(
                     "Random Name",
-                    new Date(),
-                    new Date(),
-                    new Date(),
-                    new Date(),
+                    Instant.now().getEpochSecond(),
+                    Instant.now().getEpochSecond(),
                     LAO_ID,
                     "",
                     "No description",
@@ -172,10 +171,8 @@ public class AddAttendeeFragmentTest {
 
             RollCallEvent rollCallEvent = new RollCallEvent(
                     "Random Name",
-                    new Date(),
-                    new Date(),
-                    new Date(),
-                    new Date(),
+                    Instant.now().getEpochSecond(),
+                    Instant.now().getEpochSecond(),
                     LAO_ID,
                     "",
                     "No description",

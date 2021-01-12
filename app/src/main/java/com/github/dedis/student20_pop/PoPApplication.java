@@ -17,6 +17,7 @@ import com.github.dedis.student20_pop.utility.protocol.ProtocolProxyFactory;
 import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
 
 import java.net.URI;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,7 +40,7 @@ public class PoPApplication extends Application {
 
     private static final URI LOCAL_BACKEND_URI = URI.create("ws://10.0.2.2:2000");
 
-    private final Map<Lao, List<Event>> laoEventsMap = new HashMap<>();
+    private Map<Lao, List<Event>> laoEventsMap = new HashMap<>(); //final?
     private final Map<Lao, List<String>> laoWitnessMap = new HashMap<>();
     private final Map<URI, HighLevelProxy> openSessions = new HashMap<>();
 
@@ -98,6 +99,7 @@ public class PoPApplication extends Application {
 
         currentLao = new Lao("LAO I just joined", person.getId());
         dummyLaoEventsMap = dummyLaoEventMap();
+        laoEventsMap = dummyLaoEventsMap;
         laoWitnessMap.put(currentLao, new ArrayList<>());
 
         localProxy = getProxy(LOCAL_BACKEND_URI);
@@ -327,9 +329,9 @@ public class PoPApplication extends Application {
     private Map<Lao, List<Event>> dummyLaoEventMap() {
         Map<Lao, List<Event>> map = new HashMap<>();
         List<Event> events = new ArrayList<>();
-        Event event1 = new Event("Future Event 1", new Date(2617547969000L), new Keys().getPublicKey(), "EPFL", POLL);
-        Event event2 = new Event("Present Event 1", new Date(), new Keys().getPublicKey(), "Somewhere", DISCUSSION);
-        Event event3 = new Event("Past Event 1", new Date(1481643086000L), new Keys().getPublicKey(), "Here", MEETING);
+        Event event1 = new Event("Future Event 1", new Keys().getPublicKey(), Instant.now().getEpochSecond(), "EPFL", POLL);
+        Event event2 = new Event("Present Event 1", new Keys().getPublicKey(), Instant.now().getEpochSecond(), "Somewhere", DISCUSSION);
+        Event event3 = new Event("Past Event 1", new Keys().getPublicKey(), Instant.now().getEpochSecond(), "Here", MEETING);
         events.add(event1);
         events.add(event2);
         events.add(event3);

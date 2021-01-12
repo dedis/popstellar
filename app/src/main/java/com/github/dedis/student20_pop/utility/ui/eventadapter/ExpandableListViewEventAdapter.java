@@ -9,9 +9,12 @@ import android.widget.TextView;
 
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.event.Event;
+import com.github.dedis.student20_pop.model.event.RollCallEvent;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -185,8 +188,8 @@ public abstract class ExpandableListViewEventAdapter extends BaseExpandableListA
         // in the future it could be nice to have a pencil icon to allow organizer to modify an event
         Event event = ((Event) getChild(groupPosition, childPosition));
         String eventTitle = (event.getName() + " : " + event.getType());
-        String eventDescription = "Time : " + event.getTime() + "\nLocation : " + event.getLocation();
-
+        String eventDescription = "";
+        String time = DATE_FORMAT.format(event.getStartTime()*1000L);
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.layout_event, null);
@@ -196,9 +199,10 @@ public abstract class ExpandableListViewEventAdapter extends BaseExpandableListA
         eventTitleTextView.setText(eventTitle);
         switch (event.getType()) {
             case ROLL_CALL:
-                eventDescription += ("\nParticipants: " + event.getAttendees().size());
+                eventDescription = "Start Time : " + time + "\nLocation : " + event.getLocation() + "\nParticipants: " + event.getAttendees().size();
                 break;
             default:
+                eventDescription = "Start Time : " + time + "\nLocation : " + event.getLocation();
                 break;
         }
         descriptionTextView.setText(eventDescription);
@@ -219,11 +223,11 @@ public abstract class ExpandableListViewEventAdapter extends BaseExpandableListA
         for (Event event : events) {
             //for now (testing purposes)
             //later: event.getEndTime() < now
-            if (event.getTime() < (System.currentTimeMillis() / 1000L)) {
+            if (event.getTime() < (Instant.now().getEpochSecond())) {
                 eventsMap.get(PAST).add(event);
             }
             //later: event.getStartTime()<now && event.getEndTime() > now
-            else if (event.getTime() <= System.currentTimeMillis() / 1000L) {
+            else if (event.getTime() <= Instant.now().getEpochSecond()) {
                 eventsMap.get(PRESENT).add(event);
             } else { //if e.getStartTime() > now
                 eventsMap.get(FUTURE).add(event);
