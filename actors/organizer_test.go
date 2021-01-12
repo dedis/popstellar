@@ -55,9 +55,8 @@ func createKeyPair() ([]byte, ed.PrivateKey) {
 }
 
 // getCorrectDataCreateLAO generate a example JSON string of the data field of a request for LAO creation
-func getCorrectDataCreateLAO(publicKey []byte) string {
+func getCorrectDataCreateLAO(publicKey []byte, creationstr string) string {
 	pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
-	creationstr := strconv.FormatInt(time.Now().Unix(), 10)
 	tohash := lib.ComputeAsJsonArray([]string{string(pkeyb64),creationstr,"my_lao"})
 	hashid := sha256.Sum256( []byte(tohash) )
 	id := b64.StdEncoding.EncodeToString( hashid[:] )
@@ -182,7 +181,33 @@ func getCorrectDataCloseRollCall(publicKey []byte, creationstr string) string {
 	return data
 }
 
-// TODO test stateLAO, stateMeeting, updateLAO, witnessMessage, close/open rollcall. write data for stateLAO, stateMeeting, updateLAO
+// getCorrectDataStateLAO generate a example JSON string of the data field of a request for announcing the state of a LAO (typically once it has received enough certifications)
+func getCorrectDataStateLAO(publicKey []byte, creationstr string) string {
+	pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
+	lastmodified := strconv.FormatInt(time.Now().Unix(), 10)
+	tohash := lib.ComputeAsJsonArray([]string{string(pkeyb64),creationstr,"my_lao"})
+	hashid := sha256.Sum256( []byte(tohash) )
+	id := b64.StdEncoding.EncodeToString( hashid[:] )
+	data := `{
+		"object": "lao",
+		"action": "state",
+		"id": "`+id+`",
+		"name": "my_lao",
+		"creation": `+creationstr+`,
+		"last_modified": `+lastmodified+`,
+		"organizer": "`+pkeyb64+`",
+		"witnesses": {
+	
+		},
+		"modification_id": "`+id+`",
+		"modification_signatures": []
+	}`
+	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
+	data = strings.Join(strings.Fields(data), "")
+	return data
+}
+
+// TODO test stateMeeting, updateLAO, witnessMessage. write data for stateMeeting, updateLAO
 
 
 func getCorrectDataWitnessMessage(privateKey ed.PrivateKey,messageId string) string {
@@ -350,9 +375,10 @@ func TestReceivePublishCreateLAO(t *testing.T) {
 
 	publicKey, privateKey := createKeyPair()
 
-	receivedMsg := getCorrectPublishOnRoot(publicKey, privateKey, []byte(getCorrectDataCreateLAO(publicKey)))
+	creationstr := strconv.FormatInt(time.Now().Unix(), 10)
+	receivedMsg := getCorrectPublishOnRoot(publicKey, privateKey, []byte(getCorrectDataCreateLAO(publicKey, creationstr)))
 	userId := 5
-	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishOnRoot(publicKey, privateKey, []byte(getCorrectDataCreateLAO(publicKey))) // which will never be sent, but still produced)
+	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishOnRoot(publicKey, privateKey, []byte(getCorrectDataCreateLAO(publicKey, creationstr))) // which will never be sent, but still produced)
 	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
 
 	h := &hub{
@@ -375,6 +401,53 @@ func TestReceivePublishCreateLAO(t *testing.T) {
 	_ = os.Remove("org_test.db")
 }
 
+// TestReceivePublishStateLAO should correctly receive a nil broadcast and an error answer as currently an organizer backend should never receive such a message
+func TestReceivePublishStateLAO(t *testing.T) {
+
+	publicKey, privateKey := createKeyPair()
+
+	creationstr := strconv.FormatInt(time.Now().Unix(), 10)
+	receivedMsg := getCorrectPublishOnRoot(publicKey, privateKey, []byte(getCorrectDataCreateLAO(publicKey, creationstr)))
+	userId := 5
+	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishOnRoot(publicKey, privateKey, []byte(getCorrectDataCreateLAO(publicKey, creationstr))) // which will never be sent, but still produced)
+	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
+
+	h := &hub{
+		connectionsMx:   sync.RWMutex{},
+		receivedMessage: make(chan []byte),
+		connections:     make(map[*connection]struct{}),
+		connIndex:       0,
+		idOfSender:      -1,
+		actor: 			NewOrganizer(string(publicKey), "org_test.db"),
+	}
+
+	msgAndChannel, responseToSender := h.actor.HandleReceivedMessage(receivedMsg, userId)
+	if !reflect.DeepEqual(msgAndChannel, expectedMsgAndChannel) {
+		t.Errorf("correct msgAndChannel are not as expected, \n%+v\n vs, \n%+v", msgAndChannel, expectedMsgAndChannel)
+	}
+
+	if !reflect.DeepEqual(responseToSender, expectedResponseToSender) {
+		t.Errorf("correct structs are not as expected, \n%v\n vs, \n%v", string(responseToSender), string(expectedResponseToSender))
+	}
+
+	// An organizer back end should never receive a publishStateLao
+	receivedMsg = getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataStateLAO(publicKey, creationstr)))
+	userId = 5
+	expectedMsgAndChannel = nil
+	expectedResponseToSender = []byte(`{"jsonrpc":"2.0","error":{"code":-1,"description":"invalid action"},"id":0}`) 
+
+	msgAndChannel, responseToSender = h.actor.HandleReceivedMessage(receivedMsg, userId)
+	if !reflect.DeepEqual(msgAndChannel, expectedMsgAndChannel) {
+		t.Errorf("correct msgAndChannel are not as expected, \n%+v\n vs, \n%+v", msgAndChannel, expectedMsgAndChannel)
+	}
+
+	if !reflect.DeepEqual(responseToSender, expectedResponseToSender) {
+		t.Errorf("correct structs are not as expected, \n%v\n vs, \n%v", string(responseToSender), string(expectedResponseToSender))
+	}
+
+
+	_ = os.Remove("org_test.db")
+}
 
 // TestReceivePublishCreateMeeting tests if sending a JSON string requesting to a meeting creation works 
 // by comparing the messages (response and broadcasted answers) sent back
@@ -384,7 +457,7 @@ func TestReceivePublishCreateMeeting(t *testing.T) {
 
 	receivedMsg := getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateMeeting(publicKey)))
 	userId := 5
-	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateMeeting(publicKey))) // which will never be sent, but still produced)
+	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateMeeting(publicKey)))
 	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
 
 	h := &hub{
@@ -416,7 +489,7 @@ func TestReceivePublishCreateRollCallNow(t *testing.T) {
 
 	receivedMsg := getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallNow(publicKey)))
 	userId := 5
-	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallNow(publicKey))) // which will never be sent, but still produced)
+	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallNow(publicKey)))
 	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
 
 	h := &hub{
@@ -450,7 +523,7 @@ func TestReceivePublishCreateRollCallLater(t *testing.T) {
 
 	receivedMsg := getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallLater(publicKey,creationstr)))
 	userId := 5
-	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallLater(publicKey,creationstr))) // which will never be sent, but still produced)
+	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallLater(publicKey,creationstr))) 
 	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
 
 	h := &hub{
@@ -473,7 +546,7 @@ func TestReceivePublishCreateRollCallLater(t *testing.T) {
 
 	receivedMsg = getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataOpenRollCall(publicKey,creationstr)))
 	userId = 5
-	expectedMsgAndChannel = getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataOpenRollCall(publicKey,creationstr))) // which will never be sent, but still produced)
+	expectedMsgAndChannel = getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataOpenRollCall(publicKey,creationstr))) 
 	expectedResponseToSender = []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
 
 	msgAndChannel, responseToSender = h.actor.HandleReceivedMessage(receivedMsg, userId)
@@ -488,7 +561,7 @@ func TestReceivePublishCreateRollCallLater(t *testing.T) {
 
 	receivedMsg = getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCloseRollCall(publicKey,creationstr)))
 	userId = 5
-	expectedMsgAndChannel = getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCloseRollCall(publicKey,creationstr))) // which will never be sent, but still produced)
+	expectedMsgAndChannel = getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCloseRollCall(publicKey,creationstr))) 
 	expectedResponseToSender = []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
 
 	msgAndChannel, responseToSender = h.actor.HandleReceivedMessage(receivedMsg, userId)
