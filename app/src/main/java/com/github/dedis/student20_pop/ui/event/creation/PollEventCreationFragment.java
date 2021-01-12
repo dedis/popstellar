@@ -1,7 +1,6 @@
 package com.github.dedis.student20_pop.ui.event.creation;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -135,13 +134,12 @@ public final class PollEventCreationFragment extends AbstractEventCreationFragme
             PoPApplication app = (PoPApplication) (getActivity().getApplication());
             String question = questionEditText.getText().toString();
             List<String> choicesList = getChoices(choicesListView);
+            computeTimesInSeconds();
             Event pollEvent = new PollEvent(question,
                     choicesList,
                     pollTypeIsOneOfN,
-                    startDate,
-                    endDate,
-                    startTime,
-                    endTime,
+                    startTimeInSeconds,
+                    endTimeInSeconds,
                     app.getCurrentLao().getId(),
                     NO_LOCATION);
             eventCreatedListener.OnEventCreatedListener(pollEvent);
@@ -154,11 +152,6 @@ public final class PollEventCreationFragment extends AbstractEventCreationFragme
             fragmentManager.popBackStackImmediate();
         });
         return view;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        checkDates(requestCode, resultCode, data);
     }
 
     private boolean isScheduleButtonEnabled() {

@@ -82,13 +82,14 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
 
         confirmButton = view.findViewById(R.id.roll_call_confirm);
         confirmButton.setOnClickListener(v -> {
+
+            computeTimesInSeconds();
+
             if (rollCallEvent == null) {
                 rollCallEvent = new RollCallEvent(
                         rollCallTitleEditText.getText().toString(),
-                        startDate,
-                        endDate,
-                        startTime,
-                        endTime,
+                        startTimeInSeconds,
+                        endTimeInSeconds,
                         app.getCurrentLao().getId(),
                         NO_LOCATION,
                         rollCallDescriptionEditText.getText().toString(),
@@ -100,12 +101,13 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
         });
 
         openButton.setOnClickListener(v -> {
+
+            computeTimesInSeconds();
+
             rollCallEvent = new RollCallEvent(
                     rollCallTitleEditText.getText().toString(),
-                    startDate,
-                    endDate,
-                    startTime,
-                    endTime,
+                    startTimeInSeconds,
+                    endTimeInSeconds,
                     app.getCurrentLao().getId(),
                     NO_LOCATION,
                     rollCallDescriptionEditText.getText().toString(),
@@ -121,10 +123,5 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
         });
 
         return view;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        checkDates(requestCode, resultCode, data);
     }
 }

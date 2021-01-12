@@ -83,12 +83,12 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
         confirmButton = view.findViewById(R.id.meeting_event_creation_confirm);
         confirmButton.setOnClickListener(v -> {
 
+            computeTimesInSeconds();
+
             Event meetingEvent = new MeetingEvent(
                     meetingTitleEditText.getText().toString(),
-                    startDate,
-                    endDate,
-                    startTime,
-                    endTime,
+                    startTimeInSeconds,
+                    endTimeInSeconds,
                     app.getCurrentLao().getId(),
                     meetingLocationEditText.getText().toString(),
                     meetingDescriptionEditText.getText().toString());
@@ -104,10 +104,5 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
         });
 
         return view;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        checkDates(requestCode, resultCode, data);
     }
 }

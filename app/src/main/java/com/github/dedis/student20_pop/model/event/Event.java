@@ -9,6 +9,7 @@ import com.github.dedis.student20_pop.utility.security.Signature;
 
 import org.json.JSONObject;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -23,6 +24,7 @@ public class Event {
 
     private final String name;
     private final long time;
+    private final long startTime;
     private final String id;
     private final String lao;
     // Can use GeoLocation in the future
@@ -36,17 +38,18 @@ public class Event {
      * Constructor for an Event
      *
      * @param name the name of the event, can be empty
-     * @param time the creation time, can't be modified
      * @param lao  the public key of the associated LAO
+     * @param startTime the event's start time
      * @throws IllegalArgumentException if any of the parameters is null
      */
-    public Event(String name, Date time, String lao, String location, EventType type) {
-        if (name == null || time == null || lao == null || location == null || type == null) {
+    public Event(String name, String lao, long startTime, String location, EventType type) {
+        if (name == null || lao == null || location == null || type == null) {
             throw new IllegalArgumentException("Trying to create an event with null parameters");
         }
         this.name = name;
-        this.time = time.getTime() / 1000L;
-        this.id = Hash.hash(name, time.getTime());
+        this.time = Instant.now().getEpochSecond();
+        this.startTime = startTime;
+        this.id = Hash.hash(name, time);
         this.lao = Hash.hash(lao);
         this.attendees = new ObservableArrayList<>();
         this.location = location;
@@ -59,10 +62,17 @@ public class Event {
     }
 
     /**
-     * @return creation time of the LAO as Unix Timestamp, can't be modified
+     * @return creation time of the event as Unix Timestamp, can't be modified
      */
     public long getTime() {
         return time;
+    }
+
+    /**
+     * @return the start time of the event as Unix Timestamp
+     */
+    public long getStartTime() {
+        return startTime;
     }
 
     /**
