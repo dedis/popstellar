@@ -9,11 +9,20 @@ public final class Error extends Answer {
 
     private final ErrorCode error;
 
+    /**
+     * Constructor of an Error
+     *
+     * @param id of the answer
+     * @param error of the answer, contains its code and description
+     */
     public Error(int id, ErrorCode error) {
         super(id);
         this.error = error;
     }
 
+    /**
+     * Returns the error code.
+     */
     public ErrorCode getError() {
         return error;
     }

@@ -10,15 +10,27 @@ public final class ErrorCode {
     private final int code;
     private final String description;
 
+    /**
+     * Constructor of an ErrorCode
+     *
+     * @param code the code of the error, as an integer
+     * @param description the description of the error
+     */
     public ErrorCode(int code, String description) {
         this.code = code;
         this.description = description;
     }
 
+    /**
+     * Returns the code of the error.
+     */
     public int getCode() {
         return code;
     }
 
+    /**
+     * Returns the description of the error.
+     */
     public String getDescription() {
         return description;
     }
