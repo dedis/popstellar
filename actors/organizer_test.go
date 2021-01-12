@@ -15,6 +15,11 @@ import (
 	"os"
 )
 
+// The tests in this package have a rather global coverage: 
+// they indirectly test most of the functions in parser, a good chunk of the function in security, and as well of the database functions.
+// On the other hand, they admittedly do not try to test every branching path. Currently, the focus is very much on testing that correct strings are accepted rather that incorrect strings are rejected.
+// This seems a decent trade-off for time-efficiency as our code is quite prone to raising errors.
+
 
 // TODO: To not break package encapsulation, it should probably be wise to disable the two followings structs while not testing.
 type hub struct {
