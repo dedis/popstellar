@@ -13,8 +13,18 @@ public final class Broadcast extends Message {
 
     private final MessageGeneral message;
 
+    /**
+     * Constructor for a Broadcast
+     *
+     * @param channel the channel where to broadcast
+     * @param message the message to broadcast
+     * @throws IllegalArgumentException if any parameter is null
+     */
     public Broadcast(String channel, MessageGeneral message) {
         super(channel);
+        if(message == null) {
+            throw new IllegalArgumentException("Trying to broadcast a null message");
+        }
         this.message = message;
     }
 
@@ -23,6 +33,9 @@ public final class Broadcast extends Message {
         return Method.MESSAGE.getMethod();
     }
 
+    /**
+     * Returns the message of the Broadcast.
+     */
     public MessageGeneral getMessage() {
         return message;
     }

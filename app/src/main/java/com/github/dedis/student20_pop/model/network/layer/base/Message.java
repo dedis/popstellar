@@ -13,8 +13,12 @@ public abstract class Message {
      * Constructor for a Message
      *
      * @param channel the channel over which the message is sent
+     * @throws IllegalArgumentException if channel is null
      */
     protected Message(String channel) {
+        if(channel == null) {
+            throw new IllegalArgumentException("Trying to create a message with a null channel");
+        }
         this.channel = channel;
     }
 
