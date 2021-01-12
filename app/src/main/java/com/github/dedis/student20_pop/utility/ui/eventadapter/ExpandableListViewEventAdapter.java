@@ -10,11 +10,13 @@ import android.widget.TextView;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.event.Event;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import static com.github.dedis.student20_pop.model.event.Event.EventCategory.FUTURE;
 import static com.github.dedis.student20_pop.model.event.Event.EventCategory.PAST;
@@ -24,6 +26,7 @@ public abstract class ExpandableListViewEventAdapter extends BaseExpandableListA
     protected final Context context;
     protected final List<Event.EventCategory> categories;
     protected final HashMap<Event.EventCategory, List<Event>> eventsMap;
+    protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
 
     /**
      * Constructor for the expandable list view adapter to display the events

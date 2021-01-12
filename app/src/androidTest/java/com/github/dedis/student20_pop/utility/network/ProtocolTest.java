@@ -2,6 +2,8 @@ package com.github.dedis.student20_pop.utility.network;
 
 import com.github.dedis.student20_pop.model.Person;
 import com.github.dedis.student20_pop.model.network.level.high.rollcall.CreateRollCall;
+import com.github.dedis.student20_pop.utility.protocol.HighLevelProxy;
+import com.github.dedis.student20_pop.utility.protocol.ProtocolProxyFactory;
 
 import net.jodah.concurrentunit.Waiter;
 
@@ -12,6 +14,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
@@ -41,6 +44,10 @@ public class ProtocolTest {
     public static final String MESSAGE_ID = "mId";
     public static final String MESSAGE_DATA = "data";
     public static final String LOCATION = "loc";
+    public static final String ROLL_CALL_NAME = "roll";
+    public static final String DESCRIPTION = "desc";
+    public static final String ROLL_ID = "rollId";
+    public static final List<String> ATTENDEES = Arrays.asList("attendee1", "attendee2");
 
     private Server startAcceptEverythingServer() throws DeploymentException {
         Server server = new Server(HOST_NAME, PORT, "", PerfectServer.class);
@@ -61,7 +68,7 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelClientProxy proxy = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
         proxy.createLao(LAO_NAME, 0, 0, bob.getId())
                 .whenComplete((i, t) -> {
@@ -73,7 +80,7 @@ public class ProtocolTest {
             wait(REQUEST_TIMEOUT);
         }
 
-        proxy.lowLevel().purge();
+        proxy.lowLevel().purgeTimeoutRequests();
 
         waiter.await(TEST_TIMEOUT, 1);
         server.stop();
@@ -85,7 +92,7 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelClientProxy proxy = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
         proxy.createLao(LAO_NAME, 0, 0, bob.getId())
                 .whenComplete((i, t) -> {
@@ -104,7 +111,7 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelClientProxy proxy = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
         proxy.updateLao(LAO_ID, LAO_NAME, 0, Collections.singletonList(bob.getId()))
                 .whenComplete((i, t) -> {
@@ -123,9 +130,9 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelClientProxy proxy = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
-        proxy.createMeeting(LAO_ID, MEETING_NAME, 0, 0, "loc", 0, 0)
+        proxy.createMeeting(LAO_ID, MEETING_NAME, 0, 0, LOCATION, 0, 0)
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
@@ -142,7 +149,7 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelClientProxy proxy = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
         proxy.witnessMessage(LAO_ID, "mId", "data")
                 .whenComplete((i, t) -> {
@@ -161,30 +168,30 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelClientProxy proxy = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
-        proxy.createRollCall(LAO_ID, "roll", 0, 0, CreateRollCall.StartType.NOW, "loc", "desc")
+        proxy.createRollCall(LAO_ID, ROLL_CALL_NAME, 0, 0, CreateRollCall.StartType.NOW, LOCATION, DESCRIPTION)
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
                     waiter.resume();
                 });
 
-        proxy.createRollCall(LAO_ID, "roll", 0, 0, CreateRollCall.StartType.SCHEDULED, "loc", "desc")
+        proxy.createRollCall(LAO_ID, ROLL_CALL_NAME, 0, 0, CreateRollCall.StartType.SCHEDULED, LOCATION, DESCRIPTION)
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
                     waiter.resume();
                 });
 
-        proxy.createRollCall(LAO_ID, "roll", 0, 0, CreateRollCall.StartType.NOW, "loc")
+        proxy.createRollCall(LAO_ID, ROLL_CALL_NAME, 0, 0, CreateRollCall.StartType.NOW, LOCATION)
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
                     waiter.resume();
                 });
 
-        proxy.createRollCall(LAO_ID, "roll", 0, 0, CreateRollCall.StartType.SCHEDULED, "loc")
+        proxy.createRollCall(LAO_ID, ROLL_CALL_NAME, 0, 0, CreateRollCall.StartType.SCHEDULED, LOCATION)
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
@@ -201,9 +208,9 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelClientProxy proxy = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
-        proxy.openRollCall(LAO_ID, "rollId", 0)
+        proxy.openRollCall(LAO_ID, ROLL_ID, 0)
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
@@ -220,9 +227,9 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelClientProxy proxy = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
-        proxy.reopenRollCall(LAO_ID, "rollId", 0)
+        proxy.reopenRollCall(LAO_ID, ROLL_ID, 0)
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
@@ -240,9 +247,9 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelClientProxy proxy = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
-        proxy.closeRollCall(LAO_ID, "rollId", 0, 0, Arrays.asList("attendee1", "attendee2"))
+        proxy.closeRollCall(LAO_ID, ROLL_ID, 0, 0, ATTENDEES)
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
@@ -259,7 +266,7 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelClientProxy proxy = PoPClientEndpoint.connect(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
         proxy.createLao(LAO_NAME, 0, 0, bob.getId())
                 .whenComplete((i, t) -> {
@@ -289,28 +296,28 @@ public class ProtocolTest {
                     waiter.resume();
                 });
 
-        proxy.createRollCall(LAO_ID, "roll", 0, 0, CreateRollCall.StartType.NOW, "loc", "desc")
+        proxy.createRollCall(LAO_ID, ROLL_CALL_NAME, 0, 0, CreateRollCall.StartType.NOW, LOCATION, DESCRIPTION)
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
                     waiter.resume();
                 });
 
-        proxy.openRollCall(LAO_ID, "rollId", 0)
+        proxy.openRollCall(LAO_ID, ROLL_ID, 0)
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
                     waiter.resume();
                 });
 
-        proxy.reopenRollCall(LAO_ID, "rollId", 0)
+        proxy.reopenRollCall(LAO_ID, ROLL_ID, 0)
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
                     waiter.resume();
                 });
 
-        proxy.closeRollCall(LAO_ID, "rollId", 0, 0, Arrays.asList("attendee1", "attendee2"))
+        proxy.closeRollCall(LAO_ID, ROLL_ID, 0, 0, ATTENDEES)
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
