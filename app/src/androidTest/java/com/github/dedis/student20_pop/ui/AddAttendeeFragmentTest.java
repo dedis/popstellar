@@ -187,8 +187,8 @@ public class AddAttendeeFragmentTest {
             final String ATTENDEE_ID = "t9Ed+TEwDM0+u0ZLdS4ZB/Vrrnga0Lu2iMkAQtyFRrQ=";
             final String TEST_IDS = ATTENDEE_ID + LAO_ID;
 
-            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_ROLL_CALL_ATTENDEE, rollCallEvent.getId());
-
+            rollCallEvent.addAttendee(ATTENDEE_ID);
+            
             List<String> attendees = app.getEvents(app.getCurrentLao()).parallelStream()
                     .filter(event -> event.getId().equals(rollCallEvent.getId()))
                     .map(Event::getAttendees)
