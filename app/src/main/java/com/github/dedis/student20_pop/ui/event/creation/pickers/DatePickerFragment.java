@@ -48,7 +48,7 @@ public final class DatePickerFragment extends AppCompatDialogFragment implements
         getTargetFragment().onActivityResult(
                 getTargetRequestCode(),
                 Activity.RESULT_OK,
-                new Intent().putExtra(getString(R.string.picker_selection), selectedDate)
+                new Intent().putExtra(getString(R.string.picker_selection), calendar)
         );
     }
 }

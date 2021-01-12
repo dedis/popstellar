@@ -38,6 +38,7 @@ public final class TimePickerFragment extends AppCompatDialogFragment implements
      */
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+        calendar.setTimeInMillis(0L);
         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
         calendar.set(Calendar.MINUTE, minute);
 
@@ -46,7 +47,7 @@ public final class TimePickerFragment extends AppCompatDialogFragment implements
         getTargetFragment().onActivityResult(
                 getTargetRequestCode(),
                 Activity.RESULT_OK,
-                new Intent().putExtra(getString(R.string.picker_selection), selectedTime)
+                new Intent().putExtra(getString(R.string.picker_selection), calendar)
         );
     }
 }
