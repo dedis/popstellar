@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.utility.ui.eventadapter;
+package com.github.dedis.student20_pop.utility.ui.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
