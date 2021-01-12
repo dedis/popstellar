@@ -1,12 +1,12 @@
 package com.github.dedis.student20_pop.model.network.query;
 
 import com.github.dedis.student20_pop.model.Keys;
-import com.github.dedis.student20_pop.model.network.query.MessageGeneral;
-import com.github.dedis.student20_pop.model.network.query.method.Catchup;
-import com.github.dedis.student20_pop.model.network.query.Method;
-import com.github.dedis.student20_pop.model.network.query.method.Publish;
-import com.github.dedis.student20_pop.model.network.query.method.Subscribe;
-import com.github.dedis.student20_pop.model.network.query.method.Unsubscribe;
+import com.github.dedis.student20_pop.model.network.method.Catchup;
+import com.github.dedis.student20_pop.model.network.method.Method;
+import com.github.dedis.student20_pop.model.network.method.Publish;
+import com.github.dedis.student20_pop.model.network.method.Subscribe;
+import com.github.dedis.student20_pop.model.network.method.Unsubscribe;
+import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.utility.security.Hash;
 import com.github.dedis.student20_pop.utility.security.Signature;
 
