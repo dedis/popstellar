@@ -1,7 +1,7 @@
 package com.github.dedis.student20_pop.utility.network;
 
 import com.github.dedis.student20_pop.model.Person;
-import com.github.dedis.student20_pop.model.network.layer.data.rollcall.CreateRollCall;
+import com.github.dedis.student20_pop.model.network.query.data.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.utility.protocol.HighLevelProxy;
 import com.github.dedis.student20_pop.utility.protocol.ProtocolProxyFactory;
 
