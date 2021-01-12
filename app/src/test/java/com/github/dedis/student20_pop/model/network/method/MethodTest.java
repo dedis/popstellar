@@ -1,11 +1,4 @@
-package com.github.dedis.student20_pop.model.network.query;
-
-import com.github.dedis.student20_pop.model.network.method.Broadcast;
-import com.github.dedis.student20_pop.model.network.method.Catchup;
-import com.github.dedis.student20_pop.model.network.method.Method;
-import com.github.dedis.student20_pop.model.network.method.Publish;
-import com.github.dedis.student20_pop.model.network.method.Subscribe;
-import com.github.dedis.student20_pop.model.network.method.Unsubscribe;
+package com.github.dedis.student20_pop.model.network.method;
 
 import org.junit.Test;
 
