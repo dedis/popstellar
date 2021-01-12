@@ -3,12 +3,11 @@ package security
 
 import (
 	ed "crypto/ed25519"
-	"crypto/sha256"
 	b64 "encoding/base64"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"math/rand"
+	"strconv"
 	"testing"
 	"time"
 
@@ -39,7 +38,10 @@ func TestRollCallCreatedIsValid(t *testing.T) {
 	for i := 0; i < 100; i++ {
 		pubkey, privkey := createKeyPair()
 		witnessSignatures := []message2.ItemWitnessSignatures{}
-		data, err := createRollCallNow(pubkey, privkey)
+		var creation = time.Now().Unix()
+		start := creation + (MaxPropagationDelay/2)
+		name := "RollCallNow"
+		data, err := createRollCallNow(pubkey, privkey,creation,start,name)
 		if err != nil {
 			t.Error(err)
 		}
@@ -198,7 +200,7 @@ func createDataLao(orgPubkey []byte, privkey ed.PrivateKey, WitnesseKeys [][]byt
 		return message2.DataCreateLAO{}, errors.New("wrong argument -> size of public key don't respected ")
 	}
 	var itemsToHashForId []string
-	itemsToHashForId = append(itemsToHashForId, string(orgPubkey), fmt.Sprint(creation), name)
+	itemsToHashForId = append(itemsToHashForId, b64.StdEncoding.EncodeToString(orgPubkey), strconv.FormatInt(creation, 10), name)
 	idData := HashOfItems(itemsToHashForId)
 	var data = message2.DataCreateLAO{
 		Object:    "lao",
@@ -211,14 +213,11 @@ func createDataLao(orgPubkey []byte, privkey ed.PrivateKey, WitnesseKeys [][]byt
 	}
 	return data, nil
 }
-func createRollCallNow(pubkey []byte, privkey ed.PrivateKey) (message2.DataCreateRollCall, error) {
-	var creation int64 = 123
-	name := "RollCallNow"
+func createRollCallNow(pubkey []byte, privkey ed.PrivateKey,creation int64,start int64,name string) (message2.DataCreateRollCall, error) {
 	if (len(pubkey) != ed.PublicKeySize) || len(privkey) != ed.PrivateKeySize {
 		return message2.DataCreateRollCall{}, errors.New("wrong argument -> size of public key don't respected ")
 	}
-
-	idData := sha256.Sum256([]byte(string(pubkey) + fmt.Sprint(creation) + name))
+	idData := HashOfItems([]string{b64.StdEncoding.EncodeToString(pubkey) + strconv.FormatInt(creation, 10) + name})
 	var data = message2.DataCreateRollCall{
 		Object:              "roll_call",
 		Action:              "create",
@@ -226,7 +225,7 @@ func createRollCallNow(pubkey []byte, privkey ed.PrivateKey) (message2.DataCreat
 		Name:                name,
 		Creation:            creation,
 		Location:            "pas loin",
-		Start:               6,
+		Start:                start,
 		RollCallDescription: "un roll call",
 	}
 	return data, nil
@@ -240,7 +239,7 @@ func getIdofMessage(data interface{}, privkey ed.PrivateKey) (dataFlat, signed, 
 	signed = ed.Sign(privkey, dataFlat)
 
 	var itemsToHashForMessageId []string
-	itemsToHashForMessageId = append(itemsToHashForMessageId, string(dataFlat), b64.StdEncoding.EncodeToString(signed))
+	itemsToHashForMessageId = append(itemsToHashForMessageId, b64.StdEncoding.EncodeToString(dataFlat), b64.StdEncoding.EncodeToString(signed))
 	hash := HashOfItems(itemsToHashForMessageId)
 	return dataFlat, signed, hash, nil
 

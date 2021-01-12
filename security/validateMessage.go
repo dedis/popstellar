@@ -93,8 +93,10 @@ func RollCallCreatedIsValid(data message.DataCreateRollCall, laoId string) bool 
 
 	//need to meet some	where
 	location := checkStringNotEmpty(data.Location)
+	//name cannot be empty
+	name := checkStringNotEmpty(data.Name)
 
-	return creation && location && checkRollCallId(laoId, data.Creation, data.Name, data.ID)
+	return name && creation && location && checkRollCallId(laoId, data.Creation, data.Name, data.ID)
 }
 
 //checkRollCallId check if id is correct  : SHA256('R'||lao_id||creation||name)
