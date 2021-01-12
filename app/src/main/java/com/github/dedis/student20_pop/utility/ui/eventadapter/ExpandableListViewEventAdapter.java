@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.event.Event;
+import com.github.dedis.student20_pop.model.event.EventCategory;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,14 +19,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import static com.github.dedis.student20_pop.model.event.Event.EventCategory.FUTURE;
-import static com.github.dedis.student20_pop.model.event.Event.EventCategory.PAST;
-import static com.github.dedis.student20_pop.model.event.Event.EventCategory.PRESENT;
+import static com.github.dedis.student20_pop.model.event.EventCategory.FUTURE;
+import static com.github.dedis.student20_pop.model.event.EventCategory.PAST;
+import static com.github.dedis.student20_pop.model.event.EventCategory.PRESENT;
 
 public abstract class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
     protected final Context context;
-    protected final List<Event.EventCategory> categories;
-    protected final HashMap<Event.EventCategory, List<Event>> eventsMap;
+    protected final List<EventCategory> categories;
+    protected final HashMap<EventCategory, List<Event>> eventsMap;
     protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
 
     /**
@@ -212,7 +213,7 @@ public abstract class ExpandableListViewEventAdapter extends BaseExpandableListA
      * @param events
      * @param eventsMap
      */
-    private void putEventsInMap(List<Event> events, HashMap<Event.EventCategory, List<Event>> eventsMap) {
+    private void putEventsInMap(List<Event> events, HashMap<EventCategory, List<Event>> eventsMap) {
         //TODO: make the difference clear between PAST and PRESENT
         //For now, the event are put in the different categories according to their time attribute
         //Later, according to the start/end-time
@@ -236,9 +237,9 @@ public abstract class ExpandableListViewEventAdapter extends BaseExpandableListA
      *
      * @param eventsMap
      */
-    private void orderEventsInMap(HashMap<Event.EventCategory, List<Event>> eventsMap) {
+    private void orderEventsInMap(HashMap<EventCategory, List<Event>> eventsMap) {
 
-        for (Event.EventCategory category : categories) {
+        for (EventCategory category : categories) {
             Collections.sort(eventsMap.get(category), new EventComparator());
         }
         //2 possibilities: B strictly after A or B nested within A

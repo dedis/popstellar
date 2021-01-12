@@ -1,11 +1,8 @@
 package com.github.dedis.student20_pop.model;
 
 import com.github.dedis.student20_pop.utility.security.Hash;
-import com.github.dedis.student20_pop.utility.security.Signature;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,49 +21,51 @@ public final class Election {
      * Constructor of an Election
      *
      * @param name    the name of the election, can be empty
-     * @param time    the creation time, can't be modified
      * @param lao     the LAO associated to the election
      * @param options the default ballot options
      * @throws IllegalArgumentException if any of the parameters is null
      */
-    public Election(String name, Date time, String lao, List<String> options) {
-        if (name == null || time == null || lao == null || options == null || options.contains(null)) {
+    public Election(String name, String lao, List<String> options) {
+        if (name == null || lao == null || options == null || options.contains(null)) {
             throw new IllegalArgumentException("Trying to create an Election with a null value");
         }
         this.name = name;
-        this.time = time.getTime() / 1000L;
-        this.id = Hash.hash(name, time.getTime());
+        this.time = Instant.now().getEpochSecond();
+        this.id = Hash.hash(lao, time, name);
         this.lao = lao;
         this.options = options;
     }
 
+    /**
+     * Returns the name of an Election.
+     */
     public String getName() {
         return name;
     }
 
     /**
-     * @return creation time of the Election as Unix Timestamp, can't be modified
+     * Returns the creation time of the Election as Unix Timestamp, can't be modified.
      */
     public long getTime() {
         return time;
     }
 
     /**
-     * @return ID of the Election, can't be modified
+     * Returns the ID of the Election, can't be modified.
      */
     public String getId() {
         return id;
     }
 
     /**
-     * @return associated LAO
+     * Returns the associated LAO's ID.
      */
     public String getLao() {
         return lao;
     }
 
     /**
-     * @return the default ballot options
+     * Returns the default ballot options.
      */
     public List<String> getOptions() {
         return options;

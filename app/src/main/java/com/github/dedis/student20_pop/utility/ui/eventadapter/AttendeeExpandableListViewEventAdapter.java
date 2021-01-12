@@ -8,11 +8,9 @@ import android.widget.TextView;
 
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.event.Event;
+import com.github.dedis.student20_pop.model.event.EventCategory;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
-
-import static com.github.dedis.student20_pop.model.event.Event.EventCategory;
 
 /**
  * Adapter to show events of an Attendee
@@ -39,18 +37,7 @@ public class AttendeeExpandableListViewEventAdapter extends ExpandableListViewEv
      */
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-        String eventCategory = "";
-        switch ((EventCategory) getGroup(groupPosition)) {
-            case PAST:
-                eventCategory = "Past Events";
-                break;
-            case PRESENT:
-                eventCategory = "Present Events";
-                break;
-            case FUTURE:
-                eventCategory = "Future Events";
-                break;
-        }
+        String eventCategory = ((EventCategory) getGroup(groupPosition)).toString();
 
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

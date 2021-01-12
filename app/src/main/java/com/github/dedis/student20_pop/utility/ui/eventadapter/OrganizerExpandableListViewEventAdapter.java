@@ -11,15 +11,16 @@ import android.widget.TextView;
 
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.event.Event;
+import com.github.dedis.student20_pop.model.event.EventCategory;
+import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.utility.ui.organizer.OnEventTypeSelectedListener;
 
 import java.util.List;
 
-import static com.github.dedis.student20_pop.model.event.Event.EventCategory;
-import static com.github.dedis.student20_pop.model.event.Event.EventCategory.FUTURE;
-import static com.github.dedis.student20_pop.model.event.Event.EventType.MEETING;
-import static com.github.dedis.student20_pop.model.event.Event.EventType.POLL;
-import static com.github.dedis.student20_pop.model.event.Event.EventType.ROLL_CALL;
+import static com.github.dedis.student20_pop.model.event.EventCategory.FUTURE;
+import static com.github.dedis.student20_pop.model.event.EventType.MEETING;
+import static com.github.dedis.student20_pop.model.event.EventType.POLL;
+import static com.github.dedis.student20_pop.model.event.EventType.ROLL_CALL;
 
 /**
  * Adapter to show events of an Organizer
@@ -49,18 +50,7 @@ public class OrganizerExpandableListViewEventAdapter extends ExpandableListViewE
      */
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-        String eventCategory = "";
-        switch ((EventCategory) getGroup(groupPosition)) {
-            case PAST:
-                eventCategory = context.getString(R.string.past_events);
-                break;
-            case PRESENT:
-                eventCategory = context.getString(R.string.present_events);
-                break;
-            case FUTURE:
-                eventCategory = context.getString(R.string.future_events);
-                break;
-        }
+        String eventCategory = ((EventCategory) getGroup(groupPosition)).toString();
 
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -85,7 +75,7 @@ public class OrganizerExpandableListViewEventAdapter extends ExpandableListViewE
 
             builderSingle.setNegativeButton(context.getString(R.string.button_cancel), (dialog, which) -> dialog.dismiss());
             builderSingle.setAdapter(arrayAdapter, (dialog, which) -> {
-                onEventTypeSelectedListener.OnEventTypeSelectedListener(Event.EventType.values()[which]);
+                onEventTypeSelectedListener.OnEventTypeSelectedListener(EventType.values()[which]);
             });
             builderSingle.show();
         });

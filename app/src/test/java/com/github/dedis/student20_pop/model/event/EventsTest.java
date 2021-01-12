@@ -1,17 +1,15 @@
-package com.github.dedis.student20_pop.model;
+package com.github.dedis.student20_pop.model.event;
 
 import androidx.databinding.ObservableArrayList;
 
+import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.utility.security.Hash;
-import com.github.dedis.student20_pop.utility.security.Signature;
 
-import org.junit.Ignore;
+import org.json.JSONObject;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,7 +25,7 @@ public class EventsTest {
     private final Date time = (new Date());
     private final String lao = new Keys().getPublicKey();
     private final String location = "EPFL";
-    private final Event.EventType type = Event.EventType.ROLL_CALL;
+    private final EventType type = EventType.ROLL_CALL;
     private final ObservableArrayList<String> attendees = new ObservableArrayList<>();
     private final ObservableArrayList<String> attendeesWithNull = new ObservableArrayList<>();
     private final Event event1 = new Event(name1, time, lao, location, type);
@@ -54,18 +52,26 @@ public class EventsTest {
 
     @Test
     public void getIdTest() {
-        assertThat(event1.getId(), is(Hash.hash(name1, time.getTime())));
+        assertThat(event1.getId(), is(Hash.hash(type.getSuffix(), lao, time, name1)));
     }
 
     @Test
     public void getLaoTest() {
-        assertThat(event1.getLao(), is(Hash.hash(lao)));
+        assertThat(event1.getLao(), is(lao));
     }
 
     @Test
     public void setAndGetAttendeesTest() {
         event1.setAttendees(attendees);
         assertThat(event1.getAttendees(), is(attendees));
+    }
+
+    @Test
+    public void setNullAttendeesTest() {
+        attendees.addAll(Arrays.asList("0x3434", "0x3333"));
+        attendeesWithNull.addAll(Arrays.asList("0x3323", null));
+        assertThrows(IllegalArgumentException.class, () -> event1.setAttendees(null));
+        assertThrows(IllegalArgumentException.class, () -> event1.setAttendees(attendeesWithNull));
     }
 
     @Test
@@ -76,14 +82,6 @@ public class EventsTest {
     @Test
     public void getTypeTest() {
         assertThat(event1.getType(), is(type));
-    }
-
-    @Test
-    public void setNullAttendeesTest() {
-        attendees.addAll(Arrays.asList("0x3434", "0x3333"));
-        attendeesWithNull.addAll(Arrays.asList("0x3323", null));
-        assertThrows(IllegalArgumentException.class, () -> event1.setAttendees(null));
-        assertThrows(IllegalArgumentException.class, () -> event1.setAttendees(attendeesWithNull));
     }
 
     @Test

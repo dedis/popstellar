@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.event.Event;
+import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.model.event.RollCallEvent;
 import com.github.dedis.student20_pop.ui.IdentityFragment;
 import com.github.dedis.student20_pop.ui.OrganizerFragment;
@@ -111,7 +112,7 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
      * @param eventType
      */
     @Override
-    public void OnEventTypeSelectedListener(Event.EventType eventType) {
+    public void OnEventTypeSelectedListener(EventType eventType) {
         switch (eventType) {
             case MEETING:
                 showFragment(new MeetingEventCreationFragment(), MeetingEventCreationFragment.TAG);

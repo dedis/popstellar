@@ -2,7 +2,7 @@ package com.github.dedis.student20_pop.model.event;
 
 import java.util.Date;
 
-import static com.github.dedis.student20_pop.model.event.Event.EventType.MEETING;
+import static com.github.dedis.student20_pop.model.event.EventType.MEETING;
 
 /**
  * Class modelling an Meeting Event
