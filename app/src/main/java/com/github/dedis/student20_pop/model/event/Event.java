@@ -28,7 +28,7 @@ public class Event {
      *
      * @param name the name of the event, can be empty
      * @param time the creation time, can't be modified
-     * @param lao  the public key of the associated LAO
+     * @param lao  the ID of the associated LAO
      * @throws IllegalArgumentException if any of the parameters is null
      */
     public Event(String name, Date time, String lao, String location, EventType type) {

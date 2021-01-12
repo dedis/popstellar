@@ -66,40 +66,10 @@ public final class Lao {
     }
 
     /**
-     * Get the list of ids from a given list of LAOs
-     *
-     * @param laos the list of LAOs
-     * @return list of ids of these LAOs
+     * Returns the name of the LAO.
      */
-    public static List<String> getIds(List<Lao> laos) {
-        if (laos == null || laos.contains(null)) {
-            throw new IllegalArgumentException("Cannot get ids of null LAOs");
-        }
-        List<String> ids = new ArrayList<>();
-        for (Lao lao : laos) {
-            ids.add(lao.id);
-        }
-        return ids;
-    }
-
     public String getName() {
         return name;
-    }
-
-    /**
-     * Modifying the name of the LAO creates a new id and attestation
-     *
-     * @param name new name for the LAO, can be empty
-     * @return new LAO with the new name, id and attestation
-     * @throws IllegalArgumentException if the name is null
-     */
-    public Lao setName(String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("Trying to set null as the name of the LAO");
-        } else if (name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Trying to set an empty name for the LAO");
-        }
-        return new Lao(name, time, id, organizer, witnesses, members, events);
     }
 
     /**
@@ -114,6 +84,23 @@ public final class Lao {
      */
     public String getId() {
         return id;
+    }
+
+    /**
+     * Get the list of ids from a given list of LAOs
+     *
+     * @param laos the list of LAOs
+     * @return list of ids of these LAOs
+     */
+    public static List<String> getIds(List<Lao> laos) {
+        if (laos == null || laos.contains(null)) {
+            throw new IllegalArgumentException("Cannot get ids of null LAOs");
+        }
+        List<String> ids = new ArrayList<>();
+        for (Lao lao : laos) {
+            ids.add(lao.id);
+        }
+        return ids;
     }
 
     /**
@@ -142,6 +129,22 @@ public final class Lao {
      */
     public List<String> getEvents() {
         return events;
+    }
+
+    /**
+     * Modifying the name of the LAO creates a new id and attestation
+     *
+     * @param name new name for the LAO, can be empty
+     * @return new LAO with the new name, id and attestation
+     * @throws IllegalArgumentException if the name is null
+     */
+    public Lao setName(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Trying to set null as the name of the LAO");
+        } else if (name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Trying to set an empty name for the LAO");
+        }
+        return new Lao(name, time, id, organizer, witnesses, members, events);
     }
 
     /**
