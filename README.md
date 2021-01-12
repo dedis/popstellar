@@ -8,6 +8,7 @@ Proof-of-personhood, fall 2020: Android native front-end
 
 ## Technicalities
 * The [R class in Android](https://stackoverflow.com/questions/4953077/what-is-the-class-r-in-android) is an auto-generated class containing the resource IDs all the resources of res/directory.
+* The keys are encoded in Base64 and stored as Strings, to acces the table of bytes one must decode the following way: `Base64.getDecoder().decode`
 
 ## Setup
 For cloning, use `--recursive` as the project contains submodules.

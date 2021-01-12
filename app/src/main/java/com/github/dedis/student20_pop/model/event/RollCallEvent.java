@@ -5,7 +5,7 @@ import androidx.databinding.ObservableArrayList;
 import java.util.Date;
 import java.util.Objects;
 
-import static com.github.dedis.student20_pop.model.event.Event.EventType.ROLL_CALL;
+import static com.github.dedis.student20_pop.model.event.EventType.ROLL_CALL;
 import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.ADD_ATTENDEE_ALREADY_EXISTS;
 import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.ADD_ATTENDEE_SUCCESSFUL;
 
@@ -28,7 +28,8 @@ public final class RollCallEvent extends Event {
      * @param lao
      * @param location
      */
-    public RollCallEvent(String name, Date startDate, Date endDate, Date startTime, Date endTime, String lao, String location, String description, ObservableArrayList<String> attendees) {
+    public RollCallEvent(String name, Date startDate, Date endDate, Date startTime, Date endTime, String lao,
+                         String location, String description, ObservableArrayList<String> attendees) {
         super(name, startDate, lao, location, ROLL_CALL);
 
         this.startDate = startDate;
