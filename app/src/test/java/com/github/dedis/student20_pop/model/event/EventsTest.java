@@ -20,8 +20,8 @@ import static org.junit.Assert.assertThrows;
 
 public class EventsTest {
 
-    private final String name1 = new Keys().getPublicKey();
-    private final String name2 = new Keys().getPublicKey();
+    private final String name1 = "Event 1";
+    private final String name2 = "Event 2";
     private final Date time = (new Date());
     private final String lao = new Keys().getPublicKey();
     private final String location = "EPFL";
@@ -43,16 +43,19 @@ public class EventsTest {
     @Test
     public void getNameTest() {
         assertThat(event1.getName(), is(name1));
+        assertThat(event2.getName(), is(name2));
     }
 
     @Test
     public void getTimeTest() {
         assertThat(event1.getTime(), is(time.getTime() / 1000L));
+        assertThat(event2.getTime(), is(time.getTime() / 1000L));
     }
 
     @Test
     public void getIdTest() {
         assertThat(event1.getId(), is(Hash.hash(type.getSuffix(), lao, time, name1)));
+        assertThat(event2.getId(), is(Hash.hash(type.getSuffix(), lao, time, name2)));
     }
 
     @Test
