@@ -1,6 +1,7 @@
 package com.github.dedis.student20_pop.model.event;
 
 import androidx.databinding.ObservableArrayList;
+import androidx.databinding.ObservableList;
 
 import com.github.dedis.student20_pop.utility.security.Hash;
 
@@ -17,7 +18,7 @@ public class Event {
     private final long startTime;
     private final String id;
     private final String lao;
-    private ObservableArrayList<String> attendees;
+    private ObservableList<String> attendees;
     private final String location;
     private final EventType type;
 
@@ -81,7 +82,7 @@ public class Event {
     /**
      * Returns the list of public keys of the attendees.
      */
-    public ObservableArrayList<String> getAttendees() {
+    public ObservableList<String> getAttendees() {
         return attendees;
     }
 
