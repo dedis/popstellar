@@ -276,6 +276,7 @@ public class OrganizerFragmentTest {
             final String LAO_ID = app.getCurrentLao().getId();
             final String WITNESS_ID = "t9Ed+TEwDM0+u0ZLdS4ZB/Vrrnga0Lu2iMkAQtyFRrQ=";
             final String TEST_IDS = WITNESS_ID + LAO_ID;
+            app.addWitness(WITNESS_ID);
 
             ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_WITNESS, null);
 
@@ -285,8 +286,6 @@ public class OrganizerFragmentTest {
                     Assert.assertThat(WITNESS_ID, isIn(witnesses));
                 }
             }
-
-            ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_WITNESS, null);
         });
 
         onView(withText(getApplicationContext().getString(R.string.add_witness_already_exists)))
