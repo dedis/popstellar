@@ -11,11 +11,20 @@ public final class Result extends Answer {
 
     private final JsonElement result;
 
+    /**
+     * Constructor of a Result
+     *
+     * @param id of the answer
+     * @param result of the answer
+     */
     public Result(int id, JsonElement result) {
         super(id);
         this.result = result;
     }
 
+    /**
+     * Returns the result of the answer.
+     */
     public JsonElement getResult() {
         return result;
     }

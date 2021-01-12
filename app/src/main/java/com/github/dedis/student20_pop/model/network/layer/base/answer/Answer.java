@@ -12,10 +12,18 @@ public abstract class Answer {
 
     private final int id;
 
+    /**
+     * Constructor of an Answer
+     *
+     * @param id of the answer
+     */
     public Answer(int id) {
         this.id = id;
     }
 
+    /**
+     * Returns the ID of the answer
+     */
     public int getId() {
         return id;
     }
