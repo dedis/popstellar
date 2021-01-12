@@ -41,9 +41,14 @@ func TestRollCallCreatedIsValid(t *testing.T) {
 		var creation = time.Now().Unix()
 		start := creation + (MaxPropagationDelay/2)
 		name := "RollCallNow"
-		data, err := createRollCallNow(pubkey, privkey,creation,start,name)
+		lao_id := []byte("12345")
+		data, err := createRollCallNow(pubkey, privkey,creation,start,name,lao_id)
 		if err != nil {
 			t.Error(err)
+		}
+		valid := RollCallCreatedIsValid(data, string(lao_id))
+		if valid != true {
+			t.Errorf("Created Lao Should be valid %#v", data)
 		}
 		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures)
 		if err != nil {
@@ -67,27 +72,42 @@ func TestLAOIsValid(t *testing.T) {
 		if valid != true {
 			t.Errorf("Created Lao Should be valid %#v", data)
 		}
-		//==================invalid Tests========================//
 	}
 }
-// TODO (should be not empty but) not in the protospecs ?
-func TestLAOEmptyName(t *testing.T) {
-	//increase nb of tests
-	for i := 0; i < 100; i++ {
+
+//==================invalid Tests========================//
+
+func TestLAOInvalidName(t *testing.T) {
 		pubkey, privkey := createKeyPair()
 		witnessKeys := [][]byte{}
 		var creation = time.Now().Unix()
+		// TODO (should be not empty but) not in the protospecs ?
 		name := ""
 		data, err := createDataLao(pubkey, privkey, witnessKeys, creation, name)
 		if err != nil {
 			t.Error(err)
 		}
 		valid := LAOIsValid(data, true)
-		if valid != false {
+		if valid == true {
 			t.Errorf("Created Lao Should be invalid due to empty location %#v", data)
-		}
 	}
 }
+func TestLAOInvalidId(t *testing.T) {
+	pubkey, privkey := createKeyPair()
+	witnessKeys := [][]byte{}
+	var creation = time.Now().Unix()
+	name := "helloo"
+	data, err := createDataLao(pubkey, privkey, witnessKeys, creation, name)
+	if err != nil {
+		t.Error(err)
+	}
+	data.ID = []byte("123456")
+	valid := LAOIsValid(data, true)
+	if valid == true {
+		t.Errorf("Created Lao Should be invalid due to incorrect id %#v", data)
+	}
+}
+
 func TestLAOIInvalidCreationTime(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
@@ -213,11 +233,13 @@ func createDataLao(orgPubkey []byte, privkey ed.PrivateKey, WitnesseKeys [][]byt
 	}
 	return data, nil
 }
-func createRollCallNow(pubkey []byte, privkey ed.PrivateKey,creation int64,start int64,name string) (message2.DataCreateRollCall, error) {
+func createRollCallNow(pubkey []byte, privkey ed.PrivateKey,creation int64,start int64,name string,lao_id  []byte) (message2.DataCreateRollCall, error) {
 	if (len(pubkey) != ed.PublicKeySize) || len(privkey) != ed.PrivateKeySize {
 		return message2.DataCreateRollCall{}, errors.New("wrong argument -> size of public key don't respected ")
 	}
-	idData := HashOfItems([]string{b64.StdEncoding.EncodeToString(pubkey) + strconv.FormatInt(creation, 10) + name})
+	var elementsToHashForDataId []string
+	elementsToHashForDataId = append(elementsToHashForDataId, "R", b64.StdEncoding.EncodeToString(lao_id), strconv.FormatInt(creation, 10), name)
+	idData := HashOfItems(elementsToHashForDataId)
 	var data = message2.DataCreateRollCall{
 		Object:              "roll_call",
 		Action:              "create",
