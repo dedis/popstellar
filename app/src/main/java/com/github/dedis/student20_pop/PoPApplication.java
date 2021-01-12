@@ -35,7 +35,7 @@ import static com.github.dedis.student20_pop.model.event.Event.EventType.POLL;
 public class PoPApplication extends Application {
     public static final String TAG = PoPApplication.class.getSimpleName();
     public static final String SP_PERSON_ID_KEY = "SHARED_PREFERENCES_PERSON_ID";
-    public static final String USERNAME = "USERNAME"; //TODO: let user choose/change its name
+    public static final String USERNAME = "USERNAME";
 
     private static final URI LOCAL_BACKEND_URI = URI.create("ws://10.0.2.2:2000");
 
