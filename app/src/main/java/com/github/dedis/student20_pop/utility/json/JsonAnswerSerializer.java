@@ -13,7 +13,7 @@ import com.google.gson.JsonSerializer;
 
 import java.lang.reflect.Type;
 
-public class JsonResultSerializer implements JsonSerializer<Answer>, JsonDeserializer<Answer> {
+public class JsonAnswerSerializer implements JsonSerializer<Answer>, JsonDeserializer<Answer> {
 
     private static final String RESULT = "result";
     private static final String ERROR = "error";

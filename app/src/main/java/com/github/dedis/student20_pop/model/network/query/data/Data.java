@@ -11,8 +11,20 @@ import com.github.dedis.student20_pop.model.network.query.data.rollcall.CreateRo
 import com.github.dedis.student20_pop.model.network.query.data.rollcall.OpenRollCall;
 
 import java.util.Collections;
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+
+import static com.github.dedis.student20_pop.model.network.query.data.Action.CLOSE;
+import static com.github.dedis.student20_pop.model.network.query.data.Action.CREATE;
+import static com.github.dedis.student20_pop.model.network.query.data.Action.OPEN;
+import static com.github.dedis.student20_pop.model.network.query.data.Action.STATE;
+import static com.github.dedis.student20_pop.model.network.query.data.Action.UPDATE;
+import static com.github.dedis.student20_pop.model.network.query.data.Action.WITNESS;
+import static com.github.dedis.student20_pop.model.network.query.data.Objects.LAO;
+import static com.github.dedis.student20_pop.model.network.query.data.Objects.MEETING;
+import static com.github.dedis.student20_pop.model.network.query.data.Objects.MESSAGE;
+import static com.github.dedis.student20_pop.model.network.query.data.Objects.ROLL_CALL;
 
 /**
  * An abstract high level message
@@ -20,39 +32,56 @@ import java.util.Map;
 public abstract class Data {
 
     /**
-     * A mapping of object -> action -> class
+     * A mapping of (object, action) -> class
      */
-    public static final Map<Objects, Map<Action, Class<? extends Data>>> messages = buildMessagesMap();
+    private static final Map<EntryPair, Class<? extends Data>> messages = buildMessagesMap();
 
-    private static Map<Objects, Map<Action, Class<? extends Data>>> buildMessagesMap() {
+    /**
+     * Create an entry pair given obj and action
+     * @param obj of the pair
+     * @param action of the pair
+     * @return the pair
+     */
+    private static EntryPair pair(Objects obj, Action action) {
+        return new EntryPair(obj, action);
+    }
+
+    /**
+     * Build the protocol messages map
+     * @return the built map (Unmodifiable)
+     */
+    private static Map<EntryPair, Class<? extends Data>> buildMessagesMap() {
+        Map<EntryPair, Class<? extends Data>> messagesMap = new HashMap<>();
+
         //Lao
-        Map<Action, Class<? extends Data>> laoMap = new EnumMap<>(Action.class);
-        laoMap.put(Action.CREATE, CreateLao.class);
-        laoMap.put(Action.UPDATE, UpdateLao.class);
-        laoMap.put(Action.STATE, StateLao.class);
+        messagesMap.put(pair(LAO, CREATE), CreateLao.class);
+        messagesMap.put(pair(LAO, UPDATE), UpdateLao.class);
+        messagesMap.put(pair(LAO, STATE), StateLao.class);
 
         //Meeting
-        Map<Action, Class<? extends Data>> meetingMap = new EnumMap<>(Action.class);
-        meetingMap.put(Action.CREATE, CreateMeeting.class);
-        meetingMap.put(Action.STATE, StateMeeting.class);
+        messagesMap.put(pair(MEETING, CREATE), CreateMeeting.class);
+        messagesMap.put(pair(MEETING, STATE), StateMeeting.class);
 
         //Message
-        Map<Action, Class<? extends Data>> messageMap = new EnumMap<>(Action.class);
-        messageMap.put(Action.WITNESS, WitnessMessage.class);
+        messagesMap.put(pair(MESSAGE, WITNESS), WitnessMessage.class);
 
         //Roll Call
-        Map<Action, Class<? extends Data>> rollCall = new EnumMap<>(Action.class);
-        rollCall.put(Action.CREATE, CreateRollCall.class);
-        rollCall.put(Action.OPEN, OpenRollCall.class);
-        rollCall.put(Action.CLOSE, CloseRollCall.class);
-
-        Map<Objects, Map<Action, Class<? extends Data>>> messagesMap = new EnumMap<>(Objects.class);
-        messagesMap.put(Objects.LAO, Collections.unmodifiableMap(laoMap));
-        messagesMap.put(Objects.MEETING, Collections.unmodifiableMap(meetingMap));
-        messagesMap.put(Objects.MESSAGE, Collections.unmodifiableMap(messageMap));
-        messagesMap.put(Objects.ROLL_CALL, Collections.unmodifiableMap(rollCall));
+        messagesMap.put(pair(ROLL_CALL, CREATE), CreateRollCall.class);
+        messagesMap.put(pair(ROLL_CALL, OPEN), OpenRollCall.class);
+        messagesMap.put(pair(ROLL_CALL, CLOSE), CloseRollCall.class);
 
         return Collections.unmodifiableMap(messagesMap);
+    }
+
+    /**
+     * Return the class assigned to the pair (obj, action)
+     *
+     * @param obj of the entry
+     * @param action of the entry
+     * @return the class assigned to the pair of empty if none are defined
+     */
+    public static Optional<Class<? extends Data>> getType(Objects obj, Action action) {
+        return Optional.ofNullable(messages.get(pair(obj, action)));
     }
 
     /**
@@ -64,4 +93,39 @@ public abstract class Data {
      * Returns the action the message is handling.
      */
     public abstract String getAction();
+
+    /**
+     * Entry of the messages map.
+     * A pair of (Objects, Action)
+     */
+    private static final class EntryPair {
+
+        private final Objects object;
+        private final Action action;
+
+        /**
+         * Constructor for the EntryPair
+         *
+         * @param object of the pair
+         * @param action of the pair
+         */
+        private EntryPair(Objects object, Action action) {
+            this.object = object;
+            this.action = action;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            EntryPair entryPair = (EntryPair) o;
+            return object == entryPair.object &&
+                    action == entryPair.action;
+        }
+
+        @Override
+        public int hashCode() {
+            return java.util.Objects.hash(object, action);
+        }
+    }
 }
