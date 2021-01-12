@@ -38,7 +38,7 @@ func MeetingCreatedIsValid(data message.DataCreateMeeting, laoId string) bool {
 	creation := checkCreationTimeValidity(data.Creation)
 
 	//we start after the creation and we end after the start
-	if data.Start < data.Creation || data.End < data.Start {
+	if data.Start < data.Creation || (data.End != 0 && data.End < data.Start) {
 		log.Printf("timestamps not logic. Either end is before start, or start before creation.")
 		return false
 	}
