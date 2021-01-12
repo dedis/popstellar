@@ -334,6 +334,13 @@ func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, query
 		return nil, lib.ErrInvalidResource
 	}
 
+	//we provide the id of the channel
+	laoId := strings.TrimPrefix(canal, "/root/")
+	if !security.MeetingCreatedIsValid(data, laoId) {
+		log.Printf("Meeting data invalid. Meeting not created")
+		return nil, lib.ErrInvalidResource
+	}
+
 	meeting := event.Meeting{
 		ID:       string(data.ID),
 		Name:     data.Name,
@@ -648,7 +655,7 @@ func (o *Organizer) handleCloseRollCall(msg message.Message, chann string, query
 
 	closeRollCall, err := parser.ParseDataCloseRollCall(msg.Data)
 	if err != nil {
-		log.Printf("unable to analyse params in handlOpenRollCall()")
+		log.Printf("unable to analyse params in handleCloseRollCall()")
 		return nil, lib.ErrRequestDataInvalid
 	}
 	//retrieve roll Call to open from database
@@ -656,7 +663,7 @@ func (o *Organizer) handleCloseRollCall(msg message.Message, chann string, query
 
 	rollCallData, err := parser.ParseDataCreateRollCall(storedRollCall)
 	if err != nil {
-		log.Printf("unable to parse stored roll call infos in handleOpenRollRall()")
+		log.Printf("unable to parse stored roll call infos in handleCloseRollCall()")
 		return nil, err
 	}
 
