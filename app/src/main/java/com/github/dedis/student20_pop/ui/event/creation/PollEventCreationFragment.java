@@ -136,14 +136,14 @@ public final class PollEventCreationFragment extends AbstractEventCreationFragme
             String question = questionEditText.getText().toString();
             List<String> choicesList = getChoices(choicesListView);
             Event pollEvent = new PollEvent(question,
-                    choicesList,
-                    pollTypeIsOneOfN,
                     startDate,
                     endDate,
                     startTime,
                     endTime,
                     app.getCurrentLao().getId(),
-                    NO_LOCATION);
+                    NO_LOCATION,
+                    choicesList,
+                    pollTypeIsOneOfN);
             eventCreatedListener.OnEventCreatedListener(pollEvent);
 
             fragmentManager.popBackStackImmediate();

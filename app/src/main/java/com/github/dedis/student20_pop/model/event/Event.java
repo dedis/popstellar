@@ -21,7 +21,6 @@ public class Event {
     private ObservableArrayList<String> attendees;
     private final String location;
     private final EventType type;
-    private final JSONObject other;
 
     /**
      * Constructor for an Event
@@ -42,7 +41,6 @@ public class Event {
         this.attendees = new ObservableArrayList<>();
         this.location = location;
         this.type = type;
-        this.other = new JSONObject();
     }
 
     /**
@@ -118,12 +116,11 @@ public class Event {
                 Objects.equals(lao, event.lao) &&
                 Objects.equals(attendees, event.attendees) &&
                 Objects.equals(location, event.location) &&
-                Objects.equals(type, event.type) &&
-                Objects.equals(other, event.other);
+                Objects.equals(type, event.type);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, time, id, lao, attendees, location, type, other);
+        return Objects.hash(name, time, id, lao, attendees, location, type);
     }
 }
