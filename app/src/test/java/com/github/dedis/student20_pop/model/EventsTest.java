@@ -78,17 +78,6 @@ public class EventsTest {
         assertThat(event1.getType(), is(type));
     }
 
-    @Ignore("Need the private key of the organizer, will test later")
-    @Test
-    public void getAttestationTest() {
-        //TODO: get private key of organizer
-        String organizer = new Keys().getPrivateKey();
-        String data = name1 + time + lao + location;
-        ArrayList<String> attestation = new ArrayList<>(Collections.singletonList(
-                Signature.sign(organizer, data)));
-        assertThat(event1.getAttestation(), is(attestation));
-    }
-
     @Test
     public void setNullAttendeesTest() {
         attendees.addAll(Arrays.asList("0x3434", "0x3333"));

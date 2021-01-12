@@ -35,7 +35,7 @@ import static com.github.dedis.student20_pop.model.event.Event.EventType.POLL;
 public class PoPApplication extends Application {
     public static final String TAG = PoPApplication.class.getSimpleName();
     public static final String SP_PERSON_ID_KEY = "SHARED_PREFERENCES_PERSON_ID";
-    public static final String USERNAME = "USERNAME"; //TODO: let user choose/change its name
+    public static final String USERNAME = "USERNAME";
 
     private static final URI LOCAL_BACKEND_URI = URI.create("ws://10.0.2.2:2000");
 
@@ -96,7 +96,7 @@ public class PoPApplication extends Application {
             }
         }
 
-        currentLao = new Lao("LAO I just joined", new Date(), person.getId());
+        currentLao = new Lao("LAO I just joined", person.getId());
         dummyLaoEventsMap = dummyLaoEventMap();
         laoWitnessMap.put(currentLao, new ArrayList<>());
 
@@ -150,7 +150,7 @@ public class PoPApplication extends Application {
      * @return the current lao
      */
     public Lao getCurrentLao() {
-        return currentLao;
+        return  currentLao;
     }
 
     /**
@@ -166,27 +166,21 @@ public class PoPApplication extends Application {
      * @return list of LAOs corresponding to the user
      */
     public List<Lao> getLaos() {
-        return new ArrayList<>(dummyLaoEventsMap.keySet());
-        //TODO when connected to backend
-        //return new ArrayList<>(laoEventsMap.keySet());
+        return new ArrayList<>(laoEventsMap.keySet());
     }
 
     /**
      * @return map of LAOs as keys and lists of events corresponding to the lao as values
      */
     public Map<Lao, List<Event>> getLaoEventsMap() {
-        return dummyLaoEventsMap;
-        //TODO when connected to backend
-        //return laoEventsMap;
+        return laoEventsMap;
     }
 
     /**
      * @return the list of Events associated with the given LAO, null if lao is not in the map
      */
     public List<Event> getEvents(Lao lao) {
-        return dummyLaoEventsMap.get(lao);
-        //TODO when connected to backend
-        //return laoEventsMap.get(lao);
+        return laoEventsMap.get(lao);
     }
 
     /**
@@ -343,10 +337,10 @@ public class PoPApplication extends Application {
         String notMyPublicKey = new Keys().getPublicKey();
 
         map.put(currentLao, events);
-        map.put(new Lao("LAO 1", new Date(), notMyPublicKey), events);
-        map.put(new Lao("LAO 2", new Date(), notMyPublicKey), events);
-        map.put(new Lao("My LAO 3", new Date(), person.getId()), events);
-        map.put(new Lao("LAO 4", new Date(), notMyPublicKey), events);
+        map.put(new Lao("LAO 1", notMyPublicKey), events);
+        map.put(new Lao("LAO 2", notMyPublicKey), events);
+        map.put(new Lao("My LAO 3", person.getId()), events);
+        map.put(new Lao("LAO 4", notMyPublicKey), events);
         return map;
     }
 

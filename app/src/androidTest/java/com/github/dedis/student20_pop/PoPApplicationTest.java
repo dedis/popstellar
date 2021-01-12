@@ -29,7 +29,7 @@ import static org.junit.Assert.assertTrue;
 public class PoPApplicationTest {
 
     private final Person person = new Person(PoPApplication.USERNAME);
-    private final Lao lao1 = new Lao("LAO1", new Date(), person.getId());
+    private final Lao lao1 = new Lao("LAO1", person.getId());
     private final String witness1 = "Alphonse";
     private final String witness2 = "Bertrand";
     private final ArrayList<String> witnesses = new ArrayList<>(Arrays.asList(witness1, witness2));
