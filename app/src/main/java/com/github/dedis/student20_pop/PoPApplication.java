@@ -150,7 +150,7 @@ public class PoPApplication extends Application {
      * @return the current lao
      */
     public Lao getCurrentLao() {
-        return currentLao;
+        return  currentLao;
     }
 
     /**
