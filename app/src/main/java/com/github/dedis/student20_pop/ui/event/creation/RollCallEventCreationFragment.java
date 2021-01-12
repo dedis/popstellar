@@ -90,9 +90,9 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
                         startTime,
                         endTime,
                         app.getCurrentLao().getId(),
+                        new ObservableArrayList<>(),
                         NO_LOCATION,
-                        rollCallDescriptionEditText.getText().toString(),
-                        new ObservableArrayList<>()
+                        rollCallDescriptionEditText.getText().toString()
                 );
             }
             eventCreatedListener.OnEventCreatedListener(rollCallEvent);
@@ -107,9 +107,9 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
                     startTime,
                     endTime,
                     app.getCurrentLao().getId(),
+                    new ObservableArrayList<>(),
                     NO_LOCATION,
-                    rollCallDescriptionEditText.getText().toString(),
-                    new ObservableArrayList<>()
+                    rollCallDescriptionEditText.getText().toString()
             );
             eventCreatedListener.OnEventCreatedListener(rollCallEvent);
             onAddAttendeesListener.onAddAttendeesListener(rollCallEvent.getId());
