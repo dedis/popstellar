@@ -12,30 +12,30 @@ import java.util.List;
  */
 public class StateLao extends Data {
 
-    private final String id; //Hash (organizer + creation + name)
+    private final String id;
     private final String name;
     private final long creation;
-    private final long last_modified;
+    private final long lastModified;
     private final String organizer;
     private final List<String> witnesses;
 
-    public StateLao(String id, String name, long creation, long last_modified, String organizer, List<String> witnesses) {
+    /**
+     * Constructor for a data State LAO
+     *
+     * @param id of the LAO state message, Hash(organizer||creation||name)
+     * @param name name of the LAO
+     * @param creation time of creation
+     * @param lastModified time of last modification
+     * @param organizer id of the LAO's organizer
+     * @param witnesses list of witnesses of the LAO
+     */
+    public StateLao(String id, String name, long creation, long lastModified, String organizer, List<String> witnesses) {
         this.id = id;
         this.name = name;
         this.creation = creation;
-        this.last_modified = last_modified;
+        this.lastModified = lastModified;
         this.organizer = organizer;
         this.witnesses = witnesses;
-    }
-
-    @Override
-    public String getObject() {
-        return Objects.LAO.getObject();
-    }
-
-    @Override
-    public String getAction() {
-        return Action.STATE.getAction();
     }
 
     public String getId() {
@@ -51,7 +51,7 @@ public class StateLao extends Data {
     }
 
     public long getLast_modified() {
-        return last_modified;
+        return lastModified;
     }
 
     public String getOrganizer() {
@@ -60,6 +60,16 @@ public class StateLao extends Data {
 
     public List<String> getWitnesses() {
         return new ArrayList<>(witnesses);
+    }
+
+    @Override
+    public String getObject() {
+        return Objects.LAO.getObject();
+    }
+
+    @Override
+    public String getAction() {
+        return Action.STATE.getAction();
     }
 
     @Override
@@ -86,7 +96,7 @@ public class StateLao extends Data {
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", creation=" + creation +
-                ", last_modified=" + last_modified +
+                ", last_modified=" + lastModified +
                 ", organizer='" + organizer + '\'' +
                 ", witnesses=" + witnesses +
                 '}';

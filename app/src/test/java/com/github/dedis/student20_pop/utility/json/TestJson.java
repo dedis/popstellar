@@ -7,11 +7,11 @@ import com.github.dedis.student20_pop.model.network.layer.data.lao.CreateLao;
 import com.github.dedis.student20_pop.model.network.layer.data.lao.StateLao;
 import com.github.dedis.student20_pop.model.network.layer.data.lao.UpdateLao;
 import com.github.dedis.student20_pop.model.network.layer.data.meeting.CreateMeeting;
+import com.github.dedis.student20_pop.model.network.layer.data.meeting.StateMeeting;
 import com.github.dedis.student20_pop.model.network.layer.data.message.WitnessMessage;
 import com.github.dedis.student20_pop.model.network.layer.data.rollcall.CloseRollCall;
 import com.github.dedis.student20_pop.model.network.layer.data.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.model.network.layer.data.rollcall.OpenRollCall;
-import com.github.dedis.student20_pop.model.network.layer.data.rollcall.ReopenRollCall;
 import com.github.dedis.student20_pop.model.network.layer.base.Broadcast;
 import com.github.dedis.student20_pop.model.network.layer.base.Catchup;
 import com.github.dedis.student20_pop.model.network.layer.base.Message;
@@ -111,7 +111,7 @@ public class TestJson {
 
     @Test
     public void testCreateLao() throws JsonProcessingException, ProcessingException {
-        testData(new CreateLao("id", "name", 12L, 202L, "organizer", Arrays.asList("witness1", "witness2")));
+        testData(new CreateLao("id", "name", 12L, "organizer", Arrays.asList("witness1", "witness2")));
     }
 
     @Test
@@ -121,7 +121,7 @@ public class TestJson {
 
     @Test
     public void testUpdateLao() throws JsonProcessingException, ProcessingException {
-        testData(new UpdateLao("name", 202L, Arrays.asList("witness1", "witness2")));
+        testData(new UpdateLao("id", "name", 202L, Arrays.asList("witness1", "witness2")));
     }
 
     @Test
@@ -131,7 +131,7 @@ public class TestJson {
 
     @Test
     public void testStateMeeting() throws JsonProcessingException, ProcessingException {
-        testData(new CreateMeeting("id", "name", 12L, 202L, "location", 40, 231));
+        testData(new StateMeeting("id", "name", 12L, 202L, "location", 40, 231));
     }
 
     @Test
@@ -150,11 +150,6 @@ public class TestJson {
     @Test
     public void testOpenRollCall() throws JsonProcessingException, ProcessingException {
         testData(new OpenRollCall("id", 32));
-    }
-
-    @Test
-    public void testReopenRollCall() throws JsonProcessingException, ProcessingException {
-        testData(new ReopenRollCall("id", 32));
     }
 
     @Test

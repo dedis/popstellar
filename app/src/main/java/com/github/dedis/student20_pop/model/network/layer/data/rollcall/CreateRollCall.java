@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Data sent to create a roll call
+ * Data sent to create a Roll-Call
  */
 public class CreateRollCall extends Data {
 
@@ -22,9 +22,21 @@ public class CreateRollCall extends Data {
     private transient final long start;
     private transient final StartType startType;
     private final String location;
+
     @Nullable
     private transient final String description;
 
+    /**
+     * Constructor for a data Create Roll-Call Event
+     *
+     * @param id of the Roll-Call creation message, Hash("R"||laoId||creation||name)
+     * @param name name of the Roll-Call
+     * @param creation time of creation
+     * @param start of the Roll-Call
+     * @param startType of the Roll-Call, either scheduled or now
+     * @param location location of the Roll-Call
+     * @param description can be null
+     */
     public CreateRollCall(String id, String name, long creation, long start, StartType startType, String location, @Nullable String description) {
         this.id = id;
         this.name = name;
@@ -33,16 +45,6 @@ public class CreateRollCall extends Data {
         this.startType = startType;
         this.location = location;
         this.description = description;
-    }
-
-    @Override
-    public String getObject() {
-        return Objects.ROLL_CALL.getObject();
-    }
-
-    @Override
-    public String getAction() {
-        return Action.CREATE.getAction();
     }
 
     public String getId() {
@@ -71,6 +73,16 @@ public class CreateRollCall extends Data {
 
     public Optional<String> getDescription() {
         return Optional.ofNullable(description);
+    }
+
+    @Override
+    public String getObject() {
+        return Objects.ROLL_CALL.getObject();
+    }
+
+    @Override
+    public String getAction() {
+        return Action.CREATE.getAction();
     }
 
     @Override

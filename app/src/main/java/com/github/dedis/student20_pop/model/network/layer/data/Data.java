@@ -9,7 +9,6 @@ import com.github.dedis.student20_pop.model.network.layer.data.message.WitnessMe
 import com.github.dedis.student20_pop.model.network.layer.data.rollcall.CloseRollCall;
 import com.github.dedis.student20_pop.model.network.layer.data.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.model.network.layer.data.rollcall.OpenRollCall;
-import com.github.dedis.student20_pop.model.network.layer.data.rollcall.ReopenRollCall;
 
 import java.util.Collections;
 import java.util.EnumMap;
@@ -45,7 +44,6 @@ public abstract class Data {
         Map<Action, Class<? extends Data>> rollCall = new EnumMap<>(Action.class);
         rollCall.put(Action.CREATE, CreateRollCall.class);
         rollCall.put(Action.OPEN, OpenRollCall.class);
-        rollCall.put(Action.REOPEN, ReopenRollCall.class);
         rollCall.put(Action.CLOSE, CloseRollCall.class);
 
         Map<Objects, Map<Action, Class<? extends Data>>> messagesMap = new EnumMap<>(Objects.class);
@@ -58,12 +56,12 @@ public abstract class Data {
     }
 
     /**
-     * @return the object the message is referring to
+     * Returns the object the message is referring to.
      */
     public abstract String getObject();
 
     /**
-     * @return the action the message is handling
+     * Returns the action the message is handling.
      */
     public abstract String getAction();
 }
