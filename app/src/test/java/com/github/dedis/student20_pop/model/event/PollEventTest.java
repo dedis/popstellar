@@ -4,6 +4,7 @@ import com.github.dedis.student20_pop.model.Keys;
 
 import org.junit.Test;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -19,35 +20,19 @@ public class PollEventTest {
 
     private final String name1 = "Poll 1";
     private final String name2 = "Poll 2";
-    private final Date startDate = (new Date());
-    private final Date endDate = (new Date());
-    private final Date startTime = (new Date());
-    private final Date endTime = (new Date());
+    private final long startTime = Instant.now().getEpochSecond();
+    private final long endTime = Instant.now().getEpochSecond();
     private final String lao = new Keys().getPublicKey();
     private final String location = "EPFL";
     private final List<String> choices = new ArrayList<>(Arrays.asList("Yes", "No"));
     private final List<String> choicesNull = new ArrayList<>(Arrays.asList("Yes", null));
-    private final PollEvent event1 = new PollEvent(name1, startDate, endDate, startTime, endTime, lao, location, choices, true);
-    private final PollEvent event2 = new PollEvent(name2, startDate, endDate, startTime, endTime, lao, location, choices, false);
+    private final PollEvent event1 = new PollEvent(name1, startTime, endTime, lao, location, choices, true);
+    private final PollEvent event2 = new PollEvent(name2,startTime, endTime, lao, location, choices, false);
 
     @Test
     public void createEventWithNullParametersTest() {
-        assertThrows(IllegalArgumentException.class, () -> new PollEvent(name1, null, endDate, startTime, endTime, lao, location, choices, true));
-        assertThrows(IllegalArgumentException.class, () -> new PollEvent(name1, startDate, null, startTime, endTime, lao, location, choices, true));
-        assertThrows(IllegalArgumentException.class, () -> new PollEvent(name1, startDate, endDate, null, endTime, lao, location, choices, true));
-        assertThrows(IllegalArgumentException.class, () -> new PollEvent(name1, startDate, endDate, startTime, null, lao, location, choices, true));
-        assertThrows(IllegalArgumentException.class, () -> new PollEvent(name1, startDate, endDate, startTime, endTime, lao, location, null, true));
-        assertThrows(IllegalArgumentException.class, () -> new PollEvent(name1, startDate, endDate, startTime, endTime, lao, location, choicesNull, true));
-    }
-
-    @Test
-    public void getStartDateTest() {
-        assertThat(event1.getStartDate(), is(startDate));
-    }
-
-    @Test
-    public void getEndDateTest() {
-        assertThat(event1.getEndDate(), is(endDate));
+        assertThrows(IllegalArgumentException.class, () -> new PollEvent(name1, startTime, endTime, lao, location, null, true));
+        assertThrows(IllegalArgumentException.class, () -> new PollEvent(name1, startTime, endTime, lao, location, choicesNull, true));
     }
 
     @Test

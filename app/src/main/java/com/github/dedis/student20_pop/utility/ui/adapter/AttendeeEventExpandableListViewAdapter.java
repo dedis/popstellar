@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Adapter to show events of an Attendee
  */
-public class AttendeeExpandableListViewEventAdapter extends ExpandableListViewEventAdapter {
+public class AttendeeEventExpandableListViewAdapter extends EventExpandableListViewAdapter {
 
     /**
      * Constructor for the expandable list view adapter to display the events
@@ -24,7 +24,7 @@ public class AttendeeExpandableListViewEventAdapter extends ExpandableListViewEv
      * @param context
      * @param events  the list of events of the lao
      */
-    public AttendeeExpandableListViewEventAdapter(Context context, List<Event> events) {
+    public AttendeeEventExpandableListViewAdapter(Context context, List<Event> events) {
         super(context, events);
     }
 

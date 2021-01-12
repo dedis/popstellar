@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.utility.ui.organizer;
+package com.github.dedis.student20_pop.utility.ui.listener;
 
 import com.github.dedis.student20_pop.model.event.EventType;
 

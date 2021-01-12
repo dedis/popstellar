@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 
-public class EventsTest {
+public class EventTest {
 
     private final String name1 = new Keys().getPublicKey();
     private final String name2 = new Keys().getPublicKey();

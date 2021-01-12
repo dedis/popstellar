@@ -19,8 +19,8 @@ import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.event.Event;
-import com.github.dedis.student20_pop.utility.ui.WitnessListAdapter;
-import com.github.dedis.student20_pop.utility.ui.eventadapter.AttendeeExpandableListViewEventAdapter;
+import com.github.dedis.student20_pop.utility.ui.adapter.WitnessListViewAdapter;
+import com.github.dedis.student20_pop.utility.ui.adapter.AttendeeEventExpandableListViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ import java.util.List;
 public class AttendeeFragment extends Fragment {
 
     public static final String TAG = AttendeeFragment.class.getSimpleName();
-    private AttendeeExpandableListViewEventAdapter listViewEventAdapter;
+    private AttendeeEventExpandableListViewAdapter listViewEventAdapter;
     private ExpandableListView expandableListView;
     private Lao lao;
     private Button propertiesButton;
@@ -49,7 +49,7 @@ public class AttendeeFragment extends Fragment {
         List<Event> events = app.getEvents(lao);
         //Display Events
         expandableListView = rootView.findViewById(R.id.exp_list_view);
-        listViewEventAdapter = new AttendeeExpandableListViewEventAdapter(this.getActivity(), events);
+        listViewEventAdapter = new AttendeeEventExpandableListViewAdapter(this.getActivity(), events);
         expandableListView.setAdapter(listViewEventAdapter);
         expandableListView.expandGroup(0);
         expandableListView.expandGroup(1);
@@ -58,7 +58,7 @@ public class AttendeeFragment extends Fragment {
         View propertiesView = rootView.findViewById(R.id.properties_view);
         ((TextView) propertiesView.findViewById(R.id.organization_name)).setText(lao.getName());
 
-        final WitnessListAdapter adapter = new WitnessListAdapter(getActivity(), (ArrayList<String>) app.getWitnesses(lao));
+        final WitnessListViewAdapter adapter = new WitnessListViewAdapter(getActivity(), (ArrayList<String>) app.getWitnesses(lao));
 
         witnessesListView = propertiesView.findViewById(R.id.witness_list);
         witnessesListView.setAdapter(adapter);

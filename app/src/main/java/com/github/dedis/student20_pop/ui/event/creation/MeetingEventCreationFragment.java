@@ -1,7 +1,6 @@
 package com.github.dedis.student20_pop.ui.event.creation;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -19,7 +18,7 @@ import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.MeetingEvent;
-import com.github.dedis.student20_pop.utility.ui.organizer.OnEventCreatedListener;
+import com.github.dedis.student20_pop.utility.ui.listener.OnEventCreatedListener;
 
 /**
  * Fragment that shows up when user wants to create a Meeting Event

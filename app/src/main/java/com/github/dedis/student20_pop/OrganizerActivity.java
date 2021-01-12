@@ -29,10 +29,10 @@ import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeSca
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraNotAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
-import com.github.dedis.student20_pop.utility.ui.organizer.OnAddAttendeesListener;
-import com.github.dedis.student20_pop.utility.ui.organizer.OnAddWitnessListener;
-import com.github.dedis.student20_pop.utility.ui.organizer.OnEventCreatedListener;
-import com.github.dedis.student20_pop.utility.ui.organizer.OnEventTypeSelectedListener;
+import com.github.dedis.student20_pop.utility.ui.listener.OnAddAttendeesListener;
+import com.github.dedis.student20_pop.utility.ui.listener.OnAddWitnessListener;
+import com.github.dedis.student20_pop.utility.ui.listener.OnEventCreatedListener;
+import com.github.dedis.student20_pop.utility.ui.listener.OnEventTypeSelectedListener;
 
 import java.util.Optional;
 

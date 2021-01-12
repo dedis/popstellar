@@ -24,7 +24,7 @@ import static com.github.dedis.student20_pop.model.event.EventCategory.FUTURE;
 import static com.github.dedis.student20_pop.model.event.EventCategory.PAST;
 import static com.github.dedis.student20_pop.model.event.EventCategory.PRESENT;
 
-public abstract class ExpandableListViewEventAdapter extends BaseExpandableListAdapter {
+public abstract class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     protected final Context context;
     protected final List<EventCategory> categories;
     protected final HashMap<EventCategory, List<Event>> eventsMap;
@@ -37,7 +37,7 @@ public abstract class ExpandableListViewEventAdapter extends BaseExpandableListA
      * @param context
      * @param events  the list of events of the lao
      */
-    public ExpandableListViewEventAdapter(Context context, List<Event> events) {
+    public EventExpandableListViewAdapter(Context context, List<Event> events) {
         this.context = context;
         this.eventsMap = new HashMap<>();
         this.categories = new ArrayList<>();
