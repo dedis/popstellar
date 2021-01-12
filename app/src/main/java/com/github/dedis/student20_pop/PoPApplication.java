@@ -328,9 +328,9 @@ public class PoPApplication extends Application {
     private Map<Lao, List<Event>> dummyLaoEventMap() {
         Map<Lao, List<Event>> map = new HashMap<>();
         List<Event> events = new ArrayList<>();
-        Event event1 = new Event("Future Event 1", new Keys().getPublicKey(), Instant.now().getEpochSecond(), "EPFL", POLL);
+        Event event1 = new Event("Future Event 1", new Keys().getPublicKey(), 2617547969L, "EPFL", POLL);
         Event event2 = new Event("Present Event 1", new Keys().getPublicKey(), Instant.now().getEpochSecond(), "Somewhere", DISCUSSION);
-        Event event3 = new Event("Past Event 1", new Keys().getPublicKey(), Instant.now().getEpochSecond(), "Here", MEETING);
+        Event event3 = new Event("Past Event 1", new Keys().getPublicKey(), 1481643086L, "Here", MEETING);
         events.add(event1);
         events.add(event2);
         events.add(event3);
