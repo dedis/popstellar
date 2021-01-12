@@ -42,13 +42,12 @@ public final class DatePickerFragment extends AppCompatDialogFragment implements
         calendar.set(Calendar.YEAR, year);
         calendar.set(Calendar.MONTH, month);
         calendar.set(Calendar.DAY_OF_MONTH, day);
-        String selectedDate = DATE_FORMAT.format(calendar.getTime());
 
         // send date back to the target fragment
         getTargetFragment().onActivityResult(
                 getTargetRequestCode(),
                 Activity.RESULT_OK,
-                new Intent().putExtra(getString(R.string.picker_selection), selectedDate)
+                new Intent().putExtra(getString(R.string.picker_selection), calendar)
         );
     }
 }

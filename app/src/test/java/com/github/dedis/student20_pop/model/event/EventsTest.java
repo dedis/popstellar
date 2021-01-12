@@ -3,14 +3,12 @@ package com.github.dedis.student20_pop.model.event;
 import androidx.databinding.ObservableArrayList;
 
 import com.github.dedis.student20_pop.model.Keys;
-import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.utility.security.Hash;
 
-import org.json.JSONObject;
 import org.junit.Test;
 
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -20,24 +18,23 @@ import static org.junit.Assert.assertThrows;
 
 public class EventsTest {
 
-    private final String name1 = "Event 1";
-    private final String name2 = "Event 2";
-    private final Date time = (new Date());
+    private final String name1 = new Keys().getPublicKey();
+    private final String name2 = new Keys().getPublicKey();
+    private final long startTime = Instant.now().getEpochSecond();
     private final String lao = new Keys().getPublicKey();
     private final String location = "EPFL";
     private final EventType type = EventType.ROLL_CALL;
     private final ObservableArrayList<String> attendees = new ObservableArrayList<>();
     private final ObservableArrayList<String> attendeesWithNull = new ObservableArrayList<>();
-    private final Event event1 = new Event(name1, time, lao, location, type);
-    private final Event event2 = new Event(name2, time, lao, location, type);
+    private final Event event1 = new Event(name1, lao, startTime, location, type);
+    private final Event event2 = new Event(name2, lao, startTime, location, type);
 
     @Test
     public void createEventWithNullParametersTest() {
-        assertThrows(IllegalArgumentException.class, () -> new Event(null, time, lao, location, type));
-        assertThrows(IllegalArgumentException.class, () -> new Event(name1, null, lao, location, type));
-        assertThrows(IllegalArgumentException.class, () -> new Event(name1, time, null, location, type));
-        assertThrows(IllegalArgumentException.class, () -> new Event(name1, time, lao, null, type));
-        assertThrows(IllegalArgumentException.class, () -> new Event(name1, time, lao, location, null));
+        assertThrows(IllegalArgumentException.class, () -> new Event(null, lao, startTime, location, type));
+        assertThrows(IllegalArgumentException.class, () -> new Event(name1, null, startTime, location, type));
+        assertThrows(IllegalArgumentException.class, () -> new Event(name1, lao, startTime, null, type));
+        assertThrows(IllegalArgumentException.class, () -> new Event(name1, lao, startTime, location, null));
     }
 
     @Test
@@ -47,15 +44,14 @@ public class EventsTest {
     }
 
     @Test
-    public void getTimeTest() {
-        assertThat(event1.getTime(), is(time.getTime() / 1000L));
-        assertThat(event2.getTime(), is(time.getTime() / 1000L));
+    public void getStartTimeTest() {
+    assertThat(event1.getStartTime(), is(startTime));
     }
 
     @Test
     public void getIdTest() {
-        assertThat(event1.getId(), is(Hash.hash(type.getSuffix(), lao, time, name1)));
-        assertThat(event2.getId(), is(Hash.hash(type.getSuffix(), lao, time, name2)));
+        assertThat(event1.getId(), is(Hash.hash(type.getSuffix(), lao, event1.getTime(), name1)));
+        assertThat(event2.getId(), is(Hash.hash(type.getSuffix(), lao, event2.getTime(), name2)));
     }
 
     @Test

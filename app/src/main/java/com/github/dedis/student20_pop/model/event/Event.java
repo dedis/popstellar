@@ -4,9 +4,7 @@ import androidx.databinding.ObservableArrayList;
 
 import com.github.dedis.student20_pop.utility.security.Hash;
 
-import org.json.JSONObject;
-
-import java.util.Date;
+import java.time.Instant;
 import java.util.Objects;
 
 /**
@@ -16,6 +14,7 @@ public class Event {
 
     private final String name;
     private final long time;
+    private final long startTime;
     private final String id;
     private final String lao;
     private ObservableArrayList<String> attendees;
@@ -26,16 +25,17 @@ public class Event {
      * Constructor for an Event
      *
      * @param name the name of the event, can be empty
-     * @param time the creation time, can't be modified
-     * @param lao  the ID of the associated LAO
+     * @param lao  the public key of the associated LAO
+     * @param startTime the event's start time
      * @throws IllegalArgumentException if any of the parameters is null
      */
-    public Event(String name, Date time, String lao, String location, EventType type) {
-        if (name == null || time == null || lao == null || location == null || type == null) {
+    public Event(String name, String lao, long startTime, String location, EventType type) {
+        if (name == null || lao == null || location == null || type == null) {
             throw new IllegalArgumentException("Trying to create an event with null parameters");
         }
         this.name = name;
-        this.time = time.getTime() / 1000L;
+        this.time = Instant.now().getEpochSecond();
+        this.startTime = startTime;
         this.id = Hash.hash(type.getSuffix(), lao, time, name);
         this.lao = lao;
         this.attendees = new ObservableArrayList<>();
@@ -55,6 +55,13 @@ public class Event {
      */
     public long getTime() {
         return time;
+    }
+
+    /**
+     * Returns the start time of the event as Unix Timestamp
+     */
+    public long getStartTime() {
+        return startTime;
     }
 
     /**
