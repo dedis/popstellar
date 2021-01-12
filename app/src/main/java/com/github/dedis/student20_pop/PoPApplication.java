@@ -40,7 +40,7 @@ public class PoPApplication extends Application {
 
     private static final URI LOCAL_BACKEND_URI = URI.create("ws://10.0.2.2:2000");
 
-    private Map<Lao, List<Event>> laoEventsMap = new HashMap<>(); //final?
+    private final Map<Lao, List<Event>> laoEventsMap = new HashMap<>();
     private final Map<Lao, List<String>> laoWitnessMap = new HashMap<>();
     private final Map<URI, HighLevelProxy> openSessions = new HashMap<>();
 
@@ -99,7 +99,6 @@ public class PoPApplication extends Application {
 
         currentLao = new Lao("LAO I just joined", person.getId());
         dummyLaoEventsMap = dummyLaoEventMap();
-        laoEventsMap = dummyLaoEventsMap;
         laoWitnessMap.put(currentLao, new ArrayList<>());
 
         localProxy = getProxy(LOCAL_BACKEND_URI);
