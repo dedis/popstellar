@@ -1,12 +1,13 @@
 package com.github.dedis.student20_pop.model.event;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 
 import static com.github.dedis.student20_pop.model.event.EventType.MEETING;
 
 /**
- * Class modeling an Meeting Event
+ * Class modeling a Meeting Event
  */
 public class MeetingEvent extends Event {
 
@@ -31,8 +32,8 @@ public class MeetingEvent extends Event {
      */
     public MeetingEvent(String name, Date startDate, Date endDate, Date startTime, Date endTime,
                         String lao, String location, String description) {
-        super(name, startDate, lao, location, MEETING);
-        if (endDate == null || startTime == null || endTime == null | description == null) {
+        super(name, Calendar.getInstance().getTime(), lao, location, MEETING);
+        if (startDate == null || endDate == null || startTime == null || endTime == null | description == null) {
             throw new IllegalArgumentException("Trying to create a meeting event with null parameters");
         }
         this.startDate = startDate;
