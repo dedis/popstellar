@@ -12,7 +12,6 @@ import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttend
  * Class modelling a Roll-Call event
  */
 public final class RollCallEvent extends Event {
-    private final long startTime;
     private final long endTime;
     private final String description;
 
@@ -25,7 +24,6 @@ public final class RollCallEvent extends Event {
      */
     public RollCallEvent(String name, long startTime, long endTime, String lao, String location, String description, ObservableArrayList<String> attendees) {
         super(name, lao, startTime, location, ROLL_CALL);
-        this.startTime = startTime;
         this.endTime = endTime;
         this.description = description;
         this.setAttendees(attendees);

@@ -8,7 +8,6 @@ import java.util.List;
  * Class modelling a poll event
  */
 public final class PollEvent extends Event {
-    private final long startTime;
     private final long endTime;
     private final List<String> choices;
     private final boolean oneOfN;
@@ -22,7 +21,6 @@ public final class PollEvent extends Event {
      */
     public PollEvent(String question, List<String> choices, boolean oneOfN, long startTime, long endTime, String lao, String location) {
         super(question, lao, startTime, location, EventType.POLL);
-        this.startTime = startTime;
         this.endTime = endTime;
         this.choices = choices;
         this.oneOfN = oneOfN;
