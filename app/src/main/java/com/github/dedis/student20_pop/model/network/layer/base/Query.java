@@ -10,12 +10,21 @@ public abstract class Query extends Message {
 
     private final transient int id;
 
+    /**
+     * Constructor for a Query
+     *
+     * @param channel name of the channel
+     * @param id request ID of the query
+     */
     protected Query(String channel, int id) {
         super(channel);
         this.id = id;
     }
 
-    public int getRequestID() {
+    /**
+     * Returns the request ID.
+     */
+    public int getRequestId() {
         return id;
     }
 

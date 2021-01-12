@@ -16,7 +16,7 @@ public final class Broadcast extends Message {
     /**
      * Constructor for a Broadcast
      *
-     * @param channel the channel where to broadcast
+     * @param channel name of the channel
      * @param message the message to broadcast
      * @throws IllegalArgumentException if any parameter is null
      */

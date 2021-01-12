@@ -42,7 +42,7 @@ public class JsonLowMessageSerializer implements JsonSerializer<Message>, JsonDe
         JsonObject obj = context.serialize(new JsonRPCRequest(JsonUtils.JSON_RPC_VERSION, src.getMethod(), params)).getAsJsonObject();
 
         if (src instanceof Query)
-            obj.addProperty(JsonUtils.JSON_REQUEST_ID, ((Query) src).getRequestID());
+            obj.addProperty(JsonUtils.JSON_REQUEST_ID, ((Query) src).getRequestId());
 
         return obj;
     }
