@@ -111,4 +111,22 @@ public final class RollCallEvent extends Event {
         ADD_ATTENDEE_ALREADY_EXISTS,
         ADD_ATTENDEE_UNSUCCESSFUL
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        RollCallEvent that = (RollCallEvent) o;
+        return Objects.equals(startDate, that.startDate) &&
+                Objects.equals(endDate, that.endDate) &&
+                Objects.equals(startTime, that.startTime) &&
+                Objects.equals(endTime, that.endTime) &&
+                Objects.equals(description, that.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), startDate, endDate, startTime, endTime, description);
+    }
 }
