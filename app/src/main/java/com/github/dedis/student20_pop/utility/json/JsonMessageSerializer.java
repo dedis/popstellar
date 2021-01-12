@@ -1,8 +1,8 @@
 package com.github.dedis.student20_pop.utility.json;
 
-import com.github.dedis.student20_pop.model.network.query.data.Action;
-import com.github.dedis.student20_pop.model.network.query.data.Data;
-import com.github.dedis.student20_pop.model.network.query.data.Objects;
+import com.github.dedis.student20_pop.model.network.query.Message;
+import com.github.dedis.student20_pop.model.network.query.Method;
+import com.github.dedis.student20_pop.model.network.query.Query;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -12,43 +12,50 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import java.lang.reflect.Type;
-import java.util.Map;
 
 /**
- * Json serializer and deserializer for the high level messages
+ * Json serializer and deserializer for the low level messages
  */
-public class JsonMessageSerializer implements JsonSerializer<Data>, JsonDeserializer<Data> {
-
-    private static final String OBJECT = "object";
-    private static final String ACTION = "action";
+public class JsonMessageSerializer implements JsonSerializer<Message>, JsonDeserializer<Message> {
 
     @Override
-    public Data deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        JsonObject obj = json.getAsJsonObject();
-        Objects object = Objects.find(obj.get(OBJECT).getAsString());
-        Action action = Action.find(obj.get(ACTION).getAsString());
+    public Message deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        JsonRPCRequest container = context.deserialize(json, JsonRPCRequest.class);
+        JsonUtils.testRPCVersion(container.jsonrpc);
 
-        if (object == null)
-            throw new JsonParseException("Unknown object type : " + obj.get(OBJECT).getAsString());
-        if (action == null)
-            throw new JsonParseException("Unknown action type : " + obj.get(ACTION).getAsString());
+        Method method = Method.find(container.method);
+        if (method == null)
+            throw new JsonParseException("Unknown method type " + container.method);
+        JsonObject params = container.params;
 
-        Map<Action, Class<? extends Data>> actionClassMap = Data.messages.get(object);
-        if (actionClassMap == null)
-            throw new JsonParseException("Unknown object type : " + obj.get(OBJECT).getAsString());
+        // If the Channeled Data is a Query, we need to give the params the id the the request
+        if (method.expectResult())
+            params.add(JsonUtils.JSON_REQUEST_ID, json.getAsJsonObject().get(JsonUtils.JSON_REQUEST_ID));
 
-        Class<? extends Data> clazz = actionClassMap.get(action);
-        if (clazz == null)
-            throw new JsonParseException("The pair " + object.getObject() + "/" + action.getAction() + " does not exists");
-
-        return context.deserialize(json, clazz);
+        return context.deserialize(params, method.getDataClass());
     }
 
     @Override
-    public JsonElement serialize(Data src, Type typeOfSrc, JsonSerializationContext context) {
-        JsonObject obj = context.serialize(src).getAsJsonObject();
-        obj.addProperty(OBJECT, src.getObject());
-        obj.addProperty(ACTION, src.getAction());
+    public JsonElement serialize(Message src, Type typeOfSrc, JsonSerializationContext context) {
+        JsonObject params = context.serialize(src).getAsJsonObject();
+
+        JsonObject obj = context.serialize(new JsonRPCRequest(JsonUtils.JSON_RPC_VERSION, src.getMethod(), params)).getAsJsonObject();
+
+        if (src instanceof Query)
+            obj.addProperty(JsonUtils.JSON_REQUEST_ID, ((Query) src).getRequestId());
+
         return obj;
+    }
+
+    private static final class JsonRPCRequest {
+        private final String jsonrpc;
+        private final String method;
+        private final JsonObject params;
+
+        private JsonRPCRequest(String jsonrpc, String method, JsonObject params) {
+            this.jsonrpc = jsonrpc;
+            this.method = method;
+            this.params = params;
+        }
     }
 }
