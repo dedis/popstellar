@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 
-public class BroadcastTest {
+public class MessageTest {
 
     private final Keys sender = new Keys();
     private final String data = "data";

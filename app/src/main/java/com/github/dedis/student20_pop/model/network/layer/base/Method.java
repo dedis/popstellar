@@ -35,19 +35,6 @@ public enum Method {
     }
 
     /**
-     * Find a given Method
-     *
-     * @param method to find
-     * @return the enum method
-     */
-    public static Method find(String method) {
-        for (Method a : ALL)
-            if (a.method.equals(method))
-                return a;
-        return null;
-    }
-
-    /**
      * Returns the name of the Method.
      */
     public String getMethod() {
@@ -66,5 +53,18 @@ public enum Method {
      */
     public boolean expectResult() {
         return expectResult;
+    }
+
+    /**
+     * Find a given Method
+     *
+     * @param method to find
+     * @return the enum method
+     */
+    public static Method find(String method) {
+        for (Method a : ALL)
+            if (a.method.equals(method))
+                return a;
+        return null;
     }
 }
