@@ -8,44 +8,23 @@ import static com.github.dedis.student20_pop.model.event.Event.EventType.MEETING
  * Class modelling an Meeting Event
  */
 public class MeetingEvent extends Event {
-    private final Date startDate;
-    private final Date endDate;
-    private final Date startTime;
-    private final Date endTime;
+    private final long endTime;
     private final String description;
 
     /**
      * @param name
-     * @param startDate
-     * @param endDate
      * @param startTime
      * @param endTime
      * @param lao
      * @param location
      */
-    public MeetingEvent(String name, Date startDate, Date endDate, Date startTime, Date endTime, String lao, String location, String description) {
-        super(name, startDate, lao, location, MEETING);
-
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.startTime = startTime;
+    public MeetingEvent(String name, long startTime, long endTime, String lao, String location, String description) {
+        super(name, lao, startTime, location, MEETING);
         this.endTime = endTime;
         this.description = description;
     }
 
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public Date getEndTime() {
+    public long getEndTime() {
         return endTime;
     }
 

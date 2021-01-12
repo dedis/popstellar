@@ -2,7 +2,6 @@ package com.github.dedis.student20_pop.model.event;
 
 import androidx.databinding.ObservableArrayList;
 
-import java.util.Date;
 import java.util.Objects;
 
 import static com.github.dedis.student20_pop.model.event.Event.EventType.ROLL_CALL;
@@ -13,45 +12,24 @@ import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttend
  * Class modelling a Roll-Call event
  */
 public final class RollCallEvent extends Event {
-    private final Date startDate;
-    private final Date endDate;
-    private final Date startTime;
-    private final Date endTime;
+    private final long endTime;
     private final String description;
 
     /**
      * @param name
-     * @param startDate
-     * @param endDate
      * @param startTime
      * @param endTime
      * @param lao
      * @param location
      */
-    public RollCallEvent(String name, Date startDate, Date endDate, Date startTime, Date endTime, String lao, String location, String description, ObservableArrayList<String> attendees) {
-        super(name, startDate, lao, location, ROLL_CALL);
-
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.startTime = startTime;
+    public RollCallEvent(String name, long startTime, long endTime, String lao, String location, String description, ObservableArrayList<String> attendees) {
+        super(name, lao, startTime, location, ROLL_CALL);
         this.endTime = endTime;
         this.description = description;
         this.setAttendees(attendees);
     }
 
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public Date getEndTime() {
+    public long getEndTime() {
         return endTime;
     }
 
