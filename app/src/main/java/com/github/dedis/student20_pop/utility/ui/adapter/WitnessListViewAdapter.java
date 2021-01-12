@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.utility.ui;
+package com.github.dedis.student20_pop.utility.ui.adapter;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -16,11 +16,11 @@ import java.util.ArrayList;
 /**
  * Adapter to show witnesses of an Event
  */
-public class WitnessListAdapter extends BaseAdapter {
+public class WitnessListViewAdapter extends BaseAdapter {
     private final Context context;
     private final ArrayList<String> witnesses;
 
-    public WitnessListAdapter(Context context, ArrayList<String> witnesses) {
+    public WitnessListViewAdapter(Context context, ArrayList<String> witnesses) {
         this.context = context;
         this.witnesses = witnesses;
     }

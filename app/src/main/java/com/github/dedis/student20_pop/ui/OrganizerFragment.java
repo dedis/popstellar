@@ -22,11 +22,11 @@ import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.event.Event;
-import com.github.dedis.student20_pop.utility.ui.WitnessListAdapter;
-import com.github.dedis.student20_pop.utility.ui.eventadapter.OrganizerExpandableListViewEventAdapter;
-import com.github.dedis.student20_pop.utility.ui.organizer.OnAddWitnessListener;
-import com.github.dedis.student20_pop.utility.ui.organizer.OnEventCreatedListener;
-import com.github.dedis.student20_pop.utility.ui.organizer.OnEventTypeSelectedListener;
+import com.github.dedis.student20_pop.utility.ui.adapter.WitnessListViewAdapter;
+import com.github.dedis.student20_pop.utility.ui.adapter.OrganizerEventExpandableListViewAdapter;
+import com.github.dedis.student20_pop.utility.ui.listener.OnAddWitnessListener;
+import com.github.dedis.student20_pop.utility.ui.listener.OnEventCreatedListener;
+import com.github.dedis.student20_pop.utility.ui.listener.OnEventTypeSelectedListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +77,7 @@ public class OrganizerFragment extends Fragment {
         laoNameTextView = propertiesView.findViewById(R.id.organization_name);
         laoNameTextView.setText(lao.getName());
 
-        final WitnessListAdapter adapter = new WitnessListAdapter(getActivity(), (ArrayList<String>) app.getWitnesses(lao));
+        final WitnessListViewAdapter adapter = new WitnessListViewAdapter(getActivity(), (ArrayList<String>) app.getWitnesses(lao));
         ListView witnessesListView = propertiesView.findViewById(R.id.witness_list);
         witnessesListView.setAdapter(adapter);
 
@@ -112,7 +112,7 @@ public class OrganizerFragment extends Fragment {
 
         //Display Events
         ExpandableListView expandableListView = rootView.findViewById(R.id.organizer_expandable_list_view);
-        OrganizerExpandableListViewEventAdapter listViewEventAdapter = new OrganizerExpandableListViewEventAdapter(this.getActivity(), events, onEventTypeSelectedListener);
+        OrganizerEventExpandableListViewAdapter listViewEventAdapter = new OrganizerEventExpandableListViewAdapter(this.getActivity(), events, onEventTypeSelectedListener);
         expandableListView.setAdapter(listViewEventAdapter);
         expandableListView.expandGroup(0);
         expandableListView.expandGroup(1);

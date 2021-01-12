@@ -13,7 +13,7 @@ import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventCategory;
 import com.github.dedis.student20_pop.model.event.EventType;
-import com.github.dedis.student20_pop.utility.ui.organizer.OnEventTypeSelectedListener;
+import com.github.dedis.student20_pop.utility.ui.listener.OnEventTypeSelectedListener;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ import static com.github.dedis.student20_pop.model.event.EventType.ROLL_CALL;
 /**
  * Adapter to show events of an Organizer
  */
-public class OrganizerExpandableListViewEventAdapter extends ExpandableListViewEventAdapter {
+public class OrganizerEventExpandableListViewAdapter extends EventExpandableListViewAdapter {
     private final OnEventTypeSelectedListener onEventTypeSelectedListener;
 
     /**
@@ -35,7 +35,7 @@ public class OrganizerExpandableListViewEventAdapter extends ExpandableListViewE
      * @param context
      * @param events  the list of events of the lao
      */
-    public OrganizerExpandableListViewEventAdapter(Context context, List<Event> events, OnEventTypeSelectedListener onEventTypeSelectedListener) {
+    public OrganizerEventExpandableListViewAdapter(Context context, List<Event> events, OnEventTypeSelectedListener onEventTypeSelectedListener) {
         super(context, events);
         this.onEventTypeSelectedListener = onEventTypeSelectedListener;
     }

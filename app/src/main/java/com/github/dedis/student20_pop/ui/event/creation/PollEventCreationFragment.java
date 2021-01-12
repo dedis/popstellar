@@ -23,8 +23,8 @@ import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.PollEvent;
-import com.github.dedis.student20_pop.utility.ui.ChoicesListViewAdapter;
-import com.github.dedis.student20_pop.utility.ui.organizer.OnEventCreatedListener;
+import com.github.dedis.student20_pop.utility.ui.adapter.ChoicesListViewAdapter;
+import com.github.dedis.student20_pop.utility.ui.listener.OnEventCreatedListener;
 
 import java.util.ArrayList;
 import java.util.List;
