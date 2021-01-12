@@ -102,7 +102,7 @@ func RollCallCreatedIsValid(data message.DataCreateRollCall, laoId string) bool 
 //checkRollCallId check if id is correct  : SHA256('R'||lao_id||creation||name)
 func checkRollCallId(laoId string, creation int64, name string, id []byte) bool {
 	var elementsToHashForDataId []string
-	elementsToHashForDataId = append(elementsToHashForDataId, "R", laoId, strconv.FormatInt(creation, 10), name)
+	elementsToHashForDataId = append(elementsToHashForDataId, "R", b64.StdEncoding.EncodeToString([]byte(laoId)), strconv.FormatInt(creation, 10), name)
 	hash := HashOfItems(elementsToHashForDataId)
 	if !bytes.Equal(id, hash) {
 		log.Printf("ID of RollCall invalid: %v should be: %v", string(id), string(hash[:]))
