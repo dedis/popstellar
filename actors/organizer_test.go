@@ -122,9 +122,8 @@ func getCorrectDataCreateRollCallNow(publicKey []byte) string {
 }
 
 // getCorrectDataCreateRollCallLater generate a example JSON string of the data field of a request for rollcall creation starting at a scheduled time
-func getCorrectDataCreateRollCallLater(publicKey []byte) string {
+func getCorrectDataCreateRollCallLater(publicKey []byte, creationstr string) string {
 	//pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
-	creationstr := strconv.FormatInt(time.Now().Unix(), 10)
 	startstr := strconv.FormatInt(time.Now().Unix()+1000, 10)
 	tohash := lib.ComputeAsJsonArray([]string{"R","LAO_id",creationstr,"my_roll_call"})
 	hashid := sha256.Sum256( []byte(tohash) )
@@ -144,9 +143,8 @@ func getCorrectDataCreateRollCallLater(publicKey []byte) string {
 }
 
 // getCorrectDataOpenRollCall generate a example JSON string of the data field of a request for opening a rollcall at a previously scheduled time
-func getCorrectDataOpenRollCall(publicKey []byte) string {
+func getCorrectDataOpenRollCall(publicKey []byte, creationstr string) string {
 	//pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
-	creationstr := strconv.FormatInt(time.Now().Unix(), 10)
 	startstr := strconv.FormatInt(time.Now().Unix()+1000, 10)
 	tohash := lib.ComputeAsJsonArray([]string{"R","LAO_id",creationstr,"my_roll_call"})
 	hashid := sha256.Sum256( []byte(tohash) )
@@ -449,10 +447,11 @@ func TestReceivePublishCreateRollCallLater(t *testing.T) {
 	_ = os.Remove("org_test.db")
 
 	publicKey, privateKey := createKeyPair()
+	creationstr := strconv.FormatInt(time.Now().Unix(), 10)
 
-	receivedMsg := getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallLater(publicKey)))
+	receivedMsg := getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallLater(publicKey,creationstr)))
 	userId := 5
-	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallLater(publicKey))) // which will never be sent, but still produced)
+	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallLater(publicKey,creationstr))) // which will never be sent, but still produced)
 	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
 
 	h := &hub{
@@ -473,9 +472,9 @@ func TestReceivePublishCreateRollCallLater(t *testing.T) {
 		t.Errorf("correct structs are not as expected, \n%v\n vs, \n%v", string(responseToSender), string(expectedResponseToSender))
 	}
 
-	receivedMsg = getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataOpenRollCall(publicKey)))
+	receivedMsg = getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataOpenRollCall(publicKey,creationstr)))
 	userId = 5
-	expectedMsgAndChannel = getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataOpenRollCall(publicKey))) // which will never be sent, but still produced)
+	expectedMsgAndChannel = getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataOpenRollCall(publicKey,creationstr))) // which will never be sent, but still produced)
 	expectedResponseToSender = []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
 
 	msgAndChannel, responseToSender = h.actor.HandleReceivedMessage(receivedMsg, userId)
