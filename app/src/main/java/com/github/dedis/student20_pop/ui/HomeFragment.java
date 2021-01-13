@@ -14,6 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.github.dedis.student20_pop.AttendeeActivity;
 import com.github.dedis.student20_pop.OrganizerActivity;
@@ -47,6 +48,7 @@ public final class HomeFragment extends Fragment {
         laos = app.getLaos();
         LinearLayout welcome = view.findViewById(R.id.welcome_screen);
         LinearLayout list = view.findViewById(R.id.list_screen);
+        SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
 
         if (laos.isEmpty()) {
             welcome.setVisibility(View.VISIBLE);
@@ -56,7 +58,19 @@ public final class HomeFragment extends Fragment {
             list.setVisibility(View.VISIBLE);
         }
         ListView laosListView = view.findViewById(R.id.lao_list);
-        laosListView.setAdapter(new LaoListAdapter(this.getContext()));
+        LaoListAdapter adapter = new LaoListAdapter(this.getContext(), laos);
+        laosListView.setAdapter(adapter);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            adapter.notifyDataSetChanged();
+            if (getFragmentManager() != null) {
+                getFragmentManager()
+                        .beginTransaction()
+                        .detach(this)
+                        .attach(this)
+                        .commit();
+            }
+            swipeRefreshLayout.setRefreshing(false);
+        });
         return view;
     }
 
@@ -65,19 +79,21 @@ public final class HomeFragment extends Fragment {
      */
     private class LaoListAdapter extends BaseAdapter {
         private final Context context;
+        private List<Lao> laoList;
 
-        public LaoListAdapter(Context context) {
+        public LaoListAdapter(Context context, List<Lao> laos) {
             this.context = context;
+            this.laoList = laos;
         }
 
         @Override
         public int getCount() {
-            return laos.size();
+            return laoList.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return laos.get(position);
+            return laoList.get(position);
         }
 
         @Override
@@ -92,7 +108,7 @@ public final class HomeFragment extends Fragment {
                 LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = inflater.inflate(R.layout.layout_lao_home, null);
             }
-            Lao lao = laos.get(position);
+            Lao lao = laoList.get(position);
             ((TextView) convertView.findViewById(R.id.lao_name)).setText(lao.getName());
             ((TextView) convertView.findViewById(R.id.date)).setText(DATE_FORMAT.format(lao.getTime()*1000L));
             boolean isOrganizer = (lao.getOrganizer()).equals(id);

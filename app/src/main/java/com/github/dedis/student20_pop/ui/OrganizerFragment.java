@@ -17,6 +17,7 @@ import android.widget.ViewSwitcher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
@@ -71,15 +72,17 @@ public class OrganizerFragment extends Fragment {
 
         List<Event> events = app.getEvents(lao);
 
+        SwipeRefreshLayout swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh);
+
         //Layout Properties fields
         ViewSwitcher viewSwitcher = rootView.findViewById(R.id.viewSwitcher);
         View propertiesView = rootView.findViewById(R.id.properties_view);
         laoNameTextView = propertiesView.findViewById(R.id.organization_name);
         laoNameTextView.setText(lao.getName());
 
-        final WitnessListViewAdapter adapter = new WitnessListViewAdapter(getActivity(), (ArrayList<String>) app.getWitnesses(lao));
+        final WitnessListViewAdapter witnessListViewAdapter = new WitnessListViewAdapter(getActivity(), (ArrayList<String>) app.getWitnesses(lao));
         ListView witnessesListView = propertiesView.findViewById(R.id.witness_list);
-        witnessesListView.setAdapter(adapter);
+        witnessesListView.setAdapter(witnessListViewAdapter);
 
         editPropertiesButton = rootView.findViewById(R.id.edit_button);
         editPropertiesButton
@@ -93,7 +96,7 @@ public class OrganizerFragment extends Fragment {
         laoNameEditText = propertiesEditView.findViewById(R.id.organization_name_edit_text);
         laoNameEditText.setText(lao.getName());
         ListView witnessesEditListView = propertiesEditView.findViewById(R.id.witness_edit_list);
-        witnessesEditListView.setAdapter(adapter);
+        witnessesEditListView.setAdapter(witnessListViewAdapter);
 
         addWitnessButton = propertiesEditView.findViewById(R.id.add_witness_button);
         Button confirmButton = propertiesEditView.findViewById(R.id.properties_edit_confirm);
@@ -153,6 +156,19 @@ public class OrganizerFragment extends Fragment {
                     }
                 }
         );
+
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            witnessListViewAdapter.notifyDataSetChanged();
+            listViewEventAdapter.notifyDataSetChanged();
+            if (getFragmentManager() != null) {
+                getFragmentManager()
+                        .beginTransaction()
+                        .detach(this)
+                        .attach(this)
+                        .commit();
+            }
+            swipeRefreshLayout.setRefreshing(false);
+        });
 
         return rootView;
     }
