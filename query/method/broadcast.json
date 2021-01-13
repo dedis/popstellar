@@ -15,7 +15,10 @@
 				"channel": { "description": "[String] name of the channel", "$ref": "channel/subChannel.json" },
 				"message": { 
 					"description": "[Message] message to be published", 
-					"$ref": "message/messageGeneral.json"
+					"anyOf": [
+						{ "$ref": "message/messageGeneral.json" },
+						{ "$ref": "message/messageWitnessMessage.json" }
+					]
 				}
 			},
 			"additionalProperties": false,
