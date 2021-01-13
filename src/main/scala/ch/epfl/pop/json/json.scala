@@ -6,7 +6,8 @@ import ch.epfl.pop.json.Objects.Objects
 
 /** Collection of types used in Json parsing */
 package object json {
-  type UNKNOWN = String // TODO remove later
+  // TODO [unknown extra type?]. Should be removed at some point when we know how to describe an "extra"
+  type UNKNOWN = String
 
   /** Base64 strings (untouched and decoded) */
   type Base64String = String
@@ -33,7 +34,7 @@ package object json {
 
     val Subscribe: json.Methods.Value with Matching = MatchingValue("subscribe")
     val Unsubscribe: json.Methods.Value with Matching = MatchingValue("unsubscribe")
-    val Message: json.Methods.Value with Matching = MatchingValue("message")
+    val Broadcast: json.Methods.Value with Matching = MatchingValue("broadcast")
     val Catchup: json.Methods.Value with Matching = MatchingValue("catchup")
     val Publish: json.Methods.Value with Matching = MatchingValue("publish")
 
@@ -56,7 +57,6 @@ package object json {
       MessageContent(encodedData, data, sender, signature, message_id, s :: witness_signatures)
   }
 
-  final case class ChannelMessages(messages: List[ChannelMessage])
   final case class MessageErrorContent(code: Int, description: String)
 
   final case class KeySignPair(witness: Key, signature: Signature)

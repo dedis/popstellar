@@ -18,8 +18,9 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
   /* implicit used to parse/serialize a Methods enumeration value */
   implicit object JsonEnumMethodsFormat extends RootJsonFormat[Methods] {
-    override def read(json: JsValue): Methods = Try(Methods.withName(json.convertTo[String])) match {
-      case Success(v) => v
+    @throws(classOf[DeserializationException])
+    override def read(json: JsValue): Methods = Methods.unapply(json.convertTo[String]) match {
+      case Some(v) => v
       case _ => throw DeserializationException("invalid \"method\" field : unrecognized")
     }
     override def write(obj: Methods): JsValue = JsString(obj.toString)
@@ -27,8 +28,9 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
   /* implicit used to parse/serialize a Objects enumeration value */
   implicit object JsonEnumObjectsFormat extends RootJsonFormat[Objects] {
-    override def read(json: JsValue): Objects = Try(Objects.withName(json.convertTo[String])) match {
-      case Success(v) => v
+    @throws(classOf[DeserializationException])
+    override def read(json: JsValue): Objects = Objects.unapply(json.convertTo[String]) match {
+      case Some(v) => v
       case _ => throw DeserializationException("invalid \"object\" field : unrecognized")
     }
     override def write(obj: Objects): JsValue = JsString(obj.toString)
@@ -36,8 +38,9 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
   /* implicit used to parse/serialize a Actions enumeration value */
   implicit object JsonEnumActionsFormat extends RootJsonFormat[Actions] {
-    override def read(json: JsValue): Actions = Try(Actions.withName(json.convertTo[String])) match {
-      case Success(v) => v
+    @throws(classOf[DeserializationException])
+    override def read(json: JsValue): Actions = Actions.unapply(json.convertTo[String]) match {
+      case Some(v) => v
       case _ => throw DeserializationException("invalid \"action\" field : unrecognized")
     }
     override def write(obj: Actions): JsValue = JsString(obj.toString)
@@ -45,6 +48,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
   /* implicit used to parse/serialize a String encoded in Base64 */
   implicit object ByteArrayFormat extends RootJsonFormat[ByteArray] {
+    @throws(classOf[IllegalArgumentException])
     override def read(json: JsValue): ByteArray = JsonUtils.DECODER.decode(json.convertTo[String])
     override def write(obj: ByteArray): JsValue = JsString(JsonUtils.ENCODER.encode(obj).map(_.toChar).mkString)
   }
@@ -91,7 +95,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
                         .setModificationSignatures(ms.map(_.convertTo[KeySignPair]).toList)
 
                     case _ => throw JsonMessageParserException(
-                      "invalid \"StateBroadcastLao\" query : fields (\"modification_id\" and/or " +
+                      "invalid \"stateBroadcastLao\" query : fields (\"modification_id\" and/or " +
                       "\"modification_signatures\" and/or \"last_modified\") missing or wrongly formatted"
                     )
                   }
@@ -163,7 +167,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
                         .setModificationId(mid.convertTo[ByteArray])
                         .setModificationSignatures(ms.map(_.convertTo[KeySignPair]).toList)
                     case _ => throw JsonMessageParserException(
-                      "invalid \"StateBroadcastMeeting\" query : fields (\"modification_id\" and/or " +
+                      "invalid \"stateBroadcastMeeting\" query : fields (\"modification_id\" and/or " +
                         "\"modification_signatures\" and/or \"last_modified\") missing or wrongly formatted"
                     )
                   }
@@ -178,7 +182,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
                 case Seq(end@JsNumber(_)) => mcd.setEnd(end.convertTo[TimeStamp])
                 case _ =>
               }
-              extra match { case _ => mcd.setExtra("extra: TODO in JsonCommunicationProtocol") }
+              extra match { case _ => mcd.setExtra("extra: [unknown extra type?]") }
 
               mcd.build()
 
@@ -245,7 +249,9 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
                         "\"end\" and/or \"attendees\") missing or wrongly formatted"
                     )
                   }
-                case _ =>
+                case _ => throw JsonMessageParserException(
+                  s"""invalid roll call query : action "${action.toString}" is unrecognizable"""
+                )
               }
 
               mcd.build()
@@ -281,7 +287,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
       if (obj.location != "") jsObjectContent += ("location" -> obj.location.toJson)
       if (obj.start != -1L) jsObjectContent += ("start" -> obj.start.toJson)
       if (obj.end != -1L) jsObjectContent += ("end" -> obj.end.toJson)
-      if (obj.extra != "") jsObjectContent += ("extra" -> obj.extra.toJson) // TODO modify extra's type
+      if (obj.extra != "") jsObjectContent += ("extra" -> obj.extra.toJson)
       if (obj.scheduled != -1L) jsObjectContent += ("scheduled" -> obj.scheduled.toJson)
       if (obj.roll_call_description != "") jsObjectContent += ("roll_call_description" -> obj.end.toJson)
       if (obj._object == Objects.RollCall && obj.action == Actions.Close)
@@ -410,7 +416,6 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
 
   /* ------------------- ANSWER MESSAGES SERVER ------------------- */
 
-  implicit val channelMessagesFormat: RootJsonFormat[ChannelMessages] = jsonFormat1(ChannelMessages)
   implicit val messageErrorContentFormat: RootJsonFormat[MessageErrorContent] = jsonFormat2(MessageErrorContent)
 
   implicit val propagateMessageServerFormat: RootJsonFormat[PropagateMessageServer] = jsonFormat3(PropagateMessageServer)

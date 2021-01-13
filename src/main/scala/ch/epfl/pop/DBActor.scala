@@ -86,7 +86,7 @@ object DBActor {
             val messageParsed: ChannelMessage = JsonMessageParser.parseChannelMessage(message)
             messages =  messageParsed :: messages
           }
-          replyTo ! AnswerResultArrayMessageServer(result = ChannelMessages(messages.reverse), id = rid)
+          replyTo ! AnswerResultArrayMessageServer(result = messages.reverse, id = rid)
 
         }
         else {

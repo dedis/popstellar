@@ -45,7 +45,7 @@ object JsonMessageParser {
             case Seq(JsString(v)) =>
               if (v != JsonUtils.JSON_RPC_VERSION)
                 throw JsonMessageParserException("invalid \"jsonrpc\" field : invalid jsonrpc version")
-            case _ => throw DeserializationException("invalid message : jsonrpc field missing or wrongly formatted")
+            case _ => throw JsonMessageParserException("invalid message : jsonrpc field missing or wrongly formatted")
           }
 
           val fields: Set[String] = obj.fields.keySet
@@ -61,7 +61,7 @@ object JsonMessageParser {
                 case Methods.Unsubscribe() => Left(obj.convertTo[UnsubscribeMessageClient])
 
                 /* Propagate message on a channel */
-                case Methods.Message() => Left(obj.convertTo[PropagateMessageServer])
+                case Methods.Broadcast() => Left(obj.convertTo[PropagateMessageServer])
 
                 /* Catchup on past message on a channel */
                 case Methods.Catchup() => Left(obj.convertTo[CatchupMessageClient])
@@ -93,10 +93,6 @@ object JsonMessageParser {
 
           } else if (fields.contains("error")) {
 
-            // check that an answer message it either positive (x)or negative
-            if (fields.contains("result"))
-              throw JsonMessageParserException("invalid message : an answer cannot have both \"result\" and \"error\" fields")
-
             /* parse a negative answer message */
             obj.getFields("error") match {
               case Seq(JsObject(_)) => Left(obj.convertTo[AnswerErrorMessageServer])
@@ -114,7 +110,7 @@ object JsonMessageParser {
         } catch {
           case JsonMessageParserException(msg, id, code) => Right(buildJsonMessageParserException(obj, id, code, msg))
           case DeserializationException(msg, _, _) => Right(buildJsonMessageParserException(obj, description = msg))
-          case _ => Right(buildJsonMessageParserException(obj))
+          case _: Throwable => Right(buildJsonMessageParserException(obj))
         }
 
       /* parsing error : String is not a valid JsObject */
@@ -138,6 +134,7 @@ object JsonMessageParser {
       case m: AnswerResultArrayMessageServer => m.toJson.toString
       case m: AnswerErrorMessageServer => m.toJson.toString
       case m: PropagateMessageServer => m.toJson.toString
+      case _ => throw new SerializationException("Json serializer failed : unknown message type")
     }
 
     case _: JsonMessagePublishClient => message match {
@@ -150,12 +147,14 @@ object JsonMessageParser {
       case m: CreateRollCallMessageClient => m.toJson(JsonMessagePublishClientFormat.write).toString
       case m: OpenRollCallMessageClient => m.toJson(JsonMessagePublishClientFormat.write).toString
       case m: CloseRollCallMessageClient => m.toJson(JsonMessagePublishClientFormat.write).toString
+      case _ => throw new SerializationException("Json serializer failed : unknown message type")
     }
 
     case _: JsonMessagePubSubClient => message match {
       case m: SubscribeMessageClient => m.toJson.toString
       case m: UnsubscribeMessageClient => m.toJson.toString
       case m: CatchupMessageClient => m.toJson.toString
+      case _ => throw new SerializationException("Json serializer failed : unknown message type")
     }
 
     case _ => throw new SerializationException("Json serializer failed : invalid input message")
