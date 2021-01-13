@@ -194,6 +194,8 @@ public class AddAttendeeFragmentTest {
 
             Assert.assertThat(ATTENDEE_ID, isIn(attendees));
 
+            rollCallEvent.addAttendee(ATTENDEE_ID);
+
             ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_ROLL_CALL_ATTENDEE, rollCallEvent.getId());
         });
 
