@@ -7,6 +7,7 @@ Proof-of-personhood, fall 2020: Android native front-end
 * [Coding Standards](#coding-standards)
 
 ## Technicalities
+* The target API is 29 and the minimum required is 26
 * The [R class in Android](https://stackoverflow.com/questions/4953077/what-is-the-class-r-in-android) is an auto-generated class containing the resource IDs all the resources of res/directory.
 * The keys are encoded in Base64 and stored as Strings, to acces the table of bytes one must decode the following way: `Base64.getDecoder().decode`
 
