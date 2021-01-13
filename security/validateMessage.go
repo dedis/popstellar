@@ -42,22 +42,17 @@ func MeetingCreatedIsValid(data message.DataCreateMeeting, laoId string) bool {
 		log.Printf("timestamps not logic. Either end is before start, or start before creation.")
 		return false
 	}
-	//need to meet some	where
-	location := checkStringNotEmpty(data.Location)
+	//need to have a name not empty
+	name := checkStringNotEmpty(data.Name)
 
 	//check if id is correct  : SHA256('M'||lao_id||creation||name)
 	var elementsToHashForDataId []string
-	elementsToHashForDataId = append(elementsToHashForDataId, "M", laoId, strconv.FormatInt(data.Creation, 10), data.Name)
+	elementsToHashForDataId = append(elementsToHashForDataId, "M", b64.StdEncoding.EncodeToString([]byte(laoId)), strconv.FormatInt(data.Creation, 10), data.Name)
 	hash := HashOfItems(elementsToHashForDataId)
 	if !bytes.Equal(data.ID, hash) {
 		log.Printf("ID of createRollCall invalid: %v should be: %v", string(data.ID), string(hash[:]))
 	}
-	return creation && location
-}
-
-// not implemented yet
-func PollCreatedIsValid(data message.DataCreatePoll, message message.Message) bool {
-	return true
+	return creation && name
 }
 
 // RollCallCreatedIsValid tell if a Roll call is valid on creation
@@ -110,6 +105,8 @@ func checkRollCallId(laoId string, creation int64, name string, id []byte) bool 
 	}
 	return true
 }
+
+
 
 //RollCallOpenedIsValid tell if a Roll call is valid on opening or reopening
 func RollCallOpenedIsValid(data message.DataOpenRollCall, laoId string, rollCall message.DataCreateRollCall) bool {
