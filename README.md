@@ -27,7 +27,7 @@ The hub has an actor (either Organizer or Witness), that implements the PoP conc
 depending on the received message.
 
 ### event
-This package provides the structures for real world events.
+This package provides the structures for real world events. We use it when storing the different components internally.
 
 ### message
 This package provides structures corresponding to the messages that can be sent or received as defined in the jsonRPC package.

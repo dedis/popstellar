@@ -428,6 +428,7 @@ func (o *Organizer) handleCreatePoll(msg message.Message, canal string, query me
 // It will store the received message in the database, and send the change request to every subscriber of this LAO,
 // waiting for Witnesse's validation to make the update.
 func (o *Organizer) handleUpdateProperties(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+	// TODO need some improvements
 	msgAndChan := []lib.MessageAndChannel{{
 		Message: parser.ComposeBroadcastMessage(query),
 		Channel: []byte(canal),
@@ -620,7 +621,7 @@ func (o *Organizer) handleOpenRollCall(msg message.Message, chann string, query 
 
 	//we provide the id of the channel
 	laoId := strings.TrimPrefix(chann, "/root/")
-	if !security.RollCallOpenedIsValid(openRollCall, laoId, rollCallData) {
+	if !security.RollCallOpenedIsValid(openRollCall, laoId, rollCallData.Creation, rollCallData.Name) {
 		log.Printf("roll call data invalid. Roll call not created")
 		return nil, lib.ErrInvalidResource
 	}
@@ -682,7 +683,7 @@ func (o *Organizer) handleCloseRollCall(msg message.Message, chann string, query
 		LastModified:        rollCallData.Creation,
 		Location:            rollCallData.Location,
 		RollCallDescription: rollCallData.RollCallDescription,
-		// TODO de we always take the new start ? (even when it's not a reopening)
+		// we always take the new start ? (even when it's not a reopening)
 		Start:     closeRollCall.Start,
 		Attendees: closeRollCall.Attendees,
 		End:       closeRollCall.End,
