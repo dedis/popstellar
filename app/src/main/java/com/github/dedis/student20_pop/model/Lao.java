@@ -66,6 +66,27 @@ public final class Lao {
     }
 
     /**
+     * Returns the name of the LAO.
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Returns the creation time of the LAO as Unix Timestamp, can't be modified.
+     */
+    public long getTime() {
+        return time;
+    }
+
+    /**
+     * Returns the ID of the LAO, can't be modified.
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
      * Get the list of ids from a given list of LAOs
      *
      * @param laos the list of LAOs
@@ -82,8 +103,32 @@ public final class Lao {
         return ids;
     }
 
-    public String getName() {
-        return name;
+    /**
+     * Returns the public key of the organizer, can't be modified.
+     */
+    public String getOrganizer() {
+        return organizer;
+    }
+
+    /**
+     * Returns the list of public keys where each public key belongs to one witness.
+     */
+    public List<String> getWitnesses() {
+        return witnesses;
+    }
+
+    /**
+     * Returns the list of public keys where each public key belongs to one member.
+     */
+    public List<String> getMembers() {
+        return members;
+    }
+
+    /**
+     * Returns the list of public keys where each public key belongs to an event.
+     */
+    public List<String> getEvents() {
+        return events;
     }
 
     /**
@@ -103,34 +148,8 @@ public final class Lao {
     }
 
     /**
-     * @return creation time of the LAO as Unix Timestamp, can't be modified
-     */
-    public long getTime() {
-        return time;
-    }
-
-    /**
-     * @return ID of the LAO, can't be modified
-     */
-    public String getId() {
-        return id;
-    }
-
-    /**
-     * @return public key of the organizer, can't be modified
-     */
-    public String getOrganizer() {
-        return organizer;
-    }
-
-    /**
-     * @return list of public keys where each public key belongs to one witness
-     */
-    public List<String> getWitnesses() {
-        return witnesses;
-    }
-
-    /**
+     * Modify the LAO's list of witnesses
+     *
      * @param witnesses list of public keys of witnesses, can be empty
      * @throws IllegalArgumentException if the list is null or at least one public key is null
      */
@@ -142,13 +161,8 @@ public final class Lao {
     }
 
     /**
-     * @return list of public keys where each public key belongs to one member
-     */
-    public List<String> getMembers() {
-        return members;
-    }
-
-    /**
+     * Modify the LAO's list of members
+     *
      * @param members list of public keys of members, can be empty
      * @throws IllegalArgumentException if the list is null or at least one public key is null
      */
@@ -160,13 +174,8 @@ public final class Lao {
     }
 
     /**
-     * @return list of public keys where each public key belongs to an event
-     */
-    public List<String> getEvents() {
-        return events;
-    }
-
-    /**
+     * Modify the LAO's list of events
+     *
      * @param events list of public keys of events, can be empty
      * @throws IllegalArgumentException if the list is null or at least one public key is null
      */

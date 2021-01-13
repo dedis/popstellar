@@ -82,7 +82,7 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
                     Lao lao = new Lao(name, app.getPerson().getId());
                     // Store the private key of the organizer
                     app.getLocalProxy()
-                            .createLao(lao.getName(), lao.getTime(), lao.getTime(), lao.getOrganizer())
+                            .createLao(lao.getName(), lao.getTime(), lao.getOrganizer())
                             .thenAccept(code -> {
                                 Person organizer = app.getPerson().setLaos(Collections.singletonList(lao.getId()));
                                 // Set LAO and organizer information locally

@@ -1,11 +1,6 @@
 <resources>
     <string name="app_name">Student 20 PoP</string>
 
-    <!-- General -->
-    <string name="past_events">Past Events</string>
-    <string name="present_events">Present Events</string>
-    <string name="future_events">Future Events</string>
-
     <!-- Top Tabs -->
     <string name="tab_home">Home</string>
     <string name="tab_connect">Connect</string>

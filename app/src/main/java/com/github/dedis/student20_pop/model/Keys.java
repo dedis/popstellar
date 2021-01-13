@@ -15,25 +15,33 @@ public final class Keys {
     private String privateKey;
 
     /**
-     * Constructor for the Keys, generates a set of public and private keys
+     * Constructor for the Keys
+     *
+     * Generates a set of public and private keys using Ed25519.
      */
     public Keys() {
         // Using the tink.subtle package for the moment, not sure we can keep using it
-        //("While they're generally safe to use, they're not meant for public consumption and can be modified in any way, or even removed, at any time.")
+        //("While they're generally safe to use, they're not meant for public consumption and
+        // can be modified in any way, or even removed, at any time.")
         try {
             Ed25519Sign.KeyPair keyPair = Ed25519Sign.KeyPair.newKeyPair();
             this.publicKey = Base64.getEncoder().encodeToString(keyPair.getPublicKey());
-            this.privateKey = Base64.getEncoder().encodeToString(keyPair.getPrivateKey()); //use Base64.getDecoder().decode to get byte[]
+            this.privateKey = Base64.getEncoder().encodeToString(keyPair.getPrivateKey());
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Returns the public key encoded in Base64.
+     */
     public String getPublicKey() {
         return publicKey;
     }
 
-    //Not sure we should have such a method, if the signature happens inside this class
+    /**
+     * Returns the private key encoded in Base64.
+     */
     public String getPrivateKey() {
         return privateKey;
     }

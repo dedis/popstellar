@@ -1,7 +1,6 @@
 package com.github.dedis.student20_pop.ui.event.creation;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -19,8 +18,8 @@ import androidx.fragment.app.FragmentManager;
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.event.RollCallEvent;
-import com.github.dedis.student20_pop.utility.ui.organizer.OnAddAttendeesListener;
-import com.github.dedis.student20_pop.utility.ui.organizer.OnEventCreatedListener;
+import com.github.dedis.student20_pop.utility.ui.listener.OnAddAttendeesListener;
+import com.github.dedis.student20_pop.utility.ui.listener.OnEventCreatedListener;
 
 import java.util.Objects;
 
@@ -91,9 +90,9 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
                         startTimeInSeconds,
                         endTimeInSeconds,
                         app.getCurrentLao().getId(),
+                        new ObservableArrayList<>(),
                         NO_LOCATION,
-                        rollCallDescriptionEditText.getText().toString(),
-                        new ObservableArrayList<>()
+                        rollCallDescriptionEditText.getText().toString()
                 );
             }
             eventCreatedListener.OnEventCreatedListener(rollCallEvent);
@@ -109,9 +108,9 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
                     startTimeInSeconds,
                     endTimeInSeconds,
                     app.getCurrentLao().getId(),
+                    new ObservableArrayList<>(),
                     NO_LOCATION,
-                    rollCallDescriptionEditText.getText().toString(),
-                    new ObservableArrayList<>()
+                    rollCallDescriptionEditText.getText().toString()
             );
             eventCreatedListener.OnEventCreatedListener(rollCallEvent);
             onAddAttendeesListener.onAddAttendeesListener(rollCallEvent.getId());

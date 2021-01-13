@@ -12,7 +12,7 @@ public final class Person {
     private final String name;
     private final String id;
     private final String authentication;
-    private final List<String> laos; // list of LAOs ids for now
+    private final List<String> laos;
 
     /**
      * Constructor for a new Person
@@ -51,26 +51,29 @@ public final class Person {
         this.laos = laos;
     }
 
+    /**
+     * Returns the name of the Person.
+     */
     public String getName() {
         return name;
     }
 
     /**
-     * @return public key of the Person, can't be modified
+     * Returns the public key of the Person, can't be modified.
      */
     public String getId() {
         return id;
     }
 
     /**
-     * @return private key of the Person
+     * Returns the private key of the Person, can't be modified.
      */
     public String getAuthentication() {
         return authentication;
     }
 
     /**
-     * @return list of LAOs the Person is subscribed to and/or owns
+     * Returns the list of LAOs the Person is subscribed to and/or owns.
      */
     public List<String> getLaos() {
         return laos;

@@ -2,37 +2,44 @@ package com.github.dedis.student20_pop.utility.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.dedis.student20_pop.model.network.level.high.Data;
-import com.github.dedis.student20_pop.model.network.level.high.lao.CreateLao;
-import com.github.dedis.student20_pop.model.network.level.high.lao.StateLao;
-import com.github.dedis.student20_pop.model.network.level.high.lao.UpdateLao;
-import com.github.dedis.student20_pop.model.network.level.high.meeting.CreateMeeting;
-import com.github.dedis.student20_pop.model.network.level.high.message.WitnessMessage;
-import com.github.dedis.student20_pop.model.network.level.high.rollcall.CloseRollCall;
-import com.github.dedis.student20_pop.model.network.level.high.rollcall.CreateRollCall;
-import com.github.dedis.student20_pop.model.network.level.high.rollcall.OpenRollCall;
-import com.github.dedis.student20_pop.model.network.level.high.rollcall.ReopenRollCall;
-import com.github.dedis.student20_pop.model.network.level.low.Broadcast;
-import com.github.dedis.student20_pop.model.network.level.low.Catchup;
-import com.github.dedis.student20_pop.model.network.level.low.Message;
-import com.github.dedis.student20_pop.model.network.level.low.Publish;
-import com.github.dedis.student20_pop.model.network.level.low.Subscribe;
-import com.github.dedis.student20_pop.model.network.level.low.Unsubscribe;
-import com.github.dedis.student20_pop.model.network.level.low.answer.Answer;
-import com.github.dedis.student20_pop.model.network.level.low.answer.Error;
-import com.github.dedis.student20_pop.model.network.level.low.answer.ErrorCode;
-import com.github.dedis.student20_pop.model.network.level.low.answer.Result;
-import com.github.dedis.student20_pop.model.network.level.mid.MessageGeneral;
-import com.github.fge.jsonschema.core.exceptions.ProcessingException;
-import com.github.fge.jsonschema.main.JsonSchema;
-import com.github.fge.jsonschema.main.JsonSchemaFactory;
+import com.github.dedis.student20_pop.model.network.answer.Answer;
+import com.github.dedis.student20_pop.model.network.answer.Error;
+import com.github.dedis.student20_pop.model.network.answer.ErrorCode;
+import com.github.dedis.student20_pop.model.network.answer.Result;
+import com.github.dedis.student20_pop.model.network.method.Broadcast;
+import com.github.dedis.student20_pop.model.network.method.Catchup;
+import com.github.dedis.student20_pop.model.network.method.Message;
+import com.github.dedis.student20_pop.model.network.method.Publish;
+import com.github.dedis.student20_pop.model.network.method.Subscribe;
+import com.github.dedis.student20_pop.model.network.method.Unsubscribe;
+import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
+import com.github.dedis.student20_pop.model.network.method.message.data.Data;
+import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
+import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
+import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
+import com.github.dedis.student20_pop.model.network.method.message.data.meeting.CreateMeeting;
+import com.github.dedis.student20_pop.model.network.method.message.data.meeting.StateMeeting;
+import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessage;
+import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CloseRollCall;
+import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
+import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
 import com.google.gson.Gson;
+import com.networknt.schema.JsonMetaSchema;
+import com.networknt.schema.JsonSchema;
+import com.networknt.schema.JsonSchemaFactory;
+import com.networknt.schema.SchemaValidatorsConfig;
+import com.networknt.schema.ValidationMessage;
+import com.networknt.schema.uri.URIFactory;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import java.net.URI;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Test object encoding and decoding with Gson
@@ -41,106 +48,144 @@ import java.util.Arrays;
  */
 public class TestJson {
 
+    // Set it to false to use the remotely stored schema
+    private static final boolean USE_LOCAL_SCHEMA = true;
+
+    private static final String EXTERNAL_ROOT = "https://raw.githubusercontent.com/dedis/student20_pop/proto-specs/";
+    private static final String LOCAL_ROOT = "resource:/schema/";
+
     private final Gson gson = JsonUtils.createGson();
 
     private final ObjectMapper mapper = new ObjectMapper();
     private JsonSchema lowSchema;
-    private JsonSchema highSchema;
+    private JsonSchemaFactory factory;
 
-    @Before
-    public void setupSchema() throws ProcessingException {
-        lowSchema = JsonSchemaFactory.byDefault().getJsonSchema("resource:/schema/genericMessage.json");
-        highSchema = JsonSchemaFactory.byDefault().getJsonSchema("resource:/schema/query/method/message/data/data.json");
+    private JsonSchema getSchema(String path) {
+        return factory.getSchema(URI.create((USE_LOCAL_SCHEMA ? LOCAL_ROOT : EXTERNAL_ROOT) + path), new SchemaValidatorsConfig());
     }
 
-    private void testChanneledMessage(Message msg) throws JsonProcessingException, ProcessingException {
+    @Before
+    public void setupSchema() {
+        JsonSchemaFactory.Builder factoryBuilder = new JsonSchemaFactory.Builder()
+                .defaultMetaSchemaURI(JsonMetaSchema.getV201909().getUri())
+                .addMetaSchema(JsonMetaSchema.getV201909());
+
+        if(USE_LOCAL_SCHEMA)
+            factoryBuilder = factoryBuilder.uriFactory(new ForceLocalFilesURI(EXTERNAL_ROOT, LOCAL_ROOT), "https");
+
+        factory = factoryBuilder.build();
+        lowSchema = getSchema("genericMessage.json");
+    }
+
+    private void testMessage(Message msg) throws JsonProcessingException {
         String json = gson.toJson(msg, Message.class);
-        lowSchema.validInstance(mapper.readTree(json));
+        Set<ValidationMessage> errors = lowSchema.validate(mapper.readTree(json));
+        if (errors.size() != 0) System.out.println(errors);
+        Assert.assertEquals(0, errors.size());
         Assert.assertEquals(msg, gson.fromJson(json, Message.class));
     }
 
-    private void testResult(Answer msg) throws JsonProcessingException, ProcessingException {
+    private void testResult(Answer msg) throws JsonProcessingException {
         String json = gson.toJson(msg, Answer.class);
-        lowSchema.validInstance(mapper.readTree(json));
+        Set<ValidationMessage> errors = lowSchema.validate(mapper.readTree(json));
+    if (errors.size() != 0) System.out.println(errors);
+        Assert.assertEquals(0, errors.size());
         Assert.assertEquals(msg, gson.fromJson(json, Answer.class));
     }
 
-    private void testData(Data msg) throws JsonProcessingException, ProcessingException {
+    private void testData(Data msg) throws JsonProcessingException {
         String json = gson.toJson(msg, Data.class);
-        highSchema.validate(mapper.readTree(json));
+        JsonSchema schema = getSchema("query/method/message/data/data" + msg.getClass().getSimpleName() + ".json");
+        Set<ValidationMessage> errors = schema.validate(mapper.readTree(json));
+        if (errors.size() != 0) System.out.println(errors);
+        Assert.assertEquals(0, errors.size());
         Assert.assertEquals(msg, gson.fromJson(json, Data.class));
     }
 
     @Test
-    public void testSubscribe() throws JsonProcessingException, ProcessingException {
-        testChanneledMessage(new Subscribe("test", 0));
+    public void testSubscribe() throws JsonProcessingException {
+        testMessage(new Subscribe("/root/test", 0));
     }
 
     @Test
-    public void testUnsubscribe() throws JsonProcessingException, ProcessingException {
-        testChanneledMessage(new Unsubscribe("test", 0));
+    public void testUnsubscribe() throws JsonProcessingException {
+        testMessage(new Unsubscribe("/root/test", 0));
     }
 
 
     @Test
-    public void testPublish() throws JsonProcessingException, ProcessingException {
-        testChanneledMessage(new Publish("test", 0,
-                new MessageGeneral("sender", "data", "signature", "id", Arrays.asList("witness1", "witness2"))));
+    public void testPublish() throws JsonProcessingException {
+        testMessage(new Publish("/root/test", 0,
+                new MessageGeneral("sender", "data", "signature", "id", Collections.emptyList())));
+        testMessage(new Publish("/root", 0,
+                new MessageGeneral("sender", "data", "signature", "id", Collections.emptyList())));
     }
 
     @Test
-    public void testCatchup() throws JsonProcessingException, ProcessingException {
-        testChanneledMessage(new Catchup("test", 0));
+    public void testCatchup() throws JsonProcessingException {
+        testMessage(new Catchup("/root/test", 0));
     }
 
     @Test
-    public void testMessageLow() throws JsonProcessingException, ProcessingException {
-        testChanneledMessage(new Broadcast("test",
-                new MessageGeneral("sender", "data", "signature", "id", Arrays.asList("witness1", "witness2"))));
+    public void testBroadcast() throws JsonProcessingException {
+        testMessage(new Broadcast("/root/test",
+                new MessageGeneral("sender", "data", "signature", "id", Collections.emptyList())));
     }
 
     @Test
-    public void testSuccess() throws JsonProcessingException, ProcessingException {
-        testResult(new Result(0, gson.toJsonTree(40)));
+    @Ignore("Current schema make this test fail")
+    public void testMessageGeneral() throws JsonProcessingException {
+        MessageGeneral msg = new MessageGeneral("sender", "data", "signature", "id", Collections.emptyList());
+        String json = gson.toJson(msg, MessageGeneral.class);
+        JsonSchema schema = getSchema("query/method/message/MessageGeneral.json");
+        Set<ValidationMessage> errors = schema.validate(mapper.readTree(json));
+        if (errors.size() != 0) System.out.println(errors);
+        Assert.assertEquals(0, errors.size());
+        Assert.assertEquals(msg, gson.fromJson(json, MessageGeneral.class));
     }
 
     @Test
-    public void testFailure() throws JsonProcessingException, ProcessingException {
-        testResult(new Error(4, new ErrorCode(4, "Test")));
+    public void testSuccess() throws JsonProcessingException {
+        testResult(new Result(4, gson.toJsonTree(0)));
     }
 
     @Test
-    public void testCreateLao() throws JsonProcessingException, ProcessingException {
-        testData(new CreateLao("id", "name", 12L, 202L, "organizer", Arrays.asList("witness1", "witness2")));
+    public void testError() throws JsonProcessingException {
+        testResult(new Error(4, new ErrorCode(-4, "Test")));
     }
 
     @Test
-    public void testStateLao() throws JsonProcessingException, ProcessingException {
+    public void testCreateLao() throws JsonProcessingException {
+        testData(new CreateLao("id", "name", 12L, "organizer", Arrays.asList("witness1", "witness2")));
+    }
+
+    @Test
+    public void testStateLao() throws JsonProcessingException {
         testData(new StateLao("id", "name", 12L, 202L, "organizer", Arrays.asList("witness1", "witness2")));
     }
 
     @Test
-    public void testUpdateLao() throws JsonProcessingException, ProcessingException {
-        testData(new UpdateLao("name", 202L, Arrays.asList("witness1", "witness2")));
+    public void testUpdateLao() throws JsonProcessingException {
+        testData(new UpdateLao("id", "name", 202L, Arrays.asList("witness1", "witness2")));
     }
 
     @Test
-    public void testCreateMeeting() throws JsonProcessingException, ProcessingException {
-        testData(new CreateMeeting("id", "name", 12L, 202L, "location", 40, 231));
+    public void testCreateMeeting() throws JsonProcessingException {
+        testData(new CreateMeeting("id", "name", 12L, "location", 40, 231));
     }
 
     @Test
-    public void testStateMeeting() throws JsonProcessingException, ProcessingException {
-        testData(new CreateMeeting("id", "name", 12L, 202L, "location", 40, 231));
+    public void testStateMeeting() throws JsonProcessingException {
+        testData(new StateMeeting("id", "name", 12L, 202L, "location", 40, 231, "modId", Collections.emptyList()));
     }
 
     @Test
-    public void testWitnessMessage() throws JsonProcessingException, ProcessingException {
+    public void testWitnessMessage() throws JsonProcessingException {
         testData(new WitnessMessage("id", "signature"));
     }
 
     @Test
-    public void testCreateRollCall() throws JsonProcessingException, ProcessingException {
+    public void testCreateRollCall() throws JsonProcessingException {
         testData(new CreateRollCall("id", "name", 432, 231, CreateRollCall.StartType.NOW, "loc", "desc"));
         testData(new CreateRollCall("id", "name", 432, 231, CreateRollCall.StartType.NOW, "loc", null));
         testData(new CreateRollCall("id", "name", 432, 231, CreateRollCall.StartType.SCHEDULED, "loc", "desc"));
@@ -148,17 +193,37 @@ public class TestJson {
     }
 
     @Test
-    public void testOpenRollCall() throws JsonProcessingException, ProcessingException {
+    public void testOpenRollCall() throws JsonProcessingException {
         testData(new OpenRollCall("id", 32));
     }
 
     @Test
-    public void testReopenRollCall() throws JsonProcessingException, ProcessingException {
-        testData(new ReopenRollCall("id", 32));
+    public void testCloseRollCall() throws JsonProcessingException {
+        testData(new CloseRollCall("id", 32, 342, Arrays.asList("1", "2", "3")));
     }
 
-    @Test
-    public void testCloseRollCall() throws JsonProcessingException, ProcessingException {
-        testData(new CloseRollCall("id", 32, 342, Arrays.asList("1", "2", "3")));
+    private static final class ForceLocalFilesURI implements URIFactory {
+
+        private final String externalRoot;
+        private final String localRoot;
+
+        private ForceLocalFilesURI(String externalRoot, String localRoot) {
+            this.externalRoot = externalRoot;
+            this.localRoot = localRoot;
+        }
+
+        @Override
+        public URI create(String uri) {
+            return URI.create(uri.replace(externalRoot, localRoot));
+        }
+
+        @Override
+        public URI create(URI baseURI, String segment) {
+            String uri = baseURI.toString();
+            int lastSep = uri.lastIndexOf("/");
+            String parentFile = lastSep >= 0 ?
+                    uri.substring(lastSep + 1) : "";
+            return create(uri.replace(parentFile, segment));
+        }
     }
 }

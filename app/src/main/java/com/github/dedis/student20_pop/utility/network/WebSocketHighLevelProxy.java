@@ -3,14 +3,13 @@ package com.github.dedis.student20_pop.utility.network;
 import androidx.annotation.Nullable;
 
 import com.github.dedis.student20_pop.model.Person;
-import com.github.dedis.student20_pop.model.network.level.high.lao.CreateLao;
-import com.github.dedis.student20_pop.model.network.level.high.lao.UpdateLao;
-import com.github.dedis.student20_pop.model.network.level.high.meeting.CreateMeeting;
-import com.github.dedis.student20_pop.model.network.level.high.message.WitnessMessage;
-import com.github.dedis.student20_pop.model.network.level.high.rollcall.CloseRollCall;
-import com.github.dedis.student20_pop.model.network.level.high.rollcall.CreateRollCall;
-import com.github.dedis.student20_pop.model.network.level.high.rollcall.OpenRollCall;
-import com.github.dedis.student20_pop.model.network.level.high.rollcall.ReopenRollCall;
+import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
+import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
+import com.github.dedis.student20_pop.model.network.method.message.data.meeting.CreateMeeting;
+import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessage;
+import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CloseRollCall;
+import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
+import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
 import com.github.dedis.student20_pop.utility.protocol.HighLevelProxy;
 import com.github.dedis.student20_pop.utility.protocol.LowLevelProxy;
 import com.github.dedis.student20_pop.utility.security.Hash;
@@ -41,15 +40,15 @@ public final class WebSocketHighLevelProxy implements HighLevelProxy {
     }
 
     @Override
-    public CompletableFuture<Integer> createLao(String name, long creation, long lastModified, String organizer) {
+    public CompletableFuture<Integer> createLao(String name, long creation, String organizer) {
         return lowLevelClientProxy.publish(publicKey, privateKey, ROOT,
-                new CreateLao(Hash.hash(organizer, creation, name), name, creation, lastModified, organizer, new ArrayList<>()));
+                new CreateLao(Hash.hash(organizer, creation, name), name, creation, organizer, new ArrayList<>()));
     }
 
     @Override
-    public CompletableFuture<Integer> updateLao(String laoId, String name, long lastModified, List<String> witnesses) {
+    public CompletableFuture<Integer> updateLao(String laoId, String organizer, String name, long lastModified, List<String> witnesses) {
         return lowLevelClientProxy.publish(publicKey, privateKey, ROOT + "/" + laoId,
-                new UpdateLao(name, lastModified, witnesses));
+                new UpdateLao(organizer, name, lastModified, witnesses));
     }
 
     @Override
@@ -59,9 +58,9 @@ public final class WebSocketHighLevelProxy implements HighLevelProxy {
     }
 
     @Override
-    public CompletableFuture<Integer> createMeeting(String laoId, String name, long creation, long lastModified, String location, long start, long end) {
+    public CompletableFuture<Integer> createMeeting(String laoId, String name, long creation, String location, long start, long end) {
         return lowLevelClientProxy.publish(publicKey, privateKey, ROOT + "/" + laoId,
-                new CreateMeeting(Hash.hash("M", laoId, creation, name), name, creation, lastModified, location, start, end));
+                new CreateMeeting(Hash.hash("M", laoId, creation, name), name, creation, location, start, end));
     }
 
     @Override
@@ -79,12 +78,6 @@ public final class WebSocketHighLevelProxy implements HighLevelProxy {
     public CompletableFuture<Integer> openRollCall(String laoId, String rollCallId, long start) {
         return lowLevelClientProxy.publish(publicKey, privateKey, ROOT + "/" + laoId,
                 new OpenRollCall(rollCallId, start));
-    }
-
-    @Override
-    public CompletableFuture<Integer> reopenRollCall(String laoId, String rollCallId, long start) {
-        return lowLevelClientProxy.publish(publicKey, privateKey, ROOT + "/" + laoId,
-                new ReopenRollCall(rollCallId, start));
     }
 
     @Override
