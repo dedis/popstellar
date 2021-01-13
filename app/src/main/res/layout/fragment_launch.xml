@@ -48,22 +48,23 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/button_launch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/margin_button"
-                android:layout_marginRight="@dimen/margin_button"
-                android:gravity="center"
-                android:onClick="onClick"
-                android:text="@string/text_button_launch" />
-
-            <Button
                 android:id="@+id/button_cancel_launch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:onClick="onClick"
-                android:text="@string/button_cancel" />
+                android:text="@string/button_cancel"
+                style="@style/Theme.AppCompat" />
+
+            <Button
+                android:id="@+id/button_launch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_button"
+                android:gravity="center"
+                android:onClick="onClick"
+                android:text="@string/text_button_launch"
+                style="@style/Theme.AppCompat" />
 
         </LinearLayout>
     </LinearLayout>

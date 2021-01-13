@@ -27,7 +27,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -89,15 +88,15 @@ public class AddAttendeeFragmentTest {
 
         onView(withId(R.id.roll_call_title_text)).perform(typeText("Random meeting title"));
 
-        onView(withId(R.id.start_date_editText)).perform(click());
+        onView(withId(R.id.start_date_edit_text)).perform(click());
         onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
         onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.start_date_editText)).check(matches(withText(DATE)));
+        onView(withId(R.id.start_date_edit_text)).check(matches(withText(DATE)));
 
-        onView(withId(R.id.start_time_editText)).perform(click());
+        onView(withId(R.id.start_time_edit_text)).perform(click());
         onView(withClassName(Matchers.equalTo(TimePicker.class.getName()))).perform(PickerActions.setTime(HOURS, MINUTES));
         onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.start_time_editText)).check(matches(withText(TIME)));
+        onView(withId(R.id.start_time_edit_text)).check(matches(withText(TIME)));
 
         onView(withId(R.id.roll_call_open)).perform(click());
 
@@ -149,15 +148,15 @@ public class AddAttendeeFragmentTest {
 
         onView(withId(R.id.roll_call_title_text)).perform(typeText("Random meeting title"));
 
-        onView(withId(R.id.start_date_editText)).perform(click());
+        onView(withId(R.id.start_date_edit_text)).perform(click());
         onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
         onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.start_date_editText)).check(matches(withText(DATE)));
+        onView(withId(R.id.start_date_edit_text)).check(matches(withText(DATE)));
 
-        onView(withId(R.id.start_time_editText)).perform(click());
+        onView(withId(R.id.start_time_edit_text)).perform(click());
         onView(withClassName(Matchers.equalTo(TimePicker.class.getName()))).perform(PickerActions.setTime(HOURS, MINUTES));
         onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.start_time_editText)).check(matches(withText(TIME)));
+        onView(withId(R.id.start_time_edit_text)).check(matches(withText(TIME)));
 
         onView(withId(R.id.roll_call_open)).perform(click());
 

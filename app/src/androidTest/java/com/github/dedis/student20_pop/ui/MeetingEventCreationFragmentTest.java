@@ -90,15 +90,15 @@ public class MeetingEventCreationFragmentTest {
     public void confirmButtonIsEnabledWhenRequiredFieldsFilled() {
         onView(withId(R.id.meeting_title_text)).perform(typeText("Random meeting title"));
 
-        onView(withId(R.id.start_date_editText)).perform(click());
+        onView(withId(R.id.start_date_edit_text)).perform(click());
         onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
         onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.start_date_editText)).check(matches(withText(DATE)));
+        onView(withId(R.id.start_date_edit_text)).check(matches(withText(DATE)));
 
-        onView(withId(R.id.start_time_editText)).perform(click());
+        onView(withId(R.id.start_time_edit_text)).perform(click());
         onView(withClassName(Matchers.equalTo(TimePicker.class.getName()))).perform(PickerActions.setTime(HOURS, MINUTES));
         onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.start_time_editText)).check(matches(withText(TIME)));
+        onView(withId(R.id.start_time_edit_text)).check(matches(withText(TIME)));
 
         onView(withId(R.id.meeting_event_creation_confirm)).check(matches(isEnabled()));
     }
@@ -108,15 +108,15 @@ public class MeetingEventCreationFragmentTest {
         final String RANDOM_EVENT_TITLE = "Random meeting title";
         onView(withId(R.id.meeting_title_text)).perform(typeText(RANDOM_EVENT_TITLE));
 
-        onView(withId(R.id.start_date_editText)).perform(click());
+        onView(withId(R.id.start_date_edit_text)).perform(click());
         onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
         onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.start_date_editText)).check(matches(withText(DATE)));
+        onView(withId(R.id.start_date_edit_text)).check(matches(withText(DATE)));
 
-        onView(withId(R.id.start_time_editText)).perform(click());
+        onView(withId(R.id.start_time_edit_text)).perform(click());
         onView(withClassName(Matchers.equalTo(TimePicker.class.getName()))).perform(PickerActions.setTime(HOURS, MINUTES));
         onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.start_time_editText)).check(matches(withText(TIME)));
+        onView(withId(R.id.start_time_edit_text)).check(matches(withText(TIME)));
 
         onView(withId(R.id.meeting_event_creation_confirm)).check(matches(isEnabled()));
         onView(withId(R.id.meeting_event_creation_confirm)).perform(click());

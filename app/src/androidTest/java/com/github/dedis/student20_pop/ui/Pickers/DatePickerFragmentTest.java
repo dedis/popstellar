@@ -66,22 +66,22 @@ public class DatePickerFragmentTest {
 
     @Test
     public void canLaunchDatePickerFragmentFromStartDateButton() {
-        onView(withId(R.id.start_date_editText)).perform(click());
+        onView(withId(R.id.start_date_edit_text)).perform(click());
         onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).check(matches(isDisplayed()));
     }
 
     @Test
     public void canLaunchDatePickerFragmentFromEndDateButton() {
-        onView(withId(R.id.end_date_editText)).perform(click());
+        onView(withId(R.id.end_date_edit_text)).perform(click());
         onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).check(matches(isDisplayed()));
     }
 
     @Test
     public void canChooseRandomDate() {
-        onView(withId(R.id.start_date_editText)).perform(click());
+        onView(withId(R.id.start_date_edit_text)).perform(click());
         onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
         onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.start_date_editText)).check(matches(withText(DATE)));
+        onView(withId(R.id.start_date_edit_text)).check(matches(withText(DATE)));
     }
 
     @Test
@@ -91,9 +91,9 @@ public class DatePickerFragmentTest {
         int month = currentCalendar.get(Calendar.MONTH) + 1;
         int day = currentCalendar.get(Calendar.DAY_OF_MONTH);
         final String DATE = (day < 10 ? "0" : "") + day + "/" + (month < 10 ? "0" : "") + month + "/" + year;
-        onView(withId(R.id.start_date_editText)).perform(click());
+        onView(withId(R.id.start_date_edit_text)).perform(click());
         onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.start_date_editText)).check(matches(withText(DATE)));
+        onView(withId(R.id.start_date_edit_text)).check(matches(withText(DATE)));
     }
 
     @Test
@@ -103,63 +103,63 @@ public class DatePickerFragmentTest {
         final int MONTH_OF_YEAR = 10;
         final int DAY_OF_MONTH = 10;
 
-        onView(withId(R.id.start_date_editText)).perform(click());
+        onView(withId(R.id.start_date_edit_text)).perform(click());
         onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
         onView(withId(android.R.id.button1)).perform(click());
         onView(withText(expectedWarning))
                 .inRoot(withDecorView(not(decorView)))
                 .check(matches(isDisplayed()));
-        onView(withId(R.id.start_date_editText)).check(matches(withHint(getApplicationContext().getString(R.string.start_date_required))));
+        onView(withId(R.id.start_date_edit_text)).check(matches(withHint(getApplicationContext().getString(R.string.start_date_required))));
     }
 
     @Test
     public void startDateAndEndDateCanBothBeSameDay() {
-        onView(withId(R.id.start_date_editText)).perform(click());
+        onView(withId(R.id.start_date_edit_text)).perform(click());
         onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
         onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.start_date_editText)).check(matches(withText(DATE)));
+        onView(withId(R.id.start_date_edit_text)).check(matches(withText(DATE)));
 
-        onView(withId(R.id.end_date_editText)).perform(click());
+        onView(withId(R.id.end_date_edit_text)).perform(click());
         onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
         onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.end_date_editText)).check(matches(withText(DATE)));
+        onView(withId(R.id.end_date_edit_text)).check(matches(withText(DATE)));
     }
 
     @Test
     public void startDateAfterEndDateShowsToast() {
         String expectedWarning = getApplicationContext().getString(R.string.start_date_after_end_date_not_allowed);
 
-        onView(withId(R.id.end_date_editText)).perform(click());
+        onView(withId(R.id.end_date_edit_text)).perform(click());
         onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
         onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.end_date_editText)).check(matches(withText(DATE)));
+        onView(withId(R.id.end_date_edit_text)).check(matches(withText(DATE)));
 
-        onView(withId(R.id.start_date_editText)).perform(click());
+        onView(withId(R.id.start_date_edit_text)).perform(click());
         onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH + 1));
         onView(withId(android.R.id.button1)).perform(click());
 
         onView(withText(expectedWarning))
                 .inRoot(withDecorView(not(decorView)))
                 .check(matches(isDisplayed()));
-        onView(withId(R.id.start_date_editText)).check(matches(withHint(getApplicationContext().getString(R.string.start_date_required))));
+        onView(withId(R.id.start_date_edit_text)).check(matches(withHint(getApplicationContext().getString(R.string.start_date_required))));
     }
 
     @Test
     public void endDateBeforeStartDateShowsToast() {
         String expectedWarning = getApplicationContext().getString(R.string.end_date_after_start_date_not_allowed);
 
-        onView(withId(R.id.start_date_editText)).perform(click());
+        onView(withId(R.id.start_date_edit_text)).perform(click());
         onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
         onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.start_date_editText)).check(matches(withText(DATE)));
+        onView(withId(R.id.start_date_edit_text)).check(matches(withText(DATE)));
 
-        onView(withId(R.id.end_date_editText)).perform(click());
+        onView(withId(R.id.end_date_edit_text)).perform(click());
         onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH - 1));
         onView(withId(android.R.id.button1)).perform(click());
 
         onView(withText(expectedWarning))
                 .inRoot(withDecorView(not(decorView)))
                 .check(matches(isDisplayed()));
-        onView(withId(R.id.end_date_editText)).check(matches(withHint(getApplicationContext().getString(R.string.end_date_optional))));
+        onView(withId(R.id.end_date_edit_text)).check(matches(withHint(getApplicationContext().getString(R.string.end_date_optional))));
     }
 }

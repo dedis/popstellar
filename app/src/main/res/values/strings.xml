@@ -17,16 +17,28 @@
     <!-- Connect -->
     <string name="allow_camera_text">Please allow the camera to be used by the app</string>
     <string name="allow_camera_button">Allow camera</string>
+    <string name="connecting">Connecting…</string>
 
     <!-- Launch -->
     <string name="text_title_launch">To launch a new organization, please enter a name for the organization.</string>
     <string name="text_body_launch">(You can change it later.)\n\n</string>
     <string name="text_entry_launch">Organization name</string>
     <string name="text_button_launch">Launch</string>
-    <string name="message_launch_successful">LAO %1$s created successfully</string>
 
-    <!-- Temp -->
-    <string name="connecting">Connecting…</string>
+    <!-- Abstract Event-->
+    <string name="start_date_required">Start Date*</string>
+    <string name="start_time_required">Start Time*</string>
+    <string name="end_date_optional">End Date</string>
+    <string name="location_optional">Location</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+    <string name="past_date_not_allowed">Event has to start/end today or in the future</string>
+    <string name="end_date_after_start_date_not_allowed">End date has to be after or the same day as the start date</string>
+    <string name="start_date_after_end_date_not_allowed">Start date must be before or the same day as end date</string>
+    <string name="start_time_after_end_time_not_allowed">Start time must be before end time</string>
+    <string name="end_time_before_start_time_not_allowed">End time must be after start time</string>
+    <string name="end_time_optional">End Time</string>
+    <string name="picker_selection">selection</string>
 
     <!-- Poll Event -->
     <string name="poll_event">Poll Event</string>
@@ -35,36 +47,12 @@
     <string name="select_event_type_dialog_title">Select Event Type</string>
     <string name="create_poll_title">Create a Poll</string>
     <string name="question_title">Question : </string>
-    <string name="start_time">Start Time : </string>
-    <string name="end_time">End Time (Optional) : </string>
-    <string name="now">Now</string>
     <string name="poll_type_1">Choose 1 of N</string>
     <string name="poll_type_2">Approve Any of N</string>
     <string name="choices_title">Choices : </string>
     <string name="button_schedule">Schedule</string>
-    <string name="button_open">Open</string>
     <string name="delete_choice_button">-</string>
-
-    <!-- Abstract Event-->
-    <string name="enter_title">Enter Title</string>
-    <string name="start_date_required">Start Date*</string>
-    <string name="enter_date">Enter Date</string>
-    <string name="start_time_required">Start Time*</string>
-    <string name="enter_time">Enter Time</string>
-    <string name="end_date_optional">End Date</string>
-    <string name="location_optional">Location</string>
-    <string name="enter_location">Enter Location</string>
-    <string name="confirm">Confirm</string>
-    <string name="cancel">Cancel</string>
-    <string name="today">Today</string>
-    <string name="past_date_not_allowed">Event has to start/end today or in the future</string>
-    <string name="end_date_after_start_date_not_allowed">End date has to be after or the same day as the start date</string>
-    <string name="start_date_after_end_date_not_allowed">Start date must be before or the same day as end date</string>
-    <string name="time_before_date_not_allowed">Please, choose start and end dates before choosing time</string>
-    <string name="start_time_after_end_time_not_allowed">Start time must be before end time</string>
-    <string name="end_time_before_start_time_not_allowed">End time must be after start time</string>
-    <string name="end_time_optional">End Time</string>
-    <string name="picker_selection">selection</string>
+    <string name="choice_edit_text_hint">Choice…</string>
 
     <!-- Meeting Event -->
     <string name="meeting_event">Meeting Event</string>
@@ -100,5 +88,8 @@
     <string name="close_roll_call">Close Roll-Call</string>
     <string name="scan_all_attendees_question">Are you sure you have scan all attendees ?</string>
     <string name="roll_call_title_required">Roll-Call Title required</string>
+
+    <!-- Properties -->
+    <string name="test_organization_name">Test Organization Name</string>
 
 </resources>
