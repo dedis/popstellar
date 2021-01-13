@@ -60,7 +60,7 @@ public class TestJson {
     private JsonSchemaFactory factory;
 
     private JsonSchema getSchema(String path) {
-        return factory.getSchema(URI.create(EXTERNAL_ROOT + path), new SchemaValidatorsConfig());
+        return factory.getSchema(URI.create((USE_LOCAL_SCHEMA ? LOCAL_ROOT : EXTERNAL_ROOT) + path), new SchemaValidatorsConfig());
     }
 
     @Before
