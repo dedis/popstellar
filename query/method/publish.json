@@ -33,18 +33,14 @@
 						},
 						"$comment": "Note: match a publish query destined for the root channel"
 					}
-				}, 
-
+				},
 				{
 					"if": { "properties": { "channel": { "$ref": "../channel/subChannel.json" } } },
 					"then": {
 						"properties": {
 							"message": { 
 								"description": "[Message] message to be published",
-								"anyOf": [
-									{ "$ref": "message/messageGeneral.json" },
-									{ "$ref": "message/messageWitnessMessage.json" }
-								]
+								"$ref": "message/messageGeneral.json"
 							}
 						},
 						"$comment": "Note: match a publish query destined for a sub-channel"
