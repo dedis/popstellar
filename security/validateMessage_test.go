@@ -15,6 +15,7 @@ import (
 	"student20_pop/parser"
 )
 
+//check that a message containing a createLao is valid at both message and data layer
 func TestMessageIsValidWithoutWitnesses(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
@@ -27,12 +28,17 @@ func TestMessageIsValidWithoutWitnesses(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
+		valid := LAOIsValid(data,true )
+		if valid != true {
+			t.Errorf("Created Lao Should be valid %#v", data)
+		}
 		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures)
 		if err != nil {
 			t.Error(err)
 		}
 	}
 }
+//check that a message containing a createRollCall is valid at both message and data layer
 func TestRollCallCreatedIsValid(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
@@ -48,7 +54,33 @@ func TestRollCallCreatedIsValid(t *testing.T) {
 		}
 		valid := RollCallCreatedIsValid(data, string(lao_id))
 		if valid != true {
-			t.Errorf("Created Lao Should be valid %#v", data)
+			t.Errorf("Created rollcall Should be valid %#v", data)
+		}
+		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures)
+		if err != nil {
+			t.Error(err)
+		}
+	}
+}
+//check that a message containing a createMeeting is valid at both message and data layer
+func TestMeetingCreatedIsValid(t *testing.T) {
+	//increase nb of tests
+	for i := 0; i < 100; i++ {
+		pubkey, privkey := createKeyPair()
+		witnessSignatures := []message2.ItemWitnessSignatures{}
+		var creation = time.Now().Unix()
+		start := creation + (MaxPropagationDelay/2)
+		end := creation + (MaxPropagationDelay/2)
+		name := "someMeetintintinitin"
+		lao_id := []byte("12345")
+
+		data, err := createMeeting(pubkey, privkey,creation,start,end,name,lao_id)
+		if err != nil {
+			t.Error(err)
+		}
+		valid := MeetingCreatedIsValid(data, string(lao_id))
+		if valid != true {
+			t.Errorf("Created Meeting Should be valid %#v", data)
 		}
 		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures)
 		if err != nil {
@@ -57,26 +89,59 @@ func TestRollCallCreatedIsValid(t *testing.T) {
 	}
 }
 
-func TestLAOIsValid(t *testing.T) {
-	//increase nb of tests
-	for i := 0; i < 100; i++ {
+
+//==================invalid Tests========================//
+func TestRollCallCreatedInvalidId(t *testing.T) {
 		pubkey, privkey := createKeyPair()
-		witnessKeys := [][]byte{}
+		witnessSignatures := []message2.ItemWitnessSignatures{}
 		var creation = time.Now().Unix()
-		name := "My LAO"
-		data, err := createDataLao(pubkey, privkey, witnessKeys, creation, name)
+		start := creation + (MaxPropagationDelay/2)
+		name := "RollCallNow"
+		lao_id := []byte("12345")
+		data, err := createRollCallNow(pubkey, privkey,creation,start,name,lao_id)
 		if err != nil {
 			t.Error(err)
 		}
-		valid := LAOIsValid(data, true)
+		notLao_id := []byte("6789")
+		valid := RollCallCreatedIsValid(data, string(notLao_id))
+		if valid == true {
+			t.Errorf("Created Rollcall Should be invalid beacause of invalid id %#v", data)
+		}
+		_, falsePrivkey := createKeyPair()
+		err = CheckMessageIsValid(pubkey, falsePrivkey, data, witnessSignatures)
+		if err == nil {
+			t.Errorf("The Message Should be invalid beacause of incorrect Key %#v", data)
+		}
+		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures)
+		if err == nil {
+			t.Errorf("The Message Should be invalid beacause of incorrect Key %#v", data)
+		}
+}
+func TestMeetingCreatedIsInvalid(t *testing.T) {
+	//increase nb of tests
+	for i := 0; i < 100; i++ {
+		pubkey, privkey := createKeyPair()
+		witnessSignatures := []message2.ItemWitnessSignatures{}
+		var creation = time.Now().Unix()
+		start := creation + (MaxPropagationDelay/2)
+		end := creation + (MaxPropagationDelay/2)
+		name := "someMeetintintinitin"
+		lao_id := []byte("12345")
+
+		data, err := createMeeting(pubkey, privkey,creation,start,end,name,lao_id)
+		if err != nil {
+			t.Error(err)
+		}
+		valid := MeetingCreatedIsValid(data, string(lao_id))
 		if valid != true {
-			t.Errorf("Created Lao Should be valid %#v", data)
+			t.Errorf("Created Meeting Should be valid %#v", data)
+		}
+		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures)
+		if err != nil {
+			t.Error(err)
 		}
 	}
 }
-
-//==================invalid Tests========================//
-
 func TestLAOInvalidName(t *testing.T) {
 		pubkey, privkey := createKeyPair()
 		witnessKeys := [][]byte{}
@@ -135,12 +200,7 @@ func TestLAOIInvalidCreationTime(t *testing.T) {
 func CheckMessageIsValid(pubkey []byte, privkey ed.PrivateKey, data interface{}, witnessKeysAndSignatures []message2.ItemWitnessSignatures) error {
 	var dataFlat, signed, id []byte
 	var err error
-	switch data.(type) {
-	case message2.DataCreateLAO:
-		dataFlat, signed, id, err = getIdofMessage(data.(message2.DataCreateLAO), privkey)
-	case message2.DataCreateRollCall:
-		dataFlat, signed, id, err = getIdofMessage(data.(message2.DataCreateRollCall), privkey)
-	}
+	dataFlat, signed, id, err = getIdofMessage(data, privkey)
 	if err != nil {
 		return err
 	}
@@ -214,6 +274,29 @@ func createKeyPair() ([]byte, ed.PrivateKey) {
 	privkey := ed.NewKeyFromSeed(randomSeed)
 	return privkey.Public().(ed.PublicKey), privkey
 }
+
+func createMeeting(orgPubkey []byte, privkey ed.PrivateKey, creation int64, start int64,end int64,name string,lao_id  []byte) (message2.DataCreateMeeting, error) {
+	if (len(orgPubkey) != ed.PublicKeySize) || len(privkey) != ed.PrivateKeySize {
+		return message2.DataCreateMeeting{}, errors.New("wrong argument -> size of public key don't respected ")
+	}
+	var elementsToHashForDataId []string
+	elementsToHashForDataId = append(elementsToHashForDataId, "M", b64.StdEncoding.EncodeToString(lao_id), strconv.FormatInt(creation, 10), name)
+	idData := HashOfItems(elementsToHashForDataId)
+	var data = message2.DataCreateMeeting{
+		Object:    "lao",
+		Action:    "create",
+		ID:        idData,
+		Name:      name,
+		Creation:  creation,
+		Location:     "some location",
+		Start:        start,
+		End:          end,
+		Extra:        "no no no",
+	}
+	return data, nil
+}
+
+
 
 func createDataLao(orgPubkey []byte, privkey ed.PrivateKey, WitnesseKeys [][]byte, creation int64, name string) (message2.DataCreateLAO, error) {
 	if (len(orgPubkey) != ed.PublicKeySize) || len(privkey) != ed.PrivateKeySize {
