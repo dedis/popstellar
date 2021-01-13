@@ -5,17 +5,19 @@
     android:layout_height="wrap_content">
 
     <EditText
-        android:id="@+id/start_date_editText"
+        android:id="@+id/start_date_edit_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:focusableInTouchMode="false"
-        android:hint="@string/start_date_required" />
+        android:hint="@string/start_date_required"
+        android:autofillHints="false" />
 
     <EditText
-        android:id="@+id/end_date_editText"
+        android:id="@+id/end_date_edit_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:focusableInTouchMode="false"
-        android:hint="@string/end_date_optional" />
+        android:hint="@string/end_date_optional"
+        android:autofillHints="false" />
 
 </LinearLayout>

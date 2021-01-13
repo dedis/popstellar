@@ -35,33 +35,36 @@
                 android:textSize="@dimen/size_body" />
 
             <EditText
-                android:id="@+id/question"
+                android:id="@+id/question_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:inputType="text"
+                android:autofillHints="false" />
 
             <LinearLayout
                 android:id="@+id/date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="left"
+                android:gravity="start"
                 app:layout_constrainedHeight="true"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/meeting_title">
 
                 <EditText
-                    android:id="@+id/start_date_editText"
+                    android:id="@+id/start_date_edit_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:focusableInTouchMode="false"
-                    android:hint="@string/start_date_required" />
+                    android:hint="@string/start_date_required"
+                    android:autofillHints="false" />
 
                 <EditText
-                    android:id="@+id/end_date_editText"
+                    android:id="@+id/end_date_edit_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:focusableInTouchMode="false"
-                    android:hint="@string/end_date_optional" />
+                    android:hint="@string/end_date_optional"
+                    android:autofillHints="false" />
 
             </LinearLayout>
 
@@ -69,24 +72,26 @@
                 android:id="@+id/time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="left"
+                android:gravity="start"
                 app:layout_constrainedHeight="true"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/date">
 
                 <EditText
-                    android:id="@+id/start_time_editText"
+                    android:id="@+id/start_time_edit_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:focusableInTouchMode="false"
-                    android:hint="@string/start_time_required" />
+                    android:hint="@string/start_time_required"
+                    android:autofillHints="false" />
 
                 <EditText
-                    android:id="@+id/end_time_editText"
+                    android:id="@+id/end_time_edit_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:focusableInTouchMode="false"
-                    android:hint="@string/end_time_optional" />
+                    android:hint="@string/end_time_optional"
+                    android:autofillHints="false" />
 
             </LinearLayout>
 
@@ -162,6 +167,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/schedule_button"
                     app:layout_constraintTop_toTopOf="parent" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
