@@ -1,11 +1,11 @@
 package actors
 
 import (
-	"testing"
+	"os"
 	"reflect"
 	"strings"
-	"os"
 	"student20_pop/lib"
+	"testing"
 )
 
 // getCorrectSubscribeGeneral generate a example JSON string of a request to subscribe to a channel
@@ -38,8 +38,7 @@ func getCorrectUnSubscribeGeneral() []byte {
 	return []byte(msg)
 }
 
-
-// TestReceiveSubscribeUnsubscribe tests if sending a JSON string requesting to publish a LAO creation works 
+// TestReceiveSubscribeUnsubscribe tests if sending a JSON string requesting to publish a LAO creation works
 // by comparing the messages (response and broadcasted answers) sent back
 func TestReceiveSubscribeUnsubscribe(t *testing.T) {
 
@@ -48,7 +47,7 @@ func TestReceiveSubscribeUnsubscribe(t *testing.T) {
 	receivedMsg := getCorrectSubscribeGeneral()
 	userId := 5
 	var expectedMsgAndChannel []lib.MessageAndChannel = nil
-	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":123}`) 
+	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":123}`)
 
 	org := NewOrganizer(string(publicKey), "org_test.db")
 

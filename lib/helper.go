@@ -2,18 +2,10 @@
 package lib
 
 import (
-	b64 "encoding/base64"
 	"strings"
 )
 
-// Decode is a function that decodes a base-64 encoded string into a []byte.
-// This is done automatically by json.Marshall, still used to compare channel for lao creation.
-func Decode(data string) ([]byte, error) {
-	d, err := b64.StdEncoding.DecodeString(strings.Trim(data, `"`))
-	return d, err
-}
-
-//MessageAndChannel is a return structure used by the Handle functions of package actor. It contains a Message and the
+// MessageAndChannel is a return structure used by the Handle functions of package actor. It contains a Message and the
 // Channel it should be sent on.
 type MessageAndChannel struct {
 	Channel []byte

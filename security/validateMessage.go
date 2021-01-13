@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-// LAOIsValid checks wether the infos given upon creation or update of a LAO are valid. That is it checks the timestamp
+// LAOIsValid checks whether the infos given upon creation or update of a LAO are valid. That is it checks the timestamp
 // and if it's a creation it verifies that the ID is the right one.
 func LAOIsValid(data message.DataCreateLAO, create bool) bool {
 	//the timestamp is reasonably recent with respect to the server’s clock,
@@ -32,7 +32,7 @@ func LAOIsValid(data message.DataCreateLAO, create bool) bool {
 	return creation && name
 }
 
-//MeetingCreatedIsValid checks wether a meeting is valid when it is created. It checks if the ID is correctly computed,
+//MeetingCreatedIsValid checks whether a meeting is valid when it is created. It checks if the ID is correctly computed,
 // and if the timestamps are coherent. (Start < End for example)
 func MeetingCreatedIsValid(data message.DataCreateMeeting, laoId string) bool {
 	//the timestamp is reasonably recent with respect to the server’s clock,
@@ -164,7 +164,7 @@ func MessageIsValid(msg message.Message) error {
 			log.Printf("test 3")
 			return lib.ErrInvalidResource
 		}
-		// the signatures (of MESSAGEID) of witnesses are valid
+		// the signatures (of message_id) of witnesses are valid
 
 
 		err = VerifyWitnessSignatures(data.Witnesses, msg.WitnessSignatures, msg.MessageId)
@@ -195,7 +195,7 @@ func MessageIsValid(msg message.Message) error {
 	return nil
 }
 
-// checkCreationTimeValidity checks wether the int given as argument is between the server's current time
+// checkCreationTimeValidity checks whether the int given as argument is between the server's current time
 // + MaxPropagationDelay and the server's current time - MaxClockDifference. If it's not, it logs an error message
 func checkCreationTimeValidity(ctime int64) bool {
 	//the timestamp is reasonably recent with respect to the server’s clock,

@@ -1,20 +1,20 @@
 package actors
 
 import (
-	"testing"
-	"student20_pop/lib"
-	"reflect"
 	ed "crypto/ed25519"
 	"crypto/sha256"
-	"math/rand"
 	b64 "encoding/base64"
-	"strings"
-	"time"
-	"strconv"
+	"math/rand"
 	"os"
+	"reflect"
+	"strconv"
+	"strings"
+	"student20_pop/lib"
+	"testing"
+	"time"
 )
 
-// The tests in this package have a rather global coverage: 
+// The tests in this package have a rather global coverage:
 // they indirectly test most of the functions in parser, a good chunk of the function in security, and as well of the database functions.
 // On the other hand, they admittedly do not try to test every branching path. Currently, the focus is very much on testing that correct strings are accepted rather that incorrect strings are rejected.
 // This seems a decent trade-off for time-efficiency as our code is quite prone to raising errors.
@@ -31,18 +31,18 @@ func createKeyPair() ([]byte, ed.PrivateKey) {
 }
 
 // getCorrectDataCreateLAO generate a example JSON string of the data field of a request for LAO creation
-func getCorrectDataCreateLAO(publicKey []byte, creationstr string) string {
+func getCorrectDataCreateLAO(publicKey []byte, creationStr string) string {
 	pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
-	tohash := lib.ComputeAsJsonArray([]string{string(pkeyb64),creationstr,"my_lao"})
-	hashid := sha256.Sum256( []byte(tohash) )
-	id := b64.StdEncoding.EncodeToString( hashid[:] )
+	tohash := lib.ComputeAsJsonArray([]string{pkeyb64, creationStr, "my_lao"})
+	hashid := sha256.Sum256([]byte(tohash))
+	id := b64.StdEncoding.EncodeToString(hashid[:])
 	data := `{
 		"object": "lao",
 		"action": "create",
-		"id": "`+id+`",
+		"id": "` + id + `",
 		"name": "my_lao",
-		"creation": `+creationstr+`,
-		"organizer": "`+pkeyb64+`",
+		"creation": ` + creationStr + `,
+		"organizer": "` + pkeyb64 + `",
 		"witnesses": {
 	
 		}
@@ -57,17 +57,17 @@ func getCorrectDataCreateMeeting(publicKey []byte) string {
 	//pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
 	creationstr := strconv.FormatInt(time.Now().Unix(), 10)
 	startstr := strconv.FormatInt(time.Now().Unix()+1000, 10)
-	tohash := lib.ComputeAsJsonArray([]string{"M",b64.StdEncoding.EncodeToString([]byte("LAO_id")),creationstr,"my_meeting"})
-	hashid := sha256.Sum256( []byte(tohash) )
-	id := b64.StdEncoding.EncodeToString( hashid[:] )
+	tohash := lib.ComputeAsJsonArray([]string{"M", b64.StdEncoding.EncodeToString([]byte("LAO_id")), creationstr, "my_meeting"})
+	hashid := sha256.Sum256([]byte(tohash))
+	id := b64.StdEncoding.EncodeToString(hashid[:])
 	data := `{
 		"object": "meeting",
 		"action": "create",
-		"id": "`+id+`",
+		"id": "` + id + `",
 		"name": "my_meeting",
-		"creation": `+creationstr+`,
+		"creation": ` + creationstr + `,
 		"location": "here",
-		"start": `+startstr+`
+		"start": ` + startstr + `
 	}`
 	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
 	data = strings.Join(strings.Fields(data), "")
@@ -79,16 +79,16 @@ func getCorrectDataCreateRollCallNow(publicKey []byte) string {
 	//pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
 	creationstr := strconv.FormatInt(time.Now().Unix(), 10)
 	startstr := strconv.FormatInt(time.Now().Unix()+1000, 10)
-	tohash := lib.ComputeAsJsonArray([]string{"R",b64.StdEncoding.EncodeToString([]byte("LAO_id")),creationstr,"my_roll_call"})
-	hashid := sha256.Sum256( []byte(tohash) )
-	id := b64.StdEncoding.EncodeToString( hashid[:] )
+	tohash := lib.ComputeAsJsonArray([]string{"R", b64.StdEncoding.EncodeToString([]byte("LAO_id")), creationstr, "my_roll_call"})
+	hashid := sha256.Sum256([]byte(tohash))
+	id := b64.StdEncoding.EncodeToString(hashid[:])
 	data := `{
 		"object": "roll_call",
 		"action": "create",
-		"id": "`+id+`",
+		"id": "` + id + `",
 		"name": "my_roll_call",
-		"creation": `+creationstr+`,
-		"start": `+startstr+`,
+		"creation": ` + creationstr + `,
+		"start": ` + startstr + `,
 		"location": "here"
 	}`
 	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
@@ -100,16 +100,16 @@ func getCorrectDataCreateRollCallNow(publicKey []byte) string {
 func getCorrectDataCreateRollCallLater(publicKey []byte, creationstr string) string {
 	//pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
 	startstr := strconv.FormatInt(time.Now().Unix()+1000, 10)
-	tohash := lib.ComputeAsJsonArray([]string{"R",b64.StdEncoding.EncodeToString([]byte("LAO_id")),creationstr,"my_roll_call"})
-	hashid := sha256.Sum256( []byte(tohash) )
-	id := b64.StdEncoding.EncodeToString( hashid[:] )
+	tohash := lib.ComputeAsJsonArray([]string{"R", b64.StdEncoding.EncodeToString([]byte("LAO_id")), creationstr, "my_roll_call"})
+	hashid := sha256.Sum256([]byte(tohash))
+	id := b64.StdEncoding.EncodeToString(hashid[:])
 	data := `{
 		"object": "roll_call",
 		"action": "create",
-		"id": "`+id+`",
+		"id": "` + id + `",
 		"name": "my_roll_call",
-		"creation": `+creationstr+`,
-		"scheduled": `+startstr+`,
+		"creation": ` + creationstr + `,
+		"scheduled": ` + startstr + `,
 		"location": "here"
 	}`
 	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
@@ -121,34 +121,34 @@ func getCorrectDataCreateRollCallLater(publicKey []byte, creationstr string) str
 func getCorrectDataOpenRollCall(publicKey []byte, creationstr string) string {
 	//pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
 	startstr := strconv.FormatInt(time.Now().Unix()+1000, 10)
-	tohash := lib.ComputeAsJsonArray([]string{"R",b64.StdEncoding.EncodeToString([]byte("LAO_id")),creationstr,"my_roll_call"})
-	hashid := sha256.Sum256( []byte(tohash) )
-	id := b64.StdEncoding.EncodeToString( hashid[:] )
+	tohash := lib.ComputeAsJsonArray([]string{"R", b64.StdEncoding.EncodeToString([]byte("LAO_id")), creationstr, "my_roll_call"})
+	hashid := sha256.Sum256([]byte(tohash))
+	id := b64.StdEncoding.EncodeToString(hashid[:])
 	data := `{
 		"object": "roll_call",
 		"action": "open",
-		"id": "`+id+`",
-		"start": `+startstr+`
+		"id": "` + id + `",
+		"start": ` + startstr + `
 	}`
 	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
 	data = strings.Join(strings.Fields(data), "")
 	return data
 }
 
-// getCorrectDataCloseRollCall generate a example JSON string of the data field of a request for closing a rollcall 
+// getCorrectDataCloseRollCall generate a example JSON string of the data field of a request for closing a rollcall
 func getCorrectDataCloseRollCall(publicKey []byte, creationstr string) string {
 	//pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
 	startstr := strconv.FormatInt(time.Now().Unix()+1000, 10)
 	endstr := strconv.FormatInt(time.Now().Unix()+2000, 10)
-	tohash := lib.ComputeAsJsonArray([]string{"R",b64.StdEncoding.EncodeToString([]byte("LAO_id")),creationstr,"my_roll_call"})
-	hashid := sha256.Sum256( []byte(tohash) )
-	id := b64.StdEncoding.EncodeToString( hashid[:] )
+	tohash := lib.ComputeAsJsonArray([]string{"R", b64.StdEncoding.EncodeToString([]byte("LAO_id")), creationstr, "my_roll_call"})
+	hashid := sha256.Sum256([]byte(tohash))
+	id := b64.StdEncoding.EncodeToString(hashid[:])
 	data := `{
 		"object": "roll_call",
 		"action": "close",
-		"id": "`+id+`",
-		"start": `+startstr+`,
-		"end": `+endstr+`,
+		"id": "` + id + `",
+		"start": ` + startstr + `,
+		"end": ` + endstr + `,
 		"attendees": ["1234"] 
 	}`
 	// TODO maybe the attendees field check for a real public key??
@@ -161,21 +161,21 @@ func getCorrectDataCloseRollCall(publicKey []byte, creationstr string) string {
 func getCorrectDataStateLAO(publicKey []byte, creationstr string) string {
 	pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
 	lastmodified := strconv.FormatInt(time.Now().Unix(), 10)
-	tohash := lib.ComputeAsJsonArray([]string{string(pkeyb64),creationstr,"my_lao"})
-	hashid := sha256.Sum256( []byte(tohash) )
-	id := b64.StdEncoding.EncodeToString( hashid[:] )
+	tohash := lib.ComputeAsJsonArray([]string{string(pkeyb64), creationstr, "my_lao"})
+	hashid := sha256.Sum256([]byte(tohash))
+	id := b64.StdEncoding.EncodeToString(hashid[:])
 	data := `{
 		"object": "lao",
 		"action": "state",
-		"id": "`+id+`",
+		"id": "` + id + `",
 		"name": "my_lao",
-		"creation": `+creationstr+`,
-		"last_modified": `+lastmodified+`,
-		"organizer": "`+pkeyb64+`",
+		"creation": ` + creationstr + `,
+		"last_modified": ` + lastmodified + `,
+		"organizer": "` + pkeyb64 + `",
 		"witnesses": {
 	
 		},
-		"modification_id": "`+id+`",
+		"modification_id": "` + id + `",
 		"modification_signatures": []
 	}`
 	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
@@ -185,15 +185,14 @@ func getCorrectDataStateLAO(publicKey []byte, creationstr string) string {
 
 // TODO test stateMeeting, updateLAO, witnessMessage. write data for stateMeeting, updateLAO
 
-
-func getCorrectDataWitnessMessage(privateKey ed.PrivateKey,messageId string) string {
+func getCorrectDataWitnessMessage(privateKey ed.PrivateKey, messageId string) string {
 	signature := ed.Sign(privateKey, []byte(messageId))
 	signatureb64 := b64.StdEncoding.EncodeToString(signature)
 	data := `{
 		"object": "message",
 		"action": "witness",
-		"message_id": "`+messageId+`",
-		"signature	": "`+signatureb64+`"
+		"message_id": "` + messageId + `",
+		"signature	": "` + signatureb64 + `"
 	}`
 	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
 	data = strings.Join(strings.Fields(data), "")
@@ -208,8 +207,8 @@ func getCorrectPublishOnRoot(publicKey []byte, privateKey ed.PrivateKey, data []
 	pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
 	signature := ed.Sign(privateKey, data)
 	signatureb64 := b64.StdEncoding.EncodeToString(signature)
-	tohash := lib.ComputeAsJsonArray([]string{datab64,signatureb64})
-	msgid := sha256.Sum256( []byte(tohash))
+	tohash := lib.ComputeAsJsonArray([]string{datab64, signatureb64})
+	msgid := sha256.Sum256([]byte(tohash))
 	msgidb64 := b64.StdEncoding.EncodeToString(msgid[:])
 	msg := `{
 		"jsonrpc": "2.0",
@@ -217,10 +216,10 @@ func getCorrectPublishOnRoot(publicKey []byte, privateKey ed.PrivateKey, data []
 		"params": {
 			"channel": "/root",
 			"message": {
-				"data": "`+datab64+`",
-				"sender": "`+pkeyb64+`",
-				"signature": "`+signatureb64+`",
-				"message_id": "`+msgidb64+`",
+				"data": "` + datab64 + `",
+				"sender": "` + pkeyb64 + `",
+				"signature": "` + signatureb64 + `",
+				"message_id": "` + msgidb64 + `",
 				"witness_signatures": {
 	
 				}
@@ -234,15 +233,14 @@ func getCorrectPublishOnRoot(publicKey []byte, privateKey ed.PrivateKey, data []
 	return []byte(msg)
 }
 
-
 // getCorrectPublishGeneral generate a example JSON string of the whole request for a publish, based on a data []byte
 func getCorrectPublishGeneral(publicKey []byte, privateKey ed.PrivateKey, data []byte) []byte {
 	datab64 := b64.StdEncoding.EncodeToString(data)
 	pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
 	signature := ed.Sign(privateKey, data)
 	signatureb64 := b64.StdEncoding.EncodeToString(signature)
-	tohash := lib.ComputeAsJsonArray([]string{datab64,signatureb64})
-	msgid := sha256.Sum256( []byte(tohash))
+	tohash := lib.ComputeAsJsonArray([]string{datab64, signatureb64})
+	msgid := sha256.Sum256([]byte(tohash))
 	msgidb64 := b64.StdEncoding.EncodeToString(msgid[:])
 	msg := `{
 		"jsonrpc": "2.0",
@@ -250,10 +248,10 @@ func getCorrectPublishGeneral(publicKey []byte, privateKey ed.PrivateKey, data [
 		"params": {
 			"channel": "/root/LAO_id",
 			"message": {
-				"data": "`+datab64+`",
-				"sender": "`+pkeyb64+`",
-				"signature": "`+signatureb64+`",
-				"message_id": "`+msgidb64+`",
+				"data": "` + datab64 + `",
+				"sender": "` + pkeyb64 + `",
+				"signature": "` + signatureb64 + `",
+				"message_id": "` + msgidb64 + `",
 				"witness_signatures": {
 	
 				}
@@ -274,8 +272,8 @@ func getExpectedMsgAndChannelForPublishOnRoot(publicKey []byte, privateKey ed.Pr
 	pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
 	signature := ed.Sign(privateKey, data)
 	signatureb64 := b64.StdEncoding.EncodeToString(signature)
-	tohash := lib.ComputeAsJsonArray([]string{datab64,signatureb64})
-	msgid := sha256.Sum256( []byte(tohash))
+	tohash := lib.ComputeAsJsonArray([]string{datab64, signatureb64})
+	msgid := sha256.Sum256([]byte(tohash))
 	msgidb64 := b64.StdEncoding.EncodeToString(msgid[:])
 	msg := `{
 		"jsonrpc": "2.0",
@@ -283,10 +281,10 @@ func getExpectedMsgAndChannelForPublishOnRoot(publicKey []byte, privateKey ed.Pr
 		"params": {
 			"channel": "/root",
 			"message": {
-				"data": "`+datab64+`",
-				"sender": "`+pkeyb64+`",
-				"signature": "`+signatureb64+`",
-				"message_id": "`+msgidb64+`",
+				"data": "` + datab64 + `",
+				"sender": "` + pkeyb64 + `",
+				"signature": "` + signatureb64 + `",
+				"message_id": "` + msgidb64 + `",
 				"witness_signatures": {
 	
 				}
@@ -311,8 +309,8 @@ func getExpectedMsgAndChannelForPublishGeneral(publicKey []byte, privateKey ed.P
 	pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
 	signature := ed.Sign(privateKey, data)
 	signatureb64 := b64.StdEncoding.EncodeToString(signature)
-	tohash := lib.ComputeAsJsonArray([]string{datab64,signatureb64})
-	msgid := sha256.Sum256( []byte(tohash))
+	tohash := lib.ComputeAsJsonArray([]string{datab64, signatureb64})
+	msgid := sha256.Sum256([]byte(tohash))
 	msgidb64 := b64.StdEncoding.EncodeToString(msgid[:])
 	msg := `{
 		"jsonrpc": "2.0",
@@ -320,10 +318,10 @@ func getExpectedMsgAndChannelForPublishGeneral(publicKey []byte, privateKey ed.P
 		"params": {
 			"channel": "/root/LAO_id",
 			"message": {
-				"data": "`+datab64+`",
-				"sender": "`+pkeyb64+`",
-				"signature": "`+signatureb64+`",
-				"message_id": "`+msgidb64+`",
+				"data": "` + datab64 + `",
+				"sender": "` + pkeyb64 + `",
+				"signature": "` + signatureb64 + `",
+				"message_id": "` + msgidb64 + `",
 				"witness_signatures": {
 	
 				}
@@ -343,7 +341,7 @@ func getExpectedMsgAndChannelForPublishGeneral(publicKey []byte, privateKey ed.P
 
 /////////////////////////////////////////////////////////////////////////////////////
 
-// TestReceivePublishCreateLAO tests if sending a JSON string requesting to publish a LAO creation works 
+// TestReceivePublishCreateLAO tests if sending a JSON string requesting to publish a LAO creation works
 // by comparing the messages (response and broadcasted answers) sent back
 func TestReceivePublishCreateLAO(t *testing.T) {
 
@@ -353,7 +351,7 @@ func TestReceivePublishCreateLAO(t *testing.T) {
 	receivedMsg := getCorrectPublishOnRoot(publicKey, privateKey, []byte(getCorrectDataCreateLAO(publicKey, creationstr)))
 	userId := 5
 	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishOnRoot(publicKey, privateKey, []byte(getCorrectDataCreateLAO(publicKey, creationstr))) // which will never be sent, but still produced)
-	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
+	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`)
 
 	org := NewOrganizer(string(publicKey), "org_test.db")
 
@@ -377,7 +375,7 @@ func TestReceivePublishStateLAO(t *testing.T) {
 	receivedMsg := getCorrectPublishOnRoot(publicKey, privateKey, []byte(getCorrectDataCreateLAO(publicKey, creationstr)))
 	userId := 5
 	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishOnRoot(publicKey, privateKey, []byte(getCorrectDataCreateLAO(publicKey, creationstr))) // which will never be sent, but still produced)
-	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
+	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`)
 
 	org := NewOrganizer(string(publicKey), "org_test.db")
 
@@ -394,7 +392,7 @@ func TestReceivePublishStateLAO(t *testing.T) {
 	receivedMsg = getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataStateLAO(publicKey, creationstr)))
 	userId = 5
 	expectedMsgAndChannel = nil
-	expectedResponseToSender = []byte(`{"jsonrpc":"2.0","error":{"code":-1,"description":"invalid action"},"id":0}`) 
+	expectedResponseToSender = []byte(`{"jsonrpc":"2.0","error":{"code":-1,"description":"invalid action"},"id":0}`)
 
 	msgAndChannel, responseToSender = org.HandleReceivedMessage(receivedMsg, userId)
 	if !reflect.DeepEqual(msgAndChannel, expectedMsgAndChannel) {
@@ -405,11 +403,10 @@ func TestReceivePublishStateLAO(t *testing.T) {
 		t.Errorf("correct structs are not as expected, \n%v\n vs, \n%v", string(responseToSender), string(expectedResponseToSender))
 	}
 
-
 	_ = os.Remove("org_test.db")
 }
 
-// TestReceivePublishCreateMeeting tests if sending a JSON string requesting to a meeting creation works 
+// TestReceivePublishCreateMeeting tests if sending a JSON string requesting to a meeting creation works
 // by comparing the messages (response and broadcasted answers) sent back
 func TestReceivePublishCreateMeeting(t *testing.T) {
 
@@ -418,7 +415,7 @@ func TestReceivePublishCreateMeeting(t *testing.T) {
 	receivedMsg := getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateMeeting(publicKey)))
 	userId := 5
 	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateMeeting(publicKey)))
-	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
+	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`)
 
 	org := NewOrganizer(string(publicKey), "org_test.db")
 
@@ -433,8 +430,7 @@ func TestReceivePublishCreateMeeting(t *testing.T) {
 	_ = os.Remove("org_test.db")
 }
 
-
-// TestReceivePublishCreateRollCallNow tests if sending a JSON string requesting a rollcall creation starting now works 
+// TestReceivePublishCreateRollCallNow tests if sending a JSON string requesting a rollcall creation starting now works
 // by comparing the messages (response and broadcasted answers) sent back
 func TestReceivePublishCreateRollCallNow(t *testing.T) {
 
@@ -443,7 +439,7 @@ func TestReceivePublishCreateRollCallNow(t *testing.T) {
 	receivedMsg := getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallNow(publicKey)))
 	userId := 5
 	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallNow(publicKey)))
-	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
+	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`)
 
 	org := NewOrganizer(string(publicKey), "org_test.db")
 
@@ -458,7 +454,7 @@ func TestReceivePublishCreateRollCallNow(t *testing.T) {
 	_ = os.Remove("org_test.db")
 }
 
-// TestReceivePublishCreateMeeting tests if sending a JSON string requesting a rollcall creation later works 
+// TestReceivePublishCreateMeeting tests if sending a JSON string requesting a rollcall creation later works
 // by comparing the messages (response and broadcasted answers) sent back, then open it, then closes it
 func TestReceivePublishCreateRollCallLater(t *testing.T) {
 
@@ -467,10 +463,10 @@ func TestReceivePublishCreateRollCallLater(t *testing.T) {
 	publicKey, privateKey := createKeyPair()
 	creationstr := strconv.FormatInt(time.Now().Unix(), 10)
 
-	receivedMsg := getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallLater(publicKey,creationstr)))
+	receivedMsg := getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallLater(publicKey, creationstr)))
 	userId := 5
-	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallLater(publicKey,creationstr))) 
-	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
+	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallLater(publicKey, creationstr)))
+	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`)
 
 	org := NewOrganizer(string(publicKey), "org_test.db")
 
@@ -483,10 +479,10 @@ func TestReceivePublishCreateRollCallLater(t *testing.T) {
 		t.Errorf("correct structs are not as expected, \n%v\n vs, \n%v", string(responseToSender), string(expectedResponseToSender))
 	}
 
-	receivedMsg = getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataOpenRollCall(publicKey,creationstr)))
+	receivedMsg = getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataOpenRollCall(publicKey, creationstr)))
 	userId = 5
-	expectedMsgAndChannel = getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataOpenRollCall(publicKey,creationstr))) 
-	expectedResponseToSender = []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
+	expectedMsgAndChannel = getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataOpenRollCall(publicKey, creationstr)))
+	expectedResponseToSender = []byte(`{"jsonrpc":"2.0","result":0,"id":0}`)
 
 	msgAndChannel, responseToSender = org.HandleReceivedMessage(receivedMsg, userId)
 	if !reflect.DeepEqual(msgAndChannel, expectedMsgAndChannel) {
@@ -498,10 +494,10 @@ func TestReceivePublishCreateRollCallLater(t *testing.T) {
 		t.Errorf("correct structs are not as expected, \n%v\n vs, \n%v", string(responseToSender), string(expectedResponseToSender))
 	}
 
-	receivedMsg = getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCloseRollCall(publicKey,creationstr)))
+	receivedMsg = getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCloseRollCall(publicKey, creationstr)))
 	userId = 5
-	expectedMsgAndChannel = getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCloseRollCall(publicKey,creationstr))) 
-	expectedResponseToSender = []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
+	expectedMsgAndChannel = getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCloseRollCall(publicKey, creationstr)))
+	expectedResponseToSender = []byte(`{"jsonrpc":"2.0","result":0,"id":0}`)
 
 	msgAndChannel, responseToSender = org.HandleReceivedMessage(receivedMsg, userId)
 	if !reflect.DeepEqual(msgAndChannel, expectedMsgAndChannel) {
