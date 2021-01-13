@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft/2019-09/schema#",
-	"$id": "https://github.com/dedis/student20_pop/tree/proto-specs/query/method/publish.json",
+	"$id": "https://raw.githubusercontent.com/dedis/student20_pop/proto-specs/query/method/publish.json",
 	"description": "Match publish query",
 	"type": "object",
 
@@ -18,12 +18,17 @@
 					"type": "string",
 					"pattern": "^\/root(\/[^\/]+)?$",
 					"$comment": "Note: the regex matches a \"/root\" or a \"/root/<channel>\""
+				},
+				"message": {
+					"description": "[String] message to be published",
+					"type": "object",
+					"$comment": "Note: general property declaration to fulfill the additionalProperties requirements"
 				}
 			},
 
 			"allOf": [
 				{
-					"if": { "properties": { "channel": { "$ref": "../channel/rootChannel.json" } } },
+					"if": { "properties": { "channel": { "$ref": "channel/rootChannel.json" } } },
 					"then": {
 						"properties": {
 							"message": { 
@@ -33,10 +38,9 @@
 						},
 						"$comment": "Note: match a publish query destined for the root channel"
 					}
-				}, 
-
+				},
 				{
-					"if": { "properties": { "channel": { "$ref": "../channel/subChannel.json" } } },
+					"if": { "properties": { "channel": { "$ref": "channel/subChannel.json" } } },
 					"then": {
 						"properties": {
 							"message": { 
