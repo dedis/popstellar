@@ -1,5 +1,7 @@
 package com.github.dedis.student20_pop.model.network.method.message;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -13,7 +15,9 @@ public final class MessageGeneral {
     private final String sender;
     private final String data;
     private final String signature;
+    @SerializedName("message_id")
     private final String messageId;
+    @SerializedName("witness_signatures")
     private final List<String> witnessSignatures;
 
     /**

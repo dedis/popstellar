@@ -55,13 +55,12 @@ public interface HighLevelProxy extends Closeable {
      * @param laoId        id of the lao
      * @param name         of the meeting
      * @param creation     time
-     * @param lastModified time
      * @param location     of the meeting
      * @param start        time of the meeting
      * @param end          time of the meeting
      * @return a CompletableFuture that will be complete once the back end responses
      */
-    CompletableFuture<Integer> createMeeting(String laoId, String name, long creation, long lastModified, String location, long start, long end);
+    CompletableFuture<Integer> createMeeting(String laoId, String name, long creation, String location, long start, long end);
 
     /**
      * Send a create roll call message
