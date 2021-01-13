@@ -12,7 +12,6 @@ public class CreateMeeting extends Data {
     private final String id;
     private final String name;
     private final long creation;
-    private final long lastModified;
     private final String location;
     private final long start;
     private final long end;
@@ -24,16 +23,14 @@ public class CreateMeeting extends Data {
      * @param id of the Meeting creation message, Hash("M"||laoId||creation||name)
      * @param name name of the Meeting
      * @param creation time of creation
-     * @param lastModified time of the last modification
      * @param location location of the Meeting
      * @param start of the Meeting
      * @param end of the Meeting
      */
-    public CreateMeeting(String id, String name, long creation, long lastModified, String location, long start, long end) {
+    public CreateMeeting(String id, String name, long creation, String location, long start, long end) {
         this.id = id;
         this.name = name;
         this.creation = creation;
-        this.lastModified = lastModified;
         this.location = location;
         this.start = start;
         this.end = end;
@@ -50,10 +47,6 @@ public class CreateMeeting extends Data {
 
     public long getCreation() {
         return creation;
-    }
-
-    public long getLastModified() {
-        return lastModified;
     }
 
     public String getLocation() {
@@ -84,7 +77,6 @@ public class CreateMeeting extends Data {
         if (o == null || getClass() != o.getClass()) return false;
         CreateMeeting that = (CreateMeeting) o;
         return getCreation() == that.getCreation() &&
-                getLastModified() == that.getLastModified() &&
                 getStart() == that.getStart() &&
                 getEnd() == that.getEnd() &&
                 java.util.Objects.equals(getId(), that.getId()) &&
@@ -94,7 +86,7 @@ public class CreateMeeting extends Data {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(getId(), getName(), getCreation(), getLastModified(), getLocation(), getStart(), getEnd());
+        return java.util.Objects.hash(getId(), getName(), getCreation(), getLocation(), getStart(), getEnd());
     }
 
     @Override
@@ -103,7 +95,6 @@ public class CreateMeeting extends Data {
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", creation=" + creation +
-                ", last_modified=" + lastModified +
                 ", location='" + location + '\'' +
                 ", start=" + start +
                 ", end=" + end +

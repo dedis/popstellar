@@ -58,9 +58,9 @@ public final class WebSocketHighLevelProxy implements HighLevelProxy {
     }
 
     @Override
-    public CompletableFuture<Integer> createMeeting(String laoId, String name, long creation, long lastModified, String location, long start, long end) {
+    public CompletableFuture<Integer> createMeeting(String laoId, String name, long creation, String location, long start, long end) {
         return lowLevelClientProxy.publish(publicKey, privateKey, ROOT + "/" + laoId,
-                new CreateMeeting(Hash.hash("M", laoId, creation, name), name, creation, lastModified, location, start, end));
+                new CreateMeeting(Hash.hash("M", laoId, creation, name), name, creation, location, start, end));
     }
 
     @Override

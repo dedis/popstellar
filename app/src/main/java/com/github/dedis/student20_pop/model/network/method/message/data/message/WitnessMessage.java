@@ -3,12 +3,14 @@ package com.github.dedis.student20_pop.model.network.method.message.data.message
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Data sent to attest the message as a witness
  */
 public class WitnessMessage extends Data {
 
+    @SerializedName("message_id")
     private final String messageId;
     private final String signature;
 
