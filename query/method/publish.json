@@ -45,7 +45,10 @@
 						"properties": {
 							"message": { 
 								"description": "[Message] message to be published",
-								"$ref": "message/messageGeneral.json"
+								"anyOf": [
+									{ "$ref": "message/messageGeneral.json" },
+									{ "$ref": "message/messageWitnessMessage.json" }
+								]
 							}
 						},
 						"$comment": "Note: match a publish query destined for a sub-channel"
