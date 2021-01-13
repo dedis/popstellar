@@ -32,11 +32,17 @@
             layout="@layout/layout_properties"
             android:visibility="gone" />
 
-        <ExpandableListView
-            android:id="@+id/exp_list_view"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layoutDirection="ltr" />
+            android:layout_height="wrap_content"
+            android:id="@+id/swipe_refresh" >
+
+            <ExpandableListView
+                android:id="@+id/exp_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layoutDirection="ltr" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     </LinearLayout>
 
