@@ -673,6 +673,7 @@ func (o *Organizer) handleCloseRollCall(msg message.Message, chann string, query
 	//we provide the id of the channel
 	laoId := strings.TrimPrefix(chann, "/root/")
 	if !security.RollCallClosedIsValid(closeRollCall, laoId, rollCallData) {
+		log.Printf("roll call data invalid. Roll call not created")
 		return nil, lib.ErrInvalidResource
 	}
 
