@@ -108,6 +108,7 @@ object JsonMessageParser {
           } else {
             /* parsing error : the message doesn't fall in any of the above categories */
             throw JsonMessageParserException("invalid message : fields missing or wrongly formatted")
+
           }
 
         } catch {
