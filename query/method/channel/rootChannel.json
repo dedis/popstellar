@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft/2019-09/schema#",
-	"$id": "https://github.com/dedis/student20_pop/tree/proto-specs/query/method/channel/rootChannel.json",
+	"$id": "https://raw.githubusercontent.com/dedis/student20_pop/proto-specs/query/method/channel/rootChannel.json",
 	"description": "Match a root-channel",
 
 	"const": "/root",

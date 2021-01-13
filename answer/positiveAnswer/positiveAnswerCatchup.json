@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft/2019-09/schema#",
-	"$id": "https://github.com/dedis/student20_pop/tree/proto-specs/answer/positiveAnswer/positiveAnswerCatchup.json",
+	"$id": "https://raw.githubusercontent.com/dedis/student20_pop/proto-specs/answer/positiveAnswer/positiveAnswerCatchup.json",
 	"title": "All requests (except catchup (list of message) and propagate message (nothing)) expect an ACK (0) as answer",
 	"description": "[Array[Message]] all high-level message objects so far, sorted in time (ascending)",
 

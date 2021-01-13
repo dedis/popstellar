@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft/2019-09/schema#",
-	"$id": "https://github.com/dedis/student20_pop/tree/proto-specs/query/query.json",
+	"$id": "https://raw.githubusercontent.com/dedis/student20_pop/proto-specs/query/query.json",
 	"title": "Match a custom JsonRpc 2.0 query message",
 	"description": "Match a client query",
 	"type": "object",

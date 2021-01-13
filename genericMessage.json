@@ -1,11 +1,11 @@
 {
 	"$schema": "http://json-schema.org/draft/2019-09/schema#",
-	"$id": "https://github.com/dedis/student20_pop/tree/proto-specs/genericMessage.json",
+	"$id": "https://raw.githubusercontent.com/dedis/student20_pop/proto-specs/genericMessage.json",
 	"title": "Match a custom JsonRpc 2.0 message",
 	"description": "Match a client query or a positive or negative server answer",
 
 	"oneOf": [
-		{ "$ref": "query/query.json" }, 
+		{ "$ref": "query/query.json" },
 		{ "$ref": "answer/answer.json" }
 	]
 }
