@@ -182,7 +182,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
                 case Seq(end@JsNumber(_)) => mcd.setEnd(end.convertTo[TimeStamp])
                 case _ =>
               }
-              extra match { case _ => mcd.setExtra("extra: TODO in JsonCommunicationProtocol") }
+              extra match { case _ => mcd.setExtra("extra: [unknown extra type?]") }
 
               mcd.build()
 
@@ -287,7 +287,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
       if (obj.location != "") jsObjectContent += ("location" -> obj.location.toJson)
       if (obj.start != -1L) jsObjectContent += ("start" -> obj.start.toJson)
       if (obj.end != -1L) jsObjectContent += ("end" -> obj.end.toJson)
-      if (obj.extra != "") jsObjectContent += ("extra" -> obj.extra.toJson) // TODO modify extra's type
+      if (obj.extra != "") jsObjectContent += ("extra" -> obj.extra.toJson)
       if (obj.scheduled != -1L) jsObjectContent += ("scheduled" -> obj.scheduled.toJson)
       if (obj.roll_call_description != "") jsObjectContent += ("roll_call_description" -> obj.end.toJson)
       if (obj._object == Objects.RollCall && obj.action == Actions.Close)

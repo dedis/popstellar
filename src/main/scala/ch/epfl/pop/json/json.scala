@@ -6,7 +6,8 @@ import ch.epfl.pop.json.Objects.Objects
 
 /** Collection of types used in Json parsing */
 package object json {
-  type UNKNOWN = String // TODO remove later
+  // TODO [unknown extra type?]. Should be removed at some point when we know how to describe an "extra"
+  type UNKNOWN = String
 
   /** Base64 strings (untouched and decoded) */
   type Base64String = String

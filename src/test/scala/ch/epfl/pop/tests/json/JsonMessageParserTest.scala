@@ -990,7 +990,7 @@ class JsonMessageParserTest extends FunSuite with Matchers {
       fail()
     } catch {
       case e: SerializationException => e.getMessage should equal ("Json serializer failed : invalid input message")
-      case _ => fail()
+      case _: Throwable => fail()
     }
   }
 

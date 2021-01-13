@@ -109,7 +109,7 @@ object JsonMessageParser {
         } catch {
           case JsonMessageParserException(msg, id, code) => Right(buildJsonMessageParserException(obj, id, code, msg))
           case DeserializationException(msg, _, _) => Right(buildJsonMessageParserException(obj, description = msg))
-          case _ => Right(buildJsonMessageParserException(obj))
+          case _: Throwable => Right(buildJsonMessageParserException(obj))
         }
 
       /* parsing error : String is not a valid JsObject */
@@ -133,6 +133,7 @@ object JsonMessageParser {
       case m: AnswerResultArrayMessageServer => m.toJson.toString
       case m: AnswerErrorMessageServer => m.toJson.toString
       case m: PropagateMessageServer => m.toJson.toString
+      case _ => throw new SerializationException("Json serializer failed : unknown message type")
     }
 
     case _: JsonMessagePublishClient => message match {
@@ -145,12 +146,14 @@ object JsonMessageParser {
       case m: CreateRollCallMessageClient => m.toJson(JsonMessagePublishClientFormat.write).toString
       case m: OpenRollCallMessageClient => m.toJson(JsonMessagePublishClientFormat.write).toString
       case m: CloseRollCallMessageClient => m.toJson(JsonMessagePublishClientFormat.write).toString
+      case _ => throw new SerializationException("Json serializer failed : unknown message type")
     }
 
     case _: JsonMessagePubSubClient => message match {
       case m: SubscribeMessageClient => m.toJson.toString
       case m: UnsubscribeMessageClient => m.toJson.toString
       case m: CatchupMessageClient => m.toJson.toString
+      case _ => throw new SerializationException("Json serializer failed : unknown message type")
     }
 
     case _ => throw new SerializationException("Json serializer failed : invalid input message")
