@@ -23,7 +23,7 @@
 
 			"allOf": [
 				{
-					"if": { "properties": { "channel": { "$ref": "../channel/rootChannel.json" } } },
+					"if": { "properties": { "channel": { "$ref": "channel/rootChannel.json" } } },
 					"then": {
 						"properties": {
 							"message": { 
@@ -35,7 +35,7 @@
 					}
 				},
 				{
-					"if": { "properties": { "channel": { "$ref": "../channel/subChannel.json" } } },
+					"if": { "properties": { "channel": { "$ref": "channel/subChannel.json" } } },
 					"then": {
 						"properties": {
 							"message": { 
