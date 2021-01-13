@@ -50,7 +50,7 @@ public class StateLao extends Data {
         return creation;
     }
 
-    public long getLast_modified() {
+    public long getLastModified() {
         return lastModified;
     }
 
@@ -78,7 +78,7 @@ public class StateLao extends Data {
         if (o == null || getClass() != o.getClass()) return false;
         StateLao stateLao = (StateLao) o;
         return getCreation() == stateLao.getCreation() &&
-                getLast_modified() == stateLao.getLast_modified() &&
+                getLastModified() == stateLao.getLastModified() &&
                 java.util.Objects.equals(getId(), stateLao.getId()) &&
                 java.util.Objects.equals(getName(), stateLao.getName()) &&
                 java.util.Objects.equals(getOrganizer(), stateLao.getOrganizer()) &&
@@ -87,7 +87,7 @@ public class StateLao extends Data {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(getId(), getName(), getCreation(), getLast_modified(), getOrganizer(), getWitnesses());
+        return java.util.Objects.hash(getId(), getName(), getCreation(), getLastModified(), getOrganizer(), getWitnesses());
     }
 
     @Override
