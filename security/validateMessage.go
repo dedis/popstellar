@@ -51,7 +51,8 @@ func MeetingCreatedIsValid(data message.DataCreateMeeting, laoId string) bool {
 	elementsToHashForDataId = append(elementsToHashForDataId, "M", b64.StdEncoding.EncodeToString([]byte(laoId)), strconv.FormatInt(data.Creation, 10), data.Name)
 	hash := HashOfItems(elementsToHashForDataId)
 	if !bytes.Equal(data.ID, hash) {
-		log.Printf("ID of createRollCall invalid: %v should be: %v", string(data.ID), string(hash[:]))
+		log.Printf("ID of createMeeting invalid: %v should be: %v", string(data.ID), string(hash[:]))
+		return false
 	}
 	return creation && name
 }
