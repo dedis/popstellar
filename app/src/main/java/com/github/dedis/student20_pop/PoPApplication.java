@@ -55,9 +55,6 @@ public class PoPApplication extends Application {
     private Lao currentLao;
     private HighLevelProxy localProxy;
 
-    //TODO: person/laos used for testing when we don't have a backend connected
-    private Map<Lao, List<Event>> dummyLaoEventsMap;
-
     @Override
     public void onCreate() {
         super.onCreate();
