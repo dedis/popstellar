@@ -125,8 +125,9 @@ func RollCallClosedIsValid(data message.DataCloseRollCall, laoId string, rollCal
 
 // MessageIsValid checks upon reception that the message data is valid, that is that the ID is correctly computed, and
 // that the signature is correct as well
-// IMPORTANT thing : 	For every message the signature is Sign(message_id)
-//						EXCEPT for (the data) witnessMessage which is Sign(data)
+// IMPORTANT thing :
+//	*	For every message the signature is Sign(data)
+//	*	but for the one in DATAWitnessMessage it is Sign(message_id)
 func MessageIsValid(msg message.Message) error {
 	// check message_id is valid
 	var itemsToHashForMessageId []string
@@ -152,7 +153,7 @@ func MessageIsValid(msg message.Message) error {
 		return err
 	}
 	switch data["object"] {
-	/* TODO see comment above handleLAOState in organizer.go
+	/*  see comment above handleLAOState in organizer.go
 			case "lao":
 			switch data["action"] {
 			case "state":
@@ -162,8 +163,7 @@ func MessageIsValid(msg message.Message) error {
 					return lib.ErrInvalidResource
 				}
 				// the signatures (of MESSAGEID) of witnesses are valid
-	TODO dans tous les cas, we don't have access to the message id of the lao, here we
-				put the message_id of the message state lao (this makes no sens).
+
 
 				err = VerifyWitnessSignatures(data.Witnesses, msg.WitnessSignatures, msg.MessageId)
 				if err != nil {
@@ -181,9 +181,9 @@ func MessageIsValid(msg message.Message) error {
 				log.Printf("unable to parse the dataWitnessMessage correctlty ")
 				return lib.ErrInvalidResource
 			}
-			// the signature of message_id of the message to witness is valid
-			// this is the message_id of the data layer (!)
+			// signature of message_id of the message to witness
 			err = VerifySignature(msg.Sender, data.MessageId, data.Signature)
+			// this is the message_id of the data layer (!)
 			if err != nil {
 				log.Printf("invalid message signature")
 				return err

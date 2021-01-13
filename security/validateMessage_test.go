@@ -463,7 +463,7 @@ func TestLAOInvalidName(t *testing.T) {
 	pubkey, privkey := createKeyPair()
 	witnessKeys := [][]byte{}
 	var creation = time.Now().Unix()
-	// TODO (should be not empty but) not in the protospecs ?
+	// should be not empty but) not in the protospecs ?
 	name := ""
 	data, err := createDataLao(pubkey, privkey, witnessKeys, creation, name)
 	if err != nil {
