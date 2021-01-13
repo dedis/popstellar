@@ -4,7 +4,6 @@ import (
 	"testing"
 	"student20_pop/lib"
 	"reflect"
-	"sync"
 	ed "crypto/ed25519"
 	"crypto/sha256"
 	"math/rand"
@@ -19,36 +18,6 @@ import (
 // they indirectly test most of the functions in parser, a good chunk of the function in security, and as well of the database functions.
 // On the other hand, they admittedly do not try to test every branching path. Currently, the focus is very much on testing that correct strings are accepted rather that incorrect strings are rejected.
 // This seems a decent trade-off for time-efficiency as our code is quite prone to raising errors.
-
-
-// TODO: To not break package encapsulation, it should probably be wise to disable the two followings structs while not testing.
-type hub struct {
-	// the mutex to protect connections
-	connectionsMx sync.RWMutex
-
-	// Registered connections.
-	connections map[*connection]struct{}
-
-	idOfSender int
-	//msg received from the sender through the websocket
-	receivedMessage chan []byte
-
-	logMx sync.RWMutex
-	log   [][]byte
-
-	actor Actor
-
-	connIndex int
-}
-
-type connection struct {
-	// Buffered channel of outbound messages.
-	send chan []byte
-	id   int
-	// The hub.
-	h *hub
-}
-
 
 ////////////////////////////////////////////
 
@@ -386,16 +355,9 @@ func TestReceivePublishCreateLAO(t *testing.T) {
 	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishOnRoot(publicKey, privateKey, []byte(getCorrectDataCreateLAO(publicKey, creationstr))) // which will never be sent, but still produced)
 	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
 
-	h := &hub{
-		connectionsMx:   sync.RWMutex{},
-		receivedMessage: make(chan []byte),
-		connections:     make(map[*connection]struct{}),
-		connIndex:       0,
-		idOfSender:      -1,
-		actor: 			NewOrganizer(string(publicKey), "org_test.db"),
-	}
+	org := NewOrganizer(string(publicKey), "org_test.db")
 
-	msgAndChannel, responseToSender := h.actor.HandleReceivedMessage(receivedMsg, userId)
+	msgAndChannel, responseToSender := org.HandleReceivedMessage(receivedMsg, userId)
 	if !reflect.DeepEqual(msgAndChannel, expectedMsgAndChannel) {
 		t.Errorf("correct msgAndChannel are not as expected, \n%+v\n vs, \n%+v", msgAndChannel, expectedMsgAndChannel)
 	}
@@ -417,16 +379,9 @@ func TestReceivePublishStateLAO(t *testing.T) {
 	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishOnRoot(publicKey, privateKey, []byte(getCorrectDataCreateLAO(publicKey, creationstr))) // which will never be sent, but still produced)
 	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
 
-	h := &hub{
-		connectionsMx:   sync.RWMutex{},
-		receivedMessage: make(chan []byte),
-		connections:     make(map[*connection]struct{}),
-		connIndex:       0,
-		idOfSender:      -1,
-		actor: 			NewOrganizer(string(publicKey), "org_test.db"),
-	}
+	org := NewOrganizer(string(publicKey), "org_test.db")
 
-	msgAndChannel, responseToSender := h.actor.HandleReceivedMessage(receivedMsg, userId)
+	msgAndChannel, responseToSender := org.HandleReceivedMessage(receivedMsg, userId)
 	if !reflect.DeepEqual(msgAndChannel, expectedMsgAndChannel) {
 		t.Errorf("correct msgAndChannel are not as expected, \n%+v\n vs, \n%+v", msgAndChannel, expectedMsgAndChannel)
 	}
@@ -441,7 +396,7 @@ func TestReceivePublishStateLAO(t *testing.T) {
 	expectedMsgAndChannel = nil
 	expectedResponseToSender = []byte(`{"jsonrpc":"2.0","error":{"code":-1,"description":"invalid action"},"id":0}`) 
 
-	msgAndChannel, responseToSender = h.actor.HandleReceivedMessage(receivedMsg, userId)
+	msgAndChannel, responseToSender = org.HandleReceivedMessage(receivedMsg, userId)
 	if !reflect.DeepEqual(msgAndChannel, expectedMsgAndChannel) {
 		t.Errorf("correct msgAndChannel are not as expected, \n%+v\n vs, \n%+v", msgAndChannel, expectedMsgAndChannel)
 	}
@@ -465,16 +420,9 @@ func TestReceivePublishCreateMeeting(t *testing.T) {
 	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateMeeting(publicKey)))
 	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
 
-	h := &hub{
-		connectionsMx:   sync.RWMutex{},
-		receivedMessage: make(chan []byte),
-		connections:     make(map[*connection]struct{}),
-		connIndex:       0,
-		idOfSender:      -1,
-		actor: 			NewOrganizer(string(publicKey), "org_test.db"),
-	}
+	org := NewOrganizer(string(publicKey), "org_test.db")
 
-	msgAndChannel, responseToSender := h.actor.HandleReceivedMessage(receivedMsg, userId)
+	msgAndChannel, responseToSender := org.HandleReceivedMessage(receivedMsg, userId)
 	if !reflect.DeepEqual(msgAndChannel, expectedMsgAndChannel) {
 		t.Errorf("correct msgAndChannel are not as expected, \n%+v\n vs, \n%+v", string(msgAndChannel[0].Channel), string(expectedMsgAndChannel[0].Channel))
 	}
@@ -497,16 +445,9 @@ func TestReceivePublishCreateRollCallNow(t *testing.T) {
 	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallNow(publicKey)))
 	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
 
-	h := &hub{
-		connectionsMx:   sync.RWMutex{},
-		receivedMessage: make(chan []byte),
-		connections:     make(map[*connection]struct{}),
-		connIndex:       0,
-		idOfSender:      -1,
-		actor: 			NewOrganizer(string(publicKey), "org_test.db"),
-	}
+	org := NewOrganizer(string(publicKey), "org_test.db")
 
-	msgAndChannel, responseToSender := h.actor.HandleReceivedMessage(receivedMsg, userId)
+	msgAndChannel, responseToSender := org.HandleReceivedMessage(receivedMsg, userId)
 	if !reflect.DeepEqual(msgAndChannel, expectedMsgAndChannel) {
 		t.Errorf("correct msgAndChannel are not as expected, \n%+v\n vs, \n%+v", string(msgAndChannel[0].Channel), string(expectedMsgAndChannel[0].Channel))
 	}
@@ -531,16 +472,9 @@ func TestReceivePublishCreateRollCallLater(t *testing.T) {
 	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallLater(publicKey,creationstr))) 
 	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
 
-	h := &hub{
-		connectionsMx:   sync.RWMutex{},
-		receivedMessage: make(chan []byte),
-		connections:     make(map[*connection]struct{}),
-		connIndex:       0,
-		idOfSender:      -1,
-		actor: 			NewOrganizer(string(publicKey), "org_test.db"),
-	}
+	org := NewOrganizer(string(publicKey), "org_test.db")
 
-	msgAndChannel, responseToSender := h.actor.HandleReceivedMessage(receivedMsg, userId)
+	msgAndChannel, responseToSender := org.HandleReceivedMessage(receivedMsg, userId)
 	if !reflect.DeepEqual(msgAndChannel, expectedMsgAndChannel) {
 		t.Errorf("correct msgAndChannel are not as expected, \n%+v\n vs, \n%+v", string(msgAndChannel[0].Channel), string(expectedMsgAndChannel[0].Channel))
 	}
@@ -554,7 +488,7 @@ func TestReceivePublishCreateRollCallLater(t *testing.T) {
 	expectedMsgAndChannel = getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataOpenRollCall(publicKey,creationstr))) 
 	expectedResponseToSender = []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
 
-	msgAndChannel, responseToSender = h.actor.HandleReceivedMessage(receivedMsg, userId)
+	msgAndChannel, responseToSender = org.HandleReceivedMessage(receivedMsg, userId)
 	if !reflect.DeepEqual(msgAndChannel, expectedMsgAndChannel) {
 		t.Errorf("correct msgAndChannel are not as expected, \n%+v\n vs, \n%+v", msgAndChannel, expectedMsgAndChannel)
 		//t.Errorf("correct msgAndChannel are not as expected, \n%+v\n vs, \n%+v", string(msgAndChannel[0].Channel), string(expectedMsgAndChannel[0].Channel))
@@ -569,7 +503,7 @@ func TestReceivePublishCreateRollCallLater(t *testing.T) {
 	expectedMsgAndChannel = getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCloseRollCall(publicKey,creationstr))) 
 	expectedResponseToSender = []byte(`{"jsonrpc":"2.0","result":0,"id":0}`) 
 
-	msgAndChannel, responseToSender = h.actor.HandleReceivedMessage(receivedMsg, userId)
+	msgAndChannel, responseToSender = org.HandleReceivedMessage(receivedMsg, userId)
 	if !reflect.DeepEqual(msgAndChannel, expectedMsgAndChannel) {
 		t.Errorf("correct msgAndChannel are not as expected, \n%+v\n vs, \n%+v", msgAndChannel, expectedMsgAndChannel)
 		//t.Errorf("correct msgAndChannel are not as expected, \n%+v\n vs, \n%+v", string(msgAndChannel[0].Channel), string(expectedMsgAndChannel[0].Channel))

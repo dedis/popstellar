@@ -3,7 +3,6 @@ package actors
 import (
 	"testing"
 	"reflect"
-	"sync"
 	"strings"
 	"os"
 	"student20_pop/lib"
@@ -51,16 +50,9 @@ func TestReceiveSubscribeUnsubscribe(t *testing.T) {
 	var expectedMsgAndChannel []lib.MessageAndChannel = nil
 	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":123}`) 
 
-	h := &hub{
-		connectionsMx:   sync.RWMutex{},
-		receivedMessage: make(chan []byte),
-		connections:     make(map[*connection]struct{}),
-		connIndex:       0,
-		idOfSender:      -1,
-		actor: 			NewOrganizer(string(publicKey), "org_test.db"),
-	}
+	org := NewOrganizer(string(publicKey), "org_test.db")
 
-	msgAndChannel, responseToSender := h.actor.HandleReceivedMessage(receivedMsg, userId)
+	msgAndChannel, responseToSender := org.HandleReceivedMessage(receivedMsg, userId)
 	if !reflect.DeepEqual(msgAndChannel, expectedMsgAndChannel) {
 		t.Errorf("correct msgAndChannel are not as expected, \n%+v\n vs, \n%+v", msgAndChannel, expectedMsgAndChannel)
 	}
@@ -70,8 +62,8 @@ func TestReceiveSubscribeUnsubscribe(t *testing.T) {
 	}
 
 	// Check current state
-	oneSub := h.actor.GetSubscribers("/root/LAO_id")
-	noSub1 := h.actor.GetSubscribers("/root/nobody")
+	oneSub := org.GetSubscribers("/root/LAO_id")
+	noSub1 := org.GetSubscribers("/root/nobody")
 
 	correctOneSub := []int{5}
 
@@ -84,7 +76,7 @@ func TestReceiveSubscribeUnsubscribe(t *testing.T) {
 
 	// And then unsubscribe!
 	receivedMsg = getCorrectUnSubscribeGeneral()
-	msgAndChannel, responseToSender = h.actor.HandleReceivedMessage(receivedMsg, userId)
+	msgAndChannel, responseToSender = org.HandleReceivedMessage(receivedMsg, userId)
 	if !reflect.DeepEqual(msgAndChannel, expectedMsgAndChannel) {
 		t.Errorf("correct msgAndChannel are not as expected, \n%+v\n vs, \n%+v", msgAndChannel, expectedMsgAndChannel)
 	}
@@ -93,7 +85,7 @@ func TestReceiveSubscribeUnsubscribe(t *testing.T) {
 		t.Errorf("correct structs are not as expected, \n%v\n vs, \n%v", string(responseToSender), string(expectedResponseToSender))
 	}
 
-	noSub2 := h.actor.GetSubscribers("/root/LAO_id")
+	noSub2 := org.GetSubscribers("/root/LAO_id")
 	if len(noSub2) != 0 {
 		t.Errorf("should not have sub")
 	}
