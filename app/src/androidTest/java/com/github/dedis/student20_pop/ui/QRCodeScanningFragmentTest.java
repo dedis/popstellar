@@ -39,7 +39,7 @@ public class QRCodeScanningFragmentTest {
 
         // Set good fragment
         onView(ViewMatchers.withId(R.id.tab_connect)).perform(click());
-        onView(withId(R.id.fragment_connect)).check(matches(isDisplayed()));
+        onView(withId(R.id.fragment_qrcode)).check(matches(isDisplayed()));
 
         // Simulate a detected url
         scenario.onActivity(a -> {
