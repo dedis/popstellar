@@ -114,9 +114,10 @@ public class AddAttendeeFragmentTest {
                     Instant.now().getEpochSecond(),
                     Instant.now().getEpochSecond(),
                     LAO_ID,
+                    new ObservableArrayList<>(),
                     "",
-                    "No description",
-                    new ObservableArrayList<>()
+                    "No description"
+
             );
 
             app.addEvent(rollCallEvent);
@@ -174,9 +175,9 @@ public class AddAttendeeFragmentTest {
                     Instant.now().getEpochSecond(),
                     Instant.now().getEpochSecond(),
                     LAO_ID,
+                    new ObservableArrayList<>(),
                     "",
-                    "No description",
-                    new ObservableArrayList<>()
+                    "No description"
             );
 
             app.addEvent(rollCallEvent);

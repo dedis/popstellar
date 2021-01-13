@@ -57,14 +57,19 @@
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="@id/guideline_horizontal_tab">
 
-        <ListView
-            android:id="@+id/lao_list"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="@dimen/margin_button"
-            android:layout_marginRight="@dimen/margin_button"
-            android:divider="@color/white"
-            android:dividerHeight="@dimen/margin_top" />
+            android:layout_height="wrap_content"
+            android:id="@+id/swipe_refresh" >
+            <ListView
+                android:id="@+id/lao_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/margin_button"
+                android:layout_marginRight="@dimen/margin_button"
+                android:divider="@color/white"
+                android:dividerHeight="@dimen/margin_top" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
