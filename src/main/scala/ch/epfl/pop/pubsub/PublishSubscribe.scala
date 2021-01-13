@@ -280,13 +280,22 @@ object PublishSubscribe {
 
 
         val parser = Flow[Message].map {
-          case TextMessage.Strict(s) => parseMessage(s) match {
-            case Left(m) => m
-            case Right(JsonMessageParserError(description, id, errorCode)) =>
-              AnswerErrorMessageServer(id, MessageErrorContent(errorCode.id, description))
+          case TextMessage.Strict(s) => {
+            system.log.debug("Receiving: " + s)
+            parseMessage(s) match {
+              case Left(m) => m
+              case Right(JsonMessageParserError(description, id, errorCode)) =>
+                AnswerErrorMessageServer(id, MessageErrorContent(errorCode.id, description))
+            }
           }
         }
-        val formatter = Flow[JsonMessage].map(m => TextMessage.Strict(serializeMessage(m)))
+
+        val formatter = Flow[JsonMessage].map{
+          m =>
+            val s = serializeMessage(m)
+            system.log.debug("Sending: " + s)
+            TextMessage.Strict(s)
+        }
 
         val mapPubSub = Flow[JsonMessage].map{case m: JsonMessagePubSubClient => m}
 
