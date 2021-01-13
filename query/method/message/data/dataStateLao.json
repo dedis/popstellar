@@ -54,10 +54,11 @@
 				"required": ["witness", "signature"]
 			}
 		},
-	"additionalProperties": false,
-	"required": ["object", "action", "id", "name", "creation", "last_modified", "organizer", "witnesses", "modification_id", "modification_signatures"],
-	"note": [
-		"When a LAO is created or modified, the organizer is expected to publish the lao/state message to the ",
-		"LAO’s main channel (LAO's id), once it got the required number of witness signatures"
-	]
+		"additionalProperties": false,
+		"required": ["object", "action", "id", "name", "creation", "last_modified", "organizer", "witnesses", "modification_id", "modification_signatures"],
+		"note": [
+			"When a LAO is created or modified, the organizer is expected to publish the lao/state message to the ",
+			"LAO’s main channel (LAO's id), once it got the required number of witness signatures"
+		]
+	}
 }
