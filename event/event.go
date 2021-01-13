@@ -56,6 +56,7 @@ type RollCall struct {
 	End int64 //timestamp
 }
 
+// not implemented in the protocol specifications yet
 type Poll struct {
 	// hash : Name || Creation
 	ID string
@@ -74,6 +75,7 @@ type Poll struct {
 	Extra string
 }
 
+// not implemented in the protocol specifications yet
 type Election struct {
 	// hash : Name || Creation
 	ID string
@@ -82,20 +84,21 @@ type Election struct {
 	//Creation Date/Time
 	Creation int64 //  Unix timestamp (uint64)
 
-	/*LAO: Hash Associated LAO*/
+	//LAO: Hash Associated LAO
 	//Default Ballot Options
 	Options []string
-	/*Signature by the organizer and witnesses of the corresponding LAO on (ID) to attest to this event*/
+	//Signature by the organizer and witnesses of the corresponding LAO on (ID) to attest to this event
 	Attestation [][]byte
 }
 
+// not implemented in the protocol specifications yet
 type Vote struct {
 	//the voter
 	Person []byte
 	//Election ID
 	ElectionId hash.Hash
-	//vote are Hex (Point 1) || Hex (Point 2) : ElGamal encryption of a message.
+	//vote are Hex (Point 1) || Hex (Point 2)
 	Vote string
-	/*Signature by the voter on SHA1(Election ID, LAO ID, Vote) to attest to their vote.*/
+	//Signature by the voter on SHA1(Election ID, LAO ID, Vote) to attest to their vote.
 	Attestation [][]byte
 }

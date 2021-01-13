@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 )
 
-/* potential enum, but doesn't typecheck in go, the checks must still be manual, so kinda useless
+/* potential enum, but doesn't type check in go, the checks must still be manual, so kinda useless
 type Method string
 const(
 	Subscribe Method = "subscribe"
@@ -21,10 +21,10 @@ const(
 type GenericMessage map[string]interface{}
 
 type Query struct {
-	Jsonrpc string `json:"jsonrpc"`
-	Method  string `json:"method"`
+	Jsonrpc string          `json:"jsonrpc"`
+	Method  string          `json:"method"`
 	Params  json.RawMessage `json:"params"`
-	Id      int `json:"id"`
+	Id      int             `json:"id"`
 }
 
 type Params struct {
@@ -41,7 +41,7 @@ type Message struct {
 }
 
 type ItemWitnessSignatures struct {
-	WitnessKey []byte `json:"witness"`// recovered from base 64
+	WitnessKey []byte `json:"witness"` // recovered from base 64
 	//Sign(message_id)
-	Signature []byte `json:"signature"`// recovered from base 64
+	Signature []byte `json:"signature"` // recovered from base 64
 }
