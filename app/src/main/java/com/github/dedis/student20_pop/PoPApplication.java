@@ -89,9 +89,8 @@ public class PoPApplication extends Application {
             }
         }
 
-        //activateTestingValues(); //uncomment this line when testing without a back-end
         laoWitnessMap.put(currentLao, new ArrayList<>());
-
+        activateTestingValues(); //uncomment this line when testing without a back-end
         localProxy = getProxy(LOCAL_BACKEND_URI);
     }
 
