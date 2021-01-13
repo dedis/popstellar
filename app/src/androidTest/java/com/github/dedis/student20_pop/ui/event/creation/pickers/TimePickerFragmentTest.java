@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.ui.Pickers;
+package com.github.dedis.student20_pop.ui.event.creation.pickers;
 
 import android.view.View;
 import android.widget.DatePicker;
