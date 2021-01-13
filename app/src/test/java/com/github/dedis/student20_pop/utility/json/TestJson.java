@@ -47,30 +47,33 @@ import java.util.Set;
  */
 public class TestJson {
 
+    // Set it to false to use the remotely stored schema
+    private static final boolean USE_LOCAL_SCHEMA = true;
+
+    private static final String EXTERNAL_ROOT = "https://raw.githubusercontent.com/dedis/student20_pop/proto-specs/";
+    private static final String LOCAL_ROOT = "resource:/schema/";
+
     private final Gson gson = JsonUtils.createGson();
 
     private final ObjectMapper mapper = new ObjectMapper();
     private JsonSchema lowSchema;
     private JsonSchemaFactory factory;
 
+    private JsonSchema getSchema(String path) {
+        return factory.getSchema(URI.create(EXTERNAL_ROOT + path), new SchemaValidatorsConfig());
+    }
+
     @Before
     public void setupSchema() {
-        factory = new JsonSchemaFactory.Builder()
+        JsonSchemaFactory.Builder factoryBuilder = new JsonSchemaFactory.Builder()
                 .defaultMetaSchemaURI(JsonMetaSchema.getV201909().getUri())
-                .addMetaSchema(JsonMetaSchema.getV201909())
-                .uriFactory(new URIFactory() {
-                    @Override
-                    public URI create(String uri) {
-                        return URI.create(uri.replace("https://github.com/dedis/student20_pop/tree/proto-specs/", "resource:/schema/"));
-                    }
+                .addMetaSchema(JsonMetaSchema.getV201909());
 
-                    @Override
-                    public URI create(URI baseURI, String segment) {
-                        return URI.create("resource:/schema/" + segment);
-                    }
-                }, "https")
-                .build();
-        lowSchema = factory.getSchema(URI.create("resource:/schema/genericMessage.json"), new SchemaValidatorsConfig());
+        if(USE_LOCAL_SCHEMA)
+            factoryBuilder = factoryBuilder.uriFactory(new ForceLocalFilesURI(EXTERNAL_ROOT, LOCAL_ROOT), "https");
+
+        factory = factoryBuilder.build();
+        lowSchema = getSchema("genericMessage.json");
     }
 
     private void testMessage(Message msg) throws JsonProcessingException {
@@ -91,7 +94,7 @@ public class TestJson {
 
     private void testData(Data msg) throws JsonProcessingException {
         String json = gson.toJson(msg, Data.class);
-        JsonSchema schema = factory.getSchema(URI.create("resource:/schema/query/method/message/data/data" + msg.getClass().getSimpleName() + ".json"), new SchemaValidatorsConfig());
+        JsonSchema schema = getSchema("query/method/message/data/data" + msg.getClass().getSimpleName() + ".json");
         Set<ValidationMessage> errors = schema.validate(mapper.readTree(json));
         if (errors.size() != 0) System.out.println(errors);
         Assert.assertEquals(0, errors.size());
@@ -111,6 +114,8 @@ public class TestJson {
 
     @Test
     public void testPublish() throws JsonProcessingException {
+        testMessage(new Publish("/root/test", 0,
+                new MessageGeneral("sender", "data", "signature", "id", Collections.emptyList())));
         testMessage(new Publish("/root", 0,
                 new MessageGeneral("sender", "data", "signature", "id", Collections.emptyList())));
     }
@@ -130,7 +135,7 @@ public class TestJson {
     public void testMessageGeneral() throws JsonProcessingException {
         MessageGeneral msg = new MessageGeneral("sender", "data", "signature", "id", Collections.emptyList());
         String json = gson.toJson(msg, MessageGeneral.class);
-        JsonSchema schema = factory.getSchema(URI.create("resource:/schema/query/method/message/MessageGeneral.json"), new SchemaValidatorsConfig());
+        JsonSchema schema = getSchema("query/method/message/MessageGeneral.json");
         Set<ValidationMessage> errors = schema.validate(mapper.readTree(json));
         if (errors.size() != 0) System.out.println(errors);
         Assert.assertEquals(0, errors.size());
@@ -193,5 +198,30 @@ public class TestJson {
     @Test
     public void testCloseRollCall() throws JsonProcessingException {
         testData(new CloseRollCall("id", 32, 342, Arrays.asList("1", "2", "3")));
+    }
+
+    private static final class ForceLocalFilesURI implements URIFactory {
+
+        private final String externalRoot;
+        private final String localRoot;
+
+        private ForceLocalFilesURI(String externalRoot, String localRoot) {
+            this.externalRoot = externalRoot;
+            this.localRoot = localRoot;
+        }
+
+        @Override
+        public URI create(String uri) {
+            return URI.create(uri.replace(externalRoot, localRoot));
+        }
+
+        @Override
+        public URI create(URI baseURI, String segment) {
+            String uri = baseURI.toString();
+            int lastSep = uri.lastIndexOf("/");
+            String parentFile = lastSep >= 0 ?
+                    uri.substring(lastSep + 1) : "";
+            return create(uri.replace(parentFile, segment));
+        }
     }
 }
