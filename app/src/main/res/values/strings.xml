@@ -65,6 +65,9 @@
     <string name="end_time_before_start_time_not_allowed">End time must be after start time</string>
     <string name="end_time_optional">End Time</string>
     <string name="picker_selection">selection</string>
+    <string name="past_events">Past Events</string>
+    <string name="present_events">Present Events</string>
+    <string name="future_events">Future Events</string>
 
     <!-- Meeting Event -->
     <string name="meeting_event">Meeting Event</string>
