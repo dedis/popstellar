@@ -1,7 +1,5 @@
 package com.github.dedis.student20_pop.model;
 
-import com.github.dedis.student20_pop.utility.security.Signature;
-
 import java.util.Objects;
 
 /**
@@ -17,7 +15,7 @@ public final class Vote {
      * Constructor of a Vote
      *
      * @param person   the public key of the person voting
-     * @param election the id of the election
+     * @param election the ID of the election
      * @param vote     the encrypted vote
      * @throws IllegalArgumentException if any parameter is null
      */
@@ -28,26 +26,24 @@ public final class Vote {
         this.person = person;
         this.election = election;
         this.vote = vote;
-        // TODO: Get LAO ID in the future
-        String lao = "";
     }
 
     /**
-     * @return public key of the person
+     * Returns the public key of the person voting.
      */
     public String getPerson() {
         return person;
     }
 
     /**
-     * @return id of the election
+     * Returns the ID of the election.
      */
     public String getElection() {
         return election;
     }
 
     /**
-     * @return encrypted vote
+     * Returns the encrypted vote.
      */
     public String getVote() {
         return vote;

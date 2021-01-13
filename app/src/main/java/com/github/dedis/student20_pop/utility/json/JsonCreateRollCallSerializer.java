@@ -1,6 +1,6 @@
 package com.github.dedis.student20_pop.utility.json;
 
-import com.github.dedis.student20_pop.model.network.level.high.rollcall.CreateRollCall;
+import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.google.gson.Gson;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;

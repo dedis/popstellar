@@ -3,19 +3,10 @@ package com.github.dedis.student20_pop.model.event;
 import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableList;
 
-import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.utility.security.Hash;
-import com.github.dedis.student20_pop.utility.security.Signature;
-
-import org.json.JSONObject;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
 import java.util.Objects;
-
 
 /**
  * Class modeling an Event
@@ -27,12 +18,9 @@ public class Event {
     private final long startTime;
     private final String id;
     private final String lao;
-    // Can use GeoLocation in the future
+    private ObservableList<String> attendees;
     private final String location;
-    // Can use enums in the future
     private final EventType type;
-    private final JSONObject other;
-    private ObservableArrayList<String> attendees;
 
     /**
      * Constructor for an Event
@@ -49,54 +37,72 @@ public class Event {
         this.name = name;
         this.time = Instant.now().getEpochSecond();
         this.startTime = startTime;
-        this.id = Hash.hash(name, time);
-        this.lao = Hash.hash(lao);
+        this.id = Hash.hash(type.getSuffix(), lao, time, name);
+        this.lao = lao;
         this.attendees = new ObservableArrayList<>();
         this.location = location;
         this.type = type;
-        this.other = new JSONObject();
     }
 
+    /**
+     * Returns the name of the event.
+     */
     public String getName() {
         return name;
     }
 
     /**
-     * @return creation time of the event as Unix Timestamp, can't be modified
+     * Returns the creation time of the LAO as Unix Timestamp, can't be modified.
      */
     public long getTime() {
         return time;
     }
 
     /**
-     * @return the start time of the event as Unix Timestamp
+     * Returns the start time of the event as Unix Timestamp
      */
     public long getStartTime() {
         return startTime;
     }
 
     /**
-     * @return ID of the event, can't be modified
+     * Returns the ID of the event, can't be modified.
      */
     public String getId() {
         return id;
     }
 
     /**
-     * @return ID of the associated LAO
+     * Returns the ID of the associated LAO.
      */
     public String getLao() {
         return lao;
     }
 
     /**
-     * @return list of public keys of the attendees
+     * Returns the list of public keys of the attendees.
      */
-    public ObservableArrayList<String> getAttendees() {
+    public ObservableList<String> getAttendees() {
         return attendees;
     }
 
     /**
+     * Returns the location of the event.
+     */
+    public String getLocation() {
+        return location;
+    }
+
+    /**
+     * Returns the type of the event as an EventType.
+     */
+    public EventType getType() {
+        return type;
+    }
+
+    /**
+     * Modify the Event's list of attendees
+     *
      * @param attendees list of public keys of attendees, can be empty
      * @throws IllegalArgumentException if the list is null or at least one public key is null
      */
@@ -105,14 +111,6 @@ public class Event {
             throw new IllegalArgumentException("Trying to add a null attendee to the event " + name);
         }
         this.attendees = attendees;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public EventType getType() {
-        return type;
     }
 
     @Override
@@ -126,26 +124,11 @@ public class Event {
                 Objects.equals(lao, event.lao) &&
                 Objects.equals(attendees, event.attendees) &&
                 Objects.equals(location, event.location) &&
-                Objects.equals(type, event.type) &&
-                Objects.equals(other, event.other);
+                Objects.equals(type, event.type);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, time, id, lao, attendees, location, type, other);
-    }
-
-    /**
-     * Enum class for each event type
-     */
-    public enum EventType {
-        MEETING, ROLL_CALL, POLL, DISCUSSION
-    }
-
-    /**
-     * Enum class for each event category
-     */
-    public enum EventCategory {
-        PAST, PRESENT, FUTURE
+        return Objects.hash(name, time, id, lao, attendees, location, type);
     }
 }

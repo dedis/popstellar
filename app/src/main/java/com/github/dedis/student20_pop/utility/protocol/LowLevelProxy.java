@@ -1,6 +1,6 @@
 package com.github.dedis.student20_pop.utility.protocol;
 
-import com.github.dedis.student20_pop.model.network.level.high.Data;
+import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 
 import java.io.Closeable;
 import java.util.List;

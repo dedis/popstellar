@@ -14,7 +14,6 @@ import static org.junit.Assert.assertThrows;
 
 public class LaoTest {
 
-    private final int LENGTH_UNIX_TIMESTAMP = 10;
     private final String lao1_name = "LAO name 1";
     private final String lao2_name = "LAO name 2";
     private final String organizer = new Keys().getPublicKey();
@@ -45,6 +44,7 @@ public class LaoTest {
 
     @Test
     public void getTimeTest() {
+        final int LENGTH_UNIX_TIMESTAMP = 10;
         assertThat(Long.toString(lao1.getTime()).length(), is(LENGTH_UNIX_TIMESTAMP));
     }
 

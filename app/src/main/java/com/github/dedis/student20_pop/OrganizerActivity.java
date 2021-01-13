@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.event.Event;
+import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.model.event.RollCallEvent;
 import com.github.dedis.student20_pop.ui.IdentityFragment;
 import com.github.dedis.student20_pop.ui.OrganizerFragment;
@@ -28,10 +29,10 @@ import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeSca
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraNotAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
-import com.github.dedis.student20_pop.utility.ui.organizer.OnAddAttendeesListener;
-import com.github.dedis.student20_pop.utility.ui.organizer.OnAddWitnessListener;
-import com.github.dedis.student20_pop.utility.ui.organizer.OnEventCreatedListener;
-import com.github.dedis.student20_pop.utility.ui.organizer.OnEventTypeSelectedListener;
+import com.github.dedis.student20_pop.utility.ui.listener.OnAddAttendeesListener;
+import com.github.dedis.student20_pop.utility.ui.listener.OnAddWitnessListener;
+import com.github.dedis.student20_pop.utility.ui.listener.OnEventCreatedListener;
+import com.github.dedis.student20_pop.utility.ui.listener.OnEventTypeSelectedListener;
 
 import java.util.Optional;
 
@@ -111,7 +112,7 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
      * @param eventType
      */
     @Override
-    public void OnEventTypeSelectedListener(Event.EventType eventType) {
+    public void OnEventTypeSelectedListener(EventType eventType) {
         switch (eventType) {
             case MEETING:
                 showFragment(new MeetingEventCreationFragment(), MeetingEventCreationFragment.TAG);

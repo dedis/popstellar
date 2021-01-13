@@ -1,9 +1,9 @@
 package com.github.dedis.student20_pop.utility.json;
 
-import com.github.dedis.student20_pop.model.network.level.high.Data;
-import com.github.dedis.student20_pop.model.network.level.high.rollcall.CreateRollCall;
-import com.github.dedis.student20_pop.model.network.level.low.Message;
-import com.github.dedis.student20_pop.model.network.level.low.answer.Answer;
+import com.github.dedis.student20_pop.model.network.answer.Answer;
+import com.github.dedis.student20_pop.model.network.method.Message;
+import com.github.dedis.student20_pop.model.network.method.message.data.Data;
+import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -33,9 +33,9 @@ public final class JsonUtils {
 
     public static Gson createGson() {
         return new GsonBuilder()
-                .registerTypeAdapter(Message.class, new JsonLowMessageSerializer())
-                .registerTypeAdapter(Data.class, new JsonMessageSerializer())
-                .registerTypeAdapter(Answer.class, new JsonResultSerializer())
+                .registerTypeAdapter(Message.class, new JsonMessageSerializer())
+                .registerTypeAdapter(Data.class, new JsonDataSerializer())
+                .registerTypeAdapter(Answer.class, new JsonAnswerSerializer())
                 .registerTypeAdapter(CreateRollCall.class, new JsonCreateRollCallSerializer())
                 .create();
     }

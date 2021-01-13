@@ -26,9 +26,9 @@ import java.util.Map;
 
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_ALREADY_EXISTS;
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_SUCCESSFUL;
-import static com.github.dedis.student20_pop.model.event.Event.EventType.DISCUSSION;
-import static com.github.dedis.student20_pop.model.event.Event.EventType.MEETING;
-import static com.github.dedis.student20_pop.model.event.Event.EventType.POLL;
+import static com.github.dedis.student20_pop.model.event.EventType.DISCUSSION;
+import static com.github.dedis.student20_pop.model.event.EventType.MEETING;
+import static com.github.dedis.student20_pop.model.event.EventType.POLL;
 
 /**
  * Class modelling the application : a unique person associated with LAOs
