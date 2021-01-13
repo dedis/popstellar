@@ -57,7 +57,7 @@ func getCorrectDataCreateMeeting(publicKey []byte) string {
 	//pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
 	creationstr := strconv.FormatInt(time.Now().Unix(), 10)
 	startstr := strconv.FormatInt(time.Now().Unix()+1000, 10)
-	tohash := lib.ComputeAsJsonArray([]string{"M","LAO_id",creationstr,"my_meeting"})
+	tohash := lib.ComputeAsJsonArray([]string{"M",b64.StdEncoding.EncodeToString([]byte("LAO_id")),creationstr,"my_meeting"})
 	hashid := sha256.Sum256( []byte(tohash) )
 	id := b64.StdEncoding.EncodeToString( hashid[:] )
 	data := `{
@@ -79,7 +79,7 @@ func getCorrectDataCreateRollCallNow(publicKey []byte) string {
 	//pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
 	creationstr := strconv.FormatInt(time.Now().Unix(), 10)
 	startstr := strconv.FormatInt(time.Now().Unix()+1000, 10)
-	tohash := lib.ComputeAsJsonArray([]string{"R","LAO_id",creationstr,"my_roll_call"})
+	tohash := lib.ComputeAsJsonArray([]string{"R",b64.StdEncoding.EncodeToString([]byte("LAO_id")),creationstr,"my_roll_call"})
 	hashid := sha256.Sum256( []byte(tohash) )
 	id := b64.StdEncoding.EncodeToString( hashid[:] )
 	data := `{
@@ -100,7 +100,7 @@ func getCorrectDataCreateRollCallNow(publicKey []byte) string {
 func getCorrectDataCreateRollCallLater(publicKey []byte, creationstr string) string {
 	//pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
 	startstr := strconv.FormatInt(time.Now().Unix()+1000, 10)
-	tohash := lib.ComputeAsJsonArray([]string{"R","LAO_id",creationstr,"my_roll_call"})
+	tohash := lib.ComputeAsJsonArray([]string{"R",b64.StdEncoding.EncodeToString([]byte("LAO_id")),creationstr,"my_roll_call"})
 	hashid := sha256.Sum256( []byte(tohash) )
 	id := b64.StdEncoding.EncodeToString( hashid[:] )
 	data := `{
@@ -121,7 +121,7 @@ func getCorrectDataCreateRollCallLater(publicKey []byte, creationstr string) str
 func getCorrectDataOpenRollCall(publicKey []byte, creationstr string) string {
 	//pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
 	startstr := strconv.FormatInt(time.Now().Unix()+1000, 10)
-	tohash := lib.ComputeAsJsonArray([]string{"R","LAO_id",creationstr,"my_roll_call"})
+	tohash := lib.ComputeAsJsonArray([]string{"R",b64.StdEncoding.EncodeToString([]byte("LAO_id")),creationstr,"my_roll_call"})
 	hashid := sha256.Sum256( []byte(tohash) )
 	id := b64.StdEncoding.EncodeToString( hashid[:] )
 	data := `{
@@ -140,7 +140,7 @@ func getCorrectDataCloseRollCall(publicKey []byte, creationstr string) string {
 	//pkeyb64 := b64.StdEncoding.EncodeToString(publicKey)
 	startstr := strconv.FormatInt(time.Now().Unix()+1000, 10)
 	endstr := strconv.FormatInt(time.Now().Unix()+2000, 10)
-	tohash := lib.ComputeAsJsonArray([]string{"R","LAO_id",creationstr,"my_roll_call"})
+	tohash := lib.ComputeAsJsonArray([]string{"R",b64.StdEncoding.EncodeToString([]byte("LAO_id")),creationstr,"my_roll_call"})
 	hashid := sha256.Sum256( []byte(tohash) )
 	id := b64.StdEncoding.EncodeToString( hashid[:] )
 	data := `{
