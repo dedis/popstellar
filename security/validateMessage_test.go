@@ -8,6 +8,7 @@ import (
 	"errors"
 	"math/rand"
 	"strconv"
+	"student20_pop/event"
 	"testing"
 	"time"
 
@@ -103,7 +104,11 @@ func TestRollCallOpenedIsValid(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		valid := RollCallOpenedIsValid(data, string(lao_id), rollCallCreation, rollCallName)
+		rollCall, err := createEventRollCall(pubkey, privkey, rollCallCreation, start, rollCallName, lao_id)
+		if err != nil {
+			t.Error(err)
+		}
+		valid := RollCallOpenedIsValid(data, string(lao_id), rollCall)
 		if valid != true {
 			t.Errorf("Created rollcall Should be valid %#v", data)
 		}
@@ -113,6 +118,7 @@ func TestRollCallOpenedIsValid(t *testing.T) {
 		}
 	}
 }
+
 //check that a message containing a createRollCall is valid at both message and data layer
 func TestRollCallClosedIsValid(t *testing.T) {
 	//increase nb of tests
@@ -126,11 +132,15 @@ func TestRollCallClosedIsValid(t *testing.T) {
 		start := rollCallCreation + (MaxPropagationDelay / 4)
 		end := start + (MaxPropagationDelay / 4)
 		lao_id := []byte("12345")
-		data, err := createCloseRollCallNow(pubkey, privkey, rollCallCreation, start,end, rollCallName, lao_id,attendeesPks)
+		data, err := createCloseRollCallNow(pubkey, privkey, rollCallCreation, start, end, rollCallName, lao_id, attendeesPks)
 		if err != nil {
 			t.Error(err)
 		}
-		valid := RollCallClosedIsValid(data, string(lao_id),rollCallCreation,rollCallName)
+		rollCall, err := createEventRollCall(pubkey, privkey, rollCallCreation, start, rollCallName, lao_id)
+		if err != nil {
+			t.Error(err)
+		}
+		valid := RollCallClosedIsValid(data, string(lao_id), rollCall)
 		if valid != true {
 			t.Errorf("closed rollcall Should be valid %#v", data)
 		}
@@ -140,6 +150,7 @@ func TestRollCallClosedIsValid(t *testing.T) {
 		}
 	}
 }
+
 //check that a message containing a createRollCall is valid at both message and data layer
 func TestRollCallCreatedIsValid(t *testing.T) {
 	//increase nb of tests
@@ -210,7 +221,7 @@ func TestBadDataWitnessMessage(t *testing.T) {
 	}
 	//==================================================================//
 	//Here we test when the message signature is invalid
-	message,err := makeMessage(pubkey , privkey, data,witnessSignatures)
+	message, err := makeMessage(pubkey, privkey, data, witnessSignatures)
 	if err != nil {
 		t.Error(err)
 	}
@@ -232,7 +243,7 @@ func TestBadDataWitnessMessage(t *testing.T) {
 	}
 	//==================================================================//
 	//Here we test when the message id is invalid
-	message,err = makeMessage(pubkey , privkey, data,witnessSignatures)
+	message, err = makeMessage(pubkey, privkey, data, witnessSignatures)
 	if err != nil {
 		t.Error(err)
 	}
@@ -254,7 +265,7 @@ func TestBadDataWitnessMessage(t *testing.T) {
 	}
 	//==================================================================//
 	//Here we test when the message id is invalid
-	message,err = makeMessage(pubkey , privkey, data,witnessSignatures)
+	message, err = makeMessage(pubkey, privkey, data, witnessSignatures)
 	if err != nil {
 		t.Error(err)
 	}
@@ -275,25 +286,31 @@ func TestBadDataWitnessMessage(t *testing.T) {
 		t.Errorf("didn't detect that message's data is imparsable %#v", data)
 	}
 }
+
 //check that a message containing a closeRollCall with bad timestamps is invalid
 func TestRollCallClosedInvalid(t *testing.T) {
-		pubkey, privkey := createKeyPair()
-		attendeesPks := [][]byte{}
+	pubkey, privkey := createKeyPair()
+	attendeesPks := [][]byte{}
 
-		rollCallCreation := time.Now().Unix()
-		rollCallName := "encore un roll call"
-		start := rollCallCreation + (MaxPropagationDelay / 4)
-		end := start - (MaxPropagationDelay / 4)
-		lao_id := []byte("12345")
-		data, err := createCloseRollCallNow(pubkey, privkey, rollCallCreation, start,end, rollCallName, lao_id,attendeesPks)
-		if err != nil {
-			t.Error(err)
-		}
-		valid := RollCallClosedIsValid(data, string(lao_id),rollCallCreation,rollCallName)
-		if valid == true {
-			t.Errorf("didn't detect that closed rollcall is invalid %#v", data)
-		}
+	rollCallCreation := time.Now().Unix()
+	rollCallName := "encore un roll call"
+	start := rollCallCreation + (MaxPropagationDelay / 4)
+	end := start - (MaxPropagationDelay / 4)
+	lao_id := []byte("12345")
+	data, err := createCloseRollCallNow(pubkey, privkey, rollCallCreation, start, end, rollCallName, lao_id, attendeesPks)
+	if err != nil {
+		t.Error(err)
 	}
+	rollCall, err := createEventRollCall(pubkey, privkey, rollCallCreation, start, rollCallName, lao_id)
+	if err != nil {
+		t.Error(err)
+	}
+	valid := RollCallClosedIsValid(data, string(lao_id), rollCall)
+	if valid == true {
+		t.Errorf("didn't detect that closed rollcall is invalid %#v", data)
+	}
+}
+
 //check that a message containing a openRollCall with invalid start is invalid at data layer
 func TestOpenRollCallBadFields(t *testing.T) {
 	for i := 0; i < 2; i++ {
@@ -307,7 +324,11 @@ func TestOpenRollCallBadFields(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		valid := RollCallOpenedIsValid(data, string(lao_id), rollCallCreation, rollCallName)
+		rollCall, err := createEventRollCall(pubkey, privkey, rollCallCreation, start, rollCallName, lao_id)
+		if err != nil {
+			t.Error(err)
+		}
+		valid := RollCallOpenedIsValid(data, string(lao_id), rollCall)
 		if valid == true {
 			t.Errorf("Opened rollcall Should be invalid, start before creation %#v", data)
 		}
@@ -514,9 +535,9 @@ func TestLAOIInvalidCreationTime(t *testing.T) {
 //===================================================================================//
 func CheckMessageIsValid(pubkey []byte, privkey ed.PrivateKey, data interface{}, witnessKeysAndSignatures []message2.ItemWitnessSignatures) error {
 
-	message,err := makeMessage(pubkey , privkey, data,witnessKeysAndSignatures)
+	message, err := makeMessage(pubkey, privkey, data, witnessKeysAndSignatures)
 	if err != nil {
-	return err
+		return err
 	}
 	messageFlat, err := json.Marshal(message)
 	if err != nil {
@@ -532,18 +553,18 @@ func CheckMessageIsValid(pubkey []byte, privkey ed.PrivateKey, data interface{},
 	}
 	return nil
 }
-func makeMessage(pubkey []byte, privkey ed.PrivateKey, data interface{}, witnessKeysAndSignatures []message2.ItemWitnessSignatures) (message2.Message,error) {
+func makeMessage(pubkey []byte, privkey ed.PrivateKey, data interface{}, witnessKeysAndSignatures []message2.ItemWitnessSignatures) (message2.Message, error) {
 	var dataFlat, signed, id []byte
 	var err error
 	dataFlat, signed, id, err = getIdofMessage(data, privkey)
 	if err != nil {
-		return message2.Message{},err
+		return message2.Message{}, err
 	}
 
 	//witness signatures
 	ArrayOfWitnessSignatures, err := PlugWitnessesInArray(witnessKeysAndSignatures)
 	if err != nil {
-		return message2.Message{},err
+		return message2.Message{}, err
 	}
 	var message = message2.Message{
 		Data:              dataFlat, // in base 64
@@ -552,7 +573,7 @@ func makeMessage(pubkey []byte, privkey ed.PrivateKey, data interface{}, witness
 		MessageId:         id[:],
 		WitnessSignatures: ArrayOfWitnessSignatures,
 	}
-	return message,nil
+	return message, nil
 }
 func PlugWitnessesInArray(witnessKeysAndSignatures []message2.ItemWitnessSignatures) ([]json.RawMessage, error) {
 	ArrayOfWitnessSignatures := []json.RawMessage{}
@@ -624,6 +645,23 @@ func createDataLao(orgPubkey []byte, privkey ed.PrivateKey, WitnesseKeys [][]byt
 		Creation:  creation,
 		Organizer: orgPubkey,
 		Witnesses: WitnesseKeys,
+	}
+	return data, nil
+}
+func createEventRollCall(pubkey []byte, privkey ed.PrivateKey, creation int64, start int64, name string, lao_id []byte) (event.RollCall, error) {
+	if (len(pubkey) != ed.PublicKeySize) || len(privkey) != ed.PrivateKeySize {
+		return event.RollCall{}, errors.New("wrong argument -> size of public key don't respected ")
+	}
+	var elementsToHashForDataId []string
+	elementsToHashForDataId = append(elementsToHashForDataId, "R", b64.StdEncoding.EncodeToString(lao_id), strconv.FormatInt(creation, 10), name)
+	idData := HashOfItems(elementsToHashForDataId)
+	var data = event.RollCall{
+		ID:                  string(idData),
+		Name:                name,
+		Creation:            creation,
+		Location:            "pas loin",
+		Start:               start,
+		RollCallDescription: "un roll call",
 	}
 	return data, nil
 }
