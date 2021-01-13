@@ -81,9 +81,6 @@ func RollCallCreatedIsValid(data message.DataCreateRollCall, laoId string) bool 
 			log.Printf("timestamps not logic. Scheduled cannot be before creation.")
 			return false
 		}
-	} else {
-		log.Printf("logical incoherence. Should never come to this point")
-		return false
 	}
 
 	//need to meet some	where
@@ -106,26 +103,24 @@ func checkRollCallId(laoId string, creation int64, name string, id []byte) bool 
 	return true
 }
 
-
-
 //RollCallOpenedIsValid tell if a Roll call is valid on opening or reopening
-func RollCallOpenedIsValid(data message.DataOpenRollCall, laoId string, rollCall message.DataCreateRollCall) bool {
+func RollCallOpenedIsValid(data message.DataOpenRollCall, laoId string, rollCallCreation int64, rollCallName string) bool {
 	//we start after the creation and we end after the start
-	if data.Start < rollCall.Creation {
+	if data.Start < rollCallCreation {
 		log.Printf("timestamps not logic.Start before creation.")
 		return false
 	}
-	return checkRollCallId(laoId, rollCall.Creation, rollCall.Name, data.ID)
+	return checkRollCallId(laoId, rollCallCreation, rollCallName, data.ID)
 }
 
 //RollCallClosedIsValid tell if a rollCall timestamps make sense
-func RollCallClosedIsValid(data message.DataCloseRollCall, laoId string, rollCall message.DataCreateRollCall) bool {
+func RollCallClosedIsValid(data message.DataCloseRollCall, laoId string, rollCallCreation int64, rollCallName string) bool {
 	//we start after the creation and we end after the start
-	if data.Start < rollCall.Creation || data.End < data.Start {
+	if data.Start < rollCallCreation || data.End < data.Start {
 		log.Printf("timestamps not logic.Start before creation.")
 		return false
 	}
-	return checkRollCallId(laoId, rollCall.Creation, rollCall.Name, data.ID)
+	return checkRollCallId(laoId, rollCallCreation, rollCallName, data.ID)
 }
 
 // MessageIsValid checks upon reception that the message data is valid, that is that the ID is correctly computed, and
@@ -157,31 +152,38 @@ func MessageIsValid(msg message.Message) error {
 		return err
 	}
 	switch data["object"] {
-	case "lao":
-		switch data["action"] {
-		case "state":
-			data, err := parser.ParseDataCreateLAO(msg.Data)
-			if err != nil {
-				log.Printf("test 3")
-				return lib.ErrInvalidResource
+	/* TODO see comment above handleLAOState in organizer.go
+			case "lao":
+			switch data["action"] {
+			case "state":
+				data, err := parser.ParseDataCreateLAO(msg.Data)
+				if err != nil {
+					log.Printf("test 3")
+					return lib.ErrInvalidResource
+				}
+				// the signatures (of MESSAGEID) of witnesses are valid
+	TODO dans tous les cas, we don't have access to the message id of the lao, here we
+				put the message_id of the message state lao (this makes no sens).
+
+				err = VerifyWitnessSignatures(data.Witnesses, msg.WitnessSignatures, msg.MessageId)
+				if err != nil {
+					log.Printf("invalid signatures in witness message")
+					return err
+				}
 			}
-			// the signatures (of MESSAGEID) of witnesses are valid
-			err = VerifyWitnessSignatures(data.Witnesses, msg.WitnessSignatures, msg.MessageId)
-			if err != nil {
-				log.Printf("invalid signatures in witness message")
-				return err
-			}
-		}
+
+	*/
 	case "message":
 		switch data["action"] {
 		case "witness":
 			data, err := parser.ParseDataWitnessMessage(msg.Data)
 			if err != nil {
-				log.Printf("test 3")
+				log.Printf("unable to parse the dataWitnessMessage correctlty ")
 				return lib.ErrInvalidResource
 			}
-			// the signature of DATA is valid (we are in the "DATA layer")
-			err = VerifySignature(msg.Sender, msg.Data, data.Signature)
+			// the signature of message_id of the message to witness is valid
+			// this is the message_id of the data layer (!)
+			err = VerifySignature(msg.Sender, data.MessageId, data.Signature)
 			if err != nil {
 				log.Printf("invalid message signature")
 				return err
