@@ -49,13 +49,13 @@ type DataCreateMeeting struct {
 	//Creation's timestamp (Unix) (uint64)
 	Creation int64 `json:"creation"`
 	// meeting's location, optional
-	Location string `json:"location"`
+	Location string `json:"location,omitempty"`
 	// meeting's Start time timestamp (Unix) (uint64)
 	Start int64 `json:"start"`
 	// meeting's End time timestamp (Unix) (uint64)
 	End int64 `json:"end"`
 	// arbitrary object, optional
-	Extra string `json:"extra"`
+	Extra string `json:"extra,omitempty"`
 }
 type DataCreateRollCall struct {
 	Object string `json:"object"`
@@ -67,7 +67,7 @@ type DataCreateRollCall struct {
 	//Creation's timestamp (Unix) (uint64)
 	Creation int64 `json:"creation"`
 	// roll call's location, optional
-	Location string `json:"location"`
+	Location string `json:"location,omitempty"`
 	// roll call's Start time timestamp (Unix) (uint64)
 	Start int64 `json:"start"`
 	// roll call's scheduled time timestamp (Unix) (uint64)
@@ -108,7 +108,7 @@ type DataCreatePoll struct {
 	//Creation's timestamp (Unix) (uint64)
 	Creation int64 `json:"creation"`
 	// meeting's location, optional
-	Location string `json:"location"`
+	Location string `json:"location,omitempty"`
 	// meeting's Start time timestamp (Unix) (uint64)
 	Start int64 `json:"start"`
 	// meeting's End time timestamp (Unix) (uint64)
@@ -162,7 +162,7 @@ type DataStateMeeting struct {
 	Creation int64 `json:"creation"`
 	//LastModified Date/Time
 	LastModified int64  `json:"last_modified,"` //  Unix timestamp (uint64)
-	Location     string `json:"location"`       //optional
+	Location     string `json:"location,omitempty"`       //optional
 	Start        int64  `json:"start"`          /* Timestamp */
 	End          int64  `json:"end"`            /* Timestamp, optional */
 	Extra        string `json:"extra"`          /* arbitrary object, optional */
@@ -178,6 +178,6 @@ type DataWitnessMessage struct {
 	Object    string `json:"object"`
 	Action    string `json:"action"`
 	MessageId []byte `json:"message_id"`
-	//signature by the witness over the data field of the message : Sign(data)
+	//Sign(message_id) by the witness over the message_id field of the message to witness
 	Signature []byte `json:"signature"`
 }
