@@ -18,6 +18,11 @@
 					"type": "string",
 					"pattern": "^\/root(\/[^\/]+)?$",
 					"$comment": "Note: the regex matches a \"/root\" or a \"/root/<channel>\""
+				},
+				"message": {
+					"description": "[String] message to be published",
+					"type": "object",
+					"$comment": "Note: general property declaration to fulfill the additionalProperties requirements"
 				}
 			},
 
