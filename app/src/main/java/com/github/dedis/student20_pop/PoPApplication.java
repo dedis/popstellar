@@ -97,8 +97,7 @@ public class PoPApplication extends Application {
             }
         }
 
-        currentLao = new Lao("LAO I just joined", person.getId());
-        dummyLaoEventsMap = dummyLaoEventMap();
+        //activateTestingValues(); //uncomment this line when testing without a back-end
         laoWitnessMap.put(currentLao, new ArrayList<>());
 
         localProxy = getProxy(LOCAL_BACKEND_URI);
@@ -251,6 +250,17 @@ public class PoPApplication extends Application {
     }
 
     /**
+     * @param lao to modify
+     * @param newLao the modified lao
+     */
+    public void modifyLao(Lao lao, Lao newLao){
+        List<Event> events = laoEventsMap.remove(lao);
+        if (events != null){
+            laoEventsMap.put(newLao, events);
+        }
+    }
+
+    /**
      * @param event to be added to the current lao
      */
     public void addEvent(Event event) {
@@ -325,8 +335,7 @@ public class PoPApplication extends Application {
      *
      * @return the dummy map
      */
-    private Map<Lao, List<Event>> dummyLaoEventMap() {
-        Map<Lao, List<Event>> map = new HashMap<>();
+    private void dummyLaoEventMap() {
         List<Event> events = new ArrayList<>();
         Event event1 = new Event("Future Event 1", new Keys().getPublicKey(), 2617547969L, "EPFL", POLL);
         Event event2 = new Event("Present Event 1", new Keys().getPublicKey(), Instant.now().getEpochSecond(), "Somewhere", DISCUSSION);
@@ -337,12 +346,19 @@ public class PoPApplication extends Application {
 
         String notMyPublicKey = new Keys().getPublicKey();
 
-        map.put(currentLao, events);
-        map.put(new Lao("LAO 1", notMyPublicKey), events);
-        map.put(new Lao("LAO 2", notMyPublicKey), events);
-        map.put(new Lao("My LAO 3", person.getId()), events);
-        map.put(new Lao("LAO 4", notMyPublicKey), events);
-        return map;
+        laoEventsMap.put(currentLao, events);
+        laoEventsMap.put(new Lao("LAO 1", notMyPublicKey), events);
+        laoEventsMap.put(new Lao("LAO 2", notMyPublicKey), events);
+        laoEventsMap.put(new Lao("My LAO 3", person.getId()), events);
+        laoEventsMap.put(new Lao("LAO 4", notMyPublicKey), events);
+    }
+
+    /**
+     * Only useful when testing without a back-end
+     */
+    public void activateTestingValues(){
+        currentLao = new Lao("LAO I just joined", person.getId());
+        dummyLaoEventMap();
     }
 
     /**
