@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft/2019-09/schema#",
-	"$id": "https://github.com/dedis/student20_pop/tree/proto-specs/query/method/message/messageWitnessMessage.json",
+	"$id": "https://raw.githubusercontent.com/dedis/student20_pop/proto-specs/query/method/message/messageWitnessMessage.json",
 	"title": "This represents a message someone would want to publish on a specific channel",
 	"description": "Match a message used in a \"witness a message query\"",
 	"type": "object",
