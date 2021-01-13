@@ -5,11 +5,11 @@ import (
 	b64 "encoding/base64"
 	"log"
 	"strconv"
+	"student20_pop/event"
 	"student20_pop/lib"
 	"student20_pop/message"
 	"student20_pop/parser"
 	"time"
-	"student20_pop/event"
 )
 
 // LAOIsValid checks wether the infos given upon creation or update of a LAO are valid. That is it checks the timestamp
@@ -43,22 +43,17 @@ func MeetingCreatedIsValid(data message.DataCreateMeeting, laoId string) bool {
 		log.Printf("timestamps not logic. Either end is before start, or start before creation.")
 		return false
 	}
-	//need to meet some	where
-	location := checkStringNotEmpty(data.Location)
+	//need to have a name not empty
+	name := checkStringNotEmpty(data.Name)
 
 	//check if id is correct  : SHA256('M'||lao_id||creation||name)
 	var elementsToHashForDataId []string
-	elementsToHashForDataId = append(elementsToHashForDataId, "M", laoId, strconv.FormatInt(data.Creation, 10), data.Name)
+	elementsToHashForDataId = append(elementsToHashForDataId, "M", b64.StdEncoding.EncodeToString([]byte(laoId)), strconv.FormatInt(data.Creation, 10), data.Name)
 	hash := HashOfItems(elementsToHashForDataId)
 	if !bytes.Equal(data.ID, hash) {
 		log.Printf("ID of createRollCall invalid: %v should be: %v", string(data.ID), string(hash[:]))
 	}
-	return creation && location
-}
-
-// not implemented yet
-func PollCreatedIsValid(data message.DataCreatePoll, message message.Message) bool {
-	return true
+	return creation && name
 }
 
 // RollCallCreatedIsValid tell if a Roll call is valid on creation
@@ -87,21 +82,20 @@ func RollCallCreatedIsValid(data message.DataCreateRollCall, laoId string) bool 
 			log.Printf("timestamps not logic. Scheduled cannot be before creation.")
 			return false
 		}
-	} else {
-		log.Printf("logical incoherence. Should never come to this point")
-		return false
 	}
 
 	//need to meet some	where
 	location := checkStringNotEmpty(data.Location)
+	//name cannot be empty
+	name := checkStringNotEmpty(data.Name)
 
-	return creation && location && checkRollCallId(laoId, data.Creation, data.Name, data.ID)
+	return name && creation && location && checkRollCallId(laoId, data.Creation, data.Name, data.ID)
 }
 
 //checkRollCallId check if id is correct  : SHA256('R'||lao_id||creation||name)
 func checkRollCallId(laoId string, creation int64, name string, id []byte) bool {
 	var elementsToHashForDataId []string
-	elementsToHashForDataId = append(elementsToHashForDataId, "R", laoId, strconv.FormatInt(creation, 10), name)
+	elementsToHashForDataId = append(elementsToHashForDataId, "R", b64.StdEncoding.EncodeToString([]byte(laoId)), strconv.FormatInt(creation, 10), name)
 	hash := HashOfItems(elementsToHashForDataId)
 	if !bytes.Equal(id, hash) {
 		log.Printf("ID of RollCall invalid: %v should be: %v", string(id), string(hash[:]))
@@ -132,8 +126,9 @@ func RollCallClosedIsValid(data message.DataCloseRollCall, laoId string, rollCal
 
 // MessageIsValid checks upon reception that the message data is valid, that is that the ID is correctly computed, and
 // that the signature is correct as well
-// IMPORTANT thing : 	For every message the signature is Sign(message_id)
-//						EXCEPT for (the data) witnessMessage which is Sign(data)
+// IMPORTANT thing :
+//	*	For every message the signature is Sign(data)
+//	*	but for the one in DATAWitnessMessage it is Sign(message_id)
 func MessageIsValid(msg message.Message) error {
 	// check message_id is valid
 	var itemsToHashForMessageId []string
@@ -159,31 +154,37 @@ func MessageIsValid(msg message.Message) error {
 		return err
 	}
 	switch data["object"] {
+	/*  see comment above handleLAOState in organizer.go
 	case "lao":
-		switch data["action"] {
-		case "state":
-			data, err := parser.ParseDataCreateLAO(msg.Data)
-			if err != nil {
-				log.Printf("test 3")
-				return lib.ErrInvalidResource
-			}
-			// the signatures (of MESSAGEID) of witnesses are valid
-			err = VerifyWitnessSignatures(data.Witnesses, msg.WitnessSignatures, msg.MessageId)
-			if err != nil {
-				log.Printf("invalid signatures in witness message")
-				return err
-			}
+	switch data["action"] {
+	case "state":
+		data, err := parser.ParseDataCreateLAO(msg.Data)
+		if err != nil {
+			log.Printf("test 3")
+			return lib.ErrInvalidResource
 		}
+		// the signatures (of MESSAGEID) of witnesses are valid
+
+
+		err = VerifyWitnessSignatures(data.Witnesses, msg.WitnessSignatures, msg.MessageId)
+		if err != nil {
+			log.Printf("invalid signatures in witness message")
+			return err
+		}
+	}
+
+	*/
 	case "message":
 		switch data["action"] {
 		case "witness":
 			data, err := parser.ParseDataWitnessMessage(msg.Data)
 			if err != nil {
-				log.Printf("test 3")
+				log.Printf("unable to parse the dataWitnessMessage correctlty ")
 				return lib.ErrInvalidResource
 			}
-			// the signature of DATA is valid (we are in the "DATA layer")
-			err = VerifySignature(msg.Sender, msg.Data, data.Signature)
+			// signature of message_id of the message to witness
+			err = VerifySignature(msg.Sender, data.MessageId, data.Signature)
+			// this is the message_id of the data layer (!)
 			if err != nil {
 				log.Printf("invalid message signature")
 				return err
