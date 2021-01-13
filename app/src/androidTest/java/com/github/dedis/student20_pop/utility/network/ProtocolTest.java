@@ -132,7 +132,7 @@ public class ProtocolTest {
         Person bob = new Person(PERSON_NAME);
         HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
 
-        proxy.createMeeting(LAO_ID, MEETING_NAME, 0, 0, LOCATION, 0, 0)
+        proxy.createMeeting(LAO_ID, MEETING_NAME, 0, LOCATION, 0, 0)
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
@@ -262,7 +262,7 @@ public class ProtocolTest {
                     waiter.resume();
                 });
 
-        proxy.createMeeting(LAO_ID, MEETING_NAME, 0, 0, LOCATION, 0, 0)
+        proxy.createMeeting(LAO_ID, MEETING_NAME, 0, LOCATION, 0, 0)
                 .whenComplete((i, t) -> {
                     waiter.assertTrue(t == null);
                     waiter.assertEquals(i, 0);
