@@ -84,19 +84,14 @@ object JsonUtils {
 
 
     def build(): MessageContentData = {
-      if (_object == null || action == null) {
-        println("Builder error! _object field or action field is null. Returning null") // TODO
-        null
-      } else {
-        MessageContentData(
-          _object, action,
-          id, name, creation, last_modified, organizer, witnesses,
-          modification_id, modification_signatures,
-          message_id, signature,
-          location, start, end, extra,
-          scheduled, roll_call_description, attendees
-        )
-      }
+      MessageContentData(
+        _object, action,
+        id, name, creation, last_modified, organizer, witnesses,
+        modification_id, modification_signatures,
+        message_id, signature,
+        location, start, end, extra,
+        scheduled, roll_call_description, attendees
+      )
     }
 
     def setHeader(obj: Objects, act: Actions): MessageContentDataBuilder = {setObject(obj); setAction(act); this }

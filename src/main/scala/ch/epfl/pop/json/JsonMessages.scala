@@ -31,7 +31,7 @@ object JsonMessages {
   /** Parsed result answer (Array result) Json message from the server */
   final case class AnswerResultArrayMessageServer(
                                                    id: Int,
-                                                   result: ChannelMessages,
+                                                   result: List[ChannelMessage],
                                                    jsonrpc: String = JSON_RPC_VERSION
                                                  ) extends JsonMessageAnswerServer
 
@@ -45,7 +45,7 @@ object JsonMessages {
   /** Parsed client propagate a message on a channel query */
   final case class PropagateMessageServer(
                                            params: MessageParameters,
-                                           method: Methods = Methods.Message,
+                                           method: Methods = Methods.Broadcast,
                                            jsonrpc: String = JSON_RPC_VERSION
                                          ) extends JsonMessageAnswerServer
 
