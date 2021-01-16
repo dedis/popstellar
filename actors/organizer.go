@@ -290,13 +290,13 @@ func (o *organizer) handleCreateRollCall(msg message.Message, canal string, quer
 	}
 
 	rollCall := event.RollCall{
-		ID:                  string(data.ID),
-		Name:                data.Name,
-		Creation:            data.Creation,
-		Location:            data.Location,
-		Start:               data.Start,
-		Scheduled:           data.Scheduled,
-		RollCallDescription: data.RollCallDescription,
+		ID:          string(data.ID),
+		Name:        data.Name,
+		Creation:    data.Creation,
+		Location:    data.Location,
+		Start:       data.Start,
+		Scheduled:   data.Scheduled,
+		Description: data.RollCallDescription,
 	}
 	errs = db.CreateChannel(rollCall, o.database)
 	if errs != nil {
@@ -636,13 +636,13 @@ func (o *organizer) handleOpenRollCall(msg message.Message, chann string, query 
 	}
 
 	updatedRollCall := event.RollCall{
-		ID:                  string(openRollCall.ID),
-		Name:                rollCallData.Name,
-		Creation:            rollCallData.Creation,
-		LastModified:        rollCallData.Creation,
-		Location:            rollCallData.Location,
-		Start:               openRollCall.Start,
-		RollCallDescription: rollCallData.RollCallDescription,
+		ID:           string(openRollCall.ID),
+		Name:         rollCallData.Name,
+		Creation:     rollCallData.Creation,
+		LastModified: rollCallData.Creation,
+		Location:     rollCallData.Location,
+		Start:        openRollCall.Start,
+		Description:  rollCallData.Description,
 	}
 
 	err = db.UpdateChannel(updatedRollCall, o.database)
@@ -686,12 +686,12 @@ func (o *organizer) handleCloseRollCall(msg message.Message, chann string, query
 	}
 
 	updatedRollCall := event.RollCall{
-		ID:                  string(closeRollCall.ID),
-		Name:                rollCallData.Name,
-		Creation:            rollCallData.Creation,
-		LastModified:        rollCallData.Creation,
-		Location:            rollCallData.Location,
-		RollCallDescription: rollCallData.RollCallDescription,
+		ID:           string(closeRollCall.ID),
+		Name:         rollCallData.Name,
+		Creation:     rollCallData.Creation,
+		LastModified: rollCallData.Creation,
+		Location:     rollCallData.Location,
+		Description:  rollCallData.Description,
 		// we always take the new start ? (even when it's not a reopening)
 		Start:     closeRollCall.Start,
 		Attendees: closeRollCall.Attendees,
