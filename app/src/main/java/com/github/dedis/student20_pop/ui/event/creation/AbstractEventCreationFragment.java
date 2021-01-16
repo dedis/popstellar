@@ -178,7 +178,7 @@ abstract class AbstractEventCreationFragment extends Fragment {
                                 (startTime.compareTo(endTime) > 0)) {
                             Toast.makeText(getActivity(),
                                     getString(R.string.start_time_after_end_time_not_allowed),
-                                    Toast.LENGTH_SHORT).show();
+                                    Toast.LENGTH_LONG).show();
                             startTime = null;
                             startTimeEditText.setText("");
                         } else {
@@ -199,7 +199,7 @@ abstract class AbstractEventCreationFragment extends Fragment {
                                 (endTime.compareTo(startTime) < 0)) {
                             Toast.makeText(getActivity(),
                                     getString(R.string.end_time_before_start_time_not_allowed),
-                                    Toast.LENGTH_SHORT).show();
+                                    Toast.LENGTH_LONG).show();
                             endTime = null;
                             endTimeEditText.setText("");
                         } else {

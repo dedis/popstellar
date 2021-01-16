@@ -88,7 +88,6 @@ public class MeetingEventCreationFragmentTest {
     }
 
     @Test
-    @Ignore("TODO: solve issue with GithubActions Emulator")
     public void confirmButtonIsEnabledWhenRequiredFieldsFilled() {
         onView(withId(R.id.meeting_title_text)).perform(typeText("Random meeting title"));
 
