@@ -12,18 +12,19 @@ import (
 	"student20_pop/security"
 )
 
-// Organizer implements how the organizer's back end server must behave.
-// It stores received messages in a database using the db package, composes and sends the appropriate response to the received message.
-type Organizer struct {
+// organizer implements how the organizer's back end server must behave.
+// It stores received messages in a database using the db package, composes and sends the appropriate response to the sender
+// as well as broadcast messages if available. The database field is only the name of the file the database is stored to.
+type organizer struct {
 	PublicKey string
 	database  string
 	channels  map[string][]int
 }
 
-// NewOrganizer is the constructor for the Organizer struct. db should be a a file path (existing or not) and pkey is
-// the Organizer's public key.
-func NewOrganizer(pkey string, db string) *Organizer {
-	return &Organizer{
+// NewOrganizer is the constructor for the organizer struct. db should be a a file path (existing or not) and pkey is
+// the organizer's public key.
+func NewOrganizer(pkey string, db string) *organizer {
+	return &organizer{
 		PublicKey: pkey,
 		database:  db,
 		channels:  make(map[string][]int),
@@ -32,7 +33,7 @@ func NewOrganizer(pkey string, db string) *Organizer {
 
 // HandleReceivedMessage processes the received message. It parses it and calls sub-handler functions depending on
 // 	the message's method field.
-func (o *Organizer) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAndChannel []lib.MessageAndChannel, responseToSender []byte) {
+func (o *organizer) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAndChannel []lib.MessageAndChannel, responseToSender []byte) {
 	// if the message is an answer message (positive ack or error), ignore it
 	isAnswer, err := parser.FilterAnswers(receivedMsg)
 	if err != nil {
@@ -74,8 +75,8 @@ func (o *Organizer) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAn
 
 // handleBroadcast is the function to handle a received message which method was "broadcast"
 // It is called by the function HandleReceivedMessage.
-// It returns an error as, in the current implementation there is only one Organizer, and he's the only one sending broadcast message. Hence he should not be receiving some.
-func (o *Organizer) handleBroadcast(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+// It returns an error as, in the current implementation there is only one organizer, and he's the only one sending broadcast message. Hence he should not be receiving some.
+func (o *organizer) handleBroadcast(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	// In the current specification, only organizer BEs should emit broadcasts, so currently, incoming broadcast messages are considered erroneous with requestDataInvalid
 	log.Printf("received a broadcast message on an organizer back-end()")
 	return nil, lib.ErrRequestDataInvalid
@@ -127,7 +128,7 @@ func (o *Organizer) handleBroadcast(query message.Query) (msgAndChannel []lib.Me
 // handlePublish is the function to handle a received message which method was "publish"
 // It is called by the function HandleReceivedMessage. It Analyses the message's object and action fields, and delegate the
 // work to other functions.
-func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
+func (o *organizer) handlePublish(query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
 	params, errs := parser.ParseParams(query.Params)
 	if errs != nil {
 		log.Printf("unable to analyse paramsLight in handlePublish()")
@@ -214,7 +215,7 @@ func (o *Organizer) handlePublish(query message.Query) (msgAndChannel []lib.Mess
 // The received message had the object field set to "lao" and action field to "create"
 // It will check for the validity of the received message, store the received message in the database, and store the new
 // LAO in the database.
-func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
+func (o *organizer) handleCreateLAO(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
 
 	if canal != "/root" {
 		log.Printf("Invalid channel. LAO create requests are valid only on the /root channel")
@@ -268,7 +269,7 @@ func (o *Organizer) handleCreateLAO(msg message.Message, canal string, query mes
 // The received message had the object field set to "roll_call" and action field to "create"
 // It will check for the validity of the received message, store the received message in the database, and store the new
 // Roll Call in the database.
-func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
+func (o *organizer) handleCreateRollCall(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
 	if !strings.HasPrefix(canal, "/root/") {
 		log.Printf("invalid channel name for roll call creation: %s", canal)
 		return nil, lib.ErrInvalidResource
@@ -321,7 +322,7 @@ func (o *Organizer) handleCreateRollCall(msg message.Message, canal string, quer
 // The received message had the object field set to "meeting" and action field to "create"
 // It will check for the validity of the received message, store the received message in the database, and store the new
 // meeting in the database.
-func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
+func (o *organizer) handleCreateMeeting(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
 
 	if !strings.HasPrefix(canal, "/root/") {
 		log.Printf("invalid channel name for meeting creation: %s", canal)
@@ -377,7 +378,7 @@ func (o *Organizer) handleCreateMeeting(msg message.Message, canal string, query
 // The received message had the object field set to "poll" and action field to "create"
 // It will check for the validity of the received message, store the received message in the database, and store the new
 // poll in the database.
-func (o *Organizer) handleCreatePoll(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
+func (o *organizer) handleCreatePoll(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
 
 	if !strings.HasPrefix(canal, "/root/") {
 		log.Printf("invalid channel name for meeting creation: %s", canal)
@@ -427,7 +428,7 @@ func (o *Organizer) handleCreatePoll(msg message.Message, canal string, query me
 // The received message had the object field set to "lao" and action field to "update_properties"
 // It will store the received message in the database, and send the change request to every subscriber of this LAO,
 // waiting for Witnesse's validation to make the update.
-func (o *Organizer) handleUpdateProperties(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+func (o *organizer) handleUpdateProperties(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	// TODO need some improvements
 	msgAndChan := []lib.MessageAndChannel{{
 		Message: parser.ComposeBroadcastMessage(query),
@@ -441,7 +442,7 @@ func (o *Organizer) handleUpdateProperties(msg message.Message, canal string, qu
 // (as they are stored on the disk we have no guarantee they were not tempered with). If they are enough signatures,
 // it should append to the list of returned message a reacting message (like a state broadcast for example). This is still to be
 // implemented.
-func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
+func (o *organizer) handleWitnessMessage(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
 
 	data, err := parser.ParseDataWitnessMessage(msg.Data)
 	if err != nil {
@@ -571,7 +572,7 @@ func (o *Organizer) handleWitnessMessage(msg message.Message, canal string, quer
 
 // handleCatchup is the function to handle a received message requesting a catchup on a channel.
 // It is called by HandleReceivedMessage, and returns the current state of a channel.
-func (o *Organizer) handleCatchup(query message.Query) ([]byte, error) {
+func (o *organizer) handleCatchup(query message.Query) ([]byte, error) {
 	// TODO maybe pass userId as an arg in order to check access rights later on?
 	params, err := parser.ParseParams(query.Params)
 	if err != nil {
@@ -584,8 +585,8 @@ func (o *Organizer) handleCatchup(query message.Query) ([]byte, error) {
 }
 
 //handleLAOState is just here to implement the Actor interface. It returns an error as, in the current implementation there
-// is only one Organizer, and he's the one sending this message. Hence he should not be receiving it.
-func (o *Organizer) handleLAOState(msg message.Message) (msgAndChannel []lib.MessageAndChannel, err error) {
+// is only one organizer, and he's the one sending this message. Hence he should not be receiving it.
+func (o *organizer) handleLAOState(msg message.Message) (msgAndChannel []lib.MessageAndChannel, err error) {
 	return nil, lib.ErrInvalidAction
 }
 
@@ -593,7 +594,7 @@ func (o *Organizer) handleLAOState(msg message.Message) (msgAndChannel []lib.Mes
 //		the open roll-call query. If it was closed, but it need to be reopened later (e.g. the
 //		organizer forgot to scan the public key of one attendee), then it can reopen it by using
 //		the open query. In this case, the action should be set to reopen.
-func (o *Organizer) handleOpenRollCall(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+func (o *organizer) handleOpenRollCall(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	if !strings.HasPrefix(chann, "/root/") {
 		log.Printf("invalid channel name for meeting creation: %s", chann)
 		return nil, lib.ErrInvalidResource
@@ -649,7 +650,7 @@ func (o *Organizer) handleOpenRollCall(msg message.Message, chann string, query 
 	return msgAndChan, db.CreateMessage(msg, chann, o.database)
 }
 
-func (o *Organizer) handleCloseRollCall(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
+func (o *organizer) handleCloseRollCall(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
 	if !strings.HasPrefix(chann, "/root/") {
 		log.Printf("invalid channel name for meeting creation: %s", chann)
 		return nil, lib.ErrInvalidResource

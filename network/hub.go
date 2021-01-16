@@ -33,7 +33,7 @@ type hub struct {
 	connIndex int
 }
 
-// NewOrganizerHub returns a hub which Actor is an Organizer
+// NewOrganizerHub returns a hub which Actor is an organizer
 func NewOrganizerHub(pkey string, database string) *hub {
 	return newHub("o", pkey, database)
 }
