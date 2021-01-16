@@ -19,6 +19,7 @@ func OpenDB(dbName string) (*bolt.DB, error) {
 
 // Write is a function that writes a pair (key, val) in the bucket "bkt" in the database
 // DEPRECATED : we only keep it as syntactic reminder
+// commented out to improve test coverage
 /*
 func Write(key []byte, val []byte, bkt []byte, database *bolt.DB) error {
 	err := database.Update(func(tx *bolt.Tx) error {

@@ -58,7 +58,8 @@ func TestWriteChannel(t *testing.T) {
 	_ = os.Remove("test.db")
 }
 
-// TestGetChannel tests if retrieving a channel from the Database gives the wanted result
+// TestGetChannel tests if retrieving a channel from the Database gives the wanted result. Does not test to retrieve
+// channels that do not exist.
 func TestGetChannel(t *testing.T) {
 	// error not logged : error occurs if file does not exists
 	_ = os.Remove("test.db")
