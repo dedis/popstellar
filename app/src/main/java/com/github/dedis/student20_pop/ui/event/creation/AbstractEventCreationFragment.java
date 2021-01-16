@@ -64,6 +64,11 @@ abstract class AbstractEventCreationFragment extends Fragment {
         endTimeEditText = view.findViewById(R.id.end_time_edit_text);
         endTimeEditText.setInputType(InputType.TYPE_NULL);
 
+        today.set(Calendar.HOUR, 0);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.MILLISECOND, 0);
+
         startDateEditText.setOnClickListener(v -> {
             // create the datePickerFragment
             AppCompatDialogFragment datePickerFragment = new DatePickerFragment();
