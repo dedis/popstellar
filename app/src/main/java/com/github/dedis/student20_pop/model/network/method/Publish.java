@@ -1,6 +1,7 @@
 package com.github.dedis.student20_pop.model.network.method;
 
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
+import com.github.dedis.student20_pop.utility.protocol.MessageHandler;
 
 import java.util.Objects;
 
@@ -32,6 +33,11 @@ public final class Publish extends Query {
      */
     public MessageGeneral getMessage() {
         return message;
+    }
+
+    @Override
+    public void accept(MessageHandler handler) {
+        handler.handle(this);
     }
 
     @Override

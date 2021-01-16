@@ -1,11 +1,13 @@
 package com.github.dedis.student20_pop.model.network.method;
 
+import com.github.dedis.student20_pop.model.network.GenericMessage;
+
 import java.util.Objects;
 
 /**
  * An abstract low level message that is sent over a specific channel
  */
-public abstract class Message {
+public abstract class Message extends GenericMessage {
 
     private final String channel;
 
