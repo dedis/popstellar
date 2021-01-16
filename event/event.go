@@ -51,7 +51,7 @@ type RollCall struct {
 	// Meeting's End time timestamp (Unix) (uint64)
 	End int64
 	//List of Attendees' Public keys
-	Attendees [][]byte `json:"attendees"`
+	Attendees [][]byte
 	// An optional Description of the roll call
 	Description string
 }
