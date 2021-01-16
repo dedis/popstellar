@@ -63,7 +63,7 @@ func (o *organizer) GetSubscribers(channel string) []int {
 // handleSubscribe is the function that reads a received message with method "subscribe" and adds connectionId
 // to the subscribers list of the channel. Returns an error if connection was already subscribed, or if the channel
 // is "/root"
-func (w *Witness) handleSubscribe(query message.Query, userId int) error {
+func (w *witness) handleSubscribe(query message.Query, userId int) error {
 	params, err := parser.ParseParams(query.Params)
 	if err != nil {
 		log.Printf("unable to analyse paramsLight in handleSubscribe()")
@@ -91,7 +91,7 @@ func (w *Witness) handleSubscribe(query message.Query, userId int) error {
 // handleUnsubscribe is the function that reads a received message with method "unsubscribe" and removes connectionId
 // from the subscribers list of the channel. Returns an error if connection was not already subscribed, or if
 // the channel is "/root"
-func (w *Witness) handleUnsubscribe(query message.Query, userId int) error {
+func (w *witness) handleUnsubscribe(query message.Query, userId int) error {
 	params, err := parser.ParseParams(query.Params)
 	if err != nil {
 		log.Printf("unable to analyse paramsLight in handleUnsubscribe()")
@@ -108,6 +108,6 @@ func (w *Witness) handleUnsubscribe(query message.Query, userId int) error {
 }
 
 // GetSubscribers returns the subscribers list of a channel
-func (w *Witness) GetSubscribers(channel string) []int {
+func (w *witness) GetSubscribers(channel string) []int {
 	return w.channels[channel]
 }

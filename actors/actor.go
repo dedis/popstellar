@@ -8,7 +8,7 @@ import (
 
 const SigThreshold = 0
 
-// Actor is an interface representing either an organizer or a Witness.
+// Actor is an interface representing either an organizer or a witness.
 type Actor interface {
 	//Public functions
 	HandleReceivedMessage(msg []byte, userId int) (msgAndChannel []lib.MessageAndChannel, responseToSender []byte)
