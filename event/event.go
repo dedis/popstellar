@@ -34,7 +34,7 @@ type Meeting struct {
 }
 
 type RollCall struct {
-	// hash : ('R'||lao_id||creation||name)
+	// hash : ('R' || lao_id || Creation || Name)
 	ID string
 	// Name of the Roll Call
 	Name string
@@ -45,20 +45,20 @@ type RollCall struct {
 	// RollCall's Location
 	Location string
 	// Meeting's Start time timestamp (Unix) (uint64)
-	Start int64 //  Unix timestamp (uint64)
+	Start int64
 	// Meeting's Scheduled time timestamp (Unix) (uint64)
-	Scheduled int64 //  Unix timestamp (uint64)
+	Scheduled int64
+	// Meeting's End time timestamp (Unix) (uint64)
+	End int64
 	//List of Attendees' Public keys
 	Attendees [][]byte `json:"attendees"`
-	// An optional description of the roll call
-	RollCallDescription string
-	// Meeting's End time timestamp (Unix) (uint64)
-	End int64 //timestamp
+	// An optional Description of the roll call
+	Description string
 }
 
 // not implemented in the protocol specifications yet
 type Poll struct {
-	// hash : Name || Creation
+	// hash : ('P' || lao_id || Creation || Name)
 	ID string
 	// Name of the poll
 	Name string
@@ -68,23 +68,21 @@ type Poll struct {
 	LastModified int64
 	// Poll's Location
 	Location string
-	// Meeting's Start time timestamp (Unix) (uint64)
+	// Poll's Start time timestamp (Unix) (uint64)
 	Start int64
-	// Meeting's End time timestamp (Unix) (uint64)
-	End   int64 //timestamp
+	// Poll's End time timestamp (Unix) (uint64)
+	End   int64
 	Extra string
 }
 
 // not implemented in the protocol specifications yet
 type Election struct {
-	// hash : Name || Creation
+	// hash : ('E' || lao_id || Creation || Name)
 	ID string
-	// name of election
+	// Name of election
 	Name string
-	//Creation Date/Time
-	Creation int64 //  Unix timestamp (uint64)
-
-	//LAO: Hash Associated LAO
+	// Creation timestamp (Unix) (uint64)
+	Creation int64
 	//Default Ballot Options
 	Options []string
 	//Signature by the organizer and witnesses of the corresponding LAO on (ID) to attest to this event

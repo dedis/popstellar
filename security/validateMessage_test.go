@@ -656,12 +656,12 @@ func createEventRollCall(pubkey []byte, privkey ed.PrivateKey, creation int64, s
 	elementsToHashForDataId = append(elementsToHashForDataId, "R", b64.StdEncoding.EncodeToString(lao_id), strconv.FormatInt(creation, 10), name)
 	idData := HashOfItems(elementsToHashForDataId)
 	var data = event.RollCall{
-		ID:                  string(idData),
-		Name:                name,
-		Creation:            creation,
-		Location:            "pas loin",
-		Start:               start,
-		RollCallDescription: "un roll call",
+		ID:          string(idData),
+		Name:        name,
+		Creation:    creation,
+		Location:    "pas loin",
+		Start:       start,
+		Description: "un roll call",
 	}
 	return data, nil
 }
