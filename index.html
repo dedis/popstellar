@@ -33,7 +33,7 @@
     });
 
     if (window["WebSocket"]) {
-        conn = new WebSocket("ws://localhost:8080/");
+        conn = new WebSocket("ws://localhost:8000/");
         conn.onclose = function(evt) {
             appendLog($("<div><b>Connection closed.<\/b><\/div>"))
         }
