@@ -191,8 +191,9 @@ func (o *organizer) handlePublish(query message.Query) (msgAndChannel []lib.Mess
 		switch data["action"] {
 		case "create":
 			return o.handleCreateMeeting(msg, params.Channel, query)
-		case "state": //
-			return o.handleLAOState(msg)
+		case "state":
+			// should never happen as we are the only organizer right now
+			return o.handleMeetingState(msg)
 		default:
 			return nil, lib.ErrInvalidAction
 		}
@@ -597,6 +598,12 @@ func (o *organizer) handleCatchup(query message.Query) ([]byte, error) {
 func (o *organizer) handleLAOState(msg message.Message) (msgAndChannel []lib.MessageAndChannel, err error) {
 	return nil, lib.ErrInvalidAction
 }
+//handleMeetingState is just here to implement the Actor interface. It returns an error as, in the current implementation there
+// is only one organizer, and he's the one sending this message. Hence he should not be receiving it.
+func (o *organizer) handleMeetingState(msg message.Message) (msgAndChannel []lib.MessageAndChannel, err error) {
+	return nil, lib.ErrInvalidAction
+}
+
 
 // handleOpenRollCall is used If the roll-call was started in future mode (see create roll-call), it can be opened using
 // the open roll-call query. If it was closed, but it need to be reopened later (e.g. the organizer forgot to scan
