@@ -133,17 +133,6 @@ public class TestJson {
     }
 
     @Test
-    public void testMessageGeneral() throws JsonProcessingException {
-        MessageGeneral msg = new MessageGeneral("sender", "data", "signature", "id", Collections.emptyList());
-        String json = gson.toJson(msg, MessageGeneral.class);
-        JsonSchema schema = getSchema("query/method/message/MessageGeneral.json");
-        Set<ValidationMessage> errors = schema.validate(mapper.readTree(json));
-        if (errors.size() != 0) System.out.println(errors);
-        Assert.assertEquals(0, errors.size());
-        Assert.assertEquals(msg, gson.fromJson(json, MessageGeneral.class));
-    }
-
-    @Test
     public void testSuccess() throws JsonProcessingException {
         testResult(new Result(4, gson.toJsonTree(0)));
     }
