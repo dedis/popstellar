@@ -2,7 +2,7 @@ package com.github.dedis.student20_pop.utility.network;
 
 import android.util.Log;
 
-import com.github.dedis.student20_pop.model.network.answer.Answer;
+import com.github.dedis.student20_pop.model.network.GenericMessage;
 import com.github.dedis.student20_pop.model.network.answer.Error;
 import com.github.dedis.student20_pop.model.network.answer.Result;
 import com.github.dedis.student20_pop.model.network.method.Broadcast;
@@ -16,11 +16,11 @@ import com.github.dedis.student20_pop.model.network.method.message.MessageGenera
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.utility.json.JsonUtils;
 import com.github.dedis.student20_pop.utility.protocol.LowLevelProxy;
+import com.github.dedis.student20_pop.utility.protocol.MessageHandler;
 import com.github.dedis.student20_pop.utility.security.Hash;
 import com.github.dedis.student20_pop.utility.security.Signature;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 import java.io.IOException;
 import java.net.URI;
@@ -51,6 +51,7 @@ public final class WebSocketLowLevelProxy implements LowLevelProxy, MessageListe
     private final Object SESSION_LOCK = new Object();
 
     private final URI sessionURI;
+    private final MessageHandler messageHandler = new WebSocketMessageHandler();
     private final Gson gson = JsonUtils.createGson();
     private final Map<Integer, RequestEntry> requests = new ConcurrentHashMap<>();
     private final AtomicInteger counter = new AtomicInteger();
@@ -147,54 +148,8 @@ public final class WebSocketLowLevelProxy implements LowLevelProxy, MessageListe
 
     @Override
     public void onMessage(String msg) {
-        JsonObject obj = gson.fromJson(msg, JsonObject.class);
-        //TODO not extremely happy about this way
-        if (obj.has("method")) {
-            handleMessage(gson.fromJson(obj, Broadcast.class));
-        } else {
-            handleResult(gson.fromJson(obj, Answer.class));
-        }
-    }
-
-    /**
-     * Handles a received answer. Find tis matching request and complete it.
-     *
-     * @param answer received
-     */
-    private void handleResult(Answer answer) {
-        RequestEntry entry = requests.remove(answer.getId());
-        if (entry == null)
-            throw new IllegalStateException("Received unknown Answer id");
-
-        // There is a way this is the wrong Answer : if there was a timeout and the message came back while another was generated on the same id.
-        // But this is a very rare case and we could add a timestamp to the protocol to fix this issue
-        if (answer instanceof Result) {
-            Result result = (Result) answer;
-            entry.requests.complete(result.getResult());
-        } else if (answer instanceof Error) {
-            Error error = (Error) answer;
-            entry.requests.completeExceptionally(new RuntimeException("Error code " + error.getError().getCode() + " : " + error.getError().getDescription()));
-        } else {
-            throw new IllegalArgumentException("Unknown result class");
-        }
-    }
-
-    /**
-     * Extract the high level message from the low level received message and handles it
-     * <p>
-     * TODO Handle the messages
-     *
-     * @param broadcast the low level message received
-     */
-    private void handleMessage(Broadcast broadcast) {
-        MessageGeneral container = broadcast.getMessage();
-        Data data = gson.fromJson(
-                new String(
-                        Base64.getDecoder().decode(container.getData()),
-                        StandardCharsets.UTF_8),
-                Data.class);
-
-        System.out.println(data);
+        GenericMessage genericMessage = gson.fromJson(msg, GenericMessage.class);
+        genericMessage.accept(messageHandler);
     }
 
     @Override
@@ -250,5 +205,38 @@ public final class WebSocketLowLevelProxy implements LowLevelProxy, MessageListe
 
         private final long timestamp = System.currentTimeMillis();
         private final CompletableFuture<JsonElement> requests = new CompletableFuture<>();
+    }
+
+    private class WebSocketMessageHandler implements MessageHandler {
+
+        @Override
+        public void handle(Result result) {
+            RequestEntry entry = requests.remove(result.getId());
+            if(entry != null)
+                entry.requests.complete(result.getResult());
+            else
+                Log.d(TAG, "Received an answer with unknown id. Did it timeout ?");
+        }
+
+        @Override
+        public void handle(Error error) {
+            RequestEntry entry = requests.remove(error.getId());
+            if(entry != null)
+                entry.requests.completeExceptionally(new RuntimeException("Error code " + error.getError().getCode() + " : " + error.getError().getDescription()));
+            else
+                Log.d(TAG, "Received an answer with unknown id. Did it timeout ?");
+        }
+
+        @Override
+        public void handle(Broadcast broadcast) {
+            MessageGeneral container = broadcast.getMessage();
+            Data data = gson.fromJson(
+                    new String(
+                            Base64.getDecoder().decode(container.getData()),
+                            StandardCharsets.UTF_8),
+                    Data.class);
+
+            System.out.println(data);
+        }
     }
 }
