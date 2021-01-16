@@ -181,7 +181,7 @@ func (w *witness) handleCreateLAO(msg message.Message, channel string, query mes
 		Name:          data.Name,
 		Creation:      data.Creation,
 		OrganizerPKey: string(data.Organizer),
-		Witnesses:     lib.ArrayArrayByteToArrayString(data.Witnesses),
+		Witnesses:     lib.NestedByteArrayToStringArray(data.Witnesses),
 	}
 	errs = db.CreateChannel(lao, w.database)
 	if errs != nil {
@@ -307,7 +307,7 @@ func (w *witness) handleLAOState(msg message.Message) (msgAndChannel []lib.Messa
 		Name:          data.Name,
 		Creation:      data.Creation,
 		OrganizerPKey: string(data.Organizer),
-		Witnesses:     lib.ArrayArrayByteToArrayString(data.Witnesses),
+		Witnesses:     lib.NestedByteArrayToStringArray(data.Witnesses),
 	}
 
 	errs = db.UpdateChannel(lao, w.database)

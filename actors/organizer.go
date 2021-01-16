@@ -240,7 +240,7 @@ func (o *organizer) handleCreateLAO(msg message.Message, canal string, query mes
 		Name:          data.Name,
 		Creation:      data.Creation,
 		OrganizerPKey: string(data.Organizer),
-		Witnesses:     lib.ArrayArrayByteToArrayString(data.Witnesses),
+		Witnesses:     lib.NestedByteArrayToStringArray(data.Witnesses),
 	}
 
 	errs = db.CreateChannel(lao, o.database)
@@ -552,7 +552,7 @@ func (o *organizer) handleWitnessMessage(msg message.Message, canal string, quer
 				Name:          laoData.Name,
 				Creation:      laoData.Creation,
 				OrganizerPKey: string(laoData.Organizer),
-				Witnesses:     lib.ArrayArrayByteToArrayString(laoData.Witnesses),
+				Witnesses:     lib.NestedByteArrayToStringArray(laoData.Witnesses),
 			}
 			queryStr, err = parser.ComposeBroadcastStateLAO(eventStruct.(event.LAO), laoData, o.PublicKey, data.Signature)
 			if err != nil {

@@ -12,8 +12,8 @@ type MessageAndChannel struct {
 	Message []byte
 }
 
-// ArrayArrayByteToArrayString converts an array of array of bytes into an array of string
-func ArrayArrayByteToArrayString(slice [][]byte) []string {
+// NestedByteArrayToStringArray converts an array of array of bytes into an array of string
+func NestedByteArrayToStringArray(slice [][]byte) []string {
 	var sliceString []string
 	for _, item := range slice {
 		sliceString = append(sliceString, string(item))
@@ -22,8 +22,8 @@ func ArrayArrayByteToArrayString(slice [][]byte) []string {
 }
 
 // EscapeAndQuote escapes the following characters the following way:
-//`"` and `\` characters must be escaped by adding a `\` characters before them.
-//`"` becomes `\"` and `\` becomes `\\`.
+// `"` and `\` characters must be escaped by adding a `\` characters before them.
+// `"` becomes `\"` and `\` becomes `\\`.
 func EscapeAndQuote(s string) string {
 	str := strings.ReplaceAll(strings.ReplaceAll(s, "\\", "\\\\"), "\"", "\\\"")
 	return `"` + str + `"`
