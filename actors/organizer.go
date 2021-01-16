@@ -433,7 +433,7 @@ func (o *organizer) handleCreatePoll(msg message.Message, canal string, query me
 // It will store the received message in the database, and send the change request to every subscriber of this LAO,
 // waiting for Witnesse's validation to make the update.
 func (o *organizer) handleUpdateProperties(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
-	// TODO need some improvements
+	// if statement to check that if SigThreshold == 0 then directly make the stateUpdate
 	msgAndChan := []lib.MessageAndChannel{{
 		Message: parser.ComposeBroadcastMessage(query),
 		Channel: []byte(canal),
@@ -699,7 +699,7 @@ func (o *organizer) handleCloseRollCall(msg message.Message, chann string, query
 		LastModified: rollCallData.Creation,
 		Location:     rollCallData.Location,
 		Description:  rollCallData.Description,
-		// we always take the new start ? (even when it's not a reopening)
+		// we always take the new start (even when it's not a reopening)
 		Start:     closeRollCall.Start,
 		Attendees: closeRollCall.Attendees,
 		End:       closeRollCall.End,
