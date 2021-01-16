@@ -41,7 +41,7 @@ type DataCreateLAO struct {
 type DataCreateMeeting struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
-	//ID hash : SHA256(lao_id||creation||name)
+	//ID hash : SHA256('M'||lao_id||creation||name)
 	ID []byte `json:"id"`
 	// Name of the LAO
 	Name string `json:"name"`
@@ -132,7 +132,7 @@ type DataUpdateLAO struct {
 type DataStateLAO struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
-	// hash : (Organizer|| Creation|| Name)" DIFFERENT from create Lao !
+	// hash : (Organizer|| Creation|| Name)" same id as createLao !
 	ID []byte `json:"id"`
 	// Name of the LAO,Meeting...
 	Name string `json:"name"`
@@ -153,14 +153,14 @@ type DataStateLAO struct {
 type DataStateMeeting struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
-	// hash : Name || Creation
+	// hash : SHA256('M'||lao_id||creation||name)
 	ID []byte `json:"id"`
 	// Name of the LAO,Meeting...
 	Name string `json:"name"`
 	//Creation timestamp (Unix) (uint64)
 	Creation int64 `json:"creation"`
 	//LastModified timestamp (Unix) (uint64)
-	LastModified int64 `json:"last_modified,"`
+	LastModified int64 `json:"last_modified"`
 	//optional
 	Location string `json:"location,omitempty"`
 	//Start timestamp (Unix) (uint64)
@@ -168,7 +168,7 @@ type DataStateMeeting struct {
 	//End timestamp (optional) (Unix) (uint64)
 	End int64 `json:"end"`
 	// optional
-	Extra string `json:"extra"`
+	Extra string `json:"extra,omitempy"`
 	//Organiser: Public Key
 	Organizer string `json:"organize"`
 	// id of the modification (either creation/update)
