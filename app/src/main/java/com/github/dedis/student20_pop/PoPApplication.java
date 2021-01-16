@@ -11,6 +11,9 @@ import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.Person;
 import com.github.dedis.student20_pop.model.event.Event;
+import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
+import com.github.dedis.student20_pop.model.network.method.message.data.meeting.StateMeeting;
+import com.github.dedis.student20_pop.utility.protocol.DataHandler;
 import com.github.dedis.student20_pop.utility.protocol.HighLevelProxy;
 import com.github.dedis.student20_pop.utility.protocol.LowLevelProxy;
 import com.github.dedis.student20_pop.utility.protocol.ProtocolProxyFactory;
@@ -19,7 +22,6 @@ import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
 import java.net.URI;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +45,8 @@ public class PoPApplication extends Application {
     private final Map<Lao, List<Event>> laoEventsMap = new HashMap<>();
     private final Map<Lao, List<String>> laoWitnessMap = new HashMap<>();
     private final Map<URI, HighLevelProxy> openSessions = new HashMap<>();
+
+    private final DataHandler dataHandler = new PoPDataHandler();
 
     private static Context appContext;
 
@@ -234,7 +238,7 @@ public class PoPApplication extends Application {
             if(openSessions.containsKey(host)) {
                 return openSessions.get(host);
             } else {
-                HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(host, person);
+                HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(host, person, dataHandler);
                 openSessions.put(host, proxy);
                 return proxy;
             }
@@ -351,5 +355,18 @@ public class PoPApplication extends Application {
     public enum AddWitnessResult {
         ADD_WITNESS_SUCCESSFUL,
         ADD_WITNESS_ALREADY_EXISTS
+    }
+
+    private class PoPDataHandler implements DataHandler {
+
+        @Override
+        public void handle(StateLao stateLao) {
+
+        }
+
+        @Override
+        public void handle(StateMeeting stateMeeting) {
+
+        }
     }
 }
