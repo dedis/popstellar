@@ -75,10 +75,12 @@ func (o *organizer) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAn
 
 // handleBroadcast is the function to handle a received message which method was "broadcast"
 // It is called by the function HandleReceivedMessage.
-// It returns an error as, in the current implementation there is only one organizer, and he's the only one sending broadcast message. Hence he should not be receiving some.
+// It returns an error as in the current implementation there is only one organizer. So there is only one actor sending
+// broadcast message. Hence he should not be receiving this message.
 func (o *organizer) handleBroadcast(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
-	// In the current specification, only organizer BEs should emit broadcasts, so currently, incoming broadcast messages are considered erroneous with requestDataInvalid
-	log.Printf("received a broadcast message on an organizer back-end()")
+	// In the current specification, only organizer BEs should emit broadcasts, so currently,
+	// incoming broadcast messages are considered erroneous with requestDataInvalid
+	log.Printf("received a broadcast message on an organizer back-end")
 	return nil, lib.ErrRequestDataInvalid
 
 	/*
@@ -126,8 +128,8 @@ func (o *organizer) handleBroadcast(query message.Query) (msgAndChannel []lib.Me
 }
 
 // handlePublish is the function to handle a received message which method was "publish"
-// It is called by the function HandleReceivedMessage. It Analyses the message's object and action fields, and delegate the
-// work to other functions.
+// It is called by the function HandleReceivedMessage. It Analyses the message's object and action fields, and delegate
+// the execution to sub-handlers depending on these fields.
 func (o *organizer) handlePublish(query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
 	params, errs := parser.ParseParams(query.Params)
 	if errs != nil {
@@ -253,7 +255,8 @@ func (o *organizer) handleCreateLAO(msg message.Message, canal string, query mes
 		return nil, errs
 	}
 
-	// as per hub.go, this msgAndChan will never be broadcast as Channel should be on root. We still create it in case this functionality could change in the future.
+	// as per hub.go, this msgAndChan will never be broadcast as Channel should be on root.
+	// We still create it in case this functionality could change in the future.
 	msgAndChan := []lib.MessageAndChannel{{
 		Message: parser.ComposeBroadcastMessage(query),
 		Channel: []byte(canal),
@@ -312,7 +315,7 @@ func (o *organizer) handleCreateRollCall(msg message.Message, canal string, quer
 		Channel: []byte(canal),
 	}}
 
-	log.Printf("Sucessfully created lao %s", rollCall.Name)
+	log.Printf("Sucessfully created roll call %s", rollCall.Name)
 
 	return msgAndChan, nil
 }
@@ -481,33 +484,38 @@ func (o *organizer) handleWitnessMessage(msg message.Message, canal string, quer
 		//dataWitnessMessage' signature is Sign(message_id)
 		err = security.VerifySignature(witnessSignature.WitnessKey, toSignStruct.MessageId, witnessSignature.Signature)
 		if err != nil {
-			count--
 			log.Printf("Invalid signature found in signature lists: index %d. Should check if the database has not been tempered with", i)
+		} else {
+			count++
 		}
-		count++
 		signaturesOnly = append(signaturesOnly, string(witnessSignature.Signature))
 	}
 
-	//if new signature already exists, returns error
+	// if new signature already exists, returns error
+	// does not return an error if the signature's threshold is achieved. This mechanism is to let a witness
+	// trigger the process of sending the "update properties" once more if it failed during the first execution, but
+	// after its message was stored on the database
 	_, found := lib.FindStr(signaturesOnly, string(data.Signature))
 	if found && count < SigThreshold {
 		log.Printf("Signature already exists in message list")
 		return nil, lib.ErrResourceAlreadyExists
-	}
+	} else {
 
-	iws, err := json.Marshal(message.ItemWitnessSignatures{WitnessKey: msg.Sender, Signature: data.Signature})
-	if err != nil {
-		log.Println("couldn't Marshal the ItemWitnessSignatures")
-	}
-	if !found {
+		iws, err := json.Marshal(message.ItemWitnessSignatures{WitnessKey: msg.Sender, Signature: data.Signature})
+		if err != nil {
+			log.Println("couldn't Marshal the ItemWitnessSignatures")
+		}
+
 		toSignStruct.WitnessSignatures = append(toSignStruct.WitnessSignatures, iws)
 	}
-	// update "LAOUpdateProperties" message in DB
+
+	// update "LAOUpdateProperties" (or other message) in DB
 	err = db.UpdateMessage(toSignStruct, canal, o.database)
 	if err != nil {
 		log.Printf("An error occured, unable to update message in the database")
 		return nil, lib.ErrDBFault
 	}
+
 	//store received message in DB
 	err = db.CreateMessage(msg, canal, o.database)
 	if err != nil {
@@ -590,10 +598,10 @@ func (o *organizer) handleLAOState(msg message.Message) (msgAndChannel []lib.Mes
 	return nil, lib.ErrInvalidAction
 }
 
-//handleOpenRollCall is useful If the roll-call was started in future mode (see create roll-call), it can be opened using
-//		the open roll-call query. If it was closed, but it need to be reopened later (e.g. the
-//		organizer forgot to scan the public key of one attendee), then it can reopen it by using
-//		the open query. In this case, the action should be set to reopen.
+// handleOpenRollCall is used If the roll-call was started in future mode (see create roll-call), it can be opened using
+// the open roll-call query. If it was closed, but it need to be reopened later (e.g. the organizer forgot to scan
+// the public key of one attendee), then it can reopen it by using the open query. In this case, the action should be
+// set to reopen.
 func (o *organizer) handleOpenRollCall(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	if !strings.HasPrefix(chann, "/root/") {
 		log.Printf("invalid channel name for meeting creation: %s", chann)
@@ -628,12 +636,11 @@ func (o *organizer) handleOpenRollCall(msg message.Message, chann string, query 
 	}
 
 	updatedRollCall := event.RollCall{
-		ID:           string(openRollCall.ID),
-		Name:         rollCallData.Name,
-		Creation:     rollCallData.Creation,
-		LastModified: rollCallData.Creation,
-		Location:     rollCallData.Location,
-		//openRollCall !
+		ID:                  string(openRollCall.ID),
+		Name:                rollCallData.Name,
+		Creation:            rollCallData.Creation,
+		LastModified:        rollCallData.Creation,
+		Location:            rollCallData.Location,
 		Start:               openRollCall.Start,
 		RollCallDescription: rollCallData.RollCallDescription,
 	}
@@ -690,21 +697,23 @@ func (o *organizer) handleCloseRollCall(msg message.Message, chann string, query
 		Attendees: closeRollCall.Attendees,
 		End:       closeRollCall.End,
 	}
+
 	err = db.UpdateChannel(updatedRollCall, o.database)
 	if err != nil {
 		log.Printf("unable to update channel in database")
 		return nil, err
 	}
-	msgAndChan := []lib.MessageAndChannel{{
-		Message: parser.ComposeBroadcastMessage(query),
-		Channel: []byte(chann),
-	}}
 
 	err = db.CreateMessage(msg, chann, o.database)
 	if err != nil {
 		log.Printf("unable to store receieved message in the database")
 		return nil, err
 	}
+
+	msgAndChan := []lib.MessageAndChannel{{
+		Message: parser.ComposeBroadcastMessage(query),
+		Channel: []byte(chann),
+	}}
 
 	return msgAndChan, nil
 }
