@@ -2,6 +2,7 @@ package com.github.dedis.student20_pop.utility.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.dedis.student20_pop.model.network.GenericMessage;
 import com.github.dedis.student20_pop.model.network.answer.Answer;
 import com.github.dedis.student20_pop.model.network.answer.Error;
 import com.github.dedis.student20_pop.model.network.answer.ErrorCode;
@@ -33,7 +34,6 @@ import com.networknt.schema.uri.URIFactory;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.URI;
@@ -82,7 +82,7 @@ public class TestJson {
         Set<ValidationMessage> errors = lowSchema.validate(mapper.readTree(json));
         if (errors.size() != 0) System.out.println(errors);
         Assert.assertEquals(0, errors.size());
-        Assert.assertEquals(msg, gson.fromJson(json, Message.class));
+        Assert.assertEquals(msg, gson.fromJson(json, GenericMessage.class));
     }
 
     private void testResult(Answer msg) throws JsonProcessingException {
@@ -90,7 +90,7 @@ public class TestJson {
         Set<ValidationMessage> errors = lowSchema.validate(mapper.readTree(json));
     if (errors.size() != 0) System.out.println(errors);
         Assert.assertEquals(0, errors.size());
-        Assert.assertEquals(msg, gson.fromJson(json, Answer.class));
+        Assert.assertEquals(msg, gson.fromJson(json, GenericMessage.class));
     }
 
     private void testData(Data msg) throws JsonProcessingException {
@@ -133,7 +133,6 @@ public class TestJson {
     }
 
     @Test
-    @Ignore("Current schema make this test fail")
     public void testMessageGeneral() throws JsonProcessingException {
         MessageGeneral msg = new MessageGeneral("sender", "data", "signature", "id", Collections.emptyList());
         String json = gson.toJson(msg, MessageGeneral.class);

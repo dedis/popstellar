@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.utility.json;
 
+import com.github.dedis.student20_pop.model.network.GenericMessage;
 import com.github.dedis.student20_pop.model.network.answer.Answer;
 import com.github.dedis.student20_pop.model.network.method.Message;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
@@ -33,6 +34,7 @@ public final class JsonUtils {
 
     public static Gson createGson() {
         return new GsonBuilder()
+                .registerTypeAdapter(GenericMessage.class, new JsonGenericMessageDeserializer())
                 .registerTypeAdapter(Message.class, new JsonMessageSerializer())
                 .registerTypeAdapter(Data.class, new JsonDataSerializer())
                 .registerTypeAdapter(Answer.class, new JsonAnswerSerializer())
