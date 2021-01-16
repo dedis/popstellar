@@ -4,7 +4,7 @@ package event
 import "hash"
 
 type LAO struct {
-	// hash : Name || Creation, not updated on update.
+	// hash(org||creation||name) , not updated on update.
 	ID string
 	// Name of the LAO
 	Name string
@@ -17,7 +17,7 @@ type LAO struct {
 }
 
 type Meeting struct {
-	// hash : Name || Creation
+	// hash('M'||lao_id||creation||name)
 	ID string
 	// Name of the Meeting
 	Name string
