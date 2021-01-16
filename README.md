@@ -43,6 +43,11 @@ This package implements all functions to parse received messages into structs, a
 
 ### security
 This package implements all the checks we do on messages to ensure they are valid, from timestamp age to validity of hashes and signatures.
+* Concerning the Hash when dealing with the Ids, the structure for concatenation is as follows:
+`Hash(element1|...|elementK)` is Hash("["esc(element1)",...,"esc(elementK)"]") where esc is an escaped function defined in the protocol.
+  The fields concatenated are all in their received representation, e.g. `message_id` will be the hash of the concatenation of the two field `data` and
+                                                                        `signature` both encoded in base 64 because we receive them encoded.
+* For the signature, we exclusively use the unencoded representation. 
 
 ### test
 This package contains, as its name says it, the unit tests.
