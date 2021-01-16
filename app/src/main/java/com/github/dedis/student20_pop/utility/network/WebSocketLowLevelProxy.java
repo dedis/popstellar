@@ -15,6 +15,7 @@ import com.github.dedis.student20_pop.model.network.method.Unsubscribe;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.utility.json.JsonUtils;
+import com.github.dedis.student20_pop.utility.protocol.DataHandler;
 import com.github.dedis.student20_pop.utility.protocol.LowLevelProxy;
 import com.github.dedis.student20_pop.utility.protocol.MessageHandler;
 import com.github.dedis.student20_pop.utility.security.Hash;
@@ -41,7 +42,7 @@ import java.util.function.Function;
 import javax.websocket.Session;
 
 /**
- * A proxy of a connection to a websocket. It encapsulate the publish-subscribe protocol
+ * A proxy of a connection to a WebSocket. It encapsulate the publish-subscribe protocol
  */
 public final class WebSocketLowLevelProxy implements LowLevelProxy, MessageListener {
 
@@ -50,11 +51,13 @@ public final class WebSocketLowLevelProxy implements LowLevelProxy, MessageListe
     // Lock to prevent multiple threads to access the session
     private final Object SESSION_LOCK = new Object();
 
-    private final URI sessionURI;
+
     private final MessageHandler messageHandler = new WebSocketMessageHandler();
     private final Gson gson = JsonUtils.createGson();
     private final Map<Integer, RequestEntry> requests = new ConcurrentHashMap<>();
     private final AtomicInteger counter = new AtomicInteger();
+    private final URI sessionURI;
+    private final DataHandler dataHandler;
     // Having to different futures to be able to close the session even if it is closed during the opening.
     // The first future holds the session and it will immediately be passed to the second on completion
     private CompletableFuture<Session> session;
@@ -63,8 +66,9 @@ public final class WebSocketLowLevelProxy implements LowLevelProxy, MessageListe
     // to be able to close the session as soon as it is created.
     private CompletableFuture<Session> sessionUse;
 
-    public WebSocketLowLevelProxy(URI host) {
+    public WebSocketLowLevelProxy(URI host, DataHandler dataHandler) {
         this.sessionURI = host;
+        this.dataHandler = dataHandler;
         this.session = WebSocketEndpoint.connect(host, this);
         this.sessionUse = session.thenApply(s -> s);
     }
@@ -236,7 +240,7 @@ public final class WebSocketLowLevelProxy implements LowLevelProxy, MessageListe
                             StandardCharsets.UTF_8),
                     Data.class);
 
-            System.out.println(data);
+            data.accept(dataHandler);
         }
     }
 }
