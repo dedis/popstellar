@@ -140,18 +140,14 @@ func (w *witness) handleBroadcast(query message.Query) (msgAndChannel []lib.Mess
 		}
 	case "meeting":
 		switch data["action"] {
-		case "create":
-			return nil, lib.ErrNotYetImplemented
-		case "state":
+		case "create", "state":
 			return nil, lib.ErrNotYetImplemented
 		default:
 			return nil, lib.ErrInvalidAction
 		}
 	case "poll":
 		switch data["action"] {
-		case "create":
-			return nil, lib.ErrNotYetImplemented
-		case "state":
+		case "create", "state":
 			return nil, lib.ErrNotYetImplemented
 		default:
 			return nil, lib.ErrInvalidAction
@@ -163,8 +159,8 @@ func (w *witness) handleBroadcast(query message.Query) (msgAndChannel []lib.Mess
 
 // handleCreateLAO is the function that handles the creation of a LAO. It checks the message's validity,
 // creates a new Channel in the witness's database and stores the received message
-func (w *witness) handleCreateLAO(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
-	if chann != "/root" {
+func (w *witness) handleCreateLAO(msg message.Message, channel string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+	if channel != "/root" {
 		log.Printf("Invalid channel. LAO create requests are valid only on the /root channel")
 		return nil, lib.ErrInvalidResource
 	}
@@ -193,7 +189,7 @@ func (w *witness) handleCreateLAO(msg message.Message, chann string, query messa
 		return nil, errs
 	}
 
-	errs = db.CreateMessage(msg, chann, w.database)
+	errs = db.CreateMessage(msg, channel, w.database)
 	if errs != nil {
 		log.Printf("An error occured, could not store message to the database")
 		return nil, errs
@@ -204,7 +200,7 @@ func (w *witness) handleCreateLAO(msg message.Message, chann string, query messa
 
 // handleUpdateProperties handles a received message with field object and action set respectively to "lao" and
 // "update_properties". It checks the message's validity and stores it in the witness's database.
-func (w *witness) handleUpdateProperties(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+func (w *witness) handleUpdateProperties(msg message.Message, channel string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	data, errs := parser.ParseDataCreateLAO(msg.Data)
 	if errs != nil {
 		log.Printf("could not parse received data in a message.DataCreateLAO structure")
@@ -215,8 +211,8 @@ func (w *witness) handleUpdateProperties(msg message.Message, chann string, quer
 		return nil, lib.ErrInvalidResource
 	}
 
-	//stores received message in DB
-	errs = db.CreateMessage(msg, chann, w.database)
+	//store received message in DB
+	errs = db.CreateMessage(msg, channel, w.database)
 	if errs != nil {
 		log.Printf("unable to store received message in the database")
 		return nil, err
@@ -229,56 +225,57 @@ func (w *witness) handleUpdateProperties(msg message.Message, chann string, quer
 // "witness". It checks the message's validity, retrieves the message to be signed from the database,
 // verifies signature's correctness and eventually appends the new signature to the original message, before writing it
 // back to the database, along with received message.
-func (w *witness) handleWitnessMessage(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
-	data, errs := parser.ParseDataWitnessMessage(msg.Data)
-	if errs != nil {
+func (w *witness) handleWitnessMessage(msg message.Message, channel string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
+	data, err := parser.ParseDataWitnessMessage(msg.Data)
+	if err != nil {
 		log.Printf("could not parse received data in a message.DataWitnessMessage structure")
 		return nil, lib.ErrInvalidResource
 	}
 
-	sendMsg := db.GetMessage([]byte(chann), data.MessageId, w.database)
+	sendMsg := db.GetMessage([]byte(channel), data.MessageId, w.database)
 	if sendMsg == nil {
 		log.Printf("no message with ID %v in the database", data.MessageId)
 		return nil, lib.ErrInvalidResource
 	}
-	storedMessage, errs := parser.ParseMessage(sendMsg)
-	if errs != nil {
+	storedMessage, err := parser.ParseMessage(sendMsg)
+	if err != nil {
 		log.Printf("unable to unmarshall the message stored in the database")
 		return nil, lib.ErrDBFault
 	}
 
 	//check that the field message_id in the dataWitnessMessage is correct
 	//can seem stupid as if we detected the message with its message_id it
-	// should be the correct one but useful to know if the db has been corrupted
-	signatureb64 := b64.StdEncoding.EncodeToString(data.Signature)
-	elementsToHashForMessageId := []string{b64.StdEncoding.EncodeToString(storedMessage.Data), signatureb64}
+	//should be the correct one but useful to know if the db has been corrupted
+	signatureB64 := b64.StdEncoding.EncodeToString(data.Signature)
+	elementsToHashForMessageId := []string{b64.StdEncoding.EncodeToString(storedMessage.Data), signatureB64}
 	messageIdRecomputed := security.HashOfItems(elementsToHashForMessageId)
 	if !bytes.Equal(storedMessage.MessageId, messageIdRecomputed) {
 		log.Printf("message_id of witnessMessage invalid: %v should be: %v", string(data.MessageId), string(messageIdRecomputed))
 		return nil, lib.ErrInvalidResource
 	}
 
-	errs = security.VerifySignature(msg.Sender, storedMessage.Data, data.Signature)
-	if errs != nil {
+	err = security.VerifySignature(msg.Sender, storedMessage.Data, data.Signature)
+	if err != nil {
 		log.Printf("Invalid signature in received witness message.")
 		return nil, lib.ErrInvalidResource
 	}
 
 	//adds the signature to signature list
+	// in the future should check if not already in the list
 	storedMessage.WitnessSignatures = append(storedMessage.WitnessSignatures, data.Signature)
 
 	//update message in DB
-	errs = db.UpdateMessage(storedMessage, chann, w.database)
-	if errs != nil {
+	err = db.UpdateMessage(storedMessage, channel, w.database)
+	if err != nil {
 		log.Printf("Unable to update signature list of message in the database")
-		return nil, errs
+		return nil, err
 	}
 
 	//stores received message in DB
-	errs = db.CreateMessage(msg, chann, w.database)
-	if errs != nil {
+	err = db.CreateMessage(msg, channel, w.database)
+	if err != nil {
 		log.Printf("could not store received message in the database")
-		return nil, errs
+		return nil, err
 	}
 
 	return nil, nil
@@ -295,7 +292,7 @@ func (w *witness) handleLAOState(msg message.Message) (msgAndChannel []lib.Messa
 	}
 
 	if !security.LAOIsValid(data, false) {
-		log.Printf("LAO state update is not valid. Changes aborted localy")
+		log.Printf("LAO state update is not valid. Changes aborted")
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -331,8 +328,8 @@ func (w *witness) handleLAOState(msg message.Message) (msgAndChannel []lib.Messa
 // handleCreateRollCall is the function that handles a received message with fields object and action set respectively
 // to "roll_call" and "create". It  verifies the message's validity, creates a new channel in the witness's database and
 // stores the received message.
-func (w *witness) handleCreateRollCall(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
-	if strings.HasPrefix(chann, "/root/") {
+func (w *witness) handleCreateRollCall(msg message.Message, channel string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+	if strings.HasPrefix(channel, "/root/") {
 		log.Printf("Channel name has to begin with /root/")
 		return nil, lib.ErrInvalidResource
 	}
@@ -343,7 +340,7 @@ func (w *witness) handleCreateRollCall(msg message.Message, chann string, query 
 		return nil, lib.ErrInvalidResource
 	}
 
-	laoID := strings.TrimPrefix(chann, "/root/")
+	laoID := strings.TrimPrefix(channel, "/root/")
 	if !security.RollCallCreatedIsValid(data, laoID) {
 		log.Printf("Roll Call data not valid. Roll call not created")
 		return nil, lib.ErrInvalidResource
@@ -363,7 +360,7 @@ func (w *witness) handleCreateRollCall(msg message.Message, chann string, query 
 		return nil, errs
 	}
 
-	errs = db.CreateMessage(msg, chann, w.database)
+	errs = db.CreateMessage(msg, channel, w.database)
 	if errs != nil {
 		log.Printf("failed to store a new message in the database")
 		return nil, errs
