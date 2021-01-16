@@ -23,7 +23,6 @@ const(
 	WitnessKey Action = "witness"
 )*/
 
-
 type DataCreateLAO struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
@@ -158,14 +157,18 @@ type DataStateMeeting struct {
 	ID []byte `json:"id"`
 	// Name of the LAO,Meeting...
 	Name string `json:"name"`
-	//Creation's timestamp (Unix) (uint64)
+	//Creation timestamp (Unix) (uint64)
 	Creation int64 `json:"creation"`
-	//LastModified Date/Time
-	LastModified int64  `json:"last_modified,"` //  Unix timestamp (uint64)
-	Location     string `json:"location,omitempty"`       //optional
-	Start        int64  `json:"start"`          /* Timestamp */
-	End          int64  `json:"end"`            /* Timestamp, optional */
-	Extra        string `json:"extra"`          /* arbitrary object, optional */
+	//LastModified timestamp (Unix) (uint64)
+	LastModified int64 `json:"last_modified,"`
+	//optional
+	Location string `json:"location,omitempty"`
+	//Start timestamp (Unix) (uint64)
+	Start int64 `json:"start"`
+	//End timestamp (optional) (Unix) (uint64)
+	End int64 `json:"end"`
+	// optional
+	Extra string `json:"extra"`
 	//Organiser: Public Key
 	Organizer string `json:"organize"`
 	// id of the modification (either creation/update)
