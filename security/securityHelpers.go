@@ -38,6 +38,7 @@ func VerifyWitnessSignatures(authorizedWitnesses [][]byte, witnessSignaturesEnc 
 		//We check that the signature belong to an assigned witness
 		_, isAssigned := lib.FindByteArray(authorizedWitnesses, witnessSignature.WitnessKey)
 		if !isAssigned {
+			// if one witness is unauthorized, the whole message is refused
 			log.Printf("witness public key not recognized")
 			return lib.ErrRequestDataInvalid
 		}
