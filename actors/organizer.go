@@ -553,7 +553,7 @@ func (o *organizer) handleWitnessMessage(msg message.Message, canal string, quer
 			}
 
 		default:
-			log.Printf("Witness not able to witness something else than LAO state update for now")
+			log.Printf("witness not able to witness something else than LAO state update for now")
 			return nil, lib.ErrNotYetImplemented
 
 		}

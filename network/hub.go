@@ -38,7 +38,7 @@ func NewOrganizerHub(pkey string, database string) *hub {
 	return newHub("o", pkey, database)
 }
 
-// NewWitnessHub returns a hub which Actor is a Witness
+// NewWitnessHub returns a hub which Actor is a witness
 func NewWitnessHub(pkey string, database string) *hub {
 	return newHub("w", pkey, database)
 }
