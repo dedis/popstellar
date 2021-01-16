@@ -1,8 +1,6 @@
 name: PoP CI fe2-android
 
 on:
-  push:
-    branches: [ work-fe2-* ]
   pull_request:
     branches: [ fe2-android ]
 
@@ -33,7 +31,8 @@ jobs:
       uses: reactivecircus/android-emulator-runner@v2
       with:
         api-level: 29
-        arch: x86
+        arch: x86_64
         profile: pixel_2
-        disable-animations: false
+        emulator-options: -noaudio -no-boot-anim
+        disable-animations: true
         script: ./gradlew connectedCheck
