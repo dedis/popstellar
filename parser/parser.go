@@ -107,8 +107,8 @@ func dataConstAreValid(m message.Data) bool {
 	}
 
 	creation, okC := m["creation"].(int)
-	lastm, okL := m["last_modified"].(int)
-	if (okC && creation < 0) || (okL && lastm < 0) {
+	lastModified, okL := m["last_modified"].(int)
+	if (okC && creation < 0) || (okL && lastModified < 0) {
 		log.Printf("the timestamps are smaller than 0")
 		return false
 	}
