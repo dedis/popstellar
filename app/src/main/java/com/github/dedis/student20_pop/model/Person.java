@@ -81,26 +81,24 @@ public final class Person {
 
     /**
      * @param laos the list of LAOs the Person owns/is a member to
-     * @return a new Person with the same name, public and private key, but new list of LAOs
      * @throws IllegalArgumentException if the list is null or at least one lao value is null
      */
-    public Person setLaos(List<String> laos) {
+    public void setLaos(List<String> laos) {
         if (laos == null || laos.contains(null)) {
             throw new IllegalArgumentException("Trying to add a null lao to the Person " + name);
         }
-        return new Person(name, id, authentication, laos);
+       this.laos.clear();
+       this.laos.addAll(laos);
     }
 
     /**
      * @param lao the new LAO to be added to the Person's owner/member list
-     * @return a new Person with the same name, public and private key, but new list of LAOs
      */
-    public Person addLao(String lao) {
+    public void addLao(String lao) {
         if (lao == null) {
             throw new IllegalArgumentException("Trying to add a null lao to the Person " + name);
         }
         laos.add(lao);
-        return new Person(name, id, authentication, laos);
     }
 
     @Override

@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
+import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.RollCallEvent;
 
@@ -54,12 +55,12 @@ public final class AddAttendeeFragment extends Fragment {
                 .commit();
 
         PoPApplication app = (PoPApplication) getActivity().getApplication();
-        Optional<Event> matchingEvent = app
-                .getEvents(app.getCurrentLao())
-                .parallelStream()
-                .filter(event -> event.getId().equals(eventId))
-                .distinct()
-                .findAny();
+        Optional<Event> matchingEvent = app.getCurrentLao()
+                .map(Lao::getEvents)
+                .flatMap(events -> events
+                        .parallelStream()
+                        .filter(event -> event.getId().equals(eventId))
+                        .findFirst());
 
         RollCallEvent rollCallEvent;
 

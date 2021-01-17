@@ -42,6 +42,11 @@ public final class DatePickerFragment extends AppCompatDialogFragment implements
         calendar.set(Calendar.YEAR, year);
         calendar.set(Calendar.MONTH, month);
         calendar.set(Calendar.DAY_OF_MONTH, day);
+        
+        calendar.set(Calendar.HOUR, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
 
         // send date back to the target fragment
         getTargetFragment().onActivityResult(
