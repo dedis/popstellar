@@ -272,48 +272,29 @@ public class PoPApplication extends Application {
         dummyLaos();
     }
 
+    private List<Event> dummyEvents(String laoId) {
+        return Arrays.asList(
+                new Event("Future Event 1", laoId, 2617547969L, "EPFL", POLL),
+                new Event("Present Event 1", laoId, Instant.now().getEpochSecond(), "Somewhere", DISCUSSION),
+                new Event("Past Event 1", laoId, 1481643086L, "Here", MEETING));
+    }
+
     /**
      * This method creates a map for testing, when no backend is connected.
      */
     private void dummyLaos() {
         String notMyPublicKey = new Keys().getPublicKey();
-        Lao lao0 = new Lao("LAO I just joined", notMyPublicKey);
+        Lao lao0 = new Lao("LAO I just joined", getPerson().getId());
         Lao lao1 = new Lao("LAO 1", notMyPublicKey);
         Lao lao2 = new Lao("LAO 2", notMyPublicKey);
         Lao lao3 = new Lao("My LAO 3", getPerson().getId());
-        Lao lao4 = new Lao("LAO 4", getPerson().getId());
+        Lao lao4 = new Lao("LAO 4", notMyPublicKey);
 
-        List<Event> events0 = Arrays.asList(
-                new Event("Future Event 1", lao1.getId(), 2617547969L, "EPFL", POLL),
-                new Event("Present Event 1", lao1.getId(), Instant.now().getEpochSecond(), "Somewhere", DISCUSSION),
-                new Event("Past Event 1", lao1.getId(), 1481643086L, "Here", MEETING));
-
-
-        List<Event> events1 = Arrays.asList(
-                new Event("Future Event 1", lao1.getId(), 2617547969L, "EPFL", POLL),
-                new Event("Present Event 1", lao1.getId(), Instant.now().getEpochSecond(), "Somewhere", DISCUSSION),
-                new Event("Past Event 1", lao1.getId(), 1481643086L, "Here", MEETING));
-
-        List<Event> events2 = Arrays.asList(
-                new Event("Future Event 1", lao2.getId(), 2617547969L, "EPFL", POLL),
-                new Event("Present Event 1", lao2.getId(), Instant.now().getEpochSecond(), "Somewhere", DISCUSSION),
-                new Event("Past Event 1", lao2.getId(), 1481643086L, "Here", MEETING));
-
-        List<Event> events3 = Arrays.asList(
-                new Event("Future Event 1", lao3.getId(), 2617547969L, "EPFL", POLL),
-                new Event("Present Event 1", lao3.getId(), Instant.now().getEpochSecond(), "Somewhere", DISCUSSION),
-                new Event("Past Event 1", lao3.getId(), 1481643086L, "Here", MEETING));
-
-        List<Event> events4 = Arrays.asList(
-                new Event("Future Event 1", lao4.getId(), 2617547969L, "EPFL", POLL),
-                new Event("Present Event 1", lao4.getId(), Instant.now().getEpochSecond(), "Somewhere", DISCUSSION),
-                new Event("Past Event 1", lao4.getId(), 1481643086L, "Here", MEETING));
-
-        lao1.setEvents(events0);
-        lao1.setEvents(events1);
-        lao2.setEvents(events2);
-        lao2.setEvents(events3);
-        lao3.setEvents(events4);
+        lao0.setEvents(dummyEvents(lao0.getId()));
+        lao1.setEvents(dummyEvents(lao0.getId()));
+        lao2.setEvents(dummyEvents(lao0.getId()));
+        lao2.setEvents(dummyEvents(lao0.getId()));
+        lao3.setEvents(dummyEvents(lao0.getId()));
 
         createLao(lao0);
         createLao(lao1);
