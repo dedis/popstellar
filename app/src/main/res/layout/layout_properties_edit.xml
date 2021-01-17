@@ -6,32 +6,34 @@
     android:orientation="vertical">
 
     <EditText
-        android:id="@+id/organization_name_editText"
+        android:id="@+id/organization_name_edit_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Test Organisation Name"
+        android:text="@string/test_organization_name"
         android:textSize="@dimen/size_title"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:inputType="text"
+        android:autofillHints="false" />
 
     <ImageButton
         android:id="@+id/add_witness_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right"
+        android:layout_gravity="end"
         android:src="@drawable/ic_baseline_add_24"
         android:visibility="visible"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@id/organization_name_editText" />
+        app:layout_constraintTop_toTopOf="@id/organization_name_edit_text" />
 
     <ListView
         android:id="@+id/witness_edit_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/organization_name_editText"
+        android:layout_below="@id/organization_name_edit_text"
         android:textSize="@dimen/size_body"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/organization_name_editText" />
+        app:layout_constraintTop_toBottomOf="@id/organization_name_edit_text" />
 
     <Button
         android:id="@+id/properties_edit_confirm"
