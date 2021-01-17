@@ -37,7 +37,7 @@ Open the virtual device and run the following command:
 
 This project uses Github Actions as a CI, for more information go to .github/workflows/fe2-android.yml.
 
-This CI builds and runs the Unit Tests. For the Android Test, the [reactivecircus](https://github.com/ReactiveCircus/android-emulator-runner)
+This CI builds and runs the Unit Tests. For the Android Tests, the [reactivecircus](https://github.com/ReactiveCircus/android-emulator-runner)
 Android Emulator is used, which is limited.
 
 
