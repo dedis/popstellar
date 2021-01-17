@@ -73,9 +73,10 @@ public final class ConnectingFragment extends Fragment {
                     if(!(real instanceof ManualCancel))
                         Toast.makeText(getContext(), real.getMessage(), Toast.LENGTH_LONG).show();
 
-                    getActivity().runOnUiThread(() -> {
-                                Intent intent = new Intent(getActivity(), MainActivity.class);
-                                startActivity(intent);
+                    if(!(real instanceof ChangeViewCancel))
+                        getActivity().runOnUiThread(() -> {
+                                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                                    startActivity(intent);
                     });
                     return null;
                 });
@@ -99,8 +100,24 @@ public final class ConnectingFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onStop() {
+        connexion.completeExceptionally(new ChangeViewCancel());
+        super.onStop();
+    }
+
     /**
      * Dummy exception to avoid showing toast when the user cancel the connection
      */
     private static final class ManualCancel extends Throwable {}
+
+    /**
+     * Dummy exception to avoid showing main activity when the user cancel the connection by changing the view
+     */
+    private static final class ChangeViewCancel extends Exception {
+
+        private ChangeViewCancel() {
+            super("Connection to lao cancelled");
+        }
+    }
 }
