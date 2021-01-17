@@ -17,20 +17,12 @@ import (
 func LAOIsValid(data message.DataCreateLAO, create bool) bool {
 	//the timestamp is reasonably recent with respect to the server’s clock,
 	creation := checkCreationTimeValidity(data.Creation)
-
-	//check if id is correct  : SHA256(organizer||creation||name)
-	var elementsToHashForDataId []string
-	elementsToHashForDataId = append(elementsToHashForDataId, b64.StdEncoding.EncodeToString(data.Organizer), strconv.FormatInt(data.Creation, 10), data.Name)
-	hash := HashOfItems(elementsToHashForDataId)
-	if create && !bytes.Equal(data.ID, hash) {
-		log.Printf("ID of createLAO invalid: %v should be: %v", string(data.ID), string(hash[:]))
-		return false
-	}
-
-	//name cannnot be empty
+	//name cannot be empty
 	name := checkStringNotEmpty(data.Name)
+	//ID is valid if creation
+	id := !create || checkLaoId(data.Organizer, data.Creation, data.Name, data.ID)
 
-	return creation && name && checkLaoId(data.Organizer,data.Creation,data.Name,data.ID)
+	return creation && name && id
 }
 
 //MeetingCreatedIsValid checks whether a meeting is valid when it is created. It checks if the ID is correctly computed,
@@ -86,41 +78,37 @@ func RollCallCreatedIsValid(data message.DataCreateRollCall, laoId string) bool 
 	return name && creation && location && checkRollCallId(laoId, data.Creation, data.Name, data.ID)
 }
 
-//checkRollCallId check if id is correct  : SHA256('R'||lao_id||creation||name)
-func 	checkRollCallId(laoId string, creation int64, name string, id []byte) bool {
-	var elementsToHashForDataId []string
-	elementsToHashForDataId = append(elementsToHashForDataId, "R", b64.StdEncoding.EncodeToString([]byte(laoId)), strconv.FormatInt(creation, 10), name)
-	hash := HashOfItems(elementsToHashForDataId)
+//checkID compares SHA256(firstChar || laoId || creation || name) to id, returns true if they are the same
+// for a LAO use the laoId as "organizer" field. uses HashOfItems to concatenate and hash the values
+func checkID(firstChar string, laoId []byte, creation int64, name string, id []byte) bool {
+	var elements []string
+	if firstChar != "" {
+		elements = append(elements, firstChar)
+	}
+	elements = append(elements, b64.StdEncoding.EncodeToString(laoId), strconv.FormatInt(creation, 10), name)
+	hash := HashOfItems(elements)
 	if !bytes.Equal(id, hash) {
-		log.Printf("ID of RollCall invalid: %v should be: %v", string(id), string(hash[:]))
+		log.Printf("ID invalid: %v should be: %v", string(id), string(hash[:]))
 		return false
 	}
 	return true
 }
 
-//checkMeetingId check if id is correct  : SHA256('M'||lao_id||creation||name)
-func 	checkMeetingId(laoId string, creation int64, name string, id []byte) bool {
-	var elementsToHashForDataId []string
-	elementsToHashForDataId = append(elementsToHashForDataId, "M", b64.StdEncoding.EncodeToString([]byte(laoId)), strconv.FormatInt(creation, 10), name)
-	hash := HashOfItems(elementsToHashForDataId)
-	if !bytes.Equal(id, hash) {
-		log.Printf("ID of Meeting invalid: %v should be: %v", string(id), string(hash[:]))
-		return false
-	}
-	return true
+//checkRollCallId check if id is correct: SHA256('R'||lao_id||creation||name)
+func checkRollCallId(laoId string, creation int64, name string, id []byte) bool {
+	return checkID("R", []byte(laoId), creation, name, id)
 }
 
-//check if id is correct  : SHA256(organizer||creation||name)
-func checkLaoId(organizer []byte, creation int64, name string,id []byte)bool{
-	var elementsToHashForDataId []string
-elementsToHashForDataId = append(elementsToHashForDataId, b64.StdEncoding.EncodeToString(organizer), strconv.FormatInt(creation, 10), name)
-hash := HashOfItems(elementsToHashForDataId)
-if !bytes.Equal(id, hash) {
-log.Printf("ID of createLAO invalid: %v should be: %v", string(id), string(hash[:]))
-return false
+//checkMeetingId check if id is correct: SHA256('M'||lao_id||creation||name)
+func checkMeetingId(laoId string, creation int64, name string, id []byte) bool {
+	return checkID("M", []byte(laoId), creation, name, id)
 }
-return true
+
+//check if id is correct: SHA256(organizer||creation||name)
+func checkLaoId(organizer []byte, creation int64, name string, id []byte) bool {
+	return checkID("", organizer, creation, name, id)
 }
+
 //RollCallOpenedIsValid tell if a Roll call is valid on opening or reopening
 func RollCallOpenedIsValid(data message.DataOpenRollCall, laoId string, rollCall event.RollCall) bool {
 	//we start after the creation and we end after the start
@@ -131,7 +119,7 @@ func RollCallOpenedIsValid(data message.DataOpenRollCall, laoId string, rollCall
 	return checkRollCallId(laoId, rollCall.Creation, rollCall.Name, data.ID)
 }
 
-//RollCallClosedIsValid tell if a rollCall timestamps make sense
+//RollCallClosedIsValid tell if a rollCall timestamps makes sense
 func RollCallClosedIsValid(data message.DataCloseRollCall, laoId string, rollCall event.RollCall) bool {
 	//we start after the creation and we end after the start
 	if data.Start < rollCall.Creation || data.End < data.Start {
@@ -143,7 +131,7 @@ func RollCallClosedIsValid(data message.DataCloseRollCall, laoId string, rollCal
 
 // MessageIsValid checks upon reception that the message data is valid, that is that the ID is correctly computed, and
 // that the signature is correct as well
-// IMPORTANT thing :
+// IMPORTANT :
 //	*	For every message the signature is Sign(data)
 //	*	but for the one in DATAWitnessMessage it is Sign(message_id)
 func MessageIsValid(msg message.Message) error {

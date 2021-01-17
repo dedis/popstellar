@@ -35,7 +35,7 @@ func createKeyPair() ([]byte, ed.PrivateKey) {
 // getCorrectDataCreateLAO generate a example JSON string of the data field of a request for LAO creation
 func getCorrectDataCreateLAO(publicKey []byte, creationStr string) string {
 	publicKeyBase64 := b64.StdEncoding.EncodeToString(publicKey)
-	toHash := lib.ComputeAsJsonArray([]string{publicKeyBase64, creationStr, "my_lao"})
+	toHash := lib.ArrayRepresentation([]string{publicKeyBase64, creationStr, "my_lao"})
 	hashId := sha256.Sum256([]byte(toHash))
 	id := b64.StdEncoding.EncodeToString(hashId[:])
 	data := `{
@@ -49,7 +49,7 @@ func getCorrectDataCreateLAO(publicKey []byte, creationStr string) string {
 	
 		}
 	}`
-	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
+	// strings.Join(strings.Fields(str), "") removes all white spaces (and tabs, etc) from str
 	data = strings.Join(strings.Fields(data), "")
 	return data
 }
@@ -58,7 +58,7 @@ func getCorrectDataCreateLAO(publicKey []byte, creationStr string) string {
 func getCorrectDataCreateMeeting(publicKey []byte) string {
 	creationString := strconv.FormatInt(time.Now().Unix(), 10)
 	startString := strconv.FormatInt(time.Now().Unix()+1000, 10)
-	toHash := lib.ComputeAsJsonArray([]string{"M", b64.StdEncoding.EncodeToString([]byte("LAO_id")), creationString, "my_meeting"})
+	toHash := lib.ArrayRepresentation([]string{"M", b64.StdEncoding.EncodeToString([]byte("LAO_id")), creationString, "my_meeting"})
 	hashId := sha256.Sum256([]byte(toHash))
 	id := b64.StdEncoding.EncodeToString(hashId[:])
 	data := `{
@@ -70,7 +70,7 @@ func getCorrectDataCreateMeeting(publicKey []byte) string {
 		"location": "here",
 		"start": ` + startString + `
 	}`
-	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
+	// strings.Join(strings.Fields(str), "") removes all white spaces (and tabs, etc) from str
 	data = strings.Join(strings.Fields(data), "")
 	return data
 }
@@ -79,7 +79,7 @@ func getCorrectDataCreateMeeting(publicKey []byte) string {
 func getCorrectDataCreateRollCallNow(publicKey []byte) string {
 	creationString := strconv.FormatInt(time.Now().Unix(), 10)
 	startStr := strconv.FormatInt(time.Now().Unix()+1000, 10)
-	toHash := lib.ComputeAsJsonArray([]string{"R", b64.StdEncoding.EncodeToString([]byte("LAO_id")), creationString, "my_roll_call"})
+	toHash := lib.ArrayRepresentation([]string{"R", b64.StdEncoding.EncodeToString([]byte("LAO_id")), creationString, "my_roll_call"})
 	hashId := sha256.Sum256([]byte(toHash))
 	id := b64.StdEncoding.EncodeToString(hashId[:])
 	data := `{
@@ -91,7 +91,7 @@ func getCorrectDataCreateRollCallNow(publicKey []byte) string {
 		"start": ` + startStr + `,
 		"location": "here"
 	}`
-	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
+	// strings.Join(strings.Fields(str), "") removes all white spaces (and tabs, etc) from str
 	data = strings.Join(strings.Fields(data), "")
 	return data
 }
@@ -99,7 +99,7 @@ func getCorrectDataCreateRollCallNow(publicKey []byte) string {
 // getCorrectDataCreateRollCallLater generate a example JSON string of the data field of a request for rollCall creation starting at a scheduled time
 func getCorrectDataCreateRollCallLater(publicKey []byte, creationString string) string {
 	startString := strconv.FormatInt(time.Now().Unix()+1000, 10)
-	toHash := lib.ComputeAsJsonArray([]string{"R", b64.StdEncoding.EncodeToString([]byte("LAO_id")), creationString, "my_roll_call"})
+	toHash := lib.ArrayRepresentation([]string{"R", b64.StdEncoding.EncodeToString([]byte("LAO_id")), creationString, "my_roll_call"})
 	hashId := sha256.Sum256([]byte(toHash))
 	id := b64.StdEncoding.EncodeToString(hashId[:])
 	data := `{
@@ -111,7 +111,7 @@ func getCorrectDataCreateRollCallLater(publicKey []byte, creationString string) 
 		"scheduled": ` + startString + `,
 		"location": "here"
 	}`
-	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
+	// strings.Join(strings.Fields(str), "") removes all white spaces (and tabs, etc) from str
 	data = strings.Join(strings.Fields(data), "")
 	return data
 }
@@ -119,7 +119,7 @@ func getCorrectDataCreateRollCallLater(publicKey []byte, creationString string) 
 // getCorrectDataOpenRollCall generate a example JSON string of the data field of a request for opening a rollCall at a previously scheduled time
 func getCorrectDataOpenRollCall(publicKey []byte, creationString string) string {
 	startString := strconv.FormatInt(time.Now().Unix()+1000, 10)
-	toHash := lib.ComputeAsJsonArray([]string{"R", b64.StdEncoding.EncodeToString([]byte("LAO_id")), creationString, "my_roll_call"})
+	toHash := lib.ArrayRepresentation([]string{"R", b64.StdEncoding.EncodeToString([]byte("LAO_id")), creationString, "my_roll_call"})
 	hashId := sha256.Sum256([]byte(toHash))
 	id := b64.StdEncoding.EncodeToString(hashId[:])
 	data := `{
@@ -128,7 +128,7 @@ func getCorrectDataOpenRollCall(publicKey []byte, creationString string) string 
 		"id": "` + id + `",
 		"start": ` + startString + `
 	}`
-	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
+	// strings.Join(strings.Fields(str), "") removes all white spaces (and tabs, etc) from str
 	data = strings.Join(strings.Fields(data), "")
 	return data
 }
@@ -137,7 +137,7 @@ func getCorrectDataOpenRollCall(publicKey []byte, creationString string) string 
 func getCorrectDataCloseRollCall(publicKey []byte, creationString string) string {
 	startString := strconv.FormatInt(time.Now().Unix()+1000, 10)
 	endString := strconv.FormatInt(time.Now().Unix()+2000, 10)
-	toHash := lib.ComputeAsJsonArray([]string{"R", b64.StdEncoding.EncodeToString([]byte("LAO_id")), creationString, "my_roll_call"})
+	toHash := lib.ArrayRepresentation([]string{"R", b64.StdEncoding.EncodeToString([]byte("LAO_id")), creationString, "my_roll_call"})
 	hashId := sha256.Sum256([]byte(toHash))
 	id := b64.StdEncoding.EncodeToString(hashId[:])
 	data := `{
@@ -159,7 +159,7 @@ func getCorrectDataCloseRollCall(publicKey []byte, creationString string) string
 func getCorrectDataStateLAO(publicKey []byte, creationString string) string {
 	publicKeyB64 := b64.StdEncoding.EncodeToString(publicKey)
 	lastModified := strconv.FormatInt(time.Now().Unix(), 10)
-	toHash := lib.ComputeAsJsonArray([]string{publicKeyB64, creationString, "my_lao"})
+	toHash := lib.ArrayRepresentation([]string{publicKeyB64, creationString, "my_lao"})
 	hashId := sha256.Sum256([]byte(toHash))
 	id := b64.StdEncoding.EncodeToString(hashId[:])
 	data := `{
@@ -205,7 +205,7 @@ func getCorrectPublishOnRoot(publicKey []byte, privateKey ed.PrivateKey, data []
 	publicKeyB64 := b64.StdEncoding.EncodeToString(publicKey)
 	signature := ed.Sign(privateKey, data)
 	signatureB64 := b64.StdEncoding.EncodeToString(signature)
-	toHash := lib.ComputeAsJsonArray([]string{dataB64, signatureB64})
+	toHash := lib.ArrayRepresentation([]string{dataB64, signatureB64})
 	msgId := sha256.Sum256([]byte(toHash))
 	msgIdB64 := b64.StdEncoding.EncodeToString(msgId[:])
 	msg := `{
@@ -237,7 +237,7 @@ func getCorrectPublishGeneral(publicKey []byte, privateKey ed.PrivateKey, data [
 	pkeyB64 := b64.StdEncoding.EncodeToString(publicKey)
 	signature := ed.Sign(privateKey, data)
 	signatureB64 := b64.StdEncoding.EncodeToString(signature)
-	toHash := lib.ComputeAsJsonArray([]string{dataB64, signatureB64})
+	toHash := lib.ArrayRepresentation([]string{dataB64, signatureB64})
 	msgId := sha256.Sum256([]byte(toHash))
 	msgDdB64 := b64.StdEncoding.EncodeToString(msgId[:])
 	msg := `{
@@ -270,7 +270,7 @@ func getExpectedMsgAndChannelForPublishOnRoot(publicKey []byte, privateKey ed.Pr
 	pkeyB64 := b64.StdEncoding.EncodeToString(publicKey)
 	signature := ed.Sign(privateKey, data)
 	signatureB64 := b64.StdEncoding.EncodeToString(signature)
-	toHash := lib.ComputeAsJsonArray([]string{dataB64, signatureB64})
+	toHash := lib.ArrayRepresentation([]string{dataB64, signatureB64})
 	msgId := sha256.Sum256([]byte(toHash))
 	msgIdB64 := b64.StdEncoding.EncodeToString(msgId[:])
 	msg := `{
@@ -307,7 +307,7 @@ func getExpectedMsgAndChannelForPublishGeneral(publicKey []byte, privateKey ed.P
 	pkeyB64 := b64.StdEncoding.EncodeToString(publicKey)
 	signature := ed.Sign(privateKey, data)
 	signatureB64 := b64.StdEncoding.EncodeToString(signature)
-	toHash := lib.ComputeAsJsonArray([]string{dataB64, signatureB64})
+	toHash := lib.ArrayRepresentation([]string{dataB64, signatureB64})
 	msgId := sha256.Sum256([]byte(toHash))
 	msgIdB64 := b64.StdEncoding.EncodeToString(msgId[:])
 	msg := `{
