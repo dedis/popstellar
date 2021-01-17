@@ -10,6 +10,9 @@ import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
 
+/**
+ * Json deserializer for the generic messages
+ */
 public class JsonGenericMessageDeserializer implements JsonDeserializer<GenericMessage> {
 
     private static final String METHOD = "method";
