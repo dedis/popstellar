@@ -17,11 +17,9 @@ import com.github.dedis.student20_pop.ui.event.creation.pickers.DatePickerFragme
 import com.github.dedis.student20_pop.ui.event.creation.pickers.TimePickerFragment;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -54,17 +52,22 @@ abstract class AbstractEventCreationFragment extends Fragment {
     private Calendar selection;
 
     public void setDateAndTimeView(View view, Fragment fragment, FragmentManager fragmentManager) {
-        startDateEditText = view.findViewById(R.id.start_date_editText);
+        startDateEditText = view.findViewById(R.id.start_date_edit_text);
         startDateEditText.setInputType(InputType.TYPE_NULL);
 
-        endDateEditText = view.findViewById(R.id.end_date_editText);
+        endDateEditText = view.findViewById(R.id.end_date_edit_text);
         endDateEditText.setInputType(InputType.TYPE_NULL);
 
-        startTimeEditText = view.findViewById(R.id.start_time_editText);
+        startTimeEditText = view.findViewById(R.id.start_time_edit_text);
         startTimeEditText.setInputType(InputType.TYPE_NULL);
 
-        endTimeEditText = view.findViewById(R.id.end_time_editText);
+        endTimeEditText = view.findViewById(R.id.end_time_edit_text);
         endTimeEditText.setInputType(InputType.TYPE_NULL);
+
+        today.set(Calendar.HOUR, 0);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.MILLISECOND, 0);
 
         startDateEditText.setOnClickListener(v -> {
             // create the datePickerFragment
@@ -180,7 +183,7 @@ abstract class AbstractEventCreationFragment extends Fragment {
                                 (startTime.compareTo(endTime) > 0)) {
                             Toast.makeText(getActivity(),
                                     getString(R.string.start_time_after_end_time_not_allowed),
-                                    Toast.LENGTH_SHORT).show();
+                                    Toast.LENGTH_LONG).show();
                             startTime = null;
                             startTimeEditText.setText("");
                         } else {
@@ -201,7 +204,7 @@ abstract class AbstractEventCreationFragment extends Fragment {
                                 (endTime.compareTo(startTime) < 0)) {
                             Toast.makeText(getActivity(),
                                     getString(R.string.end_time_before_start_time_not_allowed),
-                                    Toast.LENGTH_SHORT).show();
+                                    Toast.LENGTH_LONG).show();
                             endTime = null;
                             endTimeEditText.setText("");
                         } else {
