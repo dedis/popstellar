@@ -12,6 +12,9 @@ import com.google.gson.JsonSerializer;
 
 import java.lang.reflect.Type;
 
+/**
+ * Json serializer and deserializer for the CreateRollCall message
+ */
 public class JsonCreateRollCallSerializer implements JsonSerializer<CreateRollCall>, JsonDeserializer<CreateRollCall> {
 
     private static final String DESCRIPTION = "roll_call_description";
