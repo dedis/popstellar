@@ -119,7 +119,7 @@ type DataCreatePoll struct {
 type DataUpdateLAO struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
-	// hash : (Organizer|| Creation|| Name)" DIFFERENT from create Lao !
+	// hash : (Organizer|| Creation|| Name)" same id as createLao !
 	ID []byte `json:"id"`
 	// Name of the LAO,Meeting...
 	Name string `json:"name"`
