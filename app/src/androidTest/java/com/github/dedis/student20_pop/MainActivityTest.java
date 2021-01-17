@@ -1,10 +1,8 @@
 package com.github.dedis.student20_pop;
 
 import android.Manifest;
-import android.content.pm.PackageManager;
 import android.view.View;
 
-import androidx.core.content.ContextCompat;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.rule.GrantPermissionRule;
@@ -58,7 +56,6 @@ public class MainActivityTest {
     }
 
     @Test
-    @Ignore("TODO: solve issue with emulator")
     public void onClickConnectTest() {
         onView(withId(R.id.tab_connect)).perform(click());
         onView(withId(R.id.fragment_qrcode)).check(matches(isDisplayed()));
