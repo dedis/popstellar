@@ -31,7 +31,7 @@ func TestComputeAsJsonArray(t *testing.T) {
 	tab := []string{}
 	tab = append(tab, s1, s2, s3, s4)
 	expected := "[\"hel\\\"lo1\",\"hel\\\\lo2\",\"\",\"la vida\"]"
-	if expected != ComputeAsJsonArray(tab) {
+	if expected != ArrayRepresentation(tab) {
 		t.Errorf("incorrect output for %s excpected : %s", s3, expected)
 	}
 }
