@@ -1,6 +1,5 @@
 package com.github.dedis.student20_pop.ui;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,8 +11,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
@@ -37,16 +36,14 @@ public class AttendeeFragment extends Fragment {
     private Button propertiesButton;
     private ListView witnessesListView;
 
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_attendee, container, false);
         PoPApplication app = (PoPApplication) (this.getActivity().getApplication());
-        lao = app.getCurrentLao();
-        List<Event> events = app.getEvents(lao);
+        lao = app.getCurrentLaoUnsafe();
+        List<Event> events = lao.getEvents();
         //Display Events
         expandableListView = rootView.findViewById(R.id.exp_list_view);
         listViewEventAdapter = new AttendeeEventExpandableListViewAdapter(this.getActivity(), events);
@@ -57,11 +54,12 @@ public class AttendeeFragment extends Fragment {
         //Display Properties
         View propertiesView = rootView.findViewById(R.id.properties_view);
         ((TextView) propertiesView.findViewById(R.id.organization_name)).setText(lao.getName());
+        SwipeRefreshLayout swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh);
 
-        final WitnessListViewAdapter adapter = new WitnessListViewAdapter(getActivity(), (ArrayList<String>) app.getWitnesses(lao));
+        final WitnessListViewAdapter witnessListViewAdapter = new WitnessListViewAdapter(getActivity(), lao.getWitnesses());
 
         witnessesListView = propertiesView.findViewById(R.id.witness_list);
-        witnessesListView.setAdapter(adapter);
+        witnessesListView.setAdapter(witnessListViewAdapter);
         propertiesButton = rootView.findViewById(R.id.tab_properties);
 
         propertiesButton.setOnClickListener(clicked -> {
@@ -70,6 +68,19 @@ public class AttendeeFragment extends Fragment {
             } else {
                 propertiesView.setVisibility(View.GONE);
             }
+        });
+
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            witnessListViewAdapter.notifyDataSetChanged();
+            listViewEventAdapter.notifyDataSetChanged();
+            if (getFragmentManager() != null) {
+                getFragmentManager()
+                        .beginTransaction()
+                        .detach(this)
+                        .attach(this)
+                        .commit();
+            }
+            swipeRefreshLayout.setRefreshing(false);
         });
 
         return rootView;

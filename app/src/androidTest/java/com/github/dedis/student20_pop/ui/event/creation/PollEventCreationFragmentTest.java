@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.ui;
+package com.github.dedis.student20_pop.ui.event.creation;
 
 import android.view.View;
 
@@ -120,7 +120,7 @@ public class PollEventCreationFragmentTest {
     @Test
     public void scheduleButtonIsEnabledWhenCorrectFieldsAreFilled() {
         onView(withId(R.id.schedule_button)).check(matches(not(isEnabled())));
-        onView(withId(R.id.question)).perform(typeText(question));
+        onView(withId(R.id.question_edit_text)).perform(typeText(question));
         onView(withId(R.id.schedule_button)).check(matches(not(isEnabled())));
         onData(is(instanceOf(String.class))).atPosition(0).onChildView(withId(R.id.choice_edit_text)).perform(typeText(choice1));
         closeSoftKeyboard();
@@ -135,7 +135,7 @@ public class PollEventCreationFragmentTest {
     @Test
     @Ignore
     public void scheduleButtonIsDisabledWhenSomeFieldsAreDeleted() {
-        onView(withId(R.id.question)).perform(typeText(question));
+        onView(withId(R.id.question_edit_text)).perform(typeText(question));
         onData(is(instanceOf(String.class))).atPosition(0).onChildView(withId(R.id.choice_edit_text)).perform(typeText(choice1));
         closeSoftKeyboard();
         onView(withId(R.id.button_add)).perform(click());
@@ -148,7 +148,7 @@ public class PollEventCreationFragmentTest {
 
     @Test
     public void scheduleButtonIsDisabledWhenSomeTextFieldsAreDeleted() {
-        onView(withId(R.id.question)).perform(typeText(question));
+        onView(withId(R.id.question_edit_text)).perform(typeText(question));
         onData(is(instanceOf(String.class))).atPosition(0).onChildView(withId(R.id.choice_edit_text)).perform(typeText(choice1));
         closeSoftKeyboard();
         onView(withId(R.id.button_add)).perform(click());
@@ -160,19 +160,19 @@ public class PollEventCreationFragmentTest {
 
     @Test
     public void scheduleButtonIsDisabledWhenQuestionFieldIsReplacedWithWhiteSpaces() {
-        onView(withId(R.id.question)).perform(typeText(question));
+        onView(withId(R.id.question_edit_text)).perform(typeText(question));
         onData(is(instanceOf(String.class))).atPosition(0).onChildView(withId(R.id.choice_edit_text)).perform(typeText(choice1));
         closeSoftKeyboard();
         onView(withId(R.id.button_add)).perform(click());
         onData(is(instanceOf(String.class))).atPosition(1).onChildView(withId(R.id.choice_edit_text)).perform(typeText(choice2));
         closeSoftKeyboard();
-        onView(withId(R.id.question)).perform(replaceText("    "));
+        onView(withId(R.id.question_edit_text)).perform(replaceText("    "));
         onView(withId(R.id.schedule_button)).check(matches(not(isEnabled())));
     }
 
     @Test
     public void confirmAddsEventToEventList() {
-        onView(withId(R.id.question)).perform(typeText(question));
+        onView(withId(R.id.question_edit_text)).perform(typeText(question));
 
         onData(is(instanceOf(String.class))).atPosition(0).onChildView(withId(R.id.choice_edit_text)).perform(typeText(choice1));
         closeSoftKeyboard();
@@ -186,7 +186,7 @@ public class PollEventCreationFragmentTest {
         activityScenarioRule.getScenario().onActivity(
                 activity -> {
                     PoPApplication app = (PoPApplication) activity.getApplication();
-                    List<Event> events = app.getEvents(app.getCurrentLao());
+                    List<Event> events = app.getCurrentLaoUnsafe().getEvents();
                     List<String> eventsName = events.stream().map(Event::getName).collect(Collectors.toList());
                     Assert.assertThat(question, isIn(eventsName));
                 }

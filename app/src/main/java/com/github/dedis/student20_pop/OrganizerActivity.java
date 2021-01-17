@@ -153,11 +153,13 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
 
         switch (qrCodeScanningType) {
             case ADD_ROLL_CALL_ATTENDEE:
-                Optional<Event> matchingEvent = app.getEvents(app.getCurrentLao())
-                        .parallelStream()
-                        .filter(event -> event.getId().equals(eventId))
-                        .distinct()
-                        .findAny();
+                Optional<Event> matchingEvent = app.getCurrentLao()
+                        .flatMap(lao ->
+                                lao.getEvents()
+                                .parallelStream()
+                                .filter(event -> event.getId().equals(eventId))
+                                .distinct()
+                                .findAny());
 
                 this.runOnUiThread(
                         () -> {
@@ -169,11 +171,11 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
                             }
 
                             if (attendeeHasBeenAdded == ADD_ATTENDEE_SUCCESSFUL) {
-                                Toast.makeText(this, getString(R.string.add_attendee_successful), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, getString(R.string.add_attendee_successful), Toast.LENGTH_LONG).show();
                             } else if (attendeeHasBeenAdded == ADD_ATTENDEE_ALREADY_EXISTS) {
-                                Toast.makeText(getAppContext(), getString(R.string.add_attendee_already_exists), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getAppContext(), getString(R.string.add_attendee_already_exists), Toast.LENGTH_LONG).show();
                             } else {
-                                Toast.makeText(this, getString(R.string.add_attendee_unsuccessful), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, getString(R.string.add_attendee_unsuccessful), Toast.LENGTH_LONG).show();
                             }
                         });
 
