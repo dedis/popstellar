@@ -297,7 +297,7 @@ func (o *organizer) handleCreateRollCall(msg message.Message, canal string, quer
 		Location:    data.Location,
 		Start:       data.Start,
 		Scheduled:   data.Scheduled,
-		Description: data.RollCallDescription,
+		Description: data.Description,
 	}
 	errs = db.CreateChannel(rollCall, o.database)
 	if errs != nil {
@@ -439,10 +439,10 @@ func (o *organizer) handleUpdateProperties(msg message.Message, canal string, qu
 		Channel: []byte(canal),
 	}}
 	err = db.CreateMessage(msg, canal, o.database)
-	if err != nil{
-		return msgAndChan,err
+	if err != nil {
+		return msgAndChan, err
 	}
-	if SigThreshold==0{
+	if SigThreshold == 0 {
 		data, err := parser.ParseDataWitnessMessage(msg.Data)
 		if err != nil {
 			log.Printf("unable to parse received Message in handleUpdateProperties()")
@@ -464,9 +464,9 @@ func (o *organizer) handleUpdateProperties(msg message.Message, canal string, qu
 			log.Printf("could not parse the data to sign into a message.Data structure")
 			return nil, lib.ErrDBFault
 		}
-		queryStr,err := o.applyUpdates(dataToSign, toApplyStruct,data)
-		if err!= nil{
-			return nil,err
+		queryStr, err := o.applyUpdates(dataToSign, toApplyStruct, data)
+		if err != nil {
+			return nil, err
 		}
 		msgAndChan = append(msgAndChan, lib.MessageAndChannel{Channel: []byte(canal), Message: queryStr})
 	}
@@ -568,57 +568,57 @@ func (o *organizer) handleWitnessMessage(msg message.Message, canal string, quer
 		return nil, lib.ErrDBFault
 	}
 	if count == SigThreshold-1 {
-		queryStr,err := o.applyUpdates(dataToSign,toSignStruct,data)
-		if err!= nil{
-			return nil,err
+		queryStr, err := o.applyUpdates(dataToSign, toSignStruct, data)
+		if err != nil {
+			return nil, err
 		}
-		
+
 		msgAndChan = append(msgAndChan, lib.MessageAndChannel{Channel: []byte(canal), Message: queryStr})
 	}
 
 	return msgAndChan, nil
 }
 
-func (o *organizer)  applyUpdates(dataToSign  message.Data,toSignStruct  message.Message, dataWitnessMess message.DataWitnessMessage) (
+func (o *organizer) applyUpdates(dataToSign message.Data, toSignStruct message.Message, dataWitnessMess message.DataWitnessMessage) (
 	queryStr []byte,
 	err error,
-){
+) {
 	var eventStruct interface{}
 
-		switch dataToSign["object"] {
-		case "lao":
-			laoData, err := parser.ParseDataCreateLAO(toSignStruct.Data)
-			if err != nil {
-				log.Printf("unable to parse stored LAO infos in handleWitnessMessage()")
-				return nil, err
-			}
-
-			eventStruct = event.LAO{
-				ID:            string(laoData.ID),
-				Name:          laoData.Name,
-				Creation:      laoData.Creation,
-				OrganizerPKey: string(laoData.Organizer),
-				Witnesses:     lib.NestedByteArrayToStringArray(laoData.Witnesses),
-			}
-			queryStr, err = parser.ComposeBroadcastStateLAO(eventStruct.(event.LAO), laoData, o.PublicKey, dataWitnessMess.Signature)
-			if err != nil {
-				log.Printf("could not compose a state update broadcast message")
-				return nil, err
-			}
-
-		default:
-			log.Printf("witness not able to witness something else than LAO state update for now")
-			return nil, lib.ErrNotYetImplemented
-
-		}
-
-		err = db.UpdateChannel(eventStruct, o.database)
+	switch dataToSign["object"] {
+	case "lao":
+		laoData, err := parser.ParseDataCreateLAO(toSignStruct.Data)
 		if err != nil {
-			log.Printf("error updating the message in the database")
+			log.Printf("unable to parse stored LAO infos in handleWitnessMessage()")
 			return nil, err
 		}
 
-	return queryStr,nil
+		eventStruct = event.LAO{
+			ID:            string(laoData.ID),
+			Name:          laoData.Name,
+			Creation:      laoData.Creation,
+			OrganizerPKey: string(laoData.Organizer),
+			Witnesses:     lib.NestedByteArrayToStringArray(laoData.Witnesses),
+		}
+		queryStr, err = parser.ComposeBroadcastStateLAO(eventStruct.(event.LAO), laoData, o.PublicKey, dataWitnessMess.Signature)
+		if err != nil {
+			log.Printf("could not compose a state update broadcast message")
+			return nil, err
+		}
+
+	default:
+		log.Printf("witness not able to witness something else than LAO state update for now")
+		return nil, lib.ErrNotYetImplemented
+
+	}
+
+	err = db.UpdateChannel(eventStruct, o.database)
+	if err != nil {
+		log.Printf("error updating the message in the database")
+		return nil, err
+	}
+
+	return queryStr, nil
 }
 
 // handleCatchup is the function to handle a received message requesting a catchup on a channel.
@@ -640,12 +640,12 @@ func (o *organizer) handleCatchup(query message.Query) ([]byte, error) {
 func (o *organizer) handleLAOState(msg message.Message) (msgAndChannel []lib.MessageAndChannel, err error) {
 	return nil, lib.ErrInvalidAction
 }
+
 //handleMeetingState is just here to implement the Actor interface. It returns an error as, in the current implementation there
 // is only one organizer, and he's the one sending this message. Hence he should not be receiving it.
 func (o *organizer) handleMeetingState(msg message.Message) (msgAndChannel []lib.MessageAndChannel, err error) {
 	return nil, lib.ErrInvalidAction
 }
-
 
 // handleOpenRollCall is used If the roll-call was started in future mode (see create roll-call), it can be opened using
 // the open roll-call query. If it was closed, but it need to be reopened later (e.g. the organizer forgot to scan
