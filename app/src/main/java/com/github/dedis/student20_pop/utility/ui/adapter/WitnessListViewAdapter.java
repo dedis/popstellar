@@ -90,11 +90,13 @@ public class WitnessListViewAdapter extends BaseAdapter {
         deleteButton.setOnClickListener(
                 clicked -> {
                     AlertDialog.Builder adb = new AlertDialog.Builder(context);
-                    //TODO : Extract stings in string resources
-                    adb.setTitle("Delete ?");
-                    adb.setMessage("Are you sure you want to delete Witness n°" + (position + 1));
+                    //TODO : Verify that the back-end is able to delete the witness
+                    // and delete the witness in the back-end
+                    adb.setTitle(context.getString(R.string.delete_witness_dialog_title));
+                    adb.setMessage(context.getString(R.string.delete_witness_dialog_message, + (position + 1)));
                     adb.setNegativeButton(context.getString(R.string.button_cancel), null);
                     adb.setPositiveButton(context.getString(R.string.button_confirm), (dialog, which) -> {
+                        // TODO make a call to the back-end once the protocol is set
                         witnesses.remove(position);
                         notifyDataSetChanged();
                     });
