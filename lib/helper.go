@@ -29,10 +29,10 @@ func EscapeAndQuote(s string) string {
 	return `"` + str + `"`
 }
 
-// ComputeAsJsonArray creates a json Array with the strings given as arguments. It will escape them with the EscapeAndQuote
+// ArrayRepresentation returns a json Array with the strings given as arguments. It will escape them with the EscapeAndQuote
 // function first.
-// Typically used in hashed to prevent security troubles due to bad concatenation
-func ComputeAsJsonArray(elements []string) string {
+// Typically used in hashes to prevent security troubles due to bad concatenation
+func ArrayRepresentation(elements []string) string {
 	str := "["
 	if len(elements) > 0 {
 		str = "[" + EscapeAndQuote(elements[0])
