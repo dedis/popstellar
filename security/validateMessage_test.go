@@ -16,7 +16,7 @@ import (
 	"student20_pop/parser"
 )
 
-//check that a message containing a createLao is valid at both message and data layer
+//TestMessageIsValidWithoutWitnesses checks that a message containing a createLao is valid at both message and data layer
 func TestMessageIsValidWithoutWitnesses(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
@@ -40,7 +40,7 @@ func TestMessageIsValidWithoutWitnesses(t *testing.T) {
 	}
 }
 
-//check that a witness message is valid
+//TestDataWitnessMessageIsValid checks that a witness message is valid
 func TestDataWitnessMessageIsValid(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
@@ -89,7 +89,7 @@ func TestMessageIsValidWithAssessedWitnesses(t *testing.T) {
 	}
 }
 */
-//check that a message containing a openRollCall is valid at both message and data layer
+//TestRollCallOpenedIsValid checks that a message containing a openRollCall is valid at both message and data layer
 func TestRollCallOpenedIsValid(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
@@ -119,7 +119,7 @@ func TestRollCallOpenedIsValid(t *testing.T) {
 	}
 }
 
-//check that a message containing a createRollCall is valid at both message and data layer
+//TestRollCallClosedIsValid checks that a message containing a createRollCall is valid at both message and data layer
 func TestRollCallClosedIsValid(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
@@ -151,7 +151,7 @@ func TestRollCallClosedIsValid(t *testing.T) {
 	}
 }
 
-//check that a message containing a createRollCall is valid at both message and data layer
+//TestRollCallCreatedIsValid checks that a message containing a createRollCall is valid at both message and data layer
 func TestRollCallCreatedIsValid(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
@@ -176,7 +176,7 @@ func TestRollCallCreatedIsValid(t *testing.T) {
 	}
 }
 
-//check that a message containing a createMeeting is valid at both message and data layer
+//TestMeetingCreatedIsValid checks that a message containing a createMeeting is valid at both message and data layer
 func TestMeetingCreatedIsValid(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
@@ -205,7 +205,7 @@ func TestMeetingCreatedIsValid(t *testing.T) {
 
 //==================invalid Tests========================//
 
-//check that a bad witness message is invalid
+//TestBadDataWitnessMessage checks that a bad witness message is invalid
 func TestBadDataWitnessMessage(t *testing.T) {
 	pubkey, privkey := createKeyPair()
 	witnessSignatures := []message2.ItemWitnessSignatures{}
@@ -287,7 +287,7 @@ func TestBadDataWitnessMessage(t *testing.T) {
 	}
 }
 
-//check that a message containing a closeRollCall with bad timestamps is invalid
+//TestRollCallClosedInvalid checks that a message containing a closeRollCall with bad timestamps is invalid
 func TestRollCallClosedInvalid(t *testing.T) {
 	pubkey, privkey := createKeyPair()
 	attendeesPks := [][]byte{}
@@ -311,7 +311,7 @@ func TestRollCallClosedInvalid(t *testing.T) {
 	}
 }
 
-//check that a message containing a openRollCall with invalid start is invalid at data layer
+//TestOpenRollCallBadFields checks that a message containing a openRollCall with invalid start is invalid at data layer
 func TestOpenRollCallBadFields(t *testing.T) {
 	for i := 0; i < 2; i++ {
 		pubkey, privkey := createKeyPair()
@@ -335,7 +335,7 @@ func TestOpenRollCallBadFields(t *testing.T) {
 	}
 }
 
-//verify that rollcalm is invalidated due to incorrect id,timestamps,
+//TestRollCallCreatedBadFields verifies that roll call is invalidated due to incorrect id,timestamps,
 //and that the message is invalidated due to incorrect private key
 func TestRollCallCreatedBadFields(t *testing.T) {
 	for i := 0; i < 2; i++ {
@@ -413,7 +413,7 @@ func TestRollCallCreatedBadFields(t *testing.T) {
 	}
 }
 
-//verify that the meeting is invalid due to invalid timestamps,name and id
+//TestMeetingBadFields verifies that the meeting is invalid due to invalid timestamps,name and id
 func TestMeetingBadFields(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 2; i++ {
@@ -479,7 +479,7 @@ func TestMeetingBadFields(t *testing.T) {
 		}
 	}
 }
-
+//TestLAOInvalidName verifies that the Lao is invalid due to empty name
 func TestLAOInvalidName(t *testing.T) {
 	pubkey, privkey := createKeyPair()
 	witnessKeys := [][]byte{}
@@ -495,6 +495,7 @@ func TestLAOInvalidName(t *testing.T) {
 		t.Errorf("Created Lao Should be invalid due to empty location %#v", data)
 	}
 }
+//TestLAOInvalidId verifies that the Lao is invalid due to invlaid id
 func TestLAOInvalidId(t *testing.T) {
 	pubkey, privkey := createKeyPair()
 	witnessKeys := [][]byte{}
@@ -510,7 +511,7 @@ func TestLAOInvalidId(t *testing.T) {
 		t.Errorf("Created Lao Should be invalid due to incorrect id %#v", data)
 	}
 }
-
+//TestLAOIInvalidCreationTime verifies that the Lao is invalid due to invlaid creation time
 func TestLAOIInvalidCreationTime(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {

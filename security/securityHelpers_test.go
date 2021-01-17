@@ -15,7 +15,7 @@ type keys struct {
 	private ed.PrivateKey
 	public  []byte
 }
-
+// TestCorrectSignaturesAndCorrectWitnesses tests if VerifyWitnessSignatures works with correct arguments
 func TestCorrectSignaturesAndCorrectWitnesses(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
@@ -29,6 +29,7 @@ func TestCorrectSignaturesAndCorrectWitnesses(t *testing.T) {
 		}
 	}
 }
+// TestCorrectSignaturesAndCorrectWitnesses tests if VerifyWitnessSignatures raises an error if the witnesses are incorrect
 func TestCorrectSignaturesAndBadWitnesses(t *testing.T) {
 	AuthorisedWitnessKeys, jsonArrayOfWitnessSignatures, id, err := witnessesAndSignatures(false, true)
 	if err != nil {
@@ -39,7 +40,7 @@ func TestCorrectSignaturesAndBadWitnesses(t *testing.T) {
 		t.Errorf("The verifier  didn't notice unauthenticated witness")
 	}
 }
-
+// TestCorrectSignaturesAndCorrectWitnesses tests if VerifyWitnessSignatures raises an error if the signatures and the witnesses are incorrect
 func TestBadSignaturesAndBadWitnesses(t *testing.T) {
 	AuthorisedWitnessKeys, jsonArrayOfWitnessSignatures, id, err := witnessesAndSignatures(false, false)
 	if err != nil {
@@ -50,6 +51,7 @@ func TestBadSignaturesAndBadWitnesses(t *testing.T) {
 		t.Errorf("The verifier  didn't notice wrong signature(s) and unauthenticated witness")
 	}
 }
+// TestCorrectSignaturesAndCorrectWitnesses tests if VerifyWitnessSignatures raises an error if the signatures are incorrect
 func TestBadSignaturesAndCorrectWitnesses(t *testing.T) {
 	AuthorisedWitnessKeys, jsonArrayOfWitnessSigantures, id, err := witnessesAndSignatures(false, false)
 	if err != nil {
@@ -100,6 +102,7 @@ func createArrayOfkeys() []keys {
 	}
 	return keyz
 }
+//onlyPublicKeys returns an array containing the public Keys of keys
 func onlyPublicKeys(ks []keys) [][]byte {
 	var acc [][]byte
 	for _, k := range ks {
