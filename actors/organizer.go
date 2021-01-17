@@ -256,16 +256,9 @@ func (o *organizer) handleCreateLAO(msg message.Message, canal string, query mes
 		return nil, errs
 	}
 
-	// as per hub.go, this msgAndChan will never be broadcast as Channel should be on root.
-	// We still create it in case this functionality could change in the future.
-	msgAndChan := []lib.MessageAndChannel{{
-		Message: parser.ComposeBroadcastMessage(query),
-		Channel: []byte(canal),
-	}}
-
 	log.Printf("Sucessfully created lao %s", lao.Name)
-
-	return msgAndChan, nil
+	// the protocol says that LAO creation should not be broadcast on the root channel so no return message.
+	return nil, nil
 }
 
 // handleCreateRollCall is the function to handle a received message requesting a Roll Call Creation.
