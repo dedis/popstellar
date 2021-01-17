@@ -215,6 +215,7 @@ public class OrganizerFragmentTest {
     }
 
     @Test
+    @Ignore("TODO: solve issue with GithubActions Emulator")
     public void confirmEmptyLaoTitleShowsToast() {
         String expectedWarning = getApplicationContext().getString(R.string.exception_message_empty_lao_name);
         onView(withId(R.id.tab_properties)).perform(click());
