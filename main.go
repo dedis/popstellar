@@ -15,7 +15,7 @@ import (
 func main() {
 
 	var mode = flag.String("m", "o", "server mode")
-	var address = flag.String("a", "", "IP on which to run the server")
+	var address = flag.String("a", "127.0.0.1", "IP on which to run the server")
 	var port = flag.Int("p", 8000, "port on which the server listens for websocket connections")
 	var pkey = flag.String("k", "oui", "actor's public key")
 	var file = flag.String("f", "default", "file for the actor to store it's database. Must end with \".db\" ")
@@ -44,16 +44,16 @@ func main() {
 	case "o":
 		h := network.NewOrganizerHub(*pkey, *file)
 		router := http.NewServeMux()
+		router.Handle("/test", network.HomeHandler(tpl, address, port))
 		router.Handle("/", network.NewWSHandler(h))
-		router.Handle("/test", network.HomeHandler(tpl))
 		log.Printf("serving organizer on address " + *address + ":" + strconv.Itoa(*port))
 		log.Fatal(http.ListenAndServe(*address+":"+strconv.Itoa(*port), router)) //here to change the srv address
 
 	case "w":
 		h := network.NewWitnessHub(*pkey, *file)
 		router := http.NewServeMux()
+		router.Handle("/test", network.HomeHandler(tpl, address, port))
 		router.Handle("/", network.NewWSHandler(h))
-		router.Handle("/test", network.HomeHandler(tpl))
 		log.Printf("serving witness on adress " + *address + ":" + strconv.Itoa(*port))
 		log.Fatal(http.ListenAndServe(*address+":"+strconv.Itoa(*port), router)) //here to change the srv address
 
