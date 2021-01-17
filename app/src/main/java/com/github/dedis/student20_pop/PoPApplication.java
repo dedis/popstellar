@@ -125,6 +125,8 @@ public class PoPApplication extends Application {
      * @return the current LAO, unsafe
      */
     public Lao getCurrentLaoUnsafe() {
+        if(currentLao == null)
+            throw new IllegalStateException();
         return currentLao;
     }
 
