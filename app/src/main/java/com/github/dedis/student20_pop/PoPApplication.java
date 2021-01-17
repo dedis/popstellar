@@ -339,12 +339,26 @@ public class PoPApplication extends Application {
 
         @Override
         public void handle(StateLao stateLao) {
+            Lao lao = laos.get(stateLao.getId());
+            if(lao == null)
+                lao = new Lao(stateLao.getName(),
+                        stateLao.getCreation(),
+                        stateLao.getId(),
+                        stateLao.getOrganizer(),
+                        stateLao.getWitnesses(),
+                        new ArrayList<>(),
+                        new ArrayList<>());
+            else {
+                lao.setName(stateLao.getName());
+                lao.setWitnesses(stateLao.getWitnesses());
+            }
 
+            laos.put(lao.getId(), lao);
         }
 
         @Override
         public void handle(StateMeeting stateMeeting) {
-
+            //TODO later in the project
         }
     }
 }
