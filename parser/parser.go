@@ -83,8 +83,9 @@ func ParseData(data string) (message.Data, error) {
 // * object is one of "lao", "message", "meeting"
 // * action is one of "create", update_properties", "state", "witness"
 // * creation and last modified are positive integer
+// WARNING : this does not evolve automatically with the protocol, so update it as it grows
 func dataConstAreValid(m message.Data) bool {
-	// TODO need to update as it grows
+
 	switch m["object"] {
 	case "lao", "message", "meeting":
 		switch m["action"] {
@@ -113,7 +114,6 @@ func dataConstAreValid(m message.Data) bool {
 	}
 	return true
 }
-
 
 // ParseDataCreateLAO parses a json.RawMessage into a message.DataCreateLAO structure.
 func ParseDataCreateLAO(data json.RawMessage) (message.DataCreateLAO, error) {
