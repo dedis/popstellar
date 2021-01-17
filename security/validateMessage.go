@@ -86,37 +86,39 @@ func RollCallCreatedIsValid(data message.DataCreateRollCall, laoId string) bool 
 	return name && creation && location && checkRollCallId(laoId, data.Creation, data.Name, data.ID)
 }
 
-//checkRollCallId check if id is correct  : SHA256('R'||lao_id||creation||name)
+//checkRollCallId check if id is correct: SHA256('R'||lao_id||creation||name)
 func checkRollCallId(laoId string, creation int64, name string, id []byte) bool {
-	var elementsToHashForDataId []string
-	elementsToHashForDataId = append(elementsToHashForDataId, "R", b64.StdEncoding.EncodeToString([]byte(laoId)), strconv.FormatInt(creation, 10), name)
-	hash := HashOfItems(elementsToHashForDataId)
-	if !bytes.Equal(id, hash) {
-		log.Printf("ID of RollCall invalid: %v should be: %v", string(id), string(hash[:]))
-		return false
-	}
-	return true
+	return checkID("R", []byte(laoId), creation, name, id)
 }
 
-//checkMeetingId check if id is correct  : SHA256('M'||lao_id||creation||name)
+//checkMeetingId check if id is correct: SHA256('M'||lao_id||creation||name)
 func checkMeetingId(laoId string, creation int64, name string, id []byte) bool {
-	var elementsToHashForDataId []string
-	elementsToHashForDataId = append(elementsToHashForDataId, "M", b64.StdEncoding.EncodeToString([]byte(laoId)), strconv.FormatInt(creation, 10), name)
-	hash := HashOfItems(elementsToHashForDataId)
-	if !bytes.Equal(id, hash) {
-		log.Printf("ID of Meeting invalid: %v should be: %v", string(id), string(hash[:]))
-		return false
-	}
-	return true
+	return checkID("M", []byte(laoId), creation, name, id)
 }
 
-//check if id is correct  : SHA256(organizer||creation||name)
+//check if id is correct: SHA256(organizer||creation||name)
 func checkLaoId(organizer []byte, creation int64, name string, id []byte) bool {
 	var elementsToHashForDataId []string
 	elementsToHashForDataId = append(elementsToHashForDataId, b64.StdEncoding.EncodeToString(organizer), strconv.FormatInt(creation, 10), name)
 	hash := HashOfItems(elementsToHashForDataId)
 	if !bytes.Equal(id, hash) {
 		log.Printf("ID of createLAO invalid: %v should be: %v", string(id), string(hash[:]))
+		return false
+	}
+	return checkID("", organizer, creation, name, id)
+}
+
+//checkID compares SHA256(firstChar || laoId || creation || name) to id, returns true if they are the same
+// for a LAO use the laoId as "organizer" field
+func checkID(firstChar string, laoId []byte, creation int64, name string, id []byte) bool {
+	var elements []string
+	if firstChar != "" {
+		elements = append(elements, firstChar)
+	}
+	elements = append(elements, b64.StdEncoding.EncodeToString(laoId), strconv.FormatInt(creation, 10), name)
+	hash := HashOfItems(elements)
+	if !bytes.Equal(id, hash) {
+		log.Printf("ID invalid: %v should be: %v", string(id), string(hash[:]))
 		return false
 	}
 	return true
