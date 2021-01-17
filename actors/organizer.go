@@ -431,7 +431,7 @@ func (o *organizer) handleCreatePoll(msg message.Message, canal string, query me
 // It is called by the function handlePublish.
 // The received message had the object field set to "lao" and action field to "update_properties"
 // It will store the received message in the database, and send the change request to every subscriber of this LAO,
-// waiting for Witnesse's validation to make the update.
+// waiting for Witness's validation to make the update.
 func (o *organizer) handleUpdateProperties(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	// if statement to check that if SigThreshold == 0 then directly make the stateUpdate
 	msgAndChan := []lib.MessageAndChannel{{
@@ -449,12 +449,12 @@ func (o *organizer) handleUpdateProperties(msg message.Message, canal string, qu
 			return nil, err
 		}
 		//retrieve message to sign from database
-		toAplly := db.GetMessage([]byte(canal), data.MessageId, o.database)
-		if toAplly == nil {
+		toApply := db.GetMessage([]byte(canal), data.MessageId, o.database)
+		if toApply == nil {
 			return nil, lib.ErrInvalidResource
 		}
 
-		toApplyStruct, err := parser.ParseMessage(toAplly)
+		toApplyStruct, err := parser.ParseMessage(toApply)
 		if err != nil {
 			log.Printf("unable to parse (just) stored Message in handleUpdateProperties()")
 			return nil, lib.ErrRequestDataInvalid
@@ -579,10 +579,10 @@ func (o *organizer) handleWitnessMessage(msg message.Message, canal string, quer
 	return msgAndChan, nil
 }
 
-func (o *organizer) applyUpdates(dataToSign message.Data, toSignStruct message.Message, dataWitnessMess message.DataWitnessMessage) (
-	queryStr []byte,
-	err error,
-) {
+// applyUpdates returns a state update message for the data field of the Message. For now state update messages
+// exists only for LAOs. We should find a trick to avoid giving the dataToSign field, as it's just the message.data field.
+// DataToSign is used only to get the object field.
+func (o *organizer) applyUpdates(dataToSign message.Data, toSignStruct message.Message, dataWitnessMess message.DataWitnessMessage) (queryStr []byte, err error) {
 	var eventStruct interface{}
 
 	switch dataToSign["object"] {
@@ -607,9 +607,8 @@ func (o *organizer) applyUpdates(dataToSign message.Data, toSignStruct message.M
 		}
 
 	default:
-		log.Printf("witness not able to witness something else than LAO state update for now")
+		log.Printf("witnesses not able to witness something else than LAO state update for now")
 		return nil, lib.ErrNotYetImplemented
-
 	}
 
 	err = db.UpdateChannel(eventStruct, o.database)
@@ -651,9 +650,9 @@ func (o *organizer) handleMeetingState(msg message.Message) (msgAndChannel []lib
 // the open roll-call query. If it was closed, but it need to be reopened later (e.g. the organizer forgot to scan
 // the public key of one attendee), then it can reopen it by using the open query. In this case, the action should be
 // set to reopen.
-func (o *organizer) handleOpenRollCall(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
-	if !strings.HasPrefix(chann, "/root/") {
-		log.Printf("invalid channel name for meeting creation: %s", chann)
+func (o *organizer) handleOpenRollCall(msg message.Message, channel string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
+	if !strings.HasPrefix(channel, "/root/") {
+		log.Printf("invalid channel name for meeting creation: %s", channel)
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -678,7 +677,7 @@ func (o *organizer) handleOpenRollCall(msg message.Message, chann string, query 
 	}
 
 	//we provide the id of the channel
-	laoId := strings.TrimPrefix(chann, "/root/")
+	laoId := strings.TrimPrefix(channel, "/root/")
 	if !security.RollCallOpenedIsValid(openRollCall, laoId, rollCallData) {
 		log.Printf("roll call data invalid. Roll call not created")
 		return nil, lib.ErrInvalidResource
@@ -701,14 +700,17 @@ func (o *organizer) handleOpenRollCall(msg message.Message, chann string, query 
 	}
 	msgAndChan := []lib.MessageAndChannel{{
 		Message: parser.ComposeBroadcastMessage(query),
-		Channel: []byte(chann),
+		Channel: []byte(channel),
 	}}
-	return msgAndChan, db.CreateMessage(msg, chann, o.database)
+	return msgAndChan, db.CreateMessage(msg, channel, o.database)
 }
 
-func (o *organizer) handleCloseRollCall(msg message.Message, chann string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
-	if !strings.HasPrefix(chann, "/root/") {
-		log.Printf("invalid channel name for meeting creation: %s", chann)
+// handleCloseRollCall is used to close the roll-call. If it was closed, but it need to be reopened later (e.g. the organizer forgot to scan
+// the public key of one attendee), then it can reopen it by using the open query. In this case, the action should be
+// set to reopen.
+func (o *organizer) handleCloseRollCall(msg message.Message, channel string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
+	if !strings.HasPrefix(channel, "/root/") {
+		log.Printf("invalid channel name for meeting creation: %s", channel)
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -717,7 +719,7 @@ func (o *organizer) handleCloseRollCall(msg message.Message, chann string, query
 		log.Printf("unable to analyse params in handleCloseRollCall()")
 		return nil, lib.ErrRequestDataInvalid
 	}
-	//retrieve roll Call to open from database
+	//retrieve roll Call to close from database
 	storedRollCall := db.GetChannel(closeRollCall.ID, o.database)
 
 	rollCallData := event.RollCall{}
@@ -728,9 +730,9 @@ func (o *organizer) handleCloseRollCall(msg message.Message, chann string, query
 	}
 
 	//we provide the id of the channel
-	laoId := strings.TrimPrefix(chann, "/root/")
+	laoId := strings.TrimPrefix(channel, "/root/")
 	if !security.RollCallClosedIsValid(closeRollCall, laoId, rollCallData) {
-		log.Printf("roll call data invalid. Roll call not created")
+		log.Printf("roll call data invalid. Roll call not closed")
 		return nil, lib.ErrInvalidResource
 	}
 
@@ -741,10 +743,9 @@ func (o *organizer) handleCloseRollCall(msg message.Message, chann string, query
 		LastModified: rollCallData.Creation,
 		Location:     rollCallData.Location,
 		Description:  rollCallData.Description,
-		// we always take the new start (even when it's not a reopening)
-		Start:     closeRollCall.Start,
-		Attendees: closeRollCall.Attendees,
-		End:       closeRollCall.End,
+		Start:        closeRollCall.Start,
+		Attendees:    closeRollCall.Attendees,
+		End:          closeRollCall.End,
 	}
 
 	err = db.UpdateChannel(updatedRollCall, o.database)
@@ -753,7 +754,7 @@ func (o *organizer) handleCloseRollCall(msg message.Message, chann string, query
 		return nil, err
 	}
 
-	err = db.CreateMessage(msg, chann, o.database)
+	err = db.CreateMessage(msg, channel, o.database)
 	if err != nil {
 		log.Printf("unable to store receieved message in the database")
 		return nil, err
@@ -761,7 +762,7 @@ func (o *organizer) handleCloseRollCall(msg message.Message, chann string, query
 
 	msgAndChan := []lib.MessageAndChannel{{
 		Message: parser.ComposeBroadcastMessage(query),
-		Channel: []byte(chann),
+		Channel: []byte(channel),
 	}}
 
 	return msgAndChan, nil
