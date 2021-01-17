@@ -4,6 +4,7 @@ Proof-of-personhood, fall 2020: Android native front-end
 ## Table of contents
 * [Technicalities](#technicalities)
 * [Setup](#setup)
+* [Github Actions](#github-actions)
 * [Coding Standards](#coding-standards)
 
 ## Technicalities
@@ -31,6 +32,15 @@ Open the virtual device and run the following command:
 ```
 ./gradlew connectedCheck
 ```
+
+## Github Actions
+
+This project uses Github Actions as a CI, for more information go to .github/workflows/fe2-android.yml.
+
+This CI builds and runs the Unit Tests. For the Android Test, the [reactivecircus](https://github.com/ReactiveCircus/android-emulator-runner)
+Android Emulator is used, which is limited.
+
+
 ## Coding Standards
 This project follows the [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html).
 ### File Structure
