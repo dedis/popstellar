@@ -73,7 +73,7 @@ public class IdentityFragment extends Fragment {
         //Organization's ID
         final PoPApplication app = ((PoPApplication) this.getActivity().getApplication());
         String key = app.getPerson().getAuthentication();
-        String laoId = app.getCurrentLao().getId();
+        String laoId = app.getCurrentLaoUnsafe().getId();
         String uniqueIdentity = key + laoId;
 
         identityNameEditText.setText(app.getPerson().getName());

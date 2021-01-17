@@ -186,7 +186,7 @@ public class PollEventCreationFragmentTest {
         activityScenarioRule.getScenario().onActivity(
                 activity -> {
                     PoPApplication app = (PoPApplication) activity.getApplication();
-                    List<Event> events = app.getEvents(app.getCurrentLao());
+                    List<Event> events = app.getCurrentLaoUnsafe().getEvents();
                     List<String> eventsName = events.stream().map(Event::getName).collect(Collectors.toList());
                     Assert.assertThat(question, isIn(eventsName));
                 }

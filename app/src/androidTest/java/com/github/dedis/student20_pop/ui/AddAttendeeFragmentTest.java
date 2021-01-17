@@ -16,6 +16,7 @@ import androidx.test.rule.GrantPermissionRule;
 import com.github.dedis.student20_pop.OrganizerActivity;
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
+import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.RollCallEvent;
 import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
@@ -27,6 +28,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -107,7 +109,7 @@ public class AddAttendeeFragmentTest {
             Assert.assertTrue(fragment instanceof QRCodeScanningFragment);
 
             PoPApplication app = (PoPApplication) a.getApplication();
-            final String LAO_ID = app.getCurrentLao().getId();
+            final String LAO_ID = app.getCurrentLaoUnsafe().getId();
 
             RollCallEvent rollCallEvent = new RollCallEvent(
                     "Random Name",
@@ -127,11 +129,13 @@ public class AddAttendeeFragmentTest {
 
             ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_ROLL_CALL_ATTENDEE, rollCallEvent.getId());
 
-            List<String> attendees = app.getEvents(app.getCurrentLao()).parallelStream()
+            List<String> attendees = app.getCurrentLaoUnsafe()
+                    .getEvents()
+                    .parallelStream()
                     .filter(event -> event.getId().equals(rollCallEvent.getId()))
+                    .findFirst()
                     .map(Event::getAttendees)
-                    .collect(Collectors.toList())
-                    .get(0);
+                    .orElseThrow(Error::new);
 
             Assert.assertThat(ATTENDEE_ID, isIn(attendees));
         });
@@ -168,7 +172,7 @@ public class AddAttendeeFragmentTest {
             Assert.assertTrue(fragment instanceof QRCodeScanningFragment);
 
             PoPApplication app = (PoPApplication) a.getApplication();
-            final String LAO_ID = app.getCurrentLao().getId();
+            final String LAO_ID = app.getCurrentLaoUnsafe().getId();
 
             RollCallEvent rollCallEvent = new RollCallEvent(
                     "Random Name",
@@ -186,12 +190,14 @@ public class AddAttendeeFragmentTest {
             final String TEST_IDS = ATTENDEE_ID + LAO_ID;
 
             rollCallEvent.addAttendee(ATTENDEE_ID);
-            
-            List<String> attendees = app.getEvents(app.getCurrentLao()).parallelStream()
+
+            List<String> attendees = app.getCurrentLaoUnsafe()
+                    .getEvents()
+                    .parallelStream()
                     .filter(event -> event.getId().equals(rollCallEvent.getId()))
+                    .findFirst()
                     .map(Event::getAttendees)
-                    .collect(Collectors.toList())
-                    .get(0);
+                    .orElseThrow(Error::new);
 
             Assert.assertThat(ATTENDEE_ID, isIn(attendees));
 

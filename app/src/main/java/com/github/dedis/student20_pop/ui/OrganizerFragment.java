@@ -29,7 +29,6 @@ import com.github.dedis.student20_pop.utility.ui.listener.OnAddWitnessListener;
 import com.github.dedis.student20_pop.utility.ui.listener.OnEventCreatedListener;
 import com.github.dedis.student20_pop.utility.ui.listener.OnEventTypeSelectedListener;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -63,14 +62,14 @@ public class OrganizerFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_organizer, container, false);
 
         PoPApplication app = (PoPApplication) (getActivity().getApplication());
-        lao = app.getCurrentLao();
+        lao = app.getCurrentLaoUnsafe();
 
         ImageButton editPropertiesButton;
         ImageButton addWitnessButton;
         EditText laoNameEditText;
         TextView laoNameTextView;
 
-        List<Event> events = app.getEvents(lao);
+        List<Event> events = lao.getEvents();
 
         SwipeRefreshLayout swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh);
 
@@ -80,7 +79,7 @@ public class OrganizerFragment extends Fragment {
         laoNameTextView = propertiesView.findViewById(R.id.organization_name);
         laoNameTextView.setText(lao.getName());
 
-        final WitnessListViewAdapter witnessListViewAdapter = new WitnessListViewAdapter(getActivity(), (ArrayList<String>) app.getWitnesses(lao));
+        final WitnessListViewAdapter witnessListViewAdapter = new WitnessListViewAdapter(getActivity(), lao.getWitnesses());
         ListView witnessesListView = propertiesView.findViewById(R.id.witness_list);
         witnessesListView.setAdapter(witnessListViewAdapter);
 
@@ -136,9 +135,7 @@ public class OrganizerFragment extends Fragment {
         );
 
         addWitnessButton.setOnClickListener(
-                clicked -> {
-                    onAddWitnessListener.onAddWitnessListener();
-                }
+                clicked -> onAddWitnessListener.onAddWitnessListener()
         );
 
         confirmButton.setOnClickListener(

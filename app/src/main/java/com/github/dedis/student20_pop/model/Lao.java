@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.model;
 
+import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.utility.security.Hash;
 
 import java.time.Instant;
@@ -18,7 +19,7 @@ public final class Lao {
     private final String organizer;
     private List<String> witnesses;
     private List<String> members;
-    private List<String> events;
+    private List<Event> events;
 
     /**
      * Constructor for a LAO
@@ -55,7 +56,7 @@ public final class Lao {
      * @param events    the list of the ids of the events
      */
     private Lao(String name, long time, String id, String organizer, List<String> witnesses,
-                List<String> members, List<String> events) {
+                List<String> members, List<Event> events) {
         this.name = name;
         this.time = time;
         this.id = id;
@@ -125,9 +126,9 @@ public final class Lao {
     }
 
     /**
-     * Returns the list of public keys where each public key belongs to an event.
+     * Returns the list of the events of the lao.
      */
-    public List<String> getEvents() {
+    public List<Event> getEvents() {
         return events;
     }
 
@@ -176,14 +177,44 @@ public final class Lao {
     /**
      * Modify the LAO's list of events
      *
-     * @param events list of public keys of events, can be empty
-     * @throws IllegalArgumentException if the list is null or at least one public key is null
+     * @param events list of events, can be empty
+     * @throws IllegalArgumentException if the list is null or at least one event is null
      */
-    public void setEvents(List<String> events) {
+    public void setEvents(List<Event> events) {
         if (events == null || events.contains(null)) {
             throw new IllegalArgumentException("Trying to add a null event to the LAO " + name);
         }
         this.events = events;
+    }
+
+    /**
+     * Add an event to the LAO
+     *
+     * @param event to add
+     * @return true if the event was added
+     * @throws IllegalArgumentException if event is null
+     */
+    public boolean addEvent(Event event) {
+        if(event == null) {
+            throw new IllegalArgumentException("Trying to add a null event to the LAO " + name);
+        }
+
+        return this.events.add(event);
+    }
+
+    /**
+     * Add a witness to the LAO
+     *
+     * @param witness to add
+     * @return true if the witness was added
+     * @throws IllegalArgumentException if witness is null
+     */
+    public boolean addWitness(String witness) {
+        if(witness == null) {
+            throw new IllegalArgumentException("Trying to add a null witness to the LAO " + name);
+        }
+
+        return witnesses.add(witness);
     }
 
     @Override
