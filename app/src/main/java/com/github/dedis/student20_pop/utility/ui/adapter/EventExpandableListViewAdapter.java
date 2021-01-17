@@ -14,6 +14,7 @@ import com.github.dedis.student20_pop.model.event.EventCategory;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -216,17 +217,16 @@ public abstract class EventExpandableListViewAdapter extends BaseExpandableListA
      * @param eventsMap
      */
     private void putEventsInMap(List<Event> events, HashMap<EventCategory, List<Event>> eventsMap) {
-        //TODO: make the difference clear between PAST and PRESENT
-        //For now, the event are put in the different categories according to their time attribute
-        //Later, according to the start/end-time
         for (Event event : events) {
-            //for now (testing purposes)
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.DATE, -1);
+            long yesterday = (Instant.ofEpochMilli(calendar.getTimeInMillis())).getEpochSecond();
             //later: event.getEndTime() < now
-            if (event.getTime() < (Instant.now().getEpochSecond())) {
+            if (event.getStartTime() < yesterday){
                 eventsMap.get(PAST).add(event);
             }
             //later: event.getStartTime()<now && event.getEndTime() > now
-            else if (event.getTime() <= Instant.now().getEpochSecond()) {
+            else if (event.getStartTime() <= Instant.now().getEpochSecond()) {
                 eventsMap.get(PRESENT).add(event);
             } else { //if e.getStartTime() > now
                 eventsMap.get(FUTURE).add(event);

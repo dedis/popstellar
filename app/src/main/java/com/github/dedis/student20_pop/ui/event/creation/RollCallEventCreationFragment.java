@@ -89,7 +89,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
                         rollCallTitleEditText.getText().toString(),
                         startTimeInSeconds,
                         endTimeInSeconds,
-                        app.getCurrentLao().getId(),
+                        app.getCurrentLaoUnsafe().getId(),
                         new ObservableArrayList<>(),
                         NO_LOCATION,
                         rollCallDescriptionEditText.getText().toString()
@@ -107,7 +107,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
                     rollCallTitleEditText.getText().toString(),
                     startTimeInSeconds,
                     endTimeInSeconds,
-                    app.getCurrentLao().getId(),
+                    app.getCurrentLaoUnsafe().getId(),
                     new ObservableArrayList<>(),
                     NO_LOCATION,
                     rollCallDescriptionEditText.getText().toString()

@@ -99,7 +99,7 @@ public final class PollEventCreationFragment extends AbstractEventCreationFragme
         addDateAndTimeListener(buttonsTextWatcher);
 
         //Question
-        questionEditText = view.findViewById(R.id.question);
+        questionEditText = view.findViewById(R.id.question_edit_text);
         questionEditText.addTextChangedListener(buttonsTextWatcher);
 
         //Radio Buttons: poll type
@@ -138,7 +138,7 @@ public final class PollEventCreationFragment extends AbstractEventCreationFragme
             Event pollEvent = new PollEvent(question,
                     startTimeInSeconds,
                     endTimeInSeconds,
-                    app.getCurrentLao().getId(),
+                    app.getCurrentLaoUnsafe().getId(),
                     NO_LOCATION,
                     choicesList,
                     pollTypeIsOneOfN);

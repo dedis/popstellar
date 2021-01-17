@@ -17,6 +17,7 @@ import android.widget.ViewSwitcher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
@@ -28,7 +29,6 @@ import com.github.dedis.student20_pop.utility.ui.listener.OnAddWitnessListener;
 import com.github.dedis.student20_pop.utility.ui.listener.OnEventCreatedListener;
 import com.github.dedis.student20_pop.utility.ui.listener.OnEventTypeSelectedListener;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -62,14 +62,16 @@ public class OrganizerFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_organizer, container, false);
 
         PoPApplication app = (PoPApplication) (getActivity().getApplication());
-        lao = app.getCurrentLao();
+        lao = app.getCurrentLaoUnsafe();
 
         ImageButton editPropertiesButton;
         ImageButton addWitnessButton;
         EditText laoNameEditText;
         TextView laoNameTextView;
 
-        List<Event> events = app.getEvents(lao);
+        List<Event> events = lao.getEvents();
+
+        SwipeRefreshLayout swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh);
 
         //Layout Properties fields
         ViewSwitcher viewSwitcher = rootView.findViewById(R.id.viewSwitcher);
@@ -77,9 +79,9 @@ public class OrganizerFragment extends Fragment {
         laoNameTextView = propertiesView.findViewById(R.id.organization_name);
         laoNameTextView.setText(lao.getName());
 
-        final WitnessListViewAdapter adapter = new WitnessListViewAdapter(getActivity(), (ArrayList<String>) app.getWitnesses(lao));
+        final WitnessListViewAdapter witnessListViewAdapter = new WitnessListViewAdapter(getActivity(), lao.getWitnesses());
         ListView witnessesListView = propertiesView.findViewById(R.id.witness_list);
-        witnessesListView.setAdapter(adapter);
+        witnessesListView.setAdapter(witnessListViewAdapter);
 
         editPropertiesButton = rootView.findViewById(R.id.edit_button);
         editPropertiesButton
@@ -90,10 +92,10 @@ public class OrganizerFragment extends Fragment {
 
         //Layout Edit Properties fields
         View propertiesEditView = rootView.findViewById(R.id.properties_edit_view);
-        laoNameEditText = propertiesEditView.findViewById(R.id.organization_name_editText);
+        laoNameEditText = propertiesEditView.findViewById(R.id.organization_name_edit_text);
         laoNameEditText.setText(lao.getName());
         ListView witnessesEditListView = propertiesEditView.findViewById(R.id.witness_edit_list);
-        witnessesEditListView.setAdapter(adapter);
+        witnessesEditListView.setAdapter(witnessListViewAdapter);
 
         addWitnessButton = propertiesEditView.findViewById(R.id.add_witness_button);
         Button confirmButton = propertiesEditView.findViewById(R.id.properties_edit_confirm);
@@ -133,16 +135,14 @@ public class OrganizerFragment extends Fragment {
         );
 
         addWitnessButton.setOnClickListener(
-                clicked -> {
-                    onAddWitnessListener.onAddWitnessListener();
-                }
+                clicked -> onAddWitnessListener.onAddWitnessListener()
         );
 
         confirmButton.setOnClickListener(
                 clicked -> {
                     String title = laoNameEditText.getText().toString().trim();
                     if (!title.isEmpty()) {
-                        lao = lao.setName(title);
+                        lao.setName(title);
                         viewSwitcher.showNext();
                         laoNameTextView.setText(laoNameEditText.getText());
                         editPropertiesButton.setVisibility(View.VISIBLE);
@@ -153,6 +153,19 @@ public class OrganizerFragment extends Fragment {
                     }
                 }
         );
+
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            witnessListViewAdapter.notifyDataSetChanged();
+            listViewEventAdapter.notifyDataSetChanged();
+            if (getFragmentManager() != null) {
+                getFragmentManager()
+                        .beginTransaction()
+                        .detach(this)
+                        .attach(this)
+                        .commit();
+            }
+            swipeRefreshLayout.setRefreshing(false);
+        });
 
         return rootView;
     }

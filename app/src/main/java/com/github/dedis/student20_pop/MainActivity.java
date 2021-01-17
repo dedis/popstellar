@@ -84,10 +84,9 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
                     app.getLocalProxy()
                             .createLao(lao.getName(), lao.getTime(), lao.getOrganizer())
                             .thenAccept(code -> {
-                                Person organizer = app.getPerson().setLaos(Collections.singletonList(lao.getId()));
                                 // Set LAO and organizer information locally
-                                ((PoPApplication) getApplication()).setPerson(organizer);
-                                ((PoPApplication) getApplication()).addLao(lao);
+                                app.getPerson().addLao(lao.getId());
+                                ((PoPApplication) getApplication()).createLao(lao);
                                 ((PoPApplication) getApplication()).setCurrentLao(lao);
                                 // Start the Organizer Activity (user is considered an organizer)
                                 Intent intent = new Intent(this, OrganizerActivity.class);

@@ -88,7 +88,7 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
                     meetingTitleEditText.getText().toString(),
                     startTimeInSeconds,
                     endTimeInSeconds,
-                    app.getCurrentLao().getId(),
+                    app.getCurrentLaoUnsafe().getId(),
                     meetingLocationEditText.getText().toString(),
                     meetingDescriptionEditText.getText().toString());
 
