@@ -7,7 +7,7 @@ import (
 
 type Data map[string]interface{}
 
-// []byte are automatically decoded from base64 when unmarshalled, while string (and json.RawMessage) are NOT
+// []byte are automatically decoded from base64 when unmarshalled, while strings (and json.RawMessage) are NOT
 
 /* potential enums, but doesn't typecheck in go, the checks must still be manual, so kinda useless
 type Object string
@@ -43,7 +43,7 @@ type DataCreateMeeting struct {
 	Action string `json:"action"`
 	//ID hash : SHA256('M'||lao_id||creation||name)
 	ID []byte `json:"id"`
-	// Name of the LAO
+	// Name of the Meeting
 	Name string `json:"name"`
 	//Creation's timestamp (Unix) (uint64)
 	Creation int64 `json:"creation"`
@@ -56,12 +56,13 @@ type DataCreateMeeting struct {
 	// arbitrary object, optional
 	Extra string `json:"extra,omitempty"`
 }
+
 type DataCreateRollCall struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
 	//ID hash SHA256('R'||lao_id||creation||name)
 	ID []byte `json:"id"`
-	// Name of the roll ca
+	// Name of the roll call
 	Name string `json:"name"`
 	//Creation's timestamp (Unix) (uint64)
 	Creation int64 `json:"creation"`
@@ -80,7 +81,7 @@ type DataCloseRollCall struct {
 	Action string `json:"action"`
 	//ID hash SHA256('R'||lao_id||creation||name)
 	ID []byte `json:"id"`
-	// Name of the roll ca
+	// Name of the roll call
 	Name string `json:"name"`
 	//start's time timestamp (Unix) (uint64)
 	Start int64 `json:"start"`
@@ -89,20 +90,22 @@ type DataCloseRollCall struct {
 	//List of Attendees' Public keys
 	Attendees [][]byte `json:"attendees"`
 }
+
 type DataOpenRollCall struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
 	//ID hash SHA256('R'||lao_id||creation||name)
 	ID []byte `json:"id"`
-	//The start time correspond to the time the event is opened/reopened
+	//The start time corresponds to the time the event is opened/reopened
 	Start int64 `json:"start"`
 }
+
 type DataCreatePoll struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
 	//ID hash : SHA256(lao_id||creation||name)
 	ID []byte `json:"id"`
-	// Name of the LAO
+	// Name of the poll
 	Name string `json:"name"`
 	//Creation's timestamp (Unix) (uint64)
 	Creation int64 `json:"creation"`
@@ -121,7 +124,7 @@ type DataUpdateLAO struct {
 	Action string `json:"action"`
 	// hash : (Organizer|| Creation|| Name)" DIFFERENT from create Lao !
 	ID []byte `json:"id"`
-	// Name of the LAO,Meeting...
+	// Name of the LAO
 	Name string `json:"name"`
 	//Last modification's timestamp (Unix) (uint64)
 	LastModified int64 `json:"last_modified"`
@@ -134,7 +137,7 @@ type DataStateLAO struct {
 	Action string `json:"action"`
 	// hash : (Organizer|| Creation|| Name)" same id as createLao !
 	ID []byte `json:"id"`
-	// Name of the LAO,Meeting...
+	// Name of the LAO
 	Name string `json:"name"`
 	//Creation's timestamp (Uni	x) (uint64)
 	Creation int64 `json:"creation"`
@@ -155,7 +158,7 @@ type DataStateMeeting struct {
 	Action string `json:"action"`
 	// hash : SHA256('M'||lao_id||creation||name)
 	ID []byte `json:"id"`
-	// Name of the LAO,Meeting...
+	// Name of the Meeting
 	Name string `json:"name"`
 	//Creation timestamp (Unix) (uint64)
 	Creation int64 `json:"creation"`
