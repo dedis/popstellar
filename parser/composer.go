@@ -107,16 +107,16 @@ func composeErrorResponse(err error, query message.Query) ([]byte, error) {
 	var resp interface{}
 	if err == lib.ErrIdNotDecoded {
 		resp = message.ResponseIDNotDecoded{
-			Jsonrpc:       "2.0",
-			ErrorResponse: selectDescriptionError(err),
-			Id:            nil,
+			Jsonrpc: "2.0",
+			Error:   selectDescriptionError(err),
+			Id:      nil,
 		}
 
 	} else {
 		resp = message.Response{
-			Jsonrpc:       "2.0",
-			ErrorResponse: selectDescriptionError(err),
-			Id:            query.Id,
+			Jsonrpc: "2.0",
+			Error:   selectDescriptionError(err),
+			Id:      query.Id,
 		}
 
 	}
