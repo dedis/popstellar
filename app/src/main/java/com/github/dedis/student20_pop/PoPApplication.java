@@ -115,14 +115,14 @@ public class PoPApplication extends Application {
     }
 
     /**
-     * Returns the current LAO.
+     * Returns the current LAO as an Optional
      */
     public Optional<Lao> getCurrentLao() {
         return Optional.ofNullable(currentLao);
     }
 
     /**
-     * @return the current LAO, unsafe
+     * Returns the current LAO. Must only be called if it would not make sense that there is no current Lao.
      */
     public Lao getCurrentLaoUnsafe() {
         if(currentLao == null)
