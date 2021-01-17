@@ -16,6 +16,8 @@ import (
 	"student20_pop/parser"
 )
 
+// we don't check the switch in messageIsValid
+
 //TestMessageIsValidWithoutWitnesses checks that a message containing a createLao is valid at both message and data layer
 func TestMessageIsValidWithoutWitnesses(t *testing.T) {
 	//increase nb of tests

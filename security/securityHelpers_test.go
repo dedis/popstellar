@@ -15,6 +15,9 @@ type keys struct {
 	private ed.PrivateKey
 	public  []byte
 }
+// we don't check  that the key's length is 32 in the verification
+// we don't check the utility function HashOfItems which basically just hash his arguments
+
 // TestCorrectSignaturesAndCorrectWitnesses tests if VerifyWitnessSignatures works with correct arguments
 func TestCorrectSignaturesAndCorrectWitnesses(t *testing.T) {
 	//increase nb of tests
