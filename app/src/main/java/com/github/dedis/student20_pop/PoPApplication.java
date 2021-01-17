@@ -12,6 +12,7 @@ import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.Person;
 import com.github.dedis.student20_pop.model.event.Event;
+import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.meeting.StateMeeting;
 import com.github.dedis.student20_pop.utility.protocol.DataHandler;
@@ -325,6 +326,16 @@ public class PoPApplication extends Application {
                 }
             }
         });
+    }
+
+    /**
+     * Handle received data messages inorder
+     *
+     * @param dataMessages List of received messages
+     */
+    public void handleDataMessages(List<Data> dataMessages) {
+        for(Data data : dataMessages)
+            data.accept(dataHandler);
     }
 
     /**
