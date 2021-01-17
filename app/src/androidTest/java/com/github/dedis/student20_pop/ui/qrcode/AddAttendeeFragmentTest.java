@@ -130,11 +130,12 @@ public class AddAttendeeFragmentTest {
 
             ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_ROLL_CALL_ATTENDEE, rollCallEvent.getId());
 
-            List<String> attendees = app.getCurrentLaoUnsafe()
-                    .getEvents()
-                    .parallelStream()
-                    .filter(event -> event.getId().equals(rollCallEvent.getId()))
-                    .findFirst()
+            List<String> attendees = app.getCurrentLao()
+                    .map(Lao::getEvents)
+                    .flatMap(events ->
+                            events.parallelStream()
+                                    .filter(event -> event.getId().equals(rollCallEvent.getId()))
+                                    .findFirst())
                     .map(Event::getAttendees)
                     .orElseThrow(Error::new);
 
@@ -193,11 +194,12 @@ public class AddAttendeeFragmentTest {
 
             rollCallEvent.addAttendee(ATTENDEE_ID);
 
-            List<String> attendees = app.getCurrentLaoUnsafe()
-                    .getEvents()
-                    .parallelStream()
-                    .filter(event -> event.getId().equals(rollCallEvent.getId()))
-                    .findFirst()
+            List<String> attendees = app.getCurrentLao()
+                    .map(Lao::getEvents)
+                    .flatMap(events ->
+                            events.parallelStream()
+                                    .filter(event -> event.getId().equals(rollCallEvent.getId()))
+                                    .findFirst())
                     .map(Event::getAttendees)
                     .orElseThrow(Error::new);
 
