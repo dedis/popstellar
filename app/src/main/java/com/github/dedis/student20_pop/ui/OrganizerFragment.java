@@ -142,7 +142,7 @@ public class OrganizerFragment extends Fragment {
                 clicked -> {
                     String title = laoNameEditText.getText().toString().trim();
                     if (!title.isEmpty()) {
-                        lao = lao.setName(title);
+                        lao.setName(title);
                         viewSwitcher.showNext();
                         laoNameTextView.setText(laoNameEditText.getText());
                         editPropertiesButton.setVisibility(View.VISIBLE);

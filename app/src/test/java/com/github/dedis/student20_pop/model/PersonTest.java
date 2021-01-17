@@ -54,7 +54,8 @@ public class PersonTest {
 
     @Test
     public void setAndGetLaosTest() {
-        assertThat((person1.setLaos(laos)).getLaos(), is(laos));
+        person1.setLaos(laos);
+        assertThat((person1.getLaos()), is(laos));
     }
 
     @Test
