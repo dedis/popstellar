@@ -49,7 +49,7 @@ func getCorrectDataCreateLAO(publicKey []byte, creationStr string) string {
 	
 		}
 	}`
-	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
+	// strings.Join(strings.Fields(str), "") removes all white spaces (and tabs, etc) from str
 	data = strings.Join(strings.Fields(data), "")
 	return data
 }
@@ -70,7 +70,7 @@ func getCorrectDataCreateMeeting(publicKey []byte) string {
 		"location": "here",
 		"start": ` + startString + `
 	}`
-	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
+	// strings.Join(strings.Fields(str), "") removes all white spaces (and tabs, etc) from str
 	data = strings.Join(strings.Fields(data), "")
 	return data
 }
@@ -91,7 +91,7 @@ func getCorrectDataCreateRollCallNow(publicKey []byte) string {
 		"start": ` + startStr + `,
 		"location": "here"
 	}`
-	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
+	// strings.Join(strings.Fields(str), "") removes all white spaces (and tabs, etc) from str
 	data = strings.Join(strings.Fields(data), "")
 	return data
 }
@@ -111,7 +111,7 @@ func getCorrectDataCreateRollCallLater(publicKey []byte, creationString string) 
 		"scheduled": ` + startString + `,
 		"location": "here"
 	}`
-	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
+	// strings.Join(strings.Fields(str), "") removes all white spaces (and tabs, etc) from str
 	data = strings.Join(strings.Fields(data), "")
 	return data
 }
@@ -128,7 +128,7 @@ func getCorrectDataOpenRollCall(publicKey []byte, creationString string) string 
 		"id": "` + id + `",
 		"start": ` + startString + `
 	}`
-	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
+	// strings.Join(strings.Fields(str), "") removes all white spaces (and tabs, etc) from str
 	data = strings.Join(strings.Fields(data), "")
 	return data
 }
