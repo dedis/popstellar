@@ -9,7 +9,7 @@ import java.time.Instant;
 import java.util.Objects;
 
 /**
- * Class modeling an abstract Event
+ * Class modeling an Event
  */
 public class Event {
 
