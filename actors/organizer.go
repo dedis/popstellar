@@ -438,7 +438,39 @@ func (o *organizer) handleUpdateProperties(msg message.Message, canal string, qu
 		Message: parser.ComposeBroadcastMessage(query),
 		Channel: []byte(canal),
 	}}
-	return msgAndChan, db.CreateMessage(msg, canal, o.database)
+	err = db.CreateMessage(msg, canal, o.database)
+	if err != nil{
+		return msgAndChan,err
+	}
+	if SigThreshold==0{
+		data, err := parser.ParseDataWitnessMessage(msg.Data)
+		if err != nil {
+			log.Printf("unable to parse received Message in handleUpdateProperties()")
+			return nil, err
+		}
+		//retrieve message to sign from database
+		toAplly := db.GetMessage([]byte(canal), data.MessageId, o.database)
+		if toAplly == nil {
+			return nil, lib.ErrInvalidResource
+		}
+
+		toApplyStruct, err := parser.ParseMessage(toAplly)
+		if err != nil {
+			log.Printf("unable to parse (just) stored Message in handleUpdateProperties()")
+			return nil, lib.ErrRequestDataInvalid
+		}
+		dataToSign, err := parser.ParseData(string(toApplyStruct.Data))
+		if err != nil {
+			log.Printf("could not parse the data to sign into a message.Data structure")
+			return nil, lib.ErrDBFault
+		}
+		queryStr,err := o.applyUpdates(dataToSign, toApplyStruct,data)
+		if err!= nil{
+			return nil,err
+		}
+		msgAndChan = append(msgAndChan, lib.MessageAndChannel{Channel: []byte(canal), Message: queryStr})
+	}
+	return msgAndChan, nil
 }
 
 // handleWitnessMessage is the function to handle a received message validating a previously received message.
@@ -535,11 +567,24 @@ func (o *organizer) handleWitnessMessage(msg message.Message, canal string, quer
 		log.Printf("could not parse the data to sign into a message.Data structure")
 		return nil, lib.ErrDBFault
 	}
-
-	var eventStruct interface{}
-	var queryStr []byte
-
 	if count == SigThreshold-1 {
+		queryStr,err := o.applyUpdates(dataToSign,toSignStruct,data)
+		if err!= nil{
+			return nil,err
+		}
+		
+		msgAndChan = append(msgAndChan, lib.MessageAndChannel{Channel: []byte(canal), Message: queryStr})
+	}
+
+	return msgAndChan, nil
+}
+
+func (o *organizer)  applyUpdates(dataToSign  message.Data,toSignStruct  message.Message, dataWitnessMess message.DataWitnessMessage) (
+	queryStr []byte,
+	err error,
+){
+	var eventStruct interface{}
+
 		switch dataToSign["object"] {
 		case "lao":
 			laoData, err := parser.ParseDataCreateLAO(toSignStruct.Data)
@@ -555,7 +600,7 @@ func (o *organizer) handleWitnessMessage(msg message.Message, canal string, quer
 				OrganizerPKey: string(laoData.Organizer),
 				Witnesses:     lib.NestedByteArrayToStringArray(laoData.Witnesses),
 			}
-			queryStr, err = parser.ComposeBroadcastStateLAO(eventStruct.(event.LAO), laoData, o.PublicKey, data.Signature)
+			queryStr, err = parser.ComposeBroadcastStateLAO(eventStruct.(event.LAO), laoData, o.PublicKey, dataWitnessMess.Signature)
 			if err != nil {
 				log.Printf("could not compose a state update broadcast message")
 				return nil, err
@@ -572,11 +617,8 @@ func (o *organizer) handleWitnessMessage(msg message.Message, canal string, quer
 			log.Printf("error updating the message in the database")
 			return nil, err
 		}
-	}
 
-	msgAndChan = append(msgAndChan, lib.MessageAndChannel{Channel: []byte(canal), Message: queryStr})
-
-	return msgAndChan, nil
+	return queryStr,nil
 }
 
 // handleCatchup is the function to handle a received message requesting a catchup on a channel.
