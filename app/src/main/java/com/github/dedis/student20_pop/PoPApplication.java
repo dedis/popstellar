@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -7,6 +8,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import androidx.annotation.VisibleForTesting;
+
+import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.Person;
 import com.github.dedis.student20_pop.model.event.Event;
@@ -29,10 +33,10 @@ import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD
  * Class modelling the application : a unique person associated with LAOs
  */
 public class PoPApplication extends Application {
+
     public static final String TAG = PoPApplication.class.getSimpleName();
     public static final String SP_PERSON_ID_KEY = "SHARED_PREFERENCES_PERSON_ID";
     public static final String USERNAME = "USERNAME";
-
     private static final URI LOCAL_BACKEND_URI = URI.create("ws://10.0.2.2:2000");
 
     private final Map<URI, HighLevelProxy> openSessions = new HashMap<>();
@@ -45,17 +49,6 @@ public class PoPApplication extends Application {
     //represents the Lao which we are connected to, can be null
     private Lao currentLao;
     private HighLevelProxy localProxy;
-
-    //TODO: person/laos used for testing when we don't have a backend connected
-    private Map<Lao, List<Event>> dummyLaoEventsMap;
-
-
-    /**
-     * @return PoP Application Context
-     */
-    public static Context getAppContext() {
-        return appContext;
-    }
 
     @Override
     public void onCreate() {
@@ -91,61 +84,43 @@ public class PoPApplication extends Application {
             }
         }
 
+        activateTestingValues(); //comment this line when testing with a back-end
+        laoWitnessMap.put(currentLao, new ArrayList<>());
         localProxy = getProxy(LOCAL_BACKEND_URI);
     }
 
-    /**
-     * Start the routine the will purge periodically every open session to close timeout requests
-     *
-     * @param handler to run the routine on
-     */
-    private void startPurgeRoutine(Handler handler) {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (openSessions) {
-                    openSessions.values().forEach(hlp -> hlp.lowLevel().purgeTimeoutRequests());
-                    handler.postDelayed(this, LowLevelProxy.REQUEST_TIMEOUT);
-                }
-            }
-        });
-    }
-
+    @SuppressLint("ApplySharedPref")
     @Override
     public void onTerminate() {
         super.onTerminate();
-
         SharedPreferences sp = this.getSharedPreferences(TAG, Context.MODE_PRIVATE);
-
-        // Use commit for information to be stored immediately
+        // Use commit instead of apply for information to be stored immediately
         sp.edit().putString(SP_PERSON_ID_KEY, person.getId()).commit();
     }
 
     /**
-     * @return Person corresponding to the user
+     * Returns PoP Application Context.
+     */
+    public static Context getAppContext() {
+        return appContext;
+    }
+
+    /**
+     * Returns Person corresponding to the user.
      */
     public Person getPerson() {
         return person;
     }
 
     /**
-     * @param person to be set for this Application, can only be done once
-     */
-    public void setPerson(Person person) {
-        if (person != null) {
-            this.person = person;
-        }
-    }
-
-    /**
-     * @return the current lao
+     * Returns the current LAO.
      */
     public Optional<Lao> getCurrentLao() {
         return Optional.ofNullable(currentLao);
     }
 
     /**
-     * @return the current lao
+     * @return the current LAO, unsafe
      */
     public Lao getCurrentLaoUnsafe() {
         return currentLao;
@@ -157,7 +132,7 @@ public class PoPApplication extends Application {
      * @param lao
      */
     public void setCurrentLao(Lao lao) {
-        currentLao = lao;
+        this.currentLao = lao;
     }
 
     /**
@@ -168,7 +143,7 @@ public class PoPApplication extends Application {
     }
 
     /**
-     * Get witnesses of current LAO
+     * Get witnesses of the current LAO
      *
      * @return lao's corresponding list of witnesses
      */
@@ -177,16 +152,15 @@ public class PoPApplication extends Application {
     }
 
     /**
-     * Get the proxy of the local device's backend
-     *
-     * @return the proxy
+     * Returns the proxy of the local device's backend.
      */
     public HighLevelProxy getLocalProxy() {
         return localProxy;
     }
 
     /**
-     * Get the proxy for the given host. If the connection was not established yet, creates it.
+     * Get the proxy for the given host
+     * If the connection was not established yet, creates it.
      *
      * @param host of the backend
      * @return the proxy
@@ -204,13 +178,33 @@ public class PoPApplication extends Application {
     }
 
     /**
-     * @param lao to add to the app
+     * Add a new LAO to the app
+     *
+     * @param lao to add
      */
     public void createLao(Lao lao) {
         laos.put(lao.getId(), lao);
     }
 
+    /**
+     * Set a Person for this Application, can only be done once
+     *
+     * @param person to be set for this Application
+     */
+    public void setPerson(Person person) {
+        if (person != null) {
+            this.person = person;
+        }
+    }
 
+    /**
+     * Sets the current LAO of this Application
+     *
+     * @param lao current LAO to be set
+     */
+    public void setCurrentLao(Lao lao) {
+        this.currentLao = lao;
+    }
 
     /**
      * @param event to be added to the current lao
@@ -223,6 +217,8 @@ public class PoPApplication extends Application {
     }
 
     /**
+     * Add a witness to the current LAO
+     *
      * @param witness add witness to current lao
      * @return ADD_WITNESS_SUCCESSFUL if witness has been added
      * ADD_WITNESS_ALREADY_EXISTS if witness already exists
@@ -232,6 +228,8 @@ public class PoPApplication extends Application {
     }
 
     /**
+     * Add a witness to a specified LAO
+     *
      * @param lao     of the new witness
      * @param witness id to add on the list of witnesses for the LAO
      * @return ADD_WITNESS_SUCCESSFUL if witness has been added
@@ -250,6 +248,8 @@ public class PoPApplication extends Application {
     }
 
     /**
+     * Add witnesses to the current LAO
+     *
      * @param witnesses add witness to current lao
      * @return corresponding result for each witness in the list
      */
@@ -258,6 +258,8 @@ public class PoPApplication extends Application {
     }
 
     /**
+     * Add witnesses to a specified LAO
+     *
      * @param witnesses add witness to current lao
      * @return corresponding result for each witness in the list
      */
@@ -267,6 +269,52 @@ public class PoPApplication extends Application {
             results.add(addWitness(lao, witness));
         }
         return results;
+    }
+
+    /**
+     * Only useful when testing without a back-end.
+     */
+    public void activateTestingValues() {
+        currentLao = new Lao("LAO I just joined", person.getId());
+        dummyLaoEventMap();
+    }
+
+    /**
+     * This method creates a map for testing, when no backend is connected.
+     */
+    private void dummyLaoEventMap() {
+        List<Event> events = new ArrayList<>();
+        Event event1 = new Event("Future Event 1", new Keys().getPublicKey(), 2617547969L, "EPFL", POLL);
+        Event event2 = new Event("Present Event 1", new Keys().getPublicKey(), Instant.now().getEpochSecond(), "Somewhere", DISCUSSION);
+        Event event3 = new Event("Past Event 1", new Keys().getPublicKey(), 1481643086L, "Here", MEETING);
+        events.add(event1);
+        events.add(event2);
+        events.add(event3);
+
+        String notMyPublicKey = new Keys().getPublicKey();
+
+        laoEventsMap.put(currentLao, events);
+        laoEventsMap.put(new Lao("LAO 1", notMyPublicKey), events);
+        laoEventsMap.put(new Lao("LAO 2", notMyPublicKey), events);
+        laoEventsMap.put(new Lao("My LAO 3", person.getId()), events);
+        laoEventsMap.put(new Lao("LAO 4", notMyPublicKey), events);
+    }
+
+    /**
+     * Start the routine the will purge periodically every open session to close timeout requests
+     *
+     * @param handler to run the routine on
+     */
+    private void startPurgeRoutine(Handler handler) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (openSessions) {
+                    openSessions.values().forEach(hlp -> hlp.lowLevel().purgeTimeoutRequests());
+                    handler.postDelayed(this, LowLevelProxy.REQUEST_TIMEOUT);
+                }
+            }
+        });
     }
 
     /**

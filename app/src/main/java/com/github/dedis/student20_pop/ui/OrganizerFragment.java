@@ -92,7 +92,7 @@ public class OrganizerFragment extends Fragment {
 
         //Layout Edit Properties fields
         View propertiesEditView = rootView.findViewById(R.id.properties_edit_view);
-        laoNameEditText = propertiesEditView.findViewById(R.id.organization_name_editText);
+        laoNameEditText = propertiesEditView.findViewById(R.id.organization_name_edit_text);
         laoNameEditText.setText(lao.getName());
         ListView witnessesEditListView = propertiesEditView.findViewById(R.id.witness_edit_list);
         witnessesEditListView.setAdapter(witnessListViewAdapter);

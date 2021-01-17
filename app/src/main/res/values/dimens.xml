@@ -5,7 +5,6 @@
     <dimen name="guideline_horizontal_tab">0.08</dimen>
     <dimen name="guideline_vertical_tab_home">0.33</dimen>
     <dimen name="guideline_vertical_tab_connect">0.66</dimen>
-    <dimen name="margin_tab">60dp</dimen>
 
     <!-- Text -->
     <dimen name="margin_text">32dp</dimen>

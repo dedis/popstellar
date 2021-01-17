@@ -297,7 +297,7 @@ public class ProtocolTest {
                     waiter.resume();
                 });
 
-        waiter.await(TEST_TIMEOUT, 8);
+        waiter.await(TEST_TIMEOUT, 7);
         server.stop();
     }
 

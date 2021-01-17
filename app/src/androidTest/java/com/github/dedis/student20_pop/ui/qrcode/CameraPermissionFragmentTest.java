@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.ui;
+package com.github.dedis.student20_pop.ui.qrcode;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
