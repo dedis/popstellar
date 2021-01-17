@@ -6,21 +6,21 @@
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_horizontal_tab"
+        android:id="@+id/guideline_horizontal_tab_identity"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_vertical_tab_home"
+        android:id="@+id/guideline_vertical_tab_identity"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="@dimen/guideline_vertical_tab_home" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_vertical_tab"
+        android:id="@+id/guideline_vertical_tab_properties"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -32,9 +32,9 @@
         android:layout_height="0dp"
         android:onClick="onClick"
         android:text="@string/tab_identity"
-        app:layout_constraintBottom_toTopOf="@+id/guideline_horizontal_tab"
-        app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_tab"
-        app:layout_constraintStart_toEndOf="@+id/guideline_vertical_tab_home"
+        app:layout_constraintBottom_toTopOf="@+id/guideline_horizontal_tab_identity"
+        app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_tab_properties"
+        app:layout_constraintStart_toEndOf="@+id/guideline_vertical_tab_identity"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
@@ -43,9 +43,9 @@
         android:layout_height="0dp"
         android:onClick="onClick"
         android:text="@string/tab_properties"
-        app:layout_constraintBottom_toTopOf="@id/guideline_horizontal_tab"
+        app:layout_constraintBottom_toTopOf="@id/guideline_horizontal_tab_identity"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline_vertical_tab"
+        app:layout_constraintStart_toStartOf="@+id/guideline_vertical_tab_properties"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

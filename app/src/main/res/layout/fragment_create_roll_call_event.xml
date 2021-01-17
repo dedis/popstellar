@@ -34,11 +34,13 @@
             android:id="@+id/roll_call_title_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/roll_call_title_required" />
+            android:hint="@string/roll_call_title_required"
+            android:inputType="text"
+            android:autofillHints="false" />
     </LinearLayout>
 
     <include
-        layout="@layout/enter_date_layout"
+        layout="@layout/layout_enter_date"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constrainedHeight="true"
@@ -46,7 +48,7 @@
         app:layout_constraintTop_toBottomOf="@id/roll_call_title" />
 
     <include
-        layout="@layout/enter_time_layout"
+        layout="@layout/layout_enter_time"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constrainedHeight="true"
@@ -70,7 +72,8 @@
             android:gravity="start"
             android:hint="@string/event_description"
             android:inputType="textMultiLine"
-            android:maxLines="10" />
+            android:maxLines="10"
+            android:autofillHints="false" />
 
     </LinearLayout>
 
@@ -83,24 +86,27 @@
         app:layout_constraintRight_toRightOf="parent">
 
         <Button
-            android:id="@+id/roll_call_open"
+            android:id="@+id/roll_call_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:enabled="false"
-            android:text="@string/roll_call_open_attendees" />
+            android:text="@string/cancel"
+            style="@style/Theme.AppCompat" />
 
         <Button
             android:id="@+id/roll_call_confirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="false"
-            android:text="@string/confirm" />
+            android:text="@string/confirm"
+            style="@style/Theme.AppCompat" />
 
         <Button
-            android:id="@+id/roll_call_cancel"
+            android:id="@+id/roll_call_open"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/cancel" />
+            android:enabled="false"
+            android:text="@string/roll_call_open_attendees"
+            style="@style/Theme.AppCompat"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

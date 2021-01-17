@@ -99,7 +99,7 @@ public final class PollEventCreationFragment extends AbstractEventCreationFragme
         addDateAndTimeListener(buttonsTextWatcher);
 
         //Question
-        questionEditText = view.findViewById(R.id.question);
+        questionEditText = view.findViewById(R.id.question_edit_text);
         questionEditText.addTextChangedListener(buttonsTextWatcher);
 
         //Radio Buttons: poll type
