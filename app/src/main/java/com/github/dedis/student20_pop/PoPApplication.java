@@ -206,9 +206,11 @@ public class PoPApplication extends Application {
     /**
      * @param lao to add to the app
      */
-    public void addLao(Lao lao) {
+    public void createLao(Lao lao) {
         laos.put(lao.getId(), lao);
     }
+
+
 
     /**
      * @param event to be added to the current lao

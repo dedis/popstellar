@@ -13,10 +13,10 @@ import java.util.Objects;
  */
 public final class Lao {
 
-    private final String name;
     private final long time;
     private final String id;
     private final String organizer;
+    private String name;
     private List<String> witnesses;
     private List<String> members;
     private List<Event> events;
@@ -34,6 +34,7 @@ public final class Lao {
         } else if (name.trim().isEmpty()) {
             throw new IllegalArgumentException("Trying to set an empty name for the LAO");
         }
+
         this.name = name.trim();
         this.time = Instant.now().getEpochSecond();
         this.id = Hash.hash(organizer, time, name);
@@ -136,16 +137,16 @@ public final class Lao {
      * Modifying the name of the LAO creates a new id and attestation
      *
      * @param name new name for the LAO, can be empty
-     * @return new LAO with the new name, id and attestation
      * @throws IllegalArgumentException if the name is null
      */
-    public Lao setName(String name) {
+    public void setName(String name) {
         if (name == null) {
             throw new IllegalArgumentException("Trying to set null as the name of the LAO");
         } else if (name.trim().isEmpty()) {
             throw new IllegalArgumentException("Trying to set an empty name for the LAO");
         }
-        return new Lao(name, time, id, organizer, witnesses, members, events);
+
+        this.name = name;
     }
 
     /**
