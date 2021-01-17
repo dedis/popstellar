@@ -185,7 +185,7 @@ public final class Lao {
         if (events == null || events.contains(null)) {
             throw new IllegalArgumentException("Trying to add a null event to the LAO " + name);
         }
-        this.events = events;
+        this.events = new ArrayList<>(events);
     }
 
     /**
@@ -200,7 +200,10 @@ public final class Lao {
             throw new IllegalArgumentException("Trying to add a null event to the LAO " + name);
         }
 
-        return this.events.add(event);
+        if(events.contains(event))
+            return false;
+
+        return events.add(event);
     }
 
     /**
@@ -214,6 +217,9 @@ public final class Lao {
         if(witness == null) {
             throw new IllegalArgumentException("Trying to add a null witness to the LAO " + name);
         }
+
+        if(witnesses.contains(witness))
+            return false;
 
         return witnesses.add(witness);
     }
