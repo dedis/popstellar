@@ -30,32 +30,6 @@ public class AttendeeActivityTest {
     public ActivityScenarioRule<AttendeeActivity> activityScenarioRule =
             new ActivityScenarioRule<>(AttendeeActivity.class);
 
-    @Before
-    public void launchActivity() {
-        activityScenarioRule.getScenario().onActivity(
-                activity -> {
-                    PoPApplication app = (PoPApplication) activity.getApplication();
-
-                    String notMyPublicKey = new Keys().getPublicKey();
-                    Lao lao1 = new Lao("LAO 1", notMyPublicKey);
-                    Lao lao2 = new Lao("LAO 2", notMyPublicKey);
-                    Lao lao3 = new Lao("My LAO 3", app.getPerson().getId());
-
-                    List<Event> events2 = Arrays.asList(
-                            new Event("Future Event 1", lao2.getId(), 2617547969L, "EPFL", POLL),
-                            new Event("Present Event 1", lao2.getId(), Instant.now().getEpochSecond(), "Somewhere", DISCUSSION),
-                            new Event("Past Event 1", lao2.getId(), 1481643086L, "Here", MEETING));
-
-                    lao2.setEvents(events2);
-
-                    app.createLao(lao1);
-                    app.createLao(lao2);
-                    app.createLao(lao3);
-                    app.setCurrentLao(lao2);
-                }
-        );
-    }
-
     @Test
     public void onClickHomeTest() {
         onView(withId(R.id.tab_home)).perform(click());

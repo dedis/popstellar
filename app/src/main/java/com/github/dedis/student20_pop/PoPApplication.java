@@ -8,8 +8,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import androidx.annotation.VisibleForTesting;
-
 import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.Person;
@@ -20,7 +18,9 @@ import com.github.dedis.student20_pop.utility.protocol.ProtocolProxyFactory;
 import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
 
 import java.net.URI;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +28,9 @@ import java.util.Optional;
 
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_ALREADY_EXISTS;
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_SUCCESSFUL;
+import static com.github.dedis.student20_pop.model.event.EventType.DISCUSSION;
+import static com.github.dedis.student20_pop.model.event.EventType.MEETING;
+import static com.github.dedis.student20_pop.model.event.EventType.POLL;
 
 /**
  * Class modelling the application : a unique person associated with LAOs
@@ -85,7 +88,6 @@ public class PoPApplication extends Application {
         }
 
         activateTestingValues(); //comment this line when testing with a back-end
-        laoWitnessMap.put(currentLao, new ArrayList<>());
         localProxy = getProxy(LOCAL_BACKEND_URI);
     }
 
@@ -124,15 +126,6 @@ public class PoPApplication extends Application {
      */
     public Lao getCurrentLaoUnsafe() {
         return currentLao;
-    }
-
-    /**
-     * Sets the current lao
-     *
-     * @param lao
-     */
-    public void setCurrentLao(Lao lao) {
-        this.currentLao = lao;
     }
 
     /**
@@ -241,9 +234,9 @@ public class PoPApplication extends Application {
         // If witness has been added return true, otherwise false
 
         if(lao.addWitness(witness)) {
-            return ADD_WITNESS_ALREADY_EXISTS;
-        } else {
             return ADD_WITNESS_SUCCESSFUL;
+        } else {
+            return ADD_WITNESS_ALREADY_EXISTS;
         }
     }
 
@@ -276,28 +269,59 @@ public class PoPApplication extends Application {
      */
     public void activateTestingValues() {
         currentLao = new Lao("LAO I just joined", person.getId());
-        dummyLaoEventMap();
+        dummyLaos();
     }
 
     /**
      * This method creates a map for testing, when no backend is connected.
      */
-    private void dummyLaoEventMap() {
-        List<Event> events = new ArrayList<>();
-        Event event1 = new Event("Future Event 1", new Keys().getPublicKey(), 2617547969L, "EPFL", POLL);
-        Event event2 = new Event("Present Event 1", new Keys().getPublicKey(), Instant.now().getEpochSecond(), "Somewhere", DISCUSSION);
-        Event event3 = new Event("Past Event 1", new Keys().getPublicKey(), 1481643086L, "Here", MEETING);
-        events.add(event1);
-        events.add(event2);
-        events.add(event3);
-
+    private void dummyLaos() {
         String notMyPublicKey = new Keys().getPublicKey();
+        Lao lao0 = new Lao("LAO I just joined", notMyPublicKey);
+        Lao lao1 = new Lao("LAO 1", notMyPublicKey);
+        Lao lao2 = new Lao("LAO 2", notMyPublicKey);
+        Lao lao3 = new Lao("My LAO 3", getPerson().getId());
+        Lao lao4 = new Lao("LAO 4", getPerson().getId());
 
-        laoEventsMap.put(currentLao, events);
-        laoEventsMap.put(new Lao("LAO 1", notMyPublicKey), events);
-        laoEventsMap.put(new Lao("LAO 2", notMyPublicKey), events);
-        laoEventsMap.put(new Lao("My LAO 3", person.getId()), events);
-        laoEventsMap.put(new Lao("LAO 4", notMyPublicKey), events);
+        List<Event> events0 = Arrays.asList(
+                new Event("Future Event 1", lao1.getId(), 2617547969L, "EPFL", POLL),
+                new Event("Present Event 1", lao1.getId(), Instant.now().getEpochSecond(), "Somewhere", DISCUSSION),
+                new Event("Past Event 1", lao1.getId(), 1481643086L, "Here", MEETING));
+
+
+        List<Event> events1 = Arrays.asList(
+                new Event("Future Event 1", lao1.getId(), 2617547969L, "EPFL", POLL),
+                new Event("Present Event 1", lao1.getId(), Instant.now().getEpochSecond(), "Somewhere", DISCUSSION),
+                new Event("Past Event 1", lao1.getId(), 1481643086L, "Here", MEETING));
+
+        List<Event> events2 = Arrays.asList(
+                new Event("Future Event 1", lao2.getId(), 2617547969L, "EPFL", POLL),
+                new Event("Present Event 1", lao2.getId(), Instant.now().getEpochSecond(), "Somewhere", DISCUSSION),
+                new Event("Past Event 1", lao2.getId(), 1481643086L, "Here", MEETING));
+
+        List<Event> events3 = Arrays.asList(
+                new Event("Future Event 1", lao3.getId(), 2617547969L, "EPFL", POLL),
+                new Event("Present Event 1", lao3.getId(), Instant.now().getEpochSecond(), "Somewhere", DISCUSSION),
+                new Event("Past Event 1", lao3.getId(), 1481643086L, "Here", MEETING));
+
+        List<Event> events4 = Arrays.asList(
+                new Event("Future Event 1", lao4.getId(), 2617547969L, "EPFL", POLL),
+                new Event("Present Event 1", lao4.getId(), Instant.now().getEpochSecond(), "Somewhere", DISCUSSION),
+                new Event("Past Event 1", lao4.getId(), 1481643086L, "Here", MEETING));
+
+        lao1.setEvents(events0);
+        lao1.setEvents(events1);
+        lao2.setEvents(events2);
+        lao2.setEvents(events3);
+        lao3.setEvents(events4);
+
+        createLao(lao0);
+        createLao(lao1);
+        createLao(lao2);
+        createLao(lao3);
+        createLao(lao4);
+
+        setCurrentLao(lao0);
     }
 
     /**
