@@ -16,9 +16,9 @@ Proof-of-personhood, fall 2020: Android native front-end
 For cloning, use `--recursive` as the project contains submodules.
 
 #### Usage
-Import the project to Android Studio or IntelliJ and run the app.
+Import the project to Android Studio or IntelliJ, choose an emulator in the AVD Manager and run the app. The emulator used for running and testing was a Pixel 2 API 29.
 
-To run on an Android device connect it to the computer and run the following commands.
+To run on an Android device connect it to the computer and run the following commands. Keep in mind that the minimum API required is 26.
 ```
 gradle build
 ```
@@ -39,6 +39,8 @@ This project uses Github Actions as a CI, for more information go to .github/wor
 
 This CI builds and runs the Unit Tests. For the Android Tests, the [reactivecircus](https://github.com/ReactiveCircus/android-emulator-runner)
 Android Emulator is used, which is limited.
+
+For coverage the Jacoco plugin can be used, this [guide](https://www.raywenderlich.com/10562143-continuous-integration-for-android#toc-anchor-013) covers how to set it.
 
 
 ## Coding Standards
