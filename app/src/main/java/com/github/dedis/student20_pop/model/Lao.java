@@ -56,7 +56,7 @@ public final class Lao {
      * @param members   the list of the public keys of the members
      * @param events    the list of the ids of the events
      */
-    private Lao(String name, long time, String id, String organizer, List<String> witnesses,
+    public Lao(String name, long time, String id, String organizer, List<String> witnesses,
                 List<String> members, List<Event> events) {
         this.name = name;
         this.time = time;
