@@ -11,16 +11,16 @@ import android.widget.TextView;
 
 import com.github.dedis.student20_pop.R;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Adapter to show witnesses of an Event
  */
 public class WitnessListViewAdapter extends BaseAdapter {
     private final Context context;
-    private final ArrayList<String> witnesses;
+    private final List<String> witnesses;
 
-    public WitnessListViewAdapter(Context context, ArrayList<String> witnesses) {
+    public WitnessListViewAdapter(Context context, List<String> witnesses) {
         this.context = context;
         this.witnesses = witnesses;
     }
