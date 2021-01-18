@@ -23,11 +23,11 @@ type keys struct {
 func TestCorrectSignaturesAndCorrectWitnesses(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
-		AuthorisedWitnessKeys, jsonArrayOfWitnessSigntures, id, err := witnessesAndSignatures(true, true)
+		AuthorisedWitnessKeys, jsonArrayOfSignatures, id, err := witnessesAndSignatures(true, true)
 		if err != nil {
 			t.Errorf("Problem when Marshaling witnessKeysAndSignatures")
 		}
-		err = VerifyWitnessSignatures(AuthorisedWitnessKeys, jsonArrayOfWitnessSigntures, id)
+		err = VerifyWitnessSignatures(AuthorisedWitnessKeys, jsonArrayOfSignatures, id)
 		if err != nil {
 			t.Errorf("At least one of the signatures is invalid")
 		}
@@ -60,11 +60,11 @@ func TestBadSignaturesAndBadWitnesses(t *testing.T) {
 
 // TestCorrectSignaturesAndCorrectWitnesses tests if VerifyWitnessSignatures raises an error if the signatures are incorrect
 func TestBadSignaturesAndCorrectWitnesses(t *testing.T) {
-	AuthorisedWitnessKeys, jsonArrayOfWitnessSigantures, id, err := witnessesAndSignatures(false, false)
+	AuthorisedWitnessKeys, jsonArrayOfSignatures, id, err := witnessesAndSignatures(false, false)
 	if err != nil {
 		t.Errorf("Problem when Marshaling witnessKeysAndSignatures")
 	}
-	err = VerifyWitnessSignatures(AuthorisedWitnessKeys, jsonArrayOfWitnessSigantures, id)
+	err = VerifyWitnessSignatures(AuthorisedWitnessKeys, jsonArrayOfSignatures, id)
 	if err != lib.ErrRequestDataInvalid {
 		t.Errorf("The verifier  didn't notice wrong signature(s)")
 	}
@@ -93,7 +93,7 @@ func witnessesAndSignatures(correctWitnesses bool, correctSignatures bool) (auth
 
 	witnessSignatures, err = marshalSignatureArray(signatures)
 	if err != nil {
-		return nil, nil, nil, errors.New("Problem when Marshaling witnessKeysAndSignatures")
+		return nil, nil, nil, errors.New("error while Marshaling witnessKeysAndSignatures")
 	}
 	return authorisedKeys, witnessSignatures, id, nil
 }
