@@ -82,7 +82,7 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
                             .thenAccept(code -> {
                                 // Set LAO and organizer information locally
                                 app.getPerson().addLao(lao.getId());
-                                ((PoPApplication) getApplication()).createLao(lao);
+                                ((PoPApplication) getApplication()).addLao(lao);
                                 ((PoPApplication) getApplication()).setCurrentLao(lao);
                                 // Start the Organizer Activity (user is considered an organizer)
                                 Intent intent = new Intent(this, OrganizerActivity.class);
