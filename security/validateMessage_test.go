@@ -218,7 +218,7 @@ func TestBadDataWitnessMessage(t *testing.T) {
 		t.Error(err)
 	}
 
-	msg.MessageId = []byte("oulala la mauvaise identititittity")
+	msg.MessageId = []byte("bad identititittity")
 
 	messageFlat, err = json.Marshal(msg)
 	if err != nil {
@@ -240,7 +240,7 @@ func TestBadDataWitnessMessage(t *testing.T) {
 		t.Error(err)
 	}
 
-	msg.Data = []byte("oulala la\", \\} mauvaise data imparsable")
+	msg.Data = []byte("problem: \", \\} bad data, not parsable")
 
 	messageFlat, err = json.Marshal(msg)
 	if err != nil {
@@ -375,8 +375,8 @@ func TestRollCallCreatedBadFields(t *testing.T) {
 				"less than creation & start equal 0 ) %#v", data)
 		}
 		//verify that the message is invalidated due to incorrect private key
-		_, falsePrivkey := generateKeyPair()
-		err = checkMessageIsValid(publicKey, falsePrivkey, data, witnessSignatures)
+		_, badPrivateKey := generateKeyPair()
+		err = checkMessageIsValid(publicKey, badPrivateKey, data, witnessSignatures)
 		if err == nil {
 			t.Errorf("The Message Should be invalid beacause of incorrect Key %#v", data)
 		}
