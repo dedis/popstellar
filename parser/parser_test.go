@@ -11,7 +11,8 @@ import (
 )
 
 // Some encoding (hashes) are actually incorrect here, but it doesn't impact the pure parser test
-const correctCreateLAOString = `{
+func getCorrectCreateLAOString() string {
+	return `{
 	"jsonrpc": "2.0",
 	"method": "publish",
 	"params": {
@@ -28,8 +29,12 @@ const correctCreateLAOString = `{
 	},
 	"id": 0
 }`
+}
 
-const wrongCreateLAOString1 = `{
+func getWrongCreateLAOString(idx int) string {
+	switch idx {
+	case 1:
+		return `{
 	"jsonrpc": "1.0",
 	"method": "publish",
 	"params": {
@@ -46,8 +51,8 @@ const wrongCreateLAOString1 = `{
 	},
 	"id": 0
 }`
-
-const wrongCreateLAOString2 = `{
+	default:
+		return `{
 	"jsonrpc": "2.0",
 	"method": "publish",
 	"params": {
@@ -64,6 +69,9 @@ const wrongCreateLAOString2 = `{
 	},
 	"id": 0...!
 }`
+	}
+
+}
 
 func getCorrectCreateLAOQueryStruct() message.Query {
 	return message.Query{
@@ -90,12 +98,12 @@ func TestParseGenericMessageAndQuery(t *testing.T) {
 	log.SetFlags(0)
 	log.SetOutput(ioutil.Discard)
 
-	_, err := ParseGenericMessage([]byte(correctCreateLAOString))
+	_, err := ParseGenericMessage([]byte(getCorrectCreateLAOString()))
 	if err != nil {
 		t.Error(err)
 	}
 
-	msgQuery, err := ParseQuery([]byte(correctCreateLAOString))
+	msgQuery, err := ParseQuery([]byte(getCorrectCreateLAOString()))
 	if err != nil {
 		t.Error(err)
 	}
@@ -119,12 +127,12 @@ func TestParseGenericMessageAndQuery(t *testing.T) {
 		t.Errorf("correct structs are not as expected, \n%+v\n vs, \n%+v \n%v\n%v", msgQuery, referenceStruct, string(msgQuery.Params), string(referenceStruct.Params))
 	}
 
-	_, err = ParseGenericMessage([]byte(wrongCreateLAOString1))
+	_, err = ParseGenericMessage([]byte(getWrongCreateLAOString(1)))
 	if err != lib.ErrRequestDataInvalid {
 		t.Errorf("wrong string do not create an error")
 	}
 
-	_, err = ParseGenericMessage([]byte(wrongCreateLAOString2))
+	_, err = ParseGenericMessage([]byte(getWrongCreateLAOString(2)))
 	if err != lib.ErrIdNotDecoded {
 		t.Errorf("wrong string do not create an error")
 	}
