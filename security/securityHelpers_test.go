@@ -15,6 +15,7 @@ type keys struct {
 	private ed.PrivateKey
 	public  []byte
 }
+
 // we don't check  that the key's length is 32 in the verification
 // we don't check the utility function HashOfItems which basically just hash his arguments
 
@@ -32,6 +33,7 @@ func TestCorrectSignaturesAndCorrectWitnesses(t *testing.T) {
 		}
 	}
 }
+
 // TestCorrectSignaturesAndCorrectWitnesses tests if VerifyWitnessSignatures raises an error if the witnesses are incorrect
 func TestCorrectSignaturesAndBadWitnesses(t *testing.T) {
 	AuthorisedWitnessKeys, jsonArrayOfWitnessSignatures, id, err := witnessesAndSignatures(false, true)
@@ -43,6 +45,7 @@ func TestCorrectSignaturesAndBadWitnesses(t *testing.T) {
 		t.Errorf("The verifier  didn't notice unauthenticated witness")
 	}
 }
+
 // TestCorrectSignaturesAndCorrectWitnesses tests if VerifyWitnessSignatures raises an error if the signatures and the witnesses are incorrect
 func TestBadSignaturesAndBadWitnesses(t *testing.T) {
 	AuthorisedWitnessKeys, jsonArrayOfWitnessSignatures, id, err := witnessesAndSignatures(false, false)
@@ -54,6 +57,7 @@ func TestBadSignaturesAndBadWitnesses(t *testing.T) {
 		t.Errorf("The verifier  didn't notice wrong signature(s) and unauthenticated witness")
 	}
 }
+
 // TestCorrectSignaturesAndCorrectWitnesses tests if VerifyWitnessSignatures raises an error if the signatures are incorrect
 func TestBadSignaturesAndCorrectWitnesses(t *testing.T) {
 	AuthorisedWitnessKeys, jsonArrayOfWitnessSigantures, id, err := witnessesAndSignatures(false, false)
@@ -66,57 +70,59 @@ func TestBadSignaturesAndCorrectWitnesses(t *testing.T) {
 	}
 }
 
-//=====================================================================================/
-func witnessesAndSignatures(correctWitnesses bool, correctSignatures bool) (AuthorisedWitnessKeys [][]byte, jsonArrayOfWitnessSigntures []json.RawMessage, id []byte, err error) {
+//
+func witnessesAndSignatures(correctWitnesses bool, correctSignatures bool) (authorisedKeys [][]byte, witnessSignatures []json.RawMessage, id []byte, err error) {
 	id = make([]byte, 32)
-	rand.Read(id)
+	_, _ = rand.Read(id)
 
-	keys := createArrayOfkeys()
-	pubkeys := onlyPublicKeys(keys)
-	witnessSignatures := arrayOfWitnessSignatures(keys, id)
-	AuthorisedWitnessKeys = pubkeys
+	keys := generateKeyPairs()
+	publicKeys := extractPublicKeys(keys)
+	signatures := arraySign(keys, id)
+	authorisedKeys = publicKeys
 
 	if !correctWitnesses {
-		rand.Read(AuthorisedWitnessKeys[0])
-		//rand.Read(AuthorisedWitnessKeys[mRand.Intn(len(AuthorisedWitnessKeys))])
+		_, _ = rand.Read(authorisedKeys[0])
 	}
 	if !correctSignatures {
-		rand.Read(witnessSignatures[mRand.Intn(len(witnessSignatures))].Signature)
+		_, _ = rand.Read(signatures[mRand.Intn(len(signatures))].Signature)
 	}
 	if !correctSignatures && !correctWitnesses {
-		keys := createArrayOfkeys()
-		pubkeys = onlyPublicKeys(keys)
-		witnessSignatures = arrayOfWitnessSignatures(keys, id)
+		keys := generateKeyPairs()
+		signatures = arraySign(keys, id)
 	}
 
-	jsonArrayOfWitnessSigntures, err = PlugWitnessesInArray(witnessSignatures)
+	witnessSignatures, err = PlugWitnessesInArray(signatures)
 	if err != nil {
 		return nil, nil, nil, errors.New("Problem when Marshaling witnessKeysAndSignatures")
 	}
-	return AuthorisedWitnessKeys, jsonArrayOfWitnessSigntures, id, nil
+	return authorisedKeys, witnessSignatures, id, nil
 }
 
-/*10 pair of keys*/
-func createArrayOfkeys() []keys {
-	keyz := []keys{}
+// generateKeyPairs returns an array of 10 pairs of public and private keys
+func generateKeyPairs() []keys {
+	var keyList []keys
 	for i := 0; i < 10; i++ {
-		publicW, privW := createKeyPair()
-		keyz = append(keyz, keys{private: privW, public: []byte(publicW)})
+		publicKey, privateKey := createKeyPair()
+		keyList = append(keyList, keys{private: privateKey, public: publicKey})
 	}
-	return keyz
+	return keyList
 }
-//onlyPublicKeys returns an array containing the public Keys of keys
-func onlyPublicKeys(ks []keys) [][]byte {
+
+//extractPublicKeys returns an array containing the public Keys of keys
+func extractPublicKeys(ks []keys) [][]byte {
 	var acc [][]byte
 	for _, k := range ks {
 		acc = append(acc, k.public)
 	}
 	return acc
 }
-func arrayOfWitnessSignatures(ks []keys, id []byte) []message2.ItemWitnessSignatures {
+
+// arraySign returns an array of message2.ItemWitnessSignatures, where to each element in ks corresponds a pair
+// k.public, Sign(k.private, id)
+func arraySign(ks []keys, id []byte) []message2.ItemWitnessSignatures {
 	var acc []message2.ItemWitnessSignatures
 	for _, k := range ks {
-		acc = append(acc, message2.ItemWitnessSignatures{k.public, ed.Sign(k.private, id)})
+		acc = append(acc, message2.ItemWitnessSignatures{WitnessKey: k.public, Signature: ed.Sign(k.private, id)})
 	}
 	return acc
 }

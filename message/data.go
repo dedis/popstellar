@@ -122,7 +122,7 @@ type DataCreatePoll struct {
 type DataUpdateLAO struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
-	// hash : (Organizer|| Creation|| Name)" same id as createLao !
+	// LAO ID. not recomputed if the name changes
 	ID []byte `json:"id"`
 	// Name of the LAO
 	Name string `json:"name"`
@@ -135,7 +135,7 @@ type DataUpdateLAO struct {
 type DataStateLAO struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
-	// ID of LAO. Not recomputed if the name changes
+	// LAO ID. Not recomputed if the name changes
 	ID []byte `json:"id"`
 	// Name of the LAO
 	Name string `json:"name"`

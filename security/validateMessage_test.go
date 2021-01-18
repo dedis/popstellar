@@ -83,7 +83,7 @@ func TestMessageIsValidWithAssessedWitnesses(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		witnessSignatures := arrayOfWitnessSignatures(keyz,id)
+		witnessSignatures := arraySign(keyz,id)
 		err = CheckMessageIsValid(pubkey,privkey,data,witnessSignatures,witnessKeys)
 		if err != nil {
 			t.Error(err)
@@ -481,6 +481,7 @@ func TestMeetingBadFields(t *testing.T) {
 		}
 	}
 }
+
 //TestLAOInvalidName verifies that the Lao is invalid due to empty name
 func TestLAOInvalidName(t *testing.T) {
 	pubkey, privkey := createKeyPair()
@@ -497,6 +498,7 @@ func TestLAOInvalidName(t *testing.T) {
 		t.Errorf("Created Lao Should be invalid due to empty location %#v", data)
 	}
 }
+
 //TestLAOInvalidId verifies that the Lao is invalid due to invlaid id
 func TestLAOInvalidId(t *testing.T) {
 	pubkey, privkey := createKeyPair()
@@ -513,6 +515,7 @@ func TestLAOInvalidId(t *testing.T) {
 		t.Errorf("Created Lao Should be invalid due to incorrect id %#v", data)
 	}
 }
+
 //TestLAOIInvalidCreationTime verifies that the Lao is invalid due to invlaid creation time
 func TestLAOIInvalidCreationTime(t *testing.T) {
 	//increase nb of tests
