@@ -112,7 +112,7 @@ func witnessesAndSignatures(correctWitnesses bool, correctSignatures bool) (auth
 func generateKeyPairs() []keys {
 	var keyList []keys
 	for i := 0; i < 10; i++ {
-		publicKey, privateKey := generateKeyPair()
+		publicKey, privateKey := lib.GenerateTestKeyPair()
 		keyList = append(keyList, keys{private: privateKey, public: publicKey})
 	}
 	return keyList

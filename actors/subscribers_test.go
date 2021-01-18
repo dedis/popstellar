@@ -42,7 +42,7 @@ func getCorrectUnSubscribeGeneral() []byte {
 // by comparing the messages (response and broadcasted answers) sent back
 func TestReceiveSubscribeUnsubscribe(t *testing.T) {
 
-	publicKey, _ := createKeyPair()
+	publicKey, _ := lib.GenerateTestKeyPair()
 
 	receivedMsg := getCorrectSubscribeGeneral()
 	userId := 5

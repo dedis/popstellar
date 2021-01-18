@@ -95,28 +95,28 @@ func TestParseGenericMessageAndQuery(t *testing.T) {
 		t.Error(err)
 	}
 
-	msgquery, err := ParseQuery([]byte(correctCreateLAOString))
+	msgQuery, err := ParseQuery([]byte(correctCreateLAOString))
 	if err != nil {
 		t.Error(err)
 	}
 	referenceStruct := getCorrectCreateLAOQueryStruct()
-	if msgquery.Jsonrpc != referenceStruct.Jsonrpc {
+	if msgQuery.Jsonrpc != referenceStruct.Jsonrpc {
 		t.Errorf("jsonrpc not equal")
 	}
-	if msgquery.Method != referenceStruct.Method {
+	if msgQuery.Method != referenceStruct.Method {
 		t.Errorf("Method not equal")
 	}
-	if msgquery.Id != referenceStruct.Id {
+	if msgQuery.Id != referenceStruct.Id {
 		t.Errorf("Id not equal")
 	}
 
 	// Careful that string comparison and as such in our case reflect.DeepEqual cares about the exact tabulation (spaces vs tabs and how many)
-	if string(msgquery.Params) != string(referenceStruct.Params) {
-		t.Errorf("Params not equal\n%v\n%v", string(msgquery.Params), string(referenceStruct.Params))
+	if string(msgQuery.Params) != string(referenceStruct.Params) {
+		t.Errorf("Params not equal\n%v\n%v", string(msgQuery.Params), string(referenceStruct.Params))
 	}
 
-	if !reflect.DeepEqual(msgquery, referenceStruct) {
-		t.Errorf("correct structs are not as expected, \n%+v\n vs, \n%+v \n%v\n%v", msgquery, referenceStruct, string(msgquery.Params), string(referenceStruct.Params))
+	if !reflect.DeepEqual(msgQuery, referenceStruct) {
+		t.Errorf("correct structs are not as expected, \n%+v\n vs, \n%+v \n%v\n%v", msgQuery, referenceStruct, string(msgQuery.Params), string(referenceStruct.Params))
 	}
 
 	_, err = ParseGenericMessage([]byte(wrongCreateLAOString1))

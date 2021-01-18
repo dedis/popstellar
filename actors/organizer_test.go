@@ -26,6 +26,7 @@ import (
 ////////////////////////////////////////////
 
 // createKeyPair generate a new random pair of public/private key
+// DEPRECATED: use lib.GenerateTestKeyPair instead
 func createKeyPair() ([]byte, ed.PrivateKey) {
 	//randomize the key
 	randomSeed := make([]byte, 32)
@@ -348,7 +349,7 @@ func TestReceivePublishCreateLAO(t *testing.T) {
 	log.SetFlags(0)
 	log.SetOutput(ioutil.Discard)
 
-	publicKey, privateKey := createKeyPair()
+	publicKey, privateKey := lib.GenerateTestKeyPair()
 
 	creationString := strconv.FormatInt(time.Now().Unix(), 10)
 	receivedMsg := getCorrectPublishOnRoot(publicKey, privateKey, []byte(getCorrectDataCreateLAO(publicKey, creationString)))
@@ -375,7 +376,7 @@ func TestReceivePublishStateLAO(t *testing.T) {
 	log.SetFlags(0)
 	log.SetOutput(ioutil.Discard)
 
-	publicKey, privateKey := createKeyPair()
+	publicKey, privateKey := lib.GenerateTestKeyPair()
 
 	creationString := strconv.FormatInt(time.Now().Unix(), 10)
 	receivedMsg := getCorrectPublishOnRoot(publicKey, privateKey, []byte(getCorrectDataCreateLAO(publicKey, creationString)))
@@ -419,7 +420,7 @@ func TestReceivePublishCreateMeeting(t *testing.T) {
 	log.SetFlags(0)
 	log.SetOutput(ioutil.Discard)
 
-	publicKey, privateKey := createKeyPair()
+	publicKey, privateKey := lib.GenerateTestKeyPair()
 
 	receivedMsg := getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateMeeting(publicKey)))
 	userId := 5
@@ -446,7 +447,7 @@ func TestReceivePublishCreateRollCallNow(t *testing.T) {
 	log.SetFlags(0)
 	log.SetOutput(ioutil.Discard)
 
-	publicKey, privateKey := createKeyPair()
+	publicKey, privateKey := lib.GenerateTestKeyPair()
 
 	receivedMsg := getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallNow(publicKey)))
 	userId := 5
@@ -475,7 +476,7 @@ func TestReceivePublishCreateRollCallLater(t *testing.T) {
 
 	_ = os.Remove("org_test.db")
 
-	publicKey, privateKey := createKeyPair()
+	publicKey, privateKey := lib.GenerateTestKeyPair()
 	creationString := strconv.FormatInt(time.Now().Unix(), 10)
 
 	receivedMsg := getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallLater(publicKey, creationString)))
