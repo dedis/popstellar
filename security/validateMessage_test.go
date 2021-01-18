@@ -11,6 +11,7 @@ import (
 	"math/rand"
 	"strconv"
 	"student20_pop/event"
+	"student20_pop/lib"
 	"student20_pop/message"
 	"student20_pop/parser"
 	"testing"
@@ -27,7 +28,7 @@ func TestMessageIsValidWithoutWitnesses(t *testing.T) {
 
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
-		publicKey, privateKey := generateKeyPair()
+		publicKey, privateKey := lib.GenerateTestKeyPair()
 		var witnessSignatures []message.ItemWitnessSignatures
 		var witnessKeys [][]byte
 		var creation = time.Now().Unix()
@@ -55,7 +56,7 @@ func TestDataWitnessMessageIsValid(t *testing.T) {
 
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
-		publicKey, privateKey := generateKeyPair()
+		publicKey, privateKey := lib.GenerateTestKeyPair()
 		var witnessSignatures []message.ItemWitnessSignatures
 		messageIdToWitness := []byte("finally something to sign")
 		data, err := createWitnessMessage(privateKey, messageIdToWitness)
@@ -77,7 +78,7 @@ func TestRollCallOpenedIsValid(t *testing.T) {
 
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
-		publicKey, privateKey := generateKeyPair()
+		publicKey, privateKey := lib.GenerateTestKeyPair()
 		var witnessSignatures []message.ItemWitnessSignatures
 		rollCallCreation := time.Now().Unix()
 		start := rollCallCreation + (MaxPropagationDelay / 2)
@@ -111,7 +112,7 @@ func TestRollCallClosedIsValid(t *testing.T) {
 
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
-		publicKey, privateKey := generateKeyPair()
+		publicKey, privateKey := lib.GenerateTestKeyPair()
 		var witnessSignatures []message.ItemWitnessSignatures
 		var attendeesPks [][]byte
 
@@ -147,7 +148,7 @@ func TestRollCallCreatedIsValid(t *testing.T) {
 
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
-		publicKey, privateKey := generateKeyPair()
+		publicKey, privateKey := lib.GenerateTestKeyPair()
 		var witnessSignatures []message.ItemWitnessSignatures
 		var creation = time.Now().Unix()
 		start := creation + (MaxPropagationDelay / 2)
@@ -176,7 +177,7 @@ func TestMeetingCreatedIsValid(t *testing.T) {
 
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
-		publicKey, privateKey := generateKeyPair()
+		publicKey, privateKey := lib.GenerateTestKeyPair()
 		var witnessSignatures []message.ItemWitnessSignatures
 		var creation = time.Now().Unix()
 		start := creation + (MaxPropagationDelay / 2)
@@ -207,7 +208,7 @@ func TestBadDataWitnessMessage(t *testing.T) {
 	log.SetFlags(0)
 	log.SetOutput(ioutil.Discard)
 
-	publicKey, privateKey := generateKeyPair()
+	publicKey, privateKey := lib.GenerateTestKeyPair()
 	var witnessSignatures []message.ItemWitnessSignatures
 	messageIdToWitness := []byte("enfin un truc à signer")
 	data, err := createWitnessMessage(privateKey, messageIdToWitness)
@@ -289,7 +290,7 @@ func TestBadDataWitnessMessage(t *testing.T) {
 
 //TestRollCallClosedInvalid checks that a message containing a closeRollCall with bad timestamps is invalid
 func TestRollCallClosedInvalid(t *testing.T) {
-	publicKey, privateKey := generateKeyPair()
+	publicKey, privateKey := lib.GenerateTestKeyPair()
 	var attendeesPks [][]byte
 
 	rollCallCreation := time.Now().Unix()
@@ -314,7 +315,7 @@ func TestRollCallClosedInvalid(t *testing.T) {
 //TestOpenRollCallBadFields checks that a message containing a openRollCall with invalid start is invalid at data layer
 func TestOpenRollCallBadFields(t *testing.T) {
 	for i := 0; i < 2; i++ {
-		publicKey, privateKey := generateKeyPair()
+		publicKey, privateKey := lib.GenerateTestKeyPair()
 		rollCallCreation := time.Now().Unix()
 		start := rollCallCreation - (MaxPropagationDelay / 2)
 		rollCallName := "encore un roll call"
@@ -339,7 +340,7 @@ func TestOpenRollCallBadFields(t *testing.T) {
 //and that the message is invalidated due to incorrect private key
 func TestRollCallCreatedBadFields(t *testing.T) {
 	for i := 0; i < 2; i++ {
-		publicKey, privateKey := generateKeyPair()
+		publicKey, privateKey := lib.GenerateTestKeyPair()
 		var witnessSignatures []message.ItemWitnessSignatures
 		var creation = time.Now().Unix()
 		start := creation + (MaxPropagationDelay / 2)
@@ -405,7 +406,7 @@ func TestRollCallCreatedBadFields(t *testing.T) {
 				"less than creation & start equal 0 ) %#v", data)
 		}
 		//verify that the message is invalidated due to incorrect private key
-		_, badPrivateKey := generateKeyPair()
+		_, badPrivateKey := lib.GenerateTestKeyPair()
 		err = checkMessageIsValid(publicKey, badPrivateKey, data, witnessSignatures)
 		if err == nil {
 			t.Errorf("The Message Should be invalid beacause of incorrect Key %#v", data)
@@ -417,7 +418,7 @@ func TestRollCallCreatedBadFields(t *testing.T) {
 func TestMeetingBadFields(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 2; i++ {
-		publicKey, privateKey := generateKeyPair()
+		publicKey, privateKey := lib.GenerateTestKeyPair()
 		var witnessSignatures []message.ItemWitnessSignatures
 		creation := time.Now().Unix() + time.Now().Unix() + MaxPropagationDelay + 1
 		if i%2 == 0 {
@@ -486,7 +487,7 @@ func TestLAOInvalidName(t *testing.T) {
 	log.SetFlags(0)
 	log.SetOutput(ioutil.Discard)
 
-	publicKey, privateKey := generateKeyPair()
+	publicKey, privateKey := lib.GenerateTestKeyPair()
 	var witnessKeys [][]byte
 	var creation = time.Now().Unix()
 	// should be not empty but this is not specified in the protocol specifications ?
@@ -507,7 +508,7 @@ func TestLAOInvalidId(t *testing.T) {
 	log.SetFlags(0)
 	log.SetOutput(ioutil.Discard)
 
-	publicKey, privateKey := generateKeyPair()
+	publicKey, privateKey := lib.GenerateTestKeyPair()
 	var witnessKeys [][]byte
 	var creation = time.Now().Unix()
 	name := "hello"
@@ -530,7 +531,7 @@ func TestLAOIInvalidCreationTime(t *testing.T) {
 
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
-		publicKey, privateKey := generateKeyPair()
+		publicKey, privateKey := lib.GenerateTestKeyPair()
 		var witnessKeys [][]byte
 		name := "ok"
 		creation := time.Now().Unix() + time.Now().Unix() + MaxPropagationDelay + 1
@@ -609,6 +610,7 @@ func marshalSignatureArray(keySignaturePairs []message.ItemWitnessSignatures) ([
 }
 
 // generateKeyPair returns a pair of public and private key
+// DEPRECATED: use lib.generate keyPairs instead
 func generateKeyPair() ([]byte, ed.PrivateKey) {
 	//randomize the key
 	randomSeed := make([]byte, ed.PublicKeySize)

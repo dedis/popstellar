@@ -2,6 +2,8 @@
 package lib
 
 import (
+	ed "crypto/ed25519"
+	"math/rand"
 	"strings"
 )
 
@@ -42,4 +44,14 @@ func ArrayRepresentation(elements []string) string {
 	}
 	str += "]"
 	return str
+}
+
+// GenerateTestKeyPair returns a pair of public and private key. Only used for tests. Should we create a package test and
+// put it there ?
+func GenerateTestKeyPair() ([]byte, ed.PrivateKey) {
+	//randomize the key
+	randomSeed := make([]byte, ed.PublicKeySize)
+	rand.Read(randomSeed)
+	privateKey := ed.NewKeyFromSeed(randomSeed)
+	return privateKey.Public().(ed.PublicKey), privateKey
 }
