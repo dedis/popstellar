@@ -23,7 +23,7 @@ func getCorrectSubscribeGeneral() []byte {
 	return []byte(msg)
 }
 
-// getCorrectunSubscribeGeneral generate a example JSON string of a request to subscribe to a channel
+// getCorrectUnSubscribeGeneral generate a example JSON string of a request to subscribe to a channel
 func getCorrectUnSubscribeGeneral() []byte {
 	msg := `{
 		"jsonrpc": "2.0",
