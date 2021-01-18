@@ -3,6 +3,8 @@ package db
 import (
 	"bytes"
 	"encoding/json"
+	"io/ioutil"
+	"log"
 	"os"
 	"student20_pop/event"
 	"testing"
@@ -18,6 +20,11 @@ func TestWriteChannel(t *testing.T) {
 
 	// error not logged : error occurs if file does not exists
 	_ = os.Remove("test.db")
+
+	// turn off logging for the tests
+	log.SetFlags(0)
+	log.SetOutput(ioutil.Discard)
+
 	lao, meeting, rollCall, poll := getEvents()
 
 	// produces errors errors as the channel already exists
