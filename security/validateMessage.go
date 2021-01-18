@@ -165,7 +165,7 @@ func MessageIsValid(msg message.Message) error {
 	case "state":
 		data, err := parser.ParseDataCreateLAO(msg.Data)
 		if err != nil {
-			log.Printf("test 3")
+			log.Printf("could not parse dataCreateLAO")
 			return lib.ErrInvalidResource
 		}
 		// the signatures (of message_id) of witnesses are valid
