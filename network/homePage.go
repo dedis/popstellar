@@ -9,7 +9,7 @@ import (
 	"text/template"
 )
 
-// HomeHandler serves the http homepage
+// HomeHandler serves the http homepage. Set the websocket connection address to address:port
 func HomeHandler(tpl *template.Template, address *string, port *int) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		err := tpl.Execute(w, *address+":"+strconv.Itoa(*port))
