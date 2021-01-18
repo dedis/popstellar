@@ -8,10 +8,11 @@ import (
 	"log"
 	"student20_pop/lib"
 	"student20_pop/parser"
+	"time"
 )
 
-const MaxPropagationDelay = 600
-const MaxClockDifference = 100
+const MaxPropagationDelay = 2 * time.Second
+const MaxClockDifference = 3 * time.Second
 
 // VerifySignature checks that Sign(itemToVerify) corresponds to the given signature
 func VerifySignature(publicKey []byte, itemToVerify []byte, signature []byte) error {

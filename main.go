@@ -47,7 +47,7 @@ func main() {
 		router.Handle("/test", network.HomeHandler(tpl, address, port))
 		router.Handle("/", network.NewWSHandler(h))
 		log.Printf("serving organizer on address " + *address + ":" + strconv.Itoa(*port))
-		log.Fatal(http.ListenAndServe(*address+":"+strconv.Itoa(*port), router)) //here to change the srv address
+		log.Fatal(http.ListenAndServe(*address+":"+strconv.Itoa(*port), router))
 
 	case "w":
 		h := network.NewWitnessHub(*pkey, *file)
@@ -55,7 +55,7 @@ func main() {
 		router.Handle("/test", network.HomeHandler(tpl, address, port))
 		router.Handle("/", network.NewWSHandler(h))
 		log.Printf("serving witness on adress " + *address + ":" + strconv.Itoa(*port))
-		log.Fatal(http.ListenAndServe(*address+":"+strconv.Itoa(*port), router)) //here to change the srv address
+		log.Fatal(http.ListenAndServe(*address+":"+strconv.Itoa(*port), router))
 
 	}
 
