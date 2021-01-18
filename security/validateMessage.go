@@ -79,14 +79,14 @@ func RollCallCreatedIsValid(data message.DataCreateRollCall, laoId string) bool 
 }
 
 //checkID compares SHA256(firstChar || laoId || creation || name) to id, returns true if they are the same
-// for a LAO use the laoId as "organizer" field. uses HashOfItems to concatenate and hash the values
+// for a LAO use the laoId as "organizer" field. uses HashItems to concatenate and hash the values
 func checkID(firstChar string, laoId []byte, creation int64, name string, id []byte) bool {
 	var elements []string
 	if firstChar != "" {
 		elements = append(elements, firstChar)
 	}
 	elements = append(elements, b64.StdEncoding.EncodeToString(laoId), strconv.FormatInt(creation, 10), name)
-	hash := HashOfItems(elements)
+	hash := HashItems(elements)
 	if !bytes.Equal(id, hash) {
 		log.Printf("ID invalid: %v should be: %v", string(id), string(hash[:]))
 		return false
@@ -138,7 +138,7 @@ func MessageIsValid(msg message.Message) error {
 	// check message_id is valid
 	var itemsToHashForMessageId []string
 	itemsToHashForMessageId = append(itemsToHashForMessageId, b64.StdEncoding.EncodeToString(msg.Data), b64.StdEncoding.EncodeToString(msg.Signature))
-	hash := HashOfItems(itemsToHashForMessageId)
+	hash := HashItems(itemsToHashForMessageId)
 
 	if !bytes.Equal(msg.MessageId, hash) {
 		log.Printf("Id of message invalid: %v should be: %v", string(msg.MessageId), string(hash[:]))

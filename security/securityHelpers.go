@@ -51,9 +51,9 @@ func VerifyWitnessSignatures(authorizedWitnesses [][]byte, witnessSignaturesEnc 
 	return nil
 }
 
-// HashOfItems is a one-liner to hash every element we have represented in a JSON array with escaped values
+// HashItems is a one-liner to hash every element we have represented in a JSON array with escaped values
 // note : most of the values we hash are either numbers or B64 strings, so most of the time the escape function is useless.
-func HashOfItems(itemsToHash []string) []byte {
+func HashItems(itemsToHash []string) []byte {
 	hash := sha256.Sum256([]byte(lib.ArrayRepresentation(itemsToHash)))
 	return hash[:]
 }
