@@ -8,7 +8,6 @@ import (
 	"errors"
 	"io/ioutil"
 	"log"
-	"math/rand"
 	"strconv"
 	"student20_pop/event"
 	"student20_pop/lib"
@@ -81,7 +80,7 @@ func TestRollCallOpenedIsValid(t *testing.T) {
 		publicKey, privateKey := lib.GenerateTestKeyPair()
 		var witnessSignatures []message.ItemWitnessSignatures
 		rollCallCreation := time.Now().Unix()
-		start := rollCallCreation + (MaxPropagationDelay / 2)
+		start := rollCallCreation + 1
 		rollCallName := "encore un roll call"
 		laoId := []byte("12345")
 
@@ -118,8 +117,8 @@ func TestRollCallClosedIsValid(t *testing.T) {
 
 		rollCallCreation := time.Now().Unix()
 		rollCallName := "encore un roll call"
-		start := rollCallCreation + (MaxPropagationDelay / 4)
-		end := start + (MaxPropagationDelay / 4)
+		start := rollCallCreation + 1
+		end := start + 1
 		laoId := []byte("12345")
 		data, err := createCloseRollCallNow(publicKey, privateKey, rollCallCreation, start, end, rollCallName, laoId, attendeesPks)
 		if err != nil {
@@ -151,7 +150,7 @@ func TestRollCallCreatedIsValid(t *testing.T) {
 		publicKey, privateKey := lib.GenerateTestKeyPair()
 		var witnessSignatures []message.ItemWitnessSignatures
 		var creation = time.Now().Unix()
-		start := creation + (MaxPropagationDelay / 2)
+		start := creation + 1
 		name := "RollCallNow"
 		laoId := []byte("12345")
 		data, err := createRollCallNow(publicKey, privateKey, creation, start, name, laoId)
@@ -180,8 +179,8 @@ func TestMeetingCreatedIsValid(t *testing.T) {
 		publicKey, privateKey := lib.GenerateTestKeyPair()
 		var witnessSignatures []message.ItemWitnessSignatures
 		var creation = time.Now().Unix()
-		start := creation + (MaxPropagationDelay / 2)
-		end := creation + (MaxPropagationDelay / 2)
+		start := creation + 1
+		end := creation + 1
 		name := "someMeetintintinitin"
 		laoId := []byte("12345")
 
@@ -295,8 +294,8 @@ func TestRollCallClosedInvalid(t *testing.T) {
 
 	rollCallCreation := time.Now().Unix()
 	rollCallName := "encore un roll call"
-	start := rollCallCreation + (MaxPropagationDelay / 4)
-	end := start - (MaxPropagationDelay / 4)
+	start := rollCallCreation + 4
+	end := start - 2
 	laoId := []byte("12345")
 	data, err := createCloseRollCallNow(publicKey, privateKey, rollCallCreation, start, end, rollCallName, laoId, attendeesPks)
 	if err != nil {
@@ -307,7 +306,7 @@ func TestRollCallClosedInvalid(t *testing.T) {
 		t.Error(err)
 	}
 	valid := RollCallClosedIsValid(data, string(laoId), rollCall)
-	if valid == true {
+	if valid {
 		t.Errorf("didn't detect that closed rollcall is invalid %#v", data)
 	}
 }
@@ -317,7 +316,7 @@ func TestOpenRollCallBadFields(t *testing.T) {
 	for i := 0; i < 2; i++ {
 		publicKey, privateKey := lib.GenerateTestKeyPair()
 		rollCallCreation := time.Now().Unix()
-		start := rollCallCreation - (MaxPropagationDelay / 2)
+		start := rollCallCreation - 2
 		rollCallName := "encore un roll call"
 		laoId := []byte("12345")
 
@@ -330,7 +329,7 @@ func TestOpenRollCallBadFields(t *testing.T) {
 			t.Error(err)
 		}
 		valid := RollCallOpenedIsValid(data, string(laoId), rollCall)
-		if valid == true {
+		if valid {
 			t.Errorf("Opened rollcall Should be invalid, start before creation %#v", data)
 		}
 	}
@@ -343,7 +342,7 @@ func TestRollCallCreatedBadFields(t *testing.T) {
 		publicKey, privateKey := lib.GenerateTestKeyPair()
 		var witnessSignatures []message.ItemWitnessSignatures
 		var creation = time.Now().Unix()
-		start := creation + (MaxPropagationDelay / 2)
+		start := creation + 1
 		name := "RollCallNow"
 		laoId := []byte("12345")
 		data, err := createRollCallNow(publicKey, privateKey, creation, start, name, laoId)
@@ -352,7 +351,7 @@ func TestRollCallCreatedBadFields(t *testing.T) {
 		}
 		notLaoId := []byte("6789")
 		valid := RollCallCreatedIsValid(data, string(notLaoId))
-		if valid == true {
+		if valid {
 			t.Errorf("Created Rollcall Should be invalid beacause of invalid id %#v", data)
 		}
 		//===========================================================//
@@ -362,14 +361,14 @@ func TestRollCallCreatedBadFields(t *testing.T) {
 		}
 		data.Creation = creationBis
 		valid = RollCallCreatedIsValid(data, string(laoId))
-		if valid == true {
+		if valid {
 			t.Errorf("Created Meeting Should be invalid due to bad creation %#v", data)
 		}
 		//===========================================================//
 		data.Start = 2
 		data.Scheduled = 3
 		valid = RollCallCreatedIsValid(data, string(laoId))
-		if valid == true {
+		if valid {
 			t.Errorf("Created Meeting Should be invalid due to incoherent setup (cannot have start "+
 				"& scheduled strictly positive at the same time) %#v", data)
 		}
@@ -377,7 +376,7 @@ func TestRollCallCreatedBadFields(t *testing.T) {
 		data.Start = 0
 		data.Scheduled = 0
 		valid = RollCallCreatedIsValid(data, string(laoId))
-		if valid == true {
+		if valid {
 			t.Errorf("Created Meeting Should be invalid due to incoherent setup (cannot have start "+
 				"& scheduled equal 0 at the same time) %#v", data)
 		}
@@ -385,7 +384,7 @@ func TestRollCallCreatedBadFields(t *testing.T) {
 		data.Start = data.Creation - 5
 		data.Scheduled = 0
 		valid = RollCallCreatedIsValid(data, string(laoId))
-		if valid == true {
+		if valid {
 			t.Errorf("Created Meeting Should be invalid due to incoherent setup (cannot have start "+
 				"less than creation & scheduled equal 0 ) %#v", data)
 		}
@@ -393,7 +392,7 @@ func TestRollCallCreatedBadFields(t *testing.T) {
 		data.Scheduled = data.Creation - 5
 		data.Start = 0
 		valid = RollCallCreatedIsValid(data, string(laoId))
-		if valid == true {
+		if valid {
 			t.Errorf("Created Meeting Should be invalid due to incoherent setup (cannot have scheduled "+
 				"less than creation & start equal 0 ) %#v", data)
 		}
@@ -401,7 +400,7 @@ func TestRollCallCreatedBadFields(t *testing.T) {
 		data.Scheduled = data.Creation - 5
 		data.Start = 0
 		valid = RollCallCreatedIsValid(data, string(laoId))
-		if valid == true {
+		if valid {
 			t.Errorf("Created Meeting Should be invalid due to incoherent setup (cannot have scheduled "+
 				"less than creation & start equal 0 ) %#v", data)
 		}
@@ -424,8 +423,8 @@ func TestMeetingBadFields(t *testing.T) {
 		if i%2 == 0 {
 			creation = time.Now().Unix() - MaxClockDifference - 1
 		}
-		start := creation + (MaxPropagationDelay / 2)
-		end := creation + (MaxPropagationDelay / 2)
+		start := creation + 1
+		end := creation + 1
 		name := "someMeeting"
 		laoId := []byte("12345")
 
@@ -434,21 +433,21 @@ func TestMeetingBadFields(t *testing.T) {
 			t.Error(err)
 		}
 		valid := MeetingCreatedIsValid(data, string(laoId))
-		if valid == true {
+		if valid {
 			t.Errorf("Created Meeting Should be invalid due to bad creation %#v", data)
 		}
 		//==================================================================//
 		creation = time.Now().Unix()
 		data.Start = creation + 2*MaxPropagationDelay
 		valid = MeetingCreatedIsValid(data, string(laoId))
-		if valid == true {
+		if valid {
 			t.Errorf("Created Meeting Should be invalid due to bad start %#v", data)
 		}
 		//==================================================================//
 		creation = time.Now().Unix()
 		data.Start = creation - 2*MaxPropagationDelay
 		valid = MeetingCreatedIsValid(data, string(laoId))
-		if valid == true {
+		if valid {
 			t.Errorf("Created Meeting Should be invalid due to bad timestamp: "+
 				"Either end is before start, or start before creation. %#v", data)
 		}
@@ -456,22 +455,22 @@ func TestMeetingBadFields(t *testing.T) {
 		//==================================================================//
 		data.End = data.Start - 10
 		valid = MeetingCreatedIsValid(data, string(laoId))
-		if valid == true {
+		if valid {
 			t.Errorf("Created Meeting Should be invalid due to bad end %#v", data)
 		}
 		//==================================================================//
 		data.Creation = time.Now().Unix()
-		data.Start = creation + (MaxPropagationDelay / 2)
-		data.End = creation + (MaxPropagationDelay / 2)
+		data.Start = creation + 2
+		data.End = creation + 2
 		data.Name = ""
 		valid = MeetingCreatedIsValid(data, string(laoId))
-		if valid == true {
+		if valid {
 			t.Errorf("Created Meeting Should be invalid due to empty name %#v", data)
 		}
 		//==================================================================//
 		data.ID = []byte("wo shi fa guo ren")
 		valid = MeetingCreatedIsValid(data, string(laoId))
-		if valid == true {
+		if valid {
 			t.Errorf("Created Meeting Should be invalid due to bad id %#v", data)
 		}
 		err = checkMessageIsValid(publicKey, privateKey, data, witnessSignatures)
@@ -497,7 +496,7 @@ func TestLAOInvalidName(t *testing.T) {
 		t.Error(err)
 	}
 	valid := LAOIsValid(data, true)
-	if valid == true {
+	if valid {
 		t.Errorf("Created Lao Should be invalid due to empty location %#v", data)
 	}
 }
@@ -518,7 +517,7 @@ func TestLAOInvalidId(t *testing.T) {
 	}
 	data.ID = []byte("123456")
 	valid := LAOIsValid(data, true)
-	if valid == true {
+	if valid {
 		t.Errorf("Created Lao Should be invalid due to incorrect id %#v", data)
 	}
 }
@@ -607,16 +606,6 @@ func marshalSignatureArray(keySignaturePairs []message.ItemWitnessSignatures) ([
 		signatures = append(signatures, pairString)
 	}
 	return signatures, nil
-}
-
-// generateKeyPair returns a pair of public and private key
-// DEPRECATED: use lib.generate keyPairs instead
-func generateKeyPair() ([]byte, ed.PrivateKey) {
-	//randomize the key
-	randomSeed := make([]byte, ed.PublicKeySize)
-	rand.Read(randomSeed)
-	privateKey := ed.NewKeyFromSeed(randomSeed)
-	return privateKey.Public().(ed.PublicKey), privateKey
 }
 
 // createMeeting returns a valid message.DataCreateMeeting with the parameters passed as arguments.

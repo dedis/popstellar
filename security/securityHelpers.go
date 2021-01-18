@@ -11,7 +11,7 @@ import (
 )
 
 const MaxPropagationDelay = 2
-const MaxClockDifference = 3
+const MaxClockDifference = 2
 
 // VerifySignature checks that Sign(itemToVerify) corresponds to the given signature
 func VerifySignature(publicKey []byte, itemToVerify []byte, signature []byte) error {
