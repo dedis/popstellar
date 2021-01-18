@@ -9,7 +9,9 @@ type Data map[string]interface{}
 
 // []byte are automatically decoded from base64 when unmarshalled, while strings (and json.RawMessage) are NOT
 
-/* potential enums, but doesn't typecheck in go, the checks must still be manual, so kinda useless
+// all concatenation referenced here are made with the HashItems function, go check it out have any doubt of how we do it
+
+/* potential enums, but doesn't type check in go, the checks must still be manual, so kinda useless
 type Object string
 const(
 	Lao Object = "lao"
@@ -103,7 +105,7 @@ type DataOpenRollCall struct {
 type DataCreatePoll struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
-	//ID hash : SHA256(lao_id||creation||name)
+	//ID hash : SHA256( 'P'||lao_id||creation||name)
 	ID []byte `json:"id"`
 	// Name of the poll
 	Name string `json:"name"`
@@ -156,7 +158,7 @@ type DataStateLAO struct {
 type DataStateMeeting struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
-	// hash : SHA256('M'||lao_id||creation||name)
+	// Meeting ID. not recomputed if the name changes
 	ID []byte `json:"id"`
 	// Name of the Meeting
 	Name string `json:"name"`
