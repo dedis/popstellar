@@ -123,6 +123,7 @@ public class PoPApplication extends Application {
 
     /**
      * Returns the current LAO. Must only be called if it would not make sense that there is no current Lao.
+     * @throws IllegalStateException if there is no current LAO
      */
     public Lao getCurrentLaoUnsafe() {
         if(currentLao == null)
