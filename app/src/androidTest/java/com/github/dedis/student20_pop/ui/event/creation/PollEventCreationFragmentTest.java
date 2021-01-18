@@ -9,6 +9,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import com.github.dedis.student20_pop.OrganizerActivity;
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
+import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.event.Event;
 
 import org.junit.Assert;
@@ -17,6 +18,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -186,7 +188,7 @@ public class PollEventCreationFragmentTest {
         activityScenarioRule.getScenario().onActivity(
                 activity -> {
                     PoPApplication app = (PoPApplication) activity.getApplication();
-                    List<Event> events = app.getEvents(app.getCurrentLao());
+                    List<Event> events = app.getCurrentLao().map(Lao::getEvents).orElse(new ArrayList<>());
                     List<String> eventsName = events.stream().map(Event::getName).collect(Collectors.toList());
                     Assert.assertThat(question, isIn(eventsName));
                 }

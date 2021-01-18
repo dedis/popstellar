@@ -8,8 +8,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import androidx.annotation.VisibleForTesting;
-
 import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.Person;
@@ -22,10 +20,11 @@ import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
 import java.net.URI;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_ALREADY_EXISTS;
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_SUCCESSFUL;
@@ -43,9 +42,8 @@ public class PoPApplication extends Application {
     public static final String USERNAME = "USERNAME";
     private static final URI LOCAL_BACKEND_URI = URI.create("ws://10.0.2.2:2000");
 
-    private final Map<Lao, List<Event>> laoEventsMap = new HashMap<>();
-    private final Map<Lao, List<String>> laoWitnessMap = new HashMap<>();
     private final Map<URI, HighLevelProxy> openSessions = new HashMap<>();
+    private final Map<String, Lao> laos = new HashMap<>();
 
     private static Context appContext;
 
@@ -90,7 +88,6 @@ public class PoPApplication extends Application {
         }
 
         activateTestingValues(); //comment this line when testing with a back-end
-        laoWitnessMap.put(currentLao, new ArrayList<>());
         localProxy = getProxy(LOCAL_BACKEND_URI);
     }
 
@@ -118,31 +115,27 @@ public class PoPApplication extends Application {
     }
 
     /**
-     * Returns the current LAO.
+     * Returns the current LAO as an Optional
      */
-    public Lao getCurrentLao() {
-        return  currentLao;
+    public Optional<Lao> getCurrentLao() {
+        return Optional.ofNullable(currentLao);
     }
 
     /**
-     * Returns list of LAOs corresponding to the user
+     * Returns the current LAO. Must only be called if it would not make sense that there is no current Lao.
+     * @throws IllegalStateException if there is no current LAO
+     */
+    public Lao getCurrentLaoUnsafe() {
+        if(currentLao == null)
+            throw new IllegalStateException();
+        return currentLao;
+    }
+
+    /**
+     * @return list of LAOs corresponding to the user
      */
     public List<Lao> getLaos() {
-        return new ArrayList<>(laoEventsMap.keySet());
-    }
-
-    /**
-     * Returns map of LAOs as keys and lists of events corresponding to the lao as values.
-     */
-    public Map<Lao, List<Event>> getLaoEventsMap() {
-        return laoEventsMap;
-    }
-
-    /**
-     * Returns the list of Events associated with the given LAO, null if lao is not in the map.
-     */
-    public List<Event> getEvents(Lao lao) {
-        return laoEventsMap.get(lao);
+        return new ArrayList<>(laos.values());
     }
 
     /**
@@ -151,30 +144,7 @@ public class PoPApplication extends Application {
      * @return lao's corresponding list of witnesses
      */
     public List<String> getWitnesses() {
-        return laoWitnessMap.get(currentLao);
-    }
-
-    /**
-     * Get the list of witnesses of a given LAO
-     *
-     * @param lao from where we want to get the witnesses
-     * @return lao's corresponding list of witnesses
-     */
-    public List<String> getWitnesses(Lao lao) {
-        List<String> laoWitnesses = laoWitnessMap.get(lao);
-        if (laoWitnesses == null) {
-            laoWitnesses = new ArrayList<>();
-            laoWitnessMap.put(lao, laoWitnesses);
-        }
-
-        return laoWitnessMap.get(lao);
-    }
-
-    /**
-     * Returns the map of LAOs and its witnesses.
-     */
-    public Map<Lao, List<String>> getLaoWitnessMap() {
-        return laoWitnessMap;
+        return getCurrentLao().map(Lao::getWitnesses).orElseGet(ArrayList::new);
     }
 
     /**
@@ -204,6 +174,15 @@ public class PoPApplication extends Application {
     }
 
     /**
+     * Add a new LAO to the app
+     *
+     * @param lao to add
+     */
+    public void createLao(Lao lao) {
+        laos.put(lao.getId(), lao);
+    }
+
+    /**
      * Set a Person for this Application, can only be done once
      *
      * @param person to be set for this Application
@@ -224,46 +203,13 @@ public class PoPApplication extends Application {
     }
 
     /**
-     * Modify a LAO
-     *
-     * @param lao to modify
-     * @param newLao the modified lao
-     */
-    public void modifyLao(Lao lao, Lao newLao){
-        List<Event> events = laoEventsMap.remove(lao);
-        if (events != null){
-            laoEventsMap.put(newLao, events);
-        }
-    }
-
-    /**
-     * Add a LAO to this Application
-     *
-     * @param lao to add
-     */
-    public void addLao(Lao lao) {
-        if (!laoEventsMap.containsKey(lao)) {
-            this.laoEventsMap.put(lao, new ArrayList<>());
-        }
-    }
-
-    /**
-     * Add an event to the current LAO
-     *
-     * @param event to be added
+     * @param event to be added to the current lao
      */
     public void addEvent(Event event) {
-        addEvent(getCurrentLao(), event);
-    }
-
-    /**
-     * Add an event to a specified LAO
-     *
-     * @param lao   of the new event
-     * @param event to be added
-     */
-    public void addEvent(Lao lao, Event event) {
-        getEvents(lao).add(event);
+        getCurrentLao().ifPresent(lao -> {
+            lao.addEvent(event);
+            // TODO Call backend
+        });
     }
 
     /**
@@ -290,19 +236,11 @@ public class PoPApplication extends Application {
         // send info to backend
         // If witness has been added return true, otherwise false
 
-        List<String> laoWitnesses = laoWitnessMap.get(lao);
-        if (laoWitnesses == null) {
-            laoWitnesses = new ArrayList<>();
-            laoWitnessMap.put(lao, laoWitnesses);
-        }
-
-        if (laoWitnesses.contains(witness)) {
+        if(lao.addWitness(witness)) {
+            return ADD_WITNESS_SUCCESSFUL;
+        } else {
             return ADD_WITNESS_ALREADY_EXISTS;
         }
-
-        laoWitnesses.add(witness);
-
-        return ADD_WITNESS_SUCCESSFUL;
     }
 
     /**
@@ -334,28 +272,40 @@ public class PoPApplication extends Application {
      */
     public void activateTestingValues() {
         currentLao = new Lao("LAO I just joined", person.getId());
-        dummyLaoEventMap();
+        dummyLaos();
+    }
+
+    private List<Event> dummyEvents(String laoId) {
+        return Arrays.asList(
+                new Event("Future Event 1", laoId, 2617547969L, "EPFL", POLL),
+                new Event("Present Event 1", laoId, Instant.now().getEpochSecond(), "Somewhere", DISCUSSION),
+                new Event("Past Event 1", laoId, 1481643086L, "Here", MEETING));
     }
 
     /**
      * This method creates a map for testing, when no backend is connected.
      */
-    private void dummyLaoEventMap() {
-        List<Event> events = new ArrayList<>();
-        Event event1 = new Event("Future Event 1", new Keys().getPublicKey(), 2617547969L, "EPFL", POLL);
-        Event event2 = new Event("Present Event 1", new Keys().getPublicKey(), Instant.now().getEpochSecond(), "Somewhere", DISCUSSION);
-        Event event3 = new Event("Past Event 1", new Keys().getPublicKey(), 1481643086L, "Here", MEETING);
-        events.add(event1);
-        events.add(event2);
-        events.add(event3);
-
+    private void dummyLaos() {
         String notMyPublicKey = new Keys().getPublicKey();
+        Lao lao0 = new Lao("LAO I just joined", getPerson().getId());
+        Lao lao1 = new Lao("LAO 1", notMyPublicKey);
+        Lao lao2 = new Lao("LAO 2", notMyPublicKey);
+        Lao lao3 = new Lao("My LAO 3", getPerson().getId());
+        Lao lao4 = new Lao("LAO 4", notMyPublicKey);
 
-        laoEventsMap.put(currentLao, events);
-        laoEventsMap.put(new Lao("LAO 1", notMyPublicKey), events);
-        laoEventsMap.put(new Lao("LAO 2", notMyPublicKey), events);
-        laoEventsMap.put(new Lao("My LAO 3", person.getId()), events);
-        laoEventsMap.put(new Lao("LAO 4", notMyPublicKey), events);
+        lao0.setEvents(dummyEvents(lao0.getId()));
+        lao1.setEvents(dummyEvents(lao0.getId()));
+        lao2.setEvents(dummyEvents(lao0.getId()));
+        lao2.setEvents(dummyEvents(lao0.getId()));
+        lao3.setEvents(dummyEvents(lao0.getId()));
+
+        createLao(lao0);
+        createLao(lao1);
+        createLao(lao2);
+        createLao(lao3);
+        createLao(lao4);
+
+        setCurrentLao(lao0);
     }
 
     /**

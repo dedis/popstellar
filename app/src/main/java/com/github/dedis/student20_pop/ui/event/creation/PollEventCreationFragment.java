@@ -138,7 +138,7 @@ public final class PollEventCreationFragment extends AbstractEventCreationFragme
             Event pollEvent = new PollEvent(question,
                     startTimeInSeconds,
                     endTimeInSeconds,
-                    app.getCurrentLao().getId(),
+                    app.getCurrentLaoUnsafe().getId(),
                     NO_LOCATION,
                     choicesList,
                     pollTypeIsOneOfN);

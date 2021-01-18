@@ -243,15 +243,15 @@ public class OrganizerFragmentTest {
             Assert.assertTrue(fragment instanceof QRCodeScanningFragment);
 
             PoPApplication app = (PoPApplication) a.getApplication();
-            final String LAO_ID = app.getCurrentLao().getId();
+            final String LAO_ID = app.getCurrentLaoUnsafe().getId();
             final String WITNESS_ID = "t9Ed+TEwDM0+u0ZLdS4ZB/Vrrnga0Lu2iMkAQtyFRrQ=";
             final String TEST_IDS = WITNESS_ID + LAO_ID;
 
             ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_WITNESS, null);
 
-            for (Entry<Lao, List<String>> laoListEntry : app.getLaoWitnessMap().entrySet()) {
-                if (laoListEntry.getKey().getId().equals(LAO_ID)) {
-                    List<String> witnesses = laoListEntry.getValue();
+            for (Lao lao : app.getLaos()) {
+                if (lao.getId().equals(LAO_ID)) {
+                    List<String> witnesses = lao.getWitnesses();
                     Assert.assertThat(WITNESS_ID, isIn(witnesses));
                 }
             }
@@ -277,16 +277,16 @@ public class OrganizerFragmentTest {
             Assert.assertTrue(fragment instanceof QRCodeScanningFragment);
 
             PoPApplication app = (PoPApplication) a.getApplication();
-            final String LAO_ID = app.getCurrentLao().getId();
+            final String LAO_ID = app.getCurrentLaoUnsafe().getId();
             final String WITNESS_ID = "t9Ed+TEwDM0+u0ZLdS4ZB/Vrrnga0Lu2iMkAQtyFRrQ=";
             final String TEST_IDS = WITNESS_ID + LAO_ID;
             app.addWitness(WITNESS_ID);
 
             ((QRCodeScanningFragment) fragment).onQRCodeDetected(TEST_IDS, ADD_WITNESS, null);
 
-            for (Entry<Lao, List<String>> laoListEntry : app.getLaoWitnessMap().entrySet()) {
-                if (laoListEntry.getKey().getId().equals(LAO_ID)) {
-                    List<String> witnesses = laoListEntry.getValue();
+            for (Lao lao : app.getLaos()) {
+                if (lao.getId().equals(LAO_ID)) {
+                    List<String> witnesses = lao.getWitnesses();
                     Assert.assertThat(WITNESS_ID, isIn(witnesses));
                 }
             }

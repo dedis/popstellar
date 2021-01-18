@@ -51,9 +51,9 @@ public class PoPApplicationTest {
     public void canAddOneWitnessToLAO() {
         ActivityScenario.launch(MainActivity.class).onActivity(a -> {
             PoPApplication app = (PoPApplication) a.getApplication();
-            assertThat(app.getWitnesses(lao1), is(empty()));
+            assertThat(lao1.getWitnesses(), is(empty()));
             AddWitnessResult result = app.addWitness(lao1, witness1);
-            assertThat(app.getWitnesses(lao1), is(Collections.singletonList(witness1)));
+            assertThat(lao1.getWitnesses(), is(Collections.singletonList(witness1)));
             assertThat(result, is(ADD_WITNESS_SUCCESSFUL));
         });
     }
@@ -73,9 +73,9 @@ public class PoPApplicationTest {
     public void canAddWitnessesToLAO() {
         ActivityScenario.launch(MainActivity.class).onActivity(a -> {
             PoPApplication app = (PoPApplication) a.getApplication();
-            assertThat(app.getWitnesses(lao1), is(empty()));
+            assertThat(lao1.getWitnesses(), is(empty()));
             List<AddWitnessResult> results = app.addWitnesses(lao1, witnesses);
-            assertThat(app.getWitnesses(lao1), is(witnesses));
+            assertThat(lao1.getWitnesses(), is(witnesses));
             for (AddWitnessResult result : results) {
                 assertThat(result, is(ADD_WITNESS_SUCCESSFUL));
             }
@@ -111,11 +111,11 @@ public class PoPApplicationTest {
     public void cannotAddTwiceSameWitnessToLAO() {
         ActivityScenario.launch(MainActivity.class).onActivity(a -> {
             PoPApplication app = (PoPApplication) a.getApplication();
-            assertThat(app.getWitnesses(lao1), is(empty()));
+            assertThat(lao1.getWitnesses(), is(empty()));
             AddWitnessResult result1 = app.addWitness(lao1, witness1);
             AddWitnessResult result2 = app.addWitness(lao1, witness1);
 
-            assertThat(app.getWitnesses(lao1), is(Collections.singletonList(witness1)));
+            assertThat(lao1.getWitnesses(), is(Collections.singletonList(witness1)));
             assertThat(result1, is(ADD_WITNESS_SUCCESSFUL));
             assertThat(result2, is(ADD_WITNESS_ALREADY_EXISTS));
         });
@@ -125,7 +125,6 @@ public class PoPApplicationTest {
     public void startAppCreatesInfoTest() {
         ActivityScenario.launch(MainActivity.class).onActivity(a -> {
             PoPApplication app = (PoPApplication) a.getApplication();
-            assertThat(app.getLaos(), is(new ArrayList<>(app.getLaoEventsMap().keySet())));
             assertThat(app.getPerson().getName(), is(PoPApplication.USERNAME));
             assertNotNull(app.getPerson());
         });
@@ -149,11 +148,11 @@ public class PoPApplicationTest {
     public void cannotAddTwiceSameWitnessesToLAO() {
         ActivityScenario.launch(MainActivity.class).onActivity(a -> {
             PoPApplication app = (PoPApplication) a.getApplication();
-            assertThat(app.getWitnesses(lao1), is(empty()));
+            assertThat(lao1.getWitnesses(), is(empty()));
             List<AddWitnessResult> results1 = app.addWitnesses(lao1, witnesses);
             List<AddWitnessResult> results2 = app.addWitnesses(lao1, witnesses);
 
-            assertThat(app.getWitnesses(lao1), is(witnesses));
+            assertThat(lao1.getWitnesses(), is(witnesses));
             for (AddWitnessResult result : results1) {
                 assertThat(result, is(ADD_WITNESS_SUCCESSFUL));
             }
