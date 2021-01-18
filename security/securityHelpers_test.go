@@ -91,7 +91,7 @@ func witnessesAndSignatures(correctWitnesses bool, correctSignatures bool) (auth
 		signatures = arraySign(keys, id)
 	}
 
-	witnessSignatures, err = PlugWitnessesInArray(signatures)
+	witnessSignatures, err = marshalSignatureArray(signatures)
 	if err != nil {
 		return nil, nil, nil, errors.New("Problem when Marshaling witnessKeysAndSignatures")
 	}
@@ -102,7 +102,7 @@ func witnessesAndSignatures(correctWitnesses bool, correctSignatures bool) (auth
 func generateKeyPairs() []keys {
 	var keyList []keys
 	for i := 0; i < 10; i++ {
-		publicKey, privateKey := createKeyPair()
+		publicKey, privateKey := generateKeyPair()
 		keyList = append(keyList, keys{private: privateKey, public: publicKey})
 	}
 	return keyList

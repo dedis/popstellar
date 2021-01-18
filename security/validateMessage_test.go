@@ -9,11 +9,10 @@ import (
 	"math/rand"
 	"strconv"
 	"student20_pop/event"
+	"student20_pop/message"
+	"student20_pop/parser"
 	"testing"
 	"time"
-
-	message2 "student20_pop/message"
-	"student20_pop/parser"
 )
 
 // we don't check the switch in messageIsValid
@@ -22,12 +21,12 @@ import (
 func TestMessageIsValidWithoutWitnesses(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
-		pubkey, privkey := createKeyPair()
-		witnessSignatures := []message2.ItemWitnessSignatures{}
-		witnessKeys := [][]byte{}
+		publicKey, privateKey := generateKeyPair()
+		var witnessSignatures []message.ItemWitnessSignatures
+		var witnessKeys [][]byte
 		var creation = time.Now().Unix()
 		name := "My LAO"
-		data, err := createDataLao(pubkey, privkey, witnessKeys, creation, name)
+		data, err := createLAO(publicKey, privateKey, witnessKeys, creation, name)
 		if err != nil {
 			t.Error(err)
 		}
@@ -35,7 +34,7 @@ func TestMessageIsValidWithoutWitnesses(t *testing.T) {
 		if valid != true {
 			t.Errorf("Created Lao Should be valid %#v", data)
 		}
-		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures)
+		err = checkMessageIsValid(publicKey, privateKey, data, witnessSignatures)
 		if err != nil {
 			t.Error(err)
 		}
@@ -46,75 +45,44 @@ func TestMessageIsValidWithoutWitnesses(t *testing.T) {
 func TestDataWitnessMessageIsValid(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
-		pubkey, privkey := createKeyPair()
-		witnessSignatures := []message2.ItemWitnessSignatures{}
-		messageIdToWitness := []byte("enfin un truc à signer")
-		data, err := createDataWitnessMessage(privkey, messageIdToWitness)
+		publicKey, privateKey := generateKeyPair()
+		var witnessSignatures []message.ItemWitnessSignatures
+		messageIdToWitness := []byte("finally something to sign")
+		data, err := createWitnessMessage(privateKey, messageIdToWitness)
 		if err != nil {
 			t.Error(err)
 		}
-		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures)
+		err = checkMessageIsValid(publicKey, privateKey, data, witnessSignatures)
 		if err != nil {
 			t.Error(err)
 		}
 	}
 }
 
-/*
-// Basically following the last meeting (22/12/20) we are not supposed to have this case
-func TestMessageIsValidWithAssessedWitnesses(t *testing.T) {
-	//increase nb of tests
-	for i := 0; i < 100; i++ {
-		pubkey, privkey := createKeyPair()
-		witnessSignatures := []message2.ItemWitnessSignatures{}
-		authorisedWitnessKeys, jsonArrayOfWitnessSigantures, id, err := witnessesAndSignatures(true, true)
-		var creation = time.Now().Unix()
-		name := "My LAO"
-		data, err := createDataLao(pubkey, privkey, authorisedWitnessKeys, creation, name)
-		if err != nil {
-			t.Error(err)
-		}
-		valid := LAOIsValid(data,true )
-		if valid != true {
-			t.Errorf("Created Lao Should be valid %#v", data)
-		}
-
-		data, signed, id,err:= getIdofMessage(data,privkey)
-		if err != nil {
-			t.Error(err)
-		}
-		witnessSignatures := arraySign(keyz,id)
-		err = CheckMessageIsValid(pubkey,privkey,data,witnessSignatures,witnessKeys)
-		if err != nil {
-			t.Error(err)
-		}
-	}
-}
-*/
 //TestRollCallOpenedIsValid checks that a message containing a openRollCall is valid at both message and data layer
 func TestRollCallOpenedIsValid(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
-		pubkey, privkey := createKeyPair()
-		witnessSignatures := []message2.ItemWitnessSignatures{}
+		publicKey, privateKey := generateKeyPair()
+		var witnessSignatures []message.ItemWitnessSignatures
 		rollCallCreation := time.Now().Unix()
 		start := rollCallCreation + (MaxPropagationDelay / 2)
 		rollCallName := "encore un roll call"
-		lao_id := []byte("12345")
+		laoId := []byte("12345")
 
-		data, err := createOpenRollCall(pubkey, privkey, rollCallCreation, start, rollCallName, lao_id)
+		data, err := createOpenRollCall(publicKey, privateKey, rollCallCreation, start, rollCallName, laoId)
 		if err != nil {
 			t.Error(err)
 		}
-		rollCall, err := createEventRollCall(pubkey, privkey, rollCallCreation, start, rollCallName, lao_id)
+		rollCall, err := createRollCallEvent(publicKey, privateKey, rollCallCreation, start, rollCallName, laoId)
 		if err != nil {
 			t.Error(err)
 		}
-		valid := RollCallOpenedIsValid(data, string(lao_id), rollCall)
+		valid := RollCallOpenedIsValid(data, string(laoId), rollCall)
 		if valid != true {
 			t.Errorf("Created rollcall Should be valid %#v", data)
 		}
-		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures)
+		err = checkMessageIsValid(publicKey, privateKey, data, witnessSignatures)
 		if err != nil {
 			t.Error(err)
 		}
@@ -125,28 +93,28 @@ func TestRollCallOpenedIsValid(t *testing.T) {
 func TestRollCallClosedIsValid(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
-		pubkey, privkey := createKeyPair()
-		witnessSignatures := []message2.ItemWitnessSignatures{}
-		attendeesPks := [][]byte{}
+		publicKey, privateKey := generateKeyPair()
+		var witnessSignatures []message.ItemWitnessSignatures
+		var attendeesPks [][]byte
 
 		rollCallCreation := time.Now().Unix()
 		rollCallName := "encore un roll call"
 		start := rollCallCreation + (MaxPropagationDelay / 4)
 		end := start + (MaxPropagationDelay / 4)
-		lao_id := []byte("12345")
-		data, err := createCloseRollCallNow(pubkey, privkey, rollCallCreation, start, end, rollCallName, lao_id, attendeesPks)
+		laoId := []byte("12345")
+		data, err := createCloseRollCallNow(publicKey, privateKey, rollCallCreation, start, end, rollCallName, laoId, attendeesPks)
 		if err != nil {
 			t.Error(err)
 		}
-		rollCall, err := createEventRollCall(pubkey, privkey, rollCallCreation, start, rollCallName, lao_id)
+		rollCall, err := createRollCallEvent(publicKey, privateKey, rollCallCreation, start, rollCallName, laoId)
 		if err != nil {
 			t.Error(err)
 		}
-		valid := RollCallClosedIsValid(data, string(lao_id), rollCall)
+		valid := RollCallClosedIsValid(data, string(laoId), rollCall)
 		if valid != true {
 			t.Errorf("closed rollcall Should be valid %#v", data)
 		}
-		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures)
+		err = checkMessageIsValid(publicKey, privateKey, data, witnessSignatures)
 		if err != nil {
 			t.Error(err)
 		}
@@ -157,21 +125,21 @@ func TestRollCallClosedIsValid(t *testing.T) {
 func TestRollCallCreatedIsValid(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
-		pubkey, privkey := createKeyPair()
-		witnessSignatures := []message2.ItemWitnessSignatures{}
+		publicKey, privateKey := generateKeyPair()
+		var witnessSignatures []message.ItemWitnessSignatures
 		var creation = time.Now().Unix()
 		start := creation + (MaxPropagationDelay / 2)
 		name := "RollCallNow"
-		lao_id := []byte("12345")
-		data, err := createRollCallNow(pubkey, privkey, creation, start, name, lao_id)
+		laoId := []byte("12345")
+		data, err := createRollCallNow(publicKey, privateKey, creation, start, name, laoId)
 		if err != nil {
 			t.Error(err)
 		}
-		valid := RollCallCreatedIsValid(data, string(lao_id))
+		valid := RollCallCreatedIsValid(data, string(laoId))
 		if valid != true {
 			t.Errorf("Created rollcall Should be valid %#v", data)
 		}
-		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures)
+		err = checkMessageIsValid(publicKey, privateKey, data, witnessSignatures)
 		if err != nil {
 			t.Error(err)
 		}
@@ -182,55 +150,55 @@ func TestRollCallCreatedIsValid(t *testing.T) {
 func TestMeetingCreatedIsValid(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
-		pubkey, privkey := createKeyPair()
-		witnessSignatures := []message2.ItemWitnessSignatures{}
+		publicKey, privateKey := generateKeyPair()
+		var witnessSignatures []message.ItemWitnessSignatures
 		var creation = time.Now().Unix()
 		start := creation + (MaxPropagationDelay / 2)
 		end := creation + (MaxPropagationDelay / 2)
 		name := "someMeetintintinitin"
-		lao_id := []byte("12345")
+		laoId := []byte("12345")
 
-		data, err := createMeeting(pubkey, privkey, creation, start, end, name, lao_id)
+		data, err := createMeeting(publicKey, privateKey, creation, start, end, name, laoId)
 		if err != nil {
 			t.Error(err)
 		}
-		valid := MeetingCreatedIsValid(data, string(lao_id))
+		valid := MeetingCreatedIsValid(data, string(laoId))
 		if valid != true {
 			t.Errorf("Created Meeting Should be valid %#v", data)
 		}
-		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures)
+		err = checkMessageIsValid(publicKey, privateKey, data, witnessSignatures)
 		if err != nil {
 			t.Error(err)
 		}
 	}
 }
 
-//==================invalid Tests========================//
+//================== invalid Tests ========================//
 
 //TestBadDataWitnessMessage checks that a bad witness message is invalid
 func TestBadDataWitnessMessage(t *testing.T) {
-	pubkey, privkey := createKeyPair()
-	witnessSignatures := []message2.ItemWitnessSignatures{}
+	publicKey, privateKey := generateKeyPair()
+	var witnessSignatures []message.ItemWitnessSignatures
 	messageIdToWitness := []byte("enfin un truc à signer")
-	data, err := createDataWitnessMessage(privkey, messageIdToWitness)
+	data, err := createWitnessMessage(privateKey, messageIdToWitness)
 	if err != nil {
 		t.Error(err)
 	}
 	data.Signature = []byte("oulala la mauvaise signature")
-	err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures)
+	err = checkMessageIsValid(publicKey, privateKey, data, witnessSignatures)
 	if err == nil {
 		t.Errorf("Didn't detect Witness message with invalid signaure %#v", data)
 	}
 	//==================================================================//
 	//Here we test when the message signature is invalid
-	message, err := makeMessage(pubkey, privkey, data, witnessSignatures)
+	msg, err := makeMessage(publicKey, privateKey, data, witnessSignatures)
 	if err != nil {
 		t.Error(err)
 	}
 
-	message.Signature = []byte("oulala la mauvaise signature")
+	msg.Signature = []byte("oulala la mauvaise signature")
 
-	messageFlat, err := json.Marshal(message)
+	messageFlat, err := json.Marshal(msg)
 	if err != nil {
 		t.Error(err)
 	}
@@ -245,14 +213,14 @@ func TestBadDataWitnessMessage(t *testing.T) {
 	}
 	//==================================================================//
 	//Here we test when the message id is invalid
-	message, err = makeMessage(pubkey, privkey, data, witnessSignatures)
+	msg, err = makeMessage(publicKey, privateKey, data, witnessSignatures)
 	if err != nil {
 		t.Error(err)
 	}
 
-	message.MessageId = []byte("oulala la mauvaise identititittity")
+	msg.MessageId = []byte("oulala la mauvaise identititittity")
 
-	messageFlat, err = json.Marshal(message)
+	messageFlat, err = json.Marshal(msg)
 	if err != nil {
 		t.Error(err)
 	}
@@ -267,14 +235,14 @@ func TestBadDataWitnessMessage(t *testing.T) {
 	}
 	//==================================================================//
 	//Here we test when the message id is invalid
-	message, err = makeMessage(pubkey, privkey, data, witnessSignatures)
+	msg, err = makeMessage(publicKey, privateKey, data, witnessSignatures)
 	if err != nil {
 		t.Error(err)
 	}
 
-	message.Data = []byte("oulala la\", \\} mauvaise data imparsable")
+	msg.Data = []byte("oulala la\", \\} mauvaise data imparsable")
 
-	messageFlat, err = json.Marshal(message)
+	messageFlat, err = json.Marshal(msg)
 	if err != nil {
 		t.Error(err)
 	}
@@ -291,23 +259,23 @@ func TestBadDataWitnessMessage(t *testing.T) {
 
 //TestRollCallClosedInvalid checks that a message containing a closeRollCall with bad timestamps is invalid
 func TestRollCallClosedInvalid(t *testing.T) {
-	pubkey, privkey := createKeyPair()
-	attendeesPks := [][]byte{}
+	publicKey, privateKey := generateKeyPair()
+	var attendeesPks [][]byte
 
 	rollCallCreation := time.Now().Unix()
 	rollCallName := "encore un roll call"
 	start := rollCallCreation + (MaxPropagationDelay / 4)
 	end := start - (MaxPropagationDelay / 4)
-	lao_id := []byte("12345")
-	data, err := createCloseRollCallNow(pubkey, privkey, rollCallCreation, start, end, rollCallName, lao_id, attendeesPks)
+	laoId := []byte("12345")
+	data, err := createCloseRollCallNow(publicKey, privateKey, rollCallCreation, start, end, rollCallName, laoId, attendeesPks)
 	if err != nil {
 		t.Error(err)
 	}
-	rollCall, err := createEventRollCall(pubkey, privkey, rollCallCreation, start, rollCallName, lao_id)
+	rollCall, err := createRollCallEvent(publicKey, privateKey, rollCallCreation, start, rollCallName, laoId)
 	if err != nil {
 		t.Error(err)
 	}
-	valid := RollCallClosedIsValid(data, string(lao_id), rollCall)
+	valid := RollCallClosedIsValid(data, string(laoId), rollCall)
 	if valid == true {
 		t.Errorf("didn't detect that closed rollcall is invalid %#v", data)
 	}
@@ -316,21 +284,21 @@ func TestRollCallClosedInvalid(t *testing.T) {
 //TestOpenRollCallBadFields checks that a message containing a openRollCall with invalid start is invalid at data layer
 func TestOpenRollCallBadFields(t *testing.T) {
 	for i := 0; i < 2; i++ {
-		pubkey, privkey := createKeyPair()
+		publicKey, privateKey := generateKeyPair()
 		rollCallCreation := time.Now().Unix()
 		start := rollCallCreation - (MaxPropagationDelay / 2)
 		rollCallName := "encore un roll call"
-		lao_id := []byte("12345")
+		laoId := []byte("12345")
 
-		data, err := createOpenRollCall(pubkey, privkey, rollCallCreation, start, rollCallName, lao_id)
+		data, err := createOpenRollCall(publicKey, privateKey, rollCallCreation, start, rollCallName, laoId)
 		if err != nil {
 			t.Error(err)
 		}
-		rollCall, err := createEventRollCall(pubkey, privkey, rollCallCreation, start, rollCallName, lao_id)
+		rollCall, err := createRollCallEvent(publicKey, privateKey, rollCallCreation, start, rollCallName, laoId)
 		if err != nil {
 			t.Error(err)
 		}
-		valid := RollCallOpenedIsValid(data, string(lao_id), rollCall)
+		valid := RollCallOpenedIsValid(data, string(laoId), rollCall)
 		if valid == true {
 			t.Errorf("Opened rollcall Should be invalid, start before creation %#v", data)
 		}
@@ -341,18 +309,18 @@ func TestOpenRollCallBadFields(t *testing.T) {
 //and that the message is invalidated due to incorrect private key
 func TestRollCallCreatedBadFields(t *testing.T) {
 	for i := 0; i < 2; i++ {
-		pubkey, privkey := createKeyPair()
-		witnessSignatures := []message2.ItemWitnessSignatures{}
+		publicKey, privateKey := generateKeyPair()
+		var witnessSignatures []message.ItemWitnessSignatures
 		var creation = time.Now().Unix()
 		start := creation + (MaxPropagationDelay / 2)
 		name := "RollCallNow"
-		lao_id := []byte("12345")
-		data, err := createRollCallNow(pubkey, privkey, creation, start, name, lao_id)
+		laoId := []byte("12345")
+		data, err := createRollCallNow(publicKey, privateKey, creation, start, name, laoId)
 		if err != nil {
 			t.Error(err)
 		}
-		notLao_id := []byte("6789")
-		valid := RollCallCreatedIsValid(data, string(notLao_id))
+		notLaoId := []byte("6789")
+		valid := RollCallCreatedIsValid(data, string(notLaoId))
 		if valid == true {
 			t.Errorf("Created Rollcall Should be invalid beacause of invalid id %#v", data)
 		}
@@ -362,14 +330,14 @@ func TestRollCallCreatedBadFields(t *testing.T) {
 			creationBis = time.Now().Unix() - MaxClockDifference - 1
 		}
 		data.Creation = creationBis
-		valid = RollCallCreatedIsValid(data, string(lao_id))
+		valid = RollCallCreatedIsValid(data, string(laoId))
 		if valid == true {
 			t.Errorf("Created Meeting Should be invalid due to bad creation %#v", data)
 		}
 		//===========================================================//
 		data.Start = 2
 		data.Scheduled = 3
-		valid = RollCallCreatedIsValid(data, string(lao_id))
+		valid = RollCallCreatedIsValid(data, string(laoId))
 		if valid == true {
 			t.Errorf("Created Meeting Should be invalid due to incoherent setup (cannot have start "+
 				"& scheduled strictly positive at the same time) %#v", data)
@@ -377,7 +345,7 @@ func TestRollCallCreatedBadFields(t *testing.T) {
 		//===========================================================//
 		data.Start = 0
 		data.Scheduled = 0
-		valid = RollCallCreatedIsValid(data, string(lao_id))
+		valid = RollCallCreatedIsValid(data, string(laoId))
 		if valid == true {
 			t.Errorf("Created Meeting Should be invalid due to incoherent setup (cannot have start "+
 				"& scheduled equal 0 at the same time) %#v", data)
@@ -385,7 +353,7 @@ func TestRollCallCreatedBadFields(t *testing.T) {
 		//===========================================================//
 		data.Start = data.Creation - 5
 		data.Scheduled = 0
-		valid = RollCallCreatedIsValid(data, string(lao_id))
+		valid = RollCallCreatedIsValid(data, string(laoId))
 		if valid == true {
 			t.Errorf("Created Meeting Should be invalid due to incoherent setup (cannot have start "+
 				"less than creation & scheduled equal 0 ) %#v", data)
@@ -393,7 +361,7 @@ func TestRollCallCreatedBadFields(t *testing.T) {
 		//===========================================================//
 		data.Scheduled = data.Creation - 5
 		data.Start = 0
-		valid = RollCallCreatedIsValid(data, string(lao_id))
+		valid = RollCallCreatedIsValid(data, string(laoId))
 		if valid == true {
 			t.Errorf("Created Meeting Should be invalid due to incoherent setup (cannot have scheduled "+
 				"less than creation & start equal 0 ) %#v", data)
@@ -401,14 +369,14 @@ func TestRollCallCreatedBadFields(t *testing.T) {
 		//===========================================================//
 		data.Scheduled = data.Creation - 5
 		data.Start = 0
-		valid = RollCallCreatedIsValid(data, string(lao_id))
+		valid = RollCallCreatedIsValid(data, string(laoId))
 		if valid == true {
 			t.Errorf("Created Meeting Should be invalid due to incoherent setup (cannot have scheduled "+
 				"less than creation & start equal 0 ) %#v", data)
 		}
 		//verify that the message is invalidated due to incorrect private key
-		_, falsePrivkey := createKeyPair()
-		err = CheckMessageIsValid(pubkey, falsePrivkey, data, witnessSignatures)
+		_, falsePrivkey := generateKeyPair()
+		err = checkMessageIsValid(publicKey, falsePrivkey, data, witnessSignatures)
 		if err == nil {
 			t.Errorf("The Message Should be invalid beacause of incorrect Key %#v", data)
 		}
@@ -419,8 +387,8 @@ func TestRollCallCreatedBadFields(t *testing.T) {
 func TestMeetingBadFields(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 2; i++ {
-		pubkey, privkey := createKeyPair()
-		witnessSignatures := []message2.ItemWitnessSignatures{}
+		publicKey, privateKey := generateKeyPair()
+		var witnessSignatures []message.ItemWitnessSignatures
 		creation := time.Now().Unix() + time.Now().Unix() + MaxPropagationDelay + 1
 		if i%2 == 0 {
 			creation = time.Now().Unix() - MaxClockDifference - 1
@@ -428,27 +396,27 @@ func TestMeetingBadFields(t *testing.T) {
 		start := creation + (MaxPropagationDelay / 2)
 		end := creation + (MaxPropagationDelay / 2)
 		name := "someMeeting"
-		lao_id := []byte("12345")
+		laoId := []byte("12345")
 
-		data, err := createMeeting(pubkey, privkey, creation, start, end, name, lao_id)
+		data, err := createMeeting(publicKey, privateKey, creation, start, end, name, laoId)
 		if err != nil {
 			t.Error(err)
 		}
-		valid := MeetingCreatedIsValid(data, string(lao_id))
+		valid := MeetingCreatedIsValid(data, string(laoId))
 		if valid == true {
 			t.Errorf("Created Meeting Should be invalid due to bad creation %#v", data)
 		}
 		//==================================================================//
 		creation = time.Now().Unix()
 		data.Start = creation + 2*MaxPropagationDelay
-		valid = MeetingCreatedIsValid(data, string(lao_id))
+		valid = MeetingCreatedIsValid(data, string(laoId))
 		if valid == true {
 			t.Errorf("Created Meeting Should be invalid due to bad start %#v", data)
 		}
 		//==================================================================//
 		creation = time.Now().Unix()
 		data.Start = creation - 2*MaxPropagationDelay
-		valid = MeetingCreatedIsValid(data, string(lao_id))
+		valid = MeetingCreatedIsValid(data, string(laoId))
 		if valid == true {
 			t.Errorf("Created Meeting Should be invalid due to bad timestamp: "+
 				"Either end is before start, or start before creation. %#v", data)
@@ -456,7 +424,7 @@ func TestMeetingBadFields(t *testing.T) {
 		//data.Start < data.Creation || (data.End != 0 && data.End < data.Start) {
 		//==================================================================//
 		data.End = data.Start - 10
-		valid = MeetingCreatedIsValid(data, string(lao_id))
+		valid = MeetingCreatedIsValid(data, string(laoId))
 		if valid == true {
 			t.Errorf("Created Meeting Should be invalid due to bad end %#v", data)
 		}
@@ -465,17 +433,17 @@ func TestMeetingBadFields(t *testing.T) {
 		data.Start = creation + (MaxPropagationDelay / 2)
 		data.End = creation + (MaxPropagationDelay / 2)
 		data.Name = ""
-		valid = MeetingCreatedIsValid(data, string(lao_id))
+		valid = MeetingCreatedIsValid(data, string(laoId))
 		if valid == true {
 			t.Errorf("Created Meeting Should be invalid due to empty name %#v", data)
 		}
 		//==================================================================//
 		data.ID = []byte("wo shi fa guo ren")
-		valid = MeetingCreatedIsValid(data, string(lao_id))
+		valid = MeetingCreatedIsValid(data, string(laoId))
 		if valid == true {
 			t.Errorf("Created Meeting Should be invalid due to bad id %#v", data)
 		}
-		err = CheckMessageIsValid(pubkey, privkey, data, witnessSignatures)
+		err = checkMessageIsValid(publicKey, privateKey, data, witnessSignatures)
 		if err != nil {
 			t.Error(err)
 		}
@@ -484,12 +452,12 @@ func TestMeetingBadFields(t *testing.T) {
 
 //TestLAOInvalidName verifies that the Lao is invalid due to empty name
 func TestLAOInvalidName(t *testing.T) {
-	pubkey, privkey := createKeyPair()
-	witnessKeys := [][]byte{}
+	publicKey, privateKey := generateKeyPair()
+	var witnessKeys [][]byte
 	var creation = time.Now().Unix()
-	// should be not empty but) not in the protospecs ?
+	// should be not empty but this is not specified in the protocol specifications ?
 	name := ""
-	data, err := createDataLao(pubkey, privkey, witnessKeys, creation, name)
+	data, err := createLAO(publicKey, privateKey, witnessKeys, creation, name)
 	if err != nil {
 		t.Error(err)
 	}
@@ -499,13 +467,13 @@ func TestLAOInvalidName(t *testing.T) {
 	}
 }
 
-//TestLAOInvalidId verifies that the Lao is invalid due to invlaid id
+//TestLAOInvalidId verifies that the Lao is invalid due to invalid id
 func TestLAOInvalidId(t *testing.T) {
-	pubkey, privkey := createKeyPair()
-	witnessKeys := [][]byte{}
+	publicKey, privateKey := generateKeyPair()
+	var witnessKeys [][]byte
 	var creation = time.Now().Unix()
-	name := "helloo"
-	data, err := createDataLao(pubkey, privkey, witnessKeys, creation, name)
+	name := "hello"
+	data, err := createLAO(publicKey, privateKey, witnessKeys, creation, name)
 	if err != nil {
 		t.Error(err)
 	}
@@ -516,18 +484,18 @@ func TestLAOInvalidId(t *testing.T) {
 	}
 }
 
-//TestLAOIInvalidCreationTime verifies that the Lao is invalid due to invlaid creation time
+//TestLAOIInvalidCreationTime verifies that the Lao is invalid due to invalid creation time
 func TestLAOIInvalidCreationTime(t *testing.T) {
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
-		pubkey, privkey := createKeyPair()
-		witnessKeys := [][]byte{}
+		publicKey, privateKey := generateKeyPair()
+		var witnessKeys [][]byte
 		name := "ok"
 		creation := time.Now().Unix() + time.Now().Unix() + MaxPropagationDelay + 1
 		if i%2 == 0 {
 			creation = time.Now().Unix() - MaxClockDifference - 1
 		}
-		data, err := createDataLao(pubkey, privkey, witnessKeys, creation, name)
+		data, err := createLAO(publicKey, privateKey, witnessKeys, creation, name)
 		if err != nil {
 			t.Error(err)
 		}
@@ -538,14 +506,15 @@ func TestLAOIInvalidCreationTime(t *testing.T) {
 	}
 }
 
-//===================================================================================//
-func CheckMessageIsValid(pubkey []byte, privkey ed.PrivateKey, data interface{}, witnessKeysAndSignatures []message2.ItemWitnessSignatures) error {
+//================================ helper functions for the tests ===================================================//
 
-	message, err := makeMessage(pubkey, privkey, data, witnessKeysAndSignatures)
+func checkMessageIsValid(publicKey []byte, privateKey ed.PrivateKey, data interface{}, KeysAndSignatures []message.ItemWitnessSignatures) error {
+
+	msg, err := makeMessage(publicKey, privateKey, data, KeysAndSignatures)
 	if err != nil {
 		return err
 	}
-	messageFlat, err := json.Marshal(message)
+	messageFlat, err := json.Marshal(msg)
 	if err != nil {
 		return err
 	}
@@ -559,56 +528,63 @@ func CheckMessageIsValid(pubkey []byte, privkey ed.PrivateKey, data interface{},
 	}
 	return nil
 }
-func makeMessage(pubkey []byte, privkey ed.PrivateKey, data interface{}, witnessKeysAndSignatures []message2.ItemWitnessSignatures) (message2.Message, error) {
+
+// makeMessage returns a valid message.Message with fields passed as arguments, and signs it using the privateKey
+func makeMessage(publicKey []byte, privateKey ed.PrivateKey, data interface{}, keysAndSignatures []message.ItemWitnessSignatures) (msg message.Message, err error) {
 	var dataFlat, signed, id []byte
-	var err error
-	dataFlat, signed, id, err = getIdofMessage(data, privkey)
+	dataFlat, signed, id, err = computeMessageId(data, privateKey)
 	if err != nil {
-		return message2.Message{}, err
+		return message.Message{}, err
 	}
 
 	//witness signatures
-	ArrayOfWitnessSignatures, err := PlugWitnessesInArray(witnessKeysAndSignatures)
+	ArrayOfWitnessSignatures, err := marshalSignatureArray(keysAndSignatures)
 	if err != nil {
-		return message2.Message{}, err
+		return message.Message{}, err
 	}
-	var message = message2.Message{
+	msg = message.Message{
 		Data:              dataFlat, // in base 64
-		Sender:            pubkey,
+		Sender:            publicKey,
 		Signature:         signed,
-		MessageId:         id[:],
+		MessageId:         id,
 		WitnessSignatures: ArrayOfWitnessSignatures,
 	}
-	return message, nil
-}
-func PlugWitnessesInArray(witnessKeysAndSignatures []message2.ItemWitnessSignatures) ([]json.RawMessage, error) {
-	ArrayOfWitnessSignatures := []json.RawMessage{}
-	for i := 0; i < len(witnessKeysAndSignatures); i++ {
-		witnessSignatureI, err := json.Marshal(witnessKeysAndSignatures[i])
-		if err != nil {
-			return nil, errors.New("Problem when Marshaling witnessKeysAndSignatures")
-		}
-		CoupleToAdd := witnessSignatureI[:]
-		ArrayOfWitnessSignatures = append(ArrayOfWitnessSignatures, CoupleToAdd)
-	}
-	return ArrayOfWitnessSignatures, nil
-}
-func createKeyPair() ([]byte, ed.PrivateKey) {
-	//randomize the key
-	randomSeed := make([]byte, 32)
-	rand.Read(randomSeed)
-	privkey := ed.NewKeyFromSeed(randomSeed)
-	return privkey.Public().(ed.PublicKey), privkey
+	return msg, nil
 }
 
-func createMeeting(orgPubkey []byte, privkey ed.PrivateKey, creation int64, start int64, end int64, name string, lao_id []byte) (message2.DataCreateMeeting, error) {
-	if (len(orgPubkey) != ed.PublicKeySize) || len(privkey) != ed.PrivateKeySize {
-		return message2.DataCreateMeeting{}, errors.New("wrong argument -> size of public key don't respected ")
+// marshalSignatureArray returns a []json.RawMessage where each element is a marshalled message.ItemWitnessSignatures of
+// the passed argument
+func marshalSignatureArray(keySignaturePairs []message.ItemWitnessSignatures) ([]json.RawMessage, error) {
+	var signatures []json.RawMessage
+	for i := 0; i < len(keySignaturePairs); i++ {
+		pairString, err := json.Marshal(keySignaturePairs[i])
+		if err != nil {
+			return nil, errors.New("could not marshal key-Signature pair")
+		}
+		signatures = append(signatures, pairString)
 	}
+	return signatures, nil
+}
+
+// generateKeyPair returns a pair of public and private key
+func generateKeyPair() ([]byte, ed.PrivateKey) {
+	//randomize the key
+	randomSeed := make([]byte, ed.PublicKeySize)
+	rand.Read(randomSeed)
+	privateKey := ed.NewKeyFromSeed(randomSeed)
+	return privateKey.Public().(ed.PublicKey), privateKey
+}
+
+// createMeeting returns a valid message.DataCreateMeeting with the parameters passed as arguments.
+func createMeeting(publicKey []byte, privateKey ed.PrivateKey, creation int64, start int64, end int64, name string, laoId []byte) (message.DataCreateMeeting, error) {
+	if (len(publicKey) != ed.PublicKeySize) || len(privateKey) != ed.PrivateKeySize {
+		return message.DataCreateMeeting{}, errors.New("wrong argument -> size of public key don't respected ")
+	}
+
 	var elementsToHashForDataId []string
-	elementsToHashForDataId = append(elementsToHashForDataId, "M", b64.StdEncoding.EncodeToString(lao_id), strconv.FormatInt(creation, 10), name)
+	elementsToHashForDataId = append(elementsToHashForDataId, "M", b64.StdEncoding.EncodeToString(laoId), strconv.FormatInt(creation, 10), name)
 	idData := HashItems(elementsToHashForDataId)
-	var data = message2.DataCreateMeeting{
+	var data = message.DataCreateMeeting{
 		Object:   "lao",
 		Action:   "create",
 		ID:       idData,
@@ -622,44 +598,48 @@ func createMeeting(orgPubkey []byte, privkey ed.PrivateKey, creation int64, star
 	return data, nil
 }
 
-func createDataWitnessMessage(privkey ed.PrivateKey, mesageIdToWitness []byte) (message2.DataWitnessMessage, error) {
-	if len(privkey) != ed.PrivateKeySize {
-		return message2.DataWitnessMessage{}, errors.New("wrong argument -> size of private key don't respected ")
+// createWitnessMessage returns a valid message.DataWitnessMessage witnessing message with id messageId
+func createWitnessMessage(privateKey ed.PrivateKey, messageId []byte) (message.DataWitnessMessage, error) {
+	if len(privateKey) != ed.PrivateKeySize {
+		return message.DataWitnessMessage{}, errors.New("wrong argument -> size of private key don't respected ")
 	}
-	signed := ed.Sign(privkey, mesageIdToWitness)
-	var data = message2.DataWitnessMessage{
+	signed := ed.Sign(privateKey, messageId)
+	var data = message.DataWitnessMessage{
 		Object:    "message",
 		Action:    "witness",
-		MessageId: mesageIdToWitness,
+		MessageId: messageId,
 		Signature: signed,
 	}
 	return data, nil
 }
 
-func createDataLao(orgPubkey []byte, privkey ed.PrivateKey, WitnesseKeys [][]byte, creation int64, name string) (message2.DataCreateLAO, error) {
-	if (len(orgPubkey) != ed.PublicKeySize) || len(privkey) != ed.PrivateKeySize {
-		return message2.DataCreateLAO{}, errors.New("wrong argument -> size of public key don't respected ")
+// createLAO returns a valid message.DataCreateLAO with the given parameters
+func createLAO(publicKey []byte, privateKey ed.PrivateKey, WitnessKeys [][]byte, creation int64, name string) (message.DataCreateLAO, error) {
+	if (len(publicKey) != ed.PublicKeySize) || len(privateKey) != ed.PrivateKeySize {
+		return message.DataCreateLAO{}, errors.New("bad public key size")
 	}
 	var itemsToHashForId []string
-	itemsToHashForId = append(itemsToHashForId, b64.StdEncoding.EncodeToString(orgPubkey), strconv.FormatInt(creation, 10), name)
+	itemsToHashForId = append(itemsToHashForId, b64.StdEncoding.EncodeToString(publicKey), strconv.FormatInt(creation, 10), name)
 	idData := HashItems(itemsToHashForId)
-	var data = message2.DataCreateLAO{
+	var data = message.DataCreateLAO{
 		Object:    "lao",
 		Action:    "create",
-		ID:        idData[:],
+		ID:        idData,
 		Name:      name,
 		Creation:  creation,
-		Organizer: orgPubkey,
-		Witnesses: WitnesseKeys,
+		Organizer: publicKey,
+		Witnesses: WitnessKeys,
 	}
 	return data, nil
 }
-func createEventRollCall(pubkey []byte, privkey ed.PrivateKey, creation int64, start int64, name string, lao_id []byte) (event.RollCall, error) {
-	if (len(pubkey) != ed.PublicKeySize) || len(privkey) != ed.PrivateKeySize {
-		return event.RollCall{}, errors.New("wrong argument -> size of public key don't respected ")
+
+// createRollCallEvent returns an event.RollCall with the given parameters
+func createRollCallEvent(publicKey []byte, privateKey ed.PrivateKey, creation int64, start int64, name string, laoId []byte) (event.RollCall, error) {
+	if (len(publicKey) != ed.PublicKeySize) || len(privateKey) != ed.PrivateKeySize {
+		return event.RollCall{}, errors.New("bad public key size")
 	}
 	var elementsToHashForDataId []string
-	elementsToHashForDataId = append(elementsToHashForDataId, "R", b64.StdEncoding.EncodeToString(lao_id), strconv.FormatInt(creation, 10), name)
+	elementsToHashForDataId = append(elementsToHashForDataId, "R", b64.StdEncoding.EncodeToString(laoId), strconv.FormatInt(creation, 10), name)
 	idData := HashItems(elementsToHashForDataId)
 	var data = event.RollCall{
 		ID:          string(idData),
@@ -671,17 +651,19 @@ func createEventRollCall(pubkey []byte, privkey ed.PrivateKey, creation int64, s
 	}
 	return data, nil
 }
-func createRollCallNow(pubkey []byte, privkey ed.PrivateKey, creation int64, start int64, name string, lao_id []byte) (message2.DataCreateRollCall, error) {
-	if (len(pubkey) != ed.PublicKeySize) || len(privkey) != ed.PrivateKeySize {
-		return message2.DataCreateRollCall{}, errors.New("wrong argument -> size of public key don't respected ")
+
+// createCloseRollCallNow returns a valid message.DataCloseRollCall with the given arguments.
+func createRollCallNow(publicKey []byte, privateKey ed.PrivateKey, creation int64, start int64, name string, laoId []byte) (message.DataCreateRollCall, error) {
+	if (len(publicKey) != ed.PublicKeySize) || len(privateKey) != ed.PrivateKeySize {
+		return message.DataCreateRollCall{}, errors.New("bad public key size")
 	}
 	var elementsToHashForDataId []string
-	elementsToHashForDataId = append(elementsToHashForDataId, "R", b64.StdEncoding.EncodeToString(lao_id), strconv.FormatInt(creation, 10), name)
+	elementsToHashForDataId = append(elementsToHashForDataId, "R", b64.StdEncoding.EncodeToString(laoId), strconv.FormatInt(creation, 10), name)
 	idData := HashItems(elementsToHashForDataId)
-	var data = message2.DataCreateRollCall{
+	var data = message.DataCreateRollCall{
 		Object:      "roll_call",
 		Action:      "create",
-		ID:          idData[:],
+		ID:          idData,
 		Name:        name,
 		Creation:    creation,
 		Location:    "pas loin",
@@ -690,46 +672,52 @@ func createRollCallNow(pubkey []byte, privkey ed.PrivateKey, creation int64, sta
 	}
 	return data, nil
 }
-func createCloseRollCallNow(pubkey []byte, privkey ed.PrivateKey, creation int64, start int64, end int64, name string, lao_id []byte, attendeesPks [][]byte) (message2.DataCloseRollCall, error) {
-	if (len(pubkey) != ed.PublicKeySize) || len(privkey) != ed.PrivateKeySize {
-		return message2.DataCloseRollCall{}, errors.New("wrong argument -> size of public key don't respected ")
+
+// createCloseRollCallNow returns a valid message.DataCloseRollCall with the given arguments.
+func createCloseRollCallNow(publicKey []byte, privateKey ed.PrivateKey, creation int64, start int64, end int64, name string, laoId []byte, attendeePublicKeys [][]byte) (message.DataCloseRollCall, error) {
+	if (len(publicKey) != ed.PublicKeySize) || len(privateKey) != ed.PrivateKeySize {
+		return message.DataCloseRollCall{}, errors.New("bad public key size")
 	}
 	var elementsToHashForDataId []string
-	elementsToHashForDataId = append(elementsToHashForDataId, "R", b64.StdEncoding.EncodeToString(lao_id), strconv.FormatInt(creation, 10), name)
+	elementsToHashForDataId = append(elementsToHashForDataId, "R", b64.StdEncoding.EncodeToString(laoId), strconv.FormatInt(creation, 10), name)
 	idData := HashItems(elementsToHashForDataId)
-	var data = message2.DataCloseRollCall{
+	var data = message.DataCloseRollCall{
 		Object:    "roll_call",
 		Action:    "close",
 		ID:        idData,
 		Name:      name,
 		Start:     start,
 		End:       end,
-		Attendees: attendeesPks,
+		Attendees: attendeePublicKeys,
 	}
 	return data, nil
 }
-func createOpenRollCall(pubkey []byte, privkey ed.PrivateKey, creation int64, start int64, name string, lao_id []byte) (message2.DataOpenRollCall, error) {
-	if (len(pubkey) != ed.PublicKeySize) || len(privkey) != ed.PrivateKeySize {
-		return message2.DataOpenRollCall{}, errors.New("wrong argument -> size of public key don't respected ")
+
+// createOpenRollCall returns a valid message.DataOpenRollCall as should be received.
+func createOpenRollCall(publicKey []byte, privateKey ed.PrivateKey, creation int64, start int64, name string, laoId []byte) (message.DataOpenRollCall, error) {
+	if len(publicKey) != ed.PublicKeySize || len(privateKey) != ed.PrivateKeySize {
+		return message.DataOpenRollCall{}, errors.New("bad public key size")
 	}
 	var elementsToHashForDataId []string
-	elementsToHashForDataId = append(elementsToHashForDataId, "R", b64.StdEncoding.EncodeToString(lao_id), strconv.FormatInt(creation, 10), name)
+	elementsToHashForDataId = append(elementsToHashForDataId, "R", b64.StdEncoding.EncodeToString(laoId), strconv.FormatInt(creation, 10), name)
 	idData := HashItems(elementsToHashForDataId)
-	var data = message2.DataOpenRollCall{
+	var data = message.DataOpenRollCall{
 		Object: "roll_call",
 		Action: "open",
-		ID:     idData[:],
+		ID:     idData,
 		Start:  start,
 	}
 	return data, nil
 }
 
-func getIdofMessage(data interface{}, privkey ed.PrivateKey) (dataFlat, signed, id []byte, err error) {
+// computeMessageId computes the ID of a message, by hashing the data field concatenated with itself signed with the
+// privateKey given as argument
+func computeMessageId(data interface{}, privateKey ed.PrivateKey) (dataFlat, signed, id []byte, err error) {
 	dataFlat, err = json.Marshal(data)
 	if err != nil {
-		return nil, nil, nil, errors.New("Error : Impossible to marshal data")
+		return nil, nil, nil, errors.New("error, could not marshal data")
 	}
-	signed = ed.Sign(privkey, dataFlat)
+	signed = ed.Sign(privateKey, dataFlat)
 
 	var itemsToHashForMessageId []string
 	itemsToHashForMessageId = append(itemsToHashForMessageId, b64.StdEncoding.EncodeToString(dataFlat), b64.StdEncoding.EncodeToString(signed))

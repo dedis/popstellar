@@ -132,8 +132,8 @@ func RollCallClosedIsValid(data message.DataCloseRollCall, laoId string, rollCal
 // MessageIsValid checks upon reception that the message data is valid, that is that the ID is correctly computed, and
 // that the signature is correct as well
 // IMPORTANT :
-//	*	For every message the signature is Sign(data)
-//	*	but for the one in DATAWitnessMessage it is Sign(message_id)
+// * For every message the signature is Sign(data)
+// * but for the one in DATAWitnessMessage it is Sign(message_id)
 func MessageIsValid(msg message.Message) error {
 	// check message_id is valid
 	var itemsToHashForMessageId []string
