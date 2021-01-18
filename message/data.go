@@ -173,7 +173,7 @@ type DataStateMeeting struct {
 	//End timestamp (optional) (Unix) (uint64)
 	End int64 `json:"end"`
 	// optional
-	Extra string `json:"extra,omitempy"`
+	Extra string `json:"extra,omitempty"`
 	//Organiser: Public Key
 	Organizer string `json:"organize"`
 	// id of the modification (either creation/update)
