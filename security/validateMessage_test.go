@@ -6,6 +6,8 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"errors"
+	"io/ioutil"
+	"log"
 	"math/rand"
 	"strconv"
 	"student20_pop/event"
@@ -19,6 +21,10 @@ import (
 
 //TestMessageIsValidWithoutWitnesses checks that a message containing a createLao is valid at both message and data layer
 func TestMessageIsValidWithoutWitnesses(t *testing.T) {
+	// turn off logging for the tests
+	log.SetFlags(0)
+	log.SetOutput(ioutil.Discard)
+
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
 		publicKey, privateKey := generateKeyPair()
@@ -43,6 +49,10 @@ func TestMessageIsValidWithoutWitnesses(t *testing.T) {
 
 //TestDataWitnessMessageIsValid checks that a witness message is valid
 func TestDataWitnessMessageIsValid(t *testing.T) {
+	// turn off logging for the tests
+	log.SetFlags(0)
+	log.SetOutput(ioutil.Discard)
+
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
 		publicKey, privateKey := generateKeyPair()
@@ -61,6 +71,10 @@ func TestDataWitnessMessageIsValid(t *testing.T) {
 
 //TestRollCallOpenedIsValid checks that a message containing a openRollCall is valid at both message and data layer
 func TestRollCallOpenedIsValid(t *testing.T) {
+	// turn off logging for the tests
+	log.SetFlags(0)
+	log.SetOutput(ioutil.Discard)
+
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
 		publicKey, privateKey := generateKeyPair()
@@ -91,6 +105,10 @@ func TestRollCallOpenedIsValid(t *testing.T) {
 
 //TestRollCallClosedIsValid checks that a message containing a createRollCall is valid at both message and data layer
 func TestRollCallClosedIsValid(t *testing.T) {
+	// turn off logging for the tests
+	log.SetFlags(0)
+	log.SetOutput(ioutil.Discard)
+
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
 		publicKey, privateKey := generateKeyPair()
@@ -123,6 +141,10 @@ func TestRollCallClosedIsValid(t *testing.T) {
 
 //TestRollCallCreatedIsValid checks that a message containing a createRollCall is valid at both message and data layer
 func TestRollCallCreatedIsValid(t *testing.T) {
+	// turn off logging for the tests
+	log.SetFlags(0)
+	log.SetOutput(ioutil.Discard)
+
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
 		publicKey, privateKey := generateKeyPair()
@@ -148,6 +170,10 @@ func TestRollCallCreatedIsValid(t *testing.T) {
 
 //TestMeetingCreatedIsValid checks that a message containing a createMeeting is valid at both message and data layer
 func TestMeetingCreatedIsValid(t *testing.T) {
+	// turn off logging for the tests
+	log.SetFlags(0)
+	log.SetOutput(ioutil.Discard)
+
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
 		publicKey, privateKey := generateKeyPair()
@@ -177,6 +203,10 @@ func TestMeetingCreatedIsValid(t *testing.T) {
 
 //TestBadDataWitnessMessage checks that a bad witness message is invalid
 func TestBadDataWitnessMessage(t *testing.T) {
+	// turn off logging for the tests
+	log.SetFlags(0)
+	log.SetOutput(ioutil.Discard)
+
 	publicKey, privateKey := generateKeyPair()
 	var witnessSignatures []message.ItemWitnessSignatures
 	messageIdToWitness := []byte("enfin un truc à signer")
@@ -452,6 +482,10 @@ func TestMeetingBadFields(t *testing.T) {
 
 //TestLAOInvalidName verifies that the Lao is invalid due to empty name
 func TestLAOInvalidName(t *testing.T) {
+	// turn off logging for the tests
+	log.SetFlags(0)
+	log.SetOutput(ioutil.Discard)
+
 	publicKey, privateKey := generateKeyPair()
 	var witnessKeys [][]byte
 	var creation = time.Now().Unix()
@@ -469,6 +503,10 @@ func TestLAOInvalidName(t *testing.T) {
 
 //TestLAOInvalidId verifies that the Lao is invalid due to invalid id
 func TestLAOInvalidId(t *testing.T) {
+	// turn off logging for the tests
+	log.SetFlags(0)
+	log.SetOutput(ioutil.Discard)
+
 	publicKey, privateKey := generateKeyPair()
 	var witnessKeys [][]byte
 	var creation = time.Now().Unix()
@@ -486,6 +524,10 @@ func TestLAOInvalidId(t *testing.T) {
 
 //TestLAOIInvalidCreationTime verifies that the Lao is invalid due to invalid creation time
 func TestLAOIInvalidCreationTime(t *testing.T) {
+	// turn off logging for the tests
+	log.SetFlags(0)
+	log.SetOutput(ioutil.Discard)
+
 	//increase nb of tests
 	for i := 0; i < 100; i++ {
 		publicKey, privateKey := generateKeyPair()

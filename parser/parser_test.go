@@ -1,11 +1,13 @@
 package parser
 
 import (
-	"testing"
-	"student20_pop/message"
-	"student20_pop/lib"
 	"encoding/json"
+	"io/ioutil"
+	"log"
 	"reflect"
+	"student20_pop/lib"
+	"student20_pop/message"
+	"testing"
 )
 
 // Some encoding (hashes) are actually incorrect here, but it doesn't impact the pure parser test
@@ -66,8 +68,8 @@ const wrongCreateLAOString2 = `{
 func getCorrectCreateLAOQueryStruct() message.Query {
 	return message.Query{
 		Jsonrpc: "2.0",
-		Method:	"publish",
-		Params:  json.RawMessage(`{
+		Method:  "publish",
+		Params: json.RawMessage(`{
 		"channel": "/root",
 		"message": {
 			"data": "ewogICAgIm9iamVjdCI6ICJsYW8iLAogICAgImFjdGlvbiI6ICJjcmVhdGUiLAogICAgImlkIjogIllUSTVOVFk0TjJNNE1UUTBObVU1WVRJeE1USTNZbU5sTldaaU5ERTRNakJpWkRZNE9HTXlNVEl3WWpNM09HTTBPV1E1TW1RNE56Tm1aV05pTlRVNU9BPT0iLAogICAgIm5hbWUiOiAibXlfbGFvIiwKICAgICJjcmVhdGlvbiI6IDEyMzQsCiAgICAib3JnYW5pemVyIjogIk1USXoiLAogICAgIndpdG5lc3NlcyI6IHsKCiAgICB9Cn0=",
@@ -79,11 +81,14 @@ func getCorrectCreateLAOQueryStruct() message.Query {
 			}
 		}
 	}`),
-		Id:      0,
+		Id: 0,
 	}
-} 
+}
 
 func TestParseGenericMessageAndQuery(t *testing.T) {
+	// turn off logging for the tests
+	log.SetFlags(0)
+	log.SetOutput(ioutil.Discard)
 
 	_, err := ParseGenericMessage([]byte(correctCreateLAOString))
 	if err != nil {
@@ -109,7 +114,7 @@ func TestParseGenericMessageAndQuery(t *testing.T) {
 	if string(msgquery.Params) != string(referenceStruct.Params) {
 		t.Errorf("Params not equal\n%v\n%v", string(msgquery.Params), string(referenceStruct.Params))
 	}
-	
+
 	if !reflect.DeepEqual(msgquery, referenceStruct) {
 		t.Errorf("correct structs are not as expected, \n%+v\n vs, \n%+v \n%v\n%v", msgquery, referenceStruct, string(msgquery.Params), string(referenceStruct.Params))
 	}

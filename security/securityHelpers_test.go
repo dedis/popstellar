@@ -5,6 +5,8 @@ import (
 	"crypto/rand"
 	"encoding/json"
 	"errors"
+	"io/ioutil"
+	"log"
 	mRand "math/rand"
 	"student20_pop/lib"
 	message2 "student20_pop/message"
@@ -48,6 +50,10 @@ func TestCorrectSignaturesAndBadWitnesses(t *testing.T) {
 
 // TestCorrectSignaturesAndCorrectWitnesses tests if VerifyWitnessSignatures raises an error if the signatures and the witnesses are incorrect
 func TestBadSignaturesAndBadWitnesses(t *testing.T) {
+	// turn off logging for the tests
+	log.SetFlags(0)
+	log.SetOutput(ioutil.Discard)
+
 	AuthorisedWitnessKeys, jsonArrayOfWitnessSignatures, id, err := witnessesAndSignatures(false, false)
 	if err != nil {
 		t.Errorf("Problem when Marshaling witnessKeysAndSignatures")
@@ -60,6 +66,10 @@ func TestBadSignaturesAndBadWitnesses(t *testing.T) {
 
 // TestCorrectSignaturesAndCorrectWitnesses tests if VerifyWitnessSignatures raises an error if the signatures are incorrect
 func TestBadSignaturesAndCorrectWitnesses(t *testing.T) {
+	// turn off logging for the tests
+	log.SetFlags(0)
+	log.SetOutput(ioutil.Discard)
+
 	AuthorisedWitnessKeys, jsonArrayOfSignatures, id, err := witnessesAndSignatures(false, false)
 	if err != nil {
 		t.Errorf("Problem when Marshaling witnessKeysAndSignatures")
