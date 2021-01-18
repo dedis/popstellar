@@ -248,7 +248,7 @@ func (w *witness) handleWitnessMessage(msg message.Message, channel string, quer
 	//should be the correct one but useful to know if the db has been corrupted
 	signatureB64 := b64.StdEncoding.EncodeToString(data.Signature)
 	elementsToHashForMessageId := []string{b64.StdEncoding.EncodeToString(storedMessage.Data), signatureB64}
-	messageIdRecomputed := security.HashOfItems(elementsToHashForMessageId)
+	messageIdRecomputed := security.HashItems(elementsToHashForMessageId)
 	if !bytes.Equal(storedMessage.MessageId, messageIdRecomputed) {
 		log.Printf("message_id of witnessMessage invalid: %v should be: %v", string(data.MessageId), string(messageIdRecomputed))
 		return nil, lib.ErrInvalidResource

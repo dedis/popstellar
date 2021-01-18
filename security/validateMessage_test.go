@@ -607,7 +607,7 @@ func createMeeting(orgPubkey []byte, privkey ed.PrivateKey, creation int64, star
 	}
 	var elementsToHashForDataId []string
 	elementsToHashForDataId = append(elementsToHashForDataId, "M", b64.StdEncoding.EncodeToString(lao_id), strconv.FormatInt(creation, 10), name)
-	idData := HashOfItems(elementsToHashForDataId)
+	idData := HashItems(elementsToHashForDataId)
 	var data = message2.DataCreateMeeting{
 		Object:   "lao",
 		Action:   "create",
@@ -642,7 +642,7 @@ func createDataLao(orgPubkey []byte, privkey ed.PrivateKey, WitnesseKeys [][]byt
 	}
 	var itemsToHashForId []string
 	itemsToHashForId = append(itemsToHashForId, b64.StdEncoding.EncodeToString(orgPubkey), strconv.FormatInt(creation, 10), name)
-	idData := HashOfItems(itemsToHashForId)
+	idData := HashItems(itemsToHashForId)
 	var data = message2.DataCreateLAO{
 		Object:    "lao",
 		Action:    "create",
@@ -660,7 +660,7 @@ func createEventRollCall(pubkey []byte, privkey ed.PrivateKey, creation int64, s
 	}
 	var elementsToHashForDataId []string
 	elementsToHashForDataId = append(elementsToHashForDataId, "R", b64.StdEncoding.EncodeToString(lao_id), strconv.FormatInt(creation, 10), name)
-	idData := HashOfItems(elementsToHashForDataId)
+	idData := HashItems(elementsToHashForDataId)
 	var data = event.RollCall{
 		ID:          string(idData),
 		Name:        name,
@@ -677,7 +677,7 @@ func createRollCallNow(pubkey []byte, privkey ed.PrivateKey, creation int64, sta
 	}
 	var elementsToHashForDataId []string
 	elementsToHashForDataId = append(elementsToHashForDataId, "R", b64.StdEncoding.EncodeToString(lao_id), strconv.FormatInt(creation, 10), name)
-	idData := HashOfItems(elementsToHashForDataId)
+	idData := HashItems(elementsToHashForDataId)
 	var data = message2.DataCreateRollCall{
 		Object:      "roll_call",
 		Action:      "create",
@@ -696,7 +696,7 @@ func createCloseRollCallNow(pubkey []byte, privkey ed.PrivateKey, creation int64
 	}
 	var elementsToHashForDataId []string
 	elementsToHashForDataId = append(elementsToHashForDataId, "R", b64.StdEncoding.EncodeToString(lao_id), strconv.FormatInt(creation, 10), name)
-	idData := HashOfItems(elementsToHashForDataId)
+	idData := HashItems(elementsToHashForDataId)
 	var data = message2.DataCloseRollCall{
 		Object:    "roll_call",
 		Action:    "close",
@@ -714,7 +714,7 @@ func createOpenRollCall(pubkey []byte, privkey ed.PrivateKey, creation int64, st
 	}
 	var elementsToHashForDataId []string
 	elementsToHashForDataId = append(elementsToHashForDataId, "R", b64.StdEncoding.EncodeToString(lao_id), strconv.FormatInt(creation, 10), name)
-	idData := HashOfItems(elementsToHashForDataId)
+	idData := HashItems(elementsToHashForDataId)
 	var data = message2.DataOpenRollCall{
 		Object: "roll_call",
 		Action: "open",
@@ -733,7 +733,7 @@ func getIdofMessage(data interface{}, privkey ed.PrivateKey) (dataFlat, signed, 
 
 	var itemsToHashForMessageId []string
 	itemsToHashForMessageId = append(itemsToHashForMessageId, b64.StdEncoding.EncodeToString(dataFlat), b64.StdEncoding.EncodeToString(signed))
-	hash := HashOfItems(itemsToHashForMessageId)
+	hash := HashItems(itemsToHashForMessageId)
 	return dataFlat, signed, hash, nil
 
 }
