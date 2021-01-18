@@ -153,11 +153,13 @@ public class OrganizerActivity extends FragmentActivity implements OnEventTypeSe
 
         switch (qrCodeScanningType) {
             case ADD_ROLL_CALL_ATTENDEE:
-                Optional<Event> matchingEvent = app.getEvents(app.getCurrentLao())
-                        .parallelStream()
-                        .filter(event -> event.getId().equals(eventId))
-                        .distinct()
-                        .findAny();
+                Optional<Event> matchingEvent = app.getCurrentLao()
+                        .flatMap(lao ->
+                                lao.getEvents()
+                                .parallelStream()
+                                .filter(event -> event.getId().equals(eventId))
+                                .distinct()
+                                .findAny());
 
                 this.runOnUiThread(
                         () -> {

@@ -1,10 +1,8 @@
 package com.github.dedis.student20_pop;
 
 import android.Manifest;
-import android.content.pm.PackageManager;
 import android.view.View;
 
-import androidx.core.content.ContextCompat;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.rule.GrantPermissionRule;
