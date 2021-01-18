@@ -23,17 +23,11 @@ object Server {
    * Create a webserver that handles http requests and websockets requests.
    */
   def main(args: Array[String]): Unit = {
+    val PORT = 8080
+    val PATH = "pop"
 
     val root = Behaviors.setup[Nothing] { context =>
       implicit val system: ActorSystem[Nothing] = context.system
-
-      //Route for HTTP request
-      val route =
-        path("hello") {
-          get {
-            complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>Say hello to akka-http</h1>"))
-          }
-        }
 
       //Stream that send all published messages to all clients
       val (publishEntry, subscribeExit) = MergeHub.source[PropagateMessageServer].toMat(BroadcastHub.sink)(Keep.both).run()
@@ -45,14 +39,14 @@ object Server {
       val DatabasePath: String = "database"
       val dbActor = context.spawn(DBActor(DatabasePath), "actorDB")
 
-      def publishSubscribeRoute = path("ps") {
+      def publishSubscribeRoute = path(PATH) {
         handleWebSocketMessages(PublishSubscribe.messageFlow(actor, dbActor)(timeout, system, publishEntry))
       }
 
       implicit val executionContext: ExecutionContextExecutor = system.executionContext
-      val bindingFuture = Http().newServerAt("localhost", 8080).bind(route ~ publishSubscribeRoute)
+      val bindingFuture = Http().newServerAt("localhost", PORT).bind(publishSubscribeRoute)
       bindingFuture.onComplete {
-        case Success(value) => println("ch.epfl.pop.Server online at http://localhost:8080/")
+        case Success(value) => println("ch.epfl.pop.Server online at ws://localhost:" + PORT + "/" + PATH)
         case Failure(exception) => println("ch.epfl.pop.Server failed to start")
           system.terminate()
       }
