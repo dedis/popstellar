@@ -16,6 +16,7 @@ import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.model.event.RollCallEvent;
+import com.github.dedis.student20_pop.ui.ConnectingFragment;
 import com.github.dedis.student20_pop.ui.IdentityFragment;
 import com.github.dedis.student20_pop.ui.OrganizerFragment;
 import com.github.dedis.student20_pop.ui.event.creation.MeetingEventCreationFragment;
@@ -23,7 +24,6 @@ import com.github.dedis.student20_pop.ui.event.creation.PollEventCreationFragmen
 import com.github.dedis.student20_pop.ui.event.creation.RollCallEventCreationFragment;
 import com.github.dedis.student20_pop.ui.qrcode.AddAttendeeFragment;
 import com.github.dedis.student20_pop.ui.qrcode.CameraPermissionFragment;
-import com.github.dedis.student20_pop.ui.qrcode.ConnectingFragment;
 import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;

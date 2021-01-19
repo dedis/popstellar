@@ -15,19 +15,15 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.github.dedis.student20_pop.model.Lao;
-import com.github.dedis.student20_pop.model.Person;
+import com.github.dedis.student20_pop.ui.ConnectingFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
 import com.github.dedis.student20_pop.ui.qrcode.CameraPermissionFragment;
-import com.github.dedis.student20_pop.ui.qrcode.ConnectingFragment;
 import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraNotAllowedListener;
 import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
-
-import java.util.Collections;
-import java.util.Date;
 
 import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO;
 
@@ -86,7 +82,7 @@ public final class MainActivity extends FragmentActivity implements OnCameraNotA
                             .thenAccept(code -> {
                                 // Set LAO and organizer information locally
                                 app.getPerson().addLao(lao.getId());
-                                ((PoPApplication) getApplication()).createLao(lao);
+                                ((PoPApplication) getApplication()).addLao(lao);
                                 ((PoPApplication) getApplication()).setCurrentLao(lao);
                                 // Start the Organizer Activity (user is considered an organizer)
                                 Intent intent = new Intent(this, OrganizerActivity.class);
