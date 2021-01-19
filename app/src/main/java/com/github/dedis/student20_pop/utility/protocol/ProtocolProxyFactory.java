@@ -31,8 +31,8 @@ public final class ProtocolProxyFactory {
      * @param user of the app
      * @return the new proxy
      */
-    public HighLevelProxy createHighLevelProxy(final URI host, final Person user) {
-        return new WebSocketHighLevelProxy(user, createLowLevelProxy(host));
+    public HighLevelProxy createHighLevelProxy(URI host, Person user, DataHandler dataHandler) {
+        return new WebSocketHighLevelProxy(user, createLowLevelProxy(host, dataHandler));
     }
 
     /**
@@ -41,7 +41,7 @@ public final class ProtocolProxyFactory {
      * @param host of the backend
      * @return the new proxy
      */
-    public LowLevelProxy createLowLevelProxy(final URI host) {
-        return new WebSocketLowLevelProxy(host);
+    public LowLevelProxy createLowLevelProxy(URI host, DataHandler dataHandler) {
+        return new WebSocketLowLevelProxy(host, dataHandler);
     }
 }

@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.model.network.answer;
 
+import com.github.dedis.student20_pop.utility.protocol.MessageHandler;
 import com.google.gson.JsonElement;
 
 import java.util.Objects;
@@ -27,6 +28,11 @@ public final class Result extends Answer {
      */
     public JsonElement getResult() {
         return result;
+    }
+
+    @Override
+    public void accept(MessageHandler handler) {
+        handler.handle(this);
     }
 
     @Override

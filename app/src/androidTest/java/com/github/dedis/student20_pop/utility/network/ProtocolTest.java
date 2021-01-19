@@ -68,7 +68,7 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob, null);
 
         proxy.createLao(LAO_NAME, 0, bob.getId())
                 .whenComplete((i, t) -> {
@@ -92,7 +92,7 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob, null);
 
         proxy.createLao(LAO_NAME, 0, bob.getId())
                 .whenComplete((i, t) -> {
@@ -111,7 +111,7 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob, null);
 
         proxy.updateLao(LAO_ID, bob.getId(), LAO_NAME, 0, Collections.singletonList(bob.getId()))
                 .whenComplete((i, t) -> {
@@ -130,7 +130,7 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob, null);
 
         proxy.createMeeting(LAO_ID, MEETING_NAME, 0, LOCATION, 0, 0)
                 .whenComplete((i, t) -> {
@@ -149,7 +149,7 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob, null);
 
         proxy.witnessMessage(LAO_ID, "mId", "data")
                 .whenComplete((i, t) -> {
@@ -168,7 +168,7 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob, null);
 
         proxy.createRollCall(LAO_ID, ROLL_CALL_NAME, 0, 0, CreateRollCall.StartType.NOW, LOCATION, DESCRIPTION)
                 .whenComplete((i, t) -> {
@@ -208,7 +208,7 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob, null);
 
         proxy.openRollCall(LAO_ID, ROLL_ID, 0)
                 .whenComplete((i, t) -> {
@@ -227,7 +227,7 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob, null);
 
         proxy.closeRollCall(LAO_ID, ROLL_ID, 0, 0, ATTENDEES)
                 .whenComplete((i, t) -> {
@@ -246,7 +246,7 @@ public class ProtocolTest {
         Waiter waiter = new Waiter();
 
         Person bob = new Person(PERSON_NAME);
-        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob);
+        HighLevelProxy proxy = ProtocolProxyFactory.getInstance().createHighLevelProxy(URI.create("ws://" + HOST_NAME + ":" + PORT + "/"), bob, null);
 
         proxy.createLao(LAO_NAME, 0, bob.getId())
                 .whenComplete((i, t) -> {

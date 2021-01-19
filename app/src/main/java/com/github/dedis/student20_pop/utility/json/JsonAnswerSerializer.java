@@ -13,6 +13,9 @@ import com.google.gson.JsonSerializer;
 
 import java.lang.reflect.Type;
 
+/**
+ * Json serializer and deserializer for the answer
+ */
 public class JsonAnswerSerializer implements JsonSerializer<Answer>, JsonDeserializer<Answer> {
 
     private static final String RESULT = "result";

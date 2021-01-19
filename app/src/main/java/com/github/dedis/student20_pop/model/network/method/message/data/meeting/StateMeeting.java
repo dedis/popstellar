@@ -3,6 +3,7 @@ package com.github.dedis.student20_pop.model.network.method.message.data.meeting
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
+import com.github.dedis.student20_pop.utility.protocol.DataHandler;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -83,6 +84,11 @@ public class StateMeeting extends Data {
 
     public List<String> getModificationSignatures() {
         return modificationSignatures;
+    }
+
+    @Override
+    public void accept(DataHandler handler) {
+        handler.handle(this);
     }
 
     @Override
