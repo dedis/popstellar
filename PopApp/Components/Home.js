@@ -2,13 +2,12 @@ import React from 'react';
 import {
   StyleSheet, View, Text, FlatList,
 } from 'react-native';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 import STRINGS from '../res/strings';
 import { Spacing, Typography } from '../Styles';
 import LAOItem from './LAOItem';
-
-// Fake data to show the app fonctionality
-import LAOs from '../res/laoData';
 import PROPS_TYPE from '../res/Props';
 
 /**
@@ -31,7 +30,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const render = () => {
+const Home = ({ LAOs }) => {
   if (!LAOs || !LAOs.length) {
     return (
       <View style={styles.container}>
@@ -54,12 +53,12 @@ const render = () => {
   );
 };
 
-const Home = () => (
-  render()
-);
-
 Home.propTypes = {
-  navigation: PROPS_TYPE.navigation.isRequired,
+  LAOs: PropTypes.arrayOf(PROPS_TYPE.LAO).isRequired,
 };
 
-export default Home;
+const mapStateToProps = (state) => ({
+  LAOs: state.connectLAOsReducer.LAOs,
+});
+
+export default connect(mapStateToProps)(Home);

@@ -4,9 +4,14 @@ import {
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
-import { Buttons, Typography, Spacing } from '../Styles';
+import {
+  Buttons, Typography, Spacing, Views,
+} from '../Styles';
 import STRINGS from '../res/strings';
+import { requestCreateMeeting } from '../websockets/WebsocketApi';
 
 /**
  * Screen to create a meeting event: a name text input, a start time text and its buttons,
@@ -38,11 +43,18 @@ const styles = StyleSheet.create({
   buttonTime: {
     marginHorizontal: Spacing.m,
   },
+  view: {
+    ...Views.base,
+    flexDirection: 'row',
+    zIndex: 3,
+  },
+  zIndexBooster: {
+    zIndex: 100,
+  },
 });
 
 const CreateMeeting = () => {
   const navigation = useNavigation();
-  const [name, setName] = useState('');
 
   // all the funtion to manage the date object, one object to set start and finish time
   const [startDate, setStartDate] = useState(new Date());
@@ -50,6 +62,14 @@ const CreateMeeting = () => {
   const [settingStart, setSettingStart] = useState(true);
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
+
+  const setEndDate = (date) => {
+    if (date < startDate) {
+      setFinishDate(startDate);
+    } else {
+      setFinishDate(date);
+    }
+  };
 
   const showMode = (currentMode) => {
     setMode(currentMode);
@@ -75,6 +95,9 @@ const CreateMeeting = () => {
     if (event.type === 'set' && mode === 'date') {
       showTimepicker();
     }
+    if (event.type === 'set' && mode === 'time' && finishDate && finishDate <= startDate) {
+      setFinishDate(startDate);
+    }
   };
 
   const validate = () => {
@@ -87,7 +110,7 @@ const CreateMeeting = () => {
 
   const selectFinish = () => {
     if (finishDate === undefined) {
-      setFinishDate(new Date());
+      setFinishDate(startDate);
     }
     setSettingStart(false);
     showDatepicker();
@@ -97,6 +120,21 @@ const CreateMeeting = () => {
     + `${d.getHours() < 10 ? 0 : ''}${d.getHours()}:`
     + `${d.getMinutes() < 10 ? 0 : ''}${d.getMinutes()}`;
 
+  const dateToTimeStamp = (date) => {
+    if (date) {
+      return Math.floor(date / 1000);
+    }
+    return 0;
+  };
+
+  const [name, setName] = useState('');
+  const [location, setLocation] = useState('');
+
+  const createMeeting = () => {
+    requestCreateMeeting(name, dateToTimeStamp(startDate), location, dateToTimeStamp(finishDate));
+    navigation.goBack();
+  };
+
   return (
     <ScrollView>
       <TextInput
@@ -104,6 +142,8 @@ const CreateMeeting = () => {
         placeholder={STRINGS.meeting_create_name}
         onChangeText={(text) => { setName(text); }}
       />
+      {Platform.OS !== 'web'
+      && (
       <View style={{ flexDirection: 'row' }}>
         <Text
           style={[styles.text, { flex: 10 }]}
@@ -114,6 +154,27 @@ const CreateMeeting = () => {
           <Button onPress={() => { setSettingStart(true); showDatepicker(); }} title="S" />
         </View>
       </View>
+      )}
+      {Platform.OS === 'web'
+      && (
+      <View style={[styles.view, styles.zIndexBooster]}>
+        <Text style={styles.text}>{STRINGS.meeting_create_start_time}</Text>
+        <DatePicker
+          selected={startDate}
+          onChange={(date) => {
+            setStartDate(date);
+            if (finishDate < date) {
+              setFinishDate(date);
+            }
+          }}
+          imeInputLabel="Time:"
+          dateFormat="MM/dd/yyyy HH:mm"
+          showTimeInput
+        />
+      </View>
+      )}
+      {Platform.OS !== 'web'
+      && (
       <View style={{ flexDirection: 'row' }}>
         <Text
           style={[styles.text, { flex: 10 }]}
@@ -129,6 +190,23 @@ const CreateMeeting = () => {
           </View>
         </View>
       </View>
+      )}
+      {Platform.OS === 'web'
+      && (
+      <View style={styles.view}>
+        <Text style={styles.text}>{STRINGS.meeting_create_finish_time}</Text>
+        <DatePicker
+          selected={finishDate}
+          onChange={(date) => setEndDate(date)}
+          imeInputLabel="Time:"
+          dateFormat="MM/dd/yyyy HH:mm"
+          showTimeInput
+        />
+        <View style={{ marginLeft: Spacing.m }}>
+          <Button onPress={() => setFinishDate(undefined)} title="Clear" />
+        </View>
+      </View>
+      )}
       {show && (
         <DateTimePicker
           value={settingStart ? startDate : finishDate}
@@ -146,9 +224,10 @@ const CreateMeeting = () => {
       <TextInput
         style={styles.text}
         placeholder={STRINGS.meeting_create_location}
+        onChangeText={(text) => { setLocation(text); }}
       />
       <View style={styles.button}>
-        <Button title={STRINGS.general_button_confirm} disabled={name === ''} />
+        <Button title={STRINGS.general_button_confirm} disabled={name === ''} onPress={() => createMeeting()} />
       </View>
       <View style={styles.button}>
         <Button title={STRINGS.general_button_cancel} onPress={() => { navigation.goBack(); }} />

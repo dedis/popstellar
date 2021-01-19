@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 
 import { Typography, Spacing } from '../Styles';
 import EventItem from './EventItem';
+import PROPS_TYPE from '../res/Props';
 
 /**
  * Manage the collapsable list of events: contain a section list of event
@@ -59,7 +60,7 @@ const Item = ({ events, closedList }) => {
         data={events.data}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => <EventItem event={item} />}
-        listKey={events.title}
+        listKey={`eventsCollapsableList${events.title}`}
       />
       )}
     </View>
@@ -69,7 +70,9 @@ const Item = ({ events, closedList }) => {
 Item.propTypes = {
   events: PropTypes.shape({
     title: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(EventItem.propTypes.event).isRequired,
+    data: PropTypes.arrayOf(
+      PropTypes.oneOfType([PROPS_TYPE.event, PROPS_TYPE.property]),
+    ).isRequired,
   }).isRequired,
   closedList: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
@@ -84,7 +87,7 @@ const EventsCollapsableList = ({ data, closedList }) => (
     data={data}
     keyExtractor={(item) => item.title}
     renderItem={({ item }) => <Item events={item} closedList={closedList} />}
-    listKey="Base"
+    listKey="eventsCollapsableList"
   />
 );
 
