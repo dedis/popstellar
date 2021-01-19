@@ -4,47 +4,43 @@ import com.github.dedis.student20_pop.utility.protocol.MessageHandler;
 
 import java.util.Objects;
 
-/**
- * A failed query's answer
- */
+/** A failed query's answer */
 public final class Error extends Answer {
 
-    private final ErrorCode error;
+  private final ErrorCode error;
 
-    /**
-     * Constructor of an Error
-     *
-     * @param id of the answer
-     * @param error of the answer, contains its code and description
-     */
-    public Error(int id, ErrorCode error) {
-        super(id);
-        this.error = error;
-    }
+  /**
+   * Constructor of an Error
+   *
+   * @param id of the answer
+   * @param error of the answer, contains its code and description
+   */
+  public Error(int id, ErrorCode error) {
+    super(id);
+    this.error = error;
+  }
 
-    /**
-     * Returns the error code.
-     */
-    public ErrorCode getError() {
-        return error;
-    }
+  /** Returns the error code. */
+  public ErrorCode getError() {
+    return error;
+  }
 
-    @Override
-    public void accept(MessageHandler handler) {
-        handler.handle(this);
-    }
+  @Override
+  public void accept(MessageHandler handler) {
+    handler.handle(this);
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        Error error = (Error) o;
-        return Objects.equals(getError(), error.getError());
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
+    Error error = (Error) o;
+    return Objects.equals(getError(), error.getError());
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), getError());
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), getError());
+  }
 }
