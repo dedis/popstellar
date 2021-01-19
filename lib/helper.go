@@ -23,6 +23,15 @@ func NestedByteArrayToStringArray(slice [][]byte) []string {
 	return sliceString
 }
 
+// StringArrayToNestedByteArray converts an array of strings to a [][]byte
+func StringArrayToNestedByteArray(slice []string) [][]byte {
+	var byteString [][]byte
+	for _, item := range slice {
+		byteString = append(byteString, []byte(item))
+	}
+	return byteString
+}
+
 // EscapeAndQuote escapes the following characters the following way:
 // `"` and `\` characters must be escaped by adding a `\` characters before them.
 // `"` becomes `\"` and `\` becomes `\\`.
