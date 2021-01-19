@@ -58,7 +58,6 @@ const handleServerAnswer = (message) => {
         if (answer.requestAction === actions.CREATE) {
           // callback for a successful create LAO request
           const jsonMessage = answer.message;
-          jsonMessage.params.channel = fromString64(jsonMessage.params.channel);
           jsonMessage.params.message.data = JSON.parse(
             fromString64(jsonMessage.params.message.data),
           );
@@ -293,7 +292,6 @@ const handleServerAnswer = (message) => {
   };
 
   const obj = JSON.parse(message.data);
-  console.log('handling a new answer : ', obj);
 
   // check that the input is validated by the JsonSchema specifications
   if (!validateWebsocketInput(obj)) {
@@ -363,7 +361,7 @@ const handleServerAnswer = (message) => {
       _handlePositiveServerAnswer(obj);
     } else {
       throw new Error(
-        `(handleServerAnswer) result field value wrongly formatted 
+        `(handleServerAnswer) result field value wrongly formatted
         (expected: ${0}, actual: ${obj.result})`,
       );
     }
