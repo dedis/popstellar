@@ -212,8 +212,8 @@ func checkCreationTimeValidity(ctime int64) bool {
 }
 
 //checkStringNotEmpty returns false if the string given as param is empty, and logs an error message
-func checkStringNotEmpty(loc string) bool {
-	if loc == "" {
+func checkStringNotEmpty(str string) bool {
+	if str == "" {
 		log.Printf("string argument cannot be empty")
 		return false
 	}

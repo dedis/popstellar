@@ -49,6 +49,9 @@ This package implements all the checks we do on messages to ensure they are vali
                                                                         `signature` both encoded in base 64 because we receive them encoded.
 * For the signature, we exclusively use the unencoded representation. 
 
+### test
+This package contains files useful for manual real-world testing.
+
 ## Back-end components
 ### Dependencies
 Currently, the project works with the following libraries:
@@ -79,7 +82,7 @@ append the received witness signatures at the end of the original message's list
 Some unit-tests exist directly in their corresponding packages, as per Go specification. They can be run with `go test -v ./...` (recursive from the top-level folder) or simply `go test` for the current package.
 
 ## Basic testing
-We provide a very basic front-end in the file `index.html`. It does nothing but opens a websocket connection to the back-end server, and lets
+We provide a very basic front-end in the file `test/index.html`. It does nothing but opens a websocket connection to the back-end server, and lets
 you send and receive messages.
 
 If you want to test the application with the `index.html` front-end on another machine as the back-end server, you will have to change the
