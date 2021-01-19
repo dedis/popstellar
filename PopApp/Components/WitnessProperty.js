@@ -25,21 +25,21 @@ const styles = StyleSheet.create({
   },
 });
 
-const MeetingEvent = ({ event }) => (
+const WitnessProperty = ({ event }) => (
   <View style={styles.view}>
     <Text style={styles.text}>{STRINGS.witness_name}</Text>
     <FlatList
       data={event.witnesses}
       keyExtractor={(item) => item}
       renderItem={({ item }) => <Text>{item}</Text>}
-      listKey={event.id.toString()}
+      listKey={`WitnessProperty-${event.id.toString()}`}
       style={styles.flatList}
     />
   </View>
 );
 
-MeetingEvent.propTypes = {
-  event: PROPS_TYPE.event.isRequired,
+WitnessProperty.propTypes = {
+  event: PROPS_TYPE.property.isRequired,
 };
 
-export default MeetingEvent;
+export default WitnessProperty;

@@ -12,6 +12,8 @@ import Identity from '../Components/Identity';
 import MytabBar from '../Components/OrganizerMaterialTab';
 import WitnessNavigation from './WitnessNavigation';
 import OrganizerNavigation from './OrganizerNavigation';
+import PROPS_TYPE from '../res/Props';
+import { getStore } from '../Store/configureStore';
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
 
@@ -34,26 +36,37 @@ const styles = StyleSheet.create({
   },
 });
 
-function OrganizationNavigation() {
+function OrganizationNavigation(props) {
+  const { lao } = props;
+  const { pubKey } = getStore().getState().keypairReducer;
+  const isOrganizer = lao.organizer ? lao.organizer === pubKey : false;
+  const isWitness = lao.witnesses ? lao.witnesses.includes(pubKey) : false;
+
   return (
     <OrganizationTopTabNavigator.Navigator
       style={styles.navigator}
       initialRouteName={STRINGS.organization_navigation_tab_attendee}
       // eslint-disable-next-line react/jsx-props-no-spreading
-      tabBar={(props) => <MytabBar {...props} />}
+      tabBar={(p) => <MytabBar {...p} />}
     >
-      <OrganizationTopTabNavigator.Screen
-        name={STRINGS.organization_navigation_tab_attendee}
-        component={Attendee}
-      />
-      <OrganizationTopTabNavigator.Screen
-        name={STRINGS.organization_navigation_tab_organizer}
-        component={OrganizerNavigation}
-      />
-      <OrganizationTopTabNavigator.Screen
-        name={STRINGS.organization_navigation_tab_witness}
-        component={WitnessNavigation}
-      />
+      {!isOrganizer && !isWitness && (
+        <OrganizationTopTabNavigator.Screen
+          name={STRINGS.organization_navigation_tab_attendee}
+          component={Attendee}
+        />
+      )}
+      {isOrganizer && (
+        <OrganizationTopTabNavigator.Screen
+          name={STRINGS.organization_navigation_tab_organizer}
+          component={OrganizerNavigation}
+        />
+      )}
+      {isWitness && (
+        <OrganizationTopTabNavigator.Screen
+          name={STRINGS.organization_navigation_tab_witness}
+          component={WitnessNavigation}
+        />
+      )}
       <OrganizationTopTabNavigator.Screen
         name={STRINGS.organization_navigation_tab_identity}
         component={Identity}
@@ -62,8 +75,16 @@ function OrganizationNavigation() {
   );
 }
 
+OrganizationNavigation.propTypes = {
+  lao: PROPS_TYPE.LAO,
+};
+
+OrganizationNavigation.defaultProps = {
+  lao: undefined,
+};
+
 const mapStateToProps = (state) => ({
-  LAO_ID: state.toggleAppNavigationScreenReducer.LAO_ID,
+  lao: state.currentLaoReducer.lao,
 });
 
 export default connect(mapStateToProps)(OrganizationNavigation);
