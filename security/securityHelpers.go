@@ -10,7 +10,7 @@ import (
 	"student20_pop/parser"
 )
 
-const MaxPropagationDelay = 2
+const MaxPropagationDelay = 5
 const MaxClockDifference = 2
 
 // VerifySignature checks that Sign(itemToVerify) corresponds to the given signature

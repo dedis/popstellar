@@ -423,7 +423,7 @@ func (o *organizer) handleCreatePoll(msg message.Message, canal string, query me
 }
 
 // handleUpdateProperties is the function to handle a received message requesting a change of some properties of a LAO (currently).
-// It should already be relatively modulable if action "update_properties" will exists for events others than a LAO.
+// It should already be relatively modular if action "update_properties" will exists for events others than a LAO.
 // It is called by the function handlePublish.
 // The received message had the object field set to "lao" and action field to "update_properties"
 // It will store the received message in the database, and send the change request to every subscriber of the channel,
@@ -618,6 +618,7 @@ func (o *organizer) applyUpdates(dataToSign message.Data, toSignStruct message.M
 
 // handleCatchup is the function to handle a received message requesting a catchup on a channel.
 // It is called by HandleReceivedMessage, and returns the current state of a channel.
+// DEPRECATED, this is not the intended goal of this method, it should return the history of messages but it is not implemented yet.
 func (o *organizer) handleCatchup(query message.Query) ([]byte, error) {
 	// TODO maybe pass userId as an arg in order to check access rights later on?
 	params, err := parser.ParseParams(query.Params)

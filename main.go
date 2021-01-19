@@ -21,7 +21,7 @@ func main() {
 	var file = flag.String("f", "default", "file for the actor to store it's database. Must end with \".db\" ")
 
 	flag.Parse()
-	tpl := template.Must(template.ParseFiles("index.html"))
+	tpl := template.Must(template.ParseFiles("test/index.html"))
 
 	if strings.ToLower(*mode) != "o" && strings.ToLower(*mode) != "w" {
 		log.Fatal("Mode not recognized")

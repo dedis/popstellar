@@ -4,8 +4,6 @@ import (
 	ed "crypto/ed25519"
 	"crypto/sha256"
 	b64 "encoding/base64"
-	"io/ioutil"
-	"log"
 	"os"
 	"reflect"
 	"strconv"
@@ -22,7 +20,8 @@ import (
 // testing that correct strings are accepted rather that incorrect strings are rejected.
 // This seems a decent trade-off for time-efficiency as our code is quite prone to raising errors.
 
-///////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// getters for data JSON strings
 
 // getCorrectDataCreateLAO generate a example JSON string of the data field of a request for LAO creation
 func getCorrectDataCreateLAO(publicKey []byte, creationStr string) string {
@@ -190,6 +189,7 @@ func getCorrectDataWitnessMessage(privateKey ed.PrivateKey, messageId string) st
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
+// getters for top-level JSON strings
 
 // getCorrectPublishOnRoot generate a example JSON string of the whole request for a publish, based on a data []byte
 func getCorrectPublishOnRoot(publicKey []byte, privateKey ed.PrivateKey, data []byte) []byte {
@@ -299,13 +299,11 @@ func getExpectedMsgAndChannelForPublishGeneral(publicKey []byte, privateKey ed.P
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
+// Tests to run
 
 // TestReceivePublishCreateLAO tests if sending a JSON string requesting to publish a LAO creation works
 // by comparing the messages (response and broadcasted answers) sent back
 func TestReceivePublishCreateLAO(t *testing.T) {
-	// turn off logging for the tests
-	log.SetFlags(0)
-	log.SetOutput(ioutil.Discard)
 
 	publicKey, privateKey := lib.GenerateTestKeyPair()
 
@@ -330,9 +328,6 @@ func TestReceivePublishCreateLAO(t *testing.T) {
 
 // TestReceivePublishStateLAO should correctly receive a nil broadcast and an error answer as currently an organizer backend should never receive such a message
 func TestReceivePublishStateLAO(t *testing.T) {
-	// turn off logging for the tests
-	log.SetFlags(0)
-	log.SetOutput(ioutil.Discard)
 
 	publicKey, privateKey := lib.GenerateTestKeyPair()
 
@@ -374,9 +369,6 @@ func TestReceivePublishStateLAO(t *testing.T) {
 // TestReceivePublishCreateMeeting tests if sending a JSON string requesting to a meeting creation works
 // by comparing the messages (response and broadcasted answers) sent back
 func TestReceivePublishCreateMeeting(t *testing.T) {
-	// turn off logging for the tests
-	log.SetFlags(0)
-	log.SetOutput(ioutil.Discard)
 
 	publicKey, privateKey := lib.GenerateTestKeyPair()
 
@@ -401,9 +393,6 @@ func TestReceivePublishCreateMeeting(t *testing.T) {
 // TestReceivePublishCreateRollCallNow tests if sending a JSON string requesting a rollCall creation starting now works
 // by comparing the messages (response and broadcasted answers) sent back
 func TestReceivePublishCreateRollCallNow(t *testing.T) {
-	// turn off logging for the tests
-	log.SetFlags(0)
-	log.SetOutput(ioutil.Discard)
 
 	publicKey, privateKey := lib.GenerateTestKeyPair()
 
@@ -428,9 +417,6 @@ func TestReceivePublishCreateRollCallNow(t *testing.T) {
 // TestReceivePublishCreateMeeting tests if sending a JSON string requesting a rollCall creation later works
 // by comparing the messages (response and broadcasted answers) sent back, then open it, then closes it
 func TestReceivePublishCreateRollCallLater(t *testing.T) {
-	// turn off logging for the tests
-	log.SetFlags(0)
-	log.SetOutput(ioutil.Discard)
 
 	_ = os.Remove("org_test.db")
 
