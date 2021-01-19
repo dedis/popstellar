@@ -39,7 +39,7 @@ func NewWitness(pkey string, db string) *witness {
 // on the message's method field.
 func (w *witness) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAndChannel []lib.MessageAndChannel, responseToSender []byte) {
 	// if the message is an answer message just ignore it
-	isAnswer, err := parser.FilterAnswers(receivedMsg)
+	isAnswer, err := parser.IsAnswer(receivedMsg)
 	if err != nil {
 		log.Printf("unable to parse received message. Cannot decide whether message is answer or is not.")
 		return nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, message.Query{})

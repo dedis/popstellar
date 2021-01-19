@@ -185,8 +185,8 @@ func ParseDataStateMeeting(data json.RawMessage) (message.DataStateMeeting, erro
 	return m, err
 }
 
-// FilterAnswers returns true if the message was an answer message
-func FilterAnswers(receivedMsg []byte) (bool, error) {
+// IsAnswer returns true if the message was an answer message
+func IsAnswer(receivedMsg []byte) (bool, error) {
 	genericMsg, err := ParseGenericMessage(receivedMsg)
 	if err != nil {
 		return false, err
