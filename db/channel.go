@@ -83,7 +83,7 @@ func UpdateChannel(obj interface{}, database string) error {
 	return writeChannel(obj, database, false)
 }
 
-// GetChannel returns a channel's infos from a given ID. Returns ni if the channel does not exists.
+// GetChannel returns a channel's infos from a given ID. Returns nil if the channel does not exists.
 func GetChannel(id []byte, database string) []byte {
 	db, e := OpenDB(database)
 	if e != nil {

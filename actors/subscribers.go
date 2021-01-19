@@ -20,7 +20,7 @@ import (
 func (o *organizer) handleSubscribe(query message.Query, connectionId int) error {
 	params, err := parser.ParseParams(query.Params)
 	if err != nil {
-		log.Printf("unable to analyse paramsLight in handleSubscribe()")
+		log.Printf("unable to analyse params in handleSubscribe()")
 		return lib.ErrRequestDataInvalid
 	}
 
@@ -38,7 +38,7 @@ func (o *organizer) handleSubscribe(query message.Query, connectionId int) error
 func (o *organizer) handleUnsubscribe(query message.Query, userId int) error {
 	params, err := parser.ParseParams(query.Params)
 	if err != nil {
-		log.Printf("unable to analyse paramsLight in handleUnsubscribe()")
+		log.Printf("unable to analyse params in handleUnsubscribe()")
 		return lib.ErrRequestDataInvalid
 	}
 
@@ -66,7 +66,7 @@ func (o *organizer) GetSubscribers(channel string) []int {
 func (w *witness) handleSubscribe(query message.Query, userId int) error {
 	params, err := parser.ParseParams(query.Params)
 	if err != nil {
-		log.Printf("unable to analyse paramsLight in handleSubscribe()")
+		log.Printf("unable to analyse params in handleSubscribe()")
 		return lib.ErrRequestDataInvalid
 	}
 
@@ -94,7 +94,7 @@ func (w *witness) handleSubscribe(query message.Query, userId int) error {
 func (w *witness) handleUnsubscribe(query message.Query, userId int) error {
 	params, err := parser.ParseParams(query.Params)
 	if err != nil {
-		log.Printf("unable to analyse paramsLight in handleUnsubscribe()")
+		log.Printf("unable to analyse params in handleUnsubscribe()")
 		return lib.ErrRequestDataInvalid
 	}
 

@@ -4,7 +4,7 @@ package event
 import "hash"
 
 type LAO struct {
-	// hash(org||creation||name) , not updated on update.
+	// hash(organizerPublicKey||creation||name) , not updated on update.
 	ID string
 	// Name of the LAO
 	Name string
