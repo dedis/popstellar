@@ -255,6 +255,19 @@ func getCorrectPublishGeneral(publicKey []byte, privateKey ed.PrivateKey, data [
 	return []byte(msg)
 }
 
+// getCorrectCatchupOnLAO_id generate a example JSON string of the whole request for a catchup on channel LAO_id
+func getCorrectCatchupOnRollCallLAO_id() []byte {
+	msg := `{
+		"jsonrpc": "2.0",
+		"method": "catchup",
+		"params": {
+			"channel": "/root/LAO_id",
+		},
+		"id": 0
+	}`
+	return []byte(msg)
+}
+
 // getExpectedMsgAndChannelForPublishOnRoot generate a example JSON string of the whole broadcasted struct sent back for LAO creation
 // according to the data field passed in argument
 func getExpectedMsgAndChannelForPublishOnRoot(publicKey []byte, privateKey ed.PrivateKey, data []byte) []lib.MessageAndChannel {
@@ -296,6 +309,30 @@ func getExpectedMsgAndChannelForPublishGeneral(publicKey []byte, privateKey ed.P
 		Channel: []byte("/root/LAO_id"),
 	}}
 	return answer
+}
+
+// getExpectedResponseForCatchupRollCallLAO_id generate a example JSON string of the ack with the current state 
+// (not correct implementation of the protocol, but works better than nothing and matches the current implementation. 
+// Correct should be to return the whole history.)
+func getExpectedResponseForCatchupRollCallLAO_id() []byte {
+	response := `{
+		"jsonrpc":"2.0",
+		"result":[
+			"message": {
+				"data": "` + string(getCorrectDataCreateRollCallNow()) + `",
+				"sender": "",
+				"signature": "",
+				"message_id": "",
+				"witness_signatures": {
+	
+				}	
+
+		]
+		"id":0
+	}`
+	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
+	response = strings.Join(strings.Fields(response), "")
+	return []byte(response)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -392,7 +429,7 @@ func TestReceivePublishCreateMeeting(t *testing.T) {
 
 // TestReceivePublishCreateRollCallNow tests if sending a JSON string requesting a rollCall creation starting now works
 // by comparing the messages (response and broadcasted answers) sent back
-func TestReceivePublishCreateRollCallNow(t *testing.T) {
+func TestReceivePublishCreateRollCallNowAndCatchup(t *testing.T) {
 
 	publicKey, privateKey := lib.GenerateTestKeyPair()
 
@@ -411,6 +448,20 @@ func TestReceivePublishCreateRollCallNow(t *testing.T) {
 	if !reflect.DeepEqual(responseToSender, expectedResponseToSender) {
 		t.Errorf("correct structs are not as expected, \n%v\n vs, \n%v", string(responseToSender), string(expectedResponseToSender))
 	}
+
+	receivedMsg = getCorrectCatchupOnRollCallLAO_id()
+	userId = 5
+	expectedMsgAndChannel = nil
+	expectedResponseToSender = getExpectedResponseForCatchupRollCallLAO_id()
+
+	if !reflect.DeepEqual(msgAndChannel, expectedMsgAndChannel) {
+		t.Errorf("correct msgAndChannel are not as expected, \n%+v\n vs, \n%+v", msgAndChannel, expectedMsgAndChannel)
+	}
+
+	if !reflect.DeepEqual(responseToSender, expectedResponseToSender) {
+		t.Errorf("correct structs are not as expected, \n%v\n vs, \n%v", string(responseToSender), string(expectedResponseToSender))
+	}
+
 	_ = os.Remove("org_test.db")
 }
 
