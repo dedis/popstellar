@@ -124,7 +124,7 @@ type DataCreatePoll struct {
 type DataUpdateLAO struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
-	// LAO ID. not recomputed if the name changes
+	// LAO ID. Not recomputed if the name changes
 	ID []byte `json:"id"`
 	// Name of the LAO
 	Name string `json:"name"`
