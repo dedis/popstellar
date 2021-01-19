@@ -6,7 +6,6 @@ import (
 	b64 "encoding/base64"
 	"io/ioutil"
 	"log"
-	"math/rand"
 	"os"
 	"reflect"
 	"strconv"
@@ -23,17 +22,7 @@ import (
 // testing that correct strings are accepted rather that incorrect strings are rejected.
 // This seems a decent trade-off for time-efficiency as our code is quite prone to raising errors.
 
-////////////////////////////////////////////
-
-// createKeyPair generate a new random pair of public/private key
-// DEPRECATED: use lib.GenerateTestKeyPair instead
-func createKeyPair() ([]byte, ed.PrivateKey) {
-	//randomize the key
-	randomSeed := make([]byte, 32)
-	rand.Read(randomSeed)
-	privateKey := ed.NewKeyFromSeed(randomSeed)
-	return privateKey.Public().(ed.PublicKey), privateKey
-}
+///////////////////////////////////////////
 
 // getCorrectDataCreateLAO generate a example JSON string of the data field of a request for LAO creation
 func getCorrectDataCreateLAO(publicKey []byte, creationStr string) string {
@@ -58,7 +47,7 @@ func getCorrectDataCreateLAO(publicKey []byte, creationStr string) string {
 }
 
 // getCorrectDataCreateLAO generate a example JSON string of the data field of a request for meeting creation
-func getCorrectDataCreateMeeting(publicKey []byte) string {
+func getCorrectDataCreateMeeting() string {
 	creationString := strconv.FormatInt(time.Now().Unix(), 10)
 	startString := strconv.FormatInt(time.Now().Unix()+1000, 10)
 	toHash := lib.ArrayRepresentation([]string{"M", b64.StdEncoding.EncodeToString([]byte("LAO_id")), creationString, "my_meeting"})
@@ -79,7 +68,7 @@ func getCorrectDataCreateMeeting(publicKey []byte) string {
 }
 
 // getCorrectDataCreateRollCallNow generate a example JSON string of the data field of a request for rollCall creation starting now
-func getCorrectDataCreateRollCallNow(publicKey []byte) string {
+func getCorrectDataCreateRollCallNow() string {
 	creationString := strconv.FormatInt(time.Now().Unix(), 10)
 	startStr := strconv.FormatInt(time.Now().Unix()+1000, 10)
 	toHash := lib.ArrayRepresentation([]string{"R", b64.StdEncoding.EncodeToString([]byte("LAO_id")), creationString, "my_roll_call"})
@@ -100,7 +89,7 @@ func getCorrectDataCreateRollCallNow(publicKey []byte) string {
 }
 
 // getCorrectDataCreateRollCallLater generate a example JSON string of the data field of a request for rollCall creation starting at a scheduled time
-func getCorrectDataCreateRollCallLater(publicKey []byte, creationString string) string {
+func getCorrectDataCreateRollCallLater(creationString string) string {
 	startString := strconv.FormatInt(time.Now().Unix()+1000, 10)
 	toHash := lib.ArrayRepresentation([]string{"R", b64.StdEncoding.EncodeToString([]byte("LAO_id")), creationString, "my_roll_call"})
 	hashId := sha256.Sum256([]byte(toHash))
@@ -120,7 +109,7 @@ func getCorrectDataCreateRollCallLater(publicKey []byte, creationString string) 
 }
 
 // getCorrectDataOpenRollCall generate a example JSON string of the data field of a request for opening a rollCall at a previously scheduled time
-func getCorrectDataOpenRollCall(publicKey []byte, creationString string) string {
+func getCorrectDataOpenRollCall(creationString string) string {
 	startString := strconv.FormatInt(time.Now().Unix()+1000, 10)
 	toHash := lib.ArrayRepresentation([]string{"R", b64.StdEncoding.EncodeToString([]byte("LAO_id")), creationString, "my_roll_call"})
 	hashId := sha256.Sum256([]byte(toHash))
@@ -137,7 +126,7 @@ func getCorrectDataOpenRollCall(publicKey []byte, creationString string) string 
 }
 
 // getCorrectDataCloseRollCall generate a example JSON string of the data field of a request for closing a rollCall
-func getCorrectDataCloseRollCall(publicKey []byte, creationString string) string {
+func getCorrectDataCloseRollCall(creationString string) string {
 	startString := strconv.FormatInt(time.Now().Unix()+1000, 10)
 	endString := strconv.FormatInt(time.Now().Unix()+2000, 10)
 	toHash := lib.ArrayRepresentation([]string{"R", b64.StdEncoding.EncodeToString([]byte("LAO_id")), creationString, "my_roll_call"})
@@ -269,38 +258,7 @@ func getCorrectPublishGeneral(publicKey []byte, privateKey ed.PrivateKey, data [
 // getExpectedMsgAndChannelForPublishOnRoot generate a example JSON string of the whole broadcasted struct sent back for LAO creation
 // according to the data field passed in argument
 func getExpectedMsgAndChannelForPublishOnRoot(publicKey []byte, privateKey ed.PrivateKey, data []byte) []lib.MessageAndChannel {
-	dataB64 := b64.StdEncoding.EncodeToString(data)
-	pkeyB64 := b64.StdEncoding.EncodeToString(publicKey)
-	signature := ed.Sign(privateKey, data)
-	signatureB64 := b64.StdEncoding.EncodeToString(signature)
-	toHash := lib.ArrayRepresentation([]string{dataB64, signatureB64})
-	msgId := sha256.Sum256([]byte(toHash))
-	msgIdB64 := b64.StdEncoding.EncodeToString(msgId[:])
-	msg := `{
-		"jsonrpc": "2.0",
-		"method": "broadcast",
-		"params": {
-			"channel": "/root",
-			"message": {
-				"data": "` + dataB64 + `",
-				"sender": "` + pkeyB64 + `",
-				"signature": "` + signatureB64 + `",
-				"message_id": "` + msgIdB64 + `",
-				"witness_signatures": {
-	
-				}
-			}
-		},
-		"id": 0
-	}`
-	// MTIz is b64encoded 123
-	// strings.Join(strings.Fields(str), "") remove all white spaces (and tabs, etc) from str
-	msg = strings.Join(strings.Fields(msg), "")
-	answer := []lib.MessageAndChannel{{
-		Message: []byte(msg),
-		Channel: []byte("/root"),
-	}}
-	return answer
+	return nil
 }
 
 // getExpectedMsgAndChannelForPublishGeneral generate a example JSON string of the whole broadcasted struct sent back
@@ -422,9 +380,9 @@ func TestReceivePublishCreateMeeting(t *testing.T) {
 
 	publicKey, privateKey := lib.GenerateTestKeyPair()
 
-	receivedMsg := getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateMeeting(publicKey)))
+	receivedMsg := getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateMeeting()))
 	userId := 5
-	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateMeeting(publicKey)))
+	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateMeeting()))
 	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`)
 
 	org := NewOrganizer(string(publicKey), "org_test.db")
@@ -449,9 +407,9 @@ func TestReceivePublishCreateRollCallNow(t *testing.T) {
 
 	publicKey, privateKey := lib.GenerateTestKeyPair()
 
-	receivedMsg := getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallNow(publicKey)))
+	receivedMsg := getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallNow()))
 	userId := 5
-	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallNow(publicKey)))
+	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallNow()))
 	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`)
 
 	org := NewOrganizer(string(publicKey), "org_test.db")
@@ -479,9 +437,9 @@ func TestReceivePublishCreateRollCallLater(t *testing.T) {
 	publicKey, privateKey := lib.GenerateTestKeyPair()
 	creationString := strconv.FormatInt(time.Now().Unix(), 10)
 
-	receivedMsg := getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallLater(publicKey, creationString)))
+	receivedMsg := getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallLater(creationString)))
 	userId := 5
-	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallLater(publicKey, creationString)))
+	expectedMsgAndChannel := getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCreateRollCallLater(creationString)))
 	expectedResponseToSender := []byte(`{"jsonrpc":"2.0","result":0,"id":0}`)
 
 	org := NewOrganizer(string(publicKey), "org_test.db")
@@ -495,9 +453,9 @@ func TestReceivePublishCreateRollCallLater(t *testing.T) {
 		t.Errorf("correct structs are not as expected, \n%v\n vs, \n%v", string(responseToSender), string(expectedResponseToSender))
 	}
 
-	receivedMsg = getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataOpenRollCall(publicKey, creationString)))
+	receivedMsg = getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataOpenRollCall(creationString)))
 	userId = 5
-	expectedMsgAndChannel = getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataOpenRollCall(publicKey, creationString)))
+	expectedMsgAndChannel = getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataOpenRollCall(creationString)))
 	expectedResponseToSender = []byte(`{"jsonrpc":"2.0","result":0,"id":0}`)
 
 	msgAndChannel, responseToSender = org.HandleReceivedMessage(receivedMsg, userId)
@@ -509,9 +467,9 @@ func TestReceivePublishCreateRollCallLater(t *testing.T) {
 		t.Errorf("correct structs are not as expected, \n%v\n vs, \n%v", string(responseToSender), string(expectedResponseToSender))
 	}
 
-	receivedMsg = getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCloseRollCall(publicKey, creationString)))
+	receivedMsg = getCorrectPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCloseRollCall(creationString)))
 	userId = 5
-	expectedMsgAndChannel = getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCloseRollCall(publicKey, creationString)))
+	expectedMsgAndChannel = getExpectedMsgAndChannelForPublishGeneral(publicKey, privateKey, []byte(getCorrectDataCloseRollCall(creationString)))
 	expectedResponseToSender = []byte(`{"jsonrpc":"2.0","result":0,"id":0}`)
 
 	msgAndChannel, responseToSender = org.HandleReceivedMessage(receivedMsg, userId)

@@ -7,7 +7,6 @@ package actors
 import (
 	"bytes"
 	b64 "encoding/base64"
-	"encoding/json"
 	"log"
 	"strings"
 	"student20_pop/db"
@@ -73,12 +72,12 @@ func (w *witness) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAndC
 }
 
 // handlePublish is called by HandleReceivedMessage and is only here to implement Actor's interface. Currently a witness
-// only supports messages with method "message", "subscribe" and "unsubscribe".
+// only supports messages with method "broadcast", "subscribe" and "unsubscribe".
 func (w *witness) handlePublish(query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	return nil, lib.ErrInvalidAction //a witness cannot handle a publish request for now
 }
 
-// handleBroadcast is the function that handles a received message with the method "message". It is called from
+// handleBroadcast is the function that handles a received message with the method "broadcast". It is called from
 // HandleReceivedMessage. It parses the received message, and delegates the handling to sub-handler functions, depending
 // on the "object" and "action" fields.
 func (w *witness) handleBroadcast(query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
@@ -90,22 +89,19 @@ func (w *witness) handleBroadcast(query message.Query) (msgAndChannel []lib.Mess
 
 	msg, errs := parser.ParseMessage(params.Message)
 	if errs != nil {
-		log.Printf("Unable to parse received message as a message")
+		log.Printf("unable to analyse Message in handleBroadcast()")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
-	data := message.Data{}
-	dataDecoded := make([]byte, b64.StdEncoding.DecodedLen(len(msg.Data)))
-
-	l, errs := b64.StdEncoding.Decode(dataDecoded, msg.Data)
+	errs = security.MessageIsValid(msg)
 	if errs != nil {
-		log.Printf("Tried to decode invalid B64 string: %s", msg.Data)
-		return nil, lib.ErrEncodingFault
+		log.Printf("message is not valid")
+		return nil, lib.ErrRequestDataInvalid
 	}
 
-	errs = json.Unmarshal(dataDecoded[:l], &data)
+	data, errs := parser.ParseData(string(msg.Data))
 	if errs != nil {
-		log.Printf("could not parse decoded query.Data into a message.Data structure")
+		log.Printf("unable to analyse data in handleBroadcast()")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
@@ -287,7 +283,7 @@ func (w *witness) handleWitnessMessage(msg message.Message, channel string, quer
 func (w *witness) handleLAOState(msg message.Message) (msgAndChannel []lib.MessageAndChannel, err error) {
 	data, errs := parser.ParseDataCreateLAO(msg.Data)
 	if errs != nil {
-		log.Printf("could not parse recieved data in a message.CreateLAO structure")
+		log.Printf("could not parse received data in a message.CreateLAO structure")
 		return nil, lib.ErrInvalidResource
 	}
 

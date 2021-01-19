@@ -61,8 +61,8 @@ func (o *organizer) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAn
 	case "publish":
 		msg, err = o.handlePublish(query)
 	case "broadcast":
+		// Should currently return an error as organizer should not be receiving broadcast messages in the current implementation
 		msg, err = o.handleBroadcast(query)
-	// Or they are only notification, and we just want to check that it was a success
 	case "catchup":
 		history, err = o.handleCatchup(query)
 	default:
@@ -133,7 +133,7 @@ func (o *organizer) handleBroadcast(query message.Query) (msgAndChannel []lib.Me
 func (o *organizer) handlePublish(query message.Query) (msgAndChannel []lib.MessageAndChannel, err_ error) {
 	params, errs := parser.ParseParams(query.Params)
 	if errs != nil {
-		log.Printf("unable to analyse paramsLight in handlePublish()")
+		log.Printf("unable to analyse params in handlePublish()")
 		return nil, lib.ErrRequestDataInvalid
 	}
 
@@ -256,18 +256,10 @@ func (o *organizer) handleCreateLAO(msg message.Message, canal string, query mes
 		return nil, errs
 	}
 
-	// as per hub.go, this msgAndChan will never be broadcast as Channel should be on root.
-	// We still create it in case this functionality could change in the future.
-	// if we remove it, the organizer fails to pass the tests... I don't see why we expect him to still return these
-	// message and channel...
-	msgAndChan := []lib.MessageAndChannel{{
-		Message: parser.ComposeBroadcastMessage(query),
-		Channel: []byte(canal),
-	}}
 
 	log.Printf("Sucessfully created lao %s", lao.Name)
 
-	return msgAndChan, nil
+	return nil, nil
 }
 
 // handleCreateRollCall is the function to handle a received message requesting a Roll Call Creation.
@@ -430,10 +422,11 @@ func (o *organizer) handleCreatePoll(msg message.Message, canal string, query me
 	return msgAndChan, nil
 }
 
-// handleUpdateProperties is the function to handle a received message requesting a change of some properties of a LAO.
+// handleUpdateProperties is the function to handle a received message requesting a change of some properties of a LAO (currently).
+// It should already be relatively modulable if action "update_properties" will exists for events others than a LAO.
 // It is called by the function handlePublish.
 // The received message had the object field set to "lao" and action field to "update_properties"
-// It will store the received message in the database, and send the change request to every subscriber of this LAO,
+// It will store the received message in the database, and send the change request to every subscriber of the channel,
 // waiting for Witness's validation to make the update.
 func (o *organizer) handleUpdateProperties(msg message.Message, canal string, query message.Query) (msgAndChannel []lib.MessageAndChannel, err error) {
 	// if statement to check that if SigThreshold == 0 then directly make the stateUpdate
