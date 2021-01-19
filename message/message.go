@@ -1,5 +1,7 @@
-/*functions to manage received Json messages. Unmarshalls and decode messages.*/
+/*structs to manage received Json messages while Unmarshalling and decoding messages.*/
 package message
+
+// []byte are automatically decoded from base64 when unmarshalled, while string (and json.RawMessage) are NOT
 
 import (
 	"encoding/json"
@@ -10,7 +12,7 @@ type Method string
 const(
 	Subscribe Method = "subscribe"
 	Unsubscribe Method = "unsubscribe"
-	Message Method = "message"
+	Broadcast Method = "broadcast"
 	Publish Method = "publish"
 	Catchup Method = "catchup"
 )*/
@@ -26,23 +28,20 @@ type Query struct {
 }
 
 type Params struct {
-	Channel string
-}
-
-type ParamsIncludingMessage struct {
-	Channel string
-	Message json.RawMessage
+	Channel string          `json:"channel"`
+	Message json.RawMessage `json:"message,omitempty"`
 }
 
 type Message struct {
-	Data              json.RawMessage `json:"data"` // in base 64
-	Sender            string          `json:"sender"`
-	Signature         string          `json:"signature"`
-	MessageId         string          `json:"message_id"`
-	WitnessSignatures []string        `json:"witnessSignatures"`
+	Data              []byte            `json:"data"`       // recovered from base 64
+	Sender            []byte            `json:"sender"`     // recovered from base 64
+	Signature         []byte            `json:"signature"`  // recovered from base 64
+	MessageId         []byte            `json:"message_id"` // recovered from base 64
+	WitnessSignatures []json.RawMessage `json:"witnessSignatures"`
 }
 
 type ItemWitnessSignatures struct {
-	Witness   string
-	Signature string
+	WitnessKey []byte // recovered from base 64
+	//Sign(message_id)
+	Signature []byte // recovered from base 64
 }

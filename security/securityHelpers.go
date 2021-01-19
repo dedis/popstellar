@@ -1,7 +1,10 @@
+// security contains all the function to perform checks on Data, from timestamp coherence to signature validation
 package security
 
 import (
 	ed "crypto/ed25519"
+	"encoding/json"
+	"log"
 	"student20_pop/lib"
 	"student20_pop/parser"
 )
@@ -9,39 +12,35 @@ import (
 const MaxPropagationDelay = 600
 const MaxClockDifference = 100
 
-/*
-	we check that Sign(sender||data) is the given signature
-*/
-func VerifySignature(publicKey string, data []byte, signature string) error {
+// VerifySignature checks that Sign(itemToSigned) corresponds to the given signature
+func VerifySignature(publicKey []byte, itemToVerify []byte, signature []byte) error {
 	//check the size of the key as it will panic if we plug it in Verify
 	if len(publicKey) != ed.PublicKeySize {
 		return lib.ErrRequestDataInvalid
 	}
-	if ed.Verify([]byte(publicKey), data, []byte(signature)) {
+	if ed.Verify(publicKey, itemToVerify, signature) {
 		return nil
 	}
 	//invalid signature
 	return lib.ErrRequestDataInvalid
 }
 
-/*
-	handling of dynamic updates with object as item and not just string
-	*publicKeys is already decoded
-    *sender and signature are not already decoded
-*/
-func VerifyWitnessSignatures(authorizedWitnesses []string, witnessSignaturesEnc []string, sender string) error {
-	senderDecoded, err := lib.Decode(sender)
-	if err != nil {
-		return lib.ErrEncodingFault
-	}
-	//TODO verify witnesses are in event's witness list (@ouriel)
-	for i := 0; i < len(witnessSignaturesEnc); i++ {
-		witnessSignatures, err := parser.ParseWitnessSignature(witnessSignaturesEnc[i])
+// VerifyWitnessSignatures verify that for each WitnessSignatureEnc, the public key belongs to authorizedWitnesses and
+// verifies that the signature is correct
+func VerifyWitnessSignatures(authorizedWitnesses [][]byte, witnessSignaturesEnc []json.RawMessage, messageId []byte) error {
+	for _, item := range witnessSignaturesEnc {
+		witnessSignature, err := parser.ParseWitnessSignature(item)
 		if err != nil {
 			return err
 		}
-		//right now we apply the first option and publickeys is then usless here
-		err = VerifySignature(witnessSignatures.Witness, senderDecoded, witnessSignatures.Signature)
+		//We check that the signature belong to an assigned witness
+		_, isAssigned := lib.FindByteArray(authorizedWitnesses, witnessSignature.Signature)
+		if !isAssigned {
+			log.Printf("witness public key not recognized")
+			return lib.ErrRequestDataInvalid
+		}
+		//then we check correctness of the signature
+		err = VerifySignature(witnessSignature.WitnessKey, messageId, witnessSignature.Signature)
 		if err != nil {
 			return err
 		}
