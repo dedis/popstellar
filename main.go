@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"student20_pop/config"
 	"student20_pop/network"
 	"text/template"
 )
@@ -14,11 +15,11 @@ import (
 // this function basically makes the webserver run
 func main() {
 
-	var mode = flag.String("m", "o", "server mode")
-	var address = flag.String("a", "127.0.0.1", "IP on which to run the server")
-	var port = flag.Int("p", 8000, "port on which the server listens for websocket connections")
-	var pkey = flag.String("k", "oui", "actor's public key")
-	var file = flag.String("f", "default", "file for the actor to store it's database. Must end with \".db\" ")
+	var mode = flag.String("m", config.MODE, "server mode")
+	var address = flag.String("a", config.ADDRESS, "IP on which to run the server")
+	var port = flag.Int("p", config.PORT, "port on which the server listens for websocket connections")
+	var pkey = flag.String("k", config.PKEY, "actor's public key")
+	var file = flag.String("f", config.FILE, "file for the actor to store it's database. Must end with \".db\" ")
 
 	flag.Parse()
 	tpl := template.Must(template.ParseFiles("test/index.html"))
