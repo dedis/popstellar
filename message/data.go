@@ -11,20 +11,6 @@ type Data map[string]interface{}
 
 // all concatenation referenced here are made with the HashItems function, go check it out have any doubt of how we do it
 
-/* potential enums, but doesn't type check in go, the checks must still be manual, so kinda useless
-type Object string
-const(
-	Lao Object = "lao"
-	Message Object = "message"
-	Meeting Object = "meeting"
-type Action string
-const(
-	Create Action = "create"
-	Update_properties Action = "update_properties"
-	State Action = "state"
-	WitnessKey Action = "witness"
-)*/
-
 type DataCreateLAO struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
@@ -102,6 +88,7 @@ type DataOpenRollCall struct {
 	Start int64 `json:"start"`
 }
 
+// Not implemented yet
 type DataCreatePoll struct {
 	Object string `json:"object"`
 	Action string `json:"action"`

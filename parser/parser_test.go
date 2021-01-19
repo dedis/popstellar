@@ -11,6 +11,7 @@ import (
 )
 
 // Some encoding (hashes) are actually incorrect here, but it doesn't impact the pure parser test
+// Correct encoding (hashes) are tested in the organizer_test.go
 func getCorrectCreateLAOString() string {
 	return `{
 	"jsonrpc": "2.0",
