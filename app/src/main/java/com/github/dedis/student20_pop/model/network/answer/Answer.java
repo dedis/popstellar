@@ -1,6 +1,8 @@
 package com.github.dedis.student20_pop.model.network.answer;
 
 
+import com.github.dedis.student20_pop.model.network.GenericMessage;
+
 import java.util.Objects;
 
 /**
@@ -8,7 +10,7 @@ import java.util.Objects;
  * <p>
  * Is linked to an earlier request with a unique id
  */
-public abstract class Answer {
+public abstract class Answer extends GenericMessage {
 
     private final int id;
 
