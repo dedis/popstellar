@@ -35,7 +35,7 @@ func NewOrganizer(pkey string, db string) *organizer {
 // 	the message's method field.
 func (o *organizer) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAndChannel []lib.MessageAndChannel, responseToSender []byte) {
 	// if the message is an answer message (positive ack or error), ignore it
-	isAnswer, err := parser.FilterAnswers(receivedMsg)
+	isAnswer, err := parser.IsAnswer(receivedMsg)
 	if err != nil {
 		log.Printf("could not parse the received message into a message.GenericMessage structure")
 		return nil, parser.ComposeResponse(lib.ErrIdNotDecoded, nil, message.Query{})
