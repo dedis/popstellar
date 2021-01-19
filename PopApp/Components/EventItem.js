@@ -4,6 +4,7 @@ import {
   StyleSheet, View, Text, FlatList,
 } from 'react-native';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 import { Spacing } from '../Styles';
 import PROPS_TYPE from '../res/Props';
@@ -14,7 +15,7 @@ import RollCallEvent from './RollCallEvent';
 import OrganizationNameProperty from './OrganizationNameProperty';
 import WitnessProperty from './WitnessProperty';
 import RollCallEventOrganizer from './RollCallEventOrganizer';
-
+import { getStore } from '../Store/configureStore';
 /**
  * The Event item component: display the correct representation of the event according to its type,
  * otherwise display its name and in all cases its nested events
@@ -31,11 +32,14 @@ const styles = StyleSheet.create({
   },
 });
 
-const EventItem = ({ event, isOrganizer }) => {
-  switch (event.type) {
+const EventItem = ({ event, lao }) => {
+  const { pubKey } = getStore().getState().keypairReducer;
+  const isOrganizer = lao.organizer === pubKey;
+
+  switch (event.object) {
     case 'meeting':
       return (<MeetingEvent event={event} />);
-    case 'rollCall':
+    case 'roll-call':
       if (isOrganizer) {
         return (<RollCallEventOrganizer event={event} />);
       }
@@ -54,9 +58,9 @@ const EventItem = ({ event, isOrganizer }) => {
           <Text style={styles.text}>{event.name}</Text>
           <FlatList
             data={event.childrens}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => item.id}
             renderItem={({ item }) => <EventItem event={item} />}
-            listKey={event.id.toString()}
+            listKey={`EventItem-${event.id.toString()}`}
           />
         </View>
       );
@@ -64,12 +68,12 @@ const EventItem = ({ event, isOrganizer }) => {
 };
 
 EventItem.propTypes = {
-  event: PROPS_TYPE.event.isRequired,
-  isOrganizer: PropTypes.bool,
+  event: PropTypes.oneOfType([PROPS_TYPE.event, PROPS_TYPE.property]).isRequired,
+  lao: PROPS_TYPE.LAO.isRequired,
 };
 
-EventItem.defaultProps = {
-  isOrganizer: false,
-};
+const mapStateToProps = (state) => ({
+  lao: state.currentLaoReducer.lao,
+});
 
-export default EventItem;
+export default connect(mapStateToProps)(EventItem);

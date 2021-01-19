@@ -8,6 +8,8 @@ import PropTypes from 'prop-types';
 import { Typography, Spacing, Buttons } from '../Styles';
 import EventItem from './EventItem';
 import STRINGS from '../res/strings';
+import { requestUpdateLao } from '../websockets/WebsocketApi';
+import PROPS_TYPE from '../res/Props';
 
 /**
  * Manage the collapsable list of events for a organizer: contain a section list of events
@@ -58,10 +60,12 @@ const Item = ({ events, closedList }) => {
   };
   const navigation = useNavigation();
 
-  const organizationNameBase = events.title === '' ? events.data.filter((e) => e.type === 'organization_name')[0].name : '';
+  const tempOrganizationName = events.data.filter((e) => e.object === 'organization_name');
+  const organizationNameBase = events.title === '' && tempOrganizationName.length > 0 ? tempOrganizationName[0].name : '';
   const [organizationName, setOrganizationName] = useState(organizationNameBase);
 
-  const witnessesBase = events.title === '' ? [...events.data.filter((e) => e.type === 'witness')[0].witnesses].map((w) => ({ name: w, isRemove: false })) : [];
+  const tempWitnesses = events.data.filter((e) => e.object === 'witness');
+  const witnessesBase = events.title === '' && tempWitnesses.length > 0 ? [...tempWitnesses[0].witnesses].map((w) => ({ name: w, isRemove: false })) : [];
   const [witnesses, setWitnesses] = useState(witnessesBase);
 
   const removeElement = (index) => {
@@ -116,10 +120,11 @@ const Item = ({ events, closedList }) => {
 
   // the part to manage the edition of the propreties
   const renderPropretiesEditing = (item) => {
-    switch (item.type) {
+    switch (item.object) {
       case 'organization_name':
         return (
           <TextInput
+            style={styles.text}
             placeholder={STRINGS.organization_name}
             value={organizationName}
             onChangeText={(text) => setOrganizationName(text)}
@@ -174,7 +179,7 @@ const Item = ({ events, closedList }) => {
             data={events.data}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => renderPropretiesEditing(item)}
-            listKey={events.title}
+            listKey={`OrganizerEventsCollapsableList-${events.title}-properties-editing`}
             ListFooterComponent={(
               <View>
                 <View style={styles.button}>
@@ -182,6 +187,10 @@ const Item = ({ events, closedList }) => {
                     title={STRINGS.general_button_confirm}
                     disabled={organizationName === organizationNameBase
                       && witnesses.toString() === witnessesBase.toString()}
+                    onPress={() => {
+                      setPropretyEditing(false);
+                      requestUpdateLao(organizationName, witnesses.map((x) => x.name));
+                    }}
                   />
                 </View>
                 <View style={styles.button}>
@@ -203,8 +212,8 @@ const Item = ({ events, closedList }) => {
         <FlatList
           data={events.data}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <EventItem event={item} isOrganizer />}
-          listKey={events.title}
+          renderItem={({ item }) => <EventItem event={item} />}
+          listKey={`OrganizerEventsCollapsableList-${events.title}-properties`}
         />
       );
     } if (open) {
@@ -212,8 +221,8 @@ const Item = ({ events, closedList }) => {
         <FlatList
           data={events.data}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <EventItem event={item} isOrganizer />}
-          listKey={events.title}
+          renderItem={({ item }) => <EventItem event={item} />}
+          listKey={`OrganizerEventsCollapsableList-${events.title}-open`}
         />
       );
     }
@@ -239,7 +248,9 @@ const Item = ({ events, closedList }) => {
 Item.propTypes = {
   events: PropTypes.shape({
     title: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(EventItem.propTypes.event).isRequired,
+    data: PropTypes.arrayOf(
+      PropTypes.oneOfType([PROPS_TYPE.event, PROPS_TYPE.property]),
+    ).isRequired,
   }).isRequired,
   closedList: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
@@ -254,7 +265,7 @@ const OrganizerEventsCollapsableList = ({ data, closedList }) => (
     data={data}
     keyExtractor={(item) => item.title}
     renderItem={({ item }) => <Item events={item} closedList={closedList} />}
-    listKey="Base"
+    listKey="OrganizerEventsCollapsableList"
   />
 );
 

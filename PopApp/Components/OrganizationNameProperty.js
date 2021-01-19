@@ -30,7 +30,7 @@ const OrganizationNameProperty = ({ event }) => (
 );
 
 OrganizationNameProperty.propTypes = {
-  event: PROPS_TYPE.event.isRequired,
+  event: PROPS_TYPE.property.isRequired,
 };
 
 export default OrganizationNameProperty;
