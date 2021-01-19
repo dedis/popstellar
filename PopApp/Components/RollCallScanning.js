@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import {
   StyleSheet, View, Text, Button, Modal, TouchableOpacity,
+  Platform,
 } from 'react-native';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 import { Buttons, Colors, Typography } from '../Styles';
 import CameraButton from './CameraButton';
 import PROPS_TYPE from '../res/Props';
 import STRINGS from '../res/strings';
+import { requestCloseRollCall } from '../websockets/WebsocketApi';
 
 /**
  * Scanning roll-call component: a description string, the number of participants scanned,
@@ -69,12 +73,40 @@ const styles = StyleSheet.create({
   },
 });
 
-const RollCallScanning = ({ navigation }) => {
-  const [nbPartipants, setNbPartipant] = useState(0);
+// eslint-disable-next-line camelcase
+const RollCallScanning = ({ navigation, dispatch, roll_call_id }) => {
+  React.useEffect(
+    () => navigation.addListener('beforeRemove', (e) => {
+      e.preventDefault();
+    }),
+    [navigation],
+  );
+
+  const [participants, setParticipants] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+
+  const closeRollCall = () => {
+    const action = { type: 'SET_OPEN_ROLL_CALL_ID', value: -1 };
+    dispatch(action);
+    requestCloseRollCall(roll_call_id, participants);
+    navigation.goBack();
+  };
+
+  const closeRollCallConfirmation = () => {
+    if (Platform.OS === 'web') {
+      // eslint-disable-next-line no-alert, no-undef
+      if (window.confirm(STRINGS.roll_call_scan_confirmation)) {
+        closeRollCall();
+      }
+    } else {
+      setModalVisible(true);
+    }
+  };
 
   return (
     <View style={styles.container}>
+      {Platform.OS !== 'web'
+      && (
       <Modal
         animationType="fade"
         transparent
@@ -97,7 +129,7 @@ const RollCallScanning = ({ navigation }) => {
                 style={{ ...styles.openButton, backgroundColor: Colors.blue }}
                 onPress={() => {
                   setModalVisible(!modalVisible);
-                  navigation.goBack();
+                  closeRollCall();
                 }}
               >
                 <Text style={styles.textStyle}>{STRINGS.general_yes}</Text>
@@ -106,20 +138,21 @@ const RollCallScanning = ({ navigation }) => {
           </View>
         </View>
       </Modal>
+      )}
       <Text style={styles.text}>
         {STRINGS.roll_call_scan_description}
       </Text>
       <Text style={styles.text}>
-        {nbPartipants}
+        {participants.length}
         {' '}
         {STRINGS.roll_call_scan_participant}
       </Text>
-      <CameraButton action={() => { setNbPartipant(nbPartipants + 1); }} />
+      <CameraButton action={() => { setParticipants([...participants, participants.length]); }} />
       <View>
         <Button
           style={styles.buttons}
           title={STRINGS.roll_call_scan_close}
-          onPress={() => setModalVisible(true)}
+          onPress={() => closeRollCallConfirmation()}
         />
       </View>
     </View>
@@ -128,6 +161,12 @@ const RollCallScanning = ({ navigation }) => {
 
 RollCallScanning.propTypes = {
   navigation: PROPS_TYPE.navigation.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  roll_call_id: PropTypes.string.isRequired,
 };
 
-export default RollCallScanning;
+const mapStateToProps = (state) => ({
+  roll_call_id: state.openRollCallIDReducer.roll_call_id,
+});
+
+export default connect(mapStateToProps)(RollCallScanning);
