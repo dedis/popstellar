@@ -46,7 +46,6 @@ object Validate {
 
     if (!util.Arrays.equals(id, lao.id)) getError("Invalid LAO id.")
     else if (! (lao.creation > 0)) getError("Creation timestamp should be positive.")
-    else if (! (lao.creation == lao.last_modified)) getError("Creation time should be the same as last modified.")
     else if (! util.Arrays.equals(midLevelMsg.sender, lao.organizer))
       getError("The sender of the message should be the same as the organizer of the LAO.")
     else None

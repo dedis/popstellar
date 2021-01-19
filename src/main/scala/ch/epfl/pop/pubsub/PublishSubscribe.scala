@@ -108,7 +108,6 @@ object PublishSubscribe {
                       system: ActorSystem[Nothing], pubEntry: Sink[PropagateMessageServer, NotUsed]): JsonMessage => JsonMessageAnswerServer = {
 
     def pub(params: MessageParameters, propagate: Boolean) = {
-      system.log.debug("Publishing: " + util.Arrays.toString(params.message.get.message_id))
       val future = dbActor.ask(ref => Write(params.channel, params.message.get, ref))
       Await.result(future, timeout.duration)
       if(propagate) {
@@ -186,7 +185,6 @@ object PublishSubscribe {
           val future = dbActor.ask(ref => Read(params.channel, params.message.get.data.modification_id, ref))
           Await.result(future, timeout.duration) match {
             case None =>
-             // system.log.debug("Reading: " + params.message.get.data.modification_id)
               AnswerErrorMessageServer(Some(id), MessageErrorContent(InvalidData.id, "Invalid reference to a message_id"))
             case Some(msgContent: MessageContent) =>
               errorOrPublish(params, id, Validate.validate(m, msgContent.data))
@@ -280,13 +278,22 @@ object PublishSubscribe {
 
 
         val parser = Flow[Message].map {
-          case TextMessage.Strict(s) => parseMessage(s) match {
-            case Left(m) => m
-            case Right(JsonMessageParserError(description, id, errorCode)) =>
-              AnswerErrorMessageServer(id, MessageErrorContent(errorCode.id, description))
+          case TextMessage.Strict(s) => {
+            system.log.debug("Receiving: " + s)
+            parseMessage(s) match {
+              case Left(m) => m
+              case Right(JsonMessageParserError(description, id, errorCode)) =>
+                AnswerErrorMessageServer(id, MessageErrorContent(errorCode.id, description))
+            }
           }
         }
-        val formatter = Flow[JsonMessage].map(m => TextMessage.Strict(serializeMessage(m)))
+
+        val formatter = Flow[JsonMessage].map{
+          m =>
+            val s = serializeMessage(m)
+            system.log.debug("Sending: " + s)
+            TextMessage.Strict(s)
+        }
 
         val mapPubSub = Flow[JsonMessage].map{case m: JsonMessagePubSubClient => m}
 

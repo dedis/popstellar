@@ -68,7 +68,6 @@ class ValidateTest extends FunSuite {
       .setId(id)
       .setName(name)
       .setCreation(creation)
-      .setLastModified(creation)
       .setOrganizer(organizer)
       .setWitnesses(Nil)
       .build()

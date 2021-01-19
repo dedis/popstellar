@@ -23,7 +23,7 @@ object Server {
    * Create a webserver that handles http requests and websockets requests.
    */
   def main(args: Array[String]): Unit = {
-    val PORT = 8080
+    val PORT = 8000
     val PATH = "pop"
 
     val root = Behaviors.setup[Nothing] { context =>
