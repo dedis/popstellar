@@ -256,7 +256,6 @@ func (o *organizer) handleCreateLAO(msg message.Message, canal string, query mes
 		return nil, errs
 	}
 
-
 	log.Printf("Sucessfully created lao %s", lao.Name)
 
 	return nil, nil
@@ -455,12 +454,7 @@ func (o *organizer) handleUpdateProperties(msg message.Message, canal string, qu
 			log.Printf("unable to parse (just) stored Message in handleUpdateProperties()")
 			return nil, lib.ErrRequestDataInvalid
 		}
-		dataToSign, err := parser.ParseData(string(toApplyStruct.Data))
-		if err != nil {
-			log.Printf("could not parse the data to sign into a message.Data structure")
-			return nil, lib.ErrDBFault
-		}
-		queryStr, err := o.applyUpdates(dataToSign, toApplyStruct, data)
+		queryStr, err := o.applyUpdates(toApplyStruct, data)
 		if err != nil {
 			return nil, err
 		}
@@ -558,13 +552,8 @@ func (o *organizer) handleWitnessMessage(msg message.Message, canal string, quer
 		Channel: []byte(canal),
 	}}
 
-	dataToSign, err := parser.ParseData(string(toSignStruct.Data))
-	if err != nil {
-		log.Printf("could not parse the data to sign into a message.Data structure")
-		return nil, lib.ErrDBFault
-	}
 	if count == SigThreshold-1 {
-		queryStr, err := o.applyUpdates(dataToSign, toSignStruct, data)
+		queryStr, err := o.applyUpdates(toSignStruct, data)
 		if err != nil {
 			return nil, err
 		}
@@ -578,8 +567,14 @@ func (o *organizer) handleWitnessMessage(msg message.Message, canal string, quer
 // applyUpdates returns a state update message for the data field of the Message. For now state update messages
 // exists only for LAOs. We should find a trick to avoid giving the dataToSign field, as it's just the message.data field.
 // DataToSign is used only to get the object field.
-func (o *organizer) applyUpdates(dataToSign message.Data, toSignStruct message.Message, dataWitnessMess message.DataWitnessMessage) (queryStr []byte, err error) {
+func (o *organizer) applyUpdates(toSignStruct message.Message, dataWitnessMess message.DataWitnessMessage) (queryStr []byte, err error) {
 	var eventStruct interface{}
+
+	dataToSign, err := parser.ParseData(string(toSignStruct.Data))
+	if err != nil {
+		log.Printf("could not parse the data to sign into a message.Data structure")
+		return nil, lib.ErrDBFault
+	}
 
 	switch dataToSign["object"] {
 	case "lao":
@@ -596,7 +591,7 @@ func (o *organizer) applyUpdates(dataToSign message.Data, toSignStruct message.M
 			OrganizerPKey: string(laoData.Organizer),
 			Witnesses:     lib.NestedByteArrayToStringArray(laoData.Witnesses),
 		}
-		queryStr, err = parser.ComposeBroadcastStateLAO(eventStruct.(event.LAO), laoData, o.PublicKey, dataWitnessMess.Signature)
+		queryStr, err = parser.ComposeBroadcastStateLAO(eventStruct.(event.LAO), o.PublicKey, toSignStruct)
 		if err != nil {
 			log.Printf("could not compose a state update broadcast message")
 			return nil, err
