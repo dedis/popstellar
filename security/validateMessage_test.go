@@ -497,7 +497,7 @@ func TestLAOInvalidName(t *testing.T) {
 	}
 	valid := LAOIsValid(data, true)
 	if valid {
-		t.Errorf("Created Lao Should be invalid due to empty location %#v", data)
+		t.Errorf("Created Lao Should be invalid due wrong data %#v", data)
 	}
 }
 

@@ -123,7 +123,7 @@ func composeErrorResponse(err error, query message.Query) ([]byte, error) {
 	return json.Marshal(resp)
 }
 
-// composeResponse composes a positive response to be sent to the query seder. Called by ComposeResponse.
+// composeResponse composes a positive response to be sent to the query sender. Called by ComposeResponse.
 func composeResponse(messages []byte, query message.Query) ([]byte, error) {
 	var resp interface{}
 	if messages == nil {
