@@ -29,18 +29,23 @@ func ComposeBroadcastMessage(query message.Query) []byte {
 	return b
 }
 
-// ComposeBroadcastStateLAO outputs a message confirming a LAO update after the signature threshold has been reached
-func ComposeBroadcastStateLAO(lao event.LAO, laoData message.DataCreateLAO, orgPublicKey string, lastSig []byte) (queryStr []byte, err_ error) {
+// ComposeBroadcastStateLAO outputs a message confirming a LAO update after the signature threshold has been reached.
+// The update message.Message parameter is the updateProperties message validated. It is possible to make it this way as
+// we update the original's message list of signatures when we receive a signature.
+func ComposeBroadcastStateLAO(lao event.LAO, orgPublicKey string, update message.Message) (queryStr []byte, err_ error) {
 	//compose state update message
+
 	state := message.DataStateLAO{
-		Object:       "lao",
-		Action:       "state",
-		ID:           []byte(lao.ID),
-		Name:         lao.Name,
-		Creation:     lao.Creation,
-		LastModified: time.Now().Unix(),
-		Organizer:    []byte(lao.OrganizerPKey),
-		Witnesses:    laoData.Witnesses,
+		Object:                 "lao",
+		Action:                 "state",
+		ID:                     []byte(lao.ID),
+		Name:                   lao.Name,
+		Creation:               lao.Creation,
+		LastModified:           time.Now().Unix(),
+		Organizer:              []byte(lao.OrganizerPKey),
+		Witnesses:              lib.StringArrayToNestedByteArray(lao.Witnesses),
+		ModificationId:         update.MessageId,
+		ModificationSignatures: update.WitnessSignatures,
 	}
 
 	stateStr, errs := json.Marshal(state)
@@ -49,10 +54,9 @@ func ComposeBroadcastStateLAO(lao event.LAO, laoData message.DataCreateLAO, orgP
 	}
 
 	content := message.Message{
-		Data:   stateStr,
-		Sender: []byte(orgPublicKey),
-		// signature from received Message
-		Signature:         lastSig,
+		Data:              stateStr,
+		Sender:            []byte(orgPublicKey),
+		Signature:         nil, // TODO fix this in protocol, because back-end has no private key to sign stuff.
 		MessageId:         []byte(strconv.Itoa(rand.Int())),
 		WitnessSignatures: nil,
 	}

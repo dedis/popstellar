@@ -119,11 +119,16 @@ func RollCallOpenedIsValid(data message.DataOpenRollCall, laoId string, rollCall
 	return checkRollCallId(laoId, rollCall.Creation, rollCall.Name, data.ID)
 }
 
-//RollCallClosedIsValid tell if a rollCall timestamps makes sense
+//RollCallClosedIsValid tell if a rollCall timestamps makes sense and verifies its ID
 func RollCallClosedIsValid(data message.DataCloseRollCall, laoId string, rollCall event.RollCall) bool {
 	//we start after the creation and we end after the start
 	if data.Start < rollCall.Creation || data.End < data.Start {
 		log.Printf("timestamps not logic.Start before creation.")
+		return false
+	}
+
+	if data.End > time.Now().Unix()+MaxClockDifference {
+		log.Printf("timestamps not logic. End too far in the future. Roll call not closed")
 		return false
 	}
 	return checkRollCallId(laoId, rollCall.Creation, rollCall.Name, data.ID)
