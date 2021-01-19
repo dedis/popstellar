@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-// TODO remove the line above when console will not be use
 import { w3cwebsocket as W3CWebSocket } from 'websocket';
 // eslint-disable-next-line import/no-cycle
 import handleServerAnswer from './WebsocketAnswer';
@@ -7,6 +5,9 @@ import { PendingRequest } from './WebsocketUtils';
 
 /* global window */ // do not touch! EsLint required comment!
 /* eslint-disable no-underscore-dangle */
+
+/* eslint-disable no-console */
+// remove the line above when console will not be use
 
 const WEBSOCKET_READYSTATE_INTERVAL_MS = 10;
 const WEBSOCKET_READYSTATE_MAX_ATTEMPTS = 100;
@@ -32,11 +33,12 @@ export default class WebsocketLink {
    * Send a request (query) to the server
    *
    * @param message (JsonObject) message for the server
-   * @param requestObject (objects enum) object of the message
-   * @param requestAction (actions enum) action of the message
+   * @param requestObject (objects enum) object json-rpc field of the message
+   * @param requestAction (actions enum) action json-rpc field of the message
    * @param retry (boolean) is the query a retry?
    */
   static sendRequestToServer(message, requestObject, requestAction, retry = false) {
+    // if this.#ws == null => there is no connection between client and server yet
     if (this.#ws == null) {
       WebsocketLink._initWebsocket(
         SERVER_ADDRESS.address, SERVER_ADDRESS.port, SERVER_ADDRESS.path,
@@ -70,7 +72,7 @@ export default class WebsocketLink {
         console.error(`Exception in handleServerAnswer: ${e.message}`);
       }
     };
-    // TODO on error
+    ws.onerror = (event) => { console.error('WebSocket error observed : ', event); };
 
     this.#ws = ws;
     this.#queriesSentCount = 0;
@@ -95,7 +97,7 @@ export default class WebsocketLink {
           // abandon if we reached too many attempts
           if (count === WEBSOCKET_READYSTATE_MAX_ATTEMPTS) {
             rejectWebsocketReady(
-              `Maximum waiting time for websocket to be ready reached : 
+              `Maximum waiting time for websocket to be ready reached :
               ${WEBSOCKET_READYSTATE_MAX_ATTEMPTS * WEBSOCKET_READYSTATE_INTERVAL_MS}
               [ms] (_waitWebsocketReady)`,
             );
@@ -126,13 +128,12 @@ export default class WebsocketLink {
 
       promise.then(
         () => this._sendMessage(message, requestObject, requestAction, retry),
-        (error) => console.error('(TODO)', error),
       );
     } else {
       // websocket ready to be used, message can be sent
       const query = JSON.parse(JSON.stringify(message)); // defensive copy
       if (query.id === -1) {
-        // Note: this works because react/Js is single threaded
+        // Note: this only works because react/Js is single threaded
         query.id = this.#queriesSentCount;
         this.#queriesSentCount += 1;
       }
@@ -143,6 +144,7 @@ export default class WebsocketLink {
           new PendingRequest(query, requestObject, requestAction),
         );
       }
+      console.log('sending this message : ', query);
       this.#ws.send(JSON.stringify(query));
     }
   }

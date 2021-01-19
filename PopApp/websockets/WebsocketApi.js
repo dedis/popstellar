@@ -1,11 +1,12 @@
-import { encodeBase64, decodeBase64 } from 'tweetnacl-util';
 import {
   JSON_RPC_VERSION, objects, actions, methods, eventTags, getCurrentTime, toString64,
-  getCurrentLao, signStrings, hashStrings, getPublicKey, fromString64,
+  getCurrentLao, signString, hashStrings, getPublicKey, fromString64,
 } from './WebsocketUtils';
 import WebsocketLink from './WebsocketLink';
 
 /* eslint-disable no-underscore-dangle */
+
+const ROOT_CHANNEL = '/root';
 
 /** Generate a client query from a method (methods enum),
  * a params object (Json Object) and an optional id (number) */
@@ -18,7 +19,10 @@ const _generateQuery = (method, params, id) => ({
 
 /** Generate a params object from a channel (string) and a message object (Json Object) */
 const _generateParams = (channel, message) => ({
-  channel: toString64(channel),
+  // we either set the channel to /root or /root followed by the base64 encoding of the channel id
+  channel: channel === ROOT_CHANNEL
+    ? ROOT_CHANNEL
+    : `${ROOT_CHANNEL}/${toString64(channel.slice(1 + ROOT_CHANNEL.length))}`,
   message,
 });
 
@@ -27,13 +31,14 @@ const _generateParams = (channel, message) => ({
  * (arrays of public keys)
  */
 const _generateMessage = (jsonData, witness_signatures = []) => {
-  const sign = signStrings(jsonData);
+  const encodedJsonData = toString64(jsonData);
+  const sign = signString(jsonData);
 
   return {
-    data: toString64(jsonData),
+    data: encodedJsonData,
     sender: getPublicKey(),
     signature: sign,
-    message_id: hashStrings(jsonData, sign),
+    message_id: hashStrings(encodedJsonData, sign),
     witness_signatures,
   };
 };
@@ -74,7 +79,7 @@ class DataBuilder {
     if (this._organizer !== 'undefined') obj.organizer = this._organizer;
     if (this._witnesses !== 'undefined') obj.witnesses = this._witnesses;
     if (this._modId !== 'undefined') obj.modification_id = this._modId;
-    if (this._modSign !== 'undefined') obj.modification_signature = this._modSign;
+    if (this._modSign !== 'undefined') obj.modification_signatures = this._modSign;
     if (this._location !== 'undefined') obj.location = this._location;
     if (this._start !== 'undefined') obj.start = this._start;
     if (this._end !== 'undefined') obj.end = this._end;
@@ -137,7 +142,7 @@ export const requestCreateLao = (name) => {
 
   const jsonData = new DataBuilder()
     .setObject(objects.LAO).setAction(actions.CREATE)
-    .setId(hashStrings(decodeBase64(getPublicKey()), time, name))
+    .setId(hashStrings(getPublicKey(), time, name))
     .setName(name)
     .setCreation(time)
     .setOrganizer(getPublicKey())
@@ -145,7 +150,7 @@ export const requestCreateLao = (name) => {
     .buildJson();
 
   const m = _generateMessage(jsonData);
-  const obj = _generateQuery(methods.PUBLISH, _generateParams('/root', m));
+  const obj = _generateQuery(methods.PUBLISH, _generateParams(ROOT_CHANNEL, m));
 
   WebsocketLink.sendRequestToServer(obj, objects.LAO, actions.CREATE);
 };
@@ -166,7 +171,7 @@ export const requestUpdateLao = (name, witnesses = undefined) => {
     .buildJson();
 
   const m = _generateMessage(jsonData, currentParams.message.witness_signatures);
-  const obj = _generateQuery(methods.PUBLISH, _generateParams(`/root/${currentParams.message.data.id}`, m));
+  const obj = _generateQuery(methods.PUBLISH, _generateParams(`${ROOT_CHANNEL}/${currentParams.message.data.id}`, m));
 
   WebsocketLink.sendRequestToServer(obj, objects.LAO, actions.UPDATE_PROPERTIES);
 };
@@ -180,15 +185,15 @@ export const requestStateLao = () => {
     .setId(hashStrings(currentData.organizer, currentData.creation, currentData.name))
     .setName(currentData.name)
     .setCreation(currentData.creation)
-    .setLastModified(currentData.last_modified)
-    .setOrganizer(encodeBase64(currentData.organizer))
+    .setLastModified(getCurrentTime())
+    .setOrganizer(currentData.organizer)
     .setWitnesses(currentData.witnesses)
-    .setModificationId('TODO modification id in base64') // TODO modification_id from storage (waiting for storage)
-    .setModificationSignature([]) // TODO modification_signatures from storage (waiting for storage)
+    .setModificationId('') // need modification_id from storage (waiting for storage)
+    .setModificationSignature([]) // need modification_signatures from storage (waiting for storage)
     .buildJson();
 
   const m = _generateMessage(jsonData, getCurrentLao().params.message.witness_signatures);
-  const obj = _generateQuery(methods.PUBLISH, _generateParams(`/root/${currentData.id}`, m));
+  const obj = _generateQuery(methods.PUBLISH, _generateParams(`${ROOT_CHANNEL}/${currentData.id}`, m));
 
   WebsocketLink.sendRequestToServer(obj, objects.LAO, actions.STATE);
 };
@@ -196,7 +201,9 @@ export const requestStateLao = () => {
 /** Send a server query asking for the creation of a meeting given a certain name (String),
  *  startTime (Date), optional location (String), optional end time (Date) and optional
  *  extra information (Json object) */
-export const requestCreateMeeting = (name, startTime, location = '', endTime = 0, extra = {}) => {
+export const requestCreateMeeting = (
+  name, startTime, location = undefined, endTime = undefined, extra = undefined,
+) => {
   const time = getCurrentTime();
   const laoId = getCurrentLao().params.message.data.id;
 
@@ -210,18 +217,23 @@ export const requestCreateMeeting = (name, startTime, location = '', endTime = 0
 
   if (typeof location === 'string' && location !== '') json.setLocation(location);
   if (Number.isInteger(endTime) && !endTime) json.setEndTime(endTime);
-  if (extra !== 'undefined' && Object.keys(extra).length === 0 && extra.constructor === Object) json.setExtra(extra);
+  if (
+    extra !== 'undefined'
+    && typeof extra === 'object'
+    && Object.keys(extra).length === 0
+    && extra.constructor === Object
+  ) json.setExtra(extra);
 
   const jsonData = json.buildJson();
 
   const m = _generateMessage(jsonData);
-  const obj = _generateQuery(methods.PUBLISH, _generateParams(`/root/${laoId}`, m));
+  const obj = _generateQuery(methods.PUBLISH, _generateParams(`${ROOT_CHANNEL}/${laoId}`, m));
 
   WebsocketLink.sendRequestToServer(obj, objects.MEETING, actions.CREATE);
 };
 
 /** Send a server query asking for the state of a meeting */
-export const requestStateMeeting = () => {
+export const requestStateMeeting = (startTime) => {
   const currentData = getCurrentLao().params.message.data;
 
   const json = new DataBuilder()
@@ -229,9 +241,10 @@ export const requestStateMeeting = () => {
     .setId(hashStrings(eventTags.MEETING, currentData.id, currentData.creation, currentData.name))
     .setName(currentData.name)
     .setCreation(currentData.creation)
-    .setLastModified(currentData.last_modified)
-    .setModificationId('TODO modification id in base64') // TODO modification_id from storage (waiting for storage)
-    .setModificationSignature([]); // TODO modification_signatures fro storage (waiting for storage)
+    .setLastModified(getCurrentTime())
+    .setStartTime(startTime)
+    .setModificationId('') // need modification_id from storage (waiting for storage)
+    .setModificationSignature([]); // need modification_signatures fro storage (waiting for storage)
 
   if (Object.prototype.hasOwnProperty.call(currentData, 'location')) json.setLocation(currentData.location);
   if (Object.prototype.hasOwnProperty.call(currentData, 'end')) json.setEndTime(currentData.end);
@@ -240,7 +253,7 @@ export const requestStateMeeting = () => {
   const jsonData = json.buildJson();
 
   const m = _generateMessage(jsonData, getCurrentLao().params.message.witness_signatures);
-  const obj = _generateQuery(methods.PUBLISH, _generateParams(`/root/${currentData.id}`, m));
+  const obj = _generateQuery(methods.PUBLISH, _generateParams(`${ROOT_CHANNEL}/${currentData.id}`, m));
 
   WebsocketLink.sendRequestToServer(obj, objects.MEETING, actions.STATE);
 };
@@ -254,13 +267,16 @@ export const requestWitnessMessage = (message) => {
   const jsonData = new DataBuilder()
     .setObject(objects.MESSAGE).setAction(actions.WITNESS)
     .setMessageId(messageId)
-    .setSignature(signStrings(fromString64(messageId)))
+    .setSignature(signString(fromString64(messageId)))
     .buildJson();
 
   const m = _generateMessage(jsonData, []);
+  const channel = (message.params.channel === ROOT_CHANNEL)
+    ? ROOT_CHANNEL
+    : fromString64(message.params.channel);
   const obj = _generateQuery(
     methods.PUBLISH,
-    _generateParams(fromString64(message.params.channel), m),
+    _generateParams(channel, m),
   );
 
   WebsocketLink.sendRequestToServer(obj, objects.MESSAGE, actions.WITNESS);
@@ -288,14 +304,14 @@ export const requestCreateRollCall = (name, location, start = -1, scheduled = -1
   const jsonData = json.buildJson();
 
   const m = _generateMessage(jsonData);
-  const obj = _generateQuery(methods.PUBLISH, _generateParams(`/root/${laoId}`, m));
+  const obj = _generateQuery(methods.PUBLISH, _generateParams(`${ROOT_CHANNEL}/${laoId}`, m));
 
   WebsocketLink.sendRequestToServer(obj, objects.ROLL_CALL, actions.CREATE);
 };
 
 /** handles both re/opening roll calls requests for code reuse */
 const _requestRollCall = (isReopening, rollCallId, start) => {
-  const rollCall = rollCallId; // TODO get roll call by id from localStorage (waiting next PR)
+  const rollCall = { creation: 444, name: 'r-cName' }; // TODO get roll call by id from localStorage
   const laoId = getCurrentLao().params.message.data.id;
   const startTime = start === -1 ? getCurrentTime() : start;
   const action = isReopening ? actions.REOPEN : actions.OPEN;
@@ -307,7 +323,7 @@ const _requestRollCall = (isReopening, rollCallId, start) => {
     .buildJson();
 
   const m = _generateMessage(jsonData);
-  const obj = _generateQuery(methods.PUBLISH, _generateParams(`/root/${laoId}`, m));
+  const obj = _generateQuery(methods.PUBLISH, _generateParams(`${ROOT_CHANNEL}/${laoId}`, m));
 
   WebsocketLink.sendRequestToServer(obj, objects.ROLL_CALL, action);
 };
@@ -329,7 +345,7 @@ export const requestReopenRollCall = (rollCallId, start = -1) => (
 /** Send a server query asking for the closing of a roll call given its id (Number) and the
  * list of attendees (Array of public keys) */
 export const requestCloseRollCall = (rollCallId, attendees) => {
-  const rollCall = rollCallId; // TODO get roll call by id from localStorage (waiting next PR)
+  const rollCall = { creation: 444, start: 555, name: 'r-cName' }; // TODO get roll call by id from localStorage
   const laoId = getCurrentLao().params.message.data.id;
 
   const jsonData = new DataBuilder()
@@ -341,7 +357,7 @@ export const requestCloseRollCall = (rollCallId, attendees) => {
     .buildJson();
 
   const m = _generateMessage(jsonData);
-  const obj = _generateQuery(methods.PUBLISH, _generateParams(`/root/${laoId}`, m));
+  const obj = _generateQuery(methods.PUBLISH, _generateParams(`${ROOT_CHANNEL}/${laoId}`, m));
 
   WebsocketLink.sendRequestToServer(obj, objects.ROLL_CALL, actions.CLOSE);
 };
