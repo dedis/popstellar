@@ -6,7 +6,7 @@ Golang back-end for the Proof-of-personhood application. To run the backend simp
 arguments are :
 * `-m` the mode we want the server to run : either "o" for organizer or "w" for witness. Default to "o".
 * `-a` the IP address we want the server to run on. Default is empty (localhost).
-* `-p` the port we want the server to run on. Default is 8080.
+* `-p` the port we want the server to run on. Default is 8000.
 * `-k` the actor's public key. Default is "oui".
 * `-f` the file we want the backend to store its database on. Default is "org.db" for an organizer and "wit.db" for a witness
 
@@ -51,6 +51,9 @@ This package implements all the checks we do on messages to ensure they are vali
 
 ### test
 This package contains files useful for manual real-world testing.
+
+### config
+This package contains configurations files for constants. The file starting with `// +build [param]` will be used when using the command `go build -tags [param]`. The default file should start with `// +build ![param1],![param2],![param3]`.
 
 ## Back-end components
 ### Dependencies
