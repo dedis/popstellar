@@ -89,7 +89,7 @@ func getCorrectDataCreateRollCallNow() string {
 
 // getCorrectDataCreateRollCallLater generate a example JSON string of the data field of a request for rollCall creation starting at a scheduled time
 func getCorrectDataCreateRollCallLater(creationString string) string {
-	startString := strconv.FormatInt(time.Now().Unix()+1000, 10)
+	startString := strconv.FormatInt(time.Now().Unix()+1, 10)
 	toHash := lib.ArrayRepresentation([]string{"R", b64.StdEncoding.EncodeToString([]byte("LAO_id")), creationString, "my_roll_call"})
 	hashId := sha256.Sum256([]byte(toHash))
 	id := b64.StdEncoding.EncodeToString(hashId[:])
@@ -109,7 +109,7 @@ func getCorrectDataCreateRollCallLater(creationString string) string {
 
 // getCorrectDataOpenRollCall generate a example JSON string of the data field of a request for opening a rollCall at a previously scheduled time
 func getCorrectDataOpenRollCall(creationString string) string {
-	startString := strconv.FormatInt(time.Now().Unix()+1000, 10)
+	startString := strconv.FormatInt(time.Now().Unix()+1, 10)
 	toHash := lib.ArrayRepresentation([]string{"R", b64.StdEncoding.EncodeToString([]byte("LAO_id")), creationString, "my_roll_call"})
 	hashId := sha256.Sum256([]byte(toHash))
 	id := b64.StdEncoding.EncodeToString(hashId[:])
@@ -126,8 +126,8 @@ func getCorrectDataOpenRollCall(creationString string) string {
 
 // getCorrectDataCloseRollCall generate a example JSON string of the data field of a request for closing a rollCall
 func getCorrectDataCloseRollCall(creationString string) string {
-	startString := strconv.FormatInt(time.Now().Unix()+1000, 10)
-	endString := strconv.FormatInt(time.Now().Unix()+2000, 10)
+	startString := strconv.FormatInt(time.Now().Unix()+1, 10)
+	endString := strconv.FormatInt(time.Now().Unix()+2, 10)
 	toHash := lib.ArrayRepresentation([]string{"R", b64.StdEncoding.EncodeToString([]byte("LAO_id")), creationString, "my_roll_call"})
 	hashId := sha256.Sum256([]byte(toHash))
 	id := b64.StdEncoding.EncodeToString(hashId[:])
