@@ -43,7 +43,7 @@ This CI builds and runs the Unit Tests. For the Android Tests, the [reactivecirc
 The Jacoco plugin can be set in the future for code coverage, this [guide](https://www.raywenderlich.com/10562143-continuous-integration-for-android#toc-anchor-013) covers how to set it.
 
 ## Coding Standards
-This project follows the [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html).
+This project follows the [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html). The [google-java-format](https://github.com/google/google-java-format) plugin allows very easy formatting.
 ### File Structure
 The project is divided in 3 packages:
 * **model**: for the classes used to model different entities
