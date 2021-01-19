@@ -6,68 +6,71 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
 import com.github.dedis.student20_pop.utility.protocol.DataHandler;
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Data sent to attest the message as a witness
- */
+/** Data sent to attest the message as a witness */
 public class WitnessMessage extends Data {
 
-    @SerializedName("message_id")
-    private final String messageId;
-    private final String signature;
+  @SerializedName("message_id")
+  private final String messageId;
 
-    /**
-     * Constructor for a data Witness Message
-     *
-     * @param messageId ID of the message
-     * @param signature signature by the witness over the message ID
-     */
-    public WitnessMessage(String messageId, String signature) {
-        this.messageId = messageId;
-        this.signature = signature;
-    }
+  private final String signature;
 
-    public String getMessageId() {
-        return messageId;
-    }
+  /**
+   * Constructor for a data Witness Message
+   *
+   * @param messageId ID of the message
+   * @param signature signature by the witness over the message ID
+   */
+  public WitnessMessage(String messageId, String signature) {
+    this.messageId = messageId;
+    this.signature = signature;
+  }
 
-    public String getSignature() {
-        return signature;
-    }
+  public String getMessageId() {
+    return messageId;
+  }
 
-    @Override
-    public void accept(DataHandler handler) {
-        handler.handle(this);
-    }
+  public String getSignature() {
+    return signature;
+  }
 
-    @Override
-    public String getObject() {
-        return Objects.MESSAGE.getObject();
-    }
+  @Override
+  public void accept(DataHandler handler) {
+    handler.handle(this);
+  }
 
-    @Override
-    public String getAction() {
-        return Action.WITNESS.getAction();
-    }
+  @Override
+  public String getObject() {
+    return Objects.MESSAGE.getObject();
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        WitnessMessage that = (WitnessMessage) o;
-        return java.util.Objects.equals(getMessageId(), that.getMessageId()) &&
-                java.util.Objects.equals(getSignature(), that.getSignature());
-    }
+  @Override
+  public String getAction() {
+    return Action.WITNESS.getAction();
+  }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(getMessageId(), getSignature());
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    WitnessMessage that = (WitnessMessage) o;
+    return java.util.Objects.equals(getMessageId(), that.getMessageId())
+        && java.util.Objects.equals(getSignature(), that.getSignature());
+  }
 
-    @Override
-    public String toString() {
-        return "WitnessMessage{" +
-                "message_id='" + messageId + '\'' +
-                ", signature='" + signature + '\'' +
-                '}';
-    }
+  @Override
+  public int hashCode() {
+    return java.util.Objects.hash(getMessageId(), getSignature());
+  }
+
+  @Override
+  public String toString() {
+    return "WitnessMessage{"
+        + "message_id='"
+        + messageId
+        + '\''
+        + ", signature='"
+        + signature
+        + '\''
+        + '}';
+  }
 }

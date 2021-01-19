@@ -10,18 +10,16 @@ import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
 
-/**
- * Json deserializer for the generic messages
- */
+/** Json deserializer for the generic messages */
 public class JsonGenericMessageDeserializer implements JsonDeserializer<GenericMessage> {
 
-    private static final String METHOD = "method";
+  private static final String METHOD = "method";
 
-    @Override
-    public GenericMessage deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        if(json.getAsJsonObject().has(METHOD))
-            return context.deserialize(json, Message.class);
-        else
-            return context.deserialize(json, Answer.class);
-    }
+  @Override
+  public GenericMessage deserialize(
+      JsonElement json, Type typeOfT, JsonDeserializationContext context)
+      throws JsonParseException {
+    if (json.getAsJsonObject().has(METHOD)) return context.deserialize(json, Message.class);
+    else return context.deserialize(json, Answer.class);
+  }
 }
