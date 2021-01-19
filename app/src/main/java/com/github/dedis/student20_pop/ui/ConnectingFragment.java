@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.ui.qrcode;
+package com.github.dedis.student20_pop.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -64,18 +64,20 @@ public final class ConnectingFragment extends Fragment {
 
             connexion = proxy.lowLevel().subscribe(channel);
             connexion.thenCompose(i -> proxy.lowLevel().catchup(channel))
-                .thenAccept(msgs -> {
-                    //TODO handle messages
-                    //TODO Not sure about the activity
+                .thenAccept(msgs -> getActivity().runOnUiThread(() -> {
+                    ((PoPApplication) getActivity().getApplication()).handleDataMessages(msgs);
                     Intent intent = new Intent(getActivity(), MainActivity.class);
                     startActivity(intent);
-                }).exceptionally(t -> {
+                })).exceptionally(t -> {
                     Throwable real = t.getCause() == null ? t : t.getCause();
                     if(!(real instanceof ManualCancel))
                         Toast.makeText(getContext(), real.getMessage(), Toast.LENGTH_LONG).show();
 
-                    getActivity().runOnUiThread(
-                            () -> getActivity().getSupportFragmentManager().popBackStackImmediate());
+                    if(!(real instanceof ChangeViewCancel))
+                        getActivity().runOnUiThread(() -> {
+                                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                                    startActivity(intent);
+                    });
                     return null;
                 });
         }
@@ -98,8 +100,24 @@ public final class ConnectingFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onStop() {
+        connexion.completeExceptionally(new ChangeViewCancel());
+        super.onStop();
+    }
+
     /**
      * Dummy exception to avoid showing toast when the user cancel the connection
      */
     private static final class ManualCancel extends Throwable {}
+
+    /**
+     * Dummy exception to avoid showing main activity when the user cancel the connection by changing the view
+     */
+    private static final class ChangeViewCancel extends Exception {
+
+        private ChangeViewCancel() {
+            super("Connection to lao cancelled");
+        }
+    }
 }

@@ -12,6 +12,7 @@ import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.Person;
 import com.github.dedis.student20_pop.model.event.Event;
+import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.meeting.StateMeeting;
 import com.github.dedis.student20_pop.utility.protocol.DataHandler;
@@ -183,7 +184,7 @@ public class PoPApplication extends Application {
      *
      * @param lao to add
      */
-    public void createLao(Lao lao) {
+    public void addLao(Lao lao) {
         laos.put(lao.getId(), lao);
     }
 
@@ -280,11 +281,14 @@ public class PoPApplication extends Application {
         dummyLaos();
     }
 
-    private List<Event> dummyEvents(String laoId) {
-        return Arrays.asList(
-                new Event("Future Event 1", laoId, 2617547969L, "EPFL", POLL),
-                new Event("Present Event 1", laoId, Instant.now().getEpochSecond(), "Somewhere", DISCUSSION),
-                new Event("Past Event 1", laoId, 1481643086L, "Here", MEETING));
+    /**
+     * Handle received data messages inorder
+     *
+     * @param dataMessages List of received messages
+     */
+    public void handleDataMessages(List<Data> dataMessages) {
+        for(Data data : dataMessages)
+            data.accept(dataHandler);
     }
 
     /**
@@ -304,13 +308,20 @@ public class PoPApplication extends Application {
         lao2.setEvents(dummyEvents(lao0.getId()));
         lao3.setEvents(dummyEvents(lao0.getId()));
 
-        createLao(lao0);
-        createLao(lao1);
-        createLao(lao2);
-        createLao(lao3);
-        createLao(lao4);
+        addLao(lao0);
+        addLao(lao1);
+        addLao(lao2);
+        addLao(lao3);
+        addLao(lao4);
 
         setCurrentLao(lao0);
+    }
+
+    private List<Event> dummyEvents(String laoId) {
+        return Arrays.asList(
+                new Event("Future Event 1", laoId, 2617547969L, "EPFL", POLL),
+                new Event("Present Event 1", laoId, Instant.now().getEpochSecond(), "Somewhere", DISCUSSION),
+                new Event("Past Event 1", laoId, 1481643086L, "Here", MEETING));
     }
 
     /**
@@ -338,6 +349,9 @@ public class PoPApplication extends Application {
         ADD_WITNESS_ALREADY_EXISTS
     }
 
+    /**
+     * Data handler of the PoP application
+     */
     private class PoPDataHandler implements DataHandler {
 
         @Override
