@@ -4,14 +4,12 @@ import com.github.dedis.student20_pop.model.Person;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.utility.protocol.HighLevelProxy;
 import com.github.dedis.student20_pop.utility.protocol.ProtocolProxyFactory;
+
 import net.jodah.concurrentunit.Waiter;
+
 import org.glassfish.tyrus.server.Server;
 import org.junit.Test;
 
-import javax.websocket.DeploymentException;
-import javax.websocket.OnMessage;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
@@ -21,6 +19,11 @@ import java.util.Locale;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.websocket.DeploymentException;
+import javax.websocket.OnMessage;
+import javax.websocket.Session;
+import javax.websocket.server.ServerEndpoint;
 
 /**
  * Test that the protocol handles correctly and sends messages. Also test the CompletableFuture
@@ -32,8 +35,8 @@ public class ProtocolTest {
   public static final String MEETING_NAME = "name";
   public static final String PERSON_NAME = "Bob";
 
-  public static final String HOST_NAME = "localhost";
-  public static final int PORT = 2020;
+    public static final String HOST_NAME = "localhost";
+    public static final int PORT = 8000;
 
   public static final int REQUEST_TIMEOUT = 6000;
   public static final int TEST_TIMEOUT = 10000;

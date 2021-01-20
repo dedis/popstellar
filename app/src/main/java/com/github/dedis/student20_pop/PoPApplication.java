@@ -43,7 +43,7 @@ public class PoPApplication extends Application {
   public static final String TAG = PoPApplication.class.getSimpleName();
   public static final String SP_PERSON_ID_KEY = "SHARED_PREFERENCES_PERSON_ID";
   public static final String USERNAME = "USERNAME";
-  public static final URI LOCAL_BACKEND_URI = URI.create("ws://10.0.2.2:2000");
+  public static final URI LOCAL_BACKEND_URI = URI.create("ws://10.0.2.2:8000");
 
   private final Map<URI, HighLevelProxy> openSessions = new HashMap<>();
   private final Map<String, Lao> laos = new HashMap<>();
