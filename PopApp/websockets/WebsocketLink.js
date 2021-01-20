@@ -67,6 +67,7 @@ export default class WebsocketLink {
     ws.onopen = () => { console.log(`initiating web socket : ws://${address}:${port}`); };
     ws.onmessage = (message) => {
       try {
+        console.log('Received a new message : ', JSON.parse(message.data));
         handleServerAnswer(message);
       } catch (e) {
         console.error(`Exception in handleServerAnswer: ${e.message}`);
@@ -144,7 +145,7 @@ export default class WebsocketLink {
           new PendingRequest(query, requestObject, requestAction),
         );
       }
-      console.log('sending this message : ', query);
+      console.log('Sending this message : ', query);
       this.#ws.send(JSON.stringify(query));
     }
   }
