@@ -43,7 +43,7 @@ public class PoPApplication extends Application {
   public static final String TAG = PoPApplication.class.getSimpleName();
   public static final String SP_PERSON_ID_KEY = "SHARED_PREFERENCES_PERSON_ID";
   public static final String USERNAME = "USERNAME";
-  private static final URI LOCAL_BACKEND_URI = URI.create("ws://10.0.2.2:2000");
+  public static final URI LOCAL_BACKEND_URI = URI.create("ws://10.0.2.2:2000");
 
   private final Map<URI, HighLevelProxy> openSessions = new HashMap<>();
   private final Map<String, Lao> laos = new HashMap<>();
@@ -145,9 +145,9 @@ public class PoPApplication extends Application {
     return getCurrentLao().map(Lao::getWitnesses).orElseGet(ArrayList::new);
   }
 
-  /** Returns the proxy of the local device's backend. */
-  public HighLevelProxy getLocalProxy() {
-    return localProxy;
+  /** Returns the proxy of the current LAO's backend. */
+  public Optional<HighLevelProxy> getCurrentLaoProxy() {
+    return getCurrentLao().map(Lao::getHost).map(this::getProxy);
   }
 
   /**
@@ -265,7 +265,7 @@ public class PoPApplication extends Application {
 
   /** Only useful when testing without a back-end. */
   public void activateTestingValues() {
-    currentLao = new Lao("LAO I just joined", person.getId());
+    currentLao = new Lao("LAO I just joined", person.getId(), LOCAL_BACKEND_URI);
     dummyLaos();
   }
 
@@ -283,11 +283,11 @@ public class PoPApplication extends Application {
   /** This method creates a map for testing, when no backend is connected. */
   private void dummyLaos() {
     String notMyPublicKey = new Keys().getPublicKey();
-    Lao lao0 = new Lao("LAO I just joined", getPerson().getId());
-    Lao lao1 = new Lao("LAO 1", notMyPublicKey);
-    Lao lao2 = new Lao("LAO 2", notMyPublicKey);
-    Lao lao3 = new Lao("My LAO 3", getPerson().getId());
-    Lao lao4 = new Lao("LAO 4", notMyPublicKey);
+    Lao lao0 = new Lao("LAO I just joined", getPerson().getId(), LOCAL_BACKEND_URI);
+    Lao lao1 = new Lao("LAO 1", notMyPublicKey, LOCAL_BACKEND_URI);
+    Lao lao2 = new Lao("LAO 2", notMyPublicKey, LOCAL_BACKEND_URI);
+    Lao lao3 = new Lao("My LAO 3", getPerson().getId(), LOCAL_BACKEND_URI);
+    Lao lao4 = new Lao("LAO 4", notMyPublicKey, LOCAL_BACKEND_URI);
 
     lao0.setEvents(dummyEvents(lao0.getId()));
     lao1.setEvents(dummyEvents(lao0.getId()));
@@ -351,7 +351,8 @@ public class PoPApplication extends Application {
                 stateLao.getOrganizer(),
                 stateLao.getWitnesses(),
                 new ArrayList<>(),
-                new ArrayList<>());
+                new ArrayList<>(),
+                host);
       else {
         lao.setName(stateLao.getName());
         lao.setWitnesses(stateLao.getWitnesses());

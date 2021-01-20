@@ -9,9 +9,11 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.ui.ConnectingFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
@@ -78,9 +80,9 @@ public final class MainActivity extends FragmentActivity
         } else {
           final PoPApplication app = ((PoPApplication) getApplication());
           // Creating the LAO and adding it to the organizer's LAO
-          Lao lao = new Lao(name, app.getPerson().getId());
+          Lao lao = new Lao(name, app.getPerson().getId(), PoPApplication.LOCAL_BACKEND_URI);
           // Store the private key of the organizer
-          app.getLocalProxy()
+          app.getProxy(lao.getHost())
               .createLao(lao.getName(), lao.getTime(), lao.getOrganizer())
               .thenAccept(
                   code -> {

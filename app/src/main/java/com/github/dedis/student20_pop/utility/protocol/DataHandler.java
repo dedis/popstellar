@@ -32,7 +32,8 @@ public interface DataHandler {
 
   /**
    * Handle a StateLao data message
-   *  @param stateLao to handle
+   *
+   * @param stateLao to handle
    * @param host the message was received from
    * @param channel on which the message was received
    */
@@ -42,7 +43,8 @@ public interface DataHandler {
 
   /**
    * Handle a UpdateLao data message
-   *  @param updateLao to handle
+   *
+   * @param updateLao to handle
    * @param host the message was received from
    * @param channel on which the message was received
    */
@@ -52,7 +54,8 @@ public interface DataHandler {
 
   /**
    * Handle a CreateMeeting data message
-   *  @param createMeeting to handle
+   *
+   * @param createMeeting to handle
    * @param host the message was received from
    * @param channel on which the message was received
    */
@@ -73,7 +76,8 @@ public interface DataHandler {
 
   /**
    * Handle a WitnessMessage data message
-   *  @param witnessMessage to handle
+   *
+   * @param witnessMessage to handle
    * @param host the message was received from
    * @param channel on which the message was received
    */
@@ -83,7 +87,8 @@ public interface DataHandler {
 
   /**
    * Handle a CloseRollCall data message
-   *  @param closeRollCall to handle
+   *
+   * @param closeRollCall to handle
    * @param host the message was received from
    * @param channel on which the message was received
    */
@@ -93,7 +98,8 @@ public interface DataHandler {
 
   /**
    * Handle a CreateRollCall data message
-   *  @param createRollCall to handle
+   *
+   * @param createRollCall to handle
    * @param host the message was received from
    * @param channel on which the message was received
    */
@@ -103,7 +109,8 @@ public interface DataHandler {
 
   /**
    * Handle a OpenRollCall data message
-   *  @param openRollCall to handle
+   *
+   * @param openRollCall to handle
    * @param host the message was received from
    * @param channel on which the message was received
    */

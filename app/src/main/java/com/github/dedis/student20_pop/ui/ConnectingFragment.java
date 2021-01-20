@@ -57,8 +57,7 @@ public final class ConnectingFragment extends Fragment {
       lao = getArguments().getString(LAO_EXTRA);
       URI uri = URI.create(url);
 
-      HighLevelProxy proxy =
-          ((PoPApplication) getActivity().getApplication()).getProxy(uri);
+      HighLevelProxy proxy = ((PoPApplication) getActivity().getApplication()).getProxy(uri);
 
       String channel = HighLevelProxy.ROOT + "/" + lao;
 
