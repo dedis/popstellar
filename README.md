@@ -91,12 +91,7 @@ Some unit-tests exist directly in their corresponding packages, as per Go specif
 We provide a very basic front-end in the file `test/index.html`. It does nothing but opens a websocket connection to the back-end server, and lets
 you send and receive messages.
 
-If you want to test the application with the `index.html` front-end on another machine as the back-end server, you will have to change the
-back-end server's IP address (and port) in `index.html` at line 36 (instead of `localhost`). You'll also have to run the back-end
-server with this IP address (and port) as the `-a` (and `-p`) flags. However, as this works with IPv4, make sure both machines
-are in the same LAN.
-
-### Json specifications
+## Json specifications
 The protocol we use is defined in the branch `proto-specs`, and is a git submodule incorporated in the `json-RPC` folder.
 
 ## Potential improvements
