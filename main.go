@@ -45,16 +45,16 @@ func main() {
 	case "o":
 		h := network.NewOrganizerHub(*pkey, *file)
 		router := http.NewServeMux()
-		router.Handle("/test", network.HomeHandler(tpl, address, port))
-		router.Handle("/", network.NewWSHandler(h))
+		router.Handle("/", network.HomeHandler(tpl))
+		router.Handle("/ws", network.NewWSHandler(h))
 		log.Printf("serving organizer on address " + *address + ":" + strconv.Itoa(*port))
 		log.Fatal(http.ListenAndServe(*address+":"+strconv.Itoa(*port), router))
 
 	case "w":
 		h := network.NewWitnessHub(*pkey, *file)
 		router := http.NewServeMux()
-		router.Handle("/test", network.HomeHandler(tpl, address, port))
-		router.Handle("/", network.NewWSHandler(h))
+		router.Handle("/", network.HomeHandler(tpl))
+		router.Handle("/ws", network.NewWSHandler(h))
 		log.Printf("serving witness on adress " + *address + ":" + strconv.Itoa(*port))
 		log.Fatal(http.ListenAndServe(*address+":"+strconv.Itoa(*port), router))
 
