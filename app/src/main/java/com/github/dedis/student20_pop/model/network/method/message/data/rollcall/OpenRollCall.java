@@ -5,6 +5,8 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
 import com.github.dedis.student20_pop.utility.protocol.DataHandler;
 
+import java.net.URI;
+
 /** Data sent to open a roll call */
 public class OpenRollCall extends Data {
 
@@ -31,8 +33,8 @@ public class OpenRollCall extends Data {
   }
 
   @Override
-  public void accept(DataHandler handler) {
-    handler.handle(this);
+  public void accept(DataHandler handler, URI host, String channel) {
+    handler.handle(this, host, channel);
   }
 
   @Override

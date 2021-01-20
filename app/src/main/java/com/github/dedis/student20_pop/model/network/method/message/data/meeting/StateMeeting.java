@@ -6,6 +6,7 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
 import com.github.dedis.student20_pop.utility.protocol.DataHandler;
 import com.google.gson.annotations.SerializedName;
 
+import java.net.URI;
 import java.util.List;
 
 /** Data received to track the state of a meeting */
@@ -99,8 +100,8 @@ public class StateMeeting extends Data {
   }
 
   @Override
-  public void accept(DataHandler handler) {
-    handler.handle(this);
+  public void accept(DataHandler handler, URI host, String channel) {
+    handler.handle(this, host, channel);
   }
 
   @Override
