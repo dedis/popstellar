@@ -1,6 +1,8 @@
 
-#Jetbrains folder
+#IDE folders
 /.idea
+.vscode/*
+
 
 # Binaries for programs and plugins
 *.exe
@@ -16,10 +18,9 @@
 *.out
 
 # Dependency directories (remove the comment below to include it)
+
 # vendor/
 # Database files
 *.db
 *.lock
-/test
-/testdata
 

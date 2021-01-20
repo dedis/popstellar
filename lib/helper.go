@@ -2,58 +2,20 @@
 package lib
 
 import (
-	"bytes"
-	b64 "encoding/base64"
+	ed "crypto/ed25519"
+	"math/rand"
 	"strings"
 )
 
-// Find is a helper function to find an int in a []int. It returns the index of the element and a bool in slice.
-func Find(slice []int, val int) (int, bool) {
-	for i, item := range slice {
-		if item == val {
-			return i, true
-		}
-	}
-	return -1, false
-}
-
-// FindStr is a helper function to find a string in a []string. It returns the index of the element and a bool in slice.
-func FindStr(slice []string, val string) (int, bool) {
-	for i, item := range slice {
-		if item == val {
-			return i, true
-		}
-	}
-	return -1, false
-}
-
-// FindByteArray is a helper function to find a []byte in a [][]byte. It returns the index of the element and a bool
-// in slice.
-func FindByteArray(slice [][]byte, val []byte) (int, bool) {
-	for i, item := range slice {
-		if bytes.Equal(item, val) {
-			return i, true
-		}
-	}
-	return -1, false
-}
-
-// Decode is a function that decodes a base-64 encoded string into a []byte.
-// This is done automatically by json.Marshall, still used to compare channel for lao creation.
-func Decode(data string) ([]byte, error) {
-	d, err := b64.StdEncoding.DecodeString(strings.Trim(data, `"`))
-	return d, err
-}
-
-//MessageAndChannel is a return structure used by the Handle functions of package actor. It contains a Message and the
+// MessageAndChannel is a return structure used by the Handle functions of package actor. It contains a Message and the
 // Channel it should be sent on.
 type MessageAndChannel struct {
 	Channel []byte
 	Message []byte
 }
 
-// ArrayArrayByteToArrayString converts an array of array of bytes into an array of string
-func ArrayArrayByteToArrayString(slice [][]byte) []string {
+// NestedByteArrayToStringArray converts an array of array of bytes into an array of string
+func NestedByteArrayToStringArray(slice [][]byte) []string {
 	var sliceString []string
 	for _, item := range slice {
 		sliceString = append(sliceString, string(item))
@@ -61,15 +23,27 @@ func ArrayArrayByteToArrayString(slice [][]byte) []string {
 	return sliceString
 }
 
-//`"` and `\` characters must be escaped by adding a `\` characters before them.
-//`"` becomes `\"` and `\` becomes `\\`.
+// StringArrayToNestedByteArray converts an array of strings to a [][]byte
+func StringArrayToNestedByteArray(slice []string) [][]byte {
+	var byteString [][]byte
+	for _, item := range slice {
+		byteString = append(byteString, []byte(item))
+	}
+	return byteString
+}
+
+// EscapeAndQuote escapes the following characters the following way:
+// `"` and `\` characters must be escaped by adding a `\` characters before them.
+// `"` becomes `\"` and `\` becomes `\\`.
 func EscapeAndQuote(s string) string {
 	str := strings.ReplaceAll(strings.ReplaceAll(s, "\\", "\\\\"), "\"", "\\\"")
 	return `"` + str + `"`
 }
 
-//typically used in hashed to prevent security troubles due to bad concatenation
-func ComputeAsJsonArray(elements []string) string {
+// ArrayRepresentation returns a json Array with the strings given as arguments. It will escape them with the EscapeAndQuote
+// function first.
+// Typically used in hashes to prevent security troubles due to bad concatenation
+func ArrayRepresentation(elements []string) string {
 	str := "["
 	if len(elements) > 0 {
 		str = "[" + EscapeAndQuote(elements[0])
@@ -79,4 +53,14 @@ func ComputeAsJsonArray(elements []string) string {
 	}
 	str += "]"
 	return str
+}
+
+// GenerateTestKeyPair returns a pair of public and private key. Only used for tests. Should we create a package test and
+// put it there ?
+func GenerateTestKeyPair() ([]byte, ed.PrivateKey) {
+	//randomize the key
+	randomSeed := make([]byte, ed.PublicKeySize)
+	rand.Read(randomSeed)
+	privateKey := ed.NewKeyFromSeed(randomSeed)
+	return privateKey.Public().(ed.PublicKey), privateKey
 }

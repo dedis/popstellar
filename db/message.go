@@ -16,7 +16,7 @@ import (
 func writeMessage(message message.Message, channel string, database string, creating bool) error {
 	db, e := OpenDB(database)
 	if e != nil {
-		return e
+		return lib.ErrDBFault
 	}
 	defer db.Close()
 
@@ -71,7 +71,7 @@ func GetMessage(channel []byte, message []byte, database string) []byte {
 	}
 	defer db.Close()
 
-	var data []byte
+	var result []byte
 	err = db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket(channel)
 		if b == nil {
@@ -79,12 +79,14 @@ func GetMessage(channel []byte, message []byte, database string) []byte {
 			return lib.ErrInvalidResource
 		}
 
-		data = b.Get(message)
+		data := b.Get(message)
+		result = make([]byte, len(data))
+		copy(result, data)
 		return nil
 	})
 
-	if err != nil {
+	if err != nil || len(result) == 0 {
 		return nil
 	}
-	return data
+	return result
 }

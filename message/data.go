@@ -7,26 +7,9 @@ import (
 
 type Data map[string]interface{}
 
-// []byte are automatically decoded from base64 when unmarshalled, while string (and json.RawMessage) are NOT
+// []byte are automatically decoded from base64 when unmarshalled, while strings (and json.RawMessage) are NOT
 
-/* potential enums, but doesn't typecheck in go, the checks must still be manual, so kinda useless
-type Object string
-const(
-	Lao Object = "lao"
-	Message Object = "message"
-	Meeting Object = "meeting"
-type Action string
-const(
-	Create Action = "create"
-	Update_properties Action = "update_properties"
-	State Action = "state"
-	WitnessKey Action = "witness"
-)*/
-
-type DataCommon struct {
-	Object string
-	Action string
-}
+// all concatenation referenced here are made with the HashItems function, go check it out have any doubt of how we do it
 
 type DataCreateLAO struct {
 	Object string `json:"object"`
@@ -46,38 +29,39 @@ type DataCreateLAO struct {
 type DataCreateMeeting struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
-	//ID hash : SHA256(lao_id||creation||name)
+	//ID hash : SHA256('M'||lao_id||creation||name)
 	ID []byte `json:"id"`
-	// Name of the LAO
+	// Name of the Meeting
 	Name string `json:"name"`
 	//Creation's timestamp (Unix) (uint64)
 	Creation int64 `json:"creation"`
 	// meeting's location, optional
-	Location string `json:"location"`
+	Location string `json:"location,omitempty"`
 	// meeting's Start time timestamp (Unix) (uint64)
 	Start int64 `json:"start"`
 	// meeting's End time timestamp (Unix) (uint64)
 	End int64 `json:"end"`
 	// arbitrary object, optional
-	Extra string `json:"extra"`
+	Extra string `json:"extra,omitempty"`
 }
+
 type DataCreateRollCall struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
 	//ID hash SHA256('R'||lao_id||creation||name)
 	ID []byte `json:"id"`
-	// Name of the roll ca
+	// Name of the roll call
 	Name string `json:"name"`
 	//Creation's timestamp (Unix) (uint64)
 	Creation int64 `json:"creation"`
 	// roll call's location, optional
-	Location string `json:"location"`
+	Location string `json:"location,omitempty"`
 	// roll call's Start time timestamp (Unix) (uint64)
 	Start int64 `json:"start"`
 	// roll call's scheduled time timestamp (Unix) (uint64)
 	Scheduled int64 `json:"scheduled"`
 	// An optional description of the roll call
-	RollCallDescription string `json:"roll_call_description",omitempty`
+	Description string `json:"roll_call_description,omitempty"`
 }
 
 type DataCloseRollCall struct {
@@ -85,7 +69,7 @@ type DataCloseRollCall struct {
 	Action string `json:"action"`
 	//ID hash SHA256('R'||lao_id||creation||name)
 	ID []byte `json:"id"`
-	// Name of the roll ca
+	// Name of the roll call
 	Name string `json:"name"`
 	//start's time timestamp (Unix) (uint64)
 	Start int64 `json:"start"`
@@ -94,25 +78,28 @@ type DataCloseRollCall struct {
 	//List of Attendees' Public keys
 	Attendees [][]byte `json:"attendees"`
 }
+
 type DataOpenRollCall struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
 	//ID hash SHA256('R'||lao_id||creation||name)
 	ID []byte `json:"id"`
-	//The start time correspond to the time the event is opened/reopened
+	//The start time corresponds to the time the event is opened/reopened
 	Start int64 `json:"start"`
 }
+
+// Not implemented yet
 type DataCreatePoll struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
-	//ID hash : SHA256(lao_id||creation||name)
+	//ID hash : SHA256( 'P'||lao_id||creation||name)
 	ID []byte `json:"id"`
-	// Name of the LAO
+	// Name of the poll
 	Name string `json:"name"`
 	//Creation's timestamp (Unix) (uint64)
 	Creation int64 `json:"creation"`
 	// meeting's location, optional
-	Location string `json:"location"`
+	Location string `json:"location,omitempty"`
 	// meeting's Start time timestamp (Unix) (uint64)
 	Start int64 `json:"start"`
 	// meeting's End time timestamp (Unix) (uint64)
@@ -124,9 +111,9 @@ type DataCreatePoll struct {
 type DataUpdateLAO struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
-	// hash : (Organizer|| Creation|| Name)" DIFFERENT from create Lao !
+	// LAO ID. Not recomputed if the name changes
 	ID []byte `json:"id"`
-	// Name of the LAO,Meeting...
+	// Name of the LAO
 	Name string `json:"name"`
 	//Last modification's timestamp (Unix) (uint64)
 	LastModified int64 `json:"last_modified"`
@@ -137,11 +124,11 @@ type DataUpdateLAO struct {
 type DataStateLAO struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
-	// hash : (Organizer|| Creation|| Name)" DIFFERENT from create Lao !
+	// LAO ID. Not recomputed if the name changes
 	ID []byte `json:"id"`
-	// Name of the LAO,Meeting...
+	// Name of the LAO
 	Name string `json:"name"`
-	//Creation's timestamp (Uni	x) (uint64)
+	//Creation's timestamp (Unix) (uint64)
 	Creation int64 `json:"creation"`
 	//Last modification timestamp (Unix) (uint64)
 	LastModified int64 `json:"last_modified"`
@@ -158,18 +145,22 @@ type DataStateLAO struct {
 type DataStateMeeting struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
-	// hash : Name || Creation
+	// Meeting ID. not recomputed if the name changes
 	ID []byte `json:"id"`
-	// Name of the LAO,Meeting...
+	// Name of the Meeting
 	Name string `json:"name"`
-	//Creation's timestamp (Unix) (uint64)
+	//Creation timestamp (Unix) (uint64)
 	Creation int64 `json:"creation"`
-	//LastModified Date/Time
-	LastModified int64  `json:"last_modified,"` //  Unix timestamp (uint64)
-	Location     string `json:"location"`       //optional
-	Start        int64  `json:"start"`          /* Timestamp */
-	End          int64  `json:"end"`            /* Timestamp, optional */
-	Extra        string `json:"extra"`          /* arbitrary object, optional */
+	//LastModified timestamp (Unix) (uint64)
+	LastModified int64 `json:"last_modified"`
+	//optional
+	Location string `json:"location,omitempty"`
+	//Start timestamp (Unix) (uint64)
+	Start int64 `json:"start"`
+	//End timestamp (optional) (Unix) (uint64)
+	End int64 `json:"end"`
+	// optional
+	Extra string `json:"extra,omitempty"`
 	//Organiser: Public Key
 	Organizer string `json:"organize"`
 	// id of the modification (either creation/update)
@@ -182,6 +173,6 @@ type DataWitnessMessage struct {
 	Object    string `json:"object"`
 	Action    string `json:"action"`
 	MessageId []byte `json:"message_id"`
-	//signature by the witness over the data field of the message : Sign(data)
+	//Sign(message_id) by the witness over the message_id field of the message to witness
 	Signature []byte `json:"signature"`
 }

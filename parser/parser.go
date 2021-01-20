@@ -45,9 +45,7 @@ func ParseQuery(query []byte) (message.Query, error) {
 func ParseParams(params json.RawMessage) (message.Params, error) {
 	m := message.Params{}
 	err := json.Unmarshal(params, &m)
-	//L3Jvb3Q= is b64 for "/root"
-	decodedChannel, err := lib.Decode(m.Channel)
-	if !strings.HasPrefix(string(decodedChannel), "/root") || err != nil {
+	if !strings.HasPrefix(m.Channel, "/root") {
 		log.Printf("channel id doesn't start with /root but is %v", m.Channel)
 		return m, lib.ErrRequestDataInvalid
 	}
@@ -70,6 +68,7 @@ func ParseWitnessSignature(witnessSignatures json.RawMessage) (message.ItemWitne
 
 // ParseData parses a json.RawMessage into a message.Data structure. It calls dataConstAreValid to check restrictions
 // defined in the jsonRPC protocol.
+// Careful that message.Data is a map and as such fields must be used with m["field"] until it is being decoded in the specific structure (and then m.field)
 func ParseData(data string) (message.Data, error) {
 	m := message.Data{}
 	err := json.Unmarshal([]byte(data), &m)
@@ -84,11 +83,20 @@ func ParseData(data string) (message.Data, error) {
 // * object is one of "lao", "message", "meeting"
 // * action is one of "create", update_properties", "state", "witness"
 // * creation and last modified are positive integer
+// WARNING : this does not evolve automatically with the protocol, so update it as it grows
 func dataConstAreValid(m message.Data) bool {
+
 	switch m["object"] {
 	case "lao", "message", "meeting":
 		switch m["action"] {
 		case "create", "update_properties", "state", "witness":
+		default:
+			log.Printf("the action is not valid, it is instead %v", m["action"])
+			return false
+		}
+	case "roll_call":
+		switch m["action"] {
+		case "create", "open", "reopen", "close":
 		default:
 			log.Printf("the action is not valid, it is instead %v", m["action"])
 			return false
@@ -99,20 +107,12 @@ func dataConstAreValid(m message.Data) bool {
 	}
 
 	creation, okC := m["creation"].(int)
-	lastm, okL := m["last_modified"].(int)
-	if (okC && creation < 0) || (okL && lastm < 0) {
+	lastModified, okL := m["last_modified"].(int)
+	if (okC && creation < 0) || (okL && lastModified < 0) {
 		log.Printf("the timestamps are smaller than 0")
 		return false
 	}
 	return true
-}
-
-// ParseDataCommon parses a json.RawMessage into a message.DataCommon structure. Used to extract only the fields "object"
-// and "action"
-func ParseDataCommon(data json.RawMessage) (message.DataCommon, error) {
-	m := message.DataCommon{}
-	err := json.Unmarshal(data, &m)
-	return m, err
 }
 
 // ParseDataCreateLAO parses a json.RawMessage into a message.DataCreateLAO structure.
@@ -156,6 +156,7 @@ func ParseDataCloseRollCall(data json.RawMessage) (message.DataCloseRollCall, er
 	err := json.Unmarshal(data, &m)
 	return m, err
 }
+
 // ParseDataCreatePoll parses a json.RawMessage into a message.DataCreatePoll structure.
 func ParseDataCreatePoll(data json.RawMessage) (message.DataCreatePoll, error) {
 	m := message.DataCreatePoll{}
@@ -184,8 +185,8 @@ func ParseDataStateMeeting(data json.RawMessage) (message.DataStateMeeting, erro
 	return m, err
 }
 
-// FilterAnswers returns true if the message was an answer message
-func FilterAnswers(receivedMsg []byte) (bool, error) {
+// IsAnswer returns true if the message was an answer message
+func IsAnswer(receivedMsg []byte) (bool, error) {
 	genericMsg, err := ParseGenericMessage(receivedMsg)
 	if err != nil {
 		return false, err

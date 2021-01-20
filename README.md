@@ -5,10 +5,14 @@ Proof-of-personhood, fall 2020. Go back-end version, by Romain Pugin, Raoul Gerb
 Golang back-end for the Proof-of-personhood application. To run the backend simply : `go run main.go <arguments>`. The possible 
 arguments are :
 * `-m` the mode we want the server to run : either "o" for organizer or "w" for witness. Default to "o".
-* `-a` the IP address we want the server to run on. Default is empty (localhost).
-* `-p` the port we want the server to run on. Default is 8080.
+* `-a` the IP address we want the server to run on. Default is "127.0.0.1" (localhost).
+* `-p` the port we want the server to run on. Default is 8000.
 * `-k` the actor's public key. Default is "oui".
 * `-f` the file we want the backend to store its database on. Default is "org.db" for an organizer and "wit.db" for a witness
+
+The server can then be accessed on address:port with a command line interface into which one can send JSON-RPC requests such as the exampls given in `test/json_test_strings.txt`
+
+You can generate the code documentation using the godoc command: `godoc -http:=6060`.
 
 ## Packages
 ### actors
@@ -20,15 +24,15 @@ This package's purpose is to handle interaction with the local database. The dat
 
 ### network 
 This package's purpose is to handle the webserver listening for websocket connections and to handle them.
-It has a type `Hub`, that decides what message to send to whom according to the publish-subscribe paradigm.
+It has a type `Hub`, that decides which message to send to whom according to the publish-subscribe paradigm.
 The hub has an actor (either Organizer or Witness), that implements the PoP concept, and generate response messages 
 depending on the received message.
 
 ### event
-This package provides the structures for real world events.
+This package provides the structures for real world events. We use it when storing the different components internally.
 
 ### message
-This package provides structures corresponding to the messages that can be sent or received as defined in the jsonRPC package.
+This package provides structures corresponding to the serialized messages that can be sent or received as defined in the jsonRPC package.
 
 ### jsonRPC
 This package is not directly used by this backend version, but defines the messaging protocol used to on the websockets.
@@ -41,9 +45,17 @@ This package implements all functions to parse received messages into structs, a
 
 ### security
 This package implements all the checks we do on messages to ensure they are valid, from timestamp age to validity of hashes and signatures.
+* Concerning the Hash when dealing with the Ids, the structure for concatenation is as follows:
+`Hash(element1|...|elementK)` is Hash("["esc(element1)",...,"esc(elementK)"]") where esc is an escaped function defined in the protocol.
+  The fields concatenated are all in their received representation, e.g. `message_id` will be the hash of the concatenation of the two field `data` and
+                                                                        `signature` both encoded in base 64 because we receive them encoded.
+* For the signature, we exclusively use the unencoded representation. 
 
 ### test
-This package contains, as its name says it, the unit tests.
+This package contains files useful for manual real-world testing.
+
+### config
+This package contains configurations files for constants. The file starting with `// +build [param]` will be used when using the command `go build -tags [param]`. The default file should start with `// +build ![param1],![param2],![param3]`.
 
 ## Back-end components
 ### Dependencies
@@ -71,8 +83,11 @@ it has the following properties :
 Once a message is stored, it shall not be updated, except for messages requesting witness signing. In that case, we 
 append the received witness signatures at the end of the original message's list of signatures.
 
+## Unit-tests
+Some unit-tests exist directly in their corresponding packages, as per Go specification. They can be run with `go test -v ./...` (recursive from the top-level folder) or simply `go test` for the current package.
+
 ## Basic testing
-We provide a very basic front-end in the file `index.html`. It does nothing but opens a websocket connection to the back-end server, and lets
+We provide a very basic front-end in the file `test/index.html`. It does nothing but opens a websocket connection to the back-end server, and lets
 you send and receive messages.
 
 If you want to test the application with the `index.html` front-end on another machine as the back-end server, you will have to change the
@@ -96,5 +111,5 @@ Currently, the project biggest, and "all-containing" entity is the Hub (package 
 principal entity, and to let the actor have a hub.
 
 ### WebSockets
-Maybe we should consider using websocket secure (websocket over TLS) instead of "standards" websocket (over HTTP). It 
+Maybe we should consider using websocket secure (websocket over TLS) instead of "standards" websocket (over TCP). It 
 would prevent from MitM attacks, as we currently don't offer data privacy.
