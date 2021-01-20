@@ -25,6 +25,13 @@ public abstract class Message extends GenericMessage {
   /** Return the Message method */
   public abstract String getMethod();
 
+  /**
+   * Returnss the message channel
+   */
+  public String getChannel() {
+    return channel;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;

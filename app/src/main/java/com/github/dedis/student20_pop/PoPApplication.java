@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+
 import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.Person;
@@ -22,11 +23,19 @@ import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
 
 import java.net.URI;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_ALREADY_EXISTS;
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_SUCCESSFUL;
-import static com.github.dedis.student20_pop.model.event.EventType.*;
+import static com.github.dedis.student20_pop.model.event.EventType.DISCUSSION;
+import static com.github.dedis.student20_pop.model.event.EventType.MEETING;
+import static com.github.dedis.student20_pop.model.event.EventType.POLL;
 
 /** Class modelling the application : a unique person associated with LAOs */
 public class PoPApplication extends Application {
@@ -264,9 +273,11 @@ public class PoPApplication extends Application {
    * Handle received data messages inorder
    *
    * @param dataMessages List of received messages
+   * @param host the messages were received from
+   * @param channel of the messages
    */
-  public void handleDataMessages(List<Data> dataMessages) {
-    for (Data data : dataMessages) data.accept(dataHandler);
+  public void handleDataMessages(Collection<Data> dataMessages, URI host, String channel) {
+    for (Data data : dataMessages) data.accept(dataHandler, host, channel);
   }
 
   /** This method creates a map for testing, when no backend is connected. */
@@ -329,7 +340,7 @@ public class PoPApplication extends Application {
   private class PoPDataHandler implements DataHandler {
 
     @Override
-    public void handle(StateLao stateLao) {
+    public void handle(StateLao stateLao, URI host, String channel) {
       Lao lao = laos.get(stateLao.getId());
       if (lao == null)
         lao =
@@ -350,7 +361,7 @@ public class PoPApplication extends Application {
     }
 
     @Override
-    public void handle(StateMeeting stateMeeting) {
+    public void handle(StateMeeting stateMeeting, URI host, String channel) {
       // TODO later in the project
     }
   }

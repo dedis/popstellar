@@ -1,10 +1,17 @@
 package com.github.dedis.student20_pop.utility.network;
 
 import android.util.Log;
+
 import com.github.dedis.student20_pop.model.network.GenericMessage;
 import com.github.dedis.student20_pop.model.network.answer.Error;
 import com.github.dedis.student20_pop.model.network.answer.Result;
-import com.github.dedis.student20_pop.model.network.method.*;
+import com.github.dedis.student20_pop.model.network.method.Broadcast;
+import com.github.dedis.student20_pop.model.network.method.Catchup;
+import com.github.dedis.student20_pop.model.network.method.Message;
+import com.github.dedis.student20_pop.model.network.method.Publish;
+import com.github.dedis.student20_pop.model.network.method.Query;
+import com.github.dedis.student20_pop.model.network.method.Subscribe;
+import com.github.dedis.student20_pop.model.network.method.Unsubscribe;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.utility.json.JsonUtils;
@@ -16,16 +23,23 @@ import com.github.dedis.student20_pop.utility.security.Signature;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
-import javax.websocket.Session;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+
+import javax.websocket.Session;
 
 /** A proxy of a connection to a WebSocket. It encapsulate the publish-subscribe protocol */
 public final class WebSocketLowLevelProxy implements LowLevelProxy, MessageListener {
@@ -241,7 +255,7 @@ public final class WebSocketLowLevelProxy implements LowLevelProxy, MessageListe
               new String(Base64.getDecoder().decode(container.getData()), StandardCharsets.UTF_8),
               Data.class);
 
-      data.accept(dataHandler);
+      data.accept(dataHandler, sessionURI, broadcast.getChannel());
     }
   }
 }
