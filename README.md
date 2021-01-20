@@ -2,15 +2,16 @@
 Proof-of-personhood, fall 2020. Go back-end version, by Romain Pugin, Raoul Gerber and Ouriel Sebbagh.
 
 ## Overview
-Golang back-end for the Proof-of-personhood application. To run the backend simply : `go run main.go <arguments>`. The possible 
+Golang back-end for the Proof-of-personhood application. To run the backend simply : `go run main.go`. You can edit the 
+server configuration in `config/config_default.go`. The options in this file are : 
 arguments are :
-* `-m` the mode we want the server to run : either "o" for organizer or "w" for witness. Default to "o".
-* `-a` the IP address we want the server to run on. Default is "127.0.0.1" (localhost).
-* `-p` the port we want the server to run on. Default is 8000.
-* `-k` the actor's public key. Default is "oui".
-* `-f` the file we want the backend to store its database on. Default is "org.db" for an organizer and "wit.db" for a witness
+* `MODE` the mode we want the server to run : either "o" for organizer or "w" for witness. Default to "o".
+* `ADDRESS` the IP address we want the server to run on. Default is "127.0.0.1" (localhost).
+* `PORT` the port we want the server to run on. Default is 8000.
+* `PKEY` the actor's public key. Default is "oui".
+* `FILE` the file we want the backend to store its database on. Default is "org.db" for an organizer and "wit.db" for a witness
 
-The server can then be accessed on address:port with a command line interface into which one can send JSON-RPC requests such as the exampls given in `test/json_test_strings.txt`
+The server can then be accessed on address:port with a command line interface into which one can send JSON-RPC requests such as the examples given in `test/json_test_strings.txt`
 
 You can generate the code documentation using the godoc command: `godoc -http:=6060`.
 
