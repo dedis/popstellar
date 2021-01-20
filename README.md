@@ -92,6 +92,7 @@ you send and receive messages. IT's accessible from the `address`:`port`/test UR
 
 ## Json specifications
 The protocol we use is defined in the branch `proto-specs`, and is a git submodule incorporated in the `json-RPC` folder.
+Even though these strings do not work (as time stamps are not updated), you can disable the time stamps checks in the security package if you still want to use them. They are mainly here to give an example of what should be sent.
 
 ## Potential improvements
 ### Database
