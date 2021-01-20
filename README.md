@@ -10,8 +10,7 @@ server configuration in `config/config_default.go`. The options in this file are
 * `PKEY` the actor's public key. Default is "oui".
 * `FILE` the file we want the backend to store its database on. Default is "org.db" for an organizer and "wit.db" for a witness
 
-The server can then be accessed on address:port with a command line interface into which one can send JSON-RPC requests such as the examples given in `test/json_test_strings.txt`
-
+The server can then be accessed on address:port with the websocket protocol.
 You can generate the code documentation using the godoc command: `godoc -http:=6060`.
 
 ## Packages
@@ -88,7 +87,8 @@ Some unit-tests exist directly in their corresponding packages, as per Go specif
 
 ## Basic testing
 We provide a very basic front-end in the file `test/index.html`. It does nothing but opens a websocket connection to the back-end server, and lets
-you send and receive messages.
+you send and receive messages. IT's accessible from the `address`:`port`/test URL. There you can the JSON-RPC requests examples given in `test/json_test_strings.txt`
+
 
 ## Json specifications
 The protocol we use is defined in the branch `proto-specs`, and is a git submodule incorporated in the `json-RPC` folder.
