@@ -8,7 +8,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.fragment.app.Fragment;
+
 import com.github.dedis.student20_pop.MainActivity;
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
@@ -53,9 +55,9 @@ public final class ConnectingFragment extends Fragment {
     if (getArguments() != null) {
       url = getArguments().getString(URL_EXTRA);
       lao = getArguments().getString(LAO_EXTRA);
+      URI uri = URI.create(url);
 
-      HighLevelProxy proxy =
-          ((PoPApplication) getActivity().getApplication()).getProxy(URI.create(url));
+      HighLevelProxy proxy = ((PoPApplication) getActivity().getApplication()).getProxy(uri);
 
       String channel = HighLevelProxy.ROOT + "/" + lao;
 
@@ -68,7 +70,7 @@ public final class ConnectingFragment extends Fragment {
                       .runOnUiThread(
                           () -> {
                             ((PoPApplication) getActivity().getApplication())
-                                .handleDataMessages(msgs);
+                                .handleDataMessages(msgs, uri, channel);
                             Intent intent = new Intent(getActivity(), MainActivity.class);
                             startActivity(intent);
                           }))
@@ -81,10 +83,7 @@ public final class ConnectingFragment extends Fragment {
                 if (!(real instanceof ChangeViewCancel))
                   getActivity()
                       .runOnUiThread(
-                          () -> {
-                            Intent intent = new Intent(getActivity(), MainActivity.class);
-                            startActivity(intent);
-                          });
+                          () -> startActivity(new Intent(getActivity(), MainActivity.class)));
                 return null;
               });
     }

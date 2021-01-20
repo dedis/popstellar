@@ -11,13 +11,22 @@ import com.github.dedis.student20_pop.model.network.method.message.data.rollcall
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
 import com.github.dedis.student20_pop.utility.protocol.DataHandler;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.github.dedis.student20_pop.model.network.method.message.data.Action.*;
-import static com.github.dedis.student20_pop.model.network.method.message.data.Objects.*;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Action.CLOSE;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Action.CREATE;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Action.OPEN;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Action.STATE;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Action.UPDATE;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Action.WITNESS;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Objects.LAO;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Objects.MEETING;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Objects.MESSAGE;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Objects.ROLL_CALL;
 
 /** An abstract high level message */
 public abstract class Data {
@@ -79,8 +88,10 @@ public abstract class Data {
    * Accept the given handler following a visitor pattern
    *
    * @param handler that will handle this data
+   * @param host that received the data
+   * @param channel on which the data was received
    */
-  public abstract void accept(DataHandler handler);
+  public abstract void accept(DataHandler handler, URI host, String channel);
 
   /** Returns the object the message is referring to. */
   public abstract String getObject();

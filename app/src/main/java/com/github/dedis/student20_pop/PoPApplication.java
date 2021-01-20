@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+
 import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.Person;
@@ -22,11 +23,19 @@ import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
 
 import java.net.URI;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_ALREADY_EXISTS;
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_SUCCESSFUL;
-import static com.github.dedis.student20_pop.model.event.EventType.*;
+import static com.github.dedis.student20_pop.model.event.EventType.DISCUSSION;
+import static com.github.dedis.student20_pop.model.event.EventType.MEETING;
+import static com.github.dedis.student20_pop.model.event.EventType.POLL;
 
 /** Class modelling the application : a unique person associated with LAOs */
 public class PoPApplication extends Application {
@@ -34,7 +43,7 @@ public class PoPApplication extends Application {
   public static final String TAG = PoPApplication.class.getSimpleName();
   public static final String SP_PERSON_ID_KEY = "SHARED_PREFERENCES_PERSON_ID";
   public static final String USERNAME = "USERNAME";
-  private static final URI LOCAL_BACKEND_URI = URI.create("ws://10.0.2.2:2000");
+  public static final URI LOCAL_BACKEND_URI = URI.create("ws://10.0.2.2:8000");
 
   private final Map<URI, HighLevelProxy> openSessions = new HashMap<>();
   private final Map<String, Lao> laos = new HashMap<>();
@@ -47,7 +56,6 @@ public class PoPApplication extends Application {
 
   // represents the Lao which we are connected to, can be null
   private Lao currentLao;
-  private HighLevelProxy localProxy;
 
   @Override
   public void onCreate() {
@@ -84,7 +92,6 @@ public class PoPApplication extends Application {
     }
 
     activateTestingValues(); // comment this line when testing with a back-end
-    localProxy = getProxy(LOCAL_BACKEND_URI);
   }
 
   @SuppressLint("ApplySharedPref")
@@ -136,9 +143,9 @@ public class PoPApplication extends Application {
     return getCurrentLao().map(Lao::getWitnesses).orElseGet(ArrayList::new);
   }
 
-  /** Returns the proxy of the local device's backend. */
-  public HighLevelProxy getLocalProxy() {
-    return localProxy;
+  /** Returns the proxy of the current LAO's backend. */
+  public Optional<HighLevelProxy> getCurrentLaoProxy() {
+    return getCurrentLao().map(Lao::getHost).map(this::getProxy);
   }
 
   /**
@@ -256,7 +263,7 @@ public class PoPApplication extends Application {
 
   /** Only useful when testing without a back-end. */
   public void activateTestingValues() {
-    currentLao = new Lao("LAO I just joined", person.getId());
+    currentLao = new Lao("LAO I just joined", person.getId(), LOCAL_BACKEND_URI);
     dummyLaos();
   }
 
@@ -264,19 +271,21 @@ public class PoPApplication extends Application {
    * Handle received data messages inorder
    *
    * @param dataMessages List of received messages
+   * @param host the messages were received from
+   * @param channel of the messages
    */
-  public void handleDataMessages(List<Data> dataMessages) {
-    for (Data data : dataMessages) data.accept(dataHandler);
+  public void handleDataMessages(Collection<Data> dataMessages, URI host, String channel) {
+    for (Data data : dataMessages) data.accept(dataHandler, host, channel);
   }
 
   /** This method creates a map for testing, when no backend is connected. */
   private void dummyLaos() {
     String notMyPublicKey = new Keys().getPublicKey();
-    Lao lao0 = new Lao("LAO I just joined", getPerson().getId());
-    Lao lao1 = new Lao("LAO 1", notMyPublicKey);
-    Lao lao2 = new Lao("LAO 2", notMyPublicKey);
-    Lao lao3 = new Lao("My LAO 3", getPerson().getId());
-    Lao lao4 = new Lao("LAO 4", notMyPublicKey);
+    Lao lao0 = new Lao("LAO I just joined", getPerson().getId(), LOCAL_BACKEND_URI);
+    Lao lao1 = new Lao("LAO 1", notMyPublicKey, LOCAL_BACKEND_URI);
+    Lao lao2 = new Lao("LAO 2", notMyPublicKey, LOCAL_BACKEND_URI);
+    Lao lao3 = new Lao("My LAO 3", getPerson().getId(), LOCAL_BACKEND_URI);
+    Lao lao4 = new Lao("LAO 4", notMyPublicKey, LOCAL_BACKEND_URI);
 
     lao0.setEvents(dummyEvents(lao0.getId()));
     lao1.setEvents(dummyEvents(lao0.getId()));
@@ -329,7 +338,7 @@ public class PoPApplication extends Application {
   private class PoPDataHandler implements DataHandler {
 
     @Override
-    public void handle(StateLao stateLao) {
+    public void handle(StateLao stateLao, URI host, String channel) {
       Lao lao = laos.get(stateLao.getId());
       if (lao == null)
         lao =
@@ -340,7 +349,8 @@ public class PoPApplication extends Application {
                 stateLao.getOrganizer(),
                 stateLao.getWitnesses(),
                 new ArrayList<>(),
-                new ArrayList<>());
+                new ArrayList<>(),
+                host);
       else {
         lao.setName(stateLao.getName());
         lao.setWitnesses(stateLao.getWitnesses());
@@ -350,7 +360,7 @@ public class PoPApplication extends Application {
     }
 
     @Override
-    public void handle(StateMeeting stateMeeting) {
+    public void handle(StateMeeting stateMeeting, URI host, String channel) {
       // TODO later in the project
     }
   }

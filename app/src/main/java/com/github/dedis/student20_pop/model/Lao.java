@@ -3,6 +3,7 @@ package com.github.dedis.student20_pop.model;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.utility.security.Hash;
 
+import java.net.URI;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ public final class Lao {
   private final long time;
   private final String id;
   private final String organizer;
+  private final URI host;
   private String name;
   private List<String> witnesses;
   private List<String> members;
@@ -24,10 +26,11 @@ public final class Lao {
    *
    * @param name the name of the LAO, can be empty
    * @param organizer the public key of the organizer
+   * @param host the URI of the backend that host this LAO
    * @throws IllegalArgumentException if any of the parameters is null
    */
-  public Lao(String name, String organizer) {
-    if (name == null || organizer == null) {
+  public Lao(String name, String organizer, URI host) {
+    if (name == null || organizer == null || host == null) {
       throw new IllegalArgumentException("Trying to  create a LAO with a null value");
     } else if (name.trim().isEmpty()) {
       throw new IllegalArgumentException("Trying to set an empty name for the LAO");
@@ -37,6 +40,7 @@ public final class Lao {
     this.time = Instant.now().getEpochSecond();
     this.id = Hash.hash(organizer, time, name);
     this.organizer = organizer;
+    this.host = host;
     this.witnesses = new ArrayList<>();
     this.members = new ArrayList<>();
     this.events = new ArrayList<>();
@@ -53,6 +57,7 @@ public final class Lao {
    * @param witnesses the list of the public keys of the witnesses
    * @param members the list of the public keys of the members
    * @param events the list of the ids of the events
+   * @param host the URI of the backend that host this LAO
    */
   public Lao(
       String name,
@@ -61,11 +66,13 @@ public final class Lao {
       String organizer,
       List<String> witnesses,
       List<String> members,
-      List<Event> events) {
+      List<Event> events,
+      URI host) {
     this.name = name;
     this.time = time;
     this.id = id;
     this.organizer = organizer;
+    this.host = host;
     this.witnesses = witnesses;
     this.members = members;
     this.events = events;
@@ -106,6 +113,11 @@ public final class Lao {
   /** Returns the public key of the organizer, can't be modified. */
   public String getOrganizer() {
     return organizer;
+  }
+
+  /** Returns the host the LAO is hosted on. */
+  public URI getHost() {
+    return host;
   }
 
   /** Returns the list of public keys where each public key belongs to one witness. */
@@ -221,6 +233,7 @@ public final class Lao {
         && Objects.equals(time, lao.time)
         && Objects.equals(id, lao.id)
         && Objects.equals(organizer, lao.organizer)
+        && Objects.equals(host, lao.host)
         && Objects.equals(witnesses, lao.witnesses)
         && Objects.equals(members, lao.members)
         && Objects.equals(events, lao.events);
@@ -228,6 +241,6 @@ public final class Lao {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, time, id, organizer, witnesses, members, events);
+    return Objects.hash(name, time, id, organizer, host, witnesses, members, events);
   }
 }
