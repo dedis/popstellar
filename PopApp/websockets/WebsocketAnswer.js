@@ -13,6 +13,8 @@ import {
   validateDataUpdateLao, validateData,
 } from './JsonSchemaValidation';
 
+import * as RootNavigation from '../Navigation/RootNavigation';
+import STRINGS from '../res/strings';
 /* eslint-disable no-underscore-dangle */
 
 /** Maximum amount of identical queries retries */
@@ -69,7 +71,8 @@ const handleServerAnswer = (message) => {
           }
 
           // store new LAO
-          getStore().dispatch({ type: 'SET_CURRENT_LAO', value: jsonMessage });
+          getStore().dispatch({ type: 'SET_CURRENT_LAO', value: jsonMessage.params.message.data });
+          RootNavigation.navigate(STRINGS.app_navigation_tab_organizer);
         } else if (answer.requestAction === actions.UPDATE_PROPERTIES) {
           // callback for a successful update LAO request
           const jsonMessageData = answer.message.params.message.data;
@@ -88,6 +91,7 @@ const handleServerAnswer = (message) => {
 
           // store updated LAO
           getStore().dispatch({ type: 'SET_CURRENT_LAO', value: updatedLao });
+          RootNavigation.navigate(STRINGS.app_navigation_tab_organizer);
         } else if (answer.requestAction === actions.STATE) {
           console.error('TODO (in WebsocketAnswer) : case (answer.requestAction === actions.STATE)');
         }
