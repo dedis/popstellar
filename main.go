@@ -55,7 +55,7 @@ func main() {
 		router := http.NewServeMux()
 		router.Handle("/", network.HomeHandler(tpl))
 		router.Handle("/ws", network.NewWSHandler(h))
-		log.Printf("serving witness on adress " + *address + ":" + strconv.Itoa(*port))
+		log.Printf("serving witness on address " + *address + ":" + strconv.Itoa(*port))
 		log.Fatal(http.ListenAndServe(*address+":"+strconv.Itoa(*port), router))
 
 	}
