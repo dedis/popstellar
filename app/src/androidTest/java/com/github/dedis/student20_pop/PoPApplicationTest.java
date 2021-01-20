@@ -2,9 +2,12 @@ package com.github.dedis.student20_pop;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
 import androidx.test.core.app.ActivityScenario;
+
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.Person;
+
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -24,9 +27,9 @@ import static org.junit.Assert.assertTrue;
 
 public class PoPApplicationTest {
 
-  private final Person person = new Person(PoPApplication.USERNAME);
-  private final Lao lao1 = new Lao("LAO1", person.getId());
-  private final String witness1 = "Alphonse";
+    private final Person person = new Person(PoPApplication.USERNAME);
+    private final Lao lao1 = new Lao("LAO1", person.getId(), PoPApplication.LOCAL_BACKEND_URI);
+    private final String witness1 = "Alphonse";
   private final String witness2 = "Bertrand";
   private final ArrayList<String> witnesses = new ArrayList<>(Arrays.asList(witness1, witness2));
 
