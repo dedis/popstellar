@@ -7,24 +7,15 @@ import (
 	"encoding/json"
 )
 
-/* potential enum, but doesn't typecheck in go, the checks must still be manual, so kinda useless
-type Method string
-const(
-	Subscribe Method = "subscribe"
-	Unsubscribe Method = "unsubscribe"
-	Broadcast Method = "broadcast"
-	Publish Method = "publish"
-	Catchup Method = "catchup"
-)*/
 
 /*Most generic message structure*/
 type GenericMessage map[string]interface{}
 
 type Query struct {
-	Jsonrpc string
-	Method  string
-	Params  json.RawMessage
-	Id      int
+	Jsonrpc string          `json:"jsonrpc"`
+	Method  string          `json:"method"`
+	Params  json.RawMessage `json:"params"`
+	Id      int             `json:"id"`
 }
 
 type Params struct {
@@ -33,15 +24,15 @@ type Params struct {
 }
 
 type Message struct {
-	Data              []byte            `json:"data"`       // recovered from base 64
-	Sender            []byte            `json:"sender"`     // recovered from base 64
-	Signature         []byte            `json:"signature"`  // recovered from base 64
-	MessageId         []byte            `json:"message_id"` // recovered from base 64
+	Data              []byte            `json:"data"`       // decoded from base 64
+	Sender            []byte            `json:"sender"`     // decoded from base 64
+	Signature         []byte            `json:"signature"`  // decoded from base 64
+	MessageId         []byte            `json:"message_id"` // decoded from base 64
 	WitnessSignatures []json.RawMessage `json:"witnessSignatures"`
 }
 
 type ItemWitnessSignatures struct {
-	WitnessKey []byte // recovered from base 64
+	WitnessKey []byte `json:"witness"` // decoded from base 64
 	//Sign(message_id)
-	Signature []byte // recovered from base 64
+	Signature []byte `json:"signature"` // decoded from base 64
 }

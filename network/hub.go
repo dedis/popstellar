@@ -33,12 +33,12 @@ type hub struct {
 	connIndex int
 }
 
-// NewOrganizerHub returns a hub which Actor is an Organizer
+// NewOrganizerHub returns a hub which Actor is an organizer
 func NewOrganizerHub(pkey string, database string) *hub {
 	return newHub("o", pkey, database)
 }
 
-// NewWitnessHub returns a hub which Actor is a Witness
+// NewWitnessHub returns a hub which Actor is a witness
 func NewWitnessHub(pkey string, database string) *hub {
 	return newHub("w", pkey, database)
 }
@@ -103,8 +103,7 @@ func (h *hub) publishOnChannel(msg []byte, channel []byte) {
 
 	for c := range h.connections {
 		//send msgBroadcast to that connection if channel is main channel or is in channel subscribers
-		_, found := lib.Find(subscribers, c.id)
-		// && !emptyChannel seems useless
+		_, found := lib.FindInt(subscribers, c.id)
 		if (bytes.Equal(channel, []byte("/root")) || found) && msg != nil {
 			select {
 			case c.send <- msg:

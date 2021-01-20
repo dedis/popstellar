@@ -8,19 +8,22 @@ type ErrorResponse struct {
 }
 
 //We still need ResponseIDNotDecoded and ResponseWithGenResult because we cannot omit integers
+
 type ResponseIDNotDecoded struct {
-	Jsonrpc       string          `json:"jsonrpc"`
-	ErrorResponse json.RawMessage `json:"result,omitempty"`
-	Id            []byte          `json:"id"`
+	Jsonrpc string          `json:"jsonrpc"`
+	Error   json.RawMessage `json:"error,omitempty"`
+	Id      []byte          `json:"id"`
 }
+
 type ResponseWithGenResult struct {
 	Jsonrpc string `json:"jsonrpc"`
-	Result  int    `json:"result,omitempty"`
+	Result  int    `json:"result"`
 	Id      int    `json:"id"`
 }
+
 type Response struct {
 	Jsonrpc       string          `json:"jsonrpc"`
-	ErrorResponse json.RawMessage `json:"error,omitempty"`
+	Error         json.RawMessage `json:"error,omitempty"`
 	CatchupResult string          `json:"result,omitempty"`
 	Id            int             `json:"id"`
 }

@@ -19,7 +19,7 @@ const bucketChannel = "channels"
 func writeChannel(obj interface{}, database string, secure bool) error {
 	db, e := OpenDB(database)
 	if e != nil {
-		return e
+		return lib.ErrDBFault
 	}
 	defer db.Close()
 
@@ -56,29 +56,18 @@ func writeChannel(obj interface{}, database string, secure bool) error {
 				return lib.ErrInvalidResource
 			}
 		}
-		var dt []byte
-		var err2 error
-		switch obj.(type) {
-		// type assert
-		case event.LAO:
-			dt, err2 = json.Marshal(obj.(event.LAO).ID)
-		case event.Meeting:
-			dt, err2 = json.Marshal(obj.(event.Meeting).ID)
-		case event.Poll:
-			dt, err2 = json.Marshal(obj.(event.Poll).ID)
-		case event.RollCall:
-			dt, err2 = json.Marshal(obj.(event.RollCall).ID)
-		default:
-			return lib.ErrRequestDataInvalid
-		}
-		// Marshal the Obj and store it
+		dt, err2 := json.Marshal(obj)
 		if err2 != nil {
+			log.Printf("could not marshall object to store")
 			return lib.ErrRequestDataInvalid
 		}
 		err3 := b.Put(objID, dt)
 		return err3
 	})
 
+	if err != nil {
+		log.Printf("an error occured in the database transaction.")
+	}
 	return err
 }
 
@@ -94,18 +83,24 @@ func UpdateChannel(obj interface{}, database string) error {
 	return writeChannel(obj, database, false)
 }
 
-// GetChannel returns a channel's infos from a given ID. Returns ni if the channel does not exists.
+// GetChannel returns a channel's infos from a given ID. Returns nil if the channel does not exists.
 func GetChannel(id []byte, database string) []byte {
 	db, e := OpenDB(database)
 	if e != nil {
 		return nil
 	}
 	defer db.Close()
-	var data []byte
-	e = db.Update(func(tx *bolt.Tx) error {
+	var result []byte
+	e = db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucketChannel))
-		data = b.Get(id)
+		data := b.Get(id)
+		result = make([]byte, len(data))
+		copy(result, data)
 		return nil
 	})
-	return data
+	if e != nil || len(result) == 0 {
+		log.Printf("error occured while getting channel infos")
+		return nil
+	}
+	return result
 }

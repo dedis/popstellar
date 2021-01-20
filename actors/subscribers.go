@@ -8,6 +8,7 @@ package actors
 
 import (
 	"log"
+	"strings"
 	"student20_pop/lib"
 	"student20_pop/message"
 	"student20_pop/parser"
@@ -16,14 +17,14 @@ import (
 // handleSubscribe is the function that reads a received message with method "subscribe" and adds connectionId
 // to the subscribers list of the channel. Returns an error if connection was already subscribed, or if the channel
 // is "/root"
-func (o *Organizer) handleSubscribe(query message.Query, connectionId int) error {
+func (o *organizer) handleSubscribe(query message.Query, connectionId int) error {
 	params, err := parser.ParseParams(query.Params)
 	if err != nil {
-		log.Printf("unable to analyse paramsLight in handleSubscribe()")
+		log.Printf("unable to analyse params in handleSubscribe()")
 		return lib.ErrRequestDataInvalid
 	}
 
-	if _, found := lib.Find(o.channels[params.Channel], connectionId); found {
+	if _, found := lib.FindInt(o.channels[params.Channel], connectionId); found {
 		return lib.ErrResourceAlreadyExists
 	}
 
@@ -34,10 +35,10 @@ func (o *Organizer) handleSubscribe(query message.Query, connectionId int) error
 // handleUnsubscribe is the function that reads a received message with method "unsubscribe" and removes connectionId
 // from the subscribers list of the channel. Returns an error if connection was not already subscribed, or if
 // the channel is "/root"
-func (o *Organizer) handleUnsubscribe(query message.Query, userId int) error {
+func (o *organizer) handleUnsubscribe(query message.Query, userId int) error {
 	params, err := parser.ParseParams(query.Params)
 	if err != nil {
-		log.Printf("unable to analyse paramsLight in handleUnsubscribe()")
+		log.Printf("unable to analyse params in handleUnsubscribe()")
 		return lib.ErrRequestDataInvalid
 	}
 
@@ -47,7 +48,7 @@ func (o *Organizer) handleUnsubscribe(query message.Query, userId int) error {
 	}
 
 	subs := o.channels[params.Channel]
-	if index, found := lib.Find(subs, userId); found {
+	if index, found := lib.FindInt(subs, userId); found {
 		subs = append(subs[:index], subs[index+1:]...)
 		o.channels[params.Channel] = subs
 	}
@@ -55,18 +56,23 @@ func (o *Organizer) handleUnsubscribe(query message.Query, userId int) error {
 }
 
 // GetSubscribers returns the subscribers list of a channel
-func (o *Organizer) GetSubscribers(channel string) []int {
+func (o *organizer) GetSubscribers(channel string) []int {
 	return o.channels[channel]
 }
 
 // handleSubscribe is the function that reads a received message with method "subscribe" and adds connectionId
 // to the subscribers list of the channel. Returns an error if connection was already subscribed, or if the channel
 // is "/root"
-func (w *Witness) handleSubscribe(query message.Query, userId int) error {
+func (w *witness) handleSubscribe(query message.Query, userId int) error {
 	params, err := parser.ParseParams(query.Params)
 	if err != nil {
-		log.Printf("unable to analyse paramsLight in handleSubscribe()")
+		log.Printf("unable to analyse params in handleSubscribe()")
 		return lib.ErrRequestDataInvalid
+	}
+
+	if !strings.HasPrefix(params.Channel, "/root") {
+		log.Printf("Channel must begin with '/root'")
+		return lib.ErrInvalidResource
 	}
 
 	if params.Channel == "/root" {
@@ -74,7 +80,7 @@ func (w *Witness) handleSubscribe(query message.Query, userId int) error {
 		return lib.ErrInvalidResource
 	}
 
-	if _, found := lib.Find(w.channels[params.Channel], userId); found {
+	if _, found := lib.FindInt(w.channels[params.Channel], userId); found {
 		return lib.ErrResourceAlreadyExists
 	}
 
@@ -85,15 +91,15 @@ func (w *Witness) handleSubscribe(query message.Query, userId int) error {
 // handleUnsubscribe is the function that reads a received message with method "unsubscribe" and removes connectionId
 // from the subscribers list of the channel. Returns an error if connection was not already subscribed, or if
 // the channel is "/root"
-func (w *Witness) handleUnsubscribe(query message.Query, userId int) error {
+func (w *witness) handleUnsubscribe(query message.Query, userId int) error {
 	params, err := parser.ParseParams(query.Params)
 	if err != nil {
-		log.Printf("unable to analyse paramsLight in handleUnsubscribe()")
+		log.Printf("unable to analyse params in handleUnsubscribe()")
 		return lib.ErrRequestDataInvalid
 	}
 
 	subs := w.channels[params.Channel]
-	if index, found := lib.Find(subs, userId); found {
+	if index, found := lib.FindInt(subs, userId); found {
 		subs = append(subs[:index], subs[index+1:]...)
 		w.channels[params.Channel] = subs
 	}
@@ -102,6 +108,6 @@ func (w *Witness) handleUnsubscribe(query message.Query, userId int) error {
 }
 
 // GetSubscribers returns the subscribers list of a channel
-func (w *Witness) GetSubscribers(channel string) []int {
+func (w *witness) GetSubscribers(channel string) []int {
 	return w.channels[channel]
 }

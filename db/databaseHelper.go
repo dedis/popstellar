@@ -4,18 +4,23 @@ package db
 
 import (
 	"github.com/boltdb/bolt"
+	"log"
+	"student20_pop/lib"
 )
 
 func OpenDB(dbName string) (*bolt.DB, error) {
 	db, err := bolt.Open(dbName, 0600, nil)
 	if err != nil {
-		return nil, err
+		log.Printf("could not open database: %v", err)
+		return nil, lib.ErrDBFault
 	}
 	return db, nil
 }
 
 // Write is a function that writes a pair (key, val) in the bucket "bkt" in the database
 // DEPRECATED : we only keep it as syntactic reminder
+// commented out to improve test coverage
+/*
 func Write(key []byte, val []byte, bkt []byte, database *bolt.DB) error {
 	err := database.Update(func(tx *bolt.Tx) error {
 		b, err1 := tx.CreateBucketIfNotExists(bkt)
@@ -27,4 +32,4 @@ func Write(key []byte, val []byte, bkt []byte, database *bolt.DB) error {
 
 	})
 	return err
-}
+}*/
