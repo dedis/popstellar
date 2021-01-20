@@ -63,7 +63,7 @@ func (w *witness) HandleReceivedMessage(receivedMsg []byte, userId int) (msgAndC
 		msg, err = w.handleBroadcast(query)
 	case "subscribe", "unsubscribe", "catchup":
 		// Even though witness do nothing for some methods, it should not return an error
-		return nil, parser.ComposeResponse(nil, receivedMsg, query)
+		return nil, parser.ComposeResponse(nil, nil, query)
 	default:
 		err = lib.ErrRequestDataInvalid
 	}
