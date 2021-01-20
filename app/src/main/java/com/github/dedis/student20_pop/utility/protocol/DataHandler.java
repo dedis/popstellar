@@ -10,6 +10,8 @@ import com.github.dedis.student20_pop.model.network.method.message.data.rollcall
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
 
+import java.net.URI;
+
 /**
  * Handler of the high-level messages, called Data
  *
@@ -21,62 +23,91 @@ public interface DataHandler {
    * Handle a CreateLao data message
    *
    * @param createLao to handle
+   * @param host the message was received from
+   * @param channel on which the message was received
    */
-  default void handle(CreateLao createLao) {}
+  default void handle(CreateLao createLao, URI host, String channel) {
+    throw new UnsupportedOperationException();
+  }
 
   /**
    * Handle a StateLao data message
-   *
-   * @param stateLao to handle
+   *  @param stateLao to handle
+   * @param host the message was received from
+   * @param channel on which the message was received
    */
-  default void handle(StateLao stateLao) {}
+  default void handle(StateLao stateLao, URI host, String channel) {
+    throw new UnsupportedOperationException();
+  }
 
   /**
    * Handle a UpdateLao data message
-   *
-   * @param updateLao to handle
+   *  @param updateLao to handle
+   * @param host the message was received from
+   * @param channel on which the message was received
    */
-  default void handle(UpdateLao updateLao) {}
+  default void handle(UpdateLao updateLao, URI host, String channel) {
+    throw new UnsupportedOperationException();
+  }
 
   /**
    * Handle a CreateMeeting data message
-   *
-   * @param createMeeting to handle
+   *  @param createMeeting to handle
+   * @param host the message was received from
+   * @param channel on which the message was received
    */
-  default void handle(CreateMeeting createMeeting) {}
+  default void handle(CreateMeeting createMeeting, URI host, String channel) {
+    throw new UnsupportedOperationException();
+  }
 
   /**
    * Handle a StateMeeting data message
    *
    * @param stateMeeting to handle
+   * @param host the message was received from
+   * @param channel on which the message was received
    */
-  default void handle(StateMeeting stateMeeting) {}
+  default void handle(StateMeeting stateMeeting, URI host, String channel) {
+    throw new UnsupportedOperationException();
+  }
 
   /**
    * Handle a WitnessMessage data message
-   *
-   * @param witnessMessage to handle
+   *  @param witnessMessage to handle
+   * @param host the message was received from
+   * @param channel on which the message was received
    */
-  default void handle(WitnessMessage witnessMessage) {}
+  default void handle(WitnessMessage witnessMessage, URI host, String channel) {
+    throw new UnsupportedOperationException();
+  }
 
   /**
    * Handle a CloseRollCall data message
-   *
-   * @param closeRollCall to handle
+   *  @param closeRollCall to handle
+   * @param host the message was received from
+   * @param channel on which the message was received
    */
-  default void handle(CloseRollCall closeRollCall) {}
+  default void handle(CloseRollCall closeRollCall, URI host, String channel) {
+    throw new UnsupportedOperationException();
+  }
 
   /**
    * Handle a CreateRollCall data message
-   *
-   * @param createRollCall to handle
+   *  @param createRollCall to handle
+   * @param host the message was received from
+   * @param channel on which the message was received
    */
-  default void handle(CreateRollCall createRollCall) {}
+  default void handle(CreateRollCall createRollCall, URI host, String channel) {
+    throw new UnsupportedOperationException();
+  }
 
   /**
    * Handle a OpenRollCall data message
-   *
-   * @param openRollCall to handle
+   *  @param openRollCall to handle
+   * @param host the message was received from
+   * @param channel on which the message was received
    */
-  default void handle(OpenRollCall openRollCall) {}
+  default void handle(OpenRollCall openRollCall, URI host, String channel) {
+    throw new UnsupportedOperationException();
+  }
 }
