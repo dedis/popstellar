@@ -56,7 +56,6 @@ public class PoPApplication extends Application {
 
   // represents the Lao which we are connected to, can be null
   private Lao currentLao;
-  private HighLevelProxy localProxy;
 
   @Override
   public void onCreate() {
@@ -93,7 +92,6 @@ public class PoPApplication extends Application {
     }
 
     activateTestingValues(); // comment this line when testing with a back-end
-    localProxy = getProxy(LOCAL_BACKEND_URI);
   }
 
   @SuppressLint("ApplySharedPref")
