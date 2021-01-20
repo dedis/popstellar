@@ -4,7 +4,6 @@ Proof-of-personhood, fall 2020. Go back-end version, by Romain Pugin, Raoul Gerb
 ## Overview
 Golang back-end for the Proof-of-personhood application. To run the backend simply : `go run main.go`. You can edit the 
 server configuration in `config/config_default.go`. The options in this file are : 
-arguments are :
 * `MODE` the mode we want the server to run : either "o" for organizer or "w" for witness. Default to "o".
 * `ADDRESS` the IP address we want the server to run on. Default is "127.0.0.1" (localhost).
 * `PORT` the port we want the server to run on. Default is 8000.
