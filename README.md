@@ -10,6 +10,8 @@ arguments are :
 * `-k` the actor's public key. Default is "oui".
 * `-f` the file we want the backend to store its database on. Default is "org.db" for an organizer and "wit.db" for a witness
 
+The server can then be accessed on address:port with a command line interface into which one can send JSON-RPC requests such as the exampls given in `test/json_test_strings.txt`
+
 You can generate the code documentation using the godoc command: `godoc -http:=6060`.
 
 ## Packages
