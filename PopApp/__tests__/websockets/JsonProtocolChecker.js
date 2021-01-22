@@ -490,7 +490,7 @@ export const checkQueryDataCreateRollCall = (request, object, action) => {
   }
 
   // check id
-  expected = wsUtils.hashStrings('R', mockCurrentLao.params.message.data.id, data.creation, data.name);
+  expected = wsUtils.hashStrings('R', wsUtils.toString64(mockCurrentLao.params.message.data.id), data.creation, data.name);
   assertChai.strictEqual(data.id, expected, `${_descriptionStart} id field "${data.id}" should be "${expected}"`);
 };
 

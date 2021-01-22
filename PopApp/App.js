@@ -9,6 +9,7 @@ import { Provider } from 'react-redux';
 import { storeInit } from './Store/configureStore';
 
 import AppNavigation from './Navigation/AppNavigation';
+import { navigationRef } from './Navigation/RootNavigation';
 
 /*
 * The starting point of the app
@@ -25,7 +26,7 @@ export default function App() {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <NavigationContainer>
+        <NavigationContainer ref={navigationRef}>
           <SafeAreaProvider>
             {Platform.OS === 'ios'
             && <StatusBar barStyle="dark-content" backgroundColor="white" />}

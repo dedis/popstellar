@@ -7,18 +7,18 @@ const PROPS_TYPE = {
   // --- LAO type ---
   LAO: shape({
     object: oneOf(['lao']).isRequired,
-    action: oneOf(['state']).isRequired,
+    action: oneOf(['state', 'create']).isRequired,
     id: string.isRequired,
     name: string.isRequired,
     creation: number.isRequired,
-    last_modified: number.isRequired,
+    last_modified: number,
     organizer: string.isRequired,
     witnesses: arrayOf(string).isRequired,
-    modification_id: string.isRequired,
+    modification_id: string,
     modification_signatures: arrayOf(shape({
       witness: string.isRequired,
       signature: string.isRequired,
-    })).isRequired,
+    })),
   }),
 
   // --- event type ---
@@ -28,7 +28,7 @@ const PROPS_TYPE = {
     id: string.isRequired,
     name: string.isRequired,
     creation: number.isRequired,
-    last_modified: number.isRequired,
+    last_modified: number,
     organizer: string.isRequired,
     witnesses: arrayOf(string).isRequired,
     children: arrayOf(this),
