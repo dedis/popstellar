@@ -291,7 +291,7 @@ export const requestCreateRollCall = (name, location, start = -1, scheduled = -1
 
   const json = new DataBuilder()
     .setObject(objects.ROLL_CALL).setAction(actions.CREATE)
-    .setId(hashStrings(eventTags.ROLL_CALL, laoId, time, name))
+    .setId(hashStrings(eventTags.ROLL_CALL, toString64(laoId), time, name))
     .setName(name)
     .setCreation(time)
     .setLocation(location);
