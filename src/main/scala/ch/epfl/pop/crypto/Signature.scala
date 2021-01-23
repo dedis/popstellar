@@ -1,11 +1,11 @@
 package ch.epfl.pop.crypto
 
-import java.nio.charset.StandardCharsets
-
 import ch.epfl.pop.json.{Base64String, Key, Signature}
-import scorex.crypto.signatures
-import scorex.crypto.signatures.Curve25519
-import scorex.util.encode.Base16
+import com.google.crypto.tink.subtle.Ed25519Verify
+
+import java.security.GeneralSecurityException
+import java.util.Base64
+import java.nio.charset.StandardCharsets.UTF_8
 
 object Signature {
 
@@ -18,9 +18,15 @@ object Signature {
    * @return whether the signature is correct
    */
   def verify(msg: Base64String, signature: Signature, key: Key): Boolean = {
-    val sigTagged = signatures.Signature @@ signature
-    val keyTagged = signatures.PublicKey @@ key
+    val ed = new Ed25519Verify(key)
+    val msgDecoded = Base64.getDecoder.decode(msg.getBytes(UTF_8))
 
-    Curve25519.verify(sigTagged, msg.getBytes(StandardCharsets.UTF_8), keyTagged)
+    try {
+      ed.verify(signature, msgDecoded)
+      true
+    }
+    catch {
+      case _ : GeneralSecurityException => false
+    }
   }
 }

@@ -135,20 +135,24 @@ object PublishSubscribe {
       val id = m.id
       Validate.validate(m) match {
         case Some(error) => AnswerErrorMessageServer(Some(id), error)
-        case None =>
-          val highLevelMessage = params.message.get.data
-          val channel = "/root/" + new String(Base64.getEncoder.encode(highLevelMessage.id))
-          val future = actor.ask(ref => CreateMessage(channel, ref))
+        case None => Validate.validate(params.message.get) match {
+          case Some(error) => AnswerErrorMessageServer(Some(id), error)
+          case None =>
 
-          if (!Await.result(future, timeout.duration)) {
-            val error = MessageErrorContent(-3, "Channel " + channel + " already exists.")
-            AnswerErrorMessageServer(error = error, id = Some(id))
-          }
-          else {
-            //Publish on the LAO main channel
-            pub(MessageParameters(channel, params.message), false)
-            AnswerResultIntMessageServer(id)
-          }
+            val highLevelMessage = params.message.get.data
+            val channel = "/root/" + new String(Base64.getEncoder.encode(highLevelMessage.id))
+            val future = actor.ask(ref => CreateMessage(channel, ref))
+
+            if (!Await.result(future, timeout.duration)) {
+              val error = MessageErrorContent(-3, "Channel " + channel + " already exists.")
+              AnswerErrorMessageServer(error = error, id = Some(id))
+            }
+            else {
+              //Publish on the LAO main channel
+              pub(MessageParameters(channel, params.message), false)
+              AnswerResultIntMessageServer(id)
+            }
+        }
       }
     }
 

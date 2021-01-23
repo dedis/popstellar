@@ -29,9 +29,10 @@ libraryDependencies += "org.xerial.snappy" % "snappy-java" % "1.1.7.3"
 libraryDependencies += "io.spray" %%  "spray-json" % "1.3.5"
 
 //Encryption
-libraryDependencies += "org.scorexfoundation" %% "scrypto" % "2.1.9"
+libraryDependencies += "com.google.crypto.tink" % "tink" % "1.5.0"
 
 // Scala unit tests
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % Test
+
 
 conflictManager := ConflictManager.latestCompatible

@@ -4,11 +4,11 @@ package ch.epfl.pop.tests
 import ch.epfl.pop.crypto.Hash
 import ch.epfl.pop.json._
 import spray.json.enrichAny
+import com.google.crypto.tink.subtle.Ed25519Sign.KeyPair
+import com.google.crypto.tink.subtle.Ed25519Sign
 import ch.epfl.pop.json.JsonCommunicationProtocol.MessageContentDataFormat
-import scorex.crypto.signatures.{Curve25519, PrivateKey, PublicKey}
+import java.nio.charset.StandardCharsets.UTF_8
 
-import java.nio.charset.StandardCharsets
-import java.security.MessageDigest
 import java.util.Base64
 
 object MessageCreationUtils {
@@ -17,11 +17,27 @@ object MessageCreationUtils {
 
   def b64EncodeToString(b: Array[Byte]): String = Base64.getEncoder.encodeToString(b)
 
-  def getMessageParams(data: MessageContentData, pk: PublicKey, sk: PrivateKey, channel: ChannelName): MessageParameters = {
-    val encodedData = b64Encode(data.toJson.compactPrint.getBytes).map(_.toChar).mkString
-    val signature = Curve25519.sign(sk, encodedData.getBytes())
+  def b64Decode(s: Base64String): Array[Byte] = Base64.getDecoder.decode(s.getBytes(UTF_8))
+
+  def generateKeyPair(): KeyPair = {
+     val keyPair = KeyPair.newKeyPair()
+     keyPair
+  }
+
+  def sign(kp: KeyPair, data: Array[Byte]): Array[Byte] = sign(kp.getPrivateKey, data)
+
+  def sign(sk: Array[Byte], data: Array[Byte]): Array[Byte] = {
+    new Ed25519Sign(sk).sign(data)
+  }
+
+  def getMessageParams(data: MessageContentData, kp: KeyPair, channel: ChannelName): MessageParameters =
+    getMessageParams(data, kp.getPublicKey, kp.getPrivateKey, channel)
+
+  def getMessageParams(data: MessageContentData, sender: Array[Byte], sk: Array[Byte], channel: ChannelName): MessageParameters = {
+    val dataJson = data.toJson.compactPrint.getBytes
+    val encodedData = b64EncodeToString(dataJson)
+    val signature = sign(sk, dataJson)
     val messageId = Hash.computeMessageId(encodedData, signature)
-    val sender = supertagged.untag(pk)
     val witnessSignature: List[KeySignPair] = Nil
 
     val content = MessageContent(encodedData, data, sender, signature, messageId, witnessSignature)
