@@ -4,7 +4,6 @@ import java.math.BigInteger
 import java.util.Arrays
 import ch.epfl.pop.crypto.Hash
 import org.scalatest.FunSuite
-import scorex.crypto.signatures.{Curve25519, PublicKey}
 
 import java.nio.charset.StandardCharsets
 

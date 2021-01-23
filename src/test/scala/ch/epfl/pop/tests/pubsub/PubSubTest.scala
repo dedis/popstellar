@@ -2,10 +2,10 @@ package ch.epfl.pop.tests.pubsub
 
 
 import akka.NotUsed
-import ch.epfl.pop.tests.MessageCreationUtils.{b64Encode, b64EncodeToString, getMessageParams}
+import ch.epfl.pop.tests.MessageCreationUtils.{b64Decode, b64Encode, b64EncodeToString, generateKeyPair, getMessageParams, sign}
 
 import java.io.File
-import java.security.{KeyPair, MessageDigest}
+import java.security.MessageDigest
 import java.util.Base64
 import java.util.concurrent.TimeUnit
 import akka.actor.typed.scaladsl.AskPattern._
@@ -25,10 +25,8 @@ import org.iq80.leveldb.Options
 import org.scalatest.FunSuite
 import ch.epfl.pop.json.JsonUtils.{ErrorCodes, MessageContentDataBuilder}
 import org.scalactic.Equality
-import org.scalatest.Matchers.{contain, convertToAnyShouldWrapper}
-import scorex.crypto.signatures.{Curve25519, PrivateKey, PublicKey}
+import com.google.crypto.tink.subtle.Ed25519Sign.KeyPair
 
-import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 import java.util
 import scala.concurrent.duration.DurationInt
@@ -153,19 +151,15 @@ class PubSubTest extends FunSuite {
     (entry, actor, dbActor)
   }
 
-  private def generateKeyPair(): (PrivateKey, PublicKey) = {
-    val (sk, pk): (PrivateKey, PublicKey) = Curve25519.createKeyPair
-    (sk, pk)
-  }
 
-  private def getCreateLao(pk : PublicKey,
-                                   sk : PrivateKey,
-                                   id : Int, laoName: String): CreateLaoMessageClient = {
+
+  private def getCreateLao(kp: KeyPair, id : Int, laoName: String): CreateLaoMessageClient = {
 
     val creationTime = pow(2,24).toLong
     val digest = MessageDigest.getInstance("SHA-256")
+    val pk = kp.getPublicKey
     val data = "[" +
-    '"' + b64EncodeToString(supertagged.untag(pk)) + "\",\"" +
+    '"' + b64EncodeToString(pk) + "\",\"" +
     creationTime.toString + "\",\"" +
     laoName + "\"]"
     val laoID = digest.digest(data.getBytes(StandardCharsets.UTF_8))
@@ -181,16 +175,16 @@ class PubSubTest extends FunSuite {
       .build()
 
     val channel = "/root"
-    val params = getMessageParams(laoData, pk, sk, channel)
+    val params = getMessageParams(laoData, kp, channel)
     CreateLaoMessageClient(params, id, Methods.Publish)
   }
 
-  private def createLaoSetup(sk: PrivateKey, pk: PublicKey, name: String = "The best LAO in the world", startingId: Int = 0) = {
-    val createLao = getCreateLao(pk, sk, startingId + 0, name)
+  private def createLaoSetup(kp: KeyPair, name: String = "The best LAO in the world", startingId: Int = 0) = {
+    val createLao = getCreateLao(kp, startingId + 0, name)
     val laoID =  new String(Base64.getEncoder.encode(createLao.params.message.get.data.id))
     val channel = "/root/" +laoID
 
-    val state = getBroadcastState(createLao, pk, sk, channel, startingId + 2)
+    val state = getBroadcastState(createLao, kp, channel, startingId + 2)
     val prop = getPropagate(state.params)
 
     val l: List[(Option[JsonMessagePubSubClient], Option[JsonMessageAnswerServer])] =
@@ -203,7 +197,7 @@ class PubSubTest extends FunSuite {
     (l, laoID)
   }
 
-  private def getBroadcastState(create: CreateLaoMessageClient, pk: PublicKey, sk: PrivateKey, channel : ChannelName, id: Int): BroadcastLaoMessageClient = {
+  private def getBroadcastState(create: CreateLaoMessageClient, kp: KeyPair, channel : ChannelName, id: Int): BroadcastLaoMessageClient = {
 
     val dataCreate = create.params.message.get.data
     val dataBroadcast = new MessageContentDataBuilder()
@@ -218,7 +212,7 @@ class PubSubTest extends FunSuite {
       .setModificationSignatures(Nil)
       .build()
 
-    val params = getMessageParams(dataBroadcast, pk, sk, channel)
+    val params = getMessageParams(dataBroadcast, kp, channel)
     val content = params.message.get
     println("Broadcast info")
     println("Content: " + content.encodedData)
@@ -232,7 +226,7 @@ class PubSubTest extends FunSuite {
     PropagateMessageServer(params)
   }
 
-  def getCreateMeeting(laoId: Base64String, sk: PrivateKey, pk: PublicKey, id: Int) : CreateMeetingMessageClient = {
+  def getCreateMeeting(laoId: Base64String, kp: KeyPair, id: Int) : CreateMeetingMessageClient = {
     val name = "My awesome meeting"
     val creationTime = pow(2,24).toLong
     val location = "Zoom"
@@ -254,34 +248,34 @@ class PubSubTest extends FunSuite {
       .setEnd(1222222222L + 1L)
       .build()
     val channel = "/root/" + laoId
-    val params = getMessageParams(data, pk, sk, channel)
+    val params = getMessageParams(data, kp, channel)
     println(util.Arrays.equals(Hash.computeMeetingId(Base64.getDecoder.decode(laoId.getBytes()), creationTime, name), params.message.get.data.id))
     CreateMeetingMessageClient(params, id, Methods.Publish)
   }
 
-  private def getWitnessMessage(messageId: Base64String, pk: PublicKey, sk: PrivateKey, channel: ChannelName, id: Int) = {
-    val signature = Curve25519.sign(sk, messageId.getBytes())
+  private def getWitnessMessage(messageId: Base64String, kp: KeyPair, channel: ChannelName, id: Int) = {
+    val signature = sign(kp, b64Decode(messageId))
 
     val data = new MessageContentDataBuilder()
       .setHeader(Objects.Message, Actions.Witness)
       .setMessageId(messageId)
       .setSignature(signature)
       .build()
-    val params = getMessageParams(data, pk, sk, channel)
+    val params = getMessageParams(data, kp, channel)
     WitnessMessageMessageClient(params, id, Methods.Publish)
   }
 
   test("Create a LAO, subscribe to its channel and publish the state") {
-    val (sk, pk): (PrivateKey, PublicKey) = Curve25519.createKeyPair
-    val (l, _) = createLaoSetup(sk, pk)
+    val kp = generateKeyPair()
+    val (l, _) = createLaoSetup(kp)
     sendAndVerify(l)
   }
 
   test("Create a channel, subscribe to it and publish multiple messages") {
-    val (sk, pk): (PrivateKey, PublicKey) = Curve25519.createKeyPair
-    val (l, laoID) = createLaoSetup(sk, pk)
+    val kp = generateKeyPair()
+    val (l, laoID) = createLaoSetup(kp)
 
-    val meeting = getCreateMeeting(laoID, sk, pk, 4)
+    val meeting = getCreateMeeting(laoID, kp, 4)
 
     val messages = List(
       (Some(meeting),Some(AnswerResultIntMessageServer(4))),
@@ -291,12 +285,12 @@ class PubSubTest extends FunSuite {
   }
 
   test("Create multiple LAOs, subscribe to their channel and publish multiple messages") {
-    val (sk, pk): (PrivateKey, PublicKey) = Curve25519.createKeyPair
-    val (l1, laoID1) = createLaoSetup(sk, pk)
-    val (l2, laoID2) = createLaoSetup(sk, pk, "My new LAO", 3)
+    val kp = generateKeyPair()
+    val (l1, laoID1) = createLaoSetup(kp)
+    val (l2, laoID2) = createLaoSetup(kp, "My new LAO", 3)
 
-    val msg1 = getCreateMeeting(laoID1, sk, pk, 4)
-    val msg2 = getCreateMeeting(laoID2, sk, pk, 5)
+    val msg1 = getCreateMeeting(laoID1,kp, 4)
+    val msg2 = getCreateMeeting(laoID2, kp, 5)
 
     val messages : List[(Option[JsonMessagePubSubClient], Option[JsonMessageAnswerServer])] = List(
       (Some(msg1), Some(AnswerResultIntMessageServer(4))),
@@ -310,12 +304,12 @@ class PubSubTest extends FunSuite {
   }
 
   test("Two process subscribe and publish on the same channel") {
-    val (sk1, pk1): (PrivateKey, PublicKey) = Curve25519.createKeyPair
-    val (sk2, pk2): (PrivateKey, PublicKey) = Curve25519.createKeyPair
-    val (l, laoID) = createLaoSetup(sk1, pk1)
+    val kp1 = generateKeyPair()
+    val kp2 = generateKeyPair()
+    val (l, laoID) = createLaoSetup(kp1)
     val channel = "/root/" + laoID
-    val meeting1 = getCreateMeeting(laoID, sk1, pk1, 4)
-    val meeting2 = getCreateMeeting(laoID, sk2, pk2, 1)
+    val meeting1 = getCreateMeeting(laoID, kp1, 4)
+    val meeting2 = getCreateMeeting(laoID, kp2, 1)
 
     val messages: List[(Option[JsonMessagePubSubClient], Option[JsonMessageAnswerServer], Int)] = List(
       (Some(SubscribeMessageClient(MessageParameters(channel, None), 0)), Some(AnswerResultIntMessageServer(0)), 1),
@@ -339,10 +333,10 @@ class PubSubTest extends FunSuite {
   }
 
   test("Error when creating an existing LAO") {
-    val (sk, pk): (PrivateKey, PublicKey) = Curve25519.createKeyPair
+    val kp = generateKeyPair()
     val laoName = "My LAO"
-    val (l1, _) = createLaoSetup(sk, pk, laoName)
-    val createMsg = getCreateLao(pk, sk, 3, laoName)
+    val (l1, _) = createLaoSetup(kp, laoName)
+    val createMsg = getCreateLao(kp, 3, laoName)
     val laoID =  new String(Base64.getEncoder.encode(createMsg.params.message.get.data.id))
     val l = List(
       (Some(createMsg), Some(AnswerErrorMessageServer(Some(3), MessageErrorContent(-3, "Channel /root/"
@@ -354,11 +348,11 @@ class PubSubTest extends FunSuite {
 
 
   test("Don't receive messages when unsubscribing from a channel") {
-    val (sk, pk): (PrivateKey, PublicKey) = Curve25519.createKeyPair
-    val (l1, laoId) = createLaoSetup(sk, pk)
+    val kp = generateKeyPair()
+    val (l1, laoId) = createLaoSetup(kp)
     val channel = "/root/" + laoId
-    val meeting1 = getCreateMeeting(laoId, sk, pk, 4)
-    val meeting2 = getCreateMeeting(laoId, sk, pk, 5)
+    val meeting1 = getCreateMeeting(laoId, kp, 4)
+    val meeting2 = getCreateMeeting(laoId, kp, 5)
 
     val messages = List(
       (Some(UnsubscribeMessageClient(MessageParameters(channel, None), 3)), Some(AnswerResultIntMessageServer(3))),
@@ -404,11 +398,11 @@ class PubSubTest extends FunSuite {
   }
 
   test("Catchup messages on a channel") {
-    val (sk, pk): (PrivateKey, PublicKey) = Curve25519.createKeyPair
-    val createLao = getCreateLao(pk, sk, 0, "My LAO")
+    val kp = generateKeyPair()
+    val createLao = getCreateLao(kp, 0, "My LAO")
     val laoId =  new String(Base64.getEncoder.encode(createLao.params.message.get.data.id))
     val channel = "/root/" + laoId
-    val state = getBroadcastState(createLao, pk, sk, channel, 1)
+    val state = getBroadcastState(createLao, kp, channel, 1)
     val catchup = CatchupMessageClient(MessageParameters(channel, None), 2)
     val res = List(createLao.params.message.get, state.params.message.get)
 
@@ -421,13 +415,13 @@ class PubSubTest extends FunSuite {
   }
 
   private def createLaoAndWitness() = {
-    val (skOrganizer, pkOrganizer) = generateKeyPair()
-    val (skWitness, pkWitness) = generateKeyPair()
+    val kpOrga = generateKeyPair()
+    val kpWitness = generateKeyPair()
 
-    val createLao = getCreateLao(pkOrganizer, skOrganizer,0, "LAOOOOO")
+    val createLao = getCreateLao(kpOrga,0, "LAOOOOO")
     val messageId = new String(b64Encode(createLao.params.message.get.message_id))
     val channel = "/root/" + new String(b64Encode(createLao.params.message.get.data.id))
-    val witnessLaoCreation = getWitnessMessage(messageId, pkWitness, skWitness, channel, 0)
+    val witnessLaoCreation = getWitnessMessage(messageId, kpWitness, channel, 0)
 
     (createLao, witnessLaoCreation)
 
@@ -443,8 +437,8 @@ class PubSubTest extends FunSuite {
   }
 
   test("Witness an unknown message") {
-    val (skWitness, pkWitness) = generateKeyPair()
-    val witnessInvalid = getWitnessMessage("", pkWitness, skWitness, "", 0)
+    val kpWitness = generateKeyPair()
+    val witnessInvalid = getWitnessMessage("", kpWitness, "", 0)
     val l = List(
       (Some(witnessInvalid),
         Some(AnswerErrorMessageServer(Some(0), MessageErrorContent(ErrorCodes.InvalidData.id, "The id the witness message refers to does not exist."))))

@@ -5,7 +5,6 @@ import java.util.concurrent.TimeUnit
 import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.Behaviors
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
 import akka.stream.scaladsl.{BroadcastHub, Keep, MergeHub}
 import akka.util.Timeout
@@ -24,7 +23,7 @@ object Server {
    */
   def main(args: Array[String]): Unit = {
     val PORT = 8000
-    val PATH = "pop"
+    val PATH = ""
 
     val root = Behaviors.setup[Nothing] { context =>
       implicit val system: ActorSystem[Nothing] = context.system

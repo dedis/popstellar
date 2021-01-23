@@ -6,11 +6,10 @@ import ch.epfl.pop.json.JsonMessages.{BroadcastLaoMessageClient, BroadcastMeetin
 import ch.epfl.pop.json.JsonUtils.MessageContentDataBuilder
 import ch.epfl.pop.json.{Actions, ByteArray, Hash, MessageContent, Methods, Objects}
 import ch.epfl.pop.tests.MessageCreationUtils._
+import com.google.crypto.tink.subtle.Ed25519Sign.KeyPair
 import org.scalatest.FunSuite
-import scorex.crypto.signatures.{Curve25519, PrivateKey, PublicKey}
 
-import java.nio.ByteBuffer
-import java.nio.charset.StandardCharsets
+import java.nio.charset.StandardCharsets.UTF_8
 import java.security.MessageDigest
 import java.util.Base64
 class ValidateTest extends FunSuite {
@@ -18,20 +17,22 @@ class ValidateTest extends FunSuite {
   /* --------------- VALIDATE MESSAGE CONTENT --------------- */
 
   test("Validate message content when correct") {
-    val seed = "PoP".getBytes
-    val (sk, pk) = Curve25519.createKeyPair(seed)
-    val encodedData = "This is my message"
-    val signature = Curve25519.sign(sk, encodedData.getBytes)
+
+    val kp = generateKeyPair()
+    val msg = "This is my message"
+    val encodedData = b64EncodeToString(msg.getBytes(UTF_8))
+    val signature = sign(kp, msg.getBytes(UTF_8))
     val id = Hash.computeMessageId(encodedData, signature)
     val witnessSignatures = Nil
-    val content: MessageContent = MessageContent(encodedData, null, pk, signature, id, witnessSignatures)
+    val content: MessageContent = MessageContent(encodedData, null, kp.getPublicKey, signature, id, witnessSignatures)
     assert(Validate.validate(content).isEmpty)
   }
 
   test("Validate message content fails with incorrect signature") {
-    val seed = "PoP".getBytes
-    val (_, pk) = Curve25519.createKeyPair(seed)
-    val encodedData = "This is my message"
+
+    val pk = generateKeyPair().getPublicKey
+    val msg = "This is my message"
+    val encodedData = b64EncodeToString(msg.getBytes(UTF_8))
     val signature = "incorrect signature".getBytes
     val id = Hash.computeMessageId(encodedData, signature)
     val witnessSignatures = Nil
@@ -40,13 +41,14 @@ class ValidateTest extends FunSuite {
   }
 
   test("Validate message content fails with incorrect id") {
-    val seed = "PoP".getBytes
-    val (sk, pk) = Curve25519.createKeyPair(seed)
-    val encodedData = "This is my message"
-    val signature = Curve25519.sign(sk, encodedData.getBytes)
+
+    val kp = generateKeyPair()
+    val msg = "This is my message"
+    val encodedData = b64EncodeToString(msg.getBytes(UTF_8))
+    val signature = sign(kp, msg.getBytes(UTF_8))
     val id = Hash.computeMessageId(encodedData, "incorrect".getBytes)
     val witnessSignatures = Nil
-    val content: MessageContent = MessageContent(encodedData, null, pk, signature, id, witnessSignatures)
+    val content: MessageContent = MessageContent(encodedData, null, kp.getPublicKey, signature, id, witnessSignatures)
     assert(Validate.validate(content).nonEmpty)
   }
 
@@ -54,15 +56,17 @@ class ValidateTest extends FunSuite {
 
   private val laoName = "My LAO"
   private val laoCreation = 229388L
-  private val (sk, pk): (PrivateKey, PublicKey) = Curve25519.createKeyPair
-  private val laoOrganizer = supertagged.untag(pk)
+  private val kp: KeyPair = generateKeyPair()
+  private val sk = kp.getPrivateKey
+  private val pk = kp.getPublicKey
+  private val laoOrganizer = kp.getPublicKey
   private val md = MessageDigest.getInstance("SHA-256")
   private val laoString = "[" + '"' + Base64.getEncoder.encodeToString(laoOrganizer) + "\",\"" + laoCreation.toString + "\",\"" +
     laoName + "\"]"
-  private val laoId = md.digest(laoString.getBytes(StandardCharsets.UTF_8))
+  private val laoId = md.digest(laoString.getBytes(UTF_8))
   private val root = "/root"
   private def createLao(id: Hash = laoId, name: String = laoName, creation: Long = laoCreation,
-                        organizer: ByteArray = laoOrganizer, sender: PublicKey = pk): CreateLaoMessageClient = {
+                        organizer: ByteArray = laoOrganizer, sender: Array[Byte] = pk): CreateLaoMessageClient = {
     val data = new MessageContentDataBuilder()
       .setHeader(Objects.Lao, Actions.Create)
       .setId(id)
@@ -100,7 +104,7 @@ class ValidateTest extends FunSuite {
   /* --------------- VALIDATE UPDATE LAO --------------- */
 
   private val updateLaoLastModified = laoCreation + 1
-  private def updateLao(modified: Long = updateLaoLastModified, sender: PublicKey = pk): UpdateLaoMessageClient = {
+  private def updateLao(modified: Long = updateLaoLastModified, sender: Array[Byte] = pk): UpdateLaoMessageClient = {
     val data = new MessageContentDataBuilder()
       .setHeader(Objects.Lao, Actions.UpdateProperties)
       .setId(laoId)
@@ -125,7 +129,7 @@ class ValidateTest extends FunSuite {
   /* --------------- VALIDATE BROADCAST LAO --------------- */
 
   private def broadcastLao(modificationId: Hash,id: Hash = laoId, creation: Long = laoCreation, name: String = laoName, lastModified: Long = laoCreation,
-                           organizer: ByteArray = laoOrganizer, sender: PublicKey = pk): BroadcastLaoMessageClient = {
+                           organizer: ByteArray = laoOrganizer, sender: Array[Byte] = pk): BroadcastLaoMessageClient = {
     val data = new MessageContentDataBuilder()
       .setHeader(Objects.Lao, Actions.State)
       .setId(id)
@@ -186,21 +190,21 @@ class ValidateTest extends FunSuite {
 
   /* --------------- VALIDATE WITNESS --------------- */
 
-  private def witness(key: Option[PrivateKey] = None): WitnessMessageMessageClient = {
+  private def witness(key: Option[Array[Byte]] = None): WitnessMessageMessageClient = {
     val msgToWitness = createLao().params.message.get
-    val (witnessSk, witnessPk): (PrivateKey, PublicKey) = Curve25519.createKeyPair
+    val witnessKp = generateKeyPair()
     val signingKey = key match {
       case Some(sk) => sk
-      case None => witnessSk
+      case None => witnessKp.getPrivateKey
     }
     val msgId = Base64.getEncoder.encode(msgToWitness.message_id)
-    val signature = Curve25519.sign(signingKey, msgId)
+    val signature = sign(signingKey, msgToWitness.message_id)
     val data = new MessageContentDataBuilder()
       .setHeader(Objects.Message, Actions.Witness)
       .setMessageId(new String(msgId))
       .setSignature(signature)
       .build()
-    val params = getMessageParams(data, witnessPk, witnessSk, root)
+    val params = getMessageParams(data, witnessKp, root)
     WitnessMessageMessageClient(params, 0, Methods.Publish)
   }
 

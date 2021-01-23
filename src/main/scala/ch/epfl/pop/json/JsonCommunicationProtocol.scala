@@ -7,6 +7,7 @@ import ch.epfl.pop.json.Methods.Methods
 import ch.epfl.pop.json.Objects.Objects
 import spray.json._
 
+import java.nio.charset.StandardCharsets
 import scala.collection.immutable
 import scala.util.{Failure, Success, Try}
 
@@ -49,7 +50,8 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
   /* implicit used to parse/serialize a String encoded in Base64 */
   implicit object ByteArrayFormat extends RootJsonFormat[ByteArray] {
     @throws(classOf[IllegalArgumentException])
-    override def read(json: JsValue): ByteArray = JsonUtils.DECODER.decode(json.convertTo[String])
+    override def read(json: JsValue): ByteArray =
+      JsonUtils.DECODER.decode(json.convertTo[String].getBytes(StandardCharsets.UTF_8))
     override def write(obj: ByteArray): JsValue = JsString(JsonUtils.ENCODER.encode(obj).map(_.toChar).mkString)
   }
 
