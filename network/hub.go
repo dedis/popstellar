@@ -25,6 +25,7 @@ type hub struct {
 	//msg received from the sender through the websocket
 	receivedMessage chan []byte
 
+	// Where is this used?
 	logMx sync.RWMutex
 	log   [][]byte
 
@@ -69,17 +70,27 @@ func newHub(mode string, pkey string, database string) *hub {
 			//get msg from connection
 			msg := <-h.receivedMessage
 
+			// Possible race here on h.idOfSender
+
+			// TODO: do JSON schema validation here on msg and reply with an error early on failure
+			// TODO: try to unmarshal `msg` to `message.Query` here
+
 			// check if messages concerns organizer
 			var messageAndChannel []lib.MessageAndChannel = nil
 			var response []byte = nil
 			//handle the message and generate the response
+
+			// h.actor.HandleQuery
 			messageAndChannel, response = h.actor.HandleReceivedMessage(msg, h.idOfSender)
 
 			h.connectionsMx.RLock()
+
 			for _, pair := range messageAndChannel {
 				h.publishOnChannel(pair.Message, pair.Channel)
 			}
+
 			h.sendResponse(response, h.idOfSender)
+
 			h.connectionsMx.RUnlock()
 		}
 	}()
@@ -119,6 +130,7 @@ func (h *hub) publishOnChannel(msg []byte, channel []byte) {
 
 // sendResponse sends the message msg to the connection "sender"
 func (h *hub) sendResponse(msg []byte, sender int) {
+	// Perhaps a lock here?
 	for c := range h.connections {
 		//send answer to client
 		if sender == c.id {

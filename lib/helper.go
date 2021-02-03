@@ -3,6 +3,8 @@ package lib
 
 import (
 	ed "crypto/ed25519"
+
+	// crypto/rand
 	"math/rand"
 	"strings"
 )
