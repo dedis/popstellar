@@ -18,6 +18,7 @@ import (
 type organizer struct {
 	PublicKey string
 	database  string
+	// naming: subscribersOfChannel
 	channels  map[string][]int
 }
 

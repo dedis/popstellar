@@ -40,6 +40,7 @@ func main() {
 		h := network.NewOrganizerHub(config.PKEY, file)
 		router := http.NewServeMux()
 		router.Handle("/test", network.HomeHandler(tpl))
+		// Handle HTTP requests on /
 		router.Handle("/", network.NewWSHandler(h))
 		log.Printf("serving organizer on address " + config.ADDRESS + ":" + strconv.Itoa(config.PORT))
 		log.Fatal(http.ListenAndServe(config.ADDRESS+":"+strconv.Itoa(config.PORT), router))
