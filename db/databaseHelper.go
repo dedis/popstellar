@@ -9,6 +9,8 @@ import (
 )
 
 func OpenDB(dbName string) (*bolt.DB, error) {
+	// This blocks if the DB is already open. IMHO we should call `bolt.Open`
+	// once and use the same instance throughout.
 	db, err := bolt.Open(dbName, 0600, nil)
 	if err != nil {
 		log.Printf("could not open database: %v", err)
