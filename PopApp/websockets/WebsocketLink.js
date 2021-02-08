@@ -1,4 +1,5 @@
 import { w3cwebsocket as W3CWebSocket } from 'websocket';
+// FIXME: these eslint disables looks like a code smell
 // eslint-disable-next-line import/no-cycle
 import handleServerAnswer from './WebsocketAnswer';
 import { PendingRequest } from './WebsocketUtils';
@@ -12,13 +13,15 @@ import { PendingRequest } from './WebsocketUtils';
 const WEBSOCKET_READYSTATE_INTERVAL_MS = 10;
 const WEBSOCKET_READYSTATE_MAX_ATTEMPTS = 100;
 
-/* TEMP */
+// FIXME: server address is hard coded
 const SERVER_ADDRESS = {
   address: '127.0.0.1',
   port: '8000', // '8080',
   path: '', // 'ps'
 };
 
+// FIXME: This is a class, but everything is static.
+// This should be redesigned to be a proper ES6 module, or a non-static class with a singleton
 export default class WebsocketLink {
   // websocket connexion
   static #ws;

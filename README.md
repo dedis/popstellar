@@ -1,6 +1,12 @@
 # student20_pop: fe1-web branch
 Proof-of-personhood, fall 2020: Web-based front-end
 
+## Fixes to be carried out at a global level
+* Switch to using the right file types (JSX) for JSX files
+* Consider switching to TypeScript to have a bit of type-safety
+* Use classes to represent message structures, as opposed to ad-hoc logic
+* Use proper function definitions as opposed to const variables containing fat arrows
+
 ## Running the project
 Open the terminal in the folder `PopApp` and enter the following commands
 
@@ -20,7 +26,7 @@ npm start
 
 
 
-`expo start` automatically starts **Metro packager**. 
+`expo start` automatically starts **Metro packager**.
 
 - Opening the project on a phone requires to scan the QR code on the bottom left corner of the page and having [Expo Client app](https://expo.io/tools) installed to display the project. Without the app, a phone may be simulated using the emulator/simulator buttons on the packager
 - Opening the project on a browser requires to click on the *run in web browser* button on the packager

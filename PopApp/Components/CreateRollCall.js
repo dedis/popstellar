@@ -14,7 +14,7 @@ import STRINGS from '../res/strings';
 import { requestCreateRollCall } from '../websockets/WebsocketApi';
 
 /**
- * Screen to create a roll-call event: a text to explain the meanig of the date field,
+ * Screen to create a roll-call event: a text to explain the meaning of the date field,
  * a deadline date and its button, a description text input, a confirm button, a open button
  * and a cancel buton
  *
@@ -24,10 +24,10 @@ import { requestCreateRollCall } from '../websockets/WebsocketApi';
  * The open button does noting
  * The cancel button redirect to the organizer component
  *
- * TODO give appropriate name for the button that manage the dates
- * TODO Send the Roll-call event in a future state to the organization server
+ * FIXME give appropriate name for the button that manage the dates
+ * FIXME Send the Roll-call event in a future state to the organization server
  *  when the confirm button is press
- * TODO Send the Roll-call event in an open state to the organization server
+ * FIXME Send the Roll-call event in an open state to the organization server
  *  when the confirm button is press
  */
 
@@ -95,6 +95,8 @@ const CreateRollCall = () => {
   const [name, setName] = useState('');
   const [location, setLocation] = useState('');
 
+  // FIXME: there seems to be a lot of different logic across platforms & we here
+  // Can it be more or less unified?
   return (
     <ScrollView>
       {Platform.OS !== 'web'

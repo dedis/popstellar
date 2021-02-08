@@ -22,6 +22,7 @@ const _generateParams = (channel, message) => ({
   // we either set the channel to /root or /root followed by the base64 encoding of the channel id
   channel: channel === ROOT_CHANNEL
     ? ROOT_CHANNEL
+    // FIXME: this slicing+b64 conversion seems odd
     : `${ROOT_CHANNEL}/${toString64(channel.slice(1 + ROOT_CHANNEL.length))}`,
   message,
 });
@@ -42,6 +43,10 @@ const _generateMessage = (jsonData, witness_signatures = []) => {
     witness_signatures,
   };
 };
+
+
+// FIXME: much like in Scala backend, this is bad OOP design
+// We should create a per-message-type object hierarchy
 
 /** Builder for a data object */
 class DataBuilder {
@@ -345,6 +350,7 @@ export const requestReopenRollCall = (rollCallId, start = -1) => (
 /** Send a server query asking for the closing of a roll call given its id (Number) and the
  * list of attendees (Array of public keys) */
 export const requestCloseRollCall = (rollCallId, attendees) => {
+  // FIXME: functionality is clearly incomplete here
   const rollCall = { creation: 444, start: 555, name: 'r-cName' }; // TODO get roll call by id from localStorage
   const laoId = getCurrentLao().params.message.data.id;
 

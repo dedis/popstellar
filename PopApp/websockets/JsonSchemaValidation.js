@@ -2,6 +2,8 @@ const Ajv = require('ajv').default;
 
 const ajv = new Ajv();
 
+// FIXME: use the actual JSON schema, instead of empty
+
 // Temporary json schema. Waiting for the pull request to wire it all up
 // For now, EMPTY_SCHEMA validates every JS object input
 const EMPTY_SCHEMA = Object.freeze({});
