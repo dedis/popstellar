@@ -15,6 +15,9 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import com.github.dedis.student20_pop.R;
+import com.github.dedis.student20_pop.databinding.FragmentHomeBinding;
+import com.github.dedis.student20_pop.databinding.FragmentQrcodeBinding;
+import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.utility.qrcode.*;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -39,6 +42,8 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
   private QRCodeScanningType qrCodeScanningType;
   private String eventId;
 
+  private FragmentQrcodeBinding mQrCodeFragBinding;
+
   /** Default Fragment constructor */
   public QRCodeScanningFragment() {
     new QRCodeScanningFragment(CONNECT_LAO, null);
@@ -55,9 +60,14 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
     this.eventId = eventId;
   }
 
+  public static QRCodeScanningFragment newInstance() {
+    return new QRCodeScanningFragment();
+  }
+
   @Override
   public void onAttach(@NonNull Context context) {
     super.onAttach(context);
+    /*
     if (context instanceof OnCameraAllowedListener)
       onCameraNotAllowedListener = (OnCameraNotAllowedListener) context;
     else
@@ -66,6 +76,7 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
 
     if (context instanceof QRCodeListener) qrCodeListener = (QRCodeListener) context;
     else throw new ClassCastException(context.toString() + " must implement QRCodeListener");
+     */
   }
 
   @Override
@@ -73,6 +84,13 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
+
+    mQrCodeFragBinding = FragmentQrcodeBinding.inflate(inflater, container, false);
+
+    mQrCodeFragBinding.setLifecycleOwner(getActivity());
+
+    return mQrCodeFragBinding.getRoot();
+    /*
     View view = inflater.inflate(R.layout.fragment_qrcode, container, false);
 
     preview = view.findViewById(R.id.qr_camera_preview);
@@ -96,6 +114,7 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
     else onCameraNotAllowedListener.onCameraNotAllowedListener(qrCodeScanningType, eventId);
 
     return view;
+     */
   }
 
   private CameraSource createCamera() {

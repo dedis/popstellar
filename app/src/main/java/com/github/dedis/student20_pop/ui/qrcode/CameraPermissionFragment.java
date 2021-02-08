@@ -30,6 +30,11 @@ public final class CameraPermissionFragment extends Fragment implements View.OnC
     this.eventId = eventId;
   }
 
+  public static CameraPermissionFragment newInstance() {
+    // TODO: refactor eventId. Possibly rename method to reflect CONNECT_LAO
+    return new CameraPermissionFragment(QRCodeScanningType.CONNECT_LAO, null);
+  }
+
   @Override
   public void onAttach(Context context) {
     super.onAttach(context);

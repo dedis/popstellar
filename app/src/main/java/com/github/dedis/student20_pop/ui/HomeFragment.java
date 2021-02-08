@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -72,6 +73,10 @@ public final class HomeFragment extends Fragment {
     super.onActivityCreated(savedInstanceState);
 
     setupListAdapter();
+
+    setupConnectButton();
+    setupHomeButton();
+    setupLaunchButton();
   }
 
   private void setupListAdapter() {
@@ -84,6 +89,40 @@ public final class HomeFragment extends Fragment {
     );
 
     listView.setAdapter(mListAdapter);
+  }
+
+  private void setupHomeButton() {
+    Button homeButton = (Button) getActivity().findViewById(R.id.tab_home);
+
+    homeButton.setOnClickListener(new View.OnClickListener() {
+
+      @Override
+      public void onClick(View v) {
+        return;
+      }
+    });
+  }
+
+  private void setupConnectButton() {
+    Button connectButton = (Button) getActivity().findViewById(R.id.tab_connect);
+
+    connectButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        mHomeViewModel.openConnect();
+      }
+    });
+  }
+
+  private void setupLaunchButton() {
+    Button launchButton = (Button) getActivity().findViewById(R.id.tab_launch);
+
+    launchButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        return;
+      }
+    });
   }
 
   /*
