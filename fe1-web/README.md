@@ -1,7 +1,7 @@
-# student20_pop: fe1-web branch
-Proof-of-personhood, fall 2020: Web-based front-end
+# student_21_pop: fe1-web
+Proof-of-personhood, spring 2021: Web-based front-end
 
-## Fixes to be carried out at a global level
+## Fixes to be carried out at a global level (by DEDIS engineering, before the semester starts)
 * Switch to using the right file types (JSX) for JSX files
 * Consider switching to TypeScript to have a bit of type-safety
 * Use classes to represent message structures, as opposed to ad-hoc logic

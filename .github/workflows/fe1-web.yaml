@@ -38,16 +38,16 @@ jobs:
           ${{ runner.os }}-
     - name: Install dependencies
       run: |
-        cd PopApp
+        cd fe1-web
         npm install
         npm audit fix
     - name: expo doctor
       run: |
-        cd PopApp
+        cd fe1-web
         expo doctor
     - name: Build project
       run: |
-        cd PopApp
+        cd fe1-web
         expo build:web
 
   testAndLint:
@@ -73,14 +73,14 @@ jobs:
           ${{ runner.os }}-
     - name: Install dependencies
       run: |
-        cd PopApp
+        cd fe1-web
         npm install
         npm audit fix
     - name: Run lint
       run: |
-        cd PopApp
+        cd fe1-web
         npm run eslint --if-present
     - name: Run test
       run: |
-        cd PopApp
+        cd fe1-web
         npm run test --if-present
