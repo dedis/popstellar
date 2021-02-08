@@ -15,6 +15,7 @@ import com.github.dedis.student20_pop.OrganizerActivity;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
 import com.github.dedis.student20_pop.ui.HomeFragment;
+import com.github.dedis.student20_pop.ui.LaunchFragment;
 import com.github.dedis.student20_pop.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.utility.ActivityUtils;
@@ -57,6 +58,16 @@ public class HomeActivity extends AppCompatActivity  {
                             setupCameraPermissionFragment();
                             break;
                     }
+                }
+            }
+        });
+
+        mViewModel.getOpenLaunchEvent().observe(this, new Observer<Event<Boolean>>() {
+            @Override
+            public void onChanged(Event<Boolean> booleanEvent) {
+                Boolean event = booleanEvent.getContentIfNotHandled();
+                if (event != null) {
+                    setupLaunchFragment();
                 }
             }
         });
@@ -103,6 +114,16 @@ public class HomeActivity extends AppCompatActivity  {
         Intent intent = new Intent(this, OrganizerActivity.class);
         intent.putExtra("LAO_ID", laoId);
         startActivity(intent);
+    }
+
+    private void setupLaunchFragment() {
+        LaunchFragment launchFragment = (LaunchFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_launch);
+        if (launchFragment == null) {
+            launchFragment = LaunchFragment.newInstance();
+            ActivityUtils.replaceFragmentInActivity(
+                    getSupportFragmentManager(), launchFragment, R.id.fragment_container_main
+            );
+        }
     }
 
 

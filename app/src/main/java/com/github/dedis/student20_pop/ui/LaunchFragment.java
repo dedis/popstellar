@@ -14,6 +14,10 @@ public final class LaunchFragment extends Fragment {
 
   public static final String TAG = LaunchFragment.class.getSimpleName();
 
+  public static LaunchFragment newInstance() {
+    return new LaunchFragment();
+  }
+
   @Nullable
   @Override
   public View onCreateView(
