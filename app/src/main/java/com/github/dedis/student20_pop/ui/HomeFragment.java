@@ -120,7 +120,7 @@ public final class HomeFragment extends Fragment {
     launchButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        return;
+        mHomeViewModel.openLaunch();
       }
     });
   }
