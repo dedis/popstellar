@@ -3,6 +3,7 @@ package com.github.dedis.student20_pop.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +19,14 @@ import com.github.dedis.student20_pop.AttendeeActivity;
 import com.github.dedis.student20_pop.OrganizerActivity;
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
+import com.github.dedis.student20_pop.databinding.FragmentHomeBinding;
+import com.github.dedis.student20_pop.home.HomeActivity;
+import com.github.dedis.student20_pop.home.HomeViewModel;
+import com.github.dedis.student20_pop.home.LAOListAdapter;
 import com.github.dedis.student20_pop.model.Lao;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -34,6 +40,53 @@ public final class HomeFragment extends Fragment {
   private List<Lao> laos;
   private String id;
 
+  private FragmentHomeBinding mHomeFragBinding;
+
+  private HomeViewModel mHomeViewModel;
+
+  private LAOListAdapter mListAdapter;
+
+  public HomeFragment() {
+
+  }
+
+  public static HomeFragment newInstance() {
+    return new HomeFragment();
+  }
+
+  @Nullable
+  @Override
+  public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    mHomeFragBinding = FragmentHomeBinding.inflate(inflater, container, false);
+
+    mHomeViewModel = HomeActivity.obtainViewModel(getActivity());
+
+    mHomeFragBinding.setViewmodel(mHomeViewModel);
+    mHomeFragBinding.setLifecycleOwner(getActivity());
+
+    return mHomeFragBinding.getRoot();
+  }
+
+  @Override
+  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    super.onActivityCreated(savedInstanceState);
+
+    setupListAdapter();
+  }
+
+  private void setupListAdapter() {
+    ListView listView = mHomeFragBinding.laoList;
+
+    mListAdapter = new LAOListAdapter(
+            new ArrayList<Lao>(0),
+            mHomeViewModel,
+            getActivity()
+    );
+
+    listView.setAdapter(mListAdapter);
+  }
+
+  /*
   @Nullable
   @Override
   public View onCreateView(
@@ -70,7 +123,7 @@ public final class HomeFragment extends Fragment {
     return view;
   }
 
-  /** Adapter class required to display the list of LAOs in a ListView */
+  /** Adapter class required to display the list of LAOs in a ListView
   private class LaoListAdapter extends BaseAdapter {
     private final Context context;
     private List<Lao> laoList;
@@ -121,4 +174,5 @@ public final class HomeFragment extends Fragment {
       return convertView;
     }
   }
+  */
 }
