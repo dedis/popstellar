@@ -11,6 +11,7 @@ const initialState = { LAOs: laosData };
  *  CLEAR_LAOS: delete all the store LAO
 */
 
+// FIXME: `|| state` is never going to be evaluated?
 function connectLAOsReducer(state = initialState, action) {
   let nextState;
   switch (action.type) {

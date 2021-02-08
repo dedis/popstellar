@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-// TODO remove the line above when console will not be use
+// FIXME remove the line above when console will not be use
 import { sign } from 'tweetnacl';
 // eslint-disable-next-line import/no-cycle
 import WebsocketLink from './WebsocketLink';
@@ -32,6 +32,8 @@ const errorProperties = Object.freeze({
   CODE: 'code',
   DESCRIPTION: 'description',
 });
+
+// FIXME: the exported function is gigantic, it probably warrants being broken apart
 
 /**
  * Handles callbacks when receiving a server answer
@@ -132,19 +134,19 @@ const handleServerAnswer = (message) => {
     ) throw new Error('(handleServerAnswer) error object\'s fields missing or wrongly formatted');
     if (Object.keys(error).length !== Object.keys(errorProperties).length) {
       throw new Error(
-        `(handleServerAnswer) error object has missing/additional fields (expected: 
+        `(handleServerAnswer) error object has missing/additional fields (expected:
         ${Object.keys(errorProperties).length}, actual: ${Object.keys(error).length})`,
       );
     }
     if (!Number.isInteger(error.code) || error.code < -5 || error.code > -1) {
       throw new Error(
-        `(handleServerAnswer) error object's error code is wrong formatted (expected: 
+        `(handleServerAnswer) error object's error code is wrong formatted (expected:
         integer between -5 and -1, actual: ${error.code}`,
       );
     }
     if (typeof error.description !== 'string') {
       throw new Error(
-        `(handleServerAnswer) error object's is wrongly formatted (expected: 
+        `(handleServerAnswer) error object's is wrongly formatted (expected:
         string, actual: ${typeof error.description})`,
       );
     }
@@ -177,7 +179,7 @@ const handleServerAnswer = (message) => {
   const _handlePropagateMessage = (queryParams) => {
     /** returns true iff the input string is encoded in base 64 */
     const _checkBase64Strings = (...strings) => {
-      // eslint-disable-next-line consistent-return
+      // FIXME: eslint-disable-next-line consistent-return
       strings.forEach((str) => {
         if (typeof str !== 'string') return false;
 
@@ -219,9 +221,6 @@ const handleServerAnswer = (message) => {
       throw new Error('(_handlePropagateMessage) witness_signatures values are not valid base64 strings');
     }
 
-    // TODO check that the sender is the server's key
-    //
-
     // check that the signature is correct
     if (
       sign.open(decodedMessage.signature, decodedMessage.sender) !== decodedMessage.data
@@ -232,8 +231,7 @@ const handleServerAnswer = (message) => {
       decodedMessage.message_id !== hashStrings(decodedMessage.data, decodedMessage.signature)
     ) throw new Error('(_handlePropagateMessage) message_id is incorrect');
 
-    // TODO check that the witness_signatures array is correct
-    //
+    // FIXME check that the witness_signatures array is correct
 
     // check data is correct
     const dataObject = JSON.parse(decodedMessage.data);
@@ -295,6 +293,7 @@ const handleServerAnswer = (message) => {
     );
   };
 
+  // FIXME: validation should use objects
   const obj = JSON.parse(message.data);
 
   // check that the input is validated by the JsonSchema specifications
@@ -307,7 +306,7 @@ const handleServerAnswer = (message) => {
   // check that the object has exactly SERVER_ANSWER_FIELD_COUNT fields
   if (Object.keys(obj).length !== SERVER_ANSWER_FIELD_COUNT) {
     throw new Error(
-      `(handleServerAnswer) server answer has missing/additional fields 
+      `(handleServerAnswer) server answer has missing/additional fields
       (expected: ${SERVER_ANSWER_FIELD_COUNT}, actual: ${Object.keys(obj).length}`,
     );
   }

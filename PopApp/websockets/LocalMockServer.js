@@ -3,6 +3,8 @@ const webSocketsServerPort = 8000;
 const webSocketServer = require('websocket').server;
 const http = require('http');
 
+// FIXME: Could this be re-used further ? If not, remove it entirely.
+
 // https://blog.logrocket.com/websockets-tutorial-how-to-go-real-time-with-node-and-react-8e4693fbf843/
 // Spinning the http server and the websocket server.
 
