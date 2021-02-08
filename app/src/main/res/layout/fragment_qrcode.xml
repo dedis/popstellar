@@ -1,61 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                   android:id="@+id/fragment_qrcode"
-                                                   android:layout_width="match_parent"
-                                                   android:layout_height="match_parent">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/fragment_qrcode"
+                                                       android:layout_width="match_parent"
+                                                       android:layout_height="match_parent">
 
-    <include
-            layout="@layout/tab_home"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+        <include
+                layout="@layout/tab_home"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
 
-    <include
-            layout="@layout/tab_connect_launch"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+        <include
+                layout="@layout/tab_connect_launch"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
 
-    <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab"/>
-
-    <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constrainedHeight="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/guideline_horizontal">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="@dimen/camera_preview_margin">
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab"/>
 
-            <TextView
-                    android:id="@+id/scan_description"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="@string/qrcode_scanning_add_attendee"
-                    android:textSize="@dimen/size_title"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="@id/qr_camera_preview"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
+        <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constrainedHeight="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/guideline_horizontal">
 
-            <com.github.dedis.student20_pop.utility.qrcode.CameraPreview
-                    android:id="@+id/qr_camera_preview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintDimensionRatio="@string/camera_preview_ratio"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/scan_description"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </RelativeLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/camera_preview_margin">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                        android:id="@+id/scan_description"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/qrcode_scanning_add_attendee"
+                        android:textSize="@dimen/size_title"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toTopOf="@id/qr_camera_preview"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                <com.github.dedis.student20_pop.utility.qrcode.CameraPreview
+                        android:id="@+id/qr_camera_preview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintDimensionRatio="@string/camera_preview_ratio"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/scan_description"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </RelativeLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

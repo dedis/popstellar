@@ -2,6 +2,8 @@ package com.github.dedis.student20_pop.home;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
@@ -13,6 +15,8 @@ import com.github.dedis.student20_pop.OrganizerActivity;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
 import com.github.dedis.student20_pop.ui.HomeFragment;
+import com.github.dedis.student20_pop.ui.qrcode.CameraPermissionFragment;
+import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.utility.ActivityUtils;
 
 public class HomeActivity extends AppCompatActivity  {
@@ -38,6 +42,24 @@ public class HomeActivity extends AppCompatActivity  {
                 }
             }
         });
+
+        // Subscribe to "openConnect" event
+        mViewModel.getOpenConnectEvent().observe(this, new Observer<Event<String>>() {
+            @Override
+            public void onChanged(Event<String> stringEvent) {
+                String action = stringEvent.getContentIfNotHandled();
+                if (action != null) {
+                    switch (action) {
+                        case "SCAN":
+                            setupScanFragment();
+                            break;
+                        case "REQUEST_CAMERA_PERMISSION":
+                            setupCameraPermissionFragment();
+                            break;
+                    }
+                }
+            }
+        });
     }
 
     public static HomeViewModel obtainViewModel(FragmentActivity activity) {
@@ -57,7 +79,27 @@ public class HomeActivity extends AppCompatActivity  {
         }
     }
 
-    public void openLaoDetails(String laoId) {
+    private void setupScanFragment() {
+        QRCodeScanningFragment scanningFragment = (QRCodeScanningFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_qrcode);
+        if (scanningFragment == null) {
+            scanningFragment = QRCodeScanningFragment.newInstance();
+            ActivityUtils.replaceFragmentInActivity(
+                    getSupportFragmentManager(), scanningFragment, R.id.fragment_container_main
+            );
+        }
+    }
+
+    private void setupCameraPermissionFragment() {
+        CameraPermissionFragment cameraPermissionFragment = (CameraPermissionFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_camera_perm);
+        if (cameraPermissionFragment == null) {
+            cameraPermissionFragment = CameraPermissionFragment.newInstance();
+            ActivityUtils.replaceFragmentInActivity(
+                    getSupportFragmentManager(), cameraPermissionFragment, R.id.fragment_container_main
+            );
+        }
+    }
+
+    private void openLaoDetails(String laoId) {
         Intent intent = new Intent(this, OrganizerActivity.class);
         intent.putExtra("LAO_ID", laoId);
         startActivity(intent);

@@ -1,9 +1,12 @@
 package com.github.dedis.student20_pop.home;
 
+import android.Manifest;
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.PackageManager;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -16,6 +19,8 @@ public class HomeViewModel extends AndroidViewModel {
 
     private final MutableLiveData<Event<String>> mOpenLaoEvent = new MutableLiveData<Event<String>>();
 
+    private final MutableLiveData<Event<String>> mOpenConnectEvent = new MutableLiveData<>();
+
     public HomeViewModel(@NonNull Application application) {
         super(application);
         mContext = application.getApplicationContext();
@@ -25,7 +30,20 @@ public class HomeViewModel extends AndroidViewModel {
         return mOpenLaoEvent;
     }
 
+    public LiveData<Event<String>> getOpenConnectEvent() {
+        return mOpenConnectEvent;
+    }
+
     void openLAO(String laoId) {
         mOpenLaoEvent.setValue(new Event<>(laoId));
+    }
+
+    public void openConnect() {
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            // TODO: Const
+            mOpenConnectEvent.setValue(new Event<>("SCAN"));
+        } else {
+            mOpenConnectEvent.setValue(new Event<>("REQUEST_CAMERA_PERMISSION"));
+        }
     }
 }
