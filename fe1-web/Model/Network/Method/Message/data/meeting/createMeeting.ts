@@ -1,11 +1,11 @@
-import { Hash } from "../../../../../Objects/hash";
-import { Timestamp } from "../../../../../Objects/timestamp";
+import { Hash } from "Model/Objects/hash";
+import { Timestamp } from "Model/Objects/timestamp";
 import { ActionType, MessageData, ObjectType } from "../messageData";
 
 export class CreateMeeting implements MessageData {
 
-    public readonly object: ObjectType;
-    public readonly action: ActionType;
+    public readonly object: ObjectType = ObjectType.MEETING;
+    public readonly action: ActionType = ActionType.CREATE;
 
     public readonly id: Hash;
     public readonly name: string;
@@ -17,5 +17,10 @@ export class CreateMeeting implements MessageData {
 
     constructor(msg: Partial<CreateMeeting>) {
         Object.assign(this, msg);
+    }
+
+    public verify(): boolean {
+        // to be implemented...
+        return true;
     }
 }

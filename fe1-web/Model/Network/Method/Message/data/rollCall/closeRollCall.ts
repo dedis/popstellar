@@ -1,12 +1,12 @@
-import { Hash } from "../../../../../Objects/hash";
-import { Timestamp } from "../../../../../Objects/timestamp";
+import { Hash } from "Model/Objects/hash";
+import { Timestamp } from "Model/Objects/timestamp";
 import { ActionType, MessageData, ObjectType } from "../messageData";
-import { PublicKey } from "../../../../../Objects/publicKey";
+import { PublicKey } from "Model/Objects/publicKey";
 
 export class CloseRollCall implements MessageData {
 
-    public readonly object: ObjectType;
-    public readonly action: ActionType;
+    public readonly object: ObjectType = ObjectType.ROLL_CALL;
+    public readonly action: ActionType = ActionType.CLOSE;
 
     public readonly id: Hash;
     public readonly start: Timestamp;
@@ -15,5 +15,10 @@ export class CloseRollCall implements MessageData {
 
     constructor(msg: Partial<CloseRollCall>) {
         Object.assign(this, msg);
+    }
+
+    public verify(): boolean {
+        // to be implemented...
+        return true;
     }
 }

@@ -1,12 +1,12 @@
-import { Hash } from "../../../../../Objects/hash";
-import { PublicKey } from "../../../../../Objects/publicKey";
-import { Timestamp } from "../../../../../Objects/timestamp";
+import { Hash } from "Model/Objects/hash";
+import { PublicKey } from "Model/Objects/publicKey";
+import { Timestamp } from "Model/Objects/timestamp";
 import { ActionType, MessageData, ObjectType } from "../messageData";
 
 export class UpdateLao implements MessageData {
 
-    public readonly object: ObjectType;
-    public readonly action: ActionType;
+    public readonly object: ObjectType = ObjectType.LAO;
+    public readonly action: ActionType = ActionType.UPDATE_PROPERTIES;
 
     public readonly id: Hash;
     public readonly name: string;
@@ -15,5 +15,10 @@ export class UpdateLao implements MessageData {
 
     constructor(msg: Partial<UpdateLao>) {
         Object.assign(this, msg);
+    }
+
+    public verify(): boolean {
+        // to be implemented...
+        return true;
     }
 }
