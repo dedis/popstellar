@@ -1,7 +1,5 @@
 import { Verifiable } from "Model/Network/verifiable";
-import { Hash } from "Model/Objects/hash";
-import { PublicKey } from "Model/Objects/publicKey";
-import { Timestamp } from "Model/Objects/timestamp";
+import { Hash, PublicKey, Timestamp } from "Model/Objects";
 import { ActionType, MessageData, ObjectType } from "../messageData";
 
 export class CreateLao implements MessageData, Verifiable {
@@ -17,5 +15,10 @@ export class CreateLao implements MessageData, Verifiable {
 
     constructor(msg: Partial<CreateLao>) {
         Object.assign(this, msg);
+    }
+
+    public verify(): boolean {
+        // to be implemented...
+        return true;
     }
 }

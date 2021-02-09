@@ -1,88 +1,82 @@
 import { JsonRpcParams } from './Method/jsonRpcParams';
 import { JsonRpcMethod } from './jsonRpcMethods';
-import { Verifiable } from './verifiable';
+import { Verifiable } from './Verifiable';
+import { Broadcast, Catchup, Publish, Subscribe, Unsubscribe } from './Method';
+import { ProtocolError } from './ProtocolError';
 
-
-/*
-
-let msgData = new CreateLao({
-    ...
-});
-
-let message = Message.FromData(msgData);
-
-let rpc = new JsonRpcRequest({
-    method: 'publish',
-    params: {
-        channel: xxx,
-        message: message,
-    }
-});
-
-
-
-*/
-
+/**
+ * This class represents a JSON-RPC 2.0 Request (or Notification)
+ */
 export class JsonRpcRequest implements Verifiable {
 
     public readonly method: JsonRpcMethod;
     public readonly id?: number;
     public readonly params: JsonRpcParams;
 
-    constructor(req: Partial<JsonRpcRequest>) {
-        Object.assign(this, req);
-        this.method = req.method || JsonRpcMethod.INVALID;
-        this.id = req.id || undefined;
-        if ( req.params ) {
-            let rpcParams = this._parseParams(req.params);
-            this.params = rpcParams || ;
-        } else {
-            // throw ?
-        }
-    }
-
     static fromJson(jsonString: string) : JsonRpcRequest {
         // validate with ajv (json-schema)
-        return new JsonRpcRequest({});
+
+        let obj = JSON.parse(jsonString);
+
+        return new JsonRpcRequest(obj as JsonRpcRequest);
+    }
+
+    constructor(req: Partial<JsonRpcRequest>) {
+        Object.assign(this, req);
+
+        if (!req.method) {
+            throw new ProtocolError("Undefined 'method' in JSON-RPC");
+        }
+        if (req.params === undefined || req.params === null) {
+            throw new ProtocolError("Undefined 'params' in JSON-RPC");
+        }
+
+        this.method = req.method;
+        this.id = req.id || undefined;
+        this.params = this._parseParams(req.params);
     }
 
     public verify(): boolean {
         switch(this.method) {
-            case JsonRpcMethod.INVALID:
-                return false;
-
+            // notification methods, expect no ID
             case JsonRpcMethod.BROADCAST:
-                // notification, expect no ID
                 if ( this.id !== undefined ) {
                     return false;
                 }
                 break;
 
-            default:
-                // request, expect an ID
+            // RPC methods, expect an ID
+            case JsonRpcMethod.PUBLISH:
+            case JsonRpcMethod.SUBSCRIBE:
+            case JsonRpcMethod.UNSUBSCRIBE:
+            case JsonRpcMethod.CATCHUP:
                 if ( this.id === undefined ) {
                     return false;
                 }
                 break;
+
+            // Unsupported methods
+            default:
+                return false;
         }
 
         return this.params.verify();
     }
 
-    private _parseParams(params: Partial<JsonRpcParams>) : JsonRpcParams | null {
+    private _parseParams(params: Partial<JsonRpcParams>) : JsonRpcParams {
         switch(this.method) {
             case JsonRpcMethod.BROADCAST:
-                return null;
+                return new Broadcast(params);
             case JsonRpcMethod.PUBLISH:
-                return null;
+                return new Publish(params);
             case JsonRpcMethod.SUBSCRIBE:
-                return null;
+                return new Subscribe(params);
             case JsonRpcMethod.UNSUBSCRIBE:
-                return null;
+                return new Unsubscribe(params);
             case JsonRpcMethod.CATCHUP:
-                return null;
+                return new Catchup(params);
             default:
-                return null;
+                throw new ProtocolError("Unsupported method in JSON-RPC");
         }
     }
 }
