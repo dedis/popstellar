@@ -2,8 +2,8 @@ import { decodeUTF8, encodeBase64, decodeBase64 } from 'tweetnacl-util';
 import { sign } from 'tweetnacl';
 import { sha256 } from 'js-sha256';
 import { getStore } from '../Store/configureStore';
+import * as b64 from 'base-64';
 
-/* global btoa, atob */ // do not touch! EsLint required comment!
 /* eslint-disable no-underscore-dangle */
 
 /** JSON rpc version used by our protocol */
@@ -76,9 +76,9 @@ export const getSecretKey = () => {
 export const getCurrentLao = () => getStore().getState().currentLaoReducer.lao;
 
 /** Transform a string to a base64 string */
-export const toString64 = (str) => btoa(str);
+export const toString64 = (str) => b64.encode(str);
 /** Transform a base64 string to a regular string */
-export const fromString64 = (str) => atob(str);
+export const fromString64 = (str) => b64.decode(str);
 
 /** Return the current time (Number - UNIX number of seconds from 1st january 1970) */
 export const getCurrentTime = () => Math.floor(Date.now() / 1000);

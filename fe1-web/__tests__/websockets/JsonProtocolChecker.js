@@ -1,6 +1,7 @@
 /* eslint-disable */
 
 import * as wsUtils from '../../websockets/WebsocketUtils';
+import * as b64 from 'base-64';
 import {
   mockCreationTime,
   mockCurrentLao,
@@ -21,7 +22,7 @@ const ACTIONS = ['create', 'update_properties', 'state'];
 /* ----------------------------------------- CHECK UTILS ---------------------------------------- */
 const checkIsBase64String = (str) => {
   if (typeof str !== 'string') return false;
-  try { atob(str); } catch (error) { return false; }
+  try { b64.decode(str); } catch (error) { return false; }
   return true;
 };
 
@@ -111,7 +112,7 @@ export const checkMessage = (obj) => {
     checkIsBase64String(obj.signature),
     'the query data should be base64 encoded, but is not a valid base64 string'
   );
-  const signExpected = wsUtils.signString(atob(obj.data), mockSecretKey);
+  const signExpected = wsUtils.signString(b64.decode(obj.data), mockSecretKey);
   assertChai.strictEqual(
     obj.signature,
     signExpected,
@@ -174,7 +175,7 @@ export const checkQueryDataCreateLao = (request, object, action) => {
   let data;
   let expected;
   try {
-    data = JSON.parse(atob(dataEncoded));
+    data = JSON.parse(b64.decode(dataEncoded));
   } catch (error) { assertChai.fail(`${_descriptionStart} should be JSON`); }
 
   assertChai.isObject(data, `${_descriptionStart} should be a JSON object but is a ${typeof data}`);
@@ -216,7 +217,7 @@ export const checkQueryDataUpdateLao = (request, object, action) => {
   let data;
   let expected;
   try {
-    data = JSON.parse(atob(dataEncoded));
+    data = JSON.parse(b64.decode(dataEncoded));
   } catch (error) { assertChai.fail(`${_descriptionStart} should be JSON`); }
 
   assertChai.isObject(data, `${_descriptionStart} should be a JSON object but is a ${typeof data}`);
@@ -253,7 +254,7 @@ export const checkQueryDataStateLao = (request, object, action) => {
   let data;
   let expected;
   try {
-    data = JSON.parse(atob(dataEncoded));
+    data = JSON.parse(b64.decode(dataEncoded));
   } catch (error) { assertChai.fail(`${_descriptionStart} should be JSON`); }
 
   assertChai.isObject(data, `${_descriptionStart} should be a JSON object but is a ${typeof data}`);
@@ -311,7 +312,7 @@ export const checkQueryDataCreateMeeting = (request, object, action) => {
   let data;
   let expected;
   try {
-    data = JSON.parse(atob(dataEncoded));
+    data = JSON.parse(b64.decode(dataEncoded));
   } catch (error) { assertChai.fail(`${_descriptionStart} should be JSON`); }
 
   assertChai.isObject(data, `${_descriptionStart} should be a JSON object but is a ${typeof data}`);
@@ -367,7 +368,7 @@ export const checkQueryDataStateMeeting = (request, object, action) => {
   let data;
   let expected;
   try {
-    data = JSON.parse(atob(dataEncoded));
+    data = JSON.parse(b64.decode(dataEncoded));
   } catch (error) { assertChai.fail(`${_descriptionStart} should be JSON`); }
 
   assertChai.isObject(data, `${_descriptionStart} should be a JSON object but is a ${typeof data}`);
@@ -442,7 +443,7 @@ export const checkQueryDataCreateRollCall = (request, object, action) => {
   let data;
   let expected;
   try {
-    data = JSON.parse(atob(dataEncoded));
+    data = JSON.parse(b64.decode(dataEncoded));
   } catch (error) { assertChai.fail(`${_descriptionStart} should be JSON`); }
 
   assertChai.isObject(data, `${_descriptionStart} should be a JSON object but is a ${typeof data}`);
@@ -500,7 +501,7 @@ export const checkQueryDataOpenRollCall = (request, object, action) => {
   let data;
   let expected;
   try {
-    data = JSON.parse(atob(dataEncoded));
+    data = JSON.parse(b64.decode(dataEncoded));
   } catch (error) { assertChai.fail(`${_descriptionStart} should be JSON`); }
 
   assertChai.isObject(data, `${_descriptionStart} should be a JSON object but is a ${typeof data}`);
@@ -534,7 +535,7 @@ export const checkQueryDataReopenRollCall = (request, object, action) => {
   let data;
   let expected;
   try {
-    data = JSON.parse(atob(dataEncoded));
+    data = JSON.parse(b64.decode(dataEncoded));
   } catch (error) { assertChai.fail(`${_descriptionStart} should be JSON`); }
 
   assertChai.isObject(data, `${_descriptionStart} should be a JSON object but is a ${typeof data}`);
@@ -568,7 +569,7 @@ export const checkQueryDataCloseRollCall = (request, object, action) => {
   let data;
   let expected;
   try {
-    data = JSON.parse(atob(dataEncoded));
+    data = JSON.parse(b64.decode(dataEncoded));
   } catch (error) { assertChai.fail(`${_descriptionStart} should be JSON`); }
 
   assertChai.isObject(data, `${_descriptionStart} should be a JSON object but is a ${typeof data}`);
@@ -611,7 +612,7 @@ export const checkQueryDataWitnessMessage = (request, object, action) => {
   let data;
   let expected;
   try {
-    data = JSON.parse(atob(dataEncoded));
+    data = JSON.parse(b64.decode(dataEncoded));
   } catch (error) { assertChai.fail(`${_descriptionStart} should be JSON`); }
 
   assertChai.isObject(data, `${_descriptionStart} should be a JSON object but is a ${typeof data}`);
