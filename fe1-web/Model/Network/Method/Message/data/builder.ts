@@ -1,7 +1,7 @@
 import { ObjectType, ActionType, MessageData } from './messageData';
 import { CreateLao } from './lao/createLao';
 
-export function buildMessageData(msgData: MessageData) {
+export function buildMessageData(msgData: MessageData) : MessageData {
 
     switch(msgData.object) {
         case ObjectType.LAO:
@@ -12,7 +12,7 @@ export function buildMessageData(msgData: MessageData) {
         case ObjectType.ROLL_CALL:
         default:
             // not yet implemented
-            return null;
+            throw new Error("Not yet implemented");
     }
 }
 
@@ -20,9 +20,7 @@ function buildLaoMessage(msgData: MessageData) : MessageData {
     switch(msgData.action) {
         case ActionType.CREATE:
             return new CreateLao(msgData);
-            break;
         default:
-            // not yet implemented
-            return null;
+            throw new Error("Not yet implemented");
     }
 }

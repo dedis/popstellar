@@ -1,26 +1,24 @@
 import { MessageData } from './data/messageData';
 import { buildMessageData } from './data/builder';
-import { Verifiable } from 'Model/Network/verifiable';
-import { WitnessSignature } from 'Model/Objects/witnessSignature';
-import { PublicKey } from 'Model/Objects/publicKey';
-import { Hash } from 'Model/Objects/hash';
-import { Signature } from 'Model/Objects/signature';
-import { Base64Data } from 'Model/Objects/base64';
+import { Verifiable } from 'Model/Network/Verifiable';
+import { ProtocolError } from 'Model/Network/ProtocolError';
+import { Base64Data, Hash, PublicKey, Signature, WitnessSignature } from "Model/Objects";
 
 export class Message implements Verifiable {
-    public readonly data : Base64Data;
-    public readonly sender : PublicKey;
-    public readonly signature : Signature;
-    public readonly message_id : Hash;
-    public readonly witness_signatures : WitnessSignature[];
+    public readonly data: Base64Data;
+    public readonly sender: PublicKey;
+    public readonly signature: Signature;
+    public readonly message_id: Hash;
+    public readonly witness_signatures: WitnessSignature[];
 
-    private _messageData : MessageData;
+    public readonly messageData: MessageData;
 
-    constructor(message: Partial<Message>) {
-        Object.assign(this, message);
+    constructor(msg: Partial<Message>) {
+        Object.assign(this, msg);
 
-        let decoded : unknown = this.data.decode();
-        this._messageData = buildMessageData(decoded as MessageData);
+        let jsonData = this.data.decode();
+        let dataObj = JSON.parse(jsonData);
+        this.messageData = buildMessageData(dataObj as MessageData);
     }
 
     public verify(): boolean {

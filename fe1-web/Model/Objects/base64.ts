@@ -2,8 +2,11 @@ import * as b64 from 'base-64';
 
 export class Base64Data extends String {
 
-    private constructor(value: string) {
+    public constructor(value: string) {
         super(value);
+
+        // raise an exception if it's not base64 data
+        b64.decode(value);
     }
 
     public static encode(text: string) : Base64Data {
