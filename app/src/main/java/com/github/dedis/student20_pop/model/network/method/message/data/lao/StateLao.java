@@ -17,6 +17,7 @@ public class StateLao extends Data {
   private final long creation;
   private final long lastModified;
   private final String organizer;
+  private final String modificationId;
   private final List<String> witnesses;
 
   /**
@@ -35,12 +36,14 @@ public class StateLao extends Data {
       long creation,
       long lastModified,
       String organizer,
+      String modificationId,
       List<String> witnesses) {
     this.id = id;
     this.name = name;
     this.creation = creation;
     this.lastModified = lastModified;
     this.organizer = organizer;
+    this.modificationId = modificationId;
     this.witnesses = witnesses;
   }
 
@@ -121,5 +124,9 @@ public class StateLao extends Data {
         + ", witnesses="
         + witnesses
         + '}';
+  }
+
+  public String getModificationId() {
+    return modificationId;
   }
 }
