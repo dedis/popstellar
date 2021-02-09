@@ -44,7 +44,6 @@ const _generateMessage = (jsonData, witness_signatures = []) => {
   };
 };
 
-
 // FIXME: much like in Scala backend, this is bad OOP design
 // We should create a per-message-type object hierarchy
 

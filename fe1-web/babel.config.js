@@ -3,13 +3,13 @@ module.exports = (api) => {
   return {
     presets: ['babel-preset-expo'],
     plugins: [
-        [
-            'module-resolver',
-            {
-                root: ['./'],
-                extensions: ['.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json']
-            }
-	]
-    ]
+      [
+        'module-resolver',
+        {
+          root: ['./'],
+          extensions: ['.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json'],
+        },
+      ],
+    ],
   };
 };
