@@ -177,19 +177,6 @@ const handleServerAnswer = (message) => {
 
   /** handles a propagate message */
   const _handlePropagateMessage = (queryParams) => {
-    /** returns true iff the input string is encoded in base 64 */
-    const _checkBase64Strings = (...strings) => {
-      // FIXME: eslint-disable-next-line consistent-return
-      strings.forEach((str) => {
-        if (typeof str !== 'string') return false;
-
-        try {
-          fromString64(str);
-        } catch (e) { return false; }
-      });
-      return true;
-    };
-
     const queryMessage = queryParams.message;
     const decodedMessage = {
       data: '',
@@ -217,9 +204,8 @@ const handleServerAnswer = (message) => {
       throw new Error('(_handlePropagateMessage) message fields are not valid base64 strings');
     }
 
-    if (!_checkBase64Strings(queryMessage.witness_signatures)) {
-      throw new Error('(_handlePropagateMessage) witness_signatures values are not valid base64 strings');
-    }
+    // FIXME: the updated spec mentions (witness_publickey, witness_signature) tuples in this field
+    // Previous verification was out of date with spec and has been removed.
 
     // check that the signature is correct
     if (
