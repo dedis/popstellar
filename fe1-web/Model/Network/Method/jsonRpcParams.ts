@@ -1,6 +1,7 @@
+import { Verifiable } from '../verifiable';
 import { Message } from './Message/message';
 
-export class JsonRpcParams {
+export class JsonRpcParams implements Verifiable {
 
     public readonly channel: string;
 

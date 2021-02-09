@@ -1,12 +1,13 @@
-import { Hash } from "../../../../../Objects/hash";
-import { PublicKey } from "../../../../../Objects/publicKey";
-import { Timestamp } from "../../../../../Objects/timestamp";
+import { Verifiable } from "Model/Network/verifiable";
+import { Hash } from "Model/Objects/hash";
+import { PublicKey } from "Model/Objects/publicKey";
+import { Timestamp } from "Model/Objects/timestamp";
 import { ActionType, MessageData, ObjectType } from "../messageData";
 
-export class CreateLao implements MessageData {
+export class CreateLao implements MessageData, Verifiable {
 
-    public readonly object: ObjectType;
-    public readonly action: ActionType;
+    public readonly object: ObjectType = ObjectType.LAO;
+    public readonly action: ActionType = ActionType.CREATE;
 
     public readonly id: Hash;
     public readonly name: string;
