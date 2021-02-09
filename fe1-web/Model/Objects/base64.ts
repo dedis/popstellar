@@ -5,10 +5,10 @@ export class Base64Data extends String {
     }
 
     public static encode(text: string) : Base64Data {
-        return new Base64Data(atob(text));
+        return new Base64Data(btoa(text));
     }
 
     public decode(): string {
-        return btoa(this.valueOf());
+        return atob(this.valueOf());
     }
 }

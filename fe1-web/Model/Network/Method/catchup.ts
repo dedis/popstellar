@@ -1,3 +1,3 @@
 import { JsonRpcParams } from './jsonRpcParams';
 
-export class Subscribe extends JsonRpcParams {}
+export class Catchup extends JsonRpcParams {}
