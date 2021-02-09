@@ -1,12 +1,13 @@
 import { MessageData } from './data/messageData';
 import { buildMessageData } from './data/builder';
-import { WitnessSignature } from '../../../Objects/witnessSignature';
-import { PublicKey } from '../../../Objects/publicKey';
-import { Hash } from '../../../Objects/hash';
-import { Signature } from '../../../Objects/signature';
-import { Base64Data } from '../../../Objects/base64';
+import { Verifiable } from 'Model/Network/verifiable';
+import { WitnessSignature } from 'Model/Objects/witnessSignature';
+import { PublicKey } from 'Model/Objects/publicKey';
+import { Hash } from 'Model/Objects/hash';
+import { Signature } from 'Model/Objects/signature';
+import { Base64Data } from 'Model/Objects/base64';
 
-export class Message {
+export class Message implements Verifiable {
     public readonly data : Base64Data;
     public readonly sender : PublicKey;
     public readonly signature : Signature;

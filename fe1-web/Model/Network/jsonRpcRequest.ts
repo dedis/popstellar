@@ -1,5 +1,6 @@
 import { JsonRpcParams } from './Method/jsonRpcParams';
 import { JsonRpcMethod } from './jsonRpcMethods';
+import { Verifiable } from './verifiable';
 
 
 /*
@@ -22,7 +23,7 @@ let rpc = new JsonRpcRequest({
 
 */
 
-export class JsonRpcRequest {
+export class JsonRpcRequest implements Verifiable {
 
     public readonly method: JsonRpcMethod;
     public readonly id?: number;
@@ -31,13 +32,18 @@ export class JsonRpcRequest {
     constructor(req: Partial<JsonRpcRequest>) {
         Object.assign(this, req);
         this.method = req.method || JsonRpcMethod.INVALID;
-        this.id = req.id || null;
-        this.params = this._parseParams(req.params);
+        this.id = req.id || undefined;
+        if ( req.params ) {
+            let rpcParams = this._parseParams(req.params);
+            this.params = rpcParams || ;
+        } else {
+            // throw ?
+        }
     }
 
     static fromJson(jsonString: string) : JsonRpcRequest {
         // validate with ajv (json-schema)
-        return null;
+        return new JsonRpcRequest({});
     }
 
     public verify(): boolean {
@@ -47,14 +53,14 @@ export class JsonRpcRequest {
 
             case JsonRpcMethod.BROADCAST:
                 // notification, expect no ID
-                if ( this.id !== null ) {
+                if ( this.id !== undefined ) {
                     return false;
                 }
                 break;
 
             default:
                 // request, expect an ID
-                if ( this.id === null ) {
+                if ( this.id === undefined ) {
                     return false;
                 }
                 break;
@@ -63,7 +69,7 @@ export class JsonRpcRequest {
         return this.params.verify();
     }
 
-    private _parseParams(params: Partial<JsonRpcParams>) : JsonRpcParams {
+    private _parseParams(params: Partial<JsonRpcParams>) : JsonRpcParams | null {
         switch(this.method) {
             case JsonRpcMethod.BROADCAST:
                 return null;
