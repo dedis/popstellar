@@ -2,6 +2,7 @@
 
 import { sign } from 'tweetnacl';
 import { decodeBase64, decodeUTF8, encodeBase64, encodeUTF8 } from 'tweetnacl-util';
+import * as b64 from 'base-64';
 const wsUtils = require('../../websockets/WebsocketUtils');
 
 
@@ -107,7 +108,7 @@ describe('=== WebsocketUtils tests ===', function() {
 
     // https://base64.guru/converter/decode/hex
     function base64ToHex(str) {
-      const raw = atob(str);
+      const raw = b64.decode(str);
       let result = '';
       for (let i = 0; i < raw.length; i++) {
         const hex = raw.charCodeAt(i).toString(16);
