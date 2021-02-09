@@ -1,8 +1,8 @@
 import { decodeUTF8, encodeBase64, decodeBase64 } from 'tweetnacl-util';
 import { sign } from 'tweetnacl';
 import { sha256 } from 'js-sha256';
-import { getStore } from '../Store/configureStore';
 import * as b64 from 'base-64';
+import { getStore } from '../Store/configureStore';
 
 /* eslint-disable no-underscore-dangle */
 
