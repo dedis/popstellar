@@ -27,6 +27,10 @@ public class LAOListAdapter extends BaseAdapter {
         lifecycleOwner = activity;
     }
 
+    public void replaceList(List<Lao> laos) {
+        setList(laos);
+    }
+
     private void setList(List<Lao> laos) {
         this.laos = laos;
         notifyDataSetChanged();
@@ -65,6 +69,7 @@ public class LAOListAdapter extends BaseAdapter {
                 homeViewModel.openLAO(lao.getId());
             }
         };
+
 
         binding.setLao(laos.get(position));
         binding.setLifecycleOwner(lifecycleOwner);
