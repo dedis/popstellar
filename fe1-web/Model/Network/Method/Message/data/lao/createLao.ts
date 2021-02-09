@@ -1,4 +1,4 @@
-import { Verifiable } from "Model/Network/verifiable";
+import { Verifiable } from "Model/Network/Verifiable";
 import { Hash, PublicKey, Timestamp } from "Model/Objects";
 import { ActionType, MessageData, ObjectType } from "../messageData";
 
