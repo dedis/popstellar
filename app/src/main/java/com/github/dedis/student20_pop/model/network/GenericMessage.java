@@ -7,8 +7,10 @@ public abstract class GenericMessage {
 
   /**
    * Accept the given handler following a visitor pattern
-   *
+   * TODO: Possibly remove this
    * @param handler that will handle the message
    */
   public abstract void accept(MessageHandler handler);
+
+  //public abstract boolean isValid();
 }

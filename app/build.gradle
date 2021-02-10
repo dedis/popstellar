@@ -39,6 +39,14 @@ android {
         dataBinding true
     }
 
+    flavorDimensions "default"
+
+    productFlavors {
+        prod {
+            dimension "default"
+        }
+    }
+
 }
 
 //Simple library to use QR codes
@@ -62,6 +70,13 @@ dependencies {
     implementation 'org.glassfish.tyrus:tyrus-client:1.1'
     implementation 'org.glassfish.tyrus:tyrus-container-grizzly:1.1'
     implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.tinder.scarlet:scarlet:0.1.11'
+    implementation 'com.tinder.scarlet:message-adapter-gson:0.1.11'
+    implementation 'com.tinder.scarlet:stream-adapter-rxjava2:0.1.11'
+    implementation 'com.tinder.scarlet:websocket-okhttp:0.1.11'
+    implementation 'com.tinder.scarlet:lifecycle-android:0.1.11'
+    implementation "androidx.lifecycle:lifecycle-reactivestreams:2.2.0"
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.1'
 
     testImplementation 'junit:junit:4.13'
     testImplementation 'net.jodah:concurrentunit:0.4.6'

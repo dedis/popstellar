@@ -15,7 +15,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/layout_lao_home"
                                                        android:layout_width="match_parent"
                                                        android:layout_height="wrap_content"
-                                                       android:background="@color/lao">
+                                                       android:background="@color/lao"
+                                                       android:onClick="@{() -> listener.onLAOClicked(lao)}"
+        >
 
         <TextView
                 android:id="@+id/lao_name"
@@ -24,6 +26,7 @@
                 android:layout_marginHorizontal="@dimen/margin_text"
                 android:textSize="@dimen/size_body"
                 android:textStyle="bold"
+                android:text="@{lao.name}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 

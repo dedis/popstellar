@@ -12,14 +12,26 @@ import java.util.Objects;
 /** Class modeling a Local Autonomous Organization (LAO) */
 public final class Lao {
 
-  private final long time;
-  private final String id;
-  private final String organizer;
-  private final URI host;
+  private Long creation;
+  private Long lastModified;
+  private String id;
+  private String organizer;
   private String name;
   private List<String> witnesses;
+
+  // TODO: Why are these required?
+  private URI host;
   private List<String> members;
   private List<Event> events;
+
+  public Lao(String id, String name, Long creation, Long lastModified, String organizer, List<String> witnesses) {
+    this.id = id;
+    this.name = name;
+    this.creation = creation;
+    this.lastModified = lastModified;
+    this.organizer = organizer;
+    this.witnesses = witnesses;
+  }
 
   /**
    * Constructor for a LAO
@@ -37,8 +49,8 @@ public final class Lao {
     }
 
     this.name = name.trim();
-    this.time = Instant.now().getEpochSecond();
-    this.id = Hash.hash(organizer, time, name);
+    this.creation = Instant.now().getEpochSecond();
+    this.id = Hash.hash(organizer, creation, name);
     this.organizer = organizer;
     this.host = host;
     this.witnesses = new ArrayList<>();
@@ -61,7 +73,7 @@ public final class Lao {
    */
   public Lao(
       String name,
-      long time,
+      long creation,
       String id,
       String organizer,
       List<String> witnesses,
@@ -69,7 +81,7 @@ public final class Lao {
       List<Event> events,
       URI host) {
     this.name = name;
-    this.time = time;
+    this.creation = creation;
     this.id = id;
     this.organizer = organizer;
     this.host = host;
@@ -83,10 +95,6 @@ public final class Lao {
     return name;
   }
 
-  /** Returns the creation time of the LAO as Unix Timestamp, can't be modified. */
-  public long getTime() {
-    return time;
-  }
 
   /** Returns the ID of the LAO, can't be modified. */
   public String getId() {
@@ -230,7 +238,7 @@ public final class Lao {
     if (o == null || getClass() != o.getClass()) return false;
     Lao lao = (Lao) o;
     return Objects.equals(name, lao.name)
-        && Objects.equals(time, lao.time)
+        && Objects.equals(creation, lao.creation)
         && Objects.equals(id, lao.id)
         && Objects.equals(organizer, lao.organizer)
         && Objects.equals(host, lao.host)
@@ -241,6 +249,6 @@ public final class Lao {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, time, id, organizer, host, witnesses, members, events);
+    return Objects.hash(name, creation, id, organizer, host, witnesses, members, events);
   }
 }

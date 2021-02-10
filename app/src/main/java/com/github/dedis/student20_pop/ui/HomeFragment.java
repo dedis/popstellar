@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Layout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,6 +78,23 @@ public final class HomeFragment extends Fragment {
     setupConnectButton();
     setupHomeButton();
     setupLaunchButton();
+    setupListUpdates();
+
+    mHomeViewModel.setupDummyLAO();
+  }
+
+  private void setupListUpdates() {
+    mHomeViewModel.getLAOs().observe(getActivity(), laos -> {
+      Log.d(TAG, "Got a list update");
+
+      mListAdapter.replaceList(laos);
+
+      // TODO: perhaps move this to data binding
+      if (laos.size() > 0) {
+        mHomeFragBinding.welcomeScreen.setVisibility(View.GONE);
+        mHomeFragBinding.listScreen.setVisibility(View.VISIBLE);
+      }
+    });
   }
 
   private void setupListAdapter() {
