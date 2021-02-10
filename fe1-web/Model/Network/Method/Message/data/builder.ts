@@ -1,5 +1,11 @@
 import { ObjectType, ActionType, MessageData } from './messageData';
 import { CreateLao } from './lao/createLao';
+import { Base64Data } from 'Model/Objects';
+
+export function encodeMessageData(msgData: MessageData) : Base64Data {
+    let data = JSON.stringify(msgData);
+    return Base64Data.encode(data);
+}
 
 export function buildMessageData(msgData: MessageData) : MessageData {
 

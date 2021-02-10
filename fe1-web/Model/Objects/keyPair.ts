@@ -2,7 +2,7 @@ import { encodeBase64} from "tweetnacl-util";
 import { PublicKey } from "./publicKey";
 import { PrivateKey } from "./privateKey";
 import { sign } from "tweetnacl";
-import { getStore } from "../../Store/configureStore";
+import { getStore } from "Store/configureStore";
 
 export class KeyPair {
 

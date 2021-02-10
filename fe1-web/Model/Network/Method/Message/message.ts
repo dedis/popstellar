@@ -2,7 +2,7 @@ import { Base64Data, Hash, PublicKey, KeyPair, Signature, WitnessSignature } fro
 import { Verifiable } from 'Model/Network/Verifiable';
 import { ProtocolError } from 'Model/Network/ProtocolError';
 import { MessageData } from './data/messageData';
-import { buildMessageData } from './data/builder';
+import { buildMessageData, encodeMessageData } from './data/builder';
 
 export class Message implements Verifiable {
     public readonly data : Base64Data;
@@ -21,8 +21,8 @@ export class Message implements Verifiable {
         this.messageData = buildMessageData(dataObj as MessageData);
     }
 
-    public static fromData(data: {}, witnessSignatures?: WitnessSignature[]): Message {
-        const encodedDataJson: Base64Data = Base64Data.encode(JSON.stringify(buildMessageData(data as MessageData)));
+    public static fromData(data: MessageData, witnessSignatures?: WitnessSignature[]): Message {
+        const encodedDataJson: Base64Data = encodeMessageData(data)
         const signature: Signature = KeyPair.privateKey.sign(encodedDataJson);
 
         return new Message({

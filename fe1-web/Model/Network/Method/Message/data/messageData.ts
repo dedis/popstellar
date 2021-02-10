@@ -1,4 +1,4 @@
-import { Verifiable } from "Model/Network/verifiable";
+import { Verifiable } from "Model/Network/Verifiable";
 
 /** Enumeration of all possible "object" field values in MessageData */
 export enum ObjectType {
