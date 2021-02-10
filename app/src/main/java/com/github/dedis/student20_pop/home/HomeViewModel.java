@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
@@ -52,9 +53,7 @@ public class HomeViewModel extends AndroidViewModel {
 
     private final LAORepository mLAORepository;
 
-    private Disposable resultsSubscription;
-
-    private Disposable broadcastSubscription;
+    private Disposable disposable;
 
     public HomeViewModel(@NonNull Application application, Gson gson, LAORepository laoRepository) {
         super(application);
@@ -85,18 +84,14 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     public void subscribeToMessages() {
-        resultsSubscription = mLAORepository.observeMessage()
-                .filter(genericMessage -> genericMessage instanceof Result)
-                .subscribeOn(Schedulers.computation())
-                .subscribe(result -> {
-                    handleResult((Result) result);
-                });
-
-        broadcastSubscription = mLAORepository.observeMessage()
-                .filter(genericMessage -> genericMessage instanceof Broadcast)
-                .subscribeOn(Schedulers.computation())
-                .subscribe(broadcast -> {
-                    handleBroadcast((Broadcast) broadcast);
+        disposable = Flowable.merge(mLAORepository.observeBroadcasts(), mLAORepository.observeResults())
+                .subscribeOn(Schedulers.io())
+                .subscribe(genericMessage -> {
+                    if (genericMessage instanceof Result) {
+                        handleResult((Result) genericMessage);
+                    } else {
+                        handleBroadcast((Broadcast) genericMessage);
+                    }
                 });
     }
 
@@ -157,12 +152,8 @@ public class HomeViewModel extends AndroidViewModel {
 
     @Override
     protected void onCleared() {
-        if (resultsSubscription != null) {
-            resultsSubscription.dispose();;
-        }
-
-        if (broadcastSubscription != null) {
-            broadcastSubscription.dispose();
+        if (disposable != null) {
+            disposable.dispose();
         }
     }
 

@@ -69,11 +69,13 @@ public class LaoTest {
     assertThat(lao.getName(), is(LAO_NAME_2));
   }
 
+  /*
   @Test
   public void getTimeTest() {
     final int LENGTH_UNIX_TIMESTAMP = 10;
     assertThat(Long.toString(LAO_1.getTime()).length(), is(LENGTH_UNIX_TIMESTAMP));
   }
+   */
 
   @Test
   public void getOrganizerTest() {
