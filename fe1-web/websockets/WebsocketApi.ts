@@ -19,7 +19,7 @@ export function requestCreateLao(name: string) {
   const time = getCurrentTime();
 
   let message = new CreateLao({
-    id: Hash.fromString(KeyPair.publicKey.toString(), time.toString(), name),
+    id: Hash.fromStringArray(KeyPair.publicKey.toString(), time.toString(), name),
     name: name,
     creation: time,
     organizer: KeyPair.publicKey,
@@ -35,7 +35,7 @@ export function requestUpdateLao(name: string, witnesses?: PublicKey[]) {
   const currentParams = getCurrentLao().params;
 
   let message = new UpdateLao({
-    id: Hash.fromString(currentParams.message.data.organizer, currentParams.message.data.creation, name),
+    id: Hash.fromStringArray(currentParams.message.data.organizer, currentParams.message.data.creation, name),
     name: name,
     last_modified: time,
     witnesses: (witnesses === undefined) ? currentParams.message.data.witnesses : witnesses,
@@ -49,7 +49,7 @@ export function requestStateLao() {
   const laoData = getCurrentLao().params.message.data;
 
   let message = new StateLao({
-    id: Hash.fromString(laoData.organizer, laoData.creation.toString(), laoData.name),
+    id: Hash.fromStringArray(laoData.organizer, laoData.creation.toString(), laoData.name),
     name: laoData.name,
     creation: laoData.creation,
     last_modified: getCurrentTime(),
@@ -72,7 +72,7 @@ export function requestCreateMeeting(
   const laoId = getCurrentLao().params.message.data.id;
 
   let message = new CreateMeeting({
-    id: Hash.fromString(eventTags.MEETING, laoId, time.toString(), name),
+    id: Hash.fromStringArray(eventTags.MEETING, laoId, time.toString(), name),
     name: name,
     start: startTime,
     creation: time,
@@ -89,7 +89,7 @@ export function requestStateMeeting(startTime: Timestamp) {
   const laoData = getCurrentLao().params.message.data;
 
   let message = new StateMeeting({
-    id: Hash.fromString(eventTags.MEETING, laoData.id.toString(), laoData.creation.toString(), laoData.name),
+    id: Hash.fromStringArray(eventTags.MEETING, laoData.id.toString(), laoData.creation.toString(), laoData.name),
     name: laoData.name,
     creation: laoData.creation,
     last_modified: getCurrentTime(),
@@ -131,7 +131,7 @@ export function requestCreateRollCall(
     throw new Error('RollCall creation failed : both "start" and "scheduled" fields were given');
 
   let message = new CreateRollCall({
-    id: Hash.fromString(eventTags.ROLL_CALL, toString64(laoId), time.toString(), name), // FIXME how is the lao id stored?
+    id: Hash.fromStringArray(eventTags.ROLL_CALL, toString64(laoId), time.toString(), name), // FIXME how is the lao id stored?
     name: name,
     creation: time,
     location: location,
@@ -152,7 +152,7 @@ export function requestOpenRollCall(rollCallId: Number, start?: Timestamp) {
     const startTime = (start === undefined) ? getCurrentTime() : start;
 
     let message = new OpenRollCall({
-      id: Hash.fromString(eventTags.ROLL_CALL, toString64(laoId), rollCall.creation.toString(), rollCall.name),
+      id: Hash.fromStringArray(eventTags.ROLL_CALL, toString64(laoId), rollCall.creation.toString(), rollCall.name),
       start: startTime,
     });
 
@@ -174,7 +174,7 @@ export function requestCloseRollCall(rollCallId: Number, attendees: PublicKey[])
   const laoId = getCurrentLao().params.message.data.id;
 
   let message = new CloseRollCall({
-    id: Hash.fromString(eventTags.ROLL_CALL, toString64(laoId), rollCall.creation.toString(), rollCall.name),
+    id: Hash.fromStringArray(eventTags.ROLL_CALL, toString64(laoId), rollCall.creation.toString(), rollCall.name),
     start: rollCall.start,
     end: getCurrentTime(),
     attendees: attendees,
