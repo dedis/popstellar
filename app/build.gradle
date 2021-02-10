@@ -26,6 +26,12 @@ android {
         testOptions {
             execution 'ANDROIDX_TEST_ORCHESTRATOR'
         }
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
     }
 
     buildTypes {
@@ -58,6 +64,8 @@ allprojects {
 }
 
 dependencies {
+    def room_version = "2.2.6"
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
@@ -77,6 +85,8 @@ dependencies {
     implementation 'com.tinder.scarlet:lifecycle-android:0.1.11'
     implementation "androidx.lifecycle:lifecycle-reactivestreams:2.2.0"
     implementation 'com.squareup.okhttp3:logging-interceptor:4.9.1'
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
 
     testImplementation 'junit:junit:4.13'
     testImplementation 'net.jodah:concurrentunit:0.4.6'
