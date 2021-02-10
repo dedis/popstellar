@@ -1,6 +1,6 @@
-import { Hash } from "Model/Objects/hash";
-import { PublicKey } from "Model/Objects/publicKey";
-import { Timestamp } from "Model/Objects/timestamp";
+import { Hash } from "Model/Objects/Hash";
+import { PublicKey } from "Model/Objects/PublicKey";
+import { Timestamp } from "Model/Objects/Timestamp";
 import { ActionType, MessageData, ObjectType } from "../messageData";
 import { ProtocolError } from "../../../../ProtocolError";
 import { checkTimestampStaleness, checkWitnesses } from "../checker";

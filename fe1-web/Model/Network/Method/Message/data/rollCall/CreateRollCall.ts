@@ -1,5 +1,5 @@
-import { Hash } from "Model/Objects/hash";
-import { Timestamp } from "Model/Objects/timestamp";
+import { Hash } from "Model/Objects/Hash";
+import { Timestamp } from "Model/Objects/Timestamp";
 import { ActionType, MessageData, ObjectType } from "../messageData";
 import { ProtocolError } from "../../../../ProtocolError";
 import { checkTimestampStaleness } from "../checker";

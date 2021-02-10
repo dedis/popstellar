@@ -1,7 +1,7 @@
-import { Hash } from "Model/Objects/hash";
-import { Timestamp } from "Model/Objects/timestamp";
+import { Hash } from "Model/Objects/Hash";
+import { Timestamp } from "Model/Objects/Timestamp";
 import { ActionType, MessageData, ObjectType } from "../messageData";
-import { PublicKey } from "Model/Objects/publicKey";
+import { PublicKey } from "Model/Objects/PublicKey";
 import { ProtocolError} from "../../../../ProtocolError";
 import { checkTimestampStaleness, checkAttendees } from "../checker";
 
