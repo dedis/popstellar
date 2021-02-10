@@ -1,1 +1,1 @@
-export * from './witnessMessage';
+export * from './WitnessMessage';

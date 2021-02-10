@@ -1,4 +1,4 @@
-import { Verifiable } from "./verifiable";
+import { Verifiable } from "./Verifiable";
 
 export abstract class JsonRpcResponse implements Verifiable {
 
