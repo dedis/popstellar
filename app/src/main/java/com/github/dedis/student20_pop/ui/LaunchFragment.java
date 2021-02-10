@@ -14,7 +14,10 @@ import com.github.dedis.student20_pop.Event;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
 import com.github.dedis.student20_pop.launch.LaunchViewModel;
+import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.utility.ActivityUtils;
+
+import java.net.URI;
 
 /** Fragment used to display the Launch UI */
 public final class LaunchFragment extends Fragment {
@@ -42,7 +45,7 @@ public final class LaunchFragment extends Fragment {
       public void onChanged(Event<Boolean> booleanEvent) {
         Boolean action = booleanEvent.getContentIfNotHandled();
         if (action != null) {
-          launchLao();
+          launchLao(mViewModel.getLaoName().getValue());
         }
       }
     });
@@ -68,9 +71,10 @@ public final class LaunchFragment extends Fragment {
     return viewModel;
   }
 
-  private void launchLao() {
-    // get text from edit text
-    // create lao
+  private void launchLao(String laoName) {
+    String organizer = "11";
+    URI host = URI.create("");
+    Lao lao = new Lao(laoName, organizer, host);
   }
 
   private void setupHomeFragment() {

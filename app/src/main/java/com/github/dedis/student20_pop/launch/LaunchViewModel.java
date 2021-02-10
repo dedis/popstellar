@@ -2,8 +2,10 @@ package com.github.dedis.student20_pop.launch;
 
 import android.app.Application;
 import android.content.Context;
+import android.text.Editable;
 
 import androidx.annotation.NonNull;
+import androidx.databinding.BindingAdapter;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -35,6 +37,11 @@ public class LaunchViewModel extends AndroidViewModel {
 
     public MutableLiveData<String> getLaoName() {
         return laoName;
+    }
+
+    @BindingAdapter("android:afterTextChanged")
+    public void setLaoName(Editable name) {
+        this.laoName.setValue(name.toString());
     }
 
     public void launchLao() {
