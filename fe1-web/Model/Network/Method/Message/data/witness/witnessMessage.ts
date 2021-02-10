@@ -1,6 +1,5 @@
-import { Hash } from "../../../../Objects/hash";
-import { Signature } from "../../../../Objects/signature";
-import { ActionType, MessageData, ObjectType } from "./messageData";
+import { Hash, Signature } from "Model/Objects";
+import { ActionType, MessageData, ObjectType } from "../messageData";
 
 export class WitnessMessage implements MessageData {
 

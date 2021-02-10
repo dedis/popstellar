@@ -7,7 +7,12 @@ export class WitnessSignature {
     public signature: Signature;
 
     constructor(witnessSignature: Partial<WitnessSignature>) {
-        Object.assign(this, witnessSignature);
+        this.witness = witnessSignature.witness || (() => {
+            throw new Error("WitnessSignature creation failed : missing witness")
+        })();
+        this.signature = witnessSignature.signature || (() => {
+            throw new Error("WitnessSignature creation failed : missing signature")
+        })();
     }
 
     /**
@@ -16,7 +21,7 @@ export class WitnessSignature {
      * @param message_id to be verified
      */
     public verify(message_id: Hash) : boolean {
-        // FIXME: verify that witness's signature over message_id is correct
+        this.signature.verify(this.witness, message_id);
         return false;
     }
 }
