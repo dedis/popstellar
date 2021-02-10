@@ -1,10 +1,11 @@
+import { Channel } from 'Model/Objects/Channel';
 import { ProtocolError } from '../ProtocolError';
 import { Verifiable } from '../Verifiable';
 import { Message } from './Message/message';
 
 export class JsonRpcParams implements Verifiable {
 
-    public readonly channel: string;
+    public readonly channel: Channel;
 
     constructor(params: Partial<JsonRpcParams>) {
         if (params.channel === undefined) {
