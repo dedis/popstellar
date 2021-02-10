@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import com.github.dedis.student20_pop.R;
+import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
 
@@ -58,6 +59,15 @@ public final class CameraPermissionFragment extends Fragment implements View.OnC
         == PackageManager.PERMISSION_GRANTED)
       onCameraAllowedListener.onCameraAllowedListener(qrCodeScanningType, eventId);
     return view;
+  }
+
+  @Override
+  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    super.onActivityCreated(savedInstanceState);
+
+    ((HomeActivity) getActivity()).setupHomeButton();
+    ((HomeActivity) getActivity()).setupConnectButton();
+    ((HomeActivity) getActivity()).setupLaunchButton();
   }
 
   @Override

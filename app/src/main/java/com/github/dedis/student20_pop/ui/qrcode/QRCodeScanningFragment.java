@@ -117,6 +117,15 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
      */
   }
 
+  @Override
+  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    super.onActivityCreated(savedInstanceState);
+
+    ((HomeActivity) getActivity()).setupHomeButton();
+    ((HomeActivity) getActivity()).setupConnectButton();
+    ((HomeActivity) getActivity()).setupLaunchButton();
+  }
+
   private CameraSource createCamera() {
     BarcodeDetector qrDetector =
         new BarcodeDetector.Builder(getContext()).setBarcodeFormats(Barcode.QR_CODE).build();

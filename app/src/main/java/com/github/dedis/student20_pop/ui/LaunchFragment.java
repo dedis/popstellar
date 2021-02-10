@@ -4,27 +4,28 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.github.dedis.student20_pop.Event;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
-import com.github.dedis.student20_pop.launch.LaunchViewModel;
-import com.github.dedis.student20_pop.model.Lao;
+import com.github.dedis.student20_pop.databinding.FragmentLaunchBinding;
+import com.github.dedis.student20_pop.home.HomeActivity;
+import com.github.dedis.student20_pop.home.HomeViewModel;
 import com.github.dedis.student20_pop.utility.ActivityUtils;
-
-import java.net.URI;
 
 /** Fragment used to display the Launch UI */
 public final class LaunchFragment extends Fragment {
 
   public static final String TAG = LaunchFragment.class.getSimpleName();
 
-  private LaunchViewModel mViewModel;
+  private FragmentLaunchBinding mLaunchFragBinding;
+
+  private HomeViewModel mHomeViewModel;
 
   public static LaunchFragment newInstance() {
     return new LaunchFragment();
@@ -37,55 +38,70 @@ public final class LaunchFragment extends Fragment {
           @Nullable ViewGroup container,
           @Nullable Bundle savedInstanceState) {
 
-    mViewModel = obtainViewModel(this);
+    mLaunchFragBinding = FragmentLaunchBinding.inflate(inflater, container, false);
+
+    mHomeViewModel = HomeActivity.obtainViewModel(getActivity());
+
+    mLaunchFragBinding.setViewmodel(mHomeViewModel);
+    mLaunchFragBinding.setLifecycleOwner(getActivity());
+
+    return mLaunchFragBinding.getRoot();
+  }
+
+  @Override
+  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    super.onActivityCreated(savedInstanceState);
+
+    ((HomeActivity) getActivity()).setupHomeButton();
+    ((HomeActivity) getActivity()).setupConnectButton();
+    ((HomeActivity) getActivity()).setupLaunchButton();
+
+    setupLaunchButton();
+    setupCancelButton();
 
     // Subscribe to "launch LAO" event
-    mViewModel.getLaunchLaoEvent().observe(this, new Observer<Event<Boolean>>() {
-      @Override
-      public void onChanged(Event<Boolean> booleanEvent) {
-        Boolean action = booleanEvent.getContentIfNotHandled();
-        if (action != null) {
-          launchLao(mViewModel.getLaoName().getValue());
-        }
+    mHomeViewModel.getLaunchNewLaoEvent().observe(this, booleanEvent -> {
+      Boolean action = booleanEvent.getContentIfNotHandled();
+      if (action != null) {
+        setupLaunch(mHomeViewModel.getLaoName().getValue());
       }
     });
 
     // Subscribe to "cancel launch" event
-    mViewModel.getCancelLaunchEvent().observe(this, new Observer<Event<Boolean>>() {
-      @Override
-      public void onChanged(Event<Boolean> booleanEvent) {
-        Boolean action = booleanEvent.getContentIfNotHandled();
-        if (action != null) {
-          setupHomeFragment();
-        }
+    mHomeViewModel.getCancelNewLaoEvent().observe(this, booleanEvent -> {
+      Boolean action = booleanEvent.getContentIfNotHandled();
+      if (action != null) {
+        setupCancel();
       }
     });
-
-    return inflater.inflate(R.layout.fragment_launch, container, false);
   }
 
-  public static LaunchViewModel obtainViewModel(Fragment fragment) {
+  public static HomeViewModel obtainViewModel(Fragment fragment) {
     ViewModelFactory factory = ViewModelFactory.getInstance(fragment.getActivity().getApplication());
-    LaunchViewModel viewModel = new ViewModelProvider(fragment, factory).get(LaunchViewModel.class);
+    HomeViewModel viewModel = new ViewModelProvider(fragment, factory).get(HomeViewModel.class);
 
     return viewModel;
   }
 
-  private void launchLao(String laoName) {
-    String organizer = "11";
-    URI host = URI.create("");
-    Lao lao = new Lao(laoName, organizer, host);
+  private void setupLaunchButton() {
+    Button launchButton = (Button) getActivity().findViewById(R.id.button_launch);
+
+    launchButton.setOnClickListener(v -> mHomeViewModel.launchNewLao());
   }
 
-  private void setupHomeFragment() {
-    // simulate click open home
-    HomeFragment homeFragment = (HomeFragment) getActivity().getSupportFragmentManager()
-            .findFragmentById(R.id.fragment_container_main);
-    if (homeFragment == null) {
-      homeFragment = HomeFragment.newInstance();
-      ActivityUtils.replaceFragmentInActivity(
-              getActivity().getSupportFragmentManager(), homeFragment, R.id.fragment_container_main
-      );
-    }
+  private void setupCancelButton() {
+    Button cancelButton = (Button) getActivity().findViewById(R.id.button_cancel_launch);
+
+    cancelButton.setOnClickListener(v -> mHomeViewModel.cancelNewLao());
+  }
+
+  private void setupLaunch(String laoName) {
+    mHomeViewModel.launchNewLao(laoName);
+    ((Button) getActivity().findViewById(R.id.tab_home)).performClick();
+  }
+
+  private void setupCancel() {
+    mLaunchFragBinding.entryBoxLaunch.getText().clear();
+    ((Button) getActivity().findViewById(R.id.tab_home)).performClick();
   }
 }
