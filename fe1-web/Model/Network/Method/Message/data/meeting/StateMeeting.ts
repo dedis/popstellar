@@ -1,7 +1,7 @@
-import { Hash } from "Model/Objects/hash";
-import { Timestamp } from "Model/Objects/timestamp";
+import { Hash } from "Model/Objects/Hash";
+import { Timestamp } from "Model/Objects/Timestamp";
 import { ActionType, MessageData, ObjectType } from "../messageData";
-import { WitnessSignature } from "Model/Objects/witnessSignature";
+import { WitnessSignature } from "Model/Objects/WitnessSignature";
 import { ProtocolError } from "../../../../ProtocolError";
 import { checkModificationId, checkModificationSignatures, checkTimestampStaleness } from "../checker";
 

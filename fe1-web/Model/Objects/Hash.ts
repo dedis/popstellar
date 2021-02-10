@@ -1,5 +1,5 @@
 import { sha256 } from 'js-sha256';
-import { Base64Data } from "./base64";
+import { Base64Data } from "./Base64";
 
 export class Hash extends Base64Data {
 

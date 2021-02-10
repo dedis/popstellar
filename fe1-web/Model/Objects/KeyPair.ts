@@ -1,6 +1,6 @@
 import { encodeBase64} from "tweetnacl-util";
-import { PublicKey } from "./publicKey";
-import { PrivateKey } from "./privateKey";
+import { PublicKey } from "./PublicKey";
+import { PrivateKey } from "./PrivateKey";
 import { sign } from "tweetnacl";
 import { getStore } from "Store/configureStore";
 

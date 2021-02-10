@@ -1,6 +1,6 @@
-import { Hash } from './hash';
-import { PublicKey } from './publicKey';
-import { Signature } from './signature';
+import { Hash } from './Hash';
+import { PublicKey } from './PublicKey';
+import { Signature } from './Signature';
 
 export class WitnessSignature {
     public witness: PublicKey;

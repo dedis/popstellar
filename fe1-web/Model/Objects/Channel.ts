@@ -1,4 +1,4 @@
-import { Hash } from './hash';
+import { Hash } from './Hash';
 
 export type Channel = string;
 export const ROOT_CHANNEL: Channel = '/root';
