@@ -13,12 +13,12 @@ public class JsonMessageSerializer implements JsonSerializer<Message>, JsonDeser
   @Override
   public Message deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
-    JsonRPCRequest container = context.deserialize(json, JsonRPCRequest.class);
-    JsonUtils.testRPCVersion(container.jsonrpc);
+    JSONRPCRequest container = context.deserialize(json, JSONRPCRequest.class);
+    JsonUtils.testRPCVersion(container.getJsonrpc());
 
-    Method method = Method.find(container.method);
-    if (method == null) throw new JsonParseException("Unknown method type " + container.method);
-    JsonObject params = container.params;
+    Method method = Method.find(container.getMethod());
+    if (method == null) throw new JsonParseException("Unknown method type " + container.getMethod());
+    JsonObject params = container.getParams();
 
     // If the Channeled Data is a Query, we need to give the params the id the the request
     if (method.expectResult())
@@ -33,7 +33,7 @@ public class JsonMessageSerializer implements JsonSerializer<Message>, JsonDeser
 
     JsonObject obj =
         context
-            .serialize(new JsonRPCRequest(JsonUtils.JSON_RPC_VERSION, src.getMethod(), params))
+            .serialize(new JSONRPCRequest(JsonUtils.JSON_RPC_VERSION, src.getMethod(), params))
             .getAsJsonObject();
 
     if (src instanceof Query)
@@ -42,15 +42,4 @@ public class JsonMessageSerializer implements JsonSerializer<Message>, JsonDeser
     return obj;
   }
 
-  private static final class JsonRPCRequest {
-    private final String jsonrpc;
-    private final String method;
-    private final JsonObject params;
-
-    private JsonRPCRequest(String jsonrpc, String method, JsonObject params) {
-      this.jsonrpc = jsonrpc;
-      this.method = method;
-      this.params = params;
-    }
-  }
 }
