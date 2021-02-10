@@ -1,7 +1,7 @@
 import { Channel } from 'Model/Objects/Channel';
 import { ProtocolError } from '../ProtocolError';
 import { Verifiable } from '../Verifiable';
-import { Message } from './Message/message';
+import { Message } from './Message/Message';
 
 export class JsonRpcParams implements Verifiable {
 

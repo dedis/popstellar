@@ -1,4 +1,4 @@
-import { JsonRpcParams } from './Method/jsonRpcParams';
+import { JsonRpcParams } from './Method/JsonRpcParams';
 import { JsonRpcMethod } from './jsonRpcMethods';
 import { Verifiable } from './Verifiable';
 import { Broadcast, Catchup, Publish, Subscribe, Unsubscribe } from './Method';
