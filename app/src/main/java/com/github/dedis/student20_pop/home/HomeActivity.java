@@ -2,6 +2,8 @@ package com.github.dedis.student20_pop.home;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
@@ -17,8 +19,9 @@ import com.github.dedis.student20_pop.ui.LaunchFragment;
 import com.github.dedis.student20_pop.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.utility.ActivityUtils;
+import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
 
-public class HomeActivity extends AppCompatActivity  {
+public class HomeActivity extends AppCompatActivity implements OnCameraAllowedListener {
 
     private HomeViewModel mViewModel;
 
@@ -32,43 +35,65 @@ public class HomeActivity extends AppCompatActivity  {
         mViewModel = obtainViewModel(this);
 
         // Subscribe to "open lao" event
-        mViewModel.getOpenLaoEvent().observe(this, new Observer<Event<String>>() {
-            @Override
-            public void onChanged(Event<String> stringEvent) {
-                String laoId = stringEvent.getContentIfNotHandled();
-                if (laoId != null) {
-                    openLaoDetails(laoId);
-                }
+        mViewModel.getOpenLaoEvent().observe(this, stringEvent -> {
+            String laoId = stringEvent.getContentIfNotHandled();
+            if (laoId != null) {
+                openLaoDetails(laoId);
+            }
+        });
+
+        // Subscribe to "open home" event
+        mViewModel.getOpenHomeEvent().observe(this, booleanEvent -> {
+            Boolean event = booleanEvent.getContentIfNotHandled();
+            if (event != null) {
+                setupHomeFragment();
             }
         });
 
         // Subscribe to "openConnect" event
-        mViewModel.getOpenConnectEvent().observe(this, new Observer<Event<String>>() {
-            @Override
-            public void onChanged(Event<String> stringEvent) {
-                String action = stringEvent.getContentIfNotHandled();
-                if (action != null) {
-                    switch (action) {
-                        case "SCAN":
-                            setupScanFragment();
-                            break;
-                        case "REQUEST_CAMERA_PERMISSION":
-                            setupCameraPermissionFragment();
-                            break;
-                    }
+        mViewModel.getOpenConnectEvent().observe(this, stringEvent -> {
+            String action = stringEvent.getContentIfNotHandled();
+            if (action != null) {
+                switch (action) {
+                    case "SCAN":
+                        setupScanFragment();
+                        break;
+                    case "REQUEST_CAMERA_PERMISSION":
+                        setupCameraPermissionFragment();
+                        break;
                 }
             }
         });
 
-        mViewModel.getOpenLaunchEvent().observe(this, new Observer<Event<Boolean>>() {
-            @Override
-            public void onChanged(Event<Boolean> booleanEvent) {
-                Boolean event = booleanEvent.getContentIfNotHandled();
-                if (event != null) {
-                    setupLaunchFragment();
-                }
+        mViewModel.getOpenLaunchEvent().observe(this, booleanEvent -> {
+            Boolean event = booleanEvent.getContentIfNotHandled();
+            if (event != null) {
+                setupLaunchFragment();
             }
         });
+    }
+
+    @Override
+    public void onCameraAllowedListener(QRCodeScanningFragment.QRCodeScanningType qrCodeScanningType, String eventId) {
+        setupScanFragment();
+    }
+
+    public void setupHomeButton() {
+        Button homeButton = (Button) findViewById(R.id.tab_home);
+
+        homeButton.setOnClickListener(v -> mViewModel.openHome());
+    }
+
+    public void setupConnectButton() {
+        Button connectButton = (Button) findViewById(R.id.tab_connect);
+
+        connectButton.setOnClickListener(v -> mViewModel.openConnect());
+    }
+
+    public void setupLaunchButton() {
+        Button launchButton = (Button) findViewById(R.id.tab_launch);
+
+        launchButton.setOnClickListener(v -> mViewModel.openLaunch());
     }
 
     public static HomeViewModel obtainViewModel(FragmentActivity activity) {
@@ -80,6 +105,16 @@ public class HomeActivity extends AppCompatActivity  {
 
     private void setupViewFragment() {
         HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container_main);
+        if (homeFragment == null) {
+            homeFragment = HomeFragment.newInstance();
+            ActivityUtils.replaceFragmentInActivity(
+                    getSupportFragmentManager(), homeFragment, R.id.fragment_container_main
+            );
+        }
+    }
+
+    private void setupHomeFragment() {
+        HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_home);
         if (homeFragment == null) {
             homeFragment = HomeFragment.newInstance();
             ActivityUtils.replaceFragmentInActivity(
@@ -123,6 +158,4 @@ public class HomeActivity extends AppCompatActivity  {
             );
         }
     }
-
-
 }

@@ -3,6 +3,7 @@ package com.github.dedis.student20_pop.home;
 import android.Manifest;
 import android.app.Application;
 import android.content.pm.PackageManager;
+import android.text.Editable;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
 import com.github.dedis.student20_pop.Event;
+import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.model.data.LAORepository;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.network.answer.Result;
@@ -20,8 +22,10 @@ import com.github.dedis.student20_pop.model.network.method.Broadcast;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
+import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.google.gson.Gson;
 
+import java.net.URI;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -34,19 +38,26 @@ import io.reactivex.schedulers.Schedulers;
 
 public class HomeViewModel extends AndroidViewModel {
 
-    private static final String TAG = "HOME_VIEW_MODEL";
+    private static final String TAG = HomeViewModel.class.getSimpleName();
 
     private final MutableLiveData<Event<String>> mOpenLaoEvent = new MutableLiveData<>();
+
+    private final MutableLiveData<Event<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
 
     private final MutableLiveData<Event<String>> mOpenConnectEvent = new MutableLiveData<>();
 
     private final MutableLiveData<Event<Boolean>> mOpenLaunchEvent = new MutableLiveData<>();
 
+    private final MutableLiveData<Event<Boolean>> mLaunchNewLaoEvent = new MutableLiveData<>();
+
+    private final MutableLiveData<Event<Boolean>> mCancelNewLaoEvent = new MutableLiveData<>();
+
+    private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
+
     private final MutableLiveData<Map<String, Lao>> mLAOsById = new MutableLiveData<>();
 
-    private final LiveData<List<Lao>> mLAOs = Transformations.map(mLAOsById, laosById -> {
-        return new ArrayList<>(laosById.values());
-    });
+    private final LiveData<List<Lao>> mLAOs = Transformations.map(mLAOsById, laosById ->
+            new ArrayList<>(laosById.values()));
 
     private final Gson gson;
 
@@ -151,6 +162,24 @@ public class HomeViewModel extends AndroidViewModel {
 
     }
 
+    public void launchNewLao(String laoName) {
+        // Get organizer information and host
+        String organizer = "1234";
+        URI host = URI.create("");
+        Lao newLao = new Lao(laoName, organizer, host);
+        Log.d(TAG, "Launch new LAO: " + laoName);
+
+        // Send create lao message to backend
+
+        // Save new lao
+        Map<String, Lao> laosById = mLAOsById.getValue();
+        if (laosById == null) {
+            laosById = new HashMap<>();
+        }
+        laosById.put(newLao.getId(), newLao);
+        mLAOsById.postValue(laosById);
+    }
+
     public LiveData<List<Lao>> getLAOs() {
         return mLAOs;
     }
@@ -170,6 +199,10 @@ public class HomeViewModel extends AndroidViewModel {
         return mOpenLaoEvent;
     }
 
+    public LiveData<Event<Boolean>> getOpenHomeEvent() {
+        return mOpenHomeEvent;
+    }
+
     public LiveData<Event<String>> getOpenConnectEvent() {
         return mOpenConnectEvent;
     }
@@ -178,8 +211,24 @@ public class HomeViewModel extends AndroidViewModel {
         return mOpenLaunchEvent;
     }
 
+    public LiveData<Event<Boolean>> getLaunchNewLaoEvent() {
+        return mLaunchNewLaoEvent;
+    }
+
+    public LiveData<Event<Boolean>> getCancelNewLaoEvent() {
+        return mCancelNewLaoEvent;
+    }
+
+    public MutableLiveData<String> getLaoName() {
+        return mLaoName;
+    }
+
     void openLAO(String laoId) {
         mOpenLaoEvent.setValue(new Event<>(laoId));
+    }
+
+    public void openHome() {
+        mOpenHomeEvent.setValue(new Event<>(true));
     }
 
     public void openConnect() {
@@ -192,5 +241,17 @@ public class HomeViewModel extends AndroidViewModel {
 
     public void openLaunch() {
         mOpenLaunchEvent.setValue(new Event<>(true));
+    }
+
+    public void launchNewLao() {
+        mLaunchNewLaoEvent.setValue(new Event<>(true));
+    }
+
+    public void cancelNewLao() {
+        mCancelNewLaoEvent.setValue(new Event<>(true));
+    }
+
+    public void setLaoName(Editable name) {
+        this.mLaoName.setValue(name.toString());
     }
 }
