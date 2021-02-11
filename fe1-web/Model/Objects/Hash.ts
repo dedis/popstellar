@@ -40,4 +40,8 @@ export class Hash extends Base64Data {
     private static _escapeString(str: string): string {
         return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
     }
+
+    public equals(o: Hash): boolean {
+        return this.toString() === o.toString();
+    }
 }

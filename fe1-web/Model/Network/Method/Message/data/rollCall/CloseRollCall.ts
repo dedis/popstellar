@@ -33,17 +33,18 @@ export class CloseRollCall implements MessageData {
         if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'CloseRollCall\'');
         // FIXME take info from storage
         /*const expectedHash = Hash.fromStringArray(eventTags.ROLL_CALL, LAO_ID, CREATION, NAME);
-        if (expectedHash !== msg.id)
+        if (!expectedHash.equals(msg.id))
             throw new ProtocolError('Invalid \'id\' parameter encountered during \'CloseRollCall\': unexpected id value');*/
         this.id = msg.id;
     }
 
-    public verify(): boolean {
-        // to be implemented...
-        return true;
-    }
-
     public static fromJson(obj: any): CloseRollCall {
-        throw new Error('Not implemented');
+
+      // FIXME add JsonSchema validation to all "fromJson"
+      let correctness = true;
+
+      return correctness
+        ? new CloseRollCall(obj)
+        : (() => { throw new ProtocolError("add JsonSchema error message"); })();
     }
 }
