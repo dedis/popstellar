@@ -60,7 +60,7 @@ public final class LaunchFragment extends Fragment {
     mHomeViewModel.getLaunchNewLaoEvent().observe(this, booleanEvent -> {
       Boolean action = booleanEvent.getContentIfNotHandled();
       if (action != null) {
-        launchLao(mHomeViewModel.getLaoName().getValue());
+        launchLao();
       }
     });
 
@@ -85,8 +85,8 @@ public final class LaunchFragment extends Fragment {
     cancelButton.setOnClickListener(v -> mHomeViewModel.cancelNewLao());
   }
 
-  private void launchLao(String laoName) {
-    mHomeViewModel.launchNewLao(laoName);
+  private void launchLao() {
+    mHomeViewModel.launchLao();
     mHomeViewModel.openHome();
   }
 
