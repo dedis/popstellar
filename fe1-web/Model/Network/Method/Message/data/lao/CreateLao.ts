@@ -1,10 +1,9 @@
-import { Verifiable } from "Model/Network/Verifiable";
 import { Hash, PublicKey, Timestamp } from "Model/Objects";
 import { ActionType, MessageData, ObjectType } from "../messageData";
 import { checkTimestampStaleness, checkWitnesses } from '../checker'
 import { ProtocolError } from "../../../../ProtocolError";
 
-export class CreateLao implements MessageData, Verifiable {
+export class CreateLao implements MessageData {
 
     public readonly object: ObjectType = ObjectType.LAO;
     public readonly action: ActionType = ActionType.CREATE;
@@ -36,11 +35,6 @@ export class CreateLao implements MessageData, Verifiable {
         if (expectedHash !== msg.id)
             throw new ProtocolError('Invalid \'id\' parameter encountered during \'CreateLao\': unexpected id value');
         this.id = msg.id;
-    }
-
-    public verify(): boolean {
-        // to be implemented...
-        return true;
     }
 
     public static fromJson(obj: any): CreateLao {

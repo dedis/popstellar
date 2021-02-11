@@ -1,9 +1,8 @@
 import { Channel } from 'Model/Objects/Channel';
 import { ProtocolError } from '../ProtocolError';
-import { Verifiable } from '../Verifiable';
-import { Message } from './Message/Message';
+import { Message } from './Message';
 
-export class JsonRpcParams implements Verifiable {
+export class JsonRpcParams {
 
     public readonly channel: Channel;
 
@@ -35,10 +34,5 @@ export class JsonRpcParamsWithMessage extends JsonRpcParams {
         }
 
         this.message = new Message(params.message);
-    }
-
-    public verify(): boolean {
-        return super.verify()
-            && this.message.verify();
     }
 }

@@ -1,14 +1,13 @@
 import { Base64Data, Hash, PublicKey, KeyPair, Signature, WitnessSignature } from "Model/Objects";
-import { Verifiable } from 'Model/Network/Verifiable';
 import { MessageData, checkWitnessSignatures, buildMessageData, encodeMessageData } from './data';
 import { ProtocolError } from "../../ProtocolError";
 
-export class Message implements Verifiable {
-    public readonly data : Base64Data;
-    public readonly sender : PublicKey;
-    public readonly signature : Signature;
-    public readonly message_id : Hash;
-    public readonly witness_signatures : WitnessSignature[];
+export class Message {
+    public readonly data: Base64Data;
+    public readonly sender: PublicKey;
+    public readonly signature: Signature;
+    public readonly message_id: Hash;
+    public readonly witness_signatures: WitnessSignature[];
 
     public readonly messageData: MessageData;
 
@@ -57,18 +56,5 @@ export class Message implements Verifiable {
             message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
             witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
         });
-    }
-
-    public verify(): boolean {
-        let res = true;
-
-        // verify sender's signature on data
-
-        // verify witnesses' signature
-        this.witness_signatures.forEach(witSig => {
-            res = res && witSig.verify(this.message_id);
-        });
-
-        return res;
     }
 }

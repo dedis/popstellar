@@ -1,5 +1,3 @@
-import { Verifiable } from "Model/Network/Verifiable";
-
 /** Enumeration of all possible "object" field values in MessageData */
 export enum ObjectType {
     // uninitialized placeholder
@@ -25,7 +23,7 @@ export enum ActionType {
     CLOSE = 'close',
 }
 
-export interface MessageData extends Verifiable {
+export interface MessageData {
     readonly object: ObjectType;
     readonly action: ActionType;
 }
