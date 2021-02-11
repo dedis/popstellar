@@ -30,7 +30,7 @@ public class HomeActivity extends AppCompatActivity implements OnCameraAllowedLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setupViewFragment();
+        setupHomeFragment();
 
         mViewModel = obtainViewModel(this);
 
@@ -78,6 +78,13 @@ public class HomeActivity extends AppCompatActivity implements OnCameraAllowedLi
         setupScanFragment();
     }
 
+    public static HomeViewModel obtainViewModel(FragmentActivity activity) {
+        ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
+        HomeViewModel viewModel = new ViewModelProvider(activity, factory).get(HomeViewModel.class);
+
+        return viewModel;
+    }
+
     public void setupHomeButton() {
         Button homeButton = (Button) findViewById(R.id.tab_home);
 
@@ -94,23 +101,6 @@ public class HomeActivity extends AppCompatActivity implements OnCameraAllowedLi
         Button launchButton = (Button) findViewById(R.id.tab_launch);
 
         launchButton.setOnClickListener(v -> mViewModel.openLaunch());
-    }
-
-    public static HomeViewModel obtainViewModel(FragmentActivity activity) {
-        ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
-        HomeViewModel viewModel = new ViewModelProvider(activity, factory).get(HomeViewModel.class);
-
-        return viewModel;
-    }
-
-    private void setupViewFragment() {
-        HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container_main);
-        if (homeFragment == null) {
-            homeFragment = HomeFragment.newInstance();
-            ActivityUtils.replaceFragmentInActivity(
-                    getSupportFragmentManager(), homeFragment, R.id.fragment_container_main
-            );
-        }
     }
 
     private void setupHomeFragment() {
@@ -143,12 +133,6 @@ public class HomeActivity extends AppCompatActivity implements OnCameraAllowedLi
         }
     }
 
-    private void openLaoDetails(String laoId) {
-        Intent intent = new Intent(this, OrganizerActivity.class);
-        intent.putExtra("LAO_ID", laoId);
-        startActivity(intent);
-    }
-
     private void setupLaunchFragment() {
         LaunchFragment launchFragment = (LaunchFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_launch);
         if (launchFragment == null) {
@@ -157,5 +141,11 @@ public class HomeActivity extends AppCompatActivity implements OnCameraAllowedLi
                     getSupportFragmentManager(), launchFragment, R.id.fragment_container_main
             );
         }
+    }
+
+    private void openLaoDetails(String laoId) {
+        Intent intent = new Intent(this, OrganizerActivity.class);
+        intent.putExtra("LAO_ID", laoId);
+        startActivity(intent);
     }
 }
