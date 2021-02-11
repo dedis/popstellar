@@ -1,13 +1,12 @@
 import { JsonRpcParams } from './Method/JsonRpcParams';
 import { JsonRpcMethod } from './jsonRpcMethods';
-import { Verifiable } from './Verifiable';
 import { Broadcast, Catchup, Publish, Subscribe, Unsubscribe } from './Method';
 import { ProtocolError } from './ProtocolError';
 
 /**
  * This class represents a JSON-RPC 2.0 Request (or Notification)
  */
-export class JsonRpcRequest implements Verifiable {
+export class JsonRpcRequest {
 
     public readonly method: JsonRpcMethod;
     public readonly id?: number;
