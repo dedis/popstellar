@@ -162,8 +162,9 @@ public class HomeViewModel extends AndroidViewModel {
 
     }
 
-    public void launchNewLao(String laoName) {
+    public void launchLao() {
         // Get organizer information and host
+        String laoName = getLaoName().getValue();
         String organizer = "1234";
         URI host = URI.create("");
         Lao newLao = new Lao(laoName, organizer, host);
@@ -251,7 +252,7 @@ public class HomeViewModel extends AndroidViewModel {
         mCancelNewLaoEvent.setValue(new Event<>(true));
     }
 
-    public void setLaoName(Editable name) {
-        this.mLaoName.setValue(name.toString());
+    public void setLaoName(String name) {
+        this.mLaoName.setValue(name);
     }
 }
