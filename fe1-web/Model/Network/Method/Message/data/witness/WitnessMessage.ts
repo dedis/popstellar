@@ -16,14 +16,17 @@ export class WitnessMessage implements MessageData {
         this.message_id = msg.message_id;
 
         if (!msg.signature) throw new ProtocolError('Undefined \'signature\' parameter encountered during \'WitnessMessage\'');
+        // FIXME verify signature without the public key available? 0.o + uncomment 3 tests in "FromJson" test suite
         this.signature = msg.signature;
     }
 
-    verify(): boolean {
-        return false;
-    }
-
     public static fromJson(obj: any): WitnessMessage {
-        throw new Error('Not implemented');
+
+      // FIXME add JsonSchema validation to all "fromJson"
+      let correctness = true;
+
+      return correctness
+        ? new WitnessMessage(obj)
+        : (() => { throw new ProtocolError("add JsonSchema error message"); })();
     }
 }

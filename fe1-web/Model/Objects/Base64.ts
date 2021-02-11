@@ -16,4 +16,8 @@ export class Base64Data extends String {
     public decode(): string {
         return b64.decode(this.valueOf());
     }
+
+    public equals(o: Base64Data): boolean {
+        return this.toString() === o.toString();
+    }
 }

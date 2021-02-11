@@ -31,17 +31,18 @@ export class UpdateLao implements MessageData {
         if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'UpdateLao\'');
         // FIXME take info from storage
         /*const expectedHash = Hash.fromStringArray(msg.organizer.toString(), msg.creation.toString(), msg.name);
-        if (expectedHash !== msg.id)
+        if (!expectedHash.equals(msg.id))
             throw new ProtocolError('Invalid \'id\' parameter encountered during \'UpdateLao\': unexpected id value');*/
         this.id = msg.id;
     }
 
-    public verify(): boolean {
-        // to be implemented...
-        return true;
-    }
-
     public static fromJson(obj: any): UpdateLao {
-        throw new Error('Not implemented');
+
+        // FIXME add JsonSchema validation to all "fromJson"
+        let correctness = true;
+
+        return correctness
+            ? new UpdateLao(obj)
+            : (() => { throw new ProtocolError("add JsonSchema error message"); })();
     }
 }

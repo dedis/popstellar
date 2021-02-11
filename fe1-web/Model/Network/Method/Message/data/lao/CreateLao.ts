@@ -31,8 +31,8 @@ export class CreateLao implements MessageData {
         this.witnesses = [...msg.witnesses];
 
         if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'CreateLao\'');
-        const expectedHash = Hash.fromStringArray(msg.organizer.toString(), msg.creation.toString(), msg.name);
-        if (expectedHash !== msg.id)
+        const expectedHash: Hash = Hash.fromStringArray(msg.organizer.toString(), msg.creation.toString(), msg.name);
+        if (!expectedHash.equals(msg.id))
             throw new ProtocolError('Invalid \'id\' parameter encountered during \'CreateLao\': unexpected id value');
         this.id = msg.id;
     }

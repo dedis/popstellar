@@ -68,17 +68,18 @@ export class StateMeeting implements MessageData {
         if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'StateMeeting\'');
         // FIXME take info from storage
         /*const expectedHash = Hash.fromStringArray(eventTags.MEETING, LAO_ID, msg.creation.toString(), msg.name);
-        if (expectedHash !== msg.id)
+        if (!expectedHash.equals(msg.id))
             throw new ProtocolError('Invalid \'id\' parameter encountered during \'StateMeeting\': unexpected id value');*/
         this.id = msg.id;
     }
 
-    public verify(): boolean {
-        // to be implemented...
-        return true;
-    }
-
     public static fromJson(obj: any): StateMeeting {
-        throw new Error('Not implemented');
+
+      // FIXME add JsonSchema validation to all "fromJson"
+      let correctness = true;
+
+      return correctness
+        ? new StateMeeting(obj)
+        : (() => { throw new ProtocolError("add JsonSchema error message"); })();
     }
 }
