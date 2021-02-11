@@ -9,14 +9,11 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.ViewModelFactory;
 import com.github.dedis.student20_pop.databinding.FragmentLaunchBinding;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.home.HomeViewModel;
-import com.github.dedis.student20_pop.utility.ActivityUtils;
 
 /** Fragment used to display the Launch UI */
 public final class LaunchFragment extends Fragment {
@@ -63,7 +60,7 @@ public final class LaunchFragment extends Fragment {
     mHomeViewModel.getLaunchNewLaoEvent().observe(this, booleanEvent -> {
       Boolean action = booleanEvent.getContentIfNotHandled();
       if (action != null) {
-        setupLaunch(mHomeViewModel.getLaoName().getValue());
+        launchLao(mHomeViewModel.getLaoName().getValue());
       }
     });
 
@@ -71,16 +68,9 @@ public final class LaunchFragment extends Fragment {
     mHomeViewModel.getCancelNewLaoEvent().observe(this, booleanEvent -> {
       Boolean action = booleanEvent.getContentIfNotHandled();
       if (action != null) {
-        setupCancel();
+        cancelLaoLaunch();
       }
     });
-  }
-
-  public static HomeViewModel obtainViewModel(Fragment fragment) {
-    ViewModelFactory factory = ViewModelFactory.getInstance(fragment.getActivity().getApplication());
-    HomeViewModel viewModel = new ViewModelProvider(fragment, factory).get(HomeViewModel.class);
-
-    return viewModel;
   }
 
   private void setupLaunchButton() {
@@ -95,13 +85,13 @@ public final class LaunchFragment extends Fragment {
     cancelButton.setOnClickListener(v -> mHomeViewModel.cancelNewLao());
   }
 
-  private void setupLaunch(String laoName) {
+  private void launchLao(String laoName) {
     mHomeViewModel.launchNewLao(laoName);
-    ((Button) getActivity().findViewById(R.id.tab_home)).performClick();
+    mHomeViewModel.openHome();
   }
 
-  private void setupCancel() {
+  private void cancelLaoLaunch() {
     mLaunchFragBinding.entryBoxLaunch.getText().clear();
-    ((Button) getActivity().findViewById(R.id.tab_home)).performClick();
+    mHomeViewModel.openHome();
   }
 }
