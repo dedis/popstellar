@@ -7,42 +7,42 @@ import { checkTimestampStaleness, checkWitnesses } from "../checker";
 
 export class UpdateLao implements MessageData {
 
-    public readonly object: ObjectType = ObjectType.LAO;
-    public readonly action: ActionType = ActionType.UPDATE_PROPERTIES;
+  public readonly object: ObjectType = ObjectType.LAO;
+  public readonly action: ActionType = ActionType.UPDATE_PROPERTIES;
 
-    public readonly id: Hash;
-    public readonly name: string;
-    public readonly last_modified: Timestamp;
-    public readonly witnesses: PublicKey[];
+  public readonly id: Hash;
+  public readonly name: string;
+  public readonly last_modified: Timestamp;
+  public readonly witnesses: PublicKey[];
 
-    constructor(msg: Partial<UpdateLao>) {
+  constructor(msg: Partial<UpdateLao>) {
 
-        if (!msg.name) throw new ProtocolError('Undefined \'name\' parameter encountered during \'UpdateLao\'');
-        this.name = msg.name;
+    if (!msg.name) throw new ProtocolError('Undefined \'name\' parameter encountered during \'UpdateLao\'');
+    this.name = msg.name;
 
-        if (!msg.last_modified) throw new ProtocolError('Undefined \'last_modified\' parameter encountered during \'UpdateLao\'');
-        checkTimestampStaleness(msg.last_modified);
-        this.last_modified = msg.last_modified;
+    if (!msg.last_modified) throw new ProtocolError('Undefined \'last_modified\' parameter encountered during \'UpdateLao\'');
+    checkTimestampStaleness(msg.last_modified);
+    this.last_modified = msg.last_modified;
 
-        if (!msg.witnesses) throw new ProtocolError('Undefined \'witnesses\' parameter encountered during \'UpdateLao\'');
-        checkWitnesses(msg.witnesses);
-        this.witnesses = [...msg.witnesses];
+    if (!msg.witnesses) throw new ProtocolError('Undefined \'witnesses\' parameter encountered during \'UpdateLao\'');
+    checkWitnesses(msg.witnesses);
+    this.witnesses = [...msg.witnesses];
 
-        if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'UpdateLao\'');
-        // FIXME take info from storage
-        /*const expectedHash = Hash.fromStringArray(msg.organizer.toString(), msg.creation.toString(), msg.name);
-        if (!expectedHash.equals(msg.id))
-            throw new ProtocolError('Invalid \'id\' parameter encountered during \'UpdateLao\': unexpected id value');*/
-        this.id = msg.id;
-    }
+    if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'UpdateLao\'');
+    // FIXME take info from storage
+    /*const expectedHash = Hash.fromStringArray(msg.organizer.toString(), msg.creation.toString(), msg.name);
+    if (!expectedHash.equals(msg.id))
+      throw new ProtocolError('Invalid \'id\' parameter encountered during \'UpdateLao\': unexpected id value');*/
+    this.id = msg.id;
+  }
 
-    public static fromJson(obj: any): UpdateLao {
+  public static fromJson(obj: any): UpdateLao {
 
-        // FIXME add JsonSchema validation to all "fromJson"
-        let correctness = true;
+    // FIXME add JsonSchema validation to all "fromJson"
+    let correctness = true;
 
-        return correctness
-            ? new UpdateLao(obj)
-            : (() => { throw new ProtocolError("add JsonSchema error message"); })();
-    }
+    return correctness
+      ? new UpdateLao(obj)
+      : (() => { throw new ProtocolError("add JsonSchema error message"); })();
+  }
 }
