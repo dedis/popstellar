@@ -86,11 +86,6 @@ public class HomeViewModel extends AndroidViewModel implements CameraPermissionV
     }
 
     @Override
-    public void onPermissionDenied() {
-        openCameraPermission();
-    }
-
-    @Override
     public int getScanDescription() {
         return R.string.qrcode_scanning_connect_lao;
     }

@@ -62,17 +62,6 @@ public final class CameraPermissionFragment extends Fragment {
   }
 
   @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
-
-    ((HomeActivity) getActivity()).setupHomeButton();
-    ((HomeActivity) getActivity()).setupConnectButton();
-    ((HomeActivity) getActivity()).setupLaunchButton();
-
-    setupCameraPermissionButton();
-  }
-
-  @Override
   public void onRequestPermissionsResult(
       int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     if (requestCode == HANDLE_CAMERA_PERM
