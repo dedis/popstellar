@@ -17,7 +17,7 @@ export const sampleCreateLaoQuery = `{"jsonrpc":"2.0","method":"publish","params
 export const mockEventName = 'Random Name';
 export const mockLocation = 'EPFL';
 export const mockCreationTime = 1610800000;
-export const mockStartTime = 1610822222;
+export const mockStartTime = 1676158068;
 export const mockEndTime = 1610899999;
 export const mockRollCallId = 100;
 
@@ -145,7 +145,6 @@ describe('=== WebsocketApi tests ===', function() {
     it('should create the correct request for requestCreateRollCall', function () {
       const mockScheduledTime = 1610844444;
       const mockDescription = 'random description';
-      wsApi.requestCreateRollCall(mockEventName, mockLocation);
       wsApi.requestCreateRollCall(mockEventName, mockLocation, mockStartTime);
       wsApi.requestCreateRollCall(mockEventName, mockLocation, -1, mockScheduledTime);
       wsApi.requestCreateRollCall(mockEventName, mockLocation, mockStartTime, -1, mockDescription);
