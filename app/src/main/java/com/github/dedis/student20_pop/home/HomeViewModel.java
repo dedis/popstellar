@@ -24,6 +24,7 @@ import com.github.dedis.student20_pop.model.network.method.message.data.lao.Stat
 import com.github.dedis.student20_pop.ui.qrcode.CameraPermissionViewModel;
 import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningViewModel;
 import com.google.android.gms.vision.barcode.Barcode;
+import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
 
 import java.net.URI;
@@ -57,16 +58,18 @@ public class HomeViewModel extends AndroidViewModel implements CameraPermissionV
     private final MutableLiveData<Map<String, Lao>> mLAOsById = new MutableLiveData<>();
     private final LiveData<List<Lao>> mLAOs = Transformations.map(mLAOsById, laosById ->
             new ArrayList<>(laosById.values()));
-    private final Gson gson;
+    private final Gson mGson;
     private final LAORepository mLAORepository;
-
     private Disposable disposable;
+    private final AndroidKeysetManager mKeysetManager;
 
-    public HomeViewModel(@NonNull Application application, Gson gson, LAORepository laoRepository) {
+    public HomeViewModel(@NonNull Application application, Gson gson, LAORepository laoRepository,
+                         AndroidKeysetManager keysetManager) {
         super(application);
 
         mLAORepository = laoRepository;
-        this.gson = gson;
+        mGson = gson;
+        mKeysetManager = keysetManager;
 
         subscribeToMessages();
     }
@@ -152,7 +155,7 @@ public class HomeViewModel extends AndroidViewModel implements CameraPermissionV
 
         // Log.d(TAG, "data: " + msg.getData() + " dataJSON: " + dataJson);
 
-        Data data = gson.fromJson(dataJson, Data.class);
+        Data data = mGson.fromJson(dataJson, Data.class);
 
         if (data instanceof StateLao) {
             StateLao stateLao = (StateLao) data;
