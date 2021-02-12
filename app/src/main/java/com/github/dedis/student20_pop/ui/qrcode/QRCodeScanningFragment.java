@@ -108,7 +108,6 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
     // If the permission was removed while the app was paused, switch to CameraPermissionFragment
     if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
         == PackageManager.PERMISSION_GRANTED) startCamera();
-    //TODO: else mQRCodeScanningViewModel.onPermissionDenied();
   }
 
   @Override
