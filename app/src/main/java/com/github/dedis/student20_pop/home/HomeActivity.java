@@ -55,10 +55,10 @@ public class HomeActivity extends AppCompatActivity implements OnCameraAllowedLi
             String action = stringEvent.getContentIfNotHandled();
             if (action != null) {
                 switch (action) {
-                    case "SCAN":
+                    case HomeViewModel.SCAN:
                         setupScanFragment();
                         break;
-                    case "REQUEST_CAMERA_PERMISSION":
+                    case HomeViewModel.REQUEST_CAMERA_PERMISSION:
                         setupCameraPermissionFragment();
                         break;
                 }

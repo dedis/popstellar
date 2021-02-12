@@ -3,7 +3,6 @@ package com.github.dedis.student20_pop.home;
 import android.Manifest;
 import android.app.Application;
 import android.content.pm.PackageManager;
-import android.text.Editable;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -14,7 +13,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
 import com.github.dedis.student20_pop.Event;
-import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.model.data.LAORepository;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.network.answer.Result;
@@ -22,7 +20,7 @@ import com.github.dedis.student20_pop.model.network.method.Broadcast;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
-import com.github.dedis.student20_pop.ui.HomeFragment;
+import com.github.dedis.student20_pop.ui.qrcode.CameraPermissionViewModel;
 import com.google.gson.Gson;
 
 import java.net.URI;
@@ -36,9 +34,12 @@ import java.util.Map;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class HomeViewModel extends AndroidViewModel {
+public class HomeViewModel extends AndroidViewModel implements CameraPermissionViewModel {
 
-    private static final String TAG = HomeViewModel.class.getSimpleName();
+    public static final String TAG = HomeViewModel.class.getSimpleName();
+
+    public static final String SCAN = "SCAN";
+    public static final String REQUEST_CAMERA_PERMISSION = "REQUEST_CAMERA_PERMISSION";
 
     private final MutableLiveData<Event<String>> mOpenLaoEvent = new MutableLiveData<>();
 
@@ -74,6 +75,16 @@ public class HomeViewModel extends AndroidViewModel {
         this.gson = gson;
 
         subscribeToMessages();
+    }
+
+    @Override
+    public void onPermissionGranted() {
+        openQrCodeScanning();
+    }
+
+    @Override
+    public void onPermissionDenied() {
+        openCameraPermission();
     }
 
     public void setupDummyLAO() {
@@ -233,11 +244,20 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     public void openConnect() {
-        if (ActivityCompat.checkSelfPermission(getApplication().getApplicationContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            mOpenConnectEvent.setValue(new Event<>("SCAN"));
+        if (ActivityCompat.checkSelfPermission(getApplication().getApplicationContext(),
+                Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            openQrCodeScanning();
         } else {
-            mOpenConnectEvent.setValue(new Event<>("REQUEST_CAMERA_PERMISSION"));
+            openCameraPermission();
         }
+    }
+
+    public void openQrCodeScanning() {
+        mOpenConnectEvent.setValue(new Event<>(SCAN));
+    }
+
+    public void openCameraPermission() {
+        mOpenConnectEvent.setValue(new Event<>(REQUEST_CAMERA_PERMISSION));
     }
 
     public void openLaunch() {
