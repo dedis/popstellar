@@ -150,11 +150,11 @@ public class TestJson {
     testData(new CreateLao("id", "name", 12L, "organizer", Arrays.asList("witness1", "witness2")));
   }
 
-  @Test
-  public void testStateLao() throws JsonProcessingException {
-    testData(
-        new StateLao("id", "name", 12L, 202L, "organizer", Arrays.asList("witness1", "witness2")));
-  }
+//  @Test
+//  public void testStateLao() throws JsonProcessingException {
+//    testData(
+//        new StateLao("id", "name", 12L, 202L, "organizer", Arrays.asList("witness1", "witness2")));
+//  }
 
   @Test
   public void testUpdateLao() throws JsonProcessingException {

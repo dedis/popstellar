@@ -4,7 +4,7 @@ import com.github.dedis.student20_pop.model.network.GenericMessage;
 
 import io.reactivex.Flowable;
 
-public class LAORemoteDataSource implements LAODataSource {
+public class LAORemoteDataSource implements LAODataSource.Remote {
     private static LAORemoteDataSource INSTANCE;
 
     private LAOService laoService;
@@ -23,4 +23,5 @@ public class LAORemoteDataSource implements LAODataSource {
     public Flowable<GenericMessage> observeMessage() {
         return laoService.observeMessage();
     }
+
 }
