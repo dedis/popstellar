@@ -1,14 +1,11 @@
 package com.github.dedis.student20_pop.ui.qrcode;
 
 import android.Manifest;
-import android.app.Activity;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,11 +13,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentCameraPermBinding;
 import com.github.dedis.student20_pop.home.HomeActivity;
-import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType;
-import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
 
 /** Fragment handling permission granting for the camera */
 public final class CameraPermissionFragment extends Fragment {
@@ -28,13 +22,23 @@ public final class CameraPermissionFragment extends Fragment {
   public static final String TAG = CameraPermissionFragment.class.getSimpleName();
   private static final int HANDLE_CAMERA_PERM = 2;
 
+  private final QRCodeScanningFragment.QRCodeScanningType qrCodeScanningType;
+
+  private final String eventId;
+
   private FragmentCameraPermBinding mCameraPermFragBinding;
 
   private CameraPermissionViewModel mCameraPermissionViewModel;
 
+  public CameraPermissionFragment(QRCodeScanningFragment.QRCodeScanningType qrCodeScanningType, String eventId) {
+    super();
+    this.qrCodeScanningType = qrCodeScanningType;
+    this.eventId = eventId;
+  }
 
   public static CameraPermissionFragment newInstance() {
-    return new CameraPermissionFragment();
+    // TODO: refactor eventId. Possibly rename method to reflect CONNECT_LAO
+    return new CameraPermissionFragment(QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO, null);
   }
 
   @Override

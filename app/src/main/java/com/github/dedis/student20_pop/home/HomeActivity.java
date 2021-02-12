@@ -14,14 +14,18 @@ import com.github.dedis.student20_pop.Event;
 import com.github.dedis.student20_pop.OrganizerActivity;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
+import com.github.dedis.student20_pop.ui.ConnectingFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
 import com.github.dedis.student20_pop.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.utility.ActivityUtils;
 import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
+import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
 
-public class HomeActivity extends AppCompatActivity implements OnCameraAllowedListener {
+import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO;
+
+public class HomeActivity extends AppCompatActivity implements QRCodeListener {
 
     private HomeViewModel mViewModel;
 
@@ -33,6 +37,10 @@ public class HomeActivity extends AppCompatActivity implements OnCameraAllowedLi
         setupHomeFragment();
 
         mViewModel = obtainViewModel(this);
+
+        setupHomeButton();
+        setupLaunchButton();
+        setupConnectButton();
 
         // Subscribe to "open lao" event
         mViewModel.getOpenLaoEvent().observe(this, stringEvent -> {
@@ -74,8 +82,9 @@ public class HomeActivity extends AppCompatActivity implements OnCameraAllowedLi
     }
 
     @Override
-    public void onCameraAllowedListener(QRCodeScanningFragment.QRCodeScanningType qrCodeScanningType, String eventId) {
-        setupScanFragment();
+    public void onQRCodeDetected(String data, QRCodeScanningFragment.QRCodeScanningType qrCodeScanningType, String eventId) {
+        //TODO:extract url and lao id
+        setupConnectingFragment("url", "lao_id");
     }
 
     public static HomeViewModel obtainViewModel(FragmentActivity activity) {
@@ -139,6 +148,16 @@ public class HomeActivity extends AppCompatActivity implements OnCameraAllowedLi
             launchFragment = LaunchFragment.newInstance();
             ActivityUtils.replaceFragmentInActivity(
                     getSupportFragmentManager(), launchFragment, R.id.fragment_container_main
+            );
+        }
+    }
+
+    private void setupConnectingFragment(String url, String laoId) {
+        ConnectingFragment connectingFragment = (ConnectingFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_connecting);
+        if (connectingFragment == null) {
+            connectingFragment = ConnectingFragment.newInstance(url, laoId);
+            ActivityUtils.replaceFragmentInActivity(
+                    getSupportFragmentManager(), connectingFragment, R.id.fragment_container_main
             );
         }
     }

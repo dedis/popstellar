@@ -10,6 +10,8 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+
+import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventType;
@@ -86,7 +88,7 @@ public class OrganizerActivity extends FragmentActivity
     switch (view.getId()) {
       case R.id.tab_home:
         // Future: different Home UI for organizer (without connect UI?)
-        Intent mainActivityIntent = new Intent(this, MainActivity.class);
+        Intent mainActivityIntent = new Intent(this, HomeActivity.class);
         startActivity(mainActivityIntent);
         break;
       case R.id.tab_identity:

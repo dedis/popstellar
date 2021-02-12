@@ -4,16 +4,6 @@
                                                        android:layout_width="match_parent"
                                                        android:layout_height="match_parent">
 
-        <include
-                layout="@layout/tab_home"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-
-        <include
-                layout="@layout/tab_connect_launch"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-
         <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline_horizontal"
                 android:layout_width="match_parent"
