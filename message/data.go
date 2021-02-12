@@ -1,178 +1,323 @@
-// message defines the received Json messages and their nested fields
 package message
 
 import (
+	"crypto/sha256"
 	"encoding/json"
+
+	"golang.org/x/xerrors"
 )
 
-type Data map[string]interface{}
+type Data struct {
+	CreateLAOData *CreateLAOData
+	UpdateLAOData *UpdateLAOData
+	StateLAOData  *StateLAOData
 
-// []byte are automatically decoded from base64 when unmarshalled, while strings (and json.RawMessage) are NOT
+	CreateMeetingData *CreateMeetingData
+	StateMeetingData  *StateMeetingData
 
-// all concatenation referenced here are made with the HashItems function, go check it out have any doubt of how we do it
+	CreateRollCallData *CreateRollCallData
+	OpenRollCallData   *OpenRollCallData
+	CloseRollCallData  *CloseRollCallData
 
-type DataCreateLAO struct {
-	Object string `json:"object"`
-	Action string `json:"action"`
-	//ID hash : SHA256(organizer||creation||name)
-	ID []byte `json:"id"`
-	// Name of the LAO
-	Name string `json:"name"`
-	//Creation's timestamp (Unix) (uint64)
-	Creation int64 `json:"creation"`
-	//Organizer's Public Key
-	Organizer []byte `json:"organizer"`
-	//List of Witnesses' Public keys
-	Witnesses [][]byte `json:"witness"`
+	WitnessMessageData *WitnessMessageData
 }
 
-type DataCreateMeeting struct {
+type CreateLAOData struct {
+	ID     []byte `json:"id"`
 	Object string `json:"object"`
 	Action string `json:"action"`
-	//ID hash : SHA256('M'||lao_id||creation||name)
-	ID []byte `json:"id"`
-	// Name of the Meeting
-	Name string `json:"name"`
-	//Creation's timestamp (Unix) (uint64)
-	Creation int64 `json:"creation"`
-	// meeting's location, optional
-	Location string `json:"location,omitempty"`
-	// meeting's Start time timestamp (Unix) (uint64)
+
+	Name      string      `json:"name"`
+	Creation  int64       `json:"creation"`
+	Organizer PublicKey   `json:"organizer"`
+	Witnesses []PublicKey `json:"witnesses"`
+}
+
+func (c *CreateLAOData) setID() error {
+	// TODO: calculate hash
+
+	return nil
+}
+
+func NewCreateLAOData(name string, creation int64, organizer PublicKey, witnesses []PublicKey) (*Data, error) {
+	create := &CreateLAOData{
+		Object:    "lao",
+		Action:    "create",
+		Name:      name,
+		Creation:  creation,
+		Organizer: organizer,
+		Witnesses: witnesses,
+	}
+
+	err := create.setID()
+	if err != nil {
+		return nil, xerrors.Errorf("failed to set ID for CreateLAOData: %v", err)
+	}
+
+	return &Data{
+		CreateLAOData: create,
+	}, nil
+}
+
+type UpdateLAOData struct {
+	ID     []byte `json:"id"`
+	Object string `json:"object"`
+	Action string `json:"action"`
+
+	Name         string      `json:"name"`
+	LastModified int64       `json:"last_modified"`
+	Witnesses    []PublicKey `json:"witnesses"`
+}
+
+type StateLAOData struct {
+	ID     []byte `json:"id"`
+	Object string `json:"object"`
+	Action string `json:"action"`
+
+	Name                   string                   `json:"name"`
+	LastModified           int64                    `json:"last_modified"`
+	Creation               int64                    `json:"creation"`
+	Organizer              PublicKey                `json:"organizer"`
+	Witnesses              []PublicKey              `json:"witnesses"`
+	ModificationID         []byte                   `json:"modification_id"`
+	ModificationSignatures []PublicKeySignaturePair `json:"modification_signatures"`
+}
+
+type CreateMeetingData struct {
+	ID     []byte `json:"id"`
+	Object string `json:"object"`
+	Action string `json:"action"`
+
+	Name     string `json:"name"`
+	Creation int64  `json:"creation"`
+	Location string `json:"location"`
+
 	Start int64 `json:"start"`
-	// meeting's End time timestamp (Unix) (uint64)
-	End int64 `json:"end"`
-	// arbitrary object, optional
-	Extra string `json:"extra,omitempty"`
+	End   int64 `json:"end"`
+
+	Extra json.RawMessage `json:"extra"`
 }
 
-type DataCreateRollCall struct {
+type StateMeetingData struct {
+	ID     []byte `json:"id"`
 	Object string `json:"object"`
 	Action string `json:"action"`
-	//ID hash SHA256('R'||lao_id||creation||name)
-	ID []byte `json:"id"`
-	// Name of the roll call
-	Name string `json:"name"`
-	//Creation's timestamp (Unix) (uint64)
-	Creation int64 `json:"creation"`
-	// roll call's location, optional
-	Location string `json:"location,omitempty"`
-	// roll call's Start time timestamp (Unix) (uint64)
+
+	Name     string `json:"name"`
+	Creation int64  `json:"creation"`
+	Location string `json:"location"`
+
 	Start int64 `json:"start"`
-	// roll call's scheduled time timestamp (Unix) (uint64)
-	Scheduled int64 `json:"scheduled"`
-	// An optional description of the roll call
-	Description string `json:"roll_call_description,omitempty"`
+	End   int64 `json:"end"`
+
+	ModificationID         []byte                   `json:"modification_id"`
+	ModificationSignatures []PublicKeySignaturePair `json:"modification_signatures"`
+
+	Extra json.RawMessage `json:"extra"`
 }
 
-type DataCloseRollCall struct {
+type CreateRollCallData struct {
+	ID     []byte `json:"id"`
 	Object string `json:"object"`
 	Action string `json:"action"`
-	//ID hash SHA256('R'||lao_id||creation||name)
-	ID []byte `json:"id"`
-	// Name of the roll call
-	Name string `json:"name"`
-	//start's time timestamp (Unix) (uint64)
+
+	Name        string `json:"name"`
+	Creation    int64  `json:"creation"`
+	Start       int64  `json:"start"`
+	Scheduled   int64  `json:"scheduled"`
+	Location    string `json:"location"`
+	Description string `json:"roll_call_description"`
+}
+
+type OpenRollCallActionType string
+
+var (
+	OpenRollCallAction   OpenRollCallActionType = "open"
+	ReopenRollCallAction OpenRollCallActionType = "reopen"
+)
+
+type OpenRollCallData struct {
+	ID     []byte                 `json:"id"`
+	Object string                 `json:"object"`
+	Action OpenRollCallActionType `json:"action"`
+
 	Start int64 `json:"start"`
-	//end's time timestamp (Unix) (uint64)
-	End int64 `json:"end"`
-	//List of Attendees' Public keys
-	Attendees [][]byte `json:"attendees"`
 }
 
-type DataOpenRollCall struct {
+type CloseRollCallData struct {
+	ID     []byte `json:"id"`
 	Object string `json:"object"`
 	Action string `json:"action"`
-	//ID hash SHA256('R'||lao_id||creation||name)
-	ID []byte `json:"id"`
-	//The start time corresponds to the time the event is opened/reopened
-	Start int64 `json:"start"`
+
+	Start     int64       `json:"start"`
+	End       int64       `json:"end"`
+	Attendees []PublicKey `json:"attendees"`
 }
 
-// Not implemented yet
-type DataCreatePoll struct {
+type WitnessMessageData struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
-	//ID hash : SHA256( 'P'||lao_id||creation||name)
-	ID []byte `json:"id"`
-	// Name of the poll
-	Name string `json:"name"`
-	//Creation's timestamp (Unix) (uint64)
-	Creation int64 `json:"creation"`
-	// meeting's location, optional
-	Location string `json:"location,omitempty"`
-	// meeting's Start time timestamp (Unix) (uint64)
-	Start int64 `json:"start"`
-	// meeting's End time timestamp (Unix) (uint64)
-	End int64 `json:"end"`
-	// arbitrary object, optional
-	Extra string `json:"extra"`
+
+	MessageID []byte    `json:"message_id"`
+	Signature Signature `json:"signature"`
 }
 
-type DataUpdateLAO struct {
-	Object string `json:"object"`
-	Action string `json:"action"`
-	// LAO ID. Not recomputed if the name changes
-	ID []byte `json:"id"`
-	// Name of the LAO
-	Name string `json:"name"`
-	//Last modification's timestamp (Unix) (uint64)
-	LastModified int64 `json:"last_modified"`
-	// list of Witnesses' Public keys
-	Witnesses [][]byte `json:"witnesses"`
+func (d *Data) UnmarshalJSON(data []byte) error {
+	type internal struct {
+		Object string `json:"object"`
+		Action string `json:"action"`
+	}
+
+	tmp := &internal{}
+
+	err := json.Unmarshal(data, tmp)
+	if err != nil {
+		return xerrors.Errorf("failed to parse object and action: %v", err)
+	}
+
+	switch tmp.Object {
+	case "lao":
+		err := d.parseLAOData(tmp.Action, data)
+		if err != nil {
+			return xerrors.Errorf("failed to parse lao data object: %v", err)
+		}
+		return nil
+	case "message":
+		err := d.parseMessageData(tmp.Action, data)
+		if err != nil {
+			return xerrors.Errorf("failed to parse message data object: %v", err)
+		}
+		return nil
+	case "meeting":
+		err := d.parseMeetingData(tmp.Action, data)
+		if err != nil {
+			return xerrors.Errorf("failed to parse meeting data object: %v", err)
+		}
+		return nil
+	case "roll_call":
+		err := d.parseRollCallData(tmp.Action, data)
+		if err != nil {
+			return xerrors.Errorf("failed to parse roll call data object: %v", err)
+		}
+		return nil
+	default:
+		return xerrors.Errorf("invalid data object: %s", tmp.Object)
+	}
 }
 
-type DataStateLAO struct {
-	Object string `json:"object"`
-	Action string `json:"action"`
-	// LAO ID. Not recomputed if the name changes
-	ID []byte `json:"id"`
-	// Name of the LAO
-	Name string `json:"name"`
-	//Creation's timestamp (Unix) (uint64)
-	Creation int64 `json:"creation"`
-	//Last modification timestamp (Unix) (uint64)
-	LastModified int64 `json:"last_modified"`
-	//Organizer's Public Key
-	Organizer []byte `json:"organizer"`
-	// list of Witnesses' Public keys
-	Witnesses [][]byte `json:"witnesses"`
-	// id of the modification (either creation/update)
-	ModificationId []byte `json:"modification_id"`
-	// signatures of the witnesses on the modification message (either creation/update)
-	ModificationSignatures []json.RawMessage `json:"modification_signatures"`
+func (d *Data) parseRollCallData(action string, data []byte) error {
+	switch action {
+	case "create":
+		create := &CreateRollCallData{}
+
+		err := json.Unmarshal(data, create)
+		if err != nil {
+			return xerrors.Errorf("failed to parse create lao data: %v", err)
+		}
+
+		d.CreateRollCallData = create
+		return nil
+	case "open", "reopen":
+		open := &OpenRollCallData{}
+
+		err := json.Unmarshal(data, open)
+		if err != nil {
+			return xerrors.Errorf("failed to parse create lao data: %v", err)
+		}
+
+		d.OpenRollCallData = open
+		return nil
+	case "close":
+		closeInst := &CloseRollCallData{}
+
+		err := json.Unmarshal(data, closeInst)
+		if err != nil {
+			return xerrors.Errorf("failed to parse create lao data: %v", err)
+		}
+
+		d.CloseRollCallData = closeInst
+		return nil
+	default:
+		return xerrors.Errorf("invalid action: %s", action)
+	}
 }
 
-type DataStateMeeting struct {
-	Object string `json:"object"`
-	Action string `json:"action"`
-	// Meeting ID. not recomputed if the name changes
-	ID []byte `json:"id"`
-	// Name of the Meeting
-	Name string `json:"name"`
-	//Creation timestamp (Unix) (uint64)
-	Creation int64 `json:"creation"`
-	//LastModified timestamp (Unix) (uint64)
-	LastModified int64 `json:"last_modified"`
-	//optional
-	Location string `json:"location,omitempty"`
-	//Start timestamp (Unix) (uint64)
-	Start int64 `json:"start"`
-	//End timestamp (optional) (Unix) (uint64)
-	End int64 `json:"end"`
-	// optional
-	Extra string `json:"extra,omitempty"`
-	//Organiser: Public Key
-	Organizer string `json:"organize"`
-	// id of the modification (either creation/update)
-	ModificationId []byte `json:"modification_id"`
-	// signatures of the witnesses on the modification message (either creation/update)
-	ModificationSignatures []json.RawMessage `json:"modification_signatures"`
+func (d *Data) parseMessageData(action string, data []byte) error {
+	if action != "witness" {
+		return xerrors.Errorf("invalid action type: %s", action)
+	}
+
+	witness := &WitnessMessageData{}
+	err := json.Unmarshal(data, witness)
+	if err != nil {
+		return xerrors.Errorf("failed to parse witness action: %v", err)
+	}
+
+	d.WitnessMessageData = witness
+	return nil
 }
 
-type DataWitnessMessage struct {
-	Object    string `json:"object"`
-	Action    string `json:"action"`
-	MessageId []byte `json:"message_id"`
-	//Sign(message_id) by the witness over the message_id field of the message to witness
-	Signature []byte `json:"signature"`
+func (d *Data) parseMeetingData(action string, data []byte) error {
+	switch action {
+	case "create":
+		create := &CreateMeetingData{}
+
+		err := json.Unmarshal(data, create)
+		if err != nil {
+			return xerrors.Errorf("failed to parse create lao data: %v", err)
+		}
+
+		d.CreateMeetingData = create
+		return nil
+	case "state":
+		state := &StateMeetingData{}
+
+		err := json.Unmarshal(data, state)
+		if err != nil {
+			return xerrors.Errorf("failed to parse state lao data: %v", err)
+		}
+
+		d.StateMeetingData = state
+		return nil
+	default:
+		return xerrors.Errorf("invalid action: %s", action)
+
+	}
+}
+
+func (d *Data) parseLAOData(action string, data []byte) error {
+	switch action {
+	case "create":
+		create := &CreateLAOData{}
+
+		err := json.Unmarshal(data, create)
+		if err != nil {
+			return xerrors.Errorf("failed to parse create lao data: %v", err)
+		}
+
+		d.CreateLAOData = create
+		return nil
+	case "update_properties":
+		update := &UpdateLAOData{}
+
+		err := json.Unmarshal(data, update)
+		if err != nil {
+			return xerrors.Errorf("failed to parse update lao data: %v", err)
+		}
+
+		d.UpdateLAOData = update
+		return nil
+	case "state":
+		state := &StateLAOData{}
+
+		err := json.Unmarshal(data, state)
+		if err != nil {
+			return xerrors.Errorf("failed to parse state lao data: %v", err)
+		}
+
+		d.StateLAOData = state
+		return nil
+	default:
+		return xerrors.Errorf("invalid action: %s", action)
+	}
 }
