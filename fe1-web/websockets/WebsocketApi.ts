@@ -1,15 +1,23 @@
-import { Hash, KeyPair, Timestamp, PublicKey } from "Model/Objects";
-import { JsonRpcRequest, JsonRpcMethod } from 'Model/Network';
-import { Publish } from 'Model/Network/Method';
-import { Message } from 'Model/Network/Method/Message';
+import {Hash, KeyPair, PublicKey, Timestamp} from "Model/Objects";
+import {JsonRpcMethod, JsonRpcRequest} from 'Model/Network';
+import {Publish} from 'Model/Network/Method';
+import {Message} from 'Model/Network/Method/Message';
 import {
-    CreateLao, UpdateLao, StateLao,
-    CreateRollCall, OpenRollCall, CloseRollCall,
-    CreateMeeting, StateMeeting, WitnessMessage, MessageData,
-    } from 'Model/Network/Method/Message/data';
-import { eventTags, getCurrentLao, getCurrentTime, toString64 } from './WebsocketUtils';
+  ActionType,
+  CloseRollCall,
+  CreateLao,
+  CreateMeeting,
+  CreateRollCall,
+  MessageData,
+  OpenRollCall,
+  StateLao,
+  StateMeeting,
+  UpdateLao,
+  WitnessMessage,
+} from 'Model/Network/Method/Message/data';
+import {eventTags, getCurrentLao, getCurrentTime, toString64} from './WebsocketUtils';
 import WebsocketLink from './WebsocketLink';
-import { Channel, channelFromId, ROOT_CHANNEL } from "Model/Objects/Channel";
+import {Channel, channelFromId, ROOT_CHANNEL} from "Model/Objects/Channel";
 
 
 /* eslint-disable no-underscore-dangle */
@@ -35,7 +43,7 @@ export function requestUpdateLao(name: string, witnesses?: PublicKey[]) {
   const currentParams = getCurrentLao().params;
 
   let message = new UpdateLao({
-    id: Hash.fromStringArray(currentParams.message.data.organizer, currentParams.message.data.creation, name),
+    id: Hash.fromStringArray(currentParams.message.data.organizer, currentParams.message.data.creation.toString(), name),
     name: name,
     last_modified: time,
     witnesses: (witnesses === undefined) ? currentParams.message.data.witnesses : witnesses,
@@ -55,7 +63,7 @@ export function requestStateLao() {
     last_modified: getCurrentTime(),
     organizer: laoData.organizer,
     witnesses: laoData.witnesses,
-    modification_id: '', // FIXME need modification_id from storage (waiting for storage)
+    modification_id: Hash.fromString(''), // FIXME need modification_id from storage (waiting for storage)
     modification_signatures :[], // FIXME need modification_signatures from storage (waiting for storage)
   });
 
@@ -97,7 +105,7 @@ export function requestStateMeeting(startTime: Timestamp) {
     location: laoData.location,
     end: laoData.end,
     extra: laoData.extra,
-    modification_id: '', // FIXME need modification_id from storage (waiting for storage)
+    modification_id: Hash.fromString(''), // FIXME need modification_id from storage (waiting for storage)
     modification_signatures :[], // FIXME need modification_signatures from storage (waiting for storage)
   });
 
@@ -147,11 +155,12 @@ export function requestCreateRollCall(
  * optional start time (Timestamp). If the start time is not specified, then the current time
  * will be used instead */
 export function requestOpenRollCall(rollCallId: Number, start?: Timestamp) {
-    const rollCall = { creation: 444, name: 'r-cName' }; // FIXME: hardcoded
+    const rollCall = { creation: 1609455600, name: 'r-cName' }; // FIXME: hardcoded
     const laoId = getCurrentLao().params.message.data.id;
     const startTime = (start === undefined) ? getCurrentTime() : start;
 
     let message = new OpenRollCall({
+      action: ActionType.OPEN,
       id: Hash.fromStringArray(eventTags.ROLL_CALL, toString64(laoId), rollCall.creation.toString(), rollCall.name),
       start: startTime,
     });
@@ -170,10 +179,11 @@ export function requestReopenRollCall(rollCallId: Number, start?: Timestamp) {
  * list of attendees (Array of public keys) */
 export function requestCloseRollCall(rollCallId: Number, attendees: PublicKey[]) {
   // FIXME: functionality is clearly incomplete here
-  const rollCall = { creation: 444, start: 555, name: 'r-cName' }; // TODO get roll call by id from localStorage
+  const rollCall = { creation: 1609455600, start: 1609455601, name: 'r-cName' }; // TODO get roll call by id from localStorage
   const laoId = getCurrentLao().params.message.data.id;
 
   let message = new CloseRollCall({
+    action: ActionType.REOPEN,
     id: Hash.fromStringArray(eventTags.ROLL_CALL, toString64(laoId), rollCall.creation.toString(), rollCall.name),
     start: rollCall.start,
     end: getCurrentTime(),
