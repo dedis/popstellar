@@ -29,7 +29,7 @@ import java.io.IOException;
 
 import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO;
 
-/** Fragment used to display the Connect UI */
+/** Fragment handling the QR code scanning */
 public final class QRCodeScanningFragment extends Fragment implements QRCodeListener {
 
   public static final String TAG = QRCodeScanningFragment.class.getSimpleName();
@@ -87,6 +87,11 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
 
     mQrCodeFragBinding = FragmentQrcodeBinding.inflate(inflater, container, false);
 
+    preview = mQrCodeFragBinding.qrCameraPreview;
+    createCamera();
+
+    mQrCodeFragBinding.scanDescription.setText(R.string.qrcode_scanning_connect_lao);
+
     mQrCodeFragBinding.setLifecycleOwner(getActivity());
 
     return mQrCodeFragBinding.getRoot();
@@ -126,13 +131,13 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
     ((HomeActivity) getActivity()).setupLaunchButton();
   }
 
-  private CameraSource createCamera() {
+  private void createCamera() {
     BarcodeDetector qrDetector =
         new BarcodeDetector.Builder(getContext()).setBarcodeFormats(Barcode.QR_CODE).build();
 
     qrDetector.setProcessor(new QRFocusingProcessor(qrDetector, this, qrCodeScanningType, eventId));
 
-    return new CameraSource.Builder(requireContext(), qrDetector)
+    camera = new CameraSource.Builder(requireContext(), qrDetector)
         .setFacing(CameraSource.CAMERA_FACING_BACK)
         .setRequestedPreviewSize(
             getResources().getInteger(R.integer.requested_preview_width),
