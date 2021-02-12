@@ -14,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentHomeBinding;
 import com.github.dedis.student20_pop.databinding.FragmentQrcodeBinding;
@@ -35,14 +37,16 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
   public static final String TAG = QRCodeScanningFragment.class.getSimpleName();
   private static final int HANDLE_GMS = 9001;
 
+  private FragmentQrcodeBinding mQrCodeFragBinding;
+
+  private QRCodeScanningViewModel mQRCodeScanningViewModel;
+
   private CameraSource camera;
   private CameraPreview preview;
-  private OnCameraNotAllowedListener onCameraNotAllowedListener;
   private QRCodeListener qrCodeListener;
   private QRCodeScanningType qrCodeScanningType;
   private String eventId;
 
-  private FragmentQrcodeBinding mQrCodeFragBinding;
 
   /** Default Fragment constructor */
   public QRCodeScanningFragment() {
@@ -67,16 +71,8 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
   @Override
   public void onAttach(@NonNull Context context) {
     super.onAttach(context);
-    /*
-    if (context instanceof OnCameraAllowedListener)
-      onCameraNotAllowedListener = (OnCameraNotAllowedListener) context;
-    else
-      throw new ClassCastException(
-          context.toString() + " must implement OnCameraNotAllowedListener");
-
     if (context instanceof QRCodeListener) qrCodeListener = (QRCodeListener) context;
     else throw new ClassCastException(context.toString() + " must implement QRCodeListener");
-     */
   }
 
   @Override
@@ -85,66 +81,68 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
 
+
     mQrCodeFragBinding = FragmentQrcodeBinding.inflate(inflater, container, false);
 
-    preview = mQrCodeFragBinding.qrCameraPreview;
-    createCamera();
-
-    mQrCodeFragBinding.scanDescription.setText(R.string.qrcode_scanning_connect_lao);
-
-    mQrCodeFragBinding.setLifecycleOwner(getActivity());
-
-    return mQrCodeFragBinding.getRoot();
-    /*
-    View view = inflater.inflate(R.layout.fragment_qrcode, container, false);
-
-    preview = view.findViewById(R.id.qr_camera_preview);
-    TextView scanDescription = view.findViewById(R.id.scan_description);
-
-    switch (qrCodeScanningType) {
-      case CONNECT_LAO:
-        scanDescription.setText(R.string.qrcode_scanning_connect_lao);
-        break;
-      case ADD_ROLL_CALL_ATTENDEE:
-        scanDescription.setText(R.string.qrcode_scanning_add_attendee);
-        break;
-      case ADD_WITNESS:
-        scanDescription.setText(R.string.qrcode_scanning_add_witness);
-        break;
+    FragmentActivity activity = getActivity();
+    if (activity instanceof HomeActivity) {
+      mQRCodeScanningViewModel = HomeActivity.obtainViewModel(activity);
+    } else {
+      throw new IllegalArgumentException("cannot obtain view model");
     }
 
-    // Check for the camera permission, if is is not granted, switch to CameraPermissionFragment
-    if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
-        == PackageManager.PERMISSION_GRANTED) camera = createCamera();
-    else onCameraNotAllowedListener.onCameraNotAllowedListener(qrCodeScanningType, eventId);
+    preview = mQrCodeFragBinding.qrCameraPreview;
 
-    return view;
-     */
+    mQrCodeFragBinding.scanDescription.setText(mQRCodeScanningViewModel.getScanDescription());
+
+    mQrCodeFragBinding.setLifecycleOwner(activity);
+
+    createCamera();
+
+    return mQrCodeFragBinding.getRoot();
   }
 
   @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
+  public void onResume() {
+    super.onResume();
+    // If the permission was removed while the app was paused, switch to CameraPermissionFragment
+    if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+        == PackageManager.PERMISSION_GRANTED) startCamera();
+    //TODO: else mQRCodeScanningViewModel.onPermissionDenied();
+  }
 
-    ((HomeActivity) getActivity()).setupHomeButton();
-    ((HomeActivity) getActivity()).setupConnectButton();
-    ((HomeActivity) getActivity()).setupLaunchButton();
+  @Override
+  public void onPause() {
+    super.onPause();
+    if (preview != null) preview.stop();
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+    if (preview != null) preview.release();
+  }
+
+  @Override
+  public void onQRCodeDetected(String data, QRCodeScanningType qrCodeScanningType, String eventId) {
+    Log.d(TAG, "QR Code detected");
+    qrCodeListener.onQRCodeDetected(data, qrCodeScanningType, eventId);
   }
 
   private void createCamera() {
     BarcodeDetector qrDetector =
-        new BarcodeDetector.Builder(getContext()).setBarcodeFormats(Barcode.QR_CODE).build();
+            new BarcodeDetector.Builder(getContext()).setBarcodeFormats(Barcode.QR_CODE).build();
 
     qrDetector.setProcessor(new QRFocusingProcessor(qrDetector, this, qrCodeScanningType, eventId));
 
     camera = new CameraSource.Builder(requireContext(), qrDetector)
-        .setFacing(CameraSource.CAMERA_FACING_BACK)
-        .setRequestedPreviewSize(
-            getResources().getInteger(R.integer.requested_preview_width),
-            getResources().getInteger(R.integer.requested_preview_height))
-        .setRequestedFps(15.0f)
-        .setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)
-        .build();
+            .setFacing(CameraSource.CAMERA_FACING_BACK)
+            .setRequestedPreviewSize(
+                    getResources().getInteger(R.integer.requested_preview_width),
+                    getResources().getInteger(R.integer.requested_preview_height))
+            .setRequestedFps(15.0f)
+            .setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)
+            .build();
   }
 
   private void startCamera() throws SecurityException {
@@ -162,33 +160,6 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
         camera = null;
       }
     }
-  }
-
-  @Override
-  public void onResume() {
-    super.onResume();
-    // If the permission was removed while the app was paused, switch to CameraPermissionFragment
-
-    if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
-        == PackageManager.PERMISSION_GRANTED) startCamera();
-    else onCameraNotAllowedListener.onCameraNotAllowedListener(qrCodeScanningType, eventId);
-  }
-
-  @Override
-  public void onPause() {
-    super.onPause();
-    if (preview != null) preview.stop();
-  }
-
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-    if (preview != null) preview.release();
-  }
-
-  @Override
-  public void onQRCodeDetected(String data, QRCodeScanningType qrCodeScanningType, String eventId) {
-    qrCodeListener.onQRCodeDetected(data, qrCodeScanningType, eventId);
   }
 
   /**

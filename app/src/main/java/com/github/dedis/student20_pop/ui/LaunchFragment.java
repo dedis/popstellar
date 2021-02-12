@@ -49,10 +49,6 @@ public final class LaunchFragment extends Fragment {
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
-    ((HomeActivity) getActivity()).setupHomeButton();
-    ((HomeActivity) getActivity()).setupConnectButton();
-    ((HomeActivity) getActivity()).setupLaunchButton();
-
     setupLaunchButton();
     setupCancelButton();
 
