@@ -1,6 +1,7 @@
 package message
 
 import (
+	"encoding/base64"
 	"encoding/json"
 
 	"golang.org/x/xerrors"
@@ -8,8 +9,8 @@ import (
 
 type Answer struct {
 	ID     *int    `json:"id"`
-	Result *Result `json:"result"`
-	Error  *Error  `json:"error"`
+	Result *Result `json:"result,omitempty"`
+	Error  *Error  `json:"error,omitempty"`
 }
 
 type Result struct {
@@ -25,9 +26,24 @@ type Error struct {
 type PublicKey []byte
 type Signature []byte
 
+func (p PublicKey) String() string {
+	return base64.StdEncoding.EncodeToString(p)
+}
+
 type PublicKeySignaturePair struct {
 	Witness   PublicKey `json:"witness"`
 	Signature Signature `json:"signature"`
+}
+
+func (r *Result) MarshalJSON() ([]byte, error) {
+	if r.General != nil {
+		if *r.General == 0 {
+			return json.Marshal(r.General)
+		}
+		return nil, xerrors.Errorf("invalid result value: %d", *r.General)
+	}
+
+	return json.Marshal(r.Catchup)
 }
 
 func (r *Result) UnmarshalJSON(data []byte) error {
