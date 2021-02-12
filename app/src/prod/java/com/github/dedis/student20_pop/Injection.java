@@ -4,10 +4,12 @@ import android.app.Application;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.student20_pop.model.data.LAODatabase;
+import com.github.dedis.student20_pop.model.data.LAOLocalDataSource;
 import com.github.dedis.student20_pop.model.data.LAORemoteDataSource;
 import com.github.dedis.student20_pop.model.data.LAORepository;
-import com.github.dedis.student20_pop.model.network.GenericMessage;
 import com.github.dedis.student20_pop.model.data.LAOService;
+import com.github.dedis.student20_pop.model.network.GenericMessage;
 import com.github.dedis.student20_pop.model.network.answer.Answer;
 import com.github.dedis.student20_pop.model.network.method.Message;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
@@ -56,6 +58,8 @@ public class Injection {
                 .build();
 
         LAOService service = scarlet.create(LAOService.class);
-        return LAORepository.getInstance(LAORemoteDataSource.getInstance(service));
+        LAODatabase db = LAODatabase.getDatabase(application);
+
+        return LAORepository.getInstance(LAORemoteDataSource.getInstance(service), LAOLocalDataSource.getInstance(db));
     }
 }
