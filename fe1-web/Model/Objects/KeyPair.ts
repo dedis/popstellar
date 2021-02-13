@@ -1,36 +1,12 @@
-import { encodeBase64} from "tweetnacl-util";
-import { PublicKey } from "./PublicKey";
-import { PrivateKey } from "./PrivateKey";
-import { sign } from "tweetnacl";
-import { getStore } from "Store/configureStore";
+import { PublicKey, PrivateKey } from '.';
 
 export class KeyPair {
 
-  public static publicKey: PublicKey;
-  public static privateKey: PrivateKey;
+  public readonly publicKey: PublicKey;
+  public readonly privateKey: PrivateKey;
 
-  /**
-   * Initialize the keychain with a set of keys
-   */
-  public static initialise() {
-
-    const { pubKey } = getStore().getState().keypairReducer;
-    const { secKey } = getStore().getState().keypairReducer;
-
-    if (pubKey.length === 0 || secKey.length === 0) {
-      // generate a new keypair
-      const pair = sign.keyPair();
-
-      const keys = { pubKey: encodeBase64(pair.publicKey), secKey: encodeBase64(pair.secretKey) };
-      this.publicKey = new PublicKey(keys.pubKey);
-      this.privateKey = new PrivateKey(keys.secKey);
-
-      getStore().dispatch({ type: 'SET_KEYPAIR', value: keys });
-
-    } else {
-      // fill with existing keys from storage
-      this.publicKey = new PublicKey(pubKey);
-      this.privateKey = new PrivateKey(secKey);
-    }
+  constructor(publicKey: PublicKey, privateKey: PrivateKey) {
+    this.publicKey = publicKey;
+    this.privateKey = privateKey;
   }
 }

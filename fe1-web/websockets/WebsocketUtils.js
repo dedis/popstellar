@@ -1,8 +1,6 @@
-import { decodeUTF8, encodeBase64, decodeBase64 } from 'tweetnacl-util';
-import { sign } from 'tweetnacl';
+import { encodeBase64 } from 'tweetnacl-util';
 import { sha256 } from 'js-sha256';
 import * as b64 from 'base-64';
-import { getStore } from '../Store/configureStore';
 
 /* eslint-disable no-underscore-dangle */
 
@@ -45,35 +43,9 @@ export const eventTags = Object.freeze({
   ROLL_CALL: 'R',
 });
 
-/** Set a new key pair for the client in the local storage */
-const _createKeyPair = () => {
-  const pair = sign.keyPair();
-  const keys = { pubKey: encodeBase64(pair.publicKey), secKey: encodeBase64(pair.secretKey) };
-  getStore().dispatch({ type: 'SET_KEYPAIR', value: keys });
-
-  return keys;
-};
-
-/** Return the user public key (base64 string) or create it if missing */
-export const getPublicKey = () => {
-  const { pubKey } = getStore().getState().keypairReducer;
-
-  // create a new keypair for the user
-  if (pubKey.length === 0) return _createKeyPair().pubKey;
-  return pubKey;
-};
-
-/** Return the user secret key (base64 string) or create it if missing */ // TODO how to do better?
-export const getSecretKey = () => {
-  const { secKey } = getStore().getState().keypairReducer;
-
-  // create a new keypair for the user
-  if (secKey.length === 0) return _createKeyPair().secKey;
-  return secKey;
-};
-
 /** Return the current LAO the client is connected to */
-export const getCurrentLao = () => getStore().getState().currentLaoReducer.lao;
+// FIXME remove when not used in the project anymore
+export const getCurrentLao = () => 0; // getStore().getState().currentLaoReducer.lao;
 
 /** Transform a string to a base64 string */
 export const toString64 = (str) => b64.encode(str);
@@ -92,7 +64,7 @@ export const PendingRequest = class {
     this.retryCount = retryCount;
   }
 };
-
+/*
 /**
  * Sign a string using a private key
  *
@@ -100,11 +72,11 @@ export const PendingRequest = class {
  * @param secKey base64 encoded private key used for signing. If not specified, the key
  * stored in the client's localStorage will be used
  * @returns {string} base64 encoded signature over the strings using client secret key
- */
+ *
 export const signString = (str, secKey = undefined) => {
   const key = (secKey === undefined) ? getSecretKey() : secKey;
   return encodeBase64(sign.detached(decodeUTF8(str), decodeBase64(key)));
-};
+}; */
 
 /**
  * Escape any character '"' and '\' from a string

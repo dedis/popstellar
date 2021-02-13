@@ -8,13 +8,14 @@ import {
   StateLao, StateMeeting,
   UpdateLao, WitnessMessage
 } from '../../../Model/Network/Method/Message/data';
+import { initialise } from '../../../Store/Storage';
 import { ProtocolError } from '../../../Model/Network';
-import {Base64Data, Hash, PrivateKey, PublicKey, Signature, Timestamp} from "../../../Model/Objects";
+import { Base64Data, Hash, PrivateKey, PublicKey, Signature, Timestamp } from "../../../Model/Objects";
 import { sign } from "tweetnacl";
 import { encodeBase64 } from "tweetnacl-util";
 
-const assert = require('assert');
 const assertChai = require('chai').assert;
+
 
 const STALE_TIMESTAMP = new Timestamp(1514761200);    // 1st january 2018
 const STANDARD_TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
@@ -37,6 +38,15 @@ const _generateKeyPair = () => {
 
 
 describe('=== fromJson object checks ===', function() {
+
+  beforeAll(() => {
+    const promise = new Promise((resolve, reject) => {
+      initialise();
+    });
+    promise.then(
+      () => console.log('storage configured (printed from storage setup)'),
+    );
+  });
 
   const sampleKey1: PublicKey = _generateKeyPair().pubKey;
   const sampleKey2: PublicKey = _generateKeyPair().pubKey;
