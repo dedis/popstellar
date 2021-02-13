@@ -1,4 +1,7 @@
-const initialState = { pubKey: [], secKey: [] };
+import { AnyAction } from 'redux';
+import { KeyPairData } from '../objects';
+
+const initialState: KeyPairData = { publicKey: undefined, privateKey: undefined };
 
 /**
  * Reducer to store a set of public/private key
@@ -14,12 +17,12 @@ const initialState = { pubKey: [], secKey: [] };
  * @returns {{secKey: ([]|*[]|string), pubKey: ([]|*[]|string)}|{secKey: [], pubKey: []}}
  * new key pair if action is valid, old key pair otherwise
  */
-function keypairReducer(state = initialState, action) {
+function keypairReducer(state: KeyPairData = initialState, action: AnyAction): KeyPairData {
   if (action.type === 'SET_KEYPAIR') {
     const nextState = {
       ...state,
-      pubKey: action.value.pubKey,
-      secKey: action.value.secKey,
+      publicKey: action.value.publicKey,
+      privateKey: action.value.privateKey,
     };
     return nextState || state;
   }

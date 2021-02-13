@@ -8,13 +8,16 @@
       "mjs": "never",
       "jsx": "never",
       "ts": "never",
-      "tsx": "never"
+      "tsx": "never",
+      "vue": "never"
     }]
   },
+  // we disable import/extensions eslint errors. Eslint underlines every import due to an
+  // bug between typescript and eslint using the airbnb config
   "settings": {
     "import/resolver": {
       "node": {
-        "extensions": [".mjs", ".js", ".jsx", ".ts", ".tsx", ".json"]
+        "extensions": [".mjs", ".js", ".jsx", ".ts", ".tsx", ".json", ".vue"]
       }
     }
   }

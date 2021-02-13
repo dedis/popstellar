@@ -6,3 +6,4 @@ export * from './KeyPair';
 export * from './Signature';
 export * from './Timestamp';
 export * from './WitnessSignature';
+export * from './Lao';

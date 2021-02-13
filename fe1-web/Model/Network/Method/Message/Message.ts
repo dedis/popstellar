@@ -1,6 +1,7 @@
-import { Base64Data, Hash, PublicKey, KeyPair, Signature, WitnessSignature } from "Model/Objects";
+import { Base64Data, Hash, PublicKey, Signature, WitnessSignature } from "Model/Objects";
 import { MessageData, checkWitnessSignatures, buildMessageData, encodeMessageData } from './data';
 import { ProtocolError } from "../../ProtocolError";
+import { getStorageKeyPair } from "../../../../Store/Storage";
 
 export class Message {
   public readonly data: Base64Data;
@@ -34,8 +35,9 @@ export class Message {
 
     if (!msg.message_id)
       throw new ProtocolError('Undefined \'message_id\' parameter encountered during \'Message\' creation');
+
     const expectedHash = Hash.fromStringArray(msg.data.toString(), msg.signature.toString());
-    if (expectedHash !== msg.message_id)
+    if (!expectedHash.equals(msg.message_id))
       throw new ProtocolError('Invalid \'message_id\' parameter encountered during \'CreateLao\': unexpected id value');
     this.message_id = msg.message_id;
 
@@ -47,11 +49,11 @@ export class Message {
 
   public static fromData(data: MessageData, witnessSignatures?: WitnessSignature[]): Message {
     const encodedDataJson: Base64Data = encodeMessageData(data);
-    const signature: Signature = KeyPair.privateKey.sign(encodedDataJson);
+    const signature: Signature = getStorageKeyPair().getPrivateKey().sign(encodedDataJson);
 
     return new Message({
       data: encodedDataJson,
-      sender: KeyPair.publicKey,
+      sender: getStorageKeyPair().getPublicKey(),
       signature: signature,
       message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
       witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
