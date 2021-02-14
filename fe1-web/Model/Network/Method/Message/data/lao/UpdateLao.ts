@@ -4,6 +4,8 @@ import { Timestamp } from "Model/Objects/Timestamp";
 import { ActionType, MessageData, ObjectType } from "../messageData";
 import { ProtocolError } from "../../../../ProtocolError";
 import { checkTimestampStaleness, checkWitnesses } from "../checker";
+import {getStorageCurrentLao} from "../../../../../../Store/Storage";
+import {Lao} from "../../../../../Objects";
 
 export class UpdateLao implements MessageData {
 
@@ -22,18 +24,18 @@ export class UpdateLao implements MessageData {
 
     if (!msg.last_modified) throw new ProtocolError('Undefined \'last_modified\' parameter encountered during \'UpdateLao\'');
     checkTimestampStaleness(msg.last_modified);
-    this.last_modified = msg.last_modified;
+    this.last_modified = new Timestamp(msg.last_modified.toString());
 
     if (!msg.witnesses) throw new ProtocolError('Undefined \'witnesses\' parameter encountered during \'UpdateLao\'');
     checkWitnesses(msg.witnesses);
-    this.witnesses = [...msg.witnesses];
+    this.witnesses = msg.witnesses.map((key) => new PublicKey(key.toString()));
 
     if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'UpdateLao\'');
-    // FIXME take info from storage
-    /*const expectedHash = Hash.fromStringArray(msg.organizer.toString(), msg.creation.toString(), msg.name);
+    const lao: Lao = getStorageCurrentLao().getCurrentLao();
+    const expectedHash = Hash.fromStringArray(lao.organizer.toString(), lao.creation.toString(), msg.name);
     if (!expectedHash.equals(msg.id))
-      throw new ProtocolError('Invalid \'id\' parameter encountered during \'UpdateLao\': unexpected id value');*/
-    this.id = msg.id;
+      throw new ProtocolError('Invalid \'id\' parameter encountered during \'UpdateLao\': unexpected id value');
+    this.id = new Hash(msg.id.toString());
   }
 
   public static fromJson(obj: any): UpdateLao {

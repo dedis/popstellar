@@ -109,17 +109,7 @@ describe('=== WebsocketApi tests ===', function() {
   });
 
 
-
   /* NOTE: checks are done in checkRequests since wsApi.request* return void */
-/*
-  describe('websockets.WebsocketApi:mock', function () {
-    it('should mock correctly', function () {
-      assertChai.strictEqual(wsUtils.getPublicKey(), mockPublicKey);
-      assertChai.strictEqual(wsUtils.getSecretKey(), mockSecretKey);
-      assertChai.deepEqual(wsUtils.getCurrentLao(), mockCurrentLao);
-    });
-  });*/
-
 
   describe('websockets.WebsocketApi', function () {
 

@@ -1,4 +1,4 @@
-import { Hash, PublicKey, Timestamp } from "Model/Objects";
+import {Base64Data, Hash, PublicKey, Timestamp} from "Model/Objects";
 import { ActionType, MessageData, ObjectType } from "../messageData";
 import { checkTimestampStaleness, checkWitnesses } from '../checker'
 import { ProtocolError } from "../../../../ProtocolError";
@@ -21,20 +21,20 @@ export class CreateLao implements MessageData {
 
     if (!msg.creation) throw new ProtocolError('Undefined \'creation\' parameter encountered during \'CreateLao\'');
     checkTimestampStaleness(msg.creation);
-    this.creation = msg.creation;
+    this.creation = new Timestamp(msg.creation);
 
     if (!msg.organizer) throw new ProtocolError('Undefined \'organizer\' parameter encountered during \'CreateLao\'');
-    this.organizer = msg.organizer;
+    this.organizer = new PublicKey(msg.organizer.toString());
 
     if (!msg.witnesses) throw new ProtocolError('Undefined \'witnesses\' parameter encountered during \'CreateLao\'');
     checkWitnesses(msg.witnesses);
-    this.witnesses = [...msg.witnesses];
+    this.witnesses = msg.witnesses.map((key) => new PublicKey(key.toString()));
 
     if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'CreateLao\'');
     const expectedHash: Hash = Hash.fromStringArray(msg.organizer.toString(), msg.creation.toString(), msg.name);
     if (!expectedHash.equals(msg.id))
       throw new ProtocolError('Invalid \'id\' parameter encountered during \'CreateLao\': unexpected id value');
-    this.id = msg.id;
+    this.id = new Hash(msg.id.toString());
   }
 
   public static fromJson(obj: any): CreateLao {

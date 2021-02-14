@@ -4,6 +4,9 @@ import { ActionType, MessageData, ObjectType } from "../messageData";
 import { PublicKey } from "Model/Objects/PublicKey";
 import { ProtocolError} from "../../../../ProtocolError";
 import { checkTimestampStaleness, checkAttendees } from "../checker";
+import {getStorageCurrentLao} from "../../../../../../Store/Storage";
+import {Lao} from "../../../../../Objects";
+import {eventTags} from "../../../../../../websockets/WebsocketUtils";
 
 export class CloseRollCall implements MessageData {
 
@@ -19,23 +22,24 @@ export class CloseRollCall implements MessageData {
 
     if (!msg.start) throw new ProtocolError('Undefined \'start\' parameter encountered during \'CloseRollCall\'');
     checkTimestampStaleness(msg.start);
-    this.start = msg.start;
+    this.start = new Timestamp(msg.start.toString());
 
     if (!msg.end) throw new ProtocolError('Undefined \'end\' parameter encountered during \'CloseRollCall\'');
     if (msg.end < msg.start)
       throw new ProtocolError('Invalid timestamp encountered: \'end\' parameter smaller than \'start\'');
-    this.end = msg.end;
+    this.end = new Timestamp(msg.end.toString());
 
     if (!msg.attendees) throw new ProtocolError('Undefined \'attendees\' parameter encountered during \'CloseRollCall\'');
     checkAttendees(msg.attendees);
-    this.attendees = [...msg.attendees];
+    this.attendees = msg.attendees.map((key) => new PublicKey(key.toString()));
 
     if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'CloseRollCall\'');
-    // FIXME take info from storage
-    /*const expectedHash = Hash.fromStringArray(eventTags.ROLL_CALL, LAO_ID, CREATION, NAME);
+    const lao: Lao = getStorageCurrentLao().getCurrentLao();
+    /* // FIXME get event from storage
+    const expectedHash = Hash.fromStringArray(eventTags.ROLL_CALL, lao.id.toString(), lao.creation.toString(), lao.name);
     if (!expectedHash.equals(msg.id))
       throw new ProtocolError('Invalid \'id\' parameter encountered during \'CloseRollCall\': unexpected id value');*/
-    this.id = msg.id;
+    this.id = new Hash(msg.id.toString());
   }
 
   public static fromJson(obj: any): CloseRollCall {
