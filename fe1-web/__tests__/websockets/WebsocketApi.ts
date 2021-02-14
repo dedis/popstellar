@@ -3,9 +3,9 @@
 import * as wsApi from '../../websockets/WebsocketApi';
 import * as wsUtils from '../../websockets/WebsocketUtils';
 import * as jsonChecker from './JsonProtocolChecker';
-import {getStorageCurrentLao, getStorageKeyPair, initialise} from '../../Store/Storage';
-import {Base64Data, Hash, Lao, PublicKey, Timestamp} from "../../Model/Objects";
-import {getCurrentTime} from "../../websockets/WebsocketUtils";
+import { getStorageCurrentLao, getStorageKeyPair, initialise } from '../../Store/Storage';
+import { Base64Data, Hash, Lao, PublicKey, Timestamp } from "../../Model/Objects";
+import { getCurrentTime } from "../../websockets/WebsocketUtils";
 
 const assertChai = require('chai').assert;
 
@@ -26,19 +26,28 @@ export const mockRollCallId = 100;
 /*
 //jest.mock('../../websockets/WebsocketApi.ts');
 const mockedPublish = wsApi.publish as jest.MockedFunction<typeof wsApi.publish>;
+*/
+
+export function mockFunction<T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> {
+  return fn as jest.MockedFunction<T>;
+}
 
 
 // mock sendRequestToServer in order to not send any query but rather check the correctness of said query
+//jest.mock('../../websockets/WebsocketApi.ts');
+//const publishMock = wsApi.publish as jest.MockedFunction<(channel: any, msgData: any) => void>;
+//const publishMock = mockFunction(wsApi.publish);
+
+//publishMock.mockImplementation((c, a) => checkRequests());
+
+/*
 jest.mock('../../websockets/WebsocketApi.ts', () => {
 
   return {
-    // @ts-ignore
     ...jest.requireActual('../../websockets/WebsocketApi.ts'),
-    publish: jest.fn((c, a) => checkRequests("", "{}", "{}")),
+    publish: jest.fn((c, a) => checkRequests()),
   };
-});
-*/
-
+});*/
 
 /*
 const checkTypicalRequest = (request, methodExpected = 'publish', isRoot = false) => {
