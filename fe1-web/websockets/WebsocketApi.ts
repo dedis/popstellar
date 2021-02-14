@@ -198,6 +198,7 @@ function publish(channel: Channel, msgData: MessageData) {
         channel: channel,
         message: message
     }),
+    id: -1,
   });
 /* // FIXME uncomment once websocket link is refactored
   WebsocketLink.sendRequestToServer(request,

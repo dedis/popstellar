@@ -12,14 +12,6 @@ export class JsonRpcRequest {
   public readonly id?: number;
   public readonly params: JsonRpcParams;
 
-  static fromJson(jsonString: string) : JsonRpcRequest {
-    // validate with ajv (json-schema)
-
-    let obj = JSON.parse(jsonString);
-
-    return new JsonRpcRequest(obj as JsonRpcRequest);
-  }
-
   constructor(req: Partial<JsonRpcRequest>) {
     Object.assign(this, req);
 
@@ -30,18 +22,11 @@ export class JsonRpcRequest {
       throw new ProtocolError("Undefined 'params' in JSON-RPC");
     }
 
-    this.method = req.method;
-    this.id = req.id || undefined;
-    this.params = this._parseParams(req.params);
-  }
-
-  public verify(): boolean {
-    switch(this.method) {
+    switch(req.method) {
       // notification methods, expect no ID
       case JsonRpcMethod.BROADCAST:
-        if ( this.id !== undefined ) {
-          return false;
-        }
+        if (this.id !== undefined)
+          throw new ProtocolError('Error: found \'id\' parameter during \'broadcast\' message creation');
         break;
 
       // RPC methods, expect an ID
@@ -49,17 +34,27 @@ export class JsonRpcRequest {
       case JsonRpcMethod.SUBSCRIBE:
       case JsonRpcMethod.UNSUBSCRIBE:
       case JsonRpcMethod.CATCHUP:
-        if ( this.id === undefined ) {
-          return false;
-        }
+        if (this.id === undefined)
+          throw new ProtocolError('Undefined \'id\' parameter encountered during \'JsonRpcRequest\' creation');
         break;
 
       // Unsupported methods
       default:
-        return false;
+        throw new ProtocolError(`Unrecognized method '${req.method}' encountered during 'JsonRpcRequest' creation`);
     }
 
-    return this.params.verify();
+    this.method = req.method;
+    this.id = req.id || undefined;
+    this.params = this._parseParams(req.params);
+  }
+
+  static fromJson(jsonString: string) : JsonRpcRequest {
+    // FIXME add JsonSchema validation to all "fromJson"
+    let correctness = true;
+
+    return correctness
+      ? new JsonRpcRequest(JSON.parse(jsonString))
+      : (() => { throw new ProtocolError("add JsonSchema error message"); })();
   }
 
   private _parseParams(params: Partial<JsonRpcParams>) : JsonRpcParams {
