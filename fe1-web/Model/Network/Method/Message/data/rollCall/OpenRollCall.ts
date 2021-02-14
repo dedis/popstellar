@@ -3,6 +3,9 @@ import { Timestamp } from "Model/Objects/Timestamp";
 import { ActionType, MessageData, ObjectType } from "../messageData";
 import { ProtocolError } from "../../../../ProtocolError";
 import { checkTimestampStaleness } from "../checker";
+import {eventTags} from "../../../../../../websockets/WebsocketUtils";
+import {getStorageCurrentLao} from "../../../../../../Store/Storage";
+import {Lao} from "../../../../../Objects";
 
 export class OpenRollCall implements MessageData {
 
@@ -21,14 +24,15 @@ export class OpenRollCall implements MessageData {
 
     if (!msg.start) throw new ProtocolError('Undefined \'start\' parameter encountered during \'OpenRollCall\'');
     checkTimestampStaleness(msg.start);
-    this.start = msg.start;
+    this.start = new Timestamp(msg.start.toString());
 
     if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'CreateLao\'');
-    // FIXME take info from storage
-    /*const expectedHash = Hash.fromStringArray(eventTags.ROLL_CALL, LAO_ID, CREATION, NAME);
+    const lao: Lao = getStorageCurrentLao().getCurrentLao();
+    /* // FIXME get event from storage
+    const expectedHash = Hash.fromStringArray(eventTags.ROLL_CALL, lao.id.toString(), lao.creation.toString(), ROLLCALLNAME);
     if (!expectedHash.equals(msg.id))
       throw new ProtocolError('Invalid \'id\' parameter encountered during \'CreateLao\': unexpected id value');*/
-    this.id = msg.id;
+    this.id = new Hash(msg.id.toString());
   }
 
   public static fromJson(obj: any): OpenRollCall {

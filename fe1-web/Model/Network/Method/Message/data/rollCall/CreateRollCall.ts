@@ -3,6 +3,9 @@ import { Timestamp } from "Model/Objects/Timestamp";
 import { ActionType, MessageData, ObjectType } from "../messageData";
 import { ProtocolError } from "../../../../ProtocolError";
 import { checkTimestampStaleness } from "../checker";
+import {eventTags} from "../../../../../../websockets/WebsocketUtils";
+import {getStorageCurrentLao} from "../../../../../../Store/Storage";
+import {Lao} from "../../../../../Objects";
 
 export class CreateRollCall implements MessageData {
 
@@ -24,7 +27,7 @@ export class CreateRollCall implements MessageData {
 
     if (!msg.creation) throw new ProtocolError('Undefined \'creation\' parameter encountered during \'CreateRollCall\'');
     checkTimestampStaleness(msg.creation);
-    this.creation = msg.creation;
+    this.creation = new Timestamp(msg.creation.toString());
 
     if (msg.start === msg.scheduled)
       // if both are present or neither
@@ -33,13 +36,13 @@ export class CreateRollCall implements MessageData {
     if (msg.start) {
       if (msg.start < msg.creation)
         throw new ProtocolError('Invalid timestamp encountered: \'start\' parameter smaller than \'creation\'');
-      this.start = msg.start;
+      this.start = new Timestamp(msg.start.toString());
     }
 
     if (msg.scheduled) {
       if (msg.scheduled < msg.creation)
         throw new ProtocolError('Invalid timestamp encountered: \'scheduled\' parameter smaller than \'creation\'');
-      this.scheduled = msg.scheduled;
+      this.scheduled = new Timestamp(msg.scheduled.toString());
     }
 
     if (!msg.location) throw new ProtocolError('Undefined \'location\' parameter encountered during \'CreateRollCall\'');
@@ -48,11 +51,11 @@ export class CreateRollCall implements MessageData {
     if (msg.roll_call_description) this.roll_call_description = msg.roll_call_description;
 
     if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'CreateRollCall\'');
-    // FIXME take info from storage
-    /*const expectedHash = Hash.fromStringArray(eventTags.ROLL_CALL, LAO_ID, msg.creation.toString(), msg.name);
+    const lao: Lao = getStorageCurrentLao().getCurrentLao();
+    const expectedHash = Hash.fromStringArray(eventTags.ROLL_CALL, lao.id.toString(), lao.creation.toString(), msg.name);
     if (!expectedHash.equals(msg.id))
-      throw new ProtocolError('Invalid \'id\' parameter encountered during \'CreateRollCall\': unexpected id value');*/
-    this.id = msg.id;
+      throw new ProtocolError('Invalid \'id\' parameter encountered during \'CreateRollCall\': unexpected id value');
+    this.id = new Hash(msg.id.toString());
   }
 
   public static fromJson(obj: any): CreateRollCall {

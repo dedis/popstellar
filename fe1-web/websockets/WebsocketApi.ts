@@ -75,7 +75,7 @@ export function requestCreateMeeting(
   const currentLao: Lao = getStorageCurrentLao().getCurrentLao();
 
   let message = new CreateMeeting({
-    id: Hash.fromStringArray(eventTags.MEETING, currentLao.id.toString(), time.toString(), name),
+    id: Hash.fromStringArray(eventTags.MEETING, currentLao.id.toString(), currentLao.creation.toString(), name),
     name: name,
     start: startTime,
     creation: time,
@@ -134,7 +134,7 @@ export function requestCreateRollCall(
     throw new Error('RollCall creation failed : both "start" and "scheduled" fields were given');
 
   let message = new CreateRollCall({
-    id: Hash.fromStringArray(eventTags.ROLL_CALL, currentLao.id.toString(), time.toString(), name),
+    id: Hash.fromStringArray(eventTags.ROLL_CALL, currentLao.id.toString(), currentLao.creation.toString(), name),
     name: name,
     creation: time,
     location: location,

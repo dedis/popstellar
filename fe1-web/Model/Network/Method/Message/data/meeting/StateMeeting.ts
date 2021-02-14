@@ -1,9 +1,10 @@
-import { Hash } from "Model/Objects/Hash";
-import { Timestamp } from "Model/Objects/Timestamp";
+import {Base64Data, Hash, Lao, PublicKey, Signature, Timestamp} from "Model/Objects";
 import { ActionType, MessageData, ObjectType } from "../messageData";
 import { WitnessSignature } from "Model/Objects/WitnessSignature";
 import { ProtocolError } from "../../../../ProtocolError";
 import { checkModificationId, checkModificationSignatures, checkTimestampStaleness } from "../checker";
+import { getStorageCurrentLao } from "../../../../../../Store/Storage";
+import { eventTags } from "../../../../../../websockets/WebsocketUtils";
 
 export class StateMeeting implements MessageData {
 
@@ -30,47 +31,53 @@ export class StateMeeting implements MessageData {
     if (!msg.creation)
       throw new ProtocolError('Undefined \'creation\' parameter encountered during \'StateMeeting\'');
     checkTimestampStaleness(msg.creation);
-    this.creation = msg.creation;
+    this.creation = new Timestamp(msg.creation.toString());
 
     if (!msg.last_modified)
       throw new ProtocolError('Undefined \'last_modified\' parameter encountered during \'StateMeeting\'');
     if (msg.last_modified < msg.creation)
       throw new ProtocolError('Invalid timestamp encountered: \'last_modified\' parameter smaller than \'creation\'');
-    this.last_modified = msg.last_modified;
+    this.last_modified = new Timestamp(msg.last_modified.toString());
 
     if (msg.location) this.location = msg.location;
 
     if (!msg.start)
       throw new ProtocolError('Undefined \'start\' parameter encountered during \'StateMeeting\'');
     checkTimestampStaleness(msg.start);
-    this.start = msg.start;
+    this.start = new Timestamp(msg.start.toString());
 
     if (msg.end) {
       if (msg.end < msg.creation)
         throw new ProtocolError('Invalid timestamp encountered: \'end\' parameter smaller than \'creation\'');
       if (msg.end < msg.start)
         throw new ProtocolError('Invalid timestamp encountered: \'end\' parameter smaller than \'start\'');
-      this.end = msg.end;
+      this.end = new Timestamp(msg.end.toString());
     }
 
-    if (msg.extra) this.extra = msg.extra;
+    if (msg.extra) this.extra = JSON.parse(JSON.stringify(msg.extra)); // clone JS object extra
 
     if (!msg.modification_id)
       throw new ProtocolError('Undefined \'modification_id\' parameter encountered during \'StateMeeting\'');
     checkModificationId(msg.modification_id);
-    this.modification_id = msg.modification_id;
+    this.modification_id = new Hash(msg.modification_id.toString());
 
     if (!msg.modification_signatures)
       throw new ProtocolError('Undefined \'modification_signatures\' parameter encountered during \'StateMeeting\'');
     checkModificationSignatures(msg.modification_signatures);
-    this.modification_signatures = [...msg.modification_signatures];
+    this.modification_signatures = msg.modification_signatures.map((ws) =>
+      new WitnessSignature({
+        witness: new PublicKey(ws.witness.toString()),
+        signature: new Signature(ws.signature.toString()),
+      })
+    );
 
     if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'StateMeeting\'');
-    // FIXME take info from storage
-    /*const expectedHash = Hash.fromStringArray(eventTags.MEETING, LAO_ID, msg.creation.toString(), msg.name);
+    const lao: Lao = getStorageCurrentLao().getCurrentLao();
+    /* // FIXME get event from storage
+    const expectedHash = Hash.fromStringArray(eventTags.MEETING, lao.id.toString(), lao.creation.toString(), MEETING_NAME);
     if (!expectedHash.equals(msg.id))
-      throw new ProtocolError('Invalid \'id\' parameter encountered during \'StateMeeting\': unexpected id value');*/
-    this.id = msg.id;
+      throw new ProtocolError('Invalid \'id\' parameter encountered during \'StateMeeting\': unexpected id value'); */
+    this.id = new Hash(msg.id.toString());
   }
 
   public static fromJson(obj: any): StateMeeting {
