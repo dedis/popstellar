@@ -4,16 +4,17 @@ import {
   ActionType, CloseRollCall,
   CreateLao,
   CreateMeeting, CreateRollCall,
-  ObjectType, OpenRollCall,
+  ObjectType, OpenRollCall, ReopenRollCall,
   StateLao, StateMeeting,
   UpdateLao, WitnessMessage
-} from '../../../Model/Network/Method/Message/data';
-import { getStorageCurrentLao, initialise } from '../../../Store/Storage';
-import { ProtocolError } from '../../../Model/Network';
-import { Base64Data, Hash, Lao, PrivateKey, PublicKey, Timestamp } from '../../../Model/Objects';
+} from 'Model/Network/Method/Message/data';
+import { initialise } from 'Store/Storage';
+import { ProtocolError } from 'Model/Network';
+import { Base64Data, Hash, Lao, PrivateKey, PublicKey, Timestamp } from 'Model/Objects';
 import { sign } from 'tweetnacl';
 import { encodeBase64 } from 'tweetnacl-util';
-import {eventTags} from "../../../websockets/WebsocketUtils";
+import { eventTags } from "../../../websockets/WebsocketUtils";
+import { OpenedLaoStore } from 'Store';
 
 const assertChai = require('chai').assert;
 
@@ -39,15 +40,13 @@ const _generateKeyPair = () => {
 describe('=== fromJson object checks ===', function() {
 
   beforeAll(() => {
-    new Promise((resolve, reject) => {
-      initialise();
-    });
+    initialise();
 
     const sampleLao: Lao = new Lao(
       name, Hash.fromStringArray(org.toString(), time.toString(), name), time, time, org, []
     );
 
-    getStorageCurrentLao().store(sampleLao);
+    OpenedLaoStore.store(sampleLao);
   });
 
   const sampleKey1: PublicKey = _generateKeyPair().pubKey;
@@ -359,7 +358,7 @@ describe('=== fromJson object checks ===', function() {
 
       // Reopen RollCall
       it('\'ReopenRollCall\'', function () {
-        assertChai.deepEqual(OpenRollCall.fromJson(sampleReopenRollCall), sampleReopenRollCall);
+        assertChai.deepEqual(ReopenRollCall.fromJson(sampleReopenRollCall), sampleReopenRollCall);
       });
 
 
@@ -436,7 +435,7 @@ describe('=== fromJson object checks ===', function() {
 
       // Reopen RollCall
       it('\'ReopenRollCall\'', function () {
-        assertChai.deepEqual(OpenRollCall.fromJson(JSON.parse(dataReopenRollCall)), sampleReopenRollCall);
+        assertChai.deepEqual(ReopenRollCall.fromJson(JSON.parse(dataReopenRollCall)), sampleReopenRollCall);
       });
 
 

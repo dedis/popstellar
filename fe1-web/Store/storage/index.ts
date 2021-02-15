@@ -1,2 +1,2 @@
-export * from './StorageKeyPair';
-export * from './StorageCurrentLao';
+export * from './KeyPairStore';
+export * from './OpenedLaoStore';

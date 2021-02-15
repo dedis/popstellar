@@ -4,7 +4,7 @@ import { ActionType, MessageData, ObjectType } from "../messageData";
 import { PublicKey } from "Model/Objects/PublicKey";
 import { ProtocolError} from "../../../../ProtocolError";
 import { checkTimestampStaleness, checkAttendees } from "../checker";
-import {getStorageCurrentLao} from "../../../../../../Store/Storage";
+import { OpenedLaoStore } from 'Store';
 import {Lao} from "../../../../../Objects";
 import {eventTags} from "../../../../../../websockets/WebsocketUtils";
 
@@ -34,7 +34,7 @@ export class CloseRollCall implements MessageData {
     this.attendees = msg.attendees.map((key) => new PublicKey(key.toString()));
 
     if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'CloseRollCall\'');
-    const lao: Lao = getStorageCurrentLao().getCurrentLao();
+    const lao: Lao = OpenedLaoStore.get();
     /* // FIXME get event from storage
     const expectedHash = Hash.fromStringArray(eventTags.ROLL_CALL, lao.id.toString(), lao.creation.toString(), lao.name);
     if (!expectedHash.equals(msg.id))

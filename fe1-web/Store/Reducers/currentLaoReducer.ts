@@ -1,14 +1,8 @@
 import { AnyAction } from 'redux';
-import { LaoData } from '../objects';
+import { Lao } from 'Model/Objects';
+import { ActionOpenedLaoReducer } from '../Actions';
 
-const initialState: LaoData = {
-  name: undefined,
-  id: undefined,
-  creation: undefined,
-  last_modified: undefined,
-  organizer: undefined,
-  witnesses: undefined,
-};
+const initialState: Lao | null = null;
 
 /**
  * Reducer to store the current opened LAO
@@ -21,12 +15,11 @@ const initialState: LaoData = {
  *
  * @param state JsObject containing the LAO to store
  * @param action action to be executed by the reducer
- * @returns {{lao: *}|{lao: {}}} new LAO if action is valid, old LAO otherwise
+ * @returns new LAO if action is valid, old LAO otherwise
  */
-function currentLaoReducer(state: LaoData = initialState, action: AnyAction) {
-  if (action.type === 'SET_CURRENT_LAO') {
-    const nextState = {
-      ...state,
+function currentLaoReducer(state: Lao | null = initialState, action: AnyAction): Lao | null {
+  if (action.type === ActionOpenedLaoReducer.SET_CURRENT_LAO) {
+    return {
       name: action.value.name,
       id: action.value.id,
       creation: action.value.creation,
@@ -34,7 +27,6 @@ function currentLaoReducer(state: LaoData = initialState, action: AnyAction) {
       organizer: action.value.organizer,
       witnesses: action.value.witnesses,
     };
-    return nextState || state;
   }
   return state;
 }

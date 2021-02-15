@@ -3,7 +3,7 @@ import { ActionType, MessageData, ObjectType } from "../messageData";
 import { WitnessSignature } from "Model/Objects/WitnessSignature";
 import { ProtocolError } from "../../../../ProtocolError";
 import { checkModificationId, checkModificationSignatures, checkTimestampStaleness } from "../checker";
-import { getStorageCurrentLao } from "../../../../../../Store/Storage";
+import { OpenedLaoStore } from 'Store';
 import { eventTags } from "../../../../../../websockets/WebsocketUtils";
 
 export class StateMeeting implements MessageData {
@@ -72,7 +72,7 @@ export class StateMeeting implements MessageData {
     );
 
     if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'StateMeeting\'');
-    const lao: Lao = getStorageCurrentLao().getCurrentLao();
+    const lao: Lao = OpenedLaoStore.get();
     /* // FIXME get event from storage
     const expectedHash = Hash.fromStringArray(eventTags.MEETING, lao.id.toString(), lao.creation.toString(), MEETING_NAME);
     if (!expectedHash.equals(msg.id))
