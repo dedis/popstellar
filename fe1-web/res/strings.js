@@ -21,7 +21,7 @@ const STRINGS = {
   organization_navigation_tab_attendee: 'Attendee',
   organization_navigation_tab_organizer: 'Organizer',
   organization_navigation_tab_witness: 'Witness',
-  organization_navigation_tab_identity: 'My indentity',
+  organization_navigation_tab_identity: 'My identity',
 
   /* --- Witness Navigation Strings --- */
   witness_navigation_tab_home: 'Witness',

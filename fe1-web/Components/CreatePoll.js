@@ -6,7 +6,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import RadioForm from 'react-native-simple-radio-button';
 import { useNavigation } from '@react-navigation/native';
 
-import { Buttons, Typography, Spacing } from '../Styles';
+import { Buttons, Typography, Spacing } from '../styles';
 import STRINGS from '../res/strings';
 
 /**

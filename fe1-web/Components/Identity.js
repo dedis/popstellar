@@ -6,7 +6,7 @@ import { CheckBox } from 'react-native-elements';
 import PropTypes from 'prop-types';
 
 import STRINGS from '../res/strings';
-import { Colors, Spacing, Typography } from '../Styles';
+import { Colors, Spacing, Typography } from '../styles';
 
 /**
  * Manage the Identity screen: an anonymous checkbox, an info string, a name text input,

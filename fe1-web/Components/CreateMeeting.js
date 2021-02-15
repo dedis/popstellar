@@ -9,9 +9,9 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import {
   Buttons, Typography, Spacing, Views,
-} from '../Styles';
+} from '../styles';
 import STRINGS from '../res/strings';
-import { requestCreateMeeting } from '../websockets/WebsocketApi';
+import { requestCreateMeeting } from '../websockets/MessageApi';
 
 /**
  * Screen to create a meeting event: a name text input, a start time text and its buttons,

@@ -9,9 +9,9 @@ import { useNavigation } from '@react-navigation/native';
 
 import {
   Buttons, Typography, Spacing, Views,
-} from '../Styles';
+} from '../styles';
 import STRINGS from '../res/strings';
-import { requestCreateRollCall } from '../websockets/WebsocketApi';
+import { requestCreateRollCall } from '../websockets/MessageApi';
 
 /**
  * Screen to create a roll-call event: a text to explain the meaning of the date field,

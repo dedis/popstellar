@@ -45,7 +45,7 @@ export const eventTags = Object.freeze({
 
 /** Return the current LAO the client is connected to */
 // FIXME remove when not used in the project anymore
-export const getCurrentLao = () => 0; // getStore().getState().currentLaoReducer.lao;
+export const getCurrentLao = () => 0; // getStore().getState().openedLaoReducer.lao;
 
 /** Transform a string to a base64 string */
 export const toString64 = (str) => b64.encode(str);

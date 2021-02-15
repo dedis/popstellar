@@ -5,10 +5,10 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 
-import { Typography, Spacing, Buttons } from '../Styles';
+import { Typography, Spacing, Buttons } from '../styles';
 import EventItem from './EventItem';
 import STRINGS from '../res/strings';
-import { requestUpdateLao } from '../websockets/WebsocketApi';
+import { requestUpdateLao } from '../websockets/MessageApi';
 import PROPS_TYPE from '../res/Props';
 
 /**

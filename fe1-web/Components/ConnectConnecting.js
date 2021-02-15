@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 
 import STRINGS from '../res/strings';
-import { Buttons, Colors, Typography } from '../Styles';
+import { Buttons, Colors, Typography } from '../styles';
 import PROPS_TYPE from '../res/Props';
 
 /**

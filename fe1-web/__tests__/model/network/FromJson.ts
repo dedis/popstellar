@@ -7,14 +7,14 @@ import {
   ObjectType, OpenRollCall, ReopenRollCall,
   StateLao, StateMeeting,
   UpdateLao, WitnessMessage
-} from 'Model/Network/Method/Message/data';
-import { initialise } from 'Store/Storage';
-import { ProtocolError } from 'Model/Network';
-import { Base64Data, Hash, Lao, PrivateKey, PublicKey, Timestamp } from 'Model/Objects';
+} from 'model/network/method/message/data';
+import { initialise } from 'store/Storage';
+import { ProtocolError } from 'model/network';
+import { Base64Data, Hash, Lao, PrivateKey, PublicKey, Timestamp } from 'model/objects';
 import { sign } from 'tweetnacl';
 import { encodeBase64 } from 'tweetnacl-util';
 import { eventTags } from "../../../websockets/WebsocketUtils";
-import { OpenedLaoStore } from 'Store';
+import { OpenedLaoStore } from 'store';
 
 const assertChai = require('chai').assert;
 

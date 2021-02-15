@@ -1,6 +1,6 @@
 {
-  "extends": "airbnb",
-  "parser": "babel-eslint",
+  "extends": "airbnb-typescript",
+  "parser": "@typescript-eslint/parser",
   "rules": {
     "react/jsx-filename-extension": ["error", { "extensions": [".js", ".jsx"] }],
     "import/extensions": ["error", "ignorePackages", {
@@ -8,17 +8,21 @@
       "mjs": "never",
       "jsx": "never",
       "ts": "never",
-      "tsx": "never",
-      "vue": "never"
-    }]
+      "tsx": "never"
+    }],
+    "import/prefer-default-export": "off"
   },
   // we disable import/extensions eslint errors. Eslint underlines every import due to an
   // bug between typescript and eslint using the airbnb config
   "settings": {
     "import/resolver": {
       "node": {
-        "extensions": [".mjs", ".js", ".jsx", ".ts", ".tsx", ".json", ".vue"]
+        "extensions": [".mjs", ".js", ".jsx", ".ts", ".tsx", ".json"]
       }
     }
+  },
+  "plugins": ["react", "@typescript-eslint", "jest"],
+  "parserOptions": {
+    "project": ["./tsconfig.json"]
   }
 }

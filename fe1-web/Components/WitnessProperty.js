@@ -3,7 +3,7 @@ import {
   StyleSheet, View, Text, FlatList,
 } from 'react-native';
 
-import { Spacing } from '../Styles';
+import { Spacing } from '../styles';
 import PROPS_TYPE from '../res/Props';
 import STRINGS from '../res/strings';
 

@@ -5,7 +5,7 @@ import {
 import { CheckBox } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 
-import { Buttons, Typography, Spacing } from '../Styles';
+import { Buttons, Typography, Spacing } from '../styles';
 import STRINGS from '../res/strings';
 
 /**
