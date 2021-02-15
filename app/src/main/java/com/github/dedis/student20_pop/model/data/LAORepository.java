@@ -3,6 +3,8 @@ package com.github.dedis.student20_pop.model.data;
 import androidx.annotation.NonNull;
 
 import com.github.dedis.student20_pop.model.data.dao.LAODao;
+import com.github.dedis.student20_pop.model.entities.LAO;
+import com.github.dedis.student20_pop.model.entities.LAOEntity;
 import com.github.dedis.student20_pop.model.network.GenericMessage;
 import com.github.dedis.student20_pop.model.network.answer.Result;
 import com.github.dedis.student20_pop.model.network.method.Broadcast;
@@ -45,6 +47,10 @@ public class LAORepository {
         return mRemoteDataSource.observeMessage()
                 .filter(genericMessage -> genericMessage instanceof Broadcast)
                 .map(genericMessage -> (Broadcast) genericMessage);
+    }
+
+    public LAOEntity getLAO(String channel) {
+        return mLocalDataSource.getLAO(channel);
     }
 
 }

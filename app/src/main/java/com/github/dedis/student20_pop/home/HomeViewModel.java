@@ -23,6 +23,7 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.student20_pop.ui.qrcode.CameraPermissionViewModel;
 import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningViewModel;
+import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 
 import java.net.URI;
@@ -234,7 +235,7 @@ public class HomeViewModel extends AndroidViewModel implements CameraPermissionV
     }
 
     public void openHome() {
-        mOpenHomeEvent.setValue(new Event<>(true));
+        mOpenHomeEvent.postValue(new Event<>(true));
     }
 
     public void openConnect() {
@@ -268,5 +269,18 @@ public class HomeViewModel extends AndroidViewModel implements CameraPermissionV
 
     public void setLaoName(String name) {
         this.mLaoName.setValue(name);
+    }
+
+    @Override
+    public void onQRCodeDetected(Barcode barcode) {
+        Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
+
+        // TODO: subscribe to the LAO
+
+        // TODO: add LAO to the list of LAOs
+
+        // TODO: initiate a catchup
+
+        openHome();
     }
 }

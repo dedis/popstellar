@@ -22,23 +22,17 @@ public final class CameraPermissionFragment extends Fragment {
   public static final String TAG = CameraPermissionFragment.class.getSimpleName();
   private static final int HANDLE_CAMERA_PERM = 2;
 
-  private final QRCodeScanningFragment.QRCodeScanningType qrCodeScanningType;
-
-  private final String eventId;
-
   private FragmentCameraPermBinding mCameraPermFragBinding;
 
   private CameraPermissionViewModel mCameraPermissionViewModel;
 
-  public CameraPermissionFragment(QRCodeScanningFragment.QRCodeScanningType qrCodeScanningType, String eventId) {
+  public CameraPermissionFragment() {
     super();
-    this.qrCodeScanningType = qrCodeScanningType;
-    this.eventId = eventId;
   }
 
   public static CameraPermissionFragment newInstance() {
     // TODO: refactor eventId. Possibly rename method to reflect CONNECT_LAO
-    return new CameraPermissionFragment(QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO, null);
+    return new CameraPermissionFragment();
   }
 
   @Override
@@ -57,6 +51,8 @@ public final class CameraPermissionFragment extends Fragment {
     }
 
     mCameraPermFragBinding.setLifecycleOwner(activity);
+
+    setupCameraPermissionButton();
 
     return mCameraPermFragBinding.getRoot();
   }
