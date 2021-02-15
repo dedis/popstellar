@@ -14,6 +14,7 @@ import com.github.dedis.student20_pop.Event;
 import com.github.dedis.student20_pop.OrganizerActivity;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
+import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.ui.ConnectingFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
@@ -58,7 +59,7 @@ public class HomeActivity extends AppCompatActivity implements QRCodeListener {
             }
         });
 
-        // Subscribe to "openConnect" event
+        // Subscribe to "open connect" event
         mViewModel.getOpenConnectEvent().observe(this, stringEvent -> {
             String action = stringEvent.getContentIfNotHandled();
             if (action != null) {
@@ -73,6 +74,7 @@ public class HomeActivity extends AppCompatActivity implements QRCodeListener {
             }
         });
 
+        // Subscribe to "open launch" event
         mViewModel.getOpenLaunchEvent().observe(this, booleanEvent -> {
             Boolean event = booleanEvent.getContentIfNotHandled();
             if (event != null) {
@@ -163,7 +165,7 @@ public class HomeActivity extends AppCompatActivity implements QRCodeListener {
     }
 
     private void openLaoDetails(String laoId) {
-        Intent intent = new Intent(this, OrganizerActivity.class);
+        Intent intent = new Intent(this, LaoDetailActivity.class);
         intent.putExtra("LAO_ID", laoId);
         startActivity(intent);
     }

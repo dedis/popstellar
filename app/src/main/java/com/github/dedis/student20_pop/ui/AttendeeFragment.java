@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.github.dedis.student20_pop.AttendeeActivity;
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Lao;
@@ -25,11 +27,20 @@ import java.util.List;
 public class AttendeeFragment extends Fragment {
 
   public static final String TAG = AttendeeFragment.class.getSimpleName();
+  private final Lao lao;
+
   private AttendeeEventExpandableListViewAdapter listViewEventAdapter;
   private ExpandableListView expandableListView;
-  private Lao lao;
   private Button propertiesButton;
   private ListView witnessesListView;
+
+  public AttendeeFragment(Lao lao) {
+      this.lao = lao;
+  }
+
+  public static AttendeeFragment newInstance(Lao lao) {
+      return new AttendeeFragment(lao);
+  }
 
   @Nullable
   @Override
@@ -39,8 +50,11 @@ public class AttendeeFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
 
     View rootView = inflater.inflate(R.layout.fragment_attendee, container, false);
+    /*
     PoPApplication app = (PoPApplication) (this.getActivity().getApplication());
     lao = app.getCurrentLaoUnsafe();
+    */
+
     List<Event> events = lao.getEvents();
     // Display Events
     expandableListView = rootView.findViewById(R.id.exp_list_view);
