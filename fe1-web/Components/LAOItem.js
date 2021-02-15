@@ -7,8 +7,9 @@ import { useNavigation } from '@react-navigation/native';
 import { connect } from 'react-redux';
 
 import STRINGS from '../res/strings';
-import { Spacing, Typography } from '../Styles';
+import { Spacing, Typography } from '../styles';
 import PROPS_TYPE from '../res/Props';
+import { ActionOpenedLaoReducer } from '../store/Actions';
 
 /**
   * The LAO item component: name of LAO
@@ -30,7 +31,7 @@ const LAOItem = ({ LAO, dispatch }) => {
   const navigation = useNavigation();
 
   const handlePress = () => {
-    const action2 = { type: 'SET_CURRENT_LAO', value: LAO };
+    const action2 = { type: ActionOpenedLaoReducer.SET_OPENED_LAO, value: LAO };
     dispatch(action2);
     navigation.navigate(STRINGS.app_navigation_tab_organizer);
   };

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 
-import { Typography } from '../Styles';
+import { Typography } from '../styles';
 import OrganizerEventsCollapsableList from './OrganizerCollapsableList';
 import PROPS_TYPE from '../res/Props';
 import STRINGS from '../res/strings';

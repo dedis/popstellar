@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 
 import EventItem from './EventItem';
-import { Spacing } from '../Styles';
+import { Spacing } from '../styles';
 import PROPS_TYPE from '../res/Props';
 
 // Fake data to simulate the fonctionality of the component

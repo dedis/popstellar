@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import EventItem from './EventItem';
-import { Buttons, Spacing } from '../Styles';
+import { Buttons, Spacing } from '../styles';
 import PROPS_TYPE from '../res/Props';
 
 /**

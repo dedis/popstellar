@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 
-import { Typography, Spacing } from '../Styles';
+import { Typography, Spacing } from '../styles';
 import EventItem from './EventItem';
 import PROPS_TYPE from '../res/Props';
 

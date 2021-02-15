@@ -6,10 +6,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import { Provider } from 'react-redux';
-import { storeInit } from './Store/configureStore';
+import { storeInit } from './store/configureStore';
 
-import AppNavigation from './Navigation/AppNavigation';
-import { navigationRef } from './Navigation/RootNavigation';
+import AppNavigation from './navigation/AppNavigation';
+import { navigationRef } from './navigation/RootNavigation';
 
 /*
 * The starting point of the app

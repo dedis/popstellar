@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 
-import { Colors } from '../Styles';
+import { Colors } from '../styles';
 
 /**
  * Camera button component: a design button

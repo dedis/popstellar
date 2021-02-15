@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import STRINGS from '../res/strings';
-import { Spacing, Typography } from '../Styles';
+import { Spacing, Typography } from '../styles';
 import LAOItem from './LAOItem';
 import PROPS_TYPE from '../res/Props';
 

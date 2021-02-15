@@ -8,7 +8,7 @@ import CreateMeeting from './CreateMeeting';
 import CreateDiscussion from './CreateDiscussion';
 import CreatePoll from './CreatePoll';
 import CreateRollCall from './CreateRollCall';
-import { Buttons, Typography } from '../Styles';
+import { Buttons, Typography } from '../styles';
 import STRINGS from '../res/strings';
 
 /**

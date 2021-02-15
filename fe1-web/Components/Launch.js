@@ -6,9 +6,9 @@ import {
 } from 'react-native';
 
 import STRINGS from '../res/strings';
-import { Spacing, Typography } from '../Styles';
+import { Spacing, Typography } from '../styles';
 import PROPS_TYPE from '../res/Props';
-import { requestCreateLao } from '../websockets/WebsocketApi';
+import { requestCreateLao } from '../websockets/MessageApi';
 
 /**
  * Manage the Launch screen: a description string, a LAO name text input, a launch LAO button,

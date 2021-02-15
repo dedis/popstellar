@@ -6,17 +6,17 @@ import {
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { Buttons, Colors, Typography } from '../Styles';
+import { Buttons, Colors, Typography } from '../styles';
 import CameraButton from './CameraButton';
 import PROPS_TYPE from '../res/Props';
 import STRINGS from '../res/strings';
-import { requestCloseRollCall } from '../websockets/WebsocketApi';
+import { requestCloseRollCall } from '../websockets/MessageApi';
 
 /**
  * Scanning roll-call component: a description string, the number of participants scanned,
  * a camera view, a camera button and a closed button
  *
- * The camera button fakes the confirmation of a new attende scan
+ * The camera button fakes the confirmation of a new attendee scan
  * The closed button ask for a confirmation to close the roll-call
  *
  * TODO add participant to the organizer server when a QR code is scan

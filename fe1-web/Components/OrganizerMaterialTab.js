@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import { useTheme } from '@react-navigation/native';
 import STRINGS from '../res/strings';
 import PROPS_TYPE from '../res/Props';
+import { ActionOpenedLaoReducer } from '../store/Actions';
 
 /**
  * Organizer tab bar
@@ -54,7 +55,7 @@ const MytabBar = (props) => {
   const nbRoutes = navigationState.routes.length;
 
   const homePress = () => {
-    const action = { type: 'SET_CURRENT_LAO', value: {} };
+    const action = { type: ActionOpenedLaoReducer.SET_OPENED_LAO, value: {} };
     dispatch(action);
     navigation.navigate(STRINGS.app_navigation_tab_home);
   };

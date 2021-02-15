@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 
-import { Colors, Spacing } from '../Styles';
+import { Colors, Spacing } from '../styles';
 
 /**
  * Progress bar with the percent show at the right

@@ -3,7 +3,7 @@ import {
   StyleSheet, View, ScrollView, Text, Button,
 } from 'react-native';
 
-import { Spacing, Typography } from '../Styles';
+import { Spacing, Typography } from '../styles';
 import STRINGS from '../res/strings';
 import PROPS_TYPE from '../res/Props';
 

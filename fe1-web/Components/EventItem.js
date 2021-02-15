@@ -6,7 +6,7 @@ import {
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { Spacing } from '../Styles';
+import { Spacing } from '../styles';
 import PROPS_TYPE from '../res/Props';
 import MeetingEvent from './MeetingEvent';
 import DiscussionEvent from './DiscussionEvent';
@@ -15,7 +15,7 @@ import RollCallEvent from './RollCallEvent';
 import OrganizationNameProperty from './OrganizationNameProperty';
 import WitnessProperty from './WitnessProperty';
 import RollCallEventOrganizer from './RollCallEventOrganizer';
-import { getStore } from '../Store/configureStore';
+import { getStore } from '../store/configureStore';
 /**
  * The Event item component: display the correct representation of the event according to its type,
  * otherwise display its name and in all cases its nested events

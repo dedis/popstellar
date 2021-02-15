@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import currentEventsReducer from '../Store/Reducers/currentEventsReducer';
+import currentEventsReducer from '../store/reducers/currentEventsReducer';
 import eventsData from '../res/EventData';
 
 

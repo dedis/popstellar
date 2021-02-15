@@ -3,7 +3,7 @@ import { StyleSheet, View, Text } from 'react-native';
 
 import CameraButton from './CameraButton';
 import STRINGS from '../res/strings';
-import { Typography } from '../Styles';
+import { Typography } from '../styles';
 import RecorderButton from './RecorderButton';
 
 /**

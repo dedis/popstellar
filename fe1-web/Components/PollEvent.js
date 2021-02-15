@@ -8,7 +8,7 @@ import { CheckBox } from 'react-native-elements';
 
 import EventItem from './EventItem';
 import ProgressBar from './ProgressBar';
-import { Spacing } from '../Styles';
+import { Spacing } from '../styles';
 import PROPS_TYPE from '../res/Props';
 
 /**

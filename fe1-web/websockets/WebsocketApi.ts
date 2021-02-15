@@ -1,11 +1,9 @@
-import { Hash, Lao, PublicKey, Timestamp } from "Model/Objects";
-import { JsonRpcMethod, JsonRpcRequest } from 'Model/Network';
-import { Publish } from 'Model/Network/Method';
-import { Message } from 'Model/Network/Method/Message';
-import { MessageData } from 'Model/Network/Method/Message/data';
-import { Channel } from "Model/Objects/Channel";
+import { JsonRpcMethod, JsonRpcRequest } from 'model/network';
+import { Publish } from 'model/network/method';
+import { Message } from 'model/network/method/message';
+import { MessageData } from 'model/network/method/message/data';
+import { Channel } from 'model/objects/Channel';
 
-// ....
 /*
 class Manager (
   WebSockets[]
@@ -17,7 +15,6 @@ class Manager (
     return new Error(...)
 )
 )
-
 
 class WebSocket (
   ongoing_id: number[];
@@ -32,7 +29,6 @@ class WebSocket (
     ongoing_rpc[id].resolve(...)
   )
 )
-
 
 export function catchup(channel: Channel) {
 
@@ -50,19 +46,20 @@ export function catchup(channel: Channel) {
 }
 */
 export function publish(channel: Channel, msgData: MessageData) {
-  let message = Message.fromData(msgData);
+  const message = Message.fromData(msgData);
 
-  let request = new JsonRpcRequest({
+  const request = new JsonRpcRequest({
     method: JsonRpcMethod.PUBLISH,
     params: new Publish({
-        channel: channel,
-        message: message
+      channel,
+      message,
     }),
     id: -1, // FIXME
   });
+
+  return request || null; // simply to remove ESlint warning for now
 /* // FIXME uncomment once websocket link is refactored
   WebsocketLink.sendRequestToServer(request,
     message.messageData.object,
-    message.messageData.action);*/
+    message.messageData.action); */
 }
-
