@@ -46,14 +46,7 @@ import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QR
 import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.ADD_WITNESS;
 
 /** Activity used to display the different UIs for organizers */
-public class OrganizerActivity extends FragmentActivity
-    implements OnEventTypeSelectedListener,
-        OnEventCreatedListener,
-        OnAddWitnessListener,
-        OnAddAttendeesListener,
-        OnCameraNotAllowedListener,
-        QRCodeListener,
-        OnCameraAllowedListener {
+public class OrganizerActivity extends FragmentActivity {
 
   public static final String TAG = OrganizerActivity.class.getSimpleName();
 
@@ -115,7 +108,6 @@ public class OrganizerActivity extends FragmentActivity
    *
    * @param eventType
    */
-  @Override
   public void OnEventTypeSelectedListener(EventType eventType) {
     switch (eventType) {
       case MEETING:
@@ -133,23 +125,20 @@ public class OrganizerActivity extends FragmentActivity
     }
   }
 
-  @Override
-  public void onAddWitnessListener() {
-    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-        == PackageManager.PERMISSION_GRANTED) {
-      showFragment(new QRCodeScanningFragment(ADD_WITNESS, null), QRCodeScanningFragment.TAG);
-    } else {
-      showFragment(new CameraPermissionFragment(ADD_WITNESS, null), CameraPermissionFragment.TAG);
-    }
-  }
+  //  public void onAddWitnessListener() {
+  //    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+  //        == PackageManager.PERMISSION_GRANTED) {
+  //      showFragment(new QRCodeScanningFragment(ADD_WITNESS, null), QRCodeScanningFragment.TAG);
+  //    } else {
+  //      showFragment(new CameraPermissionFragment(ADD_WITNESS, null), CameraPermissionFragment.TAG);
+  //    }
+  //  }
+  //
+  //  public void onCameraNotAllowedListener(QRCodeScanningType qrCodeScanningType, String eventId) {
+  //    showFragment(
+  //        new CameraPermissionFragment(qrCodeScanningType, eventId), CameraPermissionFragment.TAG);
+  //  }
 
-  @Override
-  public void onCameraNotAllowedListener(QRCodeScanningType qrCodeScanningType, String eventId) {
-    showFragment(
-        new CameraPermissionFragment(qrCodeScanningType, eventId), CameraPermissionFragment.TAG);
-  }
-
-  @Override
   public void onQRCodeDetected(String data, QRCodeScanningType qrCodeScanningType, String eventId) {
     Log.i(TAG, "Received qrcode url : " + data);
 
@@ -228,26 +217,26 @@ public class OrganizerActivity extends FragmentActivity
     }
   }
 
-  @Override
-  public void onCameraAllowedListener(QRCodeScanningType qrCodeScanningType, String eventId) {
-    showFragment(
-        new QRCodeScanningFragment(qrCodeScanningType, eventId), QRCodeScanningFragment.TAG);
-  }
-
-  @Override
-  public void OnEventCreatedListener(Event event) {
-    ((PoPApplication) getApplication()).addEvent(event);
-  }
-
-  @Override
-  public void onAddAttendeesListener(String eventId) {
-    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-        == PackageManager.PERMISSION_GRANTED) {
-      showFragment(new AddAttendeeFragment(eventId), AddAttendeeFragment.TAG);
-    } else {
-      showFragment(
-          new CameraPermissionFragment(ADD_ROLL_CALL_ATTENDEE, eventId),
-          CameraPermissionFragment.TAG);
-    }
-  }
+//  @Override
+//  public void onCameraAllowedListener(QRCodeScanningType qrCodeScanningType, String eventId) {
+//    showFragment(
+//        new QRCodeScanningFragment(qrCodeScanningType, eventId), QRCodeScanningFragment.TAG);
+//  }
+//
+//  @Override
+//  public void OnEventCreatedListener(Event event) {
+//    ((PoPApplication) getApplication()).addEvent(event);
+//  }
+//
+//  @Override
+//  public void onAddAttendeesListener(String eventId) {
+//    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+//        == PackageManager.PERMISSION_GRANTED) {
+//      showFragment(new AddAttendeeFragment(eventId), AddAttendeeFragment.TAG);
+//    } else {
+//      showFragment(
+//          new CameraPermissionFragment(ADD_ROLL_CALL_ATTENDEE, eventId),
+//          CameraPermissionFragment.TAG);
+//    }
+//  }
 }

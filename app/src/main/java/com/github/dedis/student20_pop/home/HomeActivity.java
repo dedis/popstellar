@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.home;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -11,6 +12,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.student20_pop.Event;
+import com.github.dedis.student20_pop.Injection;
 import com.github.dedis.student20_pop.OrganizerActivity;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
@@ -20,12 +22,10 @@ import com.github.dedis.student20_pop.ui.LaunchFragment;
 import com.github.dedis.student20_pop.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.utility.ActivityUtils;
-import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
-import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
+import com.google.android.gms.vision.barcode.BarcodeDetector;
 
-import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO;
 
-public class HomeActivity extends AppCompatActivity implements QRCodeListener {
+public class HomeActivity extends AppCompatActivity {
 
     private HomeViewModel mViewModel;
 
@@ -80,12 +80,12 @@ public class HomeActivity extends AppCompatActivity implements QRCodeListener {
             }
         });
     }
-
-    @Override
-    public void onQRCodeDetected(String data, QRCodeScanningFragment.QRCodeScanningType qrCodeScanningType, String eventId) {
-        //TODO:extract url and lao id
-        setupConnectingFragment("url", "lao_id");
-    }
+//
+//    @Override
+//    public void onQRCodeDetected(String data, QRCodeScanningFragment.QRCodeScanningType qrCodeScanningType, String eventId) {
+//        //TODO:extract url and lao id
+//        setupConnectingFragment("url", "lao_id");
+//    }
 
     public static HomeViewModel obtainViewModel(FragmentActivity activity) {
         ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
@@ -125,7 +125,14 @@ public class HomeActivity extends AppCompatActivity implements QRCodeListener {
     private void setupScanFragment() {
         QRCodeScanningFragment scanningFragment = (QRCodeScanningFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_qrcode);
         if (scanningFragment == null) {
-            scanningFragment = QRCodeScanningFragment.newInstance();
+            Context context = getApplicationContext();
+            BarcodeDetector qrCodeDetector = Injection.provideQRCodeDetector(context);
+            int width = getResources().getInteger(R.integer.camera_preview_width);
+            int height = getResources().getInteger(R.integer.camera_preview_height);
+            scanningFragment = QRCodeScanningFragment.newInstance(
+                    Injection.provideCameraSource(context, qrCodeDetector, width, height),
+                    qrCodeDetector
+            );
             ActivityUtils.replaceFragmentInActivity(
                     getSupportFragmentManager(), scanningFragment, R.id.fragment_container_main
             );

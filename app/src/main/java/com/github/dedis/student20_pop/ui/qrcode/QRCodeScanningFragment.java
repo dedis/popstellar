@@ -29,10 +29,8 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
 
-import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO;
-
 /** Fragment handling the QR code scanning */
-public final class QRCodeScanningFragment extends Fragment implements QRCodeListener {
+public final class QRCodeScanningFragment extends Fragment {
 
   public static final String TAG = QRCodeScanningFragment.class.getSimpleName();
   private static final int HANDLE_GMS = 9001;
@@ -42,37 +40,26 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
   private QRCodeScanningViewModel mQRCodeScanningViewModel;
 
   private CameraSource camera;
-  private CameraPreview preview;
-  private QRCodeListener qrCodeListener;
-  private QRCodeScanningType qrCodeScanningType;
-  private String eventId;
-
-
-  /** Default Fragment constructor */
-  public QRCodeScanningFragment() {
-    new QRCodeScanningFragment(CONNECT_LAO, null);
-  }
+  private CameraPreview mPreview;
+  private BarcodeDetector barcodeDetector;
 
   /**
    * Fragment constructor
    *
-   * @param qrCodeScanningType tell what should be done with QR code information
    */
-  public QRCodeScanningFragment(QRCodeScanningType qrCodeScanningType, String eventId) {
+  public QRCodeScanningFragment(CameraSource camera, BarcodeDetector detector) {
     super();
-    this.qrCodeScanningType = qrCodeScanningType;
-    this.eventId = eventId;
+    this.camera = camera;
+    this.barcodeDetector = detector;
   }
 
-  public static QRCodeScanningFragment newInstance() {
-    return new QRCodeScanningFragment();
+  public static QRCodeScanningFragment newInstance(CameraSource camera, BarcodeDetector detector) {
+    return new QRCodeScanningFragment(camera, detector);
   }
 
   @Override
   public void onAttach(@NonNull Context context) {
     super.onAttach(context);
-    if (context instanceof QRCodeListener) qrCodeListener = (QRCodeListener) context;
-    else throw new ClassCastException(context.toString() + " must implement QRCodeListener");
   }
 
   @Override
@@ -91,13 +78,16 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
       throw new IllegalArgumentException("cannot obtain view model");
     }
 
-    preview = mQrCodeFragBinding.qrCameraPreview;
+    mPreview = mQrCodeFragBinding.qrCameraPreview;
 
     mQrCodeFragBinding.scanDescription.setText(mQRCodeScanningViewModel.getScanDescription());
 
     mQrCodeFragBinding.setLifecycleOwner(activity);
 
-    createCamera();
+    // TODO: consider removing coupling with QRFocusingProcessor
+    barcodeDetector.setProcessor(
+            new QRFocusingProcessor(barcodeDetector, BarcodeTracker.getInstance(mQRCodeScanningViewModel))
+    );
 
     return mQrCodeFragBinding.getRoot();
   }
@@ -105,43 +95,25 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
   @Override
   public void onResume() {
     super.onResume();
-    // If the permission was removed while the app was paused, switch to CameraPermissionFragment
-    if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
-        == PackageManager.PERMISSION_GRANTED) startCamera();
+    startCamera();
   }
 
   @Override
   public void onPause() {
     super.onPause();
-    if (preview != null) preview.stop();
+    // TODO: check if this should me mPreview.release() instead
+    if (mPreview != null) mPreview.stop();
   }
 
   @Override
   public void onDestroy() {
     super.onDestroy();
-    if (preview != null) preview.release();
-  }
-
-  @Override
-  public void onQRCodeDetected(String data, QRCodeScanningType qrCodeScanningType, String eventId) {
-    Log.d(TAG, "QR Code detected");
-    qrCodeListener.onQRCodeDetected(data, qrCodeScanningType, eventId);
+    if (mPreview != null) mPreview.release();
   }
 
   private void createCamera() {
-    BarcodeDetector qrDetector =
-            new BarcodeDetector.Builder(getContext()).setBarcodeFormats(Barcode.QR_CODE).build();
 
-    qrDetector.setProcessor(new QRFocusingProcessor(qrDetector, this, qrCodeScanningType, eventId));
 
-    camera = new CameraSource.Builder(requireContext(), qrDetector)
-            .setFacing(CameraSource.CAMERA_FACING_BACK)
-            .setRequestedPreviewSize(
-                    getResources().getInteger(R.integer.requested_preview_width),
-                    getResources().getInteger(R.integer.requested_preview_height))
-            .setRequestedFps(15.0f)
-            .setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)
-            .build();
   }
 
   private void startCamera() throws SecurityException {
@@ -152,22 +124,18 @@ public final class QRCodeScanningFragment extends Fragment implements QRCodeList
 
     if (camera != null) {
       try {
-        preview.start(camera);
+        mPreview.start(camera);
       } catch (IOException e) {
         Log.e(TAG, "Unable to start camera source.", e);
         camera.release();
-        camera = null;
       }
     }
   }
 
-  /**
-   * Enum representing QR code functionality If QRCodeScanningFragment is launched to add a witness
-   * or connect to a lao or to add an attendee to a roll call event
-   */
+  // TODO: Remove
   public enum QRCodeScanningType {
-    ADD_ROLL_CALL_ATTENDEE,
+    CONNECT_LAO,
     ADD_WITNESS,
-    CONNECT_LAO
+    ADD_ROLL_CALL_ATTENDEE,
   }
 }

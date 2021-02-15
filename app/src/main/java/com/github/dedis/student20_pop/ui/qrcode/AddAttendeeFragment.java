@@ -21,7 +21,6 @@ import com.github.dedis.student20_pop.model.event.RollCallEvent;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.ADD_ROLL_CALL_ATTENDEE;
 
 /**
  * This fragment wraps the QRCodeScanningFragment in order to show the user how many attendees he
@@ -48,13 +47,13 @@ public final class AddAttendeeFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_add_attendee, container, false);
 
-    Fragment newFragment = new QRCodeScanningFragment(ADD_ROLL_CALL_ATTENDEE, eventId);
-    Objects.requireNonNull(getActivity())
-        .getSupportFragmentManager()
-        .beginTransaction()
-        .replace(R.id.add_attendee_qr_code_fragment, newFragment, QRCodeScanningFragment.TAG)
-        .addToBackStack(null)
-        .commit();
+//    Fragment newFragment = new QRCodeScanningFragment(ADD_ROLL_CALL_ATTENDEE, eventId);
+//    Objects.requireNonNull(getActivity())
+//        .getSupportFragmentManager()
+//        .beginTransaction()
+//        .replace(R.id.add_attendee_qr_code_fragment, newFragment, QRCodeScanningFragment.TAG)
+//        .addToBackStack(null)
+//        .commit();
 
     PoPApplication app = (PoPApplication) getActivity().getApplication();
     Optional<Event> matchingEvent =
