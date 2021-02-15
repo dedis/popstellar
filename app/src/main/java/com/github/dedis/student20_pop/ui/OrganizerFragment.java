@@ -25,10 +25,18 @@ import java.util.List;
 /** Fragment used to display Organizer's UI */
 public class OrganizerFragment extends Fragment {
   public static final String TAG = AttendeeFragment.class.getSimpleName();
-  private Lao lao;
+  private final Lao lao;
 
   private OnEventTypeSelectedListener onEventTypeSelectedListener;
   private OnAddWitnessListener onAddWitnessListener;
+
+  public OrganizerFragment(Lao lao) {
+      this.lao = lao;
+  }
+
+  public static OrganizerFragment newInstance(Lao lao) {
+      return new OrganizerFragment(lao);
+  }
 
   @Override
   public void onAttach(@NonNull Context context) {
@@ -52,8 +60,9 @@ public class OrganizerFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     View rootView = inflater.inflate(R.layout.fragment_organizer, container, false);
 
+    /*
     PoPApplication app = (PoPApplication) (getActivity().getApplication());
-    lao = app.getCurrentLaoUnsafe();
+    lao = app.getCurrentLaoUnsafe();*/
 
     ImageButton editPropertiesButton;
     ImageButton addWitnessButton;
