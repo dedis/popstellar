@@ -2,9 +2,8 @@ import { Base64Data } from 'Model/Objects';
 import { ActionType, MessageData, ObjectType } from './messageData';
 import { CreateLao, StateLao, UpdateLao } from './lao';
 import { CreateMeeting, StateMeeting } from './meeting';
-import { CloseRollCall, CreateRollCall, OpenRollCall } from './rollCall';
+import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from './rollCall';
 import { WitnessMessage } from './witness';
-
 
 export function encodeMessageData(msgData: MessageData): Base64Data {
   const data = JSON.stringify(msgData);
@@ -40,8 +39,9 @@ function buildRollCallMessage(msgData: MessageData): MessageData {
     case ActionType.CREATE:
       return new CreateRollCall(msgData);
     case ActionType.OPEN:
-    case ActionType.REOPEN:
       return new OpenRollCall(msgData);
+    case ActionType.REOPEN:
+      return new ReopenRollCall(msgData);
     case ActionType.CLOSE:
       return new CloseRollCall(msgData);
     default:

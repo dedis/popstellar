@@ -7,9 +7,10 @@ import { ProtocolError } from './ProtocolError';
  * This class represents a JSON-RPC 2.0 Request (or Notification)
  */
 export class JsonRpcRequest {
-
   public readonly method: JsonRpcMethod;
+
   public readonly id?: number;
+
   public readonly params: JsonRpcParams;
 
   constructor(req: Partial<JsonRpcRequest>) {
@@ -25,8 +26,9 @@ export class JsonRpcRequest {
     switch(req.method) {
       // notification methods, expect no ID
       case JsonRpcMethod.BROADCAST:
-        if (this.id !== undefined)
+        if (this.id !== undefined) {
           throw new ProtocolError('Error: found \'id\' parameter during \'broadcast\' message creation');
+        }
         break;
 
       // RPC methods, expect an ID
@@ -34,8 +36,9 @@ export class JsonRpcRequest {
       case JsonRpcMethod.SUBSCRIBE:
       case JsonRpcMethod.UNSUBSCRIBE:
       case JsonRpcMethod.CATCHUP:
-        if (this.id === undefined)
+        if (this.id === undefined) {
           throw new ProtocolError('Undefined \'id\' parameter encountered during \'JsonRpcRequest\' creation');
+        }
         break;
 
       // Unsupported methods

@@ -1,7 +1,8 @@
 import { AnyAction } from 'redux';
-import { KeyPairData } from '../objects';
+import { KeyPair } from 'Model/Objects';
+import { ActionKeyPairReducer } from '../Actions';
 
-const initialState: KeyPairData = { publicKey: undefined, privateKey: undefined };
+const initialState: KeyPair | null = null;
 
 /**
  * Reducer to store a set of public/private key
@@ -14,17 +15,14 @@ const initialState: KeyPairData = { publicKey: undefined, privateKey: undefined 
  *
  * @param state JsObject containing the keys to store
  * @param action action to be executed by the reducer
- * @returns {{secKey: ([]|*[]|string), pubKey: ([]|*[]|string)}|{secKey: [], pubKey: []}}
- * new key pair if action is valid, old key pair otherwise
+ * @returns new key pair if action is valid, old key pair otherwise
  */
-function keypairReducer(state: KeyPairData = initialState, action: AnyAction): KeyPairData {
-  if (action.type === 'SET_KEYPAIR') {
-    const nextState = {
-      ...state,
+function keypairReducer(state: KeyPair | null = initialState, action: AnyAction): KeyPair | null {
+  if (action.type === ActionKeyPairReducer.SET_KEYPAIR) {
+    return {
       publicKey: action.value.publicKey,
       privateKey: action.value.privateKey,
     };
-    return nextState || state;
   }
   return state;
 }

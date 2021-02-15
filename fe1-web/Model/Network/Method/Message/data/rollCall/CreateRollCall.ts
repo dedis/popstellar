@@ -4,7 +4,7 @@ import { ActionType, MessageData, ObjectType } from "../messageData";
 import { ProtocolError } from "../../../../ProtocolError";
 import { checkTimestampStaleness } from "../checker";
 import {eventTags} from "../../../../../../websockets/WebsocketUtils";
-import {getStorageCurrentLao} from "../../../../../../Store/Storage";
+import { OpenedLaoStore } from 'Store';
 import {Lao} from "../../../../../Objects";
 
 export class CreateRollCall implements MessageData {
@@ -51,7 +51,7 @@ export class CreateRollCall implements MessageData {
     if (msg.roll_call_description) this.roll_call_description = msg.roll_call_description;
 
     if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'CreateRollCall\'');
-    const lao: Lao = getStorageCurrentLao().getCurrentLao();
+    const lao: Lao = OpenedLaoStore.get();
     const expectedHash = Hash.fromStringArray(eventTags.ROLL_CALL, lao.id.toString(), lao.creation.toString(), msg.name);
     if (!expectedHash.equals(msg.id))
       throw new ProtocolError('Invalid \'id\' parameter encountered during \'CreateRollCall\': unexpected id value');

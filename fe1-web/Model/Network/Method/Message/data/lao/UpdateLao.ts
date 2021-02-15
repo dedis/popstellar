@@ -4,8 +4,8 @@ import { Timestamp } from "Model/Objects/Timestamp";
 import { ActionType, MessageData, ObjectType } from "../messageData";
 import { ProtocolError } from "../../../../ProtocolError";
 import { checkTimestampStaleness, checkWitnesses } from "../checker";
-import {getStorageCurrentLao} from "../../../../../../Store/Storage";
-import {Lao} from "../../../../../Objects";
+import { Lao } from "../../../../../Objects";
+import { OpenedLaoStore } from 'Store';
 
 export class UpdateLao implements MessageData {
 
@@ -31,7 +31,7 @@ export class UpdateLao implements MessageData {
     this.witnesses = msg.witnesses.map((key) => new PublicKey(key.toString()));
 
     if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'UpdateLao\'');
-    const lao: Lao = getStorageCurrentLao().getCurrentLao();
+    const lao: Lao = OpenedLaoStore.get();
     const expectedHash = Hash.fromStringArray(lao.organizer.toString(), lao.creation.toString(), msg.name);
     if (!expectedHash.equals(msg.id))
       throw new ProtocolError('Invalid \'id\' parameter encountered during \'UpdateLao\': unexpected id value');

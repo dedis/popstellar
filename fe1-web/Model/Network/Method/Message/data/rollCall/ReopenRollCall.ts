@@ -1,18 +1,18 @@
-import { Hash, Timestamp, Lao } from "Model/Objects";
+import { Hash, Lao, Timestamp } from "Model/Objects";
 import { ActionType, MessageData, ObjectType } from "../messageData";
 import { ProtocolError } from "../../../../ProtocolError";
 import { checkTimestampStaleness } from "../checker";
 import { OpenedLaoStore } from 'Store';
 
-export class OpenRollCall implements MessageData {
+export class ReopenRollCall implements MessageData {
 
   public readonly object: ObjectType = ObjectType.ROLL_CALL;
-  public readonly action: ActionType = ActionType.OPEN;
+  public readonly action: ActionType = ActionType.REOPEN;
 
   public readonly id: Hash;
   public readonly start: Timestamp;
 
-  constructor(msg: Partial<OpenRollCall>) {
+  constructor(msg: Partial<ReopenRollCall>) {
 
     if (!msg.start) throw new ProtocolError('Undefined \'start\' parameter encountered during \'OpenRollCall\'');
     checkTimestampStaleness(msg.start);
@@ -27,13 +27,13 @@ export class OpenRollCall implements MessageData {
     this.id = new Hash(msg.id.toString());
   }
 
-  public static fromJson(obj: any): OpenRollCall {
+  public static fromJson(obj: any): ReopenRollCall {
 
     // FIXME add JsonSchema validation to all "fromJson"
     let correctness = true;
 
     return correctness
-    ? new OpenRollCall(obj)
-    : (() => { throw new ProtocolError("add JsonSchema error message"); })();
+      ? new ReopenRollCall(obj)
+      : (() => { throw new ProtocolError("add JsonSchema error message"); })();
   }
 }
