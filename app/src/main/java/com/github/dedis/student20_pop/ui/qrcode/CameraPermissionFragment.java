@@ -31,7 +31,6 @@ public final class CameraPermissionFragment extends Fragment {
   }
 
   public static CameraPermissionFragment newInstance() {
-    // TODO: refactor eventId. Possibly rename method to reflect CONNECT_LAO
     return new CameraPermissionFragment();
   }
 
