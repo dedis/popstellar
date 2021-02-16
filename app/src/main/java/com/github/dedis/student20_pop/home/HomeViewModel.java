@@ -86,7 +86,7 @@ public class HomeViewModel extends AndroidViewModel implements CameraPermissionV
         Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
 
         // TODO: extract information
-        setConnectingLao("new LAO extracted");
+        setConnectingLao("lao id");
         openConnecting();
 
         // TODO: subscribe to the LAO

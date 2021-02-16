@@ -3,15 +3,12 @@ package com.github.dedis.student20_pop.home;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.github.dedis.student20_pop.Event;
 import com.github.dedis.student20_pop.Injection;
 import com.github.dedis.student20_pop.OrganizerActivity;
 import com.github.dedis.student20_pop.R;
@@ -62,7 +59,7 @@ public class HomeActivity extends AppCompatActivity {
         mViewModel.getOpenConnectingEvent().observe(this, booleanEvent -> {
             Boolean event = booleanEvent.getContentIfNotHandled();
             if (event != null) {
-                setupConnectingFragment("url", "lao");
+                setupConnectingFragment();
             }
         });
 
@@ -162,7 +159,7 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    private void setupConnectingFragment(String url, String laoId) {
+    private void setupConnectingFragment() {
         ConnectingFragment connectingFragment = (ConnectingFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_connecting);
         if (connectingFragment == null) {
             connectingFragment = ConnectingFragment.newInstance();
