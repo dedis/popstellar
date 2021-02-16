@@ -13,6 +13,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Lao;
+import com.github.dedis.student20_pop.model.entities.LAOEntity;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.utility.ui.adapter.OrganizerEventExpandableListViewAdapter;
 import com.github.dedis.student20_pop.utility.ui.adapter.WitnessListViewAdapter;
@@ -25,19 +26,22 @@ import java.util.List;
 /** Fragment used to display Organizer's UI */
 public class OrganizerFragment extends Fragment {
   public static final String TAG = AttendeeFragment.class.getSimpleName();
-  private final Lao lao;
 
+  private final LAOEntity laoEntity;
+
+  /*
   private OnEventTypeSelectedListener onEventTypeSelectedListener;
-  private OnAddWitnessListener onAddWitnessListener;
+  private OnAddWitnessListener onAddWitnessListener;*/
 
-  public OrganizerFragment(Lao lao) {
-      this.lao = lao;
+  public OrganizerFragment(LAOEntity laoEntity) {
+      this.laoEntity = laoEntity;
   }
 
-  public static OrganizerFragment newInstance(Lao lao) {
-      return new OrganizerFragment(lao);
+  public static OrganizerFragment newInstance(LAOEntity laoEntity) {
+      return new OrganizerFragment(laoEntity);
   }
 
+  /*
   @Override
   public void onAttach(@NonNull Context context) {
     super.onAttach(context);
@@ -50,7 +54,7 @@ public class OrganizerFragment extends Fragment {
     if (context instanceof OnAddWitnessListener)
       onAddWitnessListener = (OnAddWitnessListener) context;
     else throw new ClassCastException(context.toString() + " must implement OnAddWitnessListener");
-  }
+  }*/
 
   @Nullable
   @Override
@@ -58,6 +62,9 @@ public class OrganizerFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
+
+
+
     View rootView = inflater.inflate(R.layout.fragment_organizer, container, false);
 
     /*
@@ -69,6 +76,7 @@ public class OrganizerFragment extends Fragment {
     EditText laoNameEditText;
     TextView laoNameTextView;
 
+    /*
     List<Event> events = lao.getEvents();
 
     SwipeRefreshLayout swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh);
@@ -169,6 +177,8 @@ public class OrganizerFragment extends Fragment {
           }
           swipeRefreshLayout.setRefreshing(false);
         });
+
+     */
 
     return rootView;
   }

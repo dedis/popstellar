@@ -15,6 +15,7 @@ import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import net.glxn.qrgen.android.QRCode;
 
+
 /**
  * Represents the identity of a user within an organization (which allows users to “wear different
  * hats” in different organizations) TODO : For te moment, the goal of this UI is just to show a QR
@@ -30,6 +31,10 @@ public class IdentityFragment extends Fragment {
   private EditText identityEmailEditText;
   private EditText identityPhoneEditText;
   private ImageView qrCode;
+
+  public static IdentityFragment newInstance() {
+    return new IdentityFragment();
+  }
 
   @Nullable
   @Override
