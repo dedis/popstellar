@@ -10,6 +10,7 @@
       "ts": "never",
       "tsx": "never"
     }],
+    // conflicts with the index.ts (eslint prefers default exports which are not compatible with index.ts)
     "import/prefer-default-export": "off"
   },
   // we disable import/extensions eslint errors. Eslint underlines every import due to an

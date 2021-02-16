@@ -29,17 +29,17 @@ export class CreateMeeting implements MessageData {
 
     if (!msg.creation) throw new ProtocolError('Undefined \'creation\' parameter encountered during \'CreateMeeting\'');
     checkTimestampStaleness(msg.creation);
-    this.creation = new Timestamp(msg.creation.toString());
+    this.creation = msg.creation;
 
     if (msg.location) this.location = msg.location;
 
     if (!msg.start) throw new ProtocolError('Undefined \'start\' parameter encountered during \'CreateMeeting\'');
     checkTimestampStaleness(msg.start);
-    this.start = new Timestamp(msg.start.toString());
+    this.start = msg.start;
 
     if (msg.end) {
       if (msg.end < msg.creation) throw new ProtocolError('Invalid timestamp encountered: \'end\' parameter smaller than \'creation\'');
-      this.end = new Timestamp(msg.end.toString());
+      this.end = msg.end;
     }
 
     if (msg.extra) this.extra = JSON.parse(JSON.stringify(msg.extra)); // clone JS object extra
@@ -54,7 +54,7 @@ export class CreateMeeting implements MessageData {
       throw new ProtocolError(
         'Invalid \'id\' parameter encountered during \'CreateMeeting\': unexpected id value'
       ); */
-    this.id = new Hash(msg.id.toString());
+    this.id = msg.id;
   }
 
   public static fromJson(obj: any): CreateMeeting {
@@ -62,7 +62,13 @@ export class CreateMeeting implements MessageData {
     const correctness = true;
 
     return correctness
-      ? new CreateMeeting(obj)
+      ? new CreateMeeting({
+        ...obj,
+        creation: new Timestamp(obj.creation),
+        start: new Timestamp(obj.start),
+        end: (obj.end !== undefined) ? new Timestamp(obj.end) : undefined,
+        id: new Hash(obj.id),
+      })
       : (() => { throw new ProtocolError('add JsonSchema error message'); })();
   }
 }

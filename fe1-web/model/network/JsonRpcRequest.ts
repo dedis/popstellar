@@ -16,8 +16,6 @@ export class JsonRpcRequest {
   public readonly params: JsonRpcParams;
 
   constructor(req: Partial<JsonRpcRequest>) {
-    Object.assign(this, req);
-
     if (!req.method) {
       throw new ProtocolError("Undefined 'method' in JSON-RPC");
     }

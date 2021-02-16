@@ -16,7 +16,7 @@ export class OpenRollCall implements MessageData {
   constructor(msg: Partial<OpenRollCall>) {
     if (!msg.start) throw new ProtocolError('Undefined \'start\' parameter encountered during \'OpenRollCall\'');
     checkTimestampStaleness(msg.start);
-    this.start = new Timestamp(msg.start.toString());
+    this.start = msg.start;
 
     if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'CreateLao\'');
     const lao: Lao = OpenedLaoStore.get();
@@ -28,7 +28,7 @@ export class OpenRollCall implements MessageData {
       throw new ProtocolError(
         'Invalid \'id\' parameter encountered during \'CreateLao\': unexpected id value'
       ); */
-    this.id = new Hash(msg.id.toString());
+    this.id = msg.id;
   }
 
   public static fromJson(obj: any): OpenRollCall {
@@ -36,7 +36,11 @@ export class OpenRollCall implements MessageData {
     const correctness = true;
 
     return correctness
-      ? new OpenRollCall(obj)
+      ? new OpenRollCall({
+        ...obj,
+        start: new Timestamp(obj.start),
+        id: new Hash(obj.id),
+      })
       : (() => { throw new ProtocolError('add JsonSchema error message'); })();
   }
 }

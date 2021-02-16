@@ -18,15 +18,17 @@ const initialState: Lao | null = null;
  * @returns new LAO if action is valid, old LAO otherwise
  */
 export function openedLaoReducer(state: Lao | null = initialState, action: AnyAction): Lao | null {
-  if (action.type === ActionOpenedLaoReducer.SET_OPENED_LAO) {
-    return {
-      name: action.value.name,
-      id: action.value.id,
-      creation: action.value.creation,
-      last_modified: action.value.last_modified,
-      organizer: action.value.organizer,
-      witnesses: action.value.witnesses,
-    };
+  try {
+    if (action.type === ActionOpenedLaoReducer.SET_OPENED_LAO) {
+      if (action.value === undefined || action.value === null) {
+        return null;
+      }
+      return new Lao(action.value);
+    }
+  } catch (e) {
+    console.exception(e);
   }
+
+  console.log(`LAO storage stayed unchanged after action : '${action.type}'`);
   return state;
 }

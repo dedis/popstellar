@@ -22,15 +22,15 @@ export class CloseRollCall implements MessageData {
   constructor(msg: Partial<CloseRollCall>) {
     if (!msg.start) throw new ProtocolError('Undefined \'start\' parameter encountered during \'CloseRollCall\'');
     checkTimestampStaleness(msg.start);
-    this.start = new Timestamp(msg.start.toString());
+    this.start = msg.start;
 
     if (!msg.end) throw new ProtocolError('Undefined \'end\' parameter encountered during \'CloseRollCall\'');
     if (msg.end < msg.start) throw new ProtocolError('Invalid timestamp encountered: \'end\' parameter smaller than \'start\'');
-    this.end = new Timestamp(msg.end.toString());
+    this.end = msg.end;
 
     if (!msg.attendees) throw new ProtocolError('Undefined \'attendees\' parameter encountered during \'CloseRollCall\'');
     checkAttendees(msg.attendees);
-    this.attendees = msg.attendees.map((key) => new PublicKey(key.toString()));
+    this.attendees = [...msg.attendees];
 
     if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'CloseRollCall\'');
     const lao: Lao = OpenedLaoStore.get();
@@ -42,7 +42,7 @@ export class CloseRollCall implements MessageData {
       throw new ProtocolError(
         'Invalid \'id\' parameter encountered during \'CloseRollCall\': unexpected id value
       '); */
-    this.id = new Hash(msg.id.toString());
+    this.id = msg.id;
   }
 
   public static fromJson(obj: any): CloseRollCall {
@@ -50,7 +50,13 @@ export class CloseRollCall implements MessageData {
     const correctness = true;
 
     return correctness
-      ? new CloseRollCall(obj)
+      ? new CloseRollCall({
+        ...obj,
+        start: new Timestamp(obj.start),
+        end: new Timestamp(obj.end),
+        attendees: obj.attendees.map((key: string) => new PublicKey(key)),
+        id: new Hash(obj.id),
+      })
       : (() => { throw new ProtocolError('add JsonSchema error message'); })();
   }
 }

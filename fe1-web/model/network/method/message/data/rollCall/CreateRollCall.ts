@@ -30,7 +30,7 @@ export class CreateRollCall implements MessageData {
 
     if (!msg.creation) throw new ProtocolError('Undefined \'creation\' parameter encountered during \'CreateRollCall\'');
     checkTimestampStaleness(msg.creation);
-    this.creation = new Timestamp(msg.creation.toString());
+    this.creation = msg.creation;
 
     if (msg.start === msg.scheduled) {
       // if both are present or neither
@@ -39,12 +39,12 @@ export class CreateRollCall implements MessageData {
 
     if (msg.start) {
       if (msg.start < msg.creation) throw new ProtocolError('Invalid timestamp encountered: \'start\' parameter smaller than \'creation\'');
-      this.start = new Timestamp(msg.start.toString());
+      this.start = msg.start;
     }
 
     if (msg.scheduled) {
       if (msg.scheduled < msg.creation) throw new ProtocolError('Invalid timestamp encountered: \'scheduled\' parameter smaller than \'creation\'');
-      this.scheduled = new Timestamp(msg.scheduled.toString());
+      this.scheduled = msg.scheduled;
     }
 
     if (!msg.location) throw new ProtocolError('Undefined \'location\' parameter encountered during \'CreateRollCall\'');
@@ -58,7 +58,7 @@ export class CreateRollCall implements MessageData {
       eventTags.ROLL_CALL, lao.id.toString(), lao.creation.toString(), msg.name,
     );
     if (!expectedHash.equals(msg.id)) throw new ProtocolError('Invalid \'id\' parameter encountered during \'CreateRollCall\': unexpected id value');
-    this.id = new Hash(msg.id.toString());
+    this.id = msg.id;
   }
 
   public static fromJson(obj: any): CreateRollCall {
@@ -66,7 +66,13 @@ export class CreateRollCall implements MessageData {
     const correctness = true;
 
     return correctness
-      ? new CreateRollCall(obj)
+      ? new CreateRollCall({
+        ...obj,
+        creation: new Timestamp(obj.creation),
+        start: (obj.start !== undefined) ? new Timestamp(obj.start) : undefined,
+        scheduled: (obj.scheduled !== undefined) ? new Timestamp(obj.scheduled) : undefined,
+        id: new Hash(obj.id),
+      })
       : (() => { throw new ProtocolError('add JsonSchema error message'); })();
   }
 }

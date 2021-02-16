@@ -16,8 +16,8 @@ let persist: Persistor;
 export function initialise(): PersistStoreConfig {
   let storage: WebStorage;
   // FIXME doesnt compile
-  // if (!window || typeof window.localStorage === 'undefined' || window.localStorage === null) {
-  if (typeof localStorage === 'undefined' || localStorage === null) {
+  if (typeof window === 'undefined' || typeof window.localStorage === 'undefined' || window.localStorage === null) {
+  // if (typeof localStorage === 'undefined' || localStorage === null) {
     // using a polyfill to replace the missing local storage
     const { LocalStorage } = require('node-localstorage');
     storage = new LocalStorage('./scratch');
