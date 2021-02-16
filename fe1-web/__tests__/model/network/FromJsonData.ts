@@ -24,10 +24,8 @@ const STANDARD_TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const CLOSE_TIMESTAMP = new Timestamp(1609542000);    // 2nd january 2021
 const FUTURE_TIMESTAMP = new Timestamp(1735686000);   // 1st january 2025
 
-// FIXME use real keys from key pair once operational
 export const mockPublicKey = new PublicKey('xjHAz+d0udy1XfHp5qugskWJVEGZETN/8DV3+ccOFSs=');
 export const mockSecretKey = new PrivateKey('vx0b2hbxwPBQzfPu9NdlCcYmuFjhUFuIUDx6doHRCM7GMcDP53S53LVd8enmq6CyRYlUQZkRM3/wNXf5xw4VKw==');
-
 
 const _generateKeyPair = () => {
   const pair = sign.keyPair();
@@ -37,7 +35,7 @@ const _generateKeyPair = () => {
 
 
 
-describe('=== fromJson object checks ===', function() {
+describe('=== fromJsonData checks ===', function() {
 
   beforeAll(() => {
     initialise();

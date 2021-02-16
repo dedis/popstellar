@@ -21,8 +21,6 @@ export class Message {
   public readonly messageData: MessageData;
 
   constructor(msg: Partial<Message>) {
-    Object.assign(this, msg);
-
     if (!msg.data) throw new ProtocolError('Undefined \'data\' parameter encountered during \'Message\' creation');
     this.data = msg.data;
 
@@ -46,6 +44,19 @@ export class Message {
     if (!msg.witness_signatures) throw new ProtocolError('Undefined \'witness_signatures\' parameter encountered during \'Message\' creation');
     checkWitnessSignatures(msg.witness_signatures, msg.data);
     this.witness_signatures = [...msg.witness_signatures];
+  }
+
+  public static fromJson(obj: any): Message {
+    return new Message({
+      data: new Base64Data(obj.data.toString()),
+      sender: new PublicKey(obj.sender.toString()),
+      signature: new Signature(obj.signature.toString()),
+      message_id: new Hash(obj.message_id.toString()),
+      witness_signatures: obj.witness_signatures.map((ws: any) => new WitnessSignature({
+        witness: new PublicKey(ws.witness.toString()),
+        signature: new Signature(ws.signature.toString()),
+      })),
+    });
   }
 
   public static fromData(data: MessageData, witnessSignatures?: WitnessSignature[]): Message {
