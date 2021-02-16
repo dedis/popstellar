@@ -26,7 +26,7 @@ export class JsonRpcRequest {
     switch (req.method) {
       // notification methods, expect no ID
       case JsonRpcMethod.BROADCAST:
-        if (this.id !== undefined) {
+        if (req.id !== undefined) {
           throw new ProtocolError('Error: found \'id\' parameter during \'broadcast\' message creation');
         }
         break;
@@ -36,7 +36,7 @@ export class JsonRpcRequest {
       case JsonRpcMethod.SUBSCRIBE:
       case JsonRpcMethod.UNSUBSCRIBE:
       case JsonRpcMethod.CATCHUP:
-        if (this.id === undefined) {
+        if (req.id === undefined) {
           throw new ProtocolError('Undefined \'id\' parameter encountered during \'JsonRpcRequest\' creation');
         }
         break;
@@ -47,11 +47,11 @@ export class JsonRpcRequest {
     }
 
     this.method = req.method;
-    this.id = req.id || undefined;
+    this.id = (req.id === undefined || req.id === null) ? undefined : req.id;
     this.params = this.parseParams(req.params);
   }
 
-  static fromJson(jsonString: string) : JsonRpcRequest {
+  static fromJson(jsonString: string): JsonRpcRequest {
     // FIXME add JsonSchema validation to all "fromJson"
     const correctness = true;
 

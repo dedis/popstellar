@@ -12,6 +12,6 @@ export class JsonRpcParamsWithMessage extends JsonRpcParams {
       throw new ProtocolError("Undefined 'message' parameter in JSON-RPC");
     }
 
-    this.message = new Message(params.message);
+    this.message = Message.fromJson(params.message);
   }
 }

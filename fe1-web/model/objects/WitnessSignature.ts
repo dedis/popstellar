@@ -22,7 +22,6 @@ export class WitnessSignature {
    * @param message_id to be verified
    */
   public verify(message_id: Hash) : boolean {
-    this.signature.verify(this.witness, message_id);
-    return false;
+    return this.signature.verify(this.witness, message_id);
   }
 }
