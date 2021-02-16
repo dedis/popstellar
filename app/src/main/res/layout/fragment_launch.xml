@@ -4,7 +4,7 @@
         <import type="android.view.View" />
 
         <variable
-            name="viewmodel"
+            name="view_model"
             type="com.github.dedis.student20_pop.home.HomeViewModel"/>
     </data>
 
@@ -38,7 +38,7 @@
 
             <EditText
                     android:id="@+id/entry_box_launch"
-                    android:afterTextChanged="@{(edtitable)->viewmodel.setLaoName(edtitable.toString())}"
+                    android:afterTextChanged="@{(edtitable)->view_model.setLaoName(edtitable.toString())}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/margin_text"

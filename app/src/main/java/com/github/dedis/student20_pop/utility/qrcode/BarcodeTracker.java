@@ -1,10 +1,10 @@
 package com.github.dedis.student20_pop.utility.qrcode;
 
-import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.barcode.Barcode;
 
 public class BarcodeTracker extends Tracker<Barcode> {
+
   private static BarcodeTracker INSTANCE = null;
 
   private QRCodeListener listener;

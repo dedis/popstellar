@@ -41,32 +41,23 @@ import io.reactivex.schedulers.Schedulers;
 public class HomeViewModel extends AndroidViewModel implements CameraPermissionViewModel, QRCodeScanningViewModel {
 
     public static final String TAG = HomeViewModel.class.getSimpleName();
-
     public static final String SCAN = "SCAN";
-
     public static final String REQUEST_CAMERA_PERMISSION = "REQUEST_CAMERA_PERMISSION";
 
     private final MutableLiveData<Event<String>> mOpenLaoEvent = new MutableLiveData<>();
-
     private final MutableLiveData<Event<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
-
+    private final MutableLiveData<Event<Boolean>> mOpenConnectingEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<String>> mOpenConnectEvent = new MutableLiveData<>();
-
     private final MutableLiveData<Event<Boolean>> mOpenLaunchEvent = new MutableLiveData<>();
-
     private final MutableLiveData<Event<Boolean>> mLaunchNewLaoEvent = new MutableLiveData<>();
-
     private final MutableLiveData<Event<Boolean>> mCancelNewLaoEvent = new MutableLiveData<>();
-
+    private final MutableLiveData<Event<Boolean>> mCancelConnectEvent = new MutableLiveData<>();
+    private final MutableLiveData<String> mConnectingLao = new MutableLiveData<>();
     private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
-
     private final MutableLiveData<Map<String, Lao>> mLAOsById = new MutableLiveData<>();
-
     private final LiveData<List<Lao>> mLAOs = Transformations.map(mLAOsById, laosById ->
             new ArrayList<>(laosById.values()));
-
     private final Gson gson;
-
     private final LAORepository mLAORepository;
 
     private Disposable disposable;
@@ -88,6 +79,30 @@ public class HomeViewModel extends AndroidViewModel implements CameraPermissionV
     @Override
     public int getScanDescription() {
         return R.string.qrcode_scanning_connect_lao;
+    }
+
+    @Override
+    public void onQRCodeDetected(Barcode barcode) {
+        Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
+
+        // TODO: extract information
+        setConnectingLao("new LAO extracted");
+        openConnecting();
+
+        // TODO: subscribe to the LAO
+
+        // TODO: add LAO to the list of LAOs
+
+        // TODO: initiate a catchup
+
+        //openHome();
+    }
+
+    @Override
+    protected void onCleared() {
+        if (disposable != null) {
+            disposable.dispose();
+        }
     }
 
     public void setupDummyLAO() {
@@ -174,13 +189,14 @@ public class HomeViewModel extends AndroidViewModel implements CameraPermissionV
 
     public void launchLao() {
         // Get organizer information and host
+        //TODO: LaoRepository
         String laoName = getLaoName().getValue();
         String organizer = "1234";
         URI host = URI.create("");
         Lao newLao = new Lao(laoName, organizer, host);
         Log.d(TAG, "Launch new LAO: " + laoName);
 
-        // Send create lao message to backend
+        // TODO: Send create lao message to backend
 
         // Save new lao
         Map<String, Lao> laosById = mLAOsById.getValue();
@@ -195,19 +211,16 @@ public class HomeViewModel extends AndroidViewModel implements CameraPermissionV
         return mLAOs;
     }
 
-    @Override
-    protected void onCleared() {
-        if (disposable != null) {
-            disposable.dispose();
-        }
-    }
-
     public LiveData<Event<String>> getOpenLaoEvent() {
         return mOpenLaoEvent;
     }
 
     public LiveData<Event<Boolean>> getOpenHomeEvent() {
         return mOpenHomeEvent;
+    }
+
+    public LiveData<Event<Boolean>> getOpenConnectingEvent() {
+        return mOpenConnectingEvent;
     }
 
     public LiveData<Event<String>> getOpenConnectEvent() {
@@ -226,16 +239,28 @@ public class HomeViewModel extends AndroidViewModel implements CameraPermissionV
         return mCancelNewLaoEvent;
     }
 
+    public LiveData<Event<Boolean>> getCancelConnectEvent() {
+        return mCancelConnectEvent;
+    }
+
+    public MutableLiveData<String> getConnectingLao() {
+        return mConnectingLao;
+    }
+
     public MutableLiveData<String> getLaoName() {
         return mLaoName;
     }
 
-    void openLAO(String laoId) {
+    public void openLAO(String laoId) {
         mOpenLaoEvent.setValue(new Event<>(laoId));
     }
 
     public void openHome() {
         mOpenHomeEvent.postValue(new Event<>(true));
+    }
+
+    public void openConnecting() {
+        mOpenConnectingEvent.postValue(new Event<>(true));
     }
 
     public void openConnect() {
@@ -267,20 +292,15 @@ public class HomeViewModel extends AndroidViewModel implements CameraPermissionV
         mCancelNewLaoEvent.setValue(new Event<>(true));
     }
 
-    public void setLaoName(String name) {
-        this.mLaoName.setValue(name);
+    public void cancelConnect() {
+        mCancelConnectEvent.setValue(new Event<>(true));
     }
 
-    @Override
-    public void onQRCodeDetected(Barcode barcode) {
-        Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
+    public void setConnectingLao(String lao) {
+        this.mConnectingLao.postValue(lao);
+    }
 
-        // TODO: subscribe to the LAO
-
-        // TODO: add LAO to the list of LAOs
-
-        // TODO: initiate a catchup
-
-        openHome();
+    public void setLaoName(String name) {
+        this.mLaoName.setValue(name);
     }
 }

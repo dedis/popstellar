@@ -29,17 +29,12 @@ public final class HomeFragment extends Fragment {
   public static final SimpleDateFormat DATE_FORMAT =
       new SimpleDateFormat("dd/MM/yy", Locale.ENGLISH);
 
-  private List<Lao> laos;
-  private String id;
-
   private FragmentHomeBinding mHomeFragBinding;
-
   private HomeViewModel mHomeViewModel;
-
   private LAOListAdapter mListAdapter;
 
   public HomeFragment() {
-
+    super();
   }
 
   public static HomeFragment newInstance() {
@@ -62,10 +57,6 @@ public final class HomeFragment extends Fragment {
   @Override
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
-
-    ((HomeActivity) getActivity()).setupHomeButton();
-    ((HomeActivity) getActivity()).setupConnectButton();
-    ((HomeActivity) getActivity()).setupLaunchButton();
 
     setupListAdapter();
     setupListUpdates();

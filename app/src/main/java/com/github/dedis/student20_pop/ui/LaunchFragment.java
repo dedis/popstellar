@@ -4,13 +4,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentLaunchBinding;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.home.HomeViewModel;
@@ -21,7 +19,6 @@ public final class LaunchFragment extends Fragment {
   public static final String TAG = LaunchFragment.class.getSimpleName();
 
   private FragmentLaunchBinding mLaunchFragBinding;
-
   private HomeViewModel mHomeViewModel;
 
   public static LaunchFragment newInstance() {
@@ -39,7 +36,7 @@ public final class LaunchFragment extends Fragment {
 
     mHomeViewModel = HomeActivity.obtainViewModel(getActivity());
 
-    mLaunchFragBinding.setViewmodel(mHomeViewModel);
+    mLaunchFragBinding.setViewModel(mHomeViewModel);
     mLaunchFragBinding.setLifecycleOwner(getActivity());
 
     return mLaunchFragBinding.getRoot();

@@ -20,10 +20,10 @@ import com.github.dedis.student20_pop.home.HomeActivity;
 public final class CameraPermissionFragment extends Fragment {
 
   public static final String TAG = CameraPermissionFragment.class.getSimpleName();
+
   private static final int HANDLE_CAMERA_PERM = 2;
 
   private FragmentCameraPermBinding mCameraPermFragBinding;
-
   private CameraPermissionViewModel mCameraPermissionViewModel;
 
   public CameraPermissionFragment() {
@@ -47,14 +47,19 @@ public final class CameraPermissionFragment extends Fragment {
     if (activity instanceof HomeActivity) {
       mCameraPermissionViewModel = HomeActivity.obtainViewModel(activity);
     } else {
-      throw new IllegalArgumentException("cannot obtain view model");
+      throw new IllegalArgumentException("Cannot obtain view model for " + TAG);
     }
 
     mCameraPermFragBinding.setLifecycleOwner(activity);
 
-    setupCameraPermissionButton();
-
     return mCameraPermFragBinding.getRoot();
+  }
+
+  @Override
+  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    super.onActivityCreated(savedInstanceState);
+
+    setupCameraPermissionButton();
   }
 
   @Override
