@@ -1,30 +1,25 @@
 package com.github.dedis.student20_pop.ui.qrcode;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.databinding.FragmentHomeBinding;
 import com.github.dedis.student20_pop.databinding.FragmentQrcodeBinding;
 import com.github.dedis.student20_pop.home.HomeActivity;
-import com.github.dedis.student20_pop.utility.qrcode.*;
+import com.github.dedis.student20_pop.utility.qrcode.BarcodeTracker;
+import com.github.dedis.student20_pop.utility.qrcode.CameraPreview;
+import com.github.dedis.student20_pop.utility.qrcode.QRFocusingProcessor;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.vision.CameraSource;
-import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
@@ -33,12 +28,11 @@ import java.io.IOException;
 public final class QRCodeScanningFragment extends Fragment {
 
   public static final String TAG = QRCodeScanningFragment.class.getSimpleName();
+
   private static final int HANDLE_GMS = 9001;
 
   private FragmentQrcodeBinding mQrCodeFragBinding;
-
   private QRCodeScanningViewModel mQRCodeScanningViewModel;
-
   private CameraSource camera;
   private CameraPreview mPreview;
   private BarcodeDetector barcodeDetector;
@@ -101,7 +95,6 @@ public final class QRCodeScanningFragment extends Fragment {
   @Override
   public void onPause() {
     super.onPause();
-    // TODO: check if this should me mPreview.release() instead
     if (mPreview != null) mPreview.stop();
   }
 
@@ -109,11 +102,6 @@ public final class QRCodeScanningFragment extends Fragment {
   public void onDestroy() {
     super.onDestroy();
     if (mPreview != null) mPreview.release();
-  }
-
-  private void createCamera() {
-
-
   }
 
   private void startCamera() throws SecurityException {
@@ -130,12 +118,5 @@ public final class QRCodeScanningFragment extends Fragment {
         camera.release();
       }
     }
-  }
-
-  // TODO: Remove
-  public enum QRCodeScanningType {
-    CONNECT_LAO,
-    ADD_WITNESS,
-    ADD_ROLL_CALL_ATTENDEE,
   }
 }

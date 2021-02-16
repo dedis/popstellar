@@ -58,7 +58,15 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        // Subscribe to "openConnect" event
+        // Subscribe to "open connecting" event
+        mViewModel.getOpenConnectingEvent().observe(this, booleanEvent -> {
+            Boolean event = booleanEvent.getContentIfNotHandled();
+            if (event != null) {
+                setupConnectingFragment("url", "lao");
+            }
+        });
+
+        // Subscribe to "open connect" event
         mViewModel.getOpenConnectEvent().observe(this, stringEvent -> {
             String action = stringEvent.getContentIfNotHandled();
             if (action != null) {
@@ -73,6 +81,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        // Subscribe to "open launch" event
         mViewModel.getOpenLaunchEvent().observe(this, booleanEvent -> {
             Boolean event = booleanEvent.getContentIfNotHandled();
             if (event != null) {
@@ -80,12 +89,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
     }
-//
-//    @Override
-//    public void onQRCodeDetected(String data, QRCodeScanningFragment.QRCodeScanningType qrCodeScanningType, String eventId) {
-//        //TODO:extract url and lao id
-//        setupConnectingFragment("url", "lao_id");
-//    }
 
     public static HomeViewModel obtainViewModel(FragmentActivity activity) {
         ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
@@ -162,7 +165,7 @@ public class HomeActivity extends AppCompatActivity {
     private void setupConnectingFragment(String url, String laoId) {
         ConnectingFragment connectingFragment = (ConnectingFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_connecting);
         if (connectingFragment == null) {
-            connectingFragment = ConnectingFragment.newInstance(url, laoId);
+            connectingFragment = ConnectingFragment.newInstance();
             ActivityUtils.replaceFragmentInActivity(
                     getSupportFragmentManager(), connectingFragment, R.id.fragment_container_main
             );

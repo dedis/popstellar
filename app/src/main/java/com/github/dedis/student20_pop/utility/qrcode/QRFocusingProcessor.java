@@ -5,7 +5,6 @@ import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.FocusingProcessor;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.barcode.Barcode;
-import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 /**
  * A Barcode processor.

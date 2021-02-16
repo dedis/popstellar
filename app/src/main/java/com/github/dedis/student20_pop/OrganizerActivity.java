@@ -1,13 +1,11 @@
 package com.github.dedis.student20_pop;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-import androidx.core.app.ActivityCompat;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
@@ -22,17 +20,6 @@ import com.github.dedis.student20_pop.ui.OrganizerFragment;
 import com.github.dedis.student20_pop.ui.event.creation.MeetingEventCreationFragment;
 import com.github.dedis.student20_pop.ui.event.creation.PollEventCreationFragment;
 import com.github.dedis.student20_pop.ui.event.creation.RollCallEventCreationFragment;
-import com.github.dedis.student20_pop.ui.qrcode.AddAttendeeFragment;
-import com.github.dedis.student20_pop.ui.qrcode.CameraPermissionFragment;
-import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
-import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType;
-import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
-import com.github.dedis.student20_pop.utility.qrcode.OnCameraNotAllowedListener;
-import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
-import com.github.dedis.student20_pop.utility.ui.listener.OnAddAttendeesListener;
-import com.github.dedis.student20_pop.utility.ui.listener.OnAddWitnessListener;
-import com.github.dedis.student20_pop.utility.ui.listener.OnEventCreatedListener;
-import com.github.dedis.student20_pop.utility.ui.listener.OnEventTypeSelectedListener;
 
 import java.util.Optional;
 
@@ -42,8 +29,6 @@ import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD
 import static com.github.dedis.student20_pop.PoPApplication.getAppContext;
 import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult;
 import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.*;
-import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.ADD_ROLL_CALL_ATTENDEE;
-import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.ADD_WITNESS;
 
 /** Activity used to display the different UIs for organizers */
 public class OrganizerActivity extends FragmentActivity {
@@ -139,6 +124,7 @@ public class OrganizerActivity extends FragmentActivity {
   //        new CameraPermissionFragment(qrCodeScanningType, eventId), CameraPermissionFragment.TAG);
   //  }
 
+  /*
   public void onQRCodeDetected(String data, QRCodeScanningType qrCodeScanningType, String eventId) {
     Log.i(TAG, "Received qrcode url : " + data);
 
@@ -216,6 +202,7 @@ public class OrganizerActivity extends FragmentActivity {
         break;
     }
   }
+   */
 
 //  @Override
 //  public void onCameraAllowedListener(QRCodeScanningType qrCodeScanningType, String eventId) {

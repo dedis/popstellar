@@ -1,31 +1,6 @@
 package com.github.dedis.student20_pop;
 
-import android.Manifest;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.Toast;
-
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-
-import com.github.dedis.student20_pop.model.Lao;
-import com.github.dedis.student20_pop.ui.ConnectingFragment;
-import com.github.dedis.student20_pop.ui.HomeFragment;
-import com.github.dedis.student20_pop.ui.LaunchFragment;
-import com.github.dedis.student20_pop.ui.qrcode.CameraPermissionFragment;
-import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
-import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType;
-import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
-import com.github.dedis.student20_pop.utility.qrcode.OnCameraNotAllowedListener;
-import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
-
-import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO;
 
 /** Activity used to display the different UIs */
 public final class MainActivity extends FragmentActivity {

@@ -33,6 +33,7 @@ public class OrganizerFragment extends Fragment {
   @Override
   public void onAttach(@NonNull Context context) {
     super.onAttach(context);
+    /*
     if (context instanceof OnEventCreatedListener)
       onEventTypeSelectedListener = (OnEventTypeSelectedListener) context;
     else
@@ -42,6 +43,7 @@ public class OrganizerFragment extends Fragment {
     if (context instanceof OnAddWitnessListener)
       onAddWitnessListener = (OnAddWitnessListener) context;
     else throw new ClassCastException(context.toString() + " must implement OnAddWitnessListener");
+    */
   }
 
   @Nullable
