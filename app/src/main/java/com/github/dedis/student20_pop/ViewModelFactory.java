@@ -5,6 +5,7 @@ import android.app.Application;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.home.HomeViewModel;
 import com.google.gson.Gson;
 
@@ -39,6 +40,9 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
     public <T extends ViewModel> T create(Class<T> modelClass) {
         if (modelClass.isAssignableFrom(HomeViewModel.class)) {
             return (T) new HomeViewModel(application, gson, Injection.provideLAORepository(application, gson));
+        }
+        else if (modelClass.isAssignableFrom(LaoDetailViewModel.class)) {
+            return (T) new LaoDetailViewModel(application, Injection.provideLAORepository(application, gson));
         }
 
         throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());

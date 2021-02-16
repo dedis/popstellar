@@ -17,6 +17,7 @@ import com.github.dedis.student20_pop.AttendeeActivity;
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Lao;
+import com.github.dedis.student20_pop.model.entities.LAOEntity;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.utility.ui.adapter.AttendeeEventExpandableListViewAdapter;
 import com.github.dedis.student20_pop.utility.ui.adapter.WitnessListViewAdapter;
@@ -27,19 +28,21 @@ import java.util.List;
 public class AttendeeFragment extends Fragment {
 
   public static final String TAG = AttendeeFragment.class.getSimpleName();
-  private final Lao lao;
 
+  private final LAOEntity laoEntity;
+
+  /*
   private AttendeeEventExpandableListViewAdapter listViewEventAdapter;
   private ExpandableListView expandableListView;
   private Button propertiesButton;
-  private ListView witnessesListView;
+  private ListView witnessesListView;*/
 
-  public AttendeeFragment(Lao lao) {
-      this.lao = lao;
+  public AttendeeFragment(LAOEntity laoEntity) {
+      this.laoEntity = laoEntity;
   }
 
-  public static AttendeeFragment newInstance(Lao lao) {
-      return new AttendeeFragment(lao);
+  public static AttendeeFragment newInstance(LAOEntity laoEntity) {
+      return new AttendeeFragment(laoEntity);
   }
 
   @Nullable
@@ -55,21 +58,22 @@ public class AttendeeFragment extends Fragment {
     lao = app.getCurrentLaoUnsafe();
     */
 
-    List<Event> events = lao.getEvents();
-    // Display Events
+
+    //TODO: Need get events List<Event> events = laoEntity.getEvents();
+    /* Display Events
     expandableListView = rootView.findViewById(R.id.exp_list_view);
     listViewEventAdapter = new AttendeeEventExpandableListViewAdapter(this.getActivity(), events);
     expandableListView.setAdapter(listViewEventAdapter);
     expandableListView.expandGroup(0);
-    expandableListView.expandGroup(1);
+    expandableListView.expandGroup(1);*/
 
-    // Display Properties
+    /* Display Properties
     View propertiesView = rootView.findViewById(R.id.properties_view);
-    ((TextView) propertiesView.findViewById(R.id.organization_name)).setText(lao.getName());
+    ((TextView) propertiesView.findViewById(R.id.organization_name)).setText(laoEntity.lao.name);
     SwipeRefreshLayout swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh);
 
     final WitnessListViewAdapter witnessListViewAdapter =
-        new WitnessListViewAdapter(getActivity(), lao.getWitnesses());
+        new WitnessListViewAdapter(getActivity(), laoEntity.getWitnesses());
 
     witnessesListView = propertiesView.findViewById(R.id.witness_list);
     witnessesListView.setAdapter(witnessListViewAdapter);
@@ -93,6 +97,7 @@ public class AttendeeFragment extends Fragment {
           }
           swipeRefreshLayout.setRefreshing(false);
         });
+    */
 
     return rootView;
   }
