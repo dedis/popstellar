@@ -20,11 +20,17 @@ const initialState: KeyPair | null = null;
 export function keyPairReducer(
   state: KeyPair | null = initialState, action: AnyAction,
 ): KeyPair | null {
-  if (action.type === ActionKeyPairReducer.SET_KEYPAIR) {
-    return {
-      publicKey: action.value.publicKey,
-      privateKey: action.value.privateKey,
-    };
+  try {
+    if (action.type === ActionKeyPairReducer.SET_KEYPAIR) {
+      if (action.value === undefined || action.value === null) {
+        return null;
+      }
+      return new KeyPair(action.value);
+    }
+  } catch (e) {
+    console.exception(e);
   }
+
+  console.log(`KeyPair storage stayed unchanged after action : '${action.type}'`);
   return state;
 }

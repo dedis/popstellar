@@ -25,11 +25,11 @@ export class UpdateLao implements MessageData {
 
     if (!msg.last_modified) throw new ProtocolError('Undefined \'last_modified\' parameter encountered during \'UpdateLao\'');
     checkTimestampStaleness(msg.last_modified);
-    this.last_modified = new Timestamp(msg.last_modified.toString());
+    this.last_modified = msg.last_modified;
 
     if (!msg.witnesses) throw new ProtocolError('Undefined \'witnesses\' parameter encountered during \'UpdateLao\'');
     checkWitnesses(msg.witnesses);
-    this.witnesses = msg.witnesses.map((key) => new PublicKey(key.toString()));
+    this.witnesses = [...msg.witnesses];
 
     if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'UpdateLao\'');
     const lao: Lao = OpenedLaoStore.get();
@@ -37,7 +37,7 @@ export class UpdateLao implements MessageData {
       lao.organizer.toString(), lao.creation.toString(), msg.name,
     );
     if (!expectedHash.equals(msg.id)) throw new ProtocolError('Invalid \'id\' parameter encountered during \'UpdateLao\': unexpected id value');
-    this.id = new Hash(msg.id.toString());
+    this.id = msg.id;
   }
 
   public static fromJson(obj: any): UpdateLao {
@@ -45,7 +45,12 @@ export class UpdateLao implements MessageData {
     const correctness = true;
 
     return correctness
-      ? new UpdateLao(obj)
+      ? new UpdateLao({
+        ...obj,
+        last_modified: new Timestamp(obj.last_modified),
+        witnesses: obj.witnesses.map((key: string) => new PublicKey(key)),
+        id: new Hash(obj.id),
+      })
       : (() => { throw new ProtocolError('add JsonSchema error message'); })();
   }
 }

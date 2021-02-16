@@ -37,36 +37,33 @@ export class StateMeeting implements MessageData {
 
     if (!msg.creation) throw new ProtocolError('Undefined \'creation\' parameter encountered during \'StateMeeting\'');
     checkTimestampStaleness(msg.creation);
-    this.creation = new Timestamp(msg.creation.toString());
+    this.creation = msg.creation;
 
     if (!msg.last_modified) throw new ProtocolError('Undefined \'last_modified\' parameter encountered during \'StateMeeting\'');
     if (msg.last_modified < msg.creation) throw new ProtocolError('Invalid timestamp encountered: \'last_modified\' parameter smaller than \'creation\'');
-    this.last_modified = new Timestamp(msg.last_modified.toString());
+    this.last_modified = msg.last_modified;
 
     if (msg.location) this.location = msg.location;
 
     if (!msg.start) throw new ProtocolError('Undefined \'start\' parameter encountered during \'StateMeeting\'');
     checkTimestampStaleness(msg.start);
-    this.start = new Timestamp(msg.start.toString());
+    this.start = msg.start;
 
     if (msg.end) {
       if (msg.end < msg.creation) throw new ProtocolError('Invalid timestamp encountered: \'end\' parameter smaller than \'creation\'');
       if (msg.end < msg.start) throw new ProtocolError('Invalid timestamp encountered: \'end\' parameter smaller than \'start\'');
-      this.end = new Timestamp(msg.end.toString());
+      this.end = msg.end;
     }
 
     if (msg.extra) this.extra = JSON.parse(JSON.stringify(msg.extra)); // clone JS object extra
 
     if (!msg.modification_id) throw new ProtocolError('Undefined \'modification_id\' parameter encountered during \'StateMeeting\'');
     checkModificationId(msg.modification_id);
-    this.modification_id = new Hash(msg.modification_id.toString());
+    this.modification_id = msg.modification_id;
 
     if (!msg.modification_signatures) throw new ProtocolError('Undefined \'modification_signatures\' parameter encountered during \'StateMeeting\'');
     checkModificationSignatures(msg.modification_signatures);
-    this.modification_signatures = msg.modification_signatures.map((ws) => new WitnessSignature({
-      witness: new PublicKey(ws.witness.toString()),
-      signature: new Signature(ws.signature.toString()),
-    }));
+    this.modification_signatures = [...msg.modification_signatures];
 
     if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'StateMeeting\'');
     const lao: Lao = OpenedLaoStore.get();
@@ -78,7 +75,7 @@ export class StateMeeting implements MessageData {
       throw new ProtocolError(
         'Invalid \'id\' parameter encountered during \'StateMeeting\': unexpected id value'
       ); */
-    this.id = new Hash(msg.id.toString());
+    this.id = msg.id;
   }
 
   public static fromJson(obj: any): StateMeeting {
@@ -86,7 +83,19 @@ export class StateMeeting implements MessageData {
     const correctness = true;
 
     return correctness
-      ? new StateMeeting(obj)
+      ? new StateMeeting({
+        ...obj,
+        creation: new Timestamp(obj.creation),
+        last_modified: new Timestamp(obj.last_modified),
+        start: new Timestamp(obj.start),
+        end: (obj.end !== undefined) ? new Timestamp(obj.end) : undefined,
+        modification_id: new Hash(obj.modification_id),
+        modification_signatures: obj.modification_signatures.map((ws: any) => new WitnessSignature({
+          witness: new PublicKey(ws.witness),
+          signature: new Signature(ws.signature),
+        })),
+        id: new Hash(obj.id),
+      })
       : (() => { throw new ProtocolError('add JsonSchema error message'); })();
   }
 }

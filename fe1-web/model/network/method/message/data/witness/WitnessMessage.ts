@@ -13,12 +13,12 @@ export class WitnessMessage implements MessageData {
 
   constructor(msg: Partial<WitnessMessage>) {
     if (!msg.message_id) throw new ProtocolError('Undefined \'message_id\' parameter encountered during \'WitnessMessage\'');
-    this.message_id = new Hash(msg.message_id.toString());
+    this.message_id = msg.message_id;
 
     if (!msg.signature) throw new ProtocolError('Undefined \'signature\' parameter encountered during \'WitnessMessage\'');
     // FIXME verify signature without the public key
     // available? 0.o + uncomment 3 tests in "FromJson" test suite
-    this.signature = new Signature(msg.signature.toString());
+    this.signature = msg.signature;
   }
 
   public static fromJson(obj: any): WitnessMessage {
@@ -26,7 +26,11 @@ export class WitnessMessage implements MessageData {
     const correctness = true;
 
     return correctness
-      ? new WitnessMessage(obj)
+      ? new WitnessMessage({
+        ...obj,
+        message_id: new Hash(obj.message_id),
+        signature: new Signature(obj.signature),
+      })
       : (() => { throw new ProtocolError('add JsonSchema error message'); })();
   }
 }

@@ -15,19 +15,23 @@ export class Lao {
 
   public readonly witnesses: PublicKey[];
 
-  constructor(
-    name: string,
-    id: Hash,
-    creation: Timestamp,
-    last_modified: Timestamp,
-    organizer: PublicKey,
-    witnesses: PublicKey[],
-  ) {
-    this.name = name;
-    this.id = id;
-    this.creation = creation;
-    this.last_modified = last_modified;
-    this.organizer = organizer;
-    this.witnesses = witnesses;
+  constructor(obj: Partial<Lao>) {
+    if (obj === undefined || obj === null) {
+      throw new Error('Error encountered while creating a LAO object : undefined/null parameters');
+    }
+
+    if (obj.name === undefined) throw new Error('Error encountered while creating a LAO object : undefined name');
+    if (obj.id === undefined) throw new Error('Error encountered while creating a LAO object : undefined id');
+    if (obj.creation === undefined) throw new Error('Error encountered while creating a LAO object : undefined creation');
+    if (obj.last_modified === undefined) throw new Error('Error encountered while creating a LAO object : undefined last_modified');
+    if (obj.organizer === undefined) throw new Error('Error encountered while creating a LAO object : undefined organizer');
+    if (obj.witnesses === undefined) throw new Error('Error encountered while creating a LAO object : undefined witnesses');
+
+    this.name = obj.name;
+    this.id = obj.id;
+    this.creation = obj.creation;
+    this.last_modified = obj.last_modified;
+    this.organizer = obj.organizer;
+    this.witnesses = [...obj.witnesses];
   }
 }

@@ -22,16 +22,16 @@ export namespace KeyPairStore {
       // create new pair of keys
       const pair = sign.keyPair();
 
-      const keyPair: KeyPair = new KeyPair(
-        new PublicKey(encodeBase64(pair.publicKey)),
-        new PrivateKey(encodeBase64(pair.secretKey)),
-      );
+      const keyPair: KeyPair = new KeyPair({
+        publicKey: new PublicKey(encodeBase64(pair.publicKey)),
+        privateKey: new PrivateKey(encodeBase64(pair.secretKey)),
+      });
 
       store(keyPair);
       return keyPair;
     }
 
-    return new KeyPair(keys.publicKey, keys.privateKey);
+    return keys;
   }
 
   export function getPublicKey(): PublicKey {

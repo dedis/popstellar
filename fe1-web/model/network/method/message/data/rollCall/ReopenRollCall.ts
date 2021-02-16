@@ -37,7 +37,11 @@ export class ReopenRollCall implements MessageData {
     const correctness = true;
 
     return correctness
-      ? new ReopenRollCall(obj)
+      ? new ReopenRollCall({
+        ...obj,
+        start: new Timestamp(obj.start),
+        id: new Hash(obj.id),
+      })
       : (() => { throw new ProtocolError('add JsonSchema error message'); })();
   }
 }
