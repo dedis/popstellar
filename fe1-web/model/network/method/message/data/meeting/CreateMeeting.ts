@@ -45,8 +45,11 @@ export class CreateMeeting implements MessageData {
     if (msg.extra) this.extra = JSON.parse(JSON.stringify(msg.extra)); // clone JS object extra
 
     if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'CreateMeeting\'');
+
+    // FIXME: implementation not finished, get event from storage,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const lao: Lao = OpenedLaoStore.get();
-    /* // FIXME get event from storage
+    /*
     const expectedHash = Hash.fromStringArray(
       eventTags.MEETING, lao.id.toString(), lao.creation.toString(), MEETING_NAME,
     );
