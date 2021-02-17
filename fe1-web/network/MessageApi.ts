@@ -15,14 +15,15 @@ import { eventTags, getCurrentTime } from './WebsocketUtils';
 import { publish } from './WebsocketApi';
 
 /** Send a server query asking for the creation of a LAO with a given name (String) */
-export function requestCreateLao(name: string) {
+export function requestCreateLao(laoName: string) {
   const time = getCurrentTime();
+  const pubKey = KeyPairStore.getPublicKey();
 
   const message = new CreateLao({
-    id: Hash.fromStringArray(KeyPairStore.getPublicKey().toString(), time.toString(), name),
-    name,
+    id: Hash.fromStringArray(pubKey.toString(), time.toString(), laoName),
+    name: laoName,
     creation: time,
-    organizer: KeyPairStore.getPublicKey(),
+    organizer: pubKey,
     witnesses: [],
   });
 

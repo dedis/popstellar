@@ -20,7 +20,7 @@ export namespace KeyPairStore {
     // storage), then a fresh instance is automatically created
     const keysState: KeyPairState = getStore().getState().keypairReducer;
 
-    if (keysState === null) {
+    if (keysState === null || keysState === undefined) {
       // create new pair of keys
       const pair = sign.keyPair();
 
