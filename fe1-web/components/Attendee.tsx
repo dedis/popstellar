@@ -35,11 +35,17 @@ const laoToProperties = (events: any, lao: Lao) => {
   return [properties, ...events];
 };
 
-interface IPropTypes {
-  // FIXME define interface
-  events: any;
-  lao: Lao;
-}
+const propTypes = {
+  events: PropTypes.arrayOf(PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    data: PropTypes.arrayOf(
+      PropTypes.oneOfType([PROPS_TYPE.event, PROPS_TYPE.property]),
+    ).isRequired,
+  })).isRequired,
+  lao: PROPS_TYPE.LAO.isRequired,
+};
+
+type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 const Attendee = ({ events, lao }: IPropTypes) => {
   if (!lao.name || !lao.witnesses) {
@@ -55,15 +61,7 @@ const Attendee = ({ events, lao }: IPropTypes) => {
   );
 };
 
-Attendee.propTypes = {
-  events: PropTypes.arrayOf(PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(
-      PropTypes.oneOfType([PROPS_TYPE.event, PROPS_TYPE.property]),
-    ).isRequired,
-  })).isRequired,
-  lao: PROPS_TYPE.LAO.isRequired,
-};
+Attendee.propTypes = propTypes;
 
 const mapStateToProps = (state: any) => ({
   events: state.currentEventsReducer.events,
