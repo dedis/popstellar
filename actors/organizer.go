@@ -19,7 +19,7 @@ type organizer struct {
 	PublicKey string
 	database  string
 	// naming: subscribersOfChannel
-	channels  map[string][]int
+	channels map[string][]int
 }
 
 // NewOrganizer is the constructor for the organizer struct. db should be a a file path (existing or not) and pkey is

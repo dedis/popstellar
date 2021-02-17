@@ -151,62 +151,62 @@ func composeResponse(messages []byte, query message.Query) ([]byte, error) {
 // on the channel database. The other fields of message are set to nil as they can't be retrieved from this database.
 // It is only there to fill an incomplete implementation and could be fully removed later as the full history of messages becomes more easily accessible.
 func fabricatePlaceholderCatchup(state []byte) string {
-		/* 
-		in the current incomplete implementation, messages is actually not at all a message 
-		but a serialized json string of the event "owning the channel". we must thus first unmarshall it, 
-		reconstruct a data struct from it, marshall it back into JSON, 
+	/*
+		in the current incomplete implementation, messages is actually not at all a message
+		but a serialized json string of the event "owning the channel". we must thus first unmarshall it,
+		reconstruct a data struct from it, marshall it back into JSON,
 		reconstruct a message struct with it and nil sender because we cannot retrieve them currently
 		marshall it to JSON and send it.
 		This is obviously far from perfect, but it allows to send a working response to catchup, useful for the requester
 		and all this without impacting at all function signatures or protocol definition.
 		As the event database does not have all the required fields, the work-around is quite dirty and to be removed in the future
 		TL;DR: What is put in the field CatchupResult needs to be changed, once the "message db" is improved.
-		*/
-		m := message.Data{}
+	*/
+	m := message.Data{}
+	json.Unmarshal(state, &m)
+	var data []byte = nil
+	if m["OrganizerPKey"] != nil {
+		// then it's a LAO
+		m := event.LAO{}
 		json.Unmarshal(state, &m)
-		var data []byte = nil
-		if m["OrganizerPKey"] != nil {
-			// then it's a LAO
-			m := event.LAO{}
-			json.Unmarshal(state, &m)
-			lao := message.DataCreateLAO{
-				Object:		  "lao",
-				Action:		  "create",
-				ID:           []byte(m.ID),
-				Name:         m.Name,
-				Creation:     m.Creation,
-				Organizer:    []byte(m.OrganizerPKey),
-				Witnesses:    lib.StringArrayToNestedByteArray(m.Witnesses),
-			}
-			data, _ = json.Marshal(lao)
-		} else {
-			// then it's a RollCall in the current implementation
-			m := event.RollCall{}
-			json.Unmarshal(state, &m)
-			rollcall := message.DataCreateRollCall{
-				Object:		  "roll_call",
-				Action:		  "create",
-				ID:           []byte(m.ID),
-				Name:         m.Name,
-				Creation:     m.Creation,
-				Location:     m.Location,
-				Start:        m.Start,
-				Scheduled:	  m.Scheduled,
-				Description:  m.Description,
-			}
-			data, _ = json.Marshal(rollcall)
+		lao := message.DataCreateLAO{
+			Object:    "lao",
+			Action:    "create",
+			ID:        []byte(m.ID),
+			Name:      m.Name,
+			Creation:  m.Creation,
+			Organizer: []byte(m.OrganizerPKey),
+			Witnesses: lib.StringArrayToNestedByteArray(m.Witnesses),
 		}
-
-		msg := message.Message{
-			Data:              data,
-			Sender:		       nil,
-			Signature:		   nil,
-			MessageId:		   nil,
-			WitnessSignatures: nil,
+		data, _ = json.Marshal(lao)
+	} else {
+		// then it's a RollCall in the current implementation
+		m := event.RollCall{}
+		json.Unmarshal(state, &m)
+		rollcall := message.DataCreateRollCall{
+			Object:      "roll_call",
+			Action:      "create",
+			ID:          []byte(m.ID),
+			Name:        m.Name,
+			Creation:    m.Creation,
+			Location:    m.Location,
+			Start:       m.Start,
+			Scheduled:   m.Scheduled,
+			Description: m.Description,
 		}
+		data, _ = json.Marshal(rollcall)
+	}
 
-		fabricated, _ := json.Marshal(msg)
-		return string(fabricated)
+	msg := message.Message{
+		Data:              data,
+		Sender:            nil,
+		Signature:         nil,
+		MessageId:         nil,
+		WitnessSignatures: nil,
+	}
+
+	fabricated, _ := json.Marshal(msg)
+	return string(fabricated)
 }
 
 // selectDescriptionError returns a message.ErrorResponse depending on the error given as argument.
