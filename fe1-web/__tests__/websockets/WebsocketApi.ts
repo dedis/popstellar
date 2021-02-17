@@ -1,11 +1,11 @@
 /* eslint-disable */
 
-import * as msApi from '../../websockets/MessageApi';
-import * as wsApi from '../../websockets/WebsocketApi';
-import { getCurrentTime } from '../../websockets/WebsocketUtils';
-import { initialise } from 'store/Storage';
+import * as msApi from 'websockets/MessageApi';
+import * as wsApi from 'websockets/WebsocketApi';
+import { getCurrentTime } from 'websockets/WebsocketUtils';
+import { storeInit } from 'store/Storage';
 import { KeyPairStore, OpenedLaoStore } from 'store';
-import { Base64Data, Hash, Lao, PublicKey, Timestamp, WitnessSignature } from '../../model/objects';
+import { Base64Data, Hash, Lao, PublicKey, Timestamp, WitnessSignature } from 'model/objects';
 import {
   ActionType, CloseRollCall,
   CreateLao, CreateMeeting, CreateRollCall,
@@ -163,7 +163,7 @@ const checkRequests = (channel: Channel, obj: MessageData) => {
 describe('=== WebsocketApi tests ===', function() {
 
   beforeAll(() => {
-    initialise();
+    storeInit();
 
     const org: PublicKey = KeyPairStore.getPublicKey();
     const time: Timestamp = getCurrentTime();

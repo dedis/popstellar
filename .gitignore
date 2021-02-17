@@ -1,0 +1,6 @@
+# JetBrains editors: IntelliJ, WebStorm, ...
+.idea
+
+# VS Code
+.vscode
+

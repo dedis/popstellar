@@ -21,8 +21,8 @@ class WebSocket (
   ongoing_rpc: map ( id ) -> Promise
   next_id: number;
 
-  sendRpc(JsonRpcRequest rpc) Promise<Answer> (...
-    ongoing_rpc[rpc.id] = new Promise<Answer>();
+  sendRpc(JsonRpcRequest rpc) Promise<answer> (...
+    ongoing_rpc[rpc.id] = new Promise<answer>();
   )
 
   onMessage(rpc) (

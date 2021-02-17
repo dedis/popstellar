@@ -19,8 +19,11 @@ export class ReopenRollCall implements MessageData {
     this.start = new Timestamp(msg.start.toString());
 
     if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'CreateLao\'');
+
+    // FIXME: implementation not finished, get event from storage,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const lao: Lao = OpenedLaoStore.get();
-    /* // FIXME get event from storage
+    /*
     const expectedHash = Hash.fromStringArray(
       eventTags.ROLL_CALL, lao.id.toString(), lao.creation.toString(), ROLLCALLNAME
     );

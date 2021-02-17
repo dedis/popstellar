@@ -3,7 +3,11 @@ import {
   AnyAction, createStore, Reducer, Store,
 } from 'redux';
 import { Persistor, WebStorage } from 'redux-persist/es/types';
-import { keyPairReducer, openedLaoReducer } from './reducers';
+
+import {
+  currentEventsReducer, keyPairReducer, openRollCallIDReducer,
+  availableLaosReducer, openedLaoReducer,
+} from './reducers';
 
 interface PersistStoreConfig {
   store: Store,
@@ -13,12 +17,12 @@ interface PersistStoreConfig {
 let store: Store;
 let persist: Persistor;
 
-export function initialise(): PersistStoreConfig {
+export function storeInit(): PersistStoreConfig {
   let storage: WebStorage;
   // FIXME doesnt compile
-  if (typeof window === 'undefined' || typeof window.localStorage === 'undefined' || window.localStorage === null) {
-  // if (typeof localStorage === 'undefined' || localStorage === null) {
-    // using a polyfill to replace the missing local storage
+  if (typeof window === 'undefined'
+    || typeof window.localStorage === 'undefined'
+    || window.localStorage === null) {
     const { LocalStorage } = require('node-localstorage');
     storage = new LocalStorage('./scratch');
   } else {
@@ -29,15 +33,20 @@ export function initialise(): PersistStoreConfig {
   const persistConfig = { key: 'root', storage };
 
   const appReducer: Reducer = persistCombineReducers(persistConfig, {
-    keypairReducer: keyPairReducer,
-    currentLaoReducer: openedLaoReducer,
+    keyPairReducer,
+    availableLaosReducer,
+    openedLaoReducer,
+    currentEventsReducer,
+    openRollCallIDReducer,
   });
 
   // Trick used to clear local persistent storage
   const rootReducer = (state: any, action: AnyAction) => {
     // clears the local cached storage as well as the state of the storage
     let newState = state;
-    if (action.type === 'CLEAR_STORAGE') { storage.removeItem('persist:root'); newState = undefined; }
+    if (action.type === 'CLEAR_STORAGE') {
+      storage.removeItem('persist:root'); newState = undefined;
+    }
     return appReducer(newState, action);
   };
 

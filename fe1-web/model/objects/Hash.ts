@@ -14,7 +14,7 @@ export class Hash extends Base64Data {
     // remove the last comma and add square brackets around
     str = `[${str.slice(0, -1)}]`;
 
-    return Base64Data.encode(this.fromString(str));
+    return this.fromString(str);
   }
 
   /**
@@ -23,11 +23,13 @@ export class Hash extends Base64Data {
      * @param data value to be hashed
      * @return resulting hash
      */
-  public static fromString(data: string): string {
+  public static fromString(data: string): Hash {
     const hash = sha256.create();
 
     const bString = hash.update(data).array();
-    return String.fromCharCode(...bString);
+    const str = String.fromCharCode(...bString);
+
+    return Base64Data.encode(str);
   }
 
   /**

@@ -1,8 +1,13 @@
 {
   "extends": "airbnb-typescript",
   "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": ["./tsconfig.json"]
+  },
+  "plugins": ["react", "@typescript-eslint", "jest"],
+  "root": true,
   "rules": {
-    "react/jsx-filename-extension": ["error", { "extensions": [".js", ".jsx"] }],
+    "react/jsx-filename-extension": ["error", { "extensions": [".jsx", ".tsx"] }],
     "import/extensions": ["error", "ignorePackages", {
       "js": "never",
       "mjs": "never",
@@ -11,7 +16,10 @@
       "tsx": "never"
     }],
     // conflicts with the index.ts (eslint prefers default exports which are not compatible with index.ts)
-    "import/prefer-default-export": "off"
+    "import/prefer-default-export": "off",
+
+    // allow the usage of console output for debugging purposes
+    "no-console": "off"
   },
   // we disable import/extensions eslint errors. Eslint underlines every import due to an
   // bug between typescript and eslint using the airbnb config
@@ -22,8 +30,9 @@
       }
     }
   },
-  "plugins": ["react", "@typescript-eslint", "jest"],
-  "parserOptions": {
-    "project": ["./tsconfig.json"]
-  }
+  "ignorePatterns": [
+    "babel.config.js",
+    "metro.config.js",
+    "jest.config.js"
+  ]
 }
