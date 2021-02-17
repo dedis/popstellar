@@ -28,7 +28,7 @@ export function keyPairReducer(
       }
       const kp = KeyPair.fromState(action.value).toState();
       console.log(`KeyPair storage was update with public key: ${kp.publicKey.toString()}`);
-      return kp;
+      return Object.freeze(kp);
     }
   } catch (e) {
     console.exception('Could not update KeyPair state due to exception', e);

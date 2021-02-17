@@ -1,4 +1,4 @@
-import eventsData from '../../res/EventData';
+import eventsData from 'res/EventData';
 
 const initialState = { events: eventsData };
 
