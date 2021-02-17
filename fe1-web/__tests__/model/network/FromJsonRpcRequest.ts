@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 import { CreateLao } from 'model/network/method/message/data';
-import { initialise } from 'store/Storage';
+import { storeInit } from 'store/Storage';
 import { JsonRpcMethod, JsonRpcRequest } from 'model/network';
 import { Base64Data, Hash, Lao, PrivateKey, PublicKey } from 'model/objects';
 import { OpenedLaoStore } from 'store';
@@ -120,7 +120,7 @@ function compareQueryMessageData(query: JsonRpcRequest): void {
 describe('=== fromJsonJsonRpcRequest checks ===', function() {
 
   beforeAll(() => {
-    initialise();
+    storeInit();
 
     const sampleLao: Lao = new Lao({
       name: sampleCreateLaoData.name,

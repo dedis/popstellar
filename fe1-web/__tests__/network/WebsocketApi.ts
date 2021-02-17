@@ -24,7 +24,7 @@ export function mockFunction<T extends (...args: any[]) => any>(fn: T): jest.Moc
   return fn as jest.MockedFunction<T>;
 }
 
-jest.mock('../../websockets/WebsocketApi.ts');
+jest.mock('network/WebsocketApi.ts');
 const publishMock = mockFunction(wsApi.publish);
 
 // @ts-ignore

@@ -34,6 +34,5 @@ export function keyPairReducer(
     console.exception('Could not update KeyPair state due to exception', e);
   }
 
-  console.log(`KeyPair storage stayed unchanged after action : '${action.type}'`);
   return state;
 }

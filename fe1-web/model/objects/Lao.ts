@@ -50,7 +50,7 @@ export class Lao {
       name: lao.name,
       id: new Hash(lao.id),
       creation: new Timestamp(lao.creation),
-      last_modified: new Timestamp(lao.creation),
+      last_modified: new Timestamp(lao.last_modified),
       organizer: new PublicKey(lao.organizer),
       witnesses: lao.witnesses.map((w) => new PublicKey(w)),
     });
