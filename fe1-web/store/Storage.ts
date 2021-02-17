@@ -19,7 +19,6 @@ let store: Store;
 let persist: Persistor;
 
 export function storeInit(): PersistStoreConfig {
-  
   const persistConfig = {
     key: 'root',
     storage: AsyncStorage,
