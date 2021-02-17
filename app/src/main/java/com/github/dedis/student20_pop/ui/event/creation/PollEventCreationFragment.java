@@ -73,6 +73,10 @@ public final class PollEventCreationFragment extends AbstractEventCreationFragme
     listView.requestLayout();
   }
 
+  public static PollEventCreationFragment newInstance() {
+      return new PollEventCreationFragment();
+  }
+
   @Override
   public void onAttach(Context context) {
     super.onAttach(context);

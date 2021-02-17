@@ -31,11 +31,11 @@ public class AttendeeFragment extends Fragment {
 
   private final LAOEntity laoEntity;
 
-  /*
+
   private AttendeeEventExpandableListViewAdapter listViewEventAdapter;
   private ExpandableListView expandableListView;
   private Button propertiesButton;
-  private ListView witnessesListView;*/
+  private ListView witnessesListView;
 
   public AttendeeFragment(LAOEntity laoEntity) {
       this.laoEntity = laoEntity;
@@ -53,27 +53,24 @@ public class AttendeeFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
 
     View rootView = inflater.inflate(R.layout.fragment_attendee, container, false);
-    /*
+/*
     PoPApplication app = (PoPApplication) (this.getActivity().getApplication());
-    lao = app.getCurrentLaoUnsafe();
-    */
+    Lao lao = app.getCurrentLaoUnsafe();
 
 
-    //TODO: Need get events List<Event> events = laoEntity.getEvents();
-    /* Display Events
     expandableListView = rootView.findViewById(R.id.exp_list_view);
-    listViewEventAdapter = new AttendeeEventExpandableListViewAdapter(this.getActivity(), events);
+    listViewEventAdapter = new AttendeeEventExpandableListViewAdapter(this.getActivity(), lao.getEvents());
     expandableListView.setAdapter(listViewEventAdapter);
     expandableListView.expandGroup(0);
-    expandableListView.expandGroup(1);*/
+    expandableListView.expandGroup(1);
 
-    /* Display Properties
+    //Display Properties
     View propertiesView = rootView.findViewById(R.id.properties_view);
     ((TextView) propertiesView.findViewById(R.id.organization_name)).setText(laoEntity.lao.name);
     SwipeRefreshLayout swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh);
 
     final WitnessListViewAdapter witnessListViewAdapter =
-        new WitnessListViewAdapter(getActivity(), laoEntity.getWitnesses());
+        new WitnessListViewAdapter(getActivity(), lao.getWitnesses());
 
     witnessesListView = propertiesView.findViewById(R.id.witness_list);
     witnessesListView.setAdapter(witnessListViewAdapter);
@@ -96,8 +93,7 @@ public class AttendeeFragment extends Fragment {
             getFragmentManager().beginTransaction().detach(this).attach(this).commit();
           }
           swipeRefreshLayout.setRefreshing(false);
-        });
-    */
+        });*/
 
     return rootView;
   }

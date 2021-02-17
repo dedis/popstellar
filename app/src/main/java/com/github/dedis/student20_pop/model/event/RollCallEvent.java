@@ -2,7 +2,12 @@ package com.github.dedis.student20_pop.model.event;
 
 import androidx.databinding.ObservableArrayList;
 
+import com.github.dedis.student20_pop.model.entities.RollCall;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.github.dedis.student20_pop.model.event.EventType.ROLL_CALL;
 import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.ADD_ATTENDEE_ALREADY_EXISTS;
@@ -77,6 +82,18 @@ public final class RollCallEvent extends Event {
     ADD_ATTENDEE_SUCCESSFUL,
     ADD_ATTENDEE_ALREADY_EXISTS,
     ADD_ATTENDEE_UNSUCCESSFUL
+  }
+
+  /** Transform a list of roll call entities into a list of roll call events */
+  public static List<RollCallEvent> transformRollCalls(List<RollCall> rollCalls) {
+    if(rollCalls == null) return new ArrayList<>();
+    return rollCalls.stream().map(RollCallEvent::transformRollCall).collect(Collectors.toList());
+  }
+
+  /** Transform a roll call entity into a roll call event */
+  public static RollCallEvent transformRollCall(RollCall rollCall) {
+    return new RollCallEvent(rollCall.name, rollCall.start, rollCall.start, rollCall.laoChannel,
+            new ObservableArrayList<>(), rollCall.location, rollCall.description);
   }
 
   @Override

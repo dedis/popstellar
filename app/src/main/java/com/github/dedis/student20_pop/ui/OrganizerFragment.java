@@ -29,9 +29,9 @@ public class OrganizerFragment extends Fragment {
 
   private final LAOEntity laoEntity;
 
-  /*
+
   private OnEventTypeSelectedListener onEventTypeSelectedListener;
-  private OnAddWitnessListener onAddWitnessListener;*/
+  private OnAddWitnessListener onAddWitnessListener;
 
   public OrganizerFragment(LAOEntity laoEntity) {
       this.laoEntity = laoEntity;
@@ -41,10 +41,10 @@ public class OrganizerFragment extends Fragment {
       return new OrganizerFragment(laoEntity);
   }
 
-  /*
   @Override
   public void onAttach(@NonNull Context context) {
     super.onAttach(context);
+    /*
     if (context instanceof OnEventCreatedListener)
       onEventTypeSelectedListener = (OnEventTypeSelectedListener) context;
     else
@@ -53,8 +53,8 @@ public class OrganizerFragment extends Fragment {
 
     if (context instanceof OnAddWitnessListener)
       onAddWitnessListener = (OnAddWitnessListener) context;
-    else throw new ClassCastException(context.toString() + " must implement OnAddWitnessListener");
-  }*/
+    else throw new ClassCastException(context.toString() + " must implement OnAddWitnessListener");*/
+  }
 
   @Nullable
   @Override
@@ -63,26 +63,18 @@ public class OrganizerFragment extends Fragment {
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
 
-
-
-    View rootView = inflater.inflate(R.layout.fragment_organizer, container, false);
-
-    /*
+    View rootView = inflater.inflate(R.layout.fragment_lao_detail, container, false);
+/*
     PoPApplication app = (PoPApplication) (getActivity().getApplication());
-    lao = app.getCurrentLaoUnsafe();*/
+    Lao lao = app.getCurrentLaoUnsafe();
 
     ImageButton editPropertiesButton;
     ImageButton addWitnessButton;
     EditText laoNameEditText;
     TextView laoNameTextView;
 
-    /*
     List<Event> events = lao.getEvents();
-
-    SwipeRefreshLayout swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh);
-
-    // Layout Properties fields
-    ViewSwitcher viewSwitcher = rootView.findViewById(R.id.viewSwitcher);
+    // Layout Properties fields && Edit Properties field
     View propertiesView = rootView.findViewById(R.id.properties_view);
     laoNameTextView = propertiesView.findViewById(R.id.organization_name);
     laoNameTextView.setText(lao.getName());
@@ -92,6 +84,7 @@ public class OrganizerFragment extends Fragment {
     ListView witnessesListView = propertiesView.findViewById(R.id.witness_list);
     witnessesListView.setAdapter(witnessListViewAdapter);
 
+    ViewSwitcher viewSwitcher = rootView.findViewById(R.id.view_switcher);
     editPropertiesButton = rootView.findViewById(R.id.edit_button);
     editPropertiesButton.setVisibility(
         ((viewSwitcher.getNextView().getId() == R.id.properties_edit_view)
@@ -101,14 +94,10 @@ public class OrganizerFragment extends Fragment {
 
     // Layout Edit Properties fields
     View propertiesEditView = rootView.findViewById(R.id.properties_edit_view);
-    laoNameEditText = propertiesEditView.findViewById(R.id.organization_name_edit_text);
+    laoNameEditText = propertiesEditView.findViewById(R.id.organization_name);
     laoNameEditText.setText(lao.getName());
-    ListView witnessesEditListView = propertiesEditView.findViewById(R.id.witness_edit_list);
+    ListView witnessesEditListView = propertiesEditView.findViewById(R.id.witness_list);
     witnessesEditListView.setAdapter(witnessListViewAdapter);
-
-    addWitnessButton = propertiesEditView.findViewById(R.id.add_witness_button);
-    Button confirmButton = propertiesEditView.findViewById(R.id.properties_edit_confirm);
-
     Button propertiesButton = rootView.findViewById(R.id.tab_properties);
     propertiesButton.setOnClickListener(
         clicked -> {
@@ -121,15 +110,8 @@ public class OrganizerFragment extends Fragment {
                   : View.GONE);
         });
 
-    // Display Events
-    ExpandableListView expandableListView =
-        rootView.findViewById(R.id.organizer_expandable_list_view);
-    OrganizerEventExpandableListViewAdapter listViewEventAdapter =
-        new OrganizerEventExpandableListViewAdapter(
-            this.getActivity(), events, onEventTypeSelectedListener);
-    expandableListView.setAdapter(listViewEventAdapter);
-    expandableListView.expandGroup(0);
-    expandableListView.expandGroup(1);
+      addWitnessButton = propertiesEditView.findViewById(R.id.add_witness_button);
+      Button confirmButton = propertiesEditView.findViewById(R.id.properties_edit_confirm);
 
     propertiesEditView
         .findViewById(R.id.properties_edit_cancel)
@@ -146,6 +128,8 @@ public class OrganizerFragment extends Fragment {
           editPropertiesButton.setVisibility(View.GONE);
           addWitnessButton.setVisibility(View.VISIBLE);
         });
+
+
 
     addWitnessButton.setOnClickListener(clicked -> onAddWitnessListener.onAddWitnessListener());
 
@@ -168,6 +152,25 @@ public class OrganizerFragment extends Fragment {
           }
         });
 
+
+
+
+
+
+
+      // Display Events
+      ExpandableListView expandableListView =
+              rootView.findViewById(R.id.exp_list_view);
+      OrganizerEventExpandableListViewAdapter listViewEventAdapter =
+              new OrganizerEventExpandableListViewAdapter(
+                      this.getActivity(), events, onEventTypeSelectedListener);
+      expandableListView.setAdapter(listViewEventAdapter);
+      expandableListView.expandGroup(0);
+      expandableListView.expandGroup(1);
+
+
+      SwipeRefreshLayout swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh);
+
     swipeRefreshLayout.setOnRefreshListener(
         () -> {
           witnessListViewAdapter.notifyDataSetChanged();
@@ -177,9 +180,7 @@ public class OrganizerFragment extends Fragment {
           }
           swipeRefreshLayout.setRefreshing(false);
         });
-
-     */
-
+*/
     return rootView;
   }
 }

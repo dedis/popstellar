@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
                                                    xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                   android:id="@+id/tab_home_identity_properties"
+                                                   android:id="@+id/tab_home_identity"
                                                    android:layout_width="match_parent"
                                                    android:layout_height="match_parent">
 
@@ -20,7 +20,7 @@
             app:layout_constraintGuide_percent="@dimen/guideline_vertical_tab_home"/>
 
     <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_vertical_tab_properties"
+            android:id="@+id/guideline_vertical_tab_prop"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
@@ -33,19 +33,8 @@
             android:onClick="onClick"
             android:text="@string/tab_identity"
             app:layout_constraintBottom_toTopOf="@+id/guideline_horizontal_tab_identity"
-            app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_tab_properties"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_tab_prop"
             app:layout_constraintStart_toEndOf="@+id/guideline_vertical_tab_identity"
-            app:layout_constraintTop_toTopOf="parent"/>
-
-    <Button
-            android:id="@+id/tab_properties"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:onClick="onClick"
-            android:text="@string/tab_properties"
-            app:layout_constraintBottom_toTopOf="@id/guideline_horizontal_tab_identity"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline_vertical_tab_properties"
             app:layout_constraintTop_toTopOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

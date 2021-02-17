@@ -4,11 +4,7 @@
                                                    android:id="@+id/fragment_organizer"
                                                    android:layout_width="match_parent"
                                                    android:layout_height="match_parent">
-
-    <include layout="@layout/tab_home"/>
-
-    <include layout="@layout/tab_identity_properties"/>
-
+    <!-- TODO: DELETE
     <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_horizontal_tab"
             android:layout_width="match_parent"
@@ -65,5 +61,5 @@
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     </LinearLayout>
-
+    -->
 </androidx.constraintlayout.widget.ConstraintLayout>

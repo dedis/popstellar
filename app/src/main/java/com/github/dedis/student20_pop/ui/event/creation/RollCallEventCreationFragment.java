@@ -51,6 +51,10 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
         public void afterTextChanged(Editable s) {}
       };
 
+  public static RollCallEventCreationFragment newInstance() {
+      return new RollCallEventCreationFragment();
+  }
+
   @Override
   public void onAttach(@NonNull Context context) {
     super.onAttach(context);
