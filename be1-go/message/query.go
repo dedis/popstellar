@@ -51,7 +51,6 @@ type Catchup struct {
 }
 
 type Broadcast struct {
-	ID     int    `json:"id"`
 	Method string `json:"method"`
 	Params Params `json:"params"`
 }
@@ -161,8 +160,6 @@ func (q *Query) GetID() int {
 		return q.Subscribe.ID
 	} else if q.Unsubscribe != nil {
 		return q.Unsubscribe.ID
-	} else if q.Broadcast != nil {
-		return q.Broadcast.ID
 	} else if q.Publish != nil {
 		return q.Publish.ID
 	} else if q.Catchup != nil {
@@ -227,4 +224,36 @@ func (q *Query) Verify(organizerPublic kyber.Point) error {
 	}
 
 	return nil
+}
+
+func (q Query) MarshalJSON() ([]byte, error) {
+	type internal struct {
+		JSONRpc     string `json:"jsonrpc"`
+		Subscribe   *Subscribe
+		Unsubscribe *Unsubscribe
+		Publish     *Publish
+		Catchup     *Catchup
+		Broadcast   *Broadcast
+	}
+
+	tmp := internal{
+		JSONRpc:     "2.0",
+		Subscribe:   q.Subscribe,
+		Unsubscribe: q.Unsubscribe,
+		Publish:     q.Publish,
+		Catchup:     q.Catchup,
+		Broadcast:   q.Broadcast,
+	}
+
+	return json.Marshal(tmp)
+}
+
+func NewBroadcast(channel string, msg *Message) *Broadcast {
+	return &Broadcast{
+		Method: "message",
+		Params: Params{
+			Channel: channel,
+			Message: msg,
+		},
+	}
 }

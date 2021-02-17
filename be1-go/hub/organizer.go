@@ -131,8 +131,7 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	case "publish":
 		err = channel.Publish(*query.Publish)
 	case "message":
-		//err = channel.Broadcast(client, *query.Broadcast)
-		log.Printf("received a broadcast? Something's wrong")
+		log.Printf("cannot handle broadcasts right now")
 	case "catchup":
 		msg = channel.Catchup(*query.Catchup)
 		// TODO send catchup response to client
@@ -181,7 +180,10 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 		}
 	}
 
+	encodedID := base64.StdEncoding.EncodeToString(data.ID)
+
 	laoCh := laoChannel{
+		channel: "/root/" + encodedID,
 		clients: make(map[*Client]struct{}),
 		inbox:   make(map[string]message.Message),
 	}
@@ -201,6 +203,9 @@ type laoChannel struct {
 
 	inboxMu sync.RWMutex
 	inbox   map[string]message.Message
+
+	// /root/<base64ID>
+	channel string
 }
 
 func (c *laoChannel) Subscribe(client *Client, msg message.Subscribe) error {
@@ -253,7 +258,7 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 
 	switch object {
 	case message.LaoObject:
-		err = c.processLaoObject(data)
+		err = c.processLaoObject(*msg)
 	case message.MeetingObject:
 		err = c.processMeetingObject(data)
 	case message.MessageObject:
@@ -267,6 +272,7 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 		return xerrors.Errorf("failed to process %s object: %v", object, err)
 	}
 
+	c.broadcastToAllClients(*msg)
 	return nil
 }
 
@@ -289,14 +295,37 @@ func (c *laoChannel) Catchup(catchup message.Catchup) []message.Message {
 	return result
 }
 
-func (c *laoChannel) processLaoObject(data message.Data) error {
-	action := message.LaoDataAction(data.GetAction())
+func (c *laoChannel) processLaoObject(msg message.Message) error {
+	action := message.LaoDataAction(msg.Data.GetAction())
+	msgIDEncoded := base64.StdEncoding.EncodeToString(msg.MessageID)
 
 	switch action {
 	case message.UpdateLaoAction:
+		c.inboxMu.Lock()
+		c.inbox[msgIDEncoded] = msg
+		c.inboxMu.Unlock()
 	case message.StateLaoAction:
 	}
+
 	return nil
+}
+
+func (c *laoChannel) broadcastToAllClients(msg message.Message) {
+	c.clientsMu.RLock()
+	defer c.clientsMu.RUnlock()
+
+	query := message.Query{
+		Broadcast: message.NewBroadcast(c.channel, &msg),
+	}
+
+	buf, err := json.Marshal(query)
+	if err != nil {
+		log.Fatalf("failed to marshal broadcast query: %v", err)
+	}
+
+	for client := range c.clients {
+		client.Send(buf)
+	}
 }
 
 func (c *laoChannel) processMeetingObject(data message.Data) error {
