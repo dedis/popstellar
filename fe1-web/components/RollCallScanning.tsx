@@ -10,7 +10,7 @@ import STRINGS from 'res/strings';
 import { Buttons, Colors, Typography } from '../styles';
 import CameraButton from './CameraButton';
 import PROPS_TYPE from '../res/Props';
-import { requestCloseRollCall } from '../websockets/MessageApi';
+import { requestCloseRollCall } from '../network/MessageApi';
 
 /**
  * Scanning roll-call component: a description string, the number of participants scanned,

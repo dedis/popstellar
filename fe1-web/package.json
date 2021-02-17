@@ -6,8 +6,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "startServer": "node websockets/LocalMockServer.js",
-    "startMonitorServer": "nodemon websockets/LocalMockServer.js",
+    "startServer": "node network/LocalMockServer.js",
+    "startMonitorServer": "nodemon network/LocalMockServer.js",
     "test": "jest",
     "eslint": "node_modules/.bin/eslint ."
   },

@@ -11,7 +11,7 @@ import {
   Buttons, Typography, Spacing, Views,
 } from 'styles';
 import STRINGS from 'res/strings';
-import { requestCreateRollCall } from 'websockets/MessageApi';
+import { requestCreateRollCall } from 'network/MessageApi';
 
 // FIXME: this could benefit from a clean-up
 

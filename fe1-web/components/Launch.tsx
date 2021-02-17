@@ -8,7 +8,7 @@ import {
 import { Spacing, Typography } from 'styles';
 import STRINGS from 'res/strings';
 import PROPS_TYPE, { INavigation } from 'res/Props';
-import { requestCreateLao } from 'websockets/MessageApi';
+import { requestCreateLao } from 'network/MessageApi';
 
 /**
  * Manage the Launch screen: a description string, a LAO name text input, a launch LAO button,

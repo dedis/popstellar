@@ -11,7 +11,7 @@ import {
   Buttons, Typography, Spacing, Views,
 } from 'styles';
 import STRINGS from 'res/strings';
-import { requestCreateMeeting } from 'websockets/MessageApi';
+import { requestCreateMeeting } from 'network/MessageApi';
 
 // FIXME: this file is very messy and needs a whole lot of clean-up
 
