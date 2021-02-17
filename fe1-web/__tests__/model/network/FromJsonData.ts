@@ -8,7 +8,7 @@ import {
   StateLao, StateMeeting,
   UpdateLao, WitnessMessage
 } from 'model/network/method/message/data';
-import { initialise } from 'store/Storage';
+import { storeInit } from 'store/Storage';
 import { ProtocolError } from 'model/network';
 import { Base64Data, Hash, Lao, PrivateKey, PublicKey, Timestamp } from 'model/objects';
 import { sign } from 'tweetnacl';
@@ -38,7 +38,7 @@ const _generateKeyPair = () => {
 describe('=== fromJsonData checks ===', function() {
 
   beforeAll(() => {
-    initialise();
+    storeInit();
 
     const sampleLao: Lao = new Lao({
       name,

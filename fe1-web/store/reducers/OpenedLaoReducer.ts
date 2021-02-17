@@ -1,8 +1,8 @@
 import { AnyAction } from 'redux';
-import { Lao } from 'model/objects';
+import { Lao, LaoState } from 'model/objects';
 import { ActionOpenedLaoReducer } from '../Actions';
 
-const initialState: Lao | null = null;
+const initialState: LaoState | null = null;
 
 /**
  * Reducer to store the current opened LAO
@@ -17,13 +17,14 @@ const initialState: Lao | null = null;
  * @param action action to be executed by the reducer
  * @returns new LAO if action is valid, old LAO otherwise
  */
-export function openedLaoReducer(state: Lao | null = initialState, action: AnyAction): Lao | null {
+export function openedLaoReducer(state: LaoState | null = initialState, action: AnyAction)
+  : LaoState | null {
   try {
     if (action.type === ActionOpenedLaoReducer.SET_OPENED_LAO) {
       if (action.value === undefined || action.value === null) {
         return null;
       }
-      return new Lao(action.value);
+      return Lao.fromState(action.value).toState();
     }
   } catch (e) {
     console.exception(e);

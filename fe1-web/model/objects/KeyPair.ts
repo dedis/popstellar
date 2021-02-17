@@ -1,6 +1,12 @@
 import { PublicKey } from './PublicKey';
 import { PrivateKey } from './PrivateKey';
 
+// Plain-old-data
+export interface KeyPairState {
+  publicKey: string;
+  privateKey: string;
+}
+
 export class KeyPair {
   public readonly publicKey: PublicKey;
 
@@ -16,5 +22,16 @@ export class KeyPair {
 
     this.publicKey = obj.publicKey;
     this.privateKey = obj.privateKey;
+  }
+
+  public static fromState(kp: KeyPairState): KeyPair {
+    return new KeyPair({
+      publicKey: new PublicKey(kp.publicKey),
+      privateKey: new PrivateKey(kp.privateKey),
+    });
+  }
+
+  public toState(): KeyPairState {
+    return JSON.parse(JSON.stringify(this));
   }
 }

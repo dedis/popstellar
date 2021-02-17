@@ -33,8 +33,11 @@ export class CloseRollCall implements MessageData {
     this.attendees = [...msg.attendees];
 
     if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'CloseRollCall\'');
+
+    // FIXME: implementation not finished, get event from storage,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const lao: Lao = OpenedLaoStore.get();
-    /* // FIXME get event from storage
+    /*
     const expectedHash = Hash.fromStringArray(
       eventTags.ROLL_CALL, lao.id.toString(), lao.creation.toString(), lao.name
     );

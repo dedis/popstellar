@@ -2,6 +2,16 @@ import { Timestamp } from './Timestamp';
 import { Hash } from './Hash';
 import { PublicKey } from './PublicKey';
 
+// Plain-old-data
+export interface LaoState {
+  name: string;
+  id: string;
+  creation: number;
+  last_modified: number;
+  organizer: string;
+  witnesses: string[];
+}
+
 export class Lao {
   public readonly name: string;
 
@@ -33,5 +43,20 @@ export class Lao {
     this.last_modified = obj.last_modified;
     this.organizer = obj.organizer;
     this.witnesses = [...obj.witnesses];
+  }
+
+  public static fromState(lao: LaoState): Lao {
+    return new Lao({
+      name: lao.name,
+      id: new Hash(lao.id),
+      creation: new Timestamp(lao.creation),
+      last_modified: new Timestamp(lao.creation),
+      organizer: new PublicKey(lao.organizer),
+      witnesses: lao.witnesses.map((w) => new PublicKey(w)),
+    });
+  }
+
+  public toState(): LaoState {
+    return JSON.parse(JSON.stringify(this));
   }
 }
