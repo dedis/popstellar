@@ -23,17 +23,17 @@ type Actor interface {
 	// TODO: figure out return values for above
 
 	/*
-	// Data represents one of the possible data objects in message with other
-	// fields being null. 
-	type Data struct {
-		CreateLAO *CreateLAO
-		UpdateLAOState *UpdateLAOState
-		UpdateProperties *UpdateProperties
-		CreateRollCall *CreateRollCall
-	}
+		// Data represents one of the possible data objects in message with other
+		// fields being null.
+		type Data struct {
+			CreateLAO *CreateLAO
+			UpdateLAOState *UpdateLAOState
+			UpdateProperties *UpdateProperties
+			CreateRollCall *CreateRollCall
+		}
 
-	message.Message, CreateLAO, UpdateLAOState, UpdateProperties, CreateRollCall
-	can have Validate() method which does stuff in the security package (which IMHO)
+		message.Message, CreateLAO, UpdateLAOState, UpdateProperties, CreateRollCall
+		can have Validate() method which does stuff in the security package (which IMHO)
 
 	*/
 

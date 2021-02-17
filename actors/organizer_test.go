@@ -254,7 +254,7 @@ func getCorrectPublishGeneral(publicKey []byte, privateKey ed.PrivateKey, data [
 	return []byte(msg)
 }
 
-// getCorrectCatchupOnLAO_id generate a example JSON string of the whole request for a catchup on channel /root/LAO_id 
+// getCorrectCatchupOnLAO_id generate a example JSON string of the whole request for a catchup on channel /root/LAO_id
 func getCorrectCatchupOnRollCallLAO_id(creationString string) []byte {
 	toHash := lib.ArrayRepresentation([]string{"R", b64.StdEncoding.EncodeToString([]byte("LAO_id")), creationString, "my_roll_call"})
 	hashId := sha256.Sum256([]byte(toHash))
@@ -316,9 +316,9 @@ func getExpectedMsgAndChannelForPublishGeneral(publicKey []byte, privateKey ed.P
 	return answer
 }
 
-// getExpectedResponseForCatchupRollCallLAO_id generate a example JSON string of the ack with the current state 
+// getExpectedResponseForCatchupRollCallLAO_id generate a example JSON string of the ack with the current state
 // for a catchup request on channel /root/LAO_id
-// (not correct implementation of the protocol, but works better than nothing and matches the current implementation. 
+// (not correct implementation of the protocol, but works better than nothing and matches the current implementation.
 // Correct should be to return the whole history.)
 func getExpectedResponseForCatchupRollCallLAO_id(creationString string) []byte {
 	response := `{
