@@ -9,7 +9,7 @@
 
     <include layout="@layout/tab_home"/>
 
-    <include layout="@layout/tab_identity_properties"/>
+    <include layout="@layout/tab_identity"/>
 
     <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_horizontal_tab"

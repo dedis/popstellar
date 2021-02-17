@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.View;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+
+import com.github.dedis.student20_pop.model.entities.LAOEntity;
 import com.github.dedis.student20_pop.ui.AttendeeFragment;
 import com.github.dedis.student20_pop.ui.IdentityFragment;
 
@@ -28,7 +30,7 @@ public class AttendeeActivity extends FragmentActivity {
 
       getSupportFragmentManager()
           .beginTransaction()
-          .add(R.id.fragment_container_attendee, new AttendeeFragment())
+          .add(R.id.fragment_container_attendee, new AttendeeFragment(new LAOEntity()))
           .commit();
     }
   }

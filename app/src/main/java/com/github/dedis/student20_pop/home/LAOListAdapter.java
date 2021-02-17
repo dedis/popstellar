@@ -63,12 +63,7 @@ public class LAOListAdapter extends BaseAdapter {
             binding = DataBindingUtil.getBinding(view);
         }
 
-        LAOItemUserActionsListener userActionsListener = new LAOItemUserActionsListener() {
-            @Override
-            public void onLAOClicked(Lao lao) {
-                homeViewModel.openLAO(lao.getId());
-            }
-        };
+        LAOItemUserActionsListener userActionsListener = lao -> homeViewModel.openLAO(lao.getId());
 
 
         binding.setLao(laos.get(position));
