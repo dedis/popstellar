@@ -6,6 +6,8 @@ type Hub interface {
 	Start(done chan struct{})
 
 	Recv(msg IncomingMessage)
+
+	RemoveClient(client *Client)
 }
 
 type IncomingMessage struct {

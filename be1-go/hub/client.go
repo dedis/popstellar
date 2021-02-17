@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"student20_pop/message"
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -26,6 +27,8 @@ type Client struct {
 	conn *websocket.Conn
 
 	send chan []byte
+
+	Wait sync.WaitGroup
 }
 
 func NewClient(h Hub, conn *websocket.Conn) *Client {
@@ -33,13 +36,17 @@ func NewClient(h Hub, conn *websocket.Conn) *Client {
 		hub:  h,
 		conn: conn,
 		send: make(chan []byte, 256),
+		Wait: sync.WaitGroup{},
 	}
 }
 
 func (c *Client) ReadPump() {
 	defer func() {
 		c.conn.Close()
+		c.Wait.Done()
 	}()
+
+	c.Wait.Add(1)
 
 	log.Printf("listening for messages from client")
 
@@ -71,7 +78,10 @@ func (c *Client) WritePump() {
 	defer func() {
 		ticker.Stop()
 		c.conn.Close()
+		c.Wait.Done()
 	}()
+
+	c.Wait.Add(1)
 
 	for {
 		select {

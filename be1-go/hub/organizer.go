@@ -5,11 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"student20_pop"
 	"sync"
 
 	"student20_pop/message"
 
 	"go.dedis.ch/kyber/v3"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 )
 
@@ -27,6 +29,15 @@ func NewOrganizerHub(public kyber.Point) *organizerHub {
 		messageChan: make(chan IncomingMessage),
 		channelByID: make(map[string]Channel),
 		public:      public,
+	}
+}
+
+func (o *organizerHub) RemoveClient(client *Client) {
+	o.RLock()
+	defer o.RUnlock()
+
+	for _, channel := range o.channelByID {
+		channel.Unsubscribe(client, message.Unsubscribe{})
 	}
 }
 
@@ -225,6 +236,18 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 	msg := publish.Params.Message
 	data := msg.Data
 
+	msgIDEncoded := base64.StdEncoding.EncodeToString(msg.MessageID)
+
+	c.inboxMu.RLock()
+	if _, ok := c.inbox[msgIDEncoded]; ok {
+		c.inboxMu.RUnlock()
+		return &message.Error{
+			Code:        -3,
+			Description: "message already exists",
+		}
+	}
+	c.inboxMu.RUnlock()
+
 	object := data.GetObject()
 	var err error
 
@@ -234,7 +257,7 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 	case message.MeetingObject:
 		err = c.processMeetingObject(data)
 	case message.MessageObject:
-		err = c.processMessageObject(data)
+		err = c.processMessageObject(msg.Sender, data)
 	case message.RollCallObject:
 		err = c.processRollCallObject(data)
 	}
@@ -288,11 +311,35 @@ func (c *laoChannel) processMeetingObject(data message.Data) error {
 	return nil
 }
 
-func (c *laoChannel) processMessageObject(data message.Data) error {
+func (c *laoChannel) processMessageObject(public message.PublicKey, data message.Data) error {
 	action := message.MessageDataAction(data.GetAction())
 
 	switch action {
 	case message.WitnessAction:
+		witnessData := data.(*message.WitnessMessageData)
+
+		msgEncoded := base64.StdEncoding.EncodeToString(witnessData.MessageID)
+
+		err := schnorr.VerifyWithChecks(student20_pop.Suite, public, witnessData.MessageID, witnessData.Signature)
+		if err != nil {
+			return &message.Error{
+				Code:        -4,
+				Description: "invalid witness signature",
+			}
+		}
+
+		c.inboxMu.Lock()
+		msg := c.inbox[msgEncoded]
+		msg.WitnessSignatures = append(msg.WitnessSignatures, message.PublicKeySignaturePair{
+			Witness:   public,
+			Signature: witnessData.Signature,
+		})
+		c.inboxMu.Unlock()
+	default:
+		return &message.Error{
+			Code:        -1,
+			Description: fmt.Sprintf("invalid action: %s", action),
+		}
 	}
 
 	return nil
