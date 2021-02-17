@@ -1,9 +1,9 @@
-import { Hash, Timestamp, Lao } from 'model/objects';
 import { OpenedLaoStore } from 'store';
+import { Hash, Timestamp, Lao } from 'model/objects';
+import { eventTags } from 'network/WebsocketUtils';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness } from '../Checker';
-import { eventTags } from '../../../../../../network/WebsocketUtils';
 
 export class CreateRollCall implements MessageData {
   public readonly object: ObjectType = ObjectType.ROLL_CALL;

@@ -152,7 +152,6 @@ const checkRequests = (channel: Channel, obj: MessageData) => {
       // isRoot depends of the request
       break;
 
-
     default:
       assertChai.fail(`Unknown object '${obj.object}'`);
   }
