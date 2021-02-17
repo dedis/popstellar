@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import STRINGS from 'res/strings';
 import { Typography, Spacing, Buttons } from '../styles';
 import EventItem from './EventItem';
-import { requestUpdateLao } from '../websockets/MessageApi';
+import { requestUpdateLao } from '../network/MessageApi';
 import PROPS_TYPE from '../res/Props';
 
 /**

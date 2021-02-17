@@ -3,7 +3,7 @@ import { OpenedLaoStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness } from '../Checker';
-import { eventTags } from '../../../../../../websockets/WebsocketUtils';
+import { eventTags } from '../../../../../../network/WebsocketUtils';
 
 export class CreateRollCall implements MessageData {
   public readonly object: ObjectType = ObjectType.ROLL_CALL;

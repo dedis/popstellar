@@ -13,7 +13,7 @@ import { ProtocolError } from 'model/network';
 import { Base64Data, Hash, Lao, PrivateKey, PublicKey, Timestamp } from 'model/objects';
 import { sign } from 'tweetnacl';
 import { encodeBase64 } from 'tweetnacl-util';
-import { eventTags } from "../../../websockets/WebsocketUtils";
+import { eventTags } from "network/WebsocketUtils";
 import { OpenedLaoStore } from 'store';
 
 const assertChai = require('chai').assert;
