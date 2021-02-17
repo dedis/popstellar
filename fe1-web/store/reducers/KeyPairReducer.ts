@@ -1,8 +1,8 @@
 import { AnyAction } from 'redux';
-import { KeyPair } from 'model/objects';
+import { KeyPair, KeyPairState } from 'model/objects';
 import { ActionKeyPairReducer } from '../Actions';
 
-const initialState: KeyPair | null = null;
+const initialState: KeyPairState | null = null;
 
 /**
  * Reducer to store a set of public/private key
@@ -18,19 +18,21 @@ const initialState: KeyPair | null = null;
  * @returns new key pair if action is valid, old key pair otherwise
  */
 export function keyPairReducer(
-  state: KeyPair | null = initialState, action: AnyAction,
-): KeyPair | null {
+  state: KeyPairState | null = initialState, action: AnyAction,
+): KeyPairState | null {
   try {
     if (action.type === ActionKeyPairReducer.SET_KEYPAIR) {
       if (action.value === undefined || action.value === null) {
+        console.log('KeyPair storage was set to: null');
         return null;
       }
-      return new KeyPair(action.value);
+      const kp = KeyPair.fromState(action.value).toState();
+      console.log(`KeyPair storage was update with public key: ${kp.publicKey.toString()}`);
+      return Object.freeze(kp);
     }
   } catch (e) {
-    console.exception(e);
+    console.exception('Could not update KeyPair state due to exception', e);
   }
 
-  console.log(`KeyPair storage stayed unchanged after action : '${action.type}'`);
   return state;
 }

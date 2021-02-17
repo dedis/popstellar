@@ -1,12 +1,12 @@
 /* eslint-disable */
 
 import { CreateLao } from 'model/network/method/message/data';
-import { initialise } from 'store/Storage';
+import { storeInit } from 'store/Storage';
 import { JsonRpcMethod, JsonRpcRequest } from 'model/network';
 import { Base64Data, Hash, Lao, PrivateKey, PublicKey } from 'model/objects';
 import { OpenedLaoStore } from 'store';
 import * as b64 from 'base-64';
-import { JsonRpcParamsWithMessage } from '../../../model/network/method/JsonRpcParamsWithMessage';
+import { JsonRpcParamsWithMessage } from 'model/network/method/JsonRpcParamsWithMessage';
 import { ROOT_CHANNEL } from 'model/objects/Channel';
 
 const assertChai = require('chai').assert;
@@ -120,7 +120,7 @@ function compareQueryMessageData(query: JsonRpcRequest): void {
 describe('=== fromJsonJsonRpcRequest checks ===', function() {
 
   beforeAll(() => {
-    initialise();
+    storeInit();
 
     const sampleLao: Lao = new Lao({
       name: sampleCreateLaoData.name,

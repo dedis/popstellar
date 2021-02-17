@@ -1,6 +1,14 @@
 /* eslint-disable */
 
-import { Base64Data, Hash, PrivateKey, PublicKey, WitnessSignature } from 'model/objects';
+import {
+  Base64Data,
+  Hash, KeyPair, KeyPairState,
+  Lao, LaoState,
+  PrivateKey,
+  PublicKey,
+  Timestamp,
+  WitnessSignature
+} from 'model/objects';
 import { channelFromId, ROOT_CHANNEL } from 'model/objects/Channel';
 
 const assertChai = require('chai').assert;
@@ -59,4 +67,37 @@ describe('=== Primitive objects checks ===', function() {
       assertChai.isTrue(witnessSignature.verify(messageId));
     });
   });
+
+  describe('Lao', function () {
+    it('can do a state round-trip', function () {
+
+      const laoState: LaoState = {
+        id: '1234',
+        name: 'MyLao',
+        creation: 123,
+        last_modified: 1234,
+        organizer: '1234',
+        witnesses: [],
+      };
+
+      const lao: Lao = Lao.fromState(laoState);
+
+      expect(lao.toState()).toStrictEqual(laoState);
+    });
+  });
+
+  describe('KeyPair', function () {
+    it('can do a state round-trip', function () {
+
+      const kpState: KeyPairState = {
+        publicKey: 'public',
+        privateKey: 'private',
+      };
+
+      const kp: KeyPair = KeyPair.fromState(kpState);
+
+      expect(kp.toState()).toStrictEqual(kpState);
+    });
+  });
+
 });

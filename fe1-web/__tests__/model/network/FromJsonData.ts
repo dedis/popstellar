@@ -8,12 +8,12 @@ import {
   StateLao, StateMeeting,
   UpdateLao, WitnessMessage
 } from 'model/network/method/message/data';
-import { initialise } from 'store/Storage';
+import { storeInit } from 'store/Storage';
 import { ProtocolError } from 'model/network';
 import { Base64Data, Hash, Lao, PrivateKey, PublicKey, Timestamp } from 'model/objects';
 import { sign } from 'tweetnacl';
 import { encodeBase64 } from 'tweetnacl-util';
-import { eventTags } from "../../../websockets/WebsocketUtils";
+import { eventTags } from "network/WebsocketUtils";
 import { OpenedLaoStore } from 'store';
 
 const assertChai = require('chai').assert;
@@ -38,7 +38,7 @@ const _generateKeyPair = () => {
 describe('=== fromJsonData checks ===', function() {
 
   beforeAll(() => {
-    initialise();
+    storeInit();
 
     const sampleLao: Lao = new Lao({
       name,
