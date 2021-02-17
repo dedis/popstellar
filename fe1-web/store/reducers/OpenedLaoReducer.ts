@@ -24,7 +24,7 @@ export function openedLaoReducer(state: LaoState | null = initialState, action: 
       if (action.value === undefined || action.value === null) {
         return null;
       }
-      return Lao.fromState(action.value).toState();
+      return Object.freeze(Lao.fromState(action.value).toState());
     }
   } catch (e) {
     console.exception(e);
