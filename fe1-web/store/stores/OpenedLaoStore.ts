@@ -4,12 +4,15 @@ import { ActionOpenedLaoReducer } from '../Actions';
 
 export namespace OpenedLaoStore {
 
-  export function store(value: Lao): void {
-    dispatch({ type: ActionOpenedLaoReducer.SET_OPENED_LAO, value });
+  export function store(lao: Lao): void {
+    dispatch({
+      type: ActionOpenedLaoReducer.SET_OPENED_LAO,
+      value: lao.toState(),
+    });
   }
 
   export function get(): Lao {
-    const laoState: LaoState = getStore().getState().currentLaoReducer;
+    const laoState: LaoState = getStore().getState().openedLaoReducer;
 
     return (laoState !== null)
       ? Lao.fromState(laoState)

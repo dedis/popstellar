@@ -22,14 +22,17 @@ export function openedLaoReducer(state: LaoState | null = initialState, action: 
   try {
     if (action.type === ActionOpenedLaoReducer.SET_OPENED_LAO) {
       if (action.value === undefined || action.value === null) {
+        console.log('LAO storage was set to: null');
         return null;
       }
-      return Object.freeze(Lao.fromState(action.value).toState());
+
+      const lao = Object.freeze(Lao.fromState(action.value).toState());
+      console.log(`LAO storage was update with open: ${lao.id.toString()}`);
+      return lao;
     }
   } catch (e) {
-    console.exception(e);
+    console.exception('Could not update opened LAO state due to exception', e);
   }
 
-  console.log(`LAO storage stayed unchanged after action : '${action.type}'`);
   return state;
 }
