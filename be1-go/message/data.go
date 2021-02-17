@@ -14,6 +14,17 @@ func (s stringer) String() string {
 	return string(s)
 }
 
+type DataObject string
+
+var (
+	LaoObject      DataObject = "lao"
+	MessageObject  DataObject = "message"
+	MeetingObject  DataObject = "meeting"
+	RollCallObject DataObject = "roll_call"
+)
+
+type DataAction string
+
 type Timestamp int64
 
 func (t Timestamp) String() string {
@@ -21,22 +32,40 @@ func (t Timestamp) String() string {
 }
 
 type Data interface {
-	GetAction() string
-	GetObject() string
+	GetAction() DataAction
+
+	GetObject() DataObject
+
+	GetRaw() []byte
+
+	//GetTimestamp() Timestamp
 }
 
 type GenericData struct {
-	Action string `json:"action"`
-	Object string `json:"object"`
+	Action DataAction `json:"action"`
+	Object DataObject `json:"object"`
+	Raw    []byte
 }
 
-func (g *GenericData) GetAction() string {
+func (g *GenericData) GetAction() DataAction {
 	return g.Action
 }
 
-func (g *GenericData) GetObject() string {
+func (g *GenericData) GetObject() DataObject {
 	return g.Object
 }
+
+func (g *GenericData) GetRaw() []byte {
+	return g.Raw
+}
+
+type LaoDataAction DataAction
+
+var (
+	CreateLaoAction LaoDataAction = "create"
+	UpdateLaoAction LaoDataAction = "update_properties"
+	StateLaoAction  LaoDataAction = "state"
+)
 
 type CreateLAOData struct {
 	*GenericData
@@ -46,6 +75,10 @@ type CreateLAOData struct {
 	Creation  Timestamp   `json:"creation"`
 	Organizer PublicKey   `json:"organizer"`
 	Witnesses []PublicKey `json:"witnesses"`
+}
+
+func (c *CreateLAOData) GetTimestamp() Timestamp {
+	return c.Creation
 }
 
 func (c *CreateLAOData) setID() error {
@@ -67,6 +100,10 @@ type UpdateLAOData struct {
 	Witnesses    []PublicKey `json:"witnesses"`
 }
 
+func (u *UpdateLAOData) GetTimestamp() Timestamp {
+	return u.LastModified
+}
+
 type StateLAOData struct {
 	*GenericData
 
@@ -80,6 +117,18 @@ type StateLAOData struct {
 	ModificationSignatures []PublicKeySignaturePair `json:"modification_signatures"`
 }
 
+func (s *StateLAOData) GetTimestamp() Timestamp {
+	return s.LastModified
+}
+
+type MeetingDataAction DataAction
+
+var (
+	CreateMeetingAction MeetingDataAction = "create"
+	UpdateMeetingAction MeetingDataAction = "update_properties"
+	StateMeetingAction  MeetingDataAction = "state"
+)
+
 type CreateMeetingData struct {
 	*GenericData
 
@@ -92,6 +141,10 @@ type CreateMeetingData struct {
 	End   Timestamp `json:"end"`
 
 	Extra json.RawMessage `json:"extra"`
+}
+
+func (c *CreateMeetingData) GetTimestamp() Timestamp {
+	return c.Creation
 }
 
 type StateMeetingData struct {
@@ -111,6 +164,17 @@ type StateMeetingData struct {
 	Extra json.RawMessage `json:"extra"`
 }
 
+func (s *StateMeetingData) GetTimestamp() Timestamp {
+	return s.Creation
+}
+
+type RollCallAction DataAction
+
+var (
+	CreateRollCallAction RollCallAction = "create"
+	CloseRollCallAction  RollCallAction = "close"
+)
+
 type CreateRollCallData struct {
 	*GenericData
 
@@ -123,7 +187,7 @@ type CreateRollCallData struct {
 	Description string    `json:"roll_call_description"`
 }
 
-type OpenRollCallActionType string
+type OpenRollCallActionType RollCallAction
 
 var (
 	OpenRollCallAction   OpenRollCallActionType = "open"
@@ -146,6 +210,12 @@ type CloseRollCallData struct {
 	Attendees []PublicKey `json:"attendees"`
 }
 
+type MessageDataAction DataAction
+
+var (
+	WitnessAction MessageDataAction = "witness"
+)
+
 type WitnessMessageData struct {
 	*GenericData
 
@@ -156,8 +226,8 @@ type WitnessMessageData struct {
 func NewCreateLAOData(name string, creation Timestamp, organizer PublicKey, witnesses []PublicKey) (Data, error) {
 	create := &CreateLAOData{
 		GenericData: &GenericData{
-			Action: "create",
-			Object: "lao",
+			Action: DataAction(CreateLaoAction),
+			Object: LaoObject,
 		},
 		Name:      name,
 		Creation:  creation,

@@ -67,3 +67,23 @@ func (r *Result) UnmarshalJSON(data []byte) error {
 	r.Catchup = catchup
 	return nil
 }
+
+func (e *Error) Error() string {
+	return e.Description
+}
+
+func (a Answer) MarshalJSON() ([]byte, error) {
+	type internal struct {
+		JSONRpc string  `json:"jsonrpc"`
+		Result  *Result `json:"result,omitempty"`
+		Error   *Error  `json:"error,omitempty"`
+	}
+
+	tmp := internal{
+		JSONRpc: "2.0",
+		Result:  a.Result,
+		Error:   a.Error,
+	}
+
+	return json.Marshal(tmp)
+}

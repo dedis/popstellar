@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"student20_pop"
+	"student20_pop/hub"
 
 	"github.com/gorilla/websocket"
 	"github.com/urfave/cli/v2"
@@ -15,6 +16,7 @@ import (
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
+	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
 func Serve(c *cli.Context) error {
@@ -36,8 +38,13 @@ func Serve(c *cli.Context) error {
 		return xerrors.Errorf("failed to unmarshal public key: %v", err)
 	}
 
+	h := hub.NewOrganizerHub(point)
+
+	done := make(chan struct{})
+	go h.Start(done)
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		serveWs(w, r)
+		serveWs(h, w, r)
 	})
 
 	log.Printf("Starting the WS server at %d", port)
@@ -46,13 +53,20 @@ func Serve(c *cli.Context) error {
 		return xerrors.Errorf("failed to start the server: %v", err)
 	}
 
+	done <- struct{}{}
+
 	return nil
 }
 
-func serveWs(w http.ResponseWriter, r *http.Request) {
-	_, err := upgrader.Upgrade(w, r, nil)
+func serveWs(h hub.Hub, w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("failed to upgrade connection: %v", err)
 		return
 	}
+
+	client := hub.NewClient(h, conn)
+
+	go client.ReadPump()
+	go client.WritePump()
 }

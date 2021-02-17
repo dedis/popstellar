@@ -22,7 +22,7 @@ func (m *GenericMessage) UnmarshalJSON(data []byte) error {
 		return xerrors.Errorf("failed to find method in GenericMessage: %s", err)
 	}
 
-	if tmp.Method != "" {
+	if tmp.Method == "" {
 		answer := &Answer{}
 
 		err = json.Unmarshal(data, answer)
