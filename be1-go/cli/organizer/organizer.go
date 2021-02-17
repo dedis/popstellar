@@ -69,4 +69,10 @@ func serveWs(h hub.Hub, w http.ResponseWriter, r *http.Request) {
 
 	go client.ReadPump()
 	go client.WritePump()
+
+	// cleanup go routine that removes clients that forgot to unsubscribe
+	go func(c *hub.Client, h hub.Hub) {
+		c.Wait.Wait()
+		h.RemoveClient(c)
+	}(client, h)
 }
