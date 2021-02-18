@@ -19,7 +19,10 @@
     "import/prefer-default-export": "off",
 
     // allow the usage of console output for debugging purposes
-    "no-console": "off"
+    "no-console": "off",
+
+    // disable object shorthand
+    "object-shorthand": "off"
   },
   // we disable import/extensions eslint errors. Eslint underlines every import due to an
   // bug between typescript and eslint using the airbnb config
