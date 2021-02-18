@@ -2,7 +2,6 @@ package com.github.dedis.student20_pop.ui;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,6 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentLaoDetailBinding;
@@ -23,9 +21,9 @@ import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.utility.ui.adapter.OrganizerEventExpandableListViewAdapter;
 import com.github.dedis.student20_pop.utility.ui.adapter.WitnessListViewAdapter;
 import com.github.dedis.student20_pop.utility.ui.listener.OnAddWitnessListener;
-import com.github.dedis.student20_pop.utility.ui.listener.OnEventCreatedListener;
 import com.github.dedis.student20_pop.utility.ui.listener.OnEventTypeSelectedListener;
 
+import java.time.chrono.HijrahDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,12 +81,20 @@ public class LaoDetailFragment extends Fragment {
         setupWitnessListAdapter();
 
         setupSwipeRefresh();
+
+        // Subscribe to "show/hide properties" event
+        mLaoDetailViewModel.getShowPropertiesEvent().observe(this, booleanEvent -> {
+            Boolean action = booleanEvent.getContentIfNotHandled();
+            if (action != null) {
+                showHideProperties(action);
+            }
+        });
     }
 
     private void setupPropertiesButton() {
         Button propertiesButton = (Button) getActivity().findViewById(R.id.tab_properties);
 
-        propertiesButton.setOnClickListener(clicked -> mLaoDetailViewModel.openProperties());
+        propertiesButton.setOnClickListener(clicked -> mLaoDetailViewModel.showHideProperties());
     }
 
     private void setupEditPropertiesButton() {
@@ -131,7 +137,8 @@ public class LaoDetailFragment extends Fragment {
         mEventListViewEventAdapter = new OrganizerEventExpandableListViewAdapter(
                 getActivity(),
                 events,
-                onEventTypeSelectedListener);
+                onEventTypeSelectedListener,
+                mLaoDetailViewModel.isOrganizer());
 
         expandableListView.setAdapter(mEventListViewEventAdapter);
         expandableListView.expandGroup(0);
@@ -147,5 +154,9 @@ public class LaoDetailFragment extends Fragment {
             }
             mLaoDetailFragBinding.swipeRefresh.setRefreshing(false);
         });
+    }
+
+    private void showHideProperties(Boolean show) {
+        mLaoDetailFragBinding.propertiesLinearLayout.setVisibility(show? View.VISIBLE : View.INVISIBLE);
     }
 }

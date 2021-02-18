@@ -124,7 +124,8 @@ public class LaoDetailActivity extends AppCompatActivity implements OnEventTypeS
 
     private void setupHomeActivity() {
         Intent intent = new Intent(this, HomeActivity.class);
-        startActivity(intent);
+        setResult(HomeActivity.LAO_DETAIL_REQUEST_CODE, intent);
+        finish();
     }
 
     private void setupIdentityFragment() {

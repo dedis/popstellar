@@ -11,10 +11,8 @@ import androidx.lifecycle.Transformations;
 
 import com.github.dedis.student20_pop.Event;
 import com.github.dedis.student20_pop.model.data.LAORepository;
-import com.github.dedis.student20_pop.model.entities.LAO;
 import com.github.dedis.student20_pop.model.entities.LAOEntity;
 import com.github.dedis.student20_pop.model.entities.Person;
-import com.github.dedis.student20_pop.utility.ui.listener.OnAddWitnessListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +24,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
     private final MutableLiveData<Event<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mOpenIdentityEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<Boolean>> mShowPropertiesEvent = new MutableLiveData<>();
     private final MutableLiveData<LAOEntity> mCurrentLao = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isOrganizer = new MutableLiveData<>();
     private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
@@ -50,6 +49,10 @@ public class LaoDetailViewModel extends AndroidViewModel {
         return mOpenIdentityEvent;
     }
 
+    public LiveData<Event<Boolean>> getShowPropertiesEvent() {
+        return mShowPropertiesEvent;
+    }
+
     public LAOEntity getCurrentLao() {
         return mCurrentLao.getValue();
     }
@@ -62,7 +65,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
         return isOrganizer.getValue();
     }
 
-    public Boolean showProperties() {
+    public Boolean getShowProperties() {
         return showProperties.getValue();
     }
 
@@ -82,8 +85,9 @@ public class LaoDetailViewModel extends AndroidViewModel {
         mOpenIdentityEvent.setValue(new Event<>(true));
     }
 
-    public void openProperties() {
-        showProperties.setValue(!showProperties());
+    public void showHideProperties() {
+        mShowPropertiesEvent.setValue(new Event<>(!getShowProperties()));
+        showProperties.postValue(!getShowProperties());
     }
 
     public void openEditProperties() {
@@ -120,7 +124,8 @@ public class LaoDetailViewModel extends AndroidViewModel {
             throw new IllegalArgumentException("Can't access details from a null LAO");
         }
         //TODO: get user id
-        isOrganizer.setValue(laoId.equals("user id"));
+        //isOrganizer.setValue(laoId.equals("user id"));
+        isOrganizer.setValue(true);
         mCurrentLao.setValue(mLAORepository.getLAO(laoId));
 
         Log.d(TAG, "The user is organizer: " + isOrganizer());

@@ -22,6 +22,7 @@ import static com.github.dedis.student20_pop.model.event.EventType.*;
 /** Adapter to show events of an Organizer */
 public class OrganizerEventExpandableListViewAdapter extends EventExpandableListViewAdapter {
   private final OnEventTypeSelectedListener onEventTypeSelectedListener;
+  private final Boolean isOrganizer;
 
   /**
    * Constructor for the expandable list view adapter to display the events in the organizer UI
@@ -32,9 +33,10 @@ public class OrganizerEventExpandableListViewAdapter extends EventExpandableList
   public OrganizerEventExpandableListViewAdapter(
       Context context,
       List<Event> events,
-      OnEventTypeSelectedListener onEventTypeSelectedListener) {
+      OnEventTypeSelectedListener onEventTypeSelectedListener, Boolean isOrganizer) {
     super(context, events);
     this.onEventTypeSelectedListener = onEventTypeSelectedListener;
+    this.isOrganizer = isOrganizer;
   }
 
   /**
@@ -59,7 +61,7 @@ public class OrganizerEventExpandableListViewAdapter extends EventExpandableList
     eventTextView.setText(eventCategory);
 
     ImageButton addEvent = convertView.findViewById(R.id.add_future_event_button);
-    addEvent.setVisibility((getGroup(groupPosition) == FUTURE) ? View.VISIBLE : View.GONE);
+    addEvent.setVisibility((getGroup(groupPosition) == FUTURE) && isOrganizer ? View.VISIBLE : View.GONE);
     addEvent.setFocusable(View.NOT_FOCUSABLE);
     addEvent.setOnClickListener(
         v -> {

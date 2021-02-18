@@ -32,8 +32,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab"
-            android:visibility="@{view_model.showProperties() ? View.VISIBLE : View.GONE}" >
+            app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab">
 
                 <ImageButton
                     android:id="@+id/edit_button"
@@ -94,19 +93,6 @@
                     android:visibility="@{view_model.editProperties() ? View.VISIBLE : View.GONE}"
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/witness_list"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/event_linear_layout"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab"
-            android:visibility="@{view_model.showProperties() ? View.GONE : View.VISIBLE}" >
 
             <ImageButton
                 android:id="@+id/add_witness_button"
