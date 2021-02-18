@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.home.HomeViewModel;
+import com.github.dedis.student20_pop.model.data.LAORepository;
 import com.google.gson.Gson;
 
 public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {

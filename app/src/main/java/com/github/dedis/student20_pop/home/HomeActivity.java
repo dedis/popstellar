@@ -2,9 +2,12 @@ package com.github.dedis.student20_pop.home;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Observer;
@@ -28,6 +31,8 @@ import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QR
 
 public class HomeActivity extends AppCompatActivity implements QRCodeListener {
 
+    public static final int LAO_DETAIL_REQUEST_CODE = 0;
+
     private HomeViewModel mViewModel;
 
     @Override
@@ -50,6 +55,7 @@ public class HomeActivity extends AppCompatActivity implements QRCodeListener {
                 openLaoDetails(laoId);
             }
         });
+
 
         // Subscribe to "open home" event
         mViewModel.getOpenHomeEvent().observe(this, booleanEvent -> {
@@ -87,6 +93,17 @@ public class HomeActivity extends AppCompatActivity implements QRCodeListener {
     public void onQRCodeDetected(String data, QRCodeScanningFragment.QRCodeScanningType qrCodeScanningType, String eventId) {
         //TODO:extract url and lao id
         setupConnectingFragment("url", "lao_id");
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == LAO_DETAIL_REQUEST_CODE) {
+            if(resultCode == RESULT_OK) {
+                startActivity(new Intent(data));
+            }
+        }
     }
 
     public static HomeViewModel obtainViewModel(FragmentActivity activity) {
@@ -167,6 +184,6 @@ public class HomeActivity extends AppCompatActivity implements QRCodeListener {
     private void openLaoDetails(String laoId) {
         Intent intent = new Intent(this, LaoDetailActivity.class);
         intent.putExtra("LAO_ID", laoId);
-        startActivity(intent);
+        startActivityForResult(intent, LAO_DETAIL_REQUEST_CODE);
     }
 }

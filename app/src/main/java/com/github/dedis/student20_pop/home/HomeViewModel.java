@@ -188,6 +188,8 @@ public class HomeViewModel extends AndroidViewModel implements CameraPermissionV
         }
         laosById.put(newLao.getId(), newLao);
         mLAOsById.postValue(laosById);
+
+        // save to LAORepository
     }
 
     public LiveData<List<Lao>> getLAOs() {
