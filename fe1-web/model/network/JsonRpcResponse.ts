@@ -1,4 +1,5 @@
 import { ProtocolError } from './ProtocolError';
+import { Message } from './method/message';
 
 export const UNDEFINED_ID: number = -1;
 
@@ -8,7 +9,7 @@ interface ErrorObject {
 }
 
 export class JsonRpcResponse {
-  public readonly result?: number;
+  public readonly result?: number | Message[];
 
   public readonly error?: ErrorObject;
 
@@ -22,14 +23,13 @@ export class JsonRpcResponse {
     }
 
     if (resp.result !== undefined) {
-      if (resp.result) {
+      if (typeof resp.result === 'number' && resp.result) {
         throw new ProtocolError('Unexpected json-rpc answer : non-zero result value');
       }
 
       this.result = resp.result;
     } else if (resp.error !== undefined) {
-      // FIXME hardcoded. Use enum if we keep this idea
-      if (resp.error.code < -6 || resp.error.code > -1) {
+      if (resp.error.code >= 0) {
         throw new ProtocolError(`Unexpected json-rpc answer : unexpected error code value '${resp.error.code}'`);
       }
 
