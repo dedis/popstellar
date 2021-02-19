@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft/2019-09/schema#",
-	"$id": "https://raw.githubusercontent.com/dedis/student20_pop/proto-specs/query/method/message/data/dataCreateMeeting.json",
+	"$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataCreateMeeting.json",
 	"description": "Match a create Meeting query",
 	"type": "object",
 

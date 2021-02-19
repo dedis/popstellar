@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft/2019-09/schema#",
-	"$id": "https://raw.githubusercontent.com/dedis/student20_pop/proto-specs/query/method/subscribe.json",
+	"$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/subscribe.json",
 	"description": "Match subscribe to a channel client query",
 	"type": "object",
 
