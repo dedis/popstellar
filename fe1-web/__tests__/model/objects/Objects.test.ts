@@ -34,6 +34,12 @@ describe('=== Primitive objects checks ===', () => {
   });
 
   describe('Hash', () => {
+    it('works against expected data', () => {
+      const hash: Hash = Hash.fromStringArray('abcd', '1234');
+
+      expect(hash.toString()).toEqual('61I7DQkiMtdHFM5VygjbFqrVmn4NAl0wSVxkj6Q5iDw=');
+    });
+
     it('equals work properly', () => {
       const hash1: Hash = Hash.fromStringArray('sameHash');
       const hash2: Hash = Hash.fromStringArray('sameHash');
@@ -42,8 +48,6 @@ describe('=== Primitive objects checks ===', () => {
       expect(hash1.equals(hash2)).toBe(true);
       expect(hash1.equals(hash3)).toBe(false);
     });
-
-    // FIXME add 1 more test when we settled on Hashing method
   });
 
   describe('PrivateKey & Signature', () => {
