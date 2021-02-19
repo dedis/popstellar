@@ -28,7 +28,7 @@ type DataAction string
 type Timestamp int64
 
 func (t Timestamp) String() string {
-	return string(t)
+	return fmt.Sprintf("%d", t)
 }
 
 type Data interface {
@@ -250,7 +250,7 @@ func hash(strs ...fmt.Stringer) ([]byte, error) {
 		if len(s) == 0 {
 			return nil, xerrors.Errorf("empty string to hash() at index: %d, %v", i, strs)
 		}
-		h.Write([]byte(string(len(s)) + s))
+		h.Write([]byte(fmt.Sprintf("%d%s", len(s), s)))
 	}
 	return h.Sum(nil), nil
 }
