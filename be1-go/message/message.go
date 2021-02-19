@@ -115,7 +115,8 @@ func (m *Message) UnmarshalJSON(data []byte) error {
 func (m *Message) parseRollCallData(action RollCallAction, data []byte) error {
 	switch action {
 	case CreateRollCallAction:
-		create := &CreateRollCallData{}
+		create := &CreateRollCallData{GenericData: &GenericData{}}
+		create.Raw = data
 
 		err := json.Unmarshal(data, create)
 		if err != nil {
@@ -125,7 +126,8 @@ func (m *Message) parseRollCallData(action RollCallAction, data []byte) error {
 		m.Data = create
 		return nil
 	case RollCallAction(OpenRollCallAction), RollCallAction(ReopenRollCallAction):
-		open := &OpenRollCallData{}
+		open := &OpenRollCallData{GenericData: &GenericData{}}
+		open.Raw = data
 
 		err := json.Unmarshal(data, open)
 		if err != nil {
@@ -135,7 +137,8 @@ func (m *Message) parseRollCallData(action RollCallAction, data []byte) error {
 		m.Data = open
 		return nil
 	case CloseRollCallAction:
-		closeInst := &CloseRollCallData{}
+		closeInst := &CloseRollCallData{GenericData: &GenericData{}}
+		closeInst.Raw = data
 
 		err := json.Unmarshal(data, closeInst)
 		if err != nil {
@@ -154,7 +157,9 @@ func (m *Message) parseMessageData(action MessageDataAction, data []byte) error 
 		return xerrors.Errorf("invalid action type: %s", action)
 	}
 
-	witness := &WitnessMessageData{}
+	witness := &WitnessMessageData{GenericData: &GenericData{}}
+	witness.Raw = data
+
 	err := json.Unmarshal(data, witness)
 	if err != nil {
 		return xerrors.Errorf("failed to parse witness action: %v", err)
@@ -167,7 +172,8 @@ func (m *Message) parseMessageData(action MessageDataAction, data []byte) error 
 func (m *Message) parseMeetingData(action MeetingDataAction, data []byte) error {
 	switch action {
 	case CreateMeetingAction:
-		create := &CreateMeetingData{}
+		create := &CreateMeetingData{GenericData: &GenericData{}}
+		create.Raw = data
 
 		err := json.Unmarshal(data, create)
 		if err != nil {
@@ -177,7 +183,8 @@ func (m *Message) parseMeetingData(action MeetingDataAction, data []byte) error 
 		m.Data = create
 		return nil
 	case StateMeetingAction:
-		state := &StateMeetingData{}
+		state := &StateMeetingData{GenericData: &GenericData{}}
+		state.Raw = data
 
 		err := json.Unmarshal(data, state)
 		if err != nil {
@@ -206,7 +213,7 @@ func (m *Message) parseLAOData(action LaoDataAction, data []byte) error {
 		m.Data = create
 		return nil
 	case UpdateLaoAction:
-		update := &UpdateLAOData{}
+		update := &UpdateLAOData{GenericData: &GenericData{}}
 		update.Raw = data
 
 		err := json.Unmarshal(data, update)
@@ -217,7 +224,7 @@ func (m *Message) parseLAOData(action LaoDataAction, data []byte) error {
 		m.Data = update
 		return nil
 	case StateLaoAction:
-		state := &StateLAOData{}
+		state := &StateLAOData{GenericData: &GenericData{}}
 		state.Raw = data
 
 		err := json.Unmarshal(data, state)
