@@ -91,7 +91,7 @@ OrganizationNavigation.defaultProps = {
 };
 
 const mapStateToProps = (state) => ({
-  lao: state.openedLaoReducer.lao,
+  lao: state.openedLao.lao,
 });
 
 export default connect(mapStateToProps)(OrganizationNavigation);

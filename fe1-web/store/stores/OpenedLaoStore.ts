@@ -12,7 +12,7 @@ export namespace OpenedLaoStore {
   }
 
   export function get(): Lao {
-    const laoState: LaoState = getStore().getState().openedLaoReducer;
+    const laoState: LaoState = getStore().getState().openedLao;
 
     if (laoState === null || laoState === undefined) {
       throw new Error('Error encountered while accessing storage : no currently opened LAO');
