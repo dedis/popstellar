@@ -26,3 +26,5 @@ might be called `work-evoting-bford` by default,
 or `work-evoting-bford-ballot-casting`
 if I need a branch to develop the ballot casting feature.
 
+
+This project is licensed under the terms of the AGPL licence. If this license is not suitable for your project, please contact us to discuss licensing terms.
