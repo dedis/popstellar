@@ -166,7 +166,7 @@ RollCallScanning.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-  roll_call_id: state.openRollCallIDReducer.roll_call_id,
+  roll_call_id: state.openedRollCallId.roll_call_id,
 });
 
 export default connect(mapStateToProps)(RollCallScanning);

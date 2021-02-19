@@ -25,11 +25,11 @@ export function storeInit(): PersistStoreConfig {
   };
 
   const appReducer: Reducer = persistCombineReducers(persistConfig, {
-    keyPairReducer,
-    availableLaosReducer,
-    openedLaoReducer,
-    currentEventsReducer,
-    openRollCallIDReducer,
+    keyPair: keyPairReducer,
+    availableLaos: availableLaosReducer,
+    openedLao: openedLaoReducer,
+    currentEvents: currentEventsReducer,
+    openedRollCallId: openRollCallIDReducer,
   });
 
   // Trick used to clear local persistent storage

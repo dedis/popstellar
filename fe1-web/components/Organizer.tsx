@@ -60,8 +60,8 @@ Organizer.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-  events: state.currentEventsReducer.events,
-  lao: state.currentLaoReducer.lao,
+  events: state.currentEvents.events,
+  lao: state.openedLao.lao,
 });
 
 export default connect(mapStateToProps)(Organizer);
