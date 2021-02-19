@@ -3,7 +3,9 @@ package message
 import (
 	"crypto/sha256"
 	"encoding/json"
+	"student20_pop"
 
+	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 )
 
@@ -21,6 +23,7 @@ type Message struct {
 	Sender            PublicKey                `json:"sender"`
 	Signature         Signature                `json:"signature"`
 	WitnessSignatures []PublicKeySignaturePair `json:"witness_signatures"`
+	RawData           []byte
 }
 
 func NewMessage(sender PublicKey, signature Signature, witnessSignatures []PublicKeySignaturePair, data Data) (*Message, error) {
@@ -71,37 +74,47 @@ func (m *Message) UnmarshalJSON(data []byte) error {
 		return xerrors.Errorf("error parsing message: %v", err)
 	}
 
-	gd := &GenericData{}
-	err = json.Unmarshal(tmp.Data, gd)
-	if err != nil {
-		return xerrors.Errorf("error parsing data wrapper: %v", err)
-	}
-
 	m.MessageID = tmp.MessageID
 	m.Sender = tmp.Sender
 	m.Signature = tmp.Signature
 	m.WitnessSignatures = tmp.WitnessSignatures
+	m.RawData = tmp.Data
+
+	return nil
+}
+
+func (m *Message) VerifyAndUnmarshalData() error {
+	err := schnorr.VerifyWithChecks(student20_pop.Suite, m.Sender, m.RawData, m.Signature)
+	if err != nil {
+		return xerrors.Errorf("error verifying signature: %v", err)
+	}
+
+	gd := &GenericData{}
+	err = json.Unmarshal(m.RawData, gd)
+	if err != nil {
+		return xerrors.Errorf("error parsing data wrapper: %v", err)
+	}
 
 	action := gd.GetAction()
 
 	switch gd.GetObject() {
 	case DataObject(LaoObject):
-		err := m.parseLAOData(LaoDataAction(action), tmp.Data)
+		err := m.parseLAOData(LaoDataAction(action), m.RawData)
 		if err != nil {
 			return xerrors.Errorf("error parsing lao data: %v", err)
 		}
 	case DataObject(MeetingObject):
-		err := m.parseMeetingData(MeetingDataAction(action), tmp.Data)
+		err := m.parseMeetingData(MeetingDataAction(action), m.RawData)
 		if err != nil {
 			return xerrors.Errorf("error parsing meeting data: %v", err)
 		}
 	case DataObject(MessageObject):
-		err := m.parseMessageData(MessageDataAction(action), tmp.Data)
+		err := m.parseMessageData(MessageDataAction(action), m.RawData)
 		if err != nil {
 			return xerrors.Errorf("error parsing message data: %v", err)
 		}
 	case DataObject(RollCallObject):
-		err := m.parseRollCallData(RollCallAction(action), tmp.Data)
+		err := m.parseRollCallData(RollCallAction(action), m.RawData)
 		if err != nil {
 			return xerrors.Errorf("error parsing roll call data: %v", err)
 		}
@@ -155,6 +168,7 @@ func (m *Message) parseMessageData(action MessageDataAction, data []byte) error 
 	}
 
 	witness := &WitnessMessageData{}
+
 	err := json.Unmarshal(data, witness)
 	if err != nil {
 		return xerrors.Errorf("failed to parse witness action: %v", err)
@@ -196,7 +210,6 @@ func (m *Message) parseLAOData(action LaoDataAction, data []byte) error {
 	switch action {
 	case CreateLaoAction:
 		create := &CreateLAOData{}
-		create.Raw = data
 
 		err := json.Unmarshal(data, create)
 		if err != nil {
@@ -207,7 +220,6 @@ func (m *Message) parseLAOData(action LaoDataAction, data []byte) error {
 		return nil
 	case UpdateLaoAction:
 		update := &UpdateLAOData{}
-		update.Raw = data
 
 		err := json.Unmarshal(data, update)
 		if err != nil {
@@ -218,7 +230,6 @@ func (m *Message) parseLAOData(action LaoDataAction, data []byte) error {
 		return nil
 	case StateLaoAction:
 		state := &StateLAOData{}
-		state.Raw = data
 
 		err := json.Unmarshal(data, state)
 		if err != nil {
