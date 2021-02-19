@@ -150,6 +150,6 @@ func (c *Client) SendResult(id int, res message.Result) {
 		log.Printf("failed to marshal answer: %v", err)
 	}
 
-	log.Printf("answerBuf: %s", answerBuf)
+	log.Printf("answerBuf: %s, received id: %d", answerBuf, id)
 	c.send <- answerBuf
 }
