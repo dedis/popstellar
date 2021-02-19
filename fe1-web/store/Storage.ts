@@ -2,7 +2,8 @@ import { persistCombineReducers, persistStore } from 'redux-persist';
 import {
   AnyAction, createStore, Reducer, Store,
 } from 'redux';
-import { Persistor, WebStorage } from 'redux-persist/es/types';
+import { Persistor } from 'redux-persist/es/types';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import {
   currentEventsReducer, keyPairReducer, openRollCallIDReducer,
@@ -18,19 +19,10 @@ let store: Store;
 let persist: Persistor;
 
 export function storeInit(): PersistStoreConfig {
-  let storage: WebStorage;
-  // FIXME doesnt compile
-  if (typeof window === 'undefined'
-    || typeof window.localStorage === 'undefined'
-    || window.localStorage === null) {
-    const { LocalStorage } = require('node-localstorage');
-    storage = new LocalStorage('./scratch');
-  } else {
-    // native local storage available
-    storage = require('redux-persist/lib/storage').localStorage;
-  }
-
-  const persistConfig = { key: 'root', storage };
+  const persistConfig = {
+    key: 'root',
+    storage: AsyncStorage,
+  };
 
   const appReducer: Reducer = persistCombineReducers(persistConfig, {
     keyPairReducer,
@@ -45,7 +37,9 @@ export function storeInit(): PersistStoreConfig {
     // clears the local cached storage as well as the state of the storage
     let newState = state;
     if (action.type === 'CLEAR_STORAGE') {
-      storage.removeItem('persist:root'); newState = undefined;
+      // unsafe, asynchronous operation:
+      AsyncStorage.removeItem('persist:root');
+      newState = undefined;
     }
     return appReducer(newState, action);
   };

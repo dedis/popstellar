@@ -48,6 +48,8 @@ export function catchup(channel: Channel) {
 export function publish(channel: Channel, msgData: MessageData) {
   const message = Message.fromData(msgData);
 
+  // FIXME
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const request = new JsonRpcRequest({
     method: JsonRpcMethod.PUBLISH,
     params: new Publish({
@@ -57,7 +59,6 @@ export function publish(channel: Channel, msgData: MessageData) {
     id: -1, // FIXME
   });
 
-  return request || null; // simply to remove ESlint warning for now
 /* // FIXME uncomment once websocket link is refactored
   WebsocketLink.sendRequestToServer(request,
     message.messageData.object,
