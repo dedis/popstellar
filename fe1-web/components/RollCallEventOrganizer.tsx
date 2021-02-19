@@ -85,7 +85,7 @@ RollCallEventOrganizer.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-  roll_call_id: state.openRollCallIDReducer.roll_call_id,
+  roll_call_id: state.getOpenRollCallId.roll_call_id,
 });
 
 export default connect(mapStateToProps)(RollCallEventOrganizer);

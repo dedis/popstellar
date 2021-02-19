@@ -18,7 +18,7 @@ export namespace KeyPairStore {
   export function get(): KeyPair {
     // if keys.publicKey or keys.privateKey is undefined (no key in the
     // storage), then a fresh instance is automatically created
-    const keysState: KeyPairState = getStore().getState().keypairReducer;
+    const keysState: KeyPairState = getStore().getState().getKeyPair;
 
     if (keysState === null || keysState === undefined) {
       // create new pair of keys

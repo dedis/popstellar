@@ -88,7 +88,7 @@ MyTabBar.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-  lao: state.currentLaoReducer.lao,
+  lao: state.getOpenedLao.lao,
 });
 
 export default connect(mapStateToProps)(MyTabBar);

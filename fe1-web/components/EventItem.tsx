@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
 });
 
 const EventItem = ({ event, lao }) => {
-  const { pubKey } = getStore().getState().keypairReducer;
+  const { pubKey } = getStore().getState().getKeyPair;
   const isOrganizer = lao.organizer === pubKey;
 
   switch (event.object) {
@@ -74,7 +74,7 @@ EventItem.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-  lao: state.currentLaoReducer.lao,
+  lao: state.getOpenedLao.lao,
 });
 
 export default connect(mapStateToProps)(EventItem);

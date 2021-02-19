@@ -8,6 +8,8 @@ import { Spacing, Typography } from 'styles';
 import STRINGS from 'res/strings';
 import PROPS_TYPE, { INavigation } from 'res/Props';
 import { requestCreateLao } from 'network/MessageApi';
+import { dispatch } from 'store';
+import { getNetworkManager } from '../network';
 
 /**
  * Manage the Launch screen: a description string, a LAO name text input, a launch LAO button,
@@ -43,8 +45,9 @@ const styles = StyleSheet.create({
 });
 
 const onButtonLaunchPress = (inputLaoName: React.RefObject<TextInput>) => {
-  if (inputLaoName.current?.props.value) {
-    requestCreateLao(inputLaoName.current.props.value);
+  // FIXME old version : "inputLaoName.current?.props.value" but props is undefined here
+  if (inputLaoName.current?.value) {
+    requestCreateLao(inputLaoName.current.value);
   } else {
     console.error('empty lao name');
   }
@@ -80,6 +83,13 @@ const Launch = ({ navigation }: IPropTypes) => {
             title={STRINGS.launch_button_launch}
             onPress={() => onButtonLaunchPress(inputLaoName)}
           />
+        </View>
+        { /* FIXME remove these two buttons used for testing */ }
+        <View style={styles.button}>
+          <Button title="--- OPEN CONNECTION to LocalMockServer.js (use 'npm run startServer') ---" onPress={() => getNetworkManager().connect('127.0.0.1')} />
+        </View>
+        <View style={styles.button}>
+          <Button title="CLEAR STORAGE" onPress={() => dispatch({ type: 'CLEAR_STORAGE', value: {} })} />
         </View>
         <View style={styles.button}>
           <Button
