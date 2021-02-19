@@ -9,10 +9,9 @@ export class Hash extends Base64Data {
      * @return resulting hash
      */
   public static fromStringArray(...data: string[]): Hash {
-    let str = '';
-    data.forEach((item) => { str += `"${Hash.escapeString(item)}",`; });
-    // remove the last comma and add square brackets around
-    str = `[${str.slice(0, -1)}]`;
+    const str = data
+      .map((item) => Hash.computeByteLength(item) + item)
+      .join('');
 
     return this.fromString(str);
   }
@@ -32,17 +31,35 @@ export class Hash extends Base64Data {
     return Base64Data.encode(str);
   }
 
-  /**
-     * Escapes backslashes and double-quotes in a string
-     *
-     * @param str string to be escaped
-     * @private
-     */
-  private static escapeString(str: string): string {
-    return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-  }
-
   public equals(o: Hash): boolean {
     return this.toString() === o.toString();
+  }
+
+  /**
+   * Computes the byte-length of a UTF-8 string
+   * This value is necessary as part of the hashing algorithm,
+   * and naive `.length` usage reports the number of unicode code points.
+   *
+   * @param str string whose length is to be measured
+   * @private
+   */
+  private static computeByteLength(str: string): number {
+    let s = str.length;
+
+    for (let i: number = str.length - 1; i >= 0; i -= 1) {
+      const code = str.charCodeAt(i);
+
+      if (code > 0x7f && code <= 0x7ff) {
+        s += 1;
+      } else if (code > 0x7ff && code <= 0xffff) {
+        s += 2;
+      }
+
+      if (code >= 0xDC00 && code <= 0xDFFF) {
+        i -= 1; // trail surrogate
+      }
+    }
+
+    return s;
   }
 }
