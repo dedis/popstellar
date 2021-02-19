@@ -1,6 +1,7 @@
 import { Hash, Timestamp, Lao } from 'model/objects';
 import { OpenedLaoStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
+import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness } from '../Checker';
 
@@ -51,7 +52,7 @@ export class CreateMeeting implements MessageData {
     const lao: Lao = OpenedLaoStore.get();
     /*
     const expectedHash = Hash.fromStringArray(
-      eventTags.MEETING, lao.id.toString(), lao.creation.toString(), MEETING_NAME,
+      EventTags.MEETING, lao.id.toString(), lao.creation.toString(), MEETING_NAME,
     );
     if (!expectedHash.equals(msg.id))
       throw new ProtocolError(
@@ -61,17 +62,18 @@ export class CreateMeeting implements MessageData {
   }
 
   public static fromJson(obj: any): CreateMeeting {
-    // FIXME add JsonSchema validation to all "fromJson"
-    const correctness = true;
+    const { errors } = validateDataObject(ObjectType.MEETING, ActionType.CREATE, obj);
 
-    return correctness
-      ? new CreateMeeting({
-        ...obj,
-        creation: new Timestamp(obj.creation),
-        start: new Timestamp(obj.start),
-        end: (obj.end !== undefined) ? new Timestamp(obj.end) : undefined,
-        id: new Hash(obj.id),
-      })
-      : (() => { throw new ProtocolError('add JsonSchema error message'); })();
+    if (errors !== null) {
+      throw new ProtocolError(`Invalid meeting create\n\n${errors}`);
+    }
+
+    return new CreateMeeting({
+      ...obj,
+      creation: new Timestamp(obj.creation),
+      start: new Timestamp(obj.start),
+      end: (obj.end !== undefined) ? new Timestamp(obj.end) : undefined,
+      id: new Hash(obj.id),
+    });
   }
 }

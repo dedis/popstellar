@@ -30,16 +30,11 @@ expect.extend({
 
     const r = JSON.parse(JSON.stringify(received));
     const ex = JSON.parse(JSON.stringify(expected));
+
+    expect(r).toEqual(ex);
     return {
-      pass: this.equals(received, expected, undefined, false),
-      message: () => `Value is not equal to expected value (under JSON transformation)\n\n${
-        this.utils.printDiffOrStringify(
-          ex,
-          r,
-          'Expected',
-          'Received',
-          true,
-        )}`,
+      pass: true,
+      message: () => 'Value is equal to expected value (under JSON transformation)',
     };
   },
 

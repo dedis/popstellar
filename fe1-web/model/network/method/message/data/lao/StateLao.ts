@@ -2,6 +2,7 @@ import {
   Hash, PublicKey, Timestamp, WitnessSignature, Signature,
 } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
+import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import {
   checkTimestampStaleness, checkWitnesses, checkModificationId, checkModificationSignatures,
@@ -64,23 +65,24 @@ export class StateLao implements MessageData {
   }
 
   public static fromJson(obj: any): StateLao {
-    // FIXME add JsonSchema validation to all "fromJson"
-    const correctness = true;
+    const { errors } = validateDataObject(ObjectType.LAO, ActionType.STATE, obj);
 
-    return correctness
-      ? new StateLao({
-        ...obj,
-        creation: new Timestamp(obj.creation),
-        last_modified: new Timestamp(obj.last_modified),
-        organizer: new PublicKey(obj.organizer),
-        witnesses: obj.witnesses.map((key: string) => new PublicKey(key)),
-        modification_id: new Hash(obj.modification_id),
-        modification_signatures: obj.modification_signatures.map((ws: any) => new WitnessSignature({
-          witness: new PublicKey(ws.witness),
-          signature: new Signature(ws.signature),
-        })),
-        id: new Hash(obj.id),
-      })
-      : (() => { throw new ProtocolError('add JsonSchema error message'); })();
+    if (errors !== null) {
+      throw new ProtocolError(`Invalid LAO state\n\n${errors}`);
+    }
+
+    return new StateLao({
+      ...obj,
+      creation: new Timestamp(obj.creation),
+      last_modified: new Timestamp(obj.last_modified),
+      organizer: new PublicKey(obj.organizer),
+      witnesses: obj.witnesses.map((key: string) => new PublicKey(key)),
+      modification_id: new Hash(obj.modification_id),
+      modification_signatures: obj.modification_signatures.map((ws: any) => new WitnessSignature({
+        witness: new PublicKey(ws.witness),
+        signature: new Signature(ws.signature),
+      })),
+      id: new Hash(obj.id),
+    });
   }
 }

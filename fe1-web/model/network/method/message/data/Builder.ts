@@ -15,11 +15,11 @@ export function encodeMessageData(msgData: MessageData): Base64Data {
 function buildLaoMessage(msgData: MessageData): MessageData {
   switch (msgData.action) {
     case ActionType.CREATE:
-      return new CreateLao(msgData);
+      return CreateLao.fromJson(msgData);
     case ActionType.UPDATE_PROPERTIES:
-      return new UpdateLao(msgData);
+      return UpdateLao.fromJson(msgData);
     case ActionType.STATE:
-      return new StateLao(msgData);
+      return StateLao.fromJson(msgData);
     default:
       throw new Error(`Unknown action '${msgData.action}' encountered while creating a LAO MessageData`);
   }
@@ -28,9 +28,9 @@ function buildLaoMessage(msgData: MessageData): MessageData {
 function buildMeetingMessage(msgData: MessageData): MessageData {
   switch (msgData.action) {
     case ActionType.CREATE:
-      return new CreateMeeting(msgData);
+      return CreateMeeting.fromJson(msgData);
     case ActionType.STATE:
-      return new StateMeeting(msgData);
+      return StateMeeting.fromJson(msgData);
     default:
       throw new Error(`Unknown action '${msgData.action}' encountered while creating a meeting MessageData`);
   }
@@ -39,20 +39,20 @@ function buildMeetingMessage(msgData: MessageData): MessageData {
 function buildRollCallMessage(msgData: MessageData): MessageData {
   switch (msgData.action) {
     case ActionType.CREATE:
-      return new CreateRollCall(msgData);
+      return CreateRollCall.fromJson(msgData);
     case ActionType.OPEN:
-      return new OpenRollCall(msgData);
+      return OpenRollCall.fromJson(msgData);
     case ActionType.REOPEN:
-      return new ReopenRollCall(msgData);
+      return ReopenRollCall.fromJson(msgData);
     case ActionType.CLOSE:
-      return new CloseRollCall(msgData);
+      return CloseRollCall.fromJson(msgData);
     default:
       throw new Error(`Unknown action '${msgData.action}' encountered while creating a roll call MessageData`);
   }
 }
 
 function buildWitnessMessage(msgData: MessageData): MessageData {
-  return new WitnessMessage(msgData);
+  return WitnessMessage.fromJson(msgData);
 }
 
 export function buildMessageData(msgData: MessageData): MessageData {
