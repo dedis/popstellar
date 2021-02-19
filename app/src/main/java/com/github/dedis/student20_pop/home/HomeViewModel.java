@@ -13,6 +13,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
 import com.github.dedis.student20_pop.Event;
+import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.data.LAORepository;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.network.answer.Result;
@@ -20,8 +21,12 @@ import com.github.dedis.student20_pop.model.network.method.Broadcast;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
+import com.github.dedis.student20_pop.ui.qrcode.CameraPermissionViewModel;
+import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningViewModel;
+import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 
+import java.net.URI;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -33,24 +38,26 @@ import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class HomeViewModel extends AndroidViewModel {
+public class HomeViewModel extends AndroidViewModel implements CameraPermissionViewModel, QRCodeScanningViewModel {
 
-    private static final String TAG = "HOME_VIEW_MODEL";
+    public static final String TAG = HomeViewModel.class.getSimpleName();
+    public static final String SCAN = "SCAN";
+    public static final String REQUEST_CAMERA_PERMISSION = "REQUEST_CAMERA_PERMISSION";
 
     private final MutableLiveData<Event<String>> mOpenLaoEvent = new MutableLiveData<>();
-
+    private final MutableLiveData<Event<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<Boolean>> mOpenConnectingEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<String>> mOpenConnectEvent = new MutableLiveData<>();
-
     private final MutableLiveData<Event<Boolean>> mOpenLaunchEvent = new MutableLiveData<>();
-
+    private final MutableLiveData<Event<Boolean>> mLaunchNewLaoEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<Boolean>> mCancelNewLaoEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<Boolean>> mCancelConnectEvent = new MutableLiveData<>();
+    private final MutableLiveData<String> mConnectingLao = new MutableLiveData<>();
+    private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
     private final MutableLiveData<Map<String, Lao>> mLAOsById = new MutableLiveData<>();
-
-    private final LiveData<List<Lao>> mLAOs = Transformations.map(mLAOsById, laosById -> {
-        return new ArrayList<>(laosById.values());
-    });
-
+    private final LiveData<List<Lao>> mLAOs = Transformations.map(mLAOsById, laosById ->
+            new ArrayList<>(laosById.values()));
     private final Gson gson;
-
     private final LAORepository mLAORepository;
 
     private Disposable disposable;
@@ -62,6 +69,40 @@ public class HomeViewModel extends AndroidViewModel {
         this.gson = gson;
 
         subscribeToMessages();
+    }
+
+    @Override
+    public void onPermissionGranted() {
+        openQrCodeScanning();
+    }
+
+    @Override
+    public int getScanDescription() {
+        return R.string.qrcode_scanning_connect_lao;
+    }
+
+    @Override
+    public void onQRCodeDetected(Barcode barcode) {
+        Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
+
+        // TODO: extract information
+        setConnectingLao("lao id");
+        openConnecting();
+
+        // TODO: subscribe to the LAO
+
+        // TODO: add LAO to the list of LAOs
+
+        // TODO: initiate a catchup
+
+        //openHome();
+    }
+
+    @Override
+    protected void onCleared() {
+        if (disposable != null) {
+            disposable.dispose();
+        }
     }
 
     public void setupDummyLAO() {
@@ -146,19 +187,40 @@ public class HomeViewModel extends AndroidViewModel {
 
     }
 
+    public void launchLao() {
+        // Get organizer information and host
+        //TODO: LaoRepository
+        String laoName = getLaoName().getValue();
+        String organizer = "1234";
+        URI host = URI.create("");
+        Lao newLao = new Lao(laoName, organizer, host);
+        Log.d(TAG, "Launch new LAO: " + laoName);
+
+        // TODO: Send create lao message to backend
+
+        // Save new lao
+        Map<String, Lao> laosById = mLAOsById.getValue();
+        if (laosById == null) {
+            laosById = new HashMap<>();
+        }
+        laosById.put(newLao.getId(), newLao);
+        mLAOsById.postValue(laosById);
+    }
+
     public LiveData<List<Lao>> getLAOs() {
         return mLAOs;
     }
 
-    @Override
-    protected void onCleared() {
-        if (disposable != null) {
-            disposable.dispose();
-        }
-    }
-
     public LiveData<Event<String>> getOpenLaoEvent() {
         return mOpenLaoEvent;
+    }
+
+    public LiveData<Event<Boolean>> getOpenHomeEvent() {
+        return mOpenHomeEvent;
+    }
+
+    public LiveData<Event<Boolean>> getOpenConnectingEvent() {
+        return mOpenConnectingEvent;
     }
 
     public LiveData<Event<String>> getOpenConnectEvent() {
@@ -169,19 +231,76 @@ public class HomeViewModel extends AndroidViewModel {
         return mOpenLaunchEvent;
     }
 
-    void openLAO(String laoId) {
+    public LiveData<Event<Boolean>> getLaunchNewLaoEvent() {
+        return mLaunchNewLaoEvent;
+    }
+
+    public LiveData<Event<Boolean>> getCancelNewLaoEvent() {
+        return mCancelNewLaoEvent;
+    }
+
+    public LiveData<Event<Boolean>> getCancelConnectEvent() {
+        return mCancelConnectEvent;
+    }
+
+    public MutableLiveData<String> getConnectingLao() {
+        return mConnectingLao;
+    }
+
+    public MutableLiveData<String> getLaoName() {
+        return mLaoName;
+    }
+
+    public void openLAO(String laoId) {
         mOpenLaoEvent.setValue(new Event<>(laoId));
     }
 
+    public void openHome() {
+        mOpenHomeEvent.postValue(new Event<>(true));
+    }
+
+    public void openConnecting() {
+        mOpenConnectingEvent.postValue(new Event<>(true));
+    }
+
     public void openConnect() {
-        if (ActivityCompat.checkSelfPermission(getApplication().getApplicationContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            mOpenConnectEvent.setValue(new Event<>("SCAN"));
+        if (ActivityCompat.checkSelfPermission(getApplication().getApplicationContext(),
+                Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            openQrCodeScanning();
         } else {
-            mOpenConnectEvent.setValue(new Event<>("REQUEST_CAMERA_PERMISSION"));
+            openCameraPermission();
         }
+    }
+
+    public void openQrCodeScanning() {
+        mOpenConnectEvent.setValue(new Event<>(SCAN));
+    }
+
+    public void openCameraPermission() {
+        mOpenConnectEvent.setValue(new Event<>(REQUEST_CAMERA_PERMISSION));
     }
 
     public void openLaunch() {
         mOpenLaunchEvent.setValue(new Event<>(true));
+    }
+
+    public void launchNewLao() {
+        mLaunchNewLaoEvent.setValue(new Event<>(true));
+    }
+
+    public void cancelNewLao() {
+        mCancelNewLaoEvent.setValue(new Event<>(true));
+    }
+
+    public void cancelConnect() {
+        mCancelConnectEvent.setValue(new Event<>(true));
+    }
+
+    public void setConnectingLao(String lao) {
+        this.mConnectingLao.postValue(lao);
+    }
+
+    public void setLaoName(String name) {
+        this.mLaoName.setValue(name);
     }
 }

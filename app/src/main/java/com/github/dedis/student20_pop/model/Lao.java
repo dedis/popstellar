@@ -63,7 +63,7 @@ public final class Lao {
    * id and attestation using the new name
    *
    * @param name the name of the LAO, can be empty
-   * @param time the creation time
+   * @param creation the creation time
    * @param id the id of the LAO, Hash(name, creation time, organizer id)
    * @param organizer the public key of the organizer
    * @param witnesses the list of the public keys of the witnesses

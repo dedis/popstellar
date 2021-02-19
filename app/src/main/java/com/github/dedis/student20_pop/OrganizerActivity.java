@@ -1,15 +1,15 @@
 package com.github.dedis.student20_pop;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-import androidx.core.app.ActivityCompat;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+
+import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventType;
@@ -20,17 +20,6 @@ import com.github.dedis.student20_pop.ui.OrganizerFragment;
 import com.github.dedis.student20_pop.ui.event.creation.MeetingEventCreationFragment;
 import com.github.dedis.student20_pop.ui.event.creation.PollEventCreationFragment;
 import com.github.dedis.student20_pop.ui.event.creation.RollCallEventCreationFragment;
-import com.github.dedis.student20_pop.ui.qrcode.AddAttendeeFragment;
-import com.github.dedis.student20_pop.ui.qrcode.CameraPermissionFragment;
-import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
-import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType;
-import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
-import com.github.dedis.student20_pop.utility.qrcode.OnCameraNotAllowedListener;
-import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
-import com.github.dedis.student20_pop.utility.ui.listener.OnAddAttendeesListener;
-import com.github.dedis.student20_pop.utility.ui.listener.OnAddWitnessListener;
-import com.github.dedis.student20_pop.utility.ui.listener.OnEventCreatedListener;
-import com.github.dedis.student20_pop.utility.ui.listener.OnEventTypeSelectedListener;
 
 import java.util.Optional;
 
@@ -40,18 +29,9 @@ import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD
 import static com.github.dedis.student20_pop.PoPApplication.getAppContext;
 import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult;
 import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.*;
-import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.ADD_ROLL_CALL_ATTENDEE;
-import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.ADD_WITNESS;
 
 /** Activity used to display the different UIs for organizers */
-public class OrganizerActivity extends FragmentActivity
-    implements OnEventTypeSelectedListener,
-        OnEventCreatedListener,
-        OnAddWitnessListener,
-        OnAddAttendeesListener,
-        OnCameraNotAllowedListener,
-        QRCodeListener,
-        OnCameraAllowedListener {
+public class OrganizerActivity extends FragmentActivity {
 
   public static final String TAG = OrganizerActivity.class.getSimpleName();
 
@@ -86,7 +66,7 @@ public class OrganizerActivity extends FragmentActivity
     switch (view.getId()) {
       case R.id.tab_home:
         // Future: different Home UI for organizer (without connect UI?)
-        Intent mainActivityIntent = new Intent(this, MainActivity.class);
+        Intent mainActivityIntent = new Intent(this, HomeActivity.class);
         startActivity(mainActivityIntent);
         break;
       case R.id.tab_identity:
@@ -113,7 +93,6 @@ public class OrganizerActivity extends FragmentActivity
    *
    * @param eventType
    */
-  @Override
   public void OnEventTypeSelectedListener(EventType eventType) {
     switch (eventType) {
       case MEETING:
@@ -131,23 +110,21 @@ public class OrganizerActivity extends FragmentActivity
     }
   }
 
-  @Override
-  public void onAddWitnessListener() {
-    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-        == PackageManager.PERMISSION_GRANTED) {
-      showFragment(new QRCodeScanningFragment(ADD_WITNESS, null), QRCodeScanningFragment.TAG);
-    } else {
-      showFragment(new CameraPermissionFragment(ADD_WITNESS, null), CameraPermissionFragment.TAG);
-    }
-  }
+  //  public void onAddWitnessListener() {
+  //    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+  //        == PackageManager.PERMISSION_GRANTED) {
+  //      showFragment(new QRCodeScanningFragment(ADD_WITNESS, null), QRCodeScanningFragment.TAG);
+  //    } else {
+  //      showFragment(new CameraPermissionFragment(ADD_WITNESS, null), CameraPermissionFragment.TAG);
+  //    }
+  //  }
+  //
+  //  public void onCameraNotAllowedListener(QRCodeScanningType qrCodeScanningType, String eventId) {
+  //    showFragment(
+  //        new CameraPermissionFragment(qrCodeScanningType, eventId), CameraPermissionFragment.TAG);
+  //  }
 
-  @Override
-  public void onCameraNotAllowedListener(QRCodeScanningType qrCodeScanningType, String eventId) {
-    showFragment(
-        new CameraPermissionFragment(qrCodeScanningType, eventId), CameraPermissionFragment.TAG);
-  }
-
-  @Override
+  /*
   public void onQRCodeDetected(String data, QRCodeScanningType qrCodeScanningType, String eventId) {
     Log.i(TAG, "Received qrcode url : " + data);
 
@@ -225,27 +202,28 @@ public class OrganizerActivity extends FragmentActivity
         break;
     }
   }
+   */
 
-  @Override
-  public void onCameraAllowedListener(QRCodeScanningType qrCodeScanningType, String eventId) {
-    showFragment(
-        new QRCodeScanningFragment(qrCodeScanningType, eventId), QRCodeScanningFragment.TAG);
-  }
-
-  @Override
-  public void OnEventCreatedListener(Event event) {
-    ((PoPApplication) getApplication()).addEvent(event);
-  }
-
-  @Override
-  public void onAddAttendeesListener(String eventId) {
-    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-        == PackageManager.PERMISSION_GRANTED) {
-      showFragment(new AddAttendeeFragment(eventId), AddAttendeeFragment.TAG);
-    } else {
-      showFragment(
-          new CameraPermissionFragment(ADD_ROLL_CALL_ATTENDEE, eventId),
-          CameraPermissionFragment.TAG);
-    }
-  }
+//  @Override
+//  public void onCameraAllowedListener(QRCodeScanningType qrCodeScanningType, String eventId) {
+//    showFragment(
+//        new QRCodeScanningFragment(qrCodeScanningType, eventId), QRCodeScanningFragment.TAG);
+//  }
+//
+//  @Override
+//  public void OnEventCreatedListener(Event event) {
+//    ((PoPApplication) getApplication()).addEvent(event);
+//  }
+//
+//  @Override
+//  public void onAddAttendeesListener(String eventId) {
+//    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+//        == PackageManager.PERMISSION_GRANTED) {
+//      showFragment(new AddAttendeeFragment(eventId), AddAttendeeFragment.TAG);
+//    } else {
+//      showFragment(
+//          new CameraPermissionFragment(ADD_ROLL_CALL_ATTENDEE, eventId),
+//          CameraPermissionFragment.TAG);
+//    }
+//  }
 }

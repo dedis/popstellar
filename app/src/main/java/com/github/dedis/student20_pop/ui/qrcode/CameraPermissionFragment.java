@@ -1,47 +1,37 @@
 package com.github.dedis.student20_pop.ui.qrcode;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType;
-import com.github.dedis.student20_pop.utility.qrcode.OnCameraAllowedListener;
+import androidx.fragment.app.FragmentActivity;
+
+import com.github.dedis.student20_pop.databinding.FragmentCameraPermBinding;
+import com.github.dedis.student20_pop.home.HomeActivity;
 
 /** Fragment handling permission granting for the camera */
-public final class CameraPermissionFragment extends Fragment implements View.OnClickListener {
+public final class CameraPermissionFragment extends Fragment {
 
   public static final String TAG = CameraPermissionFragment.class.getSimpleName();
-  private static final int HANDLE_CAMERA_PERM = 2;
-  private final QRCodeScanningType qrCodeScanningType;
-  private final String eventId;
-  private OnCameraAllowedListener onCameraAllowedListener;
 
-  public CameraPermissionFragment(QRCodeScanningType qrCodeScanningType, String eventId) {
+  private static final int HANDLE_CAMERA_PERM = 2;
+
+  private FragmentCameraPermBinding mCameraPermFragBinding;
+  private CameraPermissionViewModel mCameraPermissionViewModel;
+
+  public CameraPermissionFragment() {
     super();
-    this.qrCodeScanningType = qrCodeScanningType;
-    this.eventId = eventId;
   }
 
   public static CameraPermissionFragment newInstance() {
-    // TODO: refactor eventId. Possibly rename method to reflect CONNECT_LAO
-    return new CameraPermissionFragment(QRCodeScanningType.CONNECT_LAO, null);
-  }
-
-  @Override
-  public void onAttach(Context context) {
-    super.onAttach(context);
-    if (context instanceof OnCameraAllowedListener)
-      onCameraAllowedListener = (OnCameraAllowedListener) context;
-    else
-      throw new ClassCastException(context.toString() + " must implement OnCameraAllowedListener");
+    return new CameraPermissionFragment();
   }
 
   @Override
@@ -49,15 +39,26 @@ public final class CameraPermissionFragment extends Fragment implements View.OnC
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    View view = inflater.inflate(R.layout.fragment_camera_perm, container, false);
-    // set button click listener
-    view.findViewById(R.id.allow_camera_button).setOnClickListener(this);
 
-    // Check for the camera permission, if is is granted, switch to QRCodeScanningFragment
-    if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
-        == PackageManager.PERMISSION_GRANTED)
-      onCameraAllowedListener.onCameraAllowedListener(qrCodeScanningType, eventId);
-    return view;
+    mCameraPermFragBinding = FragmentCameraPermBinding.inflate(inflater, container, false);
+
+    FragmentActivity activity = getActivity();
+    if (activity instanceof HomeActivity) {
+      mCameraPermissionViewModel = HomeActivity.obtainViewModel(activity);
+    } else {
+      throw new IllegalArgumentException("Cannot obtain view model for " + TAG);
+    }
+
+    mCameraPermFragBinding.setLifecycleOwner(activity);
+
+    return mCameraPermFragBinding.getRoot();
+  }
+
+  @Override
+  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    super.onActivityCreated(savedInstanceState);
+
+    setupCameraPermissionButton();
   }
 
   @Override
@@ -66,8 +67,7 @@ public final class CameraPermissionFragment extends Fragment implements View.OnC
     if (requestCode == HANDLE_CAMERA_PERM
         && grantResults.length != 0
         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-      // we have permission, so we switch to QRCodeScanningFragment
-      onCameraAllowedListener.onCameraAllowedListener(qrCodeScanningType, eventId);
+      mCameraPermissionViewModel.onPermissionGranted();
     }
   }
 
@@ -75,16 +75,14 @@ public final class CameraPermissionFragment extends Fragment implements View.OnC
   public void onResume() {
     super.onResume();
     // If the permission was granted while the app was paused, switch to QRCodeScanningFragment
-
     if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
         == PackageManager.PERMISSION_GRANTED)
-      onCameraAllowedListener.onCameraAllowedListener(qrCodeScanningType, eventId);
+      mCameraPermissionViewModel.onPermissionGranted();
   }
 
-  @Override
-  public void onClick(View v) {
-    if (v.getId() == R.id.allow_camera_button) {
-      requestPermissions(new String[] {Manifest.permission.CAMERA}, HANDLE_CAMERA_PERM);
-    }
+  private void setupCameraPermissionButton() {
+    mCameraPermFragBinding.allowCameraButton.setOnClickListener(v ->
+            requestPermissions(new String[] {Manifest.permission.CAMERA}, HANDLE_CAMERA_PERM)
+    );
   }
 }
