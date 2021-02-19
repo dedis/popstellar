@@ -10,7 +10,7 @@ export class Hash extends Base64Data {
      */
   public static fromStringArray(...data: string[]): Hash {
     const str = data
-      .map((item) => Hash.computeByteLength(item).toString() + item)
+      .map((item) => Hash.computeByteLength(item) + item)
       .join('');
 
     return this.fromString(str);
