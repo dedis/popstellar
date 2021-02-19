@@ -65,20 +65,26 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 		return
 	}
 
-	err = query.Verify(o.public)
-	if err != nil {
-		log.Printf("failed to verify signature on message: %v", err)
-		client.SendError(query.GetID(), err)
-	}
-
 	channelID := query.GetChannel()
 	log.Printf("channel: %s", channelID)
 
 	id := query.GetID()
 
 	if channelID == "/root" {
-		if query.Publish != nil &&
-			query.Publish.Params.Message.Data.GetAction() == message.DataAction(message.CreateLaoAction) &&
+		if query.Publish == nil {
+			log.Printf("only publish is allowed on /root")
+			client.SendError(query.GetID(), err)
+			return
+		}
+
+		err := query.Publish.Params.Message.VerifyAndUnmarshalData()
+		if err != nil {
+			log.Printf("failed to verify and unmarshal data: %v", err)
+			client.SendError(query.Publish.ID, err)
+			return
+		}
+
+		if query.Publish.Params.Message.Data.GetAction() == message.DataAction(message.CreateLaoAction) &&
 			query.Publish.Params.Message.Data.GetObject() == message.DataObject(message.LaoObject) {
 			err := o.createLao(*query.Publish)
 			if err != nil {
@@ -249,6 +255,11 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 	log.Printf("received a publish with id: %d", publish.ID)
 
 	msg := publish.Params.Message
+	err := msg.VerifyAndUnmarshalData()
+	if err != nil {
+		return xerrors.Errorf("failed to verify and unmarshal data: %v", err)
+	}
+
 	data := msg.Data
 
 	msgIDEncoded := base64.StdEncoding.EncodeToString(msg.MessageID)
@@ -264,7 +275,6 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 	c.inboxMu.RUnlock()
 
 	object := data.GetObject()
-	var err error
 
 	switch object {
 	case message.LaoObject:
@@ -315,7 +325,7 @@ func (c *laoChannel) processLaoObject(msg message.Message) error {
 		c.inbox[msgIDEncoded] = msg
 		c.inboxMu.Unlock()
 	case message.StateLaoAction:
-		err := c.processLaoState(&msg)
+		err := c.processLaoState(msg.Data.(*message.StateLAOData))
 		if err != nil {
 			log.Printf("failed to process lao/state: %v", err)
 			return xerrors.Errorf("failed to process lao/state: %v", err)
@@ -330,9 +340,8 @@ func (c *laoChannel) processLaoObject(msg message.Message) error {
 	return nil
 }
 
-func (c *laoChannel) processLaoState(msg *message.Message) error {
+func (c *laoChannel) processLaoState(data *message.StateLAOData) error {
 	// Check if we have the update message
-	data := msg.Data.(*message.StateLAOData)
 	updateMsgIDEncoded := base64.StdEncoding.EncodeToString(data.ModificationID)
 
 	c.inboxMu.RLock()
@@ -501,7 +510,15 @@ func (c *laoChannel) processMessageObject(public message.PublicKey, data message
 		}
 
 		c.inboxMu.Lock()
-		msg := c.inbox[msgEncoded]
+		msg, ok := c.inbox[msgEncoded]
+		if !ok {
+			// We received a witness signature before the message itself.
+			// We ignore it for now but it might be worth keeping it until we
+			// actually receive the message
+			log.Printf("failed to find message_id %s for witness message", msgEncoded)
+			c.inboxMu.Unlock()
+			return nil
+		}
 		msg.WitnessSignatures = append(msg.WitnessSignatures, message.PublicKeySignaturePair{
 			Witness:   public,
 			Signature: witnessData.Signature,
