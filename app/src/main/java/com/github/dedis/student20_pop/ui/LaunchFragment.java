@@ -76,7 +76,7 @@ public final class LaunchFragment extends Fragment {
 
   private void launchLao() {
     mHomeViewModel.launchLao();
-    mHomeViewModel.openHome();
+    //mHomeViewModel.openHome();
   }
 
   private void cancelLaoLaunch() {

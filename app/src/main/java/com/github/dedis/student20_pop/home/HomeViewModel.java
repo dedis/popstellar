@@ -3,6 +3,7 @@ package com.github.dedis.student20_pop.home;
 import android.Manifest;
 import android.app.Application;
 import android.content.pm.PackageManager;
+import android.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -18,19 +19,29 @@ import com.github.dedis.student20_pop.model.data.LAORepository;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.network.answer.Result;
 import com.github.dedis.student20_pop.model.network.method.Broadcast;
+import com.github.dedis.student20_pop.model.network.method.Publish;
+import com.github.dedis.student20_pop.model.network.method.Subscribe;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
+import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.student20_pop.ui.qrcode.CameraPermissionViewModel;
 import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningViewModel;
+import com.github.dedis.student20_pop.utility.security.Keys;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
+import com.google.crypto.tink.CleartextKeysetHandle;
+import com.google.crypto.tink.JsonKeysetWriter;
+import com.google.crypto.tink.KeysetHandle;
+import com.google.crypto.tink.PublicKeySign;
 import com.google.gson.Gson;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.URI;
+import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -151,11 +162,7 @@ public class HomeViewModel extends AndroidViewModel implements CameraPermissionV
         }
 
         String laoId = channel.substring(6);
-        String dataJson = new String(Base64.getDecoder().decode(msg.getData().getBytes()));
-
-        // Log.d(TAG, "data: " + msg.getData() + " dataJSON: " + dataJson);
-
-        Data data = mGson.fromJson(dataJson, Data.class);
+        Data data = msg.getData();
 
         if (data instanceof StateLao) {
             StateLao stateLao = (StateLao) data;
@@ -185,29 +192,49 @@ public class HomeViewModel extends AndroidViewModel implements CameraPermissionV
     }
 
     public void handleResult(Result result) {
-        // TODO verfication
-        Log.d(TAG, "Received a result");
-
+        String serializedResult = mGson.toJson(result);
+        Log.d(TAG, "Received a result " + serializedResult);
     }
 
     public void launchLao() {
         // Get organizer information and host
         //TODO: LaoRepository
-        String laoName = getLaoName().getValue();
-        String organizer = "1234";
-        URI host = URI.create("");
-        Lao newLao = new Lao(laoName, organizer, host);
-        Log.d(TAG, "Launch new LAO: " + laoName);
+        String laoName = mLaoName.getValue();
+        try {
+            KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
 
-        // TODO: Send create lao message to backend
+            String organizer = Keys.getEncodedKey(publicKeysetHandle);
+            byte[] pkBuf = Base64.decode(organizer, Base64.NO_WRAP);
 
-        // Save new lao
-        Map<String, Lao> laosById = mLAOsById.getValue();
-        if (laosById == null) {
-            laosById = new HashMap<>();
+            PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+
+            CreateLao createLao = new CreateLao(laoName, organizer);
+            MessageGeneral message = new MessageGeneral(pkBuf, createLao, signer, mGson);
+
+            // TODO: get id from a global atomic counter
+            Publish publish = new Publish("/root", 1, message);
+
+            mLAORepository.sendMessage(publish);
+
+            Subscribe subscribe = new Subscribe("/root/" + createLao.getId(), 2);
+            mLAORepository.sendMessage(subscribe);
+
+            URI host = URI.create("");
+            Lao newLao = new Lao(laoName, organizer, host);
+            Log.d(TAG, "Launch new LAO: " + laoName);
+
+            // Save new lao
+            Map<String, Lao> laosById = mLAOsById.getValue();
+            if (laosById == null) {
+                laosById = new HashMap<>();
+            }
+            laosById.put(newLao.getId(), newLao);
+            mLAOsById.postValue(laosById);
+        } catch (GeneralSecurityException e) {
+            Log.e(TAG, "failed to get keyset handle", e);
+        } catch (IOException e) {
+            Log.e(TAG, "failed to parse public key", e);
         }
-        laosById.put(newLao.getId(), newLao);
-        mLAOsById.postValue(laosById);
     }
 
     public LiveData<List<Lao>> getLAOs() {

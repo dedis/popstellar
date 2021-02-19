@@ -1,6 +1,9 @@
 package com.github.dedis.student20_pop.model.data;
 
 import com.github.dedis.student20_pop.model.network.GenericMessage;
+import com.github.dedis.student20_pop.model.network.method.Message;
+import com.github.dedis.student20_pop.utility.json.JSONRPCRequest;
+import com.tinder.scarlet.WebSocket;
 
 import io.reactivex.Flowable;
 
@@ -24,4 +27,7 @@ public class LAORemoteDataSource implements LAODataSource.Remote {
         return laoService.observeMessage();
     }
 
+    public void sendMessage(Message msg) {
+        laoService.sendMessage(msg);
+    }
 }

@@ -152,9 +152,10 @@ public final class WebSocketLowLevelProxy implements LowLevelProxy, MessageListe
             .encodeToString(gson.toJson(message, Data.class).getBytes(StandardCharsets.UTF_8));
     String signature = Signature.sign(key, data);
     String msgId = Hash.hash(data, signature);
-    MessageGeneral container =
-        new MessageGeneral(sender, data, signature, msgId, new ArrayList<>());
-    return makeRequest(Integer.class, id -> new Publish(channel, id, container));
+//    MessageGeneral container =
+//        new MessageGeneral(sender, data, signature, msgId, new ArrayList<>());
+//    return makeRequest(Integer.class, id -> new Publish(channel, id, container));
+    return makeRequest(Integer.class, id -> new Publish(channel, id, null));
   }
 
   @Override
@@ -250,12 +251,12 @@ public final class WebSocketLowLevelProxy implements LowLevelProxy, MessageListe
     @Override
     public void handle(Broadcast broadcast) {
       MessageGeneral container = broadcast.getMessage();
-      Data data =
-          gson.fromJson(
-              new String(Base64.getDecoder().decode(container.getData()), StandardCharsets.UTF_8),
-              Data.class);
-
-      data.accept(dataHandler, sessionURI, broadcast.getChannel());
+//      Data data =
+//          gson.fromJson(
+//              new String(Base64.getDecoder().decode(container.getData()), StandardCharsets.UTF_8),
+////              Data.class);
+//
+//      data.accept(dataHandler, sessionURI, broadcast.getChannel());
     }
   }
 }
