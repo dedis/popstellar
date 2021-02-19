@@ -1,6 +1,7 @@
 package hub
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -206,6 +207,9 @@ type laoChannel struct {
 
 	// /root/<base64ID>
 	channel string
+
+	witnessMu sync.Mutex
+	witnesses []message.PublicKey
 }
 
 func (c *laoChannel) Subscribe(client *Client, msg message.Subscribe) error {
@@ -305,6 +309,139 @@ func (c *laoChannel) processLaoObject(msg message.Message) error {
 		c.inbox[msgIDEncoded] = msg
 		c.inboxMu.Unlock()
 	case message.StateLaoAction:
+		err := c.processLaoState(&msg)
+		if err != nil {
+			log.Printf("failed to process lao/state: %v", err)
+			return xerrors.Errorf("failed to process lao/state: %v", err)
+		}
+	default:
+		return &message.Error{
+			Code:        -1,
+			Description: fmt.Sprintf("invalid action: %s", action),
+		}
+	}
+
+	return nil
+}
+
+func (c *laoChannel) processLaoState(msg *message.Message) error {
+	// Check if we have the update message
+	data := msg.Data.(*message.StateLAOData)
+	updateMsgIDEncoded := base64.StdEncoding.EncodeToString(data.ModificationID)
+
+	c.inboxMu.RLock()
+	updateMsg, ok := c.inbox[updateMsgIDEncoded]
+	c.inboxMu.RUnlock()
+
+	if !ok {
+		return &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("cannot find lao/update_properties with ID: %s", updateMsgIDEncoded),
+		}
+	}
+
+	// Check if the signatures are from witnesses we need. We maintain
+	// the current state of witnesses for a LAO in the channel instance
+	// TODO: threshold signature verification
+
+	c.witnessMu.Lock()
+	match := 0
+	expected := len(c.witnesses)
+	// TODO: O(N^2), O(N) possible
+	for i := 0; i < expected; i++ {
+		for j := 0; j < len(data.ModificationSignatures); j++ {
+			if bytes.Equal(c.witnesses[i], data.ModificationSignatures[j].Witness) {
+				match++
+				break
+			}
+		}
+	}
+	c.witnessMu.Unlock()
+
+	if match != expected {
+		return &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("not enough witness signatures provided. Needed %d got %d", expected, match),
+		}
+	}
+
+	// Check if the signatures match
+	for _, pair := range data.ModificationSignatures {
+		err := schnorr.VerifyWithChecks(student20_pop.Suite, pair.Witness, data.ModificationID, pair.Signature)
+		if err != nil {
+			pk := base64.StdEncoding.EncodeToString(pair.Witness)
+			return &message.Error{
+				Code:        -4,
+				Description: fmt.Sprintf("signature verification failed for witness %s", pk),
+			}
+		}
+	}
+
+	// Check if the updates are consistent with the update message
+	updateMsgData, ok := updateMsg.Data.(*message.UpdateLAOData)
+	if !ok {
+		return &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("modification id %s refers to a message which is not lao/update_properties", updateMsgIDEncoded),
+		}
+	}
+
+	err := compareLaoUpdateAndState(updateMsgData, data)
+	if err != nil {
+		return xerrors.Errorf("failure while comparing lao/update and lao/state")
+	}
+
+	return nil
+}
+
+func compareLaoUpdateAndState(update *message.UpdateLAOData, state *message.StateLAOData) error {
+	if update.LastModified != state.LastModified {
+		return &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("mismatch between last modified: expected %d got %d", update.LastModified, state.LastModified),
+		}
+	}
+
+	if update.Name != state.Name {
+		return &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("mismatch between name: expected %d got %d", update.LastModified, state.LastModified),
+		}
+	}
+
+	if update.Name != state.Name {
+		return &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("mismatch between name: expected %d got %d", update.LastModified, state.LastModified),
+		}
+	}
+
+	M := len(update.Witnesses)
+	N := len(state.Witnesses)
+
+	if M != N {
+		return &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("mismatch between witness count: expected %d got %d", M, N),
+		}
+	}
+
+	match := 0
+
+	for i := 0; i < M; i++ {
+		for j := 0; j < N; j++ {
+			if bytes.Equal(update.Witnesses[i], state.Witnesses[j]) {
+				match++
+				break
+			}
+		}
+	}
+
+	if match != M {
+		return &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("mismatch between witness keys: expected %d keys to match but %d matched", M, match),
+		}
 	}
 
 	return nil

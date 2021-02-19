@@ -1,6 +1,7 @@
 package message
 
 import (
+	"crypto/sha256"
 	"encoding/json"
 
 	"golang.org/x/xerrors"
@@ -20,6 +21,31 @@ type Message struct {
 	Sender            PublicKey                `json:"sender"`
 	Signature         Signature                `json:"signature"`
 	WitnessSignatures []PublicKeySignaturePair `json:"witness_signatures"`
+}
+
+func NewMessage(sender PublicKey, signature Signature, witnessSignatures []PublicKeySignaturePair, data Data) (*Message, error) {
+	msg := &Message{
+		Data:              data,
+		Sender:            sender,
+		Signature:         signature,
+		WitnessSignatures: witnessSignatures,
+	}
+
+	h := sha256.New()
+
+	dataBuf, err := json.Marshal(data)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to marshal data: %v", err)
+	}
+
+	h.Write(dataBuf)
+	h.Write(signature)
+
+	idBuf := h.Sum(nil)
+
+	msg.MessageID = idBuf
+
+	return msg, nil
 }
 
 func (m Message) MarshalJSON() ([]byte, error) {
