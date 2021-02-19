@@ -223,7 +223,7 @@ type WitnessMessageData struct {
 	Signature Signature `json:"signature"`
 }
 
-func NewCreateLAOData(name string, creation Timestamp, organizer PublicKey, witnesses []PublicKey) (Data, error) {
+func NewCreateLAOData(name string, creation Timestamp, organizer PublicKey, witnesses []PublicKey) (*CreateLAOData, error) {
 	create := &CreateLAOData{
 		GenericData: &GenericData{
 			Action: DataAction(CreateLaoAction),

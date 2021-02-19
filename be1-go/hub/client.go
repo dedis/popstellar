@@ -62,7 +62,8 @@ func (c *Client) ReadPump() {
 			break
 		}
 
-		// TODO: validate message using JSON schema
+		// TODO: validate message using JSON schema and unmarshal it to generic
+		// message at this stage
 
 		msg := IncomingMessage{
 			Client:  c,
