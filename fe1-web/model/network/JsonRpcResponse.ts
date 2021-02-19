@@ -16,7 +16,7 @@ export class JsonRpcResponse {
   public readonly id: number;
 
   constructor(resp: Partial<JsonRpcResponse>) {
-    this.id = resp.id || UNDEFINED_ID;
+    this.id = (resp.id === undefined) ? UNDEFINED_ID : resp.id;
 
     if (resp.error !== undefined && resp.result !== undefined) {
       throw new ProtocolError('Unexpected json-rpc answer : both \'error\' and \'result\' are present');
@@ -37,6 +37,10 @@ export class JsonRpcResponse {
     } else {
       throw new ProtocolError('Unexpected json-rpc answer : both \'error\' and \'result\' are absent');
     }
+  }
+
+  public isPositiveResponse(): boolean {
+    return (this.error === undefined);
   }
 
   public static fromJson(jsonString: string): JsonRpcResponse {

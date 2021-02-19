@@ -10,6 +10,7 @@ import PROPS_TYPE, { INavigation } from 'res/Props';
 import { requestCreateLao } from 'network/MessageApi';
 import { dispatch } from 'store';
 import { getNetworkManager } from 'network';
+import { JsonRpcResponse } from 'model/network';
 
 /**
  * Manage the Launch screen: a description string, a LAO name text input, a launch LAO button,
@@ -86,7 +87,15 @@ const Launch = ({ navigation }: IPropTypes) => {
         </View>
         { /* FIXME remove these two buttons used for testing */ }
         <View style={styles.button}>
-          <Button title="--- OPEN CONNECTION to LocalMockServer.js (use 'npm run startServer') ---" onPress={() => getNetworkManager().connect('127.0.0.1')} />
+          <Button
+            title="--- OPEN CONNECTION to LocalMockServer.js (use 'npm run startServer') ---"
+            onPress={() => {
+              const nc = getNetworkManager().connect('127.0.0.1');
+              nc.setResponseHandler((m: JsonRpcResponse) => {
+                console.info('Handling the json-rpc response : ', m);
+              });
+            }}
+          />
         </View>
         <View style={styles.button}>
           <Button title="CLEAR STORAGE" onPress={() => dispatch({ type: 'CLEAR_STORAGE', value: {} })} />

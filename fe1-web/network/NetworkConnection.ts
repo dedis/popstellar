@@ -7,27 +7,19 @@ import { NetworkError } from './NetworkError';
 type ResponseHandler = (message: JsonRpcResponse) => void;
 
 const DEFAULT_RESPONSE_HANDLER: ResponseHandler = (message: JsonRpcResponse) => {
-  if (message.error === undefined) {
-    // default handler does nothing which is useful for some messages
-  } else {
-    console.error(
-      'A negative network error was received:\n'
-      + `\t- error code : ${message.error.code}`
-      + `\t- description : ${message.error.description}`,
-    );
-  }
+  console.log('No response handler was provided to manage message : ', message);
 };
 
 const WEBSOCKET_READYSTATE_INTERVAL_MS = 10;
 const WEBSOCKET_READYSTATE_MAX_ATTEMPTS = 100;
 
-const WEBSOCKET_MESSAGE_TIMEOUT_MS = 10000; // 10 seconds max round-trip time
+const WEBSOCKET_MESSAGE_TIMEOUT_MS = 1000; // 10 seconds max round-trip time
 
 interface PendingResponse {
   promise: Promise<JsonRpcResponse>,
   resolvePromise: (value: JsonRpcResponse) => void,
-  rejectPromise: () => void,
-  timeoutId: NodeJS.Timeout,
+  rejectPromise: (reason: string) => void,
+  timeoutId: number,
 }
 
 export class NetworkConnection {
@@ -52,7 +44,7 @@ export class NetworkConnection {
       try {
         response = JsonRpcResponse.fromJson(message.data);
       } catch (e) {
-        throw new ProtocolError('Answer is not valid Json');
+        throw new ProtocolError(`Answer is not valid Json : ${e}`);
       }
 
       if (response.id !== UNDEFINED_ID) {
@@ -61,10 +53,28 @@ export class NetworkConnection {
           throw new NetworkError(`Received a response which id = ${response.id} does not match any pending requests`);
         }
 
+        // a response was received, we clear the timeout and the pending query from the pending map
+        clearTimeout(pendingResponse.timeoutId);
         this.payloadPending.delete(response.id);
 
-        pendingResponse.resolvePromise(response);
-        this.onMessageHandler(response);
+        // reject the promise if the response is negative
+        if (response.isPositiveResponse()) {
+          pendingResponse.resolvePromise(response);
+          try {
+            this.onMessageHandler(response);
+          } catch (e) {
+            console.error('Exception encountered when giving response : ', response, ' to its handler.\n', e);
+          }
+        } else {
+          // Note : impossible to have an undefined error at this stage due to isPositiveResponse()
+          pendingResponse.rejectPromise(
+            'A negative network error was received:\n'
+            // @ts-ignore
+            + `\t- error code : ${response.error.code}`
+            // @ts-ignore
+            + `\t- description : ${response.error.description}`,
+          );
+        }
       }
     };
     ws.onclose = () => { console.info(`Closed websocket connection : ${address}`); };
@@ -81,9 +91,7 @@ export class NetworkConnection {
   public sendPayload(payload: JsonRpcRequest): Promise<JsonRpcResponse> {
     // Check that the websocket connection is ready
     if (!this.ws.readyState) {
-      return new Promise(() => {
-        this.waitWebsocketReady().then(() => this.sendPayload(payload));
-      });
+      return this.waitWebsocketReady().then(() => this.sendPayload(payload));
     }
 
     // websocket ready to be used, message can be sent
@@ -99,7 +107,7 @@ export class NetworkConnection {
     const promise = new Promise<JsonRpcResponse>((resolve, reject) => {
       const timeoutId = setTimeout(
         () => reject(new NetworkError(
-          `Maximum waiting time of ${WEBSOCKET_MESSAGE_TIMEOUT_MS} ms reached, dropping query`,
+          `Maximum waiting time of ${WEBSOCKET_MESSAGE_TIMEOUT_MS} [ms] reached, dropping query`,
         )), // FIXME if reject, delete from queue
         WEBSOCKET_MESSAGE_TIMEOUT_MS,
       );
@@ -129,12 +137,12 @@ export class NetworkConnection {
 
   private waitWebsocketReady(): Promise<void> {
     if (this.ws.readyState) {
-      return new Promise((resolve) => { resolve(); });
+      return Promise.resolve();
     }
 
     let count = 0;
     return new Promise((resolve, reject) => {
-      const id: NodeJS.Timeout = setInterval(() => {
+      const id: number = setInterval(() => {
         if (this.ws.readyState) {
           clearInterval(id);
           resolve();
