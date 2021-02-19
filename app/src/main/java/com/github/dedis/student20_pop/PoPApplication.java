@@ -1,12 +1,9 @@
 package com.github.dedis.student20_pop;
 
-import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
@@ -19,7 +16,6 @@ import com.github.dedis.student20_pop.utility.protocol.DataHandler;
 import com.github.dedis.student20_pop.utility.protocol.HighLevelProxy;
 import com.github.dedis.student20_pop.utility.protocol.LowLevelProxy;
 import com.github.dedis.student20_pop.utility.protocol.ProtocolProxyFactory;
-import com.github.dedis.student20_pop.utility.security.PrivateInfoStorage;
 
 import java.net.URI;
 import java.time.Instant;
@@ -65,43 +61,17 @@ public class PoPApplication extends Application {
 
     appContext = getApplicationContext();
 
-    SharedPreferences sp = this.getSharedPreferences(TAG, Context.MODE_PRIVATE);
-
-    // Verify if the information is not present
-    if (person == null) {
-      // Verify if the user already exists
-      if (sp.contains(SP_PERSON_ID_KEY)) {
-        // Recover user's information
-        String id = sp.getString(SP_PERSON_ID_KEY, "");
-        String authentication = PrivateInfoStorage.readData(this, id);
-        if (authentication == null) {
-          person = new Person(USERNAME);
-          Log.d(TAG, "Private key of user cannot be accessed, new key pair is created");
-          if (PrivateInfoStorage.storeData(this, person.getId(), person.getAuthentication()))
-            Log.d(TAG, "Stored private key of organizer");
-        } else {
-          person = new Person(USERNAME, id, authentication, new ArrayList<>());
-        }
-      } else {
-        // Create new user
-        person = new Person(USERNAME);
-        // Store private key of user
-        if (PrivateInfoStorage.storeData(this, person.getId(), person.getAuthentication()))
-          Log.d(TAG, "Stored private key of organizer");
-      }
-    }
-
-    activateTestingValues(); // comment this line when testing with a back-end
+    // activateTestingValues(); // comment this line when testing with a back-end
   }
 
-  @SuppressLint("ApplySharedPref")
-  @Override
-  public void onTerminate() {
-    super.onTerminate();
-    SharedPreferences sp = this.getSharedPreferences(TAG, Context.MODE_PRIVATE);
-    // Use commit instead of apply for information to be stored immediately
-    sp.edit().putString(SP_PERSON_ID_KEY, person.getId()).commit();
-  }
+//  @SuppressLint("ApplySharedPref")
+//  @Override
+//  public void onTerminate() {
+//    super.onTerminate();
+//    SharedPreferences sp = this.getSharedPreferences(TAG, Context.MODE_PRIVATE);
+//    // Use commit instead of apply for information to be stored immediately
+//    sp.edit().putString(SP_PERSON_ID_KEY, person.getId()).commit();
+//  }
 
   /** Returns PoP Application Context. */
   public static Context getAppContext() {
