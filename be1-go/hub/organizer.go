@@ -512,7 +512,7 @@ func (c *laoChannel) processMessageObject(public message.PublicKey, data message
 		c.inboxMu.Lock()
 		msg, ok := c.inbox[msgEncoded]
 		if !ok {
-			// We received a witness signature before the message itself.
+			// TODO: We received a witness signature before the message itself.
 			// We ignore it for now but it might be worth keeping it until we
 			// actually receive the message
 			log.Printf("failed to find message_id %s for witness message", msgEncoded)
