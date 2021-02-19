@@ -1,7 +1,21 @@
 package com.github.dedis.student20_pop.model.network.method.message;
 
+import android.util.Base64;
+import android.util.Log;
+
+import com.github.dedis.student20_pop.Injection;
+import com.github.dedis.student20_pop.model.network.method.message.data.Data;
+import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessage;
+import com.google.crypto.tink.PublicKeySign;
+import com.google.crypto.tink.PublicKeyVerify;
+import com.google.crypto.tink.subtle.Ed25519Verify;
+import com.google.gson.Gson;
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.security.GeneralSecurityException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Objects;
 
@@ -12,90 +26,109 @@ import java.util.Objects;
  */
 public final class MessageGeneral {
 
-  private final String sender;
-  private final String data;
-  private final String signature;
+  private final String TAG = MessageGeneral.class.getSimpleName();
 
-  @SerializedName("message_id")
-  private final String messageId;
+  private final byte[] sender;
 
-  @SerializedName("witness_signatures")
-  private final List<String> witnessSignatures;
+  private final byte[] dataBuf;
 
-  /**
-   * Constructor for a MessageGeneral
-   *
-   * @param sender public key of the sender/organizer/server
-   * @param data data contained in the message
-   * @param signature organizer's signature on data
-   * @param messageId ID of the message
-   * @param witnessSignatures signatures of the witnesses on the modification message (either
-   *     creation/update)
-   * @throws IllegalArgumentException if any of the parameters is null
-   */
-  public MessageGeneral(
-      String sender,
-      String data,
-      String signature,
-      String messageId,
-      List<String> witnessSignatures) {
-    if (sender == null
-        || data == null
-        || signature == null
-        || messageId == null
-        || witnessSignatures == null
-        || witnessSignatures.contains(null)) {
-      throw new IllegalArgumentException("Trying to create a general message with null parameters");
-    }
+  private Data data;
+
+  private byte[] signature;
+
+  private byte[] messageId;
+
+  private List<PublicKeySignaturePair> witnessSignatures;
+
+  private PublicKeyVerify verifier;
+
+  public MessageGeneral(byte[] sender, Data data, PublicKeySign signer, Gson gson) {
     this.sender = sender;
     this.data = data;
-    this.signature = signature;
-    this.messageId = messageId;
+    this.dataBuf = gson.toJson(data, Data.class).getBytes();
+    this.verifier = new Ed25519Verify(sender);
+
+    generateSignature(signer);
+    generateId();
+  }
+
+  public MessageGeneral(byte[] sender, Data data, List<PublicKeySignaturePair> witnessSignatures, PublicKeySign signer, Gson gson) {
+    this(sender, data, signer, gson);
     this.witnessSignatures = witnessSignatures;
   }
 
-  /** Returns public key of the sender. */
-  public String getSender() {
-    return sender;
+  public MessageGeneral(byte[] sender, byte[] dataBuf, Data data, byte[] signature, byte[] messageId, List<PublicKeySignaturePair> witnessSignatures) {
+    this.sender = sender;
+    this.messageId = messageId;
+    this.dataBuf = dataBuf;
+    this.signature = signature;
+    this.witnessSignatures = witnessSignatures;
+    this.data = data;
+    this.verifier = new Ed25519Verify(sender);
   }
 
-  /** Returns the data contained in the message. */
-  public String getData() {
+  private void generateSignature(PublicKeySign signer) {
+    try {
+      this.signature = signer.sign(this.dataBuf);
+    } catch(GeneralSecurityException e) {
+      Log.d(TAG, "failed to generate signature", e);
+    }
+  }
+
+  private void generateId() {
+    try {
+      MessageDigest hasher = MessageDigest.getInstance("SHA-256");
+
+      hasher.update(this.dataBuf);
+      hasher.update(this.signature);
+
+      this.messageId = hasher.digest();
+    } catch (NoSuchAlgorithmException e) {
+      Log.d(TAG, "failed to generate id", e);
+    }
+  }
+
+  public String getMessageId() {
+    return Base64.encodeToString(this.messageId, Base64.NO_WRAP);
+  }
+
+  public String getSender() {
+    return Base64.encodeToString(this.sender, Base64.NO_WRAP);
+  }
+
+  public String getSignature() {
+    return Base64.encodeToString(this.signature, Base64.NO_WRAP);
+  }
+
+  public List<PublicKeySignaturePair> getWitnessSignatures() {
+    return this.witnessSignatures;
+  }
+
+  public Data getData() {
     return data;
   }
 
-  /** Returns the organizer's signature on data. */
-  public String getSignature() {
-    return signature;
+  public String getDataEncoded() {
+    return Base64.encodeToString(this.dataBuf, Base64.NO_WRAP);
   }
 
-  /** Returns the message ID. */
-  public String getMessageId() {
-    return messageId;
-  }
+  public boolean verify() {
+    try {
+      verifier.verify(signature, dataBuf);
 
-  /**
-   * Returns the signatures of the witnesses on the modification message (either creation/update).
-   */
-  public List<String> getWitnessSignatures() {
-    return witnessSignatures;
-  }
+      if (data instanceof WitnessMessage) {
+        WitnessMessage witnessMessage = (WitnessMessage)data;
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    MessageGeneral that = (MessageGeneral) o;
-    return Objects.equals(getSender(), that.getSender())
-        && Objects.equals(getData(), that.getData())
-        && Objects.equals(getSignature(), that.getSignature())
-        && Objects.equals(getMessageId(), that.getMessageId())
-        && Objects.equals(getWitnessSignatures(), that.getWitnessSignatures());
-  }
+        byte[] signatureBuf = Base64.decode(witnessMessage.getSignature(), Base64.NO_WRAP);
+        byte[] messageIdBuf = Base64.decode(witnessMessage.getMessageId(), Base64.NO_WRAP);
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(
-        getSender(), getData(), getSignature(), getMessageId(), getWitnessSignatures());
+        verifier.verify(signatureBuf, messageIdBuf);
+      }
+
+      return true;
+    } catch (GeneralSecurityException e) {
+      Log.d(TAG, "failed to verify signature", e);
+      return false;
+    }
   }
 }

@@ -42,8 +42,10 @@ public final class WebSocketHighLevelProxy implements HighLevelProxy {
         publicKey,
         privateKey,
         ROOT,
-        new CreateLao(
-            Hash.hash(organizer, creation, name), name, creation, organizer, new ArrayList<>()));
+        null
+            );
+//        new CreateLao(
+//            Hash.hash(organizer, creation, name), name, creation, organizer, new ArrayList<>()));
   }
 
   @Override
@@ -72,8 +74,9 @@ public final class WebSocketHighLevelProxy implements HighLevelProxy {
         publicKey,
         privateKey,
         ROOT + "/" + laoId,
-        new CreateMeeting(
-            Hash.hash("M", laoId, creation, name), name, creation, location, start, end));
+        null);
+//        new CreateMeeting(
+//            Hash.hash("M", laoId, creation, name), name, creation, location, start, end));
   }
 
   @Override
@@ -100,14 +103,15 @@ public final class WebSocketHighLevelProxy implements HighLevelProxy {
         publicKey,
         privateKey,
         ROOT + "/" + laoId,
-        new CreateRollCall(
-            Hash.hash("R", laoId, creation, name),
-            name,
-            creation,
-            start,
-            startType,
-            location,
-            description));
+        null);
+//        new CreateRollCall(
+//            Hash.hash("R", laoId, creation, name),
+//            name,
+//            creation,
+//            start,
+//            startType,
+//            location,
+//            description));
   }
 
   @Override

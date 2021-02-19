@@ -7,8 +7,10 @@ import com.github.dedis.student20_pop.model.entities.ModificationSignature;
 import com.github.dedis.student20_pop.model.entities.Person;
 import com.github.dedis.student20_pop.model.entities.RollCall;
 import com.github.dedis.student20_pop.model.network.GenericMessage;
+import com.github.dedis.student20_pop.model.network.method.Message;
 import com.github.dedis.student20_pop.model.network.method.Subscribe;
 import com.github.dedis.student20_pop.utility.json.JSONRPCRequest;
+import com.tinder.scarlet.WebSocket;
 
 import java.util.List;
 
@@ -20,6 +22,7 @@ public interface LAODataSource {
 
         Flowable<GenericMessage> observeMessage();
 
+        void sendMessage(Message msg);
     }
 
     interface Local {

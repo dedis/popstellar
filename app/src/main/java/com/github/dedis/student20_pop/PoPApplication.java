@@ -57,9 +57,9 @@ public class PoPApplication extends Application {
   public void onCreate() {
     super.onCreate();
 
-    startPurgeRoutine(new Handler(Looper.getMainLooper()));
+//    startPurgeRoutine(new Handler(Looper.getMainLooper()));
 
-    appContext = getApplicationContext();
+//    appContext = getApplicationContext();
 
     // activateTestingValues(); // comment this line when testing with a back-end
   }
@@ -278,24 +278,6 @@ public class PoPApplication extends Application {
         new Event(
             "Present Event 1", laoId, Instant.now().getEpochSecond(), "Somewhere", DISCUSSION),
         new Event("Past Event 1", laoId, 1481643086L, "Here", MEETING));
-  }
-
-  /**
-   * Start the routine the will purge periodically every open session to close timeout requests
-   *
-   * @param handler to run the routine on
-   */
-  private void startPurgeRoutine(Handler handler) {
-    handler.post(
-        new Runnable() {
-          @Override
-          public void run() {
-            synchronized (openSessions) {
-              openSessions.values().forEach(hlp -> hlp.lowLevel().purgeTimeoutRequests());
-              handler.postDelayed(this, LowLevelProxy.REQUEST_TIMEOUT);
-            }
-          }
-        });
   }
 
   /** Type of results when adding a witness */
