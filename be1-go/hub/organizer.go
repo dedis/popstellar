@@ -84,6 +84,7 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 			if err != nil {
 				log.Printf("failed to create lao: %v", err)
 				client.SendError(query.Publish.ID, err)
+				return
 			}
 		} else {
 			log.Printf("invalid method: %s", query.GetMethod())
@@ -91,8 +92,13 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 				Code:        -1,
 				Description: "you may only invoke lao/create on /root",
 			})
+			return
 		}
 
+		status := 0
+		result := message.Result{General: &status}
+		log.Printf("sending result: %v", result)
+		client.SendResult(id, result)
 		return
 	}
 
