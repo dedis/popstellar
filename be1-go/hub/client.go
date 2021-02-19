@@ -12,7 +12,8 @@ import (
 )
 
 const (
-	maxMessageSize = 512
+	// maxMessageSize denotes a meximum possible message size in bytes
+	maxMessageSize = 256 * 1024
 
 	writeWait = 10 * time.Second
 
