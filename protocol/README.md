@@ -1,5 +1,5 @@
-# student20_pop: proto-spec branch
-Proof-of-personhood, fall 2020: Protocol specification
+# student_21_pop: Protocol Specifications
+Proof-of-personhood, spring 2021: Protocol specifications
 
 
 _Most of the sub-folders have their own README detailing some general information about their layer._
