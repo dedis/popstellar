@@ -1,0 +1,30 @@
+{
+	"$schema": "http://json-schema.org/draft/2019-09/schema#",
+	"$id": "https://raw.githubusercontent.com/dedis/student20_pop/proto-specs/query/method/message/data/dataOpenRollCall.json",
+	"description": "Match a open roll-call query",
+	"type": "object",
+
+	"properties": {
+		"object": { "const": "roll_call" },
+		"action": { "enum": ["open", "reopen"] },
+		"id": {
+			"type": "string",
+			"contentEncoding": "base64",
+			"$comment": "Hash : SHA256('R'||lao_id||creation||name)"
+		},
+		"start": {
+			"description": "[Timestamp] start time",
+			"type": "integer",
+			"minimum": 0,
+			"$comment": "The start time correspond to the time the event is opened/reopened"
+		 }
+	},
+	"additionalProperties": false,
+	"required": ["object", "action", "id", "start"],
+	"note": [
+		"If the roll-call was started in future mode (see create roll-call), it can be opened using",
+		"the open roll-call query. If it was closed, but it need to be reopened later (e.g. the ",
+		"organizer forgot to scan the public key of one attendee), then it can reopen it by using",
+		"the open query. In this case, the action should be set to reopen."
+	]
+}

@@ -1,0 +1,9 @@
+{
+	"$schema": "http://json-schema.org/draft/2019-09/schema#",
+	"$id": "https://raw.githubusercontent.com/dedis/student20_pop/proto-specs/query/method/channel/subChannel.json",
+	"description": "Match a sub-channel (not root channel)",
+
+	"type": "string",
+	"pattern": "^\/root\/[^\/]+$",
+	"$comment": "Note: always starts with \"/root/\" followed by a non-empty string"
+}
