@@ -2,6 +2,7 @@ package com.github.dedis.student20_pop;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.hardware.Camera;
 
 import androidx.annotation.NonNull;
@@ -56,6 +57,10 @@ public class Injection {
     public static AndroidKeysetManager provideAndroidKeysetManager(Context applicationContext)
             throws IOException, GeneralSecurityException {
 
+        SharedPreferences.Editor editor = applicationContext.getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE).edit();
+        editor.apply();
+
+        Ed25519PrivateKeyManager.registerPair(true);
         PublicKeySignWrapper.register();
 
         return new AndroidKeysetManager.Builder()
