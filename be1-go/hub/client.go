@@ -12,7 +12,8 @@ import (
 )
 
 const (
-	maxMessageSize = 512
+	// maxMessageSize denotes a meximum possible message size in bytes
+	maxMessageSize = 256 * 1024
 
 	writeWait = 10 * time.Second
 
@@ -149,5 +150,6 @@ func (c *Client) SendResult(id int, res message.Result) {
 		log.Printf("failed to marshal answer: %v", err)
 	}
 
+	log.Printf("answerBuf: %s, received id: %d", answerBuf, id)
 	c.send <- answerBuf
 }

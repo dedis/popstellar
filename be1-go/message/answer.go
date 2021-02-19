@@ -77,10 +77,12 @@ func (a Answer) MarshalJSON() ([]byte, error) {
 		JSONRpc string  `json:"jsonrpc"`
 		Result  *Result `json:"result,omitempty"`
 		Error   *Error  `json:"error,omitempty"`
+		ID      *int    `json:"id"`
 	}
 
 	tmp := internal{
 		JSONRpc: "2.0",
+		ID:      a.ID,
 		Result:  a.Result,
 		Error:   a.Error,
 	}
