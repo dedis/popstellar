@@ -128,7 +128,7 @@ func (m *Message) VerifyAndUnmarshalData() error {
 func (m *Message) parseRollCallData(action RollCallAction, data []byte) error {
 	switch action {
 	case CreateRollCallAction:
-		create := &CreateRollCallData{GenericData: &GenericData{}}
+		create := &CreateRollCallData{}
 
 		err := json.Unmarshal(data, create)
 		if err != nil {
@@ -138,7 +138,7 @@ func (m *Message) parseRollCallData(action RollCallAction, data []byte) error {
 		m.Data = create
 		return nil
 	case RollCallAction(OpenRollCallAction), RollCallAction(ReopenRollCallAction):
-		open := &OpenRollCallData{GenericData: &GenericData{}}
+		open := &OpenRollCallData{}
 
 		err := json.Unmarshal(data, open)
 		if err != nil {
@@ -148,7 +148,7 @@ func (m *Message) parseRollCallData(action RollCallAction, data []byte) error {
 		m.Data = open
 		return nil
 	case CloseRollCallAction:
-		closeInst := &CloseRollCallData{GenericData: &GenericData{}}
+		closeInst := &CloseRollCallData{}
 
 		err := json.Unmarshal(data, closeInst)
 		if err != nil {
@@ -167,7 +167,7 @@ func (m *Message) parseMessageData(action MessageDataAction, data []byte) error 
 		return xerrors.Errorf("invalid action type: %s", action)
 	}
 
-	witness := &WitnessMessageData{GenericData: &GenericData{}}
+	witness := &WitnessMessageData{}
 
 	err := json.Unmarshal(data, witness)
 	if err != nil {
@@ -181,7 +181,7 @@ func (m *Message) parseMessageData(action MessageDataAction, data []byte) error 
 func (m *Message) parseMeetingData(action MeetingDataAction, data []byte) error {
 	switch action {
 	case CreateMeetingAction:
-		create := &CreateMeetingData{GenericData: &GenericData{}}
+		create := &CreateMeetingData{}
 
 		err := json.Unmarshal(data, create)
 		if err != nil {
@@ -191,7 +191,7 @@ func (m *Message) parseMeetingData(action MeetingDataAction, data []byte) error 
 		m.Data = create
 		return nil
 	case StateMeetingAction:
-		state := &StateMeetingData{GenericData: &GenericData{}}
+		state := &StateMeetingData{}
 
 		err := json.Unmarshal(data, state)
 		if err != nil {
@@ -209,7 +209,7 @@ func (m *Message) parseMeetingData(action MeetingDataAction, data []byte) error 
 func (m *Message) parseLAOData(action LaoDataAction, data []byte) error {
 	switch action {
 	case CreateLaoAction:
-		create := &CreateLAOData{GenericData: &GenericData{}}
+		create := &CreateLAOData{}
 
 		err := json.Unmarshal(data, create)
 		if err != nil {
@@ -219,7 +219,7 @@ func (m *Message) parseLAOData(action LaoDataAction, data []byte) error {
 		m.Data = create
 		return nil
 	case UpdateLaoAction:
-		update := &UpdateLAOData{GenericData: &GenericData{}}
+		update := &UpdateLAOData{}
 
 		err := json.Unmarshal(data, update)
 		if err != nil {
@@ -229,7 +229,7 @@ func (m *Message) parseLAOData(action LaoDataAction, data []byte) error {
 		m.Data = update
 		return nil
 	case StateLaoAction:
-		state := &StateLAOData{GenericData: &GenericData{}}
+		state := &StateLAOData{}
 
 		err := json.Unmarshal(data, state)
 		if err != nil {
