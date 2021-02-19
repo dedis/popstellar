@@ -6,6 +6,9 @@ import com.github.dedis.student20_pop.model.network.method.Message;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
+import com.github.dedis.student20_pop.utility.security.Signature;
+import com.google.crypto.tink.PublicKeyVerify;
+import com.google.crypto.tink.subtle.Ed25519Verify;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -16,6 +19,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import java.lang.reflect.Type;
+import java.security.GeneralSecurityException;
 import java.util.List;
 
 public class JsonMessageGeneralSerializer implements JsonSerializer<MessageGeneral>, JsonDeserializer<MessageGeneral> {
@@ -27,6 +31,13 @@ public class JsonMessageGeneralSerializer implements JsonSerializer<MessageGener
         byte[] dataBuf = Base64.decode(root.get("data").getAsString(), Base64.NO_WRAP);
         byte[] sender = Base64.decode(root.get("sender").getAsString(), Base64.NO_WRAP);
         byte[] signature = Base64.decode(root.get("signature").getAsString(), Base64.NO_WRAP);
+
+        PublicKeyVerify verifier = new Ed25519Verify(sender);
+        try {
+            verifier.verify(signature, dataBuf);
+        } catch (GeneralSecurityException e) {
+            throw new JsonParseException("failed to verify signature on data", e);
+        }
 
         List<PublicKeySignaturePair> witnessSignatures = context.deserialize(root.get("witness_signatures"), PublicKeySignaturePair.class);
 
