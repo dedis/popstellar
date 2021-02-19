@@ -1,26 +1,28 @@
 package com.github.dedis.student20_pop.home;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.github.dedis.student20_pop.Event;
+import com.github.dedis.student20_pop.Injection;
 import com.github.dedis.student20_pop.OrganizerActivity;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
+import com.github.dedis.student20_pop.ui.ConnectingFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
 import com.github.dedis.student20_pop.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.utility.ActivityUtils;
+import com.google.android.gms.vision.barcode.BarcodeDetector;
 
-public class HomeActivity extends AppCompatActivity  {
+
+public class HomeActivity extends AppCompatActivity {
 
     private HomeViewModel mViewModel;
 
@@ -29,46 +31,58 @@ public class HomeActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setupViewFragment();
+        setupHomeFragment();
 
         mViewModel = obtainViewModel(this);
 
+        setupHomeButton();
+        setupLaunchButton();
+        setupConnectButton();
+
         // Subscribe to "open lao" event
-        mViewModel.getOpenLaoEvent().observe(this, new Observer<Event<String>>() {
-            @Override
-            public void onChanged(Event<String> stringEvent) {
-                String laoId = stringEvent.getContentIfNotHandled();
-                if (laoId != null) {
-                    openLaoDetails(laoId);
+        mViewModel.getOpenLaoEvent().observe(this, stringEvent -> {
+            String laoId = stringEvent.getContentIfNotHandled();
+            if (laoId != null) {
+                openLaoDetails(laoId);
+            }
+        });
+
+        // Subscribe to "open home" event
+        mViewModel.getOpenHomeEvent().observe(this, booleanEvent -> {
+            Boolean event = booleanEvent.getContentIfNotHandled();
+            if (event != null) {
+                setupHomeFragment();
+            }
+        });
+
+        // Subscribe to "open connecting" event
+        mViewModel.getOpenConnectingEvent().observe(this, booleanEvent -> {
+            Boolean event = booleanEvent.getContentIfNotHandled();
+            if (event != null) {
+                setupConnectingFragment();
+            }
+        });
+
+        // Subscribe to "open connect" event
+        mViewModel.getOpenConnectEvent().observe(this, stringEvent -> {
+            String action = stringEvent.getContentIfNotHandled();
+            if (action != null) {
+                switch (action) {
+                    case HomeViewModel.SCAN:
+                        setupScanFragment();
+                        break;
+                    case HomeViewModel.REQUEST_CAMERA_PERMISSION:
+                        setupCameraPermissionFragment();
+                        break;
                 }
             }
         });
 
-        // Subscribe to "openConnect" event
-        mViewModel.getOpenConnectEvent().observe(this, new Observer<Event<String>>() {
-            @Override
-            public void onChanged(Event<String> stringEvent) {
-                String action = stringEvent.getContentIfNotHandled();
-                if (action != null) {
-                    switch (action) {
-                        case "SCAN":
-                            setupScanFragment();
-                            break;
-                        case "REQUEST_CAMERA_PERMISSION":
-                            setupCameraPermissionFragment();
-                            break;
-                    }
-                }
-            }
-        });
-
-        mViewModel.getOpenLaunchEvent().observe(this, new Observer<Event<Boolean>>() {
-            @Override
-            public void onChanged(Event<Boolean> booleanEvent) {
-                Boolean event = booleanEvent.getContentIfNotHandled();
-                if (event != null) {
-                    setupLaunchFragment();
-                }
+        // Subscribe to "open launch" event
+        mViewModel.getOpenLaunchEvent().observe(this, booleanEvent -> {
+            Boolean event = booleanEvent.getContentIfNotHandled();
+            if (event != null) {
+                setupLaunchFragment();
             }
         });
     }
@@ -80,8 +94,26 @@ public class HomeActivity extends AppCompatActivity  {
         return viewModel;
     }
 
-    private void setupViewFragment() {
-        HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container_main);
+    public void setupHomeButton() {
+        Button homeButton = (Button) findViewById(R.id.tab_home);
+
+        homeButton.setOnClickListener(v -> mViewModel.openHome());
+    }
+
+    public void setupConnectButton() {
+        Button connectButton = (Button) findViewById(R.id.tab_connect);
+
+        connectButton.setOnClickListener(v -> mViewModel.openConnect());
+    }
+
+    public void setupLaunchButton() {
+        Button launchButton = (Button) findViewById(R.id.tab_launch);
+
+        launchButton.setOnClickListener(v -> mViewModel.openLaunch());
+    }
+
+    private void setupHomeFragment() {
+        HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_home);
         if (homeFragment == null) {
             homeFragment = HomeFragment.newInstance();
             ActivityUtils.replaceFragmentInActivity(
@@ -93,7 +125,14 @@ public class HomeActivity extends AppCompatActivity  {
     private void setupScanFragment() {
         QRCodeScanningFragment scanningFragment = (QRCodeScanningFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_qrcode);
         if (scanningFragment == null) {
-            scanningFragment = QRCodeScanningFragment.newInstance();
+            Context context = getApplicationContext();
+            BarcodeDetector qrCodeDetector = Injection.provideQRCodeDetector(context);
+            int width = getResources().getInteger(R.integer.camera_preview_width);
+            int height = getResources().getInteger(R.integer.camera_preview_height);
+            scanningFragment = QRCodeScanningFragment.newInstance(
+                    Injection.provideCameraSource(context, qrCodeDetector, width, height),
+                    qrCodeDetector
+            );
             ActivityUtils.replaceFragmentInActivity(
                     getSupportFragmentManager(), scanningFragment, R.id.fragment_container_main
             );
@@ -110,12 +149,6 @@ public class HomeActivity extends AppCompatActivity  {
         }
     }
 
-    private void openLaoDetails(String laoId) {
-        Intent intent = new Intent(this, OrganizerActivity.class);
-        intent.putExtra("LAO_ID", laoId);
-        startActivity(intent);
-    }
-
     private void setupLaunchFragment() {
         LaunchFragment launchFragment = (LaunchFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_launch);
         if (launchFragment == null) {
@@ -126,5 +159,19 @@ public class HomeActivity extends AppCompatActivity  {
         }
     }
 
+    private void setupConnectingFragment() {
+        ConnectingFragment connectingFragment = (ConnectingFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_connecting);
+        if (connectingFragment == null) {
+            connectingFragment = ConnectingFragment.newInstance();
+            ActivityUtils.replaceFragmentInActivity(
+                    getSupportFragmentManager(), connectingFragment, R.id.fragment_container_main
+            );
+        }
+    }
 
+    private void openLaoDetails(String laoId) {
+        Intent intent = new Intent(this, OrganizerActivity.class);
+        intent.putExtra("LAO_ID", laoId);
+        startActivity(intent);
+    }
 }

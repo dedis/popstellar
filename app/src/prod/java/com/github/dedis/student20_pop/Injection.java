@@ -1,6 +1,8 @@
 package com.github.dedis.student20_pop;
 
 import android.app.Application;
+import android.content.Context;
+import android.hardware.Camera;
 
 import androidx.annotation.NonNull;
 
@@ -19,6 +21,10 @@ import com.github.dedis.student20_pop.utility.json.JsonCreateRollCallSerializer;
 import com.github.dedis.student20_pop.utility.json.JsonDataSerializer;
 import com.github.dedis.student20_pop.utility.json.JsonGenericMessageDeserializer;
 import com.github.dedis.student20_pop.utility.json.JsonMessageSerializer;
+import com.google.android.gms.vision.CameraSource;
+import com.google.android.gms.vision.Detector;
+import com.google.android.gms.vision.barcode.Barcode;
+import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tinder.scarlet.Scarlet;
@@ -42,6 +48,21 @@ public class Injection {
                 .registerTypeAdapter(Answer.class, new JsonAnswerSerializer())
                 .registerTypeAdapter(CreateRollCall.class, new JsonCreateRollCallSerializer())
                 .create();
+    }
+
+    public static BarcodeDetector provideQRCodeDetector(Context context) {
+        return new BarcodeDetector.Builder(context)
+                .setBarcodeFormats(Barcode.QR_CODE)
+                .build();
+    }
+
+    public static CameraSource provideCameraSource(Context context, Detector<Barcode> qrDetector, int width, int height) {
+        return new CameraSource.Builder(context, qrDetector)
+        .setFacing(CameraSource.CAMERA_FACING_BACK)
+        .setRequestedPreviewSize(width, height)
+        .setRequestedFps(15.0f)
+        .setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)
+        .build();
     }
 
     public static LAORepository provideLAORepository(@NonNull Application application, Gson gson) {
