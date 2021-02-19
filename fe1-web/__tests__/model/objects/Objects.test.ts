@@ -1,3 +1,5 @@
+import 'jest-extended';
+
 import {
   Base64Data,
   Hash, KeyPair, KeyPairState,
@@ -6,10 +8,13 @@ import {
   PublicKey,
   WitnessSignature,
 } from 'model/objects';
-import { channelFromId, ROOT_CHANNEL } from 'model/objects/Channel';
+import { channelFromId } from 'model/objects/Channel';
 
-const mockPublicKey = new PublicKey('xjHAz+d0udy1XfHp5qugskWJVEGZETN/8DV3+ccOFSs=');
-const mockSecretKey = new PrivateKey('vx0b2hbxwPBQzfPu9NdlCcYmuFjhUFuIUDx6doHRCM7GMcDP53S53LVd8enmq6CyRYlUQZkRM3/wNXf5xw4VKw==');
+// @ts-ignore
+import testKeyPair from '__tests__/../../tests/data/keypair.json';
+
+const mockPublicKey = new PublicKey(testKeyPair.publicKey);
+const mockSecretKey = new PrivateKey(testKeyPair.privateKey);
 
 describe('=== Primitive objects checks ===', () => {
   describe('Base64Data', () => {
@@ -22,6 +27,7 @@ describe('=== Primitive objects checks ===', () => {
   describe('Channel', () => {
     it('should return channels properly', () => {
       const id: Hash = Hash.fromStringArray('id');
+
       expect(channelFromId()).toBeTruthy();
       expect(channelFromId(id)).toBeTruthy();
     });
