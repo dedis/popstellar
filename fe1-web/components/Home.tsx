@@ -60,7 +60,7 @@ Home.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-  LAOs: state.availableLaosReducer.LAOs,
+  LAOs: state.availableLaos.LAOs,
 });
 
 export default connect(mapStateToProps)(Home);

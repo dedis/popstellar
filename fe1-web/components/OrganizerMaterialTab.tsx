@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { useTheme } from '@react-navigation/native';
 import STRINGS from 'res/strings';
 import PROPS_TYPE from '../res/Props';
-import { ActionOpenedLaoReducer } from '../store/Actions';
+import { ActionOpenedLaoReducer } from 'store';
 
 /**
  * Organizer tab bar
@@ -88,7 +88,7 @@ MyTabBar.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-  lao: state.currentLaoReducer.lao,
+  lao: state.openedLao.lao,
 });
 
 export default connect(mapStateToProps)(MyTabBar);
