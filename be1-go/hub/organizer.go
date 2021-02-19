@@ -97,7 +97,7 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 
 		status := 0
 		result := message.Result{General: &status}
-		log.Printf("sending result: %v", result)
+		log.Printf("sending result: %+v", result)
 		client.SendResult(id, result)
 		return
 	}
