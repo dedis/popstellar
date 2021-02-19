@@ -195,7 +195,7 @@ func (m *Message) parseMeetingData(action MeetingDataAction, data []byte) error 
 func (m *Message) parseLAOData(action LaoDataAction, data []byte) error {
 	switch action {
 	case CreateLaoAction:
-		create := &CreateLAOData{}
+		create := &CreateLAOData{GenericData: &GenericData{}}
 		create.Raw = data
 
 		err := json.Unmarshal(data, create)
