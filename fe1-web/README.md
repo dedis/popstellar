@@ -1,5 +1,5 @@
 # student_21_pop: fe1-web
-Proof-of-personhood, spring 2021: Web-based front-end
+Proof-of-personhood, Spring 2021: Web-based front-end
 
 ## Fixes to be carried out at a global level (by DEDIS engineering, before the semester starts)
 * Switch to using the right file types (JSX) for JSX files

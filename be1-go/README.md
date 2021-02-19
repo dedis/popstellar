@@ -1,5 +1,5 @@
-# student20_pop
-Proof-of-personhood, fall 2020. Go back-end version, by Romain Pugin, Raoul Gerber and Ouriel Sebbagh.
+# student_21_pop
+Proof-of-personhood, Spring 2021. Go back-end version.
 
 ## Overview
 Golang back-end for the Proof-of-personhood application. To run the backend simply : `go run main.go`. You can edit the 
