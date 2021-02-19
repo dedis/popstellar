@@ -1,14 +1,8 @@
 package message
 
 import (
-	"bytes"
 	"encoding/json"
-	"fmt"
 
-	"student20_pop"
-
-	"go.dedis.ch/kyber/v3"
-	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 )
 
@@ -166,64 +160,6 @@ func (q *Query) GetID() int {
 		return q.Catchup.ID
 	}
 	return -1
-}
-
-func (q *Query) Verify(organizerPublic kyber.Point) error {
-	if q.Subscribe != nil || q.Unsubscribe != nil || q.Catchup != nil {
-		return nil
-	}
-
-	organizerPublicBuf, err := organizerPublic.MarshalBinary()
-	if err != nil {
-		return &Error{
-			Code:        -6,
-			Description: fmt.Sprintf("failed to marshal organizerPublic key: %v", err),
-		}
-	}
-
-	data := []byte{}
-	signature := Signature{}
-	public := PublicKey{}
-
-	object := DataObject("")
-
-	if q.Broadcast != nil {
-		data = q.Broadcast.Params.Message.Data.GetRaw()
-		signature = q.Broadcast.Params.Message.Signature
-		public = q.Broadcast.Params.Message.Sender
-		object = q.Broadcast.Params.Message.Data.GetObject()
-	} else if q.Publish != nil {
-		data = q.Publish.Params.Message.Data.GetRaw()
-		signature = q.Publish.Params.Message.Signature
-		public = q.Publish.Params.Message.Sender
-		object = q.Publish.Params.Message.Data.GetObject()
-	} else {
-		return &Error{
-			Code:        -4,
-			Description: "invalid method",
-		}
-	}
-
-	if q.Broadcast != nil || object == DataObject(MessageObject) {
-		return schnorr.VerifyWithChecks(student20_pop.Suite, public, data, signature)
-	}
-
-	if !bytes.Equal(organizerPublicBuf, public) {
-		return &Error{
-			Code:        -5,
-			Description: "you do not have permissions to sign this object",
-		}
-	}
-
-	err = schnorr.Verify(student20_pop.Suite, organizerPublic, data, signature)
-	if err != nil {
-		return &Error{
-			Code:        -5,
-			Description: "failed to verify signature using organizer's public key",
-		}
-	}
-
-	return nil
 }
 
 func (q Query) MarshalJSON() ([]byte, error) {

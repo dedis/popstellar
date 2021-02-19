@@ -36,15 +36,12 @@ type Data interface {
 
 	GetObject() DataObject
 
-	GetRaw() []byte
-
 	//GetTimestamp() Timestamp
 }
 
 type GenericData struct {
 	Action DataAction `json:"action"`
 	Object DataObject `json:"object"`
-	Raw    []byte
 }
 
 func (g *GenericData) GetAction() DataAction {
@@ -53,10 +50,6 @@ func (g *GenericData) GetAction() DataAction {
 
 func (g *GenericData) GetObject() DataObject {
 	return g.Object
-}
-
-func (g *GenericData) GetRaw() []byte {
-	return g.Raw
 }
 
 type LaoDataAction DataAction
