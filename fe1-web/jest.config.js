@@ -3,5 +3,5 @@ module.exports = {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   setupFilesAfterEnv: ["jest-extended"],
   testPathIgnorePatterns: ["/node_modules/"],
-  testMatch: [ "**/__tests__/**/?(*.)+(spec|test).[jt]s?(x)", "**/?(*.)+(spec|test).[jt]s?(x)" ],
+  testMatch: [ "**/?(*.)+(spec|test).[jt]s?(x)" ],
 };
