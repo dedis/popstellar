@@ -1,6 +1,7 @@
 import { Hash, Lao, Timestamp } from 'model/objects';
 import { OpenedLaoStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
+import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness } from '../Checker';
 
@@ -25,7 +26,7 @@ export class ReopenRollCall implements MessageData {
     const lao: Lao = OpenedLaoStore.get();
     /*
     const expectedHash = Hash.fromStringArray(
-      eventTags.ROLL_CALL, lao.id.toString(), lao.creation.toString(), ROLLCALLNAME
+      EventTags.ROLL_CALL, lao.id.toString(), lao.creation.toString(), ROLLCALLNAME
     );
     if (!expectedHash.equals(msg.id))
       throw new ProtocolError(
@@ -36,15 +37,16 @@ export class ReopenRollCall implements MessageData {
   }
 
   public static fromJson(obj: any): ReopenRollCall {
-    // FIXME add JsonSchema validation to all "fromJson"
-    const correctness = true;
+    const { errors } = validateDataObject(ObjectType.ROLL_CALL, ActionType.REOPEN, obj);
 
-    return correctness
-      ? new ReopenRollCall({
-        ...obj,
-        start: new Timestamp(obj.start),
-        id: new Hash(obj.id),
-      })
-      : (() => { throw new ProtocolError('add JsonSchema error message'); })();
+    if (errors !== null) {
+      throw new ProtocolError(`Invalid reopen roll call\n\n${errors}`);
+    }
+
+    return new ReopenRollCall({
+      ...obj,
+      start: new Timestamp(obj.start),
+      id: new Hash(obj.id),
+    });
   }
 }

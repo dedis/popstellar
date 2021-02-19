@@ -1,6 +1,12 @@
 import { sha256 } from 'js-sha256';
 import { Base64Data } from './Base64';
 
+/** Enumeration of all possible event tags used in hash creation */
+export enum EventTags {
+  MEETING = 'M',
+  ROLL_CALL = 'R',
+}
+
 export class Hash extends Base64Data {
   /**
      * Create a base64 encoded hash of an array of strings according to the communication protocol

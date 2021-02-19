@@ -1,7 +1,7 @@
 import { OpenedLaoStore } from 'store';
-import { Hash, Timestamp, Lao } from 'model/objects';
-import { eventTags } from 'network/WebsocketUtils';
+import { Hash, Timestamp, Lao, EventTags } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
+import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness } from '../Checker';
 
@@ -55,24 +55,25 @@ export class CreateRollCall implements MessageData {
     if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'CreateRollCall\'');
     const lao: Lao = OpenedLaoStore.get();
     const expectedHash = Hash.fromStringArray(
-      eventTags.ROLL_CALL, lao.id.toString(), lao.creation.toString(), msg.name,
+      EventTags.ROLL_CALL, lao.id.toString(), lao.creation.toString(), msg.name,
     );
     if (!expectedHash.equals(msg.id)) throw new ProtocolError('Invalid \'id\' parameter encountered during \'CreateRollCall\': unexpected id value');
     this.id = msg.id;
   }
 
   public static fromJson(obj: any): CreateRollCall {
-    // FIXME add JsonSchema validation to all "fromJson"
-    const correctness = true;
+    const { errors } = validateDataObject(ObjectType.ROLL_CALL, ActionType.CREATE, obj);
 
-    return correctness
-      ? new CreateRollCall({
-        ...obj,
-        creation: new Timestamp(obj.creation),
-        start: (obj.start !== undefined) ? new Timestamp(obj.start) : undefined,
-        scheduled: (obj.scheduled !== undefined) ? new Timestamp(obj.scheduled) : undefined,
-        id: new Hash(obj.id),
-      })
-      : (() => { throw new ProtocolError('add JsonSchema error message'); })();
+    if (errors !== null) {
+      throw new ProtocolError(`Invalid create roll call\n\n${errors}`);
+    }
+
+    return new CreateRollCall({
+      ...obj,
+      creation: new Timestamp(obj.creation),
+      start: (obj.start !== undefined) ? new Timestamp(obj.start) : undefined,
+      scheduled: (obj.scheduled !== undefined) ? new Timestamp(obj.scheduled) : undefined,
+      id: new Hash(obj.id),
+    });
   }
 }

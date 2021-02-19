@@ -3,6 +3,7 @@ import {
 } from 'model/objects';
 import { OpenedLaoStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
+import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkModificationId, checkModificationSignatures, checkTimestampStaleness } from '../Checker';
 
@@ -72,7 +73,7 @@ export class StateMeeting implements MessageData {
     const lao: Lao = OpenedLaoStore.get();
     /*
     const expectedHash = Hash.fromStringArray(
-      eventTags.MEETING, lao.id.toString(), lao.creation.toString(), MEETING_NAME,
+      EventTags.MEETING, lao.id.toString(), lao.creation.toString(), MEETING_NAME,
     );
     if (!expectedHash.equals(msg.id))
       throw new ProtocolError(
@@ -82,23 +83,24 @@ export class StateMeeting implements MessageData {
   }
 
   public static fromJson(obj: any): StateMeeting {
-    // FIXME add JsonSchema validation to all "fromJson"
-    const correctness = true;
+    const { errors } = validateDataObject(ObjectType.MEETING, ActionType.STATE, obj);
 
-    return correctness
-      ? new StateMeeting({
-        ...obj,
-        creation: new Timestamp(obj.creation),
-        last_modified: new Timestamp(obj.last_modified),
-        start: new Timestamp(obj.start),
-        end: (obj.end !== undefined) ? new Timestamp(obj.end) : undefined,
-        modification_id: new Hash(obj.modification_id),
-        modification_signatures: obj.modification_signatures.map((ws: any) => new WitnessSignature({
-          witness: new PublicKey(ws.witness),
-          signature: new Signature(ws.signature),
-        })),
-        id: new Hash(obj.id),
-      })
-      : (() => { throw new ProtocolError('add JsonSchema error message'); })();
+    if (errors !== null) {
+      throw new ProtocolError(`Invalid meeting state\n\n${errors}`);
+    }
+
+    return new StateMeeting({
+      ...obj,
+      creation: new Timestamp(obj.creation),
+      last_modified: new Timestamp(obj.last_modified),
+      start: new Timestamp(obj.start),
+      end: (obj.end !== undefined) ? new Timestamp(obj.end) : undefined,
+      modification_id: new Hash(obj.modification_id),
+      modification_signatures: obj.modification_signatures.map((ws: any) => new WitnessSignature({
+        witness: new PublicKey(ws.witness),
+        signature: new Signature(ws.signature),
+      })),
+      id: new Hash(obj.id),
+    });
   }
 }
