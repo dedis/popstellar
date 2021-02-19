@@ -40,8 +40,7 @@ class NetworkManager {
   }
 
   public disconnectFrom(uri: string, port: number = 8000, path: string = ''): void {
-    const address: string = NetworkManager.buildAddress(uri, port, path);
-    const connection = this.connections.find((nc: NetworkConnection) => nc.address === address);
+    const connection = this.getConnectionByAddress(NetworkManager.buildAddress(uri, port, path));
     if (connection !== undefined) this.disconnect(connection);
   }
 
