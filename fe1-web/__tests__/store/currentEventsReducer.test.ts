@@ -1,8 +1,5 @@
-/* eslint-disable */
-
-import currentEventsReducer from '../store/reducers/CurrentEventsReducer';
-import eventsData from '../res/EventData';
-
+import currentEventsReducer from 'store/reducers/CurrentEventsReducer';
+import eventsData from 'res/EventData';
 
 const emptyState = {
   events: [
@@ -21,16 +18,16 @@ const emptyState = {
   ],
 };
 
-function randomInt(x) {
+function randomInt(x: number): number {
   return Math.floor(Math.random() * x);
 }
 
-function randomTimestamp(x) {
+function randomTimestamp(x: number): number {
   return Math.floor(Date.now() / 1000) + (randomInt(x) - x / 2) * 100;
 }
 
 function createEvent() {
-const objects = ['meeting' , 'roll-call'/*, 'poll', 'discussion' */];
+  const objects = ['meeting', 'roll-call'/* , 'poll', 'discussion' */];
   const actions = ['create', 'update_properties', 'state'];
   const object = objects[randomInt(objects.length)];
   const action = actions[randomInt(actions.length)];
@@ -49,17 +46,17 @@ const objects = ['meeting' , 'roll-call'/*, 'poll', 'discussion' */];
   return {
     id,
     object,
-    //action,
-    //name,
-    //creation,
-    //last_modified,
-    //location,
+    // action,
+    // name,
+    // creation,
+    // last_modified,
+    // location,
     start,
     end,
     organizer,
     witnesses,
-    //modification_id,
-    //modification_signatures,
+    // modification_id,
+    // modification_signatures,
   };
 }
 
