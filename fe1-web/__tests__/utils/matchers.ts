@@ -16,7 +16,9 @@ declare global {
 
       toBeBase64Array(received: R): jest.CustomMatcherResult;
 
-      toBeKeySignatureArray(received: string, keyField: string, signature: R): jest.CustomMatcherResult;
+      toBeKeySignatureArray(
+        received: string, keyField: string, signature: R
+      ): jest.CustomMatcherResult;
     }
   }
 }

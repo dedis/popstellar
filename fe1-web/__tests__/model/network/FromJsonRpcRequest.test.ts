@@ -39,7 +39,7 @@ function checkParams(obj: any, isRoot: boolean = false): void {
   if (isRoot) {
     expect(obj.channel).toBe(ROOT_CHANNEL);
   } else {
-    expect(obj.channel).toMatch(/\/root\/[A-Za-z0-9+\/]*[=]*/);
+    expect(obj.channel).toMatch(/\/root\/[A-Za-z0-9+/]*[=]*/);
     expect(obj.channel.slice(ROOT_CHANNEL.length + 1)).toBeBase64();
   }
   expect(obj.message).toBeObject();
@@ -55,7 +55,7 @@ function checkMessage(obj: any): void {
   expect(obj.sender).toBeJsonEqual(mockPublicKey);
 
   expect(obj.signature).toBeBase64();
-  const signExpected = new PrivateKey(mockSecretKey).sign(obj.data);
+  const signExpected = new PrivateKey(mockSecretKey.valueOf()).sign(obj.data);
   expect(obj.signature).toBeJsonEqual(signExpected);
 
   expect(obj.message_id).toBeBase64();
@@ -63,7 +63,7 @@ function checkMessage(obj: any): void {
   expect(obj.message_id).toBeJsonEqual(hashExpected);
 
   expect(Array.isArray(obj.witness_signatures)).toBe(true);
-  obj.witness_signatures.forEach((witSig) => {
+  obj.witness_signatures.forEach((witSig: any) => {
     expect(witSig.publicKey).toBeBase64();
     expect(witSig.signature).toBeBase64();
   });
@@ -72,25 +72,12 @@ function checkMessage(obj: any): void {
 function compareQueryMessageData(query: JsonRpcRequest): void {
   const data64 = (((query.params as JsonRpcParamsWithMessage).message.data) as Base64Data);
 
-  expect(JSON.parse(data64.decode())).toEqual((query.params as JsonRpcParamsWithMessage).message.messageData);
+  expect(JSON.parse(data64.decode())).toEqual(
+    (query.params as JsonRpcParamsWithMessage).message.messageData,
+  );
 }
 
 describe('=== fromJsonJsonRpcRequest checks ===', () => {
-  beforeAll(() => {
-    storeInit();
-
-    const sampleLao: Lao = new Lao({
-      name: sampleCreateLaoData.name,
-      id: Hash.fromStringArray(sampleCreateLaoData.organizer.toString(), sampleCreateLaoData.creation.toString(), sampleCreateLaoData.name),
-      creation: sampleCreateLaoData.creation,
-      last_modified: sampleCreateLaoData.creation,
-      organizer: sampleCreateLaoData.organizer,
-      witnesses: sampleCreateLaoData.witnesses,
-    });
-
-    OpenedLaoStore.store(sampleLao);
-  });
-
   const sampleCreateLaoData: CreateLao = CreateLao.fromJson({
     object: 'lao',
     action: 'create',
@@ -99,6 +86,25 @@ describe('=== fromJsonJsonRpcRequest checks ===', () => {
     organizer: mockPublicKey.toString(),
     witnesses: [],
     id: Hash.fromStringArray(mockPublicKey.toString(), '1613495222', 'Random Name').toString(),
+  });
+
+  beforeAll(() => {
+    storeInit();
+
+    const sampleLao: Lao = new Lao({
+      name: sampleCreateLaoData.name,
+      id: Hash.fromStringArray(
+        sampleCreateLaoData.organizer.toString(),
+        sampleCreateLaoData.creation.toString(),
+        sampleCreateLaoData.name,
+      ),
+      creation: sampleCreateLaoData.creation,
+      last_modified: sampleCreateLaoData.creation,
+      organizer: sampleCreateLaoData.organizer,
+      witnesses: sampleCreateLaoData.witnesses,
+    });
+
+    OpenedLaoStore.store(sampleLao);
   });
 
   const sampleCreateLaoDataString: string = JSON.stringify(sampleCreateLaoData);
@@ -143,7 +149,9 @@ describe('=== fromJsonJsonRpcRequest checks ===', () => {
     });
 
     it(`using '${ROOT_CHANNEL}' channel`, () => {
-      const query = JsonRpcRequest.fromJson(embeddedMessage(sampleCreateLaoDataString, JsonRpcMethod.PUBLISH, ROOT_CHANNEL, 23));
+      const query = JsonRpcRequest.fromJson(
+        embeddedMessage(sampleCreateLaoDataString, JsonRpcMethod.PUBLISH, ROOT_CHANNEL, 23),
+      );
       checkTypicalQuery(query, true);
     });
   });

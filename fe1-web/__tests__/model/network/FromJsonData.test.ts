@@ -19,6 +19,9 @@ import { encodeBase64 } from 'tweetnacl-util';
 import { eventTags } from 'network/WebsocketUtils';
 import { OpenedLaoStore } from 'store';
 
+// Note : if we remove "useless escapes", then the hash doesn't match our protocol
+/* eslint-disable no-useless-escape */
+
 const STALE_TIMESTAMP = new Timestamp(1514761200); // 1st january 2018
 const STANDARD_TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const CLOSE_TIMESTAMP = new Timestamp(1609542000); // 2nd january 2021
@@ -27,13 +30,19 @@ const FUTURE_TIMESTAMP = new Timestamp(1735686000); // 1st january 2025
 export const mockPublicKey = new PublicKey('xjHAz+d0udy1XfHp5qugskWJVEGZETN/8DV3+ccOFSs=');
 export const mockSecretKey = new PrivateKey('vx0b2hbxwPBQzfPu9NdlCcYmuFjhUFuIUDx6doHRCM7GMcDP53S53LVd8enmq6CyRYlUQZkRM3/wNXf5xw4VKw==');
 
-const _generateKeyPair = () => {
+const generateKeyPair = () => {
   const pair = sign.keyPair();
   const keys = { pubKey: encodeBase64(pair.publicKey), secKey: encodeBase64(pair.secretKey) };
   return { pubKey: new PublicKey(keys.pubKey), secKey: new PrivateKey(keys.secKey) };
 };
 
 describe('=== fromJsonData checks ===', () => {
+  const org = mockPublicKey;
+  const time = STANDARD_TIMESTAMP;
+  const name = 'poof';
+  const location = 'Lausanne';
+  const mockLaoId: Hash = Hash.fromStringArray(org.toString(), time.toString(), name);
+
   beforeAll(() => {
     storeInit();
 
@@ -49,16 +58,10 @@ describe('=== fromJsonData checks ===', () => {
     OpenedLaoStore.store(sampleLao);
   });
 
-  const sampleKey1: PublicKey = _generateKeyPair().pubKey;
-  const sampleKey2: PublicKey = _generateKeyPair().pubKey;
+  const sampleKey1: PublicKey = generateKeyPair().pubKey;
+  const sampleKey2: PublicKey = generateKeyPair().pubKey;
 
   const mockMessageId = Base64Data.encode('message_id');
-
-  const org = mockPublicKey;
-  const time = STANDARD_TIMESTAMP;
-  const name = 'poof';
-  const location = 'Lausanne';
-  const mockLaoId: Hash = Hash.fromStringArray(org.toString(), time.toString(), name);
 
   let temp: any = {};
 
@@ -164,42 +167,42 @@ describe('=== fromJsonData checks ===', () => {
     signature: mockSecretKey.sign(mockMessageId),
   };
 
-  const _dataLao: string = `{"object": "${ObjectType.LAO}","action": "F_ACTION",FF_MODIFICATION"id": "${mockLaoId.toString()}","name": "${name}","creation": ${time.toString()},"last_modified": ${CLOSE_TIMESTAMP.toString()},"organizer": "${org.toString()}","witnesses": []}`;
-  const _dataMeeting: string = `{"object": "${ObjectType.MEETING}","action": "F_ACTION",FF_MODIFICATION"id": "${meetingId.toString()}","name": "${name}","creation": ${time},"last_modified": ${time},"location": "${location}","start": ${time},"end": ${FUTURE_TIMESTAMP.toString()},"extra": { "extra": "extra info" }}`;
-  const _dataRollCall: string = `{"object": "${ObjectType.ROLL_CALL}","action": "F_ACTION",FF_MODIFICATION"id": "${rollCallId.toString()}"}`;
+  const dataLao: string = `{"object": "${ObjectType.LAO}","action": "F_ACTION",FF_MODIFICATION"id": "${mockLaoId.toString()}","name": "${name}","creation": ${time.toString()},"last_modified": ${CLOSE_TIMESTAMP.toString()},"organizer": "${org.toString()}","witnesses": []}`;
+  const dataMeeting: string = `{"object": "${ObjectType.MEETING}","action": "F_ACTION",FF_MODIFICATION"id": "${meetingId.toString()}","name": "${name}","creation": ${time},"last_modified": ${time},"location": "${location}","start": ${time},"end": ${FUTURE_TIMESTAMP.toString()},"extra": { "extra": "extra info" }}`;
+  const dataRollCall: string = `{"object": "${ObjectType.ROLL_CALL}","action": "F_ACTION",FF_MODIFICATION"id": "${rollCallId.toString()}"}`;
   const dataUpdateLao: string = `{"object": "${ObjectType.LAO}","action": "${ActionType.UPDATE_PROPERTIES}","name": "${name}","id": "${mockLaoId.toString()}","last_modified": ${CLOSE_TIMESTAMP.toString()},"witnesses": ["${sampleKey1.toString()}", "${sampleKey2.toString()}"]}`;
   const dataWitnessMessage: string = `{"object": "${ObjectType.MESSAGE}","action": "${ActionType.WITNESS}","message_id": "${mockMessageId.toString()}","signature": "${mockSecretKey.sign(mockMessageId).toString()}"}`;
 
-  const dataCreateLao: string = _dataLao
+  const dataCreateLao: string = dataLao
     .replace('F_ACTION', ActionType.CREATE)
     .replace('FF_MODIFICATION', '')
     .replace(/"last_modified": [0-9]*,/g, '');
-  const dataBroadcastLao: string = _dataLao
+  const dataBroadcastLao: string = dataLao
     .replace('F_ACTION', ActionType.STATE)
     .replace(
       'FF_MODIFICATION',
       `\"modification_id\":\"${Hash.fromStringArray(mockMessageId.toString()).toString()}\",\"modification_signatures\":[],`,
     ).replace('"witnesses": []', `\"witnesses\": ["${sampleKey1.toString()}", "${sampleKey2.toString()}"]`);
-  const dataCreateMeeting: string = _dataMeeting
+  const dataCreateMeeting: string = dataMeeting
     .replace('F_ACTION', ActionType.CREATE)
     .replace('FF_MODIFICATION', '')
     .replace(/"last_modified": [0-9]*,/g, '');
-  const dataBroadcastMeeting: string = _dataMeeting
+  const dataBroadcastMeeting: string = dataMeeting
     .replace('F_ACTION', ActionType.STATE)
     .replace(
       'FF_MODIFICATION',
       `\"modification_id\":\"${Hash.fromStringArray(mockMessageId.toString()).toString()}\",\"modification_signatures\":[],`,
     );
-  const dataCreateRollCall: string = _dataRollCall
+  const dataCreateRollCall: string = dataRollCall
     .replace('F_ACTION', ActionType.CREATE)
     .replace('FF_MODIFICATION', `\"name\":\"${name}\",\"creation\":${time},\"start\":${time},\"location\":\"${location}\",\"roll_call_description\":\"description du rc\",`);
-  const dataOpenRollCall: string = _dataRollCall
+  const dataOpenRollCall: string = dataRollCall
     .replace('F_ACTION', ActionType.OPEN)
     .replace('FF_MODIFICATION', `\"start\":${time},`);
-  const dataReopenRollCall: string = _dataRollCall
+  const dataReopenRollCall: string = dataRollCall
     .replace('F_ACTION', ActionType.REOPEN)
     .replace('FF_MODIFICATION', `\"start\":${time},`);
-  const dataCloseRollCall: string = _dataRollCall
+  const dataCloseRollCall: string = dataRollCall
     .replace('F_ACTION', ActionType.CLOSE)
     .replace('FF_MODIFICATION', `\"start\":${time},\"end\":${FUTURE_TIMESTAMP.toString()},\"attendees\":[],`);
 
@@ -229,7 +232,9 @@ describe('=== fromJsonData checks ===', () => {
 
       // Create Meeting
       it('\'CreateMeeting\'', () => {
-        const calcId = Hash.fromStringArray(eventTags.MEETING, mockLaoId.toString(), time.toString(), name);
+        const calcId = Hash.fromStringArray(
+          eventTags.MEETING, mockLaoId.toString(), time.toString(), name,
+        );
         expect(CreateMeeting.fromJson(sampleCreateMeeting)).toBeJsonEqual(sampleCreateMeeting);
         temp = {
           object: ObjectType.MEETING,
@@ -268,7 +273,9 @@ describe('=== fromJsonData checks ===', () => {
 
       // State Meeting
       it('\'StateMeeting\'', () => {
-        const calcId = Hash.fromStringArray(eventTags.MEETING, mockLaoId.toString(), time.toString(), name);
+        const calcId = Hash.fromStringArray(
+          eventTags.MEETING, mockLaoId.toString(), time.toString(), name,
+        );
         expect(StateMeeting.fromJson(sampleStateMeeting)).toBeJsonEqual(sampleStateMeeting);
         temp = {
           object: ObjectType.MEETING,
@@ -389,39 +396,46 @@ describe('=== fromJsonData checks ===', () => {
 
       // Create Meeting
       it('\'CreateMeeting\'', () => {
-        expect(CreateMeeting.fromJson(JSON.parse(dataCreateMeeting))).toBeJsonEqual(sampleCreateMeeting);
+        expect(CreateMeeting.fromJson(JSON.parse(dataCreateMeeting)))
+          .toBeJsonEqual(sampleCreateMeeting);
       });
 
       // State Meeting
       it('\'StateMeeting\'', () => {
         // console.log("CREATED ", StateMeeting.fromJson(JSON.parse(dataBroadcastMeeting)));
         // console.log("EXPECTED ", sampleStateMeeting);
-        expect(StateMeeting.fromJson(JSON.parse(dataBroadcastMeeting))).toBeJsonEqual(sampleStateMeeting);
+        expect(StateMeeting.fromJson(JSON.parse(dataBroadcastMeeting)))
+          .toBeJsonEqual(sampleStateMeeting);
       });
 
       // Create RollCall
       it('\'CreateRollCall\'', () => {
-        expect(CreateRollCall.fromJson(JSON.parse(dataCreateRollCall))).toBeJsonEqual(sampleCreateRollCall);
+        expect(CreateRollCall.fromJson(JSON.parse(dataCreateRollCall)))
+          .toBeJsonEqual(sampleCreateRollCall);
       });
 
       // Open RollCall
       it('\'OpenRollCall\'', () => {
-        expect(OpenRollCall.fromJson(JSON.parse(dataOpenRollCall))).toBeJsonEqual(sampleOpenRollCall);
+        expect(OpenRollCall.fromJson(JSON.parse(dataOpenRollCall)))
+          .toBeJsonEqual(sampleOpenRollCall);
       });
 
       // Reopen RollCall
       it('\'ReopenRollCall\'', () => {
-        expect(ReopenRollCall.fromJson(JSON.parse(dataReopenRollCall))).toBeJsonEqual(sampleReopenRollCall);
+        expect(ReopenRollCall.fromJson(JSON.parse(dataReopenRollCall)))
+          .toBeJsonEqual(sampleReopenRollCall);
       });
 
       // Close RollCall
       it('\'CloseRollCall\'', () => {
-        expect(CloseRollCall.fromJson(JSON.parse(dataCloseRollCall))).toBeJsonEqual(sampleCloseRollCall);
+        expect(CloseRollCall.fromJson(JSON.parse(dataCloseRollCall)))
+          .toBeJsonEqual(sampleCloseRollCall);
       });
 
       // Witness Message
       it('\'WitnessMessage\'', () => {
-        expect(WitnessMessage.fromJson(JSON.parse(dataWitnessMessage))).toBeJsonEqual(sampleWitnessMessage);
+        expect(WitnessMessage.fromJson(JSON.parse(dataWitnessMessage)))
+          .toBeJsonEqual(sampleWitnessMessage);
       });
     });
   });
@@ -604,7 +618,7 @@ describe('=== fromJsonData checks ===', () => {
           object: ObjectType.MESSAGE,
           action: ActionType.WITNESS,
           message_id: mockMessageId,
-          signature: _generateKeyPair().secKey.sign(mockMessageId),
+          signature: generateKeyPair().secKey.sign(mockMessageId),
         });
       }).toThrow(ProtocolError);
     });

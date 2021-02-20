@@ -13,7 +13,7 @@ const DEFAULT_RESPONSE_HANDLER: ResponseHandler = (message: JsonRpcResponse) => 
 const WEBSOCKET_READYSTATE_INTERVAL_MS = 10;
 const WEBSOCKET_READYSTATE_MAX_ATTEMPTS = 100;
 
-const WEBSOCKET_MESSAGE_TIMEOUT_MS = 1000; // 10 seconds max round-trip time
+const WEBSOCKET_MESSAGE_TIMEOUT_MS = 10000; // 10 seconds max round-trip time
 
 interface PendingResponse {
   promise: Promise<JsonRpcResponse>,
