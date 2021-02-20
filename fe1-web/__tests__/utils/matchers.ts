@@ -8,15 +8,20 @@ declare global {
     // we put R in the last one should be instead, to prevent complaints from TypeScript
 
     interface Matchers<R> {
-      toBeBase64(received: R): CustomMatcherResult;
+      toBeBase64(received: R)
+      : CustomMatcherResult;
 
-      toBeJsonEqual(received: any, expected: R): CustomMatcherResult;
+      toBeJsonEqual(received: any, expected: R)
+      : CustomMatcherResult;
 
-      toBeDistinctArray(received: R): jest.CustomMatcherResult;
+      toBeDistinctArray(received: R)
+      : jest.CustomMatcherResult;
 
-      toBeBase64Array(received: R): jest.CustomMatcherResult;
+      toBeBase64Array(received: R)
+      : jest.CustomMatcherResult;
 
-      toBeKeySignatureArray(received: string, keyField: string, signature: R): jest.CustomMatcherResult;
+      toBeKeySignatureArray(received: string, keyField: string, signature: R)
+      : jest.CustomMatcherResult;
     }
   }
 }

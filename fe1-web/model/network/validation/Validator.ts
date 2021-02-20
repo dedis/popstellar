@@ -7,6 +7,10 @@ import messageSchema from './MessageSchema';
 import dataSchema from './DataSchema';
 import answerSchema from './AnswerSchema';
 
+// FIXME: these two enums need to be redefined locally because otherwise their values are
+//  undefined here, it could be due to cyclical dependencies that still need to be fixed.
+//  C.f. https://github.com/kulshekhar/ts-jest/issues/281 and others
+
 export enum ObjectType {
   // uninitialized placeholder
   INVALID = '__INVALID_OBJECT__',
@@ -17,7 +21,6 @@ export enum ObjectType {
   ROLL_CALL = 'roll_call',
 }
 
-/** Enumeration of all possible "action" field values in MessageData */
 export enum ActionType {
   // uninitialized placeholder
   INVALID = '__INVALID_ACTION__',

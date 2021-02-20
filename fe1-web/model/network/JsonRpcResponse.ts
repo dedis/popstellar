@@ -1,11 +1,6 @@
 import { ProtocolError } from './ProtocolError';
 import { Message } from './method/message';
-import {
-  validateDataObject,
-  validateJsonRpcRequest,
-  validateJsonRpcResponse
-} from "model/network/validation";
-import { ActionType, ObjectType } from "model/network/method/message/data";
+import { validateJsonRpcRequest } from './validation';
 
 export const UNDEFINED_ID: number = -1;
 

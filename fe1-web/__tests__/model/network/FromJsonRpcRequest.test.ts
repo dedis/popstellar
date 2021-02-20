@@ -41,7 +41,7 @@ function checkParams(obj: any, isRoot: boolean = false): void {
   if (isRoot) {
     expect(obj.channel).toBe(ROOT_CHANNEL);
   } else {
-    expect(obj.channel).toMatch(/\/root\/[A-Za-z0-9+\/]*[=]*/);
+    expect(obj.channel).toMatch(/\/root\/[A-Za-z0-9+/]*[=]*/);
     expect(obj.channel.slice(ROOT_CHANNEL.length + 1)).toBeBase64();
   }
   expect(obj.message).toBeObject();
@@ -111,7 +111,8 @@ describe('=== fromJsonJsonRpcRequest checks ===', () => {
 
     const sampleLao: Lao = new Lao({
       name: sampleCreateLaoData.name,
-      id: Hash.fromStringArray(sampleCreateLaoData.organizer.toString(), sampleCreateLaoData.creation.toString(), sampleCreateLaoData.name),
+      id: Hash.fromStringArray(sampleCreateLaoData.organizer.toString(),
+        sampleCreateLaoData.creation.toString(), sampleCreateLaoData.name),
       creation: sampleCreateLaoData.creation,
       last_modified: sampleCreateLaoData.creation,
       organizer: sampleCreateLaoData.organizer,
@@ -141,7 +142,8 @@ describe('=== fromJsonJsonRpcRequest checks ===', () => {
     });
 
     it(`using '${ROOT_CHANNEL}' channel`, () => {
-      const query = JsonRpcRequest.fromJson(embeddedMessage(sampleCreateLaoDataString, JsonRpcMethod.PUBLISH, ROOT_CHANNEL, 23));
+      const query = JsonRpcRequest.fromJson(embeddedMessage(
+        sampleCreateLaoDataString, JsonRpcMethod.PUBLISH, ROOT_CHANNEL, 23));
       checkTypicalQuery(query, true);
     });
   });
