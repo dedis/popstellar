@@ -1,13 +1,10 @@
-
-
 import { JsonRpcParams } from './method/JsonRpcParams';
 import { JsonRpcMethod } from './JsonRpcMethods';
 import {
   Broadcast, Catchup, Publish, Subscribe, Unsubscribe,
 } from './method';
 import { ProtocolError } from './ProtocolError';
-import { validateDataObject, validateJsonRpcRequest } from "model/network/validation";
-import { ActionType, ObjectType } from "model/network/method/message/data";
+import { validateJsonRpcRequest } from './validation';
 
 /**
  * This class represents a JSON-RPC 2.0 Request (or Notification)

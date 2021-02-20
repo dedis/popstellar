@@ -9,8 +9,8 @@ import { connect } from 'react-redux';
 
 import { useTheme } from '@react-navigation/native';
 import STRINGS from 'res/strings';
-import PROPS_TYPE from '../res/Props';
 import { ActionOpenedLaoReducer } from 'store';
+import PROPS_TYPE from '../res/Props';
 
 /**
  * Organizer tab bar

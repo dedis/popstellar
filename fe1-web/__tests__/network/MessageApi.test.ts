@@ -43,7 +43,7 @@ privateKeyMock.mockImplementation(() => new PrivateKey(testKeyPair.privateKey));
 jest.mock('network/WebsocketApi.ts');
 const publishMock = mockFunction(wsApi.publish);
 
-let mockedFn: (m: MessageData) => void = (m) => {};
+let mockedFn: (m: MessageData) => void = () => {};
 
 // @ts-ignore
 publishMock.mockImplementation(
@@ -69,28 +69,6 @@ export const mockEndTime = 1735686000;
 export const mockRollCallId = 100;
 
 const defaultDataFields = ['object', 'action'];
-const defaultDataObj = {
-  object: expect.toBeString(),
-  action: expect.toBeString(),
-};
-
-const checkArrayKeySignPairIsBase64 = (arr: WitnessSignature[]) => {
-  const pubKeyLen = mockPublicKey.length;
-
-  expect(arr).toBeArray();
-  arr.forEach((witSig) => {
-    expect(witSig).toBeObject();
-    expect(witSig).toEqual(
-      expect.objectContaining({
-        witness: expect.anything(),
-        signature: expect.anything(),
-      }),
-    );
-    expect(witSig.witness).toBeBase64();
-    expect(witSig.witness.length).toEqual(pubKeyLen);
-    expect(witSig.signature).toBeBase64();
-  });
-};
 
 describe('=== WebsocketApi tests ===', () => {
   beforeAll(() => {

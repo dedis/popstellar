@@ -9,7 +9,6 @@ export const JSON_RPC_VERSION = '2.0';
 /** Number of fields a server answer exactly contains */
 export const SERVER_ANSWER_FIELD_COUNT = 3;
 
-
 /** Return the current LAO the client is connected to */
 // FIXME remove when not used in the project anymore
 export const getCurrentLao = () => 0; // getStore().getState().openedLao.lao;
