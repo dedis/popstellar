@@ -1,5 +1,5 @@
 const webSocketsServerPort = 8000;
-const webSocketServer = require('websocket').server;
+const WebSocketServer = require('websocket').server;
 const http = require('http');
 
 // https://blog.logrocket.com/websockets-tutorial-how-to-go-real-time-with-node-and-react-8e4693fbf843/
@@ -15,8 +15,7 @@ const server = http.createServer();
 server.listen(webSocketsServerPort);
 console.log(`listening on port ${webSocketsServerPort} :)\n`);
 
-// eslint-disable-next-line new-cap
-const wsServer = new webSocketServer({
+const wsServer = new WebSocketServer({
   httpServer: server,
 });
 
@@ -42,7 +41,6 @@ wsServer.on('request', (request) => {
       console.log('Received Message :) :\n', message.utf8Data, '\n-----------------------------\n');
 
       let answers;
-      let idx;
       const JSON_RPC_VERSION = '2.0';
 
       const generalAnswerPositive = {
@@ -75,19 +73,17 @@ wsServer.on('request', (request) => {
       answers = [generalAnswerPositive, generalAnswerNegative];
       answers = [generalAnswerPositive];
 
-      // idx = 0;
-      // idx = 1;
+      // const idx = 0;
+      // const idx = 1;
 
       // choose a random index of the array answers
-      // eslint-disable-next-line prefer-const
-      idx = (Math.floor(Math.random() * (1000000))) % answers.length;
+      const idx = (Math.floor(Math.random() * (1000000))) % answers.length;
 
       // broadcasting message to all connected clients
-      // eslint-disable-next-line guard-for-in,no-restricted-syntax
-      for (const key in clients) {
+      Object.keys(clients).forEach((key) => {
         clients[key].sendUTF(JSON.stringify(answers[idx]));
         // console.log('sent Message to: ', clients[key]);
-      }
+      });
     }
   });
 });

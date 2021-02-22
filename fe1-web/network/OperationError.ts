@@ -7,7 +7,6 @@ export class OperationError extends Error {
 
   constructor(m: string, errorCode: number) {
     super(m);
-    this.errorCode = errorCode;
 
     // set prototype explicitly, needs to happen immediately after super() call
     Object.setPrototypeOf(this, OperationError.prototype);
@@ -16,5 +15,7 @@ export class OperationError extends Error {
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, OperationError);
     }
+
+    this.errorCode = errorCode;
   }
 }
