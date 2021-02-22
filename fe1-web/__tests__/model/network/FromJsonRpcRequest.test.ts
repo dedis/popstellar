@@ -143,7 +143,8 @@ describe('=== fromJsonJsonRpcRequest checks ===', () => {
 
     it(`using '${ROOT_CHANNEL}' channel`, () => {
       const query = JsonRpcRequest.fromJson(embeddedMessage(
-        sampleCreateLaoDataString, JsonRpcMethod.PUBLISH, ROOT_CHANNEL, 23));
+        sampleCreateLaoDataString, JsonRpcMethod.PUBLISH, ROOT_CHANNEL, 23,
+      ));
       checkTypicalQuery(query, true);
     });
   });
