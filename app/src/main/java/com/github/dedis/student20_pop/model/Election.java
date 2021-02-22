@@ -29,7 +29,7 @@ public final class Election {
     }
     this.name = name;
     this.time = Instant.now().getEpochSecond();
-    this.id = Hash.hash(lao, time, name);
+    this.id = ""; // Hash.hash(lao, time, name);
     this.lao = lao;
     this.options = options;
   }

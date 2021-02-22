@@ -50,7 +50,7 @@ public final class Lao {
 
     this.name = name.trim();
     this.creation = Instant.now().getEpochSecond();
-    this.id = Hash.hash(organizer, creation, name);
+    this.id = ""; //Hash.hash(organizer, creation, name);
     this.organizer = organizer;
     this.host = host;
     this.witnesses = new ArrayList<>();
