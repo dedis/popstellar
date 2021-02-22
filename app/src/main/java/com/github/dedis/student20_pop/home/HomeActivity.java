@@ -3,6 +3,7 @@ package com.github.dedis.student20_pop.home;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,6 +24,8 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 
 public class HomeActivity extends AppCompatActivity {
+
+    private final String TAG = HomeActivity.class.getSimpleName();
 
     private HomeViewModel mViewModel;
 

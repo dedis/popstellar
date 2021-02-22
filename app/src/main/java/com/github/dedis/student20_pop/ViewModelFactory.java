@@ -54,7 +54,10 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
             return (T) new HomeViewModel(
                     application,
                     gson,
-                    Injection.provideLAORepository(application, gson),
+                    Injection.provideLAORepository(
+                            application,
+                            Injection.provideLAOService(Injection.provideScarlet(application, Injection.provideOkHttpClient(), gson))
+                            ),
                     keysetManager
             );
         }

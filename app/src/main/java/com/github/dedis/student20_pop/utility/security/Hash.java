@@ -23,20 +23,20 @@ public class Hash {
    * @return the hashed data or null if failed to hash
    * @throws IllegalArgumentException if the data is null
    */
-  public static String hash(Object... data) {
-    if (data == null) {
-      throw new IllegalArgumentException("Can't hash a null data");
-    }
-
-    StringJoiner joiner = new StringJoiner(",", "[", "]");
-    for (Object elem : data) {
-      if (elem == null) {
-        throw new IllegalArgumentException("Can't hash null data");
+  public static String hash(String... strs) {
+    try {
+      MessageDigest digest = MessageDigest.getInstance("SHA-256");
+      for (String str : strs) {
+        String length = Integer.toString(str.length());
+        digest.update(length.getBytes(StandardCharsets.UTF_8));
+        digest.update(str.getBytes(StandardCharsets.UTF_8));
       }
-      joiner.add(DELIMITER + esc(elem.toString()) + DELIMITER);
+      byte[] digestBuf = digest.digest();
+      return Base64.getEncoder().encodeToString(digestBuf);
+    } catch (NoSuchAlgorithmException e) {
+      Log.e(TAG, "failed to hash", e);
+      return "";
     }
-
-    return hash(joiner.toString());
   }
 
   private static String esc(String input) {
