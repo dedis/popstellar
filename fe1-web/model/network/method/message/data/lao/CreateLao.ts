@@ -1,5 +1,6 @@
 import { Hash, PublicKey, Timestamp } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
+import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness, checkWitnesses } from '../Checker';
 
@@ -42,17 +43,18 @@ export class CreateLao implements MessageData {
   }
 
   public static fromJson(obj: any): CreateLao {
-    // FIXME add JsonSchema validation to all "fromJson"
-    const correctness = true;
+    const { errors } = validateDataObject(ObjectType.LAO, ActionType.CREATE, obj);
 
-    return correctness
-      ? new CreateLao({
-        ...obj,
-        creation: new Timestamp(obj.creation),
-        organizer: new PublicKey(obj.organizer),
-        witnesses: obj.witnesses.map((key: string) => new PublicKey(key)),
-        id: new Hash(obj.id),
-      })
-      : (() => { throw new ProtocolError('add JsonSchema error message'); })();
+    if (errors !== null) {
+      throw new ProtocolError(`Invalid LAO create\n\n${errors}`);
+    }
+
+    return new CreateLao({
+      ...obj,
+      creation: new Timestamp(obj.creation),
+      organizer: new PublicKey(obj.organizer),
+      witnesses: obj.witnesses.map((key: string) => new PublicKey(key)),
+      id: new Hash(obj.id),
+    });
   }
 }

@@ -3,6 +3,7 @@ import {
 } from 'model/objects';
 import { OpenedLaoStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
+import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness, checkAttendees } from '../Checker';
 
@@ -39,7 +40,7 @@ export class CloseRollCall implements MessageData {
     const lao: Lao = OpenedLaoStore.get();
     /*
     const expectedHash = Hash.fromStringArray(
-      eventTags.ROLL_CALL, lao.id.toString(), lao.creation.toString(), lao.name
+      EventTags.ROLL_CALL, lao.id.toString(), lao.creation.toString(), lao.name
     );
     if (!expectedHash.equals(msg.id))
       throw new ProtocolError(
@@ -49,17 +50,18 @@ export class CloseRollCall implements MessageData {
   }
 
   public static fromJson(obj: any): CloseRollCall {
-    // FIXME add JsonSchema validation to all "fromJson"
-    const correctness = true;
+    const { errors } = validateDataObject(ObjectType.ROLL_CALL, ActionType.CLOSE, obj);
 
-    return correctness
-      ? new CloseRollCall({
-        ...obj,
-        start: new Timestamp(obj.start),
-        end: new Timestamp(obj.end),
-        attendees: obj.attendees.map((key: string) => new PublicKey(key)),
-        id: new Hash(obj.id),
-      })
-      : (() => { throw new ProtocolError('add JsonSchema error message'); })();
+    if (errors !== null) {
+      throw new ProtocolError(`Invalid close roll call data message\n\n${errors}`);
+    }
+
+    return new CloseRollCall({
+      ...obj,
+      start: new Timestamp(obj.start),
+      end: new Timestamp(obj.end),
+      attendees: obj.attendees.map((key: string) => new PublicKey(key)),
+      id: new Hash(obj.id),
+    });
   }
 }

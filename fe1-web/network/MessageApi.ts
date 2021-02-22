@@ -1,5 +1,5 @@
 import {
-  Hash, Lao, PublicKey, Timestamp,
+  EventTags, Hash, Lao, PublicKey, Timestamp,
 } from 'model/objects';
 import {
   CreateLao,
@@ -11,7 +11,7 @@ import {
 } from 'model/network/method/message/data';
 import { Channel, channelFromId, ROOT_CHANNEL } from 'model/objects/Channel';
 import { OpenedLaoStore, KeyPairStore } from 'store';
-import { eventTags, getCurrentTime } from './WebsocketUtils';
+import { getCurrentTime } from './WebsocketUtils';
 import { publish } from './WebsocketApi';
 
 /** Send a server query asking for the creation of a LAO with a given name (String) */
@@ -76,7 +76,7 @@ export function requestCreateMeeting(
 
   const message = new CreateMeeting({
     id: Hash.fromStringArray(
-      eventTags.MEETING, currentLao.id.toString(), currentLao.creation.toString(), name,
+      EventTags.MEETING, currentLao.id.toString(), currentLao.creation.toString(), name,
     ),
     name,
     start: startTime,
@@ -95,7 +95,7 @@ export function requestStateMeeting(startTime: Timestamp) {
 
   let message = new StateMeeting({
     id: Hash.fromStringArray(
-      eventTags.MEETING, laoData.id.toString(), laoData.creation.toString(), laoData.name
+      EventTags.MEETING, laoData.id.toString(), laoData.creation.toString(), laoData.name
     ),
     name: laoData.name,
     creation: laoData.creation,
@@ -140,7 +140,7 @@ export function requestCreateRollCall(
 
   const message = new CreateRollCall({
     id: Hash.fromStringArray(
-      eventTags.ROLL_CALL, currentLao.id.toString(), currentLao.creation.toString(), name,
+      EventTags.ROLL_CALL, currentLao.id.toString(), currentLao.creation.toString(), name,
     ),
     name,
     creation: time,
@@ -164,7 +164,7 @@ export function requestOpenRollCall(rollCallId: Number, start?: Timestamp) {
     let message = new OpenRollCall({
       action: ActionType.OPEN,
       id: Hash.fromStringArray(
-        eventTags.ROLL_CALL, toString64(laoId), rollCall.creation.toString(), rollCall.name
+        EventTags.ROLL_CALL, toString64(laoId), rollCall.creation.toString(), rollCall.name
       ),
       start: startTime,
     });
@@ -190,7 +190,7 @@ export function requestCloseRollCall(rollCallId: Number, attendees: PublicKey[])
   let message = new CloseRollCall({
     action: ActionType.REOPEN,
     id: Hash.fromStringArray(
-      eventTags.ROLL_CALL, toString64(laoId), rollCall.creation.toString(), rollCall.name
+      EventTags.ROLL_CALL, toString64(laoId), rollCall.creation.toString(), rollCall.name
     ),
     start: rollCall.start,
     end: getCurrentTime(),

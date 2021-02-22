@@ -8,15 +8,20 @@ declare global {
     // we put R in the last one should be instead, to prevent complaints from TypeScript
 
     interface Matchers<R> {
-      toBeBase64(received: R): CustomMatcherResult;
+      toBeBase64(received: R)
+      : CustomMatcherResult;
 
-      toBeJsonEqual(received: any, expected: R): CustomMatcherResult;
+      toBeJsonEqual(received: any, expected: R)
+      : CustomMatcherResult;
 
-      toBeDistinctArray(received: R): jest.CustomMatcherResult;
+      toBeDistinctArray(received: R)
+      : jest.CustomMatcherResult;
 
-      toBeBase64Array(received: R): jest.CustomMatcherResult;
+      toBeBase64Array(received: R)
+      : jest.CustomMatcherResult;
 
-      toBeKeySignatureArray(received: string, keyField: string, signature: R): jest.CustomMatcherResult;
+      toBeKeySignatureArray(received: string, keyField: string, signature: R)
+      : jest.CustomMatcherResult;
     }
   }
 }
@@ -30,16 +35,11 @@ expect.extend({
 
     const r = JSON.parse(JSON.stringify(received));
     const ex = JSON.parse(JSON.stringify(expected));
+
+    expect(r).toEqual(ex);
     return {
-      pass: this.equals(received, expected, undefined, false),
-      message: () => `Value is not equal to expected value (under JSON transformation)\n\n${
-        this.utils.printDiffOrStringify(
-          ex,
-          r,
-          'Expected',
-          'Received',
-          true,
-        )}`,
+      pass: true,
+      message: () => 'Value is equal to expected value (under JSON transformation)',
     };
   },
 

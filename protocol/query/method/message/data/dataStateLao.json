@@ -1,5 +1,5 @@
 {
-	"$schema": "http://json-schema.org/draft/2019-09/schema#",
+	"$schema": "http://json-schema.org/draft-07/schema#",
 	"$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataStateLao.json",
 	"description": "Match a state broadcast LAO query",
 	"type": "object",
@@ -53,12 +53,12 @@
 				"additionalProperties": false,
 				"required": ["witness", "signature"]
 			}
-		},
-		"additionalProperties": false,
-		"required": ["object", "action", "id", "name", "creation", "last_modified", "organizer", "witnesses", "modification_id", "modification_signatures"],
-		"note": [
-			"When a LAO is created or modified, the organizer is expected to publish the lao/state message to the ",
-			"LAO’s main channel (LAO's id), once it got the required number of witness signatures"
-		]
-	}
+		}
+	},
+	"additionalProperties": false,
+	"required": ["object", "action", "id", "name", "creation", "last_modified", "organizer", "witnesses", "modification_id", "modification_signatures"],
+	"note": [
+		"When a LAO is created or modified, the organizer is expected to publish the lao/state message to the ",
+		"LAO’s main channel (LAO's id), once it got the required number of witness signatures"
+	]
 }
