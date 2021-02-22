@@ -123,21 +123,24 @@ describe('=== fromJsonData checks ===', () => {
   const sampleOpenRollCall: Partial<OpenRollCall> = {
     object: ObjectType.ROLL_CALL,
     action: ActionType.OPEN,
-    id: rollCallId,
+    update_id: rollCallId,
+    opens: rollCallId,
     start: time,
   };
 
   const sampleReopenRollCall: Partial<OpenRollCall> = {
     object: ObjectType.ROLL_CALL,
     action: ActionType.REOPEN,
-    id: rollCallId,
+    update_id: rollCallId,
+    opens: rollCallId,
     start: time,
   };
 
   const sampleCloseRollCall: Partial<CloseRollCall> = {
     object: ObjectType.ROLL_CALL,
     action: ActionType.CLOSE,
-    id: rollCallId,
+    update_id: rollCallId,
+    closes: rollCallId,
     start: time,
     end: FUTURE_TIMESTAMP,
     attendees: [],
@@ -152,7 +155,7 @@ describe('=== fromJsonData checks ===', () => {
 
   const dataLao: string = `{"object": "${ObjectType.LAO}","action": "F_ACTION",FF_MODIFICATION"id": "${mockLaoId.toString()}","name": "${name}","creation": ${time.toString()},"last_modified": ${CLOSE_TIMESTAMP.toString()},"organizer": "${org.toString()}","witnesses": []}`;
   const dataMeeting: string = `{"object": "${ObjectType.MEETING}","action": "F_ACTION",FF_MODIFICATION"id": "${meetingId.toString()}","name": "${name}","creation": ${time},"last_modified": ${time},"location": "${location}","start": ${time},"end": ${FUTURE_TIMESTAMP.toString()},"extra": { "extra": "extra info" }}`;
-  const dataRollCall: string = `{"object": "${ObjectType.ROLL_CALL}","action": "F_ACTION",FF_MODIFICATION"id": "${rollCallId.toString()}"}`;
+  const dataRollCall: string = `{"object": "${ObjectType.ROLL_CALL}","action":"F_ACTION",FF_MODIFICATION}`;
   const dataUpdateLao: string = `{"object": "${ObjectType.LAO}","action": "${ActionType.UPDATE_PROPERTIES}","name": "${name}","id": "${mockLaoId.toString()}","last_modified": ${CLOSE_TIMESTAMP.toString()},"witnesses": ["${sampleKey1.toString()}", "${sampleKey2.toString()}"]}`;
   const dataWitnessMessage: string = `{"object": "${ObjectType.MESSAGE}","action": "${ActionType.WITNESS}","message_id": "${mockMessageId.toString()}","signature": "${mockSecretKey.sign(mockMessageId).toString()}"}`;
 
@@ -178,16 +181,16 @@ describe('=== fromJsonData checks ===', () => {
     );
   const dataCreateRollCall: string = dataRollCall
     .replace('F_ACTION', ActionType.CREATE)
-    .replace('FF_MODIFICATION', `"name":"${name}","creation":${time},"start":${time},"location":"${location}","roll_call_description":"description du rc",`);
+    .replace('FF_MODIFICATION', `"id": "${rollCallId.toString()}","name":"${name}","creation":${time},"start":${time},"location":"${location}","roll_call_description":"description du rc"`);
   const dataOpenRollCall: string = dataRollCall
     .replace('F_ACTION', ActionType.OPEN)
-    .replace('FF_MODIFICATION', `"start":${time},`);
+    .replace('FF_MODIFICATION', `"update_id":"${rollCallId.toString()}","opens":"${rollCallId.toString()}","start":${time}`);
   const dataReopenRollCall: string = dataRollCall
     .replace('F_ACTION', ActionType.REOPEN)
-    .replace('FF_MODIFICATION', `"start":${time},`);
+    .replace('FF_MODIFICATION', `"update_id":"${rollCallId.toString()}","opens":"${rollCallId.toString()}","start":${time}`);
   const dataCloseRollCall: string = dataRollCall
     .replace('F_ACTION', ActionType.CLOSE)
-    .replace('FF_MODIFICATION', `"start":${time},"end":${FUTURE_TIMESTAMP.toString()},"attendees":[],`);
+    .replace('FF_MODIFICATION', `"update_id":"${rollCallId.toString()}","closes":"${rollCallId.toString()}","start":${time},"end":${FUTURE_TIMESTAMP.toString()},"attendees":[]`);
 
   beforeAll(() => {
     storeInit();
@@ -358,7 +361,8 @@ describe('=== fromJsonData checks ===', () => {
         temp = {
           object: ObjectType.ROLL_CALL,
           action: ActionType.CLOSE,
-          id: rollCallId,
+          update_id: rollCallId,
+          closes: rollCallId,
           start: time,
           end: FUTURE_TIMESTAMP,
           attendees: [sampleKey1, sampleKey2],
