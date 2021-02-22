@@ -3,6 +3,7 @@ import {
   JsonRpcRequest, JsonRpcResponse, ProtocolError, UNDEFINED_ID,
 } from 'model/network';
 import { getNetworkManager } from 'network/NetworkManager';
+import { OperationError } from './OperationError';
 import { NetworkError } from './NetworkError';
 
 type ResponseHandler = (message: JsonRpcResponse) => void;
@@ -19,7 +20,7 @@ const WEBSOCKET_MESSAGE_TIMEOUT_MS = 10000; // 10 seconds max round-trip time
 interface PendingResponse {
   promise: Promise<JsonRpcResponse>,
   resolvePromise: (value: JsonRpcResponse) => void,
-  rejectPromise: (reason: string) => void,
+  rejectPromise: (error: OperationError) => void,
   timeoutId: number,
 }
 
@@ -80,9 +81,8 @@ export class NetworkConnection {
           } else {
             // Note : impossible to have an undefined error from now on due to isPositiveResponse()
             pendingResponse.rejectPromise(
-              'A negative network error was received:\n'
-              + `\t- error code : ${parsedMessage.error?.code}`
-              + `\t- description : ${parsedMessage.error?.description}`,
+              // @ts-ignore
+              new OperationError(parsedMessage.error.description, parsedMessage.error.code),
             );
           }
         }
