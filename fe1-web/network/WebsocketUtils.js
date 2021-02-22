@@ -9,40 +9,6 @@ export const JSON_RPC_VERSION = '2.0';
 /** Number of fields a server answer exactly contains */
 export const SERVER_ANSWER_FIELD_COUNT = 3;
 
-/** Enumeration of all possible "method" fields in JsonMessages */
-export const methods = Object.freeze({
-  SUBSCRIBE: 'subscribe',
-  UNSUBSCRIBE: 'unsubscribe',
-  MESSAGE: 'message',
-  CATCHUP: 'catchup',
-  PUBLISH: 'publish',
-});
-
-/** Enumeration of all possible "object" fields in JsonMessages */
-export const objects = Object.freeze({
-  LAO: 'lao',
-  MESSAGE: 'message',
-  MEETING: 'meeting',
-  ROLL_CALL: 'roll_call',
-});
-
-/** Enumeration of all possible "action" fields in JsonMessages */
-export const actions = Object.freeze({
-  CREATE: 'create',
-  UPDATE_PROPERTIES: 'update_properties',
-  STATE: 'state',
-  WITNESS: 'witness',
-  OPEN: 'open',
-  REOPEN: 'reopen',
-  CLOSE: 'close',
-});
-
-/** Enumeration of all possible event tags used in hash creation */
-export const eventTags = Object.freeze({
-  MEETING: 'M',
-  ROLL_CALL: 'R',
-});
-
 /** Return the current LAO the client is connected to */
 // FIXME remove when not used in the project anymore
 export const getCurrentLao = () => 0; // getStore().getState().openedLao.lao;

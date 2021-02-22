@@ -4,6 +4,7 @@ import {
   Broadcast, Catchup, Publish, Subscribe, Unsubscribe,
 } from './method';
 import { ProtocolError } from './ProtocolError';
+import { validateJsonRpcRequest } from './validation';
 
 /**
  * This class represents a JSON-RPC 2.0 Request (or Notification)
@@ -52,12 +53,14 @@ export class JsonRpcRequest {
   }
 
   static fromJson(jsonString: string): JsonRpcRequest {
-    // FIXME add JsonSchema validation to all "fromJson"
-    const correctness = true;
+    const obj = JSON.parse(jsonString);
+    const { errors } = validateJsonRpcRequest(obj);
 
-    return correctness
-      ? new JsonRpcRequest(JSON.parse(jsonString))
-      : (() => { throw new ProtocolError('add JsonSchema error message'); })();
+    if (errors !== null) {
+      throw new ProtocolError(`Invalid JSON-RPC request\n\n${errors}`);
+    }
+
+    return new JsonRpcRequest(obj);
   }
 
   private parseParams(params: Partial<JsonRpcParams>) : JsonRpcParams {

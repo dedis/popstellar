@@ -3,6 +3,7 @@ import {
 } from 'model/objects';
 import { OpenedLaoStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
+import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness, checkWitnesses } from '../Checker';
 
@@ -41,16 +42,17 @@ export class UpdateLao implements MessageData {
   }
 
   public static fromJson(obj: any): UpdateLao {
-    // FIXME add JsonSchema validation to all "fromJson"
-    const correctness = true;
+    const { errors } = validateDataObject(ObjectType.LAO, ActionType.UPDATE_PROPERTIES, obj);
 
-    return correctness
-      ? new UpdateLao({
-        ...obj,
-        last_modified: new Timestamp(obj.last_modified),
-        witnesses: obj.witnesses.map((key: string) => new PublicKey(key)),
-        id: new Hash(obj.id),
-      })
-      : (() => { throw new ProtocolError('add JsonSchema error message'); })();
+    if (errors !== null) {
+      throw new ProtocolError(`Invalid LAO update\n\n${errors}`);
+    }
+
+    return new UpdateLao({
+      ...obj,
+      last_modified: new Timestamp(obj.last_modified),
+      witnesses: obj.witnesses.map((key: string) => new PublicKey(key)),
+      id: new Hash(obj.id),
+    });
   }
 }

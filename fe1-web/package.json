@@ -21,7 +21,7 @@
     "@react-navigation/routers": "^5.7.1",
     "@react-navigation/stack": "^5.9.2",
     "@types/react-native-simple-radio-button": "^2.7.0",
-    "ajv": "^7.0.2",
+    "ajv": "^7.1.1",
     "base-64": "^1.0.0",
     "color": "^3.1.3",
     "expect": "^26.6.2",
@@ -76,6 +76,7 @@
     "jest-extended": "^0.11.5",
     "jest-localstorage-mock": "^2.4.6",
     "jest-matcher-utils": "^26.6.2",
+    "ts-jest": "^26.5.1",
     "typescript": "^4.1.3"
   },
   "private": true

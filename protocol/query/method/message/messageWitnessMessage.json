@@ -1,5 +1,5 @@
 {
-	"$schema": "http://json-schema.org/draft/2019-09/schema#",
+	"$schema": "http://json-schema.org/draft-07/schema#",
 	"$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/messageWitnessMessage.json",
 	"title": "This represents a message someone would want to publish on a specific channel",
 	"description": "Match a message used in a \"witness a message query\"",

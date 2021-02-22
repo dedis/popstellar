@@ -4,4 +4,8 @@ module.exports = {
   setupFilesAfterEnv: ["jest-extended"],
   testPathIgnorePatterns: ["/node_modules/"],
   testMatch: [ "**/?(*.)+(spec|test).[jt]s?(x)" ],
+  moduleNameMapper: {
+    "^test_data/(.*)$": "<rootDir>/../tests/data/$1",
+    "^protocol/(.*)$": "<rootDir>/../protocol/$1",
+  }
 };

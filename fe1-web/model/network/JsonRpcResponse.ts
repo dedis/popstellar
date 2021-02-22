@@ -1,5 +1,6 @@
 import { ProtocolError } from './ProtocolError';
 import { Message } from './method/message';
+import { validateJsonRpcRequest } from './validation';
 
 export const UNDEFINED_ID: number = -1;
 
@@ -40,11 +41,13 @@ export class JsonRpcResponse {
   }
 
   public static fromJson(jsonString: string): JsonRpcResponse {
-    // FIXME add JsonSchema validation to all "fromJson"
-    const correctness = true;
+    const obj = JSON.parse(jsonString);
+    const { errors } = validateJsonRpcRequest(obj);
 
-    return correctness
-      ? new JsonRpcResponse(JSON.parse(jsonString))
-      : (() => { throw new ProtocolError('add JsonSchema error message'); })();
+    if (errors !== null) {
+      throw new ProtocolError(`Invalid JSON-RPC response\n\n${errors}`);
+    }
+
+    return new JsonRpcResponse(obj);
   }
 }

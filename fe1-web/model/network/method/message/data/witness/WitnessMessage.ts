@@ -1,5 +1,6 @@
 import { Hash, Signature } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
+import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 
 export class WitnessMessage implements MessageData {
@@ -16,21 +17,22 @@ export class WitnessMessage implements MessageData {
     this.message_id = msg.message_id;
 
     if (!msg.signature) throw new ProtocolError('Undefined \'signature\' parameter encountered during \'WitnessMessage\'');
-    // FIXME verify signature without the public key
-    // available? 0.o + uncomment 3 tests in "FromJson" test suite
+    // FIXME verify signature without the public key available? 0.o
+    // uncomment 3 tests in "FromJson" test suite
     this.signature = msg.signature;
   }
 
   public static fromJson(obj: any): WitnessMessage {
-    // FIXME add JsonSchema validation to all "fromJson"
-    const correctness = true;
+    const { errors } = validateDataObject(ObjectType.MESSAGE, ActionType.WITNESS, obj);
 
-    return correctness
-      ? new WitnessMessage({
-        ...obj,
-        message_id: new Hash(obj.message_id),
-        signature: new Signature(obj.signature),
-      })
-      : (() => { throw new ProtocolError('add JsonSchema error message'); })();
+    if (errors !== null) {
+      throw new ProtocolError(`Invalid witness message\n\n${errors}`);
+    }
+
+    return new WitnessMessage({
+      ...obj,
+      message_id: new Hash(obj.message_id),
+      signature: new Signature(obj.signature),
+    });
   }
 }
