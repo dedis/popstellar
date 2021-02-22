@@ -10,16 +10,22 @@ export class ReopenRollCall implements MessageData {
 
   public readonly action: ActionType = ActionType.REOPEN;
 
-  public readonly id: Hash;
+  public readonly update_id: Hash;
+
+  public readonly opens: Hash;
 
   public readonly start: Timestamp;
 
   constructor(msg: Partial<ReopenRollCall>) {
-    if (!msg.start) throw new ProtocolError('Undefined \'start\' parameter encountered during \'OpenRollCall\'');
+    if (!msg.start) {
+      throw new ProtocolError("Undefined 'start' parameter encountered during 'ReopenRollCall'");
+    }
     checkTimestampStaleness(msg.start);
     this.start = new Timestamp(msg.start.toString());
 
-    if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'CreateLao\'');
+    if (!msg.update_id) {
+      throw new ProtocolError("Undefined 'update_id' parameter encountered during 'ReopenRollCall'");
+    }
 
     // FIXME: implementation not finished, get event from storage,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -33,7 +39,12 @@ export class ReopenRollCall implements MessageData {
         'Invalid \'id\' parameter encountered during \'CreateLao\': unexpected id value'
       );
     */
-    this.id = new Hash(msg.id.toString());
+    this.update_id = new Hash(msg.update_id.toString());
+
+    if (!msg.opens) {
+      throw new ProtocolError("Undefined 'opens' parameter encountered during 'OpenRollCall'");
+    }
+    this.opens = msg.opens;
   }
 
   public static fromJson(obj: any): ReopenRollCall {
@@ -46,7 +57,8 @@ export class ReopenRollCall implements MessageData {
     return new ReopenRollCall({
       ...obj,
       start: new Timestamp(obj.start),
-      id: new Hash(obj.id),
+      update_id: new Hash(obj.update_id),
+      opens: new Hash(obj.opens),
     });
   }
 }
