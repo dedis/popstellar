@@ -2,6 +2,7 @@ import { w3cwebsocket as W3CWebSocket } from 'websocket';
 import {
   JsonRpcRequest, JsonRpcResponse, ProtocolError, UNDEFINED_ID,
 } from 'model/network';
+import { getNetworkManager } from 'network/NetworkManager';
 import { NetworkError } from './NetworkError';
 
 type ResponseHandler = (message: JsonRpcResponse) => void;
@@ -23,7 +24,7 @@ interface PendingResponse {
 }
 
 export class NetworkConnection {
-  private readonly ws: any;
+  private ws: W3CWebSocket;
 
   private payloadSentCount: number = 0;
 
@@ -31,57 +32,75 @@ export class NetworkConnection {
 
   private onMessageHandler: ResponseHandler = DEFAULT_RESPONSE_HANDLER;
 
-  public readonly address: string; // FIXME get the address from ws (log ws when app is running)
+  public readonly address: string;
 
   constructor(address: string) {
-    const ws = new W3CWebSocket(address);
+    this.ws = this.establishConnection(address);
+    this.address = this.ws.url;
+  }
+
+  private establishConnection(address: string): W3CWebSocket {
+    const ws: W3CWebSocket = new W3CWebSocket(address);
 
     ws.onopen = () => { console.info(`Initiating web socket : ${address}`); };
     ws.onmessage = (message: any) => {
       console.log(`Received a new message from '${address}' : `, message.data);
 
-      let response: JsonRpcResponse;
+      let parsedMessage: JsonRpcResponse | JsonRpcRequest;
       try {
-        response = JsonRpcResponse.fromJson(message.data);
+        parsedMessage = JsonRpcResponse.fromJson(message.data);
       } catch (e) {
-        throw new ProtocolError(`Answer is not valid Json : ${e}`);
+        try {
+          parsedMessage = JsonRpcRequest.fromJson(message.data);
+        } catch (ee) {
+          throw new ProtocolError(`Answer is not valid Json : ${e} && ${ee}`);
+        }
       }
 
-      if (response.id !== UNDEFINED_ID) {
-        const pendingResponse = this.payloadPending.get(response.id);
-        if (pendingResponse === undefined) {
-          throw new NetworkError(`Received a response which id = ${response.id} does not match any pending requests`);
-        }
-
-        // a response was received, we clear the timeout and the pending query from the pending map
-        clearTimeout(pendingResponse.timeoutId);
-        this.payloadPending.delete(response.id);
-
-        // reject the promise if the response is negative
-        if (response.isPositiveResponse()) {
-          pendingResponse.resolvePromise(response);
-          try {
-            this.onMessageHandler(response);
-          } catch (e) {
-            console.error('Exception encountered when giving response : ', response, ' to its handler.\n', e);
+      if (parsedMessage instanceof JsonRpcResponse) {
+        // if we have a response
+        if (parsedMessage.id !== UNDEFINED_ID) {
+          const pendingResponse = this.payloadPending.get(parsedMessage.id);
+          if (pendingResponse === undefined) {
+            throw new NetworkError(`Received a response which id = ${parsedMessage.id} does not match any pending requests`);
           }
-        } else {
-          // Note : impossible to have an undefined error at this stage due to isPositiveResponse()
-          pendingResponse.rejectPromise(
-            'A negative network error was received:\n'
-            // @ts-ignore
-            + `\t- error code : ${response.error.code}`
-            // @ts-ignore
-            + `\t- description : ${response.error.description}`,
-          );
+
+          // a response was received, clear the timeout and the pending query from the pending map
+          clearTimeout(pendingResponse.timeoutId);
+          this.payloadPending.delete(parsedMessage.id);
+
+          // reject the promise if the response is negative
+          if (parsedMessage.isPositiveResponse()) {
+            pendingResponse.resolvePromise(parsedMessage);
+            try {
+              this.onMessageHandler(parsedMessage);
+            } catch (e) {
+              console.error('Exception encountered when giving response : ', parsedMessage, ' to its handler.\n', e);
+            }
+          } else {
+            // Note : impossible to have an undefined error from now on due to isPositiveResponse()
+            pendingResponse.rejectPromise(
+              'A negative network error was received:\n'
+              + `\t- error code : ${parsedMessage.error?.code}`
+              + `\t- description : ${parsedMessage.error?.description}`,
+            );
+          }
         }
+      } else {
+        // if we have a request which needs to be forwarded
+
+        // Note to students : here should be the logic regarding witness message forwarding
+        getNetworkManager().sendPayload(parsedMessage); // FIXME ignoring promise for now
       }
     };
     ws.onclose = () => { console.info(`Closed websocket connection : ${address}`); };
-    ws.onerror = (event: any) => { console.error(`WebSocket error observed on '${address}' : `, event); };
+    ws.onerror = (event: any) => {
+      console.error(`WebSocket error observed on '${address}' : `, event);
+      console.error(`Trying to establish a new connection at address : ${address}`);
+      this.ws = this.establishConnection(address);
+    };
 
-    this.address = address;
-    this.ws = ws;
+    return ws;
   }
 
   public setResponseHandler(handler: ResponseHandler) {
