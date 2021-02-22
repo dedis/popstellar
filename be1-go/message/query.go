@@ -92,7 +92,7 @@ func (q *Query) UnmarshalJSON(data []byte) error {
 
 		q.Publish = publish
 		return nil
-	case "message":
+	case "broadcast":
 		broadcast := &Broadcast{}
 
 		err := json.Unmarshal(data, broadcast)
@@ -186,7 +186,7 @@ func (q Query) MarshalJSON() ([]byte, error) {
 
 func NewBroadcast(channel string, msg *Message) *Broadcast {
 	return &Broadcast{
-		Method: "message",
+		Method: "broadcast",
 		Params: Params{
 			Channel: channel,
 			Message: msg,
