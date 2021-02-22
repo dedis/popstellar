@@ -1,0 +1,76 @@
+import { encodeBase64 } from 'tweetnacl-util';
+import { sha256 } from 'js-sha256';
+import * as b64 from 'base-64';
+
+/* eslint-disable no-underscore-dangle */
+
+/** JSON rpc version used by our protocol */
+export const JSON_RPC_VERSION = '2.0';
+/** Number of fields a server answer exactly contains */
+export const SERVER_ANSWER_FIELD_COUNT = 3;
+
+/** Return the current LAO the client is connected to */
+// FIXME remove when not used in the project anymore
+export const getCurrentLao = () => 0; // getStore().getState().openedLao.lao;
+
+/** Transform a string to a base64 string */
+export const toString64 = (str) => b64.encode(str);
+/** Transform a base64 string to a regular string */
+export const fromString64 = (str) => b64.decode(str);
+
+/** Return the current time (Number - UNIX number of seconds from 1st january 1970) */
+export const getCurrentTime = () => Math.floor(Date.now() / 1000);
+
+/** Represent an already sent query to the server on which the client is waiting for an answer */
+export const PendingRequest = class {
+  constructor(message, requestObject, requestAction, retryCount = 0) {
+    this.message = message;
+    this.requestObject = requestObject;
+    this.requestAction = requestAction;
+    this.retryCount = retryCount;
+  }
+};
+/*
+/**
+ * Sign a string using a private key
+ *
+ * @param str string to sign
+ * @param secKey base64 encoded private key used for signing. If not specified, the key
+ * stored in the client's localStorage will be used
+ * @returns {string} base64 encoded signature over the strings using client secret key
+ *
+export const signString = (str, secKey = undefined) => {
+  const key = (secKey === undefined) ? getSecretKey() : secKey;
+  return encodeBase64(sign.detached(decodeUTF8(str), decodeBase64(key)));
+}; */
+
+/**
+ * Escape any character '"' and '\' from a string
+ *
+ * @param str string to be escaped
+ * @returns {string} escaped string
+ */
+export const escapeString = (str) => {
+  let strCopy = str;
+  if (typeof strCopy === 'object') { strCopy = fromString64(encodeBase64(strCopy)); }
+
+  strCopy = strCopy.toString();
+  return strCopy.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+};
+
+/**
+ * Hash an array of strings using SHA-256 then convert it into a base64 string
+ * @param strings variable number of strings to hash
+ * @returns {string} base64 encoded SHA-256 hash of the strings
+ */
+export const hashStrings = (...strings) => {
+  let str = '';
+  strings.forEach((item) => { str = `${str}"${escapeString(item)}",`; });
+  // remove the last comma and add square brackets around
+  str = `[${str.slice(0, -1)}]`;
+
+  const hash = sha256.create();
+
+  const bString = hash.update(str).array();
+  return toString64(String.fromCharCode(...bString));
+};

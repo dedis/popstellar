@@ -1,0 +1,16 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/answer/positiveAnswer/positiveAnswerCatchup.json",
+	"title": "All requests (except catchup (list of message) and propagate message (nothing)) expect an ACK (0) as answer",
+	"description": "[Array[Message]] all high-level message objects so far, sorted in time (ascending)",
+
+	"type": "array", 
+	"items": {
+		"oneOf": [
+			{ "$ref": "../../query/method/message/messageGeneral.json" }, 
+			{ "$ref": "../../query/method/message/messageWitnessMessage.json" }
+		],
+		"$comment": "Note: items in the list are [Message]s: high-level message objects"
+	},
+	"$comment": "Note: can be empty"
+}
