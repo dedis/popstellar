@@ -2,6 +2,7 @@ package com.github.dedis.student20_pop;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.hardware.Camera;
 
 import androidx.annotation.NonNull;
@@ -25,6 +26,9 @@ import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.crypto.tink.integration.android.AndroidKeysetManager;
+import com.google.crypto.tink.signature.Ed25519PrivateKeyManager;
+import com.google.crypto.tink.signature.PublicKeySignWrapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tinder.scarlet.Scarlet;
@@ -33,12 +37,38 @@ import com.tinder.scarlet.messageadapter.gson.GsonMessageAdapter;
 import com.tinder.scarlet.streamadapter.rxjava2.RxJava2StreamAdapterFactory;
 import com.tinder.scarlet.websocket.okhttp.OkHttpClientUtils;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 public class Injection {
     private static String SERVER_URL = "ws://10.0.2.2:8080";
+
     private static final String TAG = "INJECTION";
+
+    private static final String KEYSET_NAME = "POP_KEYSET";
+
+    private static final String SHARED_PREF_FILE_NAME = "POP_KEYSET_SP";
+
+    private static final String MASTER_KEY_URI = "android-keystore://POP_MASTER_KEY";
+
+    public static AndroidKeysetManager provideAndroidKeysetManager(Context applicationContext)
+            throws IOException, GeneralSecurityException {
+
+        SharedPreferences.Editor editor = applicationContext.getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE).edit();
+        editor.apply();
+
+        Ed25519PrivateKeyManager.registerPair(true);
+        PublicKeySignWrapper.register();
+
+        return new AndroidKeysetManager.Builder()
+                .withSharedPref(applicationContext, KEYSET_NAME, SHARED_PREF_FILE_NAME)
+                .withKeyTemplate(Ed25519PrivateKeyManager.ed25519Template())
+                .withMasterKeyUri(MASTER_KEY_URI)
+                .build();
+    }
 
     public static Gson provideGson() {
         return new GsonBuilder()
