@@ -1,12 +1,11 @@
 package com.github.dedis.student20_pop.model.event;
 
-import androidx.databinding.ObservableArrayList;
-
-import java.util.Objects;
-
 import static com.github.dedis.student20_pop.model.event.EventType.ROLL_CALL;
 import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.ADD_ATTENDEE_ALREADY_EXISTS;
 import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.ADD_ATTENDEE_SUCCESSFUL;
+
+import androidx.databinding.ObservableArrayList;
+import java.util.Objects;
 
 /** Class modelling a Roll-Call event */
 public final class RollCallEvent extends Event {

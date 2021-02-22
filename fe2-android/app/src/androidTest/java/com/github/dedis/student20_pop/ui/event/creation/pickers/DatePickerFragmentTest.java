@@ -1,20 +1,5 @@
 package com.github.dedis.student20_pop.ui.event.creation.pickers;
 
-import android.view.View;
-import android.widget.DatePicker;
-import androidx.test.core.app.ActivityScenario;
-import androidx.test.espresso.contrib.PickerActions;
-import androidx.test.espresso.matcher.ViewMatchers;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import com.github.dedis.student20_pop.OrganizerActivity;
-import com.github.dedis.student20_pop.R;
-import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-
-import java.util.Calendar;
-
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -23,6 +8,20 @@ import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
+
+import android.view.View;
+import android.widget.DatePicker;
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.espresso.contrib.PickerActions;
+import androidx.test.espresso.matcher.ViewMatchers;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import com.github.dedis.student20_pop.OrganizerActivity;
+import com.github.dedis.student20_pop.R;
+import java.util.Calendar;
+import org.hamcrest.Matchers;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 
 public class DatePickerFragmentTest {
   private final int YEAR = 2022;

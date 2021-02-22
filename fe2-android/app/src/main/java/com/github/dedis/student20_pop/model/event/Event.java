@@ -2,8 +2,6 @@ package com.github.dedis.student20_pop.model.event;
 
 import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableList;
-import com.github.dedis.student20_pop.utility.security.Hash;
-
 import java.time.Instant;
 import java.util.Objects;
 
@@ -34,7 +32,7 @@ public class Event {
     this.name = name;
     this.time = Instant.now().getEpochSecond();
     this.startTime = startTime;
-    this.id = ""; //Hash.hash(type.getSuffix(), lao, time, name);
+    this.id = ""; // Hash.hash(type.getSuffix(), lao, time, name);
     this.lao = lao;
     this.attendees = new ObservableArrayList<>();
     this.location = location;

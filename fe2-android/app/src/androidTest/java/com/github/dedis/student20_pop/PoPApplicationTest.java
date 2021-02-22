@@ -1,20 +1,5 @@
 package com.github.dedis.student20_pop;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-
-import androidx.test.core.app.ActivityScenario;
-
-import com.github.dedis.student20_pop.model.Lao;
-import com.github.dedis.student20_pop.model.Person;
-
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult;
 import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_ALREADY_EXISTS;
@@ -25,11 +10,22 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import androidx.test.core.app.ActivityScenario;
+import com.github.dedis.student20_pop.model.Lao;
+import com.github.dedis.student20_pop.model.Person;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import org.junit.Test;
+
 public class PoPApplicationTest {
 
-    private final Person person = new Person(PoPApplication.USERNAME);
-    private final Lao lao1 = new Lao("LAO1", person.getId(), PoPApplication.LOCAL_BACKEND_URI);
-    private final String witness1 = "Alphonse";
+  private final Person person = new Person(PoPApplication.USERNAME);
+  private final Lao lao1 = new Lao("LAO1", person.getId(), PoPApplication.LOCAL_BACKEND_URI);
+  private final String witness1 = "Alphonse";
   private final String witness2 = "Bertrand";
   private final ArrayList<String> witnesses = new ArrayList<>(Arrays.asList(witness1, witness2));
 

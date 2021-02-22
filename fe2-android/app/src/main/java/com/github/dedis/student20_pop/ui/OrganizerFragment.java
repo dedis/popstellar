@@ -17,9 +17,7 @@ import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.utility.ui.adapter.OrganizerEventExpandableListViewAdapter;
 import com.github.dedis.student20_pop.utility.ui.adapter.WitnessListViewAdapter;
 import com.github.dedis.student20_pop.utility.ui.listener.OnAddWitnessListener;
-import com.github.dedis.student20_pop.utility.ui.listener.OnEventCreatedListener;
 import com.github.dedis.student20_pop.utility.ui.listener.OnEventTypeSelectedListener;
-
 import java.util.List;
 
 /** Fragment used to display Organizer's UI */

@@ -1,9 +1,9 @@
 package com.github.dedis.student20_pop.model;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+
+import org.junit.Test;
 
 public class KeysTest {
 

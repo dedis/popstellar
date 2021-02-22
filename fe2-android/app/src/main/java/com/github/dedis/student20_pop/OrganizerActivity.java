@@ -1,34 +1,20 @@
 package com.github.dedis.student20_pop;
 
+import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.*;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
-
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-
 import com.github.dedis.student20_pop.home.HomeActivity;
-import com.github.dedis.student20_pop.model.Keys;
-import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventType;
-import com.github.dedis.student20_pop.model.event.RollCallEvent;
-import com.github.dedis.student20_pop.ui.ConnectingFragment;
 import com.github.dedis.student20_pop.ui.IdentityFragment;
 import com.github.dedis.student20_pop.ui.OrganizerFragment;
 import com.github.dedis.student20_pop.ui.event.creation.MeetingEventCreationFragment;
 import com.github.dedis.student20_pop.ui.event.creation.PollEventCreationFragment;
 import com.github.dedis.student20_pop.ui.event.creation.RollCallEventCreationFragment;
-
-import java.util.Optional;
-
-import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult;
-import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_ALREADY_EXISTS;
-import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_SUCCESSFUL;
-import static com.github.dedis.student20_pop.PoPApplication.getAppContext;
-import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult;
-import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.*;
 
 /** Activity used to display the different UIs for organizers */
 public class OrganizerActivity extends FragmentActivity {
@@ -115,13 +101,16 @@ public class OrganizerActivity extends FragmentActivity {
   //        == PackageManager.PERMISSION_GRANTED) {
   //      showFragment(new QRCodeScanningFragment(ADD_WITNESS, null), QRCodeScanningFragment.TAG);
   //    } else {
-  //      showFragment(new CameraPermissionFragment(ADD_WITNESS, null), CameraPermissionFragment.TAG);
+  //      showFragment(new CameraPermissionFragment(ADD_WITNESS, null),
+  // CameraPermissionFragment.TAG);
   //    }
   //  }
   //
-  //  public void onCameraNotAllowedListener(QRCodeScanningType qrCodeScanningType, String eventId) {
+  //  public void onCameraNotAllowedListener(QRCodeScanningType qrCodeScanningType, String eventId)
+  // {
   //    showFragment(
-  //        new CameraPermissionFragment(qrCodeScanningType, eventId), CameraPermissionFragment.TAG);
+  //        new CameraPermissionFragment(qrCodeScanningType, eventId),
+  // CameraPermissionFragment.TAG);
   //  }
 
   /*
@@ -204,26 +193,26 @@ public class OrganizerActivity extends FragmentActivity {
   }
    */
 
-//  @Override
-//  public void onCameraAllowedListener(QRCodeScanningType qrCodeScanningType, String eventId) {
-//    showFragment(
-//        new QRCodeScanningFragment(qrCodeScanningType, eventId), QRCodeScanningFragment.TAG);
-//  }
-//
-//  @Override
-//  public void OnEventCreatedListener(Event event) {
-//    ((PoPApplication) getApplication()).addEvent(event);
-//  }
-//
-//  @Override
-//  public void onAddAttendeesListener(String eventId) {
-//    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-//        == PackageManager.PERMISSION_GRANTED) {
-//      showFragment(new AddAttendeeFragment(eventId), AddAttendeeFragment.TAG);
-//    } else {
-//      showFragment(
-//          new CameraPermissionFragment(ADD_ROLL_CALL_ATTENDEE, eventId),
-//          CameraPermissionFragment.TAG);
-//    }
-//  }
+  //  @Override
+  //  public void onCameraAllowedListener(QRCodeScanningType qrCodeScanningType, String eventId) {
+  //    showFragment(
+  //        new QRCodeScanningFragment(qrCodeScanningType, eventId), QRCodeScanningFragment.TAG);
+  //  }
+  //
+  //  @Override
+  //  public void OnEventCreatedListener(Event event) {
+  //    ((PoPApplication) getApplication()).addEvent(event);
+  //  }
+  //
+  //  @Override
+  //  public void onAddAttendeesListener(String eventId) {
+  //    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+  //        == PackageManager.PERMISSION_GRANTED) {
+  //      showFragment(new AddAttendeeFragment(eventId), AddAttendeeFragment.TAG);
+  //    } else {
+  //      showFragment(
+  //          new CameraPermissionFragment(ADD_ROLL_CALL_ATTENDEE, eventId),
+  //          CameraPermissionFragment.TAG);
+  //    }
+  //  }
 }

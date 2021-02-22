@@ -4,7 +4,6 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
 import com.google.gson.*;
-
 import java.lang.reflect.Type;
 import java.util.Optional;
 

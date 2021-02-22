@@ -8,7 +8,6 @@ import android.widget.TextView;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventCategory;
-
 import java.util.List;
 
 /** Adapter to show events of an Attendee */

@@ -1,5 +1,13 @@
 package com.github.dedis.student20_pop.ui;
 
+import static androidx.test.espresso.Espresso.onData;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static org.hamcrest.Matchers.*;
+
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import com.github.dedis.student20_pop.MainActivity;
@@ -9,14 +17,6 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
-
-import static androidx.test.espresso.Espresso.onData;
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static org.hamcrest.Matchers.*;
 
 // TODO: Update tests when the data between activities will be passed
 public class HomeFragmentTest {

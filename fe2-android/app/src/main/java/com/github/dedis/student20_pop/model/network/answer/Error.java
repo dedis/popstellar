@@ -1,7 +1,6 @@
 package com.github.dedis.student20_pop.model.network.answer;
 
 import com.github.dedis.student20_pop.utility.protocol.MessageHandler;
-
 import java.util.Objects;
 
 /** A failed query's answer */

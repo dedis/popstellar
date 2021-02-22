@@ -1,5 +1,15 @@
 package com.github.dedis.student20_pop.ui.qrcode;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
+import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.ADD_ROLL_CALL_ATTENDEE;
+import static org.hamcrest.Matchers.*;
+
 import android.Manifest;
 import android.view.View;
 import android.widget.DatePicker;
@@ -17,22 +27,10 @@ import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.RollCallEvent;
-import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
-import org.hamcrest.Matchers;
-import org.junit.*;
-
 import java.time.Instant;
 import java.util.List;
-
-import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
-import static androidx.test.espresso.matcher.ViewMatchers.*;
-import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.ADD_ROLL_CALL_ATTENDEE;
-import static org.hamcrest.Matchers.*;
+import org.hamcrest.Matchers;
+import org.junit.*;
 
 public class AddAttendeeFragmentTest {
   @Rule
@@ -133,8 +131,7 @@ public class AddAttendeeFragmentTest {
                       .map(Lao::getEvents)
                       .flatMap(
                           events ->
-                              events
-                                  .parallelStream()
+                              events.parallelStream()
                                   .filter(event -> event.getId().equals(rollCallEvent.getId()))
                                   .findFirst())
                       .map(Event::getAttendees)
@@ -208,8 +205,7 @@ public class AddAttendeeFragmentTest {
                       .map(Lao::getEvents)
                       .flatMap(
                           events ->
-                              events
-                                  .parallelStream()
+                              events.parallelStream()
                                   .filter(event -> event.getId().equals(rollCallEvent.getId()))
                                   .findFirst())
                       .map(Event::getAttendees)

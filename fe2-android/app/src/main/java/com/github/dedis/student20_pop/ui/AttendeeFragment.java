@@ -18,7 +18,6 @@ import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.utility.ui.adapter.AttendeeEventExpandableListViewAdapter;
 import com.github.dedis.student20_pop.utility.ui.adapter.WitnessListViewAdapter;
-
 import java.util.List;
 
 /** Fragment used to display the Attendee UI */

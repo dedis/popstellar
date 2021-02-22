@@ -2,7 +2,6 @@ package com.github.dedis.student20_pop.model.network.answer;
 
 import com.github.dedis.student20_pop.utility.protocol.MessageHandler;
 import com.google.gson.JsonElement;
-
 import java.util.Objects;
 
 /** A succeed query's answer */

@@ -1,22 +1,20 @@
 package com.github.dedis.student20_pop.model;
 
-import com.github.dedis.student20_pop.model.event.Event;
-import com.github.dedis.student20_pop.model.event.MeetingEvent;
-import com.github.dedis.student20_pop.model.event.PollEvent;
-
-import org.junit.Test;
-
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
+
+import com.github.dedis.student20_pop.model.event.Event;
+import com.github.dedis.student20_pop.model.event.MeetingEvent;
+import com.github.dedis.student20_pop.model.event.PollEvent;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.junit.Test;
 
 public class LaoTest {
 
@@ -35,14 +33,14 @@ public class LaoTest {
   private static final Lao LAO_FOR_EVENTS = new Lao(LAO_NAME_2, ORGANIZER, HOST);
 
   private static final List<Event> EVENTS =
-          Arrays.asList(
-                  new MeetingEvent("meeting", 0, 0, LAO_FOR_EVENTS.getId(), "loc", "desc"),
-                  new PollEvent("question", 0, 0, LAO_FOR_EVENTS.getId(), "loc", new ArrayList<>(), false));
+      Arrays.asList(
+          new MeetingEvent("meeting", 0, 0, LAO_FOR_EVENTS.getId(), "loc", "desc"),
+          new PollEvent("question", 0, 0, LAO_FOR_EVENTS.getId(), "loc", new ArrayList<>(), false));
   private static final List<Event> EVENTS_WITH_NULL =
-          Arrays.asList(
-                  new MeetingEvent("meeting", 0, 0, LAO_FOR_EVENTS.getId(), "loc", "desc"),
-                  null,
-                  new PollEvent("question", 0, 0, LAO_FOR_EVENTS.getId(), "loc", new ArrayList<>(), false));
+      Arrays.asList(
+          new MeetingEvent("meeting", 0, 0, LAO_FOR_EVENTS.getId(), "loc", "desc"),
+          null,
+          new PollEvent("question", 0, 0, LAO_FOR_EVENTS.getId(), "loc", new ArrayList<>(), false));
 
   private static final List<Lao> LAOS = new ArrayList<>(Arrays.asList(LAO_1, LAO_FOR_EVENTS));
   private static final List<Lao> LAOS_WITH_NULL =

@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.widget.DatePicker;
 import androidx.appcompat.app.AppCompatDialogFragment;
 import com.github.dedis.student20_pop.R;
-
 import java.util.Calendar;
 
 /**

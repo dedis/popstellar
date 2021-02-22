@@ -1,16 +1,14 @@
 package com.github.dedis.student20_pop.model.network.method.message;
 
-import com.github.dedis.student20_pop.model.Keys;
-import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
-import com.github.dedis.student20_pop.utility.security.Hash;
-import com.github.dedis.student20_pop.utility.security.Signature;
-import org.junit.Test;
-
-import java.util.ArrayList;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
+
+import com.github.dedis.student20_pop.model.Keys;
+import com.github.dedis.student20_pop.utility.security.Hash;
+import com.github.dedis.student20_pop.utility.security.Signature;
+import java.util.ArrayList;
+import org.junit.Test;
 
 public class MessageGeneralTest {
 

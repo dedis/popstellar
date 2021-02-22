@@ -27,7 +27,6 @@ import androidx.annotation.RequiresPermission;
 import com.github.dedis.student20_pop.R;
 import com.google.android.gms.common.images.Size;
 import com.google.android.gms.vision.CameraSource;
-
 import java.io.IOException;
 
 /**

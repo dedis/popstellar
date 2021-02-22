@@ -1,5 +1,8 @@
 package com.github.dedis.student20_pop.utility.ui.adapter;
 
+import static com.github.dedis.student20_pop.model.event.EventCategory.FUTURE;
+import static com.github.dedis.student20_pop.model.event.EventType.*;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -13,11 +16,7 @@ import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventCategory;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.utility.ui.listener.OnEventTypeSelectedListener;
-
 import java.util.List;
-
-import static com.github.dedis.student20_pop.model.event.EventCategory.FUTURE;
-import static com.github.dedis.student20_pop.model.event.EventType.*;
 
 /** Adapter to show events of an Organizer */
 public class OrganizerEventExpandableListViewAdapter extends EventExpandableListViewAdapter {

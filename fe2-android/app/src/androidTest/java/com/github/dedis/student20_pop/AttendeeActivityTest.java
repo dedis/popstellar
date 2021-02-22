@@ -1,13 +1,13 @@
 package com.github.dedis.student20_pop;
 
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import org.junit.Rule;
-import org.junit.Test;
-
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
+
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import org.junit.Rule;
+import org.junit.Test;
 
 public class AttendeeActivityTest {
 

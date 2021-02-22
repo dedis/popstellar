@@ -1,5 +1,11 @@
 package com.github.dedis.student20_pop.ui;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.*;
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static org.hamcrest.Matchers.is;
+
 import androidx.test.core.app.ActivityScenario;
 import com.github.dedis.student20_pop.MainActivity;
 import com.github.dedis.student20_pop.OrganizerActivity;
@@ -8,12 +14,6 @@ import com.github.dedis.student20_pop.R;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.*;
-import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static org.hamcrest.Matchers.is;
 
 public class LaunchFragmentTest {
 

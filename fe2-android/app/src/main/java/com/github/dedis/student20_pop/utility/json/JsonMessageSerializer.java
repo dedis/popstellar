@@ -4,7 +4,6 @@ import com.github.dedis.student20_pop.model.network.method.Message;
 import com.github.dedis.student20_pop.model.network.method.Method;
 import com.github.dedis.student20_pop.model.network.method.Query;
 import com.google.gson.*;
-
 import java.lang.reflect.Type;
 
 /** Json serializer and deserializer for the low level messages */
@@ -17,7 +16,8 @@ public class JsonMessageSerializer implements JsonSerializer<Message>, JsonDeser
     JsonUtils.testRPCVersion(container.getJsonrpc());
 
     Method method = Method.find(container.getMethod());
-    if (method == null) throw new JsonParseException("Unknown method type " + container.getMethod());
+    if (method == null)
+      throw new JsonParseException("Unknown method type " + container.getMethod());
     JsonObject params = container.getParams();
 
     // If the Channeled Data is a Query, we need to give the params the id the the request
@@ -41,5 +41,4 @@ public class JsonMessageSerializer implements JsonSerializer<Message>, JsonDeser
 
     return obj;
   }
-
 }

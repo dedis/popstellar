@@ -1,12 +1,10 @@
 package com.github.dedis.student20_pop.model.network.method.message.data.rollcall;
 
 import androidx.annotation.Nullable;
-
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
 import com.github.dedis.student20_pop.utility.protocol.DataHandler;
-
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;

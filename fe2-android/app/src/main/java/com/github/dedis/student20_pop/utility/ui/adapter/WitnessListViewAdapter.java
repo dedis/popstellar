@@ -9,7 +9,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import com.github.dedis.student20_pop.R;
-
 import java.util.List;
 
 /** Adapter to show witnesses of an Event */

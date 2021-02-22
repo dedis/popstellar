@@ -1,12 +1,10 @@
 package com.github.dedis.student20_pop.utility.security;
 
 import android.util.Log;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-import java.util.StringJoiner;
 
 /** SHA256 Hashing Class */
 public class Hash {

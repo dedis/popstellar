@@ -7,21 +7,19 @@ import androidx.room.PrimaryKey;
 @Entity
 public class RollCall {
 
-    @PrimaryKey
-    @NonNull
-    public String id;
+  @PrimaryKey @NonNull public String id;
 
-    public String laoChannel;
+  public String laoChannel;
 
-    public String name;
+  public String name;
 
-    public Long creation;
+  public Long creation;
 
-    public Long start;
+  public Long start;
 
-    public Long scheduled;
+  public Long scheduled;
 
-    public String location;
+  public String location;
 
-    public String description;
+  public String description;
 }

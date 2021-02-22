@@ -2,7 +2,6 @@ package com.github.dedis.student20_pop.utility.security;
 
 import android.util.Log;
 import com.google.crypto.tink.subtle.Ed25519Sign;
-
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Base64;

@@ -2,20 +2,15 @@ package com.github.dedis.student20_pop.utility.network;
 
 import androidx.annotation.Nullable;
 import com.github.dedis.student20_pop.model.Person;
-import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
-import com.github.dedis.student20_pop.model.network.method.message.data.meeting.CreateMeeting;
 import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessage;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
 import com.github.dedis.student20_pop.utility.protocol.HighLevelProxy;
 import com.github.dedis.student20_pop.utility.protocol.LowLevelProxy;
-import com.github.dedis.student20_pop.utility.security.Hash;
 import com.github.dedis.student20_pop.utility.security.Signature;
-
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -38,14 +33,10 @@ public final class WebSocketHighLevelProxy implements HighLevelProxy {
 
   @Override
   public CompletableFuture<Integer> createLao(String name, long creation, String organizer) {
-    return lowLevelClientProxy.publish(
-        publicKey,
-        privateKey,
-        ROOT,
-        null
-            );
-//        new CreateLao(
-//            Hash.hash(organizer, creation, name), name, creation, organizer, new ArrayList<>()));
+    return lowLevelClientProxy.publish(publicKey, privateKey, ROOT, null);
+    //        new CreateLao(
+    //            Hash.hash(organizer, creation, name), name, creation, organizer, new
+    // ArrayList<>()));
   }
 
   @Override
@@ -70,13 +61,9 @@ public final class WebSocketHighLevelProxy implements HighLevelProxy {
   @Override
   public CompletableFuture<Integer> createMeeting(
       String laoId, String name, long creation, String location, long start, long end) {
-    return lowLevelClientProxy.publish(
-        publicKey,
-        privateKey,
-        ROOT + "/" + laoId,
-        null);
-//        new CreateMeeting(
-//            Hash.hash("M", laoId, creation, name), name, creation, location, start, end));
+    return lowLevelClientProxy.publish(publicKey, privateKey, ROOT + "/" + laoId, null);
+    //        new CreateMeeting(
+    //            Hash.hash("M", laoId, creation, name), name, creation, location, start, end));
   }
 
   @Override
@@ -99,19 +86,15 @@ public final class WebSocketHighLevelProxy implements HighLevelProxy {
       CreateRollCall.StartType startType,
       String location,
       @Nullable String description) {
-    return lowLevelClientProxy.publish(
-        publicKey,
-        privateKey,
-        ROOT + "/" + laoId,
-        null);
-//        new CreateRollCall(
-//            Hash.hash("R", laoId, creation, name),
-//            name,
-//            creation,
-//            start,
-//            startType,
-//            location,
-//            description));
+    return lowLevelClientProxy.publish(publicKey, privateKey, ROOT + "/" + laoId, null);
+    //        new CreateRollCall(
+    //            Hash.hash("R", laoId, creation, name),
+    //            name,
+    //            creation,
+    //            start,
+    //            startType,
+    //            location,
+    //            description));
   }
 
   @Override

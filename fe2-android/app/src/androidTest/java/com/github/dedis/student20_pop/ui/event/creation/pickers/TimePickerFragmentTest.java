@@ -1,5 +1,14 @@
 package com.github.dedis.student20_pop.ui.event.creation.pickers;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
+import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.not;
+
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
@@ -14,15 +23,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-
-import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
-import static androidx.test.espresso.matcher.ViewMatchers.*;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.not;
 
 public class TimePickerFragmentTest {
   private final int YEAR = 2022;

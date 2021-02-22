@@ -1,5 +1,17 @@
 package com.github.dedis.student20_pop.ui;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+import static androidx.test.espresso.Espresso.onData;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.*;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
+import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult;
+import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_SUCCESSFUL;
+import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.ADD_WITNESS;
+import static org.hamcrest.Matchers.*;
+
 import android.Manifest;
 import android.view.View;
 import androidx.fragment.app.Fragment;
@@ -12,25 +24,12 @@ import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
+import java.util.Collections;
+import java.util.List;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.*;
-
-import java.util.Collections;
-import java.util.List;
-
-import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static androidx.test.espresso.Espresso.onData;
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.*;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
-import static androidx.test.espresso.matcher.ViewMatchers.*;
-import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult;
-import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_SUCCESSFUL;
-import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.ADD_WITNESS;
-import static org.hamcrest.Matchers.*;
 
 public class OrganizerFragmentTest {
   @Rule

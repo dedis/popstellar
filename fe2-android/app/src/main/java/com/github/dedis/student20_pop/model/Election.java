@@ -1,6 +1,5 @@
 package com.github.dedis.student20_pop.model;
 
-import com.github.dedis.student20_pop.utility.security.Hash;
 
 import java.time.Instant;
 import java.util.List;

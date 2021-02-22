@@ -7,20 +7,17 @@ import androidx.room.PrimaryKey;
 @Entity
 public class LAO {
 
-    @PrimaryKey
-    @NonNull
-    public String channel;
+  @PrimaryKey @NonNull public String channel;
 
-    public String id;
+  public String id;
 
-    public String name;
+  public String name;
 
-    public Long lastModifiedAt;
+  public Long lastModifiedAt;
 
-    public Long createdAt;
+  public Long createdAt;
 
-    public String organizer;
+  public String organizer;
 
-    public String modificationId;
-
+  public String modificationId;
 }

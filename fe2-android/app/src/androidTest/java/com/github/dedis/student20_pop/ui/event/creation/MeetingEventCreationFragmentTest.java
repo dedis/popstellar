@@ -1,5 +1,13 @@
 package com.github.dedis.student20_pop.ui.event.creation;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static org.hamcrest.Matchers.*;
+
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 import androidx.test.espresso.contrib.PickerActions;
@@ -10,20 +18,11 @@ import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.event.Event;
-import org.hamcrest.Matchers;
-import org.junit.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.*;
-import static org.hamcrest.Matchers.*;
+import org.hamcrest.Matchers;
+import org.junit.*;
 
 public class MeetingEventCreationFragmentTest {
   private final int YEAR = 2022;

@@ -1,14 +1,13 @@
 package com.github.dedis.student20_pop.model;
 
-import com.github.dedis.student20_pop.utility.security.Hash;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
+
+import com.github.dedis.student20_pop.utility.security.Hash;
+import java.util.ArrayList;
+import java.util.Arrays;
+import org.junit.Test;
 
 public class ElectionTest {
 

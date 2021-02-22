@@ -18,7 +18,6 @@ import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.event.RollCallEvent;
 import com.github.dedis.student20_pop.utility.ui.listener.OnAddAttendeesListener;
 import com.github.dedis.student20_pop.utility.ui.listener.OnEventCreatedListener;
-
 import java.util.Objects;
 
 /** Fragment that shows up when user wants to create a Roll-Call Event */

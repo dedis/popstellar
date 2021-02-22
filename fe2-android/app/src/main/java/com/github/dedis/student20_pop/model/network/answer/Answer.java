@@ -1,7 +1,6 @@
 package com.github.dedis.student20_pop.model.network.answer;
 
 import com.github.dedis.student20_pop.model.network.GenericMessage;
-
 import java.util.Objects;
 
 /**
