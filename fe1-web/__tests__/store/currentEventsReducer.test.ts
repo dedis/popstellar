@@ -28,20 +28,21 @@ function randomTimestamp(x: number): number {
 
 function createEvent() {
   const objects = ['meeting', 'roll-call'/* , 'poll', 'discussion' */];
-  const actions = ['create', 'update_properties', 'state'];
+  // const actions = ['create', 'update_properties', 'state'];
   const object = objects[randomInt(objects.length)];
-  const action = actions[randomInt(actions.length)];
+  // const action = actions[randomInt(actions.length)];
   const id = randomInt(50000).toString();
-  const name = `Event ${id}`;
+  // const name = `Event ${id}`;
   const creation = randomTimestamp(50);
-  const last_modified = creation;
-  const location = randomInt(2) === 1 ? '' : 'A location, test.com';
+  // const last_modified = creation;
+  // const location = randomInt(2) === 1 ? '' : 'A location, test.com';
   const start = creation;
   const end = randomInt(2) === 1 ? undefined : creation + randomInt(50) * 100;
   const organizer = 'a organizer signature';
   const witnesses = ['witness signature 1', 'witness signature 2'];
-  const modification_id = 'a modification id';
-  const modification_signatures = [{ witness: 'Witness 1', signature: 'witness signature 1' }, { witness: 'Witness 2', signature: 'witness signature 2' }];
+  // const modification_id = 'a modification id';
+  // const modification_signatures = [{ witness: 'Witness 1', signature: 'witness signature 1' },
+  // { witness: 'Witness 2', signature: 'witness signature 2' }];
 
   return {
     id,

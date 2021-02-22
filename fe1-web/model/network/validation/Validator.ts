@@ -1,6 +1,5 @@
 import Ajv from 'ajv';
 import genericMessage from 'protocol/genericMessage.json';
-//import { ObjectType, ActionType } from 'model/network/method/message/data';
 import querySchema from './QuerySchema';
 import channelSchema from './ChannelSchema';
 import messageSchema from './MessageSchema';
