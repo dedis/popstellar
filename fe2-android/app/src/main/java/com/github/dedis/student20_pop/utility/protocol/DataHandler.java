@@ -9,7 +9,6 @@ import com.github.dedis.student20_pop.model.network.method.message.data.message.
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
-
 import java.net.URI;
 
 /**

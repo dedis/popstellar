@@ -42,5 +42,4 @@ public class QRFocusingProcessor extends FocusingProcessor<Barcode> {
 
     return id;
   }
-
 }

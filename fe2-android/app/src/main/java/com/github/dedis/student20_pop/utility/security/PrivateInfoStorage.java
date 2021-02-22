@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.Log;
 import androidx.security.crypto.EncryptedFile;
 import androidx.security.crypto.MasterKey;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;

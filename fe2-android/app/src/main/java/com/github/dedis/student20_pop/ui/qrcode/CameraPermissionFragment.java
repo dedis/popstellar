@@ -6,13 +6,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-
 import com.github.dedis.student20_pop.databinding.FragmentCameraPermBinding;
 import com.github.dedis.student20_pop.home.HomeActivity;
 
@@ -76,13 +74,11 @@ public final class CameraPermissionFragment extends Fragment {
     super.onResume();
     // If the permission was granted while the app was paused, switch to QRCodeScanningFragment
     if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
-        == PackageManager.PERMISSION_GRANTED)
-      mCameraPermissionViewModel.onPermissionGranted();
+        == PackageManager.PERMISSION_GRANTED) mCameraPermissionViewModel.onPermissionGranted();
   }
 
   private void setupCameraPermissionButton() {
-    mCameraPermFragBinding.allowCameraButton.setOnClickListener(v ->
-            requestPermissions(new String[] {Manifest.permission.CAMERA}, HANDLE_CAMERA_PERM)
-    );
+    mCameraPermFragBinding.allowCameraButton.setOnClickListener(
+        v -> requestPermissions(new String[] {Manifest.permission.CAMERA}, HANDLE_CAMERA_PERM));
   }
 }

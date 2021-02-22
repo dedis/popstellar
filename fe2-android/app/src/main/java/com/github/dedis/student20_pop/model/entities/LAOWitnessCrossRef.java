@@ -7,15 +7,14 @@ import androidx.room.Entity;
 @Entity(primaryKeys = {"channel", "publicKey"})
 public class LAOWitnessCrossRef {
 
-    public LAOWitnessCrossRef(String channel, String publicKey) {
-        this.channel = channel;
-        this.publicKey = publicKey;
-    }
+  public LAOWitnessCrossRef(String channel, String publicKey) {
+    this.channel = channel;
+    this.publicKey = publicKey;
+  }
 
-    @NonNull
-    public String channel;
+  @NonNull public String channel;
 
-    @NonNull
-    @ColumnInfo(index = true)
-    public String publicKey;
+  @NonNull
+  @ColumnInfo(index = true)
+  public String publicKey;
 }

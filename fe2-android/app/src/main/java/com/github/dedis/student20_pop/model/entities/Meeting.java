@@ -8,27 +8,25 @@ import androidx.room.PrimaryKey;
 @Entity
 public class Meeting {
 
-    @PrimaryKey
-    @NonNull
-    public String originalId;
+  @PrimaryKey @NonNull public String originalId;
 
-    @ColumnInfo(index = true)
-    public String id;
+  @ColumnInfo(index = true)
+  public String id;
 
-    @ColumnInfo(index = true)
-    public String laoChannel;
+  @ColumnInfo(index = true)
+  public String laoChannel;
 
-    public String name;
+  public String name;
 
-    public String creation;
+  public String creation;
 
-    public String location;
+  public String location;
 
-    public Long start;
+  public Long start;
 
-    public Long end;
+  public Long end;
 
-    public String extra;
+  public String extra;
 
-    public String modificationId;
+  public String modificationId;
 }

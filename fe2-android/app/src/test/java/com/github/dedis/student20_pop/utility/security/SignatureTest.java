@@ -1,12 +1,11 @@
 package com.github.dedis.student20_pop.utility.security;
 
-import com.github.dedis.student20_pop.model.Keys;
-import org.junit.Test;
-
-import java.util.ArrayList;
-
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
+
+import com.github.dedis.student20_pop.model.Keys;
+import java.util.ArrayList;
+import org.junit.Test;
 
 public class SignatureTest {
 

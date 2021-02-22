@@ -1,10 +1,13 @@
 package com.github.dedis.student20_pop;
 
+import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_ALREADY_EXISTS;
+import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_SUCCESSFUL;
+import static com.github.dedis.student20_pop.model.event.EventType.DISCUSSION;
+import static com.github.dedis.student20_pop.model.event.EventType.MEETING;
+import static com.github.dedis.student20_pop.model.event.EventType.POLL;
+
 import android.app.Application;
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
-
 import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.Person;
@@ -14,9 +17,7 @@ import com.github.dedis.student20_pop.model.network.method.message.data.lao.Stat
 import com.github.dedis.student20_pop.model.network.method.message.data.meeting.StateMeeting;
 import com.github.dedis.student20_pop.utility.protocol.DataHandler;
 import com.github.dedis.student20_pop.utility.protocol.HighLevelProxy;
-import com.github.dedis.student20_pop.utility.protocol.LowLevelProxy;
 import com.github.dedis.student20_pop.utility.protocol.ProtocolProxyFactory;
-
 import java.net.URI;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -26,12 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_ALREADY_EXISTS;
-import static com.github.dedis.student20_pop.PoPApplication.AddWitnessResult.ADD_WITNESS_SUCCESSFUL;
-import static com.github.dedis.student20_pop.model.event.EventType.DISCUSSION;
-import static com.github.dedis.student20_pop.model.event.EventType.MEETING;
-import static com.github.dedis.student20_pop.model.event.EventType.POLL;
 
 /** Class modelling the application : a unique person associated with LAOs */
 public class PoPApplication extends Application {
@@ -57,21 +52,21 @@ public class PoPApplication extends Application {
   public void onCreate() {
     super.onCreate();
 
-//    startPurgeRoutine(new Handler(Looper.getMainLooper()));
+    //    startPurgeRoutine(new Handler(Looper.getMainLooper()));
 
-//    appContext = getApplicationContext();
+    //    appContext = getApplicationContext();
 
     // activateTestingValues(); // comment this line when testing with a back-end
   }
 
-//  @SuppressLint("ApplySharedPref")
-//  @Override
-//  public void onTerminate() {
-//    super.onTerminate();
-//    SharedPreferences sp = this.getSharedPreferences(TAG, Context.MODE_PRIVATE);
-//    // Use commit instead of apply for information to be stored immediately
-//    sp.edit().putString(SP_PERSON_ID_KEY, person.getId()).commit();
-//  }
+  //  @SuppressLint("ApplySharedPref")
+  //  @Override
+  //  public void onTerminate() {
+  //    super.onTerminate();
+  //    SharedPreferences sp = this.getSharedPreferences(TAG, Context.MODE_PRIVATE);
+  //    // Use commit instead of apply for information to be stored immediately
+  //    sp.edit().putString(SP_PERSON_ID_KEY, person.getId()).commit();
+  //  }
 
   /** Returns PoP Application Context. */
   public static Context getAppContext() {

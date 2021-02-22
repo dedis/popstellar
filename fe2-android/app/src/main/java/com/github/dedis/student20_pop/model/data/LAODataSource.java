@@ -8,39 +8,32 @@ import com.github.dedis.student20_pop.model.entities.Person;
 import com.github.dedis.student20_pop.model.entities.RollCall;
 import com.github.dedis.student20_pop.model.network.GenericMessage;
 import com.github.dedis.student20_pop.model.network.method.Message;
-import com.github.dedis.student20_pop.model.network.method.Subscribe;
-import com.github.dedis.student20_pop.utility.json.JSONRPCRequest;
-import com.tinder.scarlet.WebSocket;
-
-import java.util.List;
-
 import io.reactivex.Flowable;
+import java.util.List;
 
 public interface LAODataSource {
 
-    interface Remote {
+  interface Remote {
 
-        Flowable<GenericMessage> observeMessage();
+    Flowable<GenericMessage> observeMessage();
 
-        void sendMessage(Message msg);
-    }
+    void sendMessage(Message msg);
+  }
 
-    interface Local {
+  interface Local {
 
-        List<LAO> getAll();
+    List<LAO> getAll();
 
-        LAOEntity getLAO(String channel);
+    LAOEntity getLAO(String channel);
 
-        void updateLAO(LAO lao, List<Person> witnesses, List<ModificationSignature> signatures);
+    void updateLAO(LAO lao, List<Person> witnesses, List<ModificationSignature> signatures);
 
-        void addRollCall(LAO lao, RollCall rollCall);
+    void addRollCall(LAO lao, RollCall rollCall);
 
-        void updateRollCall(RollCall rollCall);
+    void updateRollCall(RollCall rollCall);
 
-        void addMeeting(LAO lao, Meeting meeting);
+    void addMeeting(LAO lao, Meeting meeting);
 
-        void updateMeeting(Meeting meeting, List<ModificationSignature> signatures);
-
-    }
-
+    void updateMeeting(Meeting meeting, List<ModificationSignature> signatures);
+  }
 }

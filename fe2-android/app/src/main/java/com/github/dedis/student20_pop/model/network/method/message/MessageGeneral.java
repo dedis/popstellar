@@ -2,22 +2,16 @@ package com.github.dedis.student20_pop.model.network.method.message;
 
 import android.util.Base64;
 import android.util.Log;
-
-import com.github.dedis.student20_pop.Injection;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessage;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.PublicKeyVerify;
 import com.google.crypto.tink.subtle.Ed25519Verify;
 import com.google.gson.Gson;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Container of a high level message.
@@ -52,12 +46,23 @@ public final class MessageGeneral {
     generateId();
   }
 
-  public MessageGeneral(byte[] sender, Data data, List<PublicKeySignaturePair> witnessSignatures, PublicKeySign signer, Gson gson) {
+  public MessageGeneral(
+      byte[] sender,
+      Data data,
+      List<PublicKeySignaturePair> witnessSignatures,
+      PublicKeySign signer,
+      Gson gson) {
     this(sender, data, signer, gson);
     this.witnessSignatures = witnessSignatures;
   }
 
-  public MessageGeneral(byte[] sender, byte[] dataBuf, Data data, byte[] signature, byte[] messageId, List<PublicKeySignaturePair> witnessSignatures) {
+  public MessageGeneral(
+      byte[] sender,
+      byte[] dataBuf,
+      Data data,
+      byte[] signature,
+      byte[] messageId,
+      List<PublicKeySignaturePair> witnessSignatures) {
     this.sender = sender;
     this.messageId = messageId;
     this.dataBuf = dataBuf;
@@ -70,7 +75,7 @@ public final class MessageGeneral {
   private void generateSignature(PublicKeySign signer) {
     try {
       this.signature = signer.sign(this.dataBuf);
-    } catch(GeneralSecurityException e) {
+    } catch (GeneralSecurityException e) {
       Log.d(TAG, "failed to generate signature", e);
     }
   }
@@ -117,7 +122,7 @@ public final class MessageGeneral {
       verifier.verify(signature, dataBuf);
 
       if (data instanceof WitnessMessage) {
-        WitnessMessage witnessMessage = (WitnessMessage)data;
+        WitnessMessage witnessMessage = (WitnessMessage) data;
 
         byte[] signatureBuf = Base64.decode(witnessMessage.getSignature(), Base64.NO_WRAP);
         byte[] messageIdBuf = Base64.decode(witnessMessage.getMessageId(), Base64.NO_WRAP);

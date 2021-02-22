@@ -6,20 +6,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.github.dedis.student20_pop.databinding.FragmentHomeBinding;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.home.HomeViewModel;
 import com.github.dedis.student20_pop.home.LAOListAdapter;
 import com.github.dedis.student20_pop.model.Lao;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 /** Fragment used to display the Home UI */
@@ -43,7 +39,10 @@ public final class HomeFragment extends Fragment {
 
   @Nullable
   @Override
-  public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+  public View onCreateView(
+      @NonNull LayoutInflater inflater,
+      @Nullable ViewGroup container,
+      @Nullable Bundle savedInstanceState) {
     mHomeFragBinding = FragmentHomeBinding.inflate(inflater, container, false);
 
     mHomeViewModel = HomeActivity.obtainViewModel(getActivity());
@@ -65,27 +64,27 @@ public final class HomeFragment extends Fragment {
   }
 
   private void setupListUpdates() {
-    mHomeViewModel.getLAOs().observe(getActivity(), laos -> {
-      Log.d(TAG, "Got a list update");
+    mHomeViewModel
+        .getLAOs()
+        .observe(
+            getActivity(),
+            laos -> {
+              Log.d(TAG, "Got a list update");
 
-      mListAdapter.replaceList(laos);
+              mListAdapter.replaceList(laos);
 
-      // TODO: perhaps move this to data binding
-      if (laos.size() > 0) {
-        mHomeFragBinding.welcomeScreen.setVisibility(View.GONE);
-        mHomeFragBinding.listScreen.setVisibility(View.VISIBLE);
-      }
-    });
+              // TODO: perhaps move this to data binding
+              if (laos.size() > 0) {
+                mHomeFragBinding.welcomeScreen.setVisibility(View.GONE);
+                mHomeFragBinding.listScreen.setVisibility(View.VISIBLE);
+              }
+            });
   }
 
   private void setupListAdapter() {
     ListView listView = mHomeFragBinding.laoList;
 
-    mListAdapter = new LAOListAdapter(
-            new ArrayList<Lao>(0),
-            mHomeViewModel,
-            getActivity()
-    );
+    mListAdapter = new LAOListAdapter(new ArrayList<Lao>(0), mHomeViewModel, getActivity());
 
     listView.setAdapter(mListAdapter);
   }

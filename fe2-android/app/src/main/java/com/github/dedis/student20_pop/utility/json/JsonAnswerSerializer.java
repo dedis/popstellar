@@ -4,7 +4,6 @@ import com.github.dedis.student20_pop.model.network.answer.Answer;
 import com.github.dedis.student20_pop.model.network.answer.Error;
 import com.github.dedis.student20_pop.model.network.answer.Result;
 import com.google.gson.*;
-
 import java.lang.reflect.Type;
 
 /** Json serializer and deserializer for the answer */

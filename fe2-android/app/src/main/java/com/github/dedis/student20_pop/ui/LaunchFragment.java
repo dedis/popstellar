@@ -4,11 +4,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.github.dedis.student20_pop.databinding.FragmentLaunchBinding;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.home.HomeViewModel;
@@ -28,9 +26,9 @@ public final class LaunchFragment extends Fragment {
   @Nullable
   @Override
   public View onCreateView(
-          @NonNull LayoutInflater inflater,
-          @Nullable ViewGroup container,
-          @Nullable Bundle savedInstanceState) {
+      @NonNull LayoutInflater inflater,
+      @Nullable ViewGroup container,
+      @Nullable Bundle savedInstanceState) {
 
     mLaunchFragBinding = FragmentLaunchBinding.inflate(inflater, container, false);
 
@@ -50,20 +48,28 @@ public final class LaunchFragment extends Fragment {
     setupCancelButton();
 
     // Subscribe to "launch LAO" event
-    mHomeViewModel.getLaunchNewLaoEvent().observe(this, booleanEvent -> {
-      Boolean action = booleanEvent.getContentIfNotHandled();
-      if (action != null) {
-        launchLao();
-      }
-    });
+    mHomeViewModel
+        .getLaunchNewLaoEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean action = booleanEvent.getContentIfNotHandled();
+              if (action != null) {
+                launchLao();
+              }
+            });
 
     // Subscribe to "cancel launch" event
-    mHomeViewModel.getCancelNewLaoEvent().observe(this, booleanEvent -> {
-      Boolean action = booleanEvent.getContentIfNotHandled();
-      if (action != null) {
-        cancelLaoLaunch();
-      }
-    });
+    mHomeViewModel
+        .getCancelNewLaoEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean action = booleanEvent.getContentIfNotHandled();
+              if (action != null) {
+                cancelLaoLaunch();
+              }
+            });
   }
 
   private void setupLaunchButton() {
@@ -76,7 +82,7 @@ public final class LaunchFragment extends Fragment {
 
   private void launchLao() {
     mHomeViewModel.launchLao();
-    //mHomeViewModel.openHome();
+    // mHomeViewModel.openHome();
   }
 
   private void cancelLaoLaunch() {

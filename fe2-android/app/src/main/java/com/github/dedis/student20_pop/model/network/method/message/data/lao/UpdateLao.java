@@ -5,7 +5,6 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
 import com.github.dedis.student20_pop.utility.protocol.DataHandler;
 import com.google.gson.annotations.SerializedName;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;

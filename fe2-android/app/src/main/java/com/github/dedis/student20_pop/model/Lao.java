@@ -1,8 +1,6 @@
 package com.github.dedis.student20_pop.model;
 
 import com.github.dedis.student20_pop.model.event.Event;
-import com.github.dedis.student20_pop.utility.security.Hash;
-
 import java.net.URI;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -24,7 +22,13 @@ public final class Lao {
   private List<String> members;
   private List<Event> events;
 
-  public Lao(String id, String name, Long creation, Long lastModified, String organizer, List<String> witnesses) {
+  public Lao(
+      String id,
+      String name,
+      Long creation,
+      Long lastModified,
+      String organizer,
+      List<String> witnesses) {
     this.id = id;
     this.name = name;
     this.creation = creation;
@@ -50,7 +54,7 @@ public final class Lao {
 
     this.name = name.trim();
     this.creation = Instant.now().getEpochSecond();
-    this.id = ""; //Hash.hash(organizer, creation, name);
+    this.id = ""; // Hash.hash(organizer, creation, name);
     this.organizer = organizer;
     this.host = host;
     this.witnesses = new ArrayList<>();
@@ -94,7 +98,6 @@ public final class Lao {
   public String getName() {
     return name;
   }
-
 
   /** Returns the ID of the LAO, can't be modified. */
   public String getId() {

@@ -1,5 +1,7 @@
 package com.github.dedis.student20_pop.utility.ui.adapter;
 
+import static com.github.dedis.student20_pop.model.event.EventCategory.*;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,12 +11,9 @@ import android.widget.TextView;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventCategory;
-
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
-
-import static com.github.dedis.student20_pop.model.event.EventCategory.*;
 
 public abstract class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
   protected final Context context;

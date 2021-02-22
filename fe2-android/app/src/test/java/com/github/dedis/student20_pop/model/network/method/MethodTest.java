@@ -1,8 +1,8 @@
 package com.github.dedis.student20_pop.model.network.method;
 
-import org.junit.Test;
-
 import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 public class MethodTest {
 

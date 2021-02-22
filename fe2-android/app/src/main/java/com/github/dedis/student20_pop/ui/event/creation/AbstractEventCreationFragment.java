@@ -13,7 +13,6 @@ import androidx.fragment.app.FragmentManager;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ui.event.creation.pickers.DatePickerFragment;
 import com.github.dedis.student20_pop.ui.event.creation.pickers.TimePickerFragment;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;

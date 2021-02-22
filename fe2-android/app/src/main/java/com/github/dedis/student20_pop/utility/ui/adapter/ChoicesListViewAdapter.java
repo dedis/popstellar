@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.github.dedis.student20_pop.R;
-
 import java.util.LinkedList;
 import java.util.List;
 

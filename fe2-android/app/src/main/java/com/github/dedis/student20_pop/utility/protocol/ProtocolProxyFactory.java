@@ -3,7 +3,6 @@ package com.github.dedis.student20_pop.utility.protocol;
 import com.github.dedis.student20_pop.model.Person;
 import com.github.dedis.student20_pop.utility.network.WebSocketHighLevelProxy;
 import com.github.dedis.student20_pop.utility.network.WebSocketLowLevelProxy;
-
 import java.net.URI;
 
 /** Factory to create protocol proxies */

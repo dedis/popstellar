@@ -1,5 +1,11 @@
 package com.github.dedis.student20_pop.ui.qrcode;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO;
+
 import android.Manifest;
 import androidx.fragment.app.Fragment;
 import androidx.test.core.app.ActivityScenario;
@@ -7,17 +13,10 @@ import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.rule.GrantPermissionRule;
 import com.github.dedis.student20_pop.MainActivity;
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.*;
-import static com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment.QRCodeScanningType.CONNECT_LAO;
 
 /** Class handling connect fragment tests */
 public class QRCodeScanningFragmentTest {

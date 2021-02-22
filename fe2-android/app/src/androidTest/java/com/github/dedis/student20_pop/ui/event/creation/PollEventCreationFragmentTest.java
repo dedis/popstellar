@@ -1,20 +1,5 @@
 package com.github.dedis.student20_pop.ui.event.creation;
 
-import android.view.View;
-import androidx.test.core.app.ActivityScenario;
-import androidx.test.espresso.matcher.ViewMatchers;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import com.github.dedis.student20_pop.OrganizerActivity;
-import com.github.dedis.student20_pop.PoPApplication;
-import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.model.Lao;
-import com.github.dedis.student20_pop.model.event.Event;
-import org.junit.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static androidx.test.espresso.Espresso.*;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -24,6 +9,20 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
 import static org.hamcrest.Matchers.*;
+
+import android.view.View;
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.espresso.matcher.ViewMatchers;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import com.github.dedis.student20_pop.OrganizerActivity;
+import com.github.dedis.student20_pop.PoPApplication;
+import com.github.dedis.student20_pop.R;
+import com.github.dedis.student20_pop.model.Lao;
+import com.github.dedis.student20_pop.model.event.Event;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.junit.*;
 
 public class PollEventCreationFragmentTest {
 

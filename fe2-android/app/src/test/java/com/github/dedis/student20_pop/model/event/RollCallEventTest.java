@@ -1,14 +1,13 @@
 package com.github.dedis.student20_pop.model.event;
 
-import androidx.databinding.ObservableArrayList;
-import com.github.dedis.student20_pop.model.Keys;
-import org.junit.Test;
-
-import java.time.Instant;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
+
+import androidx.databinding.ObservableArrayList;
+import com.github.dedis.student20_pop.model.Keys;
+import java.time.Instant;
+import org.junit.Test;
 
 public class RollCallEventTest {
 

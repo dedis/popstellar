@@ -11,7 +11,6 @@ import com.github.dedis.student20_pop.model.network.method.*;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
-import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.meeting.CreateMeeting;
 import com.github.dedis.student20_pop.model.network.method.message.data.meeting.StateMeeting;
@@ -22,14 +21,13 @@ import com.github.dedis.student20_pop.model.network.method.message.data.rollcall
 import com.google.gson.Gson;
 import com.networknt.schema.*;
 import com.networknt.schema.uri.URIFactory;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Test object encoding and decoding with Gson
@@ -150,11 +148,12 @@ public class TestJson {
     testData(new CreateLao("id", "name", 12L, "organizer", Arrays.asList("witness1", "witness2")));
   }
 
-//  @Test
-//  public void testStateLao() throws JsonProcessingException {
-//    testData(
-//        new StateLao("id", "name", 12L, 202L, "organizer", Arrays.asList("witness1", "witness2")));
-//  }
+  //  @Test
+  //  public void testStateLao() throws JsonProcessingException {
+  //    testData(
+  //        new StateLao("id", "name", 12L, 202L, "organizer", Arrays.asList("witness1",
+  // "witness2")));
+  //  }
 
   @Test
   public void testUpdateLao() throws JsonProcessingException {

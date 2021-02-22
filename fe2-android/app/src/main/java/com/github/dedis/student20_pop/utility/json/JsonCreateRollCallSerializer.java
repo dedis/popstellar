@@ -2,7 +2,6 @@ package com.github.dedis.student20_pop.utility.json;
 
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.google.gson.*;
-
 import java.lang.reflect.Type;
 
 /** Json serializer and deserializer for the CreateRollCall message */

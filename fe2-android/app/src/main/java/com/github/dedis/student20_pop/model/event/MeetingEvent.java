@@ -1,8 +1,8 @@
 package com.github.dedis.student20_pop.model.event;
 
-import java.util.Objects;
-
 import static com.github.dedis.student20_pop.model.event.EventType.MEETING;
+
+import java.util.Objects;
 
 /** Class modeling a Meeting Event */
 public class MeetingEvent extends Event {

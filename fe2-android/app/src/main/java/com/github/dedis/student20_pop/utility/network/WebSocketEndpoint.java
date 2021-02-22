@@ -2,13 +2,12 @@ package com.github.dedis.student20_pop.utility.network;
 
 import android.os.Looper;
 import android.util.Log;
-import org.glassfish.tyrus.client.ClientManager;
-
-import javax.websocket.*;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import javax.websocket.*;
+import org.glassfish.tyrus.client.ClientManager;
 
 /**
  * A client endpoint to a web socket using jsr 365 library

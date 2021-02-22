@@ -6,12 +6,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-
 import com.github.dedis.student20_pop.databinding.FragmentQrcodeBinding;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.utility.qrcode.BarcodeTracker;
@@ -21,7 +19,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
-
 import java.io.IOException;
 
 /** Fragment handling the QR code scanning */
@@ -37,10 +34,7 @@ public final class QRCodeScanningFragment extends Fragment {
   private CameraPreview mPreview;
   private BarcodeDetector barcodeDetector;
 
-  /**
-   * Fragment constructor
-   *
-   */
+  /** Fragment constructor */
   public QRCodeScanningFragment(CameraSource camera, BarcodeDetector detector) {
     super();
     this.camera = camera;
@@ -62,7 +56,6 @@ public final class QRCodeScanningFragment extends Fragment {
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
 
-
     mQrCodeFragBinding = FragmentQrcodeBinding.inflate(inflater, container, false);
 
     FragmentActivity activity = getActivity();
@@ -80,8 +73,8 @@ public final class QRCodeScanningFragment extends Fragment {
 
     // TODO: consider removing coupling with QRFocusingProcessor
     barcodeDetector.setProcessor(
-            new QRFocusingProcessor(barcodeDetector, BarcodeTracker.getInstance(mQRCodeScanningViewModel))
-    );
+        new QRFocusingProcessor(
+            barcodeDetector, BarcodeTracker.getInstance(mQRCodeScanningViewModel)));
 
     return mQrCodeFragBinding.getRoot();
   }

@@ -8,13 +8,11 @@ import androidx.room.PrimaryKey;
 @Entity
 public class ModificationSignature {
 
-    @PrimaryKey
-    @NonNull
-    public String signature;
+  @PrimaryKey @NonNull public String signature;
 
-    public String witnessPublicKey;
+  public String witnessPublicKey;
 
-    @NonNull
-    @ColumnInfo(index = true)
-    public String identifier;
+  @NonNull
+  @ColumnInfo(index = true)
+  public String identifier;
 }
