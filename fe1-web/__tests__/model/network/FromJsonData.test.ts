@@ -141,7 +141,6 @@ describe('=== fromJsonData checks ===', () => {
     action: ActionType.CLOSE,
     update_id: rollCallId,
     closes: rollCallId,
-    start: time,
     end: FUTURE_TIMESTAMP,
     attendees: [],
   };
@@ -190,7 +189,7 @@ describe('=== fromJsonData checks ===', () => {
     .replace('FF_MODIFICATION', `"update_id":"${rollCallId.toString()}","opens":"${rollCallId.toString()}","start":${time}`);
   const dataCloseRollCall: string = dataRollCall
     .replace('F_ACTION', ActionType.CLOSE)
-    .replace('FF_MODIFICATION', `"update_id":"${rollCallId.toString()}","closes":"${rollCallId.toString()}","start":${time},"end":${FUTURE_TIMESTAMP.toString()},"attendees":[]`);
+    .replace('FF_MODIFICATION', `"update_id":"${rollCallId.toString()}","closes":"${rollCallId.toString()}","end":${FUTURE_TIMESTAMP.toString()},"attendees":[]`);
 
   beforeAll(() => {
     storeInit();
@@ -363,7 +362,6 @@ describe('=== fromJsonData checks ===', () => {
           action: ActionType.CLOSE,
           update_id: rollCallId,
           closes: rollCallId,
-          start: time,
           end: FUTURE_TIMESTAMP,
           attendees: [sampleKey1, sampleKey2],
         };

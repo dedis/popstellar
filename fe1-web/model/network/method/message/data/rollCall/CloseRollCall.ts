@@ -16,26 +16,15 @@ export class CloseRollCall implements MessageData {
 
   public readonly closes: Hash;
 
-  public readonly start: Timestamp;
-
   public readonly end: Timestamp;
 
   public readonly attendees: PublicKey[];
 
   constructor(msg: Partial<CloseRollCall>) {
-    if (!msg.start) {
-      throw new ProtocolError("Undefined 'start' parameter encountered during 'CloseRollCall'");
-    }
-    checkTimestampStaleness(msg.start);
-    this.start = msg.start;
-
     if (!msg.end) {
       throw new ProtocolError("Undefined 'end' parameter encountered during 'CloseRollCall'");
     }
-    if (msg.end < msg.start) {
-      throw new ProtocolError("Invalid timestamp encountered: 'end' parameter"
-        + " smaller than 'start' in 'CloseRollCall'");
-    }
+    checkTimestampStaleness(msg.end);
     this.end = msg.end;
 
     if (!msg.attendees) {
@@ -76,7 +65,6 @@ export class CloseRollCall implements MessageData {
 
     return new CloseRollCall({
       ...obj,
-      start: new Timestamp(obj.start),
       end: new Timestamp(obj.end),
       attendees: obj.attendees.map((key: string) => new PublicKey(key)),
       update_id: new Hash(obj.update_id),
