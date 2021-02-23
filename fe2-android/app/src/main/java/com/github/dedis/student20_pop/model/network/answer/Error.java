@@ -1,6 +1,5 @@
 package com.github.dedis.student20_pop.model.network.answer;
 
-import com.github.dedis.student20_pop.utility.protocol.MessageHandler;
 import java.util.Objects;
 
 /** A failed query's answer */
@@ -22,11 +21,6 @@ public final class Error extends Answer {
   /** Returns the error code. */
   public ErrorCode getError() {
     return error;
-  }
-
-  @Override
-  public void accept(MessageHandler handler) {
-    handler.handle(this);
   }
 
   @Override

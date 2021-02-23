@@ -4,7 +4,11 @@ import android.content.Context;
 import android.util.Log;
 import androidx.security.crypto.EncryptedFile;
 import androidx.security.crypto.MasterKey;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 
@@ -13,6 +17,7 @@ import java.security.GeneralSecurityException;
  *
  * <p>The private information is stored in an EncryptedFile, generated with a MasterKey.
  */
+@Deprecated
 public class PrivateInfoStorage {
 
   public static final String TAG = PrivateInfoStorage.class.getSimpleName();

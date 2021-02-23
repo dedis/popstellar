@@ -3,9 +3,7 @@ package com.github.dedis.student20_pop.model.network.method.message.data.lao;
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
-import com.github.dedis.student20_pop.utility.protocol.DataHandler;
 import com.github.dedis.student20_pop.utility.security.Hash;
-import java.net.URI;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,11 +61,6 @@ public class CreateLao extends Data {
 
   public List<String> getWitnesses() {
     return new ArrayList<>(witnesses);
-  }
-
-  @Override
-  public void accept(DataHandler handler, URI host, String channel) {
-    handler.handle(this, host, channel);
   }
 
   @Override

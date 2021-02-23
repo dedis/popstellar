@@ -9,6 +9,7 @@ import com.github.dedis.student20_pop.ui.AttendeeFragment;
 import com.github.dedis.student20_pop.ui.IdentityFragment;
 
 /** Activity used to display the different UIs for attendees */
+@Deprecated
 public class AttendeeActivity extends FragmentActivity {
 
   public static final String TAG = AttendeeActivity.class.getSimpleName();
