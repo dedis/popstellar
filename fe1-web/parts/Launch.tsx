@@ -2,18 +2,20 @@ import React, { useState } from 'react';
 import {
   StyleSheet, View, TextInput, TextStyle, ViewStyle,
 } from 'react-native';
-import { Spacing, Typography } from 'styles';
+import { Spacing, Typography } from 'styles/index';
 
+import * as RootNavigation from 'navigation/RootNavigation';
 import STRINGS from 'res/strings';
 import PROPS_TYPE from 'res/Props';
 import { requestCreateLao } from 'network/MessageApi';
-import { dispatch } from 'store';
+import { dispatch, KeyPairStore, OpenedLaoStore } from 'store';
 import { getNetworkManager } from 'network';
 import { JsonRpcResponse } from 'model/network';
 import WideButtonView from 'components/WideButtonView';
 import TextBlock from 'components/TextBlock';
 import PropTypes from 'prop-types';
 import styleContainer from 'styles/stylesheets/container';
+import { Hash, Lao, Timestamp } from 'model/objects';
 
 /**
  * Manage the Launch screen: a description string, a LAO name text input, a launch LAO button,
@@ -54,6 +56,19 @@ const Launch = ({ navigation }: IPropTypes) => {
     const nc = getNetworkManager().connect('127.0.0.1');
     nc.setResponseHandler((m: JsonRpcResponse) => {
       console.info('Handling the json-rpc response : ', m);
+
+      const org = KeyPairStore.getPublicKey();
+      const time = new Timestamp(1609455600);
+      const sampleLao: Lao = new Lao({
+        name: 'name',
+        id: Hash.fromStringArray(org.toString(), time.toString(), 'name'),
+        creation: time,
+        last_modified: time,
+        organizer: org,
+        witnesses: [],
+      });
+
+      OpenedLaoStore.store(sampleLao);
     });
   };
 
@@ -89,6 +104,10 @@ const Launch = ({ navigation }: IPropTypes) => {
         <WideButtonView
           title="[TEST] Clear (persistent) storage"
           onPress={onTestClearStorage}
+        />
+        <WideButtonView
+          title="[TEST] GoTo newly created LAO"
+          onPress={() => RootNavigation.navigate(STRINGS.app_navigation_tab_organizer, {})}
         />
         <WideButtonView
           title={STRINGS.general_button_cancel}
