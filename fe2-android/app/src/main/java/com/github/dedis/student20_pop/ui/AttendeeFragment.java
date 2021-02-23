@@ -18,6 +18,7 @@ import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.utility.ui.adapter.AttendeeEventExpandableListViewAdapter;
 import com.github.dedis.student20_pop.utility.ui.adapter.WitnessListViewAdapter;
+import java.net.URI;
 import java.util.List;
 
 /** Fragment used to display the Attendee UI */
@@ -39,7 +40,8 @@ public class AttendeeFragment extends Fragment {
 
     View rootView = inflater.inflate(R.layout.fragment_attendee, container, false);
     PoPApplication app = (PoPApplication) (this.getActivity().getApplication());
-    lao = app.getCurrentLaoUnsafe();
+    // lao = app.getCurrentLaoUnsafe();
+    lao = new Lao("test name", "organizer", URI.create("http://test.com"));
     List<Event> events = lao.getEvents();
     // Display Events
     expandableListView = rootView.findViewById(R.id.exp_list_view);

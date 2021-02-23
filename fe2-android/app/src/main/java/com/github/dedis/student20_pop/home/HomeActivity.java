@@ -19,6 +19,7 @@ import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.utility.ActivityUtils;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
+/** HomeActivity represents the entry point for the application. */
 public class HomeActivity extends AppCompatActivity {
 
   private final String TAG = HomeActivity.class.getSimpleName();

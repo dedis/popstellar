@@ -1,7 +1,5 @@
 package com.github.dedis.student20_pop;
 
-import static com.github.dedis.student20_pop.model.event.RollCallEvent.AddAttendeeResult.*;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +15,7 @@ import com.github.dedis.student20_pop.ui.event.creation.PollEventCreationFragmen
 import com.github.dedis.student20_pop.ui.event.creation.RollCallEventCreationFragment;
 
 /** Activity used to display the different UIs for organizers */
+@Deprecated
 public class OrganizerActivity extends FragmentActivity {
 
   public static final String TAG = OrganizerActivity.class.getSimpleName();
