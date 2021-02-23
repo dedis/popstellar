@@ -17,7 +17,6 @@
 			"contentEncoding": "base64",
 			"$comment": "The 'update_id' of the latest roll call open, or in its absence, the 'id' field of the roll call creation"
 		},
-		"start": { "description": "[Timestamp] start time", "type": "integer", "minimum": 0 },
 		"end": { "description": "[Timestamp] end time", "type": "integer", "minimum": 0 },
 		"attendees": {
 			"description": "[Array[Base64String]] list of public keys of attendees",
@@ -27,7 +26,7 @@
 		}
 	},
 	"additionalProperties": false,
-	"required": ["object", "action", "update_id", "closes", "start", "end", "attendees"],
+	"required": ["object", "action", "update_id", "closes", "end", "attendees"],
 	"note": [
 		"When the organizer scanned all the public keys of the attendees, it closes the event",
 		"and broadcast attendees public keys. The start time corresponds to the time of openening",
