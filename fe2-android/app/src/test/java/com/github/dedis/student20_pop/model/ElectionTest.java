@@ -2,9 +2,10 @@ package com.github.dedis.student20_pop.model;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThrows;
 
-import com.github.dedis.student20_pop.utility.security.Hash;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.junit.Test;
@@ -38,12 +39,12 @@ public class ElectionTest {
     assertThat(Long.toString(election1.getTime()).length(), is(LENGTH_UNIX_TIMESTAMP));
   }
 
-  @Test
-  public void getIdTest() {
-    assertThat(
-        election1.getId(),
-        is(Hash.hash(election1.getLao(), election1.getTime(), election1.getName())));
-  }
+  //  @Test
+  //  public void getIdTest() {
+  //    assertThat(
+  //        election1.getId(),
+  //        is(Hash.hash(election1.getLao(), election1.getTime(), election1.getName())));
+  //  }
 
   @Test
   public void getLaoTest() {
