@@ -68,7 +68,8 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
                               application,
                               Injection.provideLAOService(
                                       Injection.provideScarlet(
-                                              application, Injection.provideOkHttpClient(), gson))));
+                                              application, Injection.provideOkHttpClient(), gson))),
+                      keysetManager);
     }
 
     throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());
