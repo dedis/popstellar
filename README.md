@@ -1,60 +1,30 @@
-# student20_pop: fe2-android branch
-Proof-of-personhood, fall 2020: Android native front-end
+# student_21_pop
+Proof-of-personhood, spring 2021
 
-## Table of contents
-* [Technicalities](#technicalities)
-* [Setup](#setup)
-* [Github Actions](#github-actions)
-* [Coding Standards](#coding-standards)
+Note that the main work in this repository is to be done
+in the context of the following front-end and back-end folders:
 
-## Technicalities
-* The target API is 29 and the minimum required is 26
-* The [R class in Android](https://stackoverflow.com/questions/4953077/what-is-the-class-r-in-android) is an auto-generated class containing the resource IDs all the resources of res/directory.
-* The keys are encoded in Base64 and stored as Strings, to acces the array of bytes one must decode the following way: `Base64.getDecoder().decode`
+* [fe1-web](https://github.com/dedis/student_21_pop/tree/master/fe1-web): Web-based front-end implementation in TypeScript/ReactJS
+* [fe2-android](https://github.com/dedis/student_21_pop/tree/master/fe2-android): Android native front-end implementation in Java
+* [fe3-ios](https://github.com/dedis/student_21_pop/tree/master/fe3-ios): (Future) iOS native front-end implementation in Swift
+* [be1-go](https://github.com/dedis/student_21_pop/tree/master/be1-go): Back-end implementation in Go
+* [be2-scala](https://github.com/dedis/student_21_pop/tree/master/be2-scala): Back-end implementation in Scala
 
-## Setup
-For cloning, use `--recursive` as the project contains submodules.
+Everyone working on the project,
+please create your own private "working" branches as needed
+using the naming convention
+`work-(fe*|be*|evoting|wallet|network)-<yourname>[-optional-variant]`.
+For example,
+a branch I create to contribute to the `fe1-web` project
+might be called `work-fe1-bford` by default,
+or `work-fe1-bford-random-experiment` if I need an additional temporary branch
+for a random experiment for example.
+As another example,
+a branch I create to as part of my work on the `e-voting` project,
+and which spans both a back-end and a front-end,
+might be called `work-evoting-bford` by default,
+or `work-evoting-bford-ballot-casting`
+if I need a branch to develop the ballot casting feature.
 
-#### Usage
-Import the project to Android Studio or IntelliJ, choose an emulator in the AVD Manager and run the app. The emulator used for running and testing was a Pixel 2 API 29.
 
-To run on an Android device connect it to the computer and run the following commands. Keep in mind that the minimum API required is 26.
-```
-gradle build
-```
-```
-gradle installDebug
-```
-Find the app installed on the device and open it.
-
-#### Test
-Open the virtual device and run the following command:
-```
-./gradlew connectedCheck
-```
-It's also possible to run the tests using the option "Run with Coverage" from Android Studio.
-
-## Github Actions
-
-This project uses Github Actions as a CI, for more information go to the [workflows](https://github.com/dedis/student20_pop/blob/fe2-android/.github/workflows/fe2-android.yml) of this project.
-
-This CI builds and runs the Unit Tests. For the Android Tests, the [reactivecircus](https://github.com/ReactiveCircus/android-emulator-runner) Android Emulator is used, which is limited. There are issues finding the resource values and checking [Toast messages](https://developer.android.com/reference/android/widget/Toast) appearance.
-
-The Jacoco plugin can be set in the future for code coverage, this [guide](https://www.raywenderlich.com/10562143-continuous-integration-for-android#toc-anchor-013) covers how to set it.
-
-## Coding Standards
-This project follows the [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html). The [google-java-format](https://github.com/google/google-java-format) plugin allows very easy formatting.
-### File Structure
-The project is divided in 3 packages:
-* **model**: for the classes used to model different entities
-* **utility**: for the classes used to represent the application utilities
-* **ui**: for the classes used to represent the fragments for the UI
-
-The new files or packages are added into one of these packages.
-
-The package **utility.network** follows the file structure of the branch [proto-specs](https://github.com/dedis/student20_pop/tree/proto-specs).
-### Resource Values
-The values used for the UI are stored in the corresponding xml
-files (colors, dimens, strings or styles) in the res/values folder.
-
-They can then be accessed using ```R.id``` or ```getResources()```.
+This project is licensed under the terms of the AGPL licence. If this license is not suitable for your project, please contact us to discuss licensing terms.

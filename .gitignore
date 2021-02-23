@@ -1,19 +1,25 @@
-# IntelliJ
-*.iml
+# JetBrains editors: IntelliJ, WebStorm, ...
 .idea
 
-# Gradle files
-.gradle
-build
+# VS Code
+.vscode
 
-# Local configuration file (sdk path, etc)
-local.properties
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
 
-# Mac OS
-.DS_Store
+# Test binary, built with `go test -c`
+*.test
 
-# Android Studio captures folder
-captures
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
 
-# External native build folder generated in Android Studio 2.2 and later
-.externalNativeBuild
+# Dependency directories (remove the comment below to include it)
+
+# vendor/
+# Database files
+*.db
+*.lock

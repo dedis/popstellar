@@ -1,0 +1,36 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataCloseRollCall.json",
+	"description": "Match a close roll-call query",
+	"type": "object",
+
+	"properties": {
+		"object": { "const": "roll_call" },
+		"action": { "const": "close" },
+		"id": {
+			"type": "string",
+			"contentEncoding": "base64",
+			"$comment": "Hash : SHA256('R'||lao_id||creation||name)"
+		},
+		"start": { "description": "[Timestamp] start time", "type": "integer", "minimum": 0 },
+		"end": { "description": "[Timestamp] end time", "type": "integer", "minimum": 0 },
+		"attendees": {
+			"description": "[Array[Base64String]] list of public keys of attendees",
+			"type": "array",
+			"uniqueItems": true,
+			"items": { "type": "string", "contentEncoding": "base64" }
+		}
+	},
+	"additionalProperties": false,
+	"required": ["object", "action", "id", "start", "end", "attendees"],
+	"note": [
+		"When the organizer scanned all the public keys of the attendees, it closes the event",
+		"and broadcast attendees public keys. The start time corresponds to the time of openening",
+		"of the event. Usually, the event can only be closed once.",
+		"In some special case, the event may be reopened (e.g. the organizer forgot to scan the key",
+		"of an attendee, so we reopen 2 minutes later). In this case, we can close the event a",
+		"second (or more) time. The start time then corresponds to the time of the reopening,",
+		"not the original opening time."
+
+	]
+}
