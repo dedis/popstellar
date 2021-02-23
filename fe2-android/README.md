@@ -1,5 +1,5 @@
-# student20_pop: fe2-android branch
-Proof-of-personhood, fall 2020: Android native front-end
+# student21_pop: fe2-android
+Proof-of-personhood, spring 2021: Android native front-end
 
 ## Table of contents
 * [Technicalities](#technicalities)
