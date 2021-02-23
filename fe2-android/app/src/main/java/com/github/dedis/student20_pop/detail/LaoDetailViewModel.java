@@ -14,7 +14,12 @@ import com.github.dedis.student20_pop.Event;
 import com.github.dedis.student20_pop.model.data.LAORepository;
 import com.github.dedis.student20_pop.model.entities.LAOEntity;
 import com.github.dedis.student20_pop.model.entities.Person;
+import com.github.dedis.student20_pop.utility.security.Keys;
+import com.google.crypto.tink.KeysetHandle;
+import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,14 +37,16 @@ public class LaoDetailViewModel extends AndroidViewModel {
     private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
     private final MutableLiveData<String> mLaoName = new MutableLiveData<>("");
     private final LAORepository mLAORepository;
+    private final AndroidKeysetManager mKeysetManager;
     private final MutableLiveData<Map<String, Person>> mWitnessesById = new MutableLiveData<>();
     private final LiveData<List<Person>> mWitnesses = Transformations.map(mWitnessesById, witnesses ->
             new ArrayList<>(witnesses.values()));
 
-    public LaoDetailViewModel(@NonNull Application application, LAORepository laoRepository) {
+    public LaoDetailViewModel(@NonNull Application application, LAORepository laoRepository, AndroidKeysetManager keysetManager) {
         super(application);
 
         mLAORepository = laoRepository;
+        mKeysetManager = keysetManager;
     }
 
     public LiveData<Event<Boolean>> getOpenHomeEvent() {
@@ -63,7 +70,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
     }
 
     public String getCurrentLaoName() {
-        return "HELLO";//getCurrentLao().lao.name;
+        return getCurrentLao().lao.name;
     }
 
     public Boolean isOrganizer() {
@@ -124,15 +131,23 @@ public class LaoDetailViewModel extends AndroidViewModel {
         if(laoId == null) {
             throw new IllegalArgumentException("Can't access details from a null LAO");
         }
-        //TODO: get user id and LAO
-        //isOrganizer.setValue(laoId.equals("user id"));
-        isOrganizer.setValue(true);
-        mCurrentLao.setValue(mLAORepository.getLAO(laoId));
+        try {
+            KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+            String uid = Keys.getEncodedKey(publicKeysetHandle);
 
-        Log.d(TAG, "The user is organizer: " + isOrganizer());
+            isOrganizer.setValue(laoId.equals(uid));
+            mCurrentLao.setValue(mLAORepository.getLAO(laoId));
 
-        //TODO: create insert for LAOs into db
-        mCurrentLao.setValue(new LAOEntity());
+            Log.d(TAG, "The user is organizer: " + isOrganizer());
+
+            //TODO: create insert for LAOs into db
+            mCurrentLao.setValue(new LAOEntity());
+
+        } catch (GeneralSecurityException e) {
+            Log.e(TAG, "failed to get keyset handle", e);
+        } catch (IOException e) {
+            Log.e(TAG, "failed to parse public key", e);
+        }
     }
 
     public void setCurrentLaoName(String laoName) {
