@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.student20_pop.Injection;
-import com.github.dedis.student20_pop.OrganizerActivity;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
@@ -20,8 +19,6 @@ import com.github.dedis.student20_pop.ui.LaunchFragment;
 import com.github.dedis.student20_pop.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.utility.ActivityUtils;
-import com.github.dedis.student20_pop.utility.qrcode.QRCodeListener;
-import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 public class HomeActivity extends AppCompatActivity {
@@ -34,7 +31,7 @@ public class HomeActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
+    setContentView(R.layout.activity_home);
 
     setupHomeFragment();
 
@@ -154,7 +151,7 @@ public class HomeActivity extends AppCompatActivity {
     if (homeFragment == null) {
       homeFragment = HomeFragment.newInstance();
       ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), homeFragment, R.id.fragment_container_main);
+          getSupportFragmentManager(), homeFragment, R.id.fragment_container_home);
     }
   }
 
@@ -171,7 +168,7 @@ public class HomeActivity extends AppCompatActivity {
               Injection.provideCameraSource(context, qrCodeDetector, width, height),
               qrCodeDetector);
       ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), scanningFragment, R.id.fragment_container_main);
+          getSupportFragmentManager(), scanningFragment, R.id.fragment_container_home);
     }
   }
 
@@ -182,7 +179,7 @@ public class HomeActivity extends AppCompatActivity {
     if (cameraPermissionFragment == null) {
       cameraPermissionFragment = CameraPermissionFragment.newInstance();
       ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), cameraPermissionFragment, R.id.fragment_container_main);
+          getSupportFragmentManager(), cameraPermissionFragment, R.id.fragment_container_home);
     }
   }
 
@@ -192,7 +189,7 @@ public class HomeActivity extends AppCompatActivity {
     if (launchFragment == null) {
       launchFragment = LaunchFragment.newInstance();
       ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), launchFragment, R.id.fragment_container_main);
+          getSupportFragmentManager(), launchFragment, R.id.fragment_container_home);
     }
   }
 
@@ -202,7 +199,7 @@ public class HomeActivity extends AppCompatActivity {
     if (connectingFragment == null) {
       connectingFragment = ConnectingFragment.newInstance();
       ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), connectingFragment, R.id.fragment_container_main);
+          getSupportFragmentManager(), connectingFragment, R.id.fragment_container_home);
     }
   }
 

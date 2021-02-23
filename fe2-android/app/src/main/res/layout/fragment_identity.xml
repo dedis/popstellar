@@ -5,8 +5,6 @@
                                                    android:layout_height="match_parent"
                                                     android:id="@+id/fragment_identity">
 
-    <!-- TODO the 3 buttons should not be home, identity and properties -->
-
     <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_horizontal_tab"
             android:layout_width="match_parent"

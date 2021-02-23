@@ -8,11 +8,13 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import com.github.dedis.student20_pop.PoPApplication;
+
 import com.github.dedis.student20_pop.R;
+
 import net.glxn.qrgen.android.QRCode;
 
 

@@ -63,6 +63,7 @@ public class LaoDetailFragment extends Fragment {
 
         mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 
+        mLaoDetailFragBinding.setViewModel(mLaoDetailViewModel);
         mLaoDetailFragBinding.setLifecycleOwner(getActivity());
 
         return mLaoDetailFragBinding.getRoot();
@@ -89,6 +90,14 @@ public class LaoDetailFragment extends Fragment {
                 showHideProperties(action);
             }
         });
+
+        // Subscribe to "edit properties" event
+        mLaoDetailViewModel.getEditPropertiesEvent().observe(this, booleanEvent -> {
+            Boolean action = booleanEvent.getContentIfNotHandled();
+            if (action != null) {
+                editProperties(action);
+            }
+        });
     }
 
     private void setupPropertiesButton() {
@@ -100,8 +109,6 @@ public class LaoDetailFragment extends Fragment {
     private void setupEditPropertiesButton() {
         mLaoDetailFragBinding.editButton.setOnClickListener(clicked -> {
             mLaoDetailViewModel.openEditProperties();
-            // Hide the edit button while editing
-            mLaoDetailFragBinding.editButton.setVisibility(View.GONE);
         });
     }
 
@@ -110,7 +117,9 @@ public class LaoDetailFragment extends Fragment {
     }
 
     private void setupCancelEditButton() {
-        mLaoDetailFragBinding.propertiesEditCancel.setOnClickListener(clicked -> mLaoDetailViewModel.cancelEdit());
+        mLaoDetailFragBinding.propertiesEditCancel.setOnClickListener(clicked -> {
+            mLaoDetailViewModel.cancelEdit();
+        });
     }
 
     private void setupWitnessListAdapter() {
@@ -157,6 +166,14 @@ public class LaoDetailFragment extends Fragment {
     }
 
     private void showHideProperties(Boolean show) {
-        mLaoDetailFragBinding.propertiesLinearLayout.setVisibility(show? View.VISIBLE : View.INVISIBLE);
+        mLaoDetailFragBinding.propertiesLinearLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    private void editProperties(Boolean edit) {
+        mLaoDetailFragBinding.editPropertiesLinearLayout.setVisibility(edit ? View.VISIBLE : View.GONE);
+
+        // Hide current LAO name and edit button while editing
+        mLaoDetailFragBinding.editButton.setVisibility(edit ? View.GONE : View.VISIBLE);
+        mLaoDetailFragBinding.organizationName.setVisibility(edit ? View.GONE : View.VISIBLE);
     }
 }

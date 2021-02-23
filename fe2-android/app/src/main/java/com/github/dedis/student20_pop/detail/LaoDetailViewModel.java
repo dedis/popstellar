@@ -4,6 +4,7 @@ import android.app.Application;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.databinding.Bindable;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -25,10 +26,10 @@ public class LaoDetailViewModel extends AndroidViewModel {
     private final MutableLiveData<Event<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mOpenIdentityEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mShowPropertiesEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<Boolean>> mEditPropertiesEvent = new MutableLiveData<>();
     private final MutableLiveData<LAOEntity> mCurrentLao = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isOrganizer = new MutableLiveData<>();
     private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
-    private final MutableLiveData<Boolean> editProperties = new MutableLiveData<>(false);
     private final MutableLiveData<String> mLaoName = new MutableLiveData<>("");
     private final LAORepository mLAORepository;
     private final MutableLiveData<Map<String, Person>> mWitnessesById = new MutableLiveData<>();
@@ -53,12 +54,16 @@ public class LaoDetailViewModel extends AndroidViewModel {
         return mShowPropertiesEvent;
     }
 
+    public LiveData<Event<Boolean>> getEditPropertiesEvent() {
+        return mEditPropertiesEvent;
+    }
+
     public LAOEntity getCurrentLao() {
         return mCurrentLao.getValue();
     }
 
     public String getCurrentLaoName() {
-        return getCurrentLao().lao.name;
+        return "HELLO";//getCurrentLao().lao.name;
     }
 
     public Boolean isOrganizer() {
@@ -67,10 +72,6 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
     public Boolean getShowProperties() {
         return showProperties.getValue();
-    }
-
-    public Boolean editProperties() {
-        return editProperties.getValue();
     }
 
     public LiveData<List<Person>> getWitnesses() {
@@ -91,17 +92,17 @@ public class LaoDetailViewModel extends AndroidViewModel {
     }
 
     public void openEditProperties() {
-        editProperties.setValue(true);
+        mEditPropertiesEvent.setValue(new Event<>(true));
     }
 
     public void closeEditProperties() {
-        editProperties.setValue(false);
+        mEditPropertiesEvent.setValue(new Event<>(false));
     }
 
     public void confirmEdit() {
         closeEditProperties();
 
-        if(mLaoName.getValue().isEmpty()) {
+        if(!mLaoName.getValue().isEmpty()) {
             updateLaoName();
         }
     }
@@ -123,7 +124,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
         if(laoId == null) {
             throw new IllegalArgumentException("Can't access details from a null LAO");
         }
-        //TODO: get user id
+        //TODO: get user id and LAO
         //isOrganizer.setValue(laoId.equals("user id"));
         isOrganizer.setValue(true);
         mCurrentLao.setValue(mLAORepository.getLAO(laoId));
