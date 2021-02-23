@@ -7,10 +7,6 @@
 
     <!-- TODO the 3 buttons should not be home, identity and properties -->
 
-    <include layout="@layout/tab_home"/>
-
-    <include layout="@layout/tab_identity"/>
-
     <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_horizontal_tab"
             android:layout_width="match_parent"

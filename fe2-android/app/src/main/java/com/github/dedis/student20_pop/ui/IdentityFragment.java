@@ -18,7 +18,7 @@ import net.glxn.qrgen.android.QRCode;
 
 /**
  * Represents the identity of a user within an organization (which allows users to “wear different
- * hats” in different organizations) TODO : For te moment, the goal of this UI is just to show a QR
+ * hats” in different organizations) TODO : For the moment, the goal of this UI is just to show a QR
  * code, but in the future, it will be needed to store identity information somewhere to make it
  * dependent of the current user and LAO
  */
@@ -74,14 +74,17 @@ public class IdentityFragment extends Fragment {
     // User identity is composed of :
     // User's public key
     // Organization's ID
+    // TODO: verify from view model if user is organizer, if not show uid (get from view model), if yes then show organizer_id and lao_id (get from view model)
+
+    /*
     final PoPApplication app = ((PoPApplication) this.getActivity().getApplication());
     String key = app.getPerson().getAuthentication();
     String laoId = app.getCurrentLaoUnsafe().getId();
-    String uniqueIdentity = key + laoId;
+    String uniqueIdentity = key + laoId;*/
 
-    identityNameEditText.setText(app.getPerson().getName());
+    identityNameEditText.setText("USERNAME");
 
-    Bitmap myBitmap = QRCode.from(uniqueIdentity).bitmap();
+    Bitmap myBitmap = QRCode.from("UNIQUE IDENTITY").bitmap();
     qrCode.setImageBitmap(myBitmap);
 
     return view;

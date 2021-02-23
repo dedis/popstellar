@@ -13,6 +13,7 @@ import com.github.dedis.student20_pop.Injection;
 import com.github.dedis.student20_pop.OrganizerActivity;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
+import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.ui.ConnectingFragment;
 import com.github.dedis.student20_pop.ui.HomeFragment;
 import com.github.dedis.student20_pop.ui.LaunchFragment;
@@ -206,7 +207,7 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void openLaoDetails(String laoId) {
-    Intent intent = new Intent(this, OrganizerActivity.class);
+    Intent intent = new Intent(this, LaoDetailActivity.class);
     intent.putExtra("LAO_ID", laoId);
     startActivityForResult(intent, LAO_DETAIL_REQUEST_CODE);
   }
