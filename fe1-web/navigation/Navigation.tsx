@@ -5,14 +5,14 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import STRINGS from 'res/strings';
 
 import Launch from 'components/Launch';
-import Home from 'components/Home';
+import Home from 'parts/Home';
 
 import ConnectNavigation from './ConnectNavigation';
 
 /**
 * The main tab navigation component
 *
-* create a tab navigator between the Home, Connect and Launch component
+* create a tab navigator between the Home, ConnectEnableCamera and Launch component
 */
 const HomeTopTabNavigator = createMaterialTopTabNavigator();
 
