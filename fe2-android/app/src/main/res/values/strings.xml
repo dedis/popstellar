@@ -1,0 +1,110 @@
+<resources>
+    <string name="app_name">Student 20 PoP</string>
+
+    <!-- Top Tabs -->
+    <string name="tab_home">Home</string>
+    <string name="tab_connect">Connect</string>
+    <string name="tab_launch">Launch</string>
+    <string name="tab_identity">Identity</string>
+    <string name="tab_properties">Show/Hide Properties</string>
+
+    <!-- Home -->
+    <string name="text_title_welcome">Welcome to Personhood.Online!</string>
+    <string name="text_body_welcome">\n\n To connect to a local organization (LAO), please tap Connect above. \n\n To
+        launch a new LAO as an organizer, please tap Launch tab above.
+    </string>
+    <string name="attendee">Attendee</string>
+    <string name="organizer">Organizer</string>
+
+    <!-- Connect -->
+    <string name="allow_camera_text">Please allow the camera to be used by the app</string>
+    <string name="allow_camera_button">Allow camera</string>
+    <string name="connecting">Connecting to</string>
+
+    <!-- Launch -->
+    <string name="text_title_launch">To launch a new organization, please enter a name for the organization.</string>
+    <string name="text_body_launch">(You can change it later.)\n\n</string>
+    <string name="text_entry_launch">Organization name</string>
+    <string name="text_button_launch">Launch</string>
+
+    <!-- Abstract Event-->
+    <string name="start_date_required">Start Date*</string>
+    <string name="start_time_required">Start Time*</string>
+    <string name="end_date_optional">End Date</string>
+    <string name="location_optional">Location</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+    <string name="past_date_not_allowed">Event has to start/end today or in the future</string>
+    <string name="end_date_after_start_date_not_allowed">End date has to be after or the same day as the start date
+    </string>
+    <string name="start_date_after_end_date_not_allowed">Start date must be before or the same day as end date</string>
+    <string name="start_time_after_end_time_not_allowed">Start time must be before end time</string>
+    <string name="end_time_before_start_time_not_allowed">End time must be after start time</string>
+    <string name="end_time_optional">End Time</string>
+    <string name="picker_selection">selection</string>
+    <string name="past_events">Past Events</string>
+    <string name="present_events">Present Events</string>
+    <string name="future_events">Future Events</string>
+
+    <!-- Poll Event -->
+    <string name="poll_event">Poll Event</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="button_confirm">Confirm</string>
+    <string name="select_event_type_dialog_title">Select Event Type</string>
+    <string name="create_poll_title">Create a Poll</string>
+    <string name="question_title">Question :</string>
+    <string name="poll_type_1">Choose 1 of N</string>
+    <string name="poll_type_2">Approve Any of N</string>
+    <string name="choices_title">Choices :</string>
+    <string name="button_schedule">Schedule</string>
+    <string name="delete_choice_button">-</string>
+    <string name="choice_edit_text_hint">Choice…</string>
+
+    <!-- Meeting Event -->
+    <string name="meeting_event">Meeting Event</string>
+    <string name="create_meeting_event">Create Meeting event</string>
+    <string name="meeting_title_required">Meeting Title*</string>
+
+    <!-- Roll-Call Event -->
+    <string name="roll_call_event">Roll-Call Event</string>
+    <string name="exception_message_empty_lao_name">Trying to set an empty name for the LAO</string>
+    <string name="anonymous_explanation">You can participate in organizations and meetings anonymously by leaving this
+        box checked.\nIf you wish to reveal your identity to other participants in this organization,\nyou may un-check
+        this box and enter the information you wish to reveal below.\nYou must enter identity information in order to
+        play an Organizer or Witness role in an organization.
+    </string>
+    <string name="roll_call_open_attendees">Open</string>
+    <string name="add_attendee_successful">Attendee scanned successfully</string>
+    <string name="add_attendee_already_exists">Attendee already recorded</string>
+    <string name="add_attendee_unsuccessful">Error when adding attendee</string>
+    <string name="add_attendees_number">Number of attendees : %1$d</string>
+
+    <!-- Identity -->
+    <string name="identity_name">Name</string>
+    <string name="identity_title">Title</string>
+    <string name="identity_email">Email</string>
+    <string name="identity_organization">Organization</string>
+    <string name="identity_phone">Phone</string>
+    <string name="identity_anonymous">Anonymous</string>
+
+    <!-- QR code -->
+    <string name="qrcode_scanning_add_witness">Scan personal QR code of the witness to add</string>
+    <string name="qrcode_scanning_connect_lao">Scan a QR code to connect to a LAO</string>
+    <string name="event_description">Event Description</string>
+    <string name="qrcode_scanning_add_attendee">Please scan each participant’s Roll-call QR code exactly once.</string>
+    <string name="close_roll_call">Close Roll-Call</string>
+    <string name="scan_all_attendees_question">Are you sure you have scan all attendees ?</string>
+    <string name="roll_call_title_required">Roll-Call Title required</string>
+
+    <!-- Witness -->
+    <string name="delete_witness_dialog_title">Delete ?</string>
+    <string name="add_witness_successful">Witness has been added</string>
+    <string name="add_witness_unsuccessful">Witness could not be added</string>
+    <string name="add_witness_already_exists">Witness you are trying to add is already a witness of this LAO</string>
+    <string name="delete_witness_dialog_message">Are you sure you want to delete Witness n° %1$d</string>
+
+    <!-- Properties -->
+    <string name="test_organization_name">Test Organization Name</string>
+    <string name="edit_lao_name">Edit Lao Name</string>
+
+</resources>
