@@ -68,7 +68,7 @@ public class OrganizerActivity extends FragmentActivity {
     if (!fragment.isVisible()) {
       getSupportFragmentManager()
           .beginTransaction()
-          .replace(R.id.fragment_container_organizer, fragment, TAG)
+          .replace(R.id.fragment_container_lao_detail, fragment, TAG)
           .addToBackStack(TAG)
           .commit();
     }

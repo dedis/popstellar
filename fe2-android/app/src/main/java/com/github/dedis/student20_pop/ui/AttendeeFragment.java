@@ -7,21 +7,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
-import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.github.dedis.student20_pop.AttendeeActivity;
-import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.entities.LAOEntity;
-import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.utility.ui.adapter.AttendeeEventExpandableListViewAdapter;
-import com.github.dedis.student20_pop.utility.ui.adapter.WitnessListViewAdapter;
-import java.util.List;
 
 /** Fragment used to display the Attendee UI */
 public class AttendeeFragment extends Fragment {
