@@ -17,24 +17,18 @@ import com.github.dedis.student20_pop.model.entities.LAOEntity;
 import com.github.dedis.student20_pop.utility.ui.adapter.AttendeeEventExpandableListViewAdapter;
 
 /** Fragment used to display the Attendee UI */
+@Deprecated
 public class AttendeeFragment extends Fragment {
 
   public static final String TAG = AttendeeFragment.class.getSimpleName();
-
-  private final LAOEntity laoEntity;
-
 
   private AttendeeEventExpandableListViewAdapter listViewEventAdapter;
   private ExpandableListView expandableListView;
   private Button propertiesButton;
   private ListView witnessesListView;
 
-  public AttendeeFragment(LAOEntity laoEntity) {
-      this.laoEntity = laoEntity;
-  }
-
-  public static AttendeeFragment newInstance(LAOEntity laoEntity) {
-      return new AttendeeFragment(laoEntity);
+  public static AttendeeFragment newInstance() {
+      return new AttendeeFragment();
   }
 
   @Nullable

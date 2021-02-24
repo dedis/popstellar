@@ -179,18 +179,18 @@ public class PoPApplication extends Application {
 
   /** Only useful when testing without a back-end. */
   public void activateTestingValues() {
-    currentLao = new Lao("LAO I just joined", person.getId(), LOCAL_BACKEND_URI);
+    currentLao = new Lao("LAO I just joined", person.getId());
     dummyLaos();
   }
 
   /** This method creates a map for testing, when no backend is connected. */
   private void dummyLaos() {
     String notMyPublicKey = new Keys().getPublicKey();
-    Lao lao0 = new Lao("LAO I just joined", getPerson().getId(), LOCAL_BACKEND_URI);
-    Lao lao1 = new Lao("LAO 1", notMyPublicKey, LOCAL_BACKEND_URI);
-    Lao lao2 = new Lao("LAO 2", notMyPublicKey, LOCAL_BACKEND_URI);
-    Lao lao3 = new Lao("My LAO 3", getPerson().getId(), LOCAL_BACKEND_URI);
-    Lao lao4 = new Lao("LAO 4", notMyPublicKey, LOCAL_BACKEND_URI);
+    Lao lao0 = new Lao("LAO I just joined", getPerson().getId());
+    Lao lao1 = new Lao("LAO 1", notMyPublicKey);
+    Lao lao2 = new Lao("LAO 2", notMyPublicKey);
+    Lao lao3 = new Lao("My LAO 3", getPerson().getId());
+    Lao lao4 = new Lao("LAO 4", notMyPublicKey);
 
     lao0.setEvents(dummyEvents(lao0.getId()));
     lao1.setEvents(dummyEvents(lao0.getId()));

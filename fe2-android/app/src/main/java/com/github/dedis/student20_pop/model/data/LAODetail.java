@@ -32,7 +32,7 @@ public class LAODetail {
     this.laoEvents = laoEvents;
   }
 
-  public void setmLao(Lao mLao) {
+  public void setLao(Lao mLao) {
     this.mLao = mLao;
   }
 }
