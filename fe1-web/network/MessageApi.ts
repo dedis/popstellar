@@ -141,11 +141,11 @@ export function requestCreateRollCall(
     id: Hash.fromStringArray(
       EventTags.ROLL_CALL, currentLao.id.toString(), currentLao.creation.toString(), name,
     ),
-    name,
+    name: name,
     creation: time,
-    location,
-    start,
-    scheduled,
+    location: location,
+    start: start,
+    scheduled: scheduled,
     roll_call_description: description,
   });
 
