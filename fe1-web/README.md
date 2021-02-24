@@ -1,12 +1,6 @@
 # student_21_pop: fe1-web
 Proof-of-personhood, Spring 2021: Web-based front-end
 
-## Fixes to be carried out at a global level (by DEDIS engineering, before the semester starts)
-* Switch to using the right file types (JSX) for JSX files
-* Consider switching to TypeScript to have a bit of type-safety
-* Use classes to represent message structures, as opposed to ad-hoc logic
-* Use proper function definitions as opposed to const variables containing fat arrows
-
 ## Running the project
 Open the terminal in the folder `PopApp` and enter the following commands
 
@@ -76,5 +70,6 @@ Unit tests can be run from the `PopApp` folder using:
 
 ## Coding convention
 
-Our styling convention regarding the components can be found [here](https://thoughtbot.com/blog/structure-for-styling-in-react-native)
-Our coding convention follow the aibnb, that can be found [here](https://github.com/airbnb/javascript) and a quick install guide [here](https://medium.com/pvtl/linting-for-react-native-bdbb586ff694)
+Our coding convention is based on airbnb, which can be found [here](https://github.com/airbnb/javascript) and a quick install guide [here](https://medium.com/pvtl/linting-for-react-native-bdbb586ff694)
+
+Our convention for styling React elements can be found [here](https://thoughtbot.com/blog/structure-for-styling-in-react-native)
