@@ -17,8 +17,7 @@ export function publish(channel: Channel, msgData: MessageData): Promise<void> {
     id: -1, // FIXME
   });
 
-  // discard JsonRpcResponse, as publish only returns an ack.
-  // propagate the catch() with the full error message, as it needs to be handled on a higher level
   return getNetworkManager().sendPayload(request)
-    .then(() => {});
+    .then(() => { /* discard JsonRpcResponse, as publish only returns an ack */ });
+  // propagate the catch() with the full error message, as it needs to be handled on a higher level
 }
