@@ -3,17 +3,17 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import STRINGS from 'res/strings';
 
-import ConnectUnapprove from 'components/ConnectUnapprove';
-import ConnectScanning from 'components/ConnectScanning';
-import ConnectConnecting from 'components/ConnectConnecting';
-import ConnectConfirm from 'components/ConnectConfirm';
+import ConnectEnableCamera from 'parts/connect/ConnectEnableCamera';
+import ConnectOpenScan from 'parts/connect/ConnectOpenScan';
+import ConnectConnecting from 'parts/connect/ConnectConnecting';
+import ConnectConfirm from 'parts/connect/ConnectConfirm';
 
 /**
- * Define the Connect stack navigation
+ * Define the ConnectEnableCamera stack navigation
  *
- * Contains four screen:
- *  - The ConnectUnapprove
- *  - The ConnectScanning
+ * Contains four screens:
+ *  - The ConnectEnableCamera
+ *  - The ConnectOpenScan
  *  - The ConnectConnecting
  *  - The ConnectConfirm
 */
@@ -29,11 +29,11 @@ export default function ConnectNavigation() {
     >
       <Stack.Screen
         name={STRINGS.connect_unapproved_title}
-        component={ConnectUnapprove}
+        component={ConnectEnableCamera}
       />
       <Stack.Screen
         name={STRINGS.connect_scanning_title}
-        component={ConnectScanning}
+        component={ConnectOpenScan}
       />
       <Stack.Screen
         name={STRINGS.connect_connecting_title}

@@ -6,15 +6,10 @@ import PropTypes from 'prop-types';
 
 import { Colors } from 'styles';
 
-const cameraIc = require('../res/img/ic_camera.png');
+const cameraImage = require('../res/img/ic_camera.png');
 
 /**
- * Camera button component: a design button
- *
- * Show a camera button that apply the function action
- * when it is press.
- *
- * use action parameter to define the onPress action
+ * Camera button that executes an onPress action given in props
 */
 
 const styles = StyleSheet.create({
@@ -32,22 +27,21 @@ const styles = StyleSheet.create({
   },
 });
 
-interface IPropTypes {
-  action: () => any;
-}
-
 function CameraButton({ action }: IPropTypes) {
   return (
     <View>
-      <TouchableOpacity style={styles.button} onPress={() => { action(); }}>
-        <Image style={styles.icon} source={cameraIc} />
+      <TouchableOpacity style={styles.button} onPress={action}>
+        <Image style={styles.icon} source={cameraImage} />
       </TouchableOpacity>
     </View>
   );
 }
 
-CameraButton.propTypes = {
+const propTypes = {
   action: PropTypes.func.isRequired,
 };
+CameraButton.prototype = propTypes;
+
+type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default CameraButton;
