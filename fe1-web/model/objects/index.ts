@@ -7,3 +7,6 @@ export * from './Signature';
 export * from './Timestamp';
 export * from './WitnessSignature';
 export * from './Lao';
+export * from './RollCall';
+export * from './Event';
+export * from './EventBuilder';
