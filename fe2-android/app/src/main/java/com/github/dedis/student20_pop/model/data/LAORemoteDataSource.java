@@ -21,6 +21,7 @@ public class LAORemoteDataSource implements LAODataSource.Remote {
 
   private LAORemoteDataSource(LAOService service) {
     this.laoService = service;
+    requestId = new AtomicInteger();
   }
 
   public Observable<GenericMessage> observeMessage() {

@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.utility.json;
 
+import android.util.Log;
 import com.github.dedis.student20_pop.model.network.answer.Result;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.google.gson.JsonDeserializationContext;
@@ -13,10 +14,12 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 public class JsonResultSerializer implements JsonSerializer<Result>, JsonDeserializer<Result> {
+  private static final String TAG = JsonResultSerializer.class.getSimpleName();
 
   @Override
   public Result deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
+    Log.d(TAG, "Trying to deserialize result");
     JsonObject root = json.getAsJsonObject();
 
     int id = root.get("id").getAsInt();
@@ -26,6 +29,7 @@ public class JsonResultSerializer implements JsonSerializer<Result>, JsonDeseria
     if (resultElement.isJsonPrimitive()) {
       result.setGeneral();
     } else {
+      Log.d(TAG, "got a list of messages to deserialize");
       List<MessageGeneral> messages = context.deserialize(resultElement, MessageGeneral.class);
       result.setMessages(messages);
     }
