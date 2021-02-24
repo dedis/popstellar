@@ -20,8 +20,6 @@ import com.github.dedis.student20_pop.model.network.method.message.data.message.
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
-import com.github.dedis.student20_pop.utility.protocol.DataHandler;
-import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -82,15 +80,6 @@ public abstract class Data {
   public static Optional<Class<? extends Data>> getType(Objects obj, Action action) {
     return Optional.ofNullable(messages.get(pair(obj, action)));
   }
-
-  /**
-   * Accept the given handler following a visitor pattern
-   *
-   * @param handler that will handle this data
-   * @param host that received the data
-   * @param channel on which the data was received
-   */
-  public abstract void accept(DataHandler handler, URI host, String channel);
 
   /** Returns the object the message is referring to. */
   public abstract String getObject();

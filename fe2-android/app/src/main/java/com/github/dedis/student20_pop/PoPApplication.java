@@ -12,23 +12,17 @@ import com.github.dedis.student20_pop.model.Keys;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.Person;
 import com.github.dedis.student20_pop.model.event.Event;
-import com.github.dedis.student20_pop.model.network.method.message.data.Data;
-import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
-import com.github.dedis.student20_pop.model.network.method.message.data.meeting.StateMeeting;
-import com.github.dedis.student20_pop.utility.protocol.DataHandler;
-import com.github.dedis.student20_pop.utility.protocol.HighLevelProxy;
-import com.github.dedis.student20_pop.utility.protocol.ProtocolProxyFactory;
 import java.net.URI;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /** Class modelling the application : a unique person associated with LAOs */
+@Deprecated
 public class PoPApplication extends Application {
 
   public static final String TAG = PoPApplication.class.getSimpleName();
@@ -36,10 +30,7 @@ public class PoPApplication extends Application {
   public static final String USERNAME = "USERNAME";
   public static final URI LOCAL_BACKEND_URI = URI.create("ws://10.0.2.2:8000");
 
-  private final Map<URI, HighLevelProxy> openSessions = new HashMap<>();
   private final Map<String, Lao> laos = new HashMap<>();
-
-  private final DataHandler dataHandler = new PoPDataHandler();
 
   private static Context appContext;
 
@@ -52,25 +43,9 @@ public class PoPApplication extends Application {
   public void onCreate() {
     super.onCreate();
 
-    //    startPurgeRoutine(new Handler(Looper.getMainLooper()));
+    person = new Person("test");
 
-    //    appContext = getApplicationContext();
-
-    // activateTestingValues(); // comment this line when testing with a back-end
-  }
-
-  //  @SuppressLint("ApplySharedPref")
-  //  @Override
-  //  public void onTerminate() {
-  //    super.onTerminate();
-  //    SharedPreferences sp = this.getSharedPreferences(TAG, Context.MODE_PRIVATE);
-  //    // Use commit instead of apply for information to be stored immediately
-  //    sp.edit().putString(SP_PERSON_ID_KEY, person.getId()).commit();
-  //  }
-
-  /** Returns PoP Application Context. */
-  public static Context getAppContext() {
-    return appContext;
+    dummyLaos();
   }
 
   /** Returns Person corresponding to the user. */
@@ -106,30 +81,6 @@ public class PoPApplication extends Application {
    */
   public List<String> getWitnesses() {
     return getCurrentLao().map(Lao::getWitnesses).orElseGet(ArrayList::new);
-  }
-
-  /** Returns the proxy of the current LAO's backend. */
-  public Optional<HighLevelProxy> getCurrentLaoProxy() {
-    return getCurrentLao().map(Lao::getHost).map(this::getProxy);
-  }
-
-  /**
-   * Get the proxy for the given host If the connection was not established yet, creates it.
-   *
-   * @param host of the backend
-   * @return the proxy
-   */
-  public HighLevelProxy getProxy(URI host) {
-    synchronized (openSessions) {
-      if (openSessions.containsKey(host)) {
-        return openSessions.get(host);
-      } else {
-        HighLevelProxy proxy =
-            ProtocolProxyFactory.getInstance().createHighLevelProxy(host, person, dataHandler);
-        openSessions.put(host, proxy);
-        return proxy;
-      }
-    }
   }
 
   /**
@@ -232,17 +183,6 @@ public class PoPApplication extends Application {
     dummyLaos();
   }
 
-  /**
-   * Handle received data messages inorder
-   *
-   * @param dataMessages List of received messages
-   * @param host the messages were received from
-   * @param channel of the messages
-   */
-  public void handleDataMessages(Collection<Data> dataMessages, URI host, String channel) {
-    for (Data data : dataMessages) data.accept(dataHandler, host, channel);
-  }
-
   /** This method creates a map for testing, when no backend is connected. */
   private void dummyLaos() {
     String notMyPublicKey = new Keys().getPublicKey();
@@ -279,36 +219,5 @@ public class PoPApplication extends Application {
   public enum AddWitnessResult {
     ADD_WITNESS_SUCCESSFUL,
     ADD_WITNESS_ALREADY_EXISTS
-  }
-
-  /** Data handler of the PoP application */
-  private class PoPDataHandler implements DataHandler {
-
-    @Override
-    public void handle(StateLao stateLao, URI host, String channel) {
-      Lao lao = laos.get(stateLao.getId());
-      if (lao == null)
-        lao =
-            new Lao(
-                stateLao.getName(),
-                stateLao.getCreation(),
-                stateLao.getId(),
-                stateLao.getOrganizer(),
-                stateLao.getWitnesses(),
-                new ArrayList<>(),
-                new ArrayList<>(),
-                host);
-      else {
-        lao.setName(stateLao.getName());
-        lao.setWitnesses(stateLao.getWitnesses());
-      }
-
-      laos.put(lao.getId(), lao);
-    }
-
-    @Override
-    public void handle(StateMeeting stateMeeting, URI host, String channel) {
-      // TODO later in the project
-    }
   }
 }

@@ -1,5 +1,5 @@
-# student20_pop: fe2-android branch
-Proof-of-personhood, fall 2020: Android native front-end
+# student21_pop: fe2-android
+Proof-of-personhood, spring 2021: Android native front-end
 
 ## Table of contents
 * [Technicalities](#technicalities)
@@ -9,7 +9,7 @@ Proof-of-personhood, fall 2020: Android native front-end
 
 ### Note
 
-This repository is being refactored and some classes and interfaces are due for removal.
+This repository is being refactored and some classes and interfaces marked with `@Deprecated` annotation are due for removal.
 
 ## Technicalities
 * The target API is 29 and the minimum required is 26
@@ -30,7 +30,7 @@ Find the app installed on the device and open it.
 
 #### Test
 
-*Note:* The tests are obsolete/broken as a result of refactoring.
+*Note:* The tests are temporarily broken as a result of refactoring.
 
 Open the virtual device and run the following command:
 ```
@@ -42,7 +42,7 @@ It's also possible to run the tests using the option "Run with Coverage" from An
 
 *Note:* CI has been disabled during refactoring.
 
-This project uses Github Actions as a CI, for more information go to the [workflows](https://github.com/dedis/student20_pop/blob/fe2-android/.github/workflows/fe2-android.yml) of this project.
+This project uses Github Actions as a CI, for more information go to the [workflows](https://github.com/dedis/student_21_pop/tree/master/.github/workflows/fe2-android.yml) of this project.
 
 This CI builds and runs the Unit Tests. For the Android Tests, the [reactivecircus](https://github.com/ReactiveCircus/android-emulator-runner) Android Emulator is used, which is limited. There are issues finding the resource values and checking [Toast messages](https://developer.android.com/reference/android/widget/Toast) appearance.
 

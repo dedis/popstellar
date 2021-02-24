@@ -12,28 +12,30 @@ export class CloseRollCall implements MessageData {
 
   public readonly action: ActionType = ActionType.CLOSE;
 
-  public readonly id: Hash;
+  public readonly update_id: Hash;
 
-  public readonly start: Timestamp;
+  public readonly closes: Hash;
 
   public readonly end: Timestamp;
 
   public readonly attendees: PublicKey[];
 
   constructor(msg: Partial<CloseRollCall>) {
-    if (!msg.start) throw new ProtocolError('Undefined \'start\' parameter encountered during \'CloseRollCall\'');
-    checkTimestampStaleness(msg.start);
-    this.start = msg.start;
-
-    if (!msg.end) throw new ProtocolError('Undefined \'end\' parameter encountered during \'CloseRollCall\'');
-    if (msg.end < msg.start) throw new ProtocolError('Invalid timestamp encountered: \'end\' parameter smaller than \'start\'');
+    if (!msg.end) {
+      throw new ProtocolError("Undefined 'end' parameter encountered during 'CloseRollCall'");
+    }
+    checkTimestampStaleness(msg.end);
     this.end = msg.end;
 
-    if (!msg.attendees) throw new ProtocolError('Undefined \'attendees\' parameter encountered during \'CloseRollCall\'');
+    if (!msg.attendees) {
+      throw new ProtocolError("Undefined 'attendees' parameter encountered during 'CloseRollCall'");
+    }
     checkAttendees(msg.attendees);
     this.attendees = [...msg.attendees];
 
-    if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'CloseRollCall\'');
+    if (!msg.update_id) {
+      throw new ProtocolError("Undefined 'update_id' parameter encountered during 'CloseRollCall'");
+    }
 
     // FIXME: implementation not finished, get event from storage,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -46,7 +48,12 @@ export class CloseRollCall implements MessageData {
       throw new ProtocolError(
         'Invalid \'id\' parameter encountered during \'CloseRollCall\': unexpected id value
       '); */
-    this.id = msg.id;
+    this.update_id = msg.update_id;
+
+    if (!msg.closes) {
+      throw new ProtocolError("Undefined 'closes' parameter encountered during 'CloseRollCall'");
+    }
+    this.closes = msg.closes;
   }
 
   public static fromJson(obj: any): CloseRollCall {
@@ -58,10 +65,10 @@ export class CloseRollCall implements MessageData {
 
     return new CloseRollCall({
       ...obj,
-      start: new Timestamp(obj.start),
       end: new Timestamp(obj.end),
       attendees: obj.attendees.map((key: string) => new PublicKey(key)),
-      id: new Hash(obj.id),
+      update_id: new Hash(obj.update_id),
+      closes: new Hash(obj.closes),
     });
   }
 }

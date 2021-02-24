@@ -1,6 +1,5 @@
 # IntelliJ
 *.iml
-.idea
 
 # Gradle files
 .gradle
