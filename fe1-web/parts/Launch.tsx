@@ -54,7 +54,7 @@ const Launch = ({ navigation }: IPropTypes) => {
 
   const onTestOpenConnection = () => {
     const nc = getNetworkManager().connect('127.0.0.1');
-    nc.setResponseHandler((m: JsonRpcResponse) => {
+    nc.setRpcHandler((m: JsonRpcResponse) => {
       console.info('Handling the json-rpc response : ', m);
 
       const org = KeyPairStore.getPublicKey();

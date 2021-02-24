@@ -28,7 +28,7 @@ export class JsonRpcRequest {
       // notification methods, expect no ID
       case JsonRpcMethod.BROADCAST:
         if (req.id !== undefined) {
-          throw new ProtocolError('Error: found \'id\' parameter during \'broadcast\' message creation');
+          throw new ProtocolError("Found 'id' parameter in JSON-RPC notification");
         }
         break;
 
@@ -38,13 +38,13 @@ export class JsonRpcRequest {
       case JsonRpcMethod.UNSUBSCRIBE:
       case JsonRpcMethod.CATCHUP:
         if (req.id === undefined) {
-          throw new ProtocolError('Undefined \'id\' parameter encountered during \'JsonRpcRequest\' creation');
+          throw new ProtocolError("Undefined 'id' parameter in JSON-RPC request");
         }
         break;
 
       // Unsupported methods
       default:
-        throw new ProtocolError(`Unrecognized method '${req.method}' encountered during 'JsonRpcRequest' creation`);
+        throw new ProtocolError(`Unrecognized method '${req.method}' encountered in JSON-RPC request`);
     }
 
     this.method = req.method;
