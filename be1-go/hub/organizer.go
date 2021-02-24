@@ -302,7 +302,7 @@ func (c *laoChannel) Catchup(catchup message.Catchup) []message.Message {
 	c.inboxMu.RLock()
 	defer c.inboxMu.RUnlock()
 
-	result := make([]message.Message, len(c.inbox))
+	result := make([]message.Message, 0, len(c.inbox))
 	for _, msg := range c.inbox {
 		result = append(result, msg)
 	}
