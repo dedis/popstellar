@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
 import { connect } from 'react-redux';
 
+import { makeLaosList } from 'store/reducers';
+
 import { Spacing } from 'styles/index';
 import styleContainer from 'styles/stylesheets/container';
 import STRINGS from 'res/strings';
@@ -61,11 +63,12 @@ class Home extends Component {
 }
 /* // FIXME add back when available lao storage is refactored
 Home.propTypes = {
-  LAOs: PropTypes.arrayOf(PROPS_TYPE.LAO).isRequired,
+  laos: PropTypes.arrayOf(PROPS_TYPE.LAO).isRequired,
 }; */
 
-const mapStateToProps = (state) => ({
-  LAOs: state.availableLaos.LAOs,
+const laosList = makeLaosList();
+const mapStateToProps = (state: any) => ({
+  laos: laosList(state),
 });
 
 export default connect(mapStateToProps)(Home);

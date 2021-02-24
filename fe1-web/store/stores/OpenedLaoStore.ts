@@ -1,18 +1,19 @@
-import { Lao, LaoState } from 'model/objects';
-import { dispatch, getStore } from '../Storage';
-import { ActionOpenedLaoReducer } from '../Actions';
+import { useSelector } from 'react-redux';
+import { Lao } from 'model/objects';
+import { dispatch } from '../Storage';
+import { laoAdded, makeCurrentLao } from '../reducers';
+
+const currentLao = makeCurrentLao();
 
 export namespace OpenedLaoStore {
 
   export function store(lao: Lao): void {
-    dispatch({
-      type: ActionOpenedLaoReducer.SET_OPENED_LAO,
-      value: lao.toState(),
-    });
+    const laoState = lao.toState();
+    dispatch(laoAdded(laoState));
   }
 
   export function get(): Lao {
-    const laoState: LaoState = getStore().getState().openedLao;
+    const laoState = useSelector(currentLao);
 
     if (laoState === null || laoState === undefined) {
       throw new Error('Error encountered while accessing storage : no currently opened LAO');
