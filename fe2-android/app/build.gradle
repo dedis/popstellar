@@ -52,7 +52,6 @@ android {
             dimension "default"
         }
     }
-
 }
 
 //Simple library to use QR codes

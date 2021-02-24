@@ -18,18 +18,18 @@ public class AttendeeActivity extends FragmentActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    setContentView(R.layout.activity_attendee);
+    setContentView(R.layout.fragment_lao_detail);
 
     Intent intent = getIntent();
 
-    if (findViewById(R.id.fragment_container_attendee) != null) {
+    if (findViewById(R.id.fragment_container_lao_detail) != null) {
       if (savedInstanceState != null) {
         return;
       }
 
       getSupportFragmentManager()
           .beginTransaction()
-          .add(R.id.fragment_container_attendee, new AttendeeFragment())
+          .add(R.id.fragment_container_lao_detail, new AttendeeFragment())
           .commit();
     }
   }
@@ -58,7 +58,7 @@ public class AttendeeActivity extends FragmentActivity {
     if (!fragment.isVisible()) {
       getSupportFragmentManager()
           .beginTransaction()
-          .replace(R.id.fragment_container_attendee, fragment, TAG)
+          .replace(R.id.fragment_container_lao_detail, fragment, TAG)
           .addToBackStack(TAG)
           .commit();
     }

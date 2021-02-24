@@ -5,16 +5,19 @@ import android.app.Application;
 import android.content.pm.PackageManager;
 import android.util.Base64;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
+
 import com.github.dedis.student20_pop.Event;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.data.LAORepository;
+import com.github.dedis.student20_pop.model.entities.LAO;
 import com.github.dedis.student20_pop.model.network.answer.Result;
 import com.github.dedis.student20_pop.model.network.method.Broadcast;
 import com.github.dedis.student20_pop.model.network.method.Publish;
@@ -31,17 +34,17 @@ import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
-import io.reactivex.Flowable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+
 import java.io.IOException;
-import java.net.URI;
 import java.security.GeneralSecurityException;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.reactivex.Flowable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class HomeViewModel extends AndroidViewModel
     implements CameraPermissionViewModel, QRCodeScanningViewModel {
@@ -118,13 +121,10 @@ public class HomeViewModel extends AndroidViewModel
 
   public void setupDummyLAO() {
     Lao dummy =
-        new Lao(
-            "1234",
-            "dummy",
-            Instant.now().getEpochSecond(),
-            Instant.now().getEpochSecond(),
-            "DEDIS",
-            new ArrayList<>());
+            new Lao("dummy", "DEDIS");
+
+    // TODO: add LAO to db
+    // mLAORepository.addLAO(dummy.toLAO());
 
     Map<String, Lao> laosById = mLAOsById.getValue();
     if (laosById == null) {
@@ -174,13 +174,7 @@ public class HomeViewModel extends AndroidViewModel
 
         // Long creation, Long lastModified, String organizer, List<String> witnesses
         Lao newLao =
-            new Lao(
-                stateLao.getId(),
-                stateLao.getName(),
-                stateLao.getCreation(),
-                stateLao.getLastModified(),
-                stateLao.getOrganizer(),
-                stateLao.getWitnesses());
+            new Lao(stateLao);
 
         // We map things by the original LAO Id
         laosById.put(laoId, newLao);
@@ -218,8 +212,7 @@ public class HomeViewModel extends AndroidViewModel
       Subscribe subscribe = new Subscribe("/root/" + createLao.getId(), 2);
       mLAORepository.sendMessage(subscribe);
 
-      URI host = URI.create("");
-      Lao newLao = new Lao(laoName, organizer, host);
+      Lao newLao = new Lao(laoName, organizer);
       Log.d(TAG, "Launch new LAO: " + laoName);
 
       // Save new lao

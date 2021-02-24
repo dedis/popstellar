@@ -23,7 +23,7 @@ public class OrganizerActivity extends FragmentActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
+    /*
     setContentView(R.layout.activity_organizer);
     if (findViewById(R.id.fragment_container_organizer) != null) {
       if (savedInstanceState != null) {
@@ -34,7 +34,7 @@ public class OrganizerActivity extends FragmentActivity {
           .beginTransaction()
           .add(R.id.fragment_container_organizer, new OrganizerFragment())
           .commit();
-    }
+    }*/
   }
 
   @Override
@@ -67,7 +67,7 @@ public class OrganizerActivity extends FragmentActivity {
     if (!fragment.isVisible()) {
       getSupportFragmentManager()
           .beginTransaction()
-          .replace(R.id.fragment_container_organizer, fragment, TAG)
+          .replace(R.id.fragment_container_lao_detail, fragment, TAG)
           .addToBackStack(TAG)
           .commit();
     }

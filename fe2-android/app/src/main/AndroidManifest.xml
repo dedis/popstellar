@@ -24,14 +24,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".OrganizerActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
-        <activity android:name=".AttendeeActivity">
+        <activity android:name=".detail.LaoDetailActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

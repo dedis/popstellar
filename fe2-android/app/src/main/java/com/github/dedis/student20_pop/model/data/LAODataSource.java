@@ -26,6 +26,8 @@ public interface LAODataSource {
 
     LAOEntity getLAO(String channel);
 
+    void addLao(LAO lao);
+
     void updateLAO(LAO lao, List<Person> witnesses, List<ModificationSignature> signatures);
 
     void addRollCall(LAO lao, RollCall rollCall);

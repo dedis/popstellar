@@ -1,7 +1,10 @@
 package com.github.dedis.student20_pop.model;
 
+import com.github.dedis.student20_pop.model.entities.LAO;
 import com.github.dedis.student20_pop.model.event.Event;
-import java.net.URI;
+import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
+import com.github.dedis.student20_pop.utility.security.Hash;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,98 +13,122 @@ import java.util.Objects;
 /** Class modeling a Local Autonomous Organization (LAO) */
 public final class Lao {
 
-  private Long creation;
-  private Long lastModified;
+  private String channel;
   private String id;
-  private String organizer;
   private String name;
+  private Long lastModified;
+  private Long creation;
+  private String organizer;
+  private String modificationId;
   private List<String> witnesses;
-
-  // TODO: Why are these required?
-  private URI host;
   private List<String> members;
   private List<Event> events;
 
+  /**
+   * Constructor for a LAO
+   *
+   * @param channel the channel of the LAO
+   * @param id the id of the LAO, Hash(name, creation time, organizer id)
+   * @param name the name of the LAO, can be empty
+   * @param creation the creation time
+   * @param lastModified the time of the last modification
+   * @param organizer the public key of the organizer
+   * @param modificationId the id for the modification
+   * @param witnesses the list of the public keys of the witnesses
+   * @param members the list of the public keys of the members
+   * @param events the list of the ids of the events
+   * @throws IllegalArgumentException if any of the parameters is null
+   */
   public Lao(
-      String id,
-      String name,
-      Long creation,
-      Long lastModified,
-      String organizer,
-      List<String> witnesses) {
+          String channel,
+          String id,
+          String name,
+          Long creation,
+          Long lastModified,
+          String organizer,
+          String modificationId,
+          List<String> witnesses,
+          List<String> members,
+          List<Event> events) {
+    if (channel == null || id == null || name == null || organizer == null
+            || modificationId == null || witnesses == null || members == null || events == null) {
+      throw new IllegalArgumentException("Trying to create a LAO with a null value");
+    } else if (name.trim().isEmpty()) {
+      throw new IllegalArgumentException("Trying to set an empty name for the LAO");
+    }
+    this.channel = channel;
     this.id = id;
     this.name = name;
     this.creation = creation;
     this.lastModified = lastModified;
     this.organizer = organizer;
+    this.modificationId = modificationId;
     this.witnesses = witnesses;
+    this.members = members;
+    this.events = events;
   }
 
   /**
-   * Constructor for a LAO
+   * Constructor used when creation a LAO
    *
    * @param name the name of the LAO, can be empty
    * @param organizer the public key of the organizer
-   * @param host the URI of the backend that host this LAO
    * @throws IllegalArgumentException if any of the parameters is null
    */
-  public Lao(String name, String organizer, URI host) {
-    if (name == null || organizer == null || host == null) {
-      throw new IllegalArgumentException("Trying to  create a LAO with a null value");
+  public Lao(String name, String organizer) {
+    if (name == null || organizer == null) {
+      throw new IllegalArgumentException("Trying to create a LAO with a null value");
     } else if (name.trim().isEmpty()) {
       throw new IllegalArgumentException("Trying to set an empty name for the LAO");
     }
 
     this.name = name.trim();
     this.creation = Instant.now().getEpochSecond();
-    this.id = ""; // Hash.hash(organizer, creation, name);
+    this.channel = Hash.hash(organizer, creation.toString(), name);
+    this.id = channel;
+    this.lastModified = creation;
     this.organizer = organizer;
-    this.host = host;
     this.witnesses = new ArrayList<>();
     this.members = new ArrayList<>();
     this.events = new ArrayList<>();
   }
 
   /**
-   * Private constructor used to create new LAO when the name is modified, forces to recompute the
-   * id and attestation using the new name
+   * Constructor for LAO from a StateLao
    *
-   * @param name the name of the LAO, can be empty
-   * @param creation the creation time
-   * @param id the id of the LAO, Hash(name, creation time, organizer id)
-   * @param organizer the public key of the organizer
-   * @param witnesses the list of the public keys of the witnesses
-   * @param members the list of the public keys of the members
-   * @param events the list of the ids of the events
-   * @param host the URI of the backend that host this LAO
+   * @param lao the LAO to copy
+   * @throws IllegalArgumentException if any of the parameters is null
    */
-  public Lao(
-      String name,
-      long creation,
-      String id,
-      String organizer,
-      List<String> witnesses,
-      List<String> members,
-      List<Event> events,
-      URI host) {
-    this.name = name;
-    this.creation = creation;
-    this.id = id;
-    this.organizer = organizer;
-    this.host = host;
-    this.witnesses = witnesses;
-    this.members = members;
-    this.events = events;
+  public Lao(StateLao lao) {
+    if (lao == null) {
+      throw new IllegalArgumentException("Trying to copy a null Lao");
+    }
+
+    this.channel = lao.getId();
+    this.id = lao.getId();
+    this.name = lao.getName();
+    this.creation = lao.getCreation();
+    this.lastModified = lao.getLastModified();
+    this.organizer = lao.getOrganizer();
+    this.modificationId = lao.getModificationId();
+    this.witnesses = lao.getWitnesses();
+    this.members = new ArrayList<>();
+    this.events = new ArrayList<>();
+  }
+
+  /** Returns the channel of the LAO. */
+  public String getChannel() {
+    return channel;
+  }
+
+  /** Returns the ID of the LAO. */
+  public String getId() {
+    return id;
   }
 
   /** Returns the name of the LAO. */
   public String getName() {
     return name;
-  }
-
-  /** Returns the ID of the LAO, can't be modified. */
-  public String getId() {
-    return id;
   }
 
   /**
@@ -121,14 +148,24 @@ public final class Lao {
     return ids;
   }
 
+  /** Returns the creation time of the LAO. */
+  public Long getCreation() {
+    return creation;
+  }
+
+  /** Returns the last modified time of the LAO. */
+  public Long getLastModified() {
+    return lastModified;
+  }
+
   /** Returns the public key of the organizer, can't be modified. */
   public String getOrganizer() {
     return organizer;
   }
 
-  /** Returns the host the LAO is hosted on. */
-  public URI getHost() {
-    return host;
+  /** Returns the modification id of the LAO. */
+  public String getModificationId() {
+    return modificationId;
   }
 
   /** Returns the list of public keys where each public key belongs to one witness. */
@@ -235,16 +272,31 @@ public final class Lao {
     return witnesses.add(witness);
   }
 
+  public LAO toLAO() {
+    LAO lao = new LAO();
+    lao.channel = channel;
+    lao.id = id;
+    lao.name = name;
+    lao.createdAt = creation;
+    lao.lastModifiedAt = lastModified;
+    lao.organizer = organizer;
+    lao.modificationId = modificationId;
+
+    return lao;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Lao lao = (Lao) o;
-    return Objects.equals(name, lao.name)
-        && Objects.equals(creation, lao.creation)
+    return Objects.equals(channel, lao.channel)
         && Objects.equals(id, lao.id)
+        && Objects.equals(name, lao.name)
+        && Objects.equals(creation, lao.creation)
+        && Objects.equals(lastModified, lao.lastModified)
         && Objects.equals(organizer, lao.organizer)
-        && Objects.equals(host, lao.host)
+        && Objects.equals(modificationId, lao.modificationId)
         && Objects.equals(witnesses, lao.witnesses)
         && Objects.equals(members, lao.members)
         && Objects.equals(events, lao.events);
@@ -252,6 +304,6 @@ public final class Lao {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, creation, id, organizer, host, witnesses, members, events);
+    return Objects.hash(channel, id, name, creation, lastModified, organizer, modificationId, witnesses, members, events);
   }
 }

@@ -1,8 +1,14 @@
 package com.github.dedis.student20_pop.model.event;
 
-import static com.github.dedis.student20_pop.model.event.EventType.MEETING;
+import com.github.dedis.student20_pop.model.entities.Meeting;
+import com.github.dedis.student20_pop.model.entities.MeetingAndModification;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static com.github.dedis.student20_pop.model.event.EventType.MEETING;
 
 /** Class modeling a Meeting Event */
 public class MeetingEvent extends Event {
@@ -39,6 +45,18 @@ public class MeetingEvent extends Event {
   /** Returns the description of the Meeting. */
   public String getDescription() {
     return description;
+  }
+
+  /** Transform a list of meeting entities into a list of meeting events */
+  public static List<MeetingEvent> transformMeetings(List<MeetingAndModification> meetings) {
+    if(meetings == null) return new ArrayList<>();
+    return meetings.stream().map(m -> m.meeting).map(MeetingEvent::transformMeeting).collect(Collectors.toList());
+  }
+
+  /** Transform a meeting entity into a meeting event */
+  public static MeetingEvent transformMeeting(Meeting meeting) {
+    return new MeetingEvent(meeting.name, meeting.start, meeting.end, meeting.laoChannel,
+            meeting.location, meeting.extra);
   }
 
   @Override
