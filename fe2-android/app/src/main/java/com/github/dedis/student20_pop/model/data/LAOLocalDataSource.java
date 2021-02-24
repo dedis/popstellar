@@ -33,7 +33,12 @@ public class LAOLocalDataSource implements LAODataSource.Local {
 
   @Override
   public LAOEntity getLAO(String channel) {
-    return null;
+    return laoDao.getLAO(channel);
+  }
+
+  @Override
+  public void addLao(LAO lao) {
+    laoDao.addLao(lao);
   }
 
   @Override

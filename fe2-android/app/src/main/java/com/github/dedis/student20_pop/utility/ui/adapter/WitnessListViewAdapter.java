@@ -8,15 +8,23 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import androidx.databinding.DataBindingUtil;
+
 import com.github.dedis.student20_pop.R;
+import com.github.dedis.student20_pop.databinding.LayoutLaoHomeBinding;
+import com.github.dedis.student20_pop.home.LAOItemUserActionsListener;
+import com.github.dedis.student20_pop.model.Lao;
+import com.github.dedis.student20_pop.model.entities.Person;
+
 import java.util.List;
 
 /** Adapter to show witnesses of an Event */
 public class WitnessListViewAdapter extends BaseAdapter {
-  private final Context context;
-  private final List<String> witnesses;
+  private Context context;
+  private List<Person> witnesses;
 
-  public WitnessListViewAdapter(Context context, List<String> witnesses) {
+  public WitnessListViewAdapter(Context context, List<Person> witnesses) {
     this.context = context;
     this.witnesses = witnesses;
   }
@@ -78,9 +86,9 @@ public class WitnessListViewAdapter extends BaseAdapter {
     }
 
     ((TextView) convertView.findViewById(R.id.text_view_witness_name))
-        .setText(witnesses.get(position));
+        .setText(witnesses.get(position).publicKey);
     ImageButton deleteButton = convertView.findViewById(R.id.image_button_delete_witness);
-    deleteButton.setVisibility(parent.getId() == R.id.witness_edit_list ? View.VISIBLE : View.GONE);
+    deleteButton.setVisibility(parent.getId() == R.id.witness_list ? View.VISIBLE : View.GONE);
     deleteButton.setOnClickListener(
         clicked -> {
           AlertDialog.Builder adb = new AlertDialog.Builder(context);

@@ -47,6 +47,10 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
   private Button cancelButton;
   private OnEventCreatedListener eventCreatedListener;
 
+  public static MeetingEventCreationFragment newInstance() {
+      return new MeetingEventCreationFragment();
+  }
+
   @Override
   public void onAttach(Context context) {
     super.onAttach(context);
