@@ -5,7 +5,7 @@ import { MessageData } from 'model/network/method/message/data';
 import { Channel } from 'model/objects/Channel';
 import { getNetworkManager } from 'network/NetworkManager';
 
-export function publish(channel: Channel, msgData: MessageData) {
+export function publish(channel: Channel, msgData: MessageData): Promise<void> {
   const message = Message.fromData(msgData);
 
   const request = new JsonRpcRequest({
@@ -17,5 +17,8 @@ export function publish(channel: Channel, msgData: MessageData) {
     id: -1, // FIXME
   });
 
-  getNetworkManager().sendPayload(request); // FIXME ignoring promise for now
+  // discard JsonRpcResponse, as publish only returns an ack.
+  // propagate the catch() with the full error message, as it needs to be handled on a higher level
+  return getNetworkManager().sendPayload(request)
+    .then(() => {});
 }

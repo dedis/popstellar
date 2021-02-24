@@ -6,7 +6,6 @@ import testKeyPair from '__tests__/../../tests/data/keypair.json';
 
 import * as msApi from 'network/MessageApi';
 import * as wsApi from 'network/WebsocketApi';
-import { getCurrentTime } from 'network/WebsocketUtils';
 import { storeInit } from 'store/Storage';
 import { KeyPairStore, OpenedLaoStore } from 'store';
 import {
@@ -402,7 +401,7 @@ describe('=== WebsocketApi tests ===', () => {
     storeInit();
 
     const org: PublicKey = KeyPairStore.getPublicKey();
-    const time: Timestamp = getCurrentTime();
+    const time: Timestamp = Timestamp.EpochNow();
     const name: string = 'Pop\'s LAO';
     const sampleLao: Lao = new Lao({
       name,
