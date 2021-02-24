@@ -127,7 +127,7 @@ func (q *Query) GetChannel() string {
 	} else if q.Publish != nil {
 		return q.Publish.Params.Channel
 	} else if q.Catchup != nil {
-		return q.Publish.Params.Channel
+		return q.Catchup.Params.Channel
 	}
 
 	return ""
