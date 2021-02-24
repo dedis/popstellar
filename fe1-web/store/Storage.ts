@@ -1,14 +1,12 @@
-import { persistCombineReducers, persistStore } from 'redux-persist';
+import { persistStore } from 'redux-persist';
 import {
-  AnyAction, createStore, Reducer, Store,
+  AnyAction, createStore, Store, applyMiddleware
 } from 'redux';
+import thunkMiddleware from 'redux-thunk';
+import { composeWithDevTools } from 'redux-devtools-extension';
 import { Persistor } from 'redux-persist/es/types';
-import AsyncStorage from '@react-native-community/async-storage';
 
-import {
-  currentEventsReducer, keyPairReducer, openRollCallIDReducer,
-  availableLaosReducer, openedLaoReducer,
-} from './reducers';
+import rootReducer from './reducers';
 
 interface PersistStoreConfig {
   store: Store,
@@ -19,36 +17,15 @@ let store: Store;
 let persist: Persistor;
 
 export function storeInit(): PersistStoreConfig {
-  const persistConfig = {
-    key: 'root',
-    storage: AsyncStorage,
-  };
-
-  const appReducer: Reducer = persistCombineReducers(persistConfig, {
-    keyPair: keyPairReducer,
-    availableLaos: availableLaosReducer,
-    openedLao: openedLaoReducer,
-    currentEvents: currentEventsReducer,
-    openedRollCallId: openRollCallIDReducer,
-  });
-
-  // Trick used to clear local persistent storage
-  const rootReducer = (state: any, action: AnyAction) => {
-    // clears the local cached storage as well as the state of the storage
-    let newState = state;
-    if (action.type === 'CLEAR_STORAGE') {
-      // unsafe, asynchronous operation:
-      AsyncStorage.removeItem('persist:root');
-      newState = undefined;
-    }
-    return appReducer(newState, action);
-  };
+  const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
 
   // Initiates (opens) the persistent storage
-  store = createStore(rootReducer);
+  store = createStore(rootReducer, composedEnhancer);
+
+  persist = persistStore(store);
+
   if (typeof localStorage !== 'undefined' && localStorage !== null) {
     // persisting the local storage on the polyfill make the tests run forever
-    persist = persistStore(store);
   }
 
   return { store, persist };

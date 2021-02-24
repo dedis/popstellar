@@ -11,12 +11,11 @@ import {
 } from 'model/network/method/message/data';
 import { Channel, channelFromId, ROOT_CHANNEL } from 'model/objects/Channel';
 import { OpenedLaoStore, KeyPairStore } from 'store';
-import { getCurrentTime } from './WebsocketUtils';
 import { publish } from './WebsocketApi';
 
 /** Send a server query asking for the creation of a LAO with a given name (String) */
 export function requestCreateLao(laoName: string) {
-  const time = getCurrentTime();
+  const time = Timestamp.EpochNow();
   const pubKey = KeyPairStore.getPublicKey();
 
   const message = new CreateLao({
@@ -27,12 +26,12 @@ export function requestCreateLao(laoName: string) {
     witnesses: [],
   });
 
-  publish(ROOT_CHANNEL, message);
+  return publish(ROOT_CHANNEL, message);
 }
 
 /** Send a server query asking for a LAO update providing a new name (String) */
-export function requestUpdateLao(name: string, witnesses?: PublicKey[]) {
-  const time: Timestamp = getCurrentTime();
+export function requestUpdateLao(name: string, witnesses?: PublicKey[]): Promise<void> {
+  const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
 
   const message = new UpdateLao({
@@ -42,11 +41,11 @@ export function requestUpdateLao(name: string, witnesses?: PublicKey[]) {
     witnesses: (witnesses === undefined) ? currentLao.witnesses : witnesses,
   });
 
-  publish(channelFromId(currentLao.id), message);
+  return publish(channelFromId(currentLao.id), message);
 }
 
 /** Send a server query asking for the current state of a LAO */
-export function requestStateLao() {
+export function requestStateLao(): Promise<void> {
   const currentLao: Lao = OpenedLaoStore.get();
 
   const message = new StateLao({
@@ -55,14 +54,14 @@ export function requestStateLao() {
     ),
     name: currentLao.name,
     creation: currentLao.creation,
-    last_modified: getCurrentTime(),
+    last_modified: Timestamp.EpochNow(),
     organizer: currentLao.organizer,
     witnesses: currentLao.witnesses,
     modification_id: Hash.fromStringArray(), // FIXME need modification_id from storage
     modification_signatures: [], // FIXME need modification_signatures from storage
   });
 
-  publish(channelFromId(currentLao.id), message);
+  return publish(channelFromId(currentLao.id), message);
 }
 
 /** Send a server query asking for the creation of a meeting given a certain name (String),
@@ -70,8 +69,8 @@ export function requestStateLao() {
  *  extra information (Json object) */
 export function requestCreateMeeting(
   name: string, startTime: Timestamp, location?: string, endTime?: Timestamp, extra?: {},
-) {
-  const time = getCurrentTime();
+): Promise<void> {
+  const time = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
 
   const message = new CreateMeeting({
@@ -86,11 +85,11 @@ export function requestCreateMeeting(
     extra,
   });
 
-  publish(channelFromId(currentLao.id), message);
+  return publish(channelFromId(currentLao.id), message);
 }
 
 /** Send a server query asking for the state of a meeting *
-export function requestStateMeeting(startTime: Timestamp) {
+export function requestStateMeeting(startTime: Timestamp): Promise<void> {
   const laoData = get().params.message.data;
 
   let message = new StateMeeting({
@@ -99,7 +98,7 @@ export function requestStateMeeting(startTime: Timestamp) {
     ),
     name: laoData.name,
     creation: laoData.creation,
-    last_modified: getCurrentTime(),
+    last_modified: Timestamp.EpochNow(),
     start: startTime,
     location: laoData.location,
     end: laoData.end,
@@ -108,17 +107,17 @@ export function requestStateMeeting(startTime: Timestamp) {
     modification_signatures :[], // FIXME need modification_signatures from storage
   });
 
-  publish(channelFromId(laoData.id), message);
+  return publish(channelFromId(laoData.id), message);
 }
 
 /** Send a server message to acknowledge witnessing the message message (JS object) */
-export function requestWitnessMessage(channel: Channel, messageId: Hash) {
+export function requestWitnessMessage(channel: Channel, messageId: Hash): Promise<void> {
   const message = new WitnessMessage({
     message_id: messageId,
     signature: KeyPairStore.getPrivateKey().sign(messageId),
   });
 
-  publish(channel, message);
+  return publish(channel, message);
 }
 
 /** Send a server query asking for the creation of a roll call with a given name (String) and a
@@ -126,8 +125,8 @@ export function requestWitnessMessage(channel: Channel, messageId: Hash) {
  *  description (String) can be specified */
 export function requestCreateRollCall(
   name: string, location: string, start?: Timestamp, scheduled?: Timestamp, description?: string,
-) {
-  const time: Timestamp = getCurrentTime();
+): Promise<void> {
+  const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
 
   if (start === undefined && scheduled === undefined) {
@@ -142,24 +141,24 @@ export function requestCreateRollCall(
     id: Hash.fromStringArray(
       EventTags.ROLL_CALL, currentLao.id.toString(), currentLao.creation.toString(), name,
     ),
-    name,
+    name: name,
     creation: time,
-    location,
-    start,
-    scheduled,
+    location: location,
+    start: start,
+    scheduled: scheduled,
     roll_call_description: description,
   });
 
-  publish(channelFromId(currentLao.id), message);
+  return publish(channelFromId(currentLao.id), message);
 }
 
 /** Send a server query asking for the opening of a roll call given its id (Number) and an
  * optional start time (Timestamp). If the start time is not specified, then the current time
  * will be used instead *
-export function requestOpenRollCall(rollCallId: Number, start?: Timestamp) {
+export function requestOpenRollCall(rollCallId: Number, start?: Timestamp): Promise<void> {
     const rollCall = { creation: 1609455600, name: 'r-cName' }; // FIXME: hardcoded
     const laoId = get().params.message.data.id;
-    const startTime = (start === undefined) ? getCurrentTime() : start;
+    const startTime = (start === undefined) ? Timestamp.EpochNow() : start;
 
     let message = new OpenRollCall({
       action: ActionType.OPEN,
@@ -169,19 +168,19 @@ export function requestOpenRollCall(rollCallId: Number, start?: Timestamp) {
       start: startTime,
     });
 
-    publish(channelFromId(laoId), message);
+    return publish(channelFromId(laoId), message);
 }
 
 /** Send a server query asking for the reopening of a roll call given its id (Number) and an
  * optional start time (Timestamp). If the start time is not specified, then the current time
  * will be used instead *
-export function requestReopenRollCall(rollCallId: Number, start?: Timestamp) {
+export function requestReopenRollCall(rollCallId: Number, start?: Timestamp): Promise<void> {
     // FIXME: not implemented
 }
 
 /** Send a server query asking for the closing of a roll call given its id (Number) and the
  * list of attendees (Array of public keys) *
-export function requestCloseRollCall(rollCallId: Number, attendees: PublicKey[]) {
+export function requestCloseRollCall(rollCallId: Number, attendees: PublicKey[]): Promise<void> {
   // FIXME: functionality is clearly incomplete here
   // get roll call by id from localStorage
   const rollCall = { creation: 1609455600, start: 1609455601, name: 'r-cName' };
@@ -193,10 +192,10 @@ export function requestCloseRollCall(rollCallId: Number, attendees: PublicKey[])
       EventTags.ROLL_CALL, toString64(laoId), rollCall.creation.toString(), rollCall.name
     ),
     start: rollCall.start,
-    end: getCurrentTime(),
+    end: Timestamp.EpochNow(),
     attendees: attendees,
   });
 
-  publish(channelFromId(laoId), message);
+  return publish(channelFromId(laoId), message);
 }
  */
