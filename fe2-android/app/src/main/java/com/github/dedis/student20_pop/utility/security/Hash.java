@@ -11,13 +11,11 @@ public class Hash {
 
   public static final String TAG = Hash.class.getSimpleName();
 
-  private static final char DELIMITER = '\"';
-
   /**
    * Hash some objects using SHA256. Concatenate the object's string representation following the
    * protocol's directive. Then hash the obtained string
    *
-   * @param data : the objects to hash
+   * @param strs : the objects to hash
    * @return the hashed data or null if failed to hash
    * @throws IllegalArgumentException if the data is null
    */
@@ -48,6 +46,7 @@ public class Hash {
    * @return the hashed data or null if failed to hash
    * @throws IllegalArgumentException if the data is null
    */
+  @Deprecated
   protected static String hash(String data) {
     if (data == null) throw new IllegalArgumentException("Can't hash a null data");
 

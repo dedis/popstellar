@@ -49,6 +49,7 @@ public final class JsonUtils {
    *
    * @return the Gson object
    */
+  @Deprecated
   public static Gson createGson() {
     return new GsonBuilder()
         .registerTypeAdapter(GenericMessage.class, new JsonGenericMessageDeserializer())

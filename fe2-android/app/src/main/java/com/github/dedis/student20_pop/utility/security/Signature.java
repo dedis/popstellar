@@ -8,6 +8,7 @@ import java.util.Base64;
 import java.util.List;
 
 /** ED25519 Signing Class */
+@Deprecated
 public class Signature {
 
   public static final String TAG = Signature.class.getSimpleName();

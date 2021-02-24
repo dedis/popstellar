@@ -47,8 +47,11 @@ public class AttendeeFragment extends Fragment {
     View rootView = inflater.inflate(R.layout.fragment_attendee, container, false);
 /*
     PoPApplication app = (PoPApplication) (this.getActivity().getApplication());
-    Lao lao = app.getCurrentLaoUnsafe();
 
+    // lao = app.getCurrentLaoUnsafe();
+    lao = new Lao("test name", "organizer", URI.create("http://test.com"));
+    List<Event> events = lao.getEvents();
+    // Display Events
 
     expandableListView = rootView.findViewById(R.id.exp_list_view);
     listViewEventAdapter = new AttendeeEventExpandableListViewAdapter(this.getActivity(), lao.getEvents());

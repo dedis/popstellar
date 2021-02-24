@@ -27,39 +27,57 @@ export class CreateRollCall implements MessageData {
   public readonly roll_call_description?: string;
 
   constructor(msg: Partial<CreateRollCall>) {
-    if (!msg.name) throw new ProtocolError('Undefined \'name\' parameter encountered during \'CreateRollCall\'');
+    if (!msg.name) {
+      throw new ProtocolError("Undefined 'name' parameter encountered during 'CreateRollCall'");
+    }
     this.name = msg.name;
 
-    if (!msg.creation) throw new ProtocolError('Undefined \'creation\' parameter encountered during \'CreateRollCall\'');
+    if (!msg.creation) {
+      throw new ProtocolError("Undefined 'creation' parameter encountered during 'CreateRollCall'");
+    }
     checkTimestampStaleness(msg.creation);
     this.creation = msg.creation;
 
-    if (msg.start === msg.scheduled) {
+    if ((msg.start && msg.scheduled) || (!msg.start && !msg.scheduled)) {
       // if both are present or neither
-      throw new ProtocolError('Invalid \'start\' and/or \'scheduled\' value encountered during \'CreateRollCall\'');
+      throw new ProtocolError("The 'CreateRollCall' data should include"
+        + "  either 'start' or 'scheduled' values, but not both");
     }
 
     if (msg.start) {
-      if (msg.start < msg.creation) throw new ProtocolError('Invalid timestamp encountered: \'start\' parameter smaller than \'creation\'');
+      if (msg.start < msg.creation) {
+        throw new ProtocolError('Invalid timestamp encountered:'
+          + " 'start' parameter smaller than 'creation'");
+      }
       this.start = msg.start;
     }
 
     if (msg.scheduled) {
-      if (msg.scheduled < msg.creation) throw new ProtocolError('Invalid timestamp encountered: \'scheduled\' parameter smaller than \'creation\'');
+      if (msg.scheduled < msg.creation) {
+        throw new ProtocolError('Invalid timestamp encountered:'
+          + " 'scheduled' parameter smaller than 'creation'");
+      }
       this.scheduled = msg.scheduled;
     }
 
-    if (!msg.location) throw new ProtocolError('Undefined \'location\' parameter encountered during \'CreateRollCall\'');
+    if (!msg.location) {
+      throw new ProtocolError("Undefined 'location' parameter encountered during 'CreateRollCall'");
+    }
     this.location = msg.location;
 
     if (msg.roll_call_description) this.roll_call_description = msg.roll_call_description;
 
-    if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'CreateRollCall\'');
+    if (!msg.id) {
+      throw new ProtocolError("Undefined 'id' parameter encountered during 'CreateRollCall'");
+    }
     const lao: Lao = OpenedLaoStore.get();
     const expectedHash = Hash.fromStringArray(
       EventTags.ROLL_CALL, lao.id.toString(), lao.creation.toString(), msg.name,
     );
-    if (!expectedHash.equals(msg.id)) throw new ProtocolError('Invalid \'id\' parameter encountered during \'CreateRollCall\': unexpected id value');
+    if (!expectedHash.equals(msg.id)) {
+      throw new ProtocolError("Invalid 'id' parameter encountered during 'CreateRollCall':"
+        + ' re-computing the value yields a different result');
+    }
     this.id = msg.id;
   }
 

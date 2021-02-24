@@ -10,7 +10,7 @@ import { getCurrentTime } from 'network/WebsocketUtils';
 import { storeInit } from 'store/Storage';
 import { KeyPairStore, OpenedLaoStore } from 'store';
 import {
-  Base64Data, Hash, Lao, PrivateKey, PublicKey, Timestamp, WitnessSignature,
+  Base64Data, Hash, Lao, PrivateKey, PublicKey, Timestamp,
   KeyPair,
 } from 'model/objects';
 import {
@@ -70,91 +70,6 @@ export const mockRollCallId = 100;
 
 const defaultDataFields = ['object', 'action'];
 
-describe('=== WebsocketApi tests ===', () => {
-  beforeAll(() => {
-    storeInit();
-
-    const org: PublicKey = KeyPairStore.getPublicKey();
-    const time: Timestamp = getCurrentTime();
-    const name: string = 'Pop\'s LAO';
-    const sampleLao: Lao = new Lao({
-      name,
-      id: Hash.fromStringArray(org.toString(), time.toString(), name),
-      creation: time,
-      last_modified: time,
-      organizer: org,
-      witnesses: [],
-    });
-
-    OpenedLaoStore.store(sampleLao);
-  });
-
-  /* NOTE: checks are done in checkRequests since msApi.request* return void */
-
-  describe('network.WebsocketApi', () => {
-    it('should create the correct request for requestCreateLao', () => {
-      setMockCheck(checkDataCreateLao);
-      msApi.requestCreateLao(mockEventName);
-    });
-
-    it('should create the correct request for requestUpdateLao', () => {
-      setMockCheck(checkDataUpdateLao);
-      msApi.requestUpdateLao(mockEventName);
-    });
-
-    it('should create the correct request for requestStateLao', () => {
-      setMockCheck(checkDataStateLao);
-      msApi.requestStateLao();
-    });
-
-    it('should create the correct request for requestCreateMeeting', () => {
-      setMockCheck(checkDataCreateMeeting);
-      const mockExtra = { numberParticipants: 12, minAge: 18 };
-      msApi.requestCreateMeeting(mockEventName, mockStartTime);
-      msApi.requestCreateMeeting(mockEventName, mockStartTime, mockLocation);
-      msApi.requestCreateMeeting(mockEventName, mockStartTime, mockLocation, mockEndTime);
-      msApi.requestCreateMeeting(mockEventName, mockStartTime, mockLocation, mockEndTime, mockExtra);
-    });
-    /*
-    it('should create the correct request for requestStateMeeting', function () {
-      msApi.requestStateMeeting(mockStartTime);
-    });
-*/
-    it('should create the correct request for requestWitnessMessage', () => {
-      setMockCheck(checkDataWitnessMessage);
-      msApi.requestWitnessMessage('/root', Base64Data.encode('randomMessageId'));
-    });
-
-    it('should create the correct request for requestCreateRollCall', () => {
-      setMockCheck(checkDataCreateRollCall);
-      const mockScheduledTime = mockStartTime + 1;
-      const mockDescription = 'random description';
-      msApi.requestCreateRollCall(mockEventName, mockLocation, mockStartTime);
-      msApi.requestCreateRollCall(mockEventName, mockLocation, undefined, mockScheduledTime);
-      msApi.requestCreateRollCall(mockEventName, mockLocation, mockStartTime, undefined, mockDescription);
-      msApi.requestCreateRollCall(mockEventName, mockLocation, undefined, mockScheduledTime, mockDescription);
-    });
-    /*
-    it('should create the correct request for requestOpenRollCall', function () {
-      msApi.requestOpenRollCall(mockRollCallId);
-      msApi.requestOpenRollCall(mockRollCallId, mockStartTime);
-    });
-
-    it('should create the correct request for requestReopenRollCall', function () {
-      msApi.requestReopenRollCall(mockRollCallId);
-      msApi.requestReopenRollCall(mockRollCallId, mockStartTime);
-    });
-
-    it('should create the correct request for requestCloseRollCall', function () {
-      msApi.requestCloseRollCall(mockRollCallId, []);
-      msApi.requestCloseRollCall(mockRollCallId, [
-        'xjHAz+d0udy1XfHp5qugskWJVEGZETN/8DV3+ccOFSs=',
-        'mK0eAXHPPlxySr1erjOhZNlKz34/+nJ1hi1Sph66fas='
-      ]);
-    }); */
-  });
-});
-
 function checkDataCreateLao(obj: MessageData) {
   expect(obj.object).toBe(ObjectType.LAO);
   expect(obj.action).toBe(ActionType.CREATE);
@@ -180,7 +95,9 @@ function checkDataCreateLao(obj: MessageData) {
   expect(data.witnesses).toBeDistinctArray();
 
   // check id
-  const expected: Hash = Hash.fromStringArray(data.organizer.toString(), data.creation.toString(), data.name);
+  const expected: Hash = Hash.fromStringArray(
+    data.organizer.toString(), data.creation.toString(), data.name,
+  );
   expect(data.id).toBeJsonEqual(expected);
 }
 
@@ -248,7 +165,9 @@ function checkDataStateLao(obj: MessageData) {
   expect(data.modification_signatures).toBeKeySignatureArray('witness', 'signature');
 
   // check id
-  const expected = Hash.fromStringArray(data.organizer.toString(), OpenedLaoStore.get().creation.toString(), data.name);
+  const expected = Hash.fromStringArray(
+    data.organizer.toString(), OpenedLaoStore.get().creation.toString(), data.name,
+  );
   expect(data.id).toBeJsonEqual(expected);
 }
 
@@ -260,7 +179,6 @@ function checkDataCreateMeeting(obj: MessageData) {
 
   expect(data).toBeObject();
   const expectedMinFields = [...defaultDataFields, 'id', 'name', 'creation', 'start'];
-  const possibleFields = [...expectedMinFields, 'location', 'end', 'extra'];
   expect(data).toContainKeys(expectedMinFields);
 
   expect(data.id).toBeBase64();
@@ -296,6 +214,8 @@ function checkDataCreateMeeting(obj: MessageData) {
   expect(data.id).toEqual(expected);
 }
 
+// FIXME remove eslint warning when function used
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function checkDataStateMeeting(obj: MessageData) {
   expect(obj.object).toBe(ObjectType.MEETING);
   expect(obj.action).toBe(ActionType.STATE);
@@ -305,7 +225,6 @@ function checkDataStateMeeting(obj: MessageData) {
   expect(data).toBeObject();
   const expectedMinFields = [...defaultDataFields, 'id', 'name', 'creation',
     'last_modified', 'start', 'modification_id', 'modification_signatures'];
-  const possibleFields = [...expectedMinFields, 'location', 'end', 'extra'];
   expect(data).toContainKeys(expectedMinFields);
 
   expect(data.id).toBeBase64();
@@ -318,7 +237,7 @@ function checkDataStateMeeting(obj: MessageData) {
 
   expect(data.last_modified).toBeNumber();
   expect(data.last_modified.valueOf()).toBeGreaterThan(0);
-  expect(data.last_modified.valueOf() + 1).toBeGreaterThan(data.creation);
+  expect(data.last_modified.valueOf() + 1).toBeGreaterThan(data.creation.valueOf());
 
   if ('location' in data) {
     expect(data.location).toBeString();
@@ -331,7 +250,7 @@ function checkDataStateMeeting(obj: MessageData) {
 
   if ('end' in data) {
     expect(data.end).toBeNumber();
-    expect(data.end.valueOf()).toBeGreaterThan(0);
+    expect(data.end?.valueOf()).toBeGreaterThan(0);
     // @ts-ignore
     expect(data.end.valueOf() + 1).toBeGreaterThan(data.start);
   }
@@ -408,6 +327,8 @@ function checkDataCreateRollCall(obj: MessageData) {
   expect(data.id).toEqual(expected);
 }
 
+// FIXME remove eslint warning when function used
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function checkDataOpenRollCall(obj: MessageData) {
   expect(obj.object).toBe(ObjectType.ROLL_CALL);
   expect(obj.action).toBe(ActionType.OPEN);
@@ -417,16 +338,18 @@ function checkDataOpenRollCall(obj: MessageData) {
   expect(data).toBeObject();
   expect(data).toContainKeys([...defaultDataFields, 'id', 'start']);
 
-  expect(data.id).toBeBase64();
+  expect(data.update_id).toBeBase64();
 
   expect(data.start).toBeNumber();
   expect(data.start.valueOf()).toBeGreaterThan(0);
 
   // check id
-  const expected = Hash.fromStringArray('R', OpenedLaoStore.get().id.toString(), 444, 'r-cName'); // 444 and r-cName are for now hardocded in the APi
-  expect(data.id).toEqual(expected);
+  const expected = Hash.fromStringArray('R', OpenedLaoStore.get().id.toString(), '444', 'r-cName'); // 444 and r-cName are for now hardocded in the APi
+  expect(data.update_id).toEqual(expected);
 }
 
+// FIXME remove eslint warning when function used
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function checkDataReopenRollCall(obj: MessageData) {
   expect(obj.object).toBe(ObjectType.ROLL_CALL);
   expect(obj.action).toBe(ActionType.REOPEN);
@@ -435,16 +358,18 @@ function checkDataReopenRollCall(obj: MessageData) {
 
   expect(data).toContainKeys([...defaultDataFields, 'id', 'start']);
 
-  expect(data.id).toBeBase64();
+  expect(data.update_id).toBeBase64();
 
   expect(data.start).toBeNumber();
   expect(data.start.valueOf()).toBeGreaterThan(0);
 
   // check id
-  const expected = Hash.fromStringArray('R', OpenedLaoStore.get().id.toString(), 444, 'r-cName'); // 444 and r-cName are for now hardocded in the APi
-  expect(data.id).toEqual(expected);
+  const expected = Hash.fromStringArray('R', OpenedLaoStore.get().id.toString(), '444', 'r-cName'); // 444 and r-cName are for now hardocded in the APi
+  expect(data.update_id).toEqual(expected);
 }
 
+// FIXME remove eslint warning when function used
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function checkDataCloseRollCall(obj: MessageData) {
   expect(obj.object).toBe(ObjectType.ROLL_CALL);
   expect(obj.action).toBe(ActionType.CLOSE);
@@ -454,7 +379,7 @@ function checkDataCloseRollCall(obj: MessageData) {
   expect(data).toBeObject();
   expect(data).toContainKeys([...defaultDataFields, 'id', 'start', 'end', 'attendees']);
 
-  expect(data.id).toBeBase64();
+  expect(data.update_id).toBeBase64();
 
   expect(data.start).toBeNumber();
   expect(data.start.valueOf()).toBeGreaterThan(0);
@@ -468,6 +393,97 @@ function checkDataCloseRollCall(obj: MessageData) {
   expect(data.attendees).toBeDistinctArray();
 
   // check id
-  const expected = Hash.fromStringArray('R', OpenedLaoStore.get().id.toString(), 444, 'r-cName'); // 444 and r-cName are for now hardocded in the APi
-  expect(data.id).toEqual(expected);
+  const expected = Hash.fromStringArray('R', OpenedLaoStore.get().id.toString(), '444', 'r-cName'); // 444 and r-cName are for now hardocded in the APi
+  expect(data.update_id).toEqual(expected);
 }
+
+describe('=== WebsocketApi tests ===', () => {
+  beforeAll(() => {
+    storeInit();
+
+    const org: PublicKey = KeyPairStore.getPublicKey();
+    const time: Timestamp = getCurrentTime();
+    const name: string = 'Pop\'s LAO';
+    const sampleLao: Lao = new Lao({
+      name,
+      id: Hash.fromStringArray(org.toString(), time.toString(), name),
+      creation: time,
+      last_modified: time,
+      organizer: org,
+      witnesses: [],
+    });
+
+    OpenedLaoStore.store(sampleLao);
+  });
+
+  /* NOTE: checks are done in checkRequests since msApi.request* return void */
+
+  describe('network.WebsocketApi', () => {
+    it('should create the correct request for requestCreateLao', () => {
+      setMockCheck(checkDataCreateLao);
+      msApi.requestCreateLao(mockEventName);
+    });
+
+    it('should create the correct request for requestUpdateLao', () => {
+      setMockCheck(checkDataUpdateLao);
+      msApi.requestUpdateLao(mockEventName);
+    });
+
+    it('should create the correct request for requestStateLao', () => {
+      setMockCheck(checkDataStateLao);
+      msApi.requestStateLao();
+    });
+
+    it('should create the correct request for requestCreateMeeting', () => {
+      setMockCheck(checkDataCreateMeeting);
+      const mockExtra = { numberParticipants: 12, minAge: 18 };
+      msApi.requestCreateMeeting(mockEventName, mockStartTime);
+      msApi.requestCreateMeeting(mockEventName, mockStartTime, mockLocation);
+      msApi.requestCreateMeeting(mockEventName, mockStartTime, mockLocation, mockEndTime);
+      msApi.requestCreateMeeting(
+        mockEventName, mockStartTime, mockLocation, mockEndTime, mockExtra,
+      );
+    });
+    /*
+    it('should create the correct request for requestStateMeeting', function () {
+      msApi.requestStateMeeting(mockStartTime);
+    });
+*/
+    it('should create the correct request for requestWitnessMessage', () => {
+      setMockCheck(checkDataWitnessMessage);
+      msApi.requestWitnessMessage('/root', Base64Data.encode('randomMessageId'));
+    });
+
+    it('should create the correct request for requestCreateRollCall', () => {
+      setMockCheck(checkDataCreateRollCall);
+      const mockScheduledTime = mockStartTime + 1;
+      const mockDescription = 'random description';
+      msApi.requestCreateRollCall(mockEventName, mockLocation, mockStartTime);
+      msApi.requestCreateRollCall(mockEventName, mockLocation, undefined, mockScheduledTime);
+      msApi.requestCreateRollCall(
+        mockEventName, mockLocation, mockStartTime, undefined, mockDescription,
+      );
+      msApi.requestCreateRollCall(
+        mockEventName, mockLocation, undefined, mockScheduledTime, mockDescription,
+      );
+    });
+    /*
+    it('should create the correct request for requestOpenRollCall', function () {
+      msApi.requestOpenRollCall(mockRollCallId);
+      msApi.requestOpenRollCall(mockRollCallId, mockStartTime);
+    });
+
+    it('should create the correct request for requestReopenRollCall', function () {
+      msApi.requestReopenRollCall(mockRollCallId);
+      msApi.requestReopenRollCall(mockRollCallId, mockStartTime);
+    });
+
+    it('should create the correct request for requestCloseRollCall', function () {
+      msApi.requestCloseRollCall(mockRollCallId, []);
+      msApi.requestCloseRollCall(mockRollCallId, [
+        'xjHAz+d0udy1XfHp5qugskWJVEGZETN/8DV3+ccOFSs=',
+        'mK0eAXHPPlxySr1erjOhZNlKz34/+nJ1hi1Sph66fas='
+      ]);
+    }); */
+  });
+});

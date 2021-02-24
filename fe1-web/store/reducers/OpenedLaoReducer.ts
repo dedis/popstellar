@@ -27,7 +27,7 @@ export function openedLaoReducer(state: LaoState | null = initialState, action: 
       }
 
       const lao = Object.freeze(Lao.fromState(action.value).toState());
-      console.log(`LAO storage was update with open: ${lao.id.toString()}`);
+      console.log(`LAO storage was updated with open: ${lao.id.toString()}`);
       return lao;
     }
   } catch (e) {
