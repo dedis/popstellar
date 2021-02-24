@@ -11,7 +11,9 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
 import com.github.dedis.student20_pop.Event;
+import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.data.LAORepository;
+import com.github.dedis.student20_pop.model.entities.LAO;
 import com.github.dedis.student20_pop.model.entities.LAOEntity;
 import com.github.dedis.student20_pop.model.entities.Person;
 import com.github.dedis.student20_pop.utility.security.Keys;
@@ -136,12 +138,13 @@ public class LaoDetailViewModel extends AndroidViewModel {
             String uid = Keys.getEncodedKey(publicKeysetHandle);
 
             isOrganizer.setValue(laoId.equals(uid));
-            mCurrentLao.setValue(mLAORepository.getLAO(laoId));
+            // TODO: solve issue of accessing db on main thread
+            // CurrentLao.setValue(mLAORepository.getLAO(laoId));
+            LAOEntity laoEntity = new LAOEntity();
+            laoEntity.lao = new Lao("dummy", "DEDIS").toLAO();
+            mCurrentLao.setValue(laoEntity);
 
             Log.d(TAG, "The user is organizer: " + isOrganizer());
-
-            //TODO: create insert for LAOs into db
-            mCurrentLao.setValue(new LAOEntity());
 
         } catch (GeneralSecurityException e) {
             Log.e(TAG, "failed to get keyset handle", e);
