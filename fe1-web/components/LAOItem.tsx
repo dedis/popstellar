@@ -5,13 +5,13 @@ import {
 import PropTypes from 'prop-types';
 import { useNavigation } from '@react-navigation/native';
 import { connect } from 'react-redux';
-import { AnyAction } from 'redux';
 
-import STRINGS from 'res/strings';
+import { Hash, Lao } from 'model/objects';
+import { connectToLao as connectToLaoAction } from 'store';
+
 import { Spacing, Typography } from 'styles';
-import PROPS_TYPE from 'res/Props';
-import { ActionOpenedLaoReducer } from 'store/Actions';
-import { Lao } from 'model/objects';
+import STRINGS from 'res/strings';
+import { Dispatch } from 'redux';
 
 /**
   * The LAO item component: name of LAO
@@ -29,17 +29,11 @@ const styles = StyleSheet.create({
   } as TextStyle,
 });
 
-interface IPropTypes {
-  LAO: Lao;
-  dispatch: (arg: AnyAction) => any;
-}
-
-const LAOItem = ({ LAO, dispatch }: IPropTypes) => {
+const LAOItem = ({ LAO, connectToLao }: IPropTypes) => {
   const navigation = useNavigation();
 
   const handlePress = () => {
-    const action2 = { type: ActionOpenedLaoReducer.SET_OPENED_LAO, value: LAO };
-    dispatch(action2);
+    connectToLao(LAO.id);
     navigation.navigate(STRINGS.app_navigation_tab_organizer);
   };
 
@@ -52,9 +46,22 @@ const LAOItem = ({ LAO, dispatch }: IPropTypes) => {
   );
 };
 
-LAOItem.propTypes = {
-  LAO: PROPS_TYPE.LAO.isRequired,
-  dispatch: PropTypes.func.isRequired,
+const propTypes = {
+  LAO: PropTypes.instanceOf(Lao).isRequired,
+  connectToLao: PropTypes.func.isRequired,
+};
+LAOItem.propTypes = propTypes;
+
+type IPropTypes = PropTypes.InferProps<typeof propTypes>;
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  // dispatching actions returned by action creators
+  connectToLao: (id: Hash) => dispatch(connectToLaoAction(id)),
+});
+
+const LAOItemContainer = connect(null, mapDispatchToProps)(LAOItem);
+LAOItemContainer.propTypes = {
+  LAO: PropTypes.instanceOf(Lao).isRequired,
 };
 
-export default connect()(LAOItem);
+export default LAOItemContainer;

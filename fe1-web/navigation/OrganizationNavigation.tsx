@@ -3,13 +3,11 @@ import {
   Platform, StyleSheet,
 } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import STRINGS from 'res/strings';
-import PROPS_TYPE from 'res/Props';
 
-import { KeyPairStore } from 'store';
-import { Lao } from 'model/objects';
+import { KeyPairStore, makeCurrentLao } from 'store';
 
 import Attendee from 'parts/lao/attendee/Attendee';
 import Identity from 'parts/lao/Identity';
@@ -39,12 +37,14 @@ const styles = StyleSheet.create({
   },
 });
 
-interface IPropTypes {
-  lao: Lao;
-}
+const OrganizationNavigation = () => {
+  const currentLao = makeCurrentLao();
+  const lao = useSelector(currentLao);
 
-function OrganizationNavigation(props: IPropTypes) {
-  const { lao } = props;
+  if (!lao) {
+    return (<> </>);
+  }
+
   const pubKey = KeyPairStore.get().publicKey;
   // const isOrganizer = lao.organizer && pubKey.equals(lao.organizer);
   const isOrganizer = false;
@@ -82,18 +82,6 @@ function OrganizationNavigation(props: IPropTypes) {
       />
     </OrganizationTopTabNavigator.Navigator>
   );
-}
-
-OrganizationNavigation.propTypes = {
-  lao: PROPS_TYPE.LAO,
 };
 
-OrganizationNavigation.defaultProps = {
-  lao: undefined,
-};
-
-const mapStateToProps = (state) => ({
-  lao: state.openedLao,
-});
-
-export default connect(mapStateToProps)(OrganizationNavigation);
+export default OrganizationNavigation;

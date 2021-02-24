@@ -2,14 +2,17 @@ import React, { useState } from 'react';
 import {
   TouchableOpacity, View, ViewStyle,
 } from 'react-native';
-import PropTypes from 'prop-types';
-import { Spacing } from 'styles';
-import TextBlock from 'components/TextBlock';
-import styleEventView from 'styles/stylesheets/eventView';
-import ListCollapsibleIcon from 'components/eventList/ListCollapsibleIcon';
-import { connect } from 'react-redux';
-import ParagraphBlock from 'components/ParagraphBlock';
+import { useSelector } from 'react-redux';
+
+import { makeCurrentLao } from 'store';
 import { Lao } from 'model/objects';
+
+import { Spacing } from 'styles';
+import styleEventView from 'styles/stylesheets/eventView';
+
+import TextBlock from 'components/TextBlock';
+import ParagraphBlock from 'components/ParagraphBlock';
+import ListCollapsibleIcon from './ListCollapsibleIcon';
 
 function buildLaoProperties(lao: Lao) {
   return (
@@ -20,8 +23,9 @@ function buildLaoProperties(lao: Lao) {
   );
 }
 
-const LaoProperties = (props: IPropTypes) => {
-  const { lao } = props;
+const LaoProperties = () => {
+  const currentLao = makeCurrentLao();
+  const lao = useSelector(currentLao);
   const [toggleChildrenVisible, setToggleChildrenVisible] = useState(false);
 
   const toggleChildren = () => (setToggleChildrenVisible(!toggleChildrenVisible));
@@ -40,19 +44,4 @@ const LaoProperties = (props: IPropTypes) => {
   );
 };
 
-const propTypes = {
-  lao: PropTypes.instanceOf(Lao),
-};
-LaoProperties.propTypes = propTypes;
-
-LaoProperties.defaultProps = {
-  lao: undefined,
-};
-
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
-
-const mapStateToProps = (state: any) => ({
-  lao: Lao.fromState(state.openedLao),
-});
-
-export default connect(mapStateToProps)(LaoProperties);
+export default LaoProperties;
