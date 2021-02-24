@@ -3,7 +3,6 @@ package com.github.dedis.student20_pop;
 import android.app.Application;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.home.HomeViewModel;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
@@ -56,20 +55,21 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
               Injection.provideLAORepository(
                   application,
                   Injection.provideLAOService(
-                      Injection.provideScarlet(
-                          application, Injection.provideOkHttpClient(), gson))),
+                      Injection.provideScarlet(application, Injection.provideOkHttpClient(), gson)),
+                  keysetManager,
+                  gson),
               keysetManager);
-    }
-    else if (modelClass.isAssignableFrom(LaoDetailViewModel.class)) {
+    } else if (modelClass.isAssignableFrom(LaoDetailViewModel.class)) {
       return (T)
-              new LaoDetailViewModel(
-                      application,
-                      Injection.provideLAORepository(
-                              application,
-                              Injection.provideLAOService(
-                                      Injection.provideScarlet(
-                                              application, Injection.provideOkHttpClient(), gson))),
-                      keysetManager);
+          new LaoDetailViewModel(
+              application,
+              Injection.provideLAORepository(
+                  application,
+                  Injection.provideLAOService(
+                      Injection.provideScarlet(application, Injection.provideOkHttpClient(), gson)),
+                  keysetManager,
+                  gson),
+              keysetManager);
     }
 
     throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());

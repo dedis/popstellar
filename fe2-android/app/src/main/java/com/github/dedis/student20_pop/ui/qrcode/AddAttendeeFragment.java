@@ -6,18 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.databinding.ObservableArrayList;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.model.Lao;
-import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.RollCallEvent;
-import java.util.Optional;
 
 /**
  * This fragment wraps the QRCodeScanningFragment in order to show the user how many attendees he
@@ -53,61 +48,61 @@ public final class AddAttendeeFragment extends Fragment {
     //        .commit();
 
     PoPApplication app = (PoPApplication) getActivity().getApplication();
-    Optional<Event> matchingEvent =
-        app.getCurrentLao()
-            .map(Lao::getEvents)
-            .flatMap(
-                events ->
-                    events.parallelStream()
-                        .filter(event -> event.getId().equals(eventId))
-                        .findFirst());
+    //    Optional<Event> matchingEvent =
+    //        app.getCurrentLao()
+    //            .map(Lao::getEvents)
+    //            .flatMap(
+    //                events ->
+    //                    events.parallelStream()
+    //                        .filter(event -> event.getId().equals(eventId))
+    //                        .findFirst());
 
     RollCallEvent rollCallEvent;
 
-    if (matchingEvent.isPresent()) {
-      rollCallEvent = (RollCallEvent) matchingEvent.get();
-      rollCallEvent
-          .getAttendees()
-          .addOnListChangedCallback(
-              new ObservableArrayList.OnListChangedCallback<ObservableArrayList<String>>() {
-                @Override
-                public void onChanged(ObservableArrayList<String> sender) {
-                  ((TextView) view.findViewById(R.id.add_attendee_number_text))
-                      .setText(getString(R.string.add_attendees_number, sender.size()));
-                }
-
-                @Override
-                public void onItemRangeChanged(
-                    ObservableArrayList<String> sender, int positionStart, int itemCount) {
-                  ((TextView) view.findViewById(R.id.add_attendee_number_text))
-                      .setText(getString(R.string.add_attendees_number, sender.size()));
-                }
-
-                @Override
-                public void onItemRangeInserted(
-                    ObservableArrayList<String> sender, int positionStart, int itemCount) {
-                  ((TextView) view.findViewById(R.id.add_attendee_number_text))
-                      .setText(getString(R.string.add_attendees_number, sender.size()));
-                }
-
-                @Override
-                public void onItemRangeMoved(
-                    ObservableArrayList<String> sender,
-                    int fromPosition,
-                    int toPosition,
-                    int itemCount) {
-                  ((TextView) view.findViewById(R.id.add_attendee_number_text))
-                      .setText(getString(R.string.add_attendees_number, sender.size()));
-                }
-
-                @Override
-                public void onItemRangeRemoved(
-                    ObservableArrayList<String> sender, int positionStart, int itemCount) {
-                  ((TextView) view.findViewById(R.id.add_attendee_number_text))
-                      .setText(getString(R.string.add_attendees_number, sender.size()));
-                }
-              });
-    }
+    //    if (matchingEvent.isPresent()) {
+    //      rollCallEvent = (RollCallEvent) matchingEvent.get();
+    //      rollCallEvent
+    //          .getAttendees()
+    //          .addOnListChangedCallback(
+    //              new ObservableArrayList.OnListChangedCallback<ObservableArrayList<String>>() {
+    //                @Override
+    //                public void onChanged(ObservableArrayList<String> sender) {
+    //                  ((TextView) view.findViewById(R.id.add_attendee_number_text))
+    //                      .setText(getString(R.string.add_attendees_number, sender.size()));
+    //                }
+    //
+    //                @Override
+    //                public void onItemRangeChanged(
+    //                    ObservableArrayList<String> sender, int positionStart, int itemCount) {
+    //                  ((TextView) view.findViewById(R.id.add_attendee_number_text))
+    //                      .setText(getString(R.string.add_attendees_number, sender.size()));
+    //                }
+    //
+    //                @Override
+    //                public void onItemRangeInserted(
+    //                    ObservableArrayList<String> sender, int positionStart, int itemCount) {
+    //                  ((TextView) view.findViewById(R.id.add_attendee_number_text))
+    //                      .setText(getString(R.string.add_attendees_number, sender.size()));
+    //                }
+    //
+    //                @Override
+    //                public void onItemRangeMoved(
+    //                    ObservableArrayList<String> sender,
+    //                    int fromPosition,
+    //                    int toPosition,
+    //                    int itemCount) {
+    //                  ((TextView) view.findViewById(R.id.add_attendee_number_text))
+    //                      .setText(getString(R.string.add_attendees_number, sender.size()));
+    //                }
+    //
+    //                @Override
+    //                public void onItemRangeRemoved(
+    //                    ObservableArrayList<String> sender, int positionStart, int itemCount) {
+    //                  ((TextView) view.findViewById(R.id.add_attendee_number_text))
+    //                      .setText(getString(R.string.add_attendees_number, sender.size()));
+    //                }
+    //              });
+    //    }
 
     Button confirm = view.findViewById(R.id.add_attendee_confirm);
     confirm.setOnClickListener(

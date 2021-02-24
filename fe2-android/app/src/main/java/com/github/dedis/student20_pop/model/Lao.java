@@ -1,8 +1,8 @@
 package com.github.dedis.student20_pop.model;
 
+import com.github.dedis.student20_pop.model.event.Event;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -17,15 +17,23 @@ public final class Lao {
   private Long creation;
   private String organizer;
   private String modificationId;
-  private List<String> witnesses;
+  private Set<String> witnesses;
 
-  private Optional<String> updateMessageId;
+  private Set<PendingUpdate> pendingUpdates;
 
   private Map<String, RollCall> rollCalls;
 
   public Lao(String id) {
+    this.channel = id;
     this.id = id;
     this.rollCalls = new HashMap<>();
+    this.witnesses = new HashSet<>();
+    this.pendingUpdates = new HashSet<>();
+  }
+
+  public Lao(String id, String name) {
+    this(id);
+    this.name = name;
   }
 
   public void updateRollCall(String prevId, RollCall rollCall) {
@@ -36,7 +44,110 @@ public final class Lao {
     rollCalls.put(newId, rollCall);
   }
 
-  public static class RollCall {
+  public Optional<RollCall> getRollCall(String id) {
+    return Optional.ofNullable(rollCalls.get(id));
+  }
+
+  public Long getLastModified() {
+    return lastModified;
+  }
+
+  public Set<String> getWitnesses() {
+    return witnesses;
+  }
+
+  public Set<PendingUpdate> getPendingUpdates() {
+    return pendingUpdates;
+  }
+
+  public String getOrganizer() {
+    return organizer;
+  }
+
+  public String getChannel() {
+    return channel;
+  }
+
+  public void setChannel(String channel) {
+    this.channel = channel;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public void setLastModified(Long lastModified) {
+    this.lastModified = lastModified;
+  }
+
+  public Long getCreation() {
+    return creation;
+  }
+
+  public void setCreation(Long creation) {
+    this.creation = creation;
+  }
+
+  public void setOrganizer(String organizer) {
+    this.organizer = organizer;
+  }
+
+  public String getModificationId() {
+    return modificationId;
+  }
+
+  public void setModificationId(String modificationId) {
+    this.modificationId = modificationId;
+  }
+
+  public void setWitnesses(Set<String> witnesses) {
+    this.witnesses = witnesses;
+  }
+
+  public void setPendingUpdates(Set<PendingUpdate> pendingUpdates) {
+    this.pendingUpdates = pendingUpdates;
+  }
+
+  public Map<String, RollCall> getRollCalls() {
+    return rollCalls;
+  }
+
+  public void setRollCalls(Map<String, RollCall> rollCalls) {
+    this.rollCalls = rollCalls;
+  }
+
+  public static class PendingUpdate implements Comparable<PendingUpdate> {
+    private long modificationTime;
+    private String messageId;
+
+    public PendingUpdate(long modificationTime, String messageId) {
+      this.modificationTime = modificationTime;
+      this.messageId = messageId;
+    }
+
+    public long getModificationTime() {
+      return modificationTime;
+    }
+
+    @Override
+    public int compareTo(PendingUpdate o) {
+      return Long.compare(modificationTime, o.modificationTime);
+    }
+  }
+
+  public static class RollCall extends Event {
     private String id;
     private String name;
     private long creation;
@@ -122,6 +233,19 @@ public final class Lao {
 
     public void setDescription(String description) {
       this.description = description;
+    }
+
+    @Override
+    public long getTimestamp() {
+      if (end != 0) {
+        return end;
+      }
+
+      if (start == 0) {
+        return scheduled;
+      }
+
+      return start;
     }
   }
 }

@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.databinding.ObservableArrayList;
 import androidx.fragment.app.FragmentManager;
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
@@ -51,7 +50,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
       };
 
   public static RollCallEventCreationFragment newInstance() {
-      return new RollCallEventCreationFragment();
+    return new RollCallEventCreationFragment();
   }
 
   @Override
@@ -86,42 +85,42 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
           computeTimesInSeconds();
 
           if (rollCallEvent == null) {
-            rollCallEvent =
-                new RollCallEvent(
-                    rollCallTitleEditText.getText().toString(),
-                    startTimeInSeconds,
-                    endTimeInSeconds,
-                    app.getCurrentLaoUnsafe().getId(),
-                    new ObservableArrayList<>(),
-                    NO_LOCATION,
-                    rollCallDescriptionEditText.getText().toString());
+            //            rollCallEvent =
+            //                new RollCallEvent(
+            //                    rollCallTitleEditText.getText().toString(),
+            //                    startTimeInSeconds,
+            //                    endTimeInSeconds,
+            //                    app.getCurrentLaoUnsafe().getId(),
+            //                    new ObservableArrayList<>(),
+            //                    NO_LOCATION,
+            //                    rollCallDescriptionEditText.getText().toString());
           }
-          eventCreatedListener.OnEventCreatedListener(rollCallEvent);
+          //          eventCreatedListener.OnEventCreatedListener(rollCallEvent);
           fragmentManager.popBackStackImmediate();
         });
 
-    openButton.setOnClickListener(
-        v -> {
-          computeTimesInSeconds();
-
-          rollCallEvent =
-              new RollCallEvent(
-                  rollCallTitleEditText.getText().toString(),
-                  startTimeInSeconds,
-                  endTimeInSeconds,
-                  app.getCurrentLaoUnsafe().getId(),
-                  new ObservableArrayList<>(),
-                  NO_LOCATION,
-                  rollCallDescriptionEditText.getText().toString());
-          eventCreatedListener.OnEventCreatedListener(rollCallEvent);
-          onAddAttendeesListener.onAddAttendeesListener(rollCallEvent.getId());
-        });
+    //    openButton.setOnClickListener(
+    //        v -> {
+    //          computeTimesInSeconds();
+    //
+    //          rollCallEvent =
+    //              new RollCallEvent(
+    //                  rollCallTitleEditText.getText().toString(),
+    //                  startTimeInSeconds,
+    //                  endTimeInSeconds,
+    //                  app.getCurrentLaoUnsafe().getId(),
+    //                  new ObservableArrayList<>(),
+    //                  NO_LOCATION,
+    //                  rollCallDescriptionEditText.getText().toString());
+    //          eventCreatedListener.OnEventCreatedListener(rollCallEvent);
+    //          onAddAttendeesListener.onAddAttendeesListener(rollCallEvent.getId());
+    //        });
 
     Button cancelButton = view.findViewById(R.id.roll_call_cancel);
-    cancelButton.setOnClickListener(
-        v -> {
-          fragmentManager.popBackStackImmediate();
-        });
+    //    cancelButton.setOnClickListener(
+    //        v -> {
+    //          fragmentManager.popBackStackImmediate();
+    //        });
 
     return view;
   }

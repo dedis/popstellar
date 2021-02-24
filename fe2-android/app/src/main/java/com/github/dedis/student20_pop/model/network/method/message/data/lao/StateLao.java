@@ -1,10 +1,13 @@
 package com.github.dedis.student20_pop.model.network.method.message.data.lao;
 
+import com.github.dedis.student20_pop.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
-import java.util.ArrayList;
+import com.google.gson.annotations.SerializedName;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /** Data received to track the state of a lao */
 public class StateLao extends Data {
@@ -15,7 +18,10 @@ public class StateLao extends Data {
   private final long lastModified;
   private final String organizer;
   private final String modificationId;
-  private final List<String> witnesses;
+  private final Set<String> witnesses;
+
+  @SerializedName("modification_signatures")
+  private final List<PublicKeySignaturePair> modificationSignatures;
 
   /**
    * Constructor for a data State LAO
@@ -34,7 +40,8 @@ public class StateLao extends Data {
       long lastModified,
       String organizer,
       String modificationId,
-      List<String> witnesses) {
+      Set<String> witnesses,
+      List<PublicKeySignaturePair> modificationSignatures) {
     this.id = id;
     this.name = name;
     this.creation = creation;
@@ -42,6 +49,7 @@ public class StateLao extends Data {
     this.organizer = organizer;
     this.modificationId = modificationId;
     this.witnesses = witnesses;
+    this.modificationSignatures = modificationSignatures;
   }
 
   public String getId() {
@@ -64,8 +72,8 @@ public class StateLao extends Data {
     return organizer;
   }
 
-  public List<String> getWitnesses() {
-    return new ArrayList<>(witnesses);
+  public Set<String> getWitnesses() {
+    return new HashSet<>(witnesses);
   }
 
   @Override
@@ -120,5 +128,9 @@ public class StateLao extends Data {
 
   public String getModificationId() {
     return modificationId;
+  }
+
+  public List<PublicKeySignaturePair> getModificationSignatures() {
+    return modificationSignatures;
   }
 }

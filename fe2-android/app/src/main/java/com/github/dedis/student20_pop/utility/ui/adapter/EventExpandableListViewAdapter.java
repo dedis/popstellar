@@ -1,6 +1,8 @@
 package com.github.dedis.student20_pop.utility.ui.adapter;
 
-import static com.github.dedis.student20_pop.model.event.EventCategory.*;
+import static com.github.dedis.student20_pop.model.event.EventCategory.FUTURE;
+import static com.github.dedis.student20_pop.model.event.EventCategory.PAST;
+import static com.github.dedis.student20_pop.model.event.EventCategory.PRESENT;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -13,7 +15,11 @@ import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventCategory;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 public abstract class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
   protected final Context context;
@@ -169,9 +175,9 @@ public abstract class EventExpandableListViewAdapter extends BaseExpandableListA
     // TODO : For the moment, events are displayed the same if user is attendee or organizer,
     // in the future it could be nice to have a pencil icon to allow organizer to modify an event
     Event event = ((Event) getChild(groupPosition, childPosition));
-    String eventTitle = (event.getName() + " : " + event.getType());
+    //    String eventTitle = (event.getName() + " : " + event.getType());
     String eventDescription = "";
-    String time = DATE_FORMAT.format(event.getStartTime() * 1000L);
+    //    String time = DATE_FORMAT.format(event.getStartTime() * 1000L);
     if (convertView == null) {
       LayoutInflater inflater =
           (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -179,21 +185,21 @@ public abstract class EventExpandableListViewAdapter extends BaseExpandableListA
     }
     TextView eventTitleTextView = convertView.findViewById(R.id.event_title);
     TextView descriptionTextView = convertView.findViewById(R.id.event_description);
-    eventTitleTextView.setText(eventTitle);
-    switch (event.getType()) {
-      case ROLL_CALL:
-        eventDescription =
-            "Start Time : "
-                + time
-                + "\nLocation : "
-                + event.getLocation()
-                + "\nParticipants: "
-                + event.getAttendees().size();
-        break;
-      default:
-        eventDescription = "Start Time : " + time + "\nLocation : " + event.getLocation();
-        break;
-    }
+    //    eventTitleTextView.setText(eventTitle);
+    //    switch (event.getType()) {
+    //      case ROLL_CALL:
+    //        eventDescription =
+    //            "Start Time : "
+    //                + time
+    //                + "\nLocation : "
+    //                + event.getLocation()
+    //                + "\nParticipants: "
+    //                + event.getAttendees().size();
+    //        break;
+    //      default:
+    //        eventDescription = "Start Time : " + time + "\nLocation : " + event.getLocation();
+    //        break;
+    //    }
     descriptionTextView.setText(eventDescription);
     return convertView;
   }
@@ -210,15 +216,15 @@ public abstract class EventExpandableListViewAdapter extends BaseExpandableListA
       calendar.add(Calendar.DATE, -1);
       long yesterday = (Instant.ofEpochMilli(calendar.getTimeInMillis())).getEpochSecond();
       // later: event.getEndTime() < now
-      if (event.getStartTime() < yesterday) {
-        eventsMap.get(PAST).add(event);
-      }
-      // later: event.getStartTime()<now && event.getEndTime() > now
-      else if (event.getStartTime() <= Instant.now().getEpochSecond()) {
-        eventsMap.get(PRESENT).add(event);
-      } else { // if e.getStartTime() > now
-        eventsMap.get(FUTURE).add(event);
-      }
+      //      if (event.getStartTime() < yesterday) {
+      //        eventsMap.get(PAST).add(event);
+      //      }
+      //      // later: event.getStartTime()<now && event.getEndTime() > now
+      //      else if (event.getStartTime() <= Instant.now().getEpochSecond()) {
+      //        eventsMap.get(PRESENT).add(event);
+      //      } else { // if e.getStartTime() > now
+      //        eventsMap.get(FUTURE).add(event);
+      //      }
     }
   }
 
@@ -229,9 +235,9 @@ public abstract class EventExpandableListViewAdapter extends BaseExpandableListA
    */
   private void orderEventsInMap(HashMap<EventCategory, List<Event>> eventsMap) {
 
-    for (EventCategory category : categories) {
-      Collections.sort(eventsMap.get(category), new EventComparator());
-    }
+    //    for (EventCategory category : categories) {
+    //      Collections.sort(eventsMap.get(category), new EventComparator());
+    //    }
     // 2 possibilities: B strictly after A or B nested within A
   }
 
@@ -247,11 +253,11 @@ public abstract class EventExpandableListViewAdapter extends BaseExpandableListA
     return true;
   }
 
-  private static class EventComparator implements Comparator<Event> {
-    // later: compare start times
-    @Override
-    public int compare(Event event1, Event event2) {
-      return Long.compare(event1.getTime(), event2.getTime());
-    }
-  }
+  //  private static class EventComparator implements Comparator<Event> {
+  //    // later: compare start times
+  //    @Override
+  //    public int compare(Event event1, Event event2) {
+  //      return Long.compare(event1.getTime(), event2.getTime());
+  //    }
+  //  }
 }

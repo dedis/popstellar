@@ -14,8 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.model.event.Event;
-import com.github.dedis.student20_pop.model.event.MeetingEvent;
 import com.github.dedis.student20_pop.utility.ui.listener.OnEventCreatedListener;
 
 /** Fragment that shows up when user wants to create a Meeting Event */
@@ -48,7 +46,7 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
   private OnEventCreatedListener eventCreatedListener;
 
   public static MeetingEventCreationFragment newInstance() {
-      return new MeetingEventCreationFragment();
+    return new MeetingEventCreationFragment();
   }
 
   @Override
@@ -84,16 +82,16 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
         v -> {
           computeTimesInSeconds();
 
-          Event meetingEvent =
-              new MeetingEvent(
-                  meetingTitleEditText.getText().toString(),
-                  startTimeInSeconds,
-                  endTimeInSeconds,
-                  app.getCurrentLaoUnsafe().getId(),
-                  meetingLocationEditText.getText().toString(),
-                  meetingDescriptionEditText.getText().toString());
-
-          eventCreatedListener.OnEventCreatedListener(meetingEvent);
+          //          Event meetingEvent =
+          //              new MeetingEvent(
+          //                  meetingTitleEditText.getText().toString(),
+          //                  startTimeInSeconds,
+          //                  endTimeInSeconds,
+          //                  app.getCurrentLaoUnsafe().getId(),
+          //                  meetingLocationEditText.getText().toString(),
+          //                  meetingDescriptionEditText.getText().toString());
+          //
+          //          eventCreatedListener.OnEventCreatedListener(meetingEvent);
 
           fragmentManager.popBackStackImmediate();
         });

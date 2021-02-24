@@ -62,34 +62,41 @@ public class Injection {
 
   private static LAOService LAO_SERVICE_INSTANCE;
 
+  private static AndroidKeysetManager KEYSET_MANAGER;
+
   public static AndroidKeysetManager provideAndroidKeysetManager(Context applicationContext)
       throws IOException, GeneralSecurityException {
 
-    SharedPreferences.Editor editor =
-        applicationContext.getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE).edit();
-    editor.apply();
+    if (KEYSET_MANAGER == null) {
+      SharedPreferences.Editor editor =
+          applicationContext
+              .getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE)
+              .edit();
+      editor.apply();
 
-    Ed25519PrivateKeyManager.registerPair(true);
-    PublicKeySignWrapper.register();
+      Ed25519PrivateKeyManager.registerPair(true);
+      PublicKeySignWrapper.register();
 
-    // TODO: move to background thread
-    AndroidKeysetManager keysetManager =
-        new AndroidKeysetManager.Builder()
-            .withSharedPref(applicationContext, KEYSET_NAME, SHARED_PREF_FILE_NAME)
-            .withKeyTemplate(Ed25519PrivateKeyManager.rawEd25519Template())
-            .withMasterKeyUri(MASTER_KEY_URI)
-            .build();
+      // TODO: move to background thread
+      AndroidKeysetManager keysetManager =
+          new AndroidKeysetManager.Builder()
+              .withSharedPref(applicationContext, KEYSET_NAME, SHARED_PREF_FILE_NAME)
+              .withKeyTemplate(Ed25519PrivateKeyManager.rawEd25519Template())
+              .withMasterKeyUri(MASTER_KEY_URI)
+              .build();
 
-    KeysetHandle publicKeysetHandle = keysetManager.getKeysetHandle().getPublicKeysetHandle();
+      KeysetHandle publicKeysetHandle = keysetManager.getKeysetHandle().getPublicKeysetHandle();
 
-    try {
-      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-      Log.d(TAG, "public key = " + publicKey);
-    } catch (IOException e) {
-      Log.e(TAG, "failed to retrieve public key", e);
+      try {
+        String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+        Log.d(TAG, "public key = " + publicKey);
+      } catch (IOException e) {
+        Log.e(TAG, "failed to retrieve public key", e);
+      }
+
+      KEYSET_MANAGER = keysetManager;
     }
-
-    return keysetManager;
+    return KEYSET_MANAGER;
   }
 
   public static Gson provideGson() {
@@ -153,10 +160,14 @@ public class Injection {
     return LAO_SERVICE_INSTANCE;
   }
 
-  public static LAORepository provideLAORepository(Application application, LAOService service) {
+  public static LAORepository provideLAORepository(
+      Application application, LAOService service, AndroidKeysetManager keysetManager, Gson gson) {
     LAODatabase db = LAODatabase.getDatabase(application);
 
     return LAORepository.getInstance(
-        LAORemoteDataSource.getInstance(service), LAOLocalDataSource.getInstance(db));
+        LAORemoteDataSource.getInstance(service),
+        LAOLocalDataSource.getInstance(db),
+        keysetManager,
+        gson);
   }
 }
