@@ -2,20 +2,16 @@ import { w3cwebsocket as W3CWebSocket } from 'websocket';
 import {
   JsonRpcRequest, JsonRpcResponse, ProtocolError, UNDEFINED_ID,
 } from 'model/network';
-import { Broadcast } from 'model/network/method';
 import { OperationError } from './OperationError';
 import { NetworkError } from './NetworkError';
-
-type ResponseHandler = (message: JsonRpcResponse) => void;
-
-const DEFAULT_RESPONSE_HANDLER: ResponseHandler = (message: JsonRpcResponse) => {
-  console.log('No response handler was provided to manage message : ', message);
-};
+import { defaultRpcHandler, JsonRpcHandler } from './RpcHandler';
 
 const WEBSOCKET_READYSTATE_INTERVAL_MS = 10;
 const WEBSOCKET_READYSTATE_MAX_ATTEMPTS = 100;
 
 const WEBSOCKET_MESSAGE_TIMEOUT_MS = 1000; // 10 seconds max round-trip time
+
+const JSON_RPC_ID_WRAP_AROUND = 10000;
 
 interface PendingResponse {
   promise: Promise<JsonRpcResponse>,
@@ -27,17 +23,18 @@ interface PendingResponse {
 export class NetworkConnection {
   private ws: W3CWebSocket;
 
-  private payloadSentCount: number = 0;
+  private nextRpcId: number = 1;
 
-  private payloadPending: Map<number, PendingResponse> = new Map();
+  private readonly payloadPending: Map<number, PendingResponse> = new Map();
 
-  private onMessageHandler: ResponseHandler = DEFAULT_RESPONSE_HANDLER;
+  private onRpcHandler: JsonRpcHandler = defaultRpcHandler;
 
   public readonly address: string;
 
-  constructor(address: string) {
+  constructor(address: string, handler?: JsonRpcHandler) {
     this.ws = this.establishConnection(address);
     this.address = this.ws.url;
+    this.onRpcHandler = (handler !== undefined) ? handler : defaultRpcHandler;
   }
 
   private establishConnection(address: string): W3CWebSocket {
@@ -56,17 +53,15 @@ export class NetworkConnection {
   }
 
   private onMessage(message: any): void {
-    console.log(`Received a new message from '${this.address}' : `, message.data);
+    console.debug(`Received a new message from '${this.address}' : `, message.data);
 
     try {
-      const parsedMessage: JsonRpcResponse | JsonRpcRequest = NetworkConnection.parseIncomingData(
-        message.data,
-      );
+      const parsedMessage: JsonRpcResponse | JsonRpcRequest = NetworkConnection
+        .parseIncomingData(message.data);
+
       if (parsedMessage instanceof JsonRpcResponse) {
-        // if we have a response
         this.processResponse(parsedMessage);
-      } else {
-        // if we have a request which needs to be forwarded
+      } else /* instanceof JsonRpcRequest */ {
         this.processRequest(parsedMessage);
       }
     } catch (e) {
@@ -85,48 +80,48 @@ export class NetworkConnection {
   }
 
   private static parseIncomingData(data: any): JsonRpcResponse | JsonRpcRequest {
-    let parsedMessage: JsonRpcResponse | JsonRpcRequest;
+    let errResp: any;
+    let errReq: any;
+
     try {
-      parsedMessage = JsonRpcResponse.fromJson(data);
+      return JsonRpcResponse.fromJson(data);
     } catch (e) {
-      try {
-        parsedMessage = JsonRpcRequest.fromJson(data);
-      } catch (ee) {
-        throw new ProtocolError(`Answer is not valid Json : ${e} && ${ee}`);
-      }
+      errResp = e;
     }
 
-    return parsedMessage;
+    try {
+      return JsonRpcRequest.fromJson(data);
+    } catch (e) {
+      errReq = e;
+    }
+
+    throw new ProtocolError('Failed to parse incoming data as valid JSON based on protocol.'
+      + ` Errors:\n\n${errResp}\n\n${errReq}`);
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  private processRequest(parsedMessage: JsonRpcRequest): void {
-    // Note to students : here should be the logic regarding witness message forwarding
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const broadcast: Broadcast = new Broadcast(parsedMessage.params);
-
-    // ...
+  private processRequest(request: JsonRpcRequest): void {
+    try {
+      this.onRpcHandler(request);
+    } catch (e) {
+      console.error('Exception encountered when processing request:', request, e);
+    }
   }
 
   private processResponse(parsedMessage: JsonRpcResponse): void {
     if (parsedMessage.id !== UNDEFINED_ID) {
       const pendingResponse = this.payloadPending.get(parsedMessage.id);
       if (pendingResponse === undefined) {
-        throw new NetworkError(`Received a response which id = ${parsedMessage.id} does not match any pending requests`);
+        throw new NetworkError(`Received a response whose id = ${parsedMessage.id}`
+          + 'does not match any pending requests');
       }
 
       // a response was received, clear the timeout and the pending query from the pending map
       clearTimeout(pendingResponse.timeoutId);
       this.payloadPending.delete(parsedMessage.id);
 
-      // reject the promise if the response is negative
+      // use promise resolve/reject to communicate RPC outcome
       if (parsedMessage.isPositiveResponse()) {
         pendingResponse.resolvePromise(parsedMessage);
-        try {
-          this.onMessageHandler(parsedMessage);
-        } catch (e) {
-          console.error('Exception encountered when giving response : ', parsedMessage, ' to its handler.\n', e);
-        }
       } else {
         // Note : impossible to have an undefined error from now on due to isPositiveResponse()
         pendingResponse.rejectPromise(
@@ -137,8 +132,8 @@ export class NetworkConnection {
     }
   }
 
-  public setResponseHandler(handler: ResponseHandler): void {
-    this.onMessageHandler = handler;
+  public setRpcHandler(handler: JsonRpcHandler): void {
+    this.onRpcHandler = handler;
   }
 
   public sendPayload(payload: JsonRpcRequest): Promise<JsonRpcResponse> {
@@ -153,17 +148,17 @@ export class NetworkConnection {
     // Note: this only works because react/Js is single threaded
     query = new JsonRpcRequest({
       ...payload,
-      id: this.payloadSentCount,
+      id: this.getNextRpcID(),
     });
-    this.payloadSentCount += 1;
 
     const promise = new Promise<JsonRpcResponse>((resolve, reject) => {
-      const timeoutId = setTimeout(
-        () => reject(new NetworkError(
+      const timeoutId = setTimeout(() => {
+        this.payloadPending.delete(query.id as number);
+        reject(new NetworkError(
           `Maximum waiting time of ${WEBSOCKET_MESSAGE_TIMEOUT_MS} [ms] reached, dropping query`,
-        )), // FIXME if reject, delete from queue
-        WEBSOCKET_MESSAGE_TIMEOUT_MS,
-      );
+        ));
+      },
+      WEBSOCKET_MESSAGE_TIMEOUT_MS);
 
       const pendingResponse: PendingResponse = {
         promise: promise,
@@ -186,6 +181,15 @@ export class NetworkConnection {
 
   public disconnect(): void {
     this.ws.close();
+  }
+
+  private getNextRpcID(): number {
+    /* This function should also make sure that IDs used by the connection peer are not reused.
+     * In practice, not doing this check is okay as the server doesn't initiate RPCs
+     */
+    const rpcId = this.nextRpcId;
+    this.nextRpcId = (this.nextRpcId + 1) % JSON_RPC_ID_WRAP_AROUND;
+    return rpcId;
   }
 
   private waitWebsocketReady(): Promise<void> {
