@@ -22,11 +22,21 @@ declare global {
 
       toBeKeySignatureArray(received: string, keyField: string, signature: R)
       : jest.CustomMatcherResult;
+
+      toBeNumberObject(received: R)
+      : jest.CustomMatcherResult;
     }
   }
 }
 
 expect.extend({
+
+  toBeNumberObject(received: any): jest.CustomMatcherResult {
+    return {
+      pass: typeof received === 'number' || received instanceof Number,
+      message: () => `Expected '${received}' to be a number or number object`,
+    };
+  },
 
   toBeJsonEqual(received: any, expected: any): jest.CustomMatcherResult {
     if (this.isNot) {

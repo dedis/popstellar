@@ -20,6 +20,7 @@
     "@react-navigation/native": "^5.8.1",
     "@react-navigation/routers": "^5.7.1",
     "@react-navigation/stack": "^5.9.2",
+    "@reduxjs/toolkit": "^1.5.0",
     "@types/react-native-simple-radio-button": "^2.7.0",
     "ajv": "^7.1.1",
     "base-64": "^1.0.0",
@@ -45,7 +46,9 @@
     "react-navigation": "^4.4.1",
     "react-redux": "^7.2.2",
     "redux": "^4.0.5",
+    "redux-devtools-extension": "^2.13.8",
     "redux-persist": "^6.0.0",
+    "redux-thunk": "^2.3.0",
     "tweetnacl": "^1.0.3",
     "tweetnacl-util": "^0.15.1",
     "websocket": "^1.0.32"
