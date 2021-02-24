@@ -15,7 +15,10 @@ class NetworkManager {
   }
 
   private static buildAddress(host: string, port: number, path: string): string {
-    return `ws://${host}:${port}${(path === '') ? '' : `/${path}`}`;
+    const base = `ws://${host}:${port}`;
+    return (path === '')
+      ? base
+      : `${base}/${path}`;
   }
 
   private getConnectionByAddress(address: string): NetworkConnection | undefined {

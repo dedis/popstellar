@@ -25,7 +25,7 @@ export class NetworkConnection {
 
   private nextRpcId: number = 1;
 
-  private payloadPending: Map<number, PendingResponse> = new Map();
+  private readonly payloadPending: Map<number, PendingResponse> = new Map();
 
   private onRpcHandler: JsonRpcHandler = defaultRpcHandler;
 
