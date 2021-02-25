@@ -2,7 +2,7 @@
 Proof-of-personhood, Spring 2021: Web-based front-end
 
 ## Running the project
-Open the terminal in the folder `PopApp` and enter the following commands
+Open the terminal in the `fe1-web`folder and enter the following commands
 
 ```bash
 npm install
@@ -33,10 +33,10 @@ npm start
 
 The app can run normally without any associated backend by running the `LocalMockServer.js` and connecting the websocket link to the mock server instead of a real backend.
 
-The mock server can be run from the `PopApp` folder using:
+The mock server can be run from the `fe1-web` folder using:
 
 - `npm run startServer` or
-- `npm run startMonitorServer` if [nodemon](https://www.npmjs.com/package/nodemon) is installed globally on the host
+- `npm run startMonitorServer` if [nodemon](https://www.npmjs.com/package/nodemon) is installed globally on the host (`npm install -g nodemon` will install the package **g[lobally]**)
 
 `startMonitorServer` will restart the mock server automatically every time the source code changes
 
@@ -44,12 +44,14 @@ The mock server can be run from the `PopApp` folder using:
 
 
 
-## Unit tests
+## Unit tests & Linting
 
-Unit tests can be run from the `PopApp` folder using:
+Unit tests can be run from the `fe1-web` folder using:
 
-- `npm test` or
-- `./node_modules/mocha/bin/mocha --recursive`
+- `npm [run] test` or
+- `npm run test -- --silent` to disable console logs
+
+ESlint feedback can be seen directly from your IDE or using the command `npm run eslint`
 
 ---
 
@@ -58,7 +60,7 @@ Unit tests can be run from the `PopApp` folder using:
 ## Modules npm choices
 
 - **app dependencies**:
-  - we use a combination of [redux](https://redux.js.org/) and [redux-persist](https://github.com/rt2zz/redux-persist) to store our persistent data in the browser _localStorage_. This method will not work for native users (Android, iOS, ...). A solution could be to use the [_AsynchronousStorage_](https://github.com/react-native-async-storage/async-storage) and rethink part of the implementation (see this [pull request](https://github.com/dedis/student20_pop/pull/121) for more information);
+  - we use a combination of [redux](https://redux.js.org/) and [redux-persist](https://github.com/rt2zz/redux-persist) to store our persistent data *asynchronously* in the browser _localStorage_ (or a localStorage polyfill for mobiles, old browsers, and tests);
   - we use a combination of [tweetnacl](https://www.npmjs.com/package/tweetnacl) and [tweetnacl-util](https://github.com/dchest/tweetnacl-util-js) to handle everything related to cryptography (key generation, signatures, ...). This method will not work for native users (Android, iOS, ...). A solution could be to use [tweet-nacl-react-native-expo](https://www.npmjs.com/package/tweet-nacl-react-native-expo) (both libraires in one) which works on a native device but not on a browser. This would imply using a conditional import depending on the device type which we didn't manage to implement without various runtime errors.
   - we use [react-navigation](https://reactnavigation.org/) to handle all the navigations between the different views. The package works great with the native platforms, but as some design issue in the web.
 - **dev dependencies**:
