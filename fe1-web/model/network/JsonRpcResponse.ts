@@ -1,6 +1,6 @@
 import { ProtocolError } from './ProtocolError';
 import { Message } from './method/message';
-import { validateJsonRpcRequest } from './validation';
+import { validateJsonRpcResponse } from './validation';
 
 export const UNDEFINED_ID: number = -1;
 
@@ -46,7 +46,7 @@ export class JsonRpcResponse {
 
   public static fromJson(jsonString: string): JsonRpcResponse {
     const obj = JSON.parse(jsonString);
-    const { errors } = validateJsonRpcRequest(obj);
+    const { errors } = validateJsonRpcResponse(obj);
 
     if (errors !== null) {
       throw new ProtocolError(`Invalid JSON-RPC response\n\n${errors}`);
