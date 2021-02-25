@@ -4,55 +4,70 @@ import static com.github.dedis.student20_pop.model.event.EventCategory.FUTURE;
 import static com.github.dedis.student20_pop.model.event.EventCategory.PAST;
 import static com.github.dedis.student20_pop.model.event.EventCategory.PRESENT;
 
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.TextView;
-import com.github.dedis.student20_pop.R;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.LifecycleOwner;
+import com.github.dedis.student20_pop.databinding.LayoutEventBinding;
+import com.github.dedis.student20_pop.databinding.LayoutEventCategoryBinding;
+import com.github.dedis.student20_pop.detail.AddEventListener;
+import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventCategory;
+import com.github.dedis.student20_pop.model.event.EventType;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-public abstract class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
-  protected final Context context;
-  protected final List<EventCategory> categories;
-  protected final HashMap<EventCategory, List<Event>> eventsMap;
+public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
+
+  protected HashMap<EventCategory, List<Event>> eventsMap;
+  private final EventCategory[] categories = EventCategory.values();
   protected static final SimpleDateFormat DATE_FORMAT =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
+  private final LifecycleOwner lifecycleOwner;
+  private final LaoDetailViewModel viewModel;
 
   /**
    * Constructor for the expandable list view adapter to display the events in the attendee UI
    *
-   * @param context
    * @param events the list of events of the lao
    */
-  public EventExpandableListViewAdapter(Context context, List<Event> events) {
-    this.context = context;
+  public EventExpandableListViewAdapter(
+      List<Event> events, LaoDetailViewModel viewModel, LifecycleOwner lifecycleOwner) {
     this.eventsMap = new HashMap<>();
-    this.categories = new ArrayList<>();
-    this.categories.add(PAST);
-    this.categories.add(PRESENT);
-    this.categories.add(FUTURE);
     this.eventsMap.put(PAST, new ArrayList<>());
     this.eventsMap.put(PRESENT, new ArrayList<>());
     this.eventsMap.put(FUTURE, new ArrayList<>());
+    this.lifecycleOwner = lifecycleOwner;
+    this.viewModel = viewModel;
 
-    putEventsInMap(events, this.eventsMap);
-    orderEventsInMap(this.eventsMap);
+    putEventsInMap(events);
+  }
+
+  public void replaceList(List<Event> events) {
+    setList(events);
+  }
+
+  private void setList(List<Event> events) {
+    putEventsInMap(events);
+    notifyDataSetChanged();
   }
 
   /** @return the amount of categories */
   @Override
   public int getGroupCount() {
-    return this.eventsMap.size();
+    return this.categories.length;
   }
 
   /**
@@ -61,7 +76,10 @@ public abstract class EventExpandableListViewAdapter extends BaseExpandableListA
    */
   @Override
   public int getChildrenCount(int groupPosition) {
-    return this.eventsMap.get(this.categories.get(groupPosition)).size();
+    if (groupPosition > getGroupCount()) {
+      return 0;
+    }
+    return this.eventsMap.getOrDefault(categories[groupPosition], new ArrayList<>()).size();
   }
 
   /**
@@ -73,7 +91,7 @@ public abstract class EventExpandableListViewAdapter extends BaseExpandableListA
     if (groupPosition >= getGroupCount()) {
       return null;
     }
-    return this.categories.get(groupPosition);
+    return this.categories[groupPosition];
   }
 
   /**
@@ -91,7 +109,7 @@ public abstract class EventExpandableListViewAdapter extends BaseExpandableListA
       return null;
     }
 
-    return this.eventsMap.get(this.categories.get(groupPosition)).get(childPosition);
+    return this.eventsMap.get(categories[groupPosition]).get(childPosition);
   }
 
   /**
@@ -147,8 +165,52 @@ public abstract class EventExpandableListViewAdapter extends BaseExpandableListA
    * @return the View corresponding to the group at the specified position
    */
   @Override
-  public abstract View getGroupView(
-      int groupPosition, boolean isExpanded, View convertView, ViewGroup parent);
+  public View getGroupView(
+      int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+    EventCategory eventCategory = (EventCategory) getGroup(groupPosition);
+
+    LayoutEventCategoryBinding binding;
+    if (convertView == null) {
+      LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+      binding = LayoutEventCategoryBinding.inflate(inflater, parent, false);
+    } else {
+      binding = DataBindingUtil.getBinding(convertView);
+    }
+
+    binding.setCategoryName(eventCategory.name());
+
+    Context context = parent.getContext();
+
+    binding.setIsFutureCategory(eventCategory.equals(FUTURE));
+    binding.setViewmodel(viewModel);
+
+    AddEventListener addEventOnClickListener =
+        new AddEventListener() {
+          @Override
+          public void addEvent() {
+            AlertDialog.Builder builder = new Builder(context);
+            builder.setTitle("Select Event Type");
+
+            ArrayAdapter<String> arrayAdapter =
+                new ArrayAdapter<>(context, android.R.layout.select_dialog_singlechoice);
+
+            arrayAdapter.add("Roll-Call Event");
+
+            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+            builder.setAdapter(
+                arrayAdapter,
+                ((dialog, which) -> {
+                  dialog.dismiss();
+                  viewModel.addEvent(EventType.values()[which]);
+                }));
+            builder.show();
+          }
+        };
+
+    binding.setAddEventListener(addEventOnClickListener);
+
+    return binding.getRoot();
+  }
 
   /**
    * Gets a View that displays the data for the given child within the given group.
@@ -172,73 +234,44 @@ public abstract class EventExpandableListViewAdapter extends BaseExpandableListA
       boolean isLastChild,
       View convertView,
       ViewGroup parent) {
+
     // TODO : For the moment, events are displayed the same if user is attendee or organizer,
     // in the future it could be nice to have a pencil icon to allow organizer to modify an event
+
+    LayoutEventBinding binding;
     Event event = ((Event) getChild(groupPosition, childPosition));
-    //    String eventTitle = (event.getName() + " : " + event.getType());
-    String eventDescription = "";
-    //    String time = DATE_FORMAT.format(event.getStartTime() * 1000L);
     if (convertView == null) {
-      LayoutInflater inflater =
-          (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-      convertView = inflater.inflate(R.layout.layout_event, null);
+      LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+      binding = LayoutEventBinding.inflate(inflater, parent, false);
+    } else {
+      binding = DataBindingUtil.getBinding(convertView);
     }
-    TextView eventTitleTextView = convertView.findViewById(R.id.event_title);
-    TextView descriptionTextView = convertView.findViewById(R.id.event_description);
-    //    eventTitleTextView.setText(eventTitle);
-    //    switch (event.getType()) {
-    //      case ROLL_CALL:
-    //        eventDescription =
-    //            "Start Time : "
-    //                + time
-    //                + "\nLocation : "
-    //                + event.getLocation()
-    //                + "\nParticipants: "
-    //                + event.getAttendees().size();
-    //        break;
-    //      default:
-    //        eventDescription = "Start Time : " + time + "\nLocation : " + event.getLocation();
-    //        break;
-    //    }
-    descriptionTextView.setText(eventDescription);
-    return convertView;
+
+    binding.setEvent(event);
+    binding.setLifecycleOwner(lifecycleOwner);
+
+    binding.executePendingBindings();
+    return binding.getRoot();
   }
 
   /**
    * A helper method that places the events in the correct key-value pair according to their times
    *
    * @param events
-   * @param eventsMap
    */
-  private void putEventsInMap(List<Event> events, HashMap<EventCategory, List<Event>> eventsMap) {
+  private void putEventsInMap(List<Event> events) {
+    Collections.sort(events);
+    eventsMap = new HashMap<>();
+    long now = Instant.now().getEpochSecond();
     for (Event event : events) {
-      Calendar calendar = Calendar.getInstance();
-      calendar.add(Calendar.DATE, -1);
-      long yesterday = (Instant.ofEpochMilli(calendar.getTimeInMillis())).getEpochSecond();
-      // later: event.getEndTime() < now
-      //      if (event.getStartTime() < yesterday) {
-      //        eventsMap.get(PAST).add(event);
-      //      }
-      //      // later: event.getStartTime()<now && event.getEndTime() > now
-      //      else if (event.getStartTime() <= Instant.now().getEpochSecond()) {
-      //        eventsMap.get(PRESENT).add(event);
-      //      } else { // if e.getStartTime() > now
-      //        eventsMap.get(FUTURE).add(event);
-      //      }
+      if (event.getEndTimestamp() < now) {
+        eventsMap.get(PAST).add(event);
+      } else if (event.getStartTimestamp() > now) {
+        eventsMap.get(FUTURE).add(event);
+      } else {
+        eventsMap.get(PRESENT).add(event);
+      }
     }
-  }
-
-  /**
-   * A helper method that orders the events according to their times
-   *
-   * @param eventsMap
-   */
-  private void orderEventsInMap(HashMap<EventCategory, List<Event>> eventsMap) {
-
-    //    for (EventCategory category : categories) {
-    //      Collections.sort(eventsMap.get(category), new EventComparator());
-    //    }
-    // 2 possibilities: B strictly after A or B nested within A
   }
 
   /**
@@ -252,12 +285,4 @@ public abstract class EventExpandableListViewAdapter extends BaseExpandableListA
   public boolean isChildSelectable(int groupPosition, int childPosition) {
     return true;
   }
-
-  //  private static class EventComparator implements Comparator<Event> {
-  //    // later: compare start times
-  //    @Override
-  //    public int compare(Event event1, Event event2) {
-  //      return Long.compare(event1.getTime(), event2.getTime());
-  //    }
-  //  }
 }

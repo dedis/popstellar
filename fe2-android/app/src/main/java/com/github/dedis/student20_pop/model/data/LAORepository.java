@@ -3,7 +3,6 @@ package com.github.dedis.student20_pop.model.data;
 import android.util.Base64;
 import android.util.Log;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.Lao.PendingUpdate;
 import com.github.dedis.student20_pop.model.Lao.RollCall;
@@ -63,7 +62,7 @@ public class LAORepository {
   private Subject<GenericMessage> unprocessed;
 
   // State for LAO
-  private Map<String, Lao> laoById;
+  private Map<String, LaoState> laoById;
 
   // State for Messages
   private Map<String, MessageGeneral> messageById;
@@ -90,7 +89,7 @@ public class LAORepository {
     mKeysetManager = keysetManager;
     mGson = gson;
 
-    laoById = new LaoMap<>();
+    laoById = new HashMap<>();
     messageById = new HashMap<>();
     subscribeRequests = new HashMap<>();
     catchupRequests = new HashMap<>();
@@ -133,9 +132,11 @@ public class LAORepository {
         subscribeRequests.remove(id);
 
         Lao lao = new Lao(channel);
-        laoById.put(channel, lao);
+        laoById.put(channel, new LaoState(lao));
         allLaoSubject.onNext(
-            laoById.entrySet().stream().map(x -> x.getValue()).collect(Collectors.toList()));
+            laoById.entrySet().stream()
+                .map(x -> x.getValue().getLao())
+                .collect(Collectors.toList()));
 
         Log.d(TAG, "posted allLaos to `allLaoSubject`");
         sendCatchup(channel);
@@ -157,9 +158,11 @@ public class LAORepository {
         createLaoRequests.remove(id);
 
         Lao lao = new Lao(channel);
-        laoById.put(channel, lao);
+        laoById.put(channel, new LaoState(lao));
         allLaoSubject.onNext(
-            laoById.entrySet().stream().map(x -> x.getValue()).collect(Collectors.toList()));
+            laoById.entrySet().stream()
+                .map(x -> x.getValue().getLao())
+                .collect(Collectors.toList()));
         Log.d(TAG, "createLaoRequest contains this id. posted allLaos to `allLaoSubject`");
         sendCatchup(channel);
       }
@@ -212,18 +215,20 @@ public class LAORepository {
 
     // Trigger an onNext
     if (!(data instanceof WitnessMessage)) {
-      Lao lao = laoById.get(channel);
-      laoById.put(channel, lao);
+      LaoState laoState = laoById.get(channel);
+      laoState.publish();
       if (data instanceof StateLao || data instanceof CreateLao) {
         allLaoSubject.onNext(
-            laoById.entrySet().stream().map(x -> x.getValue()).collect(Collectors.toList()));
+            laoById.entrySet().stream()
+                .map(x -> x.getValue().getLao())
+                .collect(Collectors.toList()));
       }
     }
     return enqueue;
   }
 
   public boolean handleCreateLao(String channel, CreateLao createLao) {
-    Lao lao = laoById.get(channel);
+    Lao lao = laoById.get(channel).getLao();
 
     lao.setName(createLao.getName());
     lao.setCreation(createLao.getCreation());
@@ -238,7 +243,7 @@ public class LAORepository {
   }
 
   public boolean handleUpdateLao(String channel, String messageId, UpdateLao updateLao) {
-    Lao lao = laoById.get(channel);
+    Lao lao = laoById.get(channel).getLao();
 
     if (lao.getLastModified() > updateLao.getLastModified()) {
       // the current state we have is more up to date
@@ -250,7 +255,7 @@ public class LAORepository {
   }
 
   public boolean handleStateLao(String channel, StateLao stateLao) {
-    Lao lao = laoById.get(channel);
+    Lao lao = laoById.get(channel).getLao();
 
     if (!messageById.containsKey(stateLao.getModificationId())) {
       // queue it if we haven't received the update message yet
@@ -286,7 +291,7 @@ public class LAORepository {
   }
 
   public boolean handleCreateRollCall(String channel, CreateRollCall createRollCall) {
-    Lao lao = laoById.get(channel);
+    Lao lao = laoById.get(channel).getLao();
 
     Lao.RollCall rollCall = new Lao.RollCall();
     rollCall.setId(createRollCall.getId());
@@ -306,7 +311,7 @@ public class LAORepository {
   }
 
   public boolean handleOpenRollCall(String channel, OpenRollCall openRollCall) {
-    Lao lao = laoById.get(channel);
+    Lao lao = laoById.get(channel).getLao();
 
     String updateId = openRollCall.getUpdateId();
     String opens = openRollCall.getOpens();
@@ -327,7 +332,7 @@ public class LAORepository {
   }
 
   public boolean handleCloseRollCall(String channel, CloseRollCall closeRollCall) {
-    Lao lao = laoById.get(channel);
+    Lao lao = laoById.get(channel).getLao();
 
     String updateId = closeRollCall.getUpdateId();
     String closes = closeRollCall.getCloses();
@@ -367,7 +372,7 @@ public class LAORepository {
       MessageGeneral msg = messageById.get(messageId);
       msg.getWitnessSignatures().add(new PublicKeySignaturePair(senderPkBuf, signatureBuf));
 
-      Lao lao = laoById.get(channel);
+      Lao lao = laoById.get(channel).getLao();
       Set<PendingUpdate> pendingUpdates = lao.getPendingUpdates();
       if (pendingUpdates.contains(messageId)) {
         // We're waiting to collect signatures for this one
@@ -440,9 +445,10 @@ public class LAORepository {
     int id = mRemoteDataSource.incrementAndGetRequestId();
     Catchup catchup = new Catchup(channel, id);
 
-    mRemoteDataSource.sendMessage(catchup);
     catchupRequests.put(id, channel);
-    return createSingle(id);
+    Single<Answer> answer = createSingle(id);
+    mRemoteDataSource.sendMessage(catchup);
+    return answer;
   }
 
   public Single<Answer> sendPublish(String channel, MessageGeneral message) {
@@ -450,13 +456,14 @@ public class LAORepository {
 
     Publish publish = new Publish(channel, id, message);
 
-    mRemoteDataSource.sendMessage(publish);
-
     if (message.getData() instanceof CreateLao) {
       CreateLao data = (CreateLao) message.getData();
       createLaoRequests.put(id, "/root/" + data.getId());
     }
-    return createSingle(id);
+
+    Single<Answer> answer = createSingle(id);
+    mRemoteDataSource.sendMessage(publish);
+    return answer;
   }
 
   public Single<Answer> sendSubscribe(String channel) {
@@ -466,7 +473,10 @@ public class LAORepository {
 
     mRemoteDataSource.sendMessage(subscribe);
     subscribeRequests.put(id, channel);
-    return createSingle(id);
+
+    Single<Answer> answer = createSingle(id);
+    mRemoteDataSource.sendMessage(subscribe);
+    return answer;
   }
 
   public Single<Answer> sendUnsubscribe(String channel) {
@@ -474,8 +484,9 @@ public class LAORepository {
 
     Unsubscribe unsubscribe = new Unsubscribe(channel, id);
 
+    Single<Answer> answer = createSingle(id);
     mRemoteDataSource.sendMessage(unsubscribe);
-    return createSingle(id);
+    return answer;
   }
 
   private Single<Answer> createSingle(int id) {
@@ -492,7 +503,9 @@ public class LAORepository {
                 genericMessage -> {
                   return (Answer) genericMessage;
                 })
-            .firstOrError();
+            .firstOrError()
+            .subscribeOn(Schedulers.io())
+            .cache();
 
     return res;
   }
@@ -501,22 +514,30 @@ public class LAORepository {
     return allLaoSubject;
   }
 
-  private static class LaoMap<K, V> extends HashMap<K, V> {
-    private Subject<V> publisher;
+  public Observable<Lao> getLaoObservable(String channel) {
+    Log.d(TAG, "LaoIds we have are: " + laoById.keySet());
+    return laoById.get(channel).getObservable();
+  }
 
-    public LaoMap() {
+  private static class LaoState {
+    private Subject<Lao> publisher;
+    private Lao lao;
+
+    public LaoState(Lao lao) {
+      this.lao = lao;
       this.publisher = PublishSubject.create();
     }
 
-    public Observable<V> getObservable() {
-      return publisher;
+    public Observable<Lao> getObservable() {
+      return publisher.startWith(lao);
     }
 
-    @Nullable
-    @Override
-    public V put(K key, V value) {
-      publisher.onNext(value);
-      return super.put(key, value);
+    public void publish() {
+      publisher.onNext(lao);
+    }
+
+    public Lao getLao() {
+      return lao;
     }
   }
 }

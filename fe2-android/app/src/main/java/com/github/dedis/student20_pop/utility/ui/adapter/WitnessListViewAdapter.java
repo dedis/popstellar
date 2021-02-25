@@ -6,27 +6,37 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageButton;
-import android.widget.TextView;
-
 import androidx.databinding.DataBindingUtil;
-
+import androidx.lifecycle.LifecycleOwner;
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.databinding.LayoutLaoHomeBinding;
-import com.github.dedis.student20_pop.home.LAOItemUserActionsListener;
-import com.github.dedis.student20_pop.model.Lao;
-import com.github.dedis.student20_pop.model.entities.Person;
-
+import com.github.dedis.student20_pop.databinding.LayoutWitnessesListViewBinding;
+import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
+import com.github.dedis.student20_pop.detail.WitnessDeleteListener;
 import java.util.List;
 
 /** Adapter to show witnesses of an Event */
 public class WitnessListViewAdapter extends BaseAdapter {
-  private Context context;
-  private List<Person> witnesses;
 
-  public WitnessListViewAdapter(Context context, List<Person> witnesses) {
-    this.context = context;
+  private final LaoDetailViewModel viewModel;
+
+  private List<String> witnesses;
+
+  private LifecycleOwner lifecycleOwner;
+
+  public WitnessListViewAdapter(
+      List<String> witness, LaoDetailViewModel viewModel, LifecycleOwner activity) {
+    this.viewModel = viewModel;
+    setList(witness);
+    lifecycleOwner = activity;
+  }
+
+  public void replaceList(List<String> witnesses) {
+    setList(witnesses);
+  }
+
+  private void setList(List<String> witnesses) {
     this.witnesses = witnesses;
+    notifyDataSetChanged();
   }
 
   /**
@@ -36,7 +46,7 @@ public class WitnessListViewAdapter extends BaseAdapter {
    */
   @Override
   public int getCount() {
-    return witnesses.size();
+    return witnesses != null ? witnesses.size() : 0;
   }
 
   /**
@@ -80,33 +90,41 @@ public class WitnessListViewAdapter extends BaseAdapter {
    */
   @Override
   public View getView(int position, View convertView, ViewGroup parent) {
+    LayoutWitnessesListViewBinding binding;
     if (convertView == null) {
-      convertView =
-          LayoutInflater.from(context).inflate(R.layout.layout_witnesses_list_view, parent, false);
+      LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+      binding = LayoutWitnessesListViewBinding.inflate(inflater, parent, false);
+    } else {
+      binding = DataBindingUtil.getBinding(convertView);
     }
 
-    ((TextView) convertView.findViewById(R.id.text_view_witness_name))
-        .setText(witnesses.get(position).publicKey);
-    ImageButton deleteButton = convertView.findViewById(R.id.image_button_delete_witness);
-    deleteButton.setVisibility(parent.getId() == R.id.witness_list ? View.VISIBLE : View.GONE);
-    deleteButton.setOnClickListener(
-        clicked -> {
-          AlertDialog.Builder adb = new AlertDialog.Builder(context);
-          // TODO : Verify that the back-end is able to delete the witness
-          // and delete the witness in the back-end
-          adb.setTitle(context.getString(R.string.delete_witness_dialog_title));
-          adb.setMessage(
-              context.getString(R.string.delete_witness_dialog_message, +(position + 1)));
-          adb.setNegativeButton(context.getString(R.string.button_cancel), null);
-          adb.setPositiveButton(
-              context.getString(R.string.button_confirm),
-              (dialog, which) -> {
-                // TODO make a call to the back-end once the protocol is set
-                witnesses.remove(position);
-                notifyDataSetChanged();
-              });
-          adb.show();
-        });
+    binding.setWitness(witnesses.get(position));
+    binding.setLifecycleOwner(lifecycleOwner);
+    binding.setViewModel(viewModel);
+
+    Context context = parent.getContext();
+
+    WitnessDeleteListener deleteButtonListener =
+        new WitnessDeleteListener() {
+          @Override
+          public void onDeleteClicked(String witness) {
+            AlertDialog.Builder adb = new AlertDialog.Builder(context);
+            // TODO: Wait on this until we hear a success/failure from the server.
+            adb.setTitle(context.getString(R.string.delete_witness_dialog_title));
+            adb.setMessage(
+                context.getString(R.string.delete_witness_dialog_message, +(position + 1)));
+            adb.setNegativeButton(context.getString(R.string.button_cancel), null);
+            adb.setPositiveButton(
+                context.getString(R.string.button_confirm),
+                (dialog, which) -> {
+                  viewModel.removeWitness(witness);
+                });
+            adb.show();
+          }
+        };
+
+    binding.setListener(deleteButtonListener);
+
     return convertView;
   }
 }

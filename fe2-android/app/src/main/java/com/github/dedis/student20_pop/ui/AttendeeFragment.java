@@ -7,14 +7,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.model.entities.LAOEntity;
-import com.github.dedis.student20_pop.utility.ui.adapter.AttendeeEventExpandableListViewAdapter;
+// import com.github.dedis.student20_pop.utility.ui.adapter.AttendeeEventExpandableListViewAdapter;
 
 /** Fragment used to display the Attendee UI */
 @Deprecated
@@ -22,13 +19,13 @@ public class AttendeeFragment extends Fragment {
 
   public static final String TAG = AttendeeFragment.class.getSimpleName();
 
-  private AttendeeEventExpandableListViewAdapter listViewEventAdapter;
+  //  private AttendeeEventExpandableListViewAdapter listViewEventAdapter;
   private ExpandableListView expandableListView;
   private Button propertiesButton;
   private ListView witnessesListView;
 
   public static AttendeeFragment newInstance() {
-      return new AttendeeFragment();
+    return new AttendeeFragment();
   }
 
   @Nullable
@@ -39,7 +36,7 @@ public class AttendeeFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
 
     View rootView = inflater.inflate(R.layout.fragment_attendee, container, false);
-/*
+    /*
     PoPApplication app = (PoPApplication) (this.getActivity().getApplication());
 
     // lao = app.getCurrentLaoUnsafe();

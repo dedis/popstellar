@@ -9,7 +9,6 @@ import androidx.fragment.app.FragmentActivity;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.ui.IdentityFragment;
-import com.github.dedis.student20_pop.ui.OrganizerFragment;
 import com.github.dedis.student20_pop.ui.event.creation.MeetingEventCreationFragment;
 import com.github.dedis.student20_pop.ui.event.creation.PollEventCreationFragment;
 import com.github.dedis.student20_pop.ui.event.creation.RollCallEventCreationFragment;
