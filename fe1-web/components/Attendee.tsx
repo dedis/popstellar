@@ -65,7 +65,7 @@ Attendee.propTypes = propTypes;
 
 const mapStateToProps = (state: any) => ({
   events: state.currentEvents.events,
-  lao: state.openedLao.lao,
+  lao: state.openedLao,
 });
 
 export default connect(mapStateToProps)(Attendee);

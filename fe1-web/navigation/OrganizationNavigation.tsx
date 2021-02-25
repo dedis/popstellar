@@ -12,7 +12,7 @@ import { KeyPairStore } from 'store';
 import { Lao } from 'model/objects';
 
 import Attendee from 'components/Attendee';
-import Identity from 'components/Identity';
+import Identity from 'parts/lao/Identity';
 import MyTabBar from 'components/OrganizerMaterialTab';
 
 import WitnessNavigation from './WitnessNavigation';
@@ -91,7 +91,7 @@ OrganizationNavigation.defaultProps = {
 };
 
 const mapStateToProps = (state) => ({
-  lao: state.openedLao.lao,
+  lao: state.openedLao,
 });
 
 export default connect(mapStateToProps)(OrganizationNavigation);
