@@ -4,7 +4,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 
 import STRINGS from 'res/strings';
 
-import Launch from 'components/Launch';
+import Launch from 'parts/Launch';
 import Home from 'parts/Home';
 
 import ConnectNavigation from './ConnectNavigation';
