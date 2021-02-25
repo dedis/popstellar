@@ -6,13 +6,13 @@ import { Channel } from 'model/objects/Channel';
 import { getNetworkManager } from 'network/NetworkManager';
 
 export function publish(channel: Channel, msgData: MessageData): Promise<void> {
-  const message = Message.fromData(msgData);
+  const message = Message.fromData(msgData).toProtocolJson();
 
   const request = new JsonRpcRequest({
     method: JsonRpcMethod.PUBLISH,
     params: new Publish({
-      channel,
-      message,
+      channel: channel,
+      message: message,
     }),
     id: -1, // FIXME
   });

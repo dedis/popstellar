@@ -71,4 +71,9 @@ export class Message {
       witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
     });
   }
+
+  public toProtocolJson(): any {
+    const { messageData, ...protocolMessage } = this;
+    return protocolMessage;
+  }
 }
