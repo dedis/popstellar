@@ -74,7 +74,7 @@ EventItem.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-  lao: state.openedLao.lao,
+  lao: state.openedLao,
 });
 
 export default connect(mapStateToProps)(EventItem);
