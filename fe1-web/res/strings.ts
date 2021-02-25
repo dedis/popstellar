@@ -73,7 +73,7 @@ const STRINGS = {
         + 'this box checked. If you wish to reveal your identity to other participants in the organization, you may '
         + 'un-check this box and enter the information you wish to reaveal below. You must enter identity information in '
         + 'order to play an Organizer or Witness role in an organization.',
-  identity_name_placeholder: 'Name*',
+  identity_name_placeholder: 'Name',
   identity_title_placeholder: 'Title',
   identity_organization_placeholder: 'Organization',
   identity_email_placeholder: 'Email',
