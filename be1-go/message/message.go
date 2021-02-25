@@ -52,9 +52,16 @@ func NewMessage(sender PublicKey, signature Signature, witnessSignatures []Publi
 }
 
 func (m Message) MarshalJSON() ([]byte, error) {
-	dataBuf, err := json.Marshal(m.Data)
-	if err != nil {
-		return nil, xerrors.Errorf("error marshaling data: %v", err)
+
+	var dataBuf []byte
+	if m.RawData != nil {
+		dataBuf = m.RawData
+	} else {
+		buf, err := json.Marshal(m.Data)
+		if err != nil {
+			return nil, xerrors.Errorf("error marshaling data: %v", err)
+		}
+		dataBuf = buf
 	}
 
 	tmp := internalMessage{
