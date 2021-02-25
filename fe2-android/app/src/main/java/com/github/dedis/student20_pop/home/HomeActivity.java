@@ -3,8 +3,8 @@ package com.github.dedis.student20_pop.home;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
@@ -114,8 +114,8 @@ public class HomeActivity extends AppCompatActivity {
   protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
-    if(requestCode == LAO_DETAIL_REQUEST_CODE) {
-      if(resultCode == RESULT_OK) {
+    if (requestCode == LAO_DETAIL_REQUEST_CODE) {
+      if (resultCode == RESULT_OK) {
         startActivity(new Intent(data));
       }
     }
@@ -206,6 +206,7 @@ public class HomeActivity extends AppCompatActivity {
 
   private void openLaoDetails(String laoId) {
     Intent intent = new Intent(this, LaoDetailActivity.class);
+    Log.d(TAG, "Trying to open lao detail for lao with id " + laoId);
     intent.putExtra("LAO_ID", laoId);
     startActivityForResult(intent, LAO_DETAIL_REQUEST_CODE);
   }

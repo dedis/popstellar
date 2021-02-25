@@ -64,7 +64,7 @@ public class LAOListAdapter extends BaseAdapter {
         new LAOItemUserActionsListener() {
           @Override
           public void onLAOClicked(Lao lao) {
-            homeViewModel.openLAO(lao.getId());
+            homeViewModel.openLAO("/root/" + lao.getId());
           }
         };
 

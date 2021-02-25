@@ -129,6 +129,7 @@ public final class Lao {
   }
 
   public static class PendingUpdate implements Comparable<PendingUpdate> {
+
     private long modificationTime;
     private String messageId;
 
@@ -148,6 +149,7 @@ public final class Lao {
   }
 
   public static class RollCall extends Event {
+
     private String id;
     private String name;
     private long creation;
@@ -236,16 +238,19 @@ public final class Lao {
     }
 
     @Override
-    public long getTimestamp() {
-      if (end != 0) {
-        return end;
+    public long getStartTimestamp() {
+      if (start != 0) {
+        return start;
       }
+      return scheduled;
+    }
 
-      if (start == 0) {
-        return scheduled;
+    @Override
+    public long getEndTimestamp() {
+      if (end == 0) {
+        return Long.MAX_VALUE;
       }
-
-      return start;
+      return end;
     }
   }
 }

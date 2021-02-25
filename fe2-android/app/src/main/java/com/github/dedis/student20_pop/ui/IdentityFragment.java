@@ -8,15 +8,11 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.github.dedis.student20_pop.R;
-
 import net.glxn.qrgen.android.QRCode;
-
 
 /**
  * Represents the identity of a user within an organization (which allows users to “wear different
@@ -76,7 +72,8 @@ public class IdentityFragment extends Fragment {
     // User identity is composed of :
     // User's public key
     // Organization's ID
-    // TODO: verify from view model if user is organizer, if not show uid (get from view model), if yes then show organizer_id and lao_id (get from view model)
+    // TODO: verify from view model if user is organizer, if not show uid (get from view model), if
+    // yes then show organizer_id and lao_id (get from view model)
 
     /*
     final PoPApplication app = ((PoPApplication) this.getActivity().getApplication());

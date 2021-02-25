@@ -9,6 +9,7 @@ import com.github.dedis.student20_pop.model.entities.Person;
 import com.github.dedis.student20_pop.model.entities.RollCall;
 import com.github.dedis.student20_pop.model.network.GenericMessage;
 import com.github.dedis.student20_pop.model.network.method.Message;
+import com.google.gson.Gson;
 import io.reactivex.Observable;
 import io.reactivex.subjects.Subject;
 import java.util.List;
@@ -51,6 +52,18 @@ public class RxTest {
     //    subject.onNext(res);
     //
     //    Assert.assertEquals("done", done.get());
+  }
+
+  @Test
+  public void Test_Deserialization() {
+    Gson gson = Injection.provideGson();
+    //    String catchup =
+    //
+    // "{\"jsonrpc\":\"2.0\",\"result\":[{\"message_id\":\"yRgM8yPFUPCct6SrWgFO40zOvBDQ9ckdGWSlQyra+0w=\",\"data\":\"eyJhY3Rpb24iOiJjcmVhdGUiLCJvYmplY3QiOiJsYW8iLCJpZCI6InZMeTh1aUpCS1RPOFpjTUtkc2NBVk9Qb0EwY042UzNOaks3Zi9HT3BKUzg9IiwibmFtZSI6IkZvb2JhciIsImNyZWF0aW9uIjoxNjE0MjAwMjYwODY0LCJvcmdhbml6ZXIiOiI2OTM5OHhKMXEvdUpnT0JTUnpPVGV0V1F4OUpoMW55dVVtcEJXeExBTHRnPSIsIndpdG5lc3NlcyI6W119\",\"sender\":\"69398xJ1q/uJgOBSRzOTetWQx9Jh1nyuUmpBWxLALtg=\",\"signature\":\"TLHbvZkOJ1EAE0jmxs8fMV0MFZr0ICFO00buHtIIF9jsNpYc15X89y09DbUcgnzG0oetf+J7tYX5KDvxo8dSCw==\",\"witness_signatures\":null}],\"id\":2}";
+    //    GenericMessage genericMessage = gson.fromJson(catchup, GenericMessage.class);
+    String catchup =
+        "{\"jsonrpc\":\"2.0\",\"result\":[{\"creation\":1614239972771,\"id\":\"6rHq3Rql7aE9IssyzHFK1jUpFy+nofV9nI6J2Dhb1EE\\u003d\",\"name\":\"FingersCrossed\",\"organizer\":\"69398xJ1q/uJgOBSRzOTetWQx9Jh1nyuUmpBWxLALtg\\u003d\",\"witnesses\":[],\"object\":\"lao\",\"action\":\"create\"}],\"id\":8}";
+    gson.fromJson(catchup, GenericMessage.class);
   }
 
   private class TestLAORemoteDataSource implements LAODataSource.Remote {

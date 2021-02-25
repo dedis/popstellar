@@ -8,17 +8,19 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import com.github.dedis.student20_pop.Event;
+import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.data.LAORepository;
-import com.github.dedis.student20_pop.model.entities.LAOEntity;
-import com.github.dedis.student20_pop.model.entities.Person;
+import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.utility.security.Keys;
 import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class LaoDetailViewModel extends AndroidViewModel {
 
@@ -28,15 +30,23 @@ public class LaoDetailViewModel extends AndroidViewModel {
   private final MutableLiveData<Event<Boolean>> mOpenIdentityEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mShowPropertiesEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mEditPropertiesEvent = new MutableLiveData<>();
-  private final MutableLiveData<LAOEntity> mCurrentLao = new MutableLiveData<>();
-  private final MutableLiveData<Boolean> isOrganizer = new MutableLiveData<>();
+  private final MutableLiveData<Lao> mCurrentLao = new MutableLiveData<>();
+  private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
   private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>("");
   private final LAORepository mLAORepository;
   private final AndroidKeysetManager mKeysetManager;
-  private final MutableLiveData<Map<String, Person>> mWitnessesById = new MutableLiveData<>();
-  private final LiveData<List<Person>> mWitnesses =
-      Transformations.map(mWitnessesById, witnesses -> new ArrayList<>(witnesses.values()));
+  private final LiveData<List<String>> mWitnesses =
+      Transformations.map(
+          mCurrentLao,
+          lao -> lao == null ? new ArrayList<>() : new ArrayList<>(lao.getWitnesses()));
+
+  private final LiveData<String> mCurrentLaoName =
+      Transformations.map(mCurrentLao, lao -> lao == null ? "" : lao.getName());
+
+  private final MutableLiveData<Event<EventType>> mNewLaoEventEvent = new MutableLiveData<>();
+
+  private Disposable disposable;
 
   public LaoDetailViewModel(
       @NonNull Application application,
@@ -64,23 +74,23 @@ public class LaoDetailViewModel extends AndroidViewModel {
     return mEditPropertiesEvent;
   }
 
-  public LAOEntity getCurrentLao() {
+  public Lao getCurrentLao() {
     return mCurrentLao.getValue();
   }
 
-  public String getCurrentLaoName() {
-    return getCurrentLao().lao.name;
+  public LiveData<String> getCurrentLaoName() {
+    return mCurrentLaoName;
   }
 
-  public Boolean isOrganizer() {
-    return isOrganizer.getValue();
+  public LiveData<Boolean> isOrganizer() {
+    return mIsOrganizer;
   }
 
   public Boolean getShowProperties() {
     return showProperties.getValue();
   }
 
-  public LiveData<List<Person>> getWitnesses() {
+  public LiveData<List<String>> getWitnesses() {
     return mWitnesses;
   }
 
@@ -126,28 +136,47 @@ public class LaoDetailViewModel extends AndroidViewModel {
     closeEditProperties();
   }
 
-  public void setCurrentLao(String laoId) {
-    if (laoId == null) {
-      throw new IllegalArgumentException("Can't access details from a null LAO");
+  @Override
+  protected void onCleared() {
+    if (disposable != null) {
+      disposable.dispose();
     }
-    try {
-      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-      String uid = Keys.getEncodedKey(publicKeysetHandle);
+    super.onCleared();
+  }
 
-      isOrganizer.setValue(laoId.equals(uid));
-      // TODO: solve issue of accessing db on main thread
-      // CurrentLao.setValue(mLAORepository.getLAO(laoId));
-      LAOEntity laoEntity = new LAOEntity();
-      //            laoEntity.lao = new Lao("dummy", "DEDIS").toLAO();
-      mCurrentLao.setValue(laoEntity);
+  public void subscribeToLao(String laoId) {
+    disposable =
+        mLAORepository
+            .getLaoObservable(laoId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                lao -> {
+                  Log.d(TAG, "got an update for lao: " + lao.getName());
+                  mCurrentLao.postValue(lao);
+                  try {
+                    KeysetHandle publicKeysetHandle =
+                        mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+                    boolean isOrganizer =
+                        lao.getOrganizer().equals(Keys.getEncodedKey(publicKeysetHandle));
+                    Log.d(TAG, "isOrganizer: " + isOrganizer);
+                    mIsOrganizer.postValue(isOrganizer);
+                  } catch (GeneralSecurityException e) {
+                    Log.d(TAG, "failed to get public keyset handle", e);
+                  } catch (IOException e) {
+                    Log.d(TAG, "failed to get public key", e);
+                  }
+                  mIsOrganizer.postValue(false);
+                });
+  }
 
-      Log.d(TAG, "The user is organizer: " + isOrganizer());
+  public void removeWitness(String witness) {
+    // TODO: implement this by sending an UpdateLao
+    Log.d(TAG, "trying to remove witness: " + witness);
+  }
 
-    } catch (GeneralSecurityException e) {
-      Log.e(TAG, "failed to get keyset handle", e);
-    } catch (IOException e) {
-      Log.e(TAG, "failed to parse public key", e);
-    }
+  public void addEvent(EventType eventType) {
+    mNewLaoEventEvent.postValue(new Event<>(eventType));
   }
 
   public void setCurrentLaoName(String laoName) {
@@ -155,5 +184,9 @@ public class LaoDetailViewModel extends AndroidViewModel {
       Log.d(TAG, "New name for current LAO: " + laoName);
       mLaoName.setValue(laoName);
     }
+  }
+
+  public LiveData<Event<EventType>> getNewLaoEventEvent() {
+    return mNewLaoEventEvent;
   }
 }

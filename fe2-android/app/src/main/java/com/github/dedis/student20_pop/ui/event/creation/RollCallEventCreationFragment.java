@@ -15,19 +15,16 @@ import androidx.fragment.app.FragmentManager;
 import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.event.RollCallEvent;
-import com.github.dedis.student20_pop.utility.ui.listener.OnAddAttendeesListener;
-import com.github.dedis.student20_pop.utility.ui.listener.OnEventCreatedListener;
 import java.util.Objects;
 
 /** Fragment that shows up when user wants to create a Roll-Call Event */
 public final class RollCallEventCreationFragment extends AbstractEventCreationFragment {
+
   public static final String TAG = RollCallEventCreationFragment.class.getSimpleName();
 
   private EditText rollCallDescriptionEditText;
   private EditText rollCallTitleEditText;
   private RollCallEvent rollCallEvent;
-  private OnEventCreatedListener eventCreatedListener;
-  private OnAddAttendeesListener onAddAttendeesListener;
   private Button confirmButton;
   private Button openButton;
 
@@ -56,8 +53,6 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
   @Override
   public void onAttach(@NonNull Context context) {
     super.onAttach(context);
-    eventCreatedListener = (OnEventCreatedListener) context;
-    onAddAttendeesListener = (OnAddAttendeesListener) context;
   }
 
   @Nullable
@@ -117,10 +112,10 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     //        });
 
     Button cancelButton = view.findViewById(R.id.roll_call_cancel);
-    //    cancelButton.setOnClickListener(
-    //        v -> {
-    //          fragmentManager.popBackStackImmediate();
-    //        });
+    cancelButton.setOnClickListener(
+        v -> {
+          fragmentManager.popBackStackImmediate();
+        });
 
     return view;
   }

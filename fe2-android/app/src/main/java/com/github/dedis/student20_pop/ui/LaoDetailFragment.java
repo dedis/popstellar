@@ -1,7 +1,7 @@
 package com.github.dedis.student20_pop.ui;
 
-import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +15,11 @@ import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentLaoDetailBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
-import com.github.dedis.student20_pop.model.event.Event;
-import com.github.dedis.student20_pop.utility.ui.adapter.OrganizerEventExpandableListViewAdapter;
+import com.github.dedis.student20_pop.utility.ui.adapter.EventExpandableListViewAdapter;
 import com.github.dedis.student20_pop.utility.ui.adapter.WitnessListViewAdapter;
 import com.github.dedis.student20_pop.utility.ui.listener.OnAddWitnessListener;
 import com.github.dedis.student20_pop.utility.ui.listener.OnEventTypeSelectedListener;
 import java.util.ArrayList;
-import java.util.List;
 
 /** Fragment used to display the LAO Detail UI */
 public class LaoDetailFragment extends Fragment {
@@ -31,24 +29,14 @@ public class LaoDetailFragment extends Fragment {
   private FragmentLaoDetailBinding mLaoDetailFragBinding;
   private LaoDetailViewModel mLaoDetailViewModel;
   private WitnessListViewAdapter mWitnessListViewAdapter;
-  private OrganizerEventExpandableListViewAdapter mEventListViewEventAdapter;
+  private EventExpandableListViewAdapter mEventListViewEventAdapter;
   private OnEventTypeSelectedListener onEventTypeSelectedListener;
   private OnAddWitnessListener onAddWitnessListener;
 
-  public LaoDetailFragment(Context context) {
-    if (context instanceof OnEventTypeSelectedListener)
-      onEventTypeSelectedListener = (OnEventTypeSelectedListener) context;
-    else
-      throw new ClassCastException(
-          context.toString() + " must implement OnEventTypeSelectedListener");
+  public LaoDetailFragment() {}
 
-    if (context instanceof OnAddWitnessListener)
-      onAddWitnessListener = (OnAddWitnessListener) context;
-    else throw new ClassCastException(context.toString() + " must implement OnAddWitnessListener");
-  }
-
-  public static LaoDetailFragment newInstance(Context context) {
-    return new LaoDetailFragment(context);
+  public static LaoDetailFragment newInstance() {
+    return new LaoDetailFragment();
   }
 
   @Nullable
@@ -78,8 +66,11 @@ public class LaoDetailFragment extends Fragment {
 
     setupEventListAdapter();
     setupWitnessListAdapter();
+    setupWitnessListUpdates();
 
-    setupSwipeRefresh();
+    // TODO: Add witness handler
+
+    //    setupSwipeRefresh();
 
     // Subscribe to "show/hide properties" event
     mLaoDetailViewModel
@@ -135,27 +126,27 @@ public class LaoDetailFragment extends Fragment {
     ListView listView = mLaoDetailFragBinding.witnessList;
 
     mWitnessListViewAdapter =
-        new WitnessListViewAdapter(
-            getActivity(),
-            mLaoDetailViewModel.getCurrentLao().witness == null
-                ? new ArrayList<>()
-                : mLaoDetailViewModel.getCurrentLao().witness);
+        new WitnessListViewAdapter(new ArrayList<>(), mLaoDetailViewModel, getActivity());
 
     listView.setAdapter(mWitnessListViewAdapter);
+  }
+
+  private void setupWitnessListUpdates() {
+    mLaoDetailViewModel
+        .getWitnesses()
+        .observe(
+            getActivity(),
+            witnesses -> {
+              Log.d(TAG, "witnesses updated");
+              mWitnessListViewAdapter.replaceList(witnesses);
+            });
   }
 
   private void setupEventListAdapter() {
     ExpandableListView expandableListView = mLaoDetailFragBinding.expListView;
 
-    List<Event> events = new ArrayList<>();
-
-    // Get all events from the LAO
-    //        events.addAll(transformRollCalls(mLaoDetailViewModel.getCurrentLao().rollCalls));
-    //    events.addAll(transformMeetings(mLaoDetailViewModel.getCurrentLao().meetings));
-
     mEventListViewEventAdapter =
-        new OrganizerEventExpandableListViewAdapter(
-            getActivity(), events, onEventTypeSelectedListener, mLaoDetailViewModel.isOrganizer());
+        new EventExpandableListViewAdapter(new ArrayList<>(), mLaoDetailViewModel, getActivity());
 
     expandableListView.setAdapter(mEventListViewEventAdapter);
     expandableListView.expandGroup(0);
@@ -163,15 +154,15 @@ public class LaoDetailFragment extends Fragment {
   }
 
   private void setupSwipeRefresh() {
-    mLaoDetailFragBinding.swipeRefresh.setOnRefreshListener(
-        () -> {
-          mWitnessListViewAdapter.notifyDataSetChanged();
-          mEventListViewEventAdapter.notifyDataSetChanged();
-          if (getFragmentManager() != null) {
-            getFragmentManager().beginTransaction().detach(this).attach(this).commit();
-          }
-          mLaoDetailFragBinding.swipeRefresh.setRefreshing(false);
-        });
+    //    mLaoDetailFragBinding.swipeRefresh.setOnRefreshListener(
+    //        () -> {
+    //          mWitnessListViewAdapter.notifyDataSetChanged();
+    //          mEventListViewEventAdapter.notifyDataSetChanged();
+    //          if (getFragmentManager() != null) {
+    //            getFragmentManager().beginTransaction().detach(this).attach(this).commit();
+    //          }
+    //          mLaoDetailFragBinding.swipeRefresh.setRefreshing(false);
+    //        });
   }
 
   private void showHideProperties(Boolean show) {

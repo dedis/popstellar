@@ -28,8 +28,8 @@ import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
 import io.reactivex.BackpressureStrategy;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
@@ -105,6 +105,7 @@ public class HomeViewModel extends AndroidViewModel
     if (disposable != null) {
       disposable.dispose();
     }
+    super.onCleared();
   }
 
   public void launchLao() {
@@ -123,7 +124,7 @@ public class HomeViewModel extends AndroidViewModel
 
       mLAORepository
           .sendPublish("/root", msg)
-          .subscribeOn(Schedulers.io())
+          .observeOn(AndroidSchedulers.mainThread())
           .subscribe(
               answer -> {
                 if (answer instanceof Result) {

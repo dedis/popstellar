@@ -1,6 +1,5 @@
 package com.github.dedis.student20_pop.model;
 
-
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
