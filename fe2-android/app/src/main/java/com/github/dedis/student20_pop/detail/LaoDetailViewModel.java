@@ -34,17 +34,22 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
   public static final String TAG = LaoDetailViewModel.class.getSimpleName();
 
+  /*
+   * LiveData objects for capturing events like button clicks
+   */
   private final MutableLiveData<Event<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenIdentityEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mShowPropertiesEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mEditPropertiesEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenLaoDetailEvent = new MutableLiveData<>();
+
+  /*
+   * LiveData objects that represent the state in a fragment
+   */
   private final MutableLiveData<Lao> mCurrentLao = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
   private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>("");
-  private final LAORepository mLAORepository;
-  private final AndroidKeysetManager mKeysetManager;
   private final LiveData<List<String>> mWitnesses =
       Transformations.map(
           mCurrentLao,
@@ -55,8 +60,12 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
   private final MutableLiveData<Event<EventType>> mNewLaoEventEvent = new MutableLiveData<>();
 
+  /*
+   * Dependencies for this class
+   */
+  private final LAORepository mLAORepository;
+  private final AndroidKeysetManager mKeysetManager;
   private CompositeDisposable disposables;
-
   private Gson mGson;
 
   public LaoDetailViewModel(
