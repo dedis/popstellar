@@ -17,16 +17,14 @@ import ListCollapsibleIcon from '../ListCollapsibleIcon';
  * The Event item component: display the correct representation of the event according to its type,
  * otherwise display its name and in all cases its nested events
 */
-const EventGeneral = (props: IPropTypes) => {
+const Event = (props: IPropTypes) => {
   const { event } = props;
   const { renderItemFn } = props;
   const isOrganizer = false; // FIXME ?
 
   const [toggleChildrenVisible, setToggleChildrenVisible] = useState(false);
 
-  const hasChildren = () => (
-    event.children !== undefined && event.children !== null && event.children.length !== 0
-  );
+  const hasChildren = () => event.children && event.children.length !== 0;
 
   const toggleChildren = () => {
     if (hasChildren()) setToggleChildrenVisible(!toggleChildrenVisible);
@@ -50,7 +48,7 @@ const EventGeneral = (props: IPropTypes) => {
         );
       case 'roll-call':
         if (isOrganizer) {
-          console.log('is organizer => returning null in EventGeneral');
+          console.log('is organizer => returning null in Event');
           return null; // (<RollCallEventOrganizer event={event} />);
         }
         return (
@@ -61,7 +59,7 @@ const EventGeneral = (props: IPropTypes) => {
           />
         );
       default:
-        return <ParagraphBlock text={`${event.name} (default event => no mapping in EventGeneral.tsx)`} />;
+        return <ParagraphBlock text={`${event.name} (default event => no mapping in Event.tsx)`} />;
     }
   };
 
@@ -78,8 +76,8 @@ const propTypes = {
   event: PROPS_TYPE.event.isRequired,
   renderItemFn: PropTypes.func.isRequired,
 };
-EventGeneral.propTypes = propTypes;
+Event.propTypes = propTypes;
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
-export default EventGeneral;
+export default Event;

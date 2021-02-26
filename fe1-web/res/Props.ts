@@ -63,7 +63,7 @@ const PROPS_TYPE = {
 
   roll_call: shape({
     object: oneOf(['roll-call']).isRequired,
-    action: oneOf(['close', 'open', 'reopen']).isRequired,
+    action: oneOf(['close', 'open', 'reopen', 'create']).isRequired,
     name: string,
     id: string.isRequired,
     creation: number.isRequired,

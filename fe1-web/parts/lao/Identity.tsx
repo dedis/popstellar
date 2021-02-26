@@ -29,6 +29,7 @@ const Identity = () => {
         { ...Typography.base, marginBottom: Spacing.xs } as TextStyle,
         { color: (toggleAnonymity) ? Colors.gray : Colors.black },
       ]}
+      key={`input-${placeholder}`}
       placeholder={placeholder}
       editable={!toggleAnonymity}
     />

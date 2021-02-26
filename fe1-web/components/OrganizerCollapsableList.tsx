@@ -6,8 +6,8 @@ import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 
 import STRINGS from 'res/strings';
-import EventGeneral from 'components/eventList/events/EventGeneral';
 import { requestUpdateLao } from 'network';
+import Event from './eventList/events';
 import { Typography, Spacing, Buttons } from '../styles';
 import PROPS_TYPE from '../res/Props';
 
@@ -212,7 +212,7 @@ const Item = ({ events, closedList }) => {
         <FlatList
           data={events.data}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <EventGeneral event={item} />}
+          renderItem={({ item }) => <Event event={item} />}
           listKey={`OrganizerEventsCollapsableList-${events.title}-properties`}
         />
       );
@@ -221,7 +221,7 @@ const Item = ({ events, closedList }) => {
         <FlatList
           data={events.data}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <EventGeneral event={item} />}
+          renderItem={({ item }) => <Event event={item} />}
           listKey={`OrganizerEventsCollapsableList-${events.title}-open`}
         />
       );

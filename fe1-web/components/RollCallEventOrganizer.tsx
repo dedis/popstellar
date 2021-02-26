@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 import { Buttons, Spacing } from 'styles';
 import PROPS_TYPE from 'res/Props';
 
-import EventGeneral from 'EventGeneral.tsx';
+import EventGeneral from 'Event.tsx';
 
 /**
  * Organizer Roll-call component: a status (Future, Open, Closed), the number of participants,
