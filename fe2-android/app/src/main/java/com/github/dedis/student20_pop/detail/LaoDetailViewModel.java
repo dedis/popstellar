@@ -114,10 +114,6 @@ public class LaoDetailViewModel extends AndroidViewModel {
     return mIsOrganizer;
   }
 
-  public Boolean getShowProperties() {
-    return showProperties.getValue();
-  }
-
   public LiveData<List<String>> getWitnesses() {
     return mWitnesses;
   }
@@ -134,9 +130,13 @@ public class LaoDetailViewModel extends AndroidViewModel {
     mOpenIdentityEvent.setValue(new Event<>(true));
   }
 
-  public void showHideProperties() {
-    mShowPropertiesEvent.setValue(new Event<>(!getShowProperties()));
-    showProperties.postValue(!getShowProperties());
+  public LiveData<Boolean> getShowProperties() {
+    return showProperties;
+  }
+
+  public void toggleShowHideProperties() {
+    boolean val = showProperties.getValue();
+    showProperties.postValue(!val);
   }
 
   public void openEditProperties() {
