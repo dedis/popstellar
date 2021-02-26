@@ -13,11 +13,16 @@ This repository is being refactored and some classes and interfaces marked with 
 
 ## Technicalities
 * The target API is 29 and the minimum required is 26
-* The [R class in Android](https://stackoverflow.com/questions/4953077/what-is-the-class-r-in-android) is an auto-generated class containing the resource IDs all the resources of res/directory.
-
+* The [R class in Android](https://stackoverflow.com/questions/4953077/what-is-the-class-r-in-android) is an auto-generated class containing the resource IDs all the resources of res/directory
+* The application follows the MVVM pattern, and uses this [guide to app architecture](https://developer.android.com/jetpack/guide)
+* The [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel) classes implement the UI logic, retrieve and manage the data that is needed
+* The WebSockets are implemented using the [Scarlet](https://github.com/Tinder/Scarlet) library, one of its usage on this application is in the [Injection](https://github.com/dedis/student_21_pop/blob/master/fe2-android/app/src/prod/java/com/github/dedis/student20_pop/Injection.java) class
+* The application uses [RxJava](https://github.com/ReactiveX/RxJava) for asynchronous and event based programs
+* The [Room](https://developer.android.com/reference/androidx/room/package-summary) library is used to define the application's database, entities and Data Access Objects
 
 #### Usage
 Import the project to Android Studio or IntelliJ, choose an emulator in the AVD Manager and run the app. The emulator used for running and testing was a Pixel 2 API 29.
+If working on a M1 Apple Silicon Mac, [this](https://github.com/google/android-emulator-m1-preview) Android emulator can be downloaded and used.
 
 To run on an Android device connect it to the computer and run the following commands. Keep in mind that the minimum API required is 26.
 ```
@@ -38,11 +43,12 @@ Open the virtual device and run the following command:
 ```
 It's also possible to run the tests using the option "Run with Coverage" from Android Studio.
 
+
 ## Github Actions
 
 *Note:* CI has been disabled during refactoring.
 
-This project uses Github Actions as a CI, for more information go to the [workflows](https://github.com/dedis/student_21_pop/tree/master/.github/workflows/fe2-android.yml) of this project.
+This project uses Github Actions as a CI, for more information go to the [workflows](https://github.com/dedis/student_21_pop/blob/master/.github/workflows/ci.yaml) of this project.
 
 This CI builds and runs the Unit Tests. For the Android Tests, the [reactivecircus](https://github.com/ReactiveCircus/android-emulator-runner) Android Emulator is used, which is limited. There are issues finding the resource values and checking [Toast messages](https://developer.android.com/reference/android/widget/Toast) appearance.
 
@@ -65,3 +71,7 @@ The values used for the UI are stored in the corresponding xml
 files (colors, dimens, strings or styles) in the res/values folder.
 
 They can then be accessed using ```R.id``` or ```getResources()```.
+
+The strings and dimensions are divided by usage, for example all strings or dimensions used for tabs are grouped together.
+
+

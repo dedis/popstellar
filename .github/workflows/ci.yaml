@@ -169,6 +169,7 @@ jobs:
         go test -race -v ./...
 
   fe2-android:
+    name: Fe2-Android
     runs-on: macos-latest
 
     defaults:
