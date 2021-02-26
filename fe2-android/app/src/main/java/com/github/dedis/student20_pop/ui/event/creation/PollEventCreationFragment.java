@@ -7,20 +7,28 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
-import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.model.event.Event;
-import com.github.dedis.student20_pop.model.event.PollEvent;
+import com.github.dedis.student20_pop.detail.fragments.AbstractEventCreationFragment;
+import com.github.dedis.student20_pop.detail.listeners.OnEventCreatedListener;
 import com.github.dedis.student20_pop.utility.ui.adapter.ChoicesListViewAdapter;
-import com.github.dedis.student20_pop.utility.ui.listener.OnEventCreatedListener;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Fragment that shows up when user wants to create a Poll Event */
+/**
+ * Fragment that shows up when user wants to create a Poll Event
+ *
+ * @deprecated this needs to be refactored
+ */
 public final class PollEventCreationFragment extends AbstractEventCreationFragment {
 
   public static final String TAG = PollEventCreationFragment.class.getSimpleName();
@@ -73,7 +81,7 @@ public final class PollEventCreationFragment extends AbstractEventCreationFragme
   }
 
   public static PollEventCreationFragment newInstance() {
-      return new PollEventCreationFragment();
+    return new PollEventCreationFragment();
   }
 
   @Override
@@ -130,20 +138,20 @@ public final class PollEventCreationFragment extends AbstractEventCreationFragme
     scheduleButton = view.findViewById(R.id.schedule_button);
     scheduleButton.setOnClickListener(
         clicked -> {
-          PoPApplication app = (PoPApplication) (getActivity().getApplication());
+          //          PoPApplication app = (PoPApplication) (getActivity().getApplication());
           String question = questionEditText.getText().toString();
           List<String> choicesList = getChoices(choicesListView);
           computeTimesInSeconds();
-          Event pollEvent =
-              new PollEvent(
-                  question,
-                  startTimeInSeconds,
-                  endTimeInSeconds,
-                  app.getCurrentLaoUnsafe().getId(),
-                  NO_LOCATION,
-                  choicesList,
-                  pollTypeIsOneOfN);
-          eventCreatedListener.OnEventCreatedListener(pollEvent);
+          //          Event pollEvent =
+          //              new PollEvent(
+          //                  question,
+          //                  startTimeInSeconds,
+          //                  endTimeInSeconds,
+          //                  app.getCurrentLaoUnsafe().getId(),
+          //                  NO_LOCATION,
+          //                  choicesList,
+          //                  pollTypeIsOneOfN);
+          //          eventCreatedListener.OnEventCreatedListener(pollEvent);
 
           fragmentManager.popBackStackImmediate();
         });

@@ -4,6 +4,8 @@ import androidx.annotation.Nullable;
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
+import com.github.dedis.student20_pop.utility.security.Hash;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -12,26 +14,40 @@ import java.util.Optional;
 /** Data sent to create a Roll-Call */
 public class CreateRollCall extends Data {
 
-  private final String id;
-  private final String name;
-  private final long creation;
-  private final transient long start;
-  private final transient StartType startType;
-  private final String location;
+  private String id;
+  private String name;
+  private long creation;
+  private transient long start;
+  private transient StartType startType;
+  private String location;
 
-  @Nullable private final transient String description;
+  @Nullable private transient String description;
 
   /**
    * Constructor for a data Create Roll-Call Event
    *
-   * @param id of the Roll-Call creation message, Hash("R"||laoId||creation||name)
    * @param name name of the Roll-Call
-   * @param creation time of creation
    * @param start of the Roll-Call
    * @param startType of the Roll-Call, either scheduled or now
    * @param location location of the Roll-Call
    * @param description can be null
    */
+  public CreateRollCall(
+      String name,
+      long start,
+      StartType startType,
+      String location,
+      @Nullable String description,
+      String laoId) {
+    this.name = name;
+    this.creation = Instant.now().toEpochMilli();
+    this.start = start;
+    this.startType = startType;
+    this.location = location;
+    this.description = description;
+    this.id = Hash.hash("R", laoId, Long.toString(creation), name);
+  }
+
   public CreateRollCall(
       String id,
       String name,
@@ -39,7 +55,7 @@ public class CreateRollCall extends Data {
       long start,
       StartType startType,
       String location,
-      @Nullable String description) {
+      String description) {
     this.id = id;
     this.name = name;
     this.creation = creation;
@@ -89,8 +105,12 @@ public class CreateRollCall extends Data {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     CreateRollCall that = (CreateRollCall) o;
     return getCreation() == that.getCreation()
         && start == that.start
