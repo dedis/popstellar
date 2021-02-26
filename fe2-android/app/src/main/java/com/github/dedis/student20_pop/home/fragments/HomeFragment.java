@@ -59,8 +59,6 @@ public final class HomeFragment extends Fragment {
 
     setupListAdapter();
     setupListUpdates();
-
-    //    mHomeViewModel.setupDummyLAO();
   }
 
   private void setupListUpdates() {
