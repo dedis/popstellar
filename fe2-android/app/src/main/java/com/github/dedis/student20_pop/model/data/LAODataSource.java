@@ -8,16 +8,20 @@ import com.github.dedis.student20_pop.model.entities.Person;
 import com.github.dedis.student20_pop.model.entities.RollCall;
 import com.github.dedis.student20_pop.model.network.GenericMessage;
 import com.github.dedis.student20_pop.model.network.method.Message;
-import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import java.util.List;
 
 public interface LAODataSource {
 
   interface Remote {
 
-    Flowable<GenericMessage> observeMessage();
+    Observable<GenericMessage> observeMessage();
 
     void sendMessage(Message msg);
+
+    int getRequestId();
+
+    int incrementAndGetRequestId();
   }
 
   interface Local {
@@ -25,6 +29,8 @@ public interface LAODataSource {
     List<LAO> getAll();
 
     LAOEntity getLAO(String channel);
+
+    void addLao(LAO lao);
 
     void updateLAO(LAO lao, List<Person> witnesses, List<ModificationSignature> signatures);
 

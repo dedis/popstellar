@@ -3,17 +3,19 @@ package com.github.dedis.student20_pop.home;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.student20_pop.Injection;
-import com.github.dedis.student20_pop.OrganizerActivity;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
-import com.github.dedis.student20_pop.ui.ConnectingFragment;
-import com.github.dedis.student20_pop.ui.HomeFragment;
-import com.github.dedis.student20_pop.ui.LaunchFragment;
+import com.github.dedis.student20_pop.detail.LaoDetailActivity;
+import com.github.dedis.student20_pop.home.fragments.ConnectingFragment;
+import com.github.dedis.student20_pop.home.fragments.HomeFragment;
+import com.github.dedis.student20_pop.home.fragments.LaunchFragment;
 import com.github.dedis.student20_pop.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.utility.ActivityUtils;
@@ -23,13 +25,14 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 public class HomeActivity extends AppCompatActivity {
 
   private final String TAG = HomeActivity.class.getSimpleName();
+  public static final int LAO_DETAIL_REQUEST_CODE = 0;
 
   private HomeViewModel mViewModel;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
+    setContentView(R.layout.activity_home);
 
     setupHomeFragment();
 
@@ -107,6 +110,17 @@ public class HomeActivity extends AppCompatActivity {
             });
   }
 
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+
+    if (requestCode == LAO_DETAIL_REQUEST_CODE) {
+      if (resultCode == RESULT_OK) {
+        startActivity(new Intent(data));
+      }
+    }
+  }
+
   public static HomeViewModel obtainViewModel(FragmentActivity activity) {
     ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
     HomeViewModel viewModel = new ViewModelProvider(activity, factory).get(HomeViewModel.class);
@@ -138,7 +152,7 @@ public class HomeActivity extends AppCompatActivity {
     if (homeFragment == null) {
       homeFragment = HomeFragment.newInstance();
       ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), homeFragment, R.id.fragment_container_main);
+          getSupportFragmentManager(), homeFragment, R.id.fragment_container_home);
     }
   }
 
@@ -155,7 +169,7 @@ public class HomeActivity extends AppCompatActivity {
               Injection.provideCameraSource(context, qrCodeDetector, width, height),
               qrCodeDetector);
       ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), scanningFragment, R.id.fragment_container_main);
+          getSupportFragmentManager(), scanningFragment, R.id.fragment_container_home);
     }
   }
 
@@ -166,7 +180,7 @@ public class HomeActivity extends AppCompatActivity {
     if (cameraPermissionFragment == null) {
       cameraPermissionFragment = CameraPermissionFragment.newInstance();
       ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), cameraPermissionFragment, R.id.fragment_container_main);
+          getSupportFragmentManager(), cameraPermissionFragment, R.id.fragment_container_home);
     }
   }
 
@@ -176,7 +190,7 @@ public class HomeActivity extends AppCompatActivity {
     if (launchFragment == null) {
       launchFragment = LaunchFragment.newInstance();
       ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), launchFragment, R.id.fragment_container_main);
+          getSupportFragmentManager(), launchFragment, R.id.fragment_container_home);
     }
   }
 
@@ -186,13 +200,14 @@ public class HomeActivity extends AppCompatActivity {
     if (connectingFragment == null) {
       connectingFragment = ConnectingFragment.newInstance();
       ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), connectingFragment, R.id.fragment_container_main);
+          getSupportFragmentManager(), connectingFragment, R.id.fragment_container_home);
     }
   }
 
   private void openLaoDetails(String laoId) {
-    Intent intent = new Intent(this, OrganizerActivity.class);
+    Intent intent = new Intent(this, LaoDetailActivity.class);
+    Log.d(TAG, "Trying to open lao detail for lao with id " + laoId);
     intent.putExtra("LAO_ID", laoId);
-    startActivity(intent);
+    startActivityForResult(intent, LAO_DETAIL_REQUEST_CODE);
   }
 }

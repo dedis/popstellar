@@ -3,46 +3,30 @@ package com.github.dedis.student20_pop.model.network.method.message.data.rollcal
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
-import java.util.ArrayList;
 import java.util.List;
 
 /** Data sent to close a Roll-Call */
 public class CloseRollCall extends Data {
 
-  private final String id;
-  private final long start;
+  private final String updateId;
+  private final String closes;
   private final long end;
   private final List<String> attendees;
 
   /**
    * Constructor for a data Close Roll-Call Event
    *
-   * @param id of the close Roll-Call message, Hash("R"||laoId||creation||name)
-   * @param start of the Roll-Call
-   * @param end of the Roll-Call
+   * @param updateId SHA256('R'||lao_id||closes||end)
+   * @param closes The 'update_id' of the latest roll call open, or in its absence, the 'id' field
+   *     of the roll call creation
+   * @param end timestamp of the roll call end time
    * @param attendees list of attendees of the Roll-Call
    */
-  public CloseRollCall(String id, long start, long end, List<String> attendees) {
-    this.id = id;
-    this.start = start;
+  public CloseRollCall(String updateId, String closes, long end, List<String> attendees) {
+    this.updateId = updateId;
+    this.closes = closes;
     this.end = end;
-    this.attendees = new ArrayList<>(attendees);
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public long getStart() {
-    return start;
-  }
-
-  public long getEnd() {
-    return end;
-  }
-
-  public List<String> getAttendees() {
-    return attendees;
+    this.attendees = attendees;
   }
 
   @Override
@@ -55,34 +39,19 @@ public class CloseRollCall extends Data {
     return Action.CLOSE.getAction();
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    CloseRollCall that = (CloseRollCall) o;
-    return getStart() == that.getStart()
-        && getEnd() == that.getEnd()
-        && java.util.Objects.equals(getId(), that.getId())
-        && java.util.Objects.equals(getAttendees(), that.getAttendees());
+  public String getUpdateId() {
+    return updateId;
   }
 
-  @Override
-  public int hashCode() {
-    return java.util.Objects.hash(getId(), getStart(), getEnd(), getAttendees());
+  public String getCloses() {
+    return closes;
   }
 
-  @Override
-  public String toString() {
-    return "CloseRollCall{"
-        + "id='"
-        + id
-        + '\''
-        + ", start="
-        + start
-        + ", end="
-        + end
-        + ", attendees="
-        + attendees
-        + '}';
+  public long getEnd() {
+    return end;
+  }
+
+  public List<String> getAttendees() {
+    return attendees;
   }
 }
