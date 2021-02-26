@@ -6,6 +6,8 @@ import PropTypes from 'prop-types';
 
 import { Colors, Spacing } from 'styles';
 
+// Note: used in PollEvent
+
 /**
  * Progress bar with the percent show at the right
  *
