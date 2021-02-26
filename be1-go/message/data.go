@@ -14,23 +14,37 @@ func (s stringer) String() string {
 	return string(s)
 }
 
+// DataObject represents the type for the "object" key associated with the
+// message data.
 type DataObject string
 
 var (
-	LaoObject      DataObject = "lao"
-	MessageObject  DataObject = "message"
-	MeetingObject  DataObject = "meeting"
+	// LaoObject represents a "lao" message data.
+	LaoObject DataObject = "lao"
+
+	// MessageObject represents a "message" message data.
+	MessageObject DataObject = "message"
+
+	// MeetingObject represents a "meeting" message data.
+	MeetingObject DataObject = "meeting"
+
+	// RollCallObject represents a "roll call" message data.
 	RollCallObject DataObject = "roll_call"
 )
 
+// DataAction represents the type for the "action" key associated with the
+// message data.
 type DataAction string
 
+// Timestamp represents the type for a timestamp in message data.
 type Timestamp int64
 
+// String returns the string representation of a timestamp.
 func (t Timestamp) String() string {
 	return fmt.Sprintf("%d", t)
 }
 
+// Data defines an interface for all message data types.
 type Data interface {
 	GetAction() DataAction
 
@@ -39,27 +53,38 @@ type Data interface {
 	//GetTimestamp() Timestamp
 }
 
+// GenericData implements `Data` and contains fields that map to "action"
+// and "object" fields in the message data
 type GenericData struct {
 	Action DataAction `json:"action"`
 	Object DataObject `json:"object"`
 }
 
+// GetAction returns the DataAction.
 func (g *GenericData) GetAction() DataAction {
 	return g.Action
 }
 
+// GetObject returns the DataObject.
 func (g *GenericData) GetObject() DataObject {
 	return g.Object
 }
 
+// LaoDataAction represents actions associated with a "lao" data message.
 type LaoDataAction DataAction
 
 var (
+	// CreateLaoAction is the action associated with the data for creating a LAO.
 	CreateLaoAction LaoDataAction = "create"
+
+	// UpdateLaoAction is the action associated with the data for updating a LAO.
 	UpdateLaoAction LaoDataAction = "update_properties"
-	StateLaoAction  LaoDataAction = "state"
+
+	// StateLaoAction is the action associated with the data for denoting a LAO state.
+	StateLaoAction LaoDataAction = "state"
 )
 
+// CreateLAOData represents the message data used for creating a LAO.
 type CreateLAOData struct {
 	*GenericData
 
@@ -70,6 +95,7 @@ type CreateLAOData struct {
 	Witnesses []PublicKey `json:"witnesses"`
 }
 
+// GetTimestamp returns the creation timestamp.
 func (c *CreateLAOData) GetTimestamp() Timestamp {
 	return c.Creation
 }
@@ -84,6 +110,7 @@ func (c *CreateLAOData) setID() error {
 	return nil
 }
 
+// UpdateLAOData represents the message data used for updating a LAO.
 type UpdateLAOData struct {
 	*GenericData
 
@@ -93,10 +120,12 @@ type UpdateLAOData struct {
 	Witnesses    []PublicKey `json:"witnesses"`
 }
 
+// GetTimestamp returns the last modified timestamp.
 func (u *UpdateLAOData) GetTimestamp() Timestamp {
 	return u.LastModified
 }
 
+// StateLAOData represents the message data used for propagating a LAO state.
 type StateLAOData struct {
 	*GenericData
 
@@ -110,18 +139,26 @@ type StateLAOData struct {
 	ModificationSignatures []PublicKeySignaturePair `json:"modification_signatures"`
 }
 
+// GetTimestamp returns the last modified timestamp.
 func (s *StateLAOData) GetTimestamp() Timestamp {
 	return s.LastModified
 }
 
+// MeetingDataAction represents actions associated with a "meeting" data message.
 type MeetingDataAction DataAction
 
 var (
+	// CreateMeetingAction is the action associated with the data for creating a meeting.
 	CreateMeetingAction MeetingDataAction = "create"
+
+	// UpdateMeetingAction is the action associated with the data for updating a meeting.
 	UpdateMeetingAction MeetingDataAction = "update_properties"
-	StateMeetingAction  MeetingDataAction = "state"
+
+	// StateMeetingAction is the action associated with the data for closing a meeting.
+	StateMeetingAction MeetingDataAction = "state"
 )
 
+// CreateMeetingData represents the message data used for creating a meeting.
 type CreateMeetingData struct {
 	*GenericData
 
@@ -136,10 +173,12 @@ type CreateMeetingData struct {
 	Extra json.RawMessage `json:"extra"`
 }
 
+// GetTimestamp returns the creation timestamp.
 func (c *CreateMeetingData) GetTimestamp() Timestamp {
 	return c.Creation
 }
 
+// StateMeetingData represents the message data used for propagating a meeting state.
 type StateMeetingData struct {
 	*GenericData
 
@@ -157,17 +196,23 @@ type StateMeetingData struct {
 	Extra json.RawMessage `json:"extra"`
 }
 
+// GetTimestamp returns the creation timestamp.
 func (s *StateMeetingData) GetTimestamp() Timestamp {
 	return s.Creation
 }
 
+// RollCallAction represents the actions associated with a "roll call" data message.
 type RollCallAction DataAction
 
 var (
+	// CreateRollCallAction represents the action associated with the data for creating a roll call.
 	CreateRollCallAction RollCallAction = "create"
-	CloseRollCallAction  RollCallAction = "close"
+
+	// CloseRollCallAction represents the action associated with the data for closing a roll call.
+	CloseRollCallAction RollCallAction = "close"
 )
 
+// CreateRollCallData represents the message data used for creating a roll call.
 type CreateRollCallData struct {
 	*GenericData
 
@@ -180,13 +225,19 @@ type CreateRollCallData struct {
 	Description string    `json:"roll_call_description"`
 }
 
+// OpenRollCallActionType represents the actions associated with opening or
+// reopening a roll call.
 type OpenRollCallActionType RollCallAction
 
 var (
-	OpenRollCallAction   OpenRollCallActionType = "open"
+	// OpenRollCallAction reprents the action associated with the data for opening a roll call.
+	OpenRollCallAction OpenRollCallActionType = "open"
+
+	// ReopenRollCallAction reprents the action associated with the data for reopening a roll call.
 	ReopenRollCallAction OpenRollCallActionType = "reopen"
 )
 
+// OpenRollCallData represents the message data used for opening a roll call.
 type OpenRollCallData struct {
 	*GenericData
 
@@ -194,6 +245,7 @@ type OpenRollCallData struct {
 	Start Timestamp `json:"start"`
 }
 
+// CloseRollCallData represents the message data used for closing a roll call.
 type CloseRollCallData struct {
 	*GenericData
 
@@ -203,12 +255,15 @@ type CloseRollCallData struct {
 	Attendees []PublicKey `json:"attendees"`
 }
 
+// MessageDataAction represents the actions associated with a "message" data message.
 type MessageDataAction DataAction
 
 var (
+	// WitnessAction represents the action associated with the data for witnessing a message.
 	WitnessAction MessageDataAction = "witness"
 )
 
+// WitnessMessageData represents the message data used for witnessing a message.
 type WitnessMessageData struct {
 	*GenericData
 
@@ -216,6 +271,7 @@ type WitnessMessageData struct {
 	Signature Signature `json:"signature"`
 }
 
+// NewCreateLAOData returns an instance of `CreateLAOData`.
 func NewCreateLAOData(name string, creation Timestamp, organizer PublicKey, witnesses []PublicKey) (*CreateLAOData, error) {
 	create := &CreateLAOData{
 		GenericData: &GenericData{

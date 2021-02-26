@@ -2,6 +2,8 @@ package hub
 
 import "student20_pop/message"
 
+// Hub defines the methods a PoP server must implement to receive messages
+// and handle clients.
 type Hub interface {
 	Start(done chan struct{})
 
@@ -10,11 +12,14 @@ type Hub interface {
 	RemoveClient(client *Client)
 }
 
+// IncomingMessage wraps the raw message from the websocket connection and pairs
+// it with a `Client` instance.
 type IncomingMessage struct {
 	Client  *Client
 	Message []byte
 }
 
+// Channel represents a PoP channel - like a LAO.
 type Channel interface {
 	Subscribe(client *Client, msg message.Subscribe) error
 

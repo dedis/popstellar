@@ -25,7 +25,8 @@ type organizerHub struct {
 	public kyber.Point
 }
 
-func NewOrganizerHub(public kyber.Point) *organizerHub {
+// NewOrganizerHub returns a Organizer Hub.
+func NewOrganizerHub(public kyber.Point) Hub {
 	return &organizerHub{
 		messageChan: make(chan IncomingMessage),
 		channelByID: make(map[string]Channel),
@@ -33,6 +34,7 @@ func NewOrganizerHub(public kyber.Point) *organizerHub {
 	}
 }
 
+// RemoveClient removes the client from this hub.
 func (o *organizerHub) RemoveClient(client *Client) {
 	o.RLock()
 	defer o.RUnlock()
@@ -42,6 +44,7 @@ func (o *organizerHub) RemoveClient(client *Client) {
 	}
 }
 
+// Recv accepts a message and enques it for processing in the hub.
 func (o *organizerHub) Recv(msg IncomingMessage) {
 	log.Printf("organizerHub::Recv")
 	o.messageChan <- msg
