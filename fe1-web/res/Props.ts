@@ -1,5 +1,5 @@
 import {
-  shape, func, number, arrayOf, string, oneOf, object,
+  shape, func, number, arrayOf, string, oneOf, object, any,
 } from 'prop-types';
 import { Action } from '@react-navigation/routers/src/CommonActions';
 import { ParamListBase } from '@react-navigation/routers';
@@ -57,7 +57,8 @@ const PROPS_TYPE = {
       witness: string.isRequired,
       signature: string.isRequired,
     })).isRequired,
-    // children: arrayOf(PROPS_TYPE.event), TODO find a way to implement this
+    // eslint-disable-next-line react/forbid-prop-types
+    children: arrayOf(any), // TODO find a way to implement this
   }),
 
   roll_call: shape({
@@ -72,7 +73,8 @@ const PROPS_TYPE = {
     end: number,
     attendees: arrayOf(string),
     roll_call_description: string,
-    // children: arrayOf(PROPS_TYPE.event), TODO find a way to implement this
+    // eslint-disable-next-line react/forbid-prop-types
+    children: arrayOf(any), // TODO find a way to implement this
   }),
 
   // --- property type ---

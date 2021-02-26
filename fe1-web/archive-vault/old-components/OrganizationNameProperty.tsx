@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
   },
 });
 
+// @ts-ignore
 const OrganizationNameProperty = ({ event }) => (
   <View style={styles.view}>
     <Text style={styles.text}>{event.name}</Text>

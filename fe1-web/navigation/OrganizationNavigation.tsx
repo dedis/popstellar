@@ -46,8 +46,10 @@ interface IPropTypes {
 function OrganizationNavigation(props: IPropTypes) {
   const { lao } = props;
   const pubKey = KeyPairStore.get().publicKey;
-  const isOrganizer = lao.organizer ? lao.organizer === pubKey : false;
+  // const isOrganizer = lao.organizer && pubKey.equals(lao.organizer);
+  const isOrganizer = false;
   const isWitness = lao.witnesses ? lao.witnesses.includes(pubKey) : false;
+  // console.log("is org : ", isOrganizer, ", is Witness : ", isWitness);
 
   return (
     <OrganizationTopTabNavigator.Navigator

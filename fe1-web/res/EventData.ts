@@ -11,7 +11,7 @@ const data = [
         creation: 1607616483,
         last_modified: 1607616483,
         location: 'A location, test.com',
-        start: 1607616483,
+        start: 1607616500,
         end: 1607618490,
         organizer: 'a organizer signature',
         witnesses: ['witness signature 1', 'witness signature 2'],
