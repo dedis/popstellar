@@ -38,7 +38,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:visibility="@{view_model.isOrganizer() ? View.VISIBLE : View.GONE }"
+        android:visibility="@{view_model.getShowProperties() ? View.VISIBLE : View.GONE }"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

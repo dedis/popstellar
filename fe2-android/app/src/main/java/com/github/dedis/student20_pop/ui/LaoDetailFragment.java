@@ -96,7 +96,7 @@ public class LaoDetailFragment extends Fragment {
   private void setupPropertiesButton() {
     Button propertiesButton = (Button) getActivity().findViewById(R.id.tab_properties);
 
-    propertiesButton.setOnClickListener(clicked -> mLaoDetailViewModel.showHideProperties());
+    propertiesButton.setOnClickListener(clicked -> mLaoDetailViewModel.toggleShowHideProperties());
   }
 
   private void setupEditPropertiesButton() {
