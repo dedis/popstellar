@@ -181,9 +181,6 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
     Context context = parent.getContext();
 
-    binding.setIsFutureCategory(eventCategory.equals(FUTURE));
-    binding.setViewmodel(viewModel);
-
     AddEventListener addEventOnClickListener =
         new AddEventListener() {
           @Override
@@ -207,6 +204,8 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
           }
         };
 
+    binding.setIsFutureCategory(eventCategory.equals(FUTURE));
+    binding.setViewmodel(viewModel);
     binding.setLifecycleOwner(lifecycleOwner);
     binding.setAddEventListener(addEventOnClickListener);
     binding.executePendingBindings();

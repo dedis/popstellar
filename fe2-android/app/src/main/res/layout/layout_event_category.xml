@@ -48,7 +48,7 @@
       android:layout_height="@dimen/margin_text"
       android:focusable="false"
       android:src="@drawable/ic_baseline_add_24"
-      android:visibility="@{isFutureCategory ? View.VISIBLE : View.GONE}"
+      android:visibility="@{isFutureCategory &amp;&amp; viewmodel.isOrganizer() ? View.VISIBLE : View.GONE}"
       android:onClick="@{() -> addEventListener.addEvent()}"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintRight_toRightOf="parent"

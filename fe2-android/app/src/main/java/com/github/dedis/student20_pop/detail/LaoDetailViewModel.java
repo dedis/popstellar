@@ -190,6 +190,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
                         lao.getOrganizer().equals(Keys.getEncodedKey(publicKeysetHandle));
                     Log.d(TAG, "isOrganizer: " + isOrganizer);
                     mIsOrganizer.postValue(isOrganizer);
+                    return;
                   } catch (GeneralSecurityException e) {
                     Log.d(TAG, "failed to get public keyset handle", e);
                   } catch (IOException e) {
