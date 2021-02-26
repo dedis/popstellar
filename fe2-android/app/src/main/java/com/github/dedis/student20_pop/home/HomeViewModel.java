@@ -99,8 +99,10 @@ public class HomeViewModel extends AndroidViewModel
   @Override
   public void onQRCodeDetected(Barcode barcode) {
     Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
+    // TODO: retrieve lao id/name from barcode.rawValue
     // TODO: send subscribe and switch to the home screen on an answer
-    openHome();
+    setConnectingLao("lao id");
+    openConnecting();
   }
 
   /** onCleared is used to cancel all subscriptions to observables. */
