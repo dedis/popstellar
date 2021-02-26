@@ -41,6 +41,9 @@ public class HomeViewModel extends AndroidViewModel
   public static final String SCAN = "SCAN";
   public static final String REQUEST_CAMERA_PERMISSION = "REQUEST_CAMERA_PERMISSION";
 
+  /*
+   * LiveData objects for capturing events like button clicks
+   */
   private final MutableLiveData<Event<String>> mOpenLaoEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenConnectingEvent = new MutableLiveData<>();
@@ -49,13 +52,22 @@ public class HomeViewModel extends AndroidViewModel
   private final MutableLiveData<Event<Boolean>> mLaunchNewLaoEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mCancelNewLaoEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mCancelConnectEvent = new MutableLiveData<>();
+
+  /*
+   * LiveData objects that represent the state in a fragment
+   */
   private final MutableLiveData<String> mConnectingLao = new MutableLiveData<>();
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
   private LiveData<List<Lao>> mLAOs;
+
+  /*
+   * Dependencies for this class
+   */
   private final Gson mGson;
   private final LAORepository mLAORepository;
-  private Disposable disposable;
   private final AndroidKeysetManager mKeysetManager;
+
+  private Disposable disposable;
 
   public HomeViewModel(
       @NonNull Application application,
@@ -86,20 +98,11 @@ public class HomeViewModel extends AndroidViewModel
   @Override
   public void onQRCodeDetected(Barcode barcode) {
     Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
-
-    // TODO: extract information
-    setConnectingLao("lao id");
-    openConnecting();
-
-    // TODO: subscribe to the LAO
-
-    // TODO: add LAO to the list of LAOs
-
-    // TODO: initiate a catchup
-
+    // TODO: send subscribe and switch to the home screen on an answer
     openHome();
   }
 
+  /** onCleared is used to cancel all subscriptions to observables. */
   @Override
   protected void onCleared() {
     if (disposable != null) {
@@ -108,6 +111,11 @@ public class HomeViewModel extends AndroidViewModel
     super.onCleared();
   }
 
+  /**
+   * launchLao is invoked when the user tries to create a new LAO. The method creates a `CreateLAO`
+   * message and publishes it to the root channel. It observers the response in the background and
+   * switches to the home screen on success.
+   */
   public void launchLao() {
     String laoName = mLaoName.getValue();
 
@@ -145,6 +153,9 @@ public class HomeViewModel extends AndroidViewModel
     }
   }
 
+  /*
+   * Getters for MutableLiveData instances declared above
+   */
   public LiveData<List<Lao>> getLAOs() {
     return mLAOs;
   }
@@ -181,13 +192,17 @@ public class HomeViewModel extends AndroidViewModel
     return mCancelConnectEvent;
   }
 
-  public MutableLiveData<String> getConnectingLao() {
+  public LiveData<String> getConnectingLao() {
     return mConnectingLao;
   }
 
-  public MutableLiveData<String> getLaoName() {
+  public LiveData<String> getLaoName() {
     return mLaoName;
   }
+
+  /*
+   * Methods that modify the state or post an Event to update the UI.
+   */
 
   public void openLAO(String laoId) {
     mOpenLaoEvent.setValue(new Event<>(laoId));
