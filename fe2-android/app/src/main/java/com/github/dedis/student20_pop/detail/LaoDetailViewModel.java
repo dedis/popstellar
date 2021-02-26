@@ -146,11 +146,10 @@ public class LaoDetailViewModel extends AndroidViewModel {
   }
 
   public void updateLaoName() {
-    // TODO: send update Lao message
+    // TODO: Create an `UpdateLao` message and publish it. Observe the response on a background
+    // thread and update the UI accordingly.
 
-    // TODO: modify LAO in LAORepository
-
-    // TODO: set mCurrentLao with modified LAO
+    Log.d(TAG, "Updating lao name to " + mLaoName.getValue());
   }
 
   public void cancelEdit() {
