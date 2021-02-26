@@ -4,17 +4,16 @@ package db
 
 import (
 	"github.com/boltdb/bolt"
-	"log"
-	"student20_pop/lib"
+	"golang.org/x/xerrors"
 )
 
+// OpenDB opens a key-value store backed by boltdb.
 func OpenDB(dbName string) (*bolt.DB, error) {
 	// This blocks if the DB is already open. IMHO we should call `bolt.Open`
 	// once and use the same instance throughout.
 	db, err := bolt.Open(dbName, 0600, nil)
 	if err != nil {
-		log.Printf("could not open database: %v", err)
-		return nil, lib.ErrDBFault
+		return nil, xerrors.Errorf("failed to open db: %v", err)
 	}
 	return db, nil
 }
