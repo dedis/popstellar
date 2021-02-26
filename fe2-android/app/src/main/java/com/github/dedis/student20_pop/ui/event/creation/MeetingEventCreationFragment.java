@@ -12,12 +12,16 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
-import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.utility.ui.listener.OnEventCreatedListener;
 
-/** Fragment that shows up when user wants to create a Meeting Event */
+/**
+ * Fragment that shows up when user wants to create a Meeting Event
+ *
+ * @deprecated This needs to be refactored
+ */
 public final class MeetingEventCreationFragment extends AbstractEventCreationFragment {
+
   public static final String TAG = MeetingEventCreationFragment.class.getSimpleName();
 
   private EditText meetingTitleEditText;
@@ -52,10 +56,11 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
   @Override
   public void onAttach(Context context) {
     super.onAttach(context);
-    if (context instanceof OnEventCreatedListener)
+    if (context instanceof OnEventCreatedListener) {
       eventCreatedListener = (OnEventCreatedListener) context;
-    else
+    } else {
       throw new ClassCastException(context.toString() + " must implement OnEventCreatedListener");
+    }
   }
 
   @Nullable
@@ -66,7 +71,7 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
       @Nullable Bundle savedInstanceState) {
     final FragmentManager fragmentManager = (getActivity()).getSupportFragmentManager();
     View view = inflater.inflate(R.layout.fragment_create_meeting_event, container, false);
-    PoPApplication app = (PoPApplication) getActivity().getApplication();
+    //    PoPApplication app = (PoPApplication) getActivity().getApplication();
 
     setDateAndTimeView(view, MeetingEventCreationFragment.this, fragmentManager);
     addDateAndTimeListener(confirmTextWatcher);

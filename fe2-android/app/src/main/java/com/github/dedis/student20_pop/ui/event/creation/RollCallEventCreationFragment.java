@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 import com.github.dedis.student20_pop.databinding.FragmentCreateRollCallEventBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
-import com.github.dedis.student20_pop.model.event.RollCallEvent;
 import java.time.Instant;
 
 /** Fragment that shows up when user wants to create a Roll-Call Event */
@@ -23,7 +22,6 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
 
   private EditText rollCallDescriptionEditText;
   private EditText rollCallTitleEditText;
-  private RollCallEvent rollCallEvent;
   private Button confirmButton;
   private Button openButton;
 
