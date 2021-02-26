@@ -10,4 +10,12 @@ public class PublicKeySignaturePair {
     this.witness = witness;
     this.signature = signature;
   }
+
+  public byte[] getWitness() {
+    return witness;
+  }
+
+  public byte[] getSignature() {
+    return signature;
+  }
 }

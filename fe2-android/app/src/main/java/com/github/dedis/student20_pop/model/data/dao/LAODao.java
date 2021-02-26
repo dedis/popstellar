@@ -27,6 +27,9 @@ public abstract class LAODao {
   @Query("SELECT * from lao where channel LIKE :channel")
   public abstract LAOEntity getLAO(String channel);
 
+  @Insert(onConflict = OnConflictStrategy.REPLACE)
+  public abstract void addLao(LAO lao);
+
   @Transaction
   public void updateLAO(LAO lao, List<Person> witnesses, List<ModificationSignature> signatures) {
     // update the LAO

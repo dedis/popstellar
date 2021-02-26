@@ -4,7 +4,7 @@ import com.github.dedis.student20_pop.model.network.GenericMessage;
 import com.github.dedis.student20_pop.model.network.method.Message;
 import com.tinder.scarlet.ws.Receive;
 import com.tinder.scarlet.ws.Send;
-import io.reactivex.Flowable;
+import io.reactivex.Observable;
 
 public interface LAOService {
 
@@ -12,5 +12,5 @@ public interface LAOService {
   void sendMessage(Message msg);
 
   @Receive
-  Flowable<GenericMessage> observeMessage();
+  Observable<GenericMessage> observeMessage();
 }

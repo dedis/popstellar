@@ -7,22 +7,22 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
 /** Data sent to open a roll call */
 public class OpenRollCall extends Data {
 
-  private final String id;
+  private final String updateId;
+  private final String opens;
   private final long start;
 
   /**
    * Constructor of a data Open Roll-Call
    *
-   * @param id of the open Roll-Call message, Hash("R"||laoId||creation||name)
-   * @param start of the Roll-Call
+   * @param updateId id of this message Hash("R"||laoId||opens||start)
+   * @param opens The 'update_id' of the latest roll call close, or in its absence, the 'id' field
+   *     of the roll call creation
+   * @param start timestamp corresponding to roll call open
    */
-  public OpenRollCall(String id, long start) {
-    this.id = id;
+  public OpenRollCall(String updateId, String opens, long start) {
+    this.updateId = updateId;
+    this.opens = opens;
     this.start = start;
-  }
-
-  public String getId() {
-    return id;
   }
 
   public long getStart() {
@@ -39,21 +39,11 @@ public class OpenRollCall extends Data {
     return Action.OPEN.getAction();
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    OpenRollCall that = (OpenRollCall) o;
-    return getStart() == that.getStart() && java.util.Objects.equals(getId(), that.getId());
+  public String getUpdateId() {
+    return updateId;
   }
 
-  @Override
-  public int hashCode() {
-    return java.util.Objects.hash(getId(), getStart());
-  }
-
-  @Override
-  public String toString() {
-    return "OpenRollCall{" + "id='" + id + '\'' + ", start=" + start + '}';
+  public String getOpens() {
+    return opens;
   }
 }

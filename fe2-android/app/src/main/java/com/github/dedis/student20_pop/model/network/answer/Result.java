@@ -1,12 +1,14 @@
 package com.github.dedis.student20_pop.model.network.answer;
 
-import com.google.gson.JsonElement;
-import java.util.Objects;
+import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
+import java.util.List;
+import java.util.Optional;
 
 /** A succeed query's answer */
 public final class Result extends Answer {
 
-  private final JsonElement result;
+  private Optional<Integer> general;
+  private Optional<List<MessageGeneral>> messages;
 
   /**
    * Constructor of a Result
@@ -14,27 +16,23 @@ public final class Result extends Answer {
    * @param id of the answer
    * @param result of the answer
    */
-  public Result(int id, JsonElement result) {
+  public Result(int id) {
     super(id);
-    this.result = result;
   }
 
-  /** Returns the result of the answer. */
-  public JsonElement getResult() {
-    return result;
+  public void setGeneral() {
+    this.general = Optional.of(0);
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    if (!super.equals(o)) return false;
-    Result result = (Result) o;
-    return Objects.equals(getResult(), result.getResult());
+  public void setMessages(List<MessageGeneral> messages) {
+    this.messages = Optional.of(messages);
   }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(super.hashCode(), getResult());
+  public Optional<Integer> getGeneral() {
+    return general;
+  }
+
+  public Optional<List<MessageGeneral>> getMessages() {
+    return messages;
   }
 }
