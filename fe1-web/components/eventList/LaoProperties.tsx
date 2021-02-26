@@ -52,7 +52,7 @@ LaoProperties.defaultProps = {
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 const mapStateToProps = (state: any) => ({
-  lao: state.openedLao,
+  lao: Lao.fromState(state.openedLao),
 });
 
 export default connect(mapStateToProps)(LaoProperties);

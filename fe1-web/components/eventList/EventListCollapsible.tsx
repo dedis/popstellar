@@ -4,8 +4,7 @@ import PropTypes from 'prop-types';
 
 import PROPS_TYPE from 'res/Props';
 import TextBlock from 'components/TextBlock';
-import EventGeneral from 'components/eventList/events/EventGeneral';
-import LaoProperties from 'components/eventList/LaoProperties';
+import Event from './events';
 
 /**
  * Collapsible list of events: contains 3 lists of events for
@@ -15,35 +14,18 @@ import LaoProperties from 'components/eventList/LaoProperties';
 */
 const EventListCollapsible = (props: IPropTypes) => {
   const { data } = props;
-  const DATA_EXAMPLE = [ // FIXME refactor when Event storage available
-    {
-      title: 'Past',
-      data: [(data[1].data)[0], (data[1].data)[1], (data[1].data)[2]],
-    },
-    {
-      title: 'Present',
-      data: [(data[2].data)[0], (data[2].data)[1], (data[2].data)[2]],
-    },
-    {
-      title: 'Future',
-      data: [(data[3].data)[0]],
-    },
-  ];
 
   const renderItemFn = (
-    ({ item }: any) => <EventGeneral event={item} renderItemFn={renderItemFn} />
+    ({ item }: any) => <Event event={item} renderItemFn={renderItemFn} />
   );
 
   return (
-    <>
-      <LaoProperties />
-      <SectionList
-        sections={DATA_EXAMPLE}
-        keyExtractor={(item, index) => `${item?.object}-${item?.id}-${index}`}
-        renderItem={renderItemFn}
-        renderSectionHeader={({ section: { title } }) => <TextBlock bold text={title} />}
-      />
-    </>
+    <SectionList
+      sections={data}
+      keyExtractor={(item, index) => `${item?.object}-${item?.id}-${index}`}
+      renderItem={renderItemFn}
+      renderSectionHeader={({ section: { title } }) => <TextBlock bold text={title} />}
+    />
   );
 };
 

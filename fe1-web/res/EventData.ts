@@ -51,7 +51,7 @@ const data = [
           {
             id: '4',
             object: 'roll-call',
-            action: 'state',
+            action: 'create',
             name: 'Events 4',
             creation: 1607616483,
             last_modified: 1607616483,
@@ -156,7 +156,7 @@ const data = [
       {
         id: '11',
         object: 'roll-call',
-        action: 'state',
+        action: 'create',
         name: 'Events 11',
         creation: 1607616483,
         last_modified: 1607616483,

@@ -6,7 +6,7 @@ import {
 import { Buttons, Typography } from 'styles';
 import STRINGS from 'res/strings';
 import PROPS_TYPE, { INavigation } from 'res/Props';
-import Attendee from './Attendee';
+import Attendee from 'parts/lao/attendee/Attendee';
 
 /**
  * Manage the Witness screen: button to navigate to the witness video screen,

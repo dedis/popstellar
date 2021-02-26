@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 
 import PROPS_TYPE from 'res/Props';
 import EventListCollapsible from 'components/eventList/EventListCollapsible';
+import LaoProperties from 'components/eventList/LaoProperties';
 
 /**
  * Attendee screen: lists LAO properties and past/ongoing/future events
@@ -27,8 +28,29 @@ type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 const Attendee = (props: IPropTypes) => {
   const { events } = props;
+  const data = laoToProperties(events);
 
-  return <EventListCollapsible data={laoToProperties(events)} />;
+  const DATA_EXAMPLE = [ // FIXME refactor when Event storage available
+    {
+      title: 'Past',
+      data: [(data[1].data)[0], (data[1].data)[1], (data[1].data)[2]],
+    },
+    {
+      title: 'Present',
+      data: [(data[2].data)[0], (data[2].data)[1], (data[2].data)[2]],
+    },
+    {
+      title: 'Future',
+      data: [(data[3].data)[0]],
+    },
+  ];
+
+  return (
+    <>
+      <LaoProperties />
+      <EventListCollapsible data={DATA_EXAMPLE} />
+    </>
+  );
 };
 
 Attendee.propTypes = propTypes;
