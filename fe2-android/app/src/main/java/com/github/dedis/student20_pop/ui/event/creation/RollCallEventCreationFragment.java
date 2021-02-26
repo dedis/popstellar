@@ -1,6 +1,5 @@
 package com.github.dedis.student20_pop.ui.event.creation;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -11,11 +10,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
-import com.github.dedis.student20_pop.PoPApplication;
-import com.github.dedis.student20_pop.R;
+import com.github.dedis.student20_pop.databinding.FragmentCreateRollCallEventBinding;
+import com.github.dedis.student20_pop.detail.LaoDetailActivity;
+import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.model.event.RollCallEvent;
-import java.util.Objects;
+import java.time.Instant;
 
 /** Fragment that shows up when user wants to create a Roll-Call Event */
 public final class RollCallEventCreationFragment extends AbstractEventCreationFragment {
@@ -27,6 +26,8 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
   private RollCallEvent rollCallEvent;
   private Button confirmButton;
   private Button openButton;
+
+  private LaoDetailViewModel mLaoDetailViewModel;
 
   private final TextWatcher confirmTextWatcher =
       new TextWatcher() {
@@ -51,8 +52,8 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
   }
 
   @Override
-  public void onAttach(@NonNull Context context) {
-    super.onAttach(context);
+  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    super.onActivityCreated(savedInstanceState);
   }
 
   @Nullable
@@ -61,62 +62,58 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    final FragmentManager fragmentManager =
-        (Objects.requireNonNull(getActivity())).getSupportFragmentManager();
-    View view = inflater.inflate(R.layout.fragment_create_roll_call_event, container, false);
-    PoPApplication app = (PoPApplication) getActivity().getApplication();
 
-    setDateAndTimeView(view, RollCallEventCreationFragment.this, fragmentManager);
+    FragmentCreateRollCallEventBinding binding =
+        FragmentCreateRollCallEventBinding.inflate(inflater, container, false);
+
+    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
+
+    // TODO: refactor this
+    setDateAndTimeView(binding.getRoot(), this, getFragmentManager());
     addDateAndTimeListener(confirmTextWatcher);
 
-    rollCallTitleEditText = view.findViewById(R.id.roll_call_title_text);
-    rollCallDescriptionEditText = view.findViewById(R.id.roll_call_event_description_text);
+    rollCallTitleEditText = binding.rollCallTitleText;
+    rollCallDescriptionEditText = binding.rollCallEventDescriptionText;
 
-    openButton = view.findViewById(R.id.roll_call_open);
+    openButton = binding.rollCallOpen;
 
-    confirmButton = view.findViewById(R.id.roll_call_confirm);
-    confirmButton.setOnClickListener(
-        v -> {
-          computeTimesInSeconds();
+    confirmButton = binding.rollCallConfirm;
 
-          if (rollCallEvent == null) {
-            //            rollCallEvent =
-            //                new RollCallEvent(
-            //                    rollCallTitleEditText.getText().toString(),
-            //                    startTimeInSeconds,
-            //                    endTimeInSeconds,
-            //                    app.getCurrentLaoUnsafe().getId(),
-            //                    new ObservableArrayList<>(),
-            //                    NO_LOCATION,
-            //                    rollCallDescriptionEditText.getText().toString());
-          }
-          //          eventCreatedListener.OnEventCreatedListener(rollCallEvent);
-          fragmentManager.popBackStackImmediate();
-        });
-
-    //    openButton.setOnClickListener(
+    // TODO: this has to be replaced by a 'scheduled' button
+    //    confirmButton.setOnClickListener(
     //        v -> {
     //          computeTimesInSeconds();
     //
-    //          rollCallEvent =
-    //              new RollCallEvent(
-    //                  rollCallTitleEditText.getText().toString(),
-    //                  startTimeInSeconds,
-    //                  endTimeInSeconds,
-    //                  app.getCurrentLaoUnsafe().getId(),
-    //                  new ObservableArrayList<>(),
-    //                  NO_LOCATION,
-    //                  rollCallDescriptionEditText.getText().toString());
-    //          eventCreatedListener.OnEventCreatedListener(rollCallEvent);
-    //          onAddAttendeesListener.onAddAttendeesListener(rollCallEvent.getId());
+    //          String title = rollCallTitleEditText.getText().toString();
+    //          String description = rollCallDescriptionEditText.getText().toString();
+    //          long now = Instant.now().getEpochSecond();
+    //          long start = startTimeInSeconds > now ? 0 : startTimeInSeconds;
+    //          long scheduled = startTimeInSeconds >= now ? startTimeInSeconds : 0;
+    //          mLaoDetailViewModel
+    //              .createNewRollCall(title, description, start, scheduled, endTimeInSeconds);
     //        });
 
-    Button cancelButton = view.findViewById(R.id.roll_call_cancel);
-    cancelButton.setOnClickListener(
+    openButton.setOnClickListener(
         v -> {
-          fragmentManager.popBackStackImmediate();
+          computeTimesInSeconds();
+
+          String title = rollCallTitleEditText.getText().toString();
+          String description = rollCallDescriptionEditText.getText().toString();
+          long now = Instant.now().getEpochSecond();
+          long start = startTimeInSeconds > now ? 0 : startTimeInSeconds;
+          long scheduled = startTimeInSeconds >= now ? startTimeInSeconds : 0;
+          mLaoDetailViewModel.createNewRollCall(title, description, start, scheduled);
         });
 
-    return view;
+    Button cancelButton = binding.rollCallCancel;
+
+    cancelButton.setOnClickListener(
+        v -> {
+          mLaoDetailViewModel.openLaoDetail();
+        });
+
+    binding.setLifecycleOwner(getActivity());
+
+    return binding.getRoot();
   }
 }

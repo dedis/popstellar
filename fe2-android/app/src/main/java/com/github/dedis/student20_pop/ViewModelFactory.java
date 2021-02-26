@@ -69,6 +69,7 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
                       Injection.provideScarlet(application, Injection.provideOkHttpClient(), gson)),
                   keysetManager,
                   gson),
+              gson,
               keysetManager);
     }
 

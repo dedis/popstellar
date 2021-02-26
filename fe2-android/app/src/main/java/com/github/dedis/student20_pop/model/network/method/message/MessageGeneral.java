@@ -36,12 +36,6 @@ public final class MessageGeneral {
 
   private PublicKeyVerify verifier;
 
-  // TODO: Remove after RxTest
-  public MessageGeneral() {
-    this.sender = new byte[0];
-    this.dataBuf = new byte[0];
-  }
-
   public MessageGeneral(byte[] sender, Data data, PublicKeySign signer, Gson gson) {
     this.sender = sender;
     this.data = data;

@@ -41,6 +41,19 @@ public class LaoDetailActivity extends AppCompatActivity {
     setupHomeButton();
     setupIdentityButton();
 
+    // Subscribe to "open lao detail event"
+
+    mViewModel
+        .getOpenLaoDetailEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupLaoFragment();
+              }
+            });
+
     // Subscribe to "open home" event
     mViewModel
         .getOpenHomeEvent()
