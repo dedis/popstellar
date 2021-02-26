@@ -11,7 +11,7 @@ import PROPS_TYPE from 'res/Props';
 import { KeyPairStore } from 'store';
 import { Lao } from 'model/objects';
 
-import Attendee from 'components/Attendee';
+import Attendee from 'parts/lao/attendee/Attendee';
 import Identity from 'parts/lao/Identity';
 import MyTabBar from 'components/OrganizerMaterialTab';
 

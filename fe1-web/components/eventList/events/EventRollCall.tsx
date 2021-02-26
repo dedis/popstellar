@@ -46,7 +46,9 @@ const EventRollCall = (props: IPropTypes) => {
       <ParagraphBlock text={getStatus()} />
       <ParagraphBlock text="Participants #" />
 
-      { getStatus() === RollCallStatus.OPEN && <ParagraphBlock text="QR Code" /> }
+      { getStatus() === RollCallStatus.OPEN && (
+        <ParagraphBlock text="QR Code" />
+      )}
       { childrenVisibility && (
         <FlatList
           data={event.children}
