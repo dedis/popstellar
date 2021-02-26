@@ -6,6 +6,7 @@ import io.reactivex.Observable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class LAORemoteDataSource implements LAODataSource.Remote {
+
   private static LAORemoteDataSource INSTANCE;
 
   private LAOService laoService;

@@ -33,6 +33,7 @@ import io.reactivex.disposables.Disposable;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class HomeViewModel extends AndroidViewModel
     implements CameraPermissionViewModel, QRCodeScanningViewModel {
@@ -133,6 +134,7 @@ public class HomeViewModel extends AndroidViewModel
       mLAORepository
           .sendPublish("/root", msg)
           .observeOn(AndroidSchedulers.mainThread())
+          .timeout(5, TimeUnit.SECONDS)
           .subscribe(
               answer -> {
                 if (answer instanceof Result) {
@@ -144,6 +146,9 @@ public class HomeViewModel extends AndroidViewModel
                       "got failure result for create lao: "
                           + ((Error) answer).getError().getDescription());
                 }
+              },
+              throwable -> {
+                Log.d(TAG, "timed out waiting for a response for create lao", throwable);
               });
 
     } catch (GeneralSecurityException e) {

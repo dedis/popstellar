@@ -81,6 +81,8 @@ public class LAORepository {
   // Observable for view models that need access to all LAO Names
   private BehaviorSubject<List<Lao>> allLaoSubject;
 
+  private Observable<GenericMessage> upstream;
+
   private LAORepository(
       @NonNull LAODataSource.Remote remoteDataSource,
       @NonNull LAODataSource.Local localDataSource,
@@ -101,16 +103,17 @@ public class LAORepository {
 
     allLaoSubject = BehaviorSubject.create();
 
+    upstream = mRemoteDataSource.observeMessage().share();
+
     // subscribe to incoming messages and the unprocessed message queue
     startSubscription();
   }
 
   private void startSubscription() {
     // We add a delay of 5 seconds to unprocessed messages to allow incoming messages to have a
-    // higher
-    // priority
-    Observable.merge(mRemoteDataSource.observeMessage(), unprocessed.delay(5, TimeUnit.SECONDS))
-        .subscribeOn(Schedulers.io())
+    // higher priority
+    Observable.merge(upstream, unprocessed.delay(5, TimeUnit.SECONDS))
+        .subscribeOn(Schedulers.newThread())
         .subscribe(this::handleGenericMessage);
   }
 
@@ -306,6 +309,7 @@ public class LAORepository {
 
   private boolean handleCreateRollCall(String channel, CreateRollCall createRollCall) {
     Lao lao = laoById.get(channel).getLao();
+    Log.d(TAG, "handleCreateRollCall: " + channel + " name " + createRollCall.getName());
 
     Lao.RollCall rollCall = new Lao.RollCall();
     rollCall.setId(createRollCall.getId());
@@ -467,6 +471,7 @@ public class LAORepository {
 
   public Single<Answer> sendPublish(String channel, MessageGeneral message) {
     int id = mRemoteDataSource.incrementAndGetRequestId();
+    Single<Answer> answer = createSingle(id);
 
     Publish publish = new Publish(channel, id, message);
 
@@ -475,7 +480,6 @@ public class LAORepository {
       createLaoRequests.put(id, "/root/" + data.getId());
     }
 
-    Single<Answer> answer = createSingle(id);
     mRemoteDataSource.sendMessage(publish);
     return answer;
   }
@@ -505,8 +509,7 @@ public class LAORepository {
 
   private Single<Answer> createSingle(int id) {
     Single<Answer> res =
-        mRemoteDataSource
-            .observeMessage()
+        upstream
             .filter(
                 genericMessage -> {
                   Log.d(TAG, "request id: " + ((Answer) genericMessage).getId());
