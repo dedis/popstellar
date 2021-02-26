@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
   },
 });
 
+// @ts-ignore
 const WitnessProperty = ({ event }) => (
   <View style={styles.view}>
     <Text style={styles.text}>{STRINGS.witness_name}</Text>

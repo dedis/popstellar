@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 import {
   StyleSheet, View, Text, FlatList, TextInput, Button,
@@ -7,7 +8,7 @@ import EventItem from './EventItem';
 import { Spacing } from '../styles';
 import PROPS_TYPE from '../res/Props';
 
-// Fake data to simulate the fonctionality of the component
+// Fake data to simulate the functionality of the component
 const QUESTION = [
   {
     id: 1,
@@ -27,7 +28,7 @@ const QUESTION = [
 ];
 
 /**
- * Discussion compononent: a name string, a list of questions,
+ * Discussion component: a name string, a list of questions,
  * if open a text input for send question, and a list of nested events
  *
  * TODO must be modify when the discussion event will be describe in UI Specifications
@@ -49,6 +50,7 @@ const styles = StyleSheet.create({
   },
 });
 
+// @ts-ignore
 const DiscussionEvent = ({ event }) => (
   <View style={styles.view}>
     <Text style={styles.text}>{event.name}</Text>
@@ -66,11 +68,12 @@ const DiscussionEvent = ({ event }) => (
     <Text style={styles.text}>If discussion open</Text>
     <View style={{ flexDirection: 'row', marginBottom: Spacing.xs }}>
       <TextInput style={{ flex: 1 }} placeholder="Your question" />
-      <Button title="Send" />
+      { /* <Button title="Send" /> */ }
     </View>
     <FlatList
       data={event.children}
       keyExtractor={(item) => item.id.toString()}
+      // @ts-ignore
       renderItem={({ item }) => <EventItem event={item} />}
       listKey={`DiscussionEvent-${event.id.toString()}`}
       style={styles.flatList}

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState } from 'react';
 import {
   StyleSheet, View, Text, FlatList,
@@ -59,6 +60,7 @@ const radioPropsPercent = [
   { label: 'param4', value: 0.2 },
 ];
 
+// @ts-ignore
 const PollEvent = ({ event }) => {
   // TODO remove next line when the variable will be use
   const [/* radioValue */, setRadioValue] = useState(0);
@@ -98,6 +100,7 @@ const PollEvent = ({ event }) => {
       <FlatList
         data={event.children}
         keyExtractor={(item) => item.id.toString()}
+        // @ts-ignore
         renderItem={({ item }) => <EventItem event={item} />}
         listKey={`PollEvent-${event.id.toString()}`}
         style={styles.flatList}
