@@ -4,9 +4,9 @@ import {
   StyleSheet, View, Text, FlatList, TextInput, Button,
 } from 'react-native';
 
-import EventItem from './EventItem';
-import { Spacing } from '../styles';
-import PROPS_TYPE from '../res/Props';
+import EventItem from 'components/lao/EventGeneral';
+import { Spacing } from 'styles/index';
+import PROPS_TYPE from 'res/Props';
 
 // Fake data to simulate the functionality of the component
 const QUESTION = [

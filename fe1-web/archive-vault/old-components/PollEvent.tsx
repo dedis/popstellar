@@ -6,11 +6,11 @@ import {
 import RadioForm from 'react-native-simple-radio-button';
 import { CheckBox } from 'react-native-elements';
 
-import { Spacing } from 'styles';
+import { Spacing } from 'styles/index';
 import PROPS_TYPE from 'res/Props';
 
-import EventItem from './EventItem';
-import ProgressBar from './ProgressBar';
+import EventItem from 'components/lao/EventGeneral';
+import ProgressBar from 'archive-vault/old-components/ProgressBar';
 
 /**
  * Poll component: a question, a status (future, open, closed), the number of particpants
@@ -100,7 +100,6 @@ const PollEvent = ({ event }) => {
       <FlatList
         data={event.children}
         keyExtractor={(item) => item.id.toString()}
-        // @ts-ignore
         renderItem={({ item }) => <EventItem event={item} />}
         listKey={`PollEvent-${event.id.toString()}`}
         style={styles.flatList}

@@ -4,8 +4,8 @@ import {
 } from 'react-native';
 
 import STRINGS from 'res/strings';
-import { Spacing } from '../styles';
-import PROPS_TYPE from '../res/Props';
+import { Spacing } from 'styles/index';
+import PROPS_TYPE from 'res/Props';
 
 /**
  * Witnesses property component: name of the proprety, list of witnesses
