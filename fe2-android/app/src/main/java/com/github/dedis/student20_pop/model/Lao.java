@@ -162,7 +162,7 @@ public final class Lao {
     private String description;
 
     public RollCall() {
-      attendees = new HashSet<>();
+      this.attendees = new HashSet<>();
     }
 
     public String getId() {

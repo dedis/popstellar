@@ -11,15 +11,23 @@ import com.github.dedis.student20_pop.Event;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.data.LAORepository;
 import com.github.dedis.student20_pop.model.event.EventType;
+import com.github.dedis.student20_pop.model.network.answer.Result;
+import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
+import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
+import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall.StartType;
 import com.github.dedis.student20_pop.utility.security.Keys;
 import com.google.crypto.tink.KeysetHandle;
+import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
+import com.google.gson.Gson;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 public class LaoDetailViewModel extends AndroidViewModel {
@@ -30,6 +38,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
   private final MutableLiveData<Event<Boolean>> mOpenIdentityEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mShowPropertiesEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mEditPropertiesEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<Boolean>> mOpenLaoDetailEvent = new MutableLiveData<>();
   private final MutableLiveData<Lao> mCurrentLao = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
   private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
@@ -46,16 +55,25 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
   private final MutableLiveData<Event<EventType>> mNewLaoEventEvent = new MutableLiveData<>();
 
-  private Disposable disposable;
+  private CompositeDisposable disposables;
+
+  private Gson mGson;
 
   public LaoDetailViewModel(
       @NonNull Application application,
       LAORepository laoRepository,
+      Gson gson,
       AndroidKeysetManager keysetManager) {
     super(application);
 
     mLAORepository = laoRepository;
     mKeysetManager = keysetManager;
+    mGson = gson;
+    disposables = new CompositeDisposable();
+  }
+
+  public LiveData<Event<Boolean>> getOpenLaoDetailEvent() {
+    return mOpenLaoDetailEvent;
   }
 
   public LiveData<Event<Boolean>> getOpenHomeEvent() {
@@ -98,6 +116,10 @@ public class LaoDetailViewModel extends AndroidViewModel {
     mOpenHomeEvent.setValue(new Event<>(true));
   }
 
+  public void openLaoDetail() {
+    mOpenLaoDetailEvent.postValue(new Event<>(true));
+  }
+
   public void openIdentity() {
     mOpenIdentityEvent.setValue(new Event<>(true));
   }
@@ -138,14 +160,12 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
   @Override
   protected void onCleared() {
-    if (disposable != null) {
-      disposable.dispose();
-    }
     super.onCleared();
+    disposables.dispose();
   }
 
   public void subscribeToLao(String laoId) {
-    disposable =
+    disposables.add(
         mLAORepository
             .getLaoObservable(laoId)
             .subscribeOn(Schedulers.io())
@@ -167,7 +187,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
                     Log.d(TAG, "failed to get public key", e);
                   }
                   mIsOrganizer.postValue(false);
-                });
+                }));
   }
 
   public void removeWitness(String witness) {
@@ -188,5 +208,54 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
   public LiveData<Event<EventType>> getNewLaoEventEvent() {
     return mNewLaoEventEvent;
+  }
+
+  public void createNewRollCall(String title, String description, long start, long scheduled) {
+    Log.d(TAG, "creating a new roll call with title " + title);
+
+    Lao lao = getCurrentLao();
+    if (lao == null) {
+      Log.d(TAG, "failed to retrieve current lao");
+      return;
+    }
+
+    String channel = lao.getChannel();
+    CreateRollCall createRollCall;
+    String laoId = channel.substring(6); // removing /root/ prefix
+    if (start != 0) {
+      createRollCall = new CreateRollCall(title, start, StartType.NOW, "", description, laoId);
+    } else {
+      createRollCall =
+          new CreateRollCall(title, scheduled, StartType.SCHEDULED, "", description, laoId);
+    }
+
+    try {
+      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+      byte[] sender = Base64.getDecoder().decode(publicKey);
+
+      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+      MessageGeneral msg = new MessageGeneral(sender, createRollCall, signer, mGson);
+
+      Log.d(TAG, "sending publish message");
+      Disposable disposable =
+          mLAORepository
+              .sendPublish(channel, msg)
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(
+                  answer -> {
+                    if (answer instanceof Result) {
+                      Log.d(TAG, "created a roll call");
+                      openLaoDetail();
+                    } else {
+                      Log.d(TAG, "failed to create a roll call");
+                    }
+                  });
+
+      disposables.add(disposable);
+    } catch (GeneralSecurityException | IOException e) {
+      Log.d(TAG, "failed to retrieve public key", e);
+    }
   }
 }

@@ -207,7 +207,9 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
           }
         };
 
+    binding.setLifecycleOwner(lifecycleOwner);
     binding.setAddEventListener(addEventOnClickListener);
+    binding.executePendingBindings();
 
     return binding.getRoot();
   }

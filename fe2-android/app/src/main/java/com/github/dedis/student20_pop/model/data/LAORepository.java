@@ -51,6 +51,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class LAORepository {
+
   private static final String TAG = LAORepository.class.getSimpleName();
   private static volatile LAORepository INSTANCE = null;
 
@@ -59,10 +60,11 @@ public class LAORepository {
   private final AndroidKeysetManager mKeysetManager;
   private final Gson mGson;
 
+  // A subject that represents unprocessed messages
   private Subject<GenericMessage> unprocessed;
 
   // State for LAO
-  private Map<String, LaoState> laoById;
+  private Map<String, LAOState> laoById;
 
   // State for Messages
   private Map<String, MessageGeneral> messageById;
@@ -99,10 +101,14 @@ public class LAORepository {
 
     allLaoSubject = BehaviorSubject.create();
 
+    // subscribe to incoming messages and the unprocessed message queue
     startSubscription();
   }
 
   private void startSubscription() {
+    // We add a delay of 5 seconds to unprocessed messages to allow incoming messages to have a
+    // higher
+    // priority
     Observable.merge(mRemoteDataSource.observeMessage(), unprocessed.delay(5, TimeUnit.SECONDS))
         .subscribeOn(Schedulers.io())
         .subscribe(this::handleGenericMessage);
@@ -132,7 +138,7 @@ public class LAORepository {
         subscribeRequests.remove(id);
 
         Lao lao = new Lao(channel);
-        laoById.put(channel, new LaoState(lao));
+        laoById.put(channel, new LAOState(lao));
         allLaoSubject.onNext(
             laoById.entrySet().stream()
                 .map(x -> x.getValue().getLao())
@@ -158,7 +164,7 @@ public class LAORepository {
         createLaoRequests.remove(id);
 
         Lao lao = new Lao(channel);
-        laoById.put(channel, new LaoState(lao));
+        laoById.put(channel, new LAOState(lao));
         allLaoSubject.onNext(
             laoById.entrySet().stream()
                 .map(x -> x.getValue().getLao())
@@ -185,7 +191,11 @@ public class LAORepository {
     }
   }
 
-  // Returns true if we need to add this back into the queue
+  /**
+   * @param channel the channel on which the message was received
+   * @param message the message that was received
+   * @return true if the message cannot be processed and false otherwise
+   */
   private boolean handleMessage(String channel, MessageGeneral message) {
     // Put the message in the state
     messageById.put(message.getMessageId(), message);
@@ -215,7 +225,7 @@ public class LAORepository {
 
     // Trigger an onNext
     if (!(data instanceof WitnessMessage)) {
-      LaoState laoState = laoById.get(channel);
+      LAOState laoState = laoById.get(channel);
       laoState.publish();
       if (data instanceof StateLao || data instanceof CreateLao) {
         allLaoSubject.onNext(
@@ -227,7 +237,7 @@ public class LAORepository {
     return enqueue;
   }
 
-  public boolean handleCreateLao(String channel, CreateLao createLao) {
+  private boolean handleCreateLao(String channel, CreateLao createLao) {
     Lao lao = laoById.get(channel).getLao();
 
     lao.setName(createLao.getName());
@@ -242,7 +252,7 @@ public class LAORepository {
     return false;
   }
 
-  public boolean handleUpdateLao(String channel, String messageId, UpdateLao updateLao) {
+  private boolean handleUpdateLao(String channel, String messageId, UpdateLao updateLao) {
     Lao lao = laoById.get(channel).getLao();
 
     if (lao.getLastModified() > updateLao.getLastModified()) {
@@ -250,11 +260,15 @@ public class LAORepository {
       return false;
     }
 
+    // TODO: This assumes that LAOs always have some witnesses to begin with. Our current
+    // implementation
+    // begins with zero witnesses. As a result, we should update the LAO immediately if the current
+    // state has no witnesses and not wait for witness messages
     lao.getPendingUpdates().add(new PendingUpdate(updateLao.getLastModified(), messageId));
     return false;
   }
 
-  public boolean handleStateLao(String channel, StateLao stateLao) {
+  private boolean handleStateLao(String channel, StateLao stateLao) {
     Lao lao = laoById.get(channel).getLao();
 
     if (!messageById.containsKey(stateLao.getModificationId())) {
@@ -290,7 +304,7 @@ public class LAORepository {
     return false;
   }
 
-  public boolean handleCreateRollCall(String channel, CreateRollCall createRollCall) {
+  private boolean handleCreateRollCall(String channel, CreateRollCall createRollCall) {
     Lao lao = laoById.get(channel).getLao();
 
     Lao.RollCall rollCall = new Lao.RollCall();
@@ -310,7 +324,7 @@ public class LAORepository {
     return false;
   }
 
-  public boolean handleOpenRollCall(String channel, OpenRollCall openRollCall) {
+  private boolean handleOpenRollCall(String channel, OpenRollCall openRollCall) {
     Lao lao = laoById.get(channel).getLao();
 
     String updateId = openRollCall.getUpdateId();
@@ -331,7 +345,7 @@ public class LAORepository {
     return false;
   }
 
-  public boolean handleCloseRollCall(String channel, CloseRollCall closeRollCall) {
+  private boolean handleCloseRollCall(String channel, CloseRollCall closeRollCall) {
     Lao lao = laoById.get(channel).getLao();
 
     String updateId = closeRollCall.getUpdateId();
@@ -351,7 +365,7 @@ public class LAORepository {
     return true;
   }
 
-  public boolean handleWitnessMessage(String channel, String senderPk, WitnessMessage message) {
+  private boolean handleWitnessMessage(String channel, String senderPk, WitnessMessage message) {
     String messageId = message.getMessageId();
     String signature = message.getSignature();
 
@@ -517,27 +531,5 @@ public class LAORepository {
   public Observable<Lao> getLaoObservable(String channel) {
     Log.d(TAG, "LaoIds we have are: " + laoById.keySet());
     return laoById.get(channel).getObservable();
-  }
-
-  private static class LaoState {
-    private Subject<Lao> publisher;
-    private Lao lao;
-
-    public LaoState(Lao lao) {
-      this.lao = lao;
-      this.publisher = PublishSubject.create();
-    }
-
-    public Observable<Lao> getObservable() {
-      return publisher.startWith(lao);
-    }
-
-    public void publish() {
-      publisher.onNext(lao);
-    }
-
-    public Lao getLao() {
-      return lao;
-    }
   }
 }

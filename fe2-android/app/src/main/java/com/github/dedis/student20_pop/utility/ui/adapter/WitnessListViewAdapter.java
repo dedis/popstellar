@@ -124,6 +124,7 @@ public class WitnessListViewAdapter extends BaseAdapter {
         };
 
     binding.setListener(deleteButtonListener);
+    binding.executePendingBindings();
 
     return convertView;
   }
