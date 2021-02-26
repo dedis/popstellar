@@ -12,7 +12,7 @@ import CameraButton from './CameraButton';
 import PROPS_TYPE from '../res/Props';
 
 // FIXME: this code path is not yet active
-//import { requestCloseRollCall } from '../network/MessageApi';
+// import { requestCloseRollCall } from '../network/MessageApi';
 const requestCloseRollCall = () => {};
 
 /**
