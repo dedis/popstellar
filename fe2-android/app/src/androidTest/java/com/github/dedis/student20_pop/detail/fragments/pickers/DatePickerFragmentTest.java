@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.ui.event.creation.pickers;
+package com.github.dedis.student20_pop.detail.fragments.pickers;
 
 public class DatePickerFragmentTest {
   //  private final int YEAR = 2022;

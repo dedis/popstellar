@@ -13,7 +13,7 @@
 
     <variable
       name="listener"
-      type="com.github.dedis.student20_pop.detail.WitnessDeleteListener" />
+      type="com.github.dedis.student20_pop.detail.listeners.WitnessDeleteListener" />
 
   </data>
   <androidx.constraintlayout.widget.ConstraintLayout

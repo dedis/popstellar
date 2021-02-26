@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.ui.event.creation.pickers;
+package com.github.dedis.student20_pop.detail.fragments.pickers;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -12,6 +12,7 @@ import java.util.Calendar;
 
 public final class TimePickerFragment extends AppCompatDialogFragment
     implements TimePickerDialog.OnTimeSetListener {
+
   public static final String TAG = TimePickerFragment.class.getSimpleName();
   private final Calendar calendar = Calendar.getInstance();
 

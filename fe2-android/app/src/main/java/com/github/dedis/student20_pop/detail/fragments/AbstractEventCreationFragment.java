@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.ui.event.creation;
+package com.github.dedis.student20_pop.detail.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,8 +11,8 @@ import androidx.appcompat.app.AppCompatDialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.ui.event.creation.pickers.DatePickerFragment;
-import com.github.dedis.student20_pop.ui.event.creation.pickers.TimePickerFragment;
+import com.github.dedis.student20_pop.detail.fragments.pickers.DatePickerFragment;
+import com.github.dedis.student20_pop.detail.fragments.pickers.TimePickerFragment;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -27,7 +27,7 @@ import java.util.Locale;
  *
  * <p>TODO: this class needs to be refactored
  */
-abstract class AbstractEventCreationFragment extends Fragment {
+public abstract class AbstractEventCreationFragment extends Fragment {
 
   public static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm", Locale.FRENCH);
   public static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH);

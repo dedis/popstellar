@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.utility.ui.adapter;
+package com.github.dedis.student20_pop.detail.adapters;
 
 import static com.github.dedis.student20_pop.model.event.EventCategory.FUTURE;
 import static com.github.dedis.student20_pop.model.event.EventCategory.PAST;
@@ -16,8 +16,8 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
 import com.github.dedis.student20_pop.databinding.LayoutEventBinding;
 import com.github.dedis.student20_pop.databinding.LayoutEventCategoryBinding;
-import com.github.dedis.student20_pop.detail.AddEventListener;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
+import com.github.dedis.student20_pop.detail.listeners.AddEventListener;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventCategory;
 import com.github.dedis.student20_pop.model.event.EventType;

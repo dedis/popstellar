@@ -18,8 +18,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import com.github.dedis.student20_pop.R;
+import com.github.dedis.student20_pop.detail.fragments.AbstractEventCreationFragment;
+import com.github.dedis.student20_pop.detail.listeners.OnEventCreatedListener;
 import com.github.dedis.student20_pop.utility.ui.adapter.ChoicesListViewAdapter;
-import com.github.dedis.student20_pop.utility.ui.listener.OnEventCreatedListener;
 import java.util.ArrayList;
 import java.util.List;
 

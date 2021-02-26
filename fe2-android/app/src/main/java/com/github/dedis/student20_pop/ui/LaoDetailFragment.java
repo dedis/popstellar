@@ -15,10 +15,8 @@ import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentLaoDetailBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
-import com.github.dedis.student20_pop.utility.ui.adapter.EventExpandableListViewAdapter;
-import com.github.dedis.student20_pop.utility.ui.adapter.WitnessListViewAdapter;
-import com.github.dedis.student20_pop.utility.ui.listener.OnAddWitnessListener;
-import com.github.dedis.student20_pop.utility.ui.listener.OnEventTypeSelectedListener;
+import com.github.dedis.student20_pop.detail.adapters.EventExpandableListViewAdapter;
+import com.github.dedis.student20_pop.detail.adapters.WitnessListViewAdapter;
 import java.util.ArrayList;
 
 /** Fragment used to display the LAO Detail UI */
@@ -30,8 +28,6 @@ public class LaoDetailFragment extends Fragment {
   private LaoDetailViewModel mLaoDetailViewModel;
   private WitnessListViewAdapter mWitnessListViewAdapter;
   private EventExpandableListViewAdapter mEventListViewEventAdapter;
-  private OnEventTypeSelectedListener onEventTypeSelectedListener;
-  private OnAddWitnessListener onAddWitnessListener;
 
   public LaoDetailFragment() {}
 

@@ -17,7 +17,7 @@
 
     <variable
       name="addEventListener"
-      type="com.github.dedis.student20_pop.detail.AddEventListener" />
+      type="com.github.dedis.student20_pop.detail.listeners.AddEventListener" />
 
   </data>
   <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"

@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.utility.ui.adapter;
+package com.github.dedis.student20_pop.detail.adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -11,7 +11,7 @@ import androidx.lifecycle.LifecycleOwner;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.LayoutWitnessesListViewBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
-import com.github.dedis.student20_pop.detail.WitnessDeleteListener;
+import com.github.dedis.student20_pop.detail.listeners.WitnessDeleteListener;
 import java.util.List;
 
 /** Adapter to show witnesses of an Event */

@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.ui;
+package com.github.dedis.student20_pop.home.fragments;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment;
 import com.github.dedis.student20_pop.databinding.FragmentHomeBinding;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.home.HomeViewModel;
-import com.github.dedis.student20_pop.home.LAOListAdapter;
+import com.github.dedis.student20_pop.home.adapters.LAOListAdapter;
 import com.github.dedis.student20_pop.model.Lao;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

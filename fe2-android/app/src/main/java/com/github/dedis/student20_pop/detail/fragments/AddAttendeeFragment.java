@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.ui.qrcode;
+package com.github.dedis.student20_pop.detail.fragments;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
