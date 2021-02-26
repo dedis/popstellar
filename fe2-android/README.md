@@ -18,7 +18,7 @@ This repository is being refactored and some classes and interfaces marked with 
 * The [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel) classes implement the UI logic, retrieve and manage the data that is needed
 * The WebSockets are implemented using the [Scarlet](https://github.com/Tinder/Scarlet) library, one of its usage on this application is in the [Injection](https://github.com/dedis/student_21_pop/blob/master/fe2-android/app/src/prod/java/com/github/dedis/student20_pop/Injection.java) class
 * The application uses [RxJava](https://github.com/ReactiveX/RxJava) for asynchronous and event based programs
-* The the [Room](https://developer.android.com/reference/androidx/room/package-summary) library is used to define the application's database, entities and Data Access Objects
+* The [Room](https://developer.android.com/reference/androidx/room/package-summary) library is used to define the application's database, entities and Data Access Objects
 
 #### Usage
 Import the project to Android Studio or IntelliJ, choose an emulator in the AVD Manager and run the app. The emulator used for running and testing was a Pixel 2 API 29.
