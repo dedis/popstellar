@@ -10,9 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.model.event.RollCallEvent;
 
 /**
  * This fragment wraps the QRCodeScanningFragment in order to show the user how many attendees he
@@ -47,7 +45,7 @@ public final class AddAttendeeFragment extends Fragment {
     //        .addToBackStack(null)
     //        .commit();
 
-    PoPApplication app = (PoPApplication) getActivity().getApplication();
+    //    PoPApplication app = (PoPApplication) getActivity().getApplication();
     //    Optional<Event> matchingEvent =
     //        app.getCurrentLao()
     //            .map(Lao::getEvents)
@@ -56,8 +54,6 @@ public final class AddAttendeeFragment extends Fragment {
     //                    events.parallelStream()
     //                        .filter(event -> event.getId().equals(eventId))
     //                        .findFirst());
-
-    RollCallEvent rollCallEvent;
 
     //    if (matchingEvent.isPresent()) {
     //      rollCallEvent = (RollCallEvent) matchingEvent.get();

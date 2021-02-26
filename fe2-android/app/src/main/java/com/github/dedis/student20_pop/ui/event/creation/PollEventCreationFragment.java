@@ -17,14 +17,17 @@ import android.widget.RadioGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
-import com.github.dedis.student20_pop.PoPApplication;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.utility.ui.adapter.ChoicesListViewAdapter;
 import com.github.dedis.student20_pop.utility.ui.listener.OnEventCreatedListener;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Fragment that shows up when user wants to create a Poll Event */
+/**
+ * Fragment that shows up when user wants to create a Poll Event
+ *
+ * @deprecated this needs to be refactored
+ */
 public final class PollEventCreationFragment extends AbstractEventCreationFragment {
 
   public static final String TAG = PollEventCreationFragment.class.getSimpleName();
@@ -134,7 +137,7 @@ public final class PollEventCreationFragment extends AbstractEventCreationFragme
     scheduleButton = view.findViewById(R.id.schedule_button);
     scheduleButton.setOnClickListener(
         clicked -> {
-          PoPApplication app = (PoPApplication) (getActivity().getApplication());
+          //          PoPApplication app = (PoPApplication) (getActivity().getApplication());
           String question = questionEditText.getText().toString();
           List<String> choicesList = getChoices(choicesListView);
           computeTimesInSeconds();
