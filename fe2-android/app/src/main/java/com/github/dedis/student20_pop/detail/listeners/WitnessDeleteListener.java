@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.detail;
+package com.github.dedis.student20_pop.detail.listeners;
 
 public interface WitnessDeleteListener {
 

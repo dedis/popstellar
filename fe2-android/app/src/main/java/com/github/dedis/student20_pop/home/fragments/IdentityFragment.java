@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.ui;
+package com.github.dedis.student20_pop.home.fragments;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -21,6 +21,7 @@ import net.glxn.qrgen.android.QRCode;
  * dependent of the current user and LAO
  */
 public class IdentityFragment extends Fragment {
+
   public static final String TAG = IdentityFragment.class.getSimpleName();
 
   private EditText identityNameEditText;

@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.ui;
+package com.github.dedis.student20_pop.home.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.ui.event.creation.pickers;
+package com.github.dedis.student20_pop.detail.fragments.pickers;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -16,6 +16,7 @@ import java.util.Calendar;
  */
 public final class DatePickerFragment extends AppCompatDialogFragment
     implements DatePickerDialog.OnDateSetListener {
+
   public static final String TAG = DatePickerFragment.class.getSimpleName();
   private final Calendar calendar = Calendar.getInstance();
 

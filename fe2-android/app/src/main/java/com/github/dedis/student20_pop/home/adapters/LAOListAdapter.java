@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.home;
+package com.github.dedis.student20_pop.home.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +7,8 @@ import android.widget.BaseAdapter;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
 import com.github.dedis.student20_pop.databinding.LayoutLaoHomeBinding;
+import com.github.dedis.student20_pop.home.HomeViewModel;
+import com.github.dedis.student20_pop.home.listeners.LAOItemUserActionsListener;
 import com.github.dedis.student20_pop.model.Lao;
 import java.util.List;
 

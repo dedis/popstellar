@@ -13,7 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.utility.ui.listener.OnEventCreatedListener;
+import com.github.dedis.student20_pop.detail.fragments.AbstractEventCreationFragment;
+import com.github.dedis.student20_pop.detail.listeners.OnEventCreatedListener;
 
 /**
  * Fragment that shows up when user wants to create a Meeting Event

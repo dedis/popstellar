@@ -1,5 +1,6 @@
-package com.github.dedis.student20_pop.utility.ui.listener;
+package com.github.dedis.student20_pop.detail.listeners;
 
 public interface OnAddAttendeesListener {
+
   void onAddAttendeesListener(String eventId);
 }
