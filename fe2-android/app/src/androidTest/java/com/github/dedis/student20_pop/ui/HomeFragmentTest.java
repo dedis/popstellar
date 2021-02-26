@@ -6,16 +6,15 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 
-import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.matcher.BoundedMatcher;
-import com.github.dedis.student20_pop.MainActivity;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Lao;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.junit.Before;
 import org.junit.Test;
 
 // TODO: Update tests when the data between activities will be passed
@@ -42,10 +41,10 @@ public class HomeFragmentTest {
     };
   }
 
-  @Before
-  public void launchActivity() {
-    ActivityScenario.launch(MainActivity.class);
-  }
+  //  @Before
+  //  public void launchActivity() {
+  //    ActivityScenario.launch(MainActivity.class);
+  //  }
 
   @Test
   public void homeFragmentIsDisplayed() {

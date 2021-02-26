@@ -1,6 +1,5 @@
 package com.github.dedis.student20_pop.utility.json;
 
-import android.util.Base64;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
@@ -16,6 +15,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 import java.security.GeneralSecurityException;
+import java.util.Base64;
 import java.util.List;
 
 public class JsonMessageGeneralSerializer
@@ -26,10 +26,10 @@ public class JsonMessageGeneralSerializer
       throws JsonParseException {
     JsonObject root = json.getAsJsonObject();
 
-    byte[] messageId = Base64.decode(root.get("message_id").getAsString(), Base64.NO_WRAP);
-    byte[] dataBuf = Base64.decode(root.get("data").getAsString(), Base64.NO_WRAP);
-    byte[] sender = Base64.decode(root.get("sender").getAsString(), Base64.NO_WRAP);
-    byte[] signature = Base64.decode(root.get("signature").getAsString(), Base64.NO_WRAP);
+    byte[] messageId = Base64.getDecoder().decode(root.get("message_id").getAsString());
+    byte[] dataBuf = Base64.getDecoder().decode(root.get("data").getAsString());
+    byte[] sender = Base64.getDecoder().decode(root.get("sender").getAsString());
+    byte[] signature = Base64.getDecoder().decode(root.get("signature").getAsString());
 
     PublicKeyVerify verifier = new Ed25519Verify(sender);
     try {

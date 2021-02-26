@@ -4,8 +4,8 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
 import com.google.gson.annotations.SerializedName;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /** Data sent to update the lao specifications */
 public class UpdateLao extends Data {
@@ -16,7 +16,7 @@ public class UpdateLao extends Data {
   @SerializedName("last_modified")
   private final long lastModified;
 
-  private final List<String> witnesses;
+  private final Set<String> witnesses;
 
   /**
    * Constructor for a data Update LAO
@@ -26,7 +26,7 @@ public class UpdateLao extends Data {
    * @param lastModified time of last modification
    * @param witnesses list of witnesses of the LAO
    */
-  public UpdateLao(String id, String name, long lastModified, List<String> witnesses) {
+  public UpdateLao(String id, String name, long lastModified, Set<String> witnesses) {
     this.id = id;
     this.name = name;
     this.lastModified = lastModified;
@@ -45,8 +45,8 @@ public class UpdateLao extends Data {
     return lastModified;
   }
 
-  public List<String> getWitnesses() {
-    return new ArrayList<>(witnesses);
+  public Set<String> getWitnesses() {
+    return new HashSet<>(witnesses);
   }
 
   @Override
