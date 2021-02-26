@@ -29,6 +29,7 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class LaoDetailViewModel extends AndroidViewModel {
 
@@ -251,6 +252,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
               .sendPublish(channel, msg)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
+              .timeout(5, TimeUnit.SECONDS)
               .subscribe(
                   answer -> {
                     if (answer instanceof Result) {
@@ -259,6 +261,9 @@ public class LaoDetailViewModel extends AndroidViewModel {
                     } else {
                       Log.d(TAG, "failed to create a roll call");
                     }
+                  },
+                  throwable -> {
+                    Log.d(TAG, "timed out waiting for result on roll_call/create", throwable);
                   });
 
       disposables.add(disposable);
