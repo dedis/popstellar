@@ -3,8 +3,8 @@ import {
   StyleSheet, View, Text,
 } from 'react-native';
 
-import { Spacing } from '../styles';
-import PROPS_TYPE from '../res/Props';
+import { Spacing } from 'styles/index';
+import PROPS_TYPE from 'res/Props';
 
 /**
  * Organization name property component: a name text

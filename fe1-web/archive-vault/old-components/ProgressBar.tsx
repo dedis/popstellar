@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 
-import { Colors, Spacing } from 'styles';
+import { Colors, Spacing } from 'styles/index';
 
 // Note: used in PollEvent
 
