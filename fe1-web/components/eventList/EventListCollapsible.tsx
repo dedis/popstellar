@@ -2,7 +2,8 @@ import React from 'react';
 import { SectionList } from 'react-native';
 import PropTypes from 'prop-types';
 
-import PROPS_TYPE from 'res/Props';
+import { Event as EventObj } from 'model/objects';
+
 import TextBlock from 'components/TextBlock';
 import Event from './events';
 
@@ -32,7 +33,7 @@ const EventListCollapsible = (props: IPropTypes) => {
 const propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({
     title: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(PROPS_TYPE.event).isRequired,
+    data: PropTypes.arrayOf(PropTypes.instanceOf(EventObj)).isRequired,
   }).isRequired).isRequired,
 };
 EventListCollapsible.propTypes = propTypes;

@@ -2,20 +2,24 @@ import React, { useState } from 'react';
 import {
   StyleSheet, View, TextInput, TextStyle, ViewStyle,
 } from 'react-native';
-import { Spacing, Typography } from 'styles/index';
+import PropTypes from 'prop-types';
 
-import * as RootNavigation from 'navigation/RootNavigation';
+import { dispatch, KeyPairStore, OpenedLaoStore } from 'store';
+import { getNetworkManager, requestCreateLao } from 'network';
+import { JsonRpcRequest } from 'model/network';
+import { Hash, Lao, Timestamp } from 'model/objects';
+
+import { Spacing, Typography } from 'styles';
+import styleContainer from 'styles/stylesheets/container';
 import STRINGS from 'res/strings';
 import PROPS_TYPE from 'res/Props';
-import { requestCreateLao } from 'network/MessageApi';
-import { dispatch, KeyPairStore, OpenedLaoStore } from 'store';
-import { getNetworkManager } from 'network';
-import { JsonRpcResponse } from 'model/network';
+
+import * as RootNavigation from 'navigation/RootNavigation';
 import WideButtonView from 'components/WideButtonView';
 import TextBlock from 'components/TextBlock';
-import PropTypes from 'prop-types';
-import styleContainer from 'styles/stylesheets/container';
-import { Hash, Lao, Timestamp } from 'model/objects';
+
+// temporarily used for testing
+import testKeyPair from 'test_data/keypair.json';
 
 /**
  * Manage the Launch screen: a description string, a LAO name text input, a launch LAO button,
@@ -46,30 +50,37 @@ const Launch = ({ navigation }: IPropTypes) => {
 
   const onButtonLaunchPress = (laoName: string) => {
     if (laoName) {
-      requestCreateLao(laoName);
+      requestCreateLao(laoName)
+        .then(() => {
+          console.info('LAO created successfully');
+        })
+        .catch((err) => {
+          console.error('Could not create LAO:', err);
+        });
     } else {
-      console.error('empty lao name');
+      console.error('Could not create LAO without a name');
     }
   };
 
   const onTestOpenConnection = () => {
-    const nc = getNetworkManager().connect('127.0.0.1');
-    nc.setRpcHandler((m: JsonRpcResponse) => {
-      console.info('Handling the json-rpc response : ', m);
-
-      const org = KeyPairStore.getPublicKey();
-      const time = new Timestamp(1609455600);
-      const sampleLao: Lao = new Lao({
-        name: 'name',
-        id: Hash.fromStringArray(org.toString(), time.toString(), 'name'),
-        creation: time,
-        last_modified: time,
-        organizer: org,
-        witnesses: [],
-      });
-
-      OpenedLaoStore.store(sampleLao);
+    const org = KeyPairStore.getPublicKey();
+    const time = new Timestamp(1609455600);
+    const sampleLao: Lao = new Lao({
+      name: 'name',
+      id: Hash.fromStringArray(org.toString(), time.toString(), 'name'),
+      creation: time,
+      last_modified: time,
+      organizer: org,
+      witnesses: [],
     });
+
+    // bad practice to access the store directly, but OK for testing
+    OpenedLaoStore.store(sampleLao);
+
+    getNetworkManager().setRpcHandler((m: JsonRpcRequest) => {
+      console.info('Handling the json-rpc response : ', m);
+    });
+    getNetworkManager().connect('127.0.0.1');
   };
 
   const onTestClearStorage = () => {

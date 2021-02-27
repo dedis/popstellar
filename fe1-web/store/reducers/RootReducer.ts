@@ -1,15 +1,13 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import { persistCombineReducers } from 'redux-persist';
 
-// not yet fully migrated:
+// not yet fully migrated, remove?
 import openRollCallIDReducer from './OpenRollCallIDReducer';
-import currentEventsReducer from './CurrentEventsReducer';
-
-// half-way
-import { keyPairReducer } from './KeyPairReducer';
 
 // fully migrated:
 import laoReducer from './LaoReducer';
+import keyPairReducer from './KeyPairReducer';
+import eventsReducer from './EventsReducer';
 
 import { wrapWithClearStorageReducer } from './ClearStorageReducer';
 
@@ -19,9 +17,9 @@ const persistConfig = {
 };
 
 const appReducer = persistCombineReducers(persistConfig, {
-  keyPair: keyPairReducer,
+  ...keyPairReducer,
   ...laoReducer,
-  currentEvents: currentEventsReducer,
+  ...eventsReducer,
   openedRollCallId: openRollCallIDReducer,
 });
 

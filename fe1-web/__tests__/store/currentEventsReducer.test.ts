@@ -1,4 +1,4 @@
-import currentEventsReducer from 'store/reducers/CurrentEventsReducer';
+import currentEventsReducer from 'store/reducers/EventsReducer';
 import eventsData from 'res/EventData';
 
 const emptyState = {
