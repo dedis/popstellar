@@ -7,6 +7,8 @@ import styleContainer from 'styles/stylesheets/container';
 import STRINGS from 'res/strings';
 import LAOItem from 'components/LAOItem';
 import TextBlock from 'components/TextBlock';
+import QRCodeButton from '../components/QRCodeButton';
+import QRCodeDisplay from '../components/QRCodeDisplay';
 
 /**
  * Manage the Home screen component: if the user is not connected to any LAO, a welcome message
@@ -51,6 +53,7 @@ class Home extends Component {
         <TextBlock bold text={STRINGS.home_welcome} />
         <TextBlock bold text={STRINGS.home_connect_lao} />
         <TextBlock bold text={STRINGS.home_launch_lao} />
+        <QRCodeDisplay value="Adalsteinn.ml" />
       </View>
     );
   }
