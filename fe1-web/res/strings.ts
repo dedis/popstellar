@@ -32,6 +32,8 @@ const STRINGS = {
   organizer_navigation_tab_create_event: 'Create Event',
   organizer_navigation_tab_add_witness: 'Add witness',
   organizer_navigation_tab_roll_call: 'Roll-Call',
+  organizer_navigation_creation_meeting: 'Create meeting',
+  organizer_navigation_creation_roll_call: 'Create roll call',
 
   /* --- Home Strings --- */
   home_welcome: 'Welcome to Personhood.Online!',
@@ -110,7 +112,7 @@ const STRINGS = {
   /* --- Meeting creation Strings --- */
   meeting_create_name: 'Name*',
   meeting_create_start_time: 'Start time: ',
-  meeting_create_finish_time: 'Finish time: ',
+  meeting_create_finish_time: 'End time: ',
   meeting_create_location: 'Location',
 
   /* --- General creation Strings --- */

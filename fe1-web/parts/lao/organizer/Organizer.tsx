@@ -12,7 +12,7 @@ const laoToProperties = (events: any) => [[], ...events];
  * Organizer screen: lists editable LAO properties and past/ongoing/future events
  *
  * TODO By default only the past and present section are open.
- * TODO use the data receive by the organization server
+ * TODO use the data received by the organization server
 */
 const Organizer = (props: IPropTypes) => {
   const { events } = props;
@@ -35,6 +35,7 @@ const Organizer = (props: IPropTypes) => {
 
   return (
     <>
+      { /* Add edit button for the organizer in the Lao properties panel */ }
       <LaoProperties />
       <EventListCollapsible isOrganizer data={DATA_EXAMPLE} />
     </>
