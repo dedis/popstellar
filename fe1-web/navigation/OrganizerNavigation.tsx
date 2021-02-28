@@ -3,7 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import STRINGS from 'res/strings';
 
-import Organizer from 'components/Organizer';
+import Organizer from 'parts/lao/organizer/Organizer';
 import CreateEvent from 'components/CreateEvent';
 import WitnessScanning from 'components/WitnessScanning';
 import RollCallScanning from 'components/RollCallScanning';

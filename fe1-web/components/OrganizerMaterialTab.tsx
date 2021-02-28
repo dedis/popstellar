@@ -11,6 +11,7 @@ import { useTheme } from '@react-navigation/native';
 import STRINGS from 'res/strings';
 import { ActionOpenedLaoReducer } from 'store';
 import PROPS_TYPE from '../res/Props';
+import { Lao } from 'model/objects';
 
 /**
  * Organizer tab bar
@@ -84,11 +85,15 @@ MyTabBar.propTypes = {
   navigation: PROPS_TYPE.navigation.isRequired,
   navigationState: PROPS_TYPE.navigationState.isRequired,
   dispatch: PropTypes.func.isRequired,
-  lao: PROPS_TYPE.LAO.isRequired,
+  lao: PropTypes.instanceOf(Lao),
 };
 
-const mapStateToProps = (state) => ({
-  lao: state.openedLao.lao,
+MyTabBar.defaultProps = {
+  lao: undefined,
+};
+
+const mapStateToProps = (state: any) => ({
+  lao: Lao.fromState(state.openedLao),
 });
 
 export default connect(mapStateToProps)(MyTabBar);
