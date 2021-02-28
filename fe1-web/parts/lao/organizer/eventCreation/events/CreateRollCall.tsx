@@ -19,7 +19,7 @@ function dateToTimestamp(date: Date): Timestamp {
 /**
  * Screen to create a roll-call event
  *
- * FIXME Send the Roll-call event in an open state to the organization server
+ * TODO Send the Roll-call event in an open state to the organization server
  *  when the confirm button is press
  */
 const CreateRollCall = ({ route }: any) => {
@@ -52,8 +52,8 @@ const CreateRollCall = ({ route }: any) => {
 
   const onOpenPress = () => {
     console.error('Does nothing for now! See parts/.../CreateRollCall.tsx');
-    // requestOpenRollCall(ROLL_CALL_ID, new Timestamp(Math.floor((new Date()).getTime() / 1000)));
-    // navigation.goBack();
+    // requestOpenRollCall(ROLL_CALL_ID, new Timestamp(Math.floor((new Date()).getTime() / 1000)))
+    // navigation.goBack()
   };
 
   return (

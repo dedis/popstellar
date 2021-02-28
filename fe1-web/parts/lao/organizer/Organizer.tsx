@@ -18,7 +18,7 @@ const Organizer = (props: IPropTypes) => {
   const { events } = props;
   const data = laoToProperties(events);
 
-  const DATA_EXAMPLE = [ // FIXME refactor when Event storage available
+  const DATA_EXAMPLE = [ // TODO refactor when Event storage available
     {
       title: 'Past',
       data: [(data[1].data)[0], (data[1].data)[1], (data[1].data)[2]],
