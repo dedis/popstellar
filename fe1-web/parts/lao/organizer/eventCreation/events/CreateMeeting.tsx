@@ -27,9 +27,10 @@ const CreateMeeting = ({ route }: any) => {
   const styles = route.params;
 
   const navigation = useNavigation();
+  const initialStartDate = new Date();
 
   const [meetingName, setMeetingName] = useState('');
-  const [startDate, setStartDate] = useState(dateToTimestamp(new Date()));
+  const [startDate, setStartDate] = useState(dateToTimestamp(initialStartDate));
   const [endDate, setEndDate] = useState(new Timestamp(-1));
 
   const [location, setLocation] = useState('');
@@ -56,6 +57,7 @@ const CreateMeeting = ({ route }: any) => {
 
   const onChangeEndTime = (date: Date) => {
     const dateStamp: Timestamp = dateToTimestamp(date);
+
     if (dateStamp < startDate) {
       setEndDate(startDate);
     } else {
@@ -63,27 +65,37 @@ const CreateMeeting = ({ route }: any) => {
     }
   };
 
-  const buildDatePickerWeb = () => (
-    <>
-      { /* Start time */ }
-      <View style={styles.view}>
-        <ParagraphBlock text={STRINGS.meeting_create_start_time} />
-        { /* zIndexBooster corrects the problem of DatePicker being other elements */ }
-        <DatePicker selected={startDate} onChange={onChangeStartTime} />
-      </View>
+  const buildDatePickerWeb = () => {
+    const startTime = new Date(0);
+    startTime.setUTCSeconds(startDate.valueOf());
 
-      { /* End time */ }
-      <View style={styles.view}>
-        <ParagraphBlock text={STRINGS.meeting_create_finish_time} />
-        { /* zIndexBooster corrects the problem of DatePicker being other elements */ }
-        <DatePicker selected={endDate} onChange={onChangeEndTime} />
-        <View>
-          { /* the view is there to avoid button stretching */ }
-          <Button onPress={() => setEndDate(new Timestamp(-1))} title="Clear" />
+    const endTime = (endDate.valueOf() !== -1) ? new Date(0) : undefined;
+    if (endTime !== undefined) {
+      endTime.setUTCSeconds(endDate.valueOf());
+    }
+
+    return (
+      <>
+        { /* Start time */ }
+        <View style={styles.view}>
+          <ParagraphBlock text={STRINGS.meeting_create_start_time} />
+          { /* zIndexBooster corrects the problem of DatePicker being other elements */ }
+          <DatePicker selected={startTime} onChange={onChangeStartTime} />
         </View>
-      </View>
-    </>
-  );
+
+        { /* End time */}
+        <View style={styles.view}>
+          <ParagraphBlock text={STRINGS.meeting_create_finish_time} />
+          { /* zIndexBooster corrects the problem of DatePicker being other elements */}
+          <DatePicker selected={endTime} onChange={onChangeEndTime} />
+          <View>
+            { /* the view is there to avoid button stretching */ }
+            <Button onPress={() => setEndDate(new Timestamp(-1))} title="Clear" />
+          </View>
+        </View>
+      </>
+    );
+  };
 
   return (
     <>

@@ -25,22 +25,28 @@ function dateToTimestamp(date: Date): Timestamp {
 const CreateRollCall = ({ route }: any) => {
   const styles = route.params;
   const navigation = useNavigation();
+  const initialDate = new Date();
 
-  const [startDate, setStartDate] = useState(dateToTimestamp(new Date()));
+  const [startDate, setStartDate] = useState(dateToTimestamp(initialDate));
 
   const [rollCallName, setRollCallName] = useState('');
   const [rollCallLocation, setRollCallLocation] = useState('');
   const [rollCallDescription, setRollCallDescription] = useState('');
 
-  const buildDatePickerWeb = () => (
-    <View style={styles.view}>
-      <ParagraphBlock text={STRINGS.roll_call_create_deadline} />
-      <DatePicker
-        selected={startDate}
-        onChange={(date: Date) => setStartDate(dateToTimestamp(date))}
-      />
-    </View>
-  );
+  const buildDatePickerWeb = () => {
+    const startTime = new Date(0);
+    startTime.setUTCSeconds(startDate.valueOf());
+
+    return (
+      <View style={styles.view}>
+        <ParagraphBlock text={STRINGS.roll_call_create_deadline} />
+        <DatePicker
+          selected={startTime}
+          onChange={(date: Date) => setStartDate(dateToTimestamp(date))}
+        />
+      </View>
+    );
+  };
 
   const buttonsVisibility: boolean = (rollCallName !== '' && rollCallLocation !== '');
 
