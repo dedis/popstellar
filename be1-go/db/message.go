@@ -5,44 +5,45 @@ package db
 
 import (
 	"encoding/json"
-	"github.com/boltdb/bolt"
 	"log"
-	"student20_pop/lib"
 	"student20_pop/message"
+
+	"github.com/boltdb/bolt"
+	"golang.org/x/xerrors"
 )
 
 // writeMessage  writes a message to the database. The argument "creating" is to specify whether or not
 // we want to update a message, which means overwriting existing data
 func writeMessage(message message.Message, channel string, database string, creating bool) error {
-	db, e := OpenDB(database)
-	if e != nil {
-		return lib.ErrDBFault
+	db, err := OpenDB(database)
+	if err != nil {
+		return xerrors.Errorf("failed to open db: %v", err)
 	}
 	defer db.Close()
 
-	err := db.Update(func(tx *bolt.Tx) error {
-		b, err1 := tx.CreateBucketIfNotExists([]byte(channel))
-		if err1 != nil {
-			return lib.ErrDBFault
+	err = db.Update(func(tx *bolt.Tx) error {
+		b, err := tx.CreateBucketIfNotExists([]byte(channel))
+		if err != nil {
+			return xerrors.Errorf("failed to create bucket: %v", err)
 		}
 
-		check := b.Get(message.MessageId)
+		check := b.Get(message.MessageID)
 
 		if check != nil && creating {
-			return lib.ErrResourceAlreadyExists
+			return errorKeyExists
 		}
 		if check == nil && !creating {
-			return lib.ErrInvalidResource
+			return errorInvalidResource
 		}
 
 		// Marshal the message and store it
-		msg, err2 := json.Marshal(message)
-		if err2 != nil {
-			return lib.ErrRequestDataInvalid
-		}
-		err := b.Put(message.MessageId, msg)
+		msg, err := json.Marshal(message)
 		if err != nil {
-			return lib.ErrDBFault
+			return errorInvalidData
+		}
+		err = b.Put(message.MessageID, msg)
+		if err != nil {
+			return xerrors.Errorf("failed to put message: %v", err)
 		}
 
 		return nil
@@ -76,7 +77,7 @@ func GetMessage(channel []byte, message []byte, database string) []byte {
 		b := tx.Bucket(channel)
 		if b == nil {
 			log.Printf("Could not find bucket with corresponding channel ID in GetMessage()")
-			return lib.ErrInvalidResource
+			return errorInvalidResource
 		}
 
 		data := b.Get(message)

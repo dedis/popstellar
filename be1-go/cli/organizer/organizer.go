@@ -19,6 +19,7 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
+// Serve parses the CLI arguments and spawns a hub and a websocket server.
 func Serve(c *cli.Context) error {
 	port := c.Int("port")
 	pk := c.String("public-key")
