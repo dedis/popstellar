@@ -4,8 +4,8 @@ import {
   StyleSheet, View, Text, FlatList, TextInput, Button,
 } from 'react-native';
 
-import EventItem from 'components/lao/EventGeneral';
-import { Spacing } from 'styles/index';
+import Event from 'components/eventList/events/Event';
+import { Spacing } from 'styles';
 import PROPS_TYPE from 'res/Props';
 
 // Fake data to simulate the functionality of the component
@@ -68,13 +68,12 @@ const DiscussionEvent = ({ event }) => (
     <Text style={styles.text}>If discussion open</Text>
     <View style={{ flexDirection: 'row', marginBottom: Spacing.xs }}>
       <TextInput style={{ flex: 1 }} placeholder="Your question" />
-      { /* <Button title="Send" /> */ }
     </View>
     <FlatList
       data={event.children}
       keyExtractor={(item) => item.id.toString()}
       // @ts-ignore
-      renderItem={({ item }) => <EventItem event={item} />}
+      renderItem={({ item }) => <Event event={item} />}
       listKey={`DiscussionEvent-${event.id.toString()}`}
       style={styles.flatList}
     />

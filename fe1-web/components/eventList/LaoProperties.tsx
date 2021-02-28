@@ -11,7 +11,7 @@ import { connect } from 'react-redux';
 import ParagraphBlock from 'components/ParagraphBlock';
 import { Lao } from 'model/objects';
 
-function buildLaoProperties(lao: Lao) {
+function renderProperties(lao: Lao) {
   return (
     <>
       <ParagraphBlock text={`Lao name: ${lao.name}`} />
@@ -34,7 +34,7 @@ const LaoProperties = (props: IPropTypes) => {
           <ListCollapsibleIcon isOpen={toggleChildrenVisible} />
         </TouchableOpacity>
 
-        { toggleChildrenVisible && lao && buildLaoProperties(lao) }
+        { toggleChildrenVisible && lao && renderProperties(lao) }
       </View>
     </>
   );

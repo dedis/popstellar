@@ -49,8 +49,8 @@ function renderSectionHeader(title: string, isOrganizer: boolean) {
 }
 
 /**
- * Collapsible list of events: contains 3 lists of events for
- * Past, Present and Future events
+ * Collapsible list of events: list with 3 sections corresponding
+ * to 'past', 'present' and 'future' events
  *
  * Nested events should be in the children value of the parent event
 */
