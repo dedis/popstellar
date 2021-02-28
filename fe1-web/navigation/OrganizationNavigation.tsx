@@ -7,7 +7,6 @@ import { connect } from 'react-redux';
 
 import STRINGS from 'res/strings';
 
-import { KeyPairStore } from 'store';
 import { Lao } from 'model/objects';
 
 import Attendee from 'parts/lao/attendee/Attendee';
@@ -43,13 +42,10 @@ interface IPropTypes {
   lao: Lao;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function OrganizationNavigation(props: IPropTypes) {
-  const { lao } = props;
-  const pubKey = KeyPairStore.get().publicKey;
-  // const isOrganizer = lao.organizer && pubKey.equals(lao.organizer);
-  const isOrganizer = true;
-  const isWitness = false; // lao.witnesses ? lao.witnesses.includes(pubKey) : false;
-  // console.log("is org : ", isOrganizer, ", is Witness : ", isWitness);
+  const isOrganizer = true; // TODO get isOrganizer directly
+  const isWitness = false; // TODO get isWitness directly
 
   return (
     <OrganizationTopTabNavigator.Navigator

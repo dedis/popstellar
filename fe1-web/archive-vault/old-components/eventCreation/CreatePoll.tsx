@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState } from 'react';
 import {
   View, Button, TextInput, StyleSheet, FlatList, Text, Platform, TextStyle, ViewStyle,
@@ -54,6 +55,95 @@ const radioProps = [
   { label: STRINGS.poll_create_answer_type_one_of_n, value: 0 },
   { label: STRINGS.poll_create_answer_type_any_of_n, value: 1 },
 ];
+
+const listHeaderComponents = () => {
+  return null;
+    /*
+    <View>
+      <TextInput
+        style={styles.text}
+        placeholder={STRINGS.poll_create_question}
+        onChangeText={(text) => { setName(text); }}
+      />
+      <View style={{ flexDirection: 'row' }}>
+        <Text
+          style={[styles.text, { flex: 10 }]}
+        >
+          {dateToStrign(startDate)}
+        </Text>
+        <View style={[styles.buttonTime, { flex: 1 }]}>
+          <Button onPress={() => {
+            setSettingStart(true);
+            showDatepicker();
+          }} title="S" />
+        </View>
+      </View>
+      <View style={{ flexDirection: 'row' }}>
+        <Text
+          style={[styles.text, { flex: 10 }]}
+        >
+          {finishDate !== undefined ? dateToStrign(finishDate)
+            : STRINGS.poll_create_finish_time}
+        </Text>
+        <View style={[{ flexDirection: 'row', flex: 2 }, styles.buttonTime]}>
+          <View style={{ marginRight: Spacing.xs }}>
+            <Button onPress={selectFinish} title="S" />
+          </View>
+          <View>
+            <Button onPress={() => setFinishDate(undefined)} title="C" />
+          </View>
+        </View>
+      </View>
+      {show && (
+        <DateTimePicker
+          value={settingStart ? startDate : finishDate}
+          mode={mode}
+          is24Hour
+          display="default"
+          onChange={onChange}
+        />
+      )}
+      {show && Platform.OS === 'ios' && (
+        <View style={styles.button}>
+        <Button title={STRINGS.connect_confirm_description} onPress={validate} />
+        </View>
+        )}
+        <RadioForm
+        radio_props={radioProps}
+        initial={0}
+        onPress={(val) => setRadioOrCheckbox(val)}
+        style={{ marginLeft: Spacing.s }}
+        />
+        </View>
+        */
+};
+
+const listFooterComponents = (name, answers, startDate, navigation) => {
+  return (
+    <View style={{ marginVertical: Spacing.xl }}>
+      <View style={styles.button}>
+        <Button
+          title={STRINGS.general_button_confirm}
+          disabled={name === '' || answers.length < 3}
+          onPress={() => { /* implement me */ }}
+        />
+      </View>
+      <View style={styles.button}>
+        <Button
+          title={STRINGS.general_button_open}
+          disabled={name === '' || new Date() < startDate || answers.length < 3}
+          onPress={() => { /* implement me */ }}
+        />
+      </View>
+      <View style={styles.button}>
+        <Button
+          title={STRINGS.general_button_cancel}
+          onPress={() => { navigation.goBack(); }}
+        />
+      </View>
+    </View>
+  )
+};
 
 const CreatePoll = () => {
   const navigation = useNavigation();
@@ -151,85 +241,8 @@ const CreatePoll = () => {
           </View>
         </View>
       )}
-      ListHeaderComponent={(
-        <View>
-          <TextInput
-            style={styles.text}
-            placeholder={STRINGS.poll_create_question}
-            onChangeText={(text) => { setName(text); }}
-          />
-          <View style={{ flexDirection: 'row' }}>
-            <Text
-              style={[styles.text, { flex: 10 }]}
-            >
-              {dateToStrign(startDate)}
-            </Text>
-            <View style={[styles.buttonTime, { flex: 1 }]}>
-              <Button onPress={() => { setSettingStart(true); showDatepicker(); }} title="S" />
-            </View>
-          </View>
-          <View style={{ flexDirection: 'row' }}>
-            <Text
-              style={[styles.text, { flex: 10 }]}
-            >
-              {finishDate !== undefined ? dateToStrign(finishDate)
-                : STRINGS.poll_create_finish_time}
-            </Text>
-            <View style={[{ flexDirection: 'row', flex: 2 }, styles.buttonTime]}>
-              <View style={{ marginRight: Spacing.xs }}>
-                <Button onPress={selectFinish} title="S" />
-              </View>
-              <View>
-                <Button onPress={() => setFinishDate(undefined)} title="C" />
-              </View>
-            </View>
-          </View>
-          {show && (
-          <DateTimePicker
-            value={settingStart ? startDate : finishDate}
-            mode={mode}
-            is24Hour
-            display="default"
-            onChange={onChange}
-          />
-          )}
-          {show && Platform.OS === 'ios' && (
-          <View style={styles.button}>
-            <Button title={STRINGS.connect_confirm_description} onPress={validate} />
-          </View>
-          )}
-          <RadioForm
-            radio_props={radioProps}
-            initial={0}
-            onPress={(val) => setRadioOrCheckbox(val)}
-            style={{ marginLeft: Spacing.s }}
-          />
-        </View>
-      )}
-      ListFooterComponent={(
-        <View style={{ marginVertical: Spacing.xl }}>
-          <View style={styles.button}>
-            <Button
-              title={STRINGS.general_button_confirm}
-              disabled={name === '' || answers.length < 3}
-              onPress={() => { /* implement me */ }}
-            />
-          </View>
-          <View style={styles.button}>
-            <Button
-              title={STRINGS.general_button_open}
-              disabled={name === '' || new Date() < startDate || answers.length < 3}
-              onPress={() => { /* implement me */ }}
-            />
-          </View>
-          <View style={styles.button}>
-            <Button
-              title={STRINGS.general_button_cancel}
-              onPress={() => { navigation.goBack(); }}
-            />
-          </View>
-        </View>
-      )}
+      ListHeaderComponent={listHeaderComponents()}
+      ListFooterComponent={listFooterComponents(name, answers, startDate, navigation)}
       listKey="pollList"
     />
   );

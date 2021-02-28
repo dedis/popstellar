@@ -11,7 +11,6 @@ import TextBlock from 'components/TextBlock';
 import EventMeeting from './EventMeeting';
 import EventRollCall from './EventRollCall';
 import ListCollapsibleIcon from '../ListCollapsibleIcon';
-// import RollCallEventOrganizer from './RollCallEventOrganizer';
 
 /**
  * The Event item component: display the correct representation of the event according to its type,
@@ -20,14 +19,14 @@ import ListCollapsibleIcon from '../ListCollapsibleIcon';
 const Event = (props: IPropTypes) => {
   const { event } = props;
   const { renderItemFn } = props;
-  const isOrganizer = false; // FIXME ?
+  const isOrganizer = false; // TODO get isOrganizer directly
 
   const [toggleChildrenVisible, setToggleChildrenVisible] = useState(false);
 
   const hasChildren = () => event.children && event.children.length !== 0;
 
   const toggleChildren = () => {
-    if (hasChildren()) setToggleChildrenVisible(!toggleChildrenVisible);
+    if (hasChildren()) { setToggleChildrenVisible(!toggleChildrenVisible); }
   };
 
   const buildListCollapsibleIcon = () => (
@@ -49,7 +48,7 @@ const Event = (props: IPropTypes) => {
       case 'roll-call':
         if (isOrganizer) {
           console.log('is organizer => returning null in Event');
-          return null; // (<RollCallEventOrganizer event={event} />);
+          return null;
         }
         return (
           <EventRollCall
