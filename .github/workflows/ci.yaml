@@ -142,16 +142,16 @@ jobs:
     - name: Setup dependencies
       run: |
         go mod download
-        go get -u golang.org/x/lint/golint
+        go get -v honnef.co/go/tools/cmd/staticcheck
 
     - name: Run go vet
       run: |
-        go vet .
+        go vet ./...
 
-    - name: Run go lint
+    - name: Run staticcheck
       if: ${{ always() }}  # execute even if previous steps failed
       run: |
-        golint -set_exit_status=1 .
+        staticcheck ./...
 
     - name: Build
       if: ${{ always() }}  # execute even if previous steps failed

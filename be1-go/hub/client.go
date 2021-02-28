@@ -22,6 +22,7 @@ const (
 	pingPeriod = (pongWait * 9) / 10
 )
 
+// Client represents a client connected to the server.
 type Client struct {
 	hub Hub
 
@@ -32,6 +33,7 @@ type Client struct {
 	Wait sync.WaitGroup
 }
 
+// NewClient returns an instance of a Client.
 func NewClient(h Hub, conn *websocket.Conn) *Client {
 	return &Client{
 		hub:  h,
@@ -41,6 +43,7 @@ func NewClient(h Hub, conn *websocket.Conn) *Client {
 	}
 }
 
+// ReadPump starts the reader loop for the client.
 func (c *Client) ReadPump() {
 	defer func() {
 		c.conn.Close()
@@ -75,6 +78,7 @@ func (c *Client) ReadPump() {
 	}
 }
 
+// WritePump starts the writer loop for the client.
 func (c *Client) WritePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
@@ -116,11 +120,14 @@ func (c *Client) WritePump() {
 	}
 }
 
+// Send allows sending a serialised message to the client.
 func (c *Client) Send(msg []byte) {
 	log.Printf("sending message to %s", c.conn.RemoteAddr())
 	c.send <- msg
 }
 
+// SendError is a utility method that allows sending an `error` as a `message.Error`
+// message to the client.
 func (c *Client) SendError(id int, err error) {
 	msgError := &message.Error{}
 
@@ -139,6 +146,7 @@ func (c *Client) SendError(id int, err error) {
 	}
 }
 
+// SendResult is a utility method that allows sending a `message.Result` to the client.
 func (c *Client) SendResult(id int, res message.Result) {
 	answer := message.Answer{
 		ID:     &id,
