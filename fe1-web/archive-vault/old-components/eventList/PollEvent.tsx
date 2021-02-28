@@ -10,7 +10,7 @@ import { Spacing } from 'styles/index';
 import PROPS_TYPE from 'res/Props';
 
 import EventItem from 'components/lao/EventGeneral';
-import ProgressBar from 'archive-vault/old-components/ProgressBar';
+import ProgressBar from 'archive-vault/old-components/eventList/ProgressBar';
 
 /**
  * Poll component: a question, a status (future, open, closed), the number of particpants
