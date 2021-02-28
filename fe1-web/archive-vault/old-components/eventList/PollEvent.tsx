@@ -9,8 +9,8 @@ import { CheckBox } from 'react-native-elements';
 import { Spacing } from 'styles/index';
 import PROPS_TYPE from 'res/Props';
 
-import EventItem from 'components/lao/EventGeneral';
-import ProgressBar from 'archive-vault/old-components/eventList/ProgressBar';
+import Event from 'components/eventList/events/Event';
+import ProgressBar from './ProgressBar';
 
 /**
  * Poll component: a question, a status (future, open, closed), the number of particpants
@@ -100,7 +100,7 @@ const PollEvent = ({ event }) => {
       <FlatList
         data={event.children}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <EventItem event={item} />}
+        renderItem={({ item }) => <Event event={item} />}
         listKey={`PollEvent-${event.id.toString()}`}
         style={styles.flatList}
       />

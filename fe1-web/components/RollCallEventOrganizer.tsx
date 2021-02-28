@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 import { Buttons, Spacing } from 'styles';
 import PROPS_TYPE from 'res/Props';
 
-import EventGeneral from 'Event.tsx';
+import Event from 'components/eventList/events/Event';
 
 /**
  * Organizer Roll-call component: a status (Future, Open, Closed), the number of participants,
@@ -71,7 +71,7 @@ const RollCallEventOrganizer = ({ event, dispatch }) => {
       <FlatList
         data={event.children}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <EventGeneral event={item} />}
+        renderItem={({ item }) => <Event event={item} />}
         listKey={`RollCallEventOrganizer-${event.id.toString()}`}
         style={styles.flatList}
       />
@@ -84,7 +84,7 @@ RollCallEventOrganizer.propTypes = {
   dispatch: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: any) => ({
   roll_call_id: state.openedRollCallId.roll_call_id,
 });
 

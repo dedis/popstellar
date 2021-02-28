@@ -7,10 +7,10 @@ const QRCode = (props: IPropTypes) => {
   const identity = KeyPairStore.getPublicKey().toString();
   const { visibility } = props;
 
-  return (
-    // For now, we simply display a text block with the public key
-    (visibility) ? <TextBlock bold text={`ID (pk) :   ${identity}`} /> : null
-  );
+  // For now, we simply display a text block with the public key
+  return (visibility)
+    ? <TextBlock bold text={`ID (pk) :   ${identity}`} />
+    : null;
 };
 
 const propTypes = {
