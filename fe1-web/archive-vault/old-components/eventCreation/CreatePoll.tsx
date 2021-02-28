@@ -6,8 +6,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import RadioForm from 'react-native-simple-radio-button';
 import { useNavigation } from '@react-navigation/native';
 
-import { Buttons, Typography, Spacing } from 'styles';
-import STRINGS from 'res/strings';
+import { Buttons, Typography, Spacing } from '../../../styles/index';
+import STRINGS from '../../../res/strings';
 
 /**
  * Screen to create a poll event: a question text input, a start time text and its buttons,

@@ -5,8 +5,8 @@ import {
 import { CheckBox } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 
-import { Buttons, Typography, Spacing } from 'styles';
-import STRINGS from 'res/strings';
+import { Buttons, Typography, Spacing } from '../../../styles/index';
+import STRINGS from '../../../res/strings';
 
 /**
  * Screen to create a discussion event: a name text input, a discussion open checkbox,
