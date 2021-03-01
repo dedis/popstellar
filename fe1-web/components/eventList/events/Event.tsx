@@ -23,12 +23,10 @@ const Event = (props: IPropTypes) => {
 
   const [toggleChildrenVisible, setToggleChildrenVisible] = useState(false);
 
-  const hasChildren = () => event.children && event.children.length !== 0;
+  const hasChildren = (): boolean => !!event.children && event.children.length !== 0;
 
   const toggleChildren = () => {
-    setToggleChildrenVisible(
-      (!!hasChildren() && !toggleChildrenVisible),
-    );
+    setToggleChildrenVisible(hasChildren() && !toggleChildrenVisible);
   };
 
   const buildListCollapsibleIcon = () => (
