@@ -1,3 +1,4 @@
+import { Timestamp } from 'model/objects/Timestamp';
 import { Event, EventState, EventType } from './Event';
 
 // Plain-old-data
@@ -6,10 +7,13 @@ export interface MeetingState extends EventState {
 }
 
 export class Meeting implements Event {
-  // to be continued
+  public readonly start: Timestamp;
+
+  public readonly end: Timestamp;
 
   constructor(obj: Partial<Meeting>) {
-    // to be continued
+    this.start = obj.start;
+    this.end = obj.end;
   }
 
   public static fromState(rc: MeetingState): Meeting {

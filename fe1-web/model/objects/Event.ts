@@ -1,3 +1,5 @@
+import { Hash, Timestamp } from 'model/objects';
+
 export enum EventType {
   MEETING = 'MEETING',
   ROLL_CALL = 'ROLL_CALL',
@@ -7,11 +9,19 @@ export enum EventType {
 export interface EventState {
   eventType: EventType;
 
-  // To be continued
+  id: string;
+
+  start: number;
+
+  end: number;
 }
 
 export interface Event {
-  toState(): EventState;
+  id: Hash;
 
-  // To be continued
+  start: Timestamp;
+
+  end: Timestamp;
+
+  toState(): EventState;
 }
