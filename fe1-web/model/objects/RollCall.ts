@@ -1,11 +1,11 @@
-import { Event, EventState, EventType } from './Event';
+import { LaoEvent, LaoEventState, LaoEventType } from 'model/objects/LaoEvent';
 
 // Plain-old-data
-export interface RollCallState extends EventState {
+export interface RollCallState extends LaoEventState {
   // to be continued
 }
 
-export class RollCall implements Event {
+export class RollCall implements LaoEvent {
   // to be continued
 
   constructor(obj: Partial<RollCall>) {
@@ -21,7 +21,7 @@ export class RollCall implements Event {
     const obj: any = JSON.parse(JSON.stringify(this));
     return {
       ...obj,
-      eventType: EventType.ROLL_CALL,
+      eventType: LaoEventType.ROLL_CALL,
     };
   }
 }

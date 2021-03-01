@@ -1,11 +1,11 @@
 // fake events to show how the app works
-import { EventState, EventType } from 'model/objects';
+import { LaoEventState, LaoEventType } from 'model/objects';
 
 // @ts-ignore
-const data: EventState[] = [
+const data: LaoEventState[] = [
   {
     id: '1',
-    eventType: EventType.MEETING,
+    eventType: LaoEventType.MEETING,
     name: 'Events 1',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -19,7 +19,7 @@ const data: EventState[] = [
   },
   {
     id: '2',
-    eventType: EventType.MEETING,
+    eventType: LaoEventType.MEETING,
     name: 'Events 2',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -33,7 +33,7 @@ const data: EventState[] = [
   },
   {
     id: '3',
-    eventType: EventType.MEETING,
+    eventType: LaoEventType.MEETING,
     name: 'Events 3',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -50,7 +50,7 @@ const data: EventState[] = [
   },
   {
     id: '4',
-    eventType: EventType.ROLL_CALL,
+    eventType: LaoEventType.ROLL_CALL,
     name: 'Events 4',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -66,7 +66,7 @@ const data: EventState[] = [
   },
   {
     id: '5',
-    eventType: EventType.ROLL_CALL,
+    eventType: LaoEventType.ROLL_CALL,
     name: 'Events 5',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -79,7 +79,7 @@ const data: EventState[] = [
   },
   {
     id: '6',
-    eventType: EventType.MEETING,
+    eventType: LaoEventType.MEETING,
     name: 'Events 6',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -92,7 +92,7 @@ const data: EventState[] = [
   },
   {
     id: '7',
-    eventType: EventType.MEETING,
+    eventType: LaoEventType.MEETING,
     name: 'Events 7',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -106,7 +106,7 @@ const data: EventState[] = [
   },
   {
     id: '8',
-    eventType: EventType.MEETING,
+    eventType: LaoEventType.MEETING,
     name: 'Events 8',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -120,7 +120,7 @@ const data: EventState[] = [
   },
   {
     id: '9',
-    eventType: EventType.MEETING,
+    eventType: LaoEventType.MEETING,
     name: 'Events 9',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -134,7 +134,7 @@ const data: EventState[] = [
   },
   {
     id: '10',
-    eventType: EventType.MEETING,
+    eventType: LaoEventType.MEETING,
     name: 'Events 10',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -148,7 +148,7 @@ const data: EventState[] = [
   },
   {
     id: '11',
-    eventType: EventType.ROLL_CALL,
+    eventType: LaoEventType.ROLL_CALL,
     name: 'Events 11',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -159,7 +159,7 @@ const data: EventState[] = [
   },
   {
     id: '12',
-    eventType: EventType.MEETING,
+    eventType: LaoEventType.MEETING,
     name: 'Events 12',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -173,7 +173,7 @@ const data: EventState[] = [
   },
   {
     id: '13',
-    eventType: EventType.MEETING,
+    eventType: LaoEventType.MEETING,
     name: 'Events 13',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -187,7 +187,7 @@ const data: EventState[] = [
   },
   {
     id: '14',
-    eventType: EventType.MEETING,
+    eventType: LaoEventType.MEETING,
     name: 'Events 14',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -201,7 +201,7 @@ const data: EventState[] = [
   },
   {
     id: '15',
-    eventType: EventType.MEETING,
+    eventType: LaoEventType.MEETING,
     name: 'Events 15',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -215,7 +215,7 @@ const data: EventState[] = [
   },
   {
     id: '16',
-    eventType: EventType.MEETING,
+    eventType: LaoEventType.MEETING,
     name: 'Events 16',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -229,7 +229,7 @@ const data: EventState[] = [
   },
   {
     id: '17',
-    eventType: EventType.MEETING,
+    eventType: LaoEventType.MEETING,
     name: 'Events 17',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -243,7 +243,7 @@ const data: EventState[] = [
   },
   {
     id: '18',
-    eventType: EventType.MEETING,
+    eventType: LaoEventType.MEETING,
     name: 'Events 18',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -257,7 +257,7 @@ const data: EventState[] = [
   },
   {
     id: '19',
-    eventType: EventType.MEETING,
+    eventType: LaoEventType.MEETING,
     name: 'Events 19',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -271,7 +271,7 @@ const data: EventState[] = [
   },
   {
     id: '20',
-    eventType: EventType.MEETING,
+    eventType: LaoEventType.MEETING,
     name: 'Events 20',
     creation: 1607616483,
     last_modified: 1607616483,

@@ -1,13 +1,13 @@
-import { Event, EventState, EventType } from './Event';
+import { LaoEvent, LaoEventState, LaoEventType } from 'model/objects/LaoEvent';
 import { Meeting, MeetingState } from './Meeting';
 import { RollCall, RollCallState } from './RollCall';
 
-export function eventFromState(evtState: EventState): Event | undefined {
+export function eventFromState(evtState: LaoEventState): LaoEvent | undefined {
   switch (evtState.eventType) {
-    case EventType.MEETING:
+    case LaoEventType.MEETING:
       return Meeting.fromState(evtState as MeetingState);
 
-    case EventType.ROLL_CALL:
+    case LaoEventType.ROLL_CALL:
       return RollCall.fromState(evtState as RollCallState);
 
     default:

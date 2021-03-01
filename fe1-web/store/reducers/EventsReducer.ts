@@ -1,6 +1,6 @@
 import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit';
 import {
-  Hash, Event, EventState, eventFromState,
+  Hash, LaoEvent, LaoEventState, eventFromState,
 } from 'model/objects';
 import eventsData from 'res/EventData';
 import { getLaosState } from './LaoReducer';
@@ -10,7 +10,7 @@ import { getLaosState } from './LaoReducer';
  */
 
 interface EventReducerState {
-  byId: Record<string, EventState>,
+  byId: Record<string, LaoEventState>,
   allIds: string[],
 }
 
@@ -22,7 +22,7 @@ const initialState: EventLaoReducerState = {
   byLaoId: {
     myLaoId: {
       byId: Object.assign({},
-        ...eventsData.map((evt: EventState) => ({
+        ...eventsData.map((evt: LaoEventState) => ({
           [evt.id]: evt,
         }))),
       allIds: eventsData.map((evt) => evt.id),
@@ -38,12 +38,12 @@ const eventsSlice = createSlice({
 
     // Add a Event to the list of known Events
     addEvent: {
-      prepare(laoId: Hash | String, event: EventState): any {
+      prepare(laoId: Hash | String, event: LaoEventState): any {
         return { payload: { laoId: laoId.valueOf(), event: event } };
       },
       reducer(state, action: PayloadAction<{
         laoId: string;
-        event: EventState;
+        event: LaoEventState;
       }>) {
         const { laoId, event } = action.payload;
 
@@ -111,14 +111,14 @@ export const makeEventsList = () => createSelector(
   (state) => getLaosState(state).currentId,
   // Selector: returns an array of EventStates -- should it return an array of Event objects?
   (eventMap: EventLaoReducerState, laoId: string | undefined)
-  : Event[] => {
+  : LaoEvent[] => {
     if (!laoId) {
       return [];
     }
 
     return eventMap.byLaoId[laoId].allIds
-      .map((id) : Event | undefined => eventFromState(eventMap.byLaoId[laoId].byId[id]))
-      .filter((e) => !!e) as Event[];
+      .map((id) : LaoEvent | undefined => eventFromState(eventMap.byLaoId[laoId].byId[id]))
+      .filter((e) => !!e) as LaoEvent[];
     // need to assert that it is an Event[] because of TypeScript limitations as described here:
     // https://github.com/microsoft/TypeScript/issues/16069
   },

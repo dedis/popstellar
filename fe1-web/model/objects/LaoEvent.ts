@@ -1,13 +1,13 @@
 import { Hash, Timestamp } from 'model/objects';
 
-export enum EventType {
+export enum LaoEventType {
   MEETING = 'MEETING',
   ROLL_CALL = 'ROLL_CALL',
   // Election, Poll, etc.
 }
 
-export interface EventState {
-  eventType: EventType;
+export interface LaoEventState {
+  eventType: LaoEventType;
 
   id: string;
 
@@ -16,12 +16,12 @@ export interface EventState {
   end: number;
 }
 
-export interface Event {
+export interface LaoEvent {
   id: Hash;
 
   start: Timestamp;
 
   end: Timestamp;
 
-  toState(): EventState;
+  toState(): LaoEventState;
 }
