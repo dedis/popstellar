@@ -4,11 +4,12 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 
-import PROPS_TYPE from 'res/Props';
-import TextBlock from 'components/TextBlock';
 import { Spacing, Typography } from 'styles';
-import * as RootNavigation from 'navigation/RootNavigation';
 import STRINGS from 'res/strings';
+import PROPS_TYPE from 'res/Props';
+
+import * as RootNavigation from 'navigation/RootNavigation';
+import TextBlock from 'components/TextBlock';
 import Event from './events';
 
 const styles = StyleSheet.create({

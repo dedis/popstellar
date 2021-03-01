@@ -1,17 +1,21 @@
-import { Timestamp } from 'model/objects/Timestamp';
-import { Event, EventState, EventType } from './Event';
+import { Timestamp } from './Timestamp';
+import { Hash } from './Hash';
+import { LaoEvent, LaoEventState, LaoEventType } from './LaoEvent';
 
 // Plain-old-data
-export interface MeetingState extends EventState {
+export interface MeetingState extends LaoEventState {
   // to be continued
 }
 
-export class Meeting implements Event {
+export class Meeting implements LaoEvent {
+  public readonly id: Hash;
+
   public readonly start: Timestamp;
 
   public readonly end: Timestamp;
 
   constructor(obj: Partial<Meeting>) {
+    this.id = obj.id;
     this.start = obj.start;
     this.end = obj.end;
   }
@@ -25,7 +29,7 @@ export class Meeting implements Event {
     const obj: any = JSON.parse(JSON.stringify(this));
     return {
       ...obj,
-      eventType: EventType.MEETING,
+      eventType: LaoEventType.MEETING,
     };
   }
 }
