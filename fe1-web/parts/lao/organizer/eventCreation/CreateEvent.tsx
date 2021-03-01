@@ -4,7 +4,7 @@ import {
   StyleSheet, View, TextStyle, ViewStyle,
 } from 'react-native';
 
-import { Spacing, Typography, Views } from 'styles/index';
+import { Spacing, Typography, Views } from 'styles';
 import STRINGS from 'res/strings';
 import stylesContainer from 'styles/stylesheets/container';
 

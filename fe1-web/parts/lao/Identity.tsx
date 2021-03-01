@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { TextInput, TextStyle } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 
-import { Colors, Spacing, Typography } from 'styles/index';
+import { Colors, Spacing, Typography } from 'styles';
 import STRINGS from 'res/strings';
 import QRCode from 'components/QRCode';
 import TextBlock from 'components/TextBlock';

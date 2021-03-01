@@ -1,7 +1,7 @@
 import React from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 
-import { Spacing } from 'styles/index';
+import { Spacing } from 'styles';
 import PROPS_TYPE from 'res/Props';
 import PropTypes from 'prop-types';
 import ParagraphBlock from 'components/ParagraphBlock';

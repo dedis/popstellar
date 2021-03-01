@@ -6,7 +6,7 @@ import STRINGS from 'res/strings';
 import Organizer from 'parts/lao/organizer/Organizer';
 import CreateEvent from 'parts/lao/organizer/eventCreation/CreateEvent';
 import WitnessScanning from 'components/WitnessScanning';
-import RollCallScanning from 'components/RollCallScanning';
+import RollCallScanning from 'archive-vault/old-components/unused/RollCallScanning';
 import CreateMeeting from 'parts/lao/organizer/eventCreation/events/CreateMeeting';
 import CreateRollCall from 'parts/lao/organizer/eventCreation/events/CreateRollCall';
 

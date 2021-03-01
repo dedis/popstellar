@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
 import { connect } from 'react-redux';
 
-import { Spacing } from 'styles/index';
+import { Spacing } from 'styles';
 import styleContainer from 'styles/stylesheets/container';
 import STRINGS from 'res/strings';
 import LAOItem from 'components/LAOItem';

@@ -3,12 +3,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import STRINGS from 'res/strings';
 
-import Witness from 'components/Witness';
-import WitnessVideo from 'components/WitnessVideo';
+import Witness from 'parts/lao/witness/Witness';
+import WitnessCamera from 'parts/lao/witness/WitnessCamera';
 
 /**
  * Define the Witness stack navigation
- * Allow to switch between the Witness and the WitnessVideo screen
+ * Allows to navigate to the Witness and the WitnessCamera screen
 */
 
 const Stack = createStackNavigator();
@@ -26,7 +26,7 @@ export default function WitnessNavigation() {
       />
       <Stack.Screen
         name={STRINGS.witness_navigation_tab_video}
-        component={WitnessVideo}
+        component={WitnessCamera}
       />
     </Stack.Navigator>
   );
