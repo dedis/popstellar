@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   StyleSheet, View, TextInput, TextStyle, ViewStyle,
 } from 'react-native';
-import { Spacing, Typography } from 'styles/index';
+import { Spacing, Typography } from 'styles';
 
 import * as RootNavigation from 'navigation/RootNavigation';
 import STRINGS from 'res/strings';
@@ -10,7 +10,6 @@ import PROPS_TYPE from 'res/Props';
 import { requestCreateLao } from 'network/MessageApi';
 import { dispatch, KeyPairStore, OpenedLaoStore } from 'store';
 import { getNetworkManager } from 'network';
-import { JsonRpcResponse } from 'model/network';
 import WideButtonView from 'components/WideButtonView';
 import TextBlock from 'components/TextBlock';
 import PropTypes from 'prop-types';
@@ -54,22 +53,23 @@ const Launch = ({ navigation }: IPropTypes) => {
 
   const onTestOpenConnection = () => {
     const nc = getNetworkManager().connect('127.0.0.1');
-    nc.setRpcHandler((m: JsonRpcResponse) => {
-      console.info('Handling the json-rpc response : ', m);
-
-      const org = KeyPairStore.getPublicKey();
-      const time = new Timestamp(1609455600);
-      const sampleLao: Lao = new Lao({
-        name: 'name',
-        id: Hash.fromStringArray(org.toString(), time.toString(), 'name'),
-        creation: time,
-        last_modified: time,
-        organizer: org,
-        witnesses: [],
-      });
-
-      OpenedLaoStore.store(sampleLao);
+    nc.setRpcHandler(() => {
+      console.info('Using custom test rpc handler : does nothing');
     });
+
+    const org = KeyPairStore.getPublicKey();
+    const time = new Timestamp(1609455600);
+    const sampleLao: Lao = new Lao({
+      name: 'name de la Lao',
+      id: Hash.fromStringArray(org.toString(), time.toString(), 'name'),
+      creation: time,
+      last_modified: time,
+      organizer: org,
+      witnesses: [],
+    });
+
+    OpenedLaoStore.store(sampleLao);
+    console.info('Stored test lao in storage : ', sampleLao);
   };
 
   const onTestClearStorage = () => {

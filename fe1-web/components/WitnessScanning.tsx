@@ -2,9 +2,9 @@ import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 
 import STRINGS from 'res/strings';
-import { Typography } from '../styles';
+import { Typography } from 'styles';
+import PROPS_TYPE from 'res/Props';
 import CameraButton from './CameraButton';
-import PROPS_TYPE from '../res/Props';
 
 /**
  * Scanning witness component: a camera view and a camera button

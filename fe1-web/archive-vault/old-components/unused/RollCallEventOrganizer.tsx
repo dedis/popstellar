@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 import {
   StyleSheet, View, Text, FlatList, Button,
@@ -6,10 +7,10 @@ import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { Buttons, Spacing } from 'styles';
+import { Buttons, Spacing } from 'styles/index';
 import PROPS_TYPE from 'res/Props';
 
-import EventItem from './EventItem';
+import Event from 'components/eventList/events/Event';
 
 /**
  * Organizer Roll-call component: a status (Future, Open, Closed), the number of participants,
@@ -71,7 +72,7 @@ const RollCallEventOrganizer = ({ event, dispatch }) => {
       <FlatList
         data={event.children}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <EventItem event={item} />}
+        renderItem={({ item }) => <Event event={item} />}
         listKey={`RollCallEventOrganizer-${event.id.toString()}`}
         style={styles.flatList}
       />
@@ -84,7 +85,7 @@ RollCallEventOrganizer.propTypes = {
   dispatch: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: any) => ({
   roll_call_id: state.openedRollCallId.roll_call_id,
 });
 

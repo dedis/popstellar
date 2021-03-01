@@ -6,15 +6,14 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { connect } from 'react-redux';
 
 import STRINGS from 'res/strings';
-import PROPS_TYPE from 'res/Props';
 
-import { KeyPairStore } from 'store';
 import { Lao } from 'model/objects';
 
-import Attendee from 'components/Attendee';
-import Identity from 'components/Identity';
+import Attendee from 'parts/lao/attendee/Attendee';
+import Identity from 'parts/lao/Identity';
 import MyTabBar from 'components/OrganizerMaterialTab';
 
+import PropTypes from 'prop-types';
 import WitnessNavigation from './WitnessNavigation';
 import OrganizerNavigation from './OrganizerNavigation';
 
@@ -43,11 +42,10 @@ interface IPropTypes {
   lao: Lao;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function OrganizationNavigation(props: IPropTypes) {
-  const { lao } = props;
-  const pubKey = KeyPairStore.get().publicKey;
-  const isOrganizer = lao.organizer ? lao.organizer === pubKey : false;
-  const isWitness = lao.witnesses ? lao.witnesses.includes(pubKey) : false;
+  const isOrganizer = false; // TODO get isOrganizer directly
+  const isWitness = true; // TODO get isWitness directly
 
   return (
     <OrganizationTopTabNavigator.Navigator
@@ -83,15 +81,15 @@ function OrganizationNavigation(props: IPropTypes) {
 }
 
 OrganizationNavigation.propTypes = {
-  lao: PROPS_TYPE.LAO,
+  lao: PropTypes.instanceOf(Lao),
 };
 
 OrganizationNavigation.defaultProps = {
   lao: undefined,
 };
 
-const mapStateToProps = (state) => ({
-  lao: state.openedLao.lao,
+const mapStateToProps = (state: any) => ({
+  lao: Lao.fromState(state.openedLao),
 });
 
 export default connect(mapStateToProps)(OrganizationNavigation);

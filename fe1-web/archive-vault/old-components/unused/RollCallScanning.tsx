@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState } from 'react';
 import {
   StyleSheet, View, Text, Button, Modal, TouchableOpacity,
@@ -7,12 +8,12 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import STRINGS from 'res/strings';
-import { Buttons, Colors, Typography } from '../styles';
-import CameraButton from './CameraButton';
-import PROPS_TYPE from '../res/Props';
+import { Buttons, Colors, Typography } from 'styles';
+import CameraButton from 'components/CameraButton';
+import PROPS_TYPE from 'res/Props';
 
 // FIXME: this code path is not yet active
-//import { requestCloseRollCall } from '../network/MessageApi';
+// import { requestCloseRollCall } from '../network/MessageApi';
 const requestCloseRollCall = () => {};
 
 /**

@@ -3,10 +3,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import STRINGS from 'res/strings';
 
-import Organizer from 'components/Organizer';
-import CreateEvent from 'components/CreateEvent';
+import Organizer from 'parts/lao/organizer/Organizer';
+import CreateEvent from 'parts/lao/organizer/eventCreation/CreateEvent';
 import WitnessScanning from 'components/WitnessScanning';
-import RollCallScanning from 'components/RollCallScanning';
+import RollCallScanning from 'archive-vault/old-components/unused/RollCallScanning';
+import CreateMeeting from 'parts/lao/organizer/eventCreation/events/CreateMeeting';
+import CreateRollCall from 'parts/lao/organizer/eventCreation/events/CreateRollCall';
 
 /**
  * Define the Organizer stack navigation
@@ -39,6 +41,14 @@ export default function OrganizerNavigation() {
       <Stack.Screen
         name={STRINGS.organizer_navigation_tab_roll_call}
         component={RollCallScanning}
+      />
+      <Stack.Screen
+        name={STRINGS.organizer_navigation_creation_meeting}
+        component={CreateMeeting}
+      />
+      <Stack.Screen
+        name={STRINGS.organizer_navigation_creation_roll_call}
+        component={CreateRollCall}
       />
     </Stack.Navigator>
   );

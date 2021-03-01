@@ -1,6 +1,6 @@
 import { persistStore } from 'redux-persist';
 import {
-  AnyAction, createStore, Store, applyMiddleware
+  AnyAction, createStore, Store, applyMiddleware,
 } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
