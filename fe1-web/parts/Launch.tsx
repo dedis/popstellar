@@ -45,9 +45,15 @@ const Launch = ({ navigation }: IPropTypes) => {
 
   const onButtonLaunchPress = (laoName: string) => {
     if (laoName) {
-      requestCreateLao(laoName);
+      requestCreateLao(laoName)
+        .then(() => {
+          console.info('LAO created successfully');
+        })
+        .catch((err) => {
+          console.error('Could not create LAO', err);
+        });
     } else {
-      console.error('empty lao name');
+      console.error('Could not create LAO without a name');
     }
   };
 

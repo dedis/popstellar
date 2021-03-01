@@ -1,62 +1,64 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-
-import PROPS_TYPE from 'res/Props';
-import EventListCollapsible from 'components/eventList/EventListCollapsible';
-import LaoProperties from 'components/eventList/LaoProperties';
+import { useSelector } from 'react-redux';
 import { ScrollView } from 'react-native';
 
-const laoToProperties = (events: any) => [[], ...events];
+import { makeEventsList } from 'store';
+import { LaoEvent, Timestamp } from 'model/objects';
+
+import EventListCollapsible from 'components/eventList/EventListCollapsible';
+import LaoProperties from 'components/eventList/LaoProperties';
+
 
 /**
  * Attendee screen: lists LAO properties and past/ongoing/future events
  *
  * TODO By default only the past and present section are open.
  * TODO use the data receive by the organization server
-*/
+ */
 // FIXME refactor when Event storage available
-const Attendee = (props: IPropTypes) => {
-  const { events } = props;
-  const data = laoToProperties(events);
+const Attendee = () => {
+  const eventList = makeEventsList();
+  const events = useSelector(eventList);
 
-  const DATA_EXAMPLE = [ // TODO refactor when Event storage available
+  const now = Timestamp.EpochNow();
+  const pastEvents: LaoEvent[] = [];
+  const currentEvents: LaoEvent[] = [];
+  const futureEvents: LaoEvent[] = [];
+
+  events.forEach((e: LaoEvent) => {
+    if (e.end.before(now)) {
+      pastEvents.push(e);
+      return;
+    }
+    if (e.start.after(now)) {
+      futureEvents.push(e);
+      return;
+    }
+    currentEvents.push(e);
+  });
+  // TODO: nesting logic
+
+  const DATA_EXAMPLE = [
     {
       title: 'Past',
-      data: [(data[1].data)[0], (data[1].data)[1], (data[1].data)[2]],
+      data: pastEvents,
     },
     {
       title: 'Present',
-      data: [(data[2].data)[0], (data[2].data)[1], (data[2].data)[2]],
+      data: currentEvents,
     },
     {
-      title: 'Future',
-      data: [(data[3].data)[0]],
+      title: 'future',
+      data: currentEvents,
     },
   ];
 
   return (
     <ScrollView>
-      <LaoProperties />
-      <EventListCollapsible data={DATA_EXAMPLE} />
+      <LaoProperties/>
+      <EventListCollapsible data={DATA_EXAMPLE}/>
     </ScrollView>
   );
 };
 
-const propTypes = {
-  events: PropTypes.arrayOf(PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(
-      PropTypes.oneOfType([PROPS_TYPE.event, PROPS_TYPE.property]),
-    ).isRequired,
-  })).isRequired,
-};
-Attendee.propTypes = propTypes;
-
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
-
-const mapStateToProps = (state: any) => ({
-  events: state.currentEvents.events,
-});
-
-export default connect(mapStateToProps)(Attendee);
+export default Attendee;
