@@ -11,7 +11,7 @@ const data = [
         creation: 1607616483,
         last_modified: 1607616483,
         location: 'A location, test.com',
-        start: 1607616483,
+        start: 1607616500,
         end: 1607618490,
         organizer: 'a organizer signature',
         witnesses: ['witness signature 1', 'witness signature 2'],
@@ -51,7 +51,7 @@ const data = [
           {
             id: '4',
             object: 'roll-call',
-            action: 'state',
+            action: 'create',
             name: 'Events 4',
             creation: 1607616483,
             last_modified: 1607616483,
@@ -156,7 +156,7 @@ const data = [
       {
         id: '11',
         object: 'roll-call',
-        action: 'state',
+        action: 'create',
         name: 'Events 11',
         creation: 1607616483,
         last_modified: 1607616483,

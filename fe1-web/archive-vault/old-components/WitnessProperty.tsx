@@ -4,8 +4,8 @@ import {
 } from 'react-native';
 
 import STRINGS from 'res/strings';
-import { Spacing } from '../styles';
-import PROPS_TYPE from '../res/Props';
+import { Spacing } from 'styles';
+import PROPS_TYPE from 'res/Props';
 
 /**
  * Witnesses property component: name of the proprety, list of witnesses
@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
   },
 });
 
+// @ts-ignore
 const WitnessProperty = ({ event }) => (
   <View style={styles.view}>
     <Text style={styles.text}>{STRINGS.witness_name}</Text>

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState } from 'react';
 import {
   StyleSheet, View, Text, FlatList,
@@ -5,10 +6,10 @@ import {
 import RadioForm from 'react-native-simple-radio-button';
 import { CheckBox } from 'react-native-elements';
 
-import { Spacing } from 'styles';
+import { Spacing } from 'styles/index';
 import PROPS_TYPE from 'res/Props';
 
-import EventItem from './EventItem';
+import Event from 'components/eventList/events/Event';
 import ProgressBar from './ProgressBar';
 
 /**
@@ -59,6 +60,7 @@ const radioPropsPercent = [
   { label: 'param4', value: 0.2 },
 ];
 
+// @ts-ignore
 const PollEvent = ({ event }) => {
   // TODO remove next line when the variable will be use
   const [/* radioValue */, setRadioValue] = useState(0);
@@ -98,7 +100,7 @@ const PollEvent = ({ event }) => {
       <FlatList
         data={event.children}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <EventItem event={item} />}
+        renderItem={({ item }) => <Event event={item} />}
         listKey={`PollEvent-${event.id.toString()}`}
         style={styles.flatList}
       />
