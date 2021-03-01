@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 import {
   StyleSheet, View, Text, FlatList, Button,
@@ -6,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { Buttons, Spacing } from 'styles';
+import { Buttons, Spacing } from 'styles/index';
 import PROPS_TYPE from 'res/Props';
 
 import Event from 'components/eventList/events/Event';

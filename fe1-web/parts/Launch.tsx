@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   StyleSheet, View, TextInput, TextStyle, ViewStyle,
 } from 'react-native';
-import { Spacing, Typography } from 'styles/index';
+import { Spacing, Typography } from 'styles';
 
 import * as RootNavigation from 'navigation/RootNavigation';
 import STRINGS from 'res/strings';

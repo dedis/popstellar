@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, ViewStyle, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
 
-import { Spacing } from 'styles/index';
+import { Spacing } from 'styles';
 import PROPS_TYPE from 'res/Props';
 
 import ParagraphBlock from 'components/ParagraphBlock';

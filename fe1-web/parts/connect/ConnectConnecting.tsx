@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, ActivityIndicator } from 'react-native';
-import { Colors } from 'styles/index';
+import { Colors } from 'styles';
 
 import STRINGS from 'res/strings';
 import PROPS_TYPE from 'res/Props';

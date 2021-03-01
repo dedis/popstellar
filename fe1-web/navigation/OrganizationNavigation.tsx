@@ -44,8 +44,8 @@ interface IPropTypes {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function OrganizationNavigation(props: IPropTypes) {
-  const isOrganizer = true; // TODO get isOrganizer directly
-  const isWitness = false; // TODO get isWitness directly
+  const isOrganizer = false; // TODO get isOrganizer directly
+  const isWitness = true; // TODO get isWitness directly
 
   return (
     <OrganizationTopTabNavigator.Navigator

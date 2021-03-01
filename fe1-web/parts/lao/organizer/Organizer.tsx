@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import EventListCollapsible from 'components/eventList/EventListCollapsible';
 import LaoProperties from 'components/eventList/LaoProperties';
 import PROPS_TYPE from 'res/Props';
+import { ScrollView } from 'react-native';
 
 const laoToProperties = (events: any) => [[], ...events];
 
@@ -34,11 +35,11 @@ const Organizer = (props: IPropTypes) => {
   ];
 
   return (
-    <>
+    <ScrollView>
       { /* Add edit button for the organizer in the Lao properties panel */ }
       <LaoProperties />
       <EventListCollapsible isOrganizer data={DATA_EXAMPLE} />
-    </>
+    </ScrollView>
   );
 };
 
