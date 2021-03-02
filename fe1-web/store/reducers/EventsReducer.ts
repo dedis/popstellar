@@ -38,7 +38,7 @@ const eventsSlice = createSlice({
 
     // Add a Event to the list of known Events
     addEvent: {
-      prepare(laoId: Hash | String, event: LaoEventState): any {
+      prepare(laoId: Hash | string, event: LaoEventState): any {
         return { payload: { laoId: laoId.valueOf(), event: event } };
       },
       reducer(state, action: PayloadAction<{
@@ -72,7 +72,7 @@ const eventsSlice = createSlice({
 
     // Remove a Event to the list of known Events
     removeEvent: {
-      prepare(laoId: Hash | String, eventId: Hash | String): any {
+      prepare(laoId: Hash | string, eventId: Hash | string): any {
         return { payload: { laoId: laoId.valueOf(), eventId: eventId.valueOf() } };
       },
       reducer(state, action: PayloadAction<{
