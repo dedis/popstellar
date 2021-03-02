@@ -302,6 +302,7 @@ function sortByStartAscending(a: LaoEventState, b: LaoEventState) {
   return 1;
 }
 
-const sorted = data.sort(sortByStartAscending);
+// sort in place
+data.sort(sortByStartAscending);
 
-export default sorted;
+export default data;
