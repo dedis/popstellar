@@ -5,11 +5,11 @@ import {
 import { MaterialTopTabBar } from '@react-navigation/material-top-tabs';
 import PropTypes from 'prop-types';
 import Color from 'color';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 
 import { useTheme } from '@react-navigation/native';
 import STRINGS from 'res/strings';
-import { ActionOpenedLaoReducer } from 'store';
+import { ActionOpenedLaoReducer, makeCurrentLao } from 'store';
 import { Lao } from 'model/objects';
 import PROPS_TYPE from 'res/Props';
 
@@ -51,7 +51,10 @@ const styles = StyleSheet.create({
 const MyTabBar = (props) => {
   const { colors } = useTheme();
   const inactiveColor = Color(colors.text).alpha(0.5).rgb().string();
-  const { lao } = props;
+
+  const laoSelect = makeCurrentLao();
+  const lao = useSelector(laoSelect);
+
   const { navigation, dispatch, navigationState } = props;
   const nbRoutes = navigationState.routes.length;
 
@@ -80,7 +83,7 @@ const MyTabBar = (props) => {
     </View>
   );
 };
-
+/*
 MyTabBar.propTypes = {
   navigation: PROPS_TYPE.navigation.isRequired,
   navigationState: PROPS_TYPE.navigationState.isRequired,
@@ -97,3 +100,5 @@ const mapStateToProps = (state: any) => ({
 });
 
 export default connect(mapStateToProps)(MyTabBar);
+*/
+export default MyTabBar;

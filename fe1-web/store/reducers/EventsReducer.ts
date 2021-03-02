@@ -131,13 +131,13 @@ export const makeEventsList = () => createSelector(
   // Selector: returns an array of EventStates -- should it return an array of Event objects?
   (eventMap: EventLaoReducerState, laoId: string | undefined)
   : LaoEvent[] => {
-    if (!laoId) {
+    if (!laoId || !Object.prototype.hasOwnProperty.call(eventMap.byLaoId, laoId)) {
       return [];
     }
 
     return eventMap.byLaoId[laoId].allIds
       .map((id) : LaoEvent | undefined => eventFromState(eventMap.byLaoId[laoId].byId[id]))
-      .filter((e) => !!e) as LaoEvent[];
+      .filter((e) => e && Object.keys(e).length) as LaoEvent[];
     // need to assert that it is an Event[] because of TypeScript limitations as described here:
     // https://github.com/microsoft/TypeScript/issues/16069
   },
