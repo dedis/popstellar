@@ -5,8 +5,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import STRINGS from 'res/strings';
 
-import Navigation from './Navigation';
-import OrganizationNavigation from './OrganizationNavigation';
+import LaoNavigation from 'navigation/bars/LaoNavigation';
+import MainNavigation from 'navigation/bars/MainNavigation';
 
 /**
  * Define the App stack navigation
@@ -31,11 +31,11 @@ function AppNavigation() {
       >
         <Stack.Screen
           name={STRINGS.app_navigation_tab_home}
-          component={Navigation}
+          component={MainNavigation}
         />
         <Stack.Screen
           name={STRINGS.app_navigation_tab_organizer}
-          component={OrganizationNavigation}
+          component={LaoNavigation}
         />
       </Stack.Navigator>
     </SafeAreaView>

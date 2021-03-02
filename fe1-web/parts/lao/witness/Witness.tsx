@@ -8,8 +8,7 @@ import LaoProperties from 'components/eventList/LaoProperties';
 import EventListCollapsible from 'components/eventList/EventListCollapsible';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
-import { getEventsState, makeEventsList } from 'store/reducers';
-import { getStore } from 'store';
+import { makeEventsList } from 'store/reducers';
 
 const laoToProperties = (events: any) => [[], ...events];
 
@@ -19,9 +18,6 @@ const laoToProperties = (events: any) => [[], ...events];
 */
 const Witness = () => {
   const navigation = useNavigation();
-
-  const a = getEventsState(getStore().getState()).byLaoId.myLaoId
-  console.log("aaaa : ", a)
 
   const eventList = makeEventsList();
   const events = useSelector(eventList);
