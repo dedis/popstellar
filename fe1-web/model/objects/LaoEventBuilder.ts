@@ -1,4 +1,4 @@
-import { LaoEvent, LaoEventState, LaoEventType } from 'model/objects/LaoEvent';
+import { LaoEvent, LaoEventState, LaoEventType } from './LaoEvent';
 import { Meeting, MeetingState } from './Meeting';
 import { RollCall, RollCallState } from './RollCall';
 
