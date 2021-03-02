@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
-import { addLao as addLaoAction, connectToLao as connectToLaoAction } from 'store';
+import { connectToLao as connectToLaoAction } from 'store';
 import { Lao } from 'model/objects';
 
 import STRINGS from 'res/strings';
@@ -29,12 +29,11 @@ const styles = StyleSheet.create({
   } as TextStyle,
 });
 
-const LAOItem = ({ LAO, addLao, connectToLao }: IPropTypes) => {
+const LAOItem = ({ LAO, connectToLao }: IPropTypes) => {
   const navigation = useNavigation();
 
   const handlePress = () => {
-    addLao(LAO.toState());
-    connectToLao(LAO.id);
+    connectToLao(LAO.toState());
     navigation.navigate(STRINGS.app_navigation_tab_organizer);
   };
 
@@ -49,15 +48,13 @@ const LAOItem = ({ LAO, addLao, connectToLao }: IPropTypes) => {
 
 const propTypes = {
   LAO: PropTypes.instanceOf(Lao).isRequired,
-  addLao: PropTypes.func.isRequired,
   connectToLao: PropTypes.func.isRequired,
 };
 LAOItem.propTypes = propTypes;
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  addLao: (lao: Lao) => dispatch(addLaoAction(lao.toState())),
-  connectToLao: (lao: Lao) => dispatch(connectToLaoAction(lao.id)),
+  connectToLao: (lao: Lao) => dispatch(connectToLaoAction(lao.toState())),
 });
 
 export default connect(null, mapDispatchToProps)(LAOItem);
