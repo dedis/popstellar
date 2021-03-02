@@ -285,8 +285,7 @@ const data: LaoEventState[] = [
   },
 ];
 
-// Sort (ascending) by start, then by end
-const sorted = data.sort((a, b) => {
+function sortByStartAscending(a: LaoEventState, b: LaoEventState) {
   if (a.start < b.start) {
     return -1;
   }
@@ -301,6 +300,8 @@ const sorted = data.sort((a, b) => {
   }
 
   return 1;
-});
+}
+
+const sorted = data.sort(sortByStartAscending);
 
 export default sorted;

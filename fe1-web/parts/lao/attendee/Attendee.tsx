@@ -49,7 +49,7 @@ const Attendee = () => {
     },
     {
       title: 'future',
-      data: currentEvents,
+      data: futureEvents,
     },
   ];
 
