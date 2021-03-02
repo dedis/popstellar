@@ -60,7 +60,7 @@ const eventsSlice = createSlice({
         const insertIdx = state.byLaoId[laoId].allIds.findIndex((id) => (
           state.byLaoId[laoId].byId[id].start > event.start
           || (state.byLaoId[laoId].byId[id].start === event.start
-              && state.byLaoId[laoId].byId[id].end > event.end
+            && state.byLaoId[laoId].byId[id].end > event.end
           )));
 
         state.byLaoId[laoId].byId[event.id] = event;
@@ -68,7 +68,26 @@ const eventsSlice = createSlice({
       },
     },
 
-    // TODO: Update event
+    // Update an Event in the list of known Events
+    updateEvent: {
+      prepare(laoId: Hash | string, event: LaoEventState): any {
+        return { payload: { laoId: laoId.valueOf(), event: event } };
+      },
+      reducer(state, action: PayloadAction<{
+        laoId: string;
+        event: LaoEventState;
+      }>) {
+        const { laoId, event } = action.payload;
+
+        // Lao not initialized, return
+        if (!(laoId in state.byLaoId)) {
+          return;
+        }
+
+        // TODO: to be implemented
+        console.error('events/UpdateEvent is not implemented');
+      },
+    },
 
     // Remove a Event to the list of known Events
     removeEvent: {
@@ -107,7 +126,7 @@ export const getEventsState = (state: any): EventLaoReducerState => state[eventR
 export const makeEventsList = () => createSelector(
   // First input: Get all events across all LAOs
   (state) => getEventsState(state),
-  // Third input: get the current LAO id,
+  // Second input: get the current LAO id,
   (state) => getLaosState(state).currentId,
   // Selector: returns an array of EventStates -- should it return an array of Event objects?
   (eventMap: EventLaoReducerState, laoId: string | undefined)
@@ -121,6 +140,31 @@ export const makeEventsList = () => createSelector(
       .filter((e) => !!e) as LaoEvent[];
     // need to assert that it is an Event[] because of TypeScript limitations as described here:
     // https://github.com/microsoft/TypeScript/issues/16069
+  },
+);
+
+export const makeEventsMap = () => createSelector(
+  // First input: Get all events across all LAOs
+  (state) => getEventsState(state),
+  // Second input: get the current LAO id,
+  (state) => getLaosState(state).currentId,
+  // Selector: returns an array of EventStates -- should it return an array of Event objects?
+  (eventMap: EventLaoReducerState, laoId: string | undefined)
+  : Record<string, LaoEvent> => {
+    if (!laoId) {
+      return {};
+    }
+
+    const dictObj: Record<string, LaoEvent> = {};
+
+    eventMap.byLaoId[laoId].allIds.forEach((id) => {
+      const e = eventFromState(eventMap.byLaoId[laoId].byId[id]);
+      if (e) {
+        dictObj[id] = e;
+      }
+    });
+
+    return dictObj;
   },
 );
 
