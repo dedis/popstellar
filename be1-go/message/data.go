@@ -30,6 +30,9 @@ var (
 
 	// RollCallObject represents a "roll call" message data.
 	RollCallObject DataObject = "roll_call"
+
+	// ElectionObject represents a "election" message data.
+	ElectionObject DataObject = "election"
 )
 
 // DataAction represents the type for the "action" key associated with the
@@ -269,6 +272,44 @@ type WitnessMessageData struct {
 
 	MessageID []byte    `json:"message_id"`
 	Signature Signature `json:"signature"`
+}
+
+type ElectionAction DataAction
+
+var (
+	SetupElectionAction    ElectionAction = "setup"
+	CastVoteElectionAction ElectionAction = "cast_vote"
+	EndElectionAction      ElectionAction = "end"
+	ResultElectionAction   ElectionAction = "result"
+)
+
+type VotingMethodType DataAction
+
+var (
+	PluralityMethod VotingMethodType = "plurality"
+)
+
+type BallotOption string
+
+type Question struct {
+	ID            PublicKey        `json:"id"`
+	QuestionAsked string           `json:"question"`
+	VotingMethod  VotingMethodType `json:"voting_method"`
+	BallotOptions []BallotOption   `json:"ballot_options"`
+	WriteIn       bool             `json:"write_in"`
+}
+
+type SetupElectionData struct {
+	*GenericData
+
+	ID        []byte     `json:"id"`
+	Lao       []byte     `json:"lao"`
+	Name      string     `json:"name"`
+	Version   string     `json:"vesrion"`
+	CreatedAt Timestamp  `json:"created_at"`
+	StartTime Timestamp  `json:"start_time"`
+	EndTime   Timestamp  `json:"end_time"`
+	Questions []Question `json:"questions"`
 }
 
 // NewCreateLAOData returns an instance of `CreateLAOData`.
