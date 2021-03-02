@@ -44,9 +44,6 @@ interface IPropTypes {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function OrganizationNavigation(props: IPropTypes) {
-  const laoSelect = makeCurrentLao();
-  const lao = useSelector(laoSelect);
-
   const isOrganizer = true; // TODO get isOrganizer directly
   const isWitness = false; // TODO get isWitness directly
 

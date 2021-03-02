@@ -3,15 +3,12 @@ import {
   StyleSheet, View, Text, TouchableOpacity,
 } from 'react-native';
 import { MaterialTopTabBar } from '@react-navigation/material-top-tabs';
-import PropTypes from 'prop-types';
 import Color from 'color';
-import { connect, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-import { useTheme } from '@react-navigation/native';
+import { useNavigation, useTheme } from '@react-navigation/native';
 import STRINGS from 'res/strings';
 import { ActionOpenedLaoReducer, makeCurrentLao } from 'store';
-import { Lao } from 'model/objects';
-import PROPS_TYPE from 'res/Props';
 
 /**
  * Organizer tab bar
@@ -52,10 +49,13 @@ const MyTabBar = (props) => {
   const { colors } = useTheme();
   const inactiveColor = Color(colors.text).alpha(0.5).rgb().string();
 
+  // NOTE : this file is being refactored!
+  const navigation = useNavigation();
+
   const laoSelect = makeCurrentLao();
   const lao = useSelector(laoSelect);
 
-  const { navigation, dispatch, navigationState } = props;
+  const { dispatch, navigationState } = props;
   const nbRoutes = navigationState.routes.length;
 
   const homePress = () => {
@@ -83,22 +83,5 @@ const MyTabBar = (props) => {
     </View>
   );
 };
-/*
-MyTabBar.propTypes = {
-  navigation: PROPS_TYPE.navigation.isRequired,
-  navigationState: PROPS_TYPE.navigationState.isRequired,
-  dispatch: PropTypes.func.isRequired,
-  lao: PropTypes.instanceOf(Lao),
-};
 
-MyTabBar.defaultProps = {
-  lao: undefined,
-};
-
-const mapStateToProps = (state: any) => ({
-  lao: Lao.fromState(state.openedLao),
-});
-
-export default connect(mapStateToProps)(MyTabBar);
-*/
 export default MyTabBar;

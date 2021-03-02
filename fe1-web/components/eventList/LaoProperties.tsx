@@ -2,12 +2,11 @@ import React, { useState } from 'react';
 import {
   TouchableOpacity, View, ViewStyle,
 } from 'react-native';
-import PropTypes from 'prop-types';
 import { Spacing } from 'styles';
 import TextBlock from 'components/TextBlock';
 import styleEventView from 'styles/stylesheets/eventView';
 import ListCollapsibleIcon from 'components/eventList/ListCollapsibleIcon';
-import { connect, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import ParagraphBlock from 'components/ParagraphBlock';
 import { Lao } from 'model/objects';
 import { makeCurrentLao } from 'store/reducers';
