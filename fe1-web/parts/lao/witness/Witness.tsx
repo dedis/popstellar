@@ -2,14 +2,14 @@ import React from 'react';
 import { ScrollView } from 'react-native';
 
 import STRINGS from 'res/strings';
-import PROPS_TYPE from 'res/Props';
 import { useNavigation } from '@react-navigation/native';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import LaoProperties from 'components/eventList/LaoProperties';
 import EventListCollapsible from 'components/eventList/EventListCollapsible';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
+import { getEventsState, makeEventsList } from 'store/reducers';
+import { getStore } from 'store';
 
 const laoToProperties = (events: any) => [[], ...events];
 
@@ -17,9 +17,14 @@ const laoToProperties = (events: any) => [[], ...events];
  * Witness screen: button to navigate to the witness video screen,
  * a section list of events and lao properties
 */
-const Witness = (props: IPropTypes) => {
-  const { events } = props;
+const Witness = () => {
   const navigation = useNavigation();
+
+  const a = getEventsState(getStore().getState()).byLaoId.myLaoId
+  console.log("aaaa : ", a)
+
+  const eventList = makeEventsList();
+  const events = useSelector(eventList);
 
   const data = laoToProperties(events);
 
@@ -51,20 +56,4 @@ const Witness = (props: IPropTypes) => {
   );
 };
 
-const propTypes = {
-  events: PropTypes.arrayOf(PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(
-      PropTypes.oneOfType([PROPS_TYPE.event, PROPS_TYPE.property]),
-    ).isRequired,
-  })).isRequired,
-};
-Witness.propTypes = propTypes;
-
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
-
-const mapStateToProps = (state: any) => ({
-  events: state.currentEvents.events,
-});
-
-export default connect(mapStateToProps)(Witness);
+export default Witness;
