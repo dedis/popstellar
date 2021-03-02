@@ -1,4 +1,6 @@
-import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit';
+import {
+  createSlice, createSelector, PayloadAction, Draft,
+} from '@reduxjs/toolkit';
 import { Hash, Lao, LaoState } from 'model/objects';
 import laosData from 'res/laoData';
 
@@ -21,23 +23,31 @@ const initialState: LaoReducerState = {
   allIds: laosData.map((lao) => lao.id.valueOf()),
 };
 
+const addLaoReducer = (state: Draft<LaoReducerState>, action: PayloadAction<LaoState>) => {
+  const newLao = action.payload;
+
+  if (!(newLao.id in state.byId)) {
+    state.byId[newLao.id] = newLao;
+    state.allIds.push(newLao.id);
+  }
+};
+
 const laoReducerPath = 'laos';
 const laosSlice = createSlice({
   name: laoReducerPath,
   initialState,
   reducers: {
     // Add a LAO to the list of known LAOs
-    addLao: (state, action: PayloadAction<LaoState>) => {
-      const newLao = action.payload;
-      state.byId[newLao.id] = newLao;
-      state.allIds.push(newLao.id);
-    },
+    addLao: addLaoReducer,
 
     // Remove a LAO to the list of known LAOs
     removeLao: (state, action: PayloadAction<Hash>) => {
       const laoId = action.payload.valueOf();
-      delete state.byId[laoId];
-      state.allIds = state.allIds.filter((id) => id !== laoId);
+
+      if (laoId in state.byId) {
+        delete state.byId[laoId];
+        state.allIds = state.allIds.filter((id) => id !== laoId);
+      }
     },
 
     // Empty the list of known LAOs ("reset")
@@ -50,10 +60,12 @@ const laosSlice = createSlice({
 
     // Connect to a LAO for a given ID
     // Warning: this action is only accepted if we are not already connected to a LAO
-    connectToLao: (state, action: PayloadAction<Hash>) => {
+    connectToLao: (state, action: PayloadAction<LaoState>) => {
+      addLaoReducer(state, action);
+
       if (state.currentId === undefined) {
-        const laoId = action.payload.valueOf();
-        state.currentId = (laoId in state.byId) ? laoId : undefined;
+        const lao = action.payload;
+        state.currentId = lao.id;
       }
     },
 
