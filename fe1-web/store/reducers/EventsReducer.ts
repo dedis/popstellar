@@ -77,7 +77,7 @@ const eventsSlice = createSlice({
         laoId: string;
         event: LaoEventState;
       }>) {
-        const { laoId, event } = action.payload;
+        const { laoId /* , event */ } = action.payload;
 
         // Lao not initialized, return
         if (!(laoId in state.byLaoId)) {
