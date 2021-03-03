@@ -45,7 +45,8 @@ const Event = (props: IPropTypes) => {
           renderItemFn={renderItemFn}
         />
       );
-    } if (event instanceof RollCall) {
+    }
+    if (event instanceof RollCall) {
       if (isOrganizer) {
         console.log('is organizer => returning null in Event');
         return null;
@@ -58,6 +59,7 @@ const Event = (props: IPropTypes) => {
         />
       );
     }
+
     return <ParagraphBlock text={`${event.name} (default event => no mapping in Event.tsx)`} />;
   };
 
