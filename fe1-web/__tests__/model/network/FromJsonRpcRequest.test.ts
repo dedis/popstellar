@@ -131,8 +131,7 @@ describe('=== fromJsonJsonRpcRequest checks ===', () => {
       const msg = (query.params as JsonRpcParamsWithMessage).message;
       checkMessage(msg);
 
-      const data64 = (msg.data as Base64Data);
-      const msgData = JSON.parse(data64.decode());
+      const msgData = JSON.parse(msg.data.decode());
       expect(msgData).toBeJsonEqual(msg.messageData);
     };
 

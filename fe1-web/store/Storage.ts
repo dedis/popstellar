@@ -24,10 +24,6 @@ export function storeInit(): PersistStoreConfig {
 
   persist = persistStore(store);
 
-  if (typeof localStorage !== 'undefined' && localStorage !== null) {
-    // persisting the local storage on the polyfill make the tests run forever
-  }
-
   return { store, persist };
 }
 
