@@ -11,7 +11,7 @@ import {
 } from 'model/network/method/message/data';
 import { Channel, channelFromId, ROOT_CHANNEL } from 'model/objects/Channel';
 import { OpenedLaoStore, KeyPairStore } from 'store';
-import { publish } from './WebsocketApi';
+import { publish } from 'network/JsonRpcApi';
 
 /** Send a server query asking for the creation of a LAO with a given name (String) */
 export function requestCreateLao(laoName: string) {

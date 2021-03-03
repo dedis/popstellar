@@ -7,5 +7,7 @@ module.exports = {
   moduleNameMapper: {
     "^test_data/(.*)$": "<rootDir>/../tests/data/$1",
     "^protocol/(.*)$": "<rootDir>/../protocol/$1",
-  }
+  },
+  collectCoverage: true,
+  testResultsProcessor: "jest-sonar-reporter",
 };

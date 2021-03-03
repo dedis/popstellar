@@ -1,38 +1,43 @@
-import { AnyAction } from 'redux';
-import { KeyPair, KeyPairState } from 'model/objects';
-import { ActionKeyPairReducer } from '../Actions';
-
-const initialState: KeyPairState | null = null;
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { KeyPairState } from 'model/objects';
 
 /**
  * Reducer to store a set of public/private key
- *
- * Action types:
- *  - SET_KEYPAIR: set a key pair in local storage
- *
- *  Note: action is a JsObject of the form { type: <ACTION_TYPE> } where
- *  <ACTION_TYPE> is a string
- *
- * @param state JsObject containing the keys to store
- * @param action action to be executed by the reducer
- * @returns new key pair if action is valid, old key pair otherwise
+ * This might have to be extended as part of the Digital Wallet project
  */
-export function keyPairReducer(
-  state: KeyPairState | null = initialState, action: AnyAction,
-): KeyPairState | null {
-  try {
-    if (action.type === ActionKeyPairReducer.SET_KEYPAIR) {
-      if (action.value === undefined || action.value === null) {
-        console.log('KeyPair storage was set to: null');
-        return null;
-      }
-      const kp = KeyPair.fromState(action.value).toState();
-      console.log(`KeyPair storage was updated with public key: ${kp.publicKey.toString()}`);
-      return Object.freeze(kp);
-    }
-  } catch (e) {
-    console.exception('Could not update KeyPair state due to exception', e);
-  }
 
-  return state;
+interface KeyPairReducerState {
+  keyPair?: KeyPairState;
 }
+
+const initialState: KeyPairReducerState = {
+  keyPair: undefined,
+};
+
+const keyPairReducerPath = 'keyPairs';
+const keyPairsSlice = createSlice({
+  name: keyPairReducerPath,
+  initialState,
+  reducers: {
+    // Set global key pair
+    setKeyPair: (state, action: PayloadAction<KeyPairState>) => {
+      if (!action.payload) {
+        console.log('KeyPair storage was set to: null');
+        state.keyPair = undefined;
+      }
+
+      state.keyPair = action.payload;
+      console.log(`KeyPair storage was updated with public key: ${state.keyPair.publicKey.toString()}`);
+    },
+  },
+});
+
+export const {
+  setKeyPair,
+} = keyPairsSlice.actions;
+
+export default {
+  [keyPairReducerPath]: keyPairsSlice.reducer,
+};
+
+export const getKeyPairState = (state: any): KeyPairReducerState => state[keyPairReducerPath];

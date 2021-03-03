@@ -9,9 +9,9 @@ import ConnectConnecting from 'parts/connect/ConnectConnecting';
 import ConnectConfirm from 'parts/connect/ConnectConfirm';
 
 /**
- * Define the ConnectEnableCamera stack navigation
+ * Define the connect panel stack navigation
  *
- * Contains four screens:
+ * Contains four components:
  *  - The ConnectEnableCamera
  *  - The ConnectOpenScan
  *  - The ConnectConnecting
