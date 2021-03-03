@@ -76,8 +76,8 @@ function LaoNavigation() {
   const laoSelect = makeCurrentLao();
   const lao = useSelector(laoSelect);
 
-  const isOrganizer: boolean = false; // TODO get isOrganizer/isWitness directly
-  const isWitness: boolean = true; // TODO get isWitness directly
+  const isOrganizer: boolean = true; // TODO get isOrganizer directly
+  const isWitness: boolean = false; // TODO get isWitness directly
 
   const tabName: string = getLaoTabName(isOrganizer, isWitness);
   const laoName: string = (lao) ? lao.name : STRINGS.unused;
