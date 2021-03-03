@@ -9,8 +9,7 @@ import EventListCollapsible from 'components/eventList/EventListCollapsible';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
 import { makeEventsList } from 'store/reducers';
-
-const laoToProperties = (events: any) => [[], ...events];
+import { LaoEvent, Timestamp } from 'model/objects';
 
 /**
  * Witness screen: button to navigate to the witness video screen,
@@ -22,20 +21,36 @@ const Witness = () => {
   const eventList = makeEventsList();
   const events = useSelector(eventList);
 
-  const data = laoToProperties(events);
+  const now = Timestamp.EpochNow();
+  const pastEvents: LaoEvent[] = [];
+  const currentEvents: LaoEvent[] = [];
+  const futureEvents: LaoEvent[] = [];
 
-  const DATA_EXAMPLE = [ // TODO refactor when Event storage available
+  events.forEach((e: LaoEvent) => {
+    if (new Timestamp(e.end).before(now)) {
+      pastEvents.push(e);
+      return;
+    }
+    if (new Timestamp(e.start).after(now)) {
+      futureEvents.push(e);
+      return;
+    }
+    currentEvents.push(e);
+  });
+  // TODO: nesting logic
+
+  const DATA_EXAMPLE = [
     {
       title: 'Past',
-      data: [(data[1].data)[0], (data[1].data)[1], (data[1].data)[2]],
+      data: pastEvents,
     },
     {
       title: 'Present',
-      data: [(data[2].data)[0], (data[2].data)[1], (data[2].data)[2]],
+      data: currentEvents,
     },
     {
       title: 'Future',
-      data: [(data[3].data)[0]],
+      data: futureEvents,
     },
   ];
 

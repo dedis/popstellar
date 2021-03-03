@@ -5,7 +5,7 @@ import '../utils/matchers';
 import testKeyPair from 'test_data/keypair.json';
 
 import * as msApi from 'network/MessageApi';
-import * as wsApi from 'network/WebsocketApi';
+import * as wsApi from 'network/JsonRpcApi';
 import { storeInit } from 'store/Storage';
 import { KeyPairStore, OpenedLaoStore } from 'store';
 import {
@@ -38,7 +38,7 @@ publicKeyMock.mockImplementation(() => new PublicKey(testKeyPair.publicKey));
 const privateKeyMock = mockFunction(KeyPairStore.getPrivateKey);
 privateKeyMock.mockImplementation(() => new PrivateKey(testKeyPair.privateKey));
 
-jest.mock('network/WebsocketApi.ts');
+jest.mock('network/JsonRpcApi.ts');
 const publishMock = mockFunction(wsApi.publish);
 
 let mockedFn: (m: MessageData) => Promise<void> = () => Promise.resolve();
