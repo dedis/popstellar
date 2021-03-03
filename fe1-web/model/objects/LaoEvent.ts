@@ -13,7 +13,7 @@ export interface LaoEventState {
 
   start: number;
 
-  end: number;
+  end?: number;
 }
 
 export interface LaoEvent {
@@ -21,7 +21,7 @@ export interface LaoEvent {
 
   start: Timestamp;
 
-  end: Timestamp;
+  end?: Timestamp;
 
   toState(): LaoEventState;
 }

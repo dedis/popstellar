@@ -14,13 +14,13 @@ export class Meeting implements LaoEvent {
 
   public readonly name: string;
 
-  public readonly location: string;
+  public readonly location?: string;
 
   public readonly creation: Timestamp;
 
   public readonly start: Timestamp;
 
-  public readonly end: Timestamp;
+  public readonly end?: Timestamp;
 
   public readonly extra: object;
 
@@ -36,17 +36,11 @@ export class Meeting implements LaoEvent {
     if (obj.name === undefined) {
       throw new Error("Undefined 'name' when creating 'Meeting'");
     }
-    if (obj.location === undefined) {
-      throw new Error("Undefined 'location' when creating 'Meeting'");
-    }
     if (obj.creation === undefined) {
       throw new Error("Undefined 'creation' when creating 'Meeting'");
     }
     if (obj.start === undefined) {
       throw new Error("Undefined 'start' when creating 'Meeting'");
-    }
-    if (obj.end === undefined) {
-      throw new Error("Undefined 'end' when creating 'Meeting'");
     }
 
     this.id = obj.id;
@@ -65,8 +59,8 @@ export class Meeting implements LaoEvent {
       location: m.location,
       creation: new Timestamp(m.creation),
       start: new Timestamp(m.start),
-      end: new Timestamp(m.end),
-      extra: { ...m.extra },
+      end: (m.end) ? new Timestamp(m.end) : undefined,
+      extra: (m.extra) ? { ...m.extra } : {},
     });
   }
 
