@@ -82,6 +82,7 @@
     "jest-extended": "^0.11.5",
     "jest-localstorage-mock": "^2.4.6",
     "jest-matcher-utils": "^26.6.2",
+    "jest-sonar-reporter": "^2.0.0",
     "ts-jest": "^26.5.1",
     "typescript": "^4.1.3"
   },

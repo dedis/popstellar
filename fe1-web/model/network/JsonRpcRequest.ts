@@ -49,7 +49,7 @@ export class JsonRpcRequest {
 
     this.method = req.method;
     this.id = (req.id === undefined || req.id === null) ? undefined : req.id;
-    this.params = this.parseParams(req.params);
+    this.params = req.params;
   }
 
   static fromJson(jsonString: string): JsonRpcRequest {
@@ -60,21 +60,24 @@ export class JsonRpcRequest {
       throw new ProtocolError(`Invalid JSON-RPC request\n\n${errors}`);
     }
 
-    return new JsonRpcRequest(obj);
+    return new JsonRpcRequest({
+      ...obj,
+      params: JsonRpcRequest.parseParams(obj.method, obj.params),
+    });
   }
 
-  private parseParams(params: Partial<JsonRpcParams>) : JsonRpcParams {
-    switch (this.method) {
+  private static parseParams(method: JsonRpcMethod, params: any) : JsonRpcParams {
+    switch (method) {
       case JsonRpcMethod.BROADCAST:
-        return new Broadcast(params);
+        return Broadcast.fromJson(params);
       case JsonRpcMethod.PUBLISH:
-        return new Publish(params);
+        return Publish.fromJson(params);
       case JsonRpcMethod.SUBSCRIBE:
-        return new Subscribe(params);
+        return Subscribe.fromJson(params);
       case JsonRpcMethod.UNSUBSCRIBE:
-        return new Unsubscribe(params);
+        return Unsubscribe.fromJson(params);
       case JsonRpcMethod.CATCHUP:
-        return new Catchup(params);
+        return Catchup.fromJson(params);
       default:
         throw new ProtocolError('Unsupported method in JSON-RPC');
     }

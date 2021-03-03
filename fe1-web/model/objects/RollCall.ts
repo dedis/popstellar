@@ -17,13 +17,13 @@ export class RollCall implements LaoEvent {
 
   public readonly location: string;
 
-  public readonly description: string;
+  public readonly description?: string;
 
   public readonly creation: Timestamp;
 
   public readonly start: Timestamp;
 
-  public readonly end: Timestamp;
+  public readonly end?: Timestamp;
 
   public readonly ongoing: boolean;
 
@@ -47,17 +47,11 @@ export class RollCall implements LaoEvent {
     if (obj.location === undefined) {
       throw new Error("Undefined 'location' when creating 'RollCall'");
     }
-    if (obj.description === undefined) {
-      throw new Error("Undefined 'description' when creating 'RollCall'");
-    }
     if (obj.creation === undefined) {
       throw new Error("Undefined 'creation' when creating 'RollCall'");
     }
     if (obj.start === undefined) {
       throw new Error("Undefined 'start' when creating 'RollCall'");
-    }
-    if (obj.end === undefined) {
-      throw new Error("Undefined 'end' when creating 'RollCall'");
     }
 
     this.id = obj.id;
@@ -78,7 +72,7 @@ export class RollCall implements LaoEvent {
       description: rc.description,
       creation: new Timestamp(rc.creation),
       start: new Timestamp(rc.start),
-      end: new Timestamp(rc.end),
+      end: (rc.end) ? new Timestamp(rc.end) : undefined,
       ongoing: rc.ongoing,
     });
   }
