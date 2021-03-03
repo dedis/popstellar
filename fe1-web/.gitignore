@@ -9,6 +9,10 @@ npm-debug.*
 *.orig.*
 web-build/
 
+# Code coverage
+coverage/*
+test-report.xml
+
 # IntelliJ
 .idea
 
