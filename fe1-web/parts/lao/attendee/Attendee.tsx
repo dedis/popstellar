@@ -25,7 +25,8 @@ const Attendee = () => {
   const futureEvents: LaoEvent[] = [];
 
   events.forEach((e: LaoEvent) => {
-    if (e.end.before(now)) {
+    if ((e.end && e.end.before(now))
+      || (!e.end && e.start.before(now))) {
       pastEvents.push(e);
       return;
     }
@@ -47,7 +48,7 @@ const Attendee = () => {
       data: currentEvents,
     },
     {
-      title: 'future',
+      title: 'Future',
       data: futureEvents,
     },
   ];

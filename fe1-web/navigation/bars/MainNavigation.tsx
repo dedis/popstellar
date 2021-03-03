@@ -4,22 +4,18 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 
 import STRINGS from 'res/strings';
 
-import Launch from 'parts/Launch';
 import Home from 'parts/Home';
-
-import ConnectNavigation from './ConnectNavigation';
+import Launch from 'parts/Launch';
+import ConnectNavigation from 'navigation/bars/ConnectNavigation';
 
 /**
-* The main tab navigation component
-*
-* create a tab navigator between the Home, ConnectEnableCamera and Launch component
-*/
+ * The main tab navigation component
+ *
+ * create a tab navigator between the Home, Connect components and Launch component
+ */
 const HomeTopTabNavigator = createMaterialTopTabNavigator();
 
 const styles = StyleSheet.create({
-  view: {
-    flex: 1,
-  },
   navigator: {
     ...Platform.select({
       web: {
@@ -30,7 +26,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function Navigation() {
+export default function MainNavigation() {
   return (
     <HomeTopTabNavigator.Navigator
       style={styles.navigator}

@@ -3,11 +3,12 @@ import { View, ViewStyle, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
 
 import { Spacing } from 'styles';
-import PROPS_TYPE from 'res/Props';
 
 import ParagraphBlock from 'components/ParagraphBlock';
 import styleEventView from 'styles/stylesheets/eventView';
 import TextBlock from 'components/TextBlock';
+import { Hash, RollCall, Timestamp } from 'model/objects';
+import { Meeting } from 'model/objects/Meeting';
 import EventMeeting from './EventMeeting';
 import EventRollCall from './EventRollCall';
 import ListCollapsibleIcon from '../ListCollapsibleIcon';
@@ -36,30 +37,30 @@ const Event = (props: IPropTypes) => {
   );
 
   const buildEvent = () => {
-    switch (event.object) {
-      case 'meeting':
-        return (
-          <EventMeeting
-            event={event}
-            childrenVisibility={toggleChildrenVisible}
-            renderItemFn={renderItemFn}
-          />
-        );
-      case 'roll-call':
-        if (isOrganizer) {
-          console.log('is organizer => returning null in Event');
-          return null;
-        }
-        return (
-          <EventRollCall
-            event={event}
-            childrenVisibility={toggleChildrenVisible}
-            renderItemFn={renderItemFn}
-          />
-        );
-      default:
-        return <ParagraphBlock text={`${event.name} (default event => no mapping in Event.tsx)`} />;
+    if (event instanceof Meeting) {
+      return (
+        <EventMeeting
+          event={event}
+          childrenVisibility={toggleChildrenVisible}
+          renderItemFn={renderItemFn}
+        />
+      );
     }
+    if (event instanceof RollCall) {
+      if (isOrganizer) {
+        console.log('is organizer => returning null in Event');
+        return null;
+      }
+      return (
+        <EventRollCall
+          event={event}
+          childrenVisibility={toggleChildrenVisible}
+          renderItemFn={renderItemFn}
+        />
+      );
+    }
+
+    return <ParagraphBlock text={`${event.name} (default event => no mapping in Event.tsx)`} />;
   };
 
   return (
@@ -72,7 +73,11 @@ const Event = (props: IPropTypes) => {
 };
 
 const propTypes = {
-  event: PROPS_TYPE.event.isRequired,
+  event: PropTypes.shape({
+    id: PropTypes.instanceOf(Hash).isRequired,
+    start: PropTypes.instanceOf(Timestamp).isRequired,
+    end: PropTypes.instanceOf(Timestamp),
+  }).isRequired,
   renderItemFn: PropTypes.func.isRequired,
 };
 Event.propTypes = propTypes;

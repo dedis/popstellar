@@ -131,7 +131,7 @@ export const makeEventsList = () => createSelector(
   // Selector: returns an array of EventStates -- should it return an array of Event objects?
   (eventMap: EventLaoReducerState, laoId: string | undefined)
   : LaoEvent[] => {
-    if (!laoId) {
+    if (!laoId || !(laoId in eventMap.byLaoId)) {
       return [];
     }
 
