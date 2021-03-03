@@ -4,7 +4,6 @@ import {
 } from 'react-native';
 import { Spacing, Typography } from 'styles';
 
-import * as RootNavigation from 'navigation/RootNavigation';
 import STRINGS from 'res/strings';
 import PROPS_TYPE from 'res/Props';
 import { requestCreateLao } from 'network/MessageApi';
@@ -67,7 +66,7 @@ const Launch = ({ navigation }: IPropTypes) => {
     const time = new Timestamp(1609455600);
     const sampleLao: Lao = new Lao({
       name: 'name de la Lao',
-      id: Hash.fromStringArray(org.toString(), time.toString(), 'name'),
+      id: new Hash('myLaoId'), // Hash.fromStringArray(org.toString(), time.toString(), 'name')
       creation: time,
       last_modified: time,
       organizer: org,
@@ -108,12 +107,12 @@ const Launch = ({ navigation }: IPropTypes) => {
           onPress={onTestOpenConnection}
         />
         <WideButtonView
-          title="[TEST] Clear (persistent) storage"
+          title="[TEST] Clear (persistent ) storage"
           onPress={onTestClearStorage}
         />
         <WideButtonView
           title="[TEST] GoTo newly created LAO"
-          onPress={() => RootNavigation.navigate(STRINGS.app_navigation_tab_organizer, {})}
+          onPress={() => navigation.navigate(STRINGS.app_navigation_tab_organizer, {})}
         />
         <WideButtonView
           title={STRINGS.general_button_cancel}
