@@ -6,7 +6,7 @@ import { Channel } from 'model/objects/Channel';
 import { getNetworkManager } from 'network/NetworkManager';
 
 export function publish(channel: Channel, msgData: MessageData): Promise<void> {
-  const message = Message.fromData(msgData).toProtocolJson();
+  const message = Message.fromData(msgData);
 
   const request = new JsonRpcRequest({
     method: JsonRpcMethod.PUBLISH,

@@ -1,14 +1,16 @@
 import React from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
+
+import { makeLaosList } from 'store';
+import { Lao } from 'model/objects';
 
 import { Spacing } from 'styles';
 import styleContainer from 'styles/stylesheets/container';
 import STRINGS from 'res/strings';
+
 import LAOItem from 'components/LAOItem';
 import TextBlock from 'components/TextBlock';
-import PROPS_TYPE from 'res/Props';
-import PropTypes from 'prop-types';
 
 /**
  * Manage the Home screen component: if the user is not connected to any LAO, a welcome message
@@ -24,7 +26,7 @@ const styles = StyleSheet.create({
 });
 
 // FIXME: define interface + types, requires availableLaosReducer to be migrated first
-function getConnectedLaosDisplay(laos) {
+function getConnectedLaosDisplay(laos: Lao[]) {
   return (
     <View style={styleContainer.centered}>
       <FlatList
@@ -47,27 +49,13 @@ function getWelcomeMessageDisplay() {
   );
 }
 
-const Home = (props: IPropTypes) => {
-  const { laos } = props;
+const Home = () => {
+  const laosList = makeLaosList();
+  const laos: Lao[] = useSelector(laosList);
 
   return (laos && !laos.length)
     ? getConnectedLaosDisplay(laos)
     : getWelcomeMessageDisplay();
 };
 
-const propTypes = {
-  laos: PropTypes.arrayOf(PROPS_TYPE.LAO),
-};
-Home.propTypes = propTypes;
-
-Home.defaultProps = {
-  laos: undefined,
-};
-
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
-
-const mapStateToProps = (state: any) => ({
-  laos: state.availableLaos.LAOs,
-});
-
-export default connect(mapStateToProps)(Home);
+export default Home;
