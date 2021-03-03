@@ -63,9 +63,9 @@ export const sampleCreateLaoQuery = '{"jsonrpc":"2.0","method":"publish","params
 
 export const mockEventName = 'Random Name';
 export const mockLocation = 'EPFL';
-export const mockCreationTime = 1609455600;
-export const mockStartTime = 1735685990;
-export const mockEndTime = 1735686000;
+export const mockCreationTime = new Timestamp(1609455600);
+export const mockStartTime = new Timestamp(1735685990);
+export const mockEndTime = new Timestamp(1735686000);
 export const mockRollCallId = 100;
 
 const defaultDataFields = ['object', 'action'];
