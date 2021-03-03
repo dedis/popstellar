@@ -8,5 +8,5 @@ export * from './Timestamp';
 export * from './WitnessSignature';
 export * from './Lao';
 export * from './RollCall';
-export * from 'model/objects/LaoEvent';
-export * from 'model/objects/LaoEventBuilder';
+export * from './LaoEvent';
+export * from './LaoEventBuilder';
