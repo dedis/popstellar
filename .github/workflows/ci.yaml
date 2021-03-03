@@ -72,7 +72,7 @@ jobs:
         npm run test --if-present
 
     - name: Run code analysis
-      if: ${{ always() }}  # execute even if previous steps failed
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '12.x' }}  # execute even if previous steps failed
       uses: SonarSource/sonarcloud-github-action@master
       with:
         projectBaseDir: fe1-web
