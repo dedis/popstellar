@@ -137,7 +137,7 @@ export const makeEventsList = () => createSelector(
 
     return eventMap.byLaoId[laoId].allIds
       .map((id) : LaoEvent | undefined => eventFromState(eventMap.byLaoId[laoId].byId[id]))
-      .filter((e) => !!e && Object.keys(e).length) as LaoEvent[];
+      .filter((e) => !!e) as LaoEvent[];
     // need to assert that it is an Event[] because of TypeScript limitations as described here:
     // https://github.com/microsoft/TypeScript/issues/16069
   },

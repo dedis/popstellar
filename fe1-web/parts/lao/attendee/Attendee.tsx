@@ -25,11 +25,12 @@ const Attendee = () => {
   const futureEvents: LaoEvent[] = [];
 
   events.forEach((e: LaoEvent) => {
-    if (new Timestamp(e.end).before(now)) {
+    if ((e.end && e.end.before(now))
+      || (!e.end && e.start.before(now))) {
       pastEvents.push(e);
       return;
     }
-    if (new Timestamp(e.start).after(now)) {
+    if (e.start.after(now)) {
       futureEvents.push(e);
       return;
     }
