@@ -34,14 +34,14 @@ func TestSQLite_AddMessage(t *testing.T) {
 	channelID := "12345"
 	timestamp := message.Timestamp(time.Now().UnixNano())
 
-	data, err := message.NewCreateLAOData("test", timestamp, []byte{1,2,3,4}, []message.PublicKey{})
+	data, err := message.NewCreateLAOData("test", timestamp, []byte{1, 2, 3, 4}, []message.PublicKey{})
 	require.NoError(t, err)
 
 	msg := message.Message{
-		MessageID: []byte{6,7,8,9,10},
-		Data: data,
-		Sender: []byte{1,2,3,4},
-		Signature: []byte{1,2,3,4},
+		MessageID:         []byte{6, 7, 8, 9, 10},
+		Data:              data,
+		Sender:            []byte{1, 2, 3, 4},
+		Signature:         []byte{1, 2, 3, 4},
 		WitnessSignatures: []message.PublicKeySignaturePair{},
 	}
 
@@ -63,14 +63,14 @@ func TestSQLite_GetMessages(t *testing.T) {
 
 	for i := 0; i < 100; i++ {
 		timestamp := message.Timestamp(now + int64(i))
-		data, err := message.NewCreateLAOData("test", timestamp, []byte{1,2,3,4}, []message.PublicKey{})
+		data, err := message.NewCreateLAOData("test", timestamp, []byte{1, 2, 3, 4}, []message.PublicKey{})
 		require.NoError(t, err)
 
 		msg := message.Message{
-			MessageID: []byte{6,7,8,9,byte(i)},
-			Data: data,
-			Sender: []byte{1,2,3,4},
-			Signature: []byte{1,2,3,4},
+			MessageID:         []byte{6, 7, 8, 9, byte(i)},
+			Data:              data,
+			Sender:            []byte{1, 2, 3, 4},
+			Signature:         []byte{1, 2, 3, 4},
 			WitnessSignatures: []message.PublicKeySignaturePair{},
 		}
 
@@ -98,14 +98,14 @@ func TestSQLite_GetMessagesInRange(t *testing.T) {
 
 	for i := 0; i < 100; i++ {
 		timestamp := message.Timestamp(now + int64(i))
-		data, err := message.NewCreateLAOData("test", timestamp, []byte{1,2,3,4}, []message.PublicKey{})
+		data, err := message.NewCreateLAOData("test", timestamp, []byte{1, 2, 3, 4}, []message.PublicKey{})
 		require.NoError(t, err)
 
 		msg := message.Message{
-			MessageID: []byte{6,7,8,9,byte(i)},
-			Data: data,
-			Sender: []byte{1,2,3,4},
-			Signature: []byte{1,2,3,4},
+			MessageID:         []byte{6, 7, 8, 9, byte(i)},
+			Data:              data,
+			Sender:            []byte{1, 2, 3, 4},
+			Signature:         []byte{1, 2, 3, 4},
 			WitnessSignatures: []message.PublicKeySignaturePair{},
 		}
 
@@ -133,14 +133,14 @@ func TestSQLite_AddWitnessToMessage(t *testing.T) {
 	channelID := "12345"
 	timestamp := message.Timestamp(time.Now().UnixNano())
 
-	data, err := message.NewCreateLAOData("test", timestamp, []byte{1,2,3,4}, []message.PublicKey{})
+	data, err := message.NewCreateLAOData("test", timestamp, []byte{1, 2, 3, 4}, []message.PublicKey{})
 	require.NoError(t, err)
 
 	msg := message.Message{
-		MessageID: []byte{6,7,8,9,10},
-		Data: data,
-		Sender: []byte{1,2,3,4},
-		Signature: []byte{1,2,3,4},
+		MessageID:         []byte{6, 7, 8, 9, 10},
+		Data:              data,
+		Sender:            []byte{1, 2, 3, 4},
+		Signature:         []byte{1, 2, 3, 4},
 		WitnessSignatures: []message.PublicKeySignaturePair{},
 	}
 
@@ -152,7 +152,7 @@ func TestSQLite_AddWitnessToMessage(t *testing.T) {
 	addWitness := func(i byte, wg *sync.WaitGroup) {
 		pair := message.PublicKeySignaturePair{
 			Signature: []byte{i},
-			Witness: []byte{i},
+			Witness:   []byte{i},
 		}
 
 		err := repo.AddWitnessToMessage(messageID, pair)
@@ -182,7 +182,7 @@ func TestSQLite_AddWitnessToMessage(t *testing.T) {
 		require.Equal(t, 1, len(witness))
 
 		idx := witness[0]
-		counts[idx]++;
+		counts[idx]++
 	}
 
 	require.Equal(t, 100, len(counts))
