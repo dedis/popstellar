@@ -8,7 +8,6 @@ import { LaoEvent, Timestamp } from 'model/objects';
 import EventListCollapsible from 'components/eventList/EventListCollapsible';
 import LaoProperties from 'components/eventList/LaoProperties';
 
-
 /**
  * Attendee screen: lists LAO properties and past/ongoing/future events
  *
@@ -55,8 +54,8 @@ const Attendee = () => {
 
   return (
     <ScrollView>
-      <LaoProperties/>
-      <EventListCollapsible data={DATA_EXAMPLE}/>
+      <LaoProperties />
+      <EventListCollapsible data={DATA_EXAMPLE} />
     </ScrollView>
   );
 };

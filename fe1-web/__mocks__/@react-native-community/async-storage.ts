@@ -6,7 +6,7 @@ const fixedMock = {
   ...asyncMock,
 
   /**
-   * This is our custom variation on the async mock, as we need to ensure that a Promise is returned.
+   * This is our custom variation on the async mock: we need to ensure that a Promise is returned.
    * Otherwise, tests fail due to a missing .catch() method on the returned object.
    *
    * @param key
