@@ -106,7 +106,7 @@ const eventsSlice = createSlice({
         }
 
         delete state.byLaoId[laoId].byId[eventId];
-        state.byLaoId[laoId].allIds.filter((e) => e !== eventId);
+        state.byLaoId[laoId].allIds = state.byLaoId[laoId].allIds.filter((e) => e !== eventId);
       },
     },
 
