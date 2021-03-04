@@ -1,12 +1,10 @@
 import React from 'react';
 import * as QRCode from 'qrcode.react';
-import {
-  View,
-} from 'react-native';
+
 import PropTypes from 'prop-types';
 
 /**
- * QR code button that executes an onPress action given in props
+ * QR code that shows the value that is provided, optional parameter: size (in pixels)
  */
 
 // function QRCodeDisplay() {
