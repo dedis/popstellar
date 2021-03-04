@@ -7,14 +7,6 @@ import PropTypes from 'prop-types';
  * QR code that shows the value that is provided, optional parameter: size (in pixels)
  */
 
-// function QRCodeDisplay() {
-//   return (
-//     <View>
-//       <h1>Your Public Key</h1>
-//       <QRCode value="adalsteinn.ml" id="testId" />
-//     </View>
-//   );
-// }
 
 const QRCodeDisplay = (props: IPropTypes) => {
   const { value } = props;
