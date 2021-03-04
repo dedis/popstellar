@@ -12,32 +12,6 @@ on:
       - reopened
 
 jobs:
-  sonarcloud:
-    name: SonarCloud
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup repo
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of Sonar analysis
-
-      - name: Scan Fe1-Web
-        uses: SonarSource/sonarcloud-github-action@master
-        with:
-          projectBaseDir: fe1-web
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FE1 }}
-
-      - name: Scan Be1-Go
-        if: ${{ always() }}  # execute even if previous steps failed
-        uses: SonarSource/sonarcloud-github-action@master
-        with:
-          projectBaseDir: be1-go
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BE1 }}
-
   fe1-web:
     name: Fe1-Web
     runs-on: ${{ matrix.os }}
@@ -53,6 +27,8 @@ jobs:
     steps:
     - name: Setup repo
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of Sonar analysis
 
     - name: Setup node ${{ matrix.node-version }}
       uses: actions/setup-node@v1
@@ -95,6 +71,15 @@ jobs:
       run: |
         npm run test --if-present
 
+    - name: Run code analysis
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '12.x' }}  # execute even if previous steps failed
+      uses: SonarSource/sonarcloud-github-action@master
+      with:
+        projectBaseDir: fe1-web
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FE1 }}
+
     - name: Verify expo project health
       if: ${{ always() }}  # execute even if previous steps failed
       run: |
@@ -114,7 +99,6 @@ jobs:
         working-directory: ./be1-go
 
     steps:
-
     - name: Setup Go 1.x
       uses: actions/setup-go@v2
       with:
@@ -122,6 +106,8 @@ jobs:
 
     - name: Setup repo
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of Sonar analysis
 
     - uses: actions/cache@v2
       with:
@@ -142,16 +128,16 @@ jobs:
     - name: Setup dependencies
       run: |
         go mod download
-        go get -u golang.org/x/lint/golint
+        go get -v honnef.co/go/tools/cmd/staticcheck
 
     - name: Run go vet
       run: |
-        go vet .
+        go vet ./...
 
-    - name: Run go lint
+    - name: Run staticcheck
       if: ${{ always() }}  # execute even if previous steps failed
       run: |
-        golint -set_exit_status=1 .
+        staticcheck ./...
 
     - name: Build
       if: ${{ always() }}  # execute even if previous steps failed
@@ -167,6 +153,16 @@ jobs:
       if: ${{ always() }}  # execute even if previous steps failed
       run: |
         go test -race -v ./...
+
+    - name: Run code analysis
+      if: ${{ always() }}  # execute even if previous steps failed
+      uses: SonarSource/sonarcloud-github-action@master
+      with:
+        projectBaseDir: be1-go
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BE1 }}
+
 
   fe2-android:
     name: Fe2-Android

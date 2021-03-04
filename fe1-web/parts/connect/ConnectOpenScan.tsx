@@ -30,7 +30,6 @@ const ConnectOpenScan = ({ navigation }: IPropTypes) => {
     <View style={styleContainer.anchoredCenter}>
       <TextBlock text={STRINGS.connect_scanning_camera_view} />
       <CameraButton action={() => { navigation.navigate(STRINGS.connect_connecting_title); }} />
-      <QRCodeButton action={() => { navigation.navigate(STRINGS.connect_connecting_title); }} />
       <QRCodeDisplay value="1234567890" />
     </View>
   );

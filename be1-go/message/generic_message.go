@@ -6,11 +6,14 @@ import (
 	"golang.org/x/xerrors"
 )
 
+// GenericMessage represents a message that may be sent as a payload on websocket.
+// It may either be a `Query` or an `Answer`.
 type GenericMessage struct {
 	Query  *Query
 	Answer *Answer
 }
 
+// UnmarshalJSON implements custom unmarshaling logic for a GenericMessage.
 func (m *GenericMessage) UnmarshalJSON(data []byte) error {
 	type internal struct {
 		Method string `json:"method"`

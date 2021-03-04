@@ -13,4 +13,11 @@ export class JsonRpcParams {
 
     this.channel = params.channel;
   }
+
+  public static fromJson(obj: any): JsonRpcParams {
+    // Schema validation already passed at top level
+    return new JsonRpcParams({
+      channel: obj.channel,
+    });
+  }
 }

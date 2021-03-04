@@ -3,7 +3,7 @@ import {
   StyleSheet, View, ScrollView, ViewStyle,
 } from 'react-native';
 
-import { Spacing } from 'styles/index';
+import { Spacing } from 'styles';
 import STRINGS from 'res/strings';
 import PROPS_TYPE from 'res/Props';
 import TextBlock from 'components/TextBlock';

@@ -1,13 +1,16 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-import { Spacing } from 'styles/index';
+import { makeLaosList } from 'store';
+import { Lao } from 'model/objects';
+
+import { Spacing } from 'styles';
 import styleContainer from 'styles/stylesheets/container';
 import STRINGS from 'res/strings';
+
 import LAOItem from 'components/LAOItem';
 import TextBlock from 'components/TextBlock';
-import QRCodeDisplay from '../components/QRCodeDisplay';
 
 /**
  * Manage the Home screen component: if the user is not connected to any LAO, a welcome message
@@ -23,51 +26,36 @@ const styles = StyleSheet.create({
 });
 
 // FIXME: define interface + types, requires availableLaosReducer to be migrated first
-
-class Home extends Component {
-  private getHomeScreen() {
-    const { laos } = this.props;
-    if (laos !== undefined && !laos.length) {
-      return Home.getConnectedLaosDisplay(laos);
-    }
-    return Home.getWelcomeMessageDisplay();
-  }
-
-  private static getConnectedLaosDisplay(laos) {
-    return (
-      <View style={styleContainer.centered}>
-        <FlatList
-          data={laos}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <LAOItem LAO={item} />}
-          style={styles.flatList}
-        />
-      </View>
-    );
-  }
-
-  private static getWelcomeMessageDisplay() {
-    return (
-      <View style={styleContainer.centered}>
-        <TextBlock bold text={STRINGS.home_welcome} />
-        <TextBlock bold text={STRINGS.home_connect_lao} />
-        <TextBlock bold text={STRINGS.home_launch_lao} />
-        <QRCodeDisplay value="12345" />
-      </View>
-    );
-  }
-
-  render() {
-    return this.getHomeScreen();
-  }
+function getConnectedLaosDisplay(laos: Lao[]) {
+  return (
+    <View style={styleContainer.centered}>
+      <FlatList
+        data={laos}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => <LAOItem LAO={item} />}
+        style={styles.flatList}
+      />
+    </View>
+  );
 }
-/* // FIXME add back when available lao storage is refactored
-Home.propTypes = {
-  LAOs: PropTypes.arrayOf(PROPS_TYPE.LAO).isRequired,
-}; */
 
-const mapStateToProps = (state) => ({
-  LAOs: state.availableLaos.LAOs,
-});
+function getWelcomeMessageDisplay() {
+  return (
+    <View style={styleContainer.centered}>
+      <TextBlock bold text={STRINGS.home_welcome} />
+      <TextBlock bold text={STRINGS.home_connect_lao} />
+      <TextBlock bold text={STRINGS.home_launch_lao} />
+    </View>
+  );
+}
 
-export default connect(mapStateToProps)(Home);
+const Home = () => {
+  const laosList = makeLaosList();
+  const laos: Lao[] = useSelector(laosList);
+
+  return (laos && !laos.length)
+    ? getConnectedLaosDisplay(laos)
+    : getWelcomeMessageDisplay();
+};
+
+export default Home;
