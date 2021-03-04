@@ -32,6 +32,8 @@ const STRINGS = {
   organizer_navigation_tab_create_event: 'Create Event',
   organizer_navigation_tab_add_witness: 'Add witness',
   organizer_navigation_tab_roll_call: 'Roll-Call',
+  organizer_navigation_creation_meeting: 'Create meeting',
+  organizer_navigation_creation_roll_call: 'Create roll call',
 
   /* --- Home Strings --- */
   home_welcome: 'Welcome to Personhood.Online!',
@@ -73,7 +75,7 @@ const STRINGS = {
         + 'this box checked. If you wish to reveal your identity to other participants in the organization, you may '
         + 'un-check this box and enter the information you wish to reaveal below. You must enter identity information in '
         + 'order to play an Organizer or Witness role in an organization.',
-  identity_name_placeholder: 'Name*',
+  identity_name_placeholder: 'Name',
   identity_title_placeholder: 'Title',
   identity_organization_placeholder: 'Organization',
   identity_email_placeholder: 'Email',
@@ -110,7 +112,7 @@ const STRINGS = {
   /* --- Meeting creation Strings --- */
   meeting_create_name: 'Name*',
   meeting_create_start_time: 'Start time: ',
-  meeting_create_finish_time: 'Finish time: ',
+  meeting_create_finish_time: 'End time: ',
   meeting_create_location: 'Location',
 
   /* --- General creation Strings --- */

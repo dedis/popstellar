@@ -4,23 +4,20 @@ import {
 import { sign } from 'tweetnacl';
 import { encodeBase64 } from 'tweetnacl-util';
 import { dispatch, getStore } from '../Storage';
-import { ActionKeyPairReducer } from '../Actions';
+import { getKeyPairState, setKeyPair } from '../reducers';
 
 export namespace KeyPairStore {
 
   export function store(kp: KeyPair): void {
-    dispatch({
-      type: ActionKeyPairReducer.SET_KEYPAIR,
-      value: kp.toState(),
-    });
+    dispatch(setKeyPair(kp.toState()));
   }
 
   export function get(): KeyPair {
     // if keys.publicKey or keys.privateKey is undefined (no key in the
     // storage), then a fresh instance is automatically created
-    const keysState: KeyPairState = getStore().getState().keyPair;
+    const keysState: KeyPairState | undefined = getKeyPairState(getStore().getState()).keyPair;
 
-    if (keysState === null || keysState === undefined) {
+    if (!keysState) {
       // create new pair of keys
       const pair = sign.keyPair();
 

@@ -17,6 +17,7 @@ type internalMessage struct {
 	WitnessSignatures []PublicKeySignaturePair `json:"witness_signatures"`
 }
 
+// Message represents the `params.Message` field in the payload.
 type Message struct {
 	MessageID         []byte                   `json:"message_id"`
 	Data              Data                     `json:"data"`
@@ -26,6 +27,7 @@ type Message struct {
 	RawData           []byte
 }
 
+// NewMessage returns an instance of a `Message`.
 func NewMessage(sender PublicKey, signature Signature, witnessSignatures []PublicKeySignaturePair, data Data) (*Message, error) {
 	msg := &Message{
 		Data:              data,
@@ -51,6 +53,7 @@ func NewMessage(sender PublicKey, signature Signature, witnessSignatures []Publi
 	return msg, nil
 }
 
+// MarshalJSON implements custom marshaling logic for a Message.
 func (m Message) MarshalJSON() ([]byte, error) {
 
 	var dataBuf []byte
@@ -74,6 +77,7 @@ func (m Message) MarshalJSON() ([]byte, error) {
 	return json.Marshal(tmp)
 }
 
+// UnmarshalJSON implements custom unmarshaling logic for a Message.
 func (m *Message) UnmarshalJSON(data []byte) error {
 	tmp := &internalMessage{}
 	err := json.Unmarshal(data, tmp)
@@ -90,6 +94,9 @@ func (m *Message) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// VerifyAndUnmarshalData verifies the signature in the Message and returns an
+// error in case of failure. If the verification suceeds it tries to unmarshal
+// the RawData field into one of the implementations of `Data`.
 func (m *Message) VerifyAndUnmarshalData() error {
 	err := schnorr.VerifyWithChecks(student20_pop.Suite, m.Sender, m.RawData, m.Signature)
 	if err != nil {

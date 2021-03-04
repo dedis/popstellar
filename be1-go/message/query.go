@@ -6,6 +6,7 @@ import (
 	"golang.org/x/xerrors"
 )
 
+// Query represents a Query PoP message which may be one of the given types.
 type Query struct {
 	Subscribe   *Subscribe
 	Unsubscribe *Unsubscribe
@@ -14,41 +15,48 @@ type Query struct {
 	Broadcast   *Broadcast
 }
 
+// Subscribe represents a Subscribe message.
 type Subscribe struct {
 	ID     int    `json:"id"`
 	Method string `json:"method"`
 	Params Params `json:"params"`
 }
 
+// Params represents the Params field in a Query.
 type Params struct {
 	Channel string `json:"channel"`
 
 	Message *Message `json:"message"`
 }
 
+// Unsubscribe represents the Unsubscribe message.
 type Unsubscribe struct {
 	ID     int    `json:"id"`
 	Method string `json:"method"`
 	Params Params `json:"params"`
 }
 
+// Publish represents a Publish message.
 type Publish struct {
 	ID     int    `json:"id"`
 	Method string `json:"method"`
 	Params Params `json:"params"`
 }
 
+// Catchup represents a catchup message.
 type Catchup struct {
 	ID     int    `json:"id"`
 	Method string `json:"method"`
 	Params Params `json:"params"`
 }
 
+// Broadcast represents a broadcast message.
 type Broadcast struct {
 	Method string `json:"method"`
 	Params Params `json:"params"`
 }
 
+// UnmarshalJSON impelments custom unmarshaling logic for a query.
 func (q *Query) UnmarshalJSON(data []byte) error {
 	type internal struct {
 		Method string `json:"method"`
@@ -117,6 +125,7 @@ func (q *Query) UnmarshalJSON(data []byte) error {
 	}
 }
 
+// GetChannel returns the channel associated with a query.
 func (q *Query) GetChannel() string {
 	if q.Subscribe != nil {
 		return q.Subscribe.Params.Channel
@@ -133,6 +142,7 @@ func (q *Query) GetChannel() string {
 	return ""
 }
 
+// GetMethod returns the method associated with a query.
 func (q *Query) GetMethod() string {
 	if q.Subscribe != nil {
 		return q.Subscribe.Method
@@ -149,6 +159,7 @@ func (q *Query) GetMethod() string {
 	return ""
 }
 
+// GetID returns the ID associated with a query.
 func (q *Query) GetID() int {
 	if q.Subscribe != nil {
 		return q.Subscribe.ID
@@ -162,6 +173,7 @@ func (q *Query) GetID() int {
 	return -1
 }
 
+// MarshalJSON implements custom marshaling logic for a query.
 func (q Query) MarshalJSON() ([]byte, error) {
 	type internal struct {
 		JSONRpc     string `json:"jsonrpc"`
@@ -184,6 +196,7 @@ func (q Query) MarshalJSON() ([]byte, error) {
 	return json.Marshal(tmp)
 }
 
+// NewBroadcast creates a new instance of a broadcast message.
 func NewBroadcast(channel string, msg *Message) *Broadcast {
 	return &Broadcast{
 		Method: "broadcast",

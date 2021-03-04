@@ -6,7 +6,7 @@ const aliases = {
   protocol: path.resolve(__dirname, '../protocol'),
 };
 
-module.exports = async function (env, argv) {
+async function configAsync(env, argv) {
   const config = await createExpoWebpackConfigAsync(env, argv);
 
   config.resolve.alias = {
@@ -15,4 +15,6 @@ module.exports = async function (env, argv) {
   };
 
   return config;
-};
+}
+
+module.exports = configAsync;

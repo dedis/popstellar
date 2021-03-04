@@ -5,14 +5,12 @@ import {
 import PropTypes from 'prop-types';
 
 import { Colors } from 'styles';
+import stylesCircularButton from 'styles/stylesheets/circlarButton';
 
 /**
- * Recorder button component: a design button
+ * Recorder button that executes an onPress action given in props
  *
- * Show a recorder button that apply the function action
- * when it is press.
- *
- * use action parameter to define the onPress action
+ * Displays a different icon depending if the witness is currently recording or not
 */
 
 const styles = StyleSheet.create({
@@ -24,37 +22,29 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderRadius: 30,
   },
-  button: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 80,
-    height: 80,
-    backgroundColor: Colors.red,
-    borderRadius: 80,
-  },
 });
 
-interface IPropTypes {
-  action: () => any;
-}
-
 function RecorderButton({ action }: IPropTypes) {
-  const [isRecording, toggleRecording] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
 
   return (
-    <View>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => { action(); toggleRecording(!isRecording); }}
-      >
-        <View style={[styles.center, { borderRadius: isRecording ? 5 : 30 }]} />
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity
+      style={[stylesCircularButton.button, { backgroundColor: Colors.red }]}
+      onPress={() => {
+        action();
+        setIsRecording(!isRecording);
+      }}
+    >
+      <View style={[styles.center, { borderRadius: isRecording ? 5 : 30 }]} />
+    </TouchableOpacity>
   );
 }
 
-RecorderButton.propTypes = {
+const propTypes = {
   action: PropTypes.func.isRequired,
 };
+RecorderButton.prototype = propTypes;
+
+type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default RecorderButton;

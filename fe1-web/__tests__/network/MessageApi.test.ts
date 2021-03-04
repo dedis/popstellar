@@ -5,7 +5,7 @@ import '../utils/matchers';
 import testKeyPair from 'test_data/keypair.json';
 
 import * as msApi from 'network/MessageApi';
-import * as wsApi from 'network/WebsocketApi';
+import * as wsApi from 'network/JsonRpcApi';
 import { storeInit } from 'store/Storage';
 import { KeyPairStore, OpenedLaoStore } from 'store';
 import {
@@ -38,10 +38,10 @@ publicKeyMock.mockImplementation(() => new PublicKey(testKeyPair.publicKey));
 const privateKeyMock = mockFunction(KeyPairStore.getPrivateKey);
 privateKeyMock.mockImplementation(() => new PrivateKey(testKeyPair.privateKey));
 
-jest.mock('network/WebsocketApi.ts');
+jest.mock('network/JsonRpcApi.ts');
 const publishMock = mockFunction(wsApi.publish);
 
-let mockedFn: (m: MessageData) => void = () => {};
+let mockedFn: (m: MessageData) => Promise<void> = () => Promise.resolve();
 
 // @ts-ignore
 publishMock.mockImplementation(
@@ -49,7 +49,10 @@ publishMock.mockImplementation(
 );
 
 function setMockCheck(fn: (m: MessageData) => void) {
-  mockedFn = fn;
+  mockedFn = (m: MessageData) => {
+    fn(m);
+    return Promise.resolve();
+  };
 }
 
 jest.mock('model/objects/Timestamp');
@@ -63,9 +66,9 @@ export const sampleCreateLaoQuery = '{"jsonrpc":"2.0","method":"publish","params
 
 export const mockEventName = 'Random Name';
 export const mockLocation = 'EPFL';
-export const mockCreationTime = 1609455600;
-export const mockStartTime = 1735685990;
-export const mockEndTime = 1735686000;
+export const mockCreationTime = new Timestamp(1609455600);
+export const mockStartTime = new Timestamp(1735685990);
+export const mockEndTime = new Timestamp(1735686000);
 export const mockRollCallId = 100;
 
 const defaultDataFields = ['object', 'action'];
@@ -415,68 +418,68 @@ describe('=== WebsocketApi tests ===', () => {
   /* NOTE: checks are done in checkRequests since msApi.request* return void */
 
   describe('network.WebsocketApi', () => {
-    it('should create the correct request for requestCreateLao', () => {
+    it('should create the correct request for requestCreateLao', async () => {
       setMockCheck(checkDataCreateLao);
-      msApi.requestCreateLao(mockEventName);
+      await msApi.requestCreateLao(mockEventName);
     });
 
-    it('should create the correct request for requestUpdateLao', () => {
+    it('should create the correct request for requestUpdateLao', async () => {
       setMockCheck(checkDataUpdateLao);
-      msApi.requestUpdateLao(mockEventName);
+      await msApi.requestUpdateLao(mockEventName);
     });
 
-    it('should create the correct request for requestStateLao', () => {
+    it('should create the correct request for requestStateLao', async () => {
       setMockCheck(checkDataStateLao);
-      msApi.requestStateLao();
+      await msApi.requestStateLao();
     });
 
-    it('should create the correct request for requestCreateMeeting', () => {
+    it('should create the correct request for requestCreateMeeting', async () => {
       setMockCheck(checkDataCreateMeeting);
       const mockExtra = { numberParticipants: 12, minAge: 18 };
-      msApi.requestCreateMeeting(mockEventName, mockStartTime);
-      msApi.requestCreateMeeting(mockEventName, mockStartTime, mockLocation);
-      msApi.requestCreateMeeting(mockEventName, mockStartTime, mockLocation, mockEndTime);
-      msApi.requestCreateMeeting(
+      await msApi.requestCreateMeeting(mockEventName, mockStartTime);
+      await msApi.requestCreateMeeting(mockEventName, mockStartTime, mockLocation);
+      await msApi.requestCreateMeeting(mockEventName, mockStartTime, mockLocation, mockEndTime);
+      await msApi.requestCreateMeeting(
         mockEventName, mockStartTime, mockLocation, mockEndTime, mockExtra,
       );
     });
     /*
     it('should create the correct request for requestStateMeeting', function () {
-      msApi.requestStateMeeting(mockStartTime);
+      await msApi.requestStateMeeting(mockStartTime);
     });
 */
-    it('should create the correct request for requestWitnessMessage', () => {
+    it('should create the correct request for requestWitnessMessage', async () => {
       setMockCheck(checkDataWitnessMessage);
-      msApi.requestWitnessMessage('/root', Base64Data.encode('randomMessageId'));
+      await msApi.requestWitnessMessage('/root', Base64Data.encode('randomMessageId'));
     });
 
-    it('should create the correct request for requestCreateRollCall', () => {
+    it('should create the correct request for requestCreateRollCall', async () => {
       setMockCheck(checkDataCreateRollCall);
       const mockScheduledTime = mockStartTime + 1;
       const mockDescription = 'random description';
-      msApi.requestCreateRollCall(mockEventName, mockLocation, mockStartTime);
-      msApi.requestCreateRollCall(mockEventName, mockLocation, undefined, mockScheduledTime);
-      msApi.requestCreateRollCall(
+      await msApi.requestCreateRollCall(mockEventName, mockLocation, mockStartTime);
+      await msApi.requestCreateRollCall(mockEventName, mockLocation, undefined, mockScheduledTime);
+      await msApi.requestCreateRollCall(
         mockEventName, mockLocation, mockStartTime, undefined, mockDescription,
       );
-      msApi.requestCreateRollCall(
+      await msApi.requestCreateRollCall(
         mockEventName, mockLocation, undefined, mockScheduledTime, mockDescription,
       );
     });
     /*
     it('should create the correct request for requestOpenRollCall', function () {
-      msApi.requestOpenRollCall(mockRollCallId);
-      msApi.requestOpenRollCall(mockRollCallId, mockStartTime);
+      await msApi.requestOpenRollCall(mockRollCallId);
+      await msApi.requestOpenRollCall(mockRollCallId, mockStartTime);
     });
 
     it('should create the correct request for requestReopenRollCall', function () {
-      msApi.requestReopenRollCall(mockRollCallId);
-      msApi.requestReopenRollCall(mockRollCallId, mockStartTime);
+      await msApi.requestReopenRollCall(mockRollCallId);
+      await msApi.requestReopenRollCall(mockRollCallId, mockStartTime);
     });
 
     it('should create the correct request for requestCloseRollCall', function () {
-      msApi.requestCloseRollCall(mockRollCallId, []);
-      msApi.requestCloseRollCall(mockRollCallId, [
+      await msApi.requestCloseRollCall(mockRollCallId, []);
+      await msApi.requestCloseRollCall(mockRollCallId, [
         'xjHAz+d0udy1XfHp5qugskWJVEGZETN/8DV3+ccOFSs=',
         'mK0eAXHPPlxySr1erjOhZNlKz34/+nJ1hi1Sph66fas='
       ]);

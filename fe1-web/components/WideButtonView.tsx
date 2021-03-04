@@ -15,12 +15,14 @@ const styles = StyleSheet.create({
 const WideButtonView = (props: IPropTypes) => {
   const { title } = props;
   const { onPress } = props;
+  const { disabled } = props;
 
   return (
     <View style={styles.wideButtonView}>
       <Button
         title={title}
         onPress={onPress}
+        disabled={!!disabled}
       />
     </View>
   );
@@ -29,8 +31,13 @@ const WideButtonView = (props: IPropTypes) => {
 const propTypes = {
   title: PropTypes.string.isRequired,
   onPress: PropTypes.func.isRequired,
+  disabled: PropTypes.bool,
 };
 WideButtonView.propTypes = propTypes;
+
+WideButtonView.defaultProps = {
+  disabled: false,
+};
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
