@@ -2,6 +2,7 @@ package db
 
 import (
 	"encoding/base64"
+	"fmt"
 	"io/ioutil"
 	"student20_pop/message"
 	"sync"
@@ -12,10 +13,7 @@ import (
 )
 
 func TestSQLite_NewRepository(t *testing.T) {
-	dir, err := ioutil.TempDir("", "pop")
-	require.NoError(t, err)
-
-	repo, err := NewSQLiteRepository(dir + "/test.db")
+	repo, err := createRepo("test.db")
 	require.NoError(t, err)
 
 	err = repo.Close()
@@ -23,10 +21,7 @@ func TestSQLite_NewRepository(t *testing.T) {
 }
 
 func TestSQLite_AddMessage(t *testing.T) {
-	dir, err := ioutil.TempDir("", "pop")
-	require.NoError(t, err)
-
-	repo, err := NewSQLiteRepository(dir + "/add_message.db")
+	repo, err := createRepo("add_message.db")
 	require.NoError(t, err)
 
 	defer repo.Close()
@@ -34,49 +29,60 @@ func TestSQLite_AddMessage(t *testing.T) {
 	channelID := "12345"
 	timestamp := message.Timestamp(time.Now().UnixNano())
 
-	data, err := message.NewCreateLAOData("test", timestamp, []byte{1, 2, 3, 4}, []message.PublicKey{})
+	msg, err := createMessage(0, timestamp)
 	require.NoError(t, err)
-
-	msg := message.Message{
-		MessageID:         []byte{6, 7, 8, 9, 10},
-		Data:              data,
-		Sender:            []byte{1, 2, 3, 4},
-		Signature:         []byte{1, 2, 3, 4},
-		WitnessSignatures: []message.PublicKeySignaturePair{},
-	}
 
 	err = repo.AddMessage(channelID, msg, timestamp)
 	require.NoError(t, err)
 }
 
-func TestSQLite_GetMessages(t *testing.T) {
-	dir, err := ioutil.TempDir("", "pop")
-	require.NoError(t, err)
+func createMessage(i int, timestamp message.Timestamp) (message.Message, error) {
+	data, err := message.NewCreateLAOData("test", timestamp, []byte{1, 2, 3, byte(i)}, []message.PublicKey{})
+	if err != nil {
+		return message.Message{}, err
+	}
 
-	repo, err := NewSQLiteRepository(dir + "/get_messages.db")
+	msg := message.Message{
+		MessageID:         []byte{6, 7, 8, 9, byte(i)},
+		Data:              data,
+		Sender:            []byte{1, 2, 3, byte(i)},
+		Signature:         []byte{1, 2, 3, byte(i)},
+		WitnessSignatures: []message.PublicKeySignaturePair{},
+	}
+
+	return msg, nil
+}
+
+func addMessages(repo Repository, channelID string, limit int) (int64, error) {
+	now := time.Now().UnixNano()
+
+	for i := 0; i < limit; i++ {
+		timestamp := message.Timestamp(now + int64(i))
+
+		msg, err := createMessage(i, timestamp)
+		if err != nil {
+			return 0, err
+		}
+
+		err = repo.AddMessage(channelID, msg, timestamp)
+		if err != nil {
+			return 0, err
+		}
+	}
+
+	return now, nil
+}
+
+func TestSQLite_GetMessages(t *testing.T) {
+	repo, err := createRepo("get_messages.db")
 	require.NoError(t, err)
 
 	defer repo.Close()
 
 	channelID := "12345"
-	now := time.Now().UnixNano()
 
-	for i := 0; i < 100; i++ {
-		timestamp := message.Timestamp(now + int64(i))
-		data, err := message.NewCreateLAOData("test", timestamp, []byte{1, 2, 3, 4}, []message.PublicKey{})
-		require.NoError(t, err)
-
-		msg := message.Message{
-			MessageID:         []byte{6, 7, 8, 9, byte(i)},
-			Data:              data,
-			Sender:            []byte{1, 2, 3, 4},
-			Signature:         []byte{1, 2, 3, 4},
-			WitnessSignatures: []message.PublicKeySignaturePair{},
-		}
-
-		err = repo.AddMessage(channelID, msg, timestamp)
-		require.NoError(t, err)
-	}
+	_, err = addMessages(repo, channelID, 100)
+	require.NoError(t, err)
 
 	messages, err := repo.GetMessages(channelID)
 	require.NoError(t, err)
@@ -85,33 +91,14 @@ func TestSQLite_GetMessages(t *testing.T) {
 }
 
 func TestSQLite_GetMessagesInRange(t *testing.T) {
-	dir, err := ioutil.TempDir("", "pop")
-	require.NoError(t, err)
-
-	repo, err := NewSQLiteRepository(dir + "/get_messages_range.db")
+	repo, err := createRepo("get_messages_range.db")
 	require.NoError(t, err)
 
 	defer repo.Close()
 
 	channelID := "12345"
-	now := time.Now().UnixNano()
-
-	for i := 0; i < 100; i++ {
-		timestamp := message.Timestamp(now + int64(i))
-		data, err := message.NewCreateLAOData("test", timestamp, []byte{1, 2, 3, 4}, []message.PublicKey{})
-		require.NoError(t, err)
-
-		msg := message.Message{
-			MessageID:         []byte{6, 7, 8, 9, byte(i)},
-			Data:              data,
-			Sender:            []byte{1, 2, 3, 4},
-			Signature:         []byte{1, 2, 3, 4},
-			WitnessSignatures: []message.PublicKeySignaturePair{},
-		}
-
-		err = repo.AddMessage(channelID, msg, timestamp)
-		require.NoError(t, err)
-	}
+	now, err := addMessages(repo, channelID, 100)
+	require.NoError(t, err)
 
 	start := message.Timestamp(now + int64(20))
 	end := message.Timestamp(now + int64(50))
@@ -122,10 +109,7 @@ func TestSQLite_GetMessagesInRange(t *testing.T) {
 }
 
 func TestSQLite_AddWitnessToMessage(t *testing.T) {
-	dir, err := ioutil.TempDir("", "pop")
-	require.NoError(t, err)
-
-	repo, err := NewSQLiteRepository(dir + "/add_witness.db")
+	repo, err := createRepo("add_witness.db")
 	require.NoError(t, err)
 
 	defer repo.Close()
@@ -133,16 +117,8 @@ func TestSQLite_AddWitnessToMessage(t *testing.T) {
 	channelID := "12345"
 	timestamp := message.Timestamp(time.Now().UnixNano())
 
-	data, err := message.NewCreateLAOData("test", timestamp, []byte{1, 2, 3, 4}, []message.PublicKey{})
+	msg, err := createMessage(1, timestamp)
 	require.NoError(t, err)
-
-	msg := message.Message{
-		MessageID:         []byte{6, 7, 8, 9, 10},
-		Data:              data,
-		Sender:            []byte{1, 2, 3, 4},
-		Signature:         []byte{1, 2, 3, 4},
-		WitnessSignatures: []message.PublicKeySignaturePair{},
-	}
 
 	messageID := base64.StdEncoding.EncodeToString(msg.MessageID)
 
@@ -190,4 +166,18 @@ func TestSQLite_AddWitnessToMessage(t *testing.T) {
 	for _, v := range counts {
 		require.Equal(t, 1, v)
 	}
+}
+
+func createRepo(dbName string) (Repository, error) {
+	dir, err := ioutil.TempDir("", "pop")
+	if err != nil {
+		return nil, err
+	}
+
+	repo, err := NewSQLiteRepository(fmt.Sprintf("%s/%s", dir, dbName))
+	if err != nil {
+		return nil, err
+	}
+
+	return repo, nil
 }
