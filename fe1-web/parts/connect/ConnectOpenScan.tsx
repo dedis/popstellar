@@ -7,8 +7,6 @@ import PropTypes from 'prop-types';
 import TextBlock from 'components/TextBlock';
 import CameraButton from 'components/CameraButton';
 import styleContainer from 'styles/stylesheets/container';
-import QRCodeButton from "../../components/QRCodeButton";
-import QRCodeDisplay from "../../components/QRCodeDisplay";
 
 /**
  * Starts a QR code scan
@@ -30,7 +28,6 @@ const ConnectOpenScan = ({ navigation }: IPropTypes) => {
     <View style={styleContainer.anchoredCenter}>
       <TextBlock text={STRINGS.connect_scanning_camera_view} />
       <CameraButton action={() => { navigation.navigate(STRINGS.connect_connecting_title); }} />
-      <QRCodeDisplay value="1234567890" />
     </View>
   );
 };

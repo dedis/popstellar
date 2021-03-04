@@ -11,7 +11,7 @@ import TextBlock from 'components/TextBlock';
  * Manage the Identity screen. A user may decide to participate anonymously to a
  * LAO or share personal information
  *
- * TODO create and show a QR code when the user decides to share personal info
+ * TODO Center the QR code
 */
 
 const placeholderBasic: string[] = [
