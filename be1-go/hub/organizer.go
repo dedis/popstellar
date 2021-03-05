@@ -531,7 +531,7 @@ func (c *laoChannel) createElection(msg message.Message) error {
 
 	// Check if the Lao ID of the message corresponds to the channel ID
 	encodedLaoID := base64.StdEncoding.EncodeToString(data.Lao)
-	channelID := c.channelID[:6]
+	channelID := c.channelID[6:]
 	if channelID != encodedLaoID {
 		return &message.Error{
 			Code:        -4,
