@@ -12,6 +12,7 @@ import { getLaosState } from './LaoReducer';
 interface EventReducerState {
   byId: Record<string, LaoEventState>,
   allIds: string[],
+  idAlias: Record<string, string>,
 }
 
 interface EventLaoReducerState {
@@ -26,6 +27,7 @@ const initialState: EventLaoReducerState = {
           [evt.id]: evt,
         }))),
       allIds: eventsData.map((evt) => evt.id),
+      idAlias: {},
     },
   },
 };
@@ -52,40 +54,52 @@ const eventsSlice = createSlice({
           state.byLaoId[laoId] = {
             byId: {},
             allIds: [],
+            idAlias: {},
           };
         }
 
         // find the index of the first element which starts later
         // (or starts at the same time and ends afterwards)
-        const insertIdx = state.byLaoId[laoId].allIds.findIndex((id) => (
-          state.byLaoId[laoId].byId[id].start > event.start
-          || (state.byLaoId[laoId].byId[id].start === event.start
-            && state.byLaoId[laoId].byId[id].end > event.end
-          )));
+        const insertIdx = state.byLaoId[laoId].allIds.findIndex((id) => {
+          const existingEvt = state.byLaoId[laoId].byId[id];
+          return existingEvt.start > event.start
+            || (existingEvt.start === event.start && (existingEvt.end || 0) > (event.end || 0));
+        });
 
         state.byLaoId[laoId].byId[event.id] = event;
         state.byLaoId[laoId].allIds.splice(insertIdx, 0, event.id);
+        if (event.idAlias) {
+          state.byLaoId[laoId].idAlias[event.idAlias] = event.id;
+        }
       },
     },
 
     // Update an Event in the list of known Events
     updateEvent: {
-      prepare(laoId: Hash | string, event: LaoEventState): any {
-        return { payload: { laoId: laoId.valueOf(), event: event } };
+      prepare(laoId: Hash | string, event: LaoEventState, alias?: Hash | string): any {
+        return { payload: { laoId: laoId.valueOf(), event: event, alias: alias?.valueOf() } };
       },
       reducer(state, action: PayloadAction<{
         laoId: string;
         event: LaoEventState;
+        alias?: string;
       }>) {
-        const { laoId /* , event */ } = action.payload;
+        const { laoId, event } = action.payload;
 
         // Lao not initialized, return
         if (!(laoId in state.byLaoId)) {
           return;
         }
 
-        // TODO: to be implemented
-        console.error('events/UpdateEvent is not implemented');
+        const oldAlias = state.byLaoId[laoId].byId[event.id].idAlias;
+        if (oldAlias) {
+          delete state.byLaoId[laoId].idAlias[oldAlias];
+        }
+
+        state.byLaoId[laoId].byId[event.id] = event;
+        if (event.idAlias) {
+          state.byLaoId[laoId].idAlias[event.idAlias] = event.id;
+        }
       },
     },
 
@@ -100,7 +114,7 @@ const eventsSlice = createSlice({
       }>) {
         const { laoId, eventId } = action.payload;
 
-        // Lao not initialized, create it in the event state tree
+        // Lao not initialized, return
         if (!(laoId in state.byLaoId)) {
           return;
         }
@@ -118,7 +132,7 @@ const eventsSlice = createSlice({
 });
 
 export const {
-  addEvent, removeEvent, clearAllEvents,
+  addEvent, updateEvent, removeEvent, clearAllEvents,
 } = eventsSlice.actions;
 
 export const getEventsState = (state: any): EventLaoReducerState => state[eventReducerPath];
@@ -136,10 +150,26 @@ export const makeEventsList = () => createSelector(
     }
 
     return eventMap.byLaoId[laoId].allIds
-      .map((id) : LaoEvent | undefined => eventFromState(eventMap.byLaoId[laoId].byId[id]))
+      .map((id): LaoEvent | undefined => eventFromState(eventMap.byLaoId[laoId].byId[id]))
       .filter((e) => !!e) as LaoEvent[];
     // need to assert that it is an Event[] because of TypeScript limitations as described here:
     // https://github.com/microsoft/TypeScript/issues/16069
+  },
+);
+
+export const makeEventsAliasMap = () => createSelector(
+  // First input: Get all events across all LAOs
+  (state) => getEventsState(state),
+  // Second input: get the current LAO id,
+  (state) => getLaosState(state).currentId,
+  // Selector: returns a map of ids -> LaoEvents' ids
+  (eventMap: EventLaoReducerState, laoId: string | undefined)
+  : Record<string, string> => {
+    if (!laoId) {
+      return {};
+    }
+
+    return eventMap.byLaoId[laoId].idAlias;
   },
 );
 
@@ -148,7 +178,7 @@ export const makeEventsMap = () => createSelector(
   (state) => getEventsState(state),
   // Second input: get the current LAO id,
   (state) => getLaosState(state).currentId,
-  // Selector: returns an array of EventStates -- should it return an array of Event objects?
+  // Selector: returns a map of ids -> LaoEvents
   (eventMap: EventLaoReducerState, laoId: string | undefined)
   : Record<string, LaoEvent> => {
     if (!laoId) {

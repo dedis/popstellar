@@ -9,9 +9,6 @@ import * as wsApi from 'network/JsonRpcApi';
 import { storeInit } from 'store/Storage';
 import { KeyPairStore, OpenedLaoStore } from 'store';
 import {
-  Base64Data, Hash, Lao, PrivateKey, PublicKey, Timestamp, KeyPair,
-} from 'model/objects';
-import {
   ActionType, CloseRollCall,
   CreateLao, CreateMeeting, CreateRollCall,
   MessageData,
@@ -19,6 +16,9 @@ import {
   StateLao, StateMeeting,
   UpdateLao, WitnessMessage,
 } from 'model/network/method/message/data';
+import {
+  Base64Data, Hash, Lao, PrivateKey, PublicKey, Timestamp, KeyPair,
+} from 'model/objects';
 import { Channel } from 'model/objects/Channel';
 
 function mockFunction<T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> {
