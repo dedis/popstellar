@@ -163,12 +163,12 @@ export function handleRollCallMessage(msg: Message) {
     case ActionType.OPEN:
       return handleRollCallOpenMessage(msg);
 
-    case ActionType.REOPEN:
-      // TODO: implement this logic
-      return false;
-
     case ActionType.CLOSE:
       return handleRollCallCloseMessage(msg);
+
+    case ActionType.REOPEN:
+      // TODO: implement this logic
+      // fallthrough
 
     default:
       console.warn('A LAO message was received but'
