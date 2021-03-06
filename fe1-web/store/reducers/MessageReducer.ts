@@ -168,7 +168,7 @@ export function makeLaoMessagesState() {
 export function getLaoMessagesState(laoId: Hash | string, state: any): MessageReducerState {
   const id = laoId.valueOf();
   const msgState = getMessagesState(state);
-  if (id in msgState.byLaoId) {
+  if (msgState && id in msgState.byLaoId) {
     return msgState.byLaoId[id];
   }
   return {

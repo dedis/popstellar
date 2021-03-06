@@ -11,7 +11,7 @@ import { storeInit } from 'store/Storage';
 import AppNavigation from 'navigation/AppNavigation';
 import { navigationRef } from 'navigation/RootNavigation';
 
-import { configureRpcHandler } from 'ingestion';
+import { configureIngestion } from 'ingestion';
 
 /*
 * The starting point of the app
@@ -24,7 +24,7 @@ import { configureRpcHandler } from 'ingestion';
 
 export default function App() {
   const { store, persist } = storeInit();
-  configureRpcHandler();
+  configureIngestion();
 
   return (
     <Provider store={store}>
