@@ -1,5 +1,5 @@
 import {
-  EventTags, Hash, Lao, PublicKey, Timestamp,
+  EventTags, Hash, Lao, PublicKey, RollCall, Timestamp,
 } from 'model/objects';
 import {
   CreateLao,
@@ -10,11 +10,11 @@ import {
   WitnessMessage,
 } from 'model/network/method/message/data';
 import { Channel, channelFromId, ROOT_CHANNEL } from 'model/objects/Channel';
-import { OpenedLaoStore, KeyPairStore } from 'store';
+import { OpenedLaoStore, KeyPairStore, dispatch, connectToLao, addEvent } from 'store';
 import { publish } from 'network/JsonRpcApi';
 
 /** Send a server query asking for the creation of a LAO with a given name (String) */
-export function requestCreateLao(laoName: string) {
+export function requestCreateLao(laoName: string): Promise<Hash> {
   const time = Timestamp.EpochNow();
   const pubKey = KeyPairStore.getPublicKey();
 
@@ -26,7 +26,18 @@ export function requestCreateLao(laoName: string) {
     witnesses: [],
   });
 
-  return publish(ROOT_CHANNEL, message);
+  return publish(ROOT_CHANNEL, message).then(() => {
+    const lao = new Lao({
+      id: message.id,
+      name: message.name,
+      creation: message.creation,
+      last_modified: message.creation,
+      organizer: message.organizer,
+      witnesses: message.witnesses,
+    });
+    dispatch(connectToLao(lao.toState()));
+    return message.id;
+  });
 }
 
 /** Send a server query asking for a LAO update providing a new name (String) */
@@ -149,7 +160,18 @@ export function requestCreateRollCall(
     roll_call_description: description,
   });
 
-  return publish(channelFromId(currentLao.id), message);
+  return publish(channelFromId(currentLao.id), message)
+    .then(() => {
+      const rc = new RollCall({
+        id: message.id,
+        name: message.name,
+        creation: message.creation,
+        location: message.location,
+        start: message.start || message.scheduled,
+        description: message.roll_call_description,
+      });
+      dispatch(addEvent(currentLao.id, rc.toState()));
+    });
 }
 
 /** Send a server query asking for the opening of a roll call given its id (Number) and an
