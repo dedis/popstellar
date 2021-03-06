@@ -50,27 +50,26 @@ const CreateRollCall = ({ route }: any) => {
 
   const buttonsVisibility: boolean = (rollCallName !== '' && rollCallLocation !== '');
 
-  const onConfirmPress = () => {
+  const createRollCall = (scheduled: boolean) => {
     const description = (rollCallDescription === '') ? undefined : rollCallDescription;
-    requestCreateRollCall(rollCallName, rollCallLocation, undefined, startDate, rollCallDescription)
+    requestCreateRollCall(
+      rollCallName, rollCallLocation,
+      scheduled ? undefined : startDate,
+      scheduled ? startDate : undefined,
+      description,
+    )
       .then(() => {
+        // TODO: would need to go back to the Event page instead
         navigation.goBack();
       })
       .catch((err) => {
-        console.error('Could not create roll call, error:', err)
+        console.error('Could not create roll call, error:', err);
       });
   };
 
-  const onOpenPress = () => {
-    const description = (rollCallDescription === '') ? undefined : rollCallDescription;
-    requestCreateRollCall(rollCallName, rollCallLocation, startDate, undefined, description)
-      .then(() => {
-        navigation.goBack();
-      })
-      .catch((err) => {
-        console.error('Could not create roll call, error:', err)
-      });
-  };
+  const onConfirmPress = () => createRollCall(true);
+
+  const onOpenPress = () => createRollCall(false);
 
   return (
     <ScrollView>

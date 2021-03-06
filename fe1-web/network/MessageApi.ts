@@ -9,8 +9,12 @@ import {
   UpdateLao,
   WitnessMessage,
 } from 'model/network/method/message/data';
-import { Channel, channelFromId, ROOT_CHANNEL } from 'model/objects/Channel';
-import { OpenedLaoStore, KeyPairStore, dispatch, connectToLao, addEvent } from 'store';
+import {
+  Channel, channelFromId, ROOT_CHANNEL,
+} from 'model/objects/Channel';
+import {
+  OpenedLaoStore, KeyPairStore, dispatch, connectToLao, addEvent,
+} from 'store';
 import { publish } from 'network/JsonRpcApi';
 
 /** Send a server query asking for the creation of a LAO with a given name (String) */
