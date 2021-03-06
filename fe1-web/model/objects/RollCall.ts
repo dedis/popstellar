@@ -1,17 +1,21 @@
 import { LaoEvent, LaoEventState, LaoEventType } from './LaoEvent';
 import { Hash } from './Hash';
 import { Timestamp } from './Timestamp';
+import { PublicKey } from './PublicKey';
 
 export interface RollCallState extends LaoEventState {
   name: string;
   location: string;
-  description: string;
+  description?: string;
   creation: number;
   ongoing: boolean;
+  attendees?: string[];
 }
 
 export class RollCall implements LaoEvent {
   public readonly id: Hash;
+
+  public readonly idAlias?: Hash;
 
   public readonly name: string;
 
@@ -26,6 +30,8 @@ export class RollCall implements LaoEvent {
   public readonly end?: Timestamp;
 
   public readonly ongoing: boolean;
+
+  public readonly attendees?: PublicKey[];
 
   /* Not yet implemented:
    * This object should probably also keep a list of the time periods
@@ -55,6 +61,7 @@ export class RollCall implements LaoEvent {
     }
 
     this.id = obj.id;
+    this.idAlias = obj.idAlias;
     this.name = obj.name;
     this.location = obj.location;
     this.description = obj.description;
@@ -62,11 +69,13 @@ export class RollCall implements LaoEvent {
     this.start = obj.start;
     this.end = obj.end;
     this.ongoing = obj.ongoing || false;
+    this.attendees = obj.attendees;
   }
 
   public static fromState(rc: RollCallState): RollCall {
     return new RollCall({
       id: new Hash(rc.id),
+      idAlias: (rc.idAlias) ? new Hash(rc.idAlias) : undefined,
       name: rc.name,
       location: rc.location,
       description: rc.description,
@@ -74,6 +83,7 @@ export class RollCall implements LaoEvent {
       start: new Timestamp(rc.start),
       end: (rc.end) ? new Timestamp(rc.end) : undefined,
       ongoing: rc.ongoing,
+      attendees: rc.attendees?.map((a) => new PublicKey(a)),
     });
   }
 

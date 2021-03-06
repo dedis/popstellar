@@ -1,29 +1,28 @@
 import { JsonRpcMethod, JsonRpcRequest } from 'model/network';
 import { Broadcast } from 'model/network/method';
-import { Message } from 'model/network/method/message';
+import { Message, ExtendedMessage } from 'model/network/method/message';
+import { dispatch, addMessages, OpenedLaoStore } from 'store';
 
-/** Processes the message and sends it to storage
- *
- * The purpose of this method is to decouple the communication protocol from the storage layer.
- *
- * @param msg a Broadcast message
- */
-function handleBroadcastMessage(msg: Message) {
-  // Algorithm sketch:
-  // - process the message
-  // - transform it into a model/object as needed
-  // - send it to storage
+export function storeMessages(...msgs: Message[]) {
+  try {
+    // get the current LAO
+    const laoId = OpenedLaoStore.get().id;
 
-  // e.g. Lao/Create -> Lao -> dispatch ADD_LAO, SET_OPENED_LAO
-  // e.g. RollCall/Open -> validate -> RollCall (updated) -> dispatch UPDATE_EVENT
+    // create extended messages
+    const extMsgs = msgs.map((m: Message) => ExtendedMessage.fromMessage(m).toState());
 
-  console.warn('A message broadcast was received but'
-    + ' its processing logic is not yet implemented:', msg);
+    // send it to the store
+    dispatch(addMessages(laoId, extMsgs));
+  } catch (err) {
+    console.warn('Messages could not be stored, error:', err, msgs);
+  }
 }
+
+export const storeMessage = (msg: Message) => storeMessages(msg);
 
 export function handleRpcRequests(req: JsonRpcRequest) {
   if (req.method === JsonRpcMethod.BROADCAST) {
-    handleBroadcastMessage((req.params as Broadcast).message);
+    storeMessage((req.params as Broadcast).message);
   } else {
     console.warn('A request was received but it is currently unsupported:', req);
   }

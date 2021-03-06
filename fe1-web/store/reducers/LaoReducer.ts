@@ -40,6 +40,17 @@ const laosSlice = createSlice({
     // Add a LAO to the list of known LAOs
     addLao: addLaoReducer,
 
+    // Update a LAO
+    updateLao: (state: Draft<LaoReducerState>, action: PayloadAction<LaoState>) => {
+      const updatedLao = action.payload;
+
+      if (!(updatedLao.id in state.byId)) {
+        return;
+      }
+
+      state.byId[updatedLao.id] = updatedLao;
+    },
+
     // Remove a LAO to the list of known LAOs
     removeLao: (state, action: PayloadAction<Hash>) => {
       const laoId = action.payload.valueOf();
@@ -77,7 +88,7 @@ const laosSlice = createSlice({
 });
 
 export const {
-  addLao, removeLao, clearAllLaos, connectToLao, disconnectFromLao,
+  addLao, updateLao, removeLao, clearAllLaos, connectToLao, disconnectFromLao,
 } = laosSlice.actions;
 
 export const getLaosState = (state: any): LaoReducerState => state[laoReducerPath];
