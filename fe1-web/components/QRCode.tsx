@@ -5,6 +5,11 @@ import QRCodeDisplay from 'qrcode.react';
 import STRINGS from '../res/strings';
 import TextBlock from './TextBlock';
 
+const styles = {
+  textAlign: 'center',
+  padding: 10,
+};
+
 const QRCode = (props: IPropTypes) => {
   const identity = KeyPairStore.getPublicKey().toString();
   const { visibility } = props;
@@ -14,7 +19,9 @@ const QRCode = (props: IPropTypes) => {
   return (visibility)
     ? [
       <TextBlock text={STRINGS.identity_qrcode_description} />,
-      <QRCodeDisplay value={identity} size={size}  />,
+      <div style={styles}>
+        <QRCodeDisplay value={identity} size={size} />
+      </div>,
     ]
     : null;
 };
