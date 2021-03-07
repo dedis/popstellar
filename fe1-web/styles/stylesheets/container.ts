@@ -14,6 +14,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-evenly',
   },
+  topCenter: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
 });
 
 export default styles;
