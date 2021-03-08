@@ -10,4 +10,3 @@ export * from "./Lao";
 export * from "./RollCall";
 export * from "./LaoEvent";
 export * from "./LaoEventBuilder";
-export * from "./SimpleWalletObject";
