@@ -1,22 +1,20 @@
-import React, { useState } from 'react';
-import {
-  TouchableOpacity, View, ViewStyle,
-} from 'react-native';
-import { Spacing } from 'styles';
-import TextBlock from 'components/TextBlock';
-import styleEventView from 'styles/stylesheets/eventView';
-import ListCollapsibleIcon from 'components/eventList/ListCollapsibleIcon';
-import { useSelector } from 'react-redux';
-import ParagraphBlock from 'components/ParagraphBlock';
-import { Lao } from 'model/objects';
-import { makeCurrentLao } from 'store/reducers';
-import EdiText from 'react-editext';
+import React, { useState } from "react";
+import { TouchableOpacity, View, ViewStyle } from "react-native";
+import { Spacing } from "styles";
+import TextBlock from "components/TextBlock";
+import styleEventView from "styles/stylesheets/eventView";
+import ListCollapsibleIcon from "components/eventList/ListCollapsibleIcon";
+import { useSelector } from "react-redux";
+import ParagraphBlock from "components/ParagraphBlock";
+import { Lao } from "model/objects";
+import { makeCurrentLao } from "store/reducers";
+import EdiText from "react-editext";
 
 function renderProperties(lao: Lao) {
   const style = {
-    fontFamily: 'Helvetica Bold',
-    fontSize: '13px',
-    width: 200,
+    fontFamily: "Helvetica Bold",
+    fontSize: "13px",
+    width: 200
   };
   return (
     <>
@@ -26,13 +24,10 @@ function renderProperties(lao: Lao) {
         viewProps={{ style: style }}
         inputProps={{ style: style }}
         type="text"
-        onSave={
-          () => {
+        onSave={() => {
           // TODO: carry out the necessary LAO update interactions with the backend here
-        }
-        }
+        }}
         value={`${lao.name}`}
-        
       />
       <ParagraphBlock text="Lao creation: " />
       <EdiText
@@ -40,11 +35,9 @@ function renderProperties(lao: Lao) {
         viewProps={{ style: style }}
         inputProps={{ style: style }}
         type="text"
-        onSave={
-          () => {
+        onSave={() => {
           // TODO: carry out the necessary LAO update interactions with the backend here
-        }
-        }
+        }}
         value={`${lao.creation.toString()}`}
       />
     </>
@@ -57,17 +50,20 @@ const LaoProperties = () => {
 
   const [toggleChildrenVisible, setToggleChildrenVisible] = useState(false);
 
-  const toggleChildren = () => (setToggleChildrenVisible(!toggleChildrenVisible));
+  const toggleChildren = () => setToggleChildrenVisible(!toggleChildrenVisible);
 
   return (
     <>
       <TextBlock bold text="Lao Properties" />
       <View style={[styleEventView.default, { marginTop: Spacing.s }]}>
-        <TouchableOpacity onPress={toggleChildren} style={{ textAlign: 'right' } as ViewStyle}>
+        <TouchableOpacity
+          onPress={toggleChildren}
+          style={{ textAlign: "right" } as ViewStyle}
+        >
           <ListCollapsibleIcon isOpen={toggleChildrenVisible} />
         </TouchableOpacity>
 
-        { toggleChildrenVisible && lao && renderProperties(lao) }
+        {toggleChildrenVisible && lao && renderProperties(lao)}
       </View>
     </>
   );
