@@ -1,18 +1,16 @@
-import React from 'react';
-import {
-  Platform, StyleSheet,
-} from 'react-native';
-import { useSelector } from 'react-redux';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import React from "react";
+import { Platform, StyleSheet } from "react-native";
+import { useSelector } from "react-redux";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 
-import STRINGS from 'res/strings';
-import { makeCurrentLao } from 'store/reducers';
+import STRINGS from "res/strings";
+import { makeCurrentLao } from "store/reducers";
 
-import Attendee from 'parts/lao/attendee/Attendee';
-import Identity from 'parts/lao/Identity';
-import Home from 'parts/Home';
-import OrganizerNavigation from 'navigation/bars/organizer/OrganizerNavigation';
-import WitnessNavigation from 'navigation/bars/witness/WitnessNavigation';
+import Attendee from "parts/lao/attendee/Attendee";
+import Identity from "parts/lao/Identity";
+import Home from "parts/Home";
+import OrganizerNavigation from "navigation/bars/organizer/OrganizerNavigation";
+import WitnessNavigation from "navigation/bars/witness/WitnessNavigation";
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
 
@@ -24,16 +22,16 @@ const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
  *  - Lao tab (corresponding to user role)
  *  - Identity
  *  - name of the connected lao (fake link)
-*/
+ */
 const styles = StyleSheet.create({
   navigator: {
     ...Platform.select({
       web: {
-        width: '100vw',
+        width: "100vw"
       },
-      default: {},
-    }),
-  },
+      default: {}
+    })
+  }
 });
 
 function getLaoTabName(isOrganizer: boolean, isWitness: boolean): string {
@@ -61,10 +59,7 @@ function buildTabComponent(isOrganizer: boolean, isWitness: boolean) {
   }
 
   return (
-    <OrganizationTopTabNavigator.Screen
-      name={tabName}
-      component={component}
-    />
+    <OrganizationTopTabNavigator.Screen name={tabName} component={component} />
   );
 }
 
@@ -80,20 +75,19 @@ function LaoNavigation() {
   const isWitness: boolean = false; // TODO get isWitness directly
 
   const tabName: string = getLaoTabName(isOrganizer, isWitness);
-  const laoName: string = (lao) ? lao.name : STRINGS.unused;
+  const laoName: string = lao ? lao.name : STRINGS.unused;
 
   return (
     <OrganizationTopTabNavigator.Navigator
       style={styles.navigator}
       initialRouteName={tabName}
     >
-
       <OrganizationTopTabNavigator.Screen
         name={STRINGS.navigation_tab_home}
         component={Home}
       />
 
-      { buildTabComponent(isOrganizer, isWitness) }
+      {buildTabComponent(isOrganizer, isWitness)}
 
       <OrganizationTopTabNavigator.Screen
         name={STRINGS.organization_navigation_tab_identity}
@@ -104,10 +98,10 @@ function LaoNavigation() {
         name={laoName}
         component={DummyComponent}
         listeners={{
-          tabPress: (e) => {
+          tabPress: e => {
             // => do nothing
             e.preventDefault();
-          },
+          }
         }}
       />
     </OrganizationTopTabNavigator.Navigator>

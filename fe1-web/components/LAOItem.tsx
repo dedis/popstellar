@@ -1,32 +1,37 @@
-import React from 'react';
+import React from "react";
 import {
-  StyleSheet, View, Text, TouchableOpacity, TextStyle, ViewStyle,
-} from 'react-native';
-import PropTypes from 'prop-types';
-import { useNavigation } from '@react-navigation/native';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  TextStyle,
+  ViewStyle
+} from "react-native";
+import PropTypes from "prop-types";
+import { useNavigation } from "@react-navigation/native";
+import { connect } from "react-redux";
+import { Dispatch } from "redux";
 
-import { connectToLao as connectToLaoAction } from 'store';
-import { Lao } from 'model/objects';
+import { connectToLao as connectToLaoAction } from "store";
+import { Lao } from "model/objects";
 
-import STRINGS from 'res/strings';
-import { Spacing, Typography } from 'styles';
+import STRINGS from "res/strings";
+import { Spacing, Typography } from "styles";
 
 /**
-  * The LAO item component: name of LAO
-  *
-  * On click go to the organization screen and store the ID of the LAO for the organization screen
-*/
+ * The LAO item component: name of LAO
+ *
+ * On click go to the organization screen and store the ID of the LAO for the organization screen
+ */
 const styles = StyleSheet.create({
   view: {
-    marginBottom: Spacing.xs,
+    marginBottom: Spacing.xs
   } as ViewStyle,
   text: {
     ...Typography.base,
     borderWidth: 1,
-    borderRadius: 5,
-  } as TextStyle,
+    borderRadius: 5
+  } as TextStyle
 });
 
 const LAOItem = ({ LAO, connectToLao }: IPropTypes) => {
@@ -48,13 +53,13 @@ const LAOItem = ({ LAO, connectToLao }: IPropTypes) => {
 
 const propTypes = {
   LAO: PropTypes.instanceOf(Lao).isRequired,
-  connectToLao: PropTypes.func.isRequired,
+  connectToLao: PropTypes.func.isRequired
 };
 LAOItem.propTypes = propTypes;
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  connectToLao: (lao: Lao) => dispatch(connectToLaoAction(lao.toState())),
+  connectToLao: (lao: Lao) => dispatch(connectToLaoAction(lao.toState()))
 });
 
 export default connect(null, mapDispatchToProps)(LAOItem);

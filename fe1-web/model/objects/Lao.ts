@@ -1,6 +1,6 @@
-import { Timestamp } from './Timestamp';
-import { Hash } from './Hash';
-import { PublicKey } from './PublicKey';
+import { Timestamp } from "./Timestamp";
+import { Hash } from "./Hash";
+import { PublicKey } from "./PublicKey";
 
 export interface LaoState {
   name: string;
@@ -12,7 +12,7 @@ export interface LaoState {
 }
 
 export class Lao {
-  public readonly name: string;
+  public name: string;
 
   public readonly id: Hash;
 
@@ -26,7 +26,9 @@ export class Lao {
 
   constructor(obj: Partial<Lao>) {
     if (obj === undefined || obj === null) {
-      throw new Error('Error encountered while creating a LAO object: undefined/null parameters');
+      throw new Error(
+        "Error encountered while creating a LAO object: undefined/null parameters"
+      );
     }
 
     if (obj.id === undefined) {
@@ -63,7 +65,7 @@ export class Lao {
       creation: new Timestamp(lao.creation),
       last_modified: new Timestamp(lao.last_modified),
       organizer: new PublicKey(lao.organizer),
-      witnesses: lao.witnesses.map((w) => new PublicKey(w)),
+      witnesses: lao.witnesses.map(w => new PublicKey(w))
     });
   }
 
