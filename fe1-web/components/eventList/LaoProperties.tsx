@@ -12,33 +12,33 @@ import EdiText from "react-editext";
 
 function renderProperties(lao: Lao) {
   const style = {
-    fontFamily: "Helvetica Bold",
-    fontSize: "13px",
+    fontFamily: 'Helvetica Bold',
+    fontSize: '13px',
     width: 200
   };
   return (
     <>
-      <ParagraphBlock text="Lao name: " />
+      <ParagraphBlock text='Lao name: ' />
       <EdiText
-        hint="type the new LAO name"
+        hint='type the new LAO name'
         viewProps={{ style: style }}
         inputProps={{ style: style }}
-        type="text"
+        type='text'
         onSave={
-          (newLaoName: string) => console.log(" The new name is " + newLaoName)
+          (newLaoName: string) => console.log(' The new name is ' + newLaoName)
           // TODO: carry out the necessary LAO update interactions with the backend here
         }
         value={`${lao.name}`}
       />
-      <ParagraphBlock text="Lao creation: " />
+      <ParagraphBlock text='Lao creation: ' />
       <EdiText
-        hint="type the new creation date"
+        hint='type the new creation date'
         viewProps={{ style: style }}
         inputProps={{ style: style }}
-        type="text"
+        type='text'
         onSave={
           (newCreation: string) =>
-            console.log(" The new creation date is " + newCreation)
+            console.log(' The new creation date is ' + newCreation)
           // TODO: carry out the necessary LAO update interactions with the backend here
         }
         value={`${lao.creation.toString()}`}
@@ -57,7 +57,7 @@ const LaoProperties = () => {
 
   return (
     <>
-      <TextBlock bold text="Lao Properties" />
+      <TextBlock bold text='Lao Properties' />
       <View style={[styleEventView.default, { marginTop: Spacing.s }]}>
         <TouchableOpacity
           onPress={toggleChildren}
