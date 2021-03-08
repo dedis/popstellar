@@ -1,14 +1,16 @@
-import React, { useState } from "react";
-import { TouchableOpacity, View, ViewStyle } from "react-native";
-import { Spacing } from "styles";
-import TextBlock from "components/TextBlock";
-import styleEventView from "styles/stylesheets/eventView";
-import ListCollapsibleIcon from "components/eventList/ListCollapsibleIcon";
-import { useSelector } from "react-redux";
-import ParagraphBlock from "components/ParagraphBlock";
-import { Lao } from "model/objects";
-import { makeCurrentLao } from "store/reducers";
-import EdiText from "react-editext";
+import React, { useState } from 'react';
+import {
+  TouchableOpacity, View, ViewStyle,
+} from 'react-native';
+import { Spacing } from 'styles';
+import TextBlock from 'components/TextBlock';
+import styleEventView from 'styles/stylesheets/eventView';
+import ListCollapsibleIcon from 'components/eventList/ListCollapsibleIcon';
+import { useSelector } from 'react-redux';
+import ParagraphBlock from 'components/ParagraphBlock';
+import { Lao } from 'model/objects';
+import { makeCurrentLao } from 'store/reducers';
+import  EdiText from 'react-editext';
 
 function renderProperties(lao: Lao) {
   const style = {
@@ -53,20 +55,17 @@ const LaoProperties = () => {
 
   const [toggleChildrenVisible, setToggleChildrenVisible] = useState(false);
 
-  const toggleChildren = () => setToggleChildrenVisible(!toggleChildrenVisible);
+  const toggleChildren = () => (setToggleChildrenVisible(!toggleChildrenVisible));
 
   return (
     <>
-      <TextBlock bold text='Lao Properties' />
+      <TextBlock bold text="Lao Properties" />
       <View style={[styleEventView.default, { marginTop: Spacing.s }]}>
-        <TouchableOpacity
-          onPress={toggleChildren}
-          style={{ textAlign: "right" } as ViewStyle}
-        >
+        <TouchableOpacity onPress={toggleChildren} style={{ textAlign: 'right' } as ViewStyle}>
           <ListCollapsibleIcon isOpen={toggleChildrenVisible} />
         </TouchableOpacity>
 
-        {toggleChildrenVisible && lao && renderProperties(lao)}
+        { toggleChildrenVisible && lao && renderProperties(lao) }
       </View>
     </>
   );
