@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux';
 import ParagraphBlock from 'components/ParagraphBlock';
 import { Lao } from 'model/objects';
 import { makeCurrentLao } from 'store/reducers';
-import  EdiText from 'react-editext';
+import EdiText from 'react-editext';
 
 function renderProperties(lao: Lao) {
   const style = {
@@ -20,28 +20,29 @@ function renderProperties(lao: Lao) {
   };
   return (
     <>
-      <ParagraphBlock text='Lao name: ' />
+      <ParagraphBlock text="Lao name: " />
       <EdiText
-        hint='type the new LAO name'
+        hint="type the new LAO name"
         viewProps={{ style: style }}
         inputProps={{ style: style }}
-        type='text'
+        type="text"
         onSave={
-          (newLaoName: string) => console.log(' The new name is ' + newLaoName)
+          (newLaoName: string) => console.log(" The new name is " + newLaoName)
           // TODO: carry out the necessary LAO update interactions with the backend here
         }
         value={`${lao.name}`}
       />
-      <ParagraphBlock text='Lao creation: ' />
+      <ParagraphBlock text="Lao creation: " />
       <EdiText
-        hint='type the new creation date'
+        hint="type the new creation date"
         viewProps={{ style: style }}
         inputProps={{ style: style }}
-        type='text'
+        type="text"
         onSave={
-          (newCreation: string) =>
-            console.log(' The new creation date is ' + newCreation)
-          // TODO: carry out the necessary LAO update interactions with the backend here
+          (newCreation: string) => {
+            console.log(" The new creation date is " + newCreation)
+          // TODO: carry out the necessary LAO update interactions with the backend hereù
+          }
         }
         value={`${lao.creation.toString()}`}
       />
