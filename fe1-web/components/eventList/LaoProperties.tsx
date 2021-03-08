@@ -27,9 +27,9 @@ function renderProperties(lao: Lao) {
         inputProps={{ style: style }}
         type="text"
         onSave={
-          (newLaoName: string) => {
+          () => {
           // TODO: carry out the necessary LAO update interactions with the backend here
-          }
+        }
         }
         value={`${lao.name}`}
         
@@ -41,9 +41,9 @@ function renderProperties(lao: Lao) {
         inputProps={{ style: style }}
         type="text"
         onSave={
-          (newCreation: string) => {
-          // TODO: carry out the necessary LAO update interactions with the backend hereù
-          }
+          () => {
+          // TODO: carry out the necessary LAO update interactions with the backend here
+        }
         }
         value={`${lao.creation.toString()}`}
       />
