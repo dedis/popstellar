@@ -83,7 +83,8 @@ const messagesSlice = createSlice({
           state.byLaoId[laoId].byId[messageId],
         );
 
-        state.byLaoId[laoId].unprocessedIds.filter((e) => e !== messageId);
+        state.byLaoId[laoId].unprocessedIds = state.byLaoId[laoId].unprocessedIds
+          .filter((e) => e !== messageId);
       },
     },
 
@@ -139,9 +140,9 @@ export function getMessagesState(state: any): MessageLaoReducerState {
   return state[messageReducerPath];
 }
 
-export function getMessage(state: MessageReducerState, message_id: Hash | string)
+export function getMessage(state: MessageReducerState, messageId: Hash | string)
   : ExtendedMessage | undefined {
-  const id = message_id.valueOf();
+  const id = messageId.valueOf();
   return id in state.byId
     ? ExtendedMessage.fromState(state.byId[id])
     : undefined;
