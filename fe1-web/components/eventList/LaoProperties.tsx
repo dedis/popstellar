@@ -29,9 +29,10 @@ function renderProperties(lao: Lao) {
         onSave={
           (newLaoName: string) => {
           // TODO: carry out the necessary LAO update interactions with the backend here
+          }
         }
         value={`${lao.name}`}
-        }
+        
       />
       <ParagraphBlock text="Lao creation: " />
       <EdiText
