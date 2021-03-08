@@ -16,7 +16,7 @@ function renderProperties(lao: Lao) {
   const style = {
     fontFamily: 'Helvetica Bold',
     fontSize: '13px',
-    width: 200
+    width: 200,
   };
   return (
     <>
@@ -27,10 +27,11 @@ function renderProperties(lao: Lao) {
         inputProps={{ style: style }}
         type="text"
         onSave={
-          (newLaoName: string) => console.log(" The new name is " + newLaoName)
+          (newLaoName: string) => {
           // TODO: carry out the necessary LAO update interactions with the backend here
         }
         value={`${lao.name}`}
+        }
       />
       <ParagraphBlock text="Lao creation: " />
       <EdiText
@@ -40,7 +41,6 @@ function renderProperties(lao: Lao) {
         type="text"
         onSave={
           (newCreation: string) => {
-            console.log(" The new creation date is " + newCreation)
           // TODO: carry out the necessary LAO update interactions with the backend hereù
           }
         }
