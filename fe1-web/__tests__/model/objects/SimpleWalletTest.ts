@@ -9,4 +9,4 @@ wallet.addLao(laoIdHash);
 
 /* create a Roll Call */
 const rollCallId: Hash = Hash.fromString('rollCallId');
-wallet.addTokenForRollCallAttendance(laoIdHash, rollCallId); 
+wallet.addTokenForRollCallAttendance(laoIdHash, rollCallId);
