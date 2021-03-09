@@ -10,13 +10,13 @@ import { useSelector } from 'react-redux';
 import ParagraphBlock from 'components/ParagraphBlock';
 import { Lao } from 'model/objects';
 import { makeCurrentLao } from 'store/reducers';
-import EdiText from "react-editext";
+import EdiText from 'react-editext';
 
 function renderProperties(lao: Lao) {
   const style = {
-    fontFamily: "Helvetica Bold",
-    fontSize: "13px",
-    width: 200
+    fontFamily: 'Helvetica Bold',
+    fontSize: '13px',
+    width: 200,
   };
   return (
     <>
