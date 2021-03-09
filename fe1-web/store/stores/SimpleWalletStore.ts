@@ -25,7 +25,6 @@ export class SimpleWalletStore {
     if (walletId === null) {
       throw new Error('Error encountered while creating wallet storage : undefined/null walletId');
     }
-    
     this.database = new Map<string, KeyPair>();
     this.walletId = walletId;
   }
