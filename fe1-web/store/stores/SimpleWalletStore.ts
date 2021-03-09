@@ -15,6 +15,7 @@ import { KeyPair } from 'model/objects/KeyPair';
  */
 export class SimpleWalletStore {
   private database: Map<string, KeyPair>;
+
   private walletId: Hash;
 
   /**
@@ -22,10 +23,9 @@ export class SimpleWalletStore {
    */
   constructor(walletId: Hash) {
     if (walletId === null) {
-      throw new Error(
-        'Error encountered while creating wallet storage : undefined/null walletId'
-      );
+      throw new Error('Error encountered while creating wallet storage : undefined/null walletId');
     }
+    
     this.database = new Map<string, KeyPair>();
     this.walletId = walletId;
   }
@@ -37,14 +37,10 @@ export class SimpleWalletStore {
    */
   public addKeyPairToWallet(key: string, keyPair: KeyPair) {
     if (key === null || keyPair === null) {
-      throw new Error(
-        'Error encountered while adding roll call token to Wallet : undefined/null parameters'
-      );
+      throw new Error('Error encountered while adding roll call token to Wallet : undefined/null parameters');
     }
     if (this.database.has(key)) {
-      throw new Error(
-        'Error encountered while adding roll call token to Wallet : a token for this roll call already exists'
-      );
+      throw new Error('Error encountered while adding roll call token to Wallet : a token for this roll call already exists');
     }
     this.database.set(key, keyPair);
   }
@@ -55,9 +51,7 @@ export class SimpleWalletStore {
    */
   public getKeyPairFromWallet(key: string) {
     if (key === null) {
-      throw new Error(
-        'Error encountered while retreving roll call token from Wallet : undefined/null parameters'
-      );
+      throw new Error('Error encountered while retreving roll call token from Wallet : undefined/null parameters');
     }
     this.checkPresenceInWallet(key);
     return this.database.get(key);
@@ -69,9 +63,7 @@ export class SimpleWalletStore {
    */
   public removeKeyFromWallet(key: string) {
     if (key === null) {
-      throw new Error(
-        'Error encountered while removing roll call token from Wallet : undefined/null parameters'
-      );
+      throw new Error('Error encountered while removing roll call token from Wallet : undefined/null parameters');
     }
     this.checkPresenceInWallet(key);
     this.database.delete(key);
@@ -87,9 +79,7 @@ export class SimpleWalletStore {
    */
   private checkPresenceInWallet(key: string): boolean {
     if (!this.database.has(key)) {
-      throw new Error(
-        'Error encountered while removing roll call token from Wallet : the token is not in wallet'
-      );
+      throw new Error('Error encountered while removing roll call token from Wallet : the token is not in wallet');
     }
     return true;
   }

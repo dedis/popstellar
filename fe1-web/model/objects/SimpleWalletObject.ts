@@ -1,9 +1,9 @@
-import { Hash } from './Hash';
-import { Base64Data } from './Base64';
 import { encodeBase64 } from 'tweetnacl-util';
 import { sign } from 'tweetnacl';
-import { KeyPair, KeyPairState } from './KeyPair';
 import { SimpleWalletStore } from 'store/stores/SimpleWalletStore';
+import { Hash } from './Hash';
+import { Base64Data } from './Base64';
+import { KeyPair, KeyPairState } from './KeyPair';
 
 /**
  * This class represents a simple wallet object (in the sense that  it is
@@ -21,16 +21,18 @@ import { SimpleWalletStore } from 'store/stores/SimpleWalletStore';
  */
 export class SimpleWalletObject {
   private walletId: Hash;
+
   private subscribedLaos: Set<Hash> = new Set<Hash>();
+
   private laoToRollCallsMap: Map<Hash, Set<Hash>> = new Map<Hash, Set<Hash>>();
+
   private storage: SimpleWalletStore;
 
   constructor(walletId: Hash) {
     if (walletId === null) {
-      throw new Error(
-        'Error encountered while creating a wallet object : undefined/null wallet Id'
-      );
+      throw new Error('Error encountered while creating a wallet object : undefined/null wallet Id');
     }
+
     this.walletId = walletId;
     this.storage = new SimpleWalletStore(walletId);
   }
@@ -44,12 +46,10 @@ export class SimpleWalletObject {
       throw new Error('Error encountered while adding LAO : null LAO ID');
     }
     if (this.subscribedLaos.has(laoId)) {
-      throw new Error(
-        'Error encountered while adding LAO : this LAOId already exists'
-      );
+      throw new Error('Error encountered while adding LAO : this LAOId already exists');
     }
     this.subscribedLaos.add(laoId);
-    var emptySet: Set<Hash> = new Set<Hash>();
+    const emptySet: Set<Hash> = new Set<Hash>();
     this.laoToRollCallsMap.set(laoId, emptySet);
   }
 
@@ -62,20 +62,16 @@ export class SimpleWalletObject {
    */
   public addTokenForRollCallAttendance(laoId: Hash, rollCallId: Hash) {
     if (laoId === null || rollCallId == null) {
-      throw new Error(
-        'Error encountered while adding roll call to LAO : null argument'
-      );
+      throw new Error('Error encountered while adding roll call to LAO : null argument');
     }
 
     if (!this.subscribedLaos.has(laoId)) {
       this.addLao(laoId);
     }
 
-    var updatedSet: Set<Hash> = this.laoToRollCallsMap.get(laoId)!;
+    const updatedSet: Set<Hash> = this.laoToRollCallsMap.get(laoId)!;
     if (updatedSet.has(rollCallId)) {
-      throw new Error(
-        'Error encountered while adding roll call to wallet : this rollCallId already has an associated keypair'
-      );
+      throw new Error('Error encountered while adding roll call to wallet : this rollCallId already has an associated keypair');
     }
     updatedSet.add(rollCallId);
     this.laoToRollCallsMap.set(laoId, updatedSet);
@@ -90,21 +86,17 @@ export class SimpleWalletObject {
    */
   public findKeyPair(laoId: Hash, rollCallId: Hash) {
     if (laoId === null || rollCallId == null) {
-      throw new Error(
-        'Error encountered while finding Key Pair -> null argument'
-      );
+      throw new Error('Error encountered while finding Key Pair -> null argument');
     }
     if (
       !(
-        this.subscribedLaos.has(laoId) &&
-        this.laoToRollCallsMap.get(laoId)!.has(rollCallId)
+        this.subscribedLaos.has(laoId)
+        && this.laoToRollCallsMap.get(laoId)!.has(rollCallId)
       )
     ) {
-      throw new Error(
-        'Error encountered while retrieving keyPair : the LAO or roll call ID was never added to the wallet'
-      );
+      throw new Error('Error encountered while retrieving keyPair : the LAO or roll call ID was never added to the wallet');
     }
-    var key: string = this.buildStorageKey(laoId, rollCallId);
+    const key: string = SimpleWalletObject.buildStorageKey(laoId, rollCallId);
     return this.storage.getKeyPairFromWallet(key);
   }
 
@@ -115,8 +107,8 @@ export class SimpleWalletObject {
    * @param rollCallId the id of the attended roll call
    */
   private generateKeyPairAndAddToWallet(laoId: Hash, rollCallId: Hash) {
-    var key: string = this.buildStorageKey(laoId, rollCallId);
-    var keyPair: KeyPair = KeyPair.fromState(this.generateKeyPair());
+    const key: string = SimpleWalletObject.buildStorageKey(laoId, rollCallId);
+    const keyPair: KeyPair = KeyPair.fromState(SimpleWalletObject.generateKeyPair());
 
     /* no check needed since done in the caller method */
     this.storage.addKeyPairToWallet(key, keyPair);
@@ -128,23 +120,23 @@ export class SimpleWalletObject {
    * @paramthe id of the LAO
    * @param rollCallId the id of the attended roll call
    */
-  private buildStorageKey(laoId: Base64Data, rollCallId: Base64Data) {
-    var key: string = laoId.toString().concat(rollCallId.toString());
+  private static buildStorageKey(laoId: Base64Data, rollCallId: Base64Data) {
+    const key: string = laoId.toString().concat(rollCallId.toString());
     return key;
   }
 
   /**
    * generates a new public and private key
    */
-  private generateKeyPair(): KeyPairState {
+  private static generateKeyPair(): KeyPairState {
     const pair = sign.keyPair();
     const keys = {
       pubKey: encodeBase64(pair.publicKey),
-      secKey: encodeBase64(pair.secretKey)
+      secKey: encodeBase64(pair.secretKey),
     };
     return {
       publicKey: keys.pubKey,
-      privateKey: keys.secKey
+      privateKey: keys.secKey,
     };
   }
 }
