@@ -198,12 +198,11 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 
 	encodedID := base64.StdEncoding.EncodeToString(data.ID)
 
-	laoCh := laoChannel{
-		channel: "/root/" + encodedID,
-		clients: make(map[*Client]struct{}),
-		inbox:   make(map[string]message.Message),
-	}
+	laoChannelID := "/root/" + encodedID
 
+	laoCh := laoChannel{
+		createBaseChannel(o, laoChannelID),
+	}
 	messageID := base64.StdEncoding.EncodeToString(publish.Params.Message.MessageID)
 	laoCh.inbox[messageID] = *publish.Params.Message
 
@@ -214,68 +213,26 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 }
 
 type laoChannel struct {
-	clientsMu sync.RWMutex
-	clients   map[*Client]struct{}
-
-	inboxMu sync.RWMutex
-	inbox   map[string]message.Message
-
-	// /root/<base64ID>
-	channel string
-
-	witnessMu sync.Mutex
-	witnesses []message.PublicKey
+	*baseChannel
 }
 
 func (c *laoChannel) Subscribe(client *Client, msg message.Subscribe) error {
-	log.Printf("received a subscribe with id: %d", msg.ID)
-	c.clientsMu.Lock()
-	defer c.clientsMu.Unlock()
-
-	c.clients[client] = struct{}{}
-
-	return nil
+	return c.baseChannel.Subscribe(client, msg)
 }
 
 func (c *laoChannel) Unsubscribe(client *Client, msg message.Unsubscribe) error {
-	log.Printf("received an unsubscribe with id: %d", msg.ID)
-
-	c.clientsMu.Lock()
-	defer c.clientsMu.Unlock()
-
-	if _, ok := c.clients[client]; !ok {
-		return &message.Error{
-			Code:        -2,
-			Description: "client is not subscribed to this channel",
-		}
-	}
-
-	delete(c.clients, client)
-	return nil
+	return c.baseChannel.Unsubscribe(client, msg)
 }
 
 func (c *laoChannel) Publish(publish message.Publish) error {
-	log.Printf("received a publish with id: %d", publish.ID)
+	err := c.baseChannel.VerifyPublishMessage(publish)
+	if err != nil {
+		return xerrors.Errorf("failed to verify Publish message on a lao channel: %v", err)
+	}
 
 	msg := publish.Params.Message
-	err := msg.VerifyAndUnmarshalData()
-	if err != nil {
-		return xerrors.Errorf("failed to verify and unmarshal data: %v", err)
-	}
 
 	data := msg.Data
-
-	msgIDEncoded := base64.StdEncoding.EncodeToString(msg.MessageID)
-
-	c.inboxMu.RLock()
-	if _, ok := c.inbox[msgIDEncoded]; ok {
-		c.inboxMu.RUnlock()
-		return &message.Error{
-			Code:        -3,
-			Description: "message already exists",
-		}
-	}
-	c.inboxMu.RUnlock()
 
 	object := data.GetObject()
 
@@ -300,15 +257,7 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 }
 
 func (c *laoChannel) Catchup(catchup message.Catchup) []message.Message {
-	log.Printf("received a catchup with id: %d", catchup.ID)
-
-	c.inboxMu.RLock()
-	defer c.inboxMu.RUnlock()
-
-	result := make([]message.Message, 0, len(c.inbox))
-	for _, msg := range c.inbox {
-		result = append(result, msg)
-	}
+	result := c.baseChannel.Catchup(catchup)
 
 	// TODO: define order for Roll call
 	//sort.Slice(result, func(i, j int) bool {
@@ -470,7 +419,7 @@ func (c *laoChannel) broadcastToAllClients(msg message.Message) {
 	defer c.clientsMu.RUnlock()
 
 	query := message.Query{
-		Broadcast: message.NewBroadcast(c.channel, &msg),
+		Broadcast: message.NewBroadcast(c.baseChannel.channelID, &msg),
 	}
 
 	buf, err := json.Marshal(query)
