@@ -11,8 +11,9 @@ import ParagraphBlock from 'components/ParagraphBlock';
 import { Lao } from 'model/objects';
 import { makeCurrentLao } from 'store/reducers';
 import EdiText from 'react-editext';
+import PropTypes from 'prop-types';
 
-function renderProperties(lao: Lao) {
+function renderProperties(lao: Lao, isOrganizer : boolean) {
   const style = {
     fontFamily: 'Helvetica Bold',
     fontSize: '13px',
@@ -42,6 +43,7 @@ function renderProperties(lao: Lao) {
         type="text"
         onSave={
           () => {
+            console.log("Value of IsOrganizer = " + isOrganizer)
           // TODO: carry out the necessary LAO update interactions with the backend here
         }
         }
@@ -50,11 +52,15 @@ function renderProperties(lao: Lao) {
     </>
   );
 }
+const propTypes = {
+  isOrganizer : Boolean
+}
+type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
-const LaoProperties = () => {
+const LaoProperties = (props : IPropTypes) => {
   const laoSelect = makeCurrentLao();
   const lao = useSelector(laoSelect);
-
+  const {isOrganizer} = props;
   const [toggleChildrenVisible, setToggleChildrenVisible] = useState(false);
 
   const toggleChildren = () => (setToggleChildrenVisible(!toggleChildrenVisible));
@@ -67,7 +73,7 @@ const LaoProperties = () => {
           <ListCollapsibleIcon isOpen={toggleChildrenVisible} />
         </TouchableOpacity>
 
-        { toggleChildrenVisible && lao && renderProperties(lao) }
+        { toggleChildrenVisible && lao && renderProperties(lao, isOrganizer) }
       </View>
     </>
   );

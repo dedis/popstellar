@@ -54,7 +54,7 @@ const Organizer = () => {
   return (
     <ScrollView>
       {/* Add edit button for the organizer in the Lao properties panel */}
-      <LaoProperties />
+      <LaoProperties isOrganizer/>
       <EventListCollapsible isOrganizer data={DATA_EXAMPLE} />
     </ScrollView>
   );
