@@ -55,7 +55,8 @@ const Identity = () => {
       { placeholderBasic.map((p: string) => buildBasicTextInput(p)) }
       { buildEmailTextInput(STRINGS.identity_email_placeholder) }
       { buildPhoneTextInput(STRINGS.identity_phone_placeholder) }
-      <QRCode visibility={!toggleAnonymity} text={STRINGS.identity_qrcode_description} />
+      <TextBlock text={STRINGS.identity_qrcode_description} visibility={!toggleAnonymity} />
+      <QRCode visibility={!toggleAnonymity} />
     </>
   );
 };
