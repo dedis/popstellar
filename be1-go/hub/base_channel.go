@@ -9,6 +9,8 @@ import (
 	"golang.org/x/xerrors"
 )
 
+// baseChannel represent a generic channel and contains all the fields that are
+// used in all channels
 type baseChannel struct {
 	hub *organizerHub
 
@@ -18,13 +20,14 @@ type baseChannel struct {
 	inboxMu sync.RWMutex
 	inbox   map[string]message.Message
 
-	// /root/<base64ID>
+	// /root/<ID>
 	channelID string
 
 	witnessMu sync.Mutex
 	witnesses []message.PublicKey
 }
 
+// CreateBaseChannel return an instance of a `baseChannel`
 func createBaseChannel(h *organizerHub, channelID string) *baseChannel {
 	return &baseChannel{
 		hub:       h,
@@ -75,9 +78,11 @@ func (c *baseChannel) Catchup(catchup message.Catchup) []message.Message {
 	return result
 }
 
-func (c *baseChannel) verifyPublishMessage(publish message.Publish) error {
+// Verify the if a Publish message is valid
+func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 	log.Printf("received a publish with id: %d", publish.ID)
 
+	// Check if the structure of the message is correct
 	msg := publish.Params.Message
 	err := msg.VerifyAndUnmarshalData()
 	if err != nil {
@@ -86,6 +91,7 @@ func (c *baseChannel) verifyPublishMessage(publish message.Publish) error {
 
 	msgIDEncoded := base64.StdEncoding.EncodeToString(msg.MessageID)
 
+	// Check if the message already exists
 	c.inboxMu.RLock()
 	if _, ok := c.inbox[msgIDEncoded]; ok {
 		c.inboxMu.RUnlock()
