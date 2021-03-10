@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.ui;
+package com.github.dedis.student20_pop.detail.fragments;
 
 import android.os.Bundle;
 import android.util.Log;

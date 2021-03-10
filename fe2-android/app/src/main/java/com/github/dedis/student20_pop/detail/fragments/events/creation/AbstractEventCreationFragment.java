@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.detail.fragments;
+package com.github.dedis.student20_pop.detail.fragments.events.creation;
 
 import android.app.Activity;
 import android.content.Intent;

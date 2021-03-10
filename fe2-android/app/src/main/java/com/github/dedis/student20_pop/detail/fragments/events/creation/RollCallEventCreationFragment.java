@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.detail.fragments;
+package com.github.dedis.student20_pop.detail.fragments.events.creation;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import com.github.dedis.student20_pop.databinding.FragmentCreateRollCallEventBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
+
 import java.time.Instant;
 
 /** Fragment that shows up when user wants to create a Roll-Call Event */

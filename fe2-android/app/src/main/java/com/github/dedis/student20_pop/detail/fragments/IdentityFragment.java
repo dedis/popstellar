@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.home.fragments;
+package com.github.dedis.student20_pop.detail.fragments;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
