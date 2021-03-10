@@ -321,13 +321,30 @@ type ElectionSetupData struct {
 	*GenericData
 
 	ID        []byte     `json:"id"`
-	Lao       []byte     `json:"lao"`
+	LaoID     []byte     `json:"lao"`
 	Name      string     `json:"name"`
 	Version   string     `json:"vesrion"`
 	CreatedAt Timestamp  `json:"created_at"`
 	StartTime Timestamp  `json:"start_time"`
 	EndTime   Timestamp  `json:"end_time"`
 	Questions []Question `json:"questions"`
+}
+
+// Vote represents a vote in an election.
+type Vote struct {
+	ID          PublicKey `json:"id"`
+	QuestionID  []byte    `json:"question"`
+	VoteIndexes []int     `json:"vote"`
+	WriteIn     string    `json:"write_in"`
+}
+
+// CastVoteData represents the message data used for casting a vote during an election.
+type CastVoteData struct {
+	*GenericData
+	LaoID      []byte    `json:"lao"`
+	ElectionID []byte    `json:"election"`
+	CreatedAt  Timestamp `json:"created_at"`
+	Votes      []Vote    `json:"questions"`
 }
 
 // NewCreateLAOData returns an instance of `CreateLAOData`.
