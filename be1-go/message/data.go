@@ -274,32 +274,50 @@ type WitnessMessageData struct {
 	Signature Signature `json:"signature"`
 }
 
+// ElectionAction represents the action associated with an "election" data message.
 type ElectionAction DataAction
 
 var (
-	SetupElectionAction    ElectionAction = "setup"
-	CastVoteElectionAction ElectionAction = "cast_vote"
-	EndElectionAction      ElectionAction = "end"
-	ResultElectionAction   ElectionAction = "result"
+	// ElectionSetupAction represents the action associated with the data for setting up an election.
+	ElectionSetupAction ElectionAction = "setup"
+
+	// CastVoteAction represents the action associated with the data for casting a vote in
+	// an election.
+	CastVoteAction ElectionAction = "cast_vote"
+
+	// ElectionEndAction represents the action associated with the data for ending an election.
+	ElectionEndAction ElectionAction = "end"
+
+	// ElectionResultAction represents the action associated with the data for the tallying of
+	// an election.
+	ElectionResultAction ElectionAction = "result"
 )
 
-type VotingMethodType DataAction
+// VotingMethod represents the method used for a particular vote.
+type VotingMethod string
 
 var (
-	PluralityMethod VotingMethodType = "plurality"
+	// PluralityMethod represents the relative majority voting method.
+	PluralityMethod VotingMethod = "Plurality"
+	// ApprovalMethod represents a single-winner electoral system where each voter may
+	// approve any number of ballot options.
+	ApprovalMethod VotingMethod = "Approval"
 )
 
+// BallotOption represents a response option to a question.
 type BallotOption string
 
+// Question represents a question that is asked during an election.
 type Question struct {
-	ID            PublicKey        `json:"id"`
-	QuestionAsked string           `json:"question"`
-	VotingMethod  VotingMethodType `json:"voting_method"`
-	BallotOptions []BallotOption   `json:"ballot_options"`
-	WriteIn       bool             `json:"write_in"`
+	ID            PublicKey      `json:"id"`
+	QuestionAsked string         `json:"question"`
+	VotingMethod  VotingMethod   `json:"voting_method"`
+	BallotOptions []BallotOption `json:"ballot_options"`
+	WriteIn       bool           `json:"write_in"`
 }
 
-type SetupElectionData struct {
+// ElectionSetupData represents the message data used for setting up an election.
+type ElectionSetupData struct {
 	*GenericData
 
 	ID        []byte     `json:"id"`
