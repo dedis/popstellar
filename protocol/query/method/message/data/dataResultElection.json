@@ -1,0 +1,45 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataResultElection.json",
+	"description": "Match a result election query",
+	"type": "object",
+
+	"properties": {
+		"object": { "const": "election" },
+		"action": { "const": "result" },
+		"questions": {
+			"description": "Array of questions with their result",
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"contentEncoding": "base64",
+						"$comment": "ID of the question"
+					},
+					"result": {
+						"description": "[Array[String]] results",
+						"type": "array",
+						"items": {
+							"type": "string",
+							"$comment": "result"
+						},
+						"minItems": 1,
+						"uniqueItems": true
+					}
+				},
+				"additionalProperties": false,
+				"required": ["id", "result"]
+			},
+			"minItems": 1,
+			"uniqueItems": true
+		},
+		"witness_signatures": {
+			"description": "[Array[Base64String]] list of witnesses' signatures",
+			"type": "array"
+		}
+	},
+	"additionalProperties": false,
+	"required": ["object", "action", "questions"]
+}
