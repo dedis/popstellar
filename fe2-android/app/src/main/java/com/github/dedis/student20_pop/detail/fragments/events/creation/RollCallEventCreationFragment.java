@@ -116,7 +116,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
                 scheduled);
 
         if(id == null) {
-            Toast.makeText(getActivity(), "Something went wrong, try again later.", Toast.LENGTH_LONG);
+            Toast.makeText(getActivity(), "Something went wrong, try again later.", Toast.LENGTH_LONG).show();
         }
 
         return id;
@@ -124,6 +124,6 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
 
     private void openRollCall(String rollCallId) {
       Log.d(TAG, "opening new roll call");
-      //TODO: implement
+      mLaoDetailViewModel.openRollCall(rollCallId);
     }
 }
