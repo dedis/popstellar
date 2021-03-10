@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import com.github.dedis.student20_pop.databinding.FragmentCreateRollCallEventBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
+import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 
 import java.time.Instant;
@@ -84,18 +85,41 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
       setupConfirmButton();
       setupOpenButton();
       setupCancelButton();
+
+      // Subscribe to "new LAO event creation" event
+      mLaoDetailViewModel
+              .getNewLaoEventCreationEvent()
+              .observe(
+                      this,
+                      eventTypeEvent -> {
+                          EventType eventType = eventTypeEvent.getContentIfNotHandled();
+                          if(eventType == EventType.ROLL_CALL) {
+                              createRollCall();
+                          }
+                      }
+              );
+
+      // Subscribe to "open new roll call" event
+      mLaoDetailViewModel
+              .getOpenNewRollCallEvent()
+              .observe(
+                      this,
+                      booleanEvent -> {
+                          Boolean action = booleanEvent.getContentIfNotHandled();
+                          if(action != null) {
+                              String id = createRollCall();
+                              openRollCall(id);
+                          }
+                      }
+              );
   }
 
     private void setupConfirmButton() {
-        confirmButton.setOnClickListener(v -> createRollCall());
+        confirmButton.setOnClickListener(v -> mLaoDetailViewModel.newLaoEventCreation(EventType.ROLL_CALL));
     }
 
     private void setupOpenButton() {
-        openButton.setOnClickListener(
-                v -> {
-                    String id = createRollCall();
-                    openRollCall(id);
-                });
+        openButton.setOnClickListener(v -> mLaoDetailViewModel.openNewRollCall(true));
     }
 
     private void setupCancelButton() {

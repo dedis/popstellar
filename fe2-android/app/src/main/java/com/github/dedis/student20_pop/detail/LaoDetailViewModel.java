@@ -48,6 +48,8 @@ public class LaoDetailViewModel extends AndroidViewModel {
   private final MutableLiveData<Event<Boolean>> mEditPropertiesEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenLaoDetailEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<EventType>> mNewLaoEventEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<EventType>> mNewLaoEventCreationEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<Boolean>> mOpenNewRollCallEvent = new MutableLiveData<>();
 
   /*
    * LiveData objects that represent the state in a fragment
@@ -209,6 +211,14 @@ public class LaoDetailViewModel extends AndroidViewModel {
     return mNewLaoEventEvent;
   }
 
+  public LiveData<Event<EventType>> getNewLaoEventCreationEvent() {
+    return mNewLaoEventCreationEvent;
+  }
+
+  public LiveData<Event<Boolean>> getOpenNewRollCallEvent() {
+    return mOpenNewRollCallEvent;
+  }
+
   public Lao getCurrentLao() {
     return mCurrentLao.getValue();
   }
@@ -259,6 +269,14 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
   public void addEvent(EventType eventType) {
     mNewLaoEventEvent.postValue(new Event<>(eventType));
+  }
+
+  public void newLaoEventCreation(EventType eventType) {
+    mNewLaoEventCreationEvent.postValue(new Event<>(eventType));
+  }
+
+  public void openNewRollCall(Boolean open) {
+    mOpenNewRollCallEvent.postValue(new Event<>(open));
   }
 
   public void confirmEdit() {
