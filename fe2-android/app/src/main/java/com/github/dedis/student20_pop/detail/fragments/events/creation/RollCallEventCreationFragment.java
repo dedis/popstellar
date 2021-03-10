@@ -21,12 +21,13 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
 
   public static final String TAG = RollCallEventCreationFragment.class.getSimpleName();
 
-  private EditText rollCallDescriptionEditText;
-  private EditText rollCallTitleEditText;
-  private Button confirmButton;
-  private Button openButton;
+    private FragmentCreateRollCallEventBinding mFragBinding;
+    private LaoDetailViewModel mLaoDetailViewModel;
+    private EditText rollCallDescriptionEditText;
+    private EditText rollCallTitleEditText;
+    private Button confirmButton;
+    private Button openButton;
 
-  private LaoDetailViewModel mLaoDetailViewModel;
 
   private final TextWatcher confirmTextWatcher =
       new TextWatcher() {
@@ -50,11 +51,6 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     return new RollCallEventCreationFragment();
   }
 
-  @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
-  }
-
   @Nullable
   @Override
   public View onCreateView(
@@ -62,57 +58,69 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
 
-    FragmentCreateRollCallEventBinding binding =
-        FragmentCreateRollCallEventBinding.inflate(inflater, container, false);
+    mFragBinding = FragmentCreateRollCallEventBinding.inflate(inflater, container, false);
 
     mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 
     // TODO: refactor this
-    setDateAndTimeView(binding.getRoot(), this, getFragmentManager());
+    setDateAndTimeView(mFragBinding.getRoot(), this, getFragmentManager());
     addDateAndTimeListener(confirmTextWatcher);
 
-    rollCallTitleEditText = binding.rollCallTitleText;
-    rollCallDescriptionEditText = binding.rollCallEventDescriptionText;
+    rollCallTitleEditText = mFragBinding.rollCallTitleText;
+    rollCallDescriptionEditText = mFragBinding.rollCallEventDescriptionText;
 
-    openButton = binding.rollCallOpen;
+    openButton = mFragBinding.rollCallOpen;
 
-    confirmButton = binding.rollCallConfirm;
+    confirmButton = mFragBinding.rollCallConfirm;
 
-    // TODO: this has to be replaced by a 'scheduled' button
-    //    confirmButton.setOnClickListener(
-    //        v -> {
-    //          computeTimesInSeconds();
-    //
-    //          String title = rollCallTitleEditText.getText().toString();
-    //          String description = rollCallDescriptionEditText.getText().toString();
-    //          long now = Instant.now().getEpochSecond();
-    //          long start = startTimeInSeconds > now ? 0 : startTimeInSeconds;
-    //          long scheduled = startTimeInSeconds >= now ? startTimeInSeconds : 0;
-    //          mLaoDetailViewModel
-    //              .createNewRollCall(title, description, start, scheduled, endTimeInSeconds);
-    //        });
-
-    openButton.setOnClickListener(
-        v -> {
-          computeTimesInSeconds();
-
-          String title = rollCallTitleEditText.getText().toString();
-          String description = rollCallDescriptionEditText.getText().toString();
-          long now = Instant.now().getEpochSecond();
-          long start = startTimeInSeconds > now ? 0 : startTimeInSeconds;
-          long scheduled = startTimeInSeconds >= now ? startTimeInSeconds : 0;
-          mLaoDetailViewModel.createNewRollCall(title, description, start, scheduled);
-        });
-
-    Button cancelButton = binding.rollCallCancel;
-
-    cancelButton.setOnClickListener(
-        v -> {
-          mLaoDetailViewModel.openLaoDetail();
-        });
-
-    binding.setLifecycleOwner(getActivity());
-
-    return binding.getRoot();
+    return mFragBinding.getRoot();
   }
+
+  @Override
+  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+      super.onActivityCreated(savedInstanceState);
+
+      setupConfirmButton();
+      setupOpenButton();
+      setupCancelButton();
+  }
+
+    private void setupConfirmButton() {
+        confirmButton.setOnClickListener(
+                v -> {
+                    computeTimesInSeconds();
+
+                    String title = rollCallTitleEditText.getText().toString();
+                    String description = rollCallDescriptionEditText.getText().toString();
+                    long now = Instant.now().getEpochSecond();
+                    long start = startTimeInSeconds > now ? 0 : startTimeInSeconds;
+                    long scheduled = startTimeInSeconds >= now ? startTimeInSeconds : 0;
+                    mLaoDetailViewModel
+                            .createNewRollCall(title, description, start, scheduled);
+                });
+    }
+
+    private void setupOpenButton() {
+        openButton.setOnClickListener(
+                v -> {
+                    computeTimesInSeconds();
+
+                    String title = rollCallTitleEditText.getText().toString();
+                    String description = rollCallDescriptionEditText.getText().toString();
+                    long now = Instant.now().getEpochSecond();
+                    long start = startTimeInSeconds > now ? 0 : startTimeInSeconds;
+                    long scheduled = startTimeInSeconds >= now ? startTimeInSeconds : 0;
+                    mLaoDetailViewModel.createNewRollCall(title, description, start, scheduled);
+                    //TODO: open roll call
+                });
+    }
+
+    private void setupCancelButton() {
+        mFragBinding.rollCallCancel.setOnClickListener(
+                v -> {
+                    mLaoDetailViewModel.openLaoDetail();
+                });
+
+        mFragBinding.setLifecycleOwner(getActivity());
+    }
 }
