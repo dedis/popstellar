@@ -2,11 +2,13 @@ package com.github.dedis.student20_pop.detail;
 
 import android.app.Application;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
+
 import com.github.dedis.student20_pop.Event;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.data.LAORepository;
@@ -20,16 +22,18 @@ import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class LaoDetailViewModel extends AndroidViewModel {
 
@@ -220,13 +224,13 @@ public class LaoDetailViewModel extends AndroidViewModel {
     return mNewLaoEventEvent;
   }
 
-  public void createNewRollCall(String title, String description, long start, long scheduled) {
+  public String createNewRollCall(String title, String description, long start, long scheduled) {
     Log.d(TAG, "creating a new roll call with title " + title);
 
     Lao lao = getCurrentLao();
     if (lao == null) {
       Log.d(TAG, "failed to retrieve current lao");
-      return;
+      return null;
     }
 
     String channel = lao.getChannel();
@@ -257,7 +261,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
               .subscribe(
                   answer -> {
                     if (answer instanceof Result) {
-                      Log.d(TAG, "created a roll call");
+                      Log.d(TAG, "created a roll call successfully");
                       openLaoDetail();
                     } else {
                       Log.d(TAG, "failed to create a roll call");
@@ -270,6 +274,8 @@ public class LaoDetailViewModel extends AndroidViewModel {
       disposables.add(disposable);
     } catch (GeneralSecurityException | IOException e) {
       Log.d(TAG, "failed to retrieve public key", e);
+      return null;
     }
+    return createRollCall.getId();
   }
 }

@@ -3,16 +3,20 @@ package com.github.dedis.student20_pop.detail.fragments.events.creation;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.github.dedis.student20_pop.databinding.FragmentCreateRollCallEventBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
+import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 
 import java.time.Instant;
 
@@ -23,7 +27,6 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
 
     private FragmentCreateRollCallEventBinding mFragBinding;
     private LaoDetailViewModel mLaoDetailViewModel;
-    private EditText rollCallDescriptionEditText;
     private EditText rollCallTitleEditText;
     private Button confirmButton;
     private Button openButton;
@@ -62,16 +65,14 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
 
     mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 
-    // TODO: refactor this
     setDateAndTimeView(mFragBinding.getRoot(), this, getFragmentManager());
     addDateAndTimeListener(confirmTextWatcher);
 
     rollCallTitleEditText = mFragBinding.rollCallTitleText;
-    rollCallDescriptionEditText = mFragBinding.rollCallEventDescriptionText;
-
     openButton = mFragBinding.rollCallOpen;
-
     confirmButton = mFragBinding.rollCallConfirm;
+
+    mFragBinding.setLifecycleOwner(getActivity());
 
     return mFragBinding.getRoot();
   }
@@ -86,41 +87,43 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
   }
 
     private void setupConfirmButton() {
-        confirmButton.setOnClickListener(
-                v -> {
-                    computeTimesInSeconds();
-
-                    String title = rollCallTitleEditText.getText().toString();
-                    String description = rollCallDescriptionEditText.getText().toString();
-                    long now = Instant.now().getEpochSecond();
-                    long start = startTimeInSeconds > now ? 0 : startTimeInSeconds;
-                    long scheduled = startTimeInSeconds >= now ? startTimeInSeconds : 0;
-                    mLaoDetailViewModel
-                            .createNewRollCall(title, description, start, scheduled);
-                });
+        confirmButton.setOnClickListener(v -> createRollCall());
     }
 
     private void setupOpenButton() {
         openButton.setOnClickListener(
                 v -> {
-                    computeTimesInSeconds();
-
-                    String title = rollCallTitleEditText.getText().toString();
-                    String description = rollCallDescriptionEditText.getText().toString();
-                    long now = Instant.now().getEpochSecond();
-                    long start = startTimeInSeconds > now ? 0 : startTimeInSeconds;
-                    long scheduled = startTimeInSeconds >= now ? startTimeInSeconds : 0;
-                    mLaoDetailViewModel.createNewRollCall(title, description, start, scheduled);
-                    //TODO: open roll call
+                    String id = createRollCall();
+                    openRollCall(id);
                 });
     }
 
     private void setupCancelButton() {
-        mFragBinding.rollCallCancel.setOnClickListener(
-                v -> {
-                    mLaoDetailViewModel.openLaoDetail();
-                });
+        mFragBinding.rollCallCancel.setOnClickListener(v -> mLaoDetailViewModel.openLaoDetail());
+    }
 
-        mFragBinding.setLifecycleOwner(getActivity());
+    private String createRollCall() {
+        computeTimesInSeconds();
+
+        long now = Instant.now().getEpochSecond();
+        long start = startTimeInSeconds > now ? 0 : startTimeInSeconds;
+        long scheduled = startTimeInSeconds >= now ? startTimeInSeconds : 0;
+
+        String id = mLaoDetailViewModel.createNewRollCall(
+                rollCallTitleEditText.getText().toString(),
+                mFragBinding.rollCallEventDescriptionText.getText().toString(),
+                start,
+                scheduled);
+
+        if(id == null) {
+            Toast.makeText(getActivity(), "Something went wrong, try again later.", Toast.LENGTH_LONG);
+        }
+
+        return id;
+    }
+
+    private void openRollCall(String rollCallId) {
+      Log.d(TAG, "opening new roll call");
+      //TODO: implement
     }
 }
