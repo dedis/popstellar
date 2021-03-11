@@ -34,6 +34,7 @@
     "react": "16.13.1",
     "react-datepicker": "^3.3.0",
     "react-dom": "16.13.1",
+    "react-editext": "^3.17.2",
     "react-native": "https://github.com/expo/react-native/archive/sdk-39.0.2.tar.gz",
     "react-native-elements": "^3.0.0-alpha.1",
     "react-native-gesture-handler": "^1.7.0",
