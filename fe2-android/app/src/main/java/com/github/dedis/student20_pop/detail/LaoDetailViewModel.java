@@ -13,6 +13,7 @@ import com.github.dedis.student20_pop.model.data.LAORepository;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.model.network.answer.Result;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall.StartType;
 import com.github.dedis.student20_pop.utility.security.Keys;
@@ -29,6 +30,7 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 public class LaoDetailViewModel extends AndroidViewModel {
@@ -218,6 +220,59 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
   public LiveData<Event<EventType>> getNewLaoEventEvent() {
     return mNewLaoEventEvent;
+  }
+
+
+  public void createNewElection(String name, long start, long end, String voting_method, boolean write_in, List<String> ballot_options, List<String> questions) {
+    Log.d(TAG,"creating a new election with name " + name);
+
+    Lao lao = getCurrentLao();
+    if (lao == null) {
+      Log.d(TAG, "failed to retrieve current lao");
+      return;
+    }
+
+    String channel = lao.getChannel();
+    ElectionSetup electionSetup;
+    String laoId = channel.substring(6);
+
+    electionSetup = new ElectionSetup(name, start, end, voting_method, write_in, ballot_options, questions, laoId);
+
+    try {
+      // Retrieve identity of who is creating the election
+      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+      byte[] sender = Base64.getDecoder().decode(publicKey);
+
+      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+      MessageGeneral msg = new MessageGeneral(sender, electionSetup, signer, mGson);
+
+      Log.d(TAG, "sending publish message");
+      Disposable disposable =
+              mLAORepository
+                      .sendPublish(channel, msg)
+                      .subscribeOn(Schedulers.io())
+                      .observeOn(AndroidSchedulers.mainThread())
+                      .timeout(5, TimeUnit.SECONDS)
+                      .subscribe(
+                              answer -> {
+                                if (answer instanceof Result) {
+                                  Log.d(TAG, "setup an election");
+                                  openLaoDetail();
+                                } else {
+                                  Log.d(TAG, "failed to setup an election");
+                                }
+                              },
+                              throwable -> {
+                                Log.d(TAG, "timed out waiting for result on election/create", throwable);
+                              });
+
+      disposables.add(disposable);
+
+    } catch (GeneralSecurityException | IOException e) {
+      Log.d(TAG, "failed to retrieve public key", e);
+    }
+
   }
 
   public void createNewRollCall(String title, String description, long start, long scheduled) {
