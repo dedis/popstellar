@@ -18,7 +18,7 @@ const QRCode = (props: IPropTypes) => {
   return (visibility)
     ? (
       <View style={[styleContainer.anchoredCenter, { padding: 10, justifyContent: 'flex-start' }]}>
-        <QRCodeDisplay value={identity} size={Number(size)} />
+        <QRCodeDisplay value={identity} size={size} />
       </View>
     )
     : null;
