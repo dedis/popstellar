@@ -16,10 +16,11 @@ const TextBlock = (props: IPropTypes) => {
   const { text } = props;
   const { bold } = props;
   const { visibility } = props;
+  const textStyle = (bold ? styles.textBold : styles.textStandard);
 
   return (visibility)
     ? (
-      <Text style={(bold) ? styles.textBold : styles.textStandard}>{text}</Text>
+      <Text style={textStyle}>{text}</Text>
     ) : null;
 };
 
