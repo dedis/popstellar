@@ -3,6 +3,12 @@ import { StyleSheet, Text, TextStyle } from 'react-native';
 import PropTypes from 'prop-types';
 import { Typography } from 'styles';
 
+/**
+ * Block of text that gets displayed
+ * Required input: text
+ * Optional input: bold, visibility (both bool)
+ */
+
 const styles = StyleSheet.create({
   textStandard: {
     ...Typography.base,
