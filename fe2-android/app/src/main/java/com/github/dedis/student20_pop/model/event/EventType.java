@@ -5,7 +5,8 @@ public enum EventType {
   ROLL_CALL("R"),
   MEETING("M"),
   POLL("P"),
-  DISCUSSION("D");
+  DISCUSSION("D"),
+  ELECTION("E");
 
   private final String suffix;
 
