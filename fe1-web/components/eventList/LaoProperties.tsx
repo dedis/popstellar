@@ -15,7 +15,7 @@ import EdiText from 'react-editext';
 function renderProperties(lao: Lao) {
   const style = {
     fontFamily: 'Helvetica',
-    fontSize: '13px',
+    fontSize: '14px',
     width: 200,
   };
   return (
