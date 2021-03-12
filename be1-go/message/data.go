@@ -347,6 +347,28 @@ type CastVoteData struct {
 	Votes      []Vote    `json:"questions"`
 }
 
+// ElectionEndData represents the message data used for ending an election.
+type ElectionEndData struct {
+	*GenericData
+	LaoID           []byte    `json:"lao"`
+	ElectionID      []byte    `json:"election"`
+	CreatedAt       Timestamp `json:"created_at"`
+	RegisteredVotes []byte    `json:"registered_votes"`
+}
+
+// QuestionResult represents the result of a question in an election.
+type QuestionResult struct {
+	ID     PublicKey      `json:"id"`
+	Result []BallotOption `json:"result"`
+}
+
+// ElectionResultData represents the message data for the result of an election.
+type ElectionResultData struct {
+	*GenericData
+	Questions         []QuestionResult         `json:"questions"`
+	WitnessSignatures []PublicKeySignaturePair `json:"witness_signatures"`
+}
+
 // NewCreateLAOData returns an instance of `CreateLAOData`.
 func NewCreateLAOData(name string, creation Timestamp, organizer PublicKey, witnesses []PublicKey) (*CreateLAOData, error) {
 	create := &CreateLAOData{
