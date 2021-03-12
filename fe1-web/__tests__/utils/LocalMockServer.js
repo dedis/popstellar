@@ -1,4 +1,4 @@
-const webSocketsServerPort = 8000;
+const webSocketsServerPort = 8080;
 const WebSocketServer = require('websocket').server;
 const http = require('http');
 
@@ -58,6 +58,12 @@ wsServer.on('request', (request) => {
         id: JSON.parse(message.utf8Data).id,
       };
 
+      const generalCatchupAnswerPositive = {
+        jsonrpc: JSON_RPC_VERSION,
+        result: [],
+        id: JSON.parse(message.utf8Data).id,
+      };
+
       answers = [{
         success: 'true',
         error: 'null',
@@ -70,8 +76,12 @@ wsServer.on('request', (request) => {
       // const answers = [{type: "answer", msg: message.utf8Data}];
       // answers = [JSON.parse(message.utf8Data)];
 
-      answers = [generalAnswerPositive, generalAnswerNegative];
-      answers = [generalAnswerPositive];
+      if (JSON.parse(message.utf8Data).method === 'catchup') {
+        answers = [generalCatchupAnswerPositive];
+      } else {
+        answers = [generalAnswerPositive, generalAnswerNegative];
+        answers = [generalAnswerPositive];
+      }
 
       // const idx = 0;
       // const idx = 1;
