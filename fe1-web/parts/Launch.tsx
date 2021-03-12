@@ -6,12 +6,8 @@ import PropTypes from 'prop-types';
 
 import { dispatch, KeyPairStore, OpenedLaoStore } from 'store';
 import { getNetworkManager } from 'network';
-import { requestCreateLao } from 'network/MessageApi';
-import { catchup, subscribe } from 'network/JsonRpcApi';
-import { storeMessages } from 'ingestion';
 
 import { Hash, Lao, Timestamp } from 'model/objects';
-import { channelFromId } from 'model/objects/Channel';
 
 import WideButtonView from 'components/WideButtonView';
 import TextBlock from 'components/TextBlock';
@@ -20,6 +16,7 @@ import { Spacing, Typography } from 'styles';
 import STRINGS from 'res/strings';
 import PROPS_TYPE from 'res/Props';
 import styleContainer from 'styles/stylesheets/container';
+import { establishLaoConnection } from 'network/CommunicationApi';
 
 /**
  * Manage the Launch screen: a description string, a LAO name text input, a launch LAO button,
@@ -49,40 +46,12 @@ const Launch = ({ navigation }: IPropTypes) => {
   const [inputLaoName, setInputLaoName] = useState('');
 
   const onButtonLaunchPress = (laoName: string) => {
-    if (laoName) {
-      requestCreateLao(laoName)
-        .then(() => {
-          console.info('LAO created successfully');
-        })
-        .catch((err) => {
-          console.error('Could not create LAO', err);
-        });
-    } else {
-      console.error('Could not create LAO without a name');
-    }
-  };
-
-  const onDraftOpenConnection = () => {
-    getNetworkManager().connect('127.0.0.1', 8080);
-
-    const time = Timestamp.EpochNow();
-    const name = `MyLao${time}`;
-    requestCreateLao(name)
-      .then((id: Hash) => {
-        const chan = channelFromId(id);
-        console.info('Subscribing to channel: ', chan);
-        return subscribe(chan)
-          .then(() => catchup(chan)
-            .then((messages) => {
-              storeMessages(...messages);
-
-              // go to the newly created LAO
-              navigation.navigate(STRINGS.app_navigation_tab_organizer, {});
-            }));
-      })
-      .catch((err) => {
-        console.error('Something went horribly wrong when opening the connection', err);
-      });
+    establishLaoConnection(laoName).then(() => {
+      // navigate to the newly created LAO
+      navigation.navigate(STRINGS.app_navigation_tab_organizer, {});
+    }).catch(
+      ((reason) => console.debug(`Failed to establish lao connection : ${reason}`)),
+    );
   };
 
   const onTestOpenConnection = () => {
@@ -106,9 +75,7 @@ const Launch = ({ navigation }: IPropTypes) => {
     console.info('Stored test lao in storage : ', sampleLao);
   };
 
-  const onTestClearStorage = () => {
-    dispatch({ type: 'CLEAR_STORAGE', value: {} });
-  };
+  const onTestClearStorage = () => dispatch({ type: 'CLEAR_STORAGE', value: {} });
 
   const cancelAction = () => {
     setInputLaoName('');
@@ -128,12 +95,8 @@ const Launch = ({ navigation }: IPropTypes) => {
       </View>
       <View style={styles.viewBottom}>
         <WideButtonView
-          title={STRINGS.launch_button_launch}
+          title={`${STRINGS.launch_button_launch} -- Connect to port 8080 & Open lao UI`}
           onPress={() => onButtonLaunchPress(inputLaoName)}
-        />
-        <WideButtonView
-          title="[TEST] Connect to port 8080 & Connect to LAO"
-          onPress={onDraftOpenConnection}
         />
         <WideButtonView
           title="[TEST] Connect to LocalMockServer.ts (use 'npm run startServer')"
