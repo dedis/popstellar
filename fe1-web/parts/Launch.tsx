@@ -132,7 +132,7 @@ const Launch = ({ navigation }: IPropTypes) => {
           onPress={() => onButtonLaunchPress(inputLaoName)}
         />
         <WideButtonView
-          title="[TEST] Connect to 8080"
+          title="[TEST] Connect to port 8080 & Connect to LAO"
           onPress={onDraftOpenConnection}
         />
         <WideButtonView
@@ -140,7 +140,7 @@ const Launch = ({ navigation }: IPropTypes) => {
           onPress={onTestOpenConnection}
         />
         <WideButtonView
-          title="[TEST] Clear (persistent ) storage"
+          title="[TEST] Clear (persistent) storage"
           onPress={onTestClearStorage}
         />
         <WideButtonView
