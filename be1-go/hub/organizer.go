@@ -216,14 +216,6 @@ type laoChannel struct {
 	*baseChannel
 }
 
-func (c *laoChannel) Subscribe(client *Client, msg message.Subscribe) error {
-	return c.baseChannel.Subscribe(client, msg)
-}
-
-func (c *laoChannel) Unsubscribe(client *Client, msg message.Unsubscribe) error {
-	return c.baseChannel.Unsubscribe(client, msg)
-}
-
 func (c *laoChannel) Publish(publish message.Publish) error {
 	err := c.baseChannel.VerifyPublishMessage(publish)
 	if err != nil {
@@ -254,17 +246,6 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 
 	c.broadcastToAllClients(*msg)
 	return nil
-}
-
-func (c *laoChannel) Catchup(catchup message.Catchup) []message.Message {
-	result := c.baseChannel.Catchup(catchup)
-
-	// TODO: define order for Roll call
-	//sort.Slice(result, func(i, j int) bool {
-	//return result[i].Data.GetTimestamp() < result[j].GetTimestamp()
-	//})
-
-	return result
 }
 
 func (c *laoChannel) processLaoObject(msg message.Message) error {
