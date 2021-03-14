@@ -1,5 +1,7 @@
 package ch.epfl.pop.model.network.method.message.data.rollCall
 
+import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
+import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType, Parsable}
 import ch.epfl.pop.model.objects.{Hash, Timestamp}
 
@@ -7,9 +9,9 @@ case class OpenRollCall(
                          update_id: Hash,
                          opens: Hash,
                          start: Timestamp
-                       ) {
-  private final val _object = ObjectType.ROLL_CALL
-  private final val action = ActionType.OPEN
+                       ) extends MessageData {
+  override val _object: ObjectType = ObjectType.ROLL_CALL
+  override val action: ActionType = ActionType.OPEN
 }
 
 object OpenRollCall extends Parsable {
@@ -22,5 +24,5 @@ object OpenRollCall extends Parsable {
     new OpenRollCall(update_id, opens, start)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): Any = ???
+  override def buildFromJson(messageData: MessageData, payload: String): OpenRollCall = ???
 }

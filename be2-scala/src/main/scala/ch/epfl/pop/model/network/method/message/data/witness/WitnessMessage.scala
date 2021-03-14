@@ -1,14 +1,16 @@
 package ch.epfl.pop.model.network.method.message.data.witness
 
+import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
+import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType, Parsable}
 import ch.epfl.pop.model.objects.{Hash, Signature}
 
 case class WitnessMessage(
                            message_id: Hash,
                            signature: Signature,
-                         ) {
-  private final val _object = ObjectType.MESSAGE
-  private final val action = ActionType.WITNESS
+                         ) extends MessageData {
+  override val _object: ObjectType = ObjectType.MESSAGE
+  override val action: ActionType = ActionType.WITNESS
 }
 
 object WitnessMessage extends Parsable {
@@ -20,5 +22,5 @@ object WitnessMessage extends Parsable {
     new WitnessMessage(message_id, signature)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): Any = ???
+  override def buildFromJson(messageData: MessageData, payload: String): WitnessMessage = ???
 }

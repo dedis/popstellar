@@ -1,5 +1,7 @@
 package ch.epfl.pop.model.network.method.message.data.lao
 
+import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
+import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType, Parsable}
 import ch.epfl.pop.model.objects.{Hash, PublicKey, Timestamp, WitnessSignaturePair}
 
@@ -12,9 +14,9 @@ case class StateLao(
                      witnesses: List[PublicKey],
                      modification_id: Hash,
                      modification_signatures: List[WitnessSignaturePair]
-                   ) {
-  private final val _object = ObjectType.LAO
-  private final val action = ActionType.STATE
+                   ) extends MessageData {
+  override val _object: ObjectType = ObjectType.LAO
+  override val action: ActionType = ActionType.STATE
 }
 
 object StateLao extends Parsable {
@@ -32,5 +34,5 @@ object StateLao extends Parsable {
     new StateLao(id, name, creation, last_modified, organizer, witnesses, modification_id, modification_signatures)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): Any = ???
+  override def buildFromJson(messageData: MessageData, payload: String): StateLao = ???
 }

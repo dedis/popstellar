@@ -1,5 +1,7 @@
 package ch.epfl.pop.model.network.method.message.data.meeting
 
+import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
+import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType, Parsable}
 import ch.epfl.pop.model.objects.{Hash, Timestamp, WitnessSignaturePair}
 
@@ -14,9 +16,9 @@ case class StateMeeting(
                          extra: Option[Any],
                          modification_id: Hash,
                          modification_signatures: List[WitnessSignaturePair]
-                       ) {
-  private final val _object = ObjectType.MEETING
-  private final val action = ActionType.STATE
+                       ) extends MessageData {
+  override val _object: ObjectType = ObjectType.MEETING
+  override val action: ActionType = ActionType.STATE
 }
 
 object StateMeeting extends Parsable {
@@ -36,5 +38,5 @@ object StateMeeting extends Parsable {
     new StateMeeting(id, name, creation, last_modified, location, start, end, extra, modification_id, modification_signatures)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): Any = ???
+  override def buildFromJson(messageData: MessageData, payload: String): StateMeeting = ???
 }

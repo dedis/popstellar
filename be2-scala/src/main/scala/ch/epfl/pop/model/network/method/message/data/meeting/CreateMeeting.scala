@@ -1,5 +1,7 @@
 package ch.epfl.pop.model.network.method.message.data.meeting
 
+import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
+import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType, Parsable}
 import ch.epfl.pop.model.objects.{Hash, Timestamp}
 
@@ -11,9 +13,9 @@ case class CreateMeeting(
                           start: Timestamp,
                           end: Option[Timestamp],
                           extra: Option[Any]
-                        ) {
-  private final val _object = ObjectType.MEETING
-  private final val action = ActionType.CREATE
+                        ) extends MessageData {
+  override val _object: ObjectType = ObjectType.MEETING
+  override val action: ActionType = ActionType.CREATE
 }
 
 object CreateMeeting extends Parsable {
@@ -30,5 +32,5 @@ object CreateMeeting extends Parsable {
     new CreateMeeting(id, name, creation, location, start, end, extra)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): Any = ???
+  override def buildFromJson(messageData: MessageData, payload: String): CreateMeeting = ???
 }
