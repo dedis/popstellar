@@ -5,7 +5,13 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType, Parsable}
 import ch.epfl.pop.model.objects.{Hash, PublicKey, Timestamp}
 
-case class CreateLao(id: Hash, name: String, creation: Timestamp, organizer: PublicKey, witnesses: List[PublicKey]) extends MessageData {
+case class CreateLao(
+                      id: Hash,
+                      name: String,
+                      creation: Timestamp,
+                      organizer: PublicKey,
+                      witnesses: List[PublicKey]
+                    ) extends MessageData {
   override val _object: ObjectType = ObjectType.LAO
   override val action: ActionType = ActionType.CREATE
 }
