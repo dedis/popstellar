@@ -20,6 +20,7 @@ const wsServer = new WebSocketServer({
 });
 
 const clients = {};
+const laoMessageIds = []; // Note: only handles single lao scenarios
 
 // This code generates unique user id for every user.
 const getUniqueID = () => {
@@ -42,6 +43,9 @@ wsServer.on('request', (request) => {
 
       let answers;
       const JSON_RPC_VERSION = '2.0';
+      if (JSON.parse(message.utf8Data).params.message !== undefined) {
+        laoMessageIds.push(JSON.parse(message.utf8Data).params.message);
+      }
 
       const generalAnswerPositive = {
         jsonrpc: JSON_RPC_VERSION,
@@ -60,7 +64,7 @@ wsServer.on('request', (request) => {
 
       const generalCatchupAnswerPositive = {
         jsonrpc: JSON_RPC_VERSION,
-        result: [],
+        result: laoMessageIds,
         id: JSON.parse(message.utf8Data).id,
       };
 
