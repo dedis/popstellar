@@ -1,4 +1,4 @@
-import { JsonRpcMethod, JsonRpcRequest } from 'model/network';
+import { JsonRpcMethod, JsonRpcRequest, JsonRpcResponse } from 'model/network';
 import { Publish, Subscribe } from 'model/network/method';
 import { Message } from 'model/network/method/message';
 import { MessageData } from 'model/network/method/message/data';
@@ -47,8 +47,14 @@ export function catchup(channel: Channel): Promise<Message[]> {
     id: AUTO_ASSIGN_ID,
   });
 
-  return getNetworkManager().sendPayload(request)
-    .then((r) => (r.result as any[])
-      .map((m) => Message.fromJson(m)));
+  return getNetworkManager().sendPayload(request).then(
+    (r: JsonRpcResponse) => {
+      if (typeof r.result === 'number') {
+        throw new Error('FIXME number in result. Should it be here?');
+      }
+
+      return (r.result as any[]).map((m) => Message.fromJson(m));
+    },
+  );
   // propagate the catch() with the full error message, as it needs to be handled on a higher level
 }
