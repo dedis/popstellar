@@ -1,5 +1,7 @@
 package ch.epfl.pop.model.network.method.message.data
 
+import ch.epfl.pop.model.network.Matching
+
 object ActionType extends Enumeration {
   type ActionType = Value
 
