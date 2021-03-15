@@ -138,6 +138,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
                     String title = electionNameText.getText().toString();
                     List<String> questions = Arrays.asList(electionQuestionText.getText().toString());
                     mLaoDetailViewModel.createNewElection(title, startTimeInSeconds, endTimeInSeconds, votingMethod.toString(), write_in, ballotOptions, questions);
+                    mLaoDetailViewModel.openLaoDetail();
                 });
 
         //On click, cancel button takes back to LAO detail page

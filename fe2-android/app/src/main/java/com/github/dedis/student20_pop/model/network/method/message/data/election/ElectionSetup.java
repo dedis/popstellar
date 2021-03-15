@@ -20,8 +20,8 @@ public class ElectionSetup extends Data {
     private String id;
     private String name;
     private long creation;
-    private transient long start;
-    private transient long end;
+    private long start;
+    private long end;
     private List<ElectionQuestion> questions;
 
     /**
