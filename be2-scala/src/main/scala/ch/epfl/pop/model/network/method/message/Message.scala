@@ -1,6 +1,7 @@
 package ch.epfl.pop.model.network.method.message
 
-import ch.epfl.pop.model.network.method.message.data.{MessageData, Parsable}
+import ch.epfl.pop.model.network.Parsable
+import ch.epfl.pop.model.network.method.message.data.MessageData
 import ch.epfl.pop.model.objects.{Base64Data, Hash, PublicKey, Signature, WitnessSignaturePair}
 
 case class Message(
@@ -24,5 +25,5 @@ object Message extends Parsable {
     new Message(data, sender, signature, message_id, witness_signatures, ???)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): Any = ???
+  override def buildFromJson(messageData: MessageData, payload: String): Message = ???
 }

@@ -1,8 +1,9 @@
 package ch.epfl.pop.model.network.method.message.data.meeting
 
+import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
-import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType, Parsable}
+import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.model.objects.{Hash, Timestamp, WitnessSignaturePair}
 
 case class StateMeeting(
