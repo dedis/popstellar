@@ -1,11 +1,11 @@
 package ch.epfl.pop.model.network
-import ch.epfl.pop.model.network.method.ParamsSimple
+import ch.epfl.pop.model.network.method.Params
 import ch.epfl.pop.model.network.method.message.data.MessageData
 
 case class JsonRpcRequest(
                            jsonrpc: String,
                            method: Method.Method,
-                           params: ParamsSimple,
+                           params: Params,
                            id: Option[Int]
                          ) extends JsonRpcMessage
 
@@ -13,7 +13,7 @@ object JsonRpcRequest extends Parsable {
   def apply(
              jsonrpc: String,
              method: Method.Method,
-             params: ParamsSimple,
+             params: Params,
              id: Option[Int]
            ): JsonRpcRequest = {
     // FIXME add checks
