@@ -2,6 +2,7 @@ package db
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"student20_pop/message"
@@ -56,7 +57,7 @@ func createMessage(i int, timestamp message.Timestamp) (message.Message, error) 
 func addMessages(repo Repository, channelID string, limit int) (int64, error) {
 	now := time.Now().UnixNano()
 
-	for i := 0; i < limit; i++ {
+	for i := limit - 1; i >= 0; i-- {
 		timestamp := message.Timestamp(now + int64(i))
 
 		msg, err := createMessage(i, timestamp)
@@ -81,13 +82,26 @@ func TestSQLite_GetMessages(t *testing.T) {
 
 	channelID := "12345"
 
-	_, err = addMessages(repo, channelID, 100)
+	now, err := addMessages(repo, channelID, 100)
 	require.NoError(t, err)
 
 	messages, err := repo.GetMessages(channelID)
 	require.NoError(t, err)
 
 	require.Equal(t, 100, len(messages))
+
+	// Check if we get the messages in sorted order of time
+	for i := 0; i < 100; i++ {
+		type internal struct {
+			Creation int64 `json:"creation"`
+		}
+
+		tmp := &internal{}
+		err := json.Unmarshal(messages[i].RawData, tmp)
+		require.NoError(t, err)
+
+		require.Equal(t, now+int64(i), tmp.Creation)
+	}
 }
 
 func TestSQLite_GetMessagesInRange(t *testing.T) {

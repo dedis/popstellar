@@ -27,6 +27,8 @@ var (
 	`
 )
 
+type TxFunc func(tx *sql.Tx) error
+
 // NewSQLiteRepository instantiates an sqlite repository.
 // TODO: Add support for schema migrations.
 func NewSQLiteRepository(path string) (Repository, error) {
@@ -70,6 +72,31 @@ func createDatabase(path string) error {
 // in ascending order of their timestamp.
 func (s *sqlite) GetMessages(channelID string) ([]message.Message, error) {
 	return s.GetMessagesInRange(channelID, 0, math.MaxInt64)
+}
+
+func (s *sqlite) WithTransaction(fn TxFunc) (err error) {
+	tx, err := s.conn.Begin()
+	if err != nil {
+		err = xerrors.Errorf("failed to create transaction: %v", err)
+		return
+	}
+
+	defer func() {
+		if p := recover(); p != nil {
+			tx.Rollback()
+			panic(p)
+		} else if err != nil {
+			tx.Rollback()
+		} else {
+			err = tx.Commit()
+		}
+	}()
+
+	err = fn(tx)
+	if err != nil {
+		err = xerrors.Errorf("failed to process transaction: %v", err)
+	}
+	return
 }
 
 // GetMessagesInRange returns all the messages for the given `channelID`
@@ -119,44 +146,38 @@ func (s *sqlite) GetMessagesInRange(channelID string, start, end message.Timesta
 // while a write is in progress and it times out after a default value of
 // 5 seconds.
 func (s *sqlite) AddWitnessToMessage(messageID string, keyAndSignature message.PublicKeySignaturePair) error {
-	tx, err := s.conn.Begin()
+	err := s.WithTransaction(func(tx *sql.Tx) error {
+		row := tx.QueryRow("SELECT message from messages where message_id = ?", messageID)
+
+		var marshaledMsg string
+		err := row.Scan(&marshaledMsg)
+		if err != nil {
+			return xerrors.Errorf("failed to read message from row: %v", err)
+		}
+
+		msg := message.Message{}
+		err = json.Unmarshal([]byte(marshaledMsg), &msg)
+		if err != nil {
+			return xerrors.Errorf("failed to unmarshal message: %v", err)
+		}
+
+		msg.WitnessSignatures = append(msg.WitnessSignatures, keyAndSignature)
+
+		msgBuf, err := json.Marshal(msg)
+		if err != nil {
+			return xerrors.Errorf("failed to marshal msg: %v", err)
+		}
+
+		_, err = tx.Exec("UPDATE messages SET message = ? WHERE message_id = ?", string(msgBuf), messageID)
+		if err != nil {
+			return xerrors.Errorf("failed to create update statement: %v", err)
+		}
+
+		return nil
+	})
+
 	if err != nil {
-		return xerrors.Errorf("failed to create transaction: %v", err)
-	}
-
-	row := tx.QueryRow("SELECT message from messages where message_id = ?", messageID)
-
-	var marshaledMsg string
-	err = row.Scan(&marshaledMsg)
-	if err != nil {
-		tx.Rollback()
-		return xerrors.Errorf("failed to read message from row: %v", err)
-	}
-
-	msg := message.Message{}
-	err = json.Unmarshal([]byte(marshaledMsg), &msg)
-	if err != nil {
-		tx.Rollback()
-		return xerrors.Errorf("failed to unmarshal message: %v", err)
-	}
-
-	msg.WitnessSignatures = append(msg.WitnessSignatures, keyAndSignature)
-
-	msgBuf, err := json.Marshal(msg)
-	if err != nil {
-		tx.Rollback()
-		return xerrors.Errorf("failed to marshal msg: %v", err)
-	}
-
-	_, err = tx.Exec("UPDATE messages SET message = ? WHERE message_id = ?", string(msgBuf), messageID)
-	if err != nil {
-		tx.Rollback()
-		return xerrors.Errorf("failed to create update statement: %v", err)
-	}
-
-	err = tx.Commit()
-	if err != nil {
-		return xerrors.Errorf("failed to commit transaction: %v", err)
+		return xerrors.Errorf("failed to add witness: %v", err)
 	}
 
 	return nil
@@ -170,20 +191,17 @@ func (s *sqlite) AddMessage(channelID string, msg message.Message, timestamp mes
 		return xerrors.Errorf("failed to marshal message: %v", err)
 	}
 
-	tx, err := s.conn.Begin()
-	if err != nil {
-		return xerrors.Errorf("failed to create transaction: %v", err)
-	}
+	err = s.WithTransaction(func(tx *sql.Tx) error {
+		_, err = tx.Exec("INSERT INTO messages(channel_id, message_id, timestamp, message) VALUES (?, ?, ?, ?)", channelID, messageID, timestamp, string(msgBuf))
+		if err != nil {
+			return xerrors.Errorf("failed to execute insert: %v", err)
+		}
 
-	_, err = tx.Exec("INSERT INTO messages(channel_id, message_id, timestamp, message) VALUES (?, ?, ?, ?)", channelID, messageID, timestamp, string(msgBuf))
-	if err != nil {
-		tx.Rollback()
-		return xerrors.Errorf("failed to execute insert: %v", err)
-	}
+		return nil
+	})
 
-	err = tx.Commit()
 	if err != nil {
-		return xerrors.Errorf("failed to commit transaction: %v", err)
+		return xerrors.Errorf("failed to add message: %v", err)
 	}
 
 	return nil
