@@ -199,7 +199,7 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 	encodedID := base64.StdEncoding.EncodeToString(data.ID)
 	if _, ok := o.channelByID[encodedID]; ok {
 		return &message.Error{
-			Code:        -4,
+			Code:        -3,
 			Description: "failed to create lao: another one with the same ID exists",
 		}
 	}
