@@ -10,7 +10,7 @@ import { encodeBase64 } from 'tweetnacl-util';
  *
  * note - the Web Cryptography part is not implemented, for the moment keys are stored in plaintext
  */
-export class SimpleWalletStore {
+export class WalletStore {
   private readonly database: string;
 
   private db: any;
@@ -33,7 +33,7 @@ export class SimpleWalletStore {
    */
   public async createObjectStore(walletId: string) {
     try {
-      this.db = await openDB(this.database, 1, {
+      this.db = await openDB(this.database, 2, {
         upgrade(db: IDBPDatabase) {
           if (!db.objectStoreNames.contains(walletId)) {
             db.createObjectStore(walletId, { keyPath: 'id' });
@@ -56,7 +56,7 @@ export class SimpleWalletStore {
     if (walletId === null || laoId === null || rollCallId === null) {
       throw new Error('Error encountered while adding roll call token to Wallet : null parameters');
     }
-    const keyPair = SimpleWalletStore.generateKeyPairEntry(SimpleWalletStore
+    const keyPair = WalletStore.generateKeyPairEntry(WalletStore
       .buildTokenIdentifier(laoId, rollCallId));
 
     const tx = this.db.transaction(walletId, 'readwrite');
@@ -78,7 +78,7 @@ export class SimpleWalletStore {
     }
     const tx = this.db.transaction(walletId, 'readonly');
     const store = tx.objectStore(walletId);
-    const result = await store.get(SimpleWalletStore.buildTokenIdentifier(laoId, rollCallId));
+    const result = await store.get(WalletStore.buildTokenIdentifier(laoId, rollCallId));
     console.log('Get Data ', JSON.stringify(result));
     return result;
   }
@@ -93,7 +93,7 @@ export class SimpleWalletStore {
     if (walletId === null || laoId === null || rollCallId === null) {
       throw new Error('Error encountered while deleting roll call token from Wallet : null parameters');
     }
-    const laoAndRcId = SimpleWalletStore.buildTokenIdentifier(laoId, rollCallId);
+    const laoAndRcId = WalletStore.buildTokenIdentifier(laoId, rollCallId);
     const tx = this.db.transaction(walletId, 'readwrite');
     const store = tx.objectStore(walletId);
     const result = await store.get(laoAndRcId);

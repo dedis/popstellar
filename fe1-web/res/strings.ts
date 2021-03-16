@@ -115,6 +115,10 @@ const STRINGS = {
   meeting_create_finish_time: 'End time: ',
   meeting_create_location: 'Location',
 
+  /* --- Wallet Strings --- */
+  wallet: 'Create personal wallet',
+  walletAdd: 'Add token to wallet ',
+
   /* --- General creation Strings --- */
   create_description: 'Choose the type of event you want to create',
 

@@ -11,6 +11,8 @@ import STRINGS from 'res/strings';
 
 import LAOItem from 'components/LAOItem';
 import TextBlock from 'components/TextBlock';
+import WideButtonView from '../components/WideButtonView';
+import { SimpleWalletObject } from '../model/objects/SimpleWalletObject';
 
 /**
  * Manage the Home screen component: if the user is not connected to any LAO, a welcome message
@@ -24,6 +26,25 @@ const styles = StyleSheet.create({
     marginTop: Spacing.s,
   },
 });
+
+let wallet: SimpleWalletObject;
+
+const onWalletButtonPressed = async () => {
+  console.log('Creation of wallet object');
+  wallet = new SimpleWalletObject();
+  console.log('Wallet created');
+
+  console.log('Creation of wallet storage');
+  await wallet.initWalletStorage();
+  console.log('Wallet storage created');
+};
+
+const onAddKeyPairButtonPressed = async () => {
+  const laoId = `LAO ${Math.random().toString()}`;
+  const rollCallId = `RollCall ${Math.random().toString()}`;
+
+  await wallet.addTokenForRollCallAttendance(laoId, rollCallId);
+};
 
 // FIXME: define interface + types, requires availableLaosReducer to be migrated first
 function getConnectedLaosDisplay(laos: Lao[]) {
@@ -45,6 +66,17 @@ function getWelcomeMessageDisplay() {
       <TextBlock bold text={STRINGS.home_welcome} />
       <TextBlock bold text={STRINGS.home_connect_lao} />
       <TextBlock bold text={STRINGS.home_launch_lao} />
+      <TextBlock text={' '} />
+      <TextBlock text={' '} />
+      <TextBlock text={' '} />
+      <WideButtonView
+        title={STRINGS.wallet}
+        onPress={() => onWalletButtonPressed()}
+      />
+      <WideButtonView
+        title={STRINGS.walletAdd}
+        onPress={() => onAddKeyPairButtonPressed()}
+      />
     </View>
   );
 }

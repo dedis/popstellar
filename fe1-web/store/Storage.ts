@@ -7,7 +7,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import { Persistor } from 'redux-persist/es/types';
 
 import rootReducer from './reducers';
-import { SimpleWalletStore } from './stores/SimpleWalletStore';
+import { WalletStore } from './stores/WalletStore';
 
 interface PersistStoreConfig {
   store: Store,
@@ -16,7 +16,7 @@ interface PersistStoreConfig {
 
 let store: Store;
 let persist: Persistor;
-let walletStore: SimpleWalletStore;
+let walletStore: WalletStore;
 
 export function storeInit(): PersistStoreConfig {
   const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
@@ -26,18 +26,16 @@ export function storeInit(): PersistStoreConfig {
 
   persist = persistStore(store);
 
-  return { store, persist };
-}
+  walletStore = new WalletStore('walletDatabase');
 
-export function walletStoreInit() {
-  walletStore = new SimpleWalletStore('walletDatabase');
+  return { store, persist };
 }
 
 export function getStore(): Store {
   return store;
 }
 
-export function getWalletStore(): SimpleWalletStore {
+export function getWalletStore(): WalletStore {
   return walletStore;
 }
 

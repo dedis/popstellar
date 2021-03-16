@@ -1,4 +1,4 @@
-import { getWalletStore } from '../../store';
+import { getWalletStore, KeyPairStore } from '../../store';
 
 /**
  * @author Carlo Maria Musso
@@ -6,27 +6,21 @@ import { getWalletStore } from '../../store';
  *
  */
 export class SimpleWalletObject {
-  private walletId: string;
+  private readonly walletId: string;
 
   /**
-   * created a wallet object
-   * @param walletId the unique ID identifying a wallet
+   * creates a wallet object
    */
-  constructor(walletId: string) {
-    if (walletId === null) {
-      throw new Error('Error encountered while creating a wallet object : null wallet Id');
-    }
-
-    this.walletId = walletId;
+  constructor() {
+    this.walletId = KeyPairStore.getPublicKey().toString();
   }
 
   /**
    * this method creates the walletId entry in the secure wallet storage
    */
-  public initWalletStorage() {
-    getWalletStore()
-      .createObjectStore(this.walletId)
-      .then((retVal) => console.log(`initWalletStorage return value is ${retVal}`));
+  public async initWalletStorage() {
+    await getWalletStore()
+      .createObjectStore(this.walletId);
   }
 
   /**
@@ -35,7 +29,7 @@ export class SimpleWalletObject {
    * @param laoId the id of the LAO
    * @param rollCallId the id of the attended roll call
    */
-  public addTokenForRollCallAttendance(laoId: string, rollCallId: string) {
+  public async addTokenForRollCallAttendance(laoId: string, rollCallId: string) {
     if (laoId === null || rollCallId == null) {
       throw new Error('Error encountered while adding roll call to LAO : null argument');
     }
@@ -51,7 +45,7 @@ export class SimpleWalletObject {
    * @param laoId the id of the LAO
    * @param rollCallId the id of the attended roll call
    */
-  public findKeyPair(laoId: string, rollCallId: string) {
+  public async findKeyPair(laoId: string, rollCallId: string) {
     if (laoId === null || rollCallId == null) {
       throw new Error('Error encountered while finding Key Pair -> null argument');
     }
@@ -66,7 +60,7 @@ export class SimpleWalletObject {
    * @param laoId the id of the LAO
    * @param rollCallId the id of the attended roll call
    */
-  public deleteRollCallToken(laoId: string, rollCallId: string) {
+  public async deleteRollCallToken(laoId: string, rollCallId: string) {
     if (laoId === null || rollCallId == null) {
       throw new Error('Error encountered while adding roll call to LAO : null argument');
     }
