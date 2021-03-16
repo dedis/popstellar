@@ -24,6 +24,12 @@ var (
 		PRIMARY KEY (channel_id, message_id)
 	);
 	CREATE INDEX idx_timestamp ON messages(channel_id, timestamp);
+
+	CREATE TABLE migrations (
+		id integer, date integer, description text,
+		PRIMARY KEY (id)
+	);
+	INSERT INTO migrations (id, date, description) VALUES (0, datetime('now', 'unixepoch'), 'base schema');
 	`
 )
 
