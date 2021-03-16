@@ -11,6 +11,7 @@ import ParagraphBlock from 'components/ParagraphBlock';
 import { Lao } from 'model/objects';
 import { makeCurrentLao } from 'store/reducers';
 import EdiText from 'react-editext';
+import { KeyPairStore } from '../../store';
 
 function renderProperties(lao: Lao) {
   const style = {
@@ -18,38 +19,46 @@ function renderProperties(lao: Lao) {
     fontSize: '14px',
     width: 200,
   };
-  return (
-    <>
-      <ParagraphBlock text="Lao name: " />
-      <EdiText
-        hint="type the new LAO name"
-        viewProps={{ style: style }}
-        inputProps={{ style: style }}
-        type="text"
-        onSave={() => {
+
+  const isOrganizer = KeyPairStore.getPublicKey().toString() === lao.organizer.toString();
+
+  return (isOrganizer)
+    ? (
+      <>
+        <ParagraphBlock text="Lao name: " />
+        <EdiText
+          hint="type the new LAO name"
+          viewProps={{ style: style }}
+          inputProps={{ style: style }}
+          type="text"
+          onSave={() => {
           // TODO: carry out the necessary LAO update interactions with the backend here
-        }}
-        value={`${lao.name}`}
-      />
-      <ParagraphBlock text="Lao creation: " />
-      <EdiText
-        hint="type the new creation date"
-        viewProps={{ style: style }}
-        inputProps={{ style: style }}
-        type="text"
-        onSave={() => {
+          }}
+          value={`${lao.name}`}
+        />
+        <ParagraphBlock text="Lao creation: " />
+        <EdiText
+          hint="type the new creation date"
+          viewProps={{ style: style }}
+          inputProps={{ style: style }}
+          type="text"
+          onSave={() => {
           // TODO: carry out the necessary LAO update interactions with the backend here
-        }}
-        value={`${lao.creation.toString()}`}
-      />
-    </>
-  );
+          }}
+          value={`${lao.creation.toString()}`}
+        />
+      </>
+    ) : (
+      <>
+        <ParagraphBlock text={`Lao name: ${lao.name}`} />
+        <ParagraphBlock text={`Lao creation: ${lao.creation.toString()}`} />
+      </>
+    );
 }
 
 const LaoProperties = () => {
   const laoSelect = makeCurrentLao();
   const lao = useSelector(laoSelect);
-
   const [toggleChildrenVisible, setToggleChildrenVisible] = useState(false);
 
   const toggleChildren = () => (setToggleChildrenVisible(!toggleChildrenVisible));
