@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"student20_pop/message"
 	"sync"
 	"testing"
@@ -14,15 +15,20 @@ import (
 )
 
 func TestSQLite_NewRepository(t *testing.T) {
-	repo, err := createRepo("test.db")
+	repo, dir, err := createRepo("test.db")
 	require.NoError(t, err)
 
 	err = repo.Close()
 	require.NoError(t, err)
+
+	dbPath := fmt.Sprintf("%s/test.db", dir)
+
+	_, err = os.Stat(dbPath)
+	require.NoError(t, err)
 }
 
 func TestSQLite_AddMessage(t *testing.T) {
-	repo, err := createRepo("add_message.db")
+	repo, _, err := createRepo("add_message.db")
 	require.NoError(t, err)
 
 	defer repo.Close()
@@ -75,7 +81,7 @@ func addMessages(repo Repository, channelID string, limit int) (int64, error) {
 }
 
 func TestSQLite_GetMessages(t *testing.T) {
-	repo, err := createRepo("get_messages.db")
+	repo, _, err := createRepo("get_messages.db")
 	require.NoError(t, err)
 
 	defer repo.Close()
@@ -105,7 +111,7 @@ func TestSQLite_GetMessages(t *testing.T) {
 }
 
 func TestSQLite_GetMessagesInRange(t *testing.T) {
-	repo, err := createRepo("get_messages_range.db")
+	repo, _, err := createRepo("get_messages_range.db")
 	require.NoError(t, err)
 
 	defer repo.Close()
@@ -123,7 +129,7 @@ func TestSQLite_GetMessagesInRange(t *testing.T) {
 }
 
 func TestSQLite_AddWitnessToMessage(t *testing.T) {
-	repo, err := createRepo("add_witness.db")
+	repo, _, err := createRepo("add_witness.db")
 	require.NoError(t, err)
 
 	defer repo.Close()
@@ -182,16 +188,16 @@ func TestSQLite_AddWitnessToMessage(t *testing.T) {
 	}
 }
 
-func createRepo(dbName string) (Repository, error) {
+func createRepo(dbName string) (Repository, string, error) {
 	dir, err := ioutil.TempDir("", "pop")
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	repo, err := NewSQLiteRepository(fmt.Sprintf("%s/%s", dir, dbName))
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
-	return repo, nil
+	return repo, dir, nil
 }
