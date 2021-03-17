@@ -31,6 +31,9 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
 
     public static final String TAG = ElectionSetupFragment.class.getSimpleName();
 
+    private final String ERROR_ELECTION_NAME_EMPTY = "An election name cannot be empty";
+    private final String ERROR_BALLOT_OPTION_EMPTY = "A ballot option cannot be empty";
+    private final String ERROR_QUESTION_EMPTY      = "Question cannot be empty";
     private LaoDetailViewModel mLaoDetailViewModel;
     private FragmentSetupElectionEventBinding mSetupElectionFragBinding;
 
@@ -164,5 +167,22 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
         votingMethod = votingMethods.valueOf("Plurality");
+    }
+
+    /**
+     * For each of the input field checks if it's a valid input if any. If not display error message
+     * and request focus on the field
+     * @param editText The text input field to check
+     * @param errorMessage The error message to be displayed
+
+     * @return true if all input fields are adequate
+     */
+    private boolean editTextInputChecker(EditText editText, String errorMessage){
+        if (editText.getText().toString().trim().isEmpty()) {
+            editText.setError(errorMessage);
+            editText.requestFocus();
+            return false;
+        }
+        return true;
     }
 }
