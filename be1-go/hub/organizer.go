@@ -484,3 +484,44 @@ func (c *laoChannel) processRollCallObject(data message.Data) error {
 
 	return nil
 }
+
+type electionChannel struct {
+	*baseChannel
+
+	// Voting method of the election
+	method string
+
+	// Starting time of the election
+	start message.Timestamp
+
+	// Ending time of the election
+	end message.Timestamp
+
+	// True if the election is over and false otherwise
+	terminated bool
+
+	// Questions asked to the participants
+	questions []question
+}
+
+type question struct {
+	// ID of th question
+	id []byte
+
+	// Different options
+	ballotOptions []string
+
+	// list of all valid votes
+	validVotes []validVote
+}
+
+type validVote struct {
+	// time of the creation of the vote
+	voteTime message.Timestamp
+
+	// indexes of the ballot options
+	indexes []int
+
+	// Public key of the voter
+	voterKey message.PublicKey
+}
