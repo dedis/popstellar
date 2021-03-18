@@ -323,7 +323,7 @@ type ElectionSetupData struct {
 	ID        []byte     `json:"id"`
 	LaoID     []byte     `json:"lao"`
 	Name      string     `json:"name"`
-	Version   string     `json:"vesrion"`
+	Version   string     `json:"version"`
 	CreatedAt Timestamp  `json:"created_at"`
 	StartTime Timestamp  `json:"start_time"`
 	EndTime   Timestamp  `json:"end_time"`
