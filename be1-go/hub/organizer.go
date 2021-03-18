@@ -197,6 +197,12 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 	}
 
 	encodedID := base64.StdEncoding.EncodeToString(data.ID)
+	if _, ok := o.channelByID[encodedID]; ok {
+		return &message.Error{
+			Code:        -3,
+			Description: "failed to create lao: another one with the same ID exists",
+		}
+	}
 
 	laoCh := laoChannel{
 		channel: "/root/" + encodedID,
@@ -207,8 +213,7 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 	messageID := base64.StdEncoding.EncodeToString(publish.Params.Message.MessageID)
 	laoCh.inbox[messageID] = *publish.Params.Message
 
-	id := base64.StdEncoding.EncodeToString(data.ID)
-	o.channelByID[id] = &laoCh
+	o.channelByID[encodedID] = &laoCh
 
 	return nil
 }
