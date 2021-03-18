@@ -10,6 +10,8 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
+import com.github.dedis.student20_pop.detail.fragments.ElectionSetupFragment;
+import com.github.dedis.student20_pop.detail.fragments.ElectionDisplayFragment;
 import com.github.dedis.student20_pop.detail.fragments.RollCallEventCreationFragment;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.detail.fragments.IdentityFragment;
@@ -103,6 +105,10 @@ public class LaoDetailActivity extends AppCompatActivity {
       case POLL:
         setupCreatePollFragment();
         break;
+      case ELECTION_SETUP:
+        setupCreateElectionSetupFragment();
+      case ELECTION_DISPLAY:
+        setupCreateElectionDisplayFragment();
       default:
         Log.d(TAG, "unknown event type: " + eventType.toString());
     }
@@ -188,4 +194,26 @@ public class LaoDetailActivity extends AppCompatActivity {
           getSupportFragmentManager(), pollCreationFragment, R.id.fragment_container_lao_detail);
     }
   }
+
+  private void setupCreateElectionSetupFragment() {
+    ElectionSetupFragment electionSetupFragment =
+            (ElectionSetupFragment)
+              getSupportFragmentManager().findFragmentById(R.id.fragment_setup_election_event);
+    if (electionSetupFragment == null) {
+      electionSetupFragment = ElectionSetupFragment.newInstance();
+      ActivityUtils.replaceFragmentInActivity(
+              getSupportFragmentManager(), electionSetupFragment, R.id.fragment_container_lao_detail);
+    }
+  }
+  private void setupCreateElectionDisplayFragment() {
+    ElectionDisplayFragment electionDisplayFragment =
+            (ElectionDisplayFragment)
+                    getSupportFragmentManager().findFragmentById(R.id.fragment_election_display);
+    if (electionDisplayFragment == null) {
+      electionDisplayFragment = ElectionDisplayFragment.newInstance();
+      ActivityUtils.replaceFragmentInActivity(
+              getSupportFragmentManager(), electionDisplayFragment, R.id.fragment_container_lao_detail);
+    }
+  }
+
 }

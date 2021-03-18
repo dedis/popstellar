@@ -114,6 +114,10 @@ public abstract class AbstractEventCreationFragment extends Fragment {
     return startTimeEditText.getText().toString().trim();
   }
 
+  public String getEndDate() { return endDateEditText.getText().toString().trim(); }
+
+  public String getEndTime() { return endTimeEditText.getText().toString().trim(); }
+
   public void checkDates(int requestCode, int resultCode, Intent data) {
     if (resultCode == Activity.RESULT_OK) {
       selection = (Calendar) data.getSerializableExtra(getString(R.string.picker_selection));

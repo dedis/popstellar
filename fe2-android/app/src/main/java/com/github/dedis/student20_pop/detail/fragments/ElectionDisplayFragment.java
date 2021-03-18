@@ -49,21 +49,22 @@
                 throw new IllegalArgumentException("Cannot obtain view model for " + TAG);
             }
             // Set the text widget in layout to current LAO name
-            laoNameTextView = mElectionDisplayFragBinding.LAOName;
+            laoNameTextView = mElectionDisplayFragBinding.LAONameElectionDisplay;
             laoNameTextView.setText(mLaoDetailViewModel.getCurrentLaoName().getValue());
-            //////////////////////////////////////////////////////
 
-            setUpElectionNameButton();
+            //setUpElectionNameButton();
 
             mElectionDisplayFragBinding.setViewmodel(mLaoDetailViewModel);
             mElectionDisplayFragBinding.setLifecycleOwner(activity);
             return mElectionDisplayFragBinding.getRoot();
         }
 
-        private void setUpElectionNameButton() {
-            mElectionDisplayFragBinding.electionName1.setOnClickListener(  v -> {
-                mLaoDetailViewModel.castVotes();
+        /* private void setUpElectionNameButton() {
+            mElectionDisplayFragBinding.ele.setOnClickListener(  v -> {
+                mLaoDetailViewModel.launchCastingVotes();
             });
         }
+
+         */
 
     }

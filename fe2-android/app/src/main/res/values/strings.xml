@@ -106,15 +106,17 @@
     <!-- Properties -->
     <string name="test_organization_name">Test Organization Name</string>
     <string name="edit_lao_name">Edit Lao Name</string>
+    <string name="election_name">Election Name</string>
+    <string name="lao_name">LAO name</string>
+    <string name="election_setup">Election Setup</string>
+    <string name="select_a_voting_method">Select a voting method</string>
+    <string name="submit">Submit</string>
+    <string name="todo">TODO</string>
+    <string name="ballot_option_2">Ballot option 2</string>
 
     <!-- E-voting -->
-    <string name="lao_name">LAO Name</string>
     <string name="elections">Elections</string>
-    <string name="election_name1_">Election Name 1</string>
-    <string name="election_name2">Election Name 2</string>
-    <string name="election_name3">Election Name 3</string>
-    <string name="election_name4">Election Name 4</string>
-    <string name="election_name5">Election Name 5</string>
+
 
 
 
