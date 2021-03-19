@@ -1,4 +1,5 @@
 package ch.epfl.pop.model.network
+import ch.epfl.pop.json.JsonUtils.JsonMessageParserError
 import ch.epfl.pop.model.network.method.Params
 import ch.epfl.pop.model.network.method.message.data.MessageData
 
@@ -7,7 +8,9 @@ case class JsonRpcRequest(
                            method: Method.Method,
                            params: Params,
                            id: Option[Int]
-                         ) extends JsonRpcMessage
+                         ) extends JsonRpcMessage with Validatable {
+  override def validateContent(): Option[JsonMessageParserError] = params.validateContent() // define recursively?s
+}
 
 object JsonRpcRequest extends Parsable {
   def apply(
