@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class LaoDetailViewModel extends AndroidViewModel {
 
@@ -63,6 +64,12 @@ public class LaoDetailViewModel extends AndroidViewModel {
   private final LiveData<String> mCurrentLaoName =
       Transformations.map(mCurrentLao, lao -> lao == null ? "" : lao.getName());
 
+  // TODO: Multiple events from Lao may be concatenated using Stream.concat()
+  private final LiveData<List<com.github.dedis.student20_pop.model.event.Event>> mLaoEvents = Transformations
+      .map(mCurrentLao,
+          lao -> lao == null ? new ArrayList<com.github.dedis.student20_pop.model.event.Event>() :
+              lao.getRollCalls().values().stream().collect(Collectors.toList()));
+
   /*
    * Dependencies for this class
    */
@@ -92,13 +99,13 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
   /**
    * Creates new roll call event.
-   *
+   * <p>
    * Publish a GeneralMessage containing CreateRollCall data.
    *
-   * @param title the title of the roll call
+   * @param title       the title of the roll call
    * @param description the description of the roll call, can be empty
-   * @param start the start time of the roll call, zero if start type is SCHEDULED
-   * @param scheduled the scheduled time of the roll call, zero if start type is NOW
+   * @param start       the start time of the roll call, zero if start type is SCHEDULED
+   * @param scheduled   the scheduled time of the roll call, zero if start type is NOW
    * @return the id of the newly created roll call event, null if fails to create the event
    */
   public String createNewRollCall(String title, String description, long start, long scheduled) {
@@ -117,7 +124,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
       createRollCall = new CreateRollCall(title, start, StartType.NOW, "", description, laoId);
     } else {
       createRollCall =
-              new CreateRollCall(title, scheduled, StartType.SCHEDULED, "", description, laoId);
+          new CreateRollCall(title, scheduled, StartType.SCHEDULED, "", description, laoId);
     }
 
     try {
@@ -130,23 +137,23 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
       Log.d(TAG, "sending publish message");
       Disposable disposable =
-              mLAORepository
-                      .sendPublish(channel, msg)
-                      .subscribeOn(Schedulers.io())
-                      .observeOn(AndroidSchedulers.mainThread())
-                      .timeout(5, TimeUnit.SECONDS)
-                      .subscribe(
-                              answer -> {
-                                if (answer instanceof Result) {
-                                  Log.d(TAG, "created a roll call successfully");
-                                  openLaoDetail();
-                                } else {
-                                  Log.d(TAG, "failed to create a roll call");
-                                }
-                              },
-                              throwable -> {
-                                Log.d(TAG, "timed out waiting for result on roll_call/create", throwable);
-                              });
+          mLAORepository
+              .sendPublish(channel, msg)
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .timeout(5, TimeUnit.SECONDS)
+              .subscribe(
+                  answer -> {
+                    if (answer instanceof Result) {
+                      Log.d(TAG, "created a roll call successfully");
+                      openLaoDetail();
+                    } else {
+                      Log.d(TAG, "failed to create a roll call");
+                    }
+                  },
+                  throwable -> {
+                    Log.d(TAG, "timed out waiting for result on roll_call/create", throwable);
+                  });
 
       disposables.add(disposable);
     } catch (GeneralSecurityException | IOException e) {
@@ -158,7 +165,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
   /**
    * Opens a roll call event.
-   *
+   * <p>
    * Publish a GeneralMessage containing OpenRollCall data.
    *
    * @param id the roll call id to open
@@ -171,7 +178,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
   /**
    * Remove specific witness from the LAO's list of witnesses.
-   *
+   * <p>
    * Publish a GeneralMessage containing UpdateLao data.
    *
    * @param witness the id of the witness to remove
@@ -234,6 +241,10 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
   public LiveData<List<String>> getWitnesses() {
     return mWitnesses;
+  }
+
+  public LiveData<List<com.github.dedis.student20_pop.model.event.Event>> getLaoEvents() {
+    return mLaoEvents;
   }
 
   /*

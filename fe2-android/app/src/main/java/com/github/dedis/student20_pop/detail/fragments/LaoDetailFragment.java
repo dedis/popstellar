@@ -19,7 +19,9 @@ import com.github.dedis.student20_pop.detail.adapters.EventExpandableListViewAda
 import com.github.dedis.student20_pop.detail.adapters.WitnessListViewAdapter;
 import java.util.ArrayList;
 
-/** Fragment used to display the LAO Detail UI */
+/**
+ * Fragment used to display the LAO Detail UI
+ */
 public class LaoDetailFragment extends Fragment {
 
   public static final String TAG = LaoDetailFragment.class.getSimpleName();
@@ -29,7 +31,8 @@ public class LaoDetailFragment extends Fragment {
   private WitnessListViewAdapter mWitnessListViewAdapter;
   private EventExpandableListViewAdapter mEventListViewEventAdapter;
 
-  public LaoDetailFragment() {}
+  public LaoDetailFragment() {
+  }
 
   public static LaoDetailFragment newInstance() {
     return new LaoDetailFragment();
@@ -91,6 +94,15 @@ public class LaoDetailFragment extends Fragment {
                 editProperties(action);
               }
             });
+
+    mLaoDetailViewModel.getLaoEvents()
+        .observe(
+            getActivity(),
+            events -> {
+              Log.d(TAG, "Got a list update for LAO events");
+              mEventListViewEventAdapter.replaceList(events);
+            }
+        );
   }
 
   private void setupPropertiesButton() {
