@@ -34,6 +34,7 @@ const STRINGS = {
   organizer_navigation_tab_roll_call: 'Roll-Call',
   organizer_navigation_creation_meeting: 'Create meeting',
   organizer_navigation_creation_roll_call: 'Create roll call',
+  organizer_navigation_creation_election: 'Create election',
 
   /* --- Home Strings --- */
   home_welcome: 'Welcome to Personhood.Online!',
@@ -90,6 +91,18 @@ const STRINGS = {
   /* --- Discussion creation Strings --- */
   discussion_create_name: 'Name*',
   discussion_create_open: 'discussion open',
+
+  /* --- Election creation Strings --- */
+  election_create_setup: 'Election Setup',
+  election_create_name: 'Name*',
+  election_create_start_time: 'Start time: ',
+  election_create_finish_time: 'End time: ',
+  election_create_question: 'Question*',
+  election_create_voting_method: 'Voting method',
+  election_create_ballot_option: 'Option',
+  election_create_ballot_options: 'Ballot Options',
+  election_create_add_option: 'Add Ballot Option',
+  election_create_remove_option: 'Remove Ballot Option',
 
   /* --- Roll-call creation Strings --- */
   roll_call_create_deadline: 'Deadline:',

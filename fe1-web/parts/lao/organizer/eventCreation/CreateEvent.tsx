@@ -28,6 +28,7 @@ const styleEvents = StyleSheet.create({
 enum EventTypes {
   MEETING = 'Meeting',
   ROLL_CALL = 'Roll-Call',
+  ELECTION = 'Election',
 }
 
 /**
@@ -44,6 +45,10 @@ const CreateEvent = () => {
 
       case EventTypes.ROLL_CALL:
         navigation.navigate(STRINGS.organizer_navigation_creation_roll_call, styleEvents);
+        break;
+
+      case EventTypes.ELECTION:
+        navigation.navigate(STRINGS.organizer_navigation_creation_election, styleEvents);
         break;
 
       default:

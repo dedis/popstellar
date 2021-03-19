@@ -15,20 +15,25 @@ const styles = StyleSheet.create({
 const TextBlock = (props: IPropTypes) => {
   const { text } = props;
   const { bold } = props;
+  const { visibility } = props;
+  const textStyle = (bold ? styles.textBold : styles.textStandard);
 
-  return (
-    <Text style={(bold) ? styles.textBold : styles.textStandard}>{text}</Text>
-  );
+  return (visibility)
+    ? (
+      <Text style={textStyle}>{text}</Text>
+    ) : null;
 };
 
 const propTypes = {
   text: PropTypes.string.isRequired,
   bold: PropTypes.bool,
+  visibility: PropTypes.bool,
 };
 TextBlock.propTypes = propTypes;
 
 TextBlock.defaultProps = {
   bold: false,
+  visibility: true,
 };
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
