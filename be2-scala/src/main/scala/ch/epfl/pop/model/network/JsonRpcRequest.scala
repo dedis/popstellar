@@ -5,7 +5,7 @@ import ch.epfl.pop.model.network.method.message.data.MessageData
 
 case class JsonRpcRequest(
                            jsonrpc: String,
-                           method: Method.Method,
+                           method: MethodType.MethodType,
                            params: Params,
                            id: Option[Int]
                          ) extends JsonRpcMessage with Validatable {
@@ -15,7 +15,7 @@ case class JsonRpcRequest(
 object JsonRpcRequest extends Parsable {
   def apply(
              jsonrpc: String,
-             method: Method.Method,
+             method: MethodType.MethodType,
              params: Params,
              id: Option[Int]
            ): JsonRpcRequest = {
