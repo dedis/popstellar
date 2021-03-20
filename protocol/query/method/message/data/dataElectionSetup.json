@@ -67,7 +67,7 @@
 							"type": "string",
 							"$comment": "ballot option"
 						},
-						"minItems": 1,
+						"minItems": 2,
 						"uniqueItems": true
 					},
 					"write_in": {
