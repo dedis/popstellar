@@ -2,6 +2,7 @@ package message
 
 import (
 	"encoding/json"
+	"log"
 
 	"golang.org/x/xerrors"
 )
@@ -46,4 +47,18 @@ func (m *GenericMessage) UnmarshalJSON(data []byte) error {
 
 	m.Query = query
 	return nil
+}
+
+type IdStruct struct {
+	ID *int `json:"id"`
+}
+
+func (m *GenericMessage) GetID(data []byte) (int, bool) {
+	IdStruct := &IdStruct{}
+	json.Unmarshal(data, IdStruct)
+	log.Printf("%d", *IdStruct.ID)
+	if IdStruct.ID != nil {
+		return *IdStruct.ID, true
+	}
+	return -1, false
 }
