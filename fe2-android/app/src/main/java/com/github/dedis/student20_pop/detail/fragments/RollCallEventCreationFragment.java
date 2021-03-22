@@ -25,6 +25,8 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
   private Button confirmButton;
   private Button openButton;
 
+  private final String ERROR_MEETING_TITLE_EMPTY = "The roll-call title cannot be empty";
+
   private LaoDetailViewModel mLaoDetailViewModel;
 
   private final TextWatcher confirmTextWatcher =
@@ -35,6 +37,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
           String meetingTitle = rollCallTitleEditText.getText().toString().trim();
+          checkInput();
           boolean areFieldsFilled =
               !meetingTitle.isEmpty() && !getStartDate().isEmpty() && !getStartTime().isEmpty();
           confirmButton.setEnabled(areFieldsFilled);
@@ -71,7 +74,9 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     addDateAndTimeListener(confirmTextWatcher);
 
     rollCallTitleEditText = binding.rollCallTitleText;
-    rollCallDescriptionEditText = binding.rollCallEventDescriptionText;
+    rollCallTitleEditText.addTextChangedListener(confirmTextWatcher);
+
+      rollCallDescriptionEditText = binding.rollCallEventDescriptionText;
 
     openButton = binding.rollCallOpen;
 
@@ -79,28 +84,30 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
 
     // TODO: this has to be replaced by a 'scheduled' button
     //    confirmButton.setOnClickListener(
-    //        v -> {
-    //          computeTimesInSeconds();
-    //
-    //          String title = rollCallTitleEditText.getText().toString();
-    //          String description = rollCallDescriptionEditText.getText().toString();
-    //          long now = Instant.now().getEpochSecond();
-    //          long start = startTimeInSeconds > now ? 0 : startTimeInSeconds;
-    //          long scheduled = startTimeInSeconds >= now ? startTimeInSeconds : 0;
-    //          mLaoDetailViewModel
-    //              .createNewRollCall(title, description, start, scheduled, endTimeInSeconds);
+    //       { v ->
+      //       if(checkInput() {
+      //          computeTimesInSeconds();
+      //
+      //          String title = rollCallTitleEditText.getText().toString();
+      //          String description = rollCallDescriptionEditText.getText().toString();
+      //          long now = Instant.now().getEpochSecond();
+      //          long start = startTimeInSeconds > now ? 0 : startTimeInSeconds;
+      //          long scheduled = startTimeInSeconds >= now ? startTimeInSeconds : 0;
+      //          mLaoDetailViewModel
+      //              .createNewRollCall(title, description, start, scheduled, endTimeInSeconds);
+      //      }
     //        });
 
     openButton.setOnClickListener(
         v -> {
-          computeTimesInSeconds();
+                computeTimesInSeconds();
 
-          String title = rollCallTitleEditText.getText().toString();
-          String description = rollCallDescriptionEditText.getText().toString();
-          long now = Instant.now().getEpochSecond();
-          long start = startTimeInSeconds > now ? 0 : startTimeInSeconds;
-          long scheduled = startTimeInSeconds >= now ? startTimeInSeconds : 0;
-          mLaoDetailViewModel.createNewRollCall(title, description, start, scheduled);
+                String title = rollCallTitleEditText.getText().toString();
+                String description = rollCallDescriptionEditText.getText().toString();
+                long now = Instant.now().getEpochSecond();
+                long start = startTimeInSeconds > now ? 0 : startTimeInSeconds;
+                long scheduled = startTimeInSeconds >= now ? startTimeInSeconds : 0;
+                mLaoDetailViewModel.createNewRollCall(title, description, start, scheduled);
         });
 
     Button cancelButton = binding.rollCallCancel;
@@ -113,5 +120,9 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     binding.setLifecycleOwner(getActivity());
 
     return binding.getRoot();
+  }
+
+  private boolean checkInput(){
+        return editTextInputChecker(rollCallTitleEditText, ERROR_MEETING_TITLE_EMPTY);
   }
 }
