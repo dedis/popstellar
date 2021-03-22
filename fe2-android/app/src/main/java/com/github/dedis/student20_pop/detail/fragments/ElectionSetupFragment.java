@@ -87,7 +87,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
 
         setDateAndTimeView(mSetupElectionFragBinding.getRoot(), this, getFragmentManager());
         addDateAndTimeListener(confirmTextWatcher);
-
         View view = mSetupElectionFragBinding.getRoot();
         mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 
@@ -170,19 +169,23 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
     }
 
     /**
-     * For each of the input field checks if it's a valid input if any. If not display error message
-     * and request focus on the field
+     * Utility function used to check if a given field is filled and if not display an error
+     * message and request focus on said field
      * @param editText The text input field to check
      * @param errorMessage The error message to be displayed
 
      * @return true if all input fields are adequate
      */
-    private boolean editTextInputChecker(EditText editText, String errorMessage){
-        if (editText.getText().toString().trim().isEmpty()) {
-            editText.setError(errorMessage);
-            editText.requestFocus();
-            return false;
-        }
-        return true;
+
+
+    /**
+     *
+     * @return
+     */
+    private boolean checkInput(){
+        return  editTextInputChecker(electionNameText, ERROR_ELECTION_NAME_EMPTY) &&
+                editTextInputChecker(ballotOption1, ERROR_BALLOT_OPTION_EMPTY)    &&
+                editTextInputChecker(ballotOption2, ERROR_ELECTION_NAME_EMPTY)    &&
+                editTextInputChecker(electionQuestionText, ERROR_QUESTION_EMPTY);
     }
 }
