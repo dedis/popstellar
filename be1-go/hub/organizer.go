@@ -11,6 +11,7 @@ import (
 
 	"student20_pop/message"
 
+	"github.com/xeipuuv/gojsonschema"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
@@ -23,15 +24,23 @@ type organizerHub struct {
 	channelByID map[string]Channel
 
 	public kyber.Point
+
+	messageSchema *gojsonschema.Schema
 }
 
 // NewOrganizerHub returns a Organizer Hub.
-func NewOrganizerHub(public kyber.Point) Hub {
-	return &organizerHub{
-		messageChan: make(chan IncomingMessage),
-		channelByID: make(map[string]Channel),
-		public:      public,
+func NewOrganizerHub(public kyber.Point) (Hub, error) {
+	schemaLoader := gojsonschema.NewReferenceLoader("https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/genericMessage.json")
+	schema, err := gojsonschema.NewSchema(schemaLoader)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to load the json schema for messages: %v", err)
 	}
+	return &organizerHub{
+		messageChan:   make(chan IncomingMessage),
+		channelByID:   make(map[string]Channel),
+		public:        public,
+		messageSchema: schema,
+	}, nil
 }
 
 // RemoveClient removes the client from this hub.
@@ -54,12 +63,34 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	log.Printf("organizerHub::handleIncomingMessage: %s", incomingMessage.Message)
 
 	client := incomingMessage.Client
+	byteMessage := incomingMessage.Message
 
-	// unmarshal the message
+	// Check if the GenericMessage has a field "id"
 	genericMsg := &message.GenericMessage{}
-	err := json.Unmarshal(incomingMessage.Message, genericMsg)
+	id, ok := genericMsg.GetID(byteMessage)
+	if !ok {
+		log.Printf("The message do not have a valid \"id\" field")
+		client.SendError(nil, &message.Error{
+			Code:        -1,
+			Description: "The message do not have a valid \"id\" field",
+		})
+		return
+	}
+
+	// Verify the message
+	err := o.verifyMessage(byteMessage)
+	if err != nil {
+		log.Printf("failed to verifiy incoming message: %v", err)
+		client.SendError(&id, err)
+		return
+	}
+
+	// Unmarshal the message
+	err = json.Unmarshal(byteMessage, genericMsg)
 	if err != nil {
 		log.Printf("failed to unmarshal incoming message: %v", err)
+		client.SendError(&id, err)
+		return
 	}
 
 	query := genericMsg.Query
@@ -71,19 +102,17 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	channelID := query.GetChannel()
 	log.Printf("channel: %s", channelID)
 
-	id := query.GetID()
-
 	if channelID == "/root" {
 		if query.Publish == nil {
 			log.Printf("only publish is allowed on /root")
-			client.SendError(query.GetID(), err)
+			client.SendError(&id, err)
 			return
 		}
 
 		err := query.Publish.Params.Message.VerifyAndUnmarshalData()
 		if err != nil {
 			log.Printf("failed to verify and unmarshal data: %v", err)
-			client.SendError(query.Publish.ID, err)
+			client.SendError(&id, err)
 			return
 		}
 
@@ -92,12 +121,12 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 			err := o.createLao(*query.Publish)
 			if err != nil {
 				log.Printf("failed to create lao: %v", err)
-				client.SendError(query.Publish.ID, err)
+				client.SendError(&id, err)
 				return
 			}
 		} else {
 			log.Printf("invalid method: %s", query.GetMethod())
-			client.SendError(id, &message.Error{
+			client.SendError(&id, &message.Error{
 				Code:        -1,
 				Description: "you may only invoke lao/create on /root",
 			})
@@ -113,7 +142,7 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 
 	if channelID[:6] != "/root/" {
 		log.Printf("channel id must begin with /root/")
-		client.SendError(id, &message.Error{
+		client.SendError(&id, &message.Error{
 			Code:        -2,
 			Description: "channel id must begin with /root/",
 		})
@@ -125,7 +154,7 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	channel, ok := o.channelByID[channelID]
 	if !ok {
 		log.Printf("invalid channel id: %s", channelID)
-		client.SendError(id, &message.Error{
+		client.SendError(&id, &message.Error{
 			Code:        -2,
 			Description: fmt.Sprintf("channel with id %s does not exist", channelID),
 		})
@@ -155,7 +184,7 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 
 	if err != nil {
 		log.Printf("failed to process query: %v", err)
-		client.SendError(id, err)
+		client.SendError(&id, err)
 		return
 	}
 
@@ -169,6 +198,27 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	}
 
 	client.SendResult(id, result)
+}
+
+func (o *organizerHub) verifyMessage(byteMessage []byte) error {
+	messageLoader := gojsonschema.NewBytesLoader(byteMessage)
+	resultErrors, err := o.messageSchema.Validate(messageLoader)
+	if err != nil {
+		return err
+	}
+	errorsList := resultErrors.Errors()
+	descriptionErrors := ""
+	for index, e := range errorsList {
+		descriptionErrors += " (" + fmt.Sprintf("%d", index+1) + ") " + e.Description()
+	}
+	if len(errorsList) > 0 {
+		return &message.Error{
+			Code:        -1,
+			Description: fmt.Sprintf(descriptionErrors),
+		}
+	}
+
+	return nil
 }
 
 func (o *organizerHub) Start(done chan struct{}) {
