@@ -128,12 +128,12 @@ func (c *Client) Send(msg []byte) {
 
 // SendError is a utility method that allows sending an `error` as a `message.Error`
 // message to the client.
-func (c *Client) SendError(id int, err error) {
+func (c *Client) SendError(id *int, err error) {
 	msgError := &message.Error{}
 
 	if xerrors.As(err, &msgError) {
 		answer := message.Answer{
-			ID:    &id,
+			ID:    id,
 			Error: msgError,
 		}
 
