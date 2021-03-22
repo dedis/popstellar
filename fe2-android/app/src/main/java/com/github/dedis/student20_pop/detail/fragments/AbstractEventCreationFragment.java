@@ -271,14 +271,12 @@ public abstract class AbstractEventCreationFragment extends Fragment {
     }
   }
 
-  public boolean editTextInputChecker(EditText editText, String errorMessage){
+  public void editTextInputChecker(EditText editText, String errorMessage){
     if(editText != null && errorMessage != null) {
       if (editText.getText().toString().trim().isEmpty()) {
         editText.setError(errorMessage);
         //editText.requestFocus();
-        return false;
       }
-      return true;
     }
     else{
       throw new IllegalArgumentException();

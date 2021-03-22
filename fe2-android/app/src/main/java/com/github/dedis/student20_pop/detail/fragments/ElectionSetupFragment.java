@@ -170,22 +170,12 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
 
     /**
      * Utility function used to check if a given field is filled and if not display an error
-     * message and request focus on said field
-     * @param editText The text input field to check
-     * @param errorMessage The error message to be displayed
-
-     * @return true if all input fields are adequate
+     * message on said field
      */
-
-
-    /**
-     *
-     * @return
-     */
-    private boolean checkInput(){
-        return  editTextInputChecker(electionNameText, ERROR_ELECTION_NAME_EMPTY) &&
-                editTextInputChecker(ballotOption1, ERROR_BALLOT_OPTION_EMPTY)    &&
-                editTextInputChecker(ballotOption2, ERROR_ELECTION_NAME_EMPTY)    &&
-                editTextInputChecker(electionQuestionText, ERROR_QUESTION_EMPTY);
+    private void checkInput(){
+          editTextInputChecker(electionNameText, ERROR_ELECTION_NAME_EMPTY);
+          editTextInputChecker(ballotOption1, ERROR_BALLOT_OPTION_EMPTY);
+          editTextInputChecker(ballotOption2, ERROR_ELECTION_NAME_EMPTY);
+          editTextInputChecker(electionQuestionText, ERROR_QUESTION_EMPTY);
     }
 }
