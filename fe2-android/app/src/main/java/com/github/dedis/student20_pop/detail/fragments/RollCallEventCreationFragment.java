@@ -85,7 +85,6 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     // TODO: this has to be replaced by a 'scheduled' button
     //    confirmButton.setOnClickListener(
     //       { v ->
-      //       if(checkInput() {
       //          computeTimesInSeconds();
       //
       //          String title = rollCallTitleEditText.getText().toString();
@@ -95,7 +94,6 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
       //          long scheduled = startTimeInSeconds >= now ? startTimeInSeconds : 0;
       //          mLaoDetailViewModel
       //              .createNewRollCall(title, description, start, scheduled, endTimeInSeconds);
-      //      }
     //        });
 
     openButton.setOnClickListener(
@@ -122,7 +120,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     return binding.getRoot();
   }
 
-  private boolean checkInput(){
-        return editTextInputChecker(rollCallTitleEditText, ERROR_MEETING_TITLE_EMPTY);
+  private void checkInput(){
+        editTextInputChecker(rollCallTitleEditText, ERROR_MEETING_TITLE_EMPTY);
   }
 }
