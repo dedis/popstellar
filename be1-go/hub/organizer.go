@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"path/filepath"
 	"student20_pop"
 	"sync"
 
@@ -36,12 +37,16 @@ const (
 // NewOrganizerHub returns a Organizer Hub.
 func NewOrganizerHub(public kyber.Point) (Hub, error) {
 	// Import the Json schemas defined in the protocol section
-	protocolUrl := "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/"
+	protocolPath, err := filepath.Abs("../protocol")
+	if err != nil {
+		return nil, xerrors.Errorf("failed to load the path for the json schemas: %v", err)
+	}
+	protocolPath = "file://" + protocolPath
 
 	schemas := make(map[string]*gojsonschema.Schema)
 
 	// Impot the schema for generic messages
-	genericMsgLoader := gojsonschema.NewReferenceLoader(protocolUrl + "genericMessage.json")
+	genericMsgLoader := gojsonschema.NewReferenceLoader(protocolPath + "/genericMessage.json")
 	genericMsgSchema, err := gojsonschema.NewSchema(genericMsgLoader)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to load the json schema for generic messages: %v", err)
@@ -49,7 +54,7 @@ func NewOrganizerHub(public kyber.Point) (Hub, error) {
 	schemas[GenericMsgSchema] = genericMsgSchema
 
 	// Impot the schema for data
-	dataSchemaLoader := gojsonschema.NewReferenceLoader(protocolUrl + "genericMessage.json")
+	dataSchemaLoader := gojsonschema.NewReferenceLoader(protocolPath + "/query/method/message/data/data.json")
 	dataSchema, err := gojsonschema.NewSchema(dataSchemaLoader)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to load the json schema for data: %v", err)
@@ -131,7 +136,19 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 			return
 		}
 
-		err := query.Publish.Params.Message.VerifyAndUnmarshalData()
+		// Check if the structure of the message is correct
+		msg := query.Publish.Params.Message
+
+		// Verify the data
+		err := o.verifyJson(msg.RawData, DataSchema)
+		if err != nil {
+			log.Printf("failed to validate the data: %v", err)
+			client.SendError(&id, err)
+			return
+		}
+
+		// Unmarshal the data
+		err = query.Publish.Params.Message.VerifyAndUnmarshalData()
 		if err != nil {
 			log.Printf("failed to verify and unmarshal data: %v", err)
 			client.SendError(&id, err)
@@ -223,6 +240,7 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 }
 
 func (o *organizerHub) verifyJson(byteMessage []byte, schemaName string) error {
+	// Validate the Json "byteMessage" with a schema
 	messageLoader := gojsonschema.NewBytesLoader(byteMessage)
 	resultErrors, err := o.schemas[schemaName].Validate(messageLoader)
 	if err != nil {
@@ -230,9 +248,11 @@ func (o *organizerHub) verifyJson(byteMessage []byte, schemaName string) error {
 	}
 	errorsList := resultErrors.Errors()
 	descriptionErrors := ""
+	// Concatenate all error descriptions
 	for index, e := range errorsList {
 		descriptionErrors += " (" + fmt.Sprintf("%d", index+1) + ") " + e.Description()
 	}
+
 	if len(errorsList) > 0 {
 		return &message.Error{
 			Code:        -1,
