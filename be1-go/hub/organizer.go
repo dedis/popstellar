@@ -25,21 +25,43 @@ type organizerHub struct {
 
 	public kyber.Point
 
-	messageSchema *gojsonschema.Schema
+	schemas map[string]*gojsonschema.Schema
 }
+
+const (
+	GenericMsgSchema string = "genericMsgSchema"
+	DataSchema       string = "dataSchema"
+)
 
 // NewOrganizerHub returns a Organizer Hub.
 func NewOrganizerHub(public kyber.Point) (Hub, error) {
-	schemaLoader := gojsonschema.NewReferenceLoader("https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/genericMessage.json")
-	schema, err := gojsonschema.NewSchema(schemaLoader)
+	// Import the Json schemas defined in the protocol section
+	protocolUrl := "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/"
+
+	schemas := make(map[string]*gojsonschema.Schema)
+
+	// Impot the schema for generic messages
+	genericMsgLoader := gojsonschema.NewReferenceLoader(protocolUrl + "genericMessage.json")
+	genericMsgSchema, err := gojsonschema.NewSchema(genericMsgLoader)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to load the json schema for messages: %v", err)
+		return nil, xerrors.Errorf("failed to load the json schema for generic messages: %v", err)
 	}
+	schemas[GenericMsgSchema] = genericMsgSchema
+
+	// Impot the schema for data
+	dataSchemaLoader := gojsonschema.NewReferenceLoader(protocolUrl + "genericMessage.json")
+	dataSchema, err := gojsonschema.NewSchema(dataSchemaLoader)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to load the json schema for data: %v", err)
+	}
+	schemas[DataSchema] = dataSchema
+
+	// Create the organizer hub
 	return &organizerHub{
-		messageChan:   make(chan IncomingMessage),
-		channelByID:   make(map[string]Channel),
-		public:        public,
-		messageSchema: schema,
+		messageChan: make(chan IncomingMessage),
+		channelByID: make(map[string]Channel),
+		public:      public,
+		schemas:     schemas,
 	}, nil
 }
 
@@ -78,9 +100,9 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	}
 
 	// Verify the message
-	err := o.verifyMessage(byteMessage)
+	err := o.verifyJson(byteMessage, GenericMsgSchema)
 	if err != nil {
-		log.Printf("failed to verifiy incoming message: %v", err)
+		log.Printf("failed to verify incoming message: %v", err)
 		client.SendError(&id, err)
 		return
 	}
@@ -200,9 +222,9 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	client.SendResult(id, result)
 }
 
-func (o *organizerHub) verifyMessage(byteMessage []byte) error {
+func (o *organizerHub) verifyJson(byteMessage []byte, schemaName string) error {
 	messageLoader := gojsonschema.NewBytesLoader(byteMessage)
-	resultErrors, err := o.messageSchema.Validate(messageLoader)
+	resultErrors, err := o.schemas[schemaName].Validate(messageLoader)
 	if err != nil {
 		return err
 	}
