@@ -38,8 +38,10 @@ export class Wallet {
   public async addEncryptionKey() {
     /* Here the real encryption/decryption key which will be used
       is still missing for the moment it is generated randomly */
-    const key :string = Wallet
-      .generateKeyPairEntry().privateKey.toString();
+    const key: { privateKey: string } = {
+      privateKey: Wallet
+        .generateKeyPairEntry().privateKey,
+    };
 
     this.cryptKeyDatabase
       .putEncryptionKey(this.storageId, key)

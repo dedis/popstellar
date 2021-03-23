@@ -53,7 +53,7 @@ export class IndexedDBStore {
    * @param storageId the id of the secure storage
    * @param encryptionKey the key that will be used to encrypt/decrypt all tokens in the wallet
    */
-  public async putEncryptionKey(storageId: string, encryptionKey: string) {
+  public async putEncryptionKey(storageId: string, encryptionKey: { privateKey: string }) {
     if (storageId === null || encryptionKey === null) {
       throw new Error('Error encountered while adding encrypt/decrypt key to storage : null parameters');
     }
