@@ -10,3 +10,9 @@ export const important = {
   ...base,
   fontWeight: 'bold',
 };
+
+export const editTextStyle = {
+  fontFamily: 'Helvetica',
+  fontSize: '14px',
+  width: 200,
+};

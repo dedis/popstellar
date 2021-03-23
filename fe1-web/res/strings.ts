@@ -119,6 +119,8 @@ const STRINGS = {
   /* --- Wallet Strings --- */
   wallet: 'Create personal wallet',
   walletAdd: 'Add token to wallet ',
+  walletDatabaseName: 'Crypt key database',
+  walletStorageName: 'encryption-decryption-key',
 
   /* --- General creation Strings --- */
   create_description: 'Choose the type of event you want to create',
