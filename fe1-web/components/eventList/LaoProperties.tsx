@@ -12,14 +12,9 @@ import { Lao } from 'model/objects';
 import { makeCurrentLao } from 'store/reducers';
 import EdiText from 'react-editext';
 import { KeyPairStore } from '../../store';
+import { editText } from '../../styles/typography';
 
 function renderProperties(lao: Lao) {
-  const style = {
-    fontFamily: 'Helvetica',
-    fontSize: '14px',
-    width: 200,
-  };
-
   const isOrganizer = KeyPairStore.getPublicKey().toString() === lao.organizer.toString();
 
   return (isOrganizer)
@@ -28,8 +23,8 @@ function renderProperties(lao: Lao) {
         <ParagraphBlock text="Lao name: " />
         <EdiText
           hint="type the new LAO name"
-          viewProps={{ style: style }}
-          inputProps={{ style: style }}
+          viewProps={{ style: editText }}
+          inputProps={{ style: editText }}
           type="text"
           onSave={() => {
           // TODO: carry out the necessary LAO update interactions with the backend here
@@ -39,8 +34,8 @@ function renderProperties(lao: Lao) {
         <ParagraphBlock text="Lao creation: " />
         <EdiText
           hint="type the new creation date"
-          viewProps={{ style: style }}
-          inputProps={{ style: style }}
+          viewProps={{ style: editText }}
+          inputProps={{ style: editText }}
           type="text"
           onSave={() => {
           // TODO: carry out the necessary LAO update interactions with the backend here
