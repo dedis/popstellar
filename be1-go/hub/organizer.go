@@ -256,7 +256,7 @@ func (o *organizerHub) verifyJson(byteMessage []byte, schemaName string) error {
 	if len(errorsList) > 0 {
 		return &message.Error{
 			Code:        -1,
-			Description: fmt.Sprintf(descriptionErrors),
+			Description: descriptionErrors,
 		}
 	}
 
