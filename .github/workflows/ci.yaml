@@ -214,7 +214,7 @@ jobs:
 
     - name: Unit Tests
       run: |
-        ./gradlew testDebugUnitTest
+        ./gradlew testMockDebugUnitTest
 
     - name: Android Tests
       uses: reactivecircus/android-emulator-runner@v2
