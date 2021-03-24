@@ -224,4 +224,5 @@ jobs:
         profile: pixel_2
         emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
         disable-animations: true
+        working-directory: ./fe2-android
         script: ./gradlew connectedCheck
