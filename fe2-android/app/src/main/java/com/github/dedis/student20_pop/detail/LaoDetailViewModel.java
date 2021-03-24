@@ -10,6 +10,7 @@ import androidx.lifecycle.Transformations;
 import com.github.dedis.student20_pop.Event;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.data.LAORepository;
+import com.github.dedis.student20_pop.model.event.EventCategory;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.model.network.answer.Result;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
@@ -29,6 +30,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -62,7 +64,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
       Transformations.map(mCurrentLao, lao -> lao == null ? "" : lao.getName());
 
   private final MutableLiveData<Event<EventType>> mNewLaoEventEvent = new MutableLiveData<>();
-
+  private final LiveData<HashMap<EventCategory, List<Event<EventType>>>> mEventsMap = new MutableLiveData<>();
   /*
    * Dependencies for this class
    */
@@ -119,6 +121,8 @@ public class LaoDetailViewModel extends AndroidViewModel {
   public LiveData<List<String>> getWitnesses() {
     return mWitnesses;
   }
+
+  public LiveData<HashMap<EventCategory, List<Event<EventType>>>> getEventsMap() { return mEventsMap; }
 
   public void openHome() {
     mOpenHomeEvent.setValue(new Event<>(true));
