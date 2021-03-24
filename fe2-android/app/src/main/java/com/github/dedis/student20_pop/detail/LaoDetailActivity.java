@@ -13,7 +13,7 @@ import com.github.dedis.student20_pop.ViewModelFactory;
 import com.github.dedis.student20_pop.detail.fragments.ElectionSetupFragment;
 import com.github.dedis.student20_pop.detail.fragments.RollCallEventCreationFragment;
 import com.github.dedis.student20_pop.home.HomeActivity;
-import com.github.dedis.student20_pop.home.fragments.IdentityFragment;
+import com.github.dedis.student20_pop.detail.fragments.IdentityFragment;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.ui.LaoDetailFragment;
 import com.github.dedis.student20_pop.ui.event.creation.MeetingEventCreationFragment;
