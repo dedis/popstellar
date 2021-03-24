@@ -52,7 +52,8 @@ type IdStruct struct {
 	ID *int `json:"id"`
 }
 
-func (m *GenericMessage) GetID(data []byte) (int, bool) {
+// Unmarshal the ID of a message
+func (m *GenericMessage) UnmarshallID(data []byte) (int, bool) {
 	IdStruct := &IdStruct{}
 	json.Unmarshal(data, IdStruct)
 	if IdStruct.ID != nil {

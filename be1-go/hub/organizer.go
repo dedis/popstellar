@@ -94,7 +94,7 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 
 	// Check if the GenericMessage has a field "id"
 	genericMsg := &message.GenericMessage{}
-	id, ok := genericMsg.GetID(byteMessage)
+	id, ok := genericMsg.UnmarshallID(byteMessage)
 	if !ok {
 		log.Printf("The message do not have a valid \"id\" field")
 		client.SendError(nil, &message.Error{
