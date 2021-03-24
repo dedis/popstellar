@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentSetupElectionEventBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
@@ -42,9 +41,10 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
     private EditText ballotOption1;
     private EditText ballotOption2;
     private Button submitButton;
+    private TextView laoNameTextView;
     private FloatingActionButton addBallotOptionButton;
 
-    private enum votingMethods {Plurality}
+    private enum votingMethods {Plurality, New_method}
     private votingMethods votingMethod;
 
     private List<String> ballotOptions;
@@ -85,10 +85,10 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
         mSetupElectionFragBinding =
                 FragmentSetupElectionEventBinding.inflate(inflater, container, false);
 
+        mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
+
         setDateAndTimeView(mSetupElectionFragBinding.getRoot(), this, getFragmentManager());
         addDateAndTimeListener(confirmTextWatcher);
-        View view = mSetupElectionFragBinding.getRoot();
-        mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 
         Button cancelButton = mSetupElectionFragBinding.electionCancelButton;
         boolean write_in = mSetupElectionFragBinding.writeIn.isChecked();
@@ -97,50 +97,58 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
         ballotOptions = new ArrayList<>();
 
         submitButton = mSetupElectionFragBinding.electionSubmitButton;
-        electionNameText = mSetupElectionFragBinding.electionSetupName;
+        electionNameText = mSetupElectionFragBinding.electionSetupTitle;
         electionQuestionText = mSetupElectionFragBinding.electionQuestion;
 
         // At least two candidates must be selected
         ballotOption1 = mSetupElectionFragBinding.ballotOption1;
         ballotOption2 = mSetupElectionFragBinding.ballotOption2;
 
+        electionQuestionText.addTextChangedListener(confirmTextWatcher);
+        electionNameText.addTextChangedListener(confirmTextWatcher);
+        ballotOption1.addTextChangedListener(confirmTextWatcher);
+        ballotOption2.addTextChangedListener(confirmTextWatcher);
+
+
 
         //Adding ballot options
-        addBallotOptionButton = mSetupElectionFragBinding.addBallotOption;
+       addBallotOptionButton = mSetupElectionFragBinding.addBallotOption;
         addBallotOptionButton.setOnClickListener(
                 v -> {
                     Context c = getActivity();
                     EditText ballotOption = new EditText(c);
-                    ballotOption.setText("ballot option");
-                    mSetupElectionFragBinding.ll.addView(ballotOption);
+                    ballotOption.setHint("ballot option");
+                    mSetupElectionFragBinding.electionSetupFieldsLl.addView(ballotOption);
+                    ViewGroup.LayoutParams params = ballotOption.getLayoutParams();
+                    params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    ballotOption.setLayoutParams(params);
                 }
         );
 
 
 
         // Set the text widget in layout to current LAO name
-        TextView laoName = (TextView) view.findViewById(R.id.LAOname);
-        laoName.setText(mLaoDetailViewModel.getCurrentLaoName().getValue());
+        laoNameTextView = mSetupElectionFragBinding.electionSetupLaoName;
+        laoNameTextView.setText(mLaoDetailViewModel.getCurrentLaoName().getValue());
 
         //Set dropdown spinner as a list of string (from enum of votingmethods)
-        Spinner spinner = mSetupElectionFragBinding.electionSetupSpinner;
+       Spinner spinner = mSetupElectionFragBinding.electionSetupSpinner;
         String[] items = Arrays.stream(votingMethods.values()).map(votingMethods::toString).toArray(String[]::new);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_spinner_item, items);
-
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) getActivity());
+        spinner.setOnItemSelectedListener(this);
 
 
         //On click, submit button creates a new election event and launches the election UI for organizer
-        submitButton.setOnClickListener(
+       submitButton.setOnClickListener(
                 v -> {
                     computeTimesInSeconds();
                     String title = electionNameText.getText().toString();
                     List<String> questions = Arrays.asList(electionQuestionText.getText().toString());
                     mLaoDetailViewModel.createNewElection(title, startTimeInSeconds, endTimeInSeconds, votingMethod.toString(), write_in, ballotOptions, questions);
-                    mLaoDetailViewModel.openLaoDetail();
                 });
 
         //On click, cancel button takes back to LAO detail page
@@ -148,11 +156,9 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
                 v -> {
                     mLaoDetailViewModel.openLaoDetail();
                 });
-
-
         mSetupElectionFragBinding.setLifecycleOwner(getActivity());
 
-        return view;
+        return mSetupElectionFragBinding.getRoot();
 
     }
 

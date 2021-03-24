@@ -104,6 +104,9 @@ public abstract class AbstractEventCreationFragment extends Fragment {
   public void addDateAndTimeListener(TextWatcher listener) {
     startTimeEditText.addTextChangedListener(listener);
     startDateEditText.addTextChangedListener(listener);
+    //For election setup only -> refactor ?
+    endTimeEditText.addTextChangedListener(listener);
+    endDateEditText.addTextChangedListener(listener);
   }
 
   public String getStartDate() {

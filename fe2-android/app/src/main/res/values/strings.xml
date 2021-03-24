@@ -114,4 +114,9 @@
     <string name="todo">TODO</string>
     <string name="ballot_option_2">Ballot option 2</string>
 
+    <!-- E-voting -->
+    <string name="elections">Elections</string>
+
+
+
 </resources>
