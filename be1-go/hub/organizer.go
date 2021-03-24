@@ -500,28 +500,22 @@ type electionChannel struct {
 	// True if the election is over and false otherwise
 	terminated bool
 
-	// Questions asked to the participants
-	questions []question
+	// Questions correspond to a map of the question id to the question itself
+	questions map[string]question
 }
 
 type question struct {
-	// ID of th question
-	id []byte
-
 	// Different options
 	ballotOptions []string
 
-	// list of all valid votes
-	validVotes []validVote
+	// validVotes correspont to a map of the public key of the voter to his valid vote
+	validVotes map[string]validVote
 }
 
 type validVote struct {
-	// time of the creation of the vote
+	// Time of the creation of the vote
 	voteTime message.Timestamp
 
-	// indexes of the ballot options
+	// Indexes of the ballot options
 	indexes []int
-
-	// Public key of the voter
-	voterKey message.PublicKey
 }
