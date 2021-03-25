@@ -1,26 +1,27 @@
 package ch.epfl.pop.pubsub.graph
 
+import akka.NotUsed
 import akka.stream.scaladsl.Flow
 
 object Validator {
 
-  type JsonString = String
+  // FIXME implement schema
+  def validateSchema(jsonString: JsonString): Either[JsonString, PipelineError] = Left(jsonString)
 
-  // takes a string (json) input and compares it with the JsonSchema.
+  // FIXME implement rpc validator
+  def validateJsonRpcContent(graphMessage: GraphMessage): GraphMessage = graphMessage
+
+  // FIXME implement message validator
+  def validateMessageContent(graphMessage: GraphMessage): GraphMessage = graphMessage
+
+
+  // takes a string (json) input and compares it with the JsonSchema
   // /!\ Json Schema plugin?
-  val schemaValidator = Flow[JsonString].map {
-    val isCorrect: Boolean = true
+  val schemaValidator: Flow[JsonString, Either[JsonString, PipelineError], NotUsed] = Flow[JsonString].map(validateSchema)
 
-    if (isCorrect) {
-      // pass JsonString to parser
-    } else {
-      // raise an error message and send it to pubsub
-    }
+  // takes a JsonRpcMessage and validates input until Message layer
+  val jsonRpcContentValidator: Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map(validateJsonRpcContent)
 
-    ???
-  }
-
-  val jsonRpcContentValidator = ??? // takes a JsonRpcMessage and validates input until Message layer (see Validate.scala from archive)
-
-  val messageContentValidator = ??? // validation from Message layer
+  // validation from Message layer
+  val messageContentValidator: Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map(validateMessageContent)
 }

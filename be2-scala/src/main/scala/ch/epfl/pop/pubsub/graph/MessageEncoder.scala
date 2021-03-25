@@ -2,18 +2,14 @@ package ch.epfl.pop.pubsub.graph
 
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
-import ch.epfl.pop.json.JsonMessageParser
-import ch.epfl.pop.model.network.JsonRpcMessage
-
-import scala.util.Try
 
 object MessageEncoder {
 
-  val serializer: Flow[JsonRpcMessage, Nothing, NotUsed] = Flow[JsonRpcMessage].map { message =>
-    val serializedMessage: Try[String] = Try(JsonMessageParser.serializeMessage(message))
-    serializedMessage match {
-      case _ => ??? // Success/Failure
-      // return un TextMessage.strict(str)
-    }
+  def serializeMessage(graphMessage: GraphMessage): GraphMessage = graphMessage match {
+    // Note: the output message (if successful) is an answer
+    case Left(jsonRpcMessage) => Left(???) // FIXME generate json rpc answer with id corresponding to the one in the input rpc message
+    case _ => graphMessage // propagate the pipeline error one final time
   }
+
+  val serializer: Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map(serializeMessage)
 }

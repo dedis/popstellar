@@ -1,19 +1,19 @@
 package ch.epfl.pop.pubsub.graph
 
 import akka.NotUsed
-import akka.http.scaladsl.model.ws.{Message, TextMessage}
 import akka.stream.scaladsl.Flow
-import ch.epfl.pop.json.JsonMessageParser
+import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 
 object MessageDecoder {
 
   // Message or TextMessage
-  val jsonRpcParser: Flow[Message, Nothing, NotUsed] = Flow[Message].map {
-    case TextMessage.Strict(text) => JsonMessageParser.parseMessage(text) match {
-      case _ => ???
-    }
-    case TextMessage.Streamed(stream) => ??? // throw
+  val jsonRpcParser: Flow[Either[JsonString, PipelineError], GraphMessage, NotUsed] = Flow[Either[JsonString, PipelineError]].map {
+    case Left(jsonString) =>
+      Left(JsonRpcRequest("2.0", MethodType.INVALID, ???, Some(0)))
+    // case _ => _ // TODO check if type ok. Else prob Right(pipelineError)
   }
 
-  val messageParser = ???
+  val messageParser: Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map(parseMessage)
+
+  def parseMessage(graphMessage: GraphMessage): GraphMessage = graphMessage
 }
