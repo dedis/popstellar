@@ -112,8 +112,8 @@ public class Injection {
         .registerTypeAdapter(Answer.class, new JsonAnswerSerializer())
         .registerTypeAdapter(CreateRollCall.class, new JsonCreateRollCallSerializer())
         .registerTypeAdapter(MessageGeneral.class, new JsonMessageGeneralSerializer())
-            .registerTypeAdapter(ElectionQuestion.class, new JsonElectionQuestionSerializer())
-            .registerTypeAdapter(ElectionSetup.class, new JsonElectionSetupSerializer())
+            //.registerTypeAdapter(ElectionQuestion.class, new JsonElectionQuestionSerializer())
+            //.registerTypeAdapter(ElectionSetup.class, new JsonElectionSetupSerializer())
             .create();
   }
 

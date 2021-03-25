@@ -223,7 +223,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
   }
 
 
-  public void createNewElection(String name, long start, long end, String voting_method, boolean write_in, List<String> ballot_options, List<String> questions) {
+  public void createNewElection(String name, long start, long end, String voting_method, boolean write_in, List<String> ballot_options, String question) {
     Log.d(TAG,"creating a new election with name " + name);
 
     Lao lao = getCurrentLao();
@@ -236,7 +236,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
     ElectionSetup electionSetup;
     String laoId = channel.substring(6);
 
-    electionSetup = new ElectionSetup(name, start, end, voting_method, write_in, ballot_options, questions, laoId);
+    electionSetup = new ElectionSetup(name, start, end, voting_method, write_in, ballot_options, question, laoId);
 
     try {
       // Retrieve identity of who is creating the election

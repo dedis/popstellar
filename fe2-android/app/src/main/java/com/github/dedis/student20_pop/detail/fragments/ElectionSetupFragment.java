@@ -91,7 +91,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
         addDateAndTimeListener(confirmTextWatcher);
 
         Button cancelButton = mSetupElectionFragBinding.electionCancelButton;
-        boolean write_in = mSetupElectionFragBinding.writeIn.isChecked();
+        boolean writeIn = mSetupElectionFragBinding.writeIn.isChecked();
 
         //Right place to instantiate ?
         ballotOptions = new ArrayList<>();
@@ -147,8 +147,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
                 v -> {
                     computeTimesInSeconds();
                     String title = electionNameText.getText().toString();
-                    List<String> questions = Arrays.asList(electionQuestionText.getText().toString());
-                    mLaoDetailViewModel.createNewElection(title, startTimeInSeconds, endTimeInSeconds, votingMethod.toString(), write_in, ballotOptions, questions);
+                    String question = electionQuestionText.getText().toString();
+                    mLaoDetailViewModel.createNewElection(title, startTimeInSeconds, endTimeInSeconds, votingMethod.toString(), writeIn, ballotOptions, question);
                 });
 
         //On click, cancel button takes back to LAO detail page
