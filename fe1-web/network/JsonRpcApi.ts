@@ -3,7 +3,7 @@ import { Publish, Subscribe } from 'model/network/method';
 import { Message } from 'model/network/method/message';
 import { MessageData } from 'model/network/method/message/data';
 import { Channel } from 'model/objects/Channel';
-import { getNetworkManager } from 'network/NetworkManager';
+import { getNetworkManager } from './NetworkManager';
 
 export const AUTO_ASSIGN_ID = -1;
 

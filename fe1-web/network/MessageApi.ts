@@ -13,12 +13,12 @@ import {
   Channel, channelFromId, ROOT_CHANNEL,
 } from 'model/objects/Channel';
 import {
-  OpenedLaoStore, KeyPairStore, dispatch, connectToLao, addEvent,
+  OpenedLaoStore, KeyPairStore, dispatch, addEvent,
 } from 'store';
-import { publish } from 'network/JsonRpcApi';
+import { publish } from './JsonRpcApi';
 
 /** Send a server query asking for the creation of a LAO with a given name (String) */
-export function requestCreateLao(laoName: string): Promise<Hash> {
+export function requestCreateLao(laoName: string): Promise<Channel> {
   const time = Timestamp.EpochNow();
   const pubKey = KeyPairStore.getPublicKey();
 
@@ -30,18 +30,8 @@ export function requestCreateLao(laoName: string): Promise<Hash> {
     witnesses: [],
   });
 
-  return publish(ROOT_CHANNEL, message).then(() => {
-    const lao = new Lao({
-      id: message.id,
-      name: message.name,
-      creation: message.creation,
-      last_modified: message.creation,
-      organizer: message.organizer,
-      witnesses: message.witnesses,
-    });
-    dispatch(connectToLao(lao.toState()));
-    return message.id;
-  });
+  return publish(ROOT_CHANNEL, message)
+    .then(() => channelFromId(message.id));
 }
 
 /** Send a server query asking for a LAO update providing a new name (String) */

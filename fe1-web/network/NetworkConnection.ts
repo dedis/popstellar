@@ -1,6 +1,9 @@
 import { w3cwebsocket as W3CWebSocket } from 'websocket';
 import {
-  JsonRpcRequest, JsonRpcResponse, ProtocolError, UNDEFINED_ID,
+  JsonRpcRequest,
+  JsonRpcResponse,
+  ProtocolError,
+  UNDEFINED_ID,
 } from 'model/network';
 import { OperationError } from './OperationError';
 import { NetworkError } from './NetworkError';
@@ -46,6 +49,10 @@ export class NetworkConnection {
     ws.onerror = (event: any) => this.onError(event);
 
     return ws;
+  }
+
+  public disconnect(): void {
+    this.ws.close();
   }
 
   private onOpen(): void {
@@ -179,9 +186,6 @@ export class NetworkConnection {
     return promise;
   }
 
-  public disconnect(): void {
-    this.ws.close();
-  }
 
   private getNextRpcID(): number {
     /* This function should also make sure that IDs used by the connection peer are not reused.

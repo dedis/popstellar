@@ -5,9 +5,11 @@ import {
 import PropTypes from 'prop-types';
 
 import { dispatch, KeyPairStore, OpenedLaoStore } from 'store';
-import { getNetworkManager } from 'network';
+import { getNetworkManager, requestCreateLao } from 'network';
 
-import { Hash, Lao, Timestamp } from 'model/objects';
+import {
+  Hash, Lao, Timestamp, channelFromId, Channel,
+} from 'model/objects';
 
 import WideButtonView from 'components/WideButtonView';
 import TextBlock from 'components/TextBlock';
@@ -46,18 +48,24 @@ const Launch = ({ navigation }: IPropTypes) => {
   const [inputLaoName, setInputLaoName] = useState('');
 
   const onButtonLaunchPress = (laoName: string) => {
-    establishLaoConnection(laoName).then(() => {
-      // navigate to the newly created LAO
-      navigation.navigate(STRINGS.app_navigation_tab_organizer, {});
-    }).catch(
-      ((reason) => console.debug(`Failed to establish lao connection : ${reason}`)),
-    );
+    if (!laoName) return;
+
+    getNetworkManager().connect('127.0.0.1');
+    requestCreateLao(laoName)
+      .then((channel: Channel) => establishLaoConnection(channel)
+        .then(() => {
+          // navigate to the newly created LAO
+          navigation.navigate(STRINGS.app_navigation_tab_organizer, {});
+        }))
+      .catch(
+        ((reason) => console.debug(`Failed to establish lao connection: ${reason}`)),
+      );
   };
 
   const onTestOpenConnection = () => {
     const nc = getNetworkManager().connect('127.0.0.1');
     nc.setRpcHandler(() => {
-      console.info('Using custom test rpc handler : does nothing');
+      console.info('Using custom test rpc handler: does nothing');
     });
 
     const org = KeyPairStore.getPublicKey();
@@ -95,7 +103,7 @@ const Launch = ({ navigation }: IPropTypes) => {
       </View>
       <View style={styles.viewBottom}>
         <WideButtonView
-          title={`${STRINGS.launch_button_launch} -- Connect to port 8080 & Open lao UI`}
+          title={`${STRINGS.launch_button_launch} -- Connect to port 8080, Create LAO & Open UI`}
           onPress={() => onButtonLaunchPress(inputLaoName)}
         />
         <WideButtonView
