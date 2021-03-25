@@ -22,7 +22,7 @@ public class ElectionSetup extends Data {
     private long creation;
     private long start;
     private long end;
-    private List<ElectionQuestion> questions;
+    private ElectionQuestion electionQuestion;
 
     /**
      * Constructor for a data setup Election Event
@@ -38,20 +38,14 @@ public class ElectionSetup extends Data {
             String voting_method,
             boolean write_in,
             List<String> ballot_options,
-            List<String> questions,
+            String question,
             String laoId) {
         this.name = name;
         this.creation = Instant.now().toEpochMilli();
         this.start = start;
         this.end = end;
         this.id = Hash.hash("E", laoId, Long.toString(creation), name);
-
-        this.questions = new ArrayList<>();
-
-        for (int i = 0; i < questions.size(); i++) {
-            ElectionQuestion question = new ElectionQuestion(questions.get(i), voting_method, write_in, ballot_options, this.id);
-            this.questions.add(question);
-        }
+        this.electionQuestion = new ElectionQuestion(question, voting_method, write_in, ballot_options, this.id);
     }
 
 
@@ -73,7 +67,7 @@ public class ElectionSetup extends Data {
 
     public long getEndTime() { return end; }
 
-    public List<ElectionQuestion> getQuestions() { return Collections.unmodifiableList(questions); }
+    public ElectionQuestion getQuestion() { return electionQuestion; }
 
 
     @Override
@@ -101,7 +95,7 @@ public class ElectionSetup extends Data {
                 && creation == that.getCreation()
                 && java.util.Objects.equals(getName(), that.getName())
                 && end == that.getEndTime()
-                && java.util.Objects.equals(questions, that.getQuestions());
+                && java.util.Objects.equals(electionQuestion, that.getQuestion());
     }
 
     @Override
@@ -112,7 +106,7 @@ public class ElectionSetup extends Data {
                 getCreation(),
                 getStartTime(),
                 getEndTime(),
-                getQuestions());
+                getQuestion());
     }
 
     //TODO

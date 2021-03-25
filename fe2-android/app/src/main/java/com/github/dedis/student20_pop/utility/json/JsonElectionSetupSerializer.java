@@ -24,16 +24,7 @@ public class JsonElectionSetupSerializer implements JsonSerializer<ElectionSetup
     public ElectionSetup deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         ElectionSetup temp = internalGson.fromJson(json, ElectionSetup.class);
 
-        //Deserialize questions ?
-        JsonElectionQuestionSerializer serializer = new JsonElectionQuestionSerializer();
-
-        JsonObject object = json.getAsJsonObject();
-        // Serialize/Deserialize questions ?
-
-        //TODO: iteratively add questions when implementing multiple questions
-        ElectionQuestion question = temp.getQuestions().get(0);
-        List<String> questions = new ArrayList<>();
-        questions.add(question.getQuestion());
+        ElectionQuestion question = temp.getQuestion();
 
         return new ElectionSetup(
                 temp.getName(),
@@ -42,7 +33,7 @@ public class JsonElectionSetupSerializer implements JsonSerializer<ElectionSetup
                 question.getVotingMethod(),
                 question.getWriteIn(),
                 question.getBallotOptions(),
-                questions,
+                question.getQuestion(),
                 temp.getId()
         );
     }

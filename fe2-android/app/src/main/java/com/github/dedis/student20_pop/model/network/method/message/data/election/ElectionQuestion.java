@@ -20,8 +20,8 @@ public class ElectionQuestion extends Data {
     private String id;
     private String question;
     private String voting_method;
-    private boolean write_in;
     private List<String> ballot_options;
+    private boolean write_in;
 
     /**
      * Constructor for a data Question, for the election setup
