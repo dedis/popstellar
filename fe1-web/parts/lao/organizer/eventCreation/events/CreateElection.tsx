@@ -11,6 +11,7 @@ import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import { Timestamp } from 'model/objects';
 import TextBlock from 'components/TextBlock';
+import DropdownSelector from 'components/DropdownSelector';
 
 function dateToTimestamp(date: Date): Timestamp {
   return new Timestamp(Math.floor(date.getTime() / 1000));
@@ -37,6 +38,7 @@ const CreateElection = ({ route }: any) => {
   const [electionQuestion, setElectionQuestion] = useState('');
   const [electionBallots, setElectionBallots] = useState(['']);
   const [electionBallotCounter, setElectionBallotCounter] = useState(2);
+  const [selectedElectionMethod, setSelectedElectionMethod] = useState('');
   const ballotOptionsUIComponents = [];
 
   const buildDatePickerWeb = () => {
@@ -67,7 +69,10 @@ const CreateElection = ({ route }: any) => {
   // Makes sure you can't remove ballots when there are only 2 options
   const removeButtonVisibility: boolean = (electionBallotCounter > 2);
 
-  const onAddBallotPress = () => { setElectionBallotCounter((prevCount) => prevCount + 1); };
+  const onAddBallotPress = () => {
+    setElectionBallotCounter((prevCount) => prevCount + 1);
+  };
+
   const onRemoveBallotPress = () => {
     // decrements counter
     setElectionBallotCounter((prevCount) => prevCount - 1);
@@ -77,7 +82,7 @@ const CreateElection = ({ route }: any) => {
     setElectionBallots(newArr);
   };
 
-  // Updates the array with the specified ballot entries in thetextfields
+  // Updates the array with the specified ballot entries in the textfields
   const updateBallotArray = (index: number, text: string) => {
     const newArr = [...electionBallots];
     newArr[index] = text;
@@ -100,9 +105,6 @@ const CreateElection = ({ route }: any) => {
 
     navigation.goBack();
   };
-  const printBallots = () => {
-    console.log(electionBallots);
-  };
 
   return (
     <ScrollView>
@@ -114,6 +116,10 @@ const CreateElection = ({ route }: any) => {
       />
       { /* see archive branches for date picker used for native apps */ }
       { Platform.OS === 'web' && buildDatePickerWeb() }
+      <DropdownSelector
+        values={[STRINGS.election_method_Plurality]}
+        onChange={(method: string) => setSelectedElectionMethod(method)}
+      />
 
       <TextInput
         style={styles.textInput}
@@ -121,20 +127,16 @@ const CreateElection = ({ route }: any) => {
         onChangeText={(text: string) => { setElectionQuestion(text); }}
       />
       <TextBlock text={STRINGS.election_create_ballot_options} />
-      <div>{ballotOptionsUIComponents}</div>
-      <div>
-        <WideButtonView title={STRINGS.election_create_add_option} onPress={onAddBallotPress} />
-        <WideButtonView
-          title={STRINGS.election_create_remove_option}
-          onPress={onRemoveBallotPress}
-          disabled={!removeButtonVisibility}
-        />
-        <WideButtonView
-          title="Show Ballots"
-          onPress={printBallots}
-        />
-      </div>
-
+      <WideButtonView
+        onPress={onAddBallotPress}
+        title="+"
+      />
+      <WideButtonView
+        onPress={onRemoveBallotPress}
+        disabled={!removeButtonVisibility}
+        title="-"
+      />
+      {ballotOptionsUIComponents}
       <WideButtonView
         title={STRINGS.general_button_confirm}
         onPress={onConfirmPress}
