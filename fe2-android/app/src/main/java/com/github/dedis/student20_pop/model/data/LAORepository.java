@@ -50,7 +50,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class LAORepository {
+public class  LAORepository {
 
   private static final String TAG = LAORepository.class.getSimpleName();
   private static volatile LAORepository INSTANCE = null;

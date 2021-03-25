@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
 import com.github.dedis.student20_pop.detail.fragments.ElectionSetupFragment;
-import com.github.dedis.student20_pop.detail.fragments.ElectionDisplayFragment;
 import com.github.dedis.student20_pop.detail.fragments.RollCallEventCreationFragment;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.detail.fragments.IdentityFragment;

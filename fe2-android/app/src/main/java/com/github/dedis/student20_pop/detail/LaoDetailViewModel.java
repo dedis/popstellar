@@ -282,6 +282,8 @@ public class LaoDetailViewModel extends AndroidViewModel {
   public void launchCastingVotes(){};
 
 
+  public void castVotes() {};
+
   public void createNewRollCall(String title, String description, long start, long scheduled) {
     Log.d(TAG, "creating a new roll call with title " + title);
 
