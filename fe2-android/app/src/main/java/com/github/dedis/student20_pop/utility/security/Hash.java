@@ -1,6 +1,7 @@
 package com.github.dedis.student20_pop.utility.security;
 
 import android.util.Log;
+import com.github.dedis.student20_pop.exceptions.PoPException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -19,7 +20,8 @@ public class Hash {
    *
    * @param strs : the strings to hash
    * @return the hashed data or null if failed to hash
-   * @throws IllegalArgumentException if the data is null
+   * @throws IllegalArgumentException if the data is null or empty
+   * @throws PoPException             if SHA-256 MessageDigest is unavailable
    */
   public static String hash(String... strs) {
     if (strs == null || strs.length == 0) {
@@ -39,7 +41,7 @@ public class Hash {
       return Base64.getEncoder().encodeToString(digestBuf);
     } catch (NoSuchAlgorithmException e) {
       Log.e(TAG, "failed to hash", e);
-      throw new RuntimeException("failed to hash", e);
+      throw new PoPException("failed to retrieve SHA-256 instance", e);
     }
   }
 
