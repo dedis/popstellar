@@ -66,12 +66,12 @@ const messagesSlice = createSlice({
 
     // Remove a Message to the list of unprocessed Messages
     processMessages: {
-      prepare(laoId: Hash | string, messageIds: Hash | string | Hash[] | string[]): any {
+      prepare(laoId: Hash | string, messageIds: String | String[]): any {
         const msgIds = Array.isArray(messageIds) ? messageIds : [messageIds];
         return {
           payload: {
             laoId: laoId.valueOf(),
-            messageIds: msgIds.map((m: Hash | string) => m.valueOf()),
+            messageIds: msgIds.map((m: String) => m.valueOf()),
           },
         };
       },
