@@ -18,8 +18,10 @@ export class CreateRollCall implements MessageData {
 
   public readonly creation: Timestamp;
 
+  // only set if the roll call is to be opened immediately
   public readonly start?: Timestamp;
 
+  // only set if the roll call *will* be opened in the future
   public readonly scheduled?: Timestamp;
 
   public readonly location: string;
