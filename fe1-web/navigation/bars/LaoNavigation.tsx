@@ -8,11 +8,11 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import STRINGS from 'res/strings';
 import { makeCurrentLao } from 'store/reducers';
 
-import Attendee from 'parts/lao/attendee/Attendee';
-import Identity from 'parts/lao/Identity';
 import Home from 'parts/Home';
-import OrganizerNavigation from 'navigation/bars/organizer/OrganizerNavigation';
-import WitnessNavigation from 'navigation/bars/witness/WitnessNavigation';
+import Identity from 'parts/lao/Identity';
+import Attendee from 'parts/lao/attendee/Attendee';
+import OrganizerNavigation from './organizer/OrganizerNavigation';
+import WitnessNavigation from './witness/WitnessNavigation';
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
 
@@ -94,6 +94,12 @@ function LaoNavigation() {
       />
 
       { buildTabComponent(isOrganizer, isWitness) }
+
+      {
+        // this is a hack to make connection as attendee work
+        // until isOrganizer/isWitness are defined
+        buildTabComponent(false, false)
+      }
 
       <OrganizationTopTabNavigator.Screen
         name={STRINGS.organization_navigation_tab_identity}

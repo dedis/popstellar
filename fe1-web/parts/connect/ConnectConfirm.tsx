@@ -73,6 +73,11 @@ const ConnectConfirm = ({ navigation }: IPropTypes) => {
       return;
     }
 
+    const parentNavigation2 = parentNavigation.dangerouslyGetParent();
+    if (parentNavigation2 === undefined) {
+      return;
+    }
+
     if (!connectTo(serverUrl)) {
       return;
     }
@@ -84,8 +89,9 @@ const ConnectConfirm = ({ navigation }: IPropTypes) => {
 
     establishLaoConnection(channel)
       .then(() => {
-        // navigate to the newly created LAO
-        navigation.navigate(STRINGS.organization_navigation_tab_attendee, {});
+        parentNavigation.navigate(STRINGS.app_navigation_tab_organizer, {
+          screen: 'Attendee',
+        });
       })
       .catch((reason) => console.error(`Failed to establish lao connection: ${reason}`));
   };
