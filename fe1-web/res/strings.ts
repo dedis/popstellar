@@ -82,6 +82,7 @@ const STRINGS = {
   identity_organization_placeholder: 'Organization',
   identity_email_placeholder: 'Email',
   identity_phone_placeholder: 'Phone number',
+  identity_qrcode_description: 'ID (Public Key):',
 
   /* --- Witness Strings --- */
   witness_description: 'Witness screen',
