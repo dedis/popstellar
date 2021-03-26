@@ -51,6 +51,12 @@ const messagesSlice = createSlice({
         }
 
         messages.forEach((msg: ExtendedMessageState) => {
+          if (msg.message_id in state.byLaoId[laoId].byId) {
+            // don't add again a message we have already received
+            // TODO: we might want to merge the witness signatures here
+            return;
+          }
+
           state.byLaoId[laoId].byId[msg.message_id] = msg;
           state.byLaoId[laoId].allIds.push(msg.message_id);
           state.byLaoId[laoId].unprocessedIds.push(msg.message_id);
