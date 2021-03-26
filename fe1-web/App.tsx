@@ -3,6 +3,7 @@ import React from 'react';
 import { StatusBar, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
+import { useReduxDevToolsExtension } from '@react-navigation/devtools';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import { Provider } from 'react-redux';
@@ -25,6 +26,8 @@ import { configureIngestion } from 'ingestion';
 export default function App() {
   const { store, persist } = storeInit();
   configureIngestion();
+
+  useReduxDevToolsExtension(navigationRef);
 
   return (
     <Provider store={store}>
