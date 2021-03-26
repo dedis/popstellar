@@ -2,39 +2,13 @@ import { Message } from 'model/network/method/message';
 import {
   ActionType, ObjectType, CreateRollCall, OpenRollCall, CloseRollCall,
 } from 'model/network/method/message/data';
-import { Hash, LaoEvent, RollCall } from 'model/objects';
+import { RollCall } from 'model/objects';
 import {
-  getStore, dispatch, addEvent, updateEvent,
-  makeCurrentLao, makeEventsMap, makeEventsAliasMap,
+  getStore, dispatch, addEvent, updateEvent, makeCurrentLao,
 } from 'store';
-import { hasWitnessSignatureQuorum } from './Utils';
+import { hasWitnessSignatureQuorum, getEventFromId } from './Utils';
 
 const getCurrentLao = makeCurrentLao();
-const getEventMap = makeEventsMap();
-const getEventAliases = makeEventsAliasMap();
-
-/**
- * Retrieves the event id associated with a given alias
- *
- * @param state the store state
- * @param id the id (or alias) to be found
- *
- * @returns LaoEvent associated with the id, if found
- * @returns undefined if the id doesn't match any known event ID or alias
- */
-function getEventFromId(state: any, id: Hash): LaoEvent | undefined {
-  const eventAlias = getEventAliases(state);
-  const eventMap = getEventMap(state);
-
-  const idStr = id.valueOf();
-  const evtId = (idStr in eventAlias)
-    ? eventAlias[idStr]
-    : idStr;
-
-  return (evtId in eventMap)
-    ? eventMap[evtId]
-    : undefined;
-}
 
 function handleRollCallCreateMessage(msg: Message): boolean {
   if (msg.messageData.object !== ObjectType.ROLL_CALL

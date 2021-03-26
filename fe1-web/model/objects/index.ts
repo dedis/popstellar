@@ -9,5 +9,6 @@ export * from './WitnessSignature';
 export * from './Channel';
 export * from './Lao';
 export * from './RollCall';
+export * from './Meeting';
 export * from './LaoEvent';
 export * from './LaoEventBuilder';
