@@ -48,7 +48,9 @@ const Launch = ({ navigation }: IPropTypes) => {
   const [inputLaoName, setInputLaoName] = useState('');
 
   const onButtonLaunchPress = (laoName: string) => {
-    if (!laoName) return;
+    if (!laoName) {
+      return;
+    }
 
     getNetworkManager().connect('127.0.0.1');
     requestCreateLao(laoName)
