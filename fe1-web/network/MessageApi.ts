@@ -157,18 +157,8 @@ export function requestCreateRollCall(
     roll_call_description: description,
   });
 
-  return publish(channelFromId(currentLao.id), message)
-    .then(() => {
-      const rc = new RollCall({
-        id: message.id,
-        name: message.name,
-        creation: message.creation,
-        location: message.location,
-        start: message.start || message.scheduled,
-        description: message.roll_call_description,
-      });
-      dispatch(addEvent(currentLao.id, rc.toState()));
-    });
+  const laoCh = channelFromId(currentLao.id);
+  return publish(laoCh, message);
 }
 
 /** Send a server query asking for the opening of a roll call given its id (Number) and an
