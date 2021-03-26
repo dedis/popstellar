@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 
-import { getNetworkManager, requestCreateLao } from 'network';
+import { getNetworkManager } from 'network';
 import { establishLaoConnection } from 'network/CommunicationApi';
 import { Channel, channelFromId, Hash } from 'model/objects';
 
