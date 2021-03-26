@@ -4,7 +4,7 @@ import {
 } from 'model/network/method/message/data';
 import { Lao } from 'model/objects';
 import {
-  dispatch, addLao, updateLao,
+  dispatch, connectToLao, updateLao,
   getMessage, getStore,
   makeCurrentLao, makeLaoMessagesState,
 } from 'store';
@@ -29,7 +29,7 @@ function handleLaoCreateMessage(msg: Message): boolean {
     witnesses: createLaoMsg.witnesses,
   });
 
-  dispatch(addLao(lao.toState()));
+  dispatch(connectToLao(lao.toState()));
   return true;
 }
 
