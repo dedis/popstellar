@@ -59,8 +59,7 @@ const CreateRollCall = ({ route }: any) => {
       description,
     )
       .then(() => {
-        // TODO: would need to go back to the Event page instead
-        navigation.goBack();
+        navigation.navigate(STRINGS.organizer_navigation_tab_home);
       })
       .catch((err) => {
         console.error('Could not create roll call, error:', err);
