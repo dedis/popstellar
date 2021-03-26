@@ -8,7 +8,7 @@ import { dispatch, KeyPairStore, OpenedLaoStore } from 'store';
 import { getNetworkManager, requestCreateLao } from 'network';
 
 import {
-  Hash, Lao, Timestamp, channelFromId, Channel,
+  Hash, Lao, Timestamp, Channel,
 } from 'model/objects';
 
 import WideButtonView from 'components/WideButtonView';

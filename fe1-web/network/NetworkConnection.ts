@@ -186,7 +186,6 @@ export class NetworkConnection {
     return promise;
   }
 
-
   private getNextRpcID(): number {
     /* This function should also make sure that IDs used by the connection peer are not reused.
      * In practice, not doing this check is okay as the server doesn't initiate RPCs

@@ -1,5 +1,5 @@
 import {
-  EventTags, Hash, Lao, PublicKey, RollCall, Timestamp,
+  EventTags, Hash, Lao, PublicKey, Timestamp,
 } from 'model/objects';
 import {
   CreateLao,
@@ -13,7 +13,7 @@ import {
   Channel, channelFromId, ROOT_CHANNEL,
 } from 'model/objects/Channel';
 import {
-  OpenedLaoStore, KeyPairStore, dispatch, addEvent,
+  OpenedLaoStore, KeyPairStore,
 } from 'store';
 import { publish } from './JsonRpcApi';
 
@@ -32,7 +32,7 @@ export function requestCreateLao(laoName: string): Promise<Channel> {
 
   return publish(ROOT_CHANNEL, message)
     .then(() => {
-      console.info(`LAO was created with ID: ${ message.id }`);
+      console.info(`LAO was created with ID: ${message.id}`);
       return channelFromId(message.id);
     });
 }

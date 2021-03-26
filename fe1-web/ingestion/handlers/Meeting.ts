@@ -99,7 +99,6 @@ export function handleMeetingMessage(msg: Message) {
     case ActionType.STATE:
       return handleMeetingStateMessage(msg);
 
-
     default:
       console.warn('A Meeting message was received but'
         + ' its processing logic is not yet implemented:', msg);
