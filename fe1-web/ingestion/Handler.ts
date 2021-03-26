@@ -1,11 +1,11 @@
 import { JsonRpcMethod, JsonRpcRequest } from 'model/network';
 import { Broadcast } from 'model/network/method';
 import { ExtendedMessage, Message } from 'model/network/method/message';
-import { ActionType, CreateLao, ObjectType } from 'model/network/method/message/data';
+import { ActionType, ObjectType } from 'model/network/method/message/data';
 import {
-  addMessages, connectToLao, dispatch, OpenedLaoStore,
+  addMessages, dispatch, OpenedLaoStore,
 } from 'store';
-import { Lao } from 'model/objects';
+import { handleLaoMessage } from './handlers/Lao';
 
 const isLaoCreate = (m: ExtendedMessage) => m.messageData.object === ObjectType.LAO
   && m.messageData.action === ActionType.CREATE;
@@ -19,20 +19,10 @@ function handleLaoCreateMessages(msgs: ExtendedMessage[]) : ExtendedMessage[] {
       return;
     }
 
-    const msg = ((m.messageData) as CreateLao);
-
-    const lao = new Lao({
-      id: msg.id,
-      name: msg.name,
-      creation: msg.creation,
-      last_modified: msg.creation,
-      organizer: msg.organizer,
-      witnesses: msg.witnesses,
-    });
-
-    // we either connect to the LAO (if there's no active connection)
-    // or we simply add it to the list of known LAOs
-    dispatch(connectToLao(lao.toState()));
+    // processing the lao/create message:
+    // - we either connect to the LAO (if there's no active connection) OR
+    // - we simply add it to the list of known LAOs
+    handleLaoMessage(m);
   });
 
   return returnedMsgs;
