@@ -1,6 +1,8 @@
 import {
   createSlice, createSelector, PayloadAction, Draft,
 } from '@reduxjs/toolkit';
+import { REHYDRATE } from 'redux-persist';
+
 import { Hash, Lao, LaoState } from 'model/objects';
 import laosData from 'res/laoData';
 
@@ -84,6 +86,14 @@ const laosSlice = createSlice({
     disconnectFromLao: (state) => {
       state.currentId = undefined;
     },
+  },
+  extraReducers: (builder) => {
+    // this is called by the persistence layer of Redux, upon starting the application
+    builder.addCase(REHYDRATE, (state) => ({
+      ...state,
+      // make sure we always start disconnected
+      currentId: undefined,
+    }));
   },
 });
 
