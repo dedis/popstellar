@@ -30,8 +30,9 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class LaoDetailViewModel extends AndroidViewModel {
 
@@ -45,7 +46,9 @@ public class LaoDetailViewModel extends AndroidViewModel {
   private final MutableLiveData<Event<Boolean>> mShowPropertiesEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mEditPropertiesEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenLaoDetailEvent = new MutableLiveData<>();
-
+  private final MutableLiveData<Event<EventType>> mNewLaoEventEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<Boolean>> mOpenNewRollCallEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<EventType>> mNewLaoEventCreationEvent = new MutableLiveData<>();
   /*
    * LiveData objects that represent the state in a fragment
    */
@@ -61,8 +64,12 @@ public class LaoDetailViewModel extends AndroidViewModel {
   private final LiveData<String> mCurrentLaoName =
       Transformations.map(mCurrentLao, lao -> lao == null ? "" : lao.getName());
 
-  private final MutableLiveData<Event<EventType>> mNewLaoEventEvent = new MutableLiveData<>();
 
+  //  Multiple events from Lao may be concatenated using Stream.concat()
+  private final LiveData<List<com.github.dedis.student20_pop.model.event.Event>> mLaoEvents = Transformations
+          .map(mCurrentLao,
+                  lao -> lao == null ? new ArrayList<com.github.dedis.student20_pop.model.event.Event>() :
+                          Stream.concat(lao.getRollCalls().values().stream(),lao.getElections().values().stream()).collect(Collectors.toList()));
   /*
    * Dependencies for this class
    */
@@ -88,6 +95,17 @@ public class LaoDetailViewModel extends AndroidViewModel {
     return mOpenLaoDetailEvent;
   }
 
+  public LiveData<Event<EventType>> getNewLaoEventEvent() { return mNewLaoEventEvent; }
+
+  public LiveData<Event<EventType>> getNewLaoEventCreationEvent() {
+    return mNewLaoEventCreationEvent;
+  }
+  public LiveData<Event<Boolean>> getOpenNewRollCallEvent() {
+    return mOpenNewRollCallEvent;
+  }
+  public LiveData<List<com.github.dedis.student20_pop.model.event.Event>> getLaoEvents() {
+    return mLaoEvents;
+  }
   public LiveData<Event<Boolean>> getOpenHomeEvent() {
     return mOpenHomeEvent;
   }
@@ -149,6 +167,13 @@ public class LaoDetailViewModel extends AndroidViewModel {
     mEditPropertiesEvent.setValue(new Event<>(false));
   }
 
+  public void newLaoEventCreation(EventType eventType) {
+    mNewLaoEventCreationEvent.postValue(new Event<>(eventType));
+  }
+
+  public void openNewRollCall(Boolean open) {
+    mOpenNewRollCallEvent.postValue(new Event<>(open));
+  }
   public void confirmEdit() {
     closeEditProperties();
 
@@ -218,10 +243,6 @@ public class LaoDetailViewModel extends AndroidViewModel {
     }
   }
 
-  public LiveData<Event<EventType>> getNewLaoEventEvent() {
-    return mNewLaoEventEvent;
-  }
-
 
   public void createNewElection(String name, long start, long end, String voting_method, boolean write_in, List<String> ballot_options, String question) {
     Log.d(TAG,"creating a new election with name " + name);
@@ -275,15 +296,25 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
   }
 
-  public void castVotes() {};
 
-  public void createNewRollCall(String title, String description, long start, long scheduled) {
+  /**
+   * Creates new roll call event.
+   * <p>
+   * Publish a GeneralMessage containing CreateRollCall data.
+   *
+   * @param title       the title of the roll call
+   * @param description the description of the roll call, can be empty
+   * @param start       the start time of the roll call, zero if start type is SCHEDULED
+   * @param scheduled   the scheduled time of the roll call, zero if start type is NOW
+   * @return the id of the newly created roll call event, null if fails to create the event
+   */
+  public String createNewRollCall(String title, String description, long start, long scheduled) {
     Log.d(TAG, "creating a new roll call with title " + title);
 
     Lao lao = getCurrentLao();
     if (lao == null) {
       Log.d(TAG, "failed to retrieve current lao");
-      return;
+      return null;
     }
 
     String channel = lao.getChannel();
@@ -293,7 +324,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
       createRollCall = new CreateRollCall(title, start, StartType.NOW, "", description, laoId);
     } else {
       createRollCall =
-          new CreateRollCall(title, scheduled, StartType.SCHEDULED, "", description, laoId);
+              new CreateRollCall(title, scheduled, StartType.SCHEDULED, "", description, laoId);
     }
 
     try {
@@ -306,27 +337,51 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
       Log.d(TAG, "sending publish message");
       Disposable disposable =
-          mLAORepository
-              .sendPublish(channel, msg)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .timeout(5, TimeUnit.SECONDS)
-              .subscribe(
-                  answer -> {
-                    if (answer instanceof Result) {
-                      Log.d(TAG, "created a roll call");
-                      openLaoDetail();
-                    } else {
-                      Log.d(TAG, "failed to create a roll call");
-                    }
-                  },
-                  throwable -> {
-                    Log.d(TAG, "timed out waiting for result on roll_call/create", throwable);
-                  });
+              mLAORepository
+                      .sendPublish(channel, msg)
+                      .subscribeOn(Schedulers.io())
+                      .observeOn(AndroidSchedulers.mainThread())
+                      .timeout(5, TimeUnit.SECONDS)
+                      .subscribe(
+                              answer -> {
+                                if (answer instanceof Result) {
+                                  Log.d(TAG, "created a roll call successfully");
+                                  openLaoDetail();
+                                } else {
+                                  Log.d(TAG, "failed to create a roll call");
+                                }
+                              },
+                              throwable -> {
+                                Log.d(TAG, "timed out waiting for result on roll_call/create", throwable);
+                              });
 
       disposables.add(disposable);
     } catch (GeneralSecurityException | IOException e) {
       Log.d(TAG, "failed to retrieve public key", e);
+      return null;
     }
+    return createRollCall.getId();
   }
+
+  /**
+   * Opens a roll call event.
+   * <p>
+   * Publish a GeneralMessage containing OpenRollCall data.
+   *
+   * @param id the roll call id to open
+   */
+  public void openRollCall(String id) {
+    Log.d(TAG, "opening a roll call with id " + id);
+
+    //TODO: implement open roll call
+  }
+
+  /**
+   * Remove specific witness from the LAO's list of witnesses.
+   * <p>
+   * Publish a GeneralMessage containing UpdateLao data.
+   *
+   * @param witness the id of the witness to remove
+   */
+
 }

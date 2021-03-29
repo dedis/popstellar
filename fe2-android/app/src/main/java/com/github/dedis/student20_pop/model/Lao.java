@@ -21,11 +21,12 @@ public final class Lao {
   private Set<PendingUpdate> pendingUpdates;
 
   private Map<String, RollCall> rollCalls;
-
+  private Map<String,Election> elections;
   public Lao(String id) {
     this.channel = id;
     this.id = id;
     this.rollCalls = new HashMap<>();
+    this.elections = new HashMap<>();
     this.witnesses = new HashSet<>();
     this.pendingUpdates = new HashSet<>();
   }
@@ -45,6 +46,10 @@ public final class Lao {
 
   public Optional<RollCall> getRollCall(String id) {
     return Optional.ofNullable(rollCalls.get(id));
+  }
+
+  public Optional<Election> getElection(String id) {
+    return Optional.ofNullable(elections.get(id));
   }
 
   public Long getLastModified() {
@@ -125,5 +130,9 @@ public final class Lao {
 
   public void setRollCalls(Map<String, RollCall> rollCalls) {
     this.rollCalls = rollCalls;
+  }
+
+  public Map<String, Election> getElections() {
+    return elections;
   }
 }
