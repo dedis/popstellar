@@ -91,6 +91,15 @@ public class LaoDetailFragment extends Fragment {
                 editProperties(action);
               }
             });
+
+    mLaoDetailViewModel.getLaoEvents()
+            .observe(
+                    getActivity(),
+                    events -> {
+                      Log.d(TAG, "Got a list update for LAO events");
+                      mEventListViewEventAdapter.replaceList(events);
+                    }
+            );
   }
 
   private void setupPropertiesButton() {
