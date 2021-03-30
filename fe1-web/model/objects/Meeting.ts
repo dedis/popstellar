@@ -6,6 +6,7 @@ export interface MeetingState extends LaoEventState {
   name: string;
   location: string;
   creation: number;
+  last_modified: number;
   extra: object;
 }
 
@@ -17,6 +18,8 @@ export class Meeting implements LaoEvent {
   public readonly location?: string;
 
   public readonly creation: Timestamp;
+
+  public readonly last_modified: Timestamp;
 
   public readonly start: Timestamp;
 
@@ -47,6 +50,7 @@ export class Meeting implements LaoEvent {
     this.name = obj.name;
     this.location = obj.location;
     this.creation = obj.creation;
+    this.last_modified = obj.last_modified || obj.creation;
     this.start = obj.start;
     this.end = obj.end;
     this.extra = obj.extra || {};
@@ -58,6 +62,7 @@ export class Meeting implements LaoEvent {
       name: m.name,
       location: m.location,
       creation: new Timestamp(m.creation),
+      last_modified: new Timestamp((m.last_modified) ? m.last_modified : m.creation),
       start: new Timestamp(m.start),
       end: (m.end) ? new Timestamp(m.end) : undefined,
       extra: (m.extra) ? { ...m.extra } : {},

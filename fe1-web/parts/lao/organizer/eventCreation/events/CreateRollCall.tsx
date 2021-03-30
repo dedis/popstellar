@@ -50,17 +50,25 @@ const CreateRollCall = ({ route }: any) => {
 
   const buttonsVisibility: boolean = (rollCallName !== '' && rollCallLocation !== '');
 
-  const onConfirmPress = () => {
+  const createRollCall = (scheduled: boolean) => {
     const description = (rollCallDescription === '') ? undefined : rollCallDescription;
-    requestCreateRollCall(rollCallName, rollCallLocation, startDate, undefined, description);
-    navigation.goBack();
+    requestCreateRollCall(
+      rollCallName, rollCallLocation,
+      scheduled ? undefined : startDate,
+      scheduled ? startDate : undefined,
+      description,
+    )
+      .then(() => {
+        navigation.navigate(STRINGS.organizer_navigation_tab_home);
+      })
+      .catch((err) => {
+        console.error('Could not create roll call, error:', err);
+      });
   };
 
-  const onOpenPress = () => {
-    console.error('Does nothing for now! See parts/.../CreateRollCall.tsx');
-    // requestOpenRollCall(ROLL_CALL_ID, new Timestamp(Math.floor((new Date()).getTime() / 1000)))
-    // navigation.goBack()
-  };
+  const onConfirmPress = () => createRollCall(true);
+
+  const onOpenPress = () => createRollCall(false);
 
   return (
     <ScrollView>

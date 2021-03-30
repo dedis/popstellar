@@ -3,6 +3,7 @@ import React from 'react';
 import { StatusBar, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
+import { useReduxDevToolsExtension } from '@react-navigation/devtools';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import { Provider } from 'react-redux';
@@ -11,7 +12,7 @@ import { storeInit } from 'store/Storage';
 import AppNavigation from 'navigation/AppNavigation';
 import { navigationRef } from 'navigation/RootNavigation';
 
-import { configureRpcHandler } from 'ingestion';
+import { configureIngestion } from 'ingestion';
 
 /*
 * The starting point of the app
@@ -24,7 +25,9 @@ import { configureRpcHandler } from 'ingestion';
 
 export default function App() {
   const { store, persist } = storeInit();
-  configureRpcHandler();
+  configureIngestion();
+
+  useReduxDevToolsExtension(navigationRef);
 
   return (
     <Provider store={store}>

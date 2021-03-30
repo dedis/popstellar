@@ -6,7 +6,7 @@
 
 	"type": "array", 
 	"items": {
-		"oneOf": [
+		"anyOf": [
 			{ "$ref": "../../query/method/message/messageGeneral.json" }, 
 			{ "$ref": "../../query/method/message/messageWitnessMessage.json" }
 		],

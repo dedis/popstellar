@@ -3,15 +3,15 @@ import '../../utils/matchers';
 
 import keyPair from 'test_data/keypair.json';
 
-import { CreateLao } from 'model/network/method/message/data';
+import { OpenedLaoStore } from 'store';
 import { storeInit } from 'store/Storage';
-import { JsonRpcMethod, JsonRpcRequest } from 'model/network';
 import {
   Base64Data, Hash, Lao, PrivateKey, PublicKey,
 } from 'model/objects';
-import { OpenedLaoStore } from 'store';
-import { JsonRpcParamsWithMessage } from 'model/network/method/JsonRpcParamsWithMessage';
 import { ROOT_CHANNEL } from 'model/objects/Channel';
+import { JsonRpcMethod, JsonRpcRequest } from 'model/network';
+import { CreateLao } from 'model/network/method/message/data';
+import { JsonRpcParamsWithMessage } from 'model/network/method/JsonRpcParamsWithMessage';
 
 const JSON_RPC_FIELDS: string[] = ['method', 'params', 'id']; // jsonrpc version is not stored, thus only 3 fields
 const QUERY_FIELD_COUNT = JSON_RPC_FIELDS.length;
