@@ -5,7 +5,9 @@ import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import {
-  checkTimestampStaleness, checkWitnesses, checkModificationId, checkModificationSignatures,
+  checkTimestampStaleness,
+  checkWitnesses,
+  checkWitnessSignatures,
 } from '../Checker';
 
 export class StateLao implements MessageData {
@@ -30,37 +32,59 @@ export class StateLao implements MessageData {
   public readonly modification_signatures: WitnessSignature[];
 
   constructor(msg: Partial<StateLao>) {
-    if (!msg.name) throw new ProtocolError('Undefined \'name\' parameter encountered during \'StateLao\'');
+    const makeErr = (name: string) => `Undefined '${name}' parameter encountered during 'StateLao'`;
+
+    if (!msg.name) {
+      throw new ProtocolError(makeErr('name'));
+    }
     this.name = msg.name;
 
-    if (!msg.creation) throw new ProtocolError('Undefined \'creation\' parameter encountered during \'StateLao\'');
+    if (!msg.creation) {
+      throw new ProtocolError(makeErr('creation'));
+    }
     checkTimestampStaleness(msg.creation);
     this.creation = msg.creation;
 
-    if (!msg.last_modified) throw new ProtocolError('Undefined \'last_modified\' parameter encountered during \'StateLao\'');
-    if (msg.last_modified < msg.creation) throw new ProtocolError('Invalid timestamp encountered: \'last_modified\' parameter smaller than \'creation\'');
+    if (!msg.last_modified) {
+      throw new ProtocolError(makeErr('last_modified'));
+    }
+    if (msg.last_modified < msg.creation) {
+      throw new ProtocolError('Invalid timestamp encountered: '
+        + "'last_modified' parameter smaller than 'creation'");
+    }
     this.last_modified = msg.last_modified;
 
-    if (!msg.organizer) throw new ProtocolError('Undefined \'organizer\' parameter encountered during \'StateLao\'');
+    if (!msg.organizer) {
+      throw new ProtocolError(makeErr('organizer'));
+    }
     this.organizer = msg.organizer;
 
-    if (!msg.witnesses) throw new ProtocolError('Undefined \'witnesses\' parameter encountered during \'StateLao\'');
+    if (!msg.witnesses) {
+      throw new ProtocolError(makeErr('witnesses'));
+    }
     checkWitnesses(msg.witnesses);
     this.witnesses = [...msg.witnesses];
 
-    if (!msg.modification_id) throw new ProtocolError('Undefined \'modification_id\' parameter encountered during \'StateLao\'');
-    checkModificationId(msg.modification_id);
+    if (!msg.modification_id) {
+      throw new ProtocolError(makeErr('modification_id'));
+    }
     this.modification_id = msg.modification_id;
 
-    if (!msg.modification_signatures) throw new ProtocolError('Undefined \'modification_signatures\' parameter encountered during \'StateLao\'');
-    checkModificationSignatures(msg.modification_signatures);
+    if (!msg.modification_signatures) {
+      throw new ProtocolError(makeErr('modification_signatures'));
+    }
+    checkWitnessSignatures(msg.modification_signatures, msg.modification_id);
     this.modification_signatures = [...msg.modification_signatures];
 
-    if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'StateLao\'');
+    if (!msg.id) {
+      throw new ProtocolError(makeErr('id'));
+    }
     const expectedHash = Hash.fromStringArray(
       msg.organizer.toString(), msg.creation.toString(), msg.name,
     );
-    if (!expectedHash.equals(msg.id)) throw new ProtocolError('Invalid \'id\' parameter encountered during \'StateLao\': unexpected id value');
+    if (!expectedHash.equals(msg.id)) {
+      throw new ProtocolError("Invalid 'id' parameter encountered during 'StateLao'");
+    }
     this.id = msg.id;
   }
 
