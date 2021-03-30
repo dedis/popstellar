@@ -35,7 +35,7 @@ func NewOrganizerHub(public kyber.Point) Hub {
 }
 
 // RemoveClient removes the client from this hub.
-func (o *organizerHub) RemoveClient(client *Client) {
+func (o *organizerHub) RemoveClientSocket(client *ClientSocket) {
 	o.RLock()
 	defer o.RUnlock()
 
@@ -53,7 +53,10 @@ func (o *organizerHub) Recv(msg IncomingMessage) {
 func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	log.Printf("organizerHub::handleIncomingMessage: %s", incomingMessage.Message)
 
-	client := incomingMessage.Client
+	socket := incomingMessage.Socket
+	client := &ClientSocket {
+		Socket: *socket,
+	}
 
 	// unmarshal the message
 	genericMsg := &message.GenericMessage{}

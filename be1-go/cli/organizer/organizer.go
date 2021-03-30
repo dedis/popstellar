@@ -13,7 +13,7 @@ import (
 	"golang.org/x/xerrors"
 )
 
-var upgrader = websocket.Upgrader{
+var Upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 	CheckOrigin:     func(r *http.Request) bool { return true },
@@ -48,7 +48,7 @@ func Serve(c *cli.Context) error {
 		serveWs(h, w, r)
 	})
 
-	log.Printf("Starting the WS server at %d", port)
+	log.Printf("Starting the organizer WS server at %d", port)
 	err = http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 	if err != nil {
 		return xerrors.Errorf("failed to start the server: %v", err)
@@ -60,20 +60,20 @@ func Serve(c *cli.Context) error {
 }
 
 func serveWs(h hub.Hub, w http.ResponseWriter, r *http.Request) {
-	conn, err := upgrader.Upgrade(w, r, nil)
+	conn, err := Upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("failed to upgrade connection: %v", err)
 		return
 	}
 
-	client := hub.NewClient(h, conn)
+	client := hub.NewClientSocket(h, conn)
 
 	go client.ReadPump()
 	go client.WritePump()
 
 	// cleanup go routine that removes clients that forgot to unsubscribe
-	go func(c *hub.Client, h hub.Hub) {
+	go func(c *hub.ClientSocket, h hub.Hub) {
 		c.Wait.Wait()
-		h.RemoveClient(c)
+		h.RemoveClientSocket(c)
 	}(client, h)
 }

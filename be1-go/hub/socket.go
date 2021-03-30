@@ -22,8 +22,11 @@ const (
 	pingPeriod = (pongWait * 9) / 10
 )
 
-// Client represents a client connected to the server.
-type Client struct {
+
+// Socket represents a socket connected to the server.
+type Socket struct {
+	socketType string
+
 	hub Hub
 
 	conn *websocket.Conn
@@ -33,9 +36,9 @@ type Client struct {
 	Wait sync.WaitGroup
 }
 
-// NewClient returns an instance of a Client.
-func NewClient(h Hub, conn *websocket.Conn) *Client {
-	return &Client{
+// NewSocket returns an instance of a Socket.
+func NewSocket(h Hub, conn *websocket.Conn) *Socket {
+	return &Socket{
 		hub:  h,
 		conn: conn,
 		send: make(chan []byte, 256),
@@ -43,22 +46,22 @@ func NewClient(h Hub, conn *websocket.Conn) *Client {
 	}
 }
 
-// ReadPump starts the reader loop for the client.
-func (c *Client) ReadPump() {
+// ReadPump starts the reader loop for the socket.
+func (s *Socket) ReadPump() {
 	defer func() {
-		c.conn.Close()
-		c.Wait.Done()
+		s.conn.Close()
+		s.Wait.Done()
 	}()
 
-	c.Wait.Add(1)
+	s.Wait.Add(1)
 
-	log.Printf("listening for messages from client")
+	log.Printf("listening for messages from socket")
 
-	c.conn.SetReadLimit(maxMessageSize)
-	c.conn.SetReadDeadline(time.Now().Add(pongWait))
-	c.conn.SetPongHandler(func(string) error { c.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+	s.conn.SetReadLimit(maxMessageSize)
+	s.conn.SetReadDeadline(time.Now().Add(pongWait))
+	s.conn.SetPongHandler(func(string) error { s.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 	for {
-		_, message, err := c.conn.ReadMessage()
+		_, message, err := s.conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Printf("connection dropped unexpectedly: %v", err)
@@ -70,16 +73,16 @@ func (c *Client) ReadPump() {
 		// message at this stage
 
 		msg := IncomingMessage{
-			Client:  c,
+			Socket:  s,
 			Message: message,
 		}
 
-		c.hub.Recv(msg)
+		s.hub.Recv(msg)
 	}
 }
 
-// WritePump starts the writer loop for the client.
-func (c *Client) WritePump() {
+// WritePump starts the writer loop for the socket.
+func (c *Socket) WritePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
@@ -120,15 +123,15 @@ func (c *Client) WritePump() {
 	}
 }
 
-// Send allows sending a serialised message to the client.
-func (c *Client) Send(msg []byte) {
+// Send allows sending a serialised message to the socket.
+func (c *Socket) Send(msg []byte) {
 	log.Printf("sending message to %s", c.conn.RemoteAddr())
 	c.send <- msg
 }
 
 // SendError is a utility method that allows sending an `error` as a `message.Error`
-// message to the client.
-func (c *Client) SendError(id int, err error) {
+// message to the socket.
+func (c *Socket) SendError(id int, err error) {
 	msgError := &message.Error{}
 
 	if xerrors.As(err, &msgError) {
@@ -146,8 +149,8 @@ func (c *Client) SendError(id int, err error) {
 	}
 }
 
-// SendResult is a utility method that allows sending a `message.Result` to the client.
-func (c *Client) SendResult(id int, res message.Result) {
+// SendResult is a utility method that allows sending a `message.Result` to the socket.
+func (c *Socket) SendResult(id int, res message.Result) {
 	answer := message.Answer{
 		ID:     &id,
 		Result: &res,
