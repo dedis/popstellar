@@ -7,7 +7,8 @@ import testKeyPair from 'test_data/keypair.json';
 import * as msApi from 'network/MessageApi';
 import * as wsApi from 'network/JsonRpcApi';
 import { storeInit } from 'store/Storage';
-import { KeyPairStore, OpenedLaoStore } from 'store';
+import { KeyPairStore } from 'store/stores/KeyPairStore';
+import { OpenedLaoStore } from 'store/stores/OpenedLaoStore';
 import {
   ActionType, CloseRollCall,
   CreateLao, CreateMeeting, CreateRollCall,
@@ -400,7 +401,7 @@ function checkDataCloseRollCall(obj: MessageData) {
 }
 
 describe('=== WebsocketApi tests ===', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     storeInit();
 
     const org: PublicKey = KeyPairStore.getPublicKey();
