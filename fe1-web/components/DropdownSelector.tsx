@@ -10,7 +10,7 @@ import styles from 'styles/stylesheets/container';
  *  - String array of all options (required)
  *  - function that stores the selected option (required)
  *      (e.g. {(method: string) => setSelectedElectionMethod(method)} )
- *  - Option that is default selected (not required, default is the first in the array)
+ *  - Default selected option (not required, if not specified then first in the array is chosen)
  */
 
 const DropdownSelector = (props: IPropTypes) => {
@@ -34,8 +34,7 @@ const DropdownSelector = (props: IPropTypes) => {
 };
 
 const propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  selected: PropTypes.any,
+  selected: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   values: PropTypes.arrayOf(PropTypes.string).isRequired,
 };

@@ -103,6 +103,7 @@ const STRINGS = {
   election_create_ballot_options: 'Ballot Options',
   election_create_add_option: 'Add Ballot Option',
   election_create_remove_option: 'Remove Ballot Option',
+  election_voting_method: 'Voting Method',
   election_method_Plurality: 'Plurality',
 
   /* --- Roll-call creation Strings --- */
