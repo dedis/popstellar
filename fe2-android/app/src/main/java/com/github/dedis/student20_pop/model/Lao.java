@@ -21,11 +21,13 @@ public final class Lao {
   private Set<PendingUpdate> pendingUpdates;
 
   private Map<String, RollCall> rollCalls;
+  private Map<String, Election> elections;
 
   public Lao(String id) {
     this.channel = id;
     this.id = id;
     this.rollCalls = new HashMap<>();
+    this.elections = new HashMap<>();
     this.witnesses = new HashSet<>();
     this.pendingUpdates = new HashSet<>();
   }
@@ -41,6 +43,14 @@ public final class Lao {
     }
     String newId = rollCall.getId();
     rollCalls.put(newId, rollCall);
+  }
+
+  public void updateElections(String prevId, Election election) {
+    if (elections.containsKey(prevId)) {
+      elections.remove(prevId);
+    }
+    String newId = election.getId();
+    elections.put(newId, election);
   }
 
   public Optional<RollCall> getRollCall(String id) {
