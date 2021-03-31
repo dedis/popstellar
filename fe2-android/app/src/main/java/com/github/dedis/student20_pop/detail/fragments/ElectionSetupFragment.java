@@ -66,6 +66,26 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
                 public void afterTextChanged(Editable s) {}
             };
 
+    private class ballotOptionsTextWatcher implements TextWatcher {
+
+        private int ballotTag;
+
+        public ballotOptionsTextWatcher(int ballotTag) {
+            this.ballotTag = ballotTag;
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            ballotOptions.set(ballotTag, editable.toString());
+        }
+    }
+
     public static ElectionSetupFragment newInstance() {
         return new ElectionSetupFragment();
     }
@@ -99,32 +119,18 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
         electionNameText = mSetupElectionFragBinding.electionSetupTitle;
         electionQuestionText = mSetupElectionFragBinding.electionQuestion;
 
-        // At least two candidates must be selected
-        ballotOption1 = mSetupElectionFragBinding.ballotOption1;
-        ballotOption2 = mSetupElectionFragBinding.ballotOption2;
-
+        //Add text watchers on the fields that need to be filled
         electionQuestionText.addTextChangedListener(confirmTextWatcher);
         electionNameText.addTextChangedListener(confirmTextWatcher);
-        ballotOption1.addTextChangedListener(confirmTextWatcher);
-        ballotOption2.addTextChangedListener(confirmTextWatcher);
 
+        // Set up the basic fields for ballot options, with at least two options
+        initNewBallotOptionsField();
 
-
-        //Adding ballot options
+        //When the button is clicked, add a new ballot option
        addBallotOptionButton = mSetupElectionFragBinding.addBallotOption;
         addBallotOptionButton.setOnClickListener(
-                v -> {
-                    Context c = getActivity();
-                    EditText ballotOption = new EditText(c);
-                    ballotOption.setHint("ballot option");
-                    mSetupElectionFragBinding.electionSetupFieldsLl.addView(ballotOption);
-                    ViewGroup.LayoutParams params = ballotOption.getLayoutParams();
-                    params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                    params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-                    ballotOption.setLayoutParams(params);
-                }
+                v -> { addBallotOption(); }
         );
-
 
 
         // Set the text widget in layout to current LAO name
@@ -147,7 +153,11 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
                     computeTimesInSeconds();
                     String title = electionNameText.getText().toString();
                     String question = electionQuestionText.getText().toString();
-                    mLaoDetailViewModel.createNewElection(title, startTimeInSeconds, endTimeInSeconds, votingMethod.toString(), writeIn, ballotOptions, question);
+                    List<String> filteredBallotOptions = new ArrayList<>();
+                    for (String ballotOption: ballotOptions) {
+                        if (!ballotOption.equals("")) filteredBallotOptions.add(ballotOption);
+                    }
+                    mLaoDetailViewModel.createNewElection(title, startTimeInSeconds, endTimeInSeconds, votingMethod.toString(), writeIn, filteredBallotOptions, question);
                 });
 
         //On click, cancel button takes back to LAO detail page
@@ -171,6 +181,29 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
         votingMethod = votingMethods.valueOf("Plurality");
+    }
+
+    private EditText addBallotOption() {
+        Context c = getActivity();
+        EditText ballotOption = new EditText(c);
+        ballotOption.setHint("ballot option");
+        mSetupElectionFragBinding.electionSetupFieldsLl.addView(ballotOption);
+        ViewGroup.LayoutParams params = ballotOption.getLayoutParams();
+        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+        ballotOption.setLayoutParams(params);
+        int ballotTag = ballotOptions.size();
+        ballotOption.setTag(ballotTag);
+        ballotOption.addTextChangedListener(new ballotOptionsTextWatcher(ballotTag));
+        ballotOptions.add(ballotOption.getText().toString());
+        return ballotOption;
+    }
+
+    private void initNewBallotOptionsField() {
+        ballotOption1 = addBallotOption();
+        ballotOption2 = addBallotOption();
+        ballotOption1.addTextChangedListener(confirmTextWatcher);
+        ballotOption2.addTextChangedListener(confirmTextWatcher);
     }
 
     /**

@@ -243,7 +243,6 @@ public class LaoDetailViewModel extends AndroidViewModel {
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
       String publicKey = Keys.getEncodedKey(publicKeysetHandle);
       byte[] sender = Base64.getDecoder().decode(publicKey);
-
       PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
       MessageGeneral msg = new MessageGeneral(sender, electionSetup, signer, mGson);
 

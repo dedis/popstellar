@@ -2,7 +2,9 @@ package com.github.dedis.student20_pop.model;
 
 import com.github.dedis.student20_pop.model.event.Event;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Election extends Event {
@@ -11,14 +13,15 @@ public class Election extends Event {
     private String name;
     private long creation;
     private long start;
-    private long scheduled;
     private long end;
-    private Set<String> attendees;
+    private boolean writeIn;
+    private String question;
+    private List<String> ballotOptions;
 
-    private String description;
+    //votes as attribute ?
 
 
-    public Election() { this.attendees = new HashSet<>(); }
+    public Election() { this.ballotOptions = new ArrayList<>(); }
 
     public String getId() {
         return id;
@@ -44,59 +47,45 @@ public class Election extends Event {
         this.creation = creation;
     }
 
-    public long getStart() {
-        return start;
-    }
+    public long getStart() { return start; }
 
     public void setStart(long start) {
         this.start = start;
     }
 
-    public long getScheduled() {
-        return scheduled;
-    }
-
-    public void setScheduled(long scheduled) {
-        this.scheduled = scheduled;
-    }
-
-    public long getEnd() {
-        return end;
-    }
+    public long getEnd() {return end;}
 
     public void setEnd(long end) {
         this.end = end;
     }
 
-    public Set<String> getAttendees() {
-        return attendees;
+    public List<String> getBallotOptions() {
+        return ballotOptions;
     }
 
-    public void setAttendees(Set<String> attendees) {
-        this.attendees = attendees;
+    public void setBallotOptions(List<String> ballotOptions) {
+        this.ballotOptions = ballotOptions;
     }
 
-    public String getDescription() {
-        return description;
+    public String getQuestion() {
+        return question;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setQuestion(String question) {
+        this.question = question;
     }
+
+    public boolean getWriteIn() { return writeIn; }
+
+    public void setWriteIn(boolean writeIn) {this.writeIn = writeIn; }
 
     @Override
     public long getStartTimestamp() {
-        if (start != 0) {
-            return start;
-        }
-        return scheduled;
+        return start;
     }
 
     @Override
     public long getEndTimestamp() {
-        if (end == 0) {
-            return Long.MAX_VALUE;
-        }
         return end;
     }
 }

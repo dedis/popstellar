@@ -57,6 +57,10 @@ public final class Lao {
     return Optional.ofNullable(rollCalls.get(id));
   }
 
+  public Optional<Election> getElection(String id) {
+    return Optional.ofNullable(elections.get(id));
+  }
+
   public Long getLastModified() {
     return lastModified;
   }
@@ -128,6 +132,8 @@ public final class Lao {
   public void setPendingUpdates(Set<PendingUpdate> pendingUpdates) {
     this.pendingUpdates = pendingUpdates;
   }
+
+  public Map<String, Election> getElections() {return elections;}
 
   public Map<String, RollCall> getRollCalls() {
     return rollCalls;

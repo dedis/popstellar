@@ -319,13 +319,17 @@ public class  LAORepository {
 
     Election election = new Election();
     election.setId(electionSetup.getId());
+    election.setName(electionSetup.getName());
     election.setCreation(electionSetup.getCreation());
     election.setStart(electionSetup.getStartTime());
-    election.setDescription(electionSetup.getQuestion().getQuestion());
-    //TODO
+    election.setQuestion(electionSetup.getQuestion().getQuestion());
+    election.setStart(electionSetup.getStartTime());
+    election.setEnd(electionSetup.getEndTime());
+    election.setWriteIn(electionSetup.getQuestion().getWriteIn());
+    election.setBallotOptions(electionSetup.getQuestion().getBallotOptions());
 
     lao.updateElections(election.getId(), election);
-    return true;
+    return false;
 
   }
 
