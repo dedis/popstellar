@@ -44,7 +44,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
     private TextView laoNameTextView;
     private FloatingActionButton addBallotOptionButton;
 
-    private enum votingMethods {Plurality, New_method}
+    private enum votingMethods {Plurality}
     private votingMethods votingMethod;
 
     private List<String> ballotOptions;
@@ -93,7 +93,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
         Button cancelButton = mSetupElectionFragBinding.electionCancelButton;
         boolean writeIn = mSetupElectionFragBinding.writeIn.isChecked();
 
-        //Right place to instantiate ?
         ballotOptions = new ArrayList<>();
 
         submitButton = mSetupElectionFragBinding.electionSubmitButton;
