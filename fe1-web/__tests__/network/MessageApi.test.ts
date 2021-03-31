@@ -7,10 +7,8 @@ import testKeyPair from 'test_data/keypair.json';
 import * as msApi from 'network/MessageApi';
 import * as wsApi from 'network/JsonRpcApi';
 import { storeInit } from 'store/Storage';
-import { KeyPairStore, OpenedLaoStore } from 'store';
-import {
-  Base64Data, Hash, Lao, PrivateKey, PublicKey, Timestamp, KeyPair,
-} from 'model/objects';
+import { KeyPairStore } from 'store/stores/KeyPairStore';
+import { OpenedLaoStore } from 'store/stores/OpenedLaoStore';
 import {
   ActionType, CloseRollCall,
   CreateLao, CreateMeeting, CreateRollCall,
@@ -19,6 +17,9 @@ import {
   StateLao, StateMeeting,
   UpdateLao, WitnessMessage,
 } from 'model/network/method/message/data';
+import {
+  Base64Data, Hash, Lao, PrivateKey, PublicKey, Timestamp, KeyPair,
+} from 'model/objects';
 import { Channel } from 'model/objects/Channel';
 
 function mockFunction<T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> {
@@ -204,6 +205,7 @@ function checkDataCreateMeeting(obj: MessageData) {
 
   if ('end' in data) {
     expect(data.end).toBeNumberObject();
+    // @ts-ignore
     expect(data.end.valueOf()).toBeGreaterThan(0);
     // @ts-ignore
     expect(data.end.valueOf() + 1).toBeGreaterThan(data.start.valueOf());
@@ -307,6 +309,7 @@ function checkDataCreateRollCall(obj: MessageData) {
 
   if ('start' in data) {
     expect(data.start).toBeNumberObject();
+    // @ts-ignore
     expect(data.start.valueOf()).toBeGreaterThan(0);
     // @ts-ignore
     expect(data.start.valueOf() + 1).toBeGreaterThan(data.creation.valueOf());
@@ -314,6 +317,7 @@ function checkDataCreateRollCall(obj: MessageData) {
 
   if ('scheduled' in data) {
     expect(data.scheduled).toBeNumberObject();
+    // @ts-ignore
     expect(data.scheduled.valueOf()).toBeGreaterThan(0);
     // @ts-ignore
     expect(data.scheduled.valueOf() + 1).toBeGreaterThan(data.creation.valueOf());
@@ -397,7 +401,7 @@ function checkDataCloseRollCall(obj: MessageData) {
 }
 
 describe('=== WebsocketApi tests ===', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     storeInit();
 
     const org: PublicKey = KeyPairStore.getPublicKey();
@@ -455,7 +459,7 @@ describe('=== WebsocketApi tests ===', () => {
 
     it('should create the correct request for requestCreateRollCall', async () => {
       setMockCheck(checkDataCreateRollCall);
-      const mockScheduledTime = mockStartTime + 1;
+      const mockScheduledTime = new Timestamp(mockStartTime.valueOf() + 1);
       const mockDescription = 'random description';
       await msApi.requestCreateRollCall(mockEventName, mockLocation, mockStartTime);
       await msApi.requestCreateRollCall(mockEventName, mockLocation, undefined, mockScheduledTime);

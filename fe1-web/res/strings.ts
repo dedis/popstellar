@@ -56,6 +56,8 @@ const STRINGS = {
   connect_connecting_title: 'Connecting',
   connect_connecting_uri: 'Connecting to URI',
   connect_connecting_validate: 'Simulate connection',
+  connect_server_uri: 'Server URI',
+  connect_lao_id: 'LAO ID',
 
   // Confirm Connect Strings
   connect_confirm_title: 'Confirm',
@@ -81,6 +83,7 @@ const STRINGS = {
   identity_organization_placeholder: 'Organization',
   identity_email_placeholder: 'Email',
   identity_phone_placeholder: 'Phone number',
+  identity_qrcode_description: 'ID (Public Key):',
 
   /* --- Witness Strings --- */
   witness_description: 'Witness screen',

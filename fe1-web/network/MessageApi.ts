@@ -9,12 +9,16 @@ import {
   UpdateLao,
   WitnessMessage,
 } from 'model/network/method/message/data';
-import { Channel, channelFromId, ROOT_CHANNEL } from 'model/objects/Channel';
-import { OpenedLaoStore, KeyPairStore } from 'store';
-import { publish } from 'network/JsonRpcApi';
+import {
+  Channel, channelFromId, ROOT_CHANNEL,
+} from 'model/objects/Channel';
+import {
+  OpenedLaoStore, KeyPairStore,
+} from 'store';
+import { publish } from './JsonRpcApi';
 
 /** Send a server query asking for the creation of a LAO with a given name (String) */
-export function requestCreateLao(laoName: string) {
+export function requestCreateLao(laoName: string): Promise<Channel> {
   const time = Timestamp.EpochNow();
   const pubKey = KeyPairStore.getPublicKey();
 
@@ -26,7 +30,11 @@ export function requestCreateLao(laoName: string) {
     witnesses: [],
   });
 
-  return publish(ROOT_CHANNEL, message);
+  return publish(ROOT_CHANNEL, message)
+    .then(() => {
+      console.info(`LAO was created with ID: ${message.id}`);
+      return channelFromId(message.id);
+    });
 }
 
 /** Send a server query asking for a LAO update providing a new name (String) */
@@ -149,7 +157,8 @@ export function requestCreateRollCall(
     roll_call_description: description,
   });
 
-  return publish(channelFromId(currentLao.id), message);
+  const laoCh = channelFromId(currentLao.id);
+  return publish(laoCh, message);
 }
 
 /** Send a server query asking for the opening of a roll call given its id (Number) and an
