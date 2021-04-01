@@ -12,7 +12,7 @@ import STRINGS from 'res/strings';
 import LAOItem from 'components/LAOItem';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from '../components/WideButtonView';
-import { Wallet } from '../model/objects/Wallet';
+import { WalletCryptographyHandler } from '../model/objects/WalletCryptographyHandler';
 
 /**
  * Manage the Home screen component: if the user is not connected to any LAO, a welcome message
@@ -27,16 +27,20 @@ const styles = StyleSheet.create({
   },
 });
 
-let wallet: Wallet;
+let walletCryptographyHandler: WalletCryptographyHandler;
 
-const onWalletButtonPressed = async () => {
+const onWalletCryptoHandlerButtonPressed = async () => {
   console.log('Creation of wallet object');
-  wallet = new Wallet();
+  walletCryptographyHandler = new WalletCryptographyHandler();
   console.log('Wallet created');
 };
 
-const onAddKeyPairButtonPressed = async () => {
-  await wallet.addEncryptionKey();
+const onAddCryptoKeyButtonPressed = async () => {
+  await walletCryptographyHandler.addEncryptionKey();
+};
+
+const onRemoveCryptoKeyButtonPressed = async () => {
+  await walletCryptographyHandler.deleteEncryptionKey(1);
 };
 
 // FIXME: define interface + types, requires availableLaosReducer to be migrated first
@@ -64,11 +68,15 @@ function getWelcomeMessageDisplay() {
       <TextBlock text={' '} />
       <WideButtonView
         title={STRINGS.wallet}
-        onPress={() => onWalletButtonPressed()}
+        onPress={() => onWalletCryptoHandlerButtonPressed()}
       />
       <WideButtonView
         title={STRINGS.walletAdd}
-        onPress={() => onAddKeyPairButtonPressed()}
+        onPress={() => onAddCryptoKeyButtonPressed()}
+      />
+      <WideButtonView
+        title={STRINGS.walletRemove}
+        onPress={() => onRemoveCryptoKeyButtonPressed()}
       />
     </View>
   );

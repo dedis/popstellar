@@ -117,8 +117,9 @@ const STRINGS = {
   meeting_create_location: 'Location',
 
   /* --- Wallet Strings --- */
-  wallet: 'Create personal wallet',
-  walletAdd: 'Add token to wallet ',
+  wallet: 'Create wallet cryptography handler database',
+  walletAdd: 'Add encryption/decryption key to database ',
+  walletRemove: 'Remove encryption/decryption key from database ',
   walletDatabaseName: 'Crypt key database',
   walletStorageName: 'encryption-decryption-key',
 

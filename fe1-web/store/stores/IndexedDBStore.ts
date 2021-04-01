@@ -36,7 +36,6 @@ export class IndexedDBStore {
         upgrade(db: IDBPDatabase) {
           if (!db.objectStoreNames.contains(storageId)) {
             db.createObjectStore(storageId, {
-              autoIncrement: true,
               keyPath: 'id',
             });
           }
@@ -60,7 +59,7 @@ export class IndexedDBStore {
 
     const tx = this.db.transaction(storageId, 'readwrite');
     const store = tx.objectStore(storageId);
-    const result = await store.put(encryptionKey);
+    const result = await store.put({ id: 1, encryptionKey });
     console.log('Put Data ', JSON.stringify(result));
     return result;
   }
