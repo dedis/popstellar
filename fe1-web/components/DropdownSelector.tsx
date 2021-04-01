@@ -18,8 +18,7 @@ const DropdownSelector = (props: IPropTypes) => {
   const { onChange } = props;
   const { values } = props;
   const options: any = [];
-  values.forEach((value) => options.push(<Picker.Item key={value} label={value!} />));
-
+  values.forEach((value) => options.push(<Picker.Item key={value} label={value || ''} />));
   return (
     <View>
       <Picker
