@@ -15,20 +15,27 @@ import { KeyPairStore } from '../../store';
 import { editText } from '../../styles/typography';
 import DatePicker from '../DatePicker';
 
+const dateToTimestamp = (date: Date) => new Timestamp(Math.floor(date.getTime() / 1000));
+
+const timestampToDate = (t: Timestamp) => {
+  const dateAndTime = new Date(t.valueOf());
+  return `${dateAndTime.toDateString()},  ${dateAndTime.toLocaleTimeString()}`;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const dateTimePicker = (lao: Lao) => {
   const [creationDate, setCreationDate] = useState(lao.creation);
 
-  function dateToTimestamp(date: Date): Timestamp {
-    return new Timestamp(Math.floor(date.getTime() / 1000));
-  }
-
   return (
-    <View>
+    <>
       <DatePicker
         selected={creationDate}
-        onChange={(date: Date) => setCreationDate(dateToTimestamp(date))}
+        onChange={(date: Date) => {
+          setCreationDate(dateToTimestamp(date));
+          // TODO: carry out the necessary LAO update interactions with the backend here
+        }}
       />
-    </View>
+    </>
   );
 };
 
@@ -37,7 +44,7 @@ function renderProperties(lao: Lao) {
 
   return (isOrganizer)
     ? (
-      <>
+      <View>
         <ParagraphBlock text="Lao name: " />
         <EdiText
           hint="type the new LAO name"
@@ -49,17 +56,18 @@ function renderProperties(lao: Lao) {
           }}
           value={`${lao.name}`}
         />
-        <>
-          <ParagraphBlock text="Lao creation: " />
-          { () => dateTimePicker(lao) }
-        </>
-      </>
-    ) : (
+        <ParagraphBlock text="Lao creation: " />
+        <ParagraphBlock text={`${timestampToDate(lao.creation)}`} />
+
+      </View>
+    )
+    : (
       <>
         <ParagraphBlock text={`Lao name: ${lao.name}`} />
-        <ParagraphBlock text={`Lao creation: ${lao.creation.toString()}`} />
+        <ParagraphBlock text={`Lao creation: ${timestampToDate(lao.creation)}`} />
       </>
     );
+  // { dateTimePicker(lao) } on line 59 ?? rendered more hooks then during the previous render..
 }
 
 const LaoProperties = () => {
@@ -76,7 +84,6 @@ const LaoProperties = () => {
         <TouchableOpacity onPress={toggleChildren} style={{ textAlign: 'right' } as ViewStyle}>
           <ListCollapsibleIcon isOpen={toggleChildrenVisible} />
         </TouchableOpacity>
-
         { toggleChildrenVisible && lao && renderProperties(lao) }
       </View>
     </>
