@@ -1,5 +1,4 @@
-import { Hash, Timestamp, Lao } from 'model/objects';
-import { OpenedLaoStore } from 'store';
+import { Hash, Timestamp } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
@@ -26,18 +25,6 @@ export class OpenRollCall implements MessageData {
     if (!msg.update_id) {
       throw new ProtocolError("Undefined 'update_id' parameter encountered during 'OpenRollCall'");
     }
-
-    // FIXME: implementation not finished, get event from storage,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const lao: Lao = OpenedLaoStore.get();
-    /*
-    const expectedHash = Hash.fromStringArray(
-      EventTags.ROLL_CALL, lao.id.toString(), lao.creation.toString(), ROLLCALLNAME,
-    );
-    if (!expectedHash.equals(msg.id))
-      throw new ProtocolError(
-        'Invalid \'id\' parameter encountered during \'CreateLao\': unexpected id value'
-      ); */
     this.update_id = msg.update_id;
 
     if (!msg.opens) {

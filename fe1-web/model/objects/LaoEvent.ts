@@ -7,21 +7,25 @@ export enum LaoEventType {
 }
 
 export interface LaoEventState {
-  eventType: LaoEventType;
+  readonly eventType: LaoEventType;
 
-  id: string;
+  readonly id: string;
 
-  start: number;
+  readonly idAlias?: string;
 
-  end?: number;
+  readonly start: number;
+
+  readonly end?: number;
 }
 
 export interface LaoEvent {
-  id: Hash;
+  readonly id: Hash;
 
-  start: Timestamp;
+  readonly idAlias?: Hash;
 
-  end?: Timestamp;
+  readonly start: Timestamp;
+
+  readonly end?: Timestamp;
 
   toState(): LaoEventState;
 }

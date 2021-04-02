@@ -31,6 +31,6 @@ export function getStore(): Store {
   return store;
 }
 
-export function dispatch(action: AnyAction): void {
-  store.dispatch(action);
+export function dispatch(action: AnyAction): AnyAction {
+  return store.dispatch(action);
 }

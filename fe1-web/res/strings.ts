@@ -55,6 +55,8 @@ const STRINGS = {
   connect_connecting_title: 'Connecting',
   connect_connecting_uri: 'Connecting to URI',
   connect_connecting_validate: 'Simulate connection',
+  connect_server_uri: 'Server URI',
+  connect_lao_id: 'LAO ID',
 
   // Confirm Connect Strings
   connect_confirm_title: 'Confirm',
