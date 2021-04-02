@@ -8,11 +8,29 @@ import styleEventView from 'styles/stylesheets/eventView';
 import ListCollapsibleIcon from 'components/eventList/ListCollapsibleIcon';
 import { useSelector } from 'react-redux';
 import ParagraphBlock from 'components/ParagraphBlock';
-import { Lao } from 'model/objects';
+import { Lao, Timestamp } from 'model/objects';
 import { makeCurrentLao } from 'store/reducers';
 import EdiText from 'react-editext';
 import { KeyPairStore } from '../../store';
 import { editText } from '../../styles/typography';
+import DatePicker from '../DatePicker';
+
+const dateTimePicker = (lao: Lao) => {
+  const [creationDate, setCreationDate] = useState(lao.creation);
+
+  function dateToTimestamp(date: Date): Timestamp {
+    return new Timestamp(Math.floor(date.getTime() / 1000));
+  }
+
+  return (
+    <View>
+      <DatePicker
+        selected={creationDate}
+        onChange={(date: Date) => setCreationDate(dateToTimestamp(date))}
+      />
+    </View>
+  );
+};
 
 function renderProperties(lao: Lao) {
   const isOrganizer = KeyPairStore.getPublicKey().toString() === lao.organizer.toString();
@@ -31,17 +49,10 @@ function renderProperties(lao: Lao) {
           }}
           value={`${lao.name}`}
         />
-        <ParagraphBlock text="Lao creation: " />
-        <EdiText
-          hint="type the new creation date"
-          viewProps={{ style: editText }}
-          inputProps={{ style: editText }}
-          type="text"
-          onSave={() => {
-          // TODO: carry out the necessary LAO update interactions with the backend here
-          }}
-          value={`${lao.creation.toString()}`}
-        />
+        <>
+          <ParagraphBlock text="Lao creation: " />
+          { () => dateTimePicker(lao) }
+        </>
       </>
     ) : (
       <>
