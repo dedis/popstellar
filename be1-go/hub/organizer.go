@@ -60,7 +60,7 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 			hub:        socket.hub,
 			conn:       socket.conn,
 			send:       socket.send,
-			Wait:       socket.Wait,
+			Wait:       sync.WaitGroup{},
 		},
 	}
 
