@@ -25,7 +25,7 @@
 		 }
 	},
 	"additionalProperties": false,
-	"required": ["object", "action", "update_id", "opens", "start"],
+	"required": ["object", "action", "update_id", "opens", "opened_at"],
 	"note": [
 		"The roll_call/open message opens a roll call. This message would lead to a transition from the",
 		"created -> opened state after witnesses attest the message. Witnesses should attest this when they",

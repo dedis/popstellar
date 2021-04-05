@@ -27,11 +27,7 @@
 		}
 	},
 	"additionalProperties": false,
-	"required": ["object", "action", "id", "name", "creation", "location"],
-	"oneOf": [
-		{"required": ["start"] },
-		{"required": ["scheduled"] }
-	],
+	"required": ["object", "action", "id", "name", "creation", "location", "proposed_start", "proposed_end"],
 	"note": [
 		"The roll_call/create message denotes the organizer's intention to create a new roll call",
 		"The proposed_start and proposed_end fields denote the start and end time for the roll call for displaying the event in the UI.",
