@@ -54,8 +54,14 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	log.Printf("organizerHub::handleIncomingMessage: %s", incomingMessage.Message)
 
 	socket := incomingMessage.Socket
-	client := &ClientSocket {
-		Socket: *socket,
+	client := ClientSocket{
+		Socket{
+			socketType: clientSocket,
+			hub:        socket.hub,
+			conn:       socket.conn,
+			send:       socket.send,
+			Wait:       socket.Wait,
+		},
 	}
 
 	// unmarshal the message
@@ -144,9 +150,9 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	// TODO: use constants
 	switch method {
 	case "subscribe":
-		err = channel.Subscribe(client, *query.Subscribe)
+		err = channel.Subscribe(&client, *query.Subscribe)
 	case "unsubscribe":
-		err = channel.Unsubscribe(client, *query.Unsubscribe)
+		err = channel.Unsubscribe(&client, *query.Unsubscribe)
 	case "publish":
 		err = channel.Publish(*query.Publish)
 	case "message":

@@ -44,3 +44,19 @@ func NewOrganizerSocket(h Hub, conn *websocket.Conn) *OrganizerSocket {
 		},
 	}
 }
+
+type WitnessSocket struct {
+	Socket
+}
+
+func NewWitnessSocket(h Hub, conn *websocket.Conn) *WitnessSocket {
+	return &WitnessSocket {
+		Socket {
+			socketType: witnessSocket,
+			hub:  h,
+			conn: conn,
+			send: make(chan []byte, 256),
+			Wait: sync.WaitGroup{},
+		},
+	}
+}
