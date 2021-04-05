@@ -1,5 +1,4 @@
-import { sign } from 'tweetnacl';
-import { encodeBase64 } from 'tweetnacl-util';
+import NodeRSA from 'node-rsa';
 import { IndexedDBStore } from '../../store/stores/IndexedDBStore';
 import STRINGS from '../../res/strings';
 
@@ -7,95 +6,53 @@ import STRINGS from '../../res/strings';
  * @author Carlo Maria Musso
  * This class has the job of handling the cryptography functions of the wallet.
  * It interacts with the IndexedDB database in order to store and retrieve the
- * secret key. It will also encrypt and decrypt the tokens with the retrieved
- * key and then return it to the wallet object.
+ * secret key. It also encrypts and decrypts the tokens with the retrieved key.
  */
 export class WalletCryptographyHandler {
-  private readonly storageId: string;
+  private static readonly storageId: string = STRINGS.walletStorageName;
 
-  private readonly cryptKeyDatabase: IndexedDBStore;
+  private static readonly encryptionKeyId: number = 1;
 
-  private numberOfEncryptionKeys: number;
-
-  /**
-   * creates the wallet cryptography handler
-   */
-  constructor() {
-    this.cryptKeyDatabase = new IndexedDBStore(STRINGS.walletDatabaseName);
-    this.storageId = STRINGS.walletStorageName;
-    this.numberOfEncryptionKeys = 0;
-    this.initWalletStorage()
-      .then((retVal) => console.log(`storage construction return value is ${retVal}`));
-  }
+  private static nodeRSA: NodeRSA;
 
   /**
    * this method creates the storage entry in the database
    */
-  public async initWalletStorage() {
-    await this.cryptKeyDatabase
-      .createObjectStore(this.storageId);
+  public static async initWalletStorage() {
+    await IndexedDBStore.createObjectStore(this.storageId);
+    await WalletCryptographyHandler.addEncryptionKey();
+    const key = await IndexedDBStore.getEncryptionKey(WalletCryptographyHandler.storageId,
+      WalletCryptographyHandler.encryptionKeyId);
+    WalletCryptographyHandler.nodeRSA = new NodeRSA(key);
   }
 
   /**
-   * Adds an encryption/decryption key (random for the moment),
+   * encrypts the given ed25519 token with the RSA key stored in the indexedDB database
+   * @param token ed25519 key
+   */
+  public static encrypt = async (token: string) => WalletCryptographyHandler.nodeRSA.encrypt(token, 'base64');
+
+  /**
+   * decrypts the encrypted ed25519 token with the RSA key stored in the indexedDB database
+   * @param encryptedToken ed25519 encrypted token
+   */
+  public static decrypt = async (encryptedToken: string) => WalletCryptographyHandler.nodeRSA.decrypt(encryptedToken, 'utf8');
+
+  /**
+   * Adds an RSA encryption/decryption key,
    * interacts with IndexedDB browser database.
    */
-  public async addEncryptionKey() {
-    if (this.numberOfEncryptionKeys > 0) {
-      console.log('Error encountered while adding encryption/decryption key : an encryption key is already in db');
-      return;
-    }
-    /* Here the real encryption/decryption key which will be used
-      is still missing for the moment it is generated randomly */
-    const key: { privateKey: string } = {
-      privateKey: WalletCryptographyHandler
-        .generateKeyPairEntry().privateKey,
+  private static async addEncryptionKey() {
+    const key: { id: number, key: string } = {
+      id: this.encryptionKeyId,
+      key: this.generateRSAKey(),
     };
 
-    this.cryptKeyDatabase
-      .putEncryptionKey(this.storageId, key)
-      .then((retVal) => {
-        this.numberOfEncryptionKeys += 1;
-        console.log(`addEncryptionKey return value is ${retVal}`);
-      });
+    await IndexedDBStore.putEncryptionKey(this.storageId, key);
   }
 
   /**
-   * deletes the encrypted key associated requested in argument id,
-   * interacts with IndexedDB browser database.
-   * @id the number of the key in storage (there is only one key)
+   * generates the RSA key
    */
-  public async deleteEncryptionKey(id: number) {
-    if (this.numberOfEncryptionKeys <= 0) {
-      console.log('Error encountered while deleting encryption/decryption key : no encryption key in db');
-      return;
-    }
-    if (id === null) {
-      throw new Error('Error encountered while deleting encryption/decryption key : null argument');
-    }
-    this.cryptKeyDatabase
-      .deleteEncryptionKey(this.storageId, id)
-      .then((retVal) => {
-        this.numberOfEncryptionKeys -= 1;
-        console.log(`deleteEncryptionKey return value is ${retVal}`);
-      });
-  }
-
-  /**
-   * generates a new public and private key
-   *
-   * This method will be deleted once the crypto web API
-   * part is implemented having the right encryption key.
-   */
-  private static generateKeyPairEntry() {
-    const pair = sign.keyPair();
-    const keys = {
-      pubKey: encodeBase64(pair.publicKey),
-      secKey: encodeBase64(pair.secretKey),
-    };
-    return {
-      publicKey: keys.pubKey,
-      privateKey: keys.secKey,
-    };
-  }
+  private static generateRSAKey = () => new NodeRSA({ b: 512 }).exportKey();
 }

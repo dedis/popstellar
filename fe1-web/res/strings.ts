@@ -122,7 +122,9 @@ const STRINGS = {
   wallet: 'Create wallet cryptography handler database',
   walletAdd: 'Add encryption/decryption key to database ',
   walletRemove: 'Remove encryption/decryption key from database ',
-  walletDatabaseName: 'Crypt key database',
+  walletEncryptRandomToken: 'Encrypt random PoP token - ed25519 key',
+  walletDecryptRandomToken: 'Decrypt previously encrypted PoP token - ed25519 key',
+  walletDatabaseName: 'DigitalWalletCryptoKey',
   walletStorageName: 'encryption-decryption-key',
 
   /* --- General creation Strings --- */
