@@ -26,7 +26,7 @@
 		}
 	},
 	"additionalProperties": false,
-	"required": ["object", "action", "update_id", "closes", "end", "attendees"],
+	"required": ["object", "action", "update_id", "closes", "closed_at", "attendees"],
 	"note": [
 		"When the organizer scanned all the public keys of the attendees, it closes the event",
 		"and broadcast attendees public keys. A roll_call/close message attested by witnesses",
