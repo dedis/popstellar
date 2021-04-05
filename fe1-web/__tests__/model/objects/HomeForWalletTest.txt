@@ -27,20 +27,23 @@ const styles = StyleSheet.create({
   },
 });
 
-let walletCryptographyHandler: WalletCryptographyHandler;
+let cypher: string = ' ';
 
 const onWalletCryptoHandlerButtonPressed = async () => {
   console.log('Creation of wallet object');
-  walletCryptographyHandler = new WalletCryptographyHandler();
+  await WalletCryptographyHandler.initWalletStorage();
   console.log('Wallet created');
 };
 
-const onAddCryptoKeyButtonPressed = async () => {
-  await walletCryptographyHandler.addEncryptionKey();
+const onEncryptRandomToken = async () => {
+  const key: string = 'MHICAQEwBQYDK2VwBCIEINTuctv5E1hK1bbY8fdp+K06/nwoy/HU++CXqI9EdVhCoB8wHQYKKoZIhvcNAQkJFDEPDA1DdXJkbGUgQ2hhaXJzgSEAGb9ECWmEzf6FQbrBZ9w7lshQhqowtrbLDFw4rXAxZuE=';
+  cypher = await WalletCryptographyHandler.encrypt(key);
+  console.log(cypher.toString());
 };
 
-const onRemoveCryptoKeyButtonPressed = async () => {
-  await walletCryptographyHandler.deleteEncryptionKey(1);
+const onDecryptRandomToken = async () => {
+  const plain = await WalletCryptographyHandler.decrypt(cypher);
+  console.log(plain.toString());
 };
 
 // FIXME: define interface + types, requires availableLaosReducer to be migrated first
@@ -71,12 +74,12 @@ function getWelcomeMessageDisplay() {
         onPress={() => onWalletCryptoHandlerButtonPressed()}
       />
       <WideButtonView
-        title={STRINGS.walletAdd}
-        onPress={() => onAddCryptoKeyButtonPressed()}
+        title={STRINGS.walletEncryptRandomToken}
+        onPress={() => onEncryptRandomToken()}
       />
       <WideButtonView
-        title={STRINGS.walletRemove}
-        onPress={() => onRemoveCryptoKeyButtonPressed()}
+        title={STRINGS.walletDecryptRandomToken}
+        onPress={() => onDecryptRandomToken()}
       />
     </View>
   );
