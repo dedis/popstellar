@@ -30,9 +30,10 @@ const styles = StyleSheet.create({
 let cypher: string = ' ';
 
 const onWalletCryptoHandlerButtonPressed = async () => {
-  console.log('Creation of wallet object');
+  console.log('Creation of the secret key database');
   await WalletCryptographyHandler.initWalletStorage();
-  console.log('Wallet created');
+  console.log('DONE CREATING');
+  console.log('ed25519 test-key to encrypt : \nMHICAQEwBQYDK2VwBCIEINTuctv5E1hK1bbY8fdp+K06/nwoy/HU++CXqI9EdVhCoB8wHQYKKoZIhvcNAQkJFDEPDA1DdXJkbGUgQ2hhaXJzgSEAGb9ECWmEzf6FQbrBZ9w7lshQhqowtrbLDFw4rXAxZuE=');
 };
 
 const onEncryptRandomToken = async () => {
