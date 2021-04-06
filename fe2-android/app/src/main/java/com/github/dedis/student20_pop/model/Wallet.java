@@ -8,7 +8,9 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import javax.crypto.Mac;
 import javax.crypto.ShortBufferException;
@@ -30,7 +32,7 @@ public class Wallet {
   private byte[] SEED;
 
   /**
-   * Constructor: initialize the wallet with a new random seed.
+   * Class constructor, initialize the wallet with a new random seed.
    */
   public Wallet() {
     SecureRandom random = new SecureRandom();
@@ -55,8 +57,8 @@ public class Wallet {
   /**
    * Method that allow generate a different key for each path that you give.
    *
-   * @param path A String path of the form: m/i/j/k/... where i,j,k,.. are 31-bit integer.
-   * @return A Pair<byte[], byte[]> representing the keys pair.
+   * @param path a String path of the form: m/i/j/k/... where i,j,k,.. are 31-bit integer.
+   * @return a Pair<byte[], byte[]> representing the keys pair: first=private_key; second=public_key.
    * @throws NoSuchAlgorithmException
    * @throws InvalidKeyException
    * @throws ShortBufferException
@@ -94,9 +96,9 @@ public class Wallet {
   /**
    * Method that allows generate keys from the ID of the LAO and the ID of the RollCall.
    *
-   * @param Lao_ID String
-   * @param Roll_call_ID String
-   * @return A Pair<byte[], byte[]> representing the keys pair.
+   * @param Lao_ID a String.
+   * @param Roll_call_ID a String.
+   * @return a Pair<byte[], byte[]> representing the keys pair.
    * @throws NoSuchAlgorithmException
    * @throws InvalidKeyException
    * @throws ShortBufferException
@@ -142,13 +144,69 @@ public class Wallet {
   }
 
   /**
+   * Method that allows recover key pair, if the user has participated in that roll-call event.
+   *
+   * @param Lao_ID a String.
+   * @param Roll_call_ID a String.
+   * @param Roll_call_Tokens a List<byte[]> representing the list of public keys present
+   *                         on roll-call’s results.
+   * @return the key pair Pair<byte[], byte[]> (PoP token) if the user as in that roll-call
+   * participated else null.
+   * @throws NoSuchAlgorithmException
+   * @throws InvalidKeyException
+   * @throws ShortBufferException
+   */
+  public Pair<byte[], byte[]> RecoverKey(String Lao_ID, String Roll_call_ID,
+      List<byte[]> Roll_call_Tokens)
+      throws NoSuchAlgorithmException, InvalidKeyException, ShortBufferException {
+
+    Pair<byte[], byte[]> key_pair_find = FindKeyPair(Lao_ID,Roll_call_ID);
+    for(byte[] public_key : Roll_call_Tokens){
+      if(Arrays.equals(key_pair_find.second, public_key)){
+        return key_pair_find;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Method that allows recover recover all the key pairs when the master secret is imported
+   * initially, by iterating all the historical events of LAO.
+   *
+   * @param seed the master secret String
+   * @param Laos_Roll_calls_IDs a Map<String, List<String>> of keys Lao_ID and values list of
+   *                          Roll_call_ID associated to this Lao.
+   * @return a Map<Pair<String, String>, Pair<byte[], byte[]>> of the recover key pairs
+   * associated to each Lao and roll-call IDs.
+   * @throws NoSuchAlgorithmException
+   * @throws InvalidKeyException
+   * @throws ShortBufferException
+   */
+  public Map<Pair<String, String>, Pair<byte[], byte[]>> RecoverAllKeys(String seed,
+      Map<String, List<String>>  Laos_Roll_calls_IDs)
+      throws NoSuchAlgorithmException, InvalidKeyException, ShortBufferException {
+
+    initialize(seed);
+
+    Map<Pair<String, String>, Pair<byte[], byte[]>> result = new HashMap<>();
+    for (Map.Entry<String, List<String>> entry : Laos_Roll_calls_IDs.entrySet()) {
+      String Lao_ID = entry.getKey();
+      for(String Roll_call_ID: entry.getValue()){
+        result.put(new Pair<>(Lao_ID, Roll_call_ID), FindKeyPair(Lao_ID,  Roll_call_ID));
+      }
+    }
+    return result;
+  }
+
+
+  /**
    * Derives only the private key for ED25519 in the manor defined in
    * <a href="https://github.com/satoshilabs/slips/blob/master/slip-0010.md">SLIP-0010</a>.
    *
    * @param seed    Seed, the BIP0039 output.
    * @param indexes an array of indexes that define the path. E.g. for m/1'/2'/3', pass 1, 2, 3.
-   *                As with Ed25519 non-hardened child indexes are not supported, this function treats all indexes
-   *                as hardened.
+   *                As with Ed25519 non-hardened child indexes are not supported, this function
+   *                treats all indexes as hardened.
    * @return Private key.
    * @throws NoSuchAlgorithmException If it cannot find the HmacSHA512 algorithm by name.
    * @throws ShortBufferException     Occurrence not expected.
