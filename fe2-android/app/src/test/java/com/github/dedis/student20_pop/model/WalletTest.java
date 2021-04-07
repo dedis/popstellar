@@ -39,7 +39,7 @@ public class WalletTest {
     StringJoiner joiner = new StringJoiner(" ");
     for(String i: exp_str) joiner.add(i);
     System.out.println(joiner.toString());
-    hdw.ImportSeed(joiner.toString());
+    //hdw.ImportSeed(joiner.toString());
   }
 
 }
