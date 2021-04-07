@@ -1,4 +1,3 @@
-import NodeRSA from 'node-rsa';
 import { IndexedDBStore } from '../../store/stores/IndexedDBStore';
 import STRINGS from '../../res/strings';
 
@@ -11,48 +10,89 @@ import STRINGS from '../../res/strings';
 export class WalletCryptographyHandler {
   private static readonly storageId: string = STRINGS.walletStorageName;
 
+  /* there is one unique encryption/decryption key */
   private static readonly encryptionKeyId: number = 1;
 
-  private static nodeRSA: NodeRSA;
+  /* encryption/decryption algorithm (RSA) */
+  private static readonly algorithm = {
+    name: 'RSA-OAEP',
+    modulusLength: 4096,
+    publicExponent: new Uint8Array([1, 0, 1]),
+    hash: 'SHA-256',
+  };
+
+  private static readonly keyUsages: KeyUsage[] = ['encrypt', 'decrypt'];
 
   /**
-   * this method creates the storage entry in the database
+   * this method creates the storage entry in the key database
+   * and then adds an RSA encryption/decryption key to it.
    */
   public static async initWalletStorage() {
     await IndexedDBStore.createObjectStore(this.storageId);
     await WalletCryptographyHandler.addEncryptionKey();
-    const key = await IndexedDBStore.getEncryptionKey(WalletCryptographyHandler.storageId,
-      WalletCryptographyHandler.encryptionKeyId);
-    WalletCryptographyHandler.nodeRSA = new NodeRSA(key);
+  }
+
+  /**
+   * this method closes the storage database
+   */
+  public static async closeWalletStorage() {
+    IndexedDBStore.closeDatabase();
   }
 
   /**
    * encrypts the given ed25519 token with the RSA key stored in the indexedDB database
-   * @param token ed25519 key
+   * @param token ed25519 key toUint8Array()
    */
-  public static encrypt = async (token: string) => WalletCryptographyHandler.nodeRSA.encrypt(token, 'base64');
+  public static async encrypt(token: Uint8Array) {
+    const keyPair = (await WalletCryptographyHandler.getEncryptionKeyFromDatabase()).key;
+    const cypheredToken = await window.crypto.subtle.encrypt(
+      WalletCryptographyHandler.algorithm, keyPair.publicKey, token,
+    );
+    return cypheredToken;
+  }
 
   /**
    * decrypts the encrypted ed25519 token with the RSA key stored in the indexedDB database
-   * @param encryptedToken ed25519 encrypted token
+   * @param encryptedToken ed25519 encrypted token (ArrayBuffer)
    */
-  public static decrypt = async (encryptedToken: string) => WalletCryptographyHandler.nodeRSA.decrypt(encryptedToken, 'utf8');
+  public static async decrypt(encryptedToken: ArrayBuffer) {
+    const keyPair = (await WalletCryptographyHandler.getEncryptionKeyFromDatabase()).key;
+    const plaintextToken = await window.crypto.subtle.decrypt(
+      WalletCryptographyHandler.algorithm, keyPair.privateKey, encryptedToken,
+    );
+    return plaintextToken;
+  }
 
   /**
    * Adds an RSA encryption/decryption key,
    * interacts with IndexedDB browser database.
    */
   private static async addEncryptionKey() {
-    const key: { id: number, key: string } = {
+    const key = {
       id: this.encryptionKeyId,
-      key: this.generateRSAKey(),
+      key: await this.generateRSAKey(),
     };
-
     await IndexedDBStore.putEncryptionKey(this.storageId, key);
   }
 
   /**
-   * generates the RSA key
+   * This function retrieves the RSA key from database
    */
-  private static generateRSAKey = () => new NodeRSA({ b: 512 }).exportKey();
+  private static getEncryptionKeyFromDatabase = () => IndexedDBStore.getEncryptionKey(
+    WalletCryptographyHandler.storageId,
+    WalletCryptographyHandler.encryptionKeyId,
+  );
+
+  /**
+   * generates the RSA key according to specified algorithm
+   */
+  private static generateRSAKey = async () => {
+    const keyPair = await window.crypto.subtle.generateKey(
+      WalletCryptographyHandler.algorithm, false, WalletCryptographyHandler.keyUsages,
+    );
+    return {
+      publicKey: keyPair.publicKey,
+      privateKey: keyPair.privateKey,
+    };
+  };
 }

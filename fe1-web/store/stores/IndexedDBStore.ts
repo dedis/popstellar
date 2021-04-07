@@ -3,7 +3,7 @@ import STRINGS from '../../res/strings';
 
 /**
  * @author Carlo Maria Musso
- * This class represents the browser storage used to securely store the encryption key
+ * This class represents the browser storage used to securely store the (RSA) encryption key
  * used to encrypt and decrypt tokens stored in the react state.
  * Implemented using IndexedDB database on web browser in a secure way following the below link:
  * https://blog.engelke.com/2014/09/19/saving-cryptographic-keys-in-the-browser/
@@ -12,6 +12,13 @@ export class IndexedDBStore {
   private static readonly database: string = STRINGS.walletDatabaseName;
 
   private static db: any;
+
+  /**
+   * closes the database
+   */
+  public static closeDatabase() {
+    this.db.close();
+  }
 
   /**
    * This method creates an object storage in the database which will contain
@@ -40,8 +47,8 @@ export class IndexedDBStore {
    * @param storageId the id of the secure storage
    * @param encryptionKey the key that will be used to encrypt/decrypt all tokens in the wallet
    */
-  // eslint-disable-next-line max-len
-  public static async putEncryptionKey(storageId: string, encryptionKey: { id: number, key: string }) {
+  public static async putEncryptionKey(storageId: string,
+    encryptionKey: { id: number, key: { publicKey: CryptoKey, privateKey: CryptoKey } }) {
     if (storageId === null || encryptionKey === null) {
       throw new Error('Error encountered while adding encrypt/decrypt key to storage : null parameters');
     }
