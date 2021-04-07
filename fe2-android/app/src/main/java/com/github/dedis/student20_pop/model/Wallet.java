@@ -1,6 +1,12 @@
 package com.github.dedis.student20_pop.model;
 
 import androidx.core.util.Pair;
+import io.github.novacrypto.bip39.MnemonicGenerator;
+import io.github.novacrypto.bip39.MnemonicValidator;
+import io.github.novacrypto.bip39.SeedCalculator;
+import io.github.novacrypto.bip39.Words;
+import io.github.novacrypto.bip39.wordlists.English;
+import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -36,7 +42,7 @@ public class Wallet {
    */
   public Wallet() {
     SecureRandom random = new SecureRandom();
-    byte bytes[] = random.generateSeed(32);
+    byte[] bytes = random.generateSeed(64); // max nb byte (512 bit): 256 bits is advised.
     SEED = bytes;
     System.out.println( "Wallet initialized with a new random seed: " + Utils.bytesToHex(SEED));
   }
@@ -174,8 +180,9 @@ public class Wallet {
    * initially, by iterating all the historical events of LAO.
    *
    * @param seed the master secret String
-   * @param Laos_Roll_calls_IDs a Map<String, List<String>> of keys Lao_ID and values list of
-   *                          Roll_call_ID associated to this Lao.
+   * @param knows_Laos_Roll_calls a Map<Pair<String, String>, List<byte[]>> of keys known Lao_ID
+   *                              and Roll_call_ID and values representing the list of public keys
+   *                              present on roll-call’s results.
    * @return a Map<Pair<String, String>, Pair<byte[], byte[]>> of the recover key pairs
    * associated to each Lao and roll-call IDs.
    * @throws NoSuchAlgorithmException
@@ -183,19 +190,65 @@ public class Wallet {
    * @throws ShortBufferException
    */
   public Map<Pair<String, String>, Pair<byte[], byte[]>> RecoverAllKeys(String seed,
-      Map<String, List<String>>  Laos_Roll_calls_IDs)
+      Map<Pair<String, String>, List<byte[]>>  knows_Laos_Roll_calls)
       throws NoSuchAlgorithmException, InvalidKeyException, ShortBufferException {
 
     initialize(seed);
 
     Map<Pair<String, String>, Pair<byte[], byte[]>> result = new HashMap<>();
-    for (Map.Entry<String, List<String>> entry : Laos_Roll_calls_IDs.entrySet()) {
-      String Lao_ID = entry.getKey();
-      for(String Roll_call_ID: entry.getValue()){
-        result.put(new Pair<>(Lao_ID, Roll_call_ID), FindKeyPair(Lao_ID,  Roll_call_ID));
+    for (Map.Entry<Pair<String, String>, List<byte[]>> entry : knows_Laos_Roll_calls.entrySet()) {
+      String Lao_ID = entry.getKey().first;
+      String Roll_call_ID = entry.getKey().second;
+      Pair<byte[], byte[]> recovered_key = RecoverKey(Lao_ID,  Roll_call_ID, entry.getValue());
+      if(recovered_key != null){
+        result.put(new Pair<>(Lao_ID, Roll_call_ID), recovered_key);
       }
     }
     return result;
+  }
+
+  /**
+   * Method that encode the seed into a form that is easier for humans to securely back-up
+   * and retrieve.
+   *
+   * @return an array of words: mnemonic sentence representing the seed for the wallet.
+   */
+  public String[] ExportSeed(){
+
+    SecureRandom random = new SecureRandom();
+    byte[] entropy = random.generateSeed(Words.TWELVE.byteLength());
+
+    StringBuilder sb = new StringBuilder();
+    MnemonicGenerator generator = new MnemonicGenerator(English.INSTANCE);
+    generator.createMnemonic(entropy, sb::append);
+
+    String[] words = sb.toString().split(" ");
+    System.out.println(Arrays.toString(words));
+
+    StringJoiner joiner = new StringJoiner(" ");
+    for(String i: words) joiner.add(i);
+    SEED = new SeedCalculator().calculateSeed(joiner.toString(), "");
+    System.out.println( "ExportSeed new seed initialized: " + Utils.bytesToHex(SEED));
+
+    return words;
+  }
+
+  /**
+   * Method that allow import mnemonic seed.
+   *
+   * @param words a String.
+   */
+  public void ImportSeed(String words){
+    try {
+      MnemonicValidator
+          .ofWordList(English.INSTANCE)
+          .validate(words);
+      SEED = new SeedCalculator().calculateSeed(words, "");
+      System.out.println( "ImportSeed New seed initialized: " + Utils.bytesToHex(SEED));
+
+    } catch (Exception e) {
+      System.out.println("Unable to import words:" + e.getMessage());
+    }
   }
 
 

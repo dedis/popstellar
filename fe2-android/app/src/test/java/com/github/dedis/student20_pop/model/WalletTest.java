@@ -3,6 +3,8 @@ package com.github.dedis.student20_pop.model;
 import androidx.core.util.Pair;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.StringJoiner;
 import javax.crypto.ShortBufferException;
 import net.i2p.crypto.eddsa.Utils;
 import org.junit.Test;
@@ -29,4 +31,15 @@ public class WalletTest {
     // d8f59df0ed3a7646bbe9f4fc040c016fe0ab11b0d6204c786431ee4fa1e1fb1a
     // d737bd1a26ab291be2c0fd83f2b3565f13c007e1123619e91ab33826a5be7de6
   }
+
+  @Test
+  public void test_memonic(){
+    Wallet hdw = new Wallet();
+    String[] exp_str = hdw.ExportSeed();
+    StringJoiner joiner = new StringJoiner(" ");
+    for(String i: exp_str) joiner.add(i);
+    System.out.println(joiner.toString());
+    hdw.ImportSeed(joiner.toString());
+  }
+
 }
