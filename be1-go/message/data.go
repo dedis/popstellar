@@ -8,9 +8,9 @@ import (
 	"golang.org/x/xerrors"
 )
 
-type stringer string
+type Stringer string
 
-func (s stringer) String() string {
+func (s Stringer) String() string {
 	return string(s)
 }
 
@@ -101,7 +101,7 @@ func (c *CreateLAOData) GetTimestamp() Timestamp {
 }
 
 func (c *CreateLAOData) setID() error {
-	id, err := hash(stringer("L"), c.Organizer, c.Creation, stringer(c.Name))
+	id, err := Hash(Stringer("L"), c.Organizer, c.Creation, Stringer(c.Name))
 	if err != nil {
 		return xerrors.Errorf("error creating hash: %v", err)
 	}
@@ -216,13 +216,13 @@ var (
 type CreateRollCallData struct {
 	*GenericData
 
-	ID          []byte    `json:"id"`
-	Name        string    `json:"name"`
-	Creation    Timestamp `json:"creation"`
-	Start       Timestamp `json:"start"`
-	Scheduled   Timestamp `json:"scheduled"`
-	Location    string    `json:"location"`
-	Description string    `json:"roll_call_description"`
+	ID            []byte    `json:"id"`
+	Name          string    `json:"name"`
+	Creation      Timestamp `json:"creation"`
+	ProposedStart Timestamp `json:"proposed_start"`
+	ProposedEnd   Timestamp `json:"proposed_end"`
+	Location      string    `json:"location"`
+	Description   string    `json:"description,omitempty"`
 }
 
 // OpenRollCallActionType represents the actions associated with opening or
@@ -241,17 +241,19 @@ var (
 type OpenRollCallData struct {
 	*GenericData
 
-	ID    []byte    `json:"id"`
-	Start Timestamp `json:"start"`
+	UpdateID []byte    `json:"update_id"`
+	Opens    []byte    `json:"opens"`
+	OpenedAt Timestamp `json:"opened_at"`
 }
 
 // CloseRollCallData represents the message data used for closing a roll call.
 type CloseRollCallData struct {
 	*GenericData
 
-	ID        []byte      `json:"id"`
+	UpdateID  []byte      `json:"update_id"`
+	Closes    []byte      `json:"closes"`
 	Start     Timestamp   `json:"start"`
-	End       Timestamp   `json:"end"`
+	ClosedAt  Timestamp   `json:"closed_at"`
 	Attendees []PublicKey `json:"attendees"`
 }
 
@@ -292,7 +294,7 @@ func NewCreateLAOData(name string, creation Timestamp, organizer PublicKey, witn
 	return create, nil
 }
 
-func hash(strs ...fmt.Stringer) ([]byte, error) {
+func Hash(strs ...fmt.Stringer) ([]byte, error) {
 	h := sha256.New()
 	for i, str := range strs {
 		s := str.String()
