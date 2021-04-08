@@ -400,24 +400,6 @@ func compareLaoUpdateAndState(update *message.UpdateLAOData, state *message.Stat
 	return nil
 }
 
-func (c *laoChannel) broadcastToAllClients(msg message.Message) {
-	c.clientsMu.RLock()
-	defer c.clientsMu.RUnlock()
-
-	query := message.Query{
-		Broadcast: message.NewBroadcast(c.baseChannel.channelID, &msg),
-	}
-
-	buf, err := json.Marshal(query)
-	if err != nil {
-		log.Fatalf("failed to marshal broadcast query: %v", err)
-	}
-
-	for client := range c.clients {
-		client.Send(buf)
-	}
-}
-
 func (c *laoChannel) processMeetingObject(data message.Data) error {
 	action := message.MeetingDataAction(data.GetAction())
 
