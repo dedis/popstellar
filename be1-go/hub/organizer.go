@@ -207,6 +207,8 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 	laoChannelID := "/root/" + encodedID
 
 	laoCh := laoChannel{
+		rollCall{},
+		make(map[*message.PublicKey]struct{}),
 		createBaseChannel(o, laoChannelID),
 	}
 	messageID := base64.StdEncoding.EncodeToString(publish.Params.Message.MessageID)
@@ -218,7 +220,22 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 }
 
 type laoChannel struct {
+	rollCall  rollCall
+	attendees map[*message.PublicKey]struct{}
 	*baseChannel
+}
+
+type rollCallState string
+
+const (
+	Open    rollCallState = "open"
+	Closed  rollCallState = "closed"
+	Created rollCallState = "created"
+)
+
+type rollCall struct {
+	state rollCallState
+	id    string
 }
 
 func (c *laoChannel) Publish(publish message.Publish) error {
@@ -241,7 +258,7 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 	case message.MessageObject:
 		err = c.processMessageObject(msg.Sender, data)
 	case message.RollCallObject:
-		err = c.processRollCallObject(data)
+		err = c.processRollCallObject(msg.Sender, data)
 	}
 
 	if err != nil {
@@ -454,15 +471,103 @@ func (c *laoChannel) processMessageObject(public message.PublicKey, data message
 	return nil
 }
 
-func (c *laoChannel) processRollCallObject(data message.Data) error {
+func (c *laoChannel) processRollCallObject(sender message.PublicKey, data message.Data) error {
+
+	// Check if the sender of the roll call message is the organizer
+	senderPoint := student20_pop.Suite.Point()
+	err := senderPoint.UnmarshalBinary(sender)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal public key of the sender: %v", err)
+	}
+	if !c.hub.public.Equal(senderPoint) {
+		return xerrors.Errorf("The sender of the roll call message has a different public key from the organizer")
+	}
+
 	action := message.RollCallAction(data.GetAction())
 
 	switch action {
 	case message.CreateRollCallAction:
+		rollCallData := data.(*message.CreateRollCallData)
+		if !c.checkRollCallID(rollCallData.Creation, message.Stringer(rollCallData.Name), rollCallData.ID) {
+			return &message.Error{
+				Code:        -4,
+				Description: fmt.Sprintf("The id of the roll call does not correspond to SHA256(‘R’||lao_id||creation||name)"),
+			}
+		}
+		c.rollCall.id = string(rollCallData.ID)
+		c.rollCall.state = Created
 	case message.RollCallAction(message.OpenRollCallAction):
+		if c.rollCall.state != Created {
+			return &message.Error{
+				Code:        -1,
+				Description: fmt.Sprintf("The roll call can not be opened since it has not been created previously"),
+			}
+		}
+		err := c.processOpenRollCall(data)
+		if err != nil {
+			return xerrors.Errorf("Failed to process openRollCall data: %v", err)
+		}
 	case message.RollCallAction(message.ReopenRollCallAction):
+		if c.rollCall.state != Closed {
+			return &message.Error{
+				Code:        -1,
+				Description: fmt.Sprintf("The roll call can not be reopened since it has not been closed previously"),
+			}
+		}
+		err := c.processOpenRollCall(data)
+		if err != nil {
+			return xerrors.Errorf("Failed to process reopenRollCall data: %v", err)
+		}
 	case message.CloseRollCallAction:
+		if c.rollCall.state != Open {
+			return &message.Error{
+				Code:        -1,
+				Description: fmt.Sprintf("The roll call can not be closed since it is not open"),
+			}
+		}
+		rollCallData := data.(*message.CloseRollCallData)
+		if !c.checkRollCallID(message.Stringer(rollCallData.Closes), rollCallData.ClosedAt, rollCallData.UpdateID) {
+			return &message.Error{
+				Code:        -4,
+				Description: fmt.Sprintf("The update_id has not been updated correctly."),
+			}
+		}
+		c.rollCall.id = string(rollCallData.UpdateID)
+		c.rollCall.state = Closed
+		c.attendees = map[*message.PublicKey]struct{}{}
+		for _, attendee := range rollCallData.Attendees {
+			c.attendees[&attendee] = struct{}{}
+		}
+	default:
+		return &message.Error{
+			Code:        -1,
+			Description: fmt.Sprintf("invalid action: %s", action),
+		}
 	}
 
 	return nil
+}
+
+func (c *laoChannel) processOpenRollCall(data message.Data) error {
+	rollCallData := data.(*message.OpenRollCallData)
+	if !c.checkRollCallID(message.Stringer(rollCallData.Opens), rollCallData.OpenedAt, rollCallData.UpdateID) {
+		return &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("The update_id has not been updated correctly."),
+		}
+	}
+	c.rollCall.id = string(rollCallData.UpdateID)
+	c.rollCall.state = Open
+	return nil
+}
+
+// Check if the id of the roll call corresponds to the hash of the correct parameters
+// Return true if the hash corresponds to the id and false otherwise
+func (c *laoChannel) checkRollCallID(str1, str2 fmt.Stringer, id []byte) bool {
+	laoID := c.channelID[6:]
+	hash, err := message.Hash(message.Stringer('R'), message.Stringer(laoID), str1, str2)
+	if err != nil {
+		return false
+	}
+	return bytes.Equal(hash, id)
 }
