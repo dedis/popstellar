@@ -5,6 +5,7 @@ export interface EncryptionKey {
   privateKey: CryptoKey,
   publicKey: CryptoKey,
 }
+
 /**
  * This class represents the browser storage used to securely store the (RSA) encryption key
  * used to encrypt and decrypt tokens stored in the react state.
@@ -12,9 +13,9 @@ export interface EncryptionKey {
  * https://blog.engelke.com/2014/09/19/saving-cryptographic-keys-in-the-browser/
  */
 export class IndexedDBStore {
-  private publicKeyId: string = STRINGS.walletEncryptionPublicKeyId;
+  private readonly publicKeyId: string = STRINGS.walletEncryptionPublicKeyId;
 
-  private privateKeyId: string = STRINGS.walletEncryptionPrivateKeyId;
+  private readonly privateKeyId: string = STRINGS.walletEncryptionPrivateKeyId;
 
   /**
    * adds an encryption/decryption key to the storage
@@ -35,10 +36,11 @@ export class IndexedDBStore {
 
   /**
    * returns the requested encryption key from the storage
-   * @param id the number of the key in storage (technically there is only one key)
+   * @param type 'public' if the desired key is the public key,
+   * 'private' if the desired key is the private key
    */
   public async getEncryptionKey(type: string): Promise<CryptoKey> {
-    if (type === 'private') {
+    if (type === STRINGS.walletPrivateKey) {
       const key = await this.getPrivateEncryptionKey();
       return key;
     }
@@ -56,6 +58,11 @@ export class IndexedDBStore {
     return secKey;
   }
 
+  /**
+   * this is used to update the encryption key in case it will
+   * every be necessary to change it
+   * @param key the new key for encryption/decryption
+   */
   public async updateEncryptionKey(key : EncryptionKey): Promise<void> {
     await update(this.publicKeyId, () => key.publicKey);
     await update(this.privateKeyId, () => key.privateKey);

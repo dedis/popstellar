@@ -126,6 +126,8 @@ const STRINGS = {
   walletDecryptRandomToken: 'Decrypt previously encrypted test-token',
   walletEncryptionPrivateKeyId: 'Private Decryption Key',
   walletEncryptionPublicKeyId: 'Public Encryption Key',
+  walletPublicKey: 'public',
+  walletPrivateKey: 'private',
 
   /* --- General creation Strings --- */
   create_description: 'Choose the type of event you want to create',

@@ -1,4 +1,5 @@
 import { IndexedDBStore, EncryptionKey } from 'store/stores/IndexedDBStore';
+import STRINGS from 'res/strings';
 
 /**
  * This class has the job of handling the cryptography functions of the wallet.
@@ -16,6 +17,7 @@ export class WalletCryptographyHandler {
 
   private readonly keyUsages: KeyUsage[] = ['encrypt', 'decrypt'];
 
+  /* the encryption/decryption key storage */
   private keyDatabase: IndexedDBStore = new IndexedDBStore();
 
   /**
@@ -32,7 +34,7 @@ export class WalletCryptographyHandler {
    * @param token ed25519 key toUint8Array()
    */
   public async encrypt(token: Uint8Array): Promise<ArrayBuffer> {
-    const key = await this.getKeyFromDatabase('public');
+    const key = await this.getKeyFromDatabase(STRINGS.walletPublicKey);
     const cypheredToken = await window.crypto.subtle.encrypt(this.algorithm, key, token);
     return cypheredToken;
   }
@@ -42,7 +44,7 @@ export class WalletCryptographyHandler {
    * @param encryptedToken ed25519 encrypted token (ArrayBuffer)
    */
   public async decrypt(encryptedToken: ArrayBuffer): Promise<ArrayBuffer> {
-    const key = await this.getKeyFromDatabase('private');
+    const key = await this.getKeyFromDatabase(STRINGS.walletPrivateKey);
     const plaintextToken = await window.crypto.subtle.decrypt(this.algorithm, key, encryptedToken);
     return plaintextToken;
   }
