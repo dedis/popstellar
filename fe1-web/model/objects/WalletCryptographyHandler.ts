@@ -1,4 +1,4 @@
-import { IndexedDBStore, EncryptionKey } from 'store/stores/IndexedDBStore';
+import { IndexedDBStore, WalletCryptoKey } from 'store/stores/IndexedDBStore';
 import STRINGS from 'res/strings';
 
 /**
@@ -25,8 +25,8 @@ export class WalletCryptographyHandler {
    * interacts with IndexedDB browser database.
    */
   public async initWalletStorage(): Promise <void> {
-    const key: EncryptionKey = await this.generateRSAKey();
-    await this.keyDatabase.putEncryptionKey(key);
+    const key: WalletCryptoKey = await this.generateRSAKey();
+    await this.keyDatabase.putKey(key);
   }
 
   /**
@@ -56,14 +56,14 @@ export class WalletCryptographyHandler {
    */
   private getKeyFromDatabase: (type: string) => Promise<CryptoKey> =
   async (type: string) => {
-    const key: CryptoKey = await this.keyDatabase.getEncryptionKey(type);
+    const key: CryptoKey = await this.keyDatabase.getKey(type);
     return key;
   };
 
   /**
    * generates the RSA key according to specified algorithm
    */
-  private generateRSAKey: () => Promise<EncryptionKey> =
+  private generateRSAKey: () => Promise<WalletCryptoKey> =
   async () => {
     const keyPair = await window.crypto.subtle.generateKey(
       this.algorithm, false, this.keyUsages,

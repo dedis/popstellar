@@ -1,7 +1,7 @@
 import { get, set, update } from 'idb-keyval';
 import STRINGS from 'res/strings';
 
-export interface EncryptionKey {
+export interface WalletCryptoKey {
   privateKey: CryptoKey,
   publicKey: CryptoKey,
 }
@@ -13,24 +13,24 @@ export interface EncryptionKey {
  * https://blog.engelke.com/2014/09/19/saving-cryptographic-keys-in-the-browser/
  */
 export class IndexedDBStore {
-  private readonly publicKeyId: string = STRINGS.walletEncryptionPublicKeyId;
+  private readonly publicKeyId: string = STRINGS.walletPrivateKeyId;
 
-  private readonly privateKeyId: string = STRINGS.walletEncryptionPrivateKeyId;
+  private readonly privateKeyId: string = STRINGS.walletPublicKeyId;
 
   /**
    * adds an encryption/decryption key to the storage
    * @param key the key that will be used to encrypt/decrypt all tokens in the wallet
    */
-  public async putEncryptionKey(key : EncryptionKey): Promise<void> {
-    await this.putPublicEncryptionKey(key.publicKey);
-    await this.putPrivateEncryptionKey(key.privateKey);
+  public async putKey(key : WalletCryptoKey): Promise<void> {
+    await this.putPublicKey(key.publicKey);
+    await this.putPrivateKey(key.privateKey);
   }
 
-  private async putPublicEncryptionKey(key : CryptoKey): Promise<void> {
+  private async putPublicKey(key : CryptoKey): Promise<void> {
     await set(this.publicKeyId, key);
   }
 
-  private async putPrivateEncryptionKey(key : CryptoKey): Promise<void> {
+  private async putPrivateKey(key : CryptoKey): Promise<void> {
     await set(this.privateKeyId, key);
   }
 
@@ -39,21 +39,21 @@ export class IndexedDBStore {
    * @param type 'public' if the desired key is the public key,
    * 'private' if the desired key is the private key
    */
-  public async getEncryptionKey(type: string): Promise<CryptoKey> {
+  public async getKey(type: string): Promise<CryptoKey> {
     if (type === STRINGS.walletPrivateKey) {
-      const key = await this.getPrivateEncryptionKey();
+      const key = await this.getPrivateKey();
       return key;
     }
-    const key = await this.getPublicEncryptionKey();
+    const key = await this.getPublicKey();
     return key;
   }
 
-  private async getPublicEncryptionKey(): Promise<CryptoKey> {
+  private async getPublicKey(): Promise<CryptoKey> {
     const pubKey = await get(this.publicKeyId);
     return pubKey;
   }
 
-  private async getPrivateEncryptionKey(): Promise<CryptoKey> {
+  private async getPrivateKey(): Promise<CryptoKey> {
     const secKey = await get(this.privateKeyId);
     return secKey;
   }
@@ -63,7 +63,7 @@ export class IndexedDBStore {
    * every be necessary to change it
    * @param key the new key for encryption/decryption
    */
-  public async updateEncryptionKey(key : EncryptionKey): Promise<void> {
+  public async updateKey(key : WalletCryptoKey): Promise<void> {
     await update(this.publicKeyId, () => key.publicKey);
     await update(this.privateKeyId, () => key.privateKey);
   }

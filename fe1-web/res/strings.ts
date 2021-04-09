@@ -124,8 +124,8 @@ const STRINGS = {
   walletRemove: 'Remove encryption/decryption key from database ',
   walletEncryptRandomToken: 'Encrypt test-token - ed25519 key',
   walletDecryptRandomToken: 'Decrypt previously encrypted test-token',
-  walletEncryptionPrivateKeyId: 'Private Decryption Key',
-  walletEncryptionPublicKeyId: 'Public Encryption Key',
+  walletPrivateKeyId: 'Private Decryption Key',
+  walletPublicKeyId: 'Public Encryption Key',
   walletPublicKey: 'public',
   walletPrivateKey: 'private',
 
