@@ -252,7 +252,6 @@ type CloseRollCallData struct {
 
 	UpdateID  []byte      `json:"update_id"`
 	Closes    []byte      `json:"closes"`
-	Start     Timestamp   `json:"start"`
 	ClosedAt  Timestamp   `json:"closed_at"`
 	Attendees []PublicKey `json:"attendees"`
 }
