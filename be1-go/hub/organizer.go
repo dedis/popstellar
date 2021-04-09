@@ -208,7 +208,7 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 
 	laoCh := laoChannel{
 		rollCall{},
-		make(map[*message.PublicKey]struct{}),
+		make(map[string]struct{}),
 		createBaseChannel(o, laoChannelID),
 	}
 	messageID := base64.StdEncoding.EncodeToString(publish.Params.Message.MessageID)
@@ -221,7 +221,7 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 
 type laoChannel struct {
 	rollCall  rollCall
-	attendees map[*message.PublicKey]struct{}
+	attendees map[string]struct{}
 	*baseChannel
 }
 
@@ -480,7 +480,10 @@ func (c *laoChannel) processRollCallObject(sender message.PublicKey, data messag
 		return xerrors.Errorf("failed to unmarshal public key of the sender: %v", err)
 	}
 	if !c.hub.public.Equal(senderPoint) {
-		return xerrors.Errorf("The sender of the roll call message has a different public key from the organizer")
+		return &message.Error{
+			Code:        -5,
+			Description: fmt.Sprintf("The sender of the roll call message has a different public key from the organizer"),
+		}
 	}
 
 	action := message.RollCallAction(data.GetAction())
@@ -526,17 +529,23 @@ func (c *laoChannel) processRollCallObject(sender message.PublicKey, data messag
 			}
 		}
 		rollCallData := data.(*message.CloseRollCallData)
+		if !c.checkPrevID(rollCallData.Closes) {
+			return &message.Error{
+				Code:        -4,
+				Description: fmt.Sprintf("The field \"closes\" does not correspond to the id of the previous roll call message"),
+			}
+		}
 		if !c.checkRollCallID(message.Stringer(rollCallData.Closes), rollCallData.ClosedAt, rollCallData.UpdateID) {
 			return &message.Error{
 				Code:        -4,
-				Description: fmt.Sprintf("The update_id has not been updated correctly."),
+				Description: fmt.Sprintf("The id of the roll call does not correspond to SHA256(‘R’||lao_id||closes||closed_at)"),
 			}
 		}
 		c.rollCall.id = string(rollCallData.UpdateID)
 		c.rollCall.state = Closed
-		c.attendees = map[*message.PublicKey]struct{}{}
-		for _, attendee := range rollCallData.Attendees {
-			c.attendees[&attendee] = struct{}{}
+		c.attendees = map[string]struct{}{}
+		for i := 0; i < len(rollCallData.Attendees); i += 1 {
+			c.attendees[string(rollCallData.Attendees[i])] = struct{}{}
 		}
 	default:
 		return &message.Error{
@@ -550,15 +559,27 @@ func (c *laoChannel) processRollCallObject(sender message.PublicKey, data messag
 
 func (c *laoChannel) processOpenRollCall(data message.Data) error {
 	rollCallData := data.(*message.OpenRollCallData)
+
+	if !c.checkPrevID(rollCallData.Opens) {
+		return &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("The field \"opens\" does not correspond to the id of the previous roll call message"),
+		}
+	}
+
 	if !c.checkRollCallID(message.Stringer(rollCallData.Opens), rollCallData.OpenedAt, rollCallData.UpdateID) {
 		return &message.Error{
 			Code:        -4,
-			Description: fmt.Sprintf("The update_id has not been updated correctly."),
+			Description: fmt.Sprintf("The id of the roll call does not correspond to SHA256(‘R’||lao_id||opens||opened_at)"),
 		}
 	}
 	c.rollCall.id = string(rollCallData.UpdateID)
 	c.rollCall.state = Open
 	return nil
+}
+
+func (c *laoChannel) checkPrevID(prevID []byte) bool {
+	return string(prevID) == c.rollCall.id
 }
 
 // Check if the id of the roll call corresponds to the hash of the correct parameters
