@@ -13,7 +13,7 @@ import (
 	"golang.org/x/xerrors"
 )
 
-var Upgrader = websocket.Upgrader{
+var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 	CheckOrigin:     func(r *http.Request) bool { return true },
@@ -60,7 +60,7 @@ func Serve(c *cli.Context) error {
 }
 
 func serveWs(h hub.Hub, w http.ResponseWriter, r *http.Request) {
-	conn, err := Upgrader.Upgrade(w, r, nil)
+	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("failed to upgrade connection: %v", err)
 		return
