@@ -15,7 +15,7 @@
 		"closes": {
 			"type": "string",
 			"contentEncoding": "base64",
-			"$comment": "The 'update_id' of the latest roll call open, or in its absence, the 'id' field of the roll call creation"
+			"$comment": "The 'update_id' of the latest roll call open"
 		},
 		"closed_at": { "description": "[Timestamp] end time", "type": "integer", "minimum": 0 },
 		"attendees": {
