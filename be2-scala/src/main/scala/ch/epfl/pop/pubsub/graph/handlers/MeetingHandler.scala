@@ -2,17 +2,44 @@ package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
-import ch.epfl.pop.model.network.JsonRpcMessage
+import ch.epfl.pop.model.network.JsonRpcRequest
+import ch.epfl.pop.model.network.method.message.data.meeting.StateMeeting
 import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, JsonRpcRequestStateMeeting}
+import ch.epfl.pop.model.objects.{Channel, Hash}
+import ch.epfl.pop.pubsub.graph.{DbActorNew, ErrorCodes, GraphMessage, PipelineError}
 
 case object MeetingHandler extends MessageHandler {
 
-  override val handler: Flow[JsonRpcMessage, Nothing, NotUsed] = Flow[JsonRpcMessage].map {
-    case message@(_: JsonRpcRequestCreateMeeting) => handleCreateMeeting(message); ???
-    case message@(_: JsonRpcRequestStateMeeting) => handleStateMeeting(message); ???
-    case _ => ???
+  override val handler: Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
+    case Left(jsonRpcMessage) => jsonRpcMessage match {
+      case message@(_: JsonRpcRequestCreateMeeting) => handleCreateMeeting(message)
+      case message@(_: JsonRpcRequestStateMeeting) => handleStateMeeting(message)
+      case _ => Right(PipelineError(
+        ErrorCodes.SERVER_FAULT.id,
+        "Internal server fault: MeetingHandler was given a message it could not recognize"
+      ))
+    }
+    case graphMessage@_ => graphMessage
   }
 
-  def handleCreateMeeting(message: JsonRpcMessage) {}
-  def handleStateMeeting(message: JsonRpcMessage) {}
+  def handleCreateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
+    Channel.decodeSubChannel(rpcMessage.getParamsChannel) match {
+      case Some(_) => dbAskWritePropagate(rpcMessage)
+      case _ => Right(PipelineError(
+        ErrorCodes.INVALID_DATA.id,
+        s"Unable to create meeting: invalid encoded laoId '${rpcMessage.getParamsChannel}'"
+      ))
+    }
+  }
+
+  def handleStateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
+    val modificationId: Hash = rpcMessage.getDecodedData.asInstanceOf[StateMeeting].modification_id
+    dbActor.ask(ref => DbActorNew.Read(rpcMessage.getParamsChannel, modificationId, ref)) match {
+      case Some(_) => dbAskWritePropagate(rpcMessage)
+      case _ => Right(PipelineError(
+        ErrorCodes.INVALID_DATA.id,
+        s"Unable to request meeting state: invalid modification_id '$modificationId' (no message associated to this id)"
+      ))
+    }
+  }
 }
