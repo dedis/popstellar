@@ -527,6 +527,7 @@ func (c *laoChannel) createElection(msg message.Message) error {
 
 	// Check the data
 	data, ok := msg.Data.(*message.ElectionSetupData)
+
 	if !ok {
 		return &message.Error{
 			Code:        -4,

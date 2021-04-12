@@ -264,7 +264,6 @@ func (m *Message) parseLAOData(action LaoDataAction, data []byte) error {
 
 }
 func (m *Message) parseElectionData(action ElectionAction, data []byte) error {
-	log.Printf("parsing election data")
 	switch action {
 	case ElectionSetupAction:
 		log.Printf("parsins election setup data")

@@ -1,5 +1,7 @@
 package com.github.dedis.student20_pop.model.data;
 
+import android.util.Log;
+
 import com.github.dedis.student20_pop.model.network.GenericMessage;
 import com.github.dedis.student20_pop.model.network.method.Message;
 import io.reactivex.Observable;
@@ -8,6 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class LAORemoteDataSource implements LAODataSource.Remote {
 
   private static LAORemoteDataSource INSTANCE;
+  private static final String TAG = LAORemoteDataSource.class.getSimpleName();
 
   private LAOService laoService;
 

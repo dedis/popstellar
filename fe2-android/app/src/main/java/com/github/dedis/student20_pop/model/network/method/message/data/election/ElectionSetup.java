@@ -12,9 +12,11 @@ public class ElectionSetup extends Data {
 
     private String id;
     private String name;
-    private long creation;
-    private long start;
-    private long end;
+    private String lao;
+    private long created_at;
+    private long start_time;
+    private long end_time;
+    private String version;
     private List<ElectionQuestion> questions;
 
     /**
@@ -34,10 +36,12 @@ public class ElectionSetup extends Data {
             String question,
             String laoId) {
         this.name = name;
-        this.creation = Instant.now().toEpochMilli();
-        this.start = start;
-        this.end = end;
-        this.id = Hash.hash("E", laoId, Long.toString(creation), name);
+        this.created_at = Instant.now().toEpochMilli();
+        this.start_time = start;
+        this.end_time = end;
+        this.lao = laoId;
+        this.version = "1.0.0";
+        this.id = Hash.hash("E", laoId, Long.toString(created_at), name);
         this.questions = new ArrayList<>();
         this.questions.add(new ElectionQuestion(question, voting_method, write_in, ballot_options, this.id));
     }
@@ -52,16 +56,20 @@ public class ElectionSetup extends Data {
     }
 
     public long getCreation() {
-        return creation;
+        return created_at;
     }
 
     public long getStartTime() {
-        return start;
+        return start_time;
     }
 
-    public long getEndTime() { return end; }
+    public long getEndTime() { return end_time; }
 
     public List<ElectionQuestion> getQuestions() { return questions; }
+
+    public String getLao() { return lao; }
+
+    public String getVersion() { return version; }
 
 
     @Override
@@ -84,11 +92,11 @@ public class ElectionSetup extends Data {
         }
         ElectionSetup that = (ElectionSetup) o;
         return getCreation() == that.getCreation()
-                && start == that.getStartTime()
+                && start_time == that.getStartTime()
                 && java.util.Objects.equals(getId(), that.getId())
-                && creation == that.getCreation()
+                && created_at == that.getCreation()
                 && java.util.Objects.equals(getName(), that.getName())
-                && end == that.getEndTime()
+                && end_time == that.getEndTime()
                 && java.util.Objects.equals(questions, that.getQuestions());
     }
 
