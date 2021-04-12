@@ -114,7 +114,6 @@ func (m *Message) VerifyAndUnmarshalData() error {
 
 	switch gd.GetObject() {
 	case DataObject(LaoObject):
-		log.Printf("lao object is %s", gd.GetObject())
 		err := m.parseLAOData(LaoDataAction(action), m.RawData)
 		if err != nil {
 			return xerrors.Errorf("error parsing lao data: %v", err)
@@ -135,6 +134,7 @@ func (m *Message) VerifyAndUnmarshalData() error {
 			return xerrors.Errorf("error parsing roll call data: %v", err)
 		}
 	case DataObject(ElectionObject):
+		log.Printf("data object is election")
 		err := m.parseElectionData(ElectionAction(action), m.RawData)
 		if err != nil {
 			xerrors.Errorf("error parsing election data %v", err)
@@ -264,8 +264,10 @@ func (m *Message) parseLAOData(action LaoDataAction, data []byte) error {
 
 }
 func (m *Message) parseElectionData(action ElectionAction, data []byte) error {
+	log.Printf("parsing election data")
 	switch action {
 	case ElectionSetupAction:
+		log.Printf("parsins election setup data")
 		setup := &ElectionSetupData{}
 
 		err := json.Unmarshal(data, setup)
