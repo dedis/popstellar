@@ -1,30 +1,12 @@
 package ch.epfl.pop.pubsub.graph.validators
 
-import akka.NotUsed
-import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
-import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, JsonRpcRequestStateMeeting}
 import ch.epfl.pop.model.objects.Hash
-import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
 case object MeetingValidator extends ContentValidator {
-  /**
-   * Validates a GraphMessage containing a meeting rpc-message or a pipeline error
-   */
-  override val validator: Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
-    case Left(jsonRpcMessage) => jsonRpcMessage match {
-      case message@(_: JsonRpcRequestCreateMeeting) => validateCreateMeeting(message)
-      case message@(_: JsonRpcRequestStateMeeting) => validateStateMeeting(message)
-      case _ => Right(PipelineError(
-        ErrorCodes.SERVER_FAULT.id,
-        "Internal server fault: MeetingValidator was given a message it could not recognize"
-      ))
-    }
-    case graphMessage@_ => graphMessage
-  }
-
   sealed def validateCreateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CreateMeeting")
 

@@ -1,15 +1,9 @@
 package ch.epfl.pop.pubsub.graph.validators
 
-import akka.NotUsed
-import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.objects.{Hash, PublicKey, Timestamp, WitnessSignaturePair}
-import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.{ErrorCodes, PipelineError}
 
 trait ContentValidator {
-  /**
-   * Validates a GraphMessage containing a specific rpc-message or a pipeline error
-   */
-  val validator: Flow[GraphMessage, GraphMessage, NotUsed]
 
   /**
    * Creates a validation error message for reason <reason> that happened in

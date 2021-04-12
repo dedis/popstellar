@@ -1,33 +1,13 @@
 package ch.epfl.pop.pubsub.graph.validators
 
-import akka.NotUsed
-import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall}
-import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
 import ch.epfl.pop.model.objects.Hash
-import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
 case object RollCallValidator extends ContentValidator {
-  /**
-   * Validates a GraphMessage containing a roll-call rpc-message or a pipeline error
-   */
-  override val validator: Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
-    case Left(jsonRpcMessage) => jsonRpcMessage match {
-      case message@(_: JsonRpcRequestCreateLao) => validateCreateRollCall(message)
-      case message@(_: JsonRpcRequestStateLao) => validateOpenRollCall(message)
-      case message@(_: JsonRpcRequestUpdateLao) => validateReopenRollCall(message)
-      case message@(_: JsonRpcRequestUpdateLao) => validateCloseRollCall(message)
-      case _ => Right(PipelineError(
-        ErrorCodes.SERVER_FAULT.id,
-        "Internal server fault: RollCallValidator was given a message it could not recognize"
-      ))
-    }
-    case graphMessage@_ => graphMessage
-  }
-
-  def validateCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
+  sealed def validateCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CreateRollCall")
 
     rpcMessage.getParamsMessage match {
@@ -53,7 +33,7 @@ case object RollCallValidator extends ContentValidator {
   }
 
   // TODO check that this is correct (correct validations)
-  def validateOpenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
+  sealed def validateOpenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "OpenRollCall")
 
     rpcMessage.getParamsMessage match {
@@ -70,7 +50,7 @@ case object RollCallValidator extends ContentValidator {
   }
 
   // TODO check that this is correct (correct validations)
-  def validateReopenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
+  sealed def validateReopenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "ReopenRollCall")
 
     rpcMessage.getParamsMessage match {
@@ -87,7 +67,7 @@ case object RollCallValidator extends ContentValidator {
   }
 
   // TODO check that this is correct (correct validations)
-  def validateCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
+  sealed def validateCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CloseRollCall")
 
     rpcMessage.getParamsMessage match {
