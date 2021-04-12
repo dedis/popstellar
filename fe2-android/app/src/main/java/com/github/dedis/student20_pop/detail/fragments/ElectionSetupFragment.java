@@ -108,7 +108,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
         addDateAndTimeListener(confirmTextWatcher);
 
         Button cancelButton = mSetupElectionFragBinding.electionCancelButton;
-        boolean writeIn = mSetupElectionFragBinding.writeIn.isChecked();
 
         ballotOptions = new ArrayList<>();
 
@@ -154,7 +153,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
                     for (String ballotOption: ballotOptions) {
                         if (!ballotOption.equals("")) filteredBallotOptions.add(ballotOption);
                     }
-                    mLaoDetailViewModel.createNewElection(title, startTimeInSeconds, endTimeInSeconds, votingMethod.toString(), writeIn, filteredBallotOptions, question);
+                    mLaoDetailViewModel.createNewElection(title, startTimeInSeconds, endTimeInSeconds, votingMethod.toString(), mSetupElectionFragBinding.writeIn.isChecked(), filteredBallotOptions, question);
                 });
 
         //On click, cancel button takes back to LAO detail page

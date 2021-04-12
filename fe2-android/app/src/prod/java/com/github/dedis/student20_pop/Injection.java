@@ -22,8 +22,6 @@ import com.github.dedis.student20_pop.model.network.method.message.data.rollcall
 import com.github.dedis.student20_pop.utility.json.JsonAnswerSerializer;
 import com.github.dedis.student20_pop.utility.json.JsonCreateRollCallSerializer;
 import com.github.dedis.student20_pop.utility.json.JsonDataSerializer;
-import com.github.dedis.student20_pop.utility.json.JsonElectionQuestionSerializer;
-import com.github.dedis.student20_pop.utility.json.JsonElectionSetupSerializer;
 import com.github.dedis.student20_pop.utility.json.JsonGenericMessageDeserializer;
 import com.github.dedis.student20_pop.utility.json.JsonMessageGeneralSerializer;
 import com.github.dedis.student20_pop.utility.json.JsonMessageSerializer;
@@ -112,8 +110,6 @@ public class Injection {
         .registerTypeAdapter(Answer.class, new JsonAnswerSerializer())
         .registerTypeAdapter(CreateRollCall.class, new JsonCreateRollCallSerializer())
         .registerTypeAdapter(MessageGeneral.class, new JsonMessageGeneralSerializer())
-            //.registerTypeAdapter(ElectionQuestion.class, new JsonElectionQuestionSerializer())
-            //.registerTypeAdapter(ElectionSetup.class, new JsonElectionSetupSerializer())
             .create();
   }
 
