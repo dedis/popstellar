@@ -106,6 +106,7 @@ public class LaoDetailActivity extends AppCompatActivity {
         break;
       case ELECTION:
         setupCreateElectionSetupFragment();
+        break;
       default:
         Log.d(TAG, "unknown event type: " + eventType.toString());
     }
