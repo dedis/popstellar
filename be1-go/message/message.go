@@ -7,6 +7,7 @@ import (
 
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
+	"log"
 )
 
 type internalMessage struct {
@@ -113,6 +114,7 @@ func (m *Message) VerifyAndUnmarshalData() error {
 
 	switch gd.GetObject() {
 	case DataObject(LaoObject):
+		log.Printf("lao object is %s", gd.GetObject())
 		err := m.parseLAOData(LaoDataAction(action), m.RawData)
 		if err != nil {
 			return xerrors.Errorf("error parsing lao data: %v", err)

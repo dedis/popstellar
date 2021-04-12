@@ -54,6 +54,7 @@ func (o *organizerHub) Recv(msg IncomingMessage) {
 
 func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	log.Printf("organizerHub::handleIncomingMessage: %s", incomingMessage.Message)
+	log.Printf("test")
 
 	client := incomingMessage.Client
 
