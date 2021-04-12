@@ -25,16 +25,11 @@ export function checkAttendees(attendees: PublicKey[]) {
 
 export function checkWitnessSignatures(witSig: WitnessSignature[], data: Base64Data) {
   if (!witSig.every((ws) => ws.verify(data))) {
-    throw new ProtocolError("Invalid 'witness_signatures' parameter encountered: invalid signature");
+    throw new ProtocolError('Invalid witness signatures parameter encountered: invalid signature');
   }
 }
 
 export function checkModificationId(id: Hash) {
   // FIXME check modification id
   return id; // simply to remove eslint warning
-}
-
-export function checkModificationSignatures(sigPairs: WitnessSignature[]) {
-  // FIXME check modification signatures
-  return sigPairs; // simply to remove eslint warning
 }
