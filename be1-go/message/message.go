@@ -134,7 +134,6 @@ func (m *Message) VerifyAndUnmarshalData() error {
 			return xerrors.Errorf("error parsing roll call data: %v", err)
 		}
 	case DataObject(ElectionObject):
-		log.Printf("data object is election")
 		err := m.parseElectionData(ElectionAction(action), m.RawData)
 		if err != nil {
 			xerrors.Errorf("error parsing election data %v", err)
@@ -266,7 +265,6 @@ func (m *Message) parseLAOData(action LaoDataAction, data []byte) error {
 func (m *Message) parseElectionData(action ElectionAction, data []byte) error {
 	switch action {
 	case ElectionSetupAction:
-		log.Printf("parsins election setup data")
 		setup := &ElectionSetupData{}
 
 		err := json.Unmarshal(data, setup)
