@@ -30,9 +30,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
 
     public static final String TAG = ElectionSetupFragment.class.getSimpleName();
 
-    private final String ERROR_ELECTION_NAME_EMPTY = "An election name cannot be empty";
-    private final String ERROR_BALLOT_OPTION_EMPTY = "A ballot option cannot be empty";
-    private final String ERROR_QUESTION_EMPTY      = "Question cannot be empty";
     private LaoDetailViewModel mLaoDetailViewModel;
     private FragmentSetupElectionEventBinding mSetupElectionFragBinding;
 
@@ -206,14 +203,4 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
         ballotOption2.addTextChangedListener(confirmTextWatcher);
     }
 
-    /**
-     * Utility function used to check if a given field is filled and if not display an error
-     * message on said field
-     */
-    private void checkInput(){
-          editTextInputChecker(electionNameText, ERROR_ELECTION_NAME_EMPTY);
-          editTextInputChecker(ballotOption1, ERROR_BALLOT_OPTION_EMPTY);
-          editTextInputChecker(ballotOption2, ERROR_ELECTION_NAME_EMPTY);
-          editTextInputChecker(electionQuestionText, ERROR_QUESTION_EMPTY);
-    }
 }
