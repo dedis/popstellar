@@ -111,10 +111,32 @@ public class ElectionSetup extends Data {
                 getQuestions());
     }
 
-    //TODO
     @Override
     public String toString() {
-      return null;
+        return "ElectionSetup{"
+                + "id='"
+                + id
+                + '\''
+                + ", name='"
+                + name
+                + '\''
+                + ", lao='"
+                + lao
+                + '\''
+                + ", creation='"
+                + created_at
+                + '\''
+                + ", start='"
+                + start_time
+                + '\''
+                + ", end="
+                + end_time
+                + '\''
+                + ", version='"
+                + version
+                + '\''
+                + questions.get(0).toString()
+                + '}';
     }
 
 }
