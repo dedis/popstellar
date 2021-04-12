@@ -1,32 +1,24 @@
     package com.github.dedis.student20_pop.detail.fragments;
     import android.os.Bundle;
-    import android.text.Editable;
-    import android.text.TextWatcher;
     import android.view.LayoutInflater;
     import android.view.View;
     import android.view.ViewGroup;
     import android.widget.Button;
-    import android.widget.EditText;
     import android.widget.TextView;
 
     import androidx.annotation.NonNull;
     import androidx.annotation.Nullable;
     import androidx.fragment.app.FragmentActivity;
 
-    import com.github.dedis.student20_pop.databinding.FragmentCreateRollCallEventBinding;
     import com.github.dedis.student20_pop.databinding.FragmentElectionDisplayBinding;
     import com.github.dedis.student20_pop.detail.LaoDetailActivity;
     import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
-    import com.github.dedis.student20_pop.home.HomeActivity;
-
-    import java.time.Instant;
 
     public final class ElectionDisplayFragment extends AbstractEventCreationFragment {
         public static final String TAG =ElectionDisplayFragment.class.getSimpleName();
         private TextView laoNameTextView;
         private LaoDetailViewModel mLaoDetailViewModel;
         private FragmentElectionDisplayBinding mElectionDisplayFragBinding;
-        private Button electionNameButton1;
         public static ElectionDisplayFragment newInstance(){ return new ElectionDisplayFragment(); }
 
         @Override

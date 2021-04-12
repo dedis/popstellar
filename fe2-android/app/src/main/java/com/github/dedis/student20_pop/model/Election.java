@@ -3,9 +3,7 @@ package com.github.dedis.student20_pop.model;
 import com.github.dedis.student20_pop.model.event.Event;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class Election extends Event {
 
@@ -47,13 +45,9 @@ public class Election extends Event {
         this.creation = creation;
     }
 
-    public long getStart() { return start; }
-
     public void setStart(long start) {
         this.start = start;
     }
-
-    public long getEnd() {return end;}
 
     public void setEnd(long end) {
         this.end = end;

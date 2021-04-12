@@ -30,7 +30,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
 
     public static final String TAG = ElectionSetupFragment.class.getSimpleName();
 
-    private LaoDetailViewModel mLaoDetailViewModel;
     private FragmentSetupElectionEventBinding mSetupElectionFragBinding;
 
     private EditText electionNameText;
@@ -38,8 +37,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
     private EditText ballotOption1;
     private EditText ballotOption2;
     private Button submitButton;
-    private TextView laoNameTextView;
-    private FloatingActionButton addBallotOptionButton;
 
     private enum votingMethods {Plurality}
     private votingMethods votingMethod;
@@ -49,7 +46,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
     private final TextWatcher confirmTextWatcher =
             new TextWatcher() {
                 @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {/* no check to make before text is changed */}
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -60,22 +57,22 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
                 }
 
                 @Override
-                public void afterTextChanged(Editable s) {}
+                public void afterTextChanged(Editable s) {/* no check to make after text is changed */}
             };
 
-    private class ballotOptionsTextWatcher implements TextWatcher {
+    private class BallotOptionsTextWatcher implements TextWatcher {
 
         private int ballotTag;
 
-        public ballotOptionsTextWatcher(int ballotTag) {
+        public BallotOptionsTextWatcher(int ballotTag) {
             this.ballotTag = ballotTag;
         }
 
         @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {/* no check to make before text is changed */}
 
         @Override
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {/* no check to make when text is changed */}
 
         @Override
         public void afterTextChanged(Editable editable) {
@@ -102,7 +99,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
         mSetupElectionFragBinding =
                 FragmentSetupElectionEventBinding.inflate(inflater, container, false);
 
-        mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
+        LaoDetailViewModel laoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 
         setDateAndTimeView(mSetupElectionFragBinding.getRoot(), this, getFragmentManager());
         addDateAndTimeListener(confirmTextWatcher);
@@ -123,20 +120,19 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
         initNewBallotOptionsField();
 
         //When the button is clicked, add a new ballot option
-       addBallotOptionButton = mSetupElectionFragBinding.addBallotOption;
+       FloatingActionButton addBallotOptionButton = mSetupElectionFragBinding.addBallotOption;
         addBallotOptionButton.setOnClickListener(
-                v -> { addBallotOption(); }
-        );
+                v -> addBallotOption());
 
 
         // Set the text widget in layout to current LAO name
-        laoNameTextView = mSetupElectionFragBinding.electionSetupLaoName;
-        laoNameTextView.setText(mLaoDetailViewModel.getCurrentLaoName().getValue());
+        TextView laoNameTextView = mSetupElectionFragBinding.electionSetupLaoName;
+        laoNameTextView.setText(laoDetailViewModel.getCurrentLaoName().getValue());
 
         //Set dropdown spinner as a list of string (from enum of votingmethods)
        Spinner spinner = mSetupElectionFragBinding.electionSetupSpinner;
         String[] items = Arrays.stream(votingMethods.values()).map(votingMethods::toString).toArray(String[]::new);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_spinner_item, items);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
@@ -153,14 +149,13 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
                     for (String ballotOption: ballotOptions) {
                         if (!ballotOption.equals("")) filteredBallotOptions.add(ballotOption);
                     }
-                    mLaoDetailViewModel.createNewElection(title, startTimeInSeconds, endTimeInSeconds, votingMethod.toString(), mSetupElectionFragBinding.writeIn.isChecked(), filteredBallotOptions, question);
+                    laoDetailViewModel.createNewElection(title, startTimeInSeconds, endTimeInSeconds, votingMethod.toString(), mSetupElectionFragBinding.writeIn.isChecked(), filteredBallotOptions, question);
                 });
 
         //On click, cancel button takes back to LAO detail page
         cancelButton.setOnClickListener(
-                v -> {
-                    mLaoDetailViewModel.openLaoDetail();
-                });
+                v ->
+                    laoDetailViewModel.openLaoDetail());
         mSetupElectionFragBinding.setLifecycleOwner(getActivity());
 
         return mSetupElectionFragBinding.getRoot();
@@ -190,7 +185,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
         ballotOption.setLayoutParams(params);
         int ballotTag = ballotOptions.size();
         ballotOption.setTag(ballotTag);
-        ballotOption.addTextChangedListener(new ballotOptionsTextWatcher(ballotTag));
+        ballotOption.addTextChangedListener(new BallotOptionsTextWatcher(ballotTag));
         ballotOptions.add(ballotOption.getText().toString());
         return ballotOption;
     }

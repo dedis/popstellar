@@ -30,7 +30,6 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 public class LaoDetailViewModel extends AndroidViewModel {
@@ -223,7 +222,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
   }
 
 
-  public void createNewElection(String name, long start, long end, String voting_method, boolean write_in, List<String> ballot_options, String question) {
+  public void createNewElection(String name, long start, long end, String votingMethod, boolean writeIn, List<String> ballotOptions, String question) {
     Log.d(TAG,"creating a new election with name " + name);
 
     Lao lao = getCurrentLao();
@@ -236,7 +235,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
     ElectionSetup electionSetup;
     String laoId = channel.substring(6);
 
-    electionSetup = new ElectionSetup(name, start, end, voting_method, write_in, ballot_options, question, laoId);
+    electionSetup = new ElectionSetup(name, start, end, votingMethod, writeIn, ballotOptions, question, laoId);
 
     try {
       // Retrieve identity of who is creating the election
@@ -262,9 +261,9 @@ public class LaoDetailViewModel extends AndroidViewModel {
                                   Log.d(TAG, "failed to setup an election");
                                 }
                               },
-                              throwable -> {
-                                Log.d(TAG, "timed out waiting for result on election/create", throwable);
-                              });
+                              throwable ->
+                                Log.d(TAG, "timed out waiting for result on election/create", throwable)
+                              );
 
       disposables.add(disposable);
 
@@ -274,7 +273,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
   }
 
-  public void castVotes() {};
+  //public void castVotes() {};
 
   public void createNewRollCall(String title, String description, long start, long scheduled) {
     Log.d(TAG, "creating a new roll call with title " + title);
