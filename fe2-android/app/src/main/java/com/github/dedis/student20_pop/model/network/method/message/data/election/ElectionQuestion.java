@@ -85,10 +85,24 @@ public class ElectionQuestion extends Data {
                 getQuestion());
     }
 
-    //TODO
     @Override
     public String toString() {
-        return null;
+
+        return "ElectionQuestion{"
+                + "id='"
+                + id
+                + '\''
+                + ", question='"
+                + question
+                + '\''
+                + ", voting method='"
+                + voting_method
+                + '\''
+                + ", ballot options='"
+                + ballot_options
+                + '\''
+                + ", write in ='"
+                + '}';
     }
 
 
