@@ -20,7 +20,7 @@ var upgrader = websocket.Upgrader{
 }
 
 // Serve parses the CLI arguments and spawns a hub and a websocket server.
-func Serve(context *cli.Context) error {
+func OrganizerServe(context *cli.Context) error {
 	port := context.Int("port")
 	pk := context.String("public-key")
 
@@ -45,7 +45,7 @@ func Serve(context *cli.Context) error {
 	go h.Start(done)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		serveWs(h, w, r)
+		organizerServeWs(h, w, r)
 	})
 
 	log.Printf("Starting the organizer WS server at %d", port)
@@ -59,7 +59,7 @@ func Serve(context *cli.Context) error {
 	return nil
 }
 
-func serveWs(h hub.Hub, w http.ResponseWriter, r *http.Request) {
+func organizerServeWs(h hub.Hub, w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("failed to upgrade connection: %v", err)
