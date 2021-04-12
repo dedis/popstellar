@@ -50,18 +50,9 @@ func (o *organizerHub) Recv(msg IncomingMessage) {
 	o.messageChan <- msg
 }
 
-func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
-	log.Printf("organizerHub::handleIncomingMessage: %s", incomingMessage.Message)
-
-	socket := incomingMessage.Socket
+func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 	client := ClientSocket{
-		Socket{
-			socketType: clientSocket,
-			hub:        socket.hub,
-			conn:       socket.conn,
-			send:       socket.send,
-			Wait:       sync.WaitGroup{},
-		},
+		incomingMessage.Socket,
 	}
 
 	// unmarshal the message
@@ -178,6 +169,24 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	}
 
 	client.SendResult(id, result)
+}
+
+func handleMessageFromWitness(incomingMessage *IncomingMessage) {
+
+}
+
+func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
+	log.Printf("organizerHub::handleIncomingMessage: %s", incomingMessage.Message)
+
+	switch (incomingMessage.Socket.socketType) {
+	case clientSocket:
+		o.handleMessageFromClient(incomingMessage)
+		return
+	case witnessSocket:
+		handleMessageFromWitness(incomingMessage)
+		return
+	}
+
 }
 
 func (o *organizerHub) Start(done chan struct{}) {

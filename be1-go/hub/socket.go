@@ -22,10 +22,18 @@ const (
 	pingPeriod = (pongWait * 9) / 10
 )
 
+type Socket interface {
+	Type() string
+	ReadPump()
+	WritePump()
+	Send(msg []byte)
+	SendError(id int, err error)
+	SendResult(id int, res message.Result)
+}
 
-// Socket represents a socket connected to the server.
-type Socket struct {
-	socketType string
+// baseSocket represents a socket connected to the server.
+type baseSocket struct {
+	socketType SocketType
 
 	hub Hub
 
@@ -36,18 +44,12 @@ type Socket struct {
 	Wait sync.WaitGroup
 }
 
-// NewSocket returns an instance of a Socket.
-func NewSocket(h Hub, conn *websocket.Conn) *Socket {
-	return &Socket{
-		hub:  h,
-		conn: conn,
-		send: make(chan []byte, 256),
-		Wait: sync.WaitGroup{},
-	}
+func (s *baseSocket) Type() SocketType {
+	return s.socketType
 }
 
 // ReadPump starts the reader loop for the socket.
-func (s *Socket) ReadPump() {
+func (s *baseSocket) ReadPump() {
 	defer func() {
 		s.conn.Close()
 		s.Wait.Done()
@@ -82,26 +84,26 @@ func (s *Socket) ReadPump() {
 }
 
 // WritePump starts the writer loop for the socket.
-func (c *Socket) WritePump() {
+func (s *baseSocket) WritePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
-		c.conn.Close()
-		c.Wait.Done()
+		s.conn.Close()
+		s.Wait.Done()
 	}()
 
-	c.Wait.Add(1)
+	s.Wait.Add(1)
 
 	for {
 		select {
-		case message, ok := <-c.send:
-			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
+		case message, ok := <-s.send:
+			s.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok {
-				c.conn.WriteMessage(websocket.CloseMessage, []byte{})
+				s.conn.WriteMessage(websocket.CloseMessage, []byte{})
 				return
 			}
 
-			w, err := c.conn.NextWriter(websocket.TextMessage)
+			w, err := s.conn.NextWriter(websocket.TextMessage)
 			if err != nil {
 				log.Printf("failed to retrieve writer: %v", err)
 				return
@@ -114,8 +116,8 @@ func (c *Socket) WritePump() {
 				return
 			}
 		case <-ticker.C:
-			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
-			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+			s.conn.SetWriteDeadline(time.Now().Add(writeWait))
+			if err := s.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 				log.Printf("failed to send ping: %v", err)
 				return
 			}
@@ -124,14 +126,14 @@ func (c *Socket) WritePump() {
 }
 
 // Send allows sending a serialised message to the socket.
-func (c *Socket) Send(msg []byte) {
-	log.Printf("sending message to %s", c.conn.RemoteAddr())
-	c.send <- msg
+func (s *baseSocket) Send(msg []byte) {
+	log.Printf("sending message to %s", s.conn.RemoteAddr())
+	s.send <- msg
 }
 
 // SendError is a utility method that allows sending an `error` as a `message.Error`
 // message to the socket.
-func (c *Socket) SendError(id int, err error) {
+func (s *baseSocket) SendError(id int, err error) {
 	msgError := &message.Error{}
 
 	if xerrors.As(err, &msgError) {
@@ -145,12 +147,12 @@ func (c *Socket) SendError(id int, err error) {
 			log.Printf("failed to marshal answer: %v", err)
 		}
 
-		c.send <- answerBuf
+		s.send <- answerBuf
 	}
 }
 
 // SendResult is a utility method that allows sending a `message.Result` to the socket.
-func (c *Socket) SendResult(id int, res message.Result) {
+func (s *baseSocket) SendResult(id int, res message.Result) {
 	answer := message.Answer{
 		ID:     &id,
 		Result: &res,
@@ -162,5 +164,5 @@ func (c *Socket) SendResult(id int, res message.Result) {
 	}
 
 	log.Printf("answerBuf: %s, received id: %d", answerBuf, id)
-	c.send <- answerBuf
+	s.send <- answerBuf
 }

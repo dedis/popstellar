@@ -17,7 +17,7 @@ type Hub interface {
 // IncomingMessage wraps the raw message from the websocket connection and pairs
 // it with a `Client` instance.
 type IncomingMessage struct {
-	Socket  *Socket
+	Socket  *baseSocket
 	Message []byte
 }
 

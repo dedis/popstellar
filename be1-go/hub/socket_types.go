@@ -6,57 +6,51 @@ import (
 )
 
 // socket types
+type SocketType string
+
 const (
-	clientSocket = "client"
-	organizerSocket = "organizer"
-	witnessSocket = "witness"
+	clientSocket SocketType = "client"
+	organizerSocket SocketType= "organizer"
+	witnessSocket SocketType= "witness"
 )
 
-type ClientSocket struct {
-	Socket
+func newSocket(socketType SocketType, h Hub, conn *websocket.Conn) *baseSocket {
+	return &baseSocket {
+		socketType: socketType,
+		hub:  h,
+		conn: conn,
+		send: make(chan []byte, 256),
+		Wait: sync.WaitGroup{},
+	}
 }
 
-// NewClient returns an instance of a Socket.
+type ClientSocket struct {
+	*baseSocket
+}
+
+// NewClient returns an instance of a baseSocket.
 func NewClientSocket (h Hub, conn *websocket.Conn) *ClientSocket {
-	return &ClientSocket {
-		Socket {
-			socketType: clientSocket,
-			hub:  h,
-			conn: conn,
-			send: make(chan []byte, 256),
-			Wait: sync.WaitGroup{},
-		},
+	return &ClientSocket{
+		newSocket(clientSocket, h, conn),
 	}
 }
 
 type OrganizerSocket struct {
-	Socket
+	*baseSocket
 }
 
 func NewOrganizerSocket(h Hub, conn *websocket.Conn) *OrganizerSocket {
 	return &OrganizerSocket {
-		Socket {
-			socketType: organizerSocket,
-			hub:  h,
-			conn: conn,
-			send: make(chan []byte, 256),
-			Wait: sync.WaitGroup{},
-		},
+		newSocket(organizerSocket, h, conn),
 	}
 }
 
 type WitnessSocket struct {
-	Socket
+	*baseSocket
 }
 
 func NewWitnessSocket(h Hub, conn *websocket.Conn) *WitnessSocket {
 	return &WitnessSocket {
-		Socket {
-			socketType: witnessSocket,
-			hub:  h,
-			conn: conn,
-			send: make(chan []byte, 256),
-			Wait: sync.WaitGroup{},
-		},
+		newSocket(witnessSocket, h, conn),
 	}
 }
