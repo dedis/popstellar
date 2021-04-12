@@ -57,7 +57,7 @@ func (s *baseSocket) ReadPump() {
 
 	s.Wait.Add(1)
 
-	log.Printf("listening for messages from socket")
+	log.Printf("listening for messages from %s", s.socketType)
 
 	s.conn.SetReadLimit(maxMessageSize)
 	s.conn.SetReadDeadline(time.Now().Add(pongWait))

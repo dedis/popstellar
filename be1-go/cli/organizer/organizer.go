@@ -20,9 +20,9 @@ var upgrader = websocket.Upgrader{
 }
 
 // Serve parses the CLI arguments and spawns a hub and a websocket server.
-func Serve(c *cli.Context) error {
-	port := c.Int("port")
-	pk := c.String("public-key")
+func Serve(context *cli.Context) error {
+	port := context.Int("port")
+	pk := context.String("public-key")
 
 	if pk == "" {
 		return xerrors.Errorf("organizer's public key is required")

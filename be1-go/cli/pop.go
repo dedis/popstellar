@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"os"
-	"student20_pop/cli/organizer"
+	"student20_pop/cli/witness"
 
 	"github.com/urfave/cli/v2"
 )
@@ -35,7 +35,7 @@ func main() {
 								Value:   9000,
 							},
 						},
-						Action: organizer.Serve,
+						Action: witness.WitnessServe,
 					},
 				},
 			},

@@ -171,7 +171,7 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 	client.SendResult(id, result)
 }
 
-func handleMessageFromWitness(incomingMessage *IncomingMessage) {
+func (o *organizerHub) handleMessageFromWitness(incomingMessage *IncomingMessage) {
 	//TODO
 	return
 }
@@ -184,7 +184,10 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 		o.handleMessageFromClient(incomingMessage)
 		return
 	case witnessSocket:
-		handleMessageFromWitness(incomingMessage)
+		o.handleMessageFromWitness(incomingMessage)
+		return
+	default:
+		log.Printf("error: invalid socket type")
 		return
 	}
 
