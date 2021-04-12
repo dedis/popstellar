@@ -172,7 +172,8 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 }
 
 func handleMessageFromWitness(incomingMessage *IncomingMessage) {
-
+	//TODO
+	return
 }
 
 func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
