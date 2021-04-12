@@ -7,7 +7,6 @@ import (
 
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
-	"log"
 )
 
 type internalMessage struct {
