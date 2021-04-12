@@ -2,6 +2,13 @@ package ch.epfl.pop.pubsub.graph
 
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
+import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
+import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, JsonRpcRequestStateMeeting}
+import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
+import ch.epfl.pop.pubsub.graph.validators.LaoValidator.{validateCreateLao, validateStateLao, validateUpdateLao}
+import ch.epfl.pop.pubsub.graph.validators.MeetingValidator.{validateCreateMeeting, validateStateMeeting}
+import ch.epfl.pop.pubsub.graph.validators.RollCallValidator.{validateCloseRollCall, validateCreateRollCall, validateOpenRollCall, validateReopenRollCall}
+import ch.epfl.pop.pubsub.graph.validators.WitnessValidator.validateWitnessMessage
 
 object Validator {
 
@@ -9,10 +16,32 @@ object Validator {
   def validateSchema(jsonString: JsonString): Either[JsonString, PipelineError] = Left(jsonString)
 
   // FIXME implement rpc validator
-  def validateJsonRpcContent(graphMessage: GraphMessage): GraphMessage = graphMessage
+  def validateJsonRpcContent(graphMessage: GraphMessage): GraphMessage = graphMessage match {
+    case Left(jsonRpcMessage) => jsonRpcMessage match {
+      case _ => ???
+    }
+    case graphMessage@_ => graphMessage
+  }
 
-  // FIXME implement message validator
-  def validateMessageContent(graphMessage: GraphMessage): GraphMessage = graphMessage
+  def validateMessageContent(graphMessage: GraphMessage): GraphMessage = graphMessage match {
+    case Left(jsonRpcMessage) => jsonRpcMessage match {
+      case message@(_: JsonRpcRequestCreateLao) => validateCreateLao(message)
+      case message@(_: JsonRpcRequestStateLao) => validateStateLao(message)
+      case message@(_: JsonRpcRequestUpdateLao) => validateUpdateLao(message)
+      case message@(_: JsonRpcRequestCreateMeeting) => validateCreateMeeting(message)
+      case message@(_: JsonRpcRequestStateMeeting) => validateStateMeeting(message)
+      case message@(_: JsonRpcRequestCreateLao) => validateCreateRollCall(message)
+      case message@(_: JsonRpcRequestStateLao) => validateOpenRollCall(message)
+      case message@(_: JsonRpcRequestUpdateLao) => validateReopenRollCall(message)
+      case message@(_: JsonRpcRequestUpdateLao) => validateCloseRollCall(message)
+      case message@(_: JsonRpcRequestWitnessMessage) => validateWitnessMessage(message)
+      case _ => Right(PipelineError(
+        ErrorCodes.SERVER_FAULT.id,
+        "Internal server fault: Validator was given a message it could not recognize"
+      ))
+    }
+    case graphMessage@_ => graphMessage
+  }
 
 
   // takes a string (json) input and compares it with the JsonSchema

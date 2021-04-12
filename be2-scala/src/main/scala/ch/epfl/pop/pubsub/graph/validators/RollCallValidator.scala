@@ -1,0 +1,107 @@
+package ch.epfl.pop.pubsub.graph.validators
+
+import akka.NotUsed
+import akka.stream.scaladsl.Flow
+import ch.epfl.pop.model.network.JsonRpcRequest
+import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall}
+import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
+import ch.epfl.pop.model.objects.Hash
+import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
+
+case object RollCallValidator extends ContentValidator {
+  /**
+   * Validates a GraphMessage containing a roll-call rpc-message or a pipeline error
+   */
+  override val validator: Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
+    case Left(jsonRpcMessage) => jsonRpcMessage match {
+      case message@(_: JsonRpcRequestCreateLao) => validateCreateRollCall(message)
+      case message@(_: JsonRpcRequestStateLao) => validateOpenRollCall(message)
+      case message@(_: JsonRpcRequestUpdateLao) => validateReopenRollCall(message)
+      case message@(_: JsonRpcRequestUpdateLao) => validateCloseRollCall(message)
+      case _ => Right(PipelineError(
+        ErrorCodes.SERVER_FAULT.id,
+        "Internal server fault: RollCallValidator was given a message it could not recognize"
+      ))
+    }
+    case graphMessage@_ => graphMessage
+  }
+
+  def validateCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
+    def validationError(reason: String): PipelineError = super.validationError(reason, "CreateRollCall")
+
+    rpcMessage.getParamsMessage match {
+      case Some(message: Message) =>
+        val data: CreateRollCall = message.decodedData.asInstanceOf[CreateRollCall]
+        val expectedHash: Hash = Hash.fromStrings() // FIXME get id from db
+
+        if (!validateTimestampStaleness(data.creation)) {
+          Right(validationError(s"stale 'creation' timestamp (${data.creation})"))
+        } else if ((data.start.isDefined && data.scheduled.isDefined) || (data.start.isEmpty && data.scheduled.isEmpty)) {
+          Right(validationError(s"the message should include either 'start' or 'scheduled' values, but not both"))
+        } else if (data.start.isDefined && !validateTimestampOrder(data.creation, data.start.get)) {
+          Right(validationError(s"'start' (${data.start.get}) timestamp is younger than 'creation' (${data.creation})"))
+        } else if (data.scheduled.isDefined && !validateTimestampOrder(data.creation, data.scheduled.get)) {
+          Right(validationError(s"'scheduled' (${data.scheduled.get}) timestamp is younger than 'creation' (${data.creation})"))
+        } else if (expectedHash != data.id) {
+          Right(validationError("unexpected id"))
+        } else {
+          Left(rpcMessage)
+        }
+      case _ => Right(validationErrorNoMessage)
+    }
+  }
+
+  // TODO check that this is correct (correct validations)
+  def validateOpenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
+    def validationError(reason: String): PipelineError = super.validationError(reason, "OpenRollCall")
+
+    rpcMessage.getParamsMessage match {
+      case Some(message: Message) =>
+        val data: OpenRollCall = message.decodedData.asInstanceOf[OpenRollCall]
+
+        if (!validateTimestampStaleness(data.start)) {
+          Right(validationError(s"stale 'start' timestamp (${data.start})"))
+        } else {
+          Left(rpcMessage)
+        }
+      case _ => Right(validationErrorNoMessage)
+    }
+  }
+
+  // TODO check that this is correct (correct validations)
+  def validateReopenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
+    def validationError(reason: String): PipelineError = super.validationError(reason, "ReopenRollCall")
+
+    rpcMessage.getParamsMessage match {
+      case Some(message: Message) =>
+        val data: ReopenRollCall = message.decodedData.asInstanceOf[ReopenRollCall]
+
+        if (!validateTimestampStaleness(data.start)) {
+          Right(validationError(s"stale 'start' timestamp (${data.start})"))
+        } else {
+          Left(rpcMessage)
+        }
+      case _ => Right(validationErrorNoMessage)
+    }
+  }
+
+  // TODO check that this is correct (correct validations)
+  def validateCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
+    def validationError(reason: String): PipelineError = super.validationError(reason, "CloseRollCall")
+
+    rpcMessage.getParamsMessage match {
+      case Some(message: Message) =>
+        val data: CloseRollCall = message.decodedData.asInstanceOf[CloseRollCall]
+
+        if (!validateTimestampStaleness(data.end)) {
+          Right(validationError(s"stale 'end' timestamp (${data.end})"))
+        } else if (data.attendees.size != data.attendees.toSet.size) {
+          Right(validationError("duplicate attendees keys"))
+        } else {
+          Left(rpcMessage)
+        }
+      case _ => Right(validationErrorNoMessage)
+    }
+  }
+}
