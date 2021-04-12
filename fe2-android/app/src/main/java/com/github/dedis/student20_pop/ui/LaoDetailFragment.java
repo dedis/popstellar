@@ -17,6 +17,9 @@ import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.adapters.EventExpandableListViewAdapter;
 import com.github.dedis.student20_pop.detail.adapters.WitnessListViewAdapter;
+import com.github.dedis.student20_pop.model.RollCall;
+import com.github.dedis.student20_pop.model.event.Event;
+
 import java.util.ArrayList;
 
 /** Fragment used to display the LAO Detail UI */
@@ -47,7 +50,7 @@ public class LaoDetailFragment extends Fragment {
 
     mLaoDetailFragBinding.setViewModel(mLaoDetailViewModel);
     mLaoDetailFragBinding.setLifecycleOwner(getActivity());
-
+    
     return mLaoDetailFragBinding.getRoot();
   }
 
@@ -61,6 +64,7 @@ public class LaoDetailFragment extends Fragment {
     setupCancelEditButton();
 
     setupEventListAdapter();
+    setupEventListUpdates();
     setupWitnessListAdapter();
     setupWitnessListUpdates();
 
@@ -143,11 +147,28 @@ public class LaoDetailFragment extends Fragment {
 
     mEventListViewEventAdapter =
         new EventExpandableListViewAdapter(new ArrayList<>(), mLaoDetailViewModel, getActivity());
-
+      Log.d(TAG, "created adapter");
     expandableListView.setAdapter(mEventListViewEventAdapter);
     expandableListView.expandGroup(0);
     expandableListView.expandGroup(1);
   }
+
+  private void setupEventListUpdates() {
+
+    mLaoDetailViewModel
+            .getLaoEvents()
+            .observe(
+                getActivity(),
+                events -> {
+                  Log.d(TAG, "Got an event list update");
+                  for(Event event : events){
+                      Log.d(TAG, ((RollCall)event).getDescription());
+                  }
+                  mEventListViewEventAdapter.replaceList(events);
+                }
+            );
+  }
+
 
   private void setupSwipeRefresh() {
     //    mLaoDetailFragBinding.swipeRefresh.setOnRefreshListener(

@@ -18,13 +18,13 @@ import com.github.dedis.student20_pop.model.network.method.Unsubscribe;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
+import com.github.dedis.student20_pop.model.network.method.message.data.EventState;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessage;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
-import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall.StartType;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
 import com.github.dedis.student20_pop.utility.security.Keys;
 import com.google.crypto.tink.KeysetHandle;
@@ -206,6 +206,7 @@ public class LAORepository {
     String senderPk = message.getSender();
 
     Data data = message.getData();
+    Log.d(TAG, "data with class: " + data.getClass());
     boolean enqueue = false;
     if (data instanceof CreateLao) {
       enqueue = handleCreateLao(channel, (CreateLao) data);
@@ -250,7 +251,7 @@ public class LAORepository {
 
     Log.d(
         TAG,
-        "Setting name as " + createLao.getName() + " creation time as " + createLao.getCreation());
+        "Setting name as " + createLao.getName() + " creation time as " + createLao.getCreation() + " lao channel is " + channel);
 
     return false;
   }
@@ -314,22 +315,24 @@ public class LAORepository {
     RollCall rollCall = new RollCall();
     rollCall.setId(createRollCall.getId());
     rollCall.setCreation(createRollCall.getCreation());
-
-    if (createRollCall.getStartType() == StartType.NOW) {
-      rollCall.setStart(createRollCall.getStartTime());
-    } else {
-      rollCall.setScheduled(createRollCall.getStartTime());
-    }
+    rollCall.setState(EventState.CREATED);
+    rollCall.setStart(createRollCall.getProposedStart());
+    rollCall.setEnd(createRollCall.getProposedEnd());
+    rollCall.setName(createRollCall.getName());
+    rollCall.setLocation(createRollCall.getLocation());
 
     rollCall.setLocation(createRollCall.getLocation());
     rollCall.setDescription(createRollCall.getDescription().orElse(""));
 
     lao.updateRollCall(rollCall.getId(), rollCall);
+
     return false;
   }
 
   private boolean handleOpenRollCall(String channel, OpenRollCall openRollCall) {
     Lao lao = laoById.get(channel).getLao();
+    Log.d(TAG, "handleOpenRollCall: " + channel);
+    Log.d(TAG, openRollCall.getOpens());
 
     String updateId = openRollCall.getUpdateId();
     String opens = openRollCall.getOpens();
@@ -340,7 +343,8 @@ public class LAORepository {
     }
 
     RollCall rollCall = rollCallOptional.get();
-    rollCall.setStart(openRollCall.getStart());
+    rollCall.setStart(openRollCall.getOpenedAt());
+    rollCall.setState(EventState.OPENED);
     // We might be opening a closed one
     rollCall.setEnd(0);
     rollCall.setId(updateId);
@@ -351,6 +355,7 @@ public class LAORepository {
 
   private boolean handleCloseRollCall(String channel, CloseRollCall closeRollCall) {
     Lao lao = laoById.get(channel).getLao();
+    Log.d(TAG, "handleCloseRollCall: " + channel);
 
     String updateId = closeRollCall.getUpdateId();
     String closes = closeRollCall.getCloses();
@@ -361,9 +366,10 @@ public class LAORepository {
     }
 
     RollCall rollCall = rollCallOptional.get();
-    rollCall.setEnd(closeRollCall.getEnd());
+    rollCall.setEnd(closeRollCall.getClosedAt());
     rollCall.setId(updateId);
     rollCall.getAttendees().addAll(closeRollCall.getAttendees());
+    rollCall.setState(EventState.CLOSED);
 
     lao.updateRollCall(closes, rollCall);
     return true;
@@ -474,10 +480,23 @@ public class LAORepository {
     Single<Answer> answer = createSingle(id);
 
     Publish publish = new Publish(channel, id, message);
-
     if (message.getData() instanceof CreateLao) {
       CreateLao data = (CreateLao) message.getData();
       createLaoRequests.put(id, "/root/" + data.getId());
+    }else{
+      //uncomment the following for testing roll calls without receiving broadcast message from backend
+      //this is just for testing, to be removed when backend responding fully works:
+      /*
+      if(message.getData() instanceof CreateRollCall) {
+        handleCreateRollCall(channel, (CreateRollCall) message.getData());
+      }
+      if(message.getData() instanceof OpenRollCall) {
+        handleOpenRollCall(channel, (OpenRollCall) message.getData());
+      }
+      if(message.getData() instanceof CloseRollCall) {
+        handleCloseRollCall(channel, (CloseRollCall) message.getData());
+      }
+      */
     }
 
     mRemoteDataSource.sendMessage(publish);
@@ -485,15 +504,16 @@ public class LAORepository {
   }
 
   public Single<Answer> sendSubscribe(String channel) {
+
     int id = mRemoteDataSource.incrementAndGetRequestId();
 
     Subscribe subscribe = new Subscribe(channel, id);
 
-    mRemoteDataSource.sendMessage(subscribe);
     subscribeRequests.put(id, channel);
 
     Single<Answer> answer = createSingle(id);
     mRemoteDataSource.sendMessage(subscribe);
+    Log.d(TAG, "sending subscribe");
     return answer;
   }
 

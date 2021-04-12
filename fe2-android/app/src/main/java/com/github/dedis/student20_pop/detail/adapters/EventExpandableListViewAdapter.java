@@ -7,6 +7,7 @@ import static com.github.dedis.student20_pop.model.event.EventCategory.PRESENT;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,13 +19,17 @@ import com.github.dedis.student20_pop.databinding.LayoutEventBinding;
 import com.github.dedis.student20_pop.databinding.LayoutEventCategoryBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.listeners.AddEventListener;
+import com.github.dedis.student20_pop.model.RollCall;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventCategory;
 import com.github.dedis.student20_pop.model.event.EventType;
+import com.github.dedis.student20_pop.model.network.method.message.data.EventState;
+
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -181,6 +186,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
     Context context = parent.getContext();
 
+
     AddEventListener addEventOnClickListener =
         new AddEventListener() {
           @Override
@@ -209,7 +215,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     binding.setLifecycleOwner(lifecycleOwner);
     binding.setAddEventListener(addEventOnClickListener);
     binding.executePendingBindings();
-    
+
     binding.addFutureEventButton.setFocusable(false);
 
     return binding.getRoot();
@@ -242,7 +248,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     // in the future it could be nice to have a pencil icon to allow organizer to modify an event
 
     LayoutEventBinding binding;
-    Event event = ((Event) getChild(groupPosition, childPosition));
+
     if (convertView == null) {
       LayoutInflater inflater = LayoutInflater.from(parent.getContext());
       binding = LayoutEventBinding.inflate(inflater, parent, false);
@@ -250,7 +256,37 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
       binding = DataBindingUtil.getBinding(convertView);
     }
 
-    binding.setEvent(event);
+    //Event event = ((Event) getChild(groupPosition, childPosition));
+    Event event = (Event)getChild(groupPosition, childPosition);
+    if(event instanceof RollCall){
+      RollCall rollCall = (RollCall)event;
+      binding.setRollCall(rollCall);
+      binding.setIsRollCall(true);
+      SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm", Locale.FRENCH);
+      binding.rollCallTime.setText("Time: "+DATE_FORMAT.format(new Date(1000*rollCall.getStart())));
+
+      binding.rollCallTitle.setText("Roll Call: "+rollCall.getName());
+
+      binding.setViewModel(viewModel);
+      binding.openButton.setVisibility(viewModel.isOrganizer().getValue() && rollCall.getState()== EventState.CREATED ? View.VISIBLE : View.GONE);
+      binding.reopenButton.setVisibility(viewModel.isOrganizer().getValue() && rollCall.getState()== EventState.CLOSED ? View.VISIBLE : View.GONE);
+      binding.scheduledButton.setVisibility(!viewModel.isOrganizer().getValue() && rollCall.getState()== EventState.CREATED ? View.VISIBLE : View.GONE);
+      binding.enterButton.setVisibility(!viewModel.isOrganizer().getValue() && rollCall.getState()== EventState.OPENED ? View.VISIBLE : View.GONE);
+      binding.closedButton.setVisibility(!viewModel.isOrganizer().getValue() && rollCall.getState()== EventState.CLOSED ? View.VISIBLE : View.GONE);
+
+
+      binding.openButton.setOnClickListener(
+              clicked -> {
+                viewModel.openConnectRollCall(rollCall.getId());
+              });
+      binding.reopenButton.setOnClickListener(
+              clicked -> {
+                viewModel.openConnectRollCall(rollCall.getId());
+              });
+      //TODO: add listener for enterButton for attendees
+
+    }
+
     binding.setLifecycleOwner(lifecycleOwner);
 
     binding.executePendingBindings();
@@ -264,7 +300,6 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
    */
   private void putEventsInMap(List<Event> events) {
     Collections.sort(events);
-    eventsMap = new HashMap<>();
     long now = Instant.now().getEpochSecond();
     for (Event event : events) {
       if (event.getEndTimestamp() < now) {
