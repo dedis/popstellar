@@ -279,7 +279,7 @@ type ElectionAction DataAction
 
 var (
 	// ElectionSetupAction represents the action associated with the data for setting up an election.
-	ElectionSetupAction ElectionAction = "setup"
+	ElectionSetupAction ElectionAction = "create"
 
 	// CastVoteAction represents the action associated with the data for casting a vote in
 	// an election.
