@@ -267,7 +267,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
       binding.eventTime.setText("Time: "+DATE_FORMAT.format(new Date(1000*rollCall.getStart())));
       binding.eventTitle.setText("Roll Call: "+rollCall.getName());
       binding.eventLocation.setText("Location: "+rollCall.getLocation());
-
+      
       boolean isOrganizer = viewModel.isOrganizer().getValue();
 
       if(isOrganizer && rollCall.getState()== EventState.CREATED){
