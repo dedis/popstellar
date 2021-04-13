@@ -14,10 +14,15 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.github.dedis.student20_pop.databinding.LayoutEventBinding;
 import com.github.dedis.student20_pop.databinding.LayoutEventCategoryBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.listeners.AddEventListener;
+import com.github.dedis.student20_pop.detail.listeners.OnEventTypeSelectedListener;
+import com.github.dedis.student20_pop.model.Election;
+import com.github.dedis.student20_pop.model.RollCall;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventCategory;
 import com.github.dedis.student20_pop.model.event.EventType;
@@ -248,10 +253,59 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     } else {
       binding = DataBindingUtil.getBinding(convertView);
     }
+   binding.setEventType(event.type);
 
-    binding.setEvent(event);
+    OnEventTypeSelectedListener clickOnEventOnClickListener =
+            eventType -> {
+
+      // we use a switch case to handle all the different type of actions we want when we click on a certain event
+              // TODO : Handle the case where a Roll Call event is clicked on
+
+/* if the election is the present when we click on it it will launch cast vote, if it's in the past it will launch
+            if the election is in the past it will display all the election results */
+
+      switch (eventType) {
+        case ELECTION:
+          if(getGroup(groupPosition) == PRESENT) {
+            viewModel.openCastVotes(true);
+          }
+          else if (getGroup(groupPosition) == PAST) {
+            viewModel.openElectionResults(true);
+
+          }
+
+          break;
+
+
+      }
+            };
+
+    OnEventTypeSelectedListener manageEvent =
+            eventType -> {
+
+              // we use a switch case to handle all the different type of actions we want when the organizer wants to manage
+              // a certain event
+
+              // TODO : Handle the case where a Roll Call manage button is clicked on
+
+/* if the election is the present when we click on it it will launch cast vote, if it's in the past it will launch
+            if the election is in the past it will display all the election results */
+
+              switch (eventType) {
+                case ELECTION:
+                  if(getGroup(groupPosition) == PRESENT || getGroup(groupPosition) == FUTURE) {
+                    viewModel.openManageElection(true);
+                  }
+
+                  break;
+
+
+              }
+            };
+
+    binding.setViewModel(viewModel);
     binding.setLifecycleOwner(lifecycleOwner);
-
+    binding.setClickOnEventListener(clickOnEventOnClickListener);
     binding.executePendingBindings();
     return binding.getRoot();
   }

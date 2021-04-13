@@ -83,7 +83,6 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
         setupConfirmButton();
         setupOpenButton();
         setupCancelButton();
-        final String[] RollCallId = new String[1];
         // Subscribe to "new LAO event creation" event
         mLaoDetailViewModel
                 .getNewLaoEventCreationEvent()
@@ -92,7 +91,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
                         eventTypeEvent -> {
                             EventType eventType = eventTypeEvent.getContentIfNotHandled();
                             if(eventType == EventType.ROLL_CALL) {
-                               RollCallId[0] =  createRollCall();
+                                createRollCall();
                             }
                         }
                 );
@@ -105,7 +104,8 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
                         booleanEvent -> {
                             Boolean action = booleanEvent.getContentIfNotHandled();
                             if(action != null) {
-                                openRollCall(RollCallId[0]);
+                               String id = createRollCall();
+                                openRollCall(id);
                             }
                         }
                 );
