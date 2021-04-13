@@ -13,6 +13,7 @@ import com.github.dedis.student20_pop.Event;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.home.HomeViewModel;
 import com.github.dedis.student20_pop.model.Lao;
+import com.github.dedis.student20_pop.model.RollCall;
 import com.github.dedis.student20_pop.model.data.LAORepository;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.model.network.answer.Result;
@@ -39,6 +40,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -50,9 +52,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
    * LiveData objects for capturing events like button clicks
    */
   private final MutableLiveData<Event<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
-
-  private final MutableLiveData<Event<String>> mOpenIdentityEvent = new MutableLiveData<>();
-
+  private final MutableLiveData<Event<Boolean>> mOpenIdentityEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mShowPropertiesEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mEditPropertiesEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenLaoDetailEvent = new MutableLiveData<>();
@@ -111,7 +111,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   public LiveData<Event<Boolean>> getOpenHomeEvent() {
     return mOpenHomeEvent;
   }
-  public LiveData<Event<String>> getOpenIdentityEvent() {
+  public LiveData<Event<Boolean>> getOpenIdentityEvent() {
     return mOpenIdentityEvent;
   }
   public LiveData<Event<Boolean>> getShowPropertiesEvent() {
@@ -158,27 +158,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     mOpenLaoDetailEvent.postValue(new Event<>(true));
   }
   public void openIdentity() {
-    /*if still using this fragment:
-    if isorganizer->QR code from laoid
-    if participant->QR code from generated key pairs
-    how to check isorganizer use same public key?
-    for participants could use basic wallet? but would need open this only if wants to participate in roll call?
-
-
-     */
-    KeysetHandle publicKeysetHandle = null;
-    try {
-      publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-    } catch (GeneralSecurityException e) {
-      e.printStackTrace();
-    }
-    String publicKey = null;
-    try {
-      publicKey = Keys.getEncodedKey(publicKeysetHandle);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    mOpenIdentityEvent.setValue(new Event<>(publicKey));
+    mOpenIdentityEvent.setValue(new Event<>(true));
   }
   public LiveData<Boolean> getShowProperties() {
     return showProperties;
@@ -319,7 +299,12 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     String channel = lao.getChannel();
     String laoId = channel.substring(6); // removing /root/ prefix
     String updateId = Hash.hash("R", laoId, id, Long.toString(openedAt));
-    OpenRollCall openRollCall = new OpenRollCall(updateId, id, openedAt, lao.getRollCall(id).get().getState());
+    Optional<RollCall> rollCall = lao.getRollCall(id);
+    if(!rollCall.isPresent()){
+      Log.d(TAG, "failed to retrieve roll call with id "+id);
+      return;
+    }
+    OpenRollCall openRollCall = new OpenRollCall(updateId, id, openedAt, rollCall.get().getState());
 
     try {
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
