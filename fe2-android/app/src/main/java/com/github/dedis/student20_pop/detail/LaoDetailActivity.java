@@ -90,7 +90,37 @@ public class LaoDetailActivity extends AppCompatActivity {
                 handleNewEvent(eventType);
               }
             });
+
+    // Subscribe to "open Cast Votes event" event
+    mViewModel
+            .getOpenCastVotesEvent()
+            .observe(
+                    this,
+                    booleanEvent -> {
+                    setupCastVotesFragment();
+                    });
+
+    // Subscribe to "Election Display event" event
+    mViewModel
+            .getOpenElectionResultsEvent()
+            .observe(
+                    this,
+                    booleanEvent -> {
+                      setupElectionResultsFragment();
+                    });
+
+    // Subscribe to " Manage Election event" event
+    mViewModel
+            .getOpenElectionResultsEvent()
+            .observe(
+                    this,
+                    booleanEvent -> {
+                      setupManageElectionFragment();
+                    });
   }
+
+
+
 
   public void handleNewEvent(EventType eventType) {
     Log.d(TAG, "event type: " + eventType.toString());
@@ -202,4 +232,10 @@ public class LaoDetailActivity extends AppCompatActivity {
               getSupportFragmentManager(), electionSetupFragment, R.id.fragment_container_lao_detail);
     }
   }
+  private void setupCastVotesFragment() { }
+  private void setupElectionResultsFragment() {
+  }
+  private void setupManageElectionFragment() {
+  }
+
 }
