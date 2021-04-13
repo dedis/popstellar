@@ -1,6 +1,7 @@
 package com.github.dedis.student20_pop.model;
 
 import com.github.dedis.student20_pop.model.event.Event;
+import com.github.dedis.student20_pop.model.event.EventType;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,7 +19,9 @@ public class Election extends Event {
     private String description;
 
 
-    public Election() { this.attendees = new HashSet<>(); }
+    public Election() { this.attendees = new HashSet<>();
+    type = EventType.ELECTION;
+    }
 
     public String getId() {
         return id;

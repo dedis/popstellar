@@ -81,9 +81,11 @@ public class HomeViewModel extends AndroidViewModel
     mGson = gson;
     mKeysetManager = keysetManager;
 
-    mLAOs =
+     mLAOs =
         LiveDataReactiveStreams.fromPublisher(
             mLAORepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
+
+
   }
 
   @Override

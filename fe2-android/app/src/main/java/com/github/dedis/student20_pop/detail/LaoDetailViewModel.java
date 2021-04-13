@@ -49,6 +49,10 @@ public class LaoDetailViewModel extends AndroidViewModel {
   private final MutableLiveData<Event<EventType>> mNewLaoEventEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenNewRollCallEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<EventType>> mNewLaoEventCreationEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<Boolean>> mOpenCastVotesEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<Boolean>> mOpenElectionResultsEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<Boolean>> mOpenManageElectionEvent = new MutableLiveData<>();
+
   /*
    * LiveData objects that represent the state in a fragment
    */
@@ -103,9 +107,12 @@ public class LaoDetailViewModel extends AndroidViewModel {
   public LiveData<Event<Boolean>> getOpenNewRollCallEvent() {
     return mOpenNewRollCallEvent;
   }
-  public LiveData<List<com.github.dedis.student20_pop.model.event.Event>> getLaoEvents() {
-    return mLaoEvents;
-  }
+  public LiveData<Event<Boolean>> getOpenCastVotesEvent() {return mOpenCastVotesEvent; }
+  public LiveData<Event<Boolean>> getOpenElectionResultsEvent() { return mOpenElectionResultsEvent; }
+  public LiveData<Event<Boolean>> getOpenManageElectionEvent() { return mOpenManageElectionEvent;}
+
+  public LiveData<List<com.github.dedis.student20_pop.model.event.Event>> getLaoEvents() { return mLaoEvents; }
+
   public LiveData<Event<Boolean>> getOpenHomeEvent() {
     return mOpenHomeEvent;
   }
@@ -174,6 +181,13 @@ public class LaoDetailViewModel extends AndroidViewModel {
   public void openNewRollCall(Boolean open) {
     mOpenNewRollCallEvent.postValue(new Event<>(open));
   }
+  public void openCastVotes(Boolean open) {
+    mOpenCastVotesEvent.postValue(new Event<>(open));
+  }
+  public void openElectionResults(Boolean open) {
+    mOpenElectionResultsEvent.postValue(new Event<>(open));
+  }
+  public void openManageElection(Boolean open) {mOpenManageElectionEvent.postValue(new Event<>(open));}
   public void confirmEdit() {
     closeEditProperties();
 
@@ -375,6 +389,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
     //TODO: implement open roll call
   }
+
 
   /**
    * Remove specific witness from the LAO's list of witnesses.
