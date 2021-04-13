@@ -67,13 +67,9 @@ public class CastVoteFragment extends Fragment implements AdapterView.OnItemClic
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment CastVoteFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static CastVoteFragment newInstance(String param1, String param2) {
+    public static CastVoteFragment newInstance() {
         return new CastVoteFragment();
     }
 
@@ -127,7 +123,8 @@ public class CastVoteFragment extends Fragment implements AdapterView.OnItemClic
     }
 
     private void setDummyBallotOptions(){
-        ballotOptions = new String[]{"Alan Turing", "John von Neumann", "Claude Shannon"};
+      //  ballotOptions = new String[]{"Alan Turing", "John von Neumann", "Claude Shannon", "Something else", "FOO BAR", "Some other stuff", "stuff", "Anything", "Some other stuff"};
+        ballotOptions = new String[]{"Alan Turing", "John von Neumann", "Claude Shannon", "Something else"};
     }
 
     @Override
