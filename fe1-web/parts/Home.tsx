@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, FlatList } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { makeLaosList } from 'store';
@@ -8,9 +8,12 @@ import { Lao } from 'model/objects';
 import { Spacing } from 'styles';
 import styleContainer from 'styles/stylesheets/container';
 import STRINGS from 'res/strings';
-
+import { sign } from 'tweetnacl';
 import LAOItem from 'components/LAOItem';
 import TextBlock from 'components/TextBlock';
+import { encodeBase64 } from 'tweetnacl-util';
+import WideButtonView from '../components/WideButtonView';
+import { WalletCryptographyHandler } from '../model/objects/WalletCryptographyHandler';
 
 /**
  * Manage the Home screen component: if the user is not connected to any LAO, a welcome message
@@ -24,6 +27,31 @@ const styles = StyleSheet.create({
     marginTop: Spacing.s,
   },
 });
+
+const token = sign.keyPair().secretKey;
+let cypher: ArrayBuffer = new ArrayBuffer(0);
+const cryptoManager = new WalletCryptographyHandler();
+
+const onWalletCryptoHandlerButtonPressed = async () => {
+  console.log('--------------------------------- Creation of the secret key database ---------------------------------');
+  await cryptoManager.initWalletStorage();
+  console.log('---------------------------------        Key database created         ---------------------------------');
+  console.log('');
+};
+
+const onEncryptToken = async () => {
+  console.log('---------------------------------      Encryption/Decryption test     ---------------------------------');
+  console.log(`ed25519 test-key to encrypt : \n ${encodeBase64(token).toString()}`);
+  cypher = await cryptoManager.encrypt(token);
+  console.log('Encrypted Token');
+  console.log(cypher);
+};
+
+const onDecryptToken = async () => {
+  const plaintext = await cryptoManager.decrypt(cypher);
+  console.log('Decrypted Token');
+  console.log(encodeBase64(new Uint8Array(plaintext)));
+};
 
 // FIXME: define interface + types, requires availableLaosReducer to be migrated first
 function getConnectedLaosDisplay(laos: Lao[]) {
@@ -45,6 +73,21 @@ function getWelcomeMessageDisplay() {
       <TextBlock bold text={STRINGS.home_welcome} />
       <TextBlock bold text={STRINGS.home_connect_lao} />
       <TextBlock bold text={STRINGS.home_launch_lao} />
+      <TextBlock text={' '} />
+      <TextBlock text={' '} />
+      <TextBlock text={' '} />
+      <WideButtonView
+        title={STRINGS.wallet}
+        onPress={() => onWalletCryptoHandlerButtonPressed()}
+      />
+      <WideButtonView
+        title={STRINGS.walletEncryptRandomToken}
+        onPress={() => onEncryptToken()}
+      />
+      <WideButtonView
+        title={STRINGS.walletDecryptRandomToken}
+        onPress={() => onDecryptToken()}
+      />
     </View>
   );
 }
