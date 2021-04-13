@@ -119,7 +119,7 @@ const STRINGS = {
   meeting_create_location: 'Location',
 
   /* --- Wallet Strings --- */
-  wallet: 'Create wallet cryptography handler database',
+  wallet: 'Initialize wallet cryptography handler database',
   walletAdd: 'Add encryption/decryption key to database ',
   walletRemove: 'Remove encryption/decryption key from database ',
   walletEncryptRandomToken: 'Encrypt test-token - ed25519 key',

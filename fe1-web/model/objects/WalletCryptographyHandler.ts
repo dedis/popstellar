@@ -40,7 +40,7 @@ export class WalletCryptographyHandler {
       || (tryPrivateKey === undefined);
 
     if (walletIsNotInitialised) {
-      await this.solveWalletInitialisation();
+      await this.handleWalletInitialization();
     }
     console.log('Wallet storage ready');
   }
@@ -103,7 +103,7 @@ export class WalletCryptographyHandler {
    * @private
    * @param key the new key for encryption/decryption
    */
-  private async updateKey(key: WalletCryptoKey): Promise<void> {
+  private async updateKeyInDatabase(key: WalletCryptoKey): Promise<void> {
     await update(this.publicKeyId, () => key.publicKey);
     await update(this.privateKeyId, () => key.privateKey);
   }
@@ -118,7 +118,7 @@ export class WalletCryptographyHandler {
    * wallet storage. In the second case a solution still has to be found.
    * @private
    */
-  private async solveWalletInitialisation() {
+  private async handleWalletInitialization() {
     /* if (storage has never been initialised) { */
     const key: WalletCryptoKey = await this.generateRSAKey();
     await this.putKeyInDatabase(key);
