@@ -65,9 +65,9 @@ public class LaoDetailActivity extends AppCompatActivity {
             .observe(
                     this,
                     booleanEvent -> {
-                      String pk = booleanEvent.getContentIfNotHandled();
-                      if (pk != null) {
-                        setupIdentityFragment(pk);
+                      Boolean event = booleanEvent.getContentIfNotHandled();
+                      if (event != null) {
+                        setupIdentityFragment();
                       }
                     });
     // Subscribe to "new lao event" event

@@ -12,9 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.utility.security.Keys;
-import com.google.crypto.tink.KeysetHandle;
-
 import net.glxn.qrgen.android.QRCode;
 
 /**
@@ -33,23 +30,17 @@ public class IdentityFragment extends Fragment {
   private EditText identityEmailEditText;
   private EditText identityPhoneEditText;
   private ImageView qrCode;
-  private String pk;
 
-  public IdentityFragment(String pk) {
-    super();
-    this.pk = pk;
-  }
-
-  public static IdentityFragment newInstance(String pk) {
-    return new IdentityFragment(pk);
+  public static IdentityFragment newInstance() {
+    return new IdentityFragment();
   }
 
   @Nullable
   @Override
   public View onCreateView(
-      @NonNull LayoutInflater inflater,
-      @Nullable ViewGroup container,
-      @Nullable Bundle savedInstanceState) {
+          @NonNull LayoutInflater inflater,
+          @Nullable ViewGroup container,
+          @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_identity, container, false);
 
     // TODO :   The QR code does not appear at all unless the Name field is non-empty
@@ -65,18 +56,18 @@ public class IdentityFragment extends Fragment {
     hideIdentityInformation();
 
     anonymousCheckBox.setOnCheckedChangeListener(
-        (buttonView, isChecked) -> {
-          if (isChecked) {
-            hideIdentityInformation();
-          } else {
-            qrCode.setVisibility(View.VISIBLE);
-            identityEmailEditText.setVisibility(View.VISIBLE);
-            identityNameEditText.setVisibility(View.VISIBLE);
-            identityOrganizationEditText.setVisibility(View.VISIBLE);
-            identityPhoneEditText.setVisibility(View.VISIBLE);
-            identityTitleEditText.setVisibility(View.VISIBLE);
-          }
-        });
+            (buttonView, isChecked) -> {
+              if (isChecked) {
+                hideIdentityInformation();
+              } else {
+                qrCode.setVisibility(View.VISIBLE);
+                identityEmailEditText.setVisibility(View.VISIBLE);
+                identityNameEditText.setVisibility(View.VISIBLE);
+                identityOrganizationEditText.setVisibility(View.VISIBLE);
+                identityPhoneEditText.setVisibility(View.VISIBLE);
+                identityTitleEditText.setVisibility(View.VISIBLE);
+              }
+            });
 
     // NOTE : I was not sure which unique id to use to generate the QR code
     // User identity is composed of :
@@ -91,13 +82,9 @@ public class IdentityFragment extends Fragment {
     String laoId = app.getCurrentLaoUnsafe().getId();
     String uniqueIdentity = key + laoId;*/
 
-    /*KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-    String publicKey = Keys.getEncodedKey(publicKeysetHandle);*/
-
     identityNameEditText.setText("USERNAME");
 
-    //Bitmap myBitmap = QRCode.from("UNIQUE IDENTITY").bitmap();
-    Bitmap myBitmap = QRCode.from(pk+"UNIQUE IDENTITY").bitmap();
+    Bitmap myBitmap = QRCode.from("UNIQUE IDENTITY").bitmap();
     qrCode.setImageBitmap(myBitmap);
 
     return view;
