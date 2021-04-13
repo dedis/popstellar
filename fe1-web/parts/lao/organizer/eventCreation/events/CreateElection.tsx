@@ -13,10 +13,6 @@ import { Timestamp } from 'model/objects';
 import TextBlock from 'components/TextBlock';
 import DropdownSelector from 'components/DropdownSelector';
 
-function dateToTimestamp(date: Date): Timestamp {
-  return new Timestamp(Math.floor(date.getTime() / 1000));
-}
-
 /**
  * UI to create a Election Event
  *
@@ -30,8 +26,8 @@ const CreateElection = ({ route }: any) => {
   // Sets initial end date to 1 hour later than start date
   initialEndDate.setHours(initialEndDate.getHours() + 1);
 
-  const [startDate, setStartDate] = useState(dateToTimestamp(initialStartDate));
-  const [endDate, setEndDate] = useState(dateToTimestamp(initialEndDate));
+  const [startDate, setStartDate] = useState(Timestamp.dateToTimestamp(initialStartDate));
+  const [endDate, setEndDate] = useState(Timestamp.dateToTimestamp(initialEndDate));
 
   const [electionName, setElectionName] = useState('');
   const [electionQuestion, setElectionQuestion] = useState('');
@@ -52,12 +48,12 @@ const CreateElection = ({ route }: any) => {
         <ParagraphBlock text={STRINGS.election_create_start_time} />
         <DatePicker
           selected={startTime}
-          onChange={(date: Date) => setStartDate(dateToTimestamp(date))}
+          onChange={(date: Date) => setStartDate(Timestamp.dateToTimestamp(date))}
         />
         <ParagraphBlock text={STRINGS.election_create_finish_time} />
         <DatePicker
           selected={endTime}
-          onChange={(date: Date) => setEndDate(dateToTimestamp(date))}
+          onChange={(date: Date) => setEndDate(Timestamp.dateToTimestamp(date))}
         />
       </View>
     );

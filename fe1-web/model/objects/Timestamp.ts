@@ -21,6 +21,14 @@ export class Timestamp extends Number implements Number {
     return new Timestamp(Math.floor(Date.now() / 1000));
   }
 
+  public static dateToTimestamp(date: Date): Timestamp {
+    return new Timestamp(Math.floor(date.getTime() / 1000));
+  }
+
+  public timestampToDate(): Date {
+    return new Date(this.valueOf() * 1000);
+  }
+
   public before(other: Timestamp): boolean {
     return this.valueOf() < other.valueOf();
   }
