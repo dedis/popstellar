@@ -281,7 +281,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
       }else if(!isOrganizer && rollCall.getState()== EventState.CLOSED){
         binding.closedButton.setVisibility(View.VISIBLE);
       }
-
+      
       binding.openButton.setOnClickListener(
               clicked -> {
                 viewModel.openRollCall(rollCall.getId());
