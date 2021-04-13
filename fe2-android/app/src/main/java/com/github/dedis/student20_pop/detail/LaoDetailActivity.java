@@ -145,11 +145,11 @@ public class LaoDetailActivity extends AppCompatActivity {
     setResult(HomeActivity.LAO_DETAIL_REQUEST_CODE, intent);
     finish();
   }
-  private void setupIdentityFragment(String pk) {
+  private void setupIdentityFragment() {
     IdentityFragment identityFragment =
             (IdentityFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_identity);
     if (identityFragment == null) {
-      identityFragment = IdentityFragment.newInstance(pk);
+      identityFragment = IdentityFragment.newInstance();
       ActivityUtils.replaceFragmentInActivity(
               getSupportFragmentManager(), identityFragment, R.id.fragment_container_lao_detail);
     }
