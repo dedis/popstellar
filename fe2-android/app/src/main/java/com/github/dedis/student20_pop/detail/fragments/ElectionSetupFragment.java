@@ -84,11 +84,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
         return new ElectionSetupFragment();
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
     @Nullable
     @Override
     public View onCreateView(

@@ -3,7 +3,6 @@
     import android.view.LayoutInflater;
     import android.view.View;
     import android.view.ViewGroup;
-    import android.widget.Button;
     import android.widget.TextView;
 
     import androidx.annotation.NonNull;
@@ -16,15 +15,8 @@
 
     public final class ElectionDisplayFragment extends AbstractEventCreationFragment {
         public static final String TAG =ElectionDisplayFragment.class.getSimpleName();
-        private TextView laoNameTextView;
-        private LaoDetailViewModel mLaoDetailViewModel;
-        private FragmentElectionDisplayBinding mElectionDisplayFragBinding;
         public static ElectionDisplayFragment newInstance(){ return new ElectionDisplayFragment(); }
 
-        @Override
-        public void onActivityCreated (@Nullable Bundle savedInstanceState) {
-            super.onActivityCreated(savedInstanceState);
-        }
         @Nullable
         @Override
         public View onCreateView(
@@ -32,29 +24,23 @@
                 @Nullable ViewGroup container,
                 @Nullable Bundle savedInstanceState) {
 
-            mElectionDisplayFragBinding =
+            FragmentElectionDisplayBinding mElectionDisplayFragBinding =
                     FragmentElectionDisplayBinding.inflate(inflater,container, false);
             FragmentActivity activity = getActivity();
+            LaoDetailViewModel mLaoDetailViewModel;
             if (activity instanceof LaoDetailActivity) {
                 mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(activity);
             } else {
                 throw new IllegalArgumentException("Cannot obtain view model for " + TAG);
             }
             // Set the text widget in layout to current LAO name
-            laoNameTextView = mElectionDisplayFragBinding.LAONameElectionDisplay;
+            TextView laoNameTextView = mElectionDisplayFragBinding.LAONameElectionDisplay;
             laoNameTextView.setText(mLaoDetailViewModel.getCurrentLaoName().getValue());
             //////////////////////////////////////////////////////
-
-            setUpElectionNameButton();
 
             mElectionDisplayFragBinding.setLifecycleOwner(activity);
             return mElectionDisplayFragBinding.getRoot();
         }
 
-        private void setUpElectionNameButton() {
-           /* mElectionDisplayFragBinding.electionName1.setOnClickListener(  v -> {
-                mLaoDetailViewModel.castVotes();
-            }); */
-        }
 
     }
