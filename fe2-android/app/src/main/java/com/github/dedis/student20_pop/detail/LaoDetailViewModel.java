@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -48,6 +49,8 @@ import java.util.stream.Collectors;
 public class LaoDetailViewModel extends AndroidViewModel implements CameraPermissionViewModel,
         QRCodeScanningViewModel {
   public static final String TAG = LaoDetailViewModel.class.getSimpleName();
+  private static final String LAO_FAILURE_MESSAGE = "failed to retrieve current lao";
+  private static final String PK_FAILURE_MESSAGE = "failed to retrieve public key";
   /*
    * LiveData objects for capturing events like button clicks
    */
@@ -242,7 +245,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     AtomicBoolean created = new AtomicBoolean(false);
     Lao lao = getCurrentLao();
     if (lao == null) {
-      Log.d(TAG, "failed to retrieve current lao");
+      Log.d(TAG, LAO_FAILURE_MESSAGE);
       return "";
     }
     String channel = lao.getChannel();
@@ -258,7 +261,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
       PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
 
       MessageGeneral msg = new MessageGeneral(sender, createRollCall, signer, mGson);
-      Log.d(TAG, "sending publish message");
       Disposable disposable =
               mLAORepository
                       .sendPublish(channel, msg)
@@ -283,7 +285,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                               });
       disposables.add(disposable);
     } catch (GeneralSecurityException | IOException e) {
-      Log.d(TAG, "failed to retrieve public key", e);
+      Log.d(TAG, PK_FAILURE_MESSAGE, e);
     }
     return createRollCall.getId();
   }
@@ -292,7 +294,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
     Lao lao = getCurrentLao();
     if (lao == null) {
-      Log.d(TAG, "failed to retrieve current lao");
+      Log.d(TAG, LAO_FAILURE_MESSAGE);
       return;
     }
     long openedAt = Instant.now().getEpochSecond();
@@ -312,7 +314,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
       byte[] sender = Base64.getDecoder().decode(publicKey);
       PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
       MessageGeneral msg = new MessageGeneral(sender, openRollCall, signer, mGson);
-      Log.d(TAG, "sending publish message");
       Disposable disposable =
               mLAORepository
                       .sendPublish(channel, msg)
@@ -324,7 +325,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                 if (answer instanceof Result) {
                                   Log.d(TAG, "opened the roll call");
                                   mCurrentRollCallId = openRollCall.getUpdateId();
-                                  if (ActivityCompat.checkSelfPermission(
+                                  if (ContextCompat.checkSelfPermission(
                                           getApplication().getApplicationContext(), Manifest.permission.CAMERA)
                                           == PackageManager.PERMISSION_GRANTED) {
                                     openQrCodeScanningRollCall();
@@ -341,7 +342,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                               });
       disposables.add(disposable);
     } catch (GeneralSecurityException | IOException e) {
-      Log.d(TAG, "failed to retrieve public key", e);
+      Log.d(TAG, PK_FAILURE_MESSAGE, e);
     }
   }
 
@@ -350,7 +351,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     //mCloseRollCallEvent.postValue(new Event<>(true));
     Lao lao = getCurrentLao();
     if (lao == null) {
-      Log.d(TAG, "failed to retrieve current lao");
+      Log.d(TAG, LAO_FAILURE_MESSAGE);
       return;
     }
     long end = Instant.now().getEpochSecond();
@@ -364,7 +365,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
       byte[] sender = Base64.getDecoder().decode(publicKey);
       PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
       MessageGeneral msg = new MessageGeneral(sender, closeRollCall, signer, mGson);
-      Log.d(TAG, "sending publish message");
       Disposable disposable =
               mLAORepository
                       .sendPublish(channel, msg)
@@ -387,7 +387,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                               });
       disposables.add(disposable);
     } catch (GeneralSecurityException | IOException e) {
-      Log.d(TAG, "failed to retrieve public key", e);
+      Log.d(TAG, PK_FAILURE_MESSAGE, e);
     }
 
   }

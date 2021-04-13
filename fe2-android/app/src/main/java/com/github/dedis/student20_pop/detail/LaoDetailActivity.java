@@ -90,13 +90,10 @@ public class LaoDetailActivity extends AppCompatActivity {
                       if (action != null) {
                         switch (action) {
                           case HomeViewModel.SCAN:
-                            Log.d("ROLL CALL", "scan2");
                             setupScanFragmentRollCall();
                             break;
-                          case HomeViewModel.REQUEST_CAMERA_PERMISSION:
-                            Log.d("ROLL CALL", "permission2");
+                          default:
                             setupCameraPermissionFragmentRollCall();
-                            break;
                         }
                       }
                     });
