@@ -4,6 +4,7 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
 import com.github.dedis.student20_pop.utility.security.Hash;
+import com.google.gson.annotations.SerializedName;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -13,9 +14,12 @@ public class ElectionSetup extends Data {
     private String id;
     private String name;
     private String lao;
-    private long created_at;
-    private long start_time;
-    private long end_time;
+    @SerializedName(value = "created_at")
+    private long createdAt;
+    @SerializedName(value = "start_time")
+    private long startTime;
+    @SerializedName(value = "end_time")
+    private long endTime;
     private String version;
     private List<ElectionQuestion> questions;
 
@@ -36,12 +40,12 @@ public class ElectionSetup extends Data {
             String question,
             String laoId) {
         this.name = name;
-        this.created_at = Instant.now().toEpochMilli();
-        this.start_time = start;
-        this.end_time = end;
+        this.createdAt = Instant.now().toEpochMilli();
+        this.startTime = start;
+        this.endTime = end;
         this.lao = laoId;
         this.version = "1.0.0";
-        this.id = Hash.hash("E", laoId, Long.toString(created_at), name);
+        this.id = Hash.hash("E", laoId, Long.toString(createdAt), name);
         this.questions = new ArrayList<>();
         this.questions.add(new ElectionQuestion(question, voting_method, write_in, ballot_options, this.id));
     }
@@ -56,14 +60,14 @@ public class ElectionSetup extends Data {
     }
 
     public long getCreation() {
-        return created_at;
+        return createdAt;
     }
 
     public long getStartTime() {
-        return start_time;
+        return startTime;
     }
 
-    public long getEndTime() { return end_time; }
+    public long getEndTime() { return endTime; }
 
     public List<ElectionQuestion> getQuestions() { return questions; }
 
@@ -92,11 +96,11 @@ public class ElectionSetup extends Data {
         }
         ElectionSetup that = (ElectionSetup) o;
         return getCreation() == that.getCreation()
-                && start_time == that.getStartTime()
+                && startTime == that.getStartTime()
                 && java.util.Objects.equals(getId(), that.getId())
-                && created_at == that.getCreation()
+                && createdAt == that.getCreation()
                 && java.util.Objects.equals(getName(), that.getName())
-                && end_time == that.getEndTime()
+                && endTime == that.getEndTime()
                 && java.util.Objects.equals(questions, that.getQuestions());
     }
 
@@ -124,13 +128,13 @@ public class ElectionSetup extends Data {
                 + lao
                 + '\''
                 + ", creation='"
-                + created_at
+                + createdAt
                 + '\''
                 + ", start='"
-                + start_time
+                + startTime
                 + '\''
                 + ", end="
-                + end_time
+                + endTime
                 + '\''
                 + ", version='"
                 + version

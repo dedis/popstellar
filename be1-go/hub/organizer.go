@@ -536,6 +536,9 @@ func (c *laoChannel) createElection(msg message.Message) error {
 	}
 
 	// Check if the Lao ID of the message corresponds to the channel ID
+	log.Printf("voting method is %s ", data.Questions[0].VotingMethod)
+	log.Printf("write in is %t", data.Questions[0].WriteIn)
+	log.Printf("ballot options are %s", data.Questions[0].BallotOptions)
 	encodedLaoID := base64.StdEncoding.EncodeToString(data.LaoID)
 	channelID := c.channelID[6:]
 	if channelID != encodedLaoID {

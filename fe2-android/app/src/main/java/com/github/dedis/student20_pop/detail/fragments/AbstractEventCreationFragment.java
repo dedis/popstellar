@@ -278,7 +278,6 @@ public abstract class AbstractEventCreationFragment extends Fragment {
     if(editText != null && errorMessage != null) {
       if (editText.getText().toString().trim().isEmpty()) {
         editText.setError(errorMessage);
-        //editText.requestFocus();
       }
     }
     else{
