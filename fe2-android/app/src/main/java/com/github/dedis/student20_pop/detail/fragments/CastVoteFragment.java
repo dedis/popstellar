@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -31,13 +32,12 @@ import java.util.Set;
  */
 public class CastVoteFragment extends Fragment implements AdapterView.OnItemClickListener {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
 
-    int numberOfChoices;
+    private int numberOfChoices;
     String [] ballotOptions;
     Set<String> selectedOptions;
+    String uniqueSelectedOption;
     private TextView laoNameText;
     private TextView voteInText;
     private TextView electionNameText;
@@ -59,6 +59,8 @@ public class CastVoteFragment extends Fragment implements AdapterView.OnItemClic
                 }
             }
     };
+
+
 
     public CastVoteFragment() {
         // Required empty public constructor
@@ -105,12 +107,16 @@ public class CastVoteFragment extends Fragment implements AdapterView.OnItemClic
 //        setBallotOptions();
         setDummyBallotOptions();
 
+        electionNameText.setText("General Election");
+
         lvBallots = mElectionDisplayFragBinding.castVoteListView;
 
-        //Multiple options allowed by default
-        numberOfChoices = ballotOptions.length - 1;
+        //Single options allowed by default
+        numberOfChoices = 1;
         lvBallots.setChoiceMode(numberOfChoices);
         ArrayAdapter<String> ballotAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, ballotOptions);
+
+       // ArrayAdapter<String> ballotAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, ballotOptions);
         lvBallots.setAdapter(ballotAdapter);
 
         lvBallots.setOnItemClickListener(this);
@@ -123,23 +129,30 @@ public class CastVoteFragment extends Fragment implements AdapterView.OnItemClic
     }
 
     private void setDummyBallotOptions(){
-      //  ballotOptions = new String[]{"Alan Turing", "John von Neumann", "Claude Shannon", "Something else", "FOO BAR", "Some other stuff", "stuff", "Anything", "Some other stuff"};
-        ballotOptions = new String[]{"Alan Turing", "John von Neumann", "Claude Shannon", "Something else"};
+        ballotOptions = new String[]{"Alan Turing", "John von Neumann", "Claude Shannon", "Something else", "FOO BAR", "Some other stuff", "stuff", "Anything", "Some other stuff"};
+      //  ballotOptions = new String[]{"Alan Turing", "John von Neumann", "Claude Shannon", "Something else"};
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         String vote = parent.getItemAtPosition(position).toString();
-        if(selectedOptions.contains(vote)){
-            selectedOptions.remove(vote);
-            if (selectedOptions.isEmpty()){
-                voteButton.setEnabled(false);
-            }
+        if (uniqueSelectedOption.equals(vote)){
+            voteButton.setEnabled(false);
         }
         else{
-            selectedOptions.add(vote);
             voteButton.setEnabled(true);
         }
+        //That would be for multi choice later
+//        if(selectedOptions.contains(vote)){
+//            selectedOptions.remove(vote);
+//            if (selectedOptions.isEmpty()){
+//                voteButton.setEnabled(false);
+//            }
+//        }
+//        else{
+//            selectedOptions.add(vote);
+//            voteButton.setEnabled(true);
+//        }
     }
 
     private void castVote(){
