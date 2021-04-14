@@ -286,10 +286,7 @@ func (c *laoChannel) processLaoObject(msg message.Message) error {
 			return xerrors.Errorf("failed to process lao/state: %v", err)
 		}
 	default:
-		return &message.Error{
-			Code:        -1,
-			Description: fmt.Sprintf("invalid action: %s", action),
-		}
+		return message.InvalidActionError(action)
 	}
 
 	return nil
@@ -462,10 +459,7 @@ func (c *laoChannel) processMessageObject(public message.PublicKey, data message
 		})
 		c.inboxMu.Unlock()
 	default:
-		return &message.Error{
-			Code:        -1,
-			Description: fmt.Sprintf("invalid action: %s", action),
-		}
+		return message.InvalidActionError(action)
 	}
 
 	return nil
@@ -482,7 +476,7 @@ func (c *laoChannel) processRollCallObject(sender message.PublicKey, data messag
 	if !c.hub.public.Equal(senderPoint) {
 		return &message.Error{
 			Code:        -5,
-			Description: fmt.Sprintf("The sender of the roll call message has a different public key from the organizer"),
+			Description: "The sender of the roll call message has a different public key from the organizer",
 		}
 	}
 
@@ -490,74 +484,55 @@ func (c *laoChannel) processRollCallObject(sender message.PublicKey, data messag
 
 	switch action {
 	case message.CreateRollCallAction:
-		rollCallData := data.(*message.CreateRollCallData)
-		if !c.checkRollCallID(rollCallData.Creation, message.Stringer(rollCallData.Name), rollCallData.ID) {
-			return &message.Error{
-				Code:        -4,
-				Description: fmt.Sprintf("The id of the roll call does not correspond to SHA256(‘R’||lao_id||creation||name)"),
-			}
-		}
-		c.rollCall.id = string(rollCallData.ID)
-		c.rollCall.state = Created
-	case message.RollCallAction(message.OpenRollCallAction):
-		if c.rollCall.state != Created {
-			return &message.Error{
-				Code:        -1,
-				Description: fmt.Sprintf("The roll call can not be opened since it has not been created previously"),
-			}
-		}
-		err := c.processOpenRollCall(data)
-		if err != nil {
-			return xerrors.Errorf("Failed to process openRollCall data: %v", err)
-		}
-	case message.RollCallAction(message.ReopenRollCallAction):
-		if c.rollCall.state != Closed {
-			return &message.Error{
-				Code:        -1,
-				Description: fmt.Sprintf("The roll call can not be reopened since it has not been closed previously"),
-			}
-		}
-		err := c.processOpenRollCall(data)
-		if err != nil {
-			return xerrors.Errorf("Failed to process reopenRollCall data: %v", err)
-		}
+		err = c.processCreateRollCall(data)
+	case message.RollCallAction(message.OpenRollCallAction), message.RollCallAction(message.ReopenRollCallAction):
+		err = c.processOpenRollCall(data, action)
 	case message.CloseRollCallAction:
-		if c.rollCall.state != Open {
-			return &message.Error{
-				Code:        -1,
-				Description: fmt.Sprintf("The roll call can not be closed since it is not open"),
-			}
-		}
-		rollCallData := data.(*message.CloseRollCallData)
-		if !c.checkPrevID(rollCallData.Closes) {
-			return &message.Error{
-				Code:        -4,
-				Description: fmt.Sprintf("The field \"closes\" does not correspond to the id of the previous roll call message"),
-			}
-		}
-		if !c.checkRollCallID(message.Stringer(rollCallData.Closes), rollCallData.ClosedAt, rollCallData.UpdateID) {
-			return &message.Error{
-				Code:        -4,
-				Description: fmt.Sprintf("The id of the roll call does not correspond to SHA256(‘R’||lao_id||closes||closed_at)"),
-			}
-		}
-		c.rollCall.id = string(rollCallData.UpdateID)
-		c.rollCall.state = Closed
-		c.attendees = map[string]struct{}{}
-		for i := 0; i < len(rollCallData.Attendees); i += 1 {
-			c.attendees[string(rollCallData.Attendees[i])] = struct{}{}
-		}
+		err = c.processCloseRollCall(data)
 	default:
-		return &message.Error{
-			Code:        -1,
-			Description: fmt.Sprintf("invalid action: %s", action),
-		}
+		return message.InvalidActionError(action)
+	}
+
+	if err != nil {
+		return xerrors.Errorf("failed to process %v roll-call action: %v", action, err)
 	}
 
 	return nil
 }
 
-func (c *laoChannel) processOpenRollCall(data message.Data) error {
+func (c *laoChannel) processCreateRollCall(data message.Data) error {
+	rollCallData := data.(*message.CreateRollCallData)
+	if !c.checkRollCallID(rollCallData.Creation, message.Stringer(rollCallData.Name), rollCallData.ID) {
+		return &message.Error{
+			Code:        -4,
+			Description: "The id of the roll call does not correspond to SHA256(‘R’||lao_id||creation||name)",
+		}
+	}
+	c.rollCall.id = string(rollCallData.ID)
+	c.rollCall.state = Created
+	return nil
+}
+
+func (c *laoChannel) processOpenRollCall(data message.Data, action message.RollCallAction) error {
+	if action == message.RollCallAction(message.OpenRollCallAction) {
+		// If the action is an OpenRollCallAction,
+		// the previous roll call action should be a CreateRollCallAction
+		if c.rollCall.state != Created {
+			return &message.Error{
+				Code:        -1,
+				Description: "The roll call can not be opened since it has not been created previously",
+			}
+		}
+	} else {
+		// If the action is an RepenRollCallAction,
+		// the previous roll call action should be a CloseRollCallAction
+		if c.rollCall.state != Closed {
+			return &message.Error{
+				Code:        -1,
+				Description: "The roll call can not be reopened since it has not been closed previously",
+			}
+		}
+	}
 	rollCallData := data.(*message.OpenRollCallData)
 
 	if !c.checkPrevID(rollCallData.Opens) {
@@ -570,11 +545,40 @@ func (c *laoChannel) processOpenRollCall(data message.Data) error {
 	if !c.checkRollCallID(message.Stringer(rollCallData.Opens), rollCallData.OpenedAt, rollCallData.UpdateID) {
 		return &message.Error{
 			Code:        -4,
-			Description: fmt.Sprintf("The id of the roll call does not correspond to SHA256(‘R’||lao_id||opens||opened_at)"),
+			Description: "The id of the roll call does not correspond to SHA256(‘R’||lao_id||opens||opened_at)",
 		}
 	}
 	c.rollCall.id = string(rollCallData.UpdateID)
 	c.rollCall.state = Open
+	return nil
+}
+
+func (c *laoChannel) processCloseRollCall(data message.Data) error {
+	if c.rollCall.state != Open {
+		return &message.Error{
+			Code:        -1,
+			Description: fmt.Sprintf("The roll call can not be closed since it is not open"),
+		}
+	}
+	rollCallData := data.(*message.CloseRollCallData)
+	if !c.checkPrevID(rollCallData.Closes) {
+		return &message.Error{
+			Code:        -4,
+			Description: "The field \"closes\" does not correspond to the id of the previous roll call message",
+		}
+	}
+	if !c.checkRollCallID(message.Stringer(rollCallData.Closes), rollCallData.ClosedAt, rollCallData.UpdateID) {
+		return &message.Error{
+			Code:        -4,
+			Description: "The id of the roll call does not correspond to SHA256(‘R’||lao_id||closes||closed_at)",
+		}
+	}
+	c.rollCall.id = string(rollCallData.UpdateID)
+	c.rollCall.state = Closed
+	c.attendees = map[string]struct{}{}
+	for i := 0; i < len(rollCallData.Attendees); i += 1 {
+		c.attendees[string(rollCallData.Attendees[i])] = struct{}{}
+	}
 	return nil
 }
 

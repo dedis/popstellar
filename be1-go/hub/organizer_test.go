@@ -296,9 +296,16 @@ func TestOrganizer_RollCallWrongInstructions(t *testing.T) {
 
 	// Create all the data
 	dataCreate, err := newCorrectCreateRollCallData(laoID)
+	require.NoError(t, err)
+
 	dataOpen, err := newCorrectOpenRollCallData(laoID, dataCreate.ID, message.OpenRollCallAction)
+	require.NoError(t, err)
+
 	dataClose, err := newCorrectCloseRollCallData(laoID, dataOpen.UpdateID, []message.PublicKey{})
+	require.NoError(t, err)
+
 	dataReopen, err := newCorrectOpenRollCallData(laoID, dataClose.UpdateID, message.ReopenRollCallAction)
+	require.NoError(t, err)
 
 	data := []message.Data{dataCreate, dataOpen, dataClose, dataReopen}
 

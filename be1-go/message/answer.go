@@ -3,6 +3,7 @@ package message
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 
 	"golang.org/x/xerrors"
 )
@@ -84,6 +85,14 @@ func (r *Result) UnmarshalJSON(data []byte) error {
 // Error returns the string representation of an Error message.
 func (e *Error) Error() string {
 	return e.Description
+}
+
+// InvalidActionError
+func InvalidActionError(action interface{}) error {
+	return &Error{
+		Code:        -1,
+		Description: fmt.Sprintf("invalid action: %s", action),
+	}
 }
 
 // MarshalJSON marshals an Answer message
