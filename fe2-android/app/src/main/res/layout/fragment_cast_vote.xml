@@ -88,30 +88,20 @@
             app:layout_constraintGuide_begin="186dp"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:id="@+id/linearLayout2"
+        <ListView
+            android:id="@+id/castVoteListView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="@+id/guideline2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline">
-
-            <ListView
-                android:id="@+id/castVoteListView"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:listSelector="@android:color/darker_gray"
-                android:scrollbarSize="10dp"
-                android:scrollbarStyle="outsideOverlay"
-                android:scrollbars="vertical"
-                android:scrollingCache="true"
-                android:smoothScrollbar="true"></ListView>
-
-
-        </LinearLayout>
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:scrollbarSize="3dp"
+            android:scrollbarStyle="outsideOverlay"
+            android:scrollbars="vertical"
+            android:scrollingCache="true"
+            android:smoothScrollbar="true"
+            app:layout_constraintBottom_toTopOf="@+id/castVoteButton"
+            app:layout_constraintTop_toBottomOf="@+id/castVoteElectionName"
+            android:choiceMode="singleChoice" >
+        </ListView>
 
         <Button
             android:id="@+id/castVoteButton"

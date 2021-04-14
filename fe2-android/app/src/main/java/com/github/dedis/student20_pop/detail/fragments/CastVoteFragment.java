@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.detail.fragments;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -136,11 +137,22 @@ public class CastVoteFragment extends Fragment implements AdapterView.OnItemClic
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         String vote = parent.getItemAtPosition(position).toString();
-        if (uniqueSelectedOption.equals(vote)){
+        if(uniqueSelectedOption == null){
+            voteButton.setEnabled(true);
+            uniqueSelectedOption = vote;
+            view.setBackgroundColor(Color.DKGRAY);
+        }
+        else if (vote.equals(uniqueSelectedOption)){
             voteButton.setEnabled(false);
+            uniqueSelectedOption = null;
+            view.setBackgroundColor(Color.WHITE);
         }
         else{
-            voteButton.setEnabled(true);
+            int ballotsPosition = Arrays.asList(ballotOptions).indexOf(uniqueSelectedOption);
+            View previousView = (View) parent.getChildAt(ballotsPosition);
+            previousView.setBackgroundColor(Color.WHITE);
+            uniqueSelectedOption = vote;
+            view.setBackgroundColor(Color.DKGRAY);
         }
         //That would be for multi choice later
 //        if(selectedOptions.contains(vote)){
