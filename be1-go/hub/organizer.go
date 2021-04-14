@@ -538,7 +538,7 @@ func (c *laoChannel) processOpenRollCall(data message.Data, action message.RollC
 	if !c.checkPrevID(rollCallData.Opens) {
 		return &message.Error{
 			Code:        -4,
-			Description: fmt.Sprintf("The field \"opens\" does not correspond to the id of the previous roll call message"),
+			Description: "The field \"opens\" does not correspond to the id of the previous roll call message",
 		}
 	}
 
@@ -557,7 +557,7 @@ func (c *laoChannel) processCloseRollCall(data message.Data) error {
 	if c.rollCall.state != Open {
 		return &message.Error{
 			Code:        -1,
-			Description: fmt.Sprintf("The roll call can not be closed since it is not open"),
+			Description: "The roll call can not be closed since it is not open",
 		}
 	}
 	rollCallData := data.(*message.CloseRollCallData)
