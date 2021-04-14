@@ -93,14 +93,14 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:choiceMode="singleChoice"
             android:scrollbarSize="3dp"
             android:scrollbarStyle="outsideOverlay"
             android:scrollbars="vertical"
             android:scrollingCache="true"
             android:smoothScrollbar="true"
             app:layout_constraintBottom_toTopOf="@+id/castVoteButton"
-            app:layout_constraintTop_toBottomOf="@+id/castVoteElectionName"
-            android:choiceMode="singleChoice" >
+            app:layout_constraintTop_toBottomOf="@+id/castVoteElectionName">
         </ListView>
 
         <Button
