@@ -54,7 +54,7 @@ export class WalletCryptographyHandler {
     if (key === undefined) {
       throw Error('Error while retrieving encryption key from database: undefined');
     }
-    const cypheredToken = await crypto.subtle.encrypt(this.algorithm, key, token);
+    const cypheredToken = await window.crypto.subtle.encrypt(this.algorithm, key, token);
     return cypheredToken;
   }
 
@@ -67,7 +67,7 @@ export class WalletCryptographyHandler {
     if (key === undefined) {
       throw Error('Error while retrieving decryption key from database: undefined');
     }
-    const plaintextToken = await crypto.subtle.decrypt(this.algorithm, key, encryptedToken);
+    const plaintextToken = await window.crypto.subtle.decrypt(this.algorithm, key, encryptedToken);
     return plaintextToken;
   }
 
@@ -134,7 +134,7 @@ export class WalletCryptographyHandler {
    * @private
    */
   private async generateRSAKey(): Promise<WalletCryptoKey> {
-    const keyPair = await crypto.subtle.generateKey(
+    const keyPair = await window.crypto.subtle.generateKey(
       this.algorithm, false, this.keyUsages,
     );
     return {
