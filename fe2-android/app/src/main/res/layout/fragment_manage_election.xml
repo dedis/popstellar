@@ -140,14 +140,7 @@
 
                 </LinearLayout>
 
-                <Button
-                    android:id="@+id/election_terminate_button"
-                    style="@style/Theme.AppCompat"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:text="@string/terminate_election"
-                    app:layout_constraint="@id/manage_election_details" />
+
 
 
             </LinearLayout>

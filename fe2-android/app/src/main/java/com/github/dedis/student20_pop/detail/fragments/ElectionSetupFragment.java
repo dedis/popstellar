@@ -99,7 +99,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
         setDateAndTimeView(mSetupElectionFragBinding.getRoot(), this, getFragmentManager());
         addDateAndTimeListener(confirmTextWatcher);
 
-        Button cancelButton = mSetupElectionFragBinding.electionTerminateButton;
+        Button cancelButton = mSetupElectionFragBinding.electionCancelButton;
 
         ballotOptions = new ArrayList<>();
 

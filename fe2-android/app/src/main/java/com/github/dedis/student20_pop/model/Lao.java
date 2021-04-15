@@ -142,7 +142,4 @@ public final class Lao {
     this.rollCalls = rollCalls;
   }
 
-  public Map<String, Election> getElections() {
-    return elections;
-  }
 }
