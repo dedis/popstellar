@@ -165,26 +165,6 @@
                         app:layout_constraintTop_toBottomOf="@id/write_in"
                         app:srcCompat="@drawable/ic_baseline_add_24" />
 
-
-                    <EditText
-                        android:id="@+id/ballot_option_1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:autofillHints="false"
-                        android:ems="10"
-                        android:hint="ballot option"
-                        app:layout_constraintTop_toBottomOf="@id/add_ballot_option" />
-
-                    <EditText
-                        android:id="@+id/ballot_option_2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:autofillHints="false"
-                        android:ems="10"
-                        android:hint="ballot option"
-                        app:layout_constraintTop_toBottomOf="@id/write_in" />
-
-
                 </LinearLayout>
             </LinearLayout>
 

@@ -5,7 +5,11 @@ import { OpenedLaoStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
-import { checkModificationId, checkModificationSignatures, checkTimestampStaleness } from '../Checker';
+import {
+  checkModificationId,
+  checkTimestampStaleness,
+  checkWitnessSignatures,
+} from '../Checker';
 
 export class StateMeeting implements MessageData {
   public readonly object: ObjectType = ObjectType.MEETING;
@@ -63,7 +67,7 @@ export class StateMeeting implements MessageData {
     this.modification_id = msg.modification_id;
 
     if (!msg.modification_signatures) throw new ProtocolError('Undefined \'modification_signatures\' parameter encountered during \'StateMeeting\'');
-    checkModificationSignatures(msg.modification_signatures);
+    checkWitnessSignatures(msg.modification_signatures, msg.modification_id);
     this.modification_signatures = [...msg.modification_signatures];
 
     if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'StateMeeting\'');

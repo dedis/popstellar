@@ -44,6 +44,14 @@ public final class Lao {
     rollCalls.put(newId, rollCall);
   }
 
+  public void updateElections(String prevId, Election election) {
+    if (elections.containsKey(prevId)) {
+      elections.remove(prevId);
+    }
+    String newId = election.getId();
+    elections.put(newId, election);
+  }
+
   public Optional<RollCall> getRollCall(String id) {
     return Optional.ofNullable(rollCalls.get(id));
   }
@@ -123,6 +131,8 @@ public final class Lao {
   public void setPendingUpdates(Set<PendingUpdate> pendingUpdates) {
     this.pendingUpdates = pendingUpdates;
   }
+
+  public Map<String, Election> getElections() {return elections;}
 
   public Map<String, RollCall> getRollCalls() {
     return rollCalls;
