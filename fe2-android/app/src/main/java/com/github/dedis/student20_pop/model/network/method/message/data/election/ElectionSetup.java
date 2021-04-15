@@ -1,28 +1,27 @@
 package com.github.dedis.student20_pop.model.network.method.message.data.election;
 
-import androidx.annotation.Nullable;
-
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
-import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.utility.security.Hash;
+import com.google.gson.annotations.SerializedName;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-
 public class ElectionSetup extends Data {
 
     private String id;
     private String name;
-    private long creation;
-    private long start;
-    private long end;
-    private ElectionQuestion electionQuestion;
+    private String lao;
+    @SerializedName(value = "created_at")
+    private long createdAt;
+    @SerializedName(value = "start_time")
+    private long startTime;
+    @SerializedName(value = "end_time")
+    private long endTime;
+    private String version;
+    private List<ElectionQuestion> questions;
 
     /**
      * Constructor for a data setup Election Event
@@ -41,11 +40,14 @@ public class ElectionSetup extends Data {
             String question,
             String laoId) {
         this.name = name;
-        this.creation = Instant.now().toEpochMilli();
-        this.start = start;
-        this.end = end;
-        this.id = Hash.hash("E", laoId, Long.toString(creation), name);
-        this.electionQuestion = new ElectionQuestion(question, voting_method, write_in, ballot_options, this.id);
+        this.createdAt = Instant.now().toEpochMilli();
+        this.startTime = start;
+        this.endTime = end;
+        this.lao = laoId;
+        this.version = "1.0.0";
+        this.id = Hash.hash("E", laoId, Long.toString(createdAt), name);
+        this.questions = new ArrayList<>();
+        this.questions.add(new ElectionQuestion(question, voting_method, write_in, ballot_options, this.id));
     }
 
 
@@ -58,16 +60,20 @@ public class ElectionSetup extends Data {
     }
 
     public long getCreation() {
-        return creation;
+        return createdAt;
     }
 
     public long getStartTime() {
-        return start;
+        return startTime;
     }
 
-    public long getEndTime() { return end; }
+    public long getEndTime() { return endTime; }
 
-    public ElectionQuestion getQuestion() { return electionQuestion; }
+    public List<ElectionQuestion> getQuestions() { return questions; }
+
+    public String getLao() { return lao; }
+
+    public String getVersion() { return version; }
 
 
     @Override
@@ -77,7 +83,7 @@ public class ElectionSetup extends Data {
 
     @Override
     public String getAction() {
-        return Action.CREATE.getAction();
+        return Action.SETUP.getAction();
     }
 
     @Override
@@ -90,12 +96,12 @@ public class ElectionSetup extends Data {
         }
         ElectionSetup that = (ElectionSetup) o;
         return getCreation() == that.getCreation()
-                && start == that.getStartTime()
+                && startTime == that.getStartTime()
                 && java.util.Objects.equals(getId(), that.getId())
-                && creation == that.getCreation()
+                && createdAt == that.getCreation()
                 && java.util.Objects.equals(getName(), that.getName())
-                && end == that.getEndTime()
-                && java.util.Objects.equals(electionQuestion, that.getQuestion());
+                && endTime == that.getEndTime()
+                && java.util.Objects.equals(questions, that.getQuestions());
     }
 
     @Override
@@ -106,13 +112,35 @@ public class ElectionSetup extends Data {
                 getCreation(),
                 getStartTime(),
                 getEndTime(),
-                getQuestion());
+                getQuestions());
     }
 
-    //TODO
     @Override
     public String toString() {
-      return null;
+        return "ElectionSetup{"
+                + "id='"
+                + id
+                + '\''
+                + ", name='"
+                + name
+                + '\''
+                + ", lao='"
+                + lao
+                + '\''
+                + ", creation='"
+                + createdAt
+                + '\''
+                + ", start='"
+                + startTime
+                + '\''
+                + ", end="
+                + endTime
+                + '\''
+                + ", version='"
+                + version
+                + '\''
+                + questions.get(0).toString()
+                + '}';
     }
 
 }
