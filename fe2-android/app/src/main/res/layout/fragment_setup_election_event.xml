@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/fragment_setup_election_event"
+        android:id="@+id/fragment_manage_election"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -200,7 +200,7 @@
             app:layout_constraintRight_toRightOf="parent">
 
             <Button
-                android:id="@+id/election_cancel_button"
+                android:id="@+id/election_terminate_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clickable="true"
