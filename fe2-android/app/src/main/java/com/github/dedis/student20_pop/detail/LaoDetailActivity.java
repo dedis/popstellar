@@ -225,7 +225,7 @@ public class LaoDetailActivity extends AppCompatActivity {
   private void setupCreateElectionSetupFragment() {
     ElectionSetupFragment electionSetupFragment =
             (ElectionSetupFragment)
-              getSupportFragmentManager().findFragmentById(R.id.fragment_setup_election_event);
+              getSupportFragmentManager().findFragmentById(R.id.fragment_manage_election);
     if (electionSetupFragment == null) {
       electionSetupFragment = ElectionSetupFragment.newInstance();
       ActivityUtils.replaceFragmentInActivity(
