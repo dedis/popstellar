@@ -5,15 +5,12 @@
     <variable
       name="event"
       type="com.github.dedis.student20_pop.model.event.Event" />
-    <variable
-        name="eventType"
-        type="com.github.dedis.student20_pop.model.event.EventType" />
     <import type="android.view.View" />
     <variable
         name="view_model"
         type="com.github.dedis.student20_pop.detail.LaoDetailViewModel" />
     <variable
-        name="clickOnEventListener"
+        name="handleElectionListener"
         type="com.github.dedis.student20_pop.detail.listeners.OnEventTypeSelectedListener" />
     <variable
         name="manageEventListener"

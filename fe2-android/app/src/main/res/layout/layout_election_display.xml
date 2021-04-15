@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <import type="android.view.View" />
+        <import type="com.github.dedis.student20_pop.model.event.EventCategory" />
+        <variable
+            name="election"
+            type="com.github.dedis.student20_pop.model.Election" />
+        <variable
+            name="view_model"
+            type="com.github.dedis.student20_pop.detail.LaoDetailViewModel" />
+        <variable
+            name="eventCategory"
+            type="com.github.dedis.student20_pop.model.event.EventCategory" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/my_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/roll_call_layout"
+            android:layout_width="178dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/election_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/margin_text"
+                android:gravity="center"
+                android:text="@{ `Election :`+election.name}"
+                android:textSize="@dimen/size_body"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/election_end_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/margin_text"
+                android:text="@{`Start Time :`+ election.startTimestamp " />
+
+            <TextView
+                android:id="@+id/election_end_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/margin_text"
+                android:text="@{`End Time : `+election.endTimestamp}" />
+
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/election_action_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ACTION" />
+
+
+        <Button
+            android:id="@+id/enter_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Details" />
+
+        <ImageButton
+            android:id="@+id/election_edit_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="manage election"
+            android:src="@drawable/ic_baseline_edit_24"
+            android:visibility="@{view_model.isOrganizer() &amp;&amp; (eventCategory == EventCategory.PRESENT || eventCategory == EventCategory.FUTURE) ? View.VISIBLE : View.GONE}" />
+
+    </LinearLayout>
+
+</layout>
