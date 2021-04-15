@@ -13,13 +13,16 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
 import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.github.dedis.student20_pop.databinding.LayoutElectionDisplayBinding;
 import com.github.dedis.student20_pop.databinding.LayoutEventBinding;
 import com.github.dedis.student20_pop.databinding.LayoutEventCategoryBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.listeners.AddEventListener;
+import com.github.dedis.student20_pop.detail.listeners.OnEventCreatedListener;
 import com.github.dedis.student20_pop.detail.listeners.OnEventTypeSelectedListener;
 import com.github.dedis.student20_pop.model.Election;
 import com.github.dedis.student20_pop.model.RollCall;
@@ -247,7 +250,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     // TODO : For the moment, events are displayed the same if user is attendee or organizer,
     // in the future it could be nice to have a pencil icon to allow organizer to modify an event
 
-    LayoutEventBinding binding;
+    ViewDataBinding binding;
     Event event = ((Event) getChild(groupPosition, childPosition));
     if (convertView == null) {
       LayoutInflater inflater = LayoutInflater.from(parent.getContext());
@@ -255,61 +258,42 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     } else {
       binding = DataBindingUtil.getBinding(convertView);
     }
-   binding.setEventType(event.type);
-
-    OnEventTypeSelectedListener clickOnEventOnClickListener =
-            eventType -> {
-
       // we use a switch case to handle all the different type of actions we want when we click on a certain event
-              // TODO : Handle the case where a Roll Call event is clicked on
+
 
 /* if the election is the present when we click on it it will launch cast vote, if it's in the past it will launch
             if the election is in the past it will display all the election results */
 
-      switch (eventType) {
+      switch (event.type) {
         case ELECTION:
+         LayoutElectionDisplayBinding electionBinding = (LayoutElectionDisplayBinding) binding;
+          Election election =(Election) event;
+          electionBinding.setElection(election);
           if(getGroup(groupPosition) == PRESENT) {
-            viewModel.openCastVotes(true);
+           electionBinding.electionActionButton.setText("Cast Vote");
+            electionBinding.electionActionButton.setOnClickListener(
+                    clicked -> viewModel.openCastVotes(election.getId()));
           }
           else if (getGroup(groupPosition) == PAST) {
+            electionBinding.electionActionButton.setText("Election Results");
             viewModel.openElectionResults(true);
 
           }
-
-          break;
-
-
-      }
-            };
-
-    OnEventTypeSelectedListener manageEvent =
-            eventType -> {
-
-              // we use a switch case to handle all the different type of actions we want when the organizer wants to manage
-              // a certain event
-
-              // TODO : Handle the case where a Roll Call manage button is clicked on
-
-/* if the election is the present when we click on it it will launch cast vote, if it's in the past it will launch
-            if the election is in the past it will display all the election results */
-
-              switch (eventType) {
-                case ELECTION:
-                  if(getGroup(groupPosition) == PRESENT || getGroup(groupPosition) == FUTURE) {
-                    viewModel.openManageElection(true);
-                  }
-
-                  break;
+          else if (getGroup(groupPosition) == FUTURE) {
+            electionBinding.electionActionButton.setVisibility(View.GONE);
+          }
 
 
-              }
-            };
 
-    binding.setViewModel(viewModel);
-    binding.setLifecycleOwner(lifecycleOwner);
-    binding.setClickOnEventListener(clickOnEventOnClickListener);
-    binding.executePendingBindings();
-    return binding.getRoot();
+
+          electionBinding.setViewModel(viewModel);
+          electionBinding.setLifecycleOwner(lifecycleOwner);
+          electionBinding.executePendingBindings();
+          return electionBinding.getRoot();
+            }
+
+
+return binding.getRoot();
   }
 
   /**
@@ -319,7 +303,6 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
    */
   private void putEventsInMap(List<Event> events) {
     Collections.sort(events);
-    //eventsMap = new HashMap<>();
     long now = Instant.now().getEpochSecond();
     for (Event event : events) {
       if (event.getEndTimestamp() < now) {

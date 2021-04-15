@@ -49,7 +49,6 @@ public class LaoDetailViewModel extends AndroidViewModel {
   private final MutableLiveData<Event<EventType>> mNewLaoEventEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenNewRollCallEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<EventType>> mNewLaoEventCreationEvent = new MutableLiveData<>();
-  private final MutableLiveData<Event<Boolean>> mOpenCastVotesEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenElectionResultsEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenManageElectionEvent = new MutableLiveData<>();
 
@@ -107,7 +106,6 @@ public class LaoDetailViewModel extends AndroidViewModel {
   public LiveData<Event<Boolean>> getOpenNewRollCallEvent() {
     return mOpenNewRollCallEvent;
   }
-  public LiveData<Event<Boolean>> getOpenCastVotesEvent() {return mOpenCastVotesEvent; }
   public LiveData<Event<Boolean>> getOpenElectionResultsEvent() { return mOpenElectionResultsEvent; }
   public LiveData<Event<Boolean>> getOpenManageElectionEvent() { return mOpenManageElectionEvent;}
 
@@ -180,9 +178,6 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
   public void openNewRollCall(Boolean open) {
     mOpenNewRollCallEvent.postValue(new Event<>(open));
-  }
-  public void openCastVotes(Boolean open) {
-    mOpenCastVotesEvent.postValue(new Event<>(open));
   }
   public void openElectionResults(Boolean open) {
     mOpenElectionResultsEvent.postValue(new Event<>(open));
@@ -388,6 +383,10 @@ public class LaoDetailViewModel extends AndroidViewModel {
     Log.d(TAG, "opening a roll call with id " + id);
 
     //TODO: implement open roll call
+  }
+
+  public void openCastVotes(String id) {
+
   }
 
 
