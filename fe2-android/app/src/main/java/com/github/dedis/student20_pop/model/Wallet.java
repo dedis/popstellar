@@ -6,7 +6,6 @@ import io.github.novacrypto.bip39.MnemonicValidator;
 import io.github.novacrypto.bip39.SeedCalculator;
 import io.github.novacrypto.bip39.Words;
 import io.github.novacrypto.bip39.wordlists.English;
-import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -44,7 +43,7 @@ public class Wallet {
     SecureRandom random = new SecureRandom();
     byte[] bytes = random.generateSeed(64); // max nb byte (512 bit): 256 bits is advised.
     SEED = bytes;
-    System.out.println( "Wallet initialized with a new random seed: " + Utils.bytesToHex(SEED));
+    System.out.println( "Wallet: initialized with a new random seed: " + Utils.bytesToHex(SEED));
   }
 
   /**
@@ -57,7 +56,7 @@ public class Wallet {
       throw new UnsupportedOperationException("Unable to init seed from a null param!");
     }
     SEED = Utils.hexToBytes(seed);
-    System.out.println( "New seed initialized: " + Utils.bytesToHex(SEED));
+    System.out.println( "initialize: new seed initialized: " + Utils.bytesToHex(SEED));
   }
 
   /**
@@ -228,12 +227,10 @@ public class Wallet {
     StringJoiner joiner = new StringJoiner(" ");
     for(String i: words) joiner.add(i);
     SEED = new SeedCalculator().calculateSeed(joiner.toString(), "");
-    System.out.println( "ExportSeed new seed initialized: " + Utils.bytesToHex(SEED));
+    System.out.println( "ExportSeed: new seed initialized: " + Utils.bytesToHex(SEED));
 
     return words;
   }
-
-
 
   /**
    * Method that allow import mnemonic seed.
@@ -245,21 +242,35 @@ public class Wallet {
    * @return a Map<Pair<String, String>, Pair<byte[], byte[]>> of the recover key pairs
    *         associated to each Lao and roll-call IDs or null in case of error.
    */
+  /**
+   * Method that allow import mnemonic seed.
+   *
+   * @param words a String.
+   * @param knows_Laos_Roll_calls a Map<Pair<String, String>, List<byte[]>> of keys known Lao_ID
+   *                              and Roll_call_ID and values representing the list of public keys
+   *                              present on roll-call’s results.
+   * @return a Map<Pair<String, String>, Pair<byte[], byte[]>> of the recover key pairs
+   *         associated to each Lao and roll-call IDs or null in case of error.
+   * @throws NoSuchAlgorithmException
+   * @throws InvalidKeyException
+   * @throws ShortBufferException
+   */
   public Map<Pair<String, String>, Pair<byte[], byte[]>> ImportSeed(String words,
-      Map<Pair<String, String>, List<byte[]>>  knows_Laos_Roll_calls){
+      Map<Pair<String, String>, List<byte[]>>  knows_Laos_Roll_calls)
+      throws NoSuchAlgorithmException, InvalidKeyException, ShortBufferException {
 
     try {
       MnemonicValidator
           .ofWordList(English.INSTANCE)
           .validate(words);
       SEED = new SeedCalculator().calculateSeed(words, "");
-      System.out.println( "ImportSeed New seed initialized: " + Utils.bytesToHex(SEED));
-      return RecoverAllKeys(Utils.bytesToHex(SEED), knows_Laos_Roll_calls);
+      System.out.println( "ImportSeed: new seed: " + Utils.bytesToHex(SEED));
 
     } catch (Exception e) {
       System.out.println("Unable to import words:" + e.getMessage());
       return null;
     }
+    return RecoverAllKeys(Utils.bytesToHex(SEED), knows_Laos_Roll_calls);
   }
 
 

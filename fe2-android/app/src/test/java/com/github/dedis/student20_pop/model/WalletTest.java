@@ -4,6 +4,7 @@ import androidx.core.util.Pair;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.StringJoiner;
 import javax.crypto.ShortBufferException;
 import net.i2p.crypto.eddsa.Utils;
@@ -33,13 +34,14 @@ public class WalletTest {
   }
 
   @Test
-  public void test_memonic(){
+  public void test_memonic()
+      throws NoSuchAlgorithmException, InvalidKeyException, ShortBufferException {
     Wallet hdw = new Wallet();
     String[] exp_str = hdw.ExportSeed();
     StringJoiner joiner = new StringJoiner(" ");
     for(String i: exp_str) joiner.add(i);
     System.out.println(joiner.toString());
-    //hdw.ImportSeed(joiner.toString());
+    hdw.ImportSeed(joiner.toString(), new HashMap<>());
   }
 
 }
