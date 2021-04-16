@@ -140,7 +140,8 @@ export class WalletCryptographyHandler {
     await this.putKeyInDatabase(key);
 
     /* } else if (the IndexedDB was cleared for some reason) {
-      TODO: find a way to fix this and retrieve the keys
+      TODO: find a way to fix this and backup the keys
+      https://github.com/dedis/student_21_pop/issues/297
       }
     */
   }
