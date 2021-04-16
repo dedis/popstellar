@@ -4,13 +4,6 @@ import { sign } from 'tweetnacl';
 
 require('fake-indexeddb/auto');
 
-Object.defineProperty(global.self, 'crypto', {
-  value: {
-    subtle: window.crypto.subtle,
-  },
-
-});
-
 describe('=== Wallet Cryptography Handler tests ===', () => {
   describe('encryption - decryption', () => {
     it('should correctly decrypt the previously encrypted ciphertext token', async () => {
