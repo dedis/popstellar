@@ -198,7 +198,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
                 arrayAdapter,
                 ((dialog, which) -> {
                   dialog.dismiss();
-                  viewModel.addEvent(EventType.values()[which]);
+                  viewModel.chooseEventType(EventType.values()[which]);
                 }));
             builder.show();
           }

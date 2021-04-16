@@ -173,13 +173,14 @@ public class LAORepository {
                 .map(x -> x.getValue().getLao())
                 .collect(Collectors.toList()));
         Log.d(TAG, "createLaoRequest contains this id. posted allLaos to `allLaoSubject`");
+        sendSubscribe(channel);
         sendCatchup(channel);
       }
 
       return;
     }
 
-    Log.d(TAG, "Got a braodcast");
+    Log.d(TAG, "Got a broadcast");
 
     // We've a Broadcast
     Broadcast broadcast = (Broadcast) genericMessage;

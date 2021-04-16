@@ -44,7 +44,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
   private final MutableLiveData<Event<Boolean>> mShowPropertiesEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mEditPropertiesEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenLaoDetailEvent = new MutableLiveData<>();
-  private final MutableLiveData<Event<EventType>> mNewLaoEventEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<EventType>> mChooseNewLaoEventTypeEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<EventType>> mNewLaoEventCreationEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenNewRollCallEvent = new MutableLiveData<>();
 
@@ -212,7 +212,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
   }
 
   public LiveData<Event<EventType>> getNewLaoEventEvent() {
-    return mNewLaoEventEvent;
+    return mChooseNewLaoEventTypeEvent;
   }
 
   public LiveData<Event<EventType>> getNewLaoEventCreationEvent() {
@@ -275,10 +275,20 @@ public class LaoDetailViewModel extends AndroidViewModel {
     mEditPropertiesEvent.setValue(new Event<>(false));
   }
 
-  public void addEvent(EventType eventType) {
-    mNewLaoEventEvent.postValue(new Event<>(eventType));
+  /**
+   * Choosing an event type to create on the multiple-choice screen
+   *
+   * @param eventType the event type to create
+   */
+  public void chooseEventType(EventType eventType) {
+    mChooseNewLaoEventTypeEvent.postValue(new Event<>(eventType));
   }
 
+  /**
+   * Creating a new event of specified type
+   *
+   * @param eventType the event type of the new event
+   */
   public void newLaoEventCreation(EventType eventType) {
     mNewLaoEventCreationEvent.postValue(new Event<>(eventType));
   }
