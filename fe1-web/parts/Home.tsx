@@ -18,7 +18,7 @@ import TextBlock from 'components/TextBlock';
  *
  * TODO use the list that the user have already connect to, and ask data to
  *  some organizer server if needed
- */
+*/
 const styles = StyleSheet.create({
   flatList: {
     marginTop: Spacing.s,
