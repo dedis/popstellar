@@ -144,7 +144,9 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
                     for (String ballotOption: ballotOptions) {
                         if (!ballotOption.equals("")) filteredBallotOptions.add(ballotOption);
                     }
+
                     laoDetailViewModel.createNewElection(title, startTimeInSeconds, endTimeInSeconds, votingMethod.toString(), mSetupElectionFragBinding.writeIn.isChecked(), filteredBallotOptions, question);
+                    laoDetailViewModel.openLaoDetail();
                 });
 
         //On click, cancel button takes back to LAO detail page

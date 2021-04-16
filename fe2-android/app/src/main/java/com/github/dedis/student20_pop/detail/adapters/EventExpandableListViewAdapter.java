@@ -266,7 +266,13 @@ EventCategory category = (EventCategory) getGroup(groupPosition);
 
       switch (event.type) {
         case ELECTION:
-         LayoutElectionDisplayBinding electionBinding = (LayoutElectionDisplayBinding) binding;
+         LayoutElectionDisplayBinding electionBinding ;
+          if (convertView == null) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            electionBinding = LayoutElectionDisplayBinding.inflate(inflater, parent, false);
+          } else {
+            electionBinding = DataBindingUtil.getBinding(convertView);
+          }
           Election election =(Election) event;
           electionBinding.setElection(election);
           if(category == PRESENT) {
