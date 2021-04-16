@@ -27,7 +27,6 @@
         android:id="@+id/event_layout2"
         android:layout_width="354dp"
         android:layout_height="57dp"
-        android:onClick="@{() -> clickOnEventListener.OnEventTypeSelectedListener(eventType)}"
         android:orientation="vertical">
 
       <TextView
@@ -54,7 +53,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:contentDescription="@string/handle_events"
-        android:onClick="@{() -> manageEventListener.OnEventTypeSelectedListener(eventType)}"
         android:src="@drawable/ic_baseline_edit_24"
         android:visibility="@{view_model.isOrganizer() ? View.VISIBLE : View.GONE}" />
 
