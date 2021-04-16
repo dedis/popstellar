@@ -25,7 +25,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
   private Button confirmButton;
   private Button openButton;
 
-  private final String ERROR_MEETING_TITLE_EMPTY = "The roll-call title cannot be empty";
+  private static final String ERROR_MEETING_TITLE_EMPTY = "The roll-call title cannot be empty";
 
   private LaoDetailViewModel mLaoDetailViewModel;
 
@@ -37,7 +37,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
           String meetingTitle = rollCallTitleEditText.getText().toString().trim();
-          checkInput();
+          editTextInputChecker(rollCallTitleEditText, ERROR_MEETING_TITLE_EMPTY);
           boolean areFieldsFilled =
               !meetingTitle.isEmpty() && !getStartDate().isEmpty() && !getStartTime().isEmpty();
           confirmButton.setEnabled(areFieldsFilled);
@@ -118,9 +118,5 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     binding.setLifecycleOwner(getActivity());
 
     return binding.getRoot();
-  }
-
-  private void checkInput(){
-        editTextInputChecker(rollCallTitleEditText, ERROR_MEETING_TITLE_EMPTY);
   }
 }
