@@ -1,5 +1,4 @@
 package com.github.dedis.student20_pop.qrcode;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
