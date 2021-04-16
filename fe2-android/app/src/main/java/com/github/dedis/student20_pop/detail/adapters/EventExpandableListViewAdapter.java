@@ -264,7 +264,12 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
    */
   private void putEventsInMap(List<Event> events) {
     Collections.sort(events);
+
     eventsMap = new HashMap<>();
+    eventsMap.put(PAST, new ArrayList<>());
+    eventsMap.put(PRESENT, new ArrayList<>());
+    eventsMap.put(FUTURE, new ArrayList<>());
+
     long now = Instant.now().getEpochSecond();
     for (Event event : events) {
       if (event.getEndTimestamp() < now) {
