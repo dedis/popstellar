@@ -10,7 +10,8 @@ export interface WalletCryptoKey {
 /**
  * This class has the job of handling the cryptography functions of the wallet.
  * It interacts with the IndexedDB database in order to store and retrieve the
- * secret key. It also encrypts and decrypts the tokens with the retrieved key.
+ * secret key. It also encrypts and decrypts the wallet seed (used to create the
+ * tokens) with the retrieved key.
  * More info on this approach at https://blog.engelke.com/2014/09/19/saving-cryptographic-keys-in-the-browser/
  */
 export class WalletCryptographyHandler {
@@ -58,37 +59,38 @@ export class WalletCryptographyHandler {
 
   /**
    * encrypts the given ed25519 seed with the RSA key stored in the indexedDB database
-   * @param token ed25519 seed toUint8Array()
+   * @param plaintext ed25519 seed toUint8Array()
    */
-  public async encrypt(token: Uint8Array): Promise<ArrayBuffer> {
+  public async encrypt(plaintext: Uint8Array): Promise<ArrayBuffer> {
     const key: CryptoKey = await this.getKeyFromDatabase(STRINGS.walletPublicKey);
     if (key === undefined) {
       throw Error('Error while retrieving encryption key from database: undefined');
     }
     // @ts-ignore
-    const cypheredToken = await this.cryptography.subtle.encrypt(this.algorithm, key, token);
-    return cypheredToken;
+    const ciphertext = await this.cryptography.subtle.encrypt(this.algorithm, key, plaintext);
+    return ciphertext;
   }
 
   /**
    * decrypts the encrypted ed25519 seed with the RSA key stored in the indexedDB database
-   * @param encryptedToken ed25519 encrypted seed (ArrayBuffer)
+   * @param ciphertext ed25519 encrypted seed (ArrayBuffer)
    */
-  public async decrypt(encryptedToken: ArrayBuffer): Promise<ArrayBuffer> {
+  public async decrypt(ciphertext: ArrayBuffer): Promise<ArrayBuffer> {
     const key = await this.getKeyFromDatabase(STRINGS.walletPrivateKey);
     if (key === undefined) {
       throw Error('Error while retrieving decryption key from database: undefined');
     }
     // @ts-ignore
-    const plaintextToken = await this.cryptography.subtle
-      .decrypt(this.algorithm, key, encryptedToken);
-    return plaintextToken;
+    const plaintext = await this.cryptography.subtle
+      .decrypt(this.algorithm, key, ciphertext);
+    return plaintext;
   }
 
   /**
    * adds an encryption/decryption key to the storage
    * @private
-   * @param key the key that will be used to encrypt/decrypt all tokens in the wallet
+   * @param key the key that will be used to encrypt/decrypt all the
+   * seed generating all tokens in the wallet
    */
   private async putKeyInDatabase(key: WalletCryptoKey): Promise<void> {
     await set(this.publicKeyId, key.publicKey);

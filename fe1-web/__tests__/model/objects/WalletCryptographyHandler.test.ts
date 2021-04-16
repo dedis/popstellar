@@ -16,13 +16,13 @@ const crypto = {};
  */
 describe('=== Wallet Cryptography Handler tests ===', () => {
   describe('encryption - decryption', () => {
-    it('should correctly decrypt the previously encrypted ciphertext token', async () => {
+    it('should correctly encrypt and decrypt the generated seed', async () => {
       /* this is the MOCK crypto manager, it uses the mock SubtleCrypto library */
       // eslint-disable-next-line max-len
       let mockCryptoManager : WalletCryptographyHandler | null = new WalletCryptographyHandler(crypto);
 
-      /* token to encrypt */
-      const token = sign.keyPair().secretKey;
+      /* seed to encrypt */
+      const seed = sign.keyPair().secretKey;
 
       /* adding to crypto used by mockCryptoManager the subtle property
          with the MOCKED functions: generateKey, encrypt, decrypt */
@@ -47,20 +47,22 @@ describe('=== Wallet Cryptography Handler tests ===', () => {
       await mockCryptoManager.initWalletStorage();
 
       /* encrypting using mock encrypt */
-      const cypher: ArrayBuffer = await mockCryptoManager.encrypt(token);
+      const cypher: ArrayBuffer = await mockCryptoManager.encrypt(seed);
 
       /* deleting previous manager and creating new instance of wallet manager, this should ensure
          ensure the correct store and retrieve of the RSA key in indexedDB - app restart */
       mockCryptoManager = null;
       const newMockCryptoManager = new WalletCryptographyHandler(crypto);
 
+      expect(mockCryptoManager).toBeNull();
+
       /* initialization of wallet storage and retrieve crypto key in database */
       await newMockCryptoManager.initWalletStorage();
 
       /* decrypting using mock decrypt */
-      const plaintext:Uint8Array = new Uint8Array(await newMockCryptoManager.decrypt(cypher));
+      const plaintext: Uint8Array = new Uint8Array(await newMockCryptoManager.decrypt(cypher));
 
-      expect(plaintext).toStrictEqual(token);
+      expect(plaintext).toStrictEqual(seed);
     });
   });
 });
