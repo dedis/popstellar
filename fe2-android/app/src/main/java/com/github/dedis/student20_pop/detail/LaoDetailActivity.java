@@ -91,14 +91,14 @@ public class LaoDetailActivity extends AppCompatActivity {
               }
             });
 
-    // Subscribe to "open Cast Votes event" event
-    mViewModel
-            .getOpenCastVotesEvent()
-            .observe(
-                    this,
-                    booleanEvent -> {
-                    setupCastVotesFragment();
-                    });
+//    // Subscribe to "open Cast Votes event" event
+//    mViewModel
+//            .getOpenCastVotesEvent()
+//            .observe(
+//                    this,
+//                    booleanEvent -> {
+//                    setupCastVotesFragment();
+//                    });
 
     // Subscribe to "Election Display event" event
     mViewModel

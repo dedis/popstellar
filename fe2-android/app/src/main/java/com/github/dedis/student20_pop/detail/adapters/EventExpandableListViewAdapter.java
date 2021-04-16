@@ -260,7 +260,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     }
       // we use a switch case to handle all the different type of actions we want when we click on a certain event
 
-
+EventCategory category = (EventCategory) getGroup(groupPosition);
 /* if the election is the present when we click on it it will launch cast vote, if it's in the past it will launch
             if the election is in the past it will display all the election results */
 
@@ -269,23 +269,23 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
          LayoutElectionDisplayBinding electionBinding = (LayoutElectionDisplayBinding) binding;
           Election election =(Election) event;
           electionBinding.setElection(election);
-          if(getGroup(groupPosition) == PRESENT) {
+          if(category == PRESENT) {
            electionBinding.electionActionButton.setText("Cast Vote");
             electionBinding.electionActionButton.setOnClickListener(
                     clicked -> viewModel.openCastVotes(election.getId()));
           }
-          else if (getGroup(groupPosition) == PAST) {
+          else if (category == PAST) {
             electionBinding.electionActionButton.setText("Election Results");
             viewModel.openElectionResults(true);
 
           }
-          else if (getGroup(groupPosition) == FUTURE) {
+          else if (category == FUTURE) {
             electionBinding.electionActionButton.setVisibility(View.GONE);
           }
 
 
 
-
+          electionBinding.setEventCategory(category);
           electionBinding.setViewModel(viewModel);
           electionBinding.setLifecycleOwner(lifecycleOwner);
           electionBinding.executePendingBindings();
