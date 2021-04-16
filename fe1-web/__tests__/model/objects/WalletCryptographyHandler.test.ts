@@ -4,6 +4,7 @@ import { sign } from 'tweetnacl';
 
 require('fake-indexeddb/auto');
 
+
 describe('=== Wallet Cryptography Handler tests ===', () => {
   describe('encryption - decryption', () => {
     it('should correctly decrypt the previously encrypted ciphertext token', async () => {
