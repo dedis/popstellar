@@ -38,7 +38,7 @@ public class CastVoteFragment extends Fragment implements AdapterView.OnItemClic
     private int numberOfChoices;
     String [] ballotOptions;
     Set<String> selectedOptions;
-    String uniqueSelectedOption;
+    int selectedOption;
     private TextView laoNameText;
     private TextView voteInText;
     private TextView electionNameText;
@@ -53,12 +53,8 @@ public class CastVoteFragment extends Fragment implements AdapterView.OnItemClic
     private View.OnClickListener buttonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (selectedOptions.isEmpty()) {
-                    Toast.makeText(getActivity(), "No voting option selected", Toast.LENGTH_SHORT);
-            } else {
-                castVote();
-                }
-            }
+            castVote();
+        }
     };
 
 
@@ -108,6 +104,7 @@ public class CastVoteFragment extends Fragment implements AdapterView.OnItemClic
 //        setBallotOptions();
         setDummyBallotOptions();
 
+        //todo get real election name
         electionNameText.setText("General Election");
 
         lvBallots = mElectionDisplayFragBinding.castVoteListView;
@@ -130,30 +127,36 @@ public class CastVoteFragment extends Fragment implements AdapterView.OnItemClic
     }
 
     private void setDummyBallotOptions(){
-        ballotOptions = new String[]{"Alan Turing", "John von Neumann", "Claude Shannon", "Something else", "FOO BAR", "Some other stuff", "stuff", "Anything", "Some other stuff"};
+        ballotOptions = new String[]{"Alan Turing", "John von Neumann", "Claude Shannon", "Linus Torvalds", "Ken Thompson", "Tim Berners-Lee", "Charles Babbage", "Barbara Liskov", "Ronald Rivest", "Adi Shamir", "Len Adleman"};
+
+      //  ballotOptions = new String[]{"Alan Turing", "John von Neumann", "Claude Shannon", "Something else", "FOO BAR", "Some other stuff", "stuff", "Anything", "Some other stuff"};
       //  ballotOptions = new String[]{"Alan Turing", "John von Neumann", "Claude Shannon", "Something else"};
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        String vote = parent.getItemAtPosition(position).toString();
-        if(uniqueSelectedOption == null){
+        view.setBackgroundColor(Color.TRANSPARENT);
+        if (selectedOption == -1){
+            selectedOption = position;
+            lvBallots.setItemChecked(position, true);
             voteButton.setEnabled(true);
-            uniqueSelectedOption = vote;
-            view.setBackgroundColor(Color.DKGRAY);
-        }
-        else if (vote.equals(uniqueSelectedOption)){
+        }//No previously selected option
+
+        else if(selectedOption == position){
+            lvBallots.setItemChecked(selectedOption, false);
+            selectedOption = -1;
             voteButton.setEnabled(false);
-            uniqueSelectedOption = null;
             view.setBackgroundColor(Color.WHITE);
-        }
+        }//Unselecting choice
+
         else{
-            int ballotsPosition = Arrays.asList(ballotOptions).indexOf(uniqueSelectedOption);
-            View previousView = (View) parent.getChildAt(ballotsPosition);
-            previousView.setBackgroundColor(Color.WHITE);
-            uniqueSelectedOption = vote;
-            view.setBackgroundColor(Color.DKGRAY);
-        }
+            lvBallots.setItemChecked(selectedOption, false);
+            selectedOption = position;
+            lvBallots.setItemChecked(position, true);
+            voteButton.setEnabled(true);
+        } //Changing the selected choice
+
+
         //That would be for multi choice later
 //        if(selectedOptions.contains(vote)){
 //            selectedOptions.remove(vote);
