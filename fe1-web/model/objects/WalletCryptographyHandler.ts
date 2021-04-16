@@ -14,6 +14,9 @@ export interface WalletCryptoKey {
  * More info on this approach at https://blog.engelke.com/2014/09/19/saving-cryptographic-keys-in-the-browser/
  */
 export class WalletCryptographyHandler {
+  /* the crypto library - passed to constructor */
+  private cryptography!: object;
+
   private readonly publicKeyId: string = STRINGS.walletPublicKeyId;
 
   private readonly privateKeyId: string = STRINGS.walletPrivateKeyId;
@@ -26,7 +29,15 @@ export class WalletCryptographyHandler {
     hash: 'SHA-256',
   };
 
+  /* usages for the RSA key */
   private readonly keyUsages: KeyUsage[] = ['encrypt', 'decrypt'];
+
+  /* the crypto library is passed to constructor, this is necessary in order to test the
+     cryptography handler without the crypto.subtle library provided by the window object.
+     In jest context provide a MOCK crypto.subtle library, otherwise provide window.crypto */
+  constructor(cryptography: object) {
+    this.cryptography = cryptography;
+  }
 
   /**
    * This functions verifies weather or not the wallet storage in IndexedDB database
@@ -46,28 +57,31 @@ export class WalletCryptographyHandler {
   }
 
   /**
-   * encrypts the given ed25519 token with the RSA key stored in the indexedDB database
-   * @param token ed25519 key toUint8Array()
+   * encrypts the given ed25519 seed with the RSA key stored in the indexedDB database
+   * @param token ed25519 seed toUint8Array()
    */
   public async encrypt(token: Uint8Array): Promise<ArrayBuffer> {
     const key: CryptoKey = await this.getKeyFromDatabase(STRINGS.walletPublicKey);
     if (key === undefined) {
       throw Error('Error while retrieving encryption key from database: undefined');
     }
-    const cypheredToken = await crypto.subtle.encrypt(this.algorithm, key, token);
+    // @ts-ignore
+    const cypheredToken = await this.cryptography.subtle.encrypt(this.algorithm, key, token);
     return cypheredToken;
   }
 
   /**
-   * decrypts the encrypted ed25519 token with the RSA key stored in the indexedDB database
-   * @param encryptedToken ed25519 encrypted token (ArrayBuffer)
+   * decrypts the encrypted ed25519 seed with the RSA key stored in the indexedDB database
+   * @param encryptedToken ed25519 encrypted seed (ArrayBuffer)
    */
   public async decrypt(encryptedToken: ArrayBuffer): Promise<ArrayBuffer> {
     const key = await this.getKeyFromDatabase(STRINGS.walletPrivateKey);
     if (key === undefined) {
       throw Error('Error while retrieving decryption key from database: undefined');
     }
-    const plaintextToken = await crypto.subtle.decrypt(this.algorithm, key, encryptedToken);
+    // @ts-ignore
+    const plaintextToken = await this.cryptography.subtle
+      .decrypt(this.algorithm, key, encryptedToken);
     return plaintextToken;
   }
 
@@ -115,7 +129,7 @@ export class WalletCryptographyHandler {
    * 2. it was initialised but then cleared for some reason (e.g. clear browser data)
    *
    * In the first case the wallet is initialised by generating an RSA key and creating the
-   * wallet storage. In the second case a solution still has to be found.
+   * wallet storage. In the second case a solution still has to be found, se issue on github.
    * @private
    */
   private async handleWalletInitialization() {
@@ -134,7 +148,8 @@ export class WalletCryptographyHandler {
    * @private
    */
   private async generateRSAKey(): Promise<WalletCryptoKey> {
-    const keyPair = await crypto.subtle.generateKey(
+    // @ts-ignore
+    const keyPair = await this.cryptography.subtle.generateKey(
       this.algorithm, false, this.keyUsages,
     );
     return {
