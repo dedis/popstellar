@@ -142,7 +142,7 @@ describe('=== fromJsonData checks ===', () => {
     action: ActionType.CLOSE,
     update_id: rollCallId,
     closes: rollCallId,
-    closed_at: FUTURE_TIMESTAMP,
+    closed_at: CLOSE_TIMESTAMP,
     attendees: [],
   };
 
@@ -181,16 +181,16 @@ describe('=== fromJsonData checks ===', () => {
     );
   const dataCreateRollCall: string = dataRollCall
     .replace('F_ACTION', ActionType.CREATE)
-    .replace('FF_MODIFICATION', `"id": "${rollCallId.toString()}","name":"${name}","creation":${time},"start":${time},"location":"${location}","roll_call_description":"description du rc"`);
+    .replace('FF_MODIFICATION', `"id": "${rollCallId.toString()}","name":"${name}","creation":${time},"proposed_start":${time},"proposed_end":${CLOSE_TIMESTAMP},"location":"${location}","description":"description du rc"`);
   const dataOpenRollCall: string = dataRollCall
     .replace('F_ACTION', ActionType.OPEN)
-    .replace('FF_MODIFICATION', `"update_id":"${rollCallId.toString()}","opens":"${rollCallId.toString()}","start":${time}`);
+    .replace('FF_MODIFICATION', `"update_id":"${rollCallId.toString()}","opens":"${rollCallId.toString()}","opened_at":${time}`);
   const dataReopenRollCall: string = dataRollCall
     .replace('F_ACTION', ActionType.REOPEN)
-    .replace('FF_MODIFICATION', `"update_id":"${rollCallId.toString()}","opens":"${rollCallId.toString()}","start":${time}`);
+    .replace('FF_MODIFICATION', `"update_id":"${rollCallId.toString()}","opens":"${rollCallId.toString()}","opened_at":${time}`);
   const dataCloseRollCall: string = dataRollCall
     .replace('F_ACTION', ActionType.CLOSE)
-    .replace('FF_MODIFICATION', `"update_id":"${rollCallId.toString()}","closes":"${rollCallId.toString()}","end":${FUTURE_TIMESTAMP.toString()},"attendees":[]`);
+    .replace('FF_MODIFICATION', `"update_id":"${rollCallId.toString()}","closes":"${rollCallId.toString()}","closed_at":${CLOSE_TIMESTAMP},"attendees":[]`);
 
   beforeAll(() => {
     storeInit();
@@ -329,7 +329,8 @@ describe('=== fromJsonData checks ===', () => {
           id: rollCallId,
           name: name,
           creation: STANDARD_TIMESTAMP,
-          start: time,
+          proposed_start: STANDARD_TIMESTAMP,
+          proposed_end: CLOSE_TIMESTAMP,
           location: 'Lausanne',
         };
         expect(new CreateRollCall(temp)).toBeJsonEqual(temp);
@@ -339,8 +340,10 @@ describe('=== fromJsonData checks ===', () => {
           id: rollCallId,
           name: name,
           creation: STANDARD_TIMESTAMP,
-          scheduled: time,
+          proposed_start: STANDARD_TIMESTAMP,
+          proposed_end: FUTURE_TIMESTAMP,
           location: 'Lausanne',
+          description: 'Roll Call creation',
         };
         expect(new CreateRollCall(temp)).toBeJsonEqual(temp);
       });
@@ -363,7 +366,7 @@ describe('=== fromJsonData checks ===', () => {
           action: ActionType.CLOSE,
           update_id: rollCallId,
           closes: rollCallId,
-          end: FUTURE_TIMESTAMP,
+          closed_at: FUTURE_TIMESTAMP,
           attendees: [sampleKey1, sampleKey2],
         };
         expect(new CloseRollCall(temp)).toBeJsonEqual(temp);
