@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <data>
         <import type="android.view.View" />
         <import type="com.github.dedis.student20_pop.model.event.EventCategory" />
@@ -22,7 +23,7 @@
 
         <LinearLayout
             android:id="@+id/roll_call_layout"
-            android:layout_width="178dp"
+            android:layout_width="186dp"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
@@ -30,25 +31,25 @@
                 android:id="@+id/election_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/margin_text"
+                android:layout_marginLeft="15dp"
                 android:gravity="center"
                 android:text="@{ `Election :`+election.name}"
-                android:textSize="@dimen/size_body"
+                android:textSize="15dp"
                 android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/election_start_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:textSize="15dp" />
 
             <TextView
                 android:id="@+id/election_end_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/margin_text"
-                android:text="@{`Start Time :`+ election.startTimestamp " />
-
-            <TextView
-                android:id="@+id/election_end_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/margin_text"
-                android:text="@{`End Time : `+election.endTimestamp}" />
+                android:layout_marginLeft="15dp"
+                tools:textSize="15dp" />
 
 
         </LinearLayout>
@@ -56,14 +57,14 @@
         <Button
             android:id="@+id/election_action_button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
             android:text="ACTION" />
 
 
         <Button
             android:id="@+id/enter_button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
             android:text="Details" />
 
         <ImageButton
