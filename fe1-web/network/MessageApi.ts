@@ -152,9 +152,9 @@ export function requestCreateRollCall(
     name: name,
     creation: time,
     location: location,
-    start: start,
-    scheduled: scheduled,
-    roll_call_description: description,
+    proposed_start: start,
+    proposed_end: scheduled,
+    description: description,
   });
 
   const laoCh = channelFromId(currentLao.id);

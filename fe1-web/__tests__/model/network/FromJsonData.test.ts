@@ -115,9 +115,10 @@ describe('=== fromJsonData checks ===', () => {
     id: rollCallId,
     name: name,
     creation: time,
-    start: time,
+    proposed_start: time,
+    proposed_end: CLOSE_TIMESTAMP,
     location: location,
-    roll_call_description: 'description du rc',
+    description: 'description du rc',
   };
 
   const sampleOpenRollCall: Partial<OpenRollCall> = {
@@ -125,7 +126,7 @@ describe('=== fromJsonData checks ===', () => {
     action: ActionType.OPEN,
     update_id: rollCallId,
     opens: rollCallId,
-    start: time,
+    opened_at: time,
   };
 
   const sampleReopenRollCall: Partial<OpenRollCall> = {
@@ -133,7 +134,7 @@ describe('=== fromJsonData checks ===', () => {
     action: ActionType.REOPEN,
     update_id: rollCallId,
     opens: rollCallId,
-    start: time,
+    opened_at: time,
   };
 
   const sampleCloseRollCall: Partial<CloseRollCall> = {
@@ -141,7 +142,7 @@ describe('=== fromJsonData checks ===', () => {
     action: ActionType.CLOSE,
     update_id: rollCallId,
     closes: rollCallId,
-    end: FUTURE_TIMESTAMP,
+    closed_at: FUTURE_TIMESTAMP,
     attendees: [],
   };
 

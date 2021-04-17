@@ -28,16 +28,14 @@ function handleRollCallCreateMessage(msg: Message): boolean {
 
   const rcMsgData = msg.messageData as CreateRollCall;
 
-  const ongoing = (!!rcMsgData.scheduled);
-
   const rc = new RollCall({
     id: rcMsgData.id,
     name: rcMsgData.name,
     location: rcMsgData.location,
-    description: rcMsgData.roll_call_description,
+    description: rcMsgData.description,
     creation: rcMsgData.creation,
-    start: ongoing ? rcMsgData.start : rcMsgData.scheduled,
-    ongoing: ongoing,
+    start: rcMsgData.proposed_start,
+    ongoing: false,
   });
 
   dispatch(addEvent(lao.id, rc.toState()));
@@ -70,7 +68,7 @@ function handleRollCallOpenMessage(msg: Message): boolean {
   const rc = new RollCall({
     ...oldRC,
     idAlias: rcMsgData.update_id,
-    start: rcMsgData.start,
+    start: rcMsgData.opened_at,
     ongoing: true,
   });
 
@@ -104,7 +102,7 @@ function handleRollCallCloseMessage(msg: Message): boolean {
   const rc = new RollCall({
     ...oldRC,
     idAlias: rcMsgData.update_id,
-    end: rcMsgData.end,
+    end: rcMsgData.closed_at,
     ongoing: false,
     attendees: rcMsgData.attendees,
   });
