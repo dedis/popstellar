@@ -14,6 +14,7 @@ import com.github.dedis.student20_pop.model.network.answer.Error;
 import com.github.dedis.student20_pop.model.network.answer.Result;
 import com.github.dedis.student20_pop.model.network.method.Broadcast;
 import com.github.dedis.student20_pop.model.network.method.Catchup;
+import com.github.dedis.student20_pop.model.network.method.Message;
 import com.github.dedis.student20_pop.model.network.method.Publish;
 import com.github.dedis.student20_pop.model.network.method.Subscribe;
 import com.github.dedis.student20_pop.model.network.method.Unsubscribe;
@@ -176,13 +177,14 @@ public class  LAORepository {
                 .map(x -> x.getValue().getLao())
                 .collect(Collectors.toList()));
         Log.d(TAG, "createLaoRequest contains this id. posted allLaos to `allLaoSubject`");
+        sendSubscribe(channel);
         sendCatchup(channel);
       }
 
       return;
     }
 
-    Log.d(TAG, "Got a braodcast");
+    Log.d(TAG, "Got a broadcast");
 
     // We've a Broadcast
     Broadcast broadcast = (Broadcast) genericMessage;
@@ -546,7 +548,9 @@ public class  LAORepository {
         upstream
             .filter(
                 genericMessage -> {
-                  Log.d(TAG, "request id: " + ((Answer) genericMessage).getId());
+                  if(genericMessage instanceof Answer) {
+                    Log.d(TAG, "request id: " + ((Answer) genericMessage).getId());
+                  }
                   return genericMessage instanceof Answer
                       && ((Answer) genericMessage).getId() == id;
                 })
