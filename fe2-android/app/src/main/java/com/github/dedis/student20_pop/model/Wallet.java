@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.model;
 
+import android.util.Log;
 import androidx.core.util.Pair;
 import io.github.novacrypto.bip39.MnemonicGenerator;
 import io.github.novacrypto.bip39.MnemonicValidator;
@@ -36,27 +37,32 @@ public class Wallet {
   private static final int ACCOUNT =  0;
   private byte[] SEED;
 
+  private static final Wallet instance = new Wallet();
+  public static Wallet getInstance() {
+    return instance;
+  }
+
   /**
    * Class constructor, initialize the wallet with a new random seed.
    */
   public Wallet() {
     SecureRandom random = new SecureRandom();
-    byte[] bytes = random.generateSeed(64); // max nb byte (512 bit): 256 bits is advised.
+    byte[] bytes = random.generateSeed(64);
     SEED = bytes;
-    System.out.println( "Wallet: initialized with a new random seed: " + Utils.bytesToHex(SEED));
+    Log.d(TAG, "Wallet initialized with a new random seed: " + Utils.bytesToHex(SEED));
   }
 
   /**
    * Method to overwrite the seed of the current wallet with a new seed.
    *
-   * @param seed  A String representing the 256-bit seed.
+   * @param seed
    */
   public void initialize(String seed){
     if (seed == null) {
       throw new UnsupportedOperationException("Unable to init seed from a null param!");
     }
     SEED = Utils.hexToBytes(seed);
-    System.out.println( "initialize: new seed initialized: " + Utils.bytesToHex(SEED));
+    Log.d(TAG, "New seed initialized: " + Utils.bytesToHex(SEED));
   }
 
   /**
@@ -75,7 +81,7 @@ public class Wallet {
     }
     //split the path string
     List<String> path_value = new ArrayList<>(Arrays.asList(path.split("/")));
-    System.out.println( "Path decomposed: " + path_value);
+    Log.d(TAG, "Path decomposed: " + path_value);
 
     path_value.remove(0); //remove the first element (m)
 
@@ -84,10 +90,6 @@ public class Wallet {
         .stream()
         .map(Integer::parseInt)
         .mapToInt(Integer::intValue).toArray();
-
-    System.out.print("Integer path: {  ");
-    for (int i: path_value_int) System.out.print(i+"  ");
-    System.out.println("} ");
 
     // derive private and public key
     byte[] private_key = deriveEd25519PrivateKey(SEED, path_value_int);
@@ -122,7 +124,7 @@ public class Wallet {
     joiner.add(convert_string_to_path(Roll_call_ID));
     String res = joiner.toString();
 
-    System.out.println("Generated path: " + res);
+    Log.d(TAG, "Generated path: " + res);
 
     return GenerateKeyFromPath(res);
   }
@@ -144,7 +146,6 @@ public class Wallet {
       i+= 3;
       joiner.add(Integer.toString(res));
     }
-
     return joiner.toString();
   }
 
@@ -164,6 +165,10 @@ public class Wallet {
   public Pair<byte[], byte[]> RecoverKey(String Lao_ID, String Roll_call_ID,
       List<byte[]> Roll_call_Tokens)
       throws NoSuchAlgorithmException, InvalidKeyException, ShortBufferException {
+
+    if (Lao_ID == null || Roll_call_ID == null) {
+      throw new UnsupportedOperationException("Unable to find keys from a null param");
+    }
 
     Pair<byte[], byte[]> key_pair_find = FindKeyPair(Lao_ID,Roll_call_ID);
     for(byte[] public_key : Roll_call_Tokens){
@@ -191,6 +196,9 @@ public class Wallet {
   public Map<Pair<String, String>, Pair<byte[], byte[]>> RecoverAllKeys(String seed,
       Map<Pair<String, String>, List<byte[]>>  knows_Laos_Roll_calls)
       throws NoSuchAlgorithmException, InvalidKeyException, ShortBufferException {
+    if (knows_Laos_Roll_calls == null) {
+      throw new UnsupportedOperationException("Unable to find recover keys from a null param");
+    }
 
     initialize(seed);
 
@@ -215,19 +223,19 @@ public class Wallet {
   public String[] ExportSeed(){
 
     SecureRandom random = new SecureRandom();
-    byte[] entropy = random.generateSeed(Words.TWELVE.byteLength());
+    byte[] entropy = random.generateSeed(Words.TWENTY_FOUR.byteLength());
 
     StringBuilder sb = new StringBuilder();
     MnemonicGenerator generator = new MnemonicGenerator(English.INSTANCE);
     generator.createMnemonic(entropy, sb::append);
 
     String[] words = sb.toString().split(" ");
-    System.out.println(Arrays.toString(words));
+    Log.d(TAG,"the array of word generated:" + Arrays.toString(words));
 
     StringJoiner joiner = new StringJoiner(" ");
     for(String i: words) joiner.add(i);
     SEED = new SeedCalculator().calculateSeed(joiner.toString(), "");
-    System.out.println( "ExportSeed: new seed initialized: " + Utils.bytesToHex(SEED));
+    Log.d(TAG, "ExportSeed: new seed initialized: " + Utils.bytesToHex(SEED));
 
     return words;
   }
@@ -264,10 +272,10 @@ public class Wallet {
           .ofWordList(English.INSTANCE)
           .validate(words);
       SEED = new SeedCalculator().calculateSeed(words, "");
-      System.out.println( "ImportSeed: new seed: " + Utils.bytesToHex(SEED));
+      Log.d(TAG, "ImportSeed: new seed: " + Utils.bytesToHex(SEED));
 
     } catch (Exception e) {
-      System.out.println("Unable to import words:" + e.getMessage());
+      Log.d(TAG,"Unable to import words:" + e.getMessage());
       return null;
     }
     return RecoverAllKeys(Utils.bytesToHex(SEED), knows_Laos_Roll_calls);
