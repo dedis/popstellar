@@ -146,7 +146,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
                     }
 
                     laoDetailViewModel.createNewElection(title, startTimeInSeconds, endTimeInSeconds, votingMethod.toString(), mSetupElectionFragBinding.writeIn.isChecked(), filteredBallotOptions, question);
-                    laoDetailViewModel.openLaoDetail();
                 });
 
         //On click, cancel button takes back to LAO detail page
