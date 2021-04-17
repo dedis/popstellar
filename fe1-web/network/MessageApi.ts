@@ -132,7 +132,7 @@ export function requestWitnessMessage(channel: Channel, messageId: Hash): Promis
  *  given location (String). An optional start time (Timestamp), scheduled time (Timestamp) or
  *  description (String) can be specified */
 export function requestCreateRollCall(
-  name: string, location: string, proposed_start: Timestamp, proposed_end: Timestamp,
+  name: string, location: string, proposedStart: Timestamp, proposedEnd: Timestamp,
   description?: string,
 ): Promise<void> {
   const time: Timestamp = Timestamp.EpochNow();
@@ -145,8 +145,8 @@ export function requestCreateRollCall(
     name: name,
     creation: time,
     location: location,
-    proposed_start: proposed_start,
-    proposed_end: proposed_end,
+    proposedStart: proposedStart,
+    proposedEnd: proposedEnd,
     description: description,
   });
 

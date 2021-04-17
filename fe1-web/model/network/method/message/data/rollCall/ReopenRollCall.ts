@@ -10,21 +10,21 @@ export class ReopenRollCall implements MessageData {
 
   public readonly action: ActionType = ActionType.REOPEN;
 
-  public readonly update_id: Hash;
+  public readonly updateId: Hash;
 
   public readonly opens: Hash;
 
-  public readonly opened_at: Timestamp;
+  public readonly openedAt: Timestamp;
 
   constructor(msg: Partial<ReopenRollCall>) {
-    if (!msg.opened_at) {
-      throw new ProtocolError("Undefined 'start' parameter encountered during 'ReopenRollCall'");
+    if (!msg.openedAt) {
+      throw new ProtocolError("Undefined 'openedAt' parameter encountered during 'ReopenRollCall'");
     }
-    checkTimestampStaleness(msg.opened_at);
-    this.opened_at = new Timestamp(msg.opened_at.toString());
+    checkTimestampStaleness(msg.openedAt);
+    this.openedAt = new Timestamp(msg.openedAt.toString());
 
-    if (!msg.update_id) {
-      throw new ProtocolError("Undefined 'update_id' parameter encountered during 'ReopenRollCall'");
+    if (!msg.updateId) {
+      throw new ProtocolError("Undefined 'updateId' parameter encountered during 'ReopenRollCall'");
     }
 
     // FIXME: implementation not finished, get event from storage,
@@ -39,7 +39,7 @@ export class ReopenRollCall implements MessageData {
         'Invalid \'id\' parameter encountered during \'CreateLao\': unexpected id value'
       );
     */
-    this.update_id = new Hash(msg.update_id.toString());
+    this.updateId = new Hash(msg.updateId.toString());
 
     if (!msg.opens) {
       throw new ProtocolError("Undefined 'opens' parameter encountered during 'OpenRollCall'");
@@ -56,8 +56,8 @@ export class ReopenRollCall implements MessageData {
 
     return new ReopenRollCall({
       ...obj,
-      opened_at: new Timestamp(obj.opened_at),
-      update_id: new Hash(obj.update_id),
+      openedAt: new Timestamp(obj.opened_at),
+      updateId: new Hash(obj.update_id),
       opens: new Hash(obj.opens),
     });
   }
