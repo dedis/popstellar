@@ -21,6 +21,7 @@ import java.util.List;
 import com.github.dedis.student20_pop.databinding.FragmentSetupElectionEventBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
+import com.github.dedis.student20_pop.detail.fragments.event.creation.AbstractEventCreationFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.annotation.NonNull;
@@ -146,6 +147,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
                     }
 
                     laoDetailViewModel.createNewElection(title, startTimeInSeconds, endTimeInSeconds, votingMethod.toString(), mSetupElectionFragBinding.writeIn.isChecked(), filteredBallotOptions, question);
+                    laoDetailViewModel.openLaoDetail();
                 });
 
         //On click, cancel button takes back to LAO detail page

@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
                 android:gravity="center"
-                android:text="@{ `Election :`+election.name}"
+                android:text="@{ `Election : `+election.name}"
                 android:textSize="15dp"
                 android:textStyle="bold" />
 

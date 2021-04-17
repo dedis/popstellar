@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import com.github.dedis.student20_pop.databinding.FragmentCreateRollCallEventBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
+import com.github.dedis.student20_pop.detail.fragments.event.creation.AbstractEventCreationFragment;
 import com.github.dedis.student20_pop.model.event.EventType;
 
 import java.time.Instant;
