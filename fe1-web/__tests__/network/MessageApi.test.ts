@@ -454,15 +454,10 @@ describe('=== WebsocketApi tests ===', () => {
 
     it('should create the correct request for requestCreateRollCall', async () => {
       setMockCheck(checkDataCreateRollCall);
-      const mockScheduledTime = new Timestamp(mockStartTime.valueOf() + 1);
       const mockDescription = 'random description';
-      await msApi.requestCreateRollCall(mockEventName, mockLocation, mockStartTime);
-      await msApi.requestCreateRollCall(mockEventName, mockLocation, undefined, mockScheduledTime);
+      await msApi.requestCreateRollCall(mockEventName, mockLocation, mockStartTime, mockEndTime);
       await msApi.requestCreateRollCall(
-        mockEventName, mockLocation, mockStartTime, undefined, mockDescription,
-      );
-      await msApi.requestCreateRollCall(
-        mockEventName, mockLocation, undefined, mockScheduledTime, mockDescription,
+        mockEventName, mockLocation, mockStartTime, mockEndTime, mockDescription,
       );
     });
     /*
