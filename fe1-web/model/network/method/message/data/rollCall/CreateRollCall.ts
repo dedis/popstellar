@@ -40,12 +40,18 @@ export class CreateRollCall implements MessageData {
 
     if (!msg.proposed_start) {
       throw new ProtocolError("Undefined 'proposed_start' parameter encountered during 'CreateRollCall'");
+    } else if (msg.proposed_start < msg.creation) {
+      throw new ProtocolError('Invalid timestamp encountered:'
+          + " 'proposed_start' parameter smaller than 'creation'");
     }
     checkTimestampStaleness(msg.proposed_start);
     this.proposed_start = msg.proposed_start;
 
     if (!msg.proposed_end) {
       throw new ProtocolError("Undefined 'proposed_end' parameter encountered during 'CreateRollCall'");
+    } else if (msg.proposed_end < msg.proposed_start) {
+      throw new ProtocolError('Invalid timestamp encountered:'
+        + " 'proposed_end' parameter smaller than 'proposed_start'");
     }
     checkTimestampStaleness(msg.proposed_end);
     this.proposed_end = msg.proposed_end;
