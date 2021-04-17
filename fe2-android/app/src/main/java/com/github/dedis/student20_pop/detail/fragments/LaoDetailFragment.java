@@ -159,6 +159,7 @@ public class LaoDetailFragment extends Fragment {
     expandableListView.setAdapter(mEventListViewEventAdapter);
     expandableListView.expandGroup(0);
     expandableListView.expandGroup(1);
+
   }
 
   private void setupSwipeRefresh() {
