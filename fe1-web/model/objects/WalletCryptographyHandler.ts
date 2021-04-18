@@ -141,6 +141,7 @@ export class WalletCryptographyHandler {
 
     /* } else if (the IndexedDB was cleared for some reason) {
       TODO: find a way to fix this and retrieve the keys
+      https://github.com/dedis/student_21_pop/issues/297
       }
     */
   }

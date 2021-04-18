@@ -1,6 +1,8 @@
 import 'jest-extended';
 import { WalletCryptographyHandler } from 'model/objects/WalletCryptographyHandler';
 import { sign } from 'tweetnacl';
+import STRINGS from 'res/strings';
+import { get } from 'idb-keyval';
 
 /* used to simulate indexedDB database to test store/retrieve functions */
 require('fake-indexeddb/auto');
@@ -29,21 +31,39 @@ describe('=== Wallet Cryptography Handler tests ===', () => {
       Object.defineProperty(crypto, 'subtle', {
         value: {
           generateKey: () => ({
-            publicKey: 'MOCK_PUBLIC_KEY',
-            privateKey: 'MOCK_PRIVATE_KEY',
+            publicKey: sign.keyPair().secretKey,
+            privateKey: sign.keyPair().publicKey,
           }),
-          // eslint-disable-next-line max-len
-          encrypt: (s: AesGcmParams, key: CryptoKey, plaintext: Uint8Array) => new Promise((resolve) => {
-            resolve(plaintext.buffer);
-          }),
-          // eslint-disable-next-line max-len
-          decrypt: (s: RsaOaepParams, key: CryptoKey, ciphertext: BufferSource) => new Promise((resolve) => {
-            resolve(ciphertext);
-          }),
+
+          /* this mock encrypt function appends public encryption key to seed */
+          encrypt: async (s: AesGcmParams, publicKey: CryptoKey, plaintext: Uint8Array) => {
+            const ciphertext: string = plaintext.join().concat(publicKey.toString());
+            const ciphertextBuffer: ArrayBuffer = Buffer.from(ciphertext);
+            return new Promise((resolve) => {
+              resolve(ciphertextBuffer);
+            });
+          },
+
+          /* the mock decrypt function is called AFTER walletCryptoManager destruction.
+             The check is done on key coherence in database: since the encryption appended
+             the public key to the seed we need to retrieve the public key and undo the append
+             in order to provide correct decryption */
+          decrypt: async (s: RsaOaepParams, privateKey: CryptoKey, ciphertext: ArrayBuffer) => {
+            /* note the publicKey has to be retrieved here since the one passed in
+            parameter by the decrypt call in handler is the private key */
+            const publicKey = await get(STRINGS.walletPublicKeyId);
+            /* undoing public key append by substituting the substring with empty string */
+            const plaintext: string = ciphertext.toString().replace(publicKey.toString(), '');
+            const plaintextBuffer: ArrayBuffer = Buffer.from(plaintext);
+            return new Promise((resolve) => {
+              resolve(plaintextBuffer);
+            });
+          },
         },
       });
 
-      /* initialization of wallet storage and crypto key in database */
+      /* initialization of wallet storage and crypto key in database
+       here the generated keys are STORED in indexedDB simulator */
       await mockCryptoManager.initWalletStorage();
 
       /* encrypting using mock encrypt */
@@ -59,10 +79,11 @@ describe('=== Wallet Cryptography Handler tests ===', () => {
       /* initialization of wallet storage and retrieve crypto key in database */
       await newMockCryptoManager.initWalletStorage();
 
-      /* decrypting using mock decrypt */
-      const plaintext: Uint8Array = new Uint8Array(await newMockCryptoManager.decrypt(cypher));
+      /* decrypting using mock decrypt, if the decryption works it implies indexedDB
+         database has correctly stored the keys after app restart */
+      const plaintext: ArrayBuffer = await newMockCryptoManager.decrypt(cypher);
 
-      expect(plaintext).toStrictEqual(seed);
+      expect(plaintext.toString()).toStrictEqual(seed.join());
     });
   });
 });
