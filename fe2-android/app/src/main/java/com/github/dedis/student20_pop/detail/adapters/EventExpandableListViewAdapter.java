@@ -119,6 +119,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     }
 
     return this.eventsMap.get(categories[groupPosition]).get(childPosition);
+
   }
 
   /**
@@ -278,27 +279,29 @@ EventCategory category = (EventCategory) getGroup(groupPosition);
           electionBinding.setElection(election);
           Date dStart = new java.util.Date(Long.valueOf(election.getStartTimestamp())*1000);// *1000 because it needs to be in milisecond
           String dateStart = new SimpleDateFormat("dd/MM/yyyy HH:mm",Locale.FRENCH).format(dStart);
-          long dv = Long.valueOf(election.getStartTimestamp())*1000;// its need to be in milisecond
           electionBinding.electionStartDate.setText("Start date : " +dateStart);
-          Date dEnd = new java.util.Date(Long.valueOf(election.getEndTimestamp())*1000);// *1000 because it needs to be in milisecond
+          Date dEnd = new java.util.Date(Long.valueOf(election.getEndTimestamp())*1000);
           String dateEnd = new SimpleDateFormat("dd/MM, yyyy HH:mm",Locale.FRENCH).format(dEnd);
           electionBinding.electionEndDate.setText("End Date : " + dateEnd);
           if(category == PRESENT) {
            electionBinding.electionActionButton.setText("Cast Vote");
             electionBinding.electionActionButton.setOnClickListener(
-                    clicked -> viewModel.openCastVotes(election.getId()));
+                    clicked -> viewModel.openCastVotes());
           }
           else if (category == PAST) {
             electionBinding.electionActionButton.setText("Election Results");
-            viewModel.openElectionResults(true);
+              electionBinding.electionActionButton.setOnClickListener(
+                      clicked -> viewModel.openElectionResults(true));
 
           }
           else if (category == FUTURE) {
             electionBinding.electionActionButton.setVisibility(View.GONE);
           }
 
-
-
+          electionBinding.electionEditButton.setOnClickListener( clicked -> {
+              viewModel.setCurrentElection(election);
+              viewModel.openManageElection(true);
+          });
           electionBinding.setEventCategory(category);
           electionBinding.setViewModel(viewModel);
           electionBinding.setLifecycleOwner(lifecycleOwner);

@@ -60,6 +60,28 @@ public final class Lao {
     return Optional.ofNullable(elections.get(id));
   }
 
+  /**
+   * Removes an election from the list of elections.
+   *
+   * @param id       the id of the Election
+   * @return true if the election was deleted
+   */
+  public boolean removeElection(String id) {
+    return (elections.remove(id) != null ) ;
+
+  }
+
+  /**
+   * Removes a roll call from the list of roll calls.
+   *
+   * @param id       the id of the Roll Call
+   * @return true if the roll call was deleted
+   */
+  public boolean removeRollCall(String id) {
+    return (rollCalls.remove(id) != null ) ;
+
+  }
+
   public Long getLastModified() {
     return lastModified;
   }

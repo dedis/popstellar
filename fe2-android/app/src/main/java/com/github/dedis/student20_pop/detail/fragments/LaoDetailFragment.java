@@ -47,7 +47,6 @@ public class LaoDetailFragment extends Fragment {
     mLaoDetailFragBinding = FragmentLaoDetailBinding.inflate(inflater, container, false);
 
     mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
-
     mLaoDetailFragBinding.setViewModel(mLaoDetailViewModel);
     mLaoDetailFragBinding.setLifecycleOwner(getActivity());
 
