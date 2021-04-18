@@ -147,16 +147,32 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
                     }
 
                     laoDetailViewModel.createNewElection(title, startTimeInSeconds, endTimeInSeconds, votingMethod.toString(), mSetupElectionFragBinding.writeIn.isChecked(), filteredBallotOptions, question);
-                    laoDetailViewModel.openLaoDetail();
                 });
 
         //On click, cancel button takes back to LAO detail page
         cancelButton.setOnClickListener(
                 v ->
                     laoDetailViewModel.openLaoDetail());
-        mSetupElectionFragBinding.setLifecycleOwner(getActivity());
 
+        // Subscribe on updates for Election Creation
+
+        laoDetailViewModel
+                .getElectionCreated()
+                .observe(
+                        this,
+                        booleanEvent -> {
+                            Boolean action = booleanEvent.getContentIfNotHandled();
+                            if (action != null) {
+                                laoDetailViewModel.openLaoDetail();
+                            }
+                        });
+
+        mSetupElectionFragBinding.setLifecycleOwner(getActivity());
         return mSetupElectionFragBinding.getRoot();
+
+
+
+        //
 
     }
 
