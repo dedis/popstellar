@@ -308,7 +308,6 @@ function checkDataCreateRollCall(obj: MessageData) {
   // @ts-ignore
   expect(data.proposed_start.valueOf() + 1).toBeGreaterThan(data.creation.valueOf());
 
-
   expect(data.proposed_end).toBeNumberObject();
   // @ts-ignore
   expect(data.proposed_end.valueOf()).toBeGreaterThan(0);
