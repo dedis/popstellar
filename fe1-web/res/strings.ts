@@ -95,7 +95,8 @@ const STRINGS = {
   discussion_create_open: 'discussion open',
 
   /* --- Roll-call creation Strings --- */
-  roll_call_create_deadline: 'Deadline:',
+  roll_call_create_proposed_start: 'Proposed Start:',
+  roll_call_create_proposed_end: 'Proposed End:',
   roll_call_create_description: 'Description',
   roll_call_create_location: 'Location*',
   roll_call_create_name: 'Name*',

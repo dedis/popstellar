@@ -25,9 +25,13 @@ function dateToTimestamp(date: Date): Timestamp {
 const CreateRollCall = ({ route }: any) => {
   const styles = route.params;
   const navigation = useNavigation();
-  const initialDate = new Date();
+  const initialStartDate = new Date();
+  const initialEndDate = new Date();
+  // Sets initial end date to 1 hour later than start date
+  initialEndDate.setHours(initialEndDate.getHours() + 1);
 
-  const [startDate, setStartDate] = useState(dateToTimestamp(initialDate));
+  const [proposedStartDate, setProposedStartDate] = useState(dateToTimestamp(initialStartDate));
+  const [proposedEndDate, setProposedEndDate] = useState(dateToTimestamp(initialEndDate));
 
   const [rollCallName, setRollCallName] = useState('');
   const [rollCallLocation, setRollCallLocation] = useState('');
@@ -35,14 +39,21 @@ const CreateRollCall = ({ route }: any) => {
 
   const buildDatePickerWeb = () => {
     const startTime = new Date(0);
-    startTime.setUTCSeconds(startDate.valueOf());
+    const endTime = new Date(0);
+    startTime.setUTCSeconds(proposedStartDate.valueOf());
+    endTime.setUTCSeconds(proposedEndDate.valueOf());
 
     return (
       <View style={styles.view}>
-        <ParagraphBlock text={STRINGS.roll_call_create_deadline} />
+        <ParagraphBlock text={STRINGS.roll_call_create_proposed_start} />
         <DatePicker
           selected={startTime}
-          onChange={(date: Date) => setStartDate(dateToTimestamp(date))}
+          onChange={(date: Date) => setProposedStartDate(dateToTimestamp(date))}
+        />
+        <ParagraphBlock text={STRINGS.roll_call_create_proposed_end} />
+        <DatePicker
+          selected={endTime}
+          onChange={(date: Date) => setProposedEndDate(dateToTimestamp(date))}
         />
       </View>
     );
@@ -50,12 +61,10 @@ const CreateRollCall = ({ route }: any) => {
 
   const buttonsVisibility: boolean = (rollCallName !== '' && rollCallLocation !== '');
 
-  const createRollCall = (scheduled: boolean) => {
+  const createRollCall = () => {
     const description = (rollCallDescription === '') ? undefined : rollCallDescription;
     requestCreateRollCall(
-      rollCallName, rollCallLocation,
-      scheduled ? undefined : startDate,
-      scheduled ? startDate : undefined,
+      rollCallName, rollCallLocation, proposedStartDate, proposedEndDate,
       description,
     )
       .then(() => {
