@@ -61,7 +61,9 @@ export class CreateRollCall implements MessageData {
     }
     this.location = msg.location;
 
-    if (msg.description) { this.description = msg.description; }
+    if (msg.description) {
+      this.description = msg.description;
+    }
 
     if (!msg.id) {
       throw new ProtocolError("Undefined 'id' parameter encountered during 'CreateRollCall'");
