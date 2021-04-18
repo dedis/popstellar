@@ -115,8 +115,8 @@ describe('=== fromJsonData checks ===', () => {
     id: rollCallId,
     name: name,
     creation: time,
-    proposedStart: time,
-    proposedEnd: CLOSE_TIMESTAMP,
+    proposed_start: time,
+    proposed_end: CLOSE_TIMESTAMP,
     location: location,
     description: 'description du rc',
   };
@@ -124,25 +124,25 @@ describe('=== fromJsonData checks ===', () => {
   const sampleOpenRollCall: Partial<OpenRollCall> = {
     object: ObjectType.ROLL_CALL,
     action: ActionType.OPEN,
-    updateId: rollCallId,
+    update_id: rollCallId,
     opens: rollCallId,
-    openedAt: time,
+    opened_at: time,
   };
 
   const sampleReopenRollCall: Partial<OpenRollCall> = {
     object: ObjectType.ROLL_CALL,
     action: ActionType.REOPEN,
-    updateId: rollCallId,
+    update_id: rollCallId,
     opens: rollCallId,
-    openedAt: time,
+    opened_at: time,
   };
 
   const sampleCloseRollCall: Partial<CloseRollCall> = {
     object: ObjectType.ROLL_CALL,
     action: ActionType.CLOSE,
-    updateId: rollCallId,
+    update_id: rollCallId,
     closes: rollCallId,
-    closedAt: CLOSE_TIMESTAMP,
+    closed_at: CLOSE_TIMESTAMP,
     attendees: [],
   };
 
@@ -329,8 +329,8 @@ describe('=== fromJsonData checks ===', () => {
           id: rollCallId,
           name: name,
           creation: STANDARD_TIMESTAMP,
-          proposedStart: STANDARD_TIMESTAMP,
-          proposedEnd: CLOSE_TIMESTAMP,
+          proposed_start: STANDARD_TIMESTAMP,
+          proposed_end: CLOSE_TIMESTAMP,
           location: 'Lausanne',
         };
         expect(new CreateRollCall(temp)).toBeJsonEqual(temp);
@@ -340,8 +340,8 @@ describe('=== fromJsonData checks ===', () => {
           id: rollCallId,
           name: name,
           creation: STANDARD_TIMESTAMP,
-          proposedStart: STANDARD_TIMESTAMP,
-          proposedEnd: FUTURE_TIMESTAMP,
+          proposed_start: STANDARD_TIMESTAMP,
+          proposed_end: FUTURE_TIMESTAMP,
           location: 'Lausanne',
           description: 'Roll Call creation',
         };
@@ -364,9 +364,9 @@ describe('=== fromJsonData checks ===', () => {
         temp = {
           object: ObjectType.ROLL_CALL,
           action: ActionType.CLOSE,
-          updateId: rollCallId,
+          update_id: rollCallId,
           closes: rollCallId,
-          closedAt: FUTURE_TIMESTAMP,
+          closed_at: FUTURE_TIMESTAMP,
           attendees: [sampleKey1, sampleKey2],
         };
         expect(new CloseRollCall(temp)).toBeJsonEqual(temp);

@@ -18,9 +18,9 @@ export class CreateRollCall implements MessageData {
 
   public readonly creation: Timestamp;
 
-  public readonly proposedStart: Timestamp;
+  public readonly proposed_start: Timestamp;
 
-  public readonly proposedEnd: Timestamp;
+  public readonly proposed_end: Timestamp;
 
   public readonly location: string;
 
@@ -38,23 +38,23 @@ export class CreateRollCall implements MessageData {
     checkTimestampStaleness(msg.creation);
     this.creation = msg.creation;
 
-    if (!msg.proposedStart) {
-      throw new ProtocolError("Undefined 'proposedStart' parameter encountered during 'CreateRollCall'");
-    } else if (msg.proposedStart < msg.creation) {
+    if (!msg.proposed_start) {
+      throw new ProtocolError("Undefined 'proposed_start' parameter encountered during 'CreateRollCall'");
+    } else if (msg.proposed_start < msg.creation) {
       throw new ProtocolError('Invalid timestamp encountered:'
           + " 'proposed_start' parameter smaller than 'creation'");
     }
-    checkTimestampStaleness(msg.proposedStart);
-    this.proposedStart = msg.proposedStart;
+    checkTimestampStaleness(msg.proposed_start);
+    this.proposed_start = msg.proposed_start;
 
-    if (!msg.proposedEnd) {
-      throw new ProtocolError("Undefined 'proposedEnd' parameter encountered during 'CreateRollCall'");
-    } else if (msg.proposedEnd < msg.proposedStart) {
+    if (!msg.proposed_end) {
+      throw new ProtocolError("Undefined 'proposed_end' parameter encountered during 'CreateRollCall'");
+    } else if (msg.proposed_end < msg.proposed_start) {
       throw new ProtocolError('Invalid timestamp encountered:'
-        + " 'proposedEnd' parameter smaller than 'proposedStart'");
+        + " 'proposed_end' parameter smaller than 'proposed_start'");
     }
-    checkTimestampStaleness(msg.proposedEnd);
-    this.proposedEnd = msg.proposedEnd;
+    checkTimestampStaleness(msg.proposed_end);
+    this.proposed_end = msg.proposed_end;
 
     if (!msg.location) {
       throw new ProtocolError("Undefined 'location' parameter encountered during 'CreateRollCall'");
@@ -87,8 +87,8 @@ export class CreateRollCall implements MessageData {
     return new CreateRollCall({
       ...obj,
       creation: new Timestamp(obj.creation),
-      proposedStart: new Timestamp(obj.proposed_start),
-      proposedEnd: new Timestamp(obj.proposed_end),
+      proposed_start: new Timestamp(obj.proposed_start),
+      proposed_end: new Timestamp(obj.proposed_end),
       id: new Hash(obj.id),
     });
   }

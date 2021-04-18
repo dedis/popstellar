@@ -10,20 +10,20 @@ export class ReopenRollCall implements MessageData {
 
   public readonly action: ActionType = ActionType.REOPEN;
 
-  public readonly updateId: Hash;
+  public readonly update_id: Hash;
 
   public readonly opens: Hash;
 
-  public readonly openedAt: Timestamp;
+  public readonly opened_at: Timestamp;
 
   constructor(msg: Partial<ReopenRollCall>) {
-    if (!msg.openedAt) {
+    if (!msg.opened_at) {
       throw new ProtocolError("Undefined 'openedAt' parameter encountered during 'ReopenRollCall'");
     }
-    checkTimestampStaleness(msg.openedAt);
-    this.openedAt = new Timestamp(msg.openedAt.toString());
+    checkTimestampStaleness(msg.opened_at);
+    this.opened_at = new Timestamp(msg.opened_at.toString());
 
-    if (!msg.updateId) {
+    if (!msg.update_id) {
       throw new ProtocolError("Undefined 'updateId' parameter encountered during 'ReopenRollCall'");
     }
 
@@ -39,7 +39,7 @@ export class ReopenRollCall implements MessageData {
         'Invalid \'id\' parameter encountered during \'CreateLao\': unexpected id value'
       );
     */
-    this.updateId = new Hash(msg.updateId.toString());
+    this.update_id = new Hash(msg.update_id.toString());
 
     if (!msg.opens) {
       throw new ProtocolError("Undefined 'opens' parameter encountered during 'OpenRollCall'");
@@ -56,8 +56,8 @@ export class ReopenRollCall implements MessageData {
 
     return new ReopenRollCall({
       ...obj,
-      openedAt: new Timestamp(obj.opened_at),
-      updateId: new Hash(obj.update_id),
+      opened_at: new Timestamp(obj.opened_at),
+      update_id: new Hash(obj.update_id),
       opens: new Hash(obj.opens),
     });
   }

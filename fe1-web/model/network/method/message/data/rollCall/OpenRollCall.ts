@@ -9,23 +9,23 @@ export class OpenRollCall implements MessageData {
 
   public readonly action: ActionType = ActionType.OPEN;
 
-  public readonly updateId: Hash;
+  public readonly update_id: Hash;
 
   public readonly opens: Hash;
 
-  public readonly openedAt: Timestamp;
+  public readonly opened_at: Timestamp;
 
   constructor(msg: Partial<OpenRollCall>) {
-    if (!msg.openedAt) {
+    if (!msg.opened_at) {
       throw new ProtocolError("Undefined 'openedAt' parameter encountered during 'OpenRollCall'");
     }
-    checkTimestampStaleness(msg.openedAt);
-    this.openedAt = msg.openedAt;
+    checkTimestampStaleness(msg.opened_at);
+    this.opened_at = msg.opened_at;
 
-    if (!msg.updateId) {
+    if (!msg.update_id) {
       throw new ProtocolError("Undefined 'updateId' parameter encountered during 'OpenRollCall'");
     }
-    this.updateId = msg.updateId;
+    this.update_id = msg.update_id;
 
     if (!msg.opens) {
       throw new ProtocolError("Undefined 'opens' parameter encountered during 'OpenRollCall'");
@@ -42,8 +42,8 @@ export class OpenRollCall implements MessageData {
 
     return new OpenRollCall({
       ...obj,
-      openedAt: new Timestamp(obj.opened_at),
-      updateId: new Hash(obj.update_id),
+      opened_at: new Timestamp(obj.opened_at),
+      update_id: new Hash(obj.update_id),
       opens: new Hash(obj.opens),
     });
   }

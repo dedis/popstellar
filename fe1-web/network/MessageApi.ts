@@ -145,8 +145,8 @@ export function requestCreateRollCall(
     name: name,
     creation: time,
     location: location,
-    proposedStart: proposedStart,
-    proposedEnd: proposedEnd,
+    proposed_start: proposedStart,
+    proposed_end: proposedEnd,
     description: description,
   });
 

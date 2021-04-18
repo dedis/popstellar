@@ -12,20 +12,20 @@ export class CloseRollCall implements MessageData {
 
   public readonly action: ActionType = ActionType.CLOSE;
 
-  public readonly updateId: Hash;
+  public readonly update_id: Hash;
 
   public readonly closes: Hash;
 
-  public readonly closedAt: Timestamp;
+  public readonly closed_at: Timestamp;
 
   public readonly attendees: PublicKey[];
 
   constructor(msg: Partial<CloseRollCall>) {
-    if (!msg.closedAt) {
+    if (!msg.closed_at) {
       throw new ProtocolError("Undefined 'closedAt' parameter encountered during 'CloseRollCall'");
     }
-    checkTimestampStaleness(msg.closedAt);
-    this.closedAt = msg.closedAt;
+    checkTimestampStaleness(msg.closed_at);
+    this.closed_at = msg.closed_at;
 
     if (!msg.attendees) {
       throw new ProtocolError("Undefined 'attendees' parameter encountered during 'CloseRollCall'");
@@ -33,7 +33,7 @@ export class CloseRollCall implements MessageData {
     checkAttendees(msg.attendees);
     this.attendees = [...msg.attendees];
 
-    if (!msg.updateId) {
+    if (!msg.update_id) {
       throw new ProtocolError("Undefined 'update_id' parameter encountered during 'CloseRollCall'");
     }
 
@@ -48,7 +48,7 @@ export class CloseRollCall implements MessageData {
       throw new ProtocolError(
         'Invalid \'id\' parameter encountered during \'CloseRollCall\': unexpected id value
       '); */
-    this.updateId = msg.updateId;
+    this.update_id = msg.update_id;
 
     if (!msg.closes) {
       throw new ProtocolError("Undefined 'closes' parameter encountered during 'CloseRollCall'");
@@ -65,9 +65,9 @@ export class CloseRollCall implements MessageData {
 
     return new CloseRollCall({
       ...obj,
-      closedAt: new Timestamp(obj.closed_at),
+      closed_at: new Timestamp(obj.closed_at),
       attendees: obj.attendees.map((key: string) => new PublicKey(key)),
-      updateId: new Hash(obj.update_id),
+      update_id: new Hash(obj.update_id),
       closes: new Hash(obj.closes),
     });
   }

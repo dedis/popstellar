@@ -34,7 +34,7 @@ function handleRollCallCreateMessage(msg: Message): boolean {
     location: rcMsgData.location,
     description: rcMsgData.description,
     creation: rcMsgData.creation,
-    start: rcMsgData.proposedStart,
+    start: rcMsgData.proposed_start,
     ongoing: false,
   });
 
@@ -67,8 +67,8 @@ function handleRollCallOpenMessage(msg: Message): boolean {
 
   const rc = new RollCall({
     ...oldRC,
-    idAlias: rcMsgData.updateId,
-    start: rcMsgData.openedAt,
+    idAlias: rcMsgData.update_id,
+    start: rcMsgData.opened_at,
     ongoing: true,
   });
 
@@ -101,8 +101,8 @@ function handleRollCallCloseMessage(msg: Message): boolean {
 
   const rc = new RollCall({
     ...oldRC,
-    idAlias: rcMsgData.updateId,
-    end: rcMsgData.closedAt,
+    idAlias: rcMsgData.update_id,
+    end: rcMsgData.closed_at,
     ongoing: false,
     attendees: rcMsgData.attendees,
   });

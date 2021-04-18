@@ -302,21 +302,18 @@ function checkDataCreateRollCall(obj: MessageData) {
   expect(data.creation).toBeNumberObject();
   expect(data.creation.valueOf()).toBeGreaterThan(0);
 
-  if ('proposed_start' in data) {
-    expect(data.proposedStart).toBeNumberObject();
-    // @ts-ignore
-    expect(data.proposedStart.valueOf()).toBeGreaterThan(0);
-    // @ts-ignore
-    expect(data.proposedStart.valueOf() + 1).toBeGreaterThan(data.creation.valueOf());
-  }
+  expect(data.proposed_start).toBeNumberObject();
+  // @ts-ignore
+  expect(data.proposed_start.valueOf()).toBeGreaterThan(0);
+  // @ts-ignore
+  expect(data.proposed_start.valueOf() + 1).toBeGreaterThan(data.creation.valueOf());
 
-  if ('proposed_end' in data) {
-    expect(data.proposedEnd).toBeNumberObject();
-    // @ts-ignore
-    expect(data.proposedEnd.valueOf()).toBeGreaterThan(0);
-    // @ts-ignore
-    expect(data.proposedEnd.valueOf() + 1).toBeGreaterThan(data.creation.valueOf());
-  }
+
+  expect(data.proposed_end).toBeNumberObject();
+  // @ts-ignore
+  expect(data.proposed_end.valueOf()).toBeGreaterThan(0);
+  // @ts-ignore
+  expect(data.proposed_end.valueOf() + 1).toBeGreaterThan(data.creation.valueOf());
 
   expect(data.location).toBeString();
   expect(data.location).toBe(mockLocation);
@@ -341,14 +338,14 @@ function checkDataOpenRollCall(obj: MessageData) {
   expect(data).toBeObject();
   expect(data).toContainKeys([...defaultDataFields, 'update_id', 'opened_at']);
 
-  expect(data.updateId).toBeBase64();
+  expect(data.update_id).toBeBase64();
 
-  expect(data.openedAt).toBeNumberObject();
-  expect(data.openedAt.valueOf()).toBeGreaterThan(0);
+  expect(data.opened_at).toBeNumberObject();
+  expect(data.opened_at.valueOf()).toBeGreaterThan(0);
 
   // check id
   const expected = Hash.fromStringArray('R', OpenedLaoStore.get().id.toString(), '444', 'r-cName'); // 444 and r-cName are for now hardocded in the APi
-  expect(data.updateId).toEqual(expected);
+  expect(data.update_id).toEqual(expected);
 }
 
 // FIXME remove eslint warning when function used
@@ -361,14 +358,14 @@ function checkDataReopenRollCall(obj: MessageData) {
 
   expect(data).toContainKeys([...defaultDataFields, 'id', 'opened_at']);
 
-  expect(data.updateId).toBeBase64();
+  expect(data.update_id).toBeBase64();
 
-  expect(data.openedAt).toBeNumberObject();
-  expect(data.openedAt.valueOf()).toBeGreaterThan(0);
+  expect(data.opened_at).toBeNumberObject();
+  expect(data.opened_at.valueOf()).toBeGreaterThan(0);
 
   // check id
   const expected = Hash.fromStringArray('R', OpenedLaoStore.get().id.toString(), '444', 'r-cName'); // 444 and r-cName are for now hardocded in the APi
-  expect(data.updateId).toEqual(expected);
+  expect(data.update_id).toEqual(expected);
 }
 
 // FIXME remove eslint warning when function used
@@ -382,17 +379,17 @@ function checkDataCloseRollCall(obj: MessageData) {
   expect(data).toBeObject();
   expect(data).toContainKeys([...defaultDataFields, 'update_id', 'closes', 'closed_at', 'attendees']);
 
-  expect(data.updateId).toBeBase64();
+  expect(data.update_id).toBeBase64();
 
-  expect(data.closedAt).toBeNumberObject();
-  expect(data.closedAt.valueOf()).toBeGreaterThan(0);
+  expect(data.closed_at).toBeNumberObject();
+  expect(data.closed_at.valueOf()).toBeGreaterThan(0);
 
   expect(data.attendees).toBeBase64Array();
   expect(data.attendees).toBeDistinctArray();
 
   // check id
   const expected = Hash.fromStringArray('R', OpenedLaoStore.get().id.toString(), '444', 'r-cName'); // 444 and r-cName are for now hardocded in the APi
-  expect(data.updateId).toEqual(expected);
+  expect(data.update_id).toEqual(expected);
 }
 
 describe('=== WebsocketApi tests ===', () => {
