@@ -84,6 +84,8 @@ public class ManageElectionFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setupHomeButton();
+        Button back = (Button) getActivity().findViewById(R.id.tab_back);
+        back.setOnClickListener(c->laoDetailViewModel.openLaoDetail());
         //On click, terminate button  current Election
         terminate.setOnClickListener(
                 v -> {
