@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,10 +33,9 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
 
     private FragmentSetupElectionEventBinding mSetupElectionFragBinding;
 
+    //mandatory fields for submitting
     private EditText electionNameText;
     private EditText electionQuestionText;
-    private EditText ballotOption1;
-    private EditText ballotOption2;
     private Button submitButton;
 
     private enum votingMethods {Plurality}
@@ -43,40 +43,49 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
 
     private List<String> ballotOptions;
 
-    private final TextWatcher confirmTextWatcher =
+    //the number of valid ballot options set by the organizer
+    private int numberBallotOptions = 0;
+
+    //Text watcher that checks if mandatory fields are filled for submitting each time the user changes a field (with at least two valid ballot options)
+    private final TextWatcher submitTextWatcher =
             new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {/* no check to make before text is changed */}
 
                 @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    boolean areFieldsFilled =
-                            !electionNameText.getText().toString().trim().isEmpty() && !getStartDate().isEmpty() && !getStartTime().isEmpty() && !getEndDate().isEmpty() && !getEndTime().isEmpty() &&
-                            !ballotOption1.getText().toString().trim().isEmpty() && !ballotOption2.getText().toString().trim().isEmpty() && !electionQuestionText.getText().toString().trim().isEmpty();
-                    submitButton.setEnabled(areFieldsFilled);
-                }
+                public void onTextChanged(CharSequence s, int start, int before, int count) {/* no check to make during the text is being changes */}
 
                 @Override
-                public void afterTextChanged(Editable s) {/* no check to make after text is changed */}
+                public void afterTextChanged(Editable s) {
+                    boolean areFieldsFilled =
+                        !electionNameText.getText().toString().trim().isEmpty() && !getStartDate().isEmpty() && !getStartTime().isEmpty() && !getEndDate().isEmpty() && !getEndTime().isEmpty() &&
+                                !electionQuestionText.getText().toString().trim().isEmpty() && numberBallotOptions >= 2;
+                    submitButton.setEnabled(areFieldsFilled);}
             };
-
+    //Text watcher that adds a ballot option to the list when user finishes writing in the ballot options fields (and counts it as a valid option for submitting)
     private class BallotOptionsTextWatcher implements TextWatcher {
 
-        private int ballotTag;
+        // If the user changes the text of the same ballot option, its name in the list will be changed as well. Hence, we have to keep track of the ballot option's index
+        private int ballotIndex;
 
-        public BallotOptionsTextWatcher(int ballotTag) {
-            this.ballotTag = ballotTag;
+        public BallotOptionsTextWatcher(int ballotIndex) {
+            this.ballotIndex = ballotIndex;
         }
 
         @Override
         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {/* no check to make before text is changed */}
 
         @Override
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {/* no check to make when text is changed */}
+        public void onTextChanged(CharSequence charSequence, int start, int before, int count) { /*no check to make during the text is being changed */}
 
         @Override
         public void afterTextChanged(Editable editable) {
-            ballotOptions.set(ballotTag, editable.toString());
+            //If the list of ballot options was initially empty, or if the text is empty, then we count it as a valid ballot option
+            if (ballotOptions.isEmpty() || (ballotOptions.get(ballotIndex).isEmpty() && !editable.toString().isEmpty())) numberBallotOptions++;
+            // If the text was not empty, and we modify it to make it empty, then we remove it from the count of valid ballot options
+            else if (!ballotOptions.get(ballotIndex).isEmpty() && editable.toString().isEmpty())  numberBallotOptions--;
+            // Either way, we save our change in the corresponding index
+            ballotOptions.set(ballotIndex, editable.toString());
         }
     }
 
@@ -97,7 +106,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
         LaoDetailViewModel laoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 
         setDateAndTimeView(mSetupElectionFragBinding.getRoot(), this, getFragmentManager());
-        addDateAndTimeListener(confirmTextWatcher);
+        addDateAndTimeListener(submitTextWatcher);
 
         Button cancelButton = mSetupElectionFragBinding.electionCancelButton;
 
@@ -108,8 +117,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
         electionQuestionText = mSetupElectionFragBinding.electionQuestion;
 
         //Add text watchers on the fields that need to be filled
-        electionQuestionText.addTextChangedListener(confirmTextWatcher);
-        electionNameText.addTextChangedListener(confirmTextWatcher);
+        electionQuestionText.addTextChangedListener(submitTextWatcher);
+        electionNameText.addTextChangedListener(submitTextWatcher);
 
         // Set up the basic fields for ballot options, with at least two options
         initNewBallotOptionsField();
@@ -181,15 +190,14 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
         int ballotTag = ballotOptions.size();
         ballotOption.setTag(ballotTag);
         ballotOption.addTextChangedListener(new BallotOptionsTextWatcher(ballotTag));
+        ballotOption.addTextChangedListener(submitTextWatcher);
         ballotOptions.add(ballotOption.getText().toString());
         return ballotOption;
     }
-
+    //By default, always at least two ballot options
     private void initNewBallotOptionsField() {
-        ballotOption1 = addBallotOption();
-        ballotOption2 = addBallotOption();
-        ballotOption1.addTextChangedListener(confirmTextWatcher);
-        ballotOption2.addTextChangedListener(confirmTextWatcher);
+        addBallotOption();
+        addBallotOption();
     }
 
 }
