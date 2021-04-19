@@ -118,7 +118,7 @@ describe('=== fromJsonData checks ===', () => {
     proposed_start: time,
     proposed_end: CLOSE_TIMESTAMP,
     location: location,
-    description: 'description du rc',
+    description: 'Roll Call description',
   };
 
   const sampleOpenRollCall: Partial<OpenRollCall> = {
@@ -182,7 +182,7 @@ describe('=== fromJsonData checks ===', () => {
   const dataCreateRollCall: string = dataRollCall
     .replace('F_ACTION', ActionType.CREATE)
     .replace('FF_MODIFICATION', `"id": "${rollCallId.toString()}","name":"${name}","creation":${time},
-    "proposed_start":${time},"proposed_end":${CLOSE_TIMESTAMP},"location":"${location}","description":"description du rc"`);
+    "proposed_start":${time},"proposed_end":${CLOSE_TIMESTAMP},"location":"${location}","description":"Roll Call description"`);
   const dataOpenRollCall: string = dataRollCall
     .replace('F_ACTION', ActionType.OPEN)
     .replace('FF_MODIFICATION', `"update_id":"${rollCallId.toString()}","opens":"${rollCallId.toString()}","opened_at":${time}`);
