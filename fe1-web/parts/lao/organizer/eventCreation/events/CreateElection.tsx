@@ -12,6 +12,7 @@ import WideButtonView from 'components/WideButtonView';
 import { Timestamp } from 'model/objects';
 import TextBlock from 'components/TextBlock';
 import DropdownSelector from 'components/DropdownSelector';
+import TextInputList from 'components/TextInputList';
 
 /**
  * UI to create a Election Event
@@ -61,41 +62,41 @@ const CreateElection = ({ route }: any) => {
 
   // Confirm button only clickable when the Name, Question and 2 Ballot options have values
   const buttonsVisibility: boolean = (electionQuestion !== '' && electionName !== ''
-    && electionBallots.length >= 2 && electionBallots[0] !== '' && electionBallots[1] !== '');
+    && electionBallots.length >= 2);
 
-  // Makes sure you can't remove ballots when there are only 2 options
-  const removeButtonVisibility: boolean = (electionBallotCounter > 2);
-
-  const onAddBallotPress = () => {
-    setElectionBallotCounter((prevCount) => prevCount + 1);
-  };
-
-  const onRemoveBallotPress = () => {
-    // decrements counter
-    setElectionBallotCounter((prevCount) => prevCount - 1);
-    // removes value from ballot array
-    const newArr = [...electionBallots];
-    newArr.splice(electionBallotCounter - 1, 1);
-    setElectionBallots(newArr);
-  };
-
-  // Updates the array with the specified ballot entries in the textfields
-  const updateBallotArray = (index: number, text: string) => {
-    const newArr = [...electionBallots];
-    newArr[index] = text;
-    setElectionBallots(newArr);
-  };
-
-  // Creates all the Ballot option text-fields based on the electionBallotCounter
-  for (let i = 0; i < electionBallotCounter; i += 1) {
-    const ballotPlaceholder = `${STRINGS.election_create_ballot_option} ${i + 1}`;
-    ballotOptionsUIComponents.push(<TextInput
-      style={styles.textInput}
-      placeholder={ballotPlaceholder} // Add index in the setState
-      onChangeText={(text: string) => { updateBallotArray(i, text); }}
-      key={ballotPlaceholder}
-    />);
-  }
+  // // Makes sure you can't remove ballots when there are only 2 options
+  // const removeButtonVisibility: boolean = (electionBallotCounter > 2);
+  //
+  // const onAddBallotPress = () => {
+  //   setElectionBallotCounter((prevCount) => prevCount + 1);
+  // };
+  //
+  // const onRemoveBallotPress = () => {
+  //   // decrements counter
+  //   setElectionBallotCounter((prevCount) => prevCount - 1);
+  //   // removes value from ballot array
+  //   const newArr = [...electionBallots];
+  //   newArr.splice(electionBallotCounter - 1, 1);
+  //   setElectionBallots(newArr);
+  // };
+  //
+  // // Updates the array with the specified ballot entries in the textfields
+  // const updateBallotArray = (index: number, text: string) => {
+  //   const newArr = [...electionBallots];
+  //   newArr[index] = text;
+  //   setElectionBallots(newArr);
+  // };
+  //
+  // // Creates all the Ballot option text-fields based on the electionBallotCounter
+  // for (let i = 0; i < electionBallotCounter; i += 1) {
+  //   const ballotPlaceholder = `${STRINGS.election_create_ballot_option} ${i + 1}`;
+  //   ballotOptionsUIComponents.push(<TextInput
+  //     style={styles.textInput}
+  //     placeholder={ballotPlaceholder} // Add index in the setState
+  //     onChangeText={(text: string) => { updateBallotArray(i, text); }}
+  //     key={ballotPlaceholder}
+  //   />);
+  // }
 
   const onConfirmPress = () => {
     // Todo: Make this button send the request to create this election and remove console logs
@@ -128,16 +129,7 @@ const CreateElection = ({ route }: any) => {
         onChangeText={(text: string) => { setElectionQuestion(text); }}
       />
       <TextBlock text={STRINGS.election_create_ballot_options} />
-      <WideButtonView
-        onPress={onAddBallotPress}
-        title="+"
-      />
-      <WideButtonView
-        onPress={onRemoveBallotPress}
-        disabled={!removeButtonVisibility}
-        title="-"
-      />
-      {ballotOptionsUIComponents}
+      <TextInputList onChange={setElectionBallots} />
       <WideButtonView
         title={STRINGS.general_button_confirm}
         onPress={onConfirmPress}

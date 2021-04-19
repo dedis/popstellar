@@ -104,8 +104,6 @@ const STRINGS = {
   election_create_voting_method: 'Voting method',
   election_create_ballot_option: 'Option',
   election_create_ballot_options: 'Ballot Options',
-  election_create_add_option: 'Add Ballot Option',
-  election_create_remove_option: 'Remove Ballot Option',
   election_voting_method: 'Voting Method',
   election_method_Plurality: 'Plurality',
 
@@ -135,6 +133,7 @@ const STRINGS = {
 
   /* --- General creation Strings --- */
   create_description: 'Choose the type of event you want to create',
+  add_option: 'Add option',
 
   lorem_ipsum: "Scrollable box containing the critical informations!\nLAO's, organizers' and witnesses' names "
         + 'and hex fingerprint\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse vitae egestas '
