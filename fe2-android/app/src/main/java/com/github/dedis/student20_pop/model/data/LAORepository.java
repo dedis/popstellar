@@ -513,7 +513,7 @@ public class LAORepository {
         upstream
             .filter(
                 genericMessage -> {
-                  if(genericMessage instanceof Answer) {
+                  if (genericMessage instanceof Answer) {
                     Log.d(TAG, "request id: " + ((Answer) genericMessage).getId());
                   }
                   return genericMessage instanceof Answer
