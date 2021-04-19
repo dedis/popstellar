@@ -115,7 +115,8 @@ public abstract class AbstractEventCreationFragment extends Fragment {
 
   public void checkDates(int requestCode, int resultCode, Intent data) {
     if (resultCode == Activity.RESULT_OK) {
-      Calendar selection = (Calendar) data.getSerializableExtra(getString(R.string.picker_selection));
+      Calendar selection =
+          (Calendar) data.getSerializableExtra(getString(R.string.picker_selection));
       switch (requestCode) {
         case START_DATE_REQUEST_CODE:
           startDate = selection;

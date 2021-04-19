@@ -44,10 +44,11 @@ public class LaoDetailViewModel extends AndroidViewModel {
   private final MutableLiveData<Event<Boolean>> mShowPropertiesEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mEditPropertiesEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenLaoDetailEvent = new MutableLiveData<>();
-  private final MutableLiveData<Event<EventType>> mChooseNewLaoEventTypeEvent = new MutableLiveData<>();
-  private final MutableLiveData<Event<EventType>> mNewLaoEventCreationEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<EventType>> mChooseNewLaoEventTypeEvent =
+      new MutableLiveData<>();
+  private final MutableLiveData<Event<EventType>> mNewLaoEventCreationEvent =
+      new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenNewRollCallEvent = new MutableLiveData<>();
-
 
   /*
    * LiveData objects that represent the state in a fragment
@@ -65,10 +66,13 @@ public class LaoDetailViewModel extends AndroidViewModel {
       Transformations.map(mCurrentLao, lao -> lao == null ? "" : lao.getName());
 
   // TODO: Multiple events from Lao may be concatenated using Stream.concat()
-  private final LiveData<List<com.github.dedis.student20_pop.model.event.Event>> mLaoEvents = Transformations
-      .map(mCurrentLao,
-          lao -> lao == null ? new ArrayList<com.github.dedis.student20_pop.model.event.Event>() :
-              lao.getRollCalls().values().stream().collect(Collectors.toList()));
+  private final LiveData<List<com.github.dedis.student20_pop.model.event.Event>> mLaoEvents =
+      Transformations.map(
+          mCurrentLao,
+          lao ->
+              lao == null
+                  ? new ArrayList<com.github.dedis.student20_pop.model.event.Event>()
+                  : lao.getRollCalls().values().stream().collect(Collectors.toList()));
 
   /*
    * Dependencies for this class
@@ -99,13 +103,13 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
   /**
    * Creates new roll call event.
-   * <p>
-   * Publish a GeneralMessage containing CreateRollCall data.
    *
-   * @param title       the title of the roll call
+   * <p>Publish a GeneralMessage containing CreateRollCall data.
+   *
+   * @param title the title of the roll call
    * @param description the description of the roll call, can be empty
-   * @param start       the start time of the roll call, zero if start type is SCHEDULED
-   * @param scheduled   the scheduled time of the roll call, zero if start type is NOW
+   * @param start the start time of the roll call, zero if start type is SCHEDULED
+   * @param scheduled the scheduled time of the roll call, zero if start type is NOW
    * @return the id of the newly created roll call event, null if fails to create the event
    */
   public String createNewRollCall(String title, String description, long start, long scheduled) {
@@ -165,21 +169,21 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
   /**
    * Opens a roll call event.
-   * <p>
-   * Publish a GeneralMessage containing OpenRollCall data.
+   *
+   * <p>Publish a GeneralMessage containing OpenRollCall data.
    *
    * @param id the roll call id to open
    */
   public void openRollCall(String id) {
     Log.d(TAG, "opening a roll call with id " + id);
 
-    //TODO: implement open roll call
+    // TODO: implement open roll call
   }
 
   /**
    * Remove specific witness from the LAO's list of witnesses.
-   * <p>
-   * Publish a GeneralMessage containing UpdateLao data.
+   *
+   * <p>Publish a GeneralMessage containing UpdateLao data.
    *
    * @param witness the id of the witness to remove
    */
@@ -350,5 +354,4 @@ public class LaoDetailViewModel extends AndroidViewModel {
                   mIsOrganizer.postValue(false);
                 }));
   }
-
 }
