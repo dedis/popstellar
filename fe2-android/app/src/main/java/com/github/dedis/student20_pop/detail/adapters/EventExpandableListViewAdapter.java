@@ -199,7 +199,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
                 arrayAdapter,
                 ((dialog, which) -> {
                   dialog.dismiss();
-                  viewModel.addEvent(EventType.values()[which]);
+                  viewModel.chooseEventType(EventType.values()[which]);
                 }));
             builder.show();
           }
@@ -210,7 +210,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     binding.setLifecycleOwner(lifecycleOwner);
     binding.setAddEventListener(addEventOnClickListener);
     binding.executePendingBindings();
-    
+
     binding.addFutureEventButton.setFocusable(false);
 
     return binding.getRoot();
@@ -265,7 +265,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
    */
   private void putEventsInMap(List<Event> events) {
     Collections.sort(events);
-    eventsMap = new HashMap<>();
+
     long now = Instant.now().getEpochSecond();
     for (Event event : events) {
       if (event.getEndTimestamp() < now) {
