@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-  Button,
-  StyleSheet, TextStyle, View, ViewStyle,
-} from 'react-native';
-import STRINGS from 'res/strings';
-import { Spacing, Typography, Views } from 'styles';
+import { View } from 'react-native';
 import RemovableTextInput from 'components/removableTextInput';
 
 /**
@@ -17,11 +12,10 @@ const TextInputList = (props: IPropTypes) => {
   const { onChange } = props;
   const [idCount, setIdCount] = useState(0);
   const [userOptions, setUserOptions] = useState([{ id: -1, value: '' }]);
-  const placeholder = STRINGS.election_create_ballot_option;
 
   const updateParent = (options: { id: number, value: string }[]) => {
     // Gets the distinct options which are not empty ('')
-    // new Set() keeps the order the same
+    // Set() keeps the order the same
     const distinctValues = [...new Set(options.map((option) => option.value))].filter((value) => value !== '');
     // Updates the values in the election setup
     onChange(distinctValues);
@@ -56,7 +50,6 @@ const TextInputList = (props: IPropTypes) => {
     }
   };
 
-
   // Add value to the text so that it doesn't get removed on each re-render
   return (
     <View>
@@ -65,7 +58,6 @@ const TextInputList = (props: IPropTypes) => {
           onChange={(id: number, text: string) => { updateOption(id, text); }}
           onRemove={removeOption}
           id={option.id}
-          placeholder="Add Option"
           value={option.value}
         />
       ))}

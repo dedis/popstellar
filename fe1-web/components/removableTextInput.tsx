@@ -4,8 +4,8 @@ import {
   StyleSheet, TextInput, TextStyle, View, ViewStyle,
 } from 'react-native';
 import DeleteButton from 'components/DeleteButton';
-import { Spacing, Typography, Views } from '../styles';
 import STRINGS from 'res/strings';
+import { Spacing, Typography, Views } from '../styles';
 
 /**
  * TextInput component which is removable by clicking the trashcan

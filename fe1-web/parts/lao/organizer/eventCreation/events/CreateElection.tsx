@@ -33,10 +33,9 @@ const CreateElection = ({ route }: any) => {
   const [electionName, setElectionName] = useState('');
   const [electionQuestion, setElectionQuestion] = useState('');
   const [electionBallots, setElectionBallots] = useState(['']);
-  const [electionBallotCounter, setElectionBallotCounter] = useState(2);
   const votingMethods = [STRINGS.election_method_Plurality];
   const [votingMethod, setVotingMethod] = useState(votingMethods[0]);
-  const ballotOptionsUIComponents = [];
+  const minBallotOptions = 2;
 
   const buildDatePickerWeb = () => {
     const startTime = new Date(0);
@@ -62,41 +61,7 @@ const CreateElection = ({ route }: any) => {
 
   // Confirm button only clickable when the Name, Question and 2 Ballot options have values
   const buttonsVisibility: boolean = (electionQuestion !== '' && electionName !== ''
-    && electionBallots.length >= 2);
-
-  // // Makes sure you can't remove ballots when there are only 2 options
-  // const removeButtonVisibility: boolean = (electionBallotCounter > 2);
-  //
-  // const onAddBallotPress = () => {
-  //   setElectionBallotCounter((prevCount) => prevCount + 1);
-  // };
-  //
-  // const onRemoveBallotPress = () => {
-  //   // decrements counter
-  //   setElectionBallotCounter((prevCount) => prevCount - 1);
-  //   // removes value from ballot array
-  //   const newArr = [...electionBallots];
-  //   newArr.splice(electionBallotCounter - 1, 1);
-  //   setElectionBallots(newArr);
-  // };
-  //
-  // // Updates the array with the specified ballot entries in the textfields
-  // const updateBallotArray = (index: number, text: string) => {
-  //   const newArr = [...electionBallots];
-  //   newArr[index] = text;
-  //   setElectionBallots(newArr);
-  // };
-  //
-  // // Creates all the Ballot option text-fields based on the electionBallotCounter
-  // for (let i = 0; i < electionBallotCounter; i += 1) {
-  //   const ballotPlaceholder = `${STRINGS.election_create_ballot_option} ${i + 1}`;
-  //   ballotOptionsUIComponents.push(<TextInput
-  //     style={styles.textInput}
-  //     placeholder={ballotPlaceholder} // Add index in the setState
-  //     onChangeText={(text: string) => { updateBallotArray(i, text); }}
-  //     key={ballotPlaceholder}
-  //   />);
-  // }
+    && electionBallots.length >= minBallotOptions);
 
   const onConfirmPress = () => {
     // Todo: Make this button send the request to create this election and remove console logs
