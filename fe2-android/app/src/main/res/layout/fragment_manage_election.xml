@@ -43,7 +43,9 @@
             android:layout_height="match_parent"
             android:fillViewport="true"
             android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent">
+            android:layout_marginTop="40dp"
+            app:layout_constraintTop_toBottomOf="@id/manage_election_guideline_horizontal"
+          >
 
             <LinearLayout
                 android:id="@+id/manage_election_fields_ll"
@@ -119,7 +121,7 @@
                             android:layout_height="match_parent"
                             android:layout_marginStart="127dp"
                             android:autofillHints="false"
-                            android:focusableInTouchMode="false" />
+                             />
 
                     </LinearLayout>
 
@@ -147,8 +149,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_marginStart="79dp"
-                            android:autofillHints="false"
-                            android:focusableInTouchMode="false" />
+                            android:autofillHints="false" />
 
                     </LinearLayout>
 
@@ -176,8 +177,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_marginStart="90dp"
-                            android:autofillHints="false"
-                            android:focusableInTouchMode="false" />
+                            android:autofillHints="false" />
 
                     </LinearLayout>
 
