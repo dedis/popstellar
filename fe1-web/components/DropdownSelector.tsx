@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Picker } from '@react-native-picker/picker';
-import { View } from 'react-native';
 import styles from 'styles/stylesheets/container';
 
 /**
@@ -20,15 +19,13 @@ const DropdownSelector = (props: IPropTypes) => {
   const options: any = [];
   values.forEach((value) => options.push(<Picker.Item key={value} label={value || ''} />));
   return (
-    <View>
-      <Picker
-        selectedValue={selected}
-        onValueChange={(val: any) => onChange(val)}
-        style={styles.centerWithMargin}
-      >
-        { options }
-      </Picker>
-    </View>
+    <Picker
+      selectedValue={selected}
+      onValueChange={(val: any) => onChange(val)}
+      style={styles.centerWithMargin}
+    >
+      { options }
+    </Picker>
   );
 };
 

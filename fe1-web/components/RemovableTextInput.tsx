@@ -9,6 +9,7 @@ import { Spacing, Typography, Views } from '../styles';
 
 /**
  * TextInput component which is removable by clicking the trashcan
+ * It is used by the TextInputList.tsx component
  */
 
 const styles = StyleSheet.create({
@@ -36,7 +37,7 @@ const RemovableTextInput = (props: IPropTypes) => {
     <View style={styles.view}>
       <TextInput
         style={styles.textInput}
-        placeholder={placeholder} // Add index in the setState
+        placeholder={placeholder}
         onChangeText={(text: string) => { onChange(id, text); }}
         key={id}
         value={value}

@@ -15,7 +15,7 @@ import DropdownSelector from 'components/DropdownSelector';
 import TextInputList from 'components/TextInputList';
 
 /**
- * UI to create a Election Event
+ * UI to create an Election Event
  *
  * TODO Send the Election event to the organization server when the confirm button is pressed
  */

@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  StyleSheet, Image, View, Pressable, ImageStyle,
+  StyleSheet, Image, Pressable, ImageStyle,
 } from 'react-native';
 import PropTypes from 'prop-types';
 
@@ -19,11 +19,9 @@ const styles = StyleSheet.create({
 
 function DeleteButton({ action }: IPropTypes) {
   return (
-    <View>
-      <Pressable onPress={action}>
-        <Image style={styles.icon} source={trashcan} />
-      </Pressable>
-    </View>
+    <Pressable onPress={action}>
+      <Image style={styles.icon} source={trashcan} />
+    </Pressable>
   );
 }
 
