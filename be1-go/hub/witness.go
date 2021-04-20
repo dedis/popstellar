@@ -50,7 +50,8 @@ func (w *witnessHub) Recv(msg IncomingMessage) {
 func (w *witnessHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 	//TODO
 	//check exactly how we will store a message once we receive it
-	w.receivedMessages[incomingMessage.Client] = incomingMessage.Message
+	//TODO: find the sender so it can represent the key in the stored messages
+	w.receivedMessages[incomingMessage.Socket.send] = incomingMessage.Message
 }
 
 func (w *witnessHub) handleMessageFromOrganizer(incomingMessage *IncomingMessage) {
