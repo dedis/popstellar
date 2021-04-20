@@ -627,9 +627,40 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 	if object == message.ElectionObject {
 
 		action := message.ElectionAction(data.GetAction())
-
 		switch action {
 		case message.CastVoteAction:
+			voteData, ok := msg.Data.(*message.CastVoteData)
+			if !ok {
+				return &message.Error{
+					Code:        -4,
+					Description: "failed to cast data to CastVoteData",
+				}
+			}
+			if !ok{
+				return xerrors.Errorf("Couldn't cast to castVoteData")
+			}
+			if voteData.CreatedAt > c.end {
+				return xerrors.Errorf("Vote casted too late")
+			}
+			//This should update any previously set vote if the message ids are the same
+			messageID := base64.StdEncoding.EncodeToString(msg.MessageID)
+			c.inbox[messageID] = *msg
+			for _,q := range voteData.Votes{
+				QuestionID :=  base64.StdEncoding.EncodeToString(q.QuestionID)
+				qs,ok := c.questions[QuestionID]
+				if ok{
+					earlierVote,ok := qs.validVotes[msg.Sender.String()]
+					// if the sender didn't previously cast a vote or if the vote
+					//is no longer valid update it
+					if !ok  || earlierVote.voteTime > voteData.CreatedAt {
+						qs.validVotes[msg.Sender.String()] =
+							validVote{voteData.CreatedAt,
+								q.VoteIndexes}
+					}
+				}else{
+					return xerrors.Errorf("No Question with this ID exists")
+				}
+			}
 		case message.ElectionEndAction:
 		case message.ElectionResultAction:
 		}
