@@ -1,11 +1,10 @@
-import { Base64Data } from 'model/objects';
-import { ActionType, MessageData, ObjectType } from './MessageData';
-import { CreateLao, StateLao, UpdateLao } from './lao';
-import { CreateMeeting, StateMeeting } from './meeting';
-import {
-  CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall,
-} from './rollCall';
-import { WitnessMessage } from './witness';
+import {Base64Data} from 'model/objects';
+import {ActionType, MessageData, ObjectType} from './MessageData';
+import {CreateLao, StateLao, UpdateLao} from './lao';
+import {CreateMeeting, StateMeeting} from './meeting';
+import {CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall,} from './rollCall';
+import {WitnessMessage} from './witness';
+import {CreateElection} from "./election";
 
 export function encodeMessageData(msgData: MessageData): Base64Data {
   const data = JSON.stringify(msgData);
@@ -36,6 +35,15 @@ function buildMeetingMessage(msgData: MessageData): MessageData {
   }
 }
 
+function buildElectionMessage(msgData: MessageData): MessageData {
+  switch (msgData.action) {
+    case ActionType.SETUP:
+      return CreateElection.fromJson(msgData);
+    default:
+      throw new Error(`Unknown action '${msgData.action}' encountered while creating a election MessageData`);
+  }
+}
+
 function buildRollCallMessage(msgData: MessageData): MessageData {
   switch (msgData.action) {
     case ActionType.CREATE:
@@ -62,6 +70,9 @@ export function buildMessageData(msgData: MessageData): MessageData {
 
     case ObjectType.MEETING:
       return buildMeetingMessage(msgData);
+
+    case ObjectType.ELECTION:
+      return buildElectionMessage(msgData);
 
     case ObjectType.MESSAGE:
       return buildWitnessMessage(msgData);

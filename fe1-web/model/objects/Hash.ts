@@ -5,6 +5,7 @@ import { Base64Data } from './Base64';
 export enum EventTags {
   MEETING = 'M',
   ROLL_CALL = 'R',
+  ELECTION = 'Election',
 }
 
 export class Hash extends Base64Data {

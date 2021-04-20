@@ -13,6 +13,7 @@ import { Timestamp } from 'model/objects';
 import TextBlock from 'components/TextBlock';
 import DropdownSelector from 'components/DropdownSelector';
 import TextInputList from 'components/TextInputList';
+import { requestCreateElection } from '../../../../../network';
 
 /**
  * UI to create an Election Event
@@ -71,6 +72,26 @@ const CreateElection = ({ route }: any) => {
     console.log('Question: ', electionQuestion);
     console.log('Voting Method: ', votingMethod);
     console.log('Ballots: ', electionBallots);
+
+    requestCreateElection(
+      electionName,
+      '1',
+      startDate,
+      endDate,
+      [{
+        id: 'idtest',
+        question: electionQuestion,
+        voting_method: votingMethod,
+        ballot_options: electionBallots,
+        write_in: false,
+      }],
+    )
+      .then(() => {
+        navigation.navigate(STRINGS.organizer_navigation_tab_home);
+      })
+      .catch((err) => {
+        console.error('Could not create Election, error:', err);
+      });
   };
 
   return (
