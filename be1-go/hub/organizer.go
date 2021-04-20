@@ -22,7 +22,7 @@ type organizerHub struct {
 	sync.RWMutex
 	channelByID map[string]Channel
 
-	public kyber.Point 
+	public kyber.Point
 }
 
 // NewOrganizerHub returns a Organizer Hub.
