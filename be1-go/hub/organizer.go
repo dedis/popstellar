@@ -2,14 +2,12 @@ package hub
 
 import (
 	"bytes"
-	//"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
 	"student20_pop"
 	"sync"
-	//"sort"
 
 	"student20_pop/message"
 
@@ -202,6 +200,13 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 
 	laoChannelID := "/root/" + encodedID
 
+	if _, ok := o.channelByID[encodedID]; ok {
+		return &message.Error{
+			Code:        -3,
+			Description: "failed to create lao: another one with the same ID exists",
+		}
+	}
+
 	laoCh := laoChannel{
 		createBaseChannel(o, laoChannelID),
 	}
@@ -209,6 +214,7 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 	laoCh.inbox[messageID] = *publish.Params.Message
 
 	id := base64.StdEncoding.EncodeToString(data.ID)
+
 	o.channelByID[id] = &laoCh
 
 	return nil
@@ -218,13 +224,6 @@ type laoChannel struct {
 	*baseChannel
 }
 
-func (c *laoChannel) Subscribe(client *Client, msg message.Subscribe) error {
-	return c.baseChannel.Subscribe(client, msg)
-}
-
-func (c *laoChannel) Unsubscribe(client *Client, msg message.Unsubscribe) error {
-	return c.baseChannel.Unsubscribe(client, msg)
-}
 
 func (c *laoChannel) Publish(publish message.Publish) error {
 	err := c.baseChannel.VerifyPublishMessage(publish)
@@ -260,16 +259,6 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 	return nil
 }
 
-func (c *laoChannel) Catchup(catchup message.Catchup) []message.Message {
-	result := c.baseChannel.Catchup(catchup)
-
-	// TODO: define order for Roll call
-	//sort.Slice(result, func(i, j int) bool {
-	//return result[i].Data.GetTimestamp() < result[j].GetTimestamp()
-	//})
-
-	return result
-}
 
 func (c *laoChannel) processLaoObject(msg message.Message) error {
 	action := message.LaoDataAction(msg.Data.GetAction())
@@ -551,19 +540,17 @@ func (c *laoChannel) createElection(msg message.Message) error {
 	// Create the new election channel
 	electionCh := electionChannel{
 		createBaseChannel(o, "/root/"+encodedID),
-		data.Questions[0].VotingMethod,//TODO : check if this is what was meanth by method ot is it rather pluralityy and stuff??,
+		//TODO : check if this is what was meanth by method ot is it rather pluralityy and stuff??,
 		//Also can it happen that there is a valid setup without questions?
 		data.StartTime,
 		data.EndTime,
 		false,
-		getAllQuestionsForElectionChannel(data.Questions),
+		getAllQuestionsForElectionChannel(data.Questions,data),
 	}
 
 	// Add the SetupElection message to the new election channel
 	messageID := base64.StdEncoding.EncodeToString(msg.MessageID)
 	electionCh.inbox[messageID] = msg
-	electionCh.inbox["0"] = msg//have this message saved at a place by
-	//default
 
 	// Add the new election channel to the organizerHub
 	o.channelByID[encodedID] = &electionCh
@@ -571,13 +558,14 @@ func (c *laoChannel) createElection(msg message.Message) error {
 	return nil
 }
 
-func getAllQuestionsForElectionChannel(questions []message.Question)map[string]question{
+func getAllQuestionsForElectionChannel(questions []message.Question,data *message.ElectionSetupData)map[string]question{
 	qs := make(map[string]question)
 	for _,q := range questions{
 		qs[ base64.StdEncoding.EncodeToString(q.ID)] = question{
 			q.ID,
 			q.BallotOptions,
 			make(map[string]validVote),
+			data.Questions[0].VotingMethod,
 		}
 	}
 	return qs
@@ -586,8 +574,6 @@ func getAllQuestionsForElectionChannel(questions []message.Question)map[string]q
 type electionChannel struct {
 	*baseChannel
 
-	// Voting method of the election
-	method message.VotingMethod
 
 	// Starting time of the election
 	start message.Timestamp
@@ -612,6 +598,9 @@ type question struct {
 
 	// list of all valid votes
 	validVotes map[string]validVote
+
+	// Voting method of the election
+	method message.VotingMethod
 }
 
 type validVote struct {
@@ -621,13 +610,6 @@ type validVote struct {
 	// indexes of the ballot options
 	indexes []int
 
-}
-func (c *electionChannel) Subscribe(client *Client, msg message.Subscribe) error {
-	return c.baseChannel.Subscribe(client, msg)
-}
-
-func (c *electionChannel) Unsubscribe(client *Client, msg message.Unsubscribe) error {
-	return c.baseChannel.Unsubscribe(client, msg)
 }
 
 func (c *electionChannel) Publish(publish message.Publish) error {
@@ -656,6 +638,8 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 	return nil
 }
 
-func (c *electionChannel) Catchup(catchup message.Catchup) []message.Message {
-	return c.baseChannel.Catchup(catchup)
-}
+
+
+
+
+
