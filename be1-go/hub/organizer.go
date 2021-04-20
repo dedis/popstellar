@@ -540,7 +540,7 @@ func (c *laoChannel) createElection(msg message.Message) error {
 	// Create the new election channel
 	electionCh := electionChannel{
 		createBaseChannel(o, "/root/"+encodedID),
-		//TODO : check if this is what was meanth by method ot is it rather pluralityy and stuff??,
+		//TODO : check if this is what was meant by method ot is it rather pluralityy and stuff??,
 		//Also can it happen that there is a valid setup without questions?
 		data.StartTime,
 		data.EndTime,
@@ -640,7 +640,7 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 				return xerrors.Errorf("Couldn't cast to castVoteData")
 			}
 			if voteData.CreatedAt > c.end {
-				return xerrors.Errorf("Vote casted too late")
+				return xerrors.Errorf("Vote cast too late, vote casted at ",voteData.CreatedAt, " and election ended at ", c.end)
 			}
 			//This should update any previously set vote if the message ids are the same
 			messageID := base64.StdEncoding.EncodeToString(msg.MessageID)
