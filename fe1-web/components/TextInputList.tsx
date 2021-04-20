@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { View } from 'react-native';
-import RemovableTextInput from './RemovableTextInput';
+import RemovableTextInput from 'components/RemovableTextInput';
 
 /**
  * Component which creates a list of Text input fields which can be deleted individually
@@ -14,52 +14,51 @@ import RemovableTextInput from './RemovableTextInput';
 const TextInputList = (props: IPropTypes) => {
   const { onChange } = props;
   const [idCount, setIdCount] = useState(1);
-  const [userOptions, setUserOptions] = useState([{ id: 0, value: '' }]);
+  const [userInputs, setUserInputs] = useState([{ id: 0, value: '' }]);
 
   const updateParent = (options: { id: number, value: string }[]) => {
     // Gets the distinct options which are not empty ('')
-    // Set() keeps the order the same
     const distinctValues = [...new Set(options.map((option) => option.value))].filter((value) => value !== '');
     // Updates the values in the parent component
     onChange(distinctValues);
   };
 
-  const addOption = () => {
+  const addInput = () => {
     // Makes sure each component has a unique ID
     const newOption = { id: idCount, value: '' };
-    const newOptions = [...userOptions, newOption];
-    setUserOptions(newOptions);
+    const newOptions = [...userInputs, newOption];
+    setUserInputs(newOptions);
     setIdCount(idCount + 1);
   };
 
-  const updateOption = (id: number, value: string) => {
-    const optionIndex = userOptions.findIndex((option) => option.id === id);
-    userOptions[optionIndex] = { id: id, value: value };
-    setUserOptions(userOptions);
-    updateParent(userOptions);
+  const updateInput = (id: number, value: string) => {
+    const optionIndex = userInputs.findIndex((option) => option.id === id);
+    userInputs[optionIndex] = { id: id, value: value };
+    setUserInputs(userInputs);
+    updateParent(userInputs);
     // If the currently modified text field is the last in the list
     // then it adds a new text input field below
-    if (userOptions.filter((option) => option.id > id).length === 0) {
-      addOption();
+    if (userInputs.filter((option) => option.id > id).length === 0) {
+      addInput();
     }
   };
 
-  const removeOption = (id: number) => {
+  const removeInput = (id: number) => {
     // This makes sure that when the last textInput is empty, it can't be deleted
-    if (userOptions.filter((option) => option.id > id).length !== 0) {
+    if (userInputs.filter((option) => option.id > id).length !== 0) {
       // This removes the option
-      const filteredOptions = userOptions.filter((option) => option.id !== id);
-      setUserOptions(filteredOptions);
+      const filteredOptions = userInputs.filter((option) => option.id !== id);
+      setUserInputs(filteredOptions);
       updateParent(filteredOptions);
     }
   };
 
   return (
     <View>
-      {userOptions.map((option) => (
+      {userInputs.map((option) => (
         <RemovableTextInput
-          onChange={(id: number, text: string) => { updateOption(id, text); }}
-          onRemove={removeOption}
+          onChange={updateInput}
+          onRemove={removeInput}
           id={option.id}
           value={option.value}
         />
