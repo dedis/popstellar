@@ -61,6 +61,7 @@ const TextInputList = (props: IPropTypes) => {
           onRemove={removeInput}
           id={option.id}
           value={option.value}
+          key={option.id}
         />
       ))}
     </View>
