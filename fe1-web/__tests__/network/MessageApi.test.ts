@@ -335,9 +335,10 @@ function checkDataOpenRollCall(obj: MessageData) {
   const data: OpenRollCall = obj as OpenRollCall;
 
   expect(data).toBeObject();
-  expect(data).toContainKeys([...defaultDataFields, 'update_id', 'opened_at']);
+  expect(data).toContainKeys([...defaultDataFields, 'update_id', 'opens', 'opened_at']);
 
   expect(data.update_id).toBeBase64();
+  expect(data.opens).toBeBase64();
 
   expect(data.opened_at).toBeNumberObject();
   expect(data.opened_at.valueOf()).toBeGreaterThan(0);
@@ -355,10 +356,10 @@ function checkDataReopenRollCall(obj: MessageData) {
 
   const data: ReopenRollCall = obj as ReopenRollCall;
 
-  expect(data).toContainKeys([...defaultDataFields, 'id', 'opened_at']);
+  expect(data).toContainKeys([...defaultDataFields, 'id', 'opens', 'opened_at']);
 
   expect(data.update_id).toBeBase64();
-
+  expect(data.opens).toBeBase64();
   expect(data.opened_at).toBeNumberObject();
   expect(data.opened_at.valueOf()).toBeGreaterThan(0);
 

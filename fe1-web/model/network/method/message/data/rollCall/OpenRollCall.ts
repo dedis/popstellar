@@ -17,13 +17,13 @@ export class OpenRollCall implements MessageData {
 
   constructor(msg: Partial<OpenRollCall>) {
     if (!msg.opened_at) {
-      throw new ProtocolError("Undefined 'openedAt' parameter encountered during 'OpenRollCall'");
+      throw new ProtocolError("Undefined 'opened_at' parameter encountered during 'OpenRollCall'");
     }
     checkTimestampStaleness(msg.opened_at);
     this.opened_at = msg.opened_at;
 
     if (!msg.update_id) {
-      throw new ProtocolError("Undefined 'updateId' parameter encountered during 'OpenRollCall'");
+      throw new ProtocolError("Undefined 'update_Id' parameter encountered during 'OpenRollCall'");
     }
     this.update_id = msg.update_id;
 

@@ -22,7 +22,7 @@ export class CloseRollCall implements MessageData {
 
   constructor(msg: Partial<CloseRollCall>) {
     if (!msg.closed_at) {
-      throw new ProtocolError("Undefined 'closedAt' parameter encountered during 'CloseRollCall'");
+      throw new ProtocolError("Undefined 'closed_at' parameter encountered during 'CloseRollCall'");
     }
     checkTimestampStaleness(msg.closed_at);
     this.closed_at = msg.closed_at;

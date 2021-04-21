@@ -27,6 +27,8 @@ const CreateRollCall = ({ route }: any) => {
   const navigation = useNavigation();
   const initialStartDate = new Date();
   const initialEndDate = new Date();
+  // Sets initial start date 5 minutes in the future to avoid: proposed_start < creation
+  initialStartDate.setMinutes(initialStartDate.getMinutes() + 5);
   // Sets initial end date to 1 hour later than start date
   initialEndDate.setHours(initialEndDate.getHours() + 1);
 
@@ -75,9 +77,7 @@ const CreateRollCall = ({ route }: any) => {
       });
   };
 
-  const onConfirmPress = () => createRollCall(true);
-
-  const onOpenPress = () => createRollCall(false);
+  const onConfirmPress = () => createRollCall();
 
   return (
     <ScrollView>
@@ -103,11 +103,6 @@ const CreateRollCall = ({ route }: any) => {
       <WideButtonView
         title={STRINGS.general_button_confirm}
         onPress={onConfirmPress}
-        disabled={!buttonsVisibility}
-      />
-      <WideButtonView
-        title={STRINGS.general_button_open}
-        onPress={onOpenPress}
         disabled={!buttonsVisibility}
       />
       <WideButtonView

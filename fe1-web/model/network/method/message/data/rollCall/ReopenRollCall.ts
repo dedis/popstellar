@@ -18,13 +18,13 @@ export class ReopenRollCall implements MessageData {
 
   constructor(msg: Partial<ReopenRollCall>) {
     if (!msg.opened_at) {
-      throw new ProtocolError("Undefined 'openedAt' parameter encountered during 'ReopenRollCall'");
+      throw new ProtocolError("Undefined 'opened_at' parameter encountered during 'ReopenRollCall'");
     }
     checkTimestampStaleness(msg.opened_at);
     this.opened_at = new Timestamp(msg.opened_at.toString());
 
     if (!msg.update_id) {
-      throw new ProtocolError("Undefined 'updateId' parameter encountered during 'ReopenRollCall'");
+      throw new ProtocolError("Undefined 'update_id' parameter encountered during 'ReopenRollCall'");
     }
 
     // FIXME: implementation not finished, get event from storage,
