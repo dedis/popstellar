@@ -15,7 +15,11 @@ export interface RollCallState extends LaoEventState {
   location: string;
   description?: string;
   creation: number;
-  status: RollCallStatus;
+  proposed_start: number;
+  proposed_end: number;
+  opened_at?: number;
+  closed_at?: number;
+  status: number;
   attendees?: string[];
 }
 
@@ -105,8 +109,10 @@ export class RollCall implements LaoEvent {
       location: rc.location,
       description: rc.description,
       creation: new Timestamp(rc.creation),
-      start: new Timestamp(rc.start),
-      end: new Timestamp(rc.end),
+      proposed_start: new Timestamp(rc.proposed_start),
+      proposed_end: new Timestamp(rc.proposed_end),
+      opened_at: new Timestamp(rc.opened_at),
+      closed_at: new Timestamp(rc.closed_at),
       status: rc.status,
       attendees: rc.attendees?.map((a) => new PublicKey(a)),
     });
@@ -116,6 +122,8 @@ export class RollCall implements LaoEvent {
     const obj: any = JSON.parse(JSON.stringify(this));
     return {
       ...obj,
+      start: obj.getStart(),
+      end: obj.getEnd(),
       eventType: LaoEventType.ROLL_CALL,
     };
   }
