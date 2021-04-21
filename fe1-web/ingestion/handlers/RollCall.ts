@@ -1,4 +1,4 @@
-import {Message} from 'model/network/method/message';
+import { Message } from 'model/network/method/message';
 import {
   ActionType,
   CloseRollCall,
@@ -6,9 +6,11 @@ import {
   ObjectType,
   OpenRollCall,
 } from 'model/network/method/message/data';
-import {RollCall, RollCallStatus} from 'model/objects';
-import {addEvent, dispatch, getStore, makeCurrentLao, updateEvent,} from 'store';
-import {getEventFromId, hasWitnessSignatureQuorum} from './Utils';
+import { RollCall, RollCallStatus } from 'model/objects';
+import {
+  addEvent, dispatch, getStore, makeCurrentLao, updateEvent,
+} from 'store';
+import { getEventFromId, hasWitnessSignatureQuorum } from './Utils';
 
 const getCurrentLao = makeCurrentLao();
 
