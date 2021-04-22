@@ -537,7 +537,7 @@ public class LAORepository {
                     Log.d(TAG, "request id: " + ((Answer) genericMessage).getId());
                   }
                   return genericMessage instanceof Answer
-                      && ((Answer) genericMessage).getId() == id;
+                          && ((Answer) genericMessage).getId() == id;
                 })
             .map(
                 genericMessage -> {
