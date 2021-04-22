@@ -26,12 +26,10 @@ func NewWitnessHub(public kyber.Point) Hub {
 
 func (w *witnessHub) RemoveClientSocket(client *ClientSocket) {
 	//TODO
-	return
 }
 
 func (w *witnessHub) Recv(msg IncomingMessage) {
 	//TODO
-	return
 }
 
 func (w *witnessHub) handleMessageFromOrganizer(incomingMessage *IncomingMessage) {
@@ -74,6 +72,4 @@ func (w *witnessHub) Start(done chan struct{}) {
 			return
 		}
 	}
-
-	return
 }
