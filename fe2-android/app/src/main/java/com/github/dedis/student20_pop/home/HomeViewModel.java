@@ -53,6 +53,7 @@ public class HomeViewModel extends AndroidViewModel
   private final MutableLiveData<Event<Boolean>> mLaunchNewLaoEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mCancelNewLaoEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mCancelConnectEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<Boolean>> mOpenWalletEvent = new MutableLiveData<>();
 
   /*
    * LiveData objects that represent the state in a fragment
@@ -206,6 +207,10 @@ public class HomeViewModel extends AndroidViewModel
   public LiveData<String> getLaoName() {
     return mLaoName;
   }
+  public LiveData<Event<Boolean>> getOpenWallerEvent() {
+    return mOpenWalletEvent;
+  }
+
 
   /*
    * Methods that modify the state or post an Event to update the UI.
@@ -221,6 +226,10 @@ public class HomeViewModel extends AndroidViewModel
 
   public void openConnecting() {
     mOpenConnectingEvent.postValue(new Event<>(true));
+  }
+  
+  public void openWallet() {
+    mOpenWalletEvent.postValue(new Event<>(true));
   }
 
   public void openConnect() {

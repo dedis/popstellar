@@ -5,6 +5,7 @@
     <string name="tab_home">Home</string>
     <string name="tab_connect">Connect</string>
     <string name="tab_launch">Launch</string>
+    <string name="tab_wallet">Wallet</string>
     <string name="tab_identity">Identity</string>
     <string name="tab_properties">Show/Hide Properties</string>
 
@@ -106,5 +107,13 @@
     <!-- Properties -->
     <string name="test_organization_name">Test Organization Name</string>
     <string name="edit_lao_name">Edit Lao Name</string>
+
+    <!-- Wallet -->
+    <string name="button_own_seed">I own a seed</string>
+    <string name="button_new_wallet">New wallet</string>
+    <string name="text_title_wallet">Welcome to your wallet !</string>
+    <string name="text_help_wallet">You may import your seed if you own one or create a new wallet.</string>
+    <string name="text_help_new_wallet">ATTENTION: if you create a new wallet remember to write down
+        the given seed and store it secure place, this is the only backup to your PoP tokens.</string>
 
 </resources>

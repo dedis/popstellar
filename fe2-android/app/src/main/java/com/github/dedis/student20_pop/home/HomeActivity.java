@@ -16,6 +16,7 @@ import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.home.fragments.ConnectingFragment;
 import com.github.dedis.student20_pop.home.fragments.HomeFragment;
 import com.github.dedis.student20_pop.home.fragments.LaunchFragment;
+import com.github.dedis.student20_pop.home.fragments.WalletFragment;
 import com.github.dedis.student20_pop.qrcode.CameraPermissionFragment;
 import com.github.dedis.student20_pop.qrcode.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.utility.ActivityUtils;
@@ -41,6 +42,7 @@ public class HomeActivity extends AppCompatActivity {
     setupHomeButton();
     setupLaunchButton();
     setupConnectButton();
+    setupWalletButton();
 
     // Subscribe to "open lao" event
     mViewModel
@@ -108,6 +110,18 @@ public class HomeActivity extends AppCompatActivity {
                 setupLaunchFragment();
               }
             });
+
+    // Subscribe to "open wallet" event
+    mViewModel
+        .getOpenWallerEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupWalletFragment();
+              }
+            });
   }
 
   @Override
@@ -144,6 +158,12 @@ public class HomeActivity extends AppCompatActivity {
     Button launchButton = (Button) findViewById(R.id.tab_launch);
 
     launchButton.setOnClickListener(v -> mViewModel.openLaunch());
+  }
+
+    public void setupWalletButton() {
+    Button launchButton = (Button) findViewById(R.id.tab_wallet);
+
+    launchButton.setOnClickListener(v -> mViewModel.openWallet());
   }
 
   private void setupHomeFragment() {
@@ -201,6 +221,16 @@ public class HomeActivity extends AppCompatActivity {
       connectingFragment = ConnectingFragment.newInstance();
       ActivityUtils.replaceFragmentInActivity(
           getSupportFragmentManager(), connectingFragment, R.id.fragment_container_home);
+    }
+  }
+
+  private void setupWalletFragment() {
+    WalletFragment walletFragment =
+        (WalletFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_wallet);
+    if (walletFragment == null) {
+      walletFragment = WalletFragment.newInstance();
+      ActivityUtils.replaceFragmentInActivity(
+          getSupportFragmentManager(), walletFragment, R.id.fragment_container_home);
     }
   }
 
