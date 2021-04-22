@@ -133,18 +133,11 @@ export function requestWitnessMessage(channel: Channel, messageId: Hash): Promis
  *  given location (String). An optional start time (Timestamp), scheduled time (Timestamp) or
  *  description (String) can be specified */
 export function requestCreateRollCall(
-  name: string, location: string, start?: Timestamp, scheduled?: Timestamp, description?: string,
+  name: string, location: string, proposedStart: Timestamp, proposedEnd: Timestamp,
+  description?: string,
 ): Promise<void> {
   const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
-
-  if (start === undefined && scheduled === undefined) {
-    throw new Error('RollCall creation failed : neither "start" or "scheduled" field was given');
-  }
-
-  if (start !== undefined && scheduled !== undefined) {
-    throw new Error('RollCall creation failed : both "start" and "scheduled" fields were given');
-  }
 
   const message = new CreateRollCall({
     id: Hash.fromStringArray(
@@ -153,9 +146,9 @@ export function requestCreateRollCall(
     name: name,
     creation: time,
     location: location,
-    start: start,
-    scheduled: scheduled,
-    roll_call_description: description,
+    proposed_start: proposedStart,
+    proposed_end: proposedEnd,
+    description: description,
   });
 
   const laoCh = channelFromId(currentLao.id);
