@@ -34,11 +34,15 @@ func (w *witnessHub) Recv(msg IncomingMessage) {
 	return
 }
 
+func (w *witnessHub) handleMessageFromOrganizer(incomingMessage *IncomingMessage) {
+	//TODO
+}
+
 func (w *witnessHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 	//TODO
 }
 
-func (w *witnessHub) handleMessageFromOrganizer(incomingMessage *IncomingMessage) {
+func (w *witnessHub) handleMessageFromWitness(incomingMessage *IncomingMessage) {
 	//TODO
 }
 
@@ -46,11 +50,14 @@ func (w *witnessHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	log.Printf("organizerHub::handleIncomingMessage: %s", incomingMessage.Message)
 
 	switch incomingMessage.Socket.socketType {
-	case clientSocket:
+	case OrganizerSocketType:
+		w.handleMessageFromOrganizer(incomingMessage)
+		return
+	case ClientSocketType:
 		w.handleMessageFromClient(incomingMessage)
 		return
-	case witnessSocket:
-		w.handleMessageFromOrganizer(incomingMessage)
+	case WitnessSocketType:
+		w.handleMessageFromWitness(incomingMessage)
 		return
 	}
 

@@ -3,6 +3,7 @@ package witness
 import (
 	"encoding/base64"
 	"flag"
+	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
@@ -19,8 +20,10 @@ var upgrader = websocket.Upgrader{
 }
 
 func WitnessServe(context *cli.Context) error {
-	//port := context.Int("port")
+	orgIpAddr := context.String("ip-address")
+	port := context.Int("port")
 	pk := context.String("public-key")
+
 
 	if pk == "" {
 		return xerrors.Errorf("witness' public key is required")
@@ -39,19 +42,32 @@ func WitnessServe(context *cli.Context) error {
 
 	h := hub.NewWitnessHub(point)
 
-	var addr = flag.String("addr", "localhost:8080", "http service address")
-	u := url.URL{Scheme: "ws", Host: *addr, Path: "/echo"}
-	var ws *websocket.Conn
-	ws, _, err = websocket.DefaultDialer.Dial(u.String(), nil)
-
+	ws, err := witConnectToOrganizer(orgIpAddr, port)
 	if err != nil {
 		return xerrors.Errorf("failed to connect to organizer: %v", err)
 	}
 
 	organizerSocket := hub.NewOrganizerSocket(h, ws)
 
-	organizerSocket.WritePump()
-	organizerSocket.ReadPump()
+	go organizerSocket.WritePump()
+	go organizerSocket.ReadPump()
+
+	done := make(chan struct{})
+	h.Start(done)
+
+	//TODO: connect to clients and other witnesses
+
+	done <- struct{}{}
 
 	return nil
+}
+
+func witConnectToOrganizer(orgIpAddr string, port int) (*websocket.Conn, error){
+	var addr = flag.String("addr",fmt.Sprintf("%s:%d", orgIpAddr, port), "http service address")
+	u := url.URL{Scheme: "ws", Host: *addr, Path: "/org/witness/"}
+	ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
+	if err != nil {
+		return ws, xerrors.Errorf("failed to connect to organizer: %v", err)
+	}
+	return ws, nil
 }

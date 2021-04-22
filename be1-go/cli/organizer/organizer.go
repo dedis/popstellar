@@ -44,36 +44,51 @@ func OrganizerServe(context *cli.Context) error {
 	done := make(chan struct{})
 	go h.Start(done)
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		organizerServeWs(h, w, r)
-	})
-
-	log.Printf("Starting the organizer WS server at %d", port)
-	err = http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
-	if err != nil {
-		return xerrors.Errorf("failed to start the server: %v", err)
-	}
+	go orgCreateSocket(hub.WitnessSocketType, h, port)
+	orgCreateSocket(hub.ClientSocketType, h, port)
 
 	done <- struct{}{}
 
 	return nil
 }
 
-func organizerServeWs(h hub.Hub, w http.ResponseWriter, r *http.Request) {
+func orgCreateSocket(socketType hub.SocketType, h hub.Hub, port int) error {
+	http.HandleFunc(string("/org/"+socketType+"/"), func(w http.ResponseWriter, r *http.Request) {
+		orgServeWs(socketType, h, w, r)
+	})
+
+	log.Printf("Starting the organizer WS server (for %s) at %d", socketType, port)
+	var err = http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+	if err != nil {
+		return xerrors.Errorf("failed to start the server: %v", err)
+	}
+
+	return nil
+}
+
+func orgServeWs(socketType hub.SocketType, h hub.Hub, w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("failed to upgrade connection: %v", err)
 		return
 	}
 
-	client := hub.NewClientSocket(h, conn)
+	switch socketType {
+	case hub.ClientSocketType:
+		client := hub.NewClientSocket(h, conn)
 
-	go client.ReadPump()
-	go client.WritePump()
+		go client.ReadPump()
+		go client.WritePump()
 
-	// cleanup go routine that removes clients that forgot to unsubscribe
-	go func(c *hub.ClientSocket, h hub.Hub) {
-		c.Wait.Wait()
-		h.RemoveClientSocket(c)
-	}(client, h)
+		// cleanup go routine that removes clients that forgot to unsubscribe
+		go func(c *hub.ClientSocket, h hub.Hub) {
+			c.Wait.Wait()
+			h.RemoveClientSocket(c)
+		} (client, h)
+	case hub.WitnessSocketType:
+		witness := hub.NewWitnessSocket(h, conn)
+
+		go witness.ReadPump()
+		go witness.WritePump()
+	}
 }
