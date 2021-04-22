@@ -34,7 +34,6 @@ export class CreateElection implements MessageData {
 
   constructor(msg: Partial<CreateElection>) {
     if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'CreateElection\'');
-    this.id = msg.id;
 
     if (!msg.name) throw new ProtocolError('Undefined \'name\' parameter encountered during \'CreateElection\'');
     this.name = msg.name;
@@ -64,16 +63,16 @@ export class CreateElection implements MessageData {
     });
     this.questions = msg.questions;
 
-    // FIXME: implementation not finished, get event from storage,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const lao: Lao = OpenedLaoStore.get();
-    console.log('Create Election called: ', this);
 
-    // const expectedHash = Hash.fromStringArray(
-    //   EventTags.ELECTION, lao.id.toString(), lao.creation.toString(), msg.name,
-    // );
-    // eslint-disable-next-line max-len
-    // if (!expectedHash.equals(msg.id)) throw new ProtocolError('Invalid \'id\' parameter encountered during \'CreateMeeting\': unexpected id value');
+    const expectedHash = Hash.fromStringArray(
+      EventTags.ELECTION, lao.id.toString(), lao.creation.toString(), msg.name,
+    );
+    if (!expectedHash.equals(msg.id)) {
+      throw new ProtocolError("Invalid 'id' parameter encountered during 'CreateElection':"
+        + ' re-computing the value yields a different result');
+    }
+    this.id = msg.id;
   }
 
   public static fromJson(obj: any): CreateElection {
