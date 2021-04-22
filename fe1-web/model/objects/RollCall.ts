@@ -122,8 +122,8 @@ export class RollCall implements LaoEvent {
     const obj: any = JSON.parse(JSON.stringify(this));
     return {
       ...obj,
-      start: obj.getStart(),
-      end: obj.getEnd(),
+      start: this.start.valueOf(),
+      end: this.end.valueOf(),
       eventType: LaoEventType.ROLL_CALL,
     };
   }
