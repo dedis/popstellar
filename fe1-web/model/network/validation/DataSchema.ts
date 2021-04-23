@@ -16,11 +16,12 @@ const dataSchemas = [
 
   dataCreateMeeting,
   dataStateMeeting,
-  dataElectionSetup,
 
   dataCreateRollCall,
   dataOpenRollCall,
   dataCloseRollCall,
+
+  dataElectionSetup,
 
   dataWitnessMessage,
 ];

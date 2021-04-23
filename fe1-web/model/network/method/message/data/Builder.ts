@@ -1,10 +1,12 @@
-import {Base64Data} from 'model/objects';
-import {ActionType, MessageData, ObjectType} from './MessageData';
-import {CreateLao, StateLao, UpdateLao} from './lao';
-import {CreateMeeting, StateMeeting} from './meeting';
-import {CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall,} from './rollCall';
-import {WitnessMessage} from './witness';
-import {CreateElection} from "./election";
+import { Base64Data } from 'model/objects';
+import { ActionType, MessageData, ObjectType } from './MessageData';
+import { CreateLao, StateLao, UpdateLao } from './lao';
+import { CreateMeeting, StateMeeting } from './meeting';
+import {
+  CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall,
+} from './rollCall';
+import { WitnessMessage } from './witness';
+import { CreateElection } from './election';
 
 export function encodeMessageData(msgData: MessageData): Base64Data {
   const data = JSON.stringify(msgData);

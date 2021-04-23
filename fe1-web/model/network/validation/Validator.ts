@@ -85,6 +85,7 @@ export interface ValidationResult {
 }
 
 function validate(schemaId: string, data: any): ValidationResult {
+  console.log('Validating:', schemaId, data);
   const valid = ajv.validate(schemaId, data);
   return {
     errors: valid ? null : ajv.errorsText(ajv.errors),

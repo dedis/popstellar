@@ -16,6 +16,7 @@ import {
 import {
   OpenedLaoStore, KeyPairStore,
 } from 'store';
+import { Question } from 'model/objects/Election';
 import { publish } from './JsonRpcApi';
 
 /** Send a server query asking for the creation of a LAO with a given name (String) */
@@ -208,16 +209,10 @@ export function requestCloseRollCall(rollCallId: Number, attendees: PublicKey[])
  *  The Election start and end is also specified as a timestamp */
 export function requestCreateElection(
   name: string,
-  version: string,
+  version: number,
   start: Timestamp,
   end: Timestamp,
-  questions: {
-    id: string,
-    question: string,
-    voting_method: string,
-    ballot_options: string[],
-    write_in: boolean,
-  }[],
+  questions: Question[],
 ): Promise<void> {
   const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();

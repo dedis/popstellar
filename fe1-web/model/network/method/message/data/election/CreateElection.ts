@@ -1,9 +1,10 @@
 import {
-  Hash, Timestamp, Lao,
+  Hash, Timestamp, Lao, EventTags,
 } from 'model/objects';
 import { OpenedLaoStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
+import { Question } from 'model/objects/Election';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness } from '../Checker';
 
@@ -16,7 +17,7 @@ export class CreateElection implements MessageData {
 
   public readonly name: string;
 
-  public readonly version: string;
+  public readonly version: number;
 
   public readonly created_at: Timestamp;
 
@@ -24,13 +25,7 @@ export class CreateElection implements MessageData {
 
   public readonly end_time: Timestamp;
 
-  public readonly questions: {
-    id: string,
-    question: string,
-    voting_method: string,
-    ballot_options: string[],
-    write_in: boolean,
-  }[];
+  public readonly questions: Question[];
 
   constructor(msg: Partial<CreateElection>) {
     if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'CreateElection\'');
