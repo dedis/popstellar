@@ -37,8 +37,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
   protected HashMap<EventCategory, List<Event>> eventsMap;
   private final EventCategory[] categories = EventCategory.values();
-  protected static final SimpleDateFormat DATE_FORMAT =
-          new SimpleDateFormat("HH:mm", Locale.ENGLISH);
+  protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
   private final LifecycleOwner lifecycleOwner;
   private final LaoDetailViewModel viewModel;
 
@@ -267,7 +266,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
       binding.eventTime.setText("Time: "+DATE_FORMAT.format(new Date(1000*rollCall.getStart())));
       binding.eventTitle.setText("Roll Call: "+rollCall.getName());
       binding.eventLocation.setText("Location: "+rollCall.getLocation());
-      
+
       boolean isOrganizer = viewModel.isOrganizer().getValue();
 
       if(isOrganizer && rollCall.getState()== EventState.CREATED){
