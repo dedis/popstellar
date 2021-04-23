@@ -29,7 +29,8 @@ func (w *witnessHub) RemoveClientSocket(client *ClientSocket) {
 }
 
 func (w *witnessHub) Recv(msg IncomingMessage) {
-	//TODO
+	log.Printf("witnessHub::Recv")
+	w.messageChan <- msg
 }
 
 func (w *witnessHub) handleMessageFromOrganizer(incomingMessage *IncomingMessage) {

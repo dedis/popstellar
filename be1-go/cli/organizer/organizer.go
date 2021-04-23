@@ -44,15 +44,15 @@ func OrganizerServe(context *cli.Context) error {
 	done := make(chan struct{})
 	go h.Start(done)
 
-	go orgCreateSocket(hub.WitnessSocketType, h, port)
-	orgCreateSocket(hub.ClientSocketType, h, port)
+	go orgCreateAndServeWs(hub.WitnessSocketType, h, port)
+	orgCreateAndServeWs(hub.ClientSocketType, h, port)
 
 	done <- struct{}{}
 
 	return nil
 }
 
-func orgCreateSocket(socketType hub.SocketType, h hub.Hub, port int) error {
+func orgCreateAndServeWs(socketType hub.SocketType, h hub.Hub, port int) error {
 	http.HandleFunc(string("/org/"+socketType+"/"), func(w http.ResponseWriter, r *http.Request) {
 		orgServeWs(socketType, h, w, r)
 	})
