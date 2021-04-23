@@ -16,11 +16,11 @@ export interface WalletCryptoKey {
  */
 export class WalletCryptographyHandler {
   /* the crypto library - passed to constructor */
-  private cryptography!: object;
+  private cryptography: Crypto;
 
-  private readonly publicKeyId: string = STRINGS.walletPublicKeyId;
+  private readonly publicKeyId: string = STRINGS.wallet_public_key_id;
 
-  private readonly privateKeyId: string = STRINGS.walletPrivateKeyId;
+  private readonly privateKeyId: string = STRINGS.wallet_private_key_id;
 
   /* encryption/decryption algorithm (RSA) */
   private readonly algorithm = {
@@ -36,7 +36,7 @@ export class WalletCryptographyHandler {
   /* the crypto library is passed to constructor, this is necessary in order to test the
      cryptography handler without the crypto.subtle library provided by the window object.
      In jest context provide a MOCK crypto.subtle library, otherwise provide window.crypto */
-  constructor(cryptography: object) {
+  constructor(cryptography: Crypto) {
     this.cryptography = cryptography;
   }
 
@@ -46,8 +46,8 @@ export class WalletCryptographyHandler {
    */
   public async initWalletStorage(): Promise<void> {
     /* verifies if wallet storage has already been initialised */
-    const tryPublicKey: CryptoKey = await this.getKeyFromDatabase(STRINGS.walletPublicKey);
-    const tryPrivateKey: CryptoKey = await this.getKeyFromDatabase(STRINGS.walletPrivateKey);
+    const tryPublicKey: CryptoKey = await this.getKeyFromDatabase(STRINGS.wallet_public_key);
+    const tryPrivateKey: CryptoKey = await this.getKeyFromDatabase(STRINGS.wallet_private_key);
     const walletIsNotInitialised: boolean = (tryPublicKey === undefined)
       || (tryPrivateKey === undefined);
 
@@ -62,11 +62,10 @@ export class WalletCryptographyHandler {
    * @param plaintext ed25519 seed toUint8Array()
    */
   public async encrypt(plaintext: Uint8Array): Promise<ArrayBuffer> {
-    const key: CryptoKey = await this.getKeyFromDatabase(STRINGS.walletPublicKey);
+    const key: CryptoKey = await this.getKeyFromDatabase(STRINGS.wallet_public_key);
     if (key === undefined) {
       throw Error('Error while retrieving encryption key from database: undefined');
     }
-    // @ts-ignore
     const ciphertext = await this.cryptography.subtle.encrypt(this.algorithm, key, plaintext);
     return ciphertext;
   }
@@ -76,11 +75,10 @@ export class WalletCryptographyHandler {
    * @param ciphertext ed25519 encrypted seed (ArrayBuffer)
    */
   public async decrypt(ciphertext: ArrayBuffer): Promise<ArrayBuffer> {
-    const key = await this.getKeyFromDatabase(STRINGS.walletPrivateKey);
+    const key = await this.getKeyFromDatabase(STRINGS.wallet_private_key);
     if (key === undefined) {
       throw Error('Error while retrieving decryption key from database: undefined');
     }
-    // @ts-ignore
     const plaintext = await this.cryptography.subtle
       .decrypt(this.algorithm, key, ciphertext);
     return plaintext;
@@ -104,7 +102,7 @@ export class WalletCryptographyHandler {
    * 'private' if the desired key is the private (decryption) key
    */
   private async getKeyFromDatabase(type: string): Promise<CryptoKey> {
-    if (type === STRINGS.walletPrivateKey) {
+    if (type === STRINGS.wallet_private_key) {
       const key = await get(this.privateKeyId);
       return key;
     }
@@ -151,7 +149,6 @@ export class WalletCryptographyHandler {
    * @private
    */
   private async generateRSAKey(): Promise<WalletCryptoKey> {
-    // @ts-ignore
     const keyPair = await this.cryptography.subtle.generateKey(
       this.algorithm, false, this.keyUsages,
     );

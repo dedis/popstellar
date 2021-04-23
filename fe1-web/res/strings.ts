@@ -121,14 +121,14 @@ const STRINGS = {
 
   /* --- Wallet Strings --- */
   wallet: 'Initialize wallet cryptography handler database',
-  walletAdd: 'Add encryption/decryption key to database ',
-  walletRemove: 'Remove encryption/decryption key from database ',
-  walletEncryptRandomToken: 'Encrypt test-token - ed25519 key',
-  walletDecryptRandomToken: 'Decrypt previously encrypted test-token',
-  walletPrivateKeyId: 'Private Decryption Key',
-  walletPublicKeyId: 'Public Encryption Key',
-  walletPublicKey: 'public',
-  walletPrivateKey: 'private',
+  wallet_add: 'Add encryption/decryption key to database ',
+  wallet_remove: 'Remove encryption/decryption key from database ',
+  wallet_encrypt_random_token: 'Encrypt test-token - ed25519 key',
+  wallet_decrypt_random_token: 'Decrypt previously encrypted test-token',
+  wallet_private_key_id: 'Private Decryption Key',
+  wallet_public_key_id: 'Public Encryption Key',
+  wallet_public_key: 'public',
+  wallet_private_key: 'private',
 
   /* --- General creation Strings --- */
   create_description: 'Choose the type of event you want to create',
