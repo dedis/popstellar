@@ -119,6 +119,17 @@ const STRINGS = {
   meeting_create_finish_time: 'End time: ',
   meeting_create_location: 'Location',
 
+  /* --- Wallet Strings --- */
+  wallet: 'Initialize wallet cryptography handler database',
+  wallet_add: 'Add encryption/decryption key to database ',
+  wallet_remove: 'Remove encryption/decryption key from database ',
+  wallet_encrypt_random_token: 'Encrypt test-token - ed25519 key',
+  wallet_decrypt_random_token: 'Decrypt previously encrypted test-token',
+  wallet_private_key_id: 'Private Decryption Key',
+  wallet_public_key_id: 'Public Encryption Key',
+  wallet_public_key: 'public',
+  wallet_private_key: 'private',
+
   /* --- General creation Strings --- */
   create_description: 'Choose the type of event you want to create',
 
