@@ -27,7 +27,7 @@ public class OpenRollCall extends Data {
     this.opens = opens;
     this.openedAt = openedAt;
     if(state==EventState.CLOSED){
-      this.action = Action.OPEN.getAction();
+      this.action = Action.REOPEN.getAction();
     }else{
       this.action = Action.OPEN.getAction();
     }

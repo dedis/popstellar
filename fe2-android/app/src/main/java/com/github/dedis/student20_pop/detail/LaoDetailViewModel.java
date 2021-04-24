@@ -130,7 +130,9 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
    *
    * @param title the title of the roll call
    * @param description the description of the roll call, can be empty
-   * @param proposedStart the start time of the roll call, zero if start type is SCHEDULED
+   * @param proposedStart the proposed start time of the roll call
+   * @param proposedEnd the proposed end time of the roll call
+   * @param open true if we want to directly open the roll call
    * @return the id of the newly created roll call event, null if fails to create the event
    */
   public String createNewRollCall(String title, String description, long proposedStart, long proposedEnd, boolean open) {
@@ -208,7 +210,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     }
     RollCall rollCall = optRollCall.get();
     OpenRollCall openRollCall = new OpenRollCall(updateId, id, openedAt, rollCall.getState());
-    attendees = rollCall.getAttendees();
+    attendees = new HashSet<>(rollCall.getAttendees());
     Log.d(TAG, "nb attendees: "+attendees.size());
     try {
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
@@ -471,6 +473,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
   public void openQrCodeScanningRollCall() {
     mOpenRollCallEvent.setValue(new Event<>(HomeViewModel.SCAN));
+    mNbAttendees.postValue(new Event<>(attendees.size())); //this to display the initial number of attendees
   }
   public void openCameraPermissionRollCall() {
     mOpenRollCallEvent.setValue(new Event<>(HomeViewModel.REQUEST_CAMERA_PERMISSION));

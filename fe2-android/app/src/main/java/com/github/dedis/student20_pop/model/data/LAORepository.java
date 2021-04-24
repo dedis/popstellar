@@ -371,7 +371,7 @@ public class LAORepository {
     rollCall.setId(updateId);
     rollCall.getAttendees().addAll(closeRollCall.getAttendees());
     rollCall.setState(EventState.CLOSED);
-    Log.d(TAG, "nb attendees: "+rollCall.getAttendees().size());
+
     lao.updateRollCall(closes, rollCall);
     return false;
   }
