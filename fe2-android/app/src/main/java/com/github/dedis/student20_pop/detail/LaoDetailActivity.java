@@ -19,8 +19,6 @@ import com.github.dedis.student20_pop.detail.fragments.event.creation.RollCallEv
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.home.HomeViewModel;
-import com.github.dedis.student20_pop.detail.fragments.IdentityFragment;
-import com.github.dedis.student20_pop.detail.fragments.LaoDetailFragment;
 import com.github.dedis.student20_pop.qrcode.CameraPermissionFragment;
 import com.github.dedis.student20_pop.qrcode.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.utility.ActivityUtils;

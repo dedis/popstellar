@@ -28,7 +28,9 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     private final TextWatcher confirmTextWatcher =
             new TextWatcher() {
                 @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    //nothing to do
+                }
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -40,7 +42,9 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
                 }
 
                 @Override
-                public void afterTextChanged(Editable s) {}
+                public void afterTextChanged(Editable s) {
+                    //nothing to do
+                }
             };
 
     public static RollCallEventCreationFragment newInstance() {
