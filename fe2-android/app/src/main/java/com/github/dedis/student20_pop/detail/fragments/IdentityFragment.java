@@ -38,9 +38,9 @@ public class IdentityFragment extends Fragment {
   @Nullable
   @Override
   public View onCreateView(
-      @NonNull LayoutInflater inflater,
-      @Nullable ViewGroup container,
-      @Nullable Bundle savedInstanceState) {
+          @NonNull LayoutInflater inflater,
+          @Nullable ViewGroup container,
+          @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_identity, container, false);
 
     // TODO :   The QR code does not appear at all unless the Name field is non-empty
@@ -56,18 +56,18 @@ public class IdentityFragment extends Fragment {
     hideIdentityInformation();
 
     anonymousCheckBox.setOnCheckedChangeListener(
-        (buttonView, isChecked) -> {
-          if (isChecked) {
-            hideIdentityInformation();
-          } else {
-            qrCode.setVisibility(View.VISIBLE);
-            identityEmailEditText.setVisibility(View.VISIBLE);
-            identityNameEditText.setVisibility(View.VISIBLE);
-            identityOrganizationEditText.setVisibility(View.VISIBLE);
-            identityPhoneEditText.setVisibility(View.VISIBLE);
-            identityTitleEditText.setVisibility(View.VISIBLE);
-          }
-        });
+            (buttonView, isChecked) -> {
+              if (isChecked) {
+                hideIdentityInformation();
+              } else {
+                qrCode.setVisibility(View.VISIBLE);
+                identityEmailEditText.setVisibility(View.VISIBLE);
+                identityNameEditText.setVisibility(View.VISIBLE);
+                identityOrganizationEditText.setVisibility(View.VISIBLE);
+                identityPhoneEditText.setVisibility(View.VISIBLE);
+                identityTitleEditText.setVisibility(View.VISIBLE);
+              }
+            });
 
     // NOTE : I was not sure which unique id to use to generate the QR code
     // User identity is composed of :
