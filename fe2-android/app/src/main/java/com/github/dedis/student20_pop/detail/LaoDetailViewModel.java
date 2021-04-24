@@ -88,7 +88,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   private final LiveData<String> mCurrentLaoName =
           Transformations.map(mCurrentLao, lao -> lao == null ? "" : lao.getName());
   private final MutableLiveData<Event<EventType>> mNewLaoEventEvent = new MutableLiveData<>();
-  private String mCurrentRollCallId = "";
+  private String mCurrentRollCallId = ""; //used to know which roll call to close
 
   private final LiveData<List<com.github.dedis.student20_pop.model.event.Event>> mLaoEvents = Transformations
           .map(mCurrentLao,
@@ -211,7 +211,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     RollCall rollCall = optRollCall.get();
     OpenRollCall openRollCall = new OpenRollCall(updateId, id, openedAt, rollCall.getState());
     attendees = new HashSet<>(rollCall.getAttendees());
-    Log.d(TAG, "nb attendees: "+attendees.size());
+
     try {
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
       String publicKey = Keys.getEncodedKey(publicKeysetHandle);
@@ -251,14 +251,13 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
   public void closeRollCall(){
     Log.d(TAG, "call closeRollCall");
-    //mCloseRollCallEvent.postValue(new Event<>(true));
     Lao lao = getCurrentLao();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return;
     }
     long end = Instant.now().getEpochSecond();
-    String channel = lao.getChannel();//try loa.getId() ??
+    String channel = lao.getChannel();
     String laoId = channel.substring(6); // removing /root/ prefix
     String updateId = Hash.hash("R", laoId, mCurrentRollCallId, Long.toString(end));
     CloseRollCall closeRollCall = new CloseRollCall(updateId, mCurrentRollCallId, end, new ArrayList<>(attendees));
@@ -278,7 +277,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                               answer -> {
                                 if (answer instanceof Result) {
                                   Log.d(TAG, "closed the roll call");
-                                  mCurrentRollCallId = "";//is this really needed or we give id in param??
+                                  mCurrentRollCallId = "";
                                   attendees.clear();
                                   openLaoDetail();
                                 } else {
