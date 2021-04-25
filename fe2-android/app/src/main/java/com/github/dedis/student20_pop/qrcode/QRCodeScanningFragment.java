@@ -53,6 +53,7 @@ public final class QRCodeScanningFragment extends Fragment {
     FragmentActivity activity = getActivity();
     if (activity instanceof HomeActivity) {
       mQRCodeScanningViewModel = HomeActivity.obtainViewModel(activity);
+      mQrCodeFragBinding.addAttendeeTotalText.setVisibility(View.GONE);
       mQrCodeFragBinding.addAttendeeNumberText.setVisibility(View.GONE);
       mQrCodeFragBinding.addAttendeeConfirm.setVisibility(View.GONE);
     } else if (activity instanceof LaoDetailActivity) {
