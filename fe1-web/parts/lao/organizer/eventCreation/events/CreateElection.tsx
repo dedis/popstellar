@@ -9,7 +9,7 @@ import STRINGS from 'res/strings';
 import DatePicker from 'components/DatePicker';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
-import {Base64Data, Timestamp} from 'model/objects';
+import { Base64Data, Timestamp } from 'model/objects';
 import TextBlock from 'components/TextBlock';
 import DropdownSelector from 'components/DropdownSelector';
 import TextInputList from 'components/TextInputList';
