@@ -26,13 +26,13 @@ public class OpenRollCall extends Data {
     this.updateId = updateId;
     this.opens = opens;
     this.openedAt = openedAt;
+    /*
     if(state==EventState.CLOSED){
-      //use first line when REOPEN is recognised by backend
-      //this.action = Action.REOPEN.getAction();
-      this.action = Action.OPEN.getAction();
+      this.action = Action.REOPEN.getAction();
     }else{
       this.action = Action.OPEN.getAction();
-    }
+    }*/
+    this.action = Action.OPEN.getAction(); //replace by commented code above when REOPEN is recognised by backend
   }
 
   public OpenRollCall(String updateId, String opens, long openedAt, String action) {
