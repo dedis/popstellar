@@ -1,6 +1,6 @@
 import { Message } from 'model/network/method/message';
 import {
-  ActionType, ObjectType, CreateElection,
+  ActionType, ObjectType, SetupElection,
 } from 'model/network/method/message/data';
 import { Election } from 'model/objects';
 import {
@@ -25,7 +25,7 @@ function handleElectionSetupMessage(msg: Message): boolean {
     return false;
   }
 
-  const elecMsg = msg.messageData as CreateElection;
+  const elecMsg = msg.messageData as SetupElection;
 
   const election = new Election({
     id: elecMsg.id,

@@ -5,7 +5,7 @@ import {
   CreateLao,
   CreateMeeting,
   CreateRollCall,
-  CreateElection,
+  SetupElection,
   StateLao,
   UpdateLao,
   WitnessMessage,
@@ -204,12 +204,12 @@ export function requestCloseRollCall(rollCallId: Number, attendees: PublicKey[])
 }
  */
 
-/** Sends a server query asking for creation of an Election with a given name (String), a
- *  question (String) and a List of ballot options (Array of strings).
- *  The Election start and end is also specified as a timestamp */
+/** Sends a server query asking for creation of an Election with a given name (String),
+ *  an array of questions, a version (String), the current lao (String), the id, and the  creation,
+ *  start and end are also specified as a timestamp */
 export function requestCreateElection(
   name: string,
-  version: number,
+  version: string,
   start: Timestamp,
   end: Timestamp,
   questions: Question[],
@@ -217,7 +217,8 @@ export function requestCreateElection(
   const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
 
-  const message = new CreateElection({
+  const message = new SetupElection({
+    lao: currentLao.id.toString(),
     id: Hash.fromStringArray(
       EventTags.ELECTION, currentLao.id.toString(), currentLao.creation.toString(), name,
     ),

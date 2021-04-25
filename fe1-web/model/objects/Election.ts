@@ -3,8 +3,9 @@ import { Hash } from './Hash';
 import { Timestamp } from './Timestamp';
 
 export interface ElectionState extends LaoEventState {
+  lao: string;
   name: string;
-  version: number;
+  version: string;
   creation: number;
   start_time: number;
   end_time: number;
@@ -20,11 +21,13 @@ export interface Question {
 }
 
 export class Election implements LaoEvent {
+  public readonly lao: string;
+
   public readonly id: Hash;
 
   public readonly name: string;
 
-  public readonly version: number;
+  public readonly version: string;
 
   public readonly created_at: Timestamp;
 
@@ -39,7 +42,9 @@ export class Election implements LaoEvent {
       throw new Error('Error encountered while creating a RollCall object: '
         + 'undefined/null parameters');
     }
-
+    if (obj.lao === undefined) {
+      throw new Error("Undefined 'lao' when creating 'RollCall'");
+    }
     if (obj.id === undefined) {
       throw new Error("Undefined 'id' when creating 'RollCall'");
     }
@@ -61,7 +66,7 @@ export class Election implements LaoEvent {
     if (obj.questions === undefined) {
       throw new Error("Undefined 'questions' when creating 'RollCall'");
     }
-
+    this.lao = obj.lao;
     this.id = obj.id;
     this.name = obj.name;
     this.version = obj.version;
@@ -73,6 +78,7 @@ export class Election implements LaoEvent {
 
   public static fromState(e: ElectionState): Election {
     return new Election({
+      lao: e.lao,
       id: new Hash(e.id),
       name: e.name,
       version: e.version,

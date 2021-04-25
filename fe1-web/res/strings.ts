@@ -99,13 +99,14 @@ const STRINGS = {
   election_create_setup: 'Election Setup',
   election_create_name: 'Name*',
   election_create_start_time: 'Start time: ',
-  election_create_finish_time: 'End time: ',
+  election_create_finish_time: 'End time:  ',
   election_create_question: 'Question*',
   election_create_voting_method: 'Voting method',
   election_create_ballot_option: 'Option',
   election_create_ballot_options: 'Ballot Options',
   election_voting_method: 'Voting Method',
   election_method_Plurality: 'Plurality',
+  election_method_Approval: 'Approval',
 
   /* --- Roll-call creation Strings --- */
   roll_call_create_proposed_start: 'Proposed Start:',

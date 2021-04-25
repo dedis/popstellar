@@ -17,6 +17,11 @@ const styleEvents = StyleSheet.create({
     flexDirection: 'row',
     zIndex: 3,
   } as ViewStyle,
+  viewVertical: {
+    ...Views.base,
+    flexDirection: 'column',
+    zIndex: 3,
+  } as ViewStyle,
   textInput: {
     ...Typography.base,
     borderBottomWidth: 2,

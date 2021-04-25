@@ -9,17 +9,18 @@ import STRINGS from 'res/strings';
 import DatePicker from 'components/DatePicker';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
-import { Timestamp } from 'model/objects';
+import {Base64Data, Timestamp} from 'model/objects';
 import TextBlock from 'components/TextBlock';
 import DropdownSelector from 'components/DropdownSelector';
 import TextInputList from 'components/TextInputList';
-import { requestCreateElection } from '../../../../../network';
+import { requestCreateElection } from 'network';
 
 /**
  * UI to create an Election Event
  *
- * TODO Send the Election event to the organization server when the confirm button is pressed
+ * TODO Implement support for multiple questions
  */
+
 const CreateElection = ({ route }: any) => {
   const styles = route.params;
   const navigation = useNavigation();
@@ -34,7 +35,7 @@ const CreateElection = ({ route }: any) => {
   const [electionName, setElectionName] = useState('');
   const [electionQuestion, setElectionQuestion] = useState('');
   const [electionBallots, setElectionBallots] = useState(['']);
-  const votingMethods = [STRINGS.election_method_Plurality];
+  const votingMethods = [STRINGS.election_method_Plurality, STRINGS.election_method_Approval];
   const [votingMethod, setVotingMethod] = useState(votingMethods[0]);
   const minBallotOptions = 2;
 
@@ -45,17 +46,21 @@ const CreateElection = ({ route }: any) => {
     endTime.setUTCSeconds(endDate.valueOf());
 
     return (
-      <View style={styles.view}>
-        <ParagraphBlock text={STRINGS.election_create_start_time} />
-        <DatePicker
-          selected={startTime}
-          onChange={(date: Date) => setStartDate(Timestamp.dateToTimestamp(date))}
-        />
-        <ParagraphBlock text={STRINGS.election_create_finish_time} />
-        <DatePicker
-          selected={endTime}
-          onChange={(date: Date) => setEndDate(Timestamp.dateToTimestamp(date))}
-        />
+      <View style={styles.viewVertical}>
+        <View style={[styles.view, { padding: 5 }]}>
+          <ParagraphBlock text={STRINGS.election_create_start_time} />
+          <DatePicker
+            selected={startTime}
+            onChange={(date: Date) => setStartDate(Timestamp.dateToTimestamp(date))}
+          />
+        </View>
+        <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
+          <ParagraphBlock text={STRINGS.election_create_finish_time} />
+          <DatePicker
+            selected={endTime}
+            onChange={(date: Date) => setEndDate(Timestamp.dateToTimestamp(date))}
+          />
+        </View>
       </View>
     );
   };
@@ -65,21 +70,13 @@ const CreateElection = ({ route }: any) => {
     && electionBallots.length >= minBallotOptions);
 
   const onConfirmPress = () => {
-    // Todo: Make this button send the request to create this election and remove console logs
-    console.log('Election name: ', electionName);
-    console.log('Start Date: ', startDate);
-    console.log('End Date: ', endDate);
-    console.log('Question: ', electionQuestion);
-    console.log('Voting Method: ', votingMethod);
-    console.log('Ballots: ', electionBallots);
-
     requestCreateElection(
       electionName,
-      1.0,
+      '1.0',
       startDate,
       endDate,
       [{
-        id: 'test_id',
+        id: Base64Data.encode('question_id').toString(),
         question: electionQuestion,
         voting_method: votingMethod,
         ballot_options: electionBallots,
@@ -114,17 +111,18 @@ const CreateElection = ({ route }: any) => {
         placeholder={STRINGS.election_create_question}
         onChangeText={(text: string) => { setElectionQuestion(text); }}
       />
-      <TextBlock text={STRINGS.election_create_ballot_options} />
       <TextInputList onChange={setElectionBallots} />
-      <WideButtonView
-        title={STRINGS.general_button_confirm}
-        onPress={onConfirmPress}
-        disabled={!buttonsVisibility}
-      />
-      <WideButtonView
-        title={STRINGS.general_button_cancel}
-        onPress={navigation.goBack}
-      />
+      <View style={styles.view}>
+        <WideButtonView
+          title={STRINGS.general_button_cancel}
+          onPress={navigation.goBack}
+        />
+        <WideButtonView
+          title={STRINGS.general_button_confirm}
+          onPress={onConfirmPress}
+          disabled={!buttonsVisibility}
+        />
+      </View>
     </ScrollView>
   );
 };

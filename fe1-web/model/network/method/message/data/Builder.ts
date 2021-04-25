@@ -6,7 +6,7 @@ import {
   CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall,
 } from './rollCall';
 import { WitnessMessage } from './witness';
-import { CreateElection } from './election';
+import { SetupElection } from './election';
 
 export function encodeMessageData(msgData: MessageData): Base64Data {
   const data = JSON.stringify(msgData);
@@ -40,7 +40,7 @@ function buildMeetingMessage(msgData: MessageData): MessageData {
 function buildElectionMessage(msgData: MessageData): MessageData {
   switch (msgData.action) {
     case ActionType.SETUP:
-      return CreateElection.fromJson(msgData);
+      return SetupElection.fromJson(msgData);
     default:
       throw new Error(`Unknown action '${msgData.action}' encountered while creating a election MessageData`);
   }

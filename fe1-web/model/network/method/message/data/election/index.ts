@@ -1,1 +1,1 @@
-export * from './CreateElection';
+export * from './SetupElection';
