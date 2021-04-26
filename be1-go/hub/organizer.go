@@ -562,6 +562,7 @@ func getAllQuestionsForElectionChannel(questions []message.Question,data *messag
 		qs[ base64.StdEncoding.EncodeToString(q.ID)] = question{
 			q.ID,
 			q.BallotOptions,
+			sync.RWMutex{},
 			make(map[string]validVote),
 			q.VotingMethod,
 		}
@@ -593,6 +594,9 @@ type question struct {
 
 	// Different options
 	ballotOptions []message.BallotOption
+
+	//valid vote mutex
+	validVotesMu sync.RWMutex
 
 	// list of all valid votes
 	validVotes map[string]validVote
@@ -638,6 +642,10 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 
 func castVoteHelper(publish message.Publish,c *electionChannel) error{
 	msg := publish.Params.Message
+
+	//this is to handle the case when the organizer must handle multiple votes being cast at the same time
+	c.validVotesMu.RLock()
+	defer c.validVotesMu.RUnlock()
 
 	voteData, ok := msg.Data.(*message.CastVoteData)
 	if !ok {
