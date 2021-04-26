@@ -178,7 +178,7 @@ func (o *organizerHub) handleMessageFromWitness(incomingMessage *IncomingMessage
 func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	log.Printf("organizerHub::handleMessageFromClient: %s", incomingMessage.Message)
 
-	switch (incomingMessage.Socket.socketType) {
+	switch incomingMessage.Socket.socketType {
 	case clientSocket:
 		o.handleMessageFromClient(incomingMessage)
 		return
@@ -279,7 +279,7 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 	case message.MessageObject:
 		err = c.processMessageObject(msg.Sender, data)
 	case message.RollCallObject:
-		err = c.processRollCallObject(msg.Sender, data)
+		err = c.processRollCallObject(*msg)
 	}
 
 	if err != nil {
@@ -486,7 +486,9 @@ func (c *laoChannel) processMessageObject(public message.PublicKey, data message
 	return nil
 }
 
-func (c *laoChannel) processRollCallObject(sender message.PublicKey, data message.Data) error {
+func (c *laoChannel) processRollCallObject(msg message.Message) error {
+	sender := msg.Sender
+	data := msg.Data
 
 	// Check if the sender of the roll call message is the organizer
 	senderPoint := student20_pop.Suite.Point()
@@ -517,6 +519,12 @@ func (c *laoChannel) processRollCallObject(sender message.PublicKey, data messag
 	if err != nil {
 		return xerrors.Errorf("failed to process %v roll-call action: %v", action, err)
 	}
+
+	msgIDEncoded := base64.StdEncoding.EncodeToString(msg.MessageID)
+	c.inboxMu.Lock()
+	log.Printf("add message with id, %s", msgIDEncoded)
+	c.inbox[msgIDEncoded] = msg
+	c.inboxMu.Unlock()
 
 	return nil
 }
