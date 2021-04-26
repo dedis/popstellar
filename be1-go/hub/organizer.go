@@ -198,7 +198,6 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 
 	encodedID := base64.StdEncoding.EncodeToString(data.ID)
 
-	laoChannelID := "/root/" + encodedID
 
 	if _, ok := o.channelByID[encodedID]; ok {
 		return &message.Error{
@@ -206,6 +205,7 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 			Description: "failed to create lao: another one with the same ID exists",
 		}
 	}
+	laoChannelID := "/root/" + encodedID
 
 	laoCh := laoChannel{
 		createBaseChannel(o, laoChannelID),
@@ -213,9 +213,7 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 	messageID := base64.StdEncoding.EncodeToString(publish.Params.Message.MessageID)
 	laoCh.inbox[messageID] = *publish.Params.Message
 
-	id := base64.StdEncoding.EncodeToString(data.ID)
-
-	o.channelByID[id] = &laoCh
+	o.channelByID[encodedID] = &laoCh
 
 	return nil
 }
@@ -643,9 +641,6 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 func castVoteHelper(publish message.Publish,c *electionChannel) error{
 	msg := publish.Params.Message
 
-	//this is to handle the case when the organizer must handle multiple votes being cast at the same time
-	c.validVotesMu.RLock()
-	defer c.validVotesMu.RUnlock()
 
 	voteData, ok := msg.Data.(*message.CastVoteData)
 	if !ok {
@@ -664,9 +659,12 @@ func castVoteHelper(publish message.Publish,c *electionChannel) error{
 	messageID := base64.StdEncoding.EncodeToString(msg.MessageID)
 	c.inbox[messageID] = *msg
 	for _,q := range voteData.Votes{
+
 		QuestionID :=  base64.StdEncoding.EncodeToString(q.QuestionID)
 		qs,ok := c.questions[QuestionID]
 		if ok{
+			//this is to handle the case when the organizer must handle multiple votes being cast at the same time
+			qs.validVotesMu.RLock()
 			earlierVote,ok := qs.validVotes[msg.Sender.String()]
 			// if the sender didn't previously cast a vote or if the vote is no longer valid update it
 			if !ok {
@@ -680,6 +678,8 @@ func castVoteHelper(publish message.Publish,c *electionChannel) error{
 							q.VoteIndexes}
 				}
 			}
+			//other votes can now change the list of valid votes
+			qs.validVotesMu.RUnlock()
 		}else{
 			return &message.Error{
 				Code: -4,
