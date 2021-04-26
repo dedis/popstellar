@@ -1,5 +1,5 @@
 import {
-  Base64Data, Hash, PublicKey, Signature, WitnessSignature,
+  Base64Data, Hash, PublicKey, Signature, WitnessSignature, WitnessSignatureState,
 } from 'model/objects';
 import { KeyPairStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
@@ -9,7 +9,7 @@ import {
 
 /**
  * MessageState is the interface that should match JSON.stringify(Message)
- * It is used to store messages in a compact way within the Redux store.
+ * It is used to store messages in a way compatible with the Redux store.
  */
 export interface MessageState {
   data: string;
@@ -20,7 +20,7 @@ export interface MessageState {
 
   message_id: string;
 
-  witness_signatures: string[];
+  witness_signatures: WitnessSignatureState[];
 }
 
 /**
@@ -91,10 +91,9 @@ export class Message {
       sender: new PublicKey(obj.sender.toString()),
       signature: new Signature(obj.signature.toString()),
       message_id: new Hash(obj.message_id.toString()),
-      witness_signatures: obj.witness_signatures.map((ws: any) => new WitnessSignature({
-        witness: new PublicKey(ws.witness.toString()),
-        signature: new Signature(ws.signature.toString()),
-      })),
+      witness_signatures: obj.witness_signatures.map(
+        (ws: WitnessSignatureState) => WitnessSignature.fromJson(ws),
+      ),
     });
   }
 

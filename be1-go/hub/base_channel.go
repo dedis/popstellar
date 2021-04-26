@@ -16,7 +16,7 @@ type baseChannel struct {
 	hub *organizerHub
 
 	clientsMu sync.RWMutex
-	clients   map[*Client]struct{}
+	clients   map[*ClientSocket]struct{}
 
 	inboxMu sync.RWMutex
 	inbox   map[string]message.Message
@@ -33,12 +33,12 @@ func createBaseChannel(h *organizerHub, channelID string) *baseChannel {
 	return &baseChannel{
 		hub:       h,
 		channelID: channelID,
-		clients:   make(map[*Client]struct{}),
+		clients:   make(map[*ClientSocket]struct{}),
 		inbox:     make(map[string]message.Message),
 	}
 }
 
-func (c *baseChannel) Subscribe(client *Client, msg message.Subscribe) error {
+func (c *baseChannel) Subscribe(client *ClientSocket, msg message.Subscribe) error {
 	log.Printf("received a subscribe with id: %d", msg.ID)
 	c.clientsMu.Lock()
 	defer c.clientsMu.Unlock()
@@ -48,7 +48,7 @@ func (c *baseChannel) Subscribe(client *Client, msg message.Subscribe) error {
 	return nil
 }
 
-func (c *baseChannel) Unsubscribe(client *Client, msg message.Unsubscribe) error {
+func (c *baseChannel) Unsubscribe(client *ClientSocket, msg message.Unsubscribe) error {
 	log.Printf("received an unsubscribe with id: %d", msg.ID)
 
 	c.clientsMu.Lock()

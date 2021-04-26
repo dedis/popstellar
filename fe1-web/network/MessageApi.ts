@@ -9,12 +9,16 @@ import {
   UpdateLao,
   WitnessMessage,
 } from 'model/network/method/message/data';
-import { Channel, channelFromId, ROOT_CHANNEL } from 'model/objects/Channel';
-import { OpenedLaoStore, KeyPairStore } from 'store';
-import { publish } from 'network/JsonRpcApi';
+import {
+  Channel, channelFromId, ROOT_CHANNEL,
+} from 'model/objects/Channel';
+import {
+  OpenedLaoStore, KeyPairStore,
+} from 'store';
+import { publish } from './JsonRpcApi';
 
 /** Send a server query asking for the creation of a LAO with a given name (String) */
-export function requestCreateLao(laoName: string) {
+export function requestCreateLao(laoName: string): Promise<Channel> {
   const time = Timestamp.EpochNow();
   const pubKey = KeyPairStore.getPublicKey();
 
@@ -26,7 +30,11 @@ export function requestCreateLao(laoName: string) {
     witnesses: [],
   });
 
-  return publish(ROOT_CHANNEL, message);
+  return publish(ROOT_CHANNEL, message)
+    .then(() => {
+      console.info(`LAO was created with ID: ${message.id}`);
+      return channelFromId(message.id);
+    });
 }
 
 /** Send a server query asking for a LAO update providing a new name (String) */
@@ -124,18 +132,11 @@ export function requestWitnessMessage(channel: Channel, messageId: Hash): Promis
  *  given location (String). An optional start time (Timestamp), scheduled time (Timestamp) or
  *  description (String) can be specified */
 export function requestCreateRollCall(
-  name: string, location: string, start?: Timestamp, scheduled?: Timestamp, description?: string,
+  name: string, location: string, proposedStart: Timestamp, proposedEnd: Timestamp,
+  description?: string,
 ): Promise<void> {
   const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
-
-  if (start === undefined && scheduled === undefined) {
-    throw new Error('RollCall creation failed : neither "start" or "scheduled" field was given');
-  }
-
-  if (start !== undefined && scheduled !== undefined) {
-    throw new Error('RollCall creation failed : both "start" and "scheduled" fields were given');
-  }
 
   const message = new CreateRollCall({
     id: Hash.fromStringArray(
@@ -144,12 +145,13 @@ export function requestCreateRollCall(
     name: name,
     creation: time,
     location: location,
-    start: start,
-    scheduled: scheduled,
-    roll_call_description: description,
+    proposed_start: proposedStart,
+    proposed_end: proposedEnd,
+    description: description,
   });
 
-  return publish(channelFromId(currentLao.id), message);
+  const laoCh = channelFromId(currentLao.id);
+  return publish(laoCh, message);
 }
 
 /** Send a server query asking for the opening of a roll call given its id (Number) and an
