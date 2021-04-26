@@ -6,6 +6,9 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.model.objects.{Hash, Timestamp, WitnessSignaturePair}
 
+import ch.epfl.pop.jsonNew.MessageDataProtocol._
+import spray.json._
+
 case class StateMeeting(
                          id: Hash,
                          name: String,
@@ -39,5 +42,6 @@ object StateMeeting extends Parsable {
     new StateMeeting(id, name, creation, last_modified, location, start, end, extra, modification_id, modification_signatures)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): StateMeeting = ???
+  override def buildFromJson(messageData: MessageData, payload: String): StateMeeting =
+    payload.parseJson.asJsObject.convertTo[StateMeeting]
 }

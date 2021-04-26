@@ -6,6 +6,9 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.model.objects.{Hash, Signature}
 
+import ch.epfl.pop.jsonNew.MessageDataProtocol._
+import spray.json._
+
 case class WitnessMessage(
                            message_id: Hash,
                            signature: Signature,
@@ -23,5 +26,6 @@ object WitnessMessage extends Parsable {
     new WitnessMessage(message_id, signature)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): WitnessMessage = ???
+  override def buildFromJson(messageData: MessageData, payload: String): WitnessMessage =
+    payload.parseJson.asJsObject.convertTo[WitnessMessage]
 }

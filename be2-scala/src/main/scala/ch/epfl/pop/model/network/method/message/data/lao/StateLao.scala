@@ -6,6 +6,9 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.model.objects.{Hash, PublicKey, Timestamp, WitnessSignaturePair}
 
+import ch.epfl.pop.jsonNew.MessageDataProtocol._
+import spray.json._
+
 case class StateLao(
                      id: Hash,
                      name: String,
@@ -35,5 +38,6 @@ object StateLao extends Parsable {
     new StateLao(id, name, creation, last_modified, organizer, witnesses, modification_id, modification_signatures)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): StateLao = ???
+  override def buildFromJson(messageData: MessageData, payload: String): StateLao =
+    payload.parseJson.asJsObject.convertTo[StateLao]
 }

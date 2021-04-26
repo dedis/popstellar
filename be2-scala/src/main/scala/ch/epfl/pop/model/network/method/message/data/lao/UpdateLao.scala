@@ -6,6 +6,9 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.model.objects.{Hash, PublicKey, Timestamp}
 
+import ch.epfl.pop.jsonNew.MessageDataProtocol._
+import spray.json._
+
 case class UpdateLao(id: Hash, name: String, last_modified: Timestamp, witnesses: List[PublicKey]) extends MessageData {
   override val _object: ObjectType = ObjectType.LAO
   override val action: ActionType = ActionType.UPDATE_PROPERTIES
@@ -17,5 +20,6 @@ object UpdateLao extends Parsable {
     new UpdateLao(id, name, last_modified, witnesses)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): UpdateLao = ???
+  override def buildFromJson(messageData: MessageData, payload: String): UpdateLao =
+    payload.parseJson.asJsObject.convertTo[UpdateLao]
 }

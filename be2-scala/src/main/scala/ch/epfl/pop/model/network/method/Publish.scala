@@ -5,6 +5,9 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.MessageData
 import ch.epfl.pop.model.objects.Channel.Channel
 
+import ch.epfl.pop.jsonNew.HighLevelProtocol._
+import spray.json._
+
 case class Publish(channel: Channel, message: Message) extends ParamsWithMessage
 
 object Publish extends Parsable {
@@ -13,5 +16,6 @@ object Publish extends Parsable {
     new Publish(channel, message)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): Publish = ???
+  override def buildFromJson(messageData: MessageData, payload: String): Publish =
+    payload.parseJson.asJsObject.convertTo[Publish]
 }

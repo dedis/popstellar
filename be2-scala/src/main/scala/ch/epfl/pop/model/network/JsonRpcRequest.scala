@@ -16,6 +16,7 @@ class JsonRpcRequest(
   override def validateContent(): Option[PipelineError] = ??? // params.validateContent() // define recursively?s
 
   // defensive methods in case protocol structure changes
+  def getParams: Params = this.params
   def getParamsChannel: Channel = this.params.channel
   def getParamsMessage: Option[Message] = Try(this.params.asInstanceOf[ParamsWithMessage].message) match {
     case Success(message) => Some(message)

@@ -5,6 +5,7 @@ import java.util.Base64
 object Channel {
   type Channel = String
 
+  val rootChannel: String = "/root"
   val rootChannelPrefix: String = "/root/"
 
   /**
