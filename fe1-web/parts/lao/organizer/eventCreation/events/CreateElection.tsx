@@ -72,11 +72,11 @@ const CreateElection = ({ route }: any) => {
   const onConfirmPress = () => {
     requestCreateElection(
       electionName,
-      '1.0',
+      STRINGS.election_version_identifier,
       startDate,
       endDate,
       [{
-        id: Base64Data.encode('question_id').toString(),
+        id: Base64Data.encode('question_id').toString(), //Todo make hash
         question: electionQuestion,
         voting_method: votingMethod,
         ballot_options: electionBallots,

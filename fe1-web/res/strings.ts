@@ -107,6 +107,7 @@ const STRINGS = {
   election_voting_method: 'Voting Method',
   election_method_Plurality: 'Plurality',
   election_method_Approval: 'Approval',
+  election_version_identifier: '1.0.0',
 
   /* --- Roll-call creation Strings --- */
   roll_call_create_proposed_start: 'Proposed Start:',

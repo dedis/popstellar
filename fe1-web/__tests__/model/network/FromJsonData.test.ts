@@ -52,7 +52,7 @@ describe('=== fromJsonData checks ===', () => {
   const time = STANDARD_TIMESTAMP;
   const name = 'poof';
   const location = 'Lausanne';
-  const mockVersion = '1.0';
+  const mockVersion = STRINGS.election_version_identifier;
   const mockLaoId: Hash = Hash.fromStringArray(org.toString(), time.toString(), name);
 
   let temp: any = {};
@@ -526,7 +526,7 @@ describe('=== fromJsonData checks ===', () => {
 
     it('should fail when omitting a mandatory parameter', () => {
       // omitted a mandatory parameter (name)
-      const event = () => {
+      let event = () => {
         CreateLao.fromJson({
           object: ObjectType.LAO,
           action: ActionType.CREATE,
@@ -539,6 +539,22 @@ describe('=== fromJsonData checks ===', () => {
 
       expect(event).toThrow(ProtocolError);
       expect(event).toThrow('should have required property \'name\'');
+
+      event = () => {
+        SetupElection.fromJson({
+          object: ObjectType.ELECTION,
+          action: ActionType.SETUP,
+          id: electionId,
+          lao: mockLaoId.toString(),
+          name: name,
+          version: mockVersion,
+          created_at: time,
+          start_time: time,
+          end_time: CLOSE_TIMESTAMP,
+        });
+      };
+      expect(event).toThrow(ProtocolError);
+      expect(event).toThrow('should have required property \'questions\'');
     });
 
     it('should fail when using garbage types', () => {
