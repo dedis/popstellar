@@ -648,12 +648,17 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 				qs,ok := c.questions[QuestionID]
 				if ok{
 					earlierVote,ok := qs.validVotes[msg.Sender.String()]
-					// if the sender didn't previously cast a vote or if the vote
-					//is no longer valid update it
-					if !ok  || earlierVote.voteTime > voteData.CreatedAt {
+					// if the sender didn't previously cast a vote or if the vote is no longer valid update it
+					if !ok {
 						qs.validVotes[msg.Sender.String()] =
 							validVote{voteData.CreatedAt,
 								q.VoteIndexes}
+					}else{
+						if earlierVote.voteTime > voteData.CreatedAt{
+							qs.validVotes[msg.Sender.String()] =
+								validVote{voteData.CreatedAt,
+									q.VoteIndexes}
+						}
 					}
 				}else{
 					return &message.Error{
