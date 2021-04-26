@@ -17,7 +17,7 @@ case object WitnessHandler extends MessageHandler {
     case Left(jsonRpcMessage) => jsonRpcMessage match {
       case message@(_: JsonRpcRequestWitnessMessage) => handleWitnessMessage(message)
       case _ => Right(PipelineError(
-        ErrorCodes.SERVER_FAULT.id,
+        ErrorCodes.SERVER_ERROR.id,
         "Internal server fault: WitnessHandler was given a message it could not recognize"
       ))
     }

@@ -19,7 +19,7 @@ case object LaoHandler extends MessageHandler {
       case message@(_: JsonRpcRequestStateLao) => handleStateLao(message)
       case message@(_: JsonRpcRequestUpdateLao) => handleUpdateLao(message)
       case _ => Right(PipelineError(
-        ErrorCodes.SERVER_FAULT.id,
+        ErrorCodes.SERVER_ERROR.id,
         "Internal server fault: LaoHandler was given a message it could not recognize"
       ))
     }
@@ -35,7 +35,7 @@ case object LaoHandler extends MessageHandler {
         // Publish on the LAO main channel
         dbActor.ask(ref => DbActorNew.Write(channel, rpcMessage.getParamsMessage.get, ref)) match {
           case Success(_) => Left(rpcMessage)
-          case _ => Right(PipelineError(-10, "")) // FIXME add DbActor "answers" with error description if failed
+          case _ => Right(PipelineError(-10, "")) // FIXME add DbActor "answers" with error description if failed. Should be a SERVER_ERROR
         }
       case _ => Right(PipelineError(ErrorCodes.ALREADY_EXISTS.id, s"Unable to create lao: channel '$channel' already exists"))
     }
@@ -45,6 +45,7 @@ case object LaoHandler extends MessageHandler {
     val modificationId: Hash = rpcMessage.getDecodedData.asInstanceOf[StateLao].modification_id
     dbActor.ask(ref => DbActorNew.Read(rpcMessage.getParamsChannel, modificationId, ref)) match {
       case Some(_) => dbAskWritePropagate(rpcMessage)
+      // TODO careful about asynchrony and the fact that the network may reorder some messages
       case _ => Right(PipelineError(
         ErrorCodes.INVALID_DATA.id,
         s"Unable to request lao state: invalid modification_id '$modificationId' (no message associated to this id)"

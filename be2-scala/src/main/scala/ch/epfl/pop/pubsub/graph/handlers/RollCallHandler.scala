@@ -16,7 +16,7 @@ case object RollCallHandler extends MessageHandler {
       case message@(_: JsonRpcRequestReopenRollCall) => handleReopenRollCall(message)
       case message@(_: JsonRpcRequestCloseRollCall) => handleCloseRollCall(message)
       case _ => Right(PipelineError(
-        ErrorCodes.SERVER_FAULT.id,
+        ErrorCodes.SERVER_ERROR.id,
         "Internal server fault: RollCallHandler was given a message it could not recognize"
       ))
     }

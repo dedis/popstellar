@@ -19,7 +19,7 @@ import ch.epfl.pop.pubsub.graph.validators.WitnessValidator._
 object Validator {
 
   private val VALIDATOR_ERROR: PipelineError = PipelineError(
-    ErrorCodes.SERVER_FAULT.id,
+    ErrorCodes.INVALID_ACTION.id,
     "Internal server fault: Validator was given a message it could not recognize"
   )
 
@@ -45,7 +45,7 @@ object Validator {
       case _ => Right(VALIDATOR_ERROR)
     }
     case Left(_) => Right(PipelineError(
-      ErrorCodes.SERVER_FAULT.id,
+      ErrorCodes.INVALID_ACTION.id,
       "Internal server fault: MethodValidator was given a response message"
     ))
     case graphMessage@_ => graphMessage

@@ -17,6 +17,6 @@ object ErrorCodes extends Enumeration {
   val INVALID_DATA: ErrorCodes = Value(-4, "request data is invalid")
   // access denied (e.g. subscribing to a “restricted” channel)
   val ACCESS_DENIED: ErrorCodes = Value(-5, "access denied")
-  // server fault
-  val SERVER_FAULT: ErrorCodes = Value(-6, "server fault")
+  // internal server error (e.g. crashed while processing, database unavailable, etc.)
+  val SERVER_ERROR: ErrorCodes = Value(-6, "internal server error")
 }
