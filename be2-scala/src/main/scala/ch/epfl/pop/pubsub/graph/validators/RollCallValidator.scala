@@ -6,8 +6,8 @@ import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, Cr
 import ch.epfl.pop.model.objects.Hash
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
-case object RollCallValidator extends ContentValidator {
-  sealed def validateCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
+case object RollCallValidator extends MessageDataContentValidator {
+  def validateCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CreateRollCall")
 
     rpcMessage.getParamsMessage match {
@@ -33,7 +33,7 @@ case object RollCallValidator extends ContentValidator {
   }
 
   // TODO check that this is correct (correct validations)
-  sealed def validateOpenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
+  def validateOpenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "OpenRollCall")
 
     rpcMessage.getParamsMessage match {
@@ -50,7 +50,7 @@ case object RollCallValidator extends ContentValidator {
   }
 
   // TODO check that this is correct (correct validations)
-  sealed def validateReopenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
+  def validateReopenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "ReopenRollCall")
 
     rpcMessage.getParamsMessage match {
@@ -67,7 +67,7 @@ case object RollCallValidator extends ContentValidator {
   }
 
   // TODO check that this is correct (correct validations)
-  sealed def validateCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
+  def validateCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CloseRollCall")
 
     rpcMessage.getParamsMessage match {
