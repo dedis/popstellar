@@ -161,21 +161,28 @@ describe('=== fromJsonData checks ===', () => {
     message_id: mockMessageId,
     signature: mockSecretKey.sign(mockMessageId),
   };
-  const electionId: Hash = Hash.fromStringArray('Election', mockLaoId.toString(), time.toString(), name.toString());
-  const mockQuestionId1 = Base64Data.encode('question_id_1');
-  const mockQuestionId2 = Base64Data.encode('question_id_2');
-  const mockQuestion = 'Mock Question';
+  const electionId: Hash = Hash.fromStringArray(
+    'Election', mockLaoId.toString(), time.toString(), name.toString(),
+  );
+  const mockQuestion1 = 'Mock Question 1';
+  const mockQuestion2 = 'Mock Question 2';
+  const mockQuestionId1 = Hash.fromStringArray(
+    STRINGS.election_question, mockLaoId.toString(), mockQuestion1,
+  );
+  const mockQuestionId2 = Hash.fromStringArray(
+    STRINGS.election_question, mockLaoId.toString(), mockQuestion2,
+  );
   const mockBallotOptions = ['Ballot Option 1', 'Ballot Option 2'];
   const mockQuestionObject1: Question = {
-    id: mockQuestionId1.toString(),
-    question: mockQuestion,
+    id: mockQuestionId1,
+    question: mockQuestion1,
     voting_method: STRINGS.election_method_Plurality,
     ballot_options: mockBallotOptions,
     write_in: false,
   };
   const mockQuestionObject2: Question = {
-    id: mockQuestionId2.toString(),
-    question: mockQuestion,
+    id: mockQuestionId2,
+    question: mockQuestion2,
     voting_method: STRINGS.election_method_Approval,
     ballot_options: mockBallotOptions,
     write_in: true,

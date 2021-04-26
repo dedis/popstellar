@@ -9,11 +9,14 @@ import STRINGS from 'res/strings';
 import DatePicker from 'components/DatePicker';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
-import { Base64Data, Timestamp } from 'model/objects';
+import {
+  Hash, Lao, Timestamp, Question,
+} from 'model/objects';
 import TextBlock from 'components/TextBlock';
 import DropdownSelector from 'components/DropdownSelector';
 import TextInputList from 'components/TextInputList';
 import { requestCreateElection } from 'network';
+import { OpenedLaoStore } from 'store';
 
 /**
  * UI to create an Election Event
@@ -38,6 +41,7 @@ const CreateElection = ({ route }: any) => {
   const votingMethods = [STRINGS.election_method_Plurality, STRINGS.election_method_Approval];
   const [votingMethod, setVotingMethod] = useState(votingMethods[0]);
   const minBallotOptions = 2;
+  const currentLao: Lao = OpenedLaoStore.get();
 
   const buildDatePickerWeb = () => {
     const startTime = new Date(0);
@@ -65,6 +69,14 @@ const CreateElection = ({ route }: any) => {
     );
   };
 
+  const QuestionObject: Question = {
+    id: Hash.fromStringArray(STRINGS.election_question, currentLao.id.toString(), electionQuestion),
+    question: electionQuestion,
+    voting_method: votingMethod,
+    ballot_options: electionBallots,
+    write_in: false,
+  };
+
   // Confirm button only clickable when the Name, Question and 2 Ballot options have values
   const buttonsVisibility: boolean = (electionQuestion !== '' && electionName !== ''
     && electionBallots.length >= minBallotOptions);
@@ -75,13 +87,7 @@ const CreateElection = ({ route }: any) => {
       STRINGS.election_version_identifier,
       startDate,
       endDate,
-      [{
-        id: Base64Data.encode('question_id').toString(), //Todo make hash
-        question: electionQuestion,
-        voting_method: votingMethod,
-        ballot_options: electionBallots,
-        write_in: false,
-      }],
+      [QuestionObject],
     )
       .then(() => {
         navigation.navigate(STRINGS.organizer_navigation_tab_home);
