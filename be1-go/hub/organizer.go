@@ -634,11 +634,11 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 					Description: "failed to cast data to CastVoteData",
 				}
 			}
-			if !ok{
-				return xerrors.Errorf("Couldn't cast to castVoteData")
-			}
 			if voteData.CreatedAt > c.end {
-				return xerrors.Errorf("Vote cast too late, vote casted at %v and election ended at %v", voteData.CreatedAt,c.end)
+				return &message.Error{
+					Code : -4,
+					Description:  fmt.Sprintf("Vote cast too late, vote casted at %v and election ended at %v", voteData.CreatedAt,c.end),
+				}
 			}
 			//This should update any previously set vote if the message ids are the same
 			messageID := base64.StdEncoding.EncodeToString(msg.MessageID)
@@ -656,7 +656,10 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 								q.VoteIndexes}
 					}
 				}else{
-					return xerrors.Errorf("No Question with this ID exists")
+					return &message.Error{
+						Code: -4,
+						Description: "No Question with this ID exists",
+					}
 				}
 			}
 		case message.ElectionEndAction:
