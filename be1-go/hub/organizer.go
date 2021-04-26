@@ -627,52 +627,62 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 		action := message.ElectionAction(data.GetAction())
 		switch action {
 		case message.CastVoteAction:
-			voteData, ok := msg.Data.(*message.CastVoteData)
-			if !ok {
-				return &message.Error{
-					Code:        -4,
-					Description: "failed to cast data to CastVoteData",
-				}
-			}
-			if voteData.CreatedAt > c.end {
-				return &message.Error{
-					Code : -4,
-					Description:  fmt.Sprintf("Vote cast too late, vote casted at %v and election ended at %v", voteData.CreatedAt,c.end),
-				}
-			}
-			//This should update any previously set vote if the message ids are the same
-			messageID := base64.StdEncoding.EncodeToString(msg.MessageID)
-			c.inbox[messageID] = *msg
-			for _,q := range voteData.Votes{
-				QuestionID :=  base64.StdEncoding.EncodeToString(q.QuestionID)
-				qs,ok := c.questions[QuestionID]
-				if ok{
-					earlierVote,ok := qs.validVotes[msg.Sender.String()]
-					// if the sender didn't previously cast a vote or if the vote is no longer valid update it
-					if !ok {
-						qs.validVotes[msg.Sender.String()] =
-							validVote{voteData.CreatedAt,
-								q.VoteIndexes}
-					}else{
-						if earlierVote.voteTime > voteData.CreatedAt{
-							qs.validVotes[msg.Sender.String()] =
-								validVote{voteData.CreatedAt,
-									q.VoteIndexes}
-						}
-					}
-				}else{
-					return &message.Error{
-						Code: -4,
-						Description: "No Question with this ID exists",
-					}
-				}
-			}
+			return castVoteHelper(publish,c)
 		case message.ElectionEndAction:
 		case message.ElectionResultAction:
 		}
 	}
 
 	return nil
+}
+
+func castVoteHelper(publish message.Publish,c *electionChannel) error{
+	msg := publish.Params.Message
+
+	voteData, ok := msg.Data.(*message.CastVoteData)
+	if !ok {
+		return &message.Error{
+			Code:        -4,
+			Description: "failed to cast data to CastVoteData",
+		}
+	}
+	if voteData.CreatedAt > c.end {
+		return &message.Error{
+			Code : -4,
+			Description:  fmt.Sprintf("Vote cast too late, vote casted at %v and election ended at %v", voteData.CreatedAt,c.end),
+		}
+	}
+	//This should update any previously set vote if the message ids are the same
+	messageID := base64.StdEncoding.EncodeToString(msg.MessageID)
+	c.inbox[messageID] = *msg
+	for _,q := range voteData.Votes{
+		QuestionID :=  base64.StdEncoding.EncodeToString(q.QuestionID)
+		qs,ok := c.questions[QuestionID]
+		if ok{
+			earlierVote,ok := qs.validVotes[msg.Sender.String()]
+			// if the sender didn't previously cast a vote or if the vote is no longer valid update it
+			if !ok {
+				qs.validVotes[msg.Sender.String()] =
+					validVote{voteData.CreatedAt,
+						q.VoteIndexes}
+			}else{
+				if earlierVote.voteTime > voteData.CreatedAt{
+					qs.validVotes[msg.Sender.String()] =
+						validVote{voteData.CreatedAt,
+							q.VoteIndexes}
+				}
+			}
+		}else{
+			return &message.Error{
+				Code: -4,
+				Description: "No Question with this ID exists",
+			}
+		}
+	}
+	return &message.Error{
+		Code: -4,
+		Description: "Error in CastVote helper function",
+	}
 }
 
 
