@@ -540,8 +540,6 @@ func (c *laoChannel) createElection(msg message.Message) error {
 	// Create the new election channel
 	electionCh := electionChannel{
 		createBaseChannel(o, "/root/"+encodedID),
-		//TODO : check if this is what was meant by method ot is it rather pluralityy and stuff??,
-		//Also can it happen that there is a valid setup without questions?
 		data.StartTime,
 		data.EndTime,
 		false,
