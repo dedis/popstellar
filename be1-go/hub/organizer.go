@@ -563,7 +563,7 @@ func getAllQuestionsForElectionChannel(questions []message.Question,data *messag
 			q.ID,
 			q.BallotOptions,
 			make(map[string]validVote),
-			data.Questions[0].VotingMethod,
+			q.VotingMethod,
 		}
 	}
 	return qs
