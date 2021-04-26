@@ -10,7 +10,7 @@ import DatePicker from 'components/DatePicker';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import {
-  Hash, Lao, Timestamp, Question,
+  Hash, Lao, Timestamp, Question, EventTags,
 } from 'model/objects';
 import TextBlock from 'components/TextBlock';
 import DropdownSelector from 'components/DropdownSelector';
@@ -70,7 +70,9 @@ const CreateElection = ({ route }: any) => {
   };
 
   const QuestionObject: Question = {
-    id: Hash.fromStringArray(STRINGS.election_question, currentLao.id.toString(), electionQuestion),
+    id: Hash.fromStringArray(
+      EventTags.QUESTION, currentLao.id.toString(), electionQuestion,
+    ).toString(),
     question: electionQuestion,
     voting_method: votingMethod,
     ballot_options: electionBallots,

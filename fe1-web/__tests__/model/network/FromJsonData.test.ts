@@ -167,21 +167,21 @@ describe('=== fromJsonData checks ===', () => {
   const mockQuestion1 = 'Mock Question 1';
   const mockQuestion2 = 'Mock Question 2';
   const mockQuestionId1 = Hash.fromStringArray(
-    STRINGS.election_question, mockLaoId.toString(), mockQuestion1,
+    EventTags.QUESTION, mockLaoId.toString(), mockQuestion1,
   );
   const mockQuestionId2 = Hash.fromStringArray(
-    STRINGS.election_question, mockLaoId.toString(), mockQuestion2,
+    EventTags.QUESTION, mockLaoId.toString(), mockQuestion2,
   );
   const mockBallotOptions = ['Ballot Option 1', 'Ballot Option 2'];
   const mockQuestionObject1: Question = {
-    id: mockQuestionId1,
+    id: mockQuestionId1.toString(),
     question: mockQuestion1,
     voting_method: STRINGS.election_method_Plurality,
     ballot_options: mockBallotOptions,
     write_in: false,
   };
   const mockQuestionObject2: Question = {
-    id: mockQuestionId2,
+    id: mockQuestionId2.toString(),
     question: mockQuestion2,
     voting_method: STRINGS.election_method_Approval,
     ballot_options: mockBallotOptions,

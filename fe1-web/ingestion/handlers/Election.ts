@@ -28,6 +28,7 @@ function handleElectionSetupMessage(msg: Message): boolean {
   const elecMsg = msg.messageData as SetupElection;
 
   const election = new Election({
+    lao: elecMsg.lao,
     id: elecMsg.id,
     name: elecMsg.name,
     version: elecMsg.version,
@@ -35,6 +36,7 @@ function handleElectionSetupMessage(msg: Message): boolean {
     start: elecMsg.start_time,
     end: elecMsg.end_time,
     questions: elecMsg.questions,
+
   });
 
   dispatch(addEvent(lao.id, election.toState()));
