@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
@@ -17,6 +18,7 @@ import com.github.dedis.student20_pop.home.fragments.ConnectingFragment;
 import com.github.dedis.student20_pop.home.fragments.HomeFragment;
 import com.github.dedis.student20_pop.home.fragments.LaunchFragment;
 import com.github.dedis.student20_pop.home.fragments.WalletFragment;
+import com.github.dedis.student20_pop.model.Wallet;
 import com.github.dedis.student20_pop.qrcode.CameraPermissionFragment;
 import com.github.dedis.student20_pop.qrcode.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.utility.ActivityUtils;
@@ -151,13 +153,26 @@ public class HomeActivity extends AppCompatActivity {
   public void setupConnectButton() {
     Button connectButton = (Button) findViewById(R.id.tab_connect);
 
-    connectButton.setOnClickListener(v -> mViewModel.openConnect());
+    connectButton.setOnClickListener(v -> {
+      if(Wallet.getInstance().isSetUp()){
+          mViewModel.openConnect();
+      } else {
+        Toast.makeText(getApplicationContext(), "Set up the wallet before do anything", Toast.LENGTH_LONG).show();
+        mViewModel.openWallet();
+
+    }});
   }
 
   public void setupLaunchButton() {
     Button launchButton = (Button) findViewById(R.id.tab_launch);
 
-    launchButton.setOnClickListener(v -> mViewModel.openLaunch());
+    launchButton.setOnClickListener(v ->{
+      if(Wallet.getInstance().isSetUp()){
+        mViewModel.openLaunch();
+      } else {
+        Toast.makeText(getApplicationContext(), "Set up the wallet before do anything", Toast.LENGTH_LONG).show();
+        mViewModel.openWallet();
+      }});
   }
 
     public void setupWalletButton() {

@@ -37,6 +37,8 @@ public class Wallet {
   private static final int ACCOUNT =  0;
   private byte[] SEED;
 
+  private boolean IS_SET_UP = false;
+
   private static final Wallet instance = new Wallet();
   public static Wallet getInstance() {
     return instance;
@@ -237,6 +239,7 @@ public class Wallet {
     SEED = new SeedCalculator().calculateSeed(joiner.toString(), "");
     Log.d(TAG, "ExportSeed: new seed initialized: " + Utils.bytesToHex(SEED));
 
+    IS_SET_UP = true;
     return words;
   }
 
@@ -273,12 +276,17 @@ public class Wallet {
           .validate(words);
       SEED = new SeedCalculator().calculateSeed(words, "");
       Log.d(TAG, "ImportSeed: new seed: " + Utils.bytesToHex(SEED));
+      IS_SET_UP = true;
+      return RecoverAllKeys(Utils.bytesToHex(SEED), knows_Laos_Roll_calls);
 
     } catch (Exception e) {
       Log.d(TAG,"Unable to import words:" + e.getMessage());
       return null;
     }
-    return RecoverAllKeys(Utils.bytesToHex(SEED), knows_Laos_Roll_calls);
+  }
+
+  public boolean isSetUp(){
+    return IS_SET_UP;
   }
 
 
