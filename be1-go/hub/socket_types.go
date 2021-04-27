@@ -15,12 +15,12 @@ const (
 )
 
 func newSocket(socketType SocketType, h Hub, conn *websocket.Conn) *baseSocket {
-	return &baseSocket {
+	return &baseSocket{
 		socketType: socketType,
-		hub:  h,
-		conn: conn,
-		send: make(chan []byte, 256),
-		Wait: sync.WaitGroup{},
+		hub:        h,
+		conn:       conn,
+		send:       make(chan []byte, 256),
+		Wait:       sync.WaitGroup{},
 	}
 }
 
@@ -29,7 +29,7 @@ type ClientSocket struct {
 }
 
 // NewClient returns an instance of a baseSocket.
-func NewClientSocket (h Hub, conn *websocket.Conn) *ClientSocket {
+func NewClientSocket(h Hub, conn *websocket.Conn) *ClientSocket {
 	return &ClientSocket{
 		newSocket(ClientSocketType, h, conn),
 	}
@@ -40,7 +40,7 @@ type OrganizerSocket struct {
 }
 
 func NewOrganizerSocket(h Hub, conn *websocket.Conn) *OrganizerSocket {
-	return &OrganizerSocket {
+	return &OrganizerSocket{
 		newSocket(OrganizerSocketType, h, conn),
 	}
 }
@@ -50,7 +50,7 @@ type WitnessSocket struct {
 }
 
 func NewWitnessSocket(h Hub, conn *websocket.Conn) *WitnessSocket {
-	return &WitnessSocket {
+	return &WitnessSocket{
 		newSocket(WitnessSocketType, h, conn),
 	}
 }

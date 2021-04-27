@@ -6,11 +6,12 @@ import (
 
 	"go.dedis.ch/kyber/v3"
 )
+
 type witnessHub struct {
 	messageChan chan IncomingMessage
 
 	sync.RWMutex
-	channelByID map[string] Channel
+	channelByID map[string]Channel
 
 	public kyber.Point
 }
@@ -19,7 +20,7 @@ type witnessHub struct {
 func NewWitnessHub(public kyber.Point) Hub {
 	return &witnessHub{
 		messageChan: make(chan IncomingMessage),
-		channelByID: make(map[string] Channel),
+		channelByID: make(map[string]Channel),
 		public:      public,
 	}
 }

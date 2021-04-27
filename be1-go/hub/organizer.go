@@ -178,7 +178,7 @@ func (o *organizerHub) handleMessageFromWitness(incomingMessage *IncomingMessage
 func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	log.Printf("organizerHub::handleMessageFromClient: %s", incomingMessage.Message)
 
-	switch (incomingMessage.Socket.socketType) {
+	switch incomingMessage.Socket.socketType {
 	case ClientSocketType:
 		o.handleMessageFromClient(incomingMessage)
 		return

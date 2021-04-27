@@ -84,7 +84,7 @@ func orgServeWs(socketType hub.SocketType, h hub.Hub, w http.ResponseWriter, r *
 		go func(c *hub.ClientSocket, h hub.Hub) {
 			c.Wait.Wait()
 			h.RemoveClientSocket(c)
-		} (client, h)
+		}(client, h)
 	case hub.WitnessSocketType:
 		witness := hub.NewWitnessSocket(h, conn)
 

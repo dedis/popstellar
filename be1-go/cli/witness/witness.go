@@ -24,7 +24,6 @@ func WitnessServe(context *cli.Context) error {
 	port := context.Int("port")
 	pk := context.String("public-key")
 
-
 	if pk == "" {
 		return xerrors.Errorf("witness' public key is required")
 	}
@@ -62,8 +61,8 @@ func WitnessServe(context *cli.Context) error {
 	return nil
 }
 
-func witConnectToOrganizer(orgIpAddr string, port int) (*websocket.Conn, error){
-	var addr = flag.String("addr",fmt.Sprintf("%s:%d", orgIpAddr, port), "http service address")
+func witConnectToOrganizer(orgIpAddr string, port int) (*websocket.Conn, error) {
+	var addr = flag.String("addr", fmt.Sprintf("%s:%d", orgIpAddr, port), "http service address")
 	u := url.URL{Scheme: "ws", Host: *addr, Path: "/org/witness/"}
 	ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {

@@ -66,10 +66,10 @@ func main() {
 							Usage: "start the organizer server",
 							Flags: []cli.Flag{
 								&cli.StringFlag{
-									Name: "org-address",
+									Name:    "org-address",
 									Aliases: []string{"org"},
-									Usage: "ip address of organizer",
-									Value: "localhost",
+									Usage:   "ip address of organizer",
+									Value:   "localhost",
 								},
 								&cli.IntFlag{
 									Name:    "port",
