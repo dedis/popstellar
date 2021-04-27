@@ -45,7 +45,7 @@ func NewOrganizerHub(public kyber.Point) (Hub, error) {
 
 	schemas := make(map[string]*gojsonschema.Schema)
 
-	// Impot the schema for generic messages
+	// Import the schema for generic messages
 	genericMsgLoader := gojsonschema.NewReferenceLoader(protocolPath + "/genericMessage.json")
 	genericMsgSchema, err := gojsonschema.NewSchema(genericMsgLoader)
 	if err != nil {
