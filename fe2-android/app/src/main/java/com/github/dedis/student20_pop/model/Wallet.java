@@ -32,7 +32,7 @@ import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 public class Wallet {
 
   private static final String TAG = Wallet.class.getSimpleName();
-  private static final String hmacSHA512algorithm = "HmacSHA512";
+  private static final String HMAC_SHA512 = "HmacSHA512";
   private static final int PURPOSE =  888;
   private static final int ACCOUNT =  0;
   private byte[] SEED;
@@ -299,10 +299,10 @@ public class Wallet {
       throws NoSuchAlgorithmException, ShortBufferException, InvalidKeyException {
 
     final byte[] I = new byte[64];
-    final Mac mac = Mac.getInstance(hmacSHA512algorithm);
+    final Mac mac = Mac.getInstance(HMAC_SHA512);
 
     // I = HMAC-SHA512(Key = bytes("ed25519 seed"), Data = seed)
-    mac.init(new SecretKeySpec("ed25519 seed".getBytes(Charset.forName("UTF-8")), hmacSHA512algorithm));
+    mac.init(new SecretKeySpec("ed25519 seed".getBytes(Charset.forName("UTF-8")), HMAC_SHA512));
     mac.update(seed);
     mac.doFinal(I, 0);
 
@@ -311,7 +311,7 @@ public class Wallet {
       // which is simply:
       // I = HMAC-SHA512(Key = Ir, Data = 0x00 || Il || ser32(i'))
       // Key = Ir
-      mac.init(new SecretKeySpec(I, 32, 32, hmacSHA512algorithm));
+      mac.init(new SecretKeySpec(I, 32, 32, HMAC_SHA512));
       // Data = 0x00
       mac.update((byte) 0x00);
       // Data += Il

@@ -82,19 +82,20 @@ public class WalletFragment extends Fragment {
       builder.setPositiveButton("Set up wallet", new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
+          String errorMessage = "Error import key, try again:  ";
           try {
             if(wallet.ImportSeed(input.getText().toString(), new HashMap<>()) == null){
-              Toast.makeText(getContext().getApplicationContext(), "Error import key, try again ", Toast.LENGTH_LONG).show();
+              Toast.makeText(getContext().getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
             } else {
               setupContentWalletFragment();
             }
 
           } catch (NoSuchAlgorithmException e) {
-            Toast.makeText(getContext().getApplicationContext(), "Error import key, try again:  " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext().getApplicationContext(), errorMessage + e.getMessage(), Toast.LENGTH_LONG).show();
           } catch (InvalidKeyException e) {
-            Toast.makeText(getContext().getApplicationContext(), "Error import key, try again:  " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext().getApplicationContext(), errorMessage + e.getMessage(), Toast.LENGTH_LONG).show();
           } catch (ShortBufferException e) {
-            Toast.makeText(getContext().getApplicationContext(), "Error import key, try again:  " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext().getApplicationContext(), errorMessage + e.getMessage(), Toast.LENGTH_LONG).show();
           }
         }
       });
