@@ -88,7 +88,7 @@ func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 	// Verify the data
 	err := c.hub.verifyJson(msg.RawData, DataSchema)
 	if err != nil {
-		return xerrors.Errorf("failed to validate the data: %v", err)
+		return message.Errorf("failed to validate the data: %v", err)
 	}
 
 	// Unmarshal the data

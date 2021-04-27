@@ -239,38 +239,15 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 	client.SendResult(id, result)
 }
 
-func (o *organizerHub) verifyJson(byteMessage []byte, schemaName string) error {
-	// Validate the Json "byteMessage" with a schema
-	messageLoader := gojsonschema.NewBytesLoader(byteMessage)
-	resultErrors, err := o.schemas[schemaName].Validate(messageLoader)
-	if err != nil {
-		return err
-	}
-	errorsList := resultErrors.Errors()
-	descriptionErrors := ""
-	// Concatenate all error descriptions
-	for index, e := range errorsList {
-		descriptionErrors += fmt.Sprintf(" (%d) %s", index+1, e.Description())
-	}
-
-	if len(errorsList) > 0 {
-		return &message.Error{
-			Code:        -1,
-			Description: descriptionErrors,
-		}
-	}
-
-	return nil
-
-	func (o *organizerHub) handleMessageFromWitness(incomingMessage *IncomingMessage) {
+func (o *organizerHub) handleMessageFromWitness(incomingMessage *IncomingMessage) {
 	//TODO
-	}
+
 }
 
 func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	log.Printf("organizerHub::handleMessageFromClient: %s", incomingMessage.Message)
 
-	switch (incomingMessage.Socket.socketType) {
+	switch incomingMessage.Socket.socketType {
 	case clientSocket:
 		o.handleMessageFromClient(incomingMessage)
 		return
@@ -295,6 +272,33 @@ func (o *organizerHub) Start(done chan struct{}) {
 			return
 		}
 	}
+}
+
+func (o *organizerHub) verifyJson(byteMessage []byte, schemaName string) error {
+	// Validate the Json "byteMessage" with a schema
+	messageLoader := gojsonschema.NewBytesLoader(byteMessage)
+	resultErrors, err := o.schemas[schemaName].Validate(messageLoader)
+	if err != nil {
+		return &message.Error{
+			Code:        -1,
+			Description: err.Error(),
+		}
+	}
+	errorsList := resultErrors.Errors()
+	descriptionErrors := ""
+	// Concatenate all error descriptions
+	for index, e := range errorsList {
+		descriptionErrors += fmt.Sprintf(" (%d) %s", index+1, e.Description())
+	}
+
+	if len(errorsList) > 0 {
+		return &message.Error{
+			Code:        -1,
+			Description: descriptionErrors,
+		}
+	}
+
+	return nil
 }
 
 func (o *organizerHub) createLao(publish message.Publish) error {
@@ -337,7 +341,7 @@ type laoChannel struct {
 func (c *laoChannel) Publish(publish message.Publish) error {
 	err := c.baseChannel.VerifyPublishMessage(publish)
 	if err != nil {
-		return xerrors.Errorf("failed to verify Publish message on a lao channel: %v", err)
+		return message.Errorf("failed to verify Publish message on a lao channel: %v", err)
 	}
 
 	msg := publish.Params.Message

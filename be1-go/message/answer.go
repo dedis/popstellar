@@ -3,6 +3,7 @@ package message
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 
 	"golang.org/x/xerrors"
 )
@@ -84,6 +85,17 @@ func (r *Result) UnmarshalJSON(data []byte) error {
 // Error returns the string representation of an Error message.
 func (e *Error) Error() string {
 	return e.Description
+}
+
+// Errorf returns an error with the new formatting
+func Errorf(format string, err error) error {
+	msgError := &Error{}
+
+	if xerrors.As(err, &msgError) {
+		msgError.Description = fmt.Sprintf(format, msgError.Description)
+		return msgError
+	}
+	return xerrors.Errorf(format, err)
 }
 
 // MarshalJSON marshals an Answer message
