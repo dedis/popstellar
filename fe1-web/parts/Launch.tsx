@@ -2,18 +2,23 @@ import React, { useState } from 'react';
 import {
   StyleSheet, View, TextInput, TextStyle, ViewStyle,
 } from 'react-native';
-import { Spacing, Typography } from 'styles';
+import PropTypes from 'prop-types';
 
-import STRINGS from 'res/strings';
-import PROPS_TYPE from 'res/Props';
-import { requestCreateLao } from 'network/MessageApi';
 import { dispatch, KeyPairStore, OpenedLaoStore } from 'store';
-import { getNetworkManager } from 'network';
+import { getNetworkManager, requestCreateLao } from 'network';
+
+import {
+  Hash, Lao, Timestamp, Channel,
+} from 'model/objects';
+
 import WideButtonView from 'components/WideButtonView';
 import TextBlock from 'components/TextBlock';
-import PropTypes from 'prop-types';
+
+import { Spacing, Typography } from 'styles';
+import STRINGS from 'res/strings';
+import PROPS_TYPE from 'res/Props';
 import styleContainer from 'styles/stylesheets/container';
-import { Hash, Lao, Timestamp } from 'model/objects';
+import { establishLaoConnection } from 'network/CommunicationApi';
 
 /**
  * Manage the Launch screen: a description string, a LAO name text input, a launch LAO button,
@@ -23,7 +28,7 @@ import { Hash, Lao, Timestamp } from 'model/objects';
  * The cancel button clear the LAO name field and redirect to the Home screen
  *
  * TODO implement the launch button action
-*/
+ */
 const styles = StyleSheet.create({
   textInput: {
     ...Typography.base,
@@ -43,23 +48,26 @@ const Launch = ({ navigation }: IPropTypes) => {
   const [inputLaoName, setInputLaoName] = useState('');
 
   const onButtonLaunchPress = (laoName: string) => {
-    if (laoName) {
-      requestCreateLao(laoName)
-        .then(() => {
-          console.info('LAO created successfully');
-        })
-        .catch((err) => {
-          console.error('Could not create LAO', err);
-        });
-    } else {
-      console.error('Could not create LAO without a name');
+    if (!laoName) {
+      return;
     }
+
+    getNetworkManager().connect('127.0.0.1');
+    requestCreateLao(laoName)
+      .then((channel: Channel) => establishLaoConnection(channel)
+        .then(() => {
+          // navigate to the newly created LAO
+          navigation.navigate(STRINGS.app_navigation_tab_organizer, {});
+        }))
+      .catch(
+        ((reason) => console.debug(`Failed to establish lao connection: ${reason}`)),
+      );
   };
 
   const onTestOpenConnection = () => {
     const nc = getNetworkManager().connect('127.0.0.1');
     nc.setRpcHandler(() => {
-      console.info('Using custom test rpc handler : does nothing');
+      console.info('Using custom test rpc handler: does nothing');
     });
 
     const org = KeyPairStore.getPublicKey();
@@ -77,9 +85,7 @@ const Launch = ({ navigation }: IPropTypes) => {
     console.info('Stored test lao in storage : ', sampleLao);
   };
 
-  const onTestClearStorage = () => {
-    dispatch({ type: 'CLEAR_STORAGE', value: {} });
-  };
+  const onTestClearStorage = () => dispatch({ type: 'CLEAR_STORAGE', value: {} });
 
   const cancelAction = () => {
     setInputLaoName('');
@@ -99,7 +105,7 @@ const Launch = ({ navigation }: IPropTypes) => {
       </View>
       <View style={styles.viewBottom}>
         <WideButtonView
-          title={STRINGS.launch_button_launch}
+          title={`${STRINGS.launch_button_launch} -- Connect to port 8080, Create LAO & Open UI`}
           onPress={() => onButtonLaunchPress(inputLaoName)}
         />
         <WideButtonView
@@ -107,7 +113,7 @@ const Launch = ({ navigation }: IPropTypes) => {
           onPress={onTestOpenConnection}
         />
         <WideButtonView
-          title="[TEST] Clear (persistent ) storage"
+          title="[TEST] Clear (persistent) storage"
           onPress={onTestClearStorage}
         />
         <WideButtonView

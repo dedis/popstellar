@@ -5,14 +5,15 @@ import {
 import { useSelector } from 'react-redux';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
-import STRINGS from 'res/strings';
-import { makeCurrentLao } from 'store/reducers';
+import { getStore, getKeyPairState, makeCurrentLao } from 'store';
+import { PublicKey } from 'model/objects';
 
-import Attendee from 'parts/lao/attendee/Attendee';
-import Identity from 'parts/lao/Identity';
+import STRINGS from 'res/strings';
 import Home from 'parts/Home';
-import OrganizerNavigation from 'navigation/bars/organizer/OrganizerNavigation';
-import WitnessNavigation from 'navigation/bars/witness/WitnessNavigation';
+import Identity from 'parts/lao/Identity';
+import Attendee from 'parts/lao/attendee/Attendee';
+import OrganizerNavigation from './organizer/OrganizerNavigation';
+import WitnessNavigation from './witness/WitnessNavigation';
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
 
@@ -76,8 +77,11 @@ function LaoNavigation() {
   const laoSelect = makeCurrentLao();
   const lao = useSelector(laoSelect);
 
-  const isOrganizer: boolean = true; // TODO get isOrganizer directly
-  const isWitness: boolean = false; // TODO get isWitness directly
+  const publicKeyRaw = getKeyPairState(getStore().getState()).keyPair?.publicKey;
+  const publicKey = publicKeyRaw ? new PublicKey(publicKeyRaw) : undefined;
+
+  const isOrganizer = !!(lao && publicKey && (publicKey.equals(lao.organizer)));
+  const isWitness = !!(lao && publicKey && lao.witnesses.some((w) => publicKey.equals(w)));
 
   const tabName: string = getLaoTabName(isOrganizer, isWitness);
   const laoName: string = (lao) ? lao.name : STRINGS.unused;

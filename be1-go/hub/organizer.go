@@ -71,7 +71,7 @@ func NewOrganizerHub(public kyber.Point) (Hub, error) {
 }
 
 // RemoveClient removes the client from this hub.
-func (o *organizerHub) RemoveClient(client *Client) {
+func (o *organizerHub) RemoveClientSocket(client *ClientSocket) {
 	o.RLock()
 	defer o.RUnlock()
 
@@ -86,10 +86,10 @@ func (o *organizerHub) Recv(msg IncomingMessage) {
 	o.messageChan <- msg
 }
 
-func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
-	log.Printf("organizerHub::handleIncomingMessage: %s", incomingMessage.Message)
-
-	client := incomingMessage.Client
+func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
+	client := ClientSocket{
+		incomingMessage.Socket,
+	}
 	byteMessage := incomingMessage.Message
 
 	// Check if the GenericMessage has a field "id"
@@ -209,9 +209,9 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	// TODO: use constants
 	switch method {
 	case "subscribe":
-		err = channel.Subscribe(client, *query.Subscribe)
+		err = channel.Subscribe(&client, *query.Subscribe)
 	case "unsubscribe":
-		err = channel.Unsubscribe(client, *query.Unsubscribe)
+		err = channel.Unsubscribe(&client, *query.Unsubscribe)
 	case "publish":
 		err = channel.Publish(*query.Publish)
 	case "message":
@@ -261,6 +261,27 @@ func (o *organizerHub) verifyJson(byteMessage []byte, schemaName string) error {
 	}
 
 	return nil
+
+	func (o *organizerHub) handleMessageFromWitness(incomingMessage *IncomingMessage) {
+	//TODO
+	}
+}
+
+func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
+	log.Printf("organizerHub::handleMessageFromClient: %s", incomingMessage.Message)
+
+	switch (incomingMessage.Socket.socketType) {
+	case clientSocket:
+		o.handleMessageFromClient(incomingMessage)
+		return
+	case witnessSocket:
+		o.handleMessageFromWitness(incomingMessage)
+		return
+	default:
+		log.Printf("error: invalid socket type")
+		return
+	}
+
 }
 
 func (o *organizerHub) Start(done chan struct{}) {
