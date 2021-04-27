@@ -99,7 +99,7 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 		log.Printf("The message does not have a valid `id` field")
 		client.SendError(nil, &message.Error{
 			Code:        -1,
-			Description: "The message do not have a valid \"id\" field",
+			Description: "The message does not have a valid `id` field",
 		})
 		return
 	}
