@@ -250,7 +250,7 @@ func (o *organizerHub) verifyJson(byteMessage []byte, schemaName string) error {
 	descriptionErrors := ""
 	// Concatenate all error descriptions
 	for index, e := range errorsList {
-		descriptionErrors += " (" + fmt.Sprintf("%d", index+1) + ") " + e.Description()
+		descriptionErrors += fmt.Sprintf(" (%d) %s", index+1, e.Description())
 	}
 
 	if len(errorsList) > 0 {
