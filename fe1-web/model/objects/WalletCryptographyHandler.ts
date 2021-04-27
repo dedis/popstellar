@@ -9,9 +9,8 @@ export interface WalletCryptoKey {
 
 /**
  * This class has the job of handling the cryptography functions of the wallet.
- * It interacts with the IndexedDB database in order to store and retrieve the
- * secret key. It also encrypts and decrypts the wallet seed (used to create the
- * tokens) with the retrieved key.
+ * It interacts with the IndexedDB database in order to store and retrieve the secret key.
+ * It also encrypts and decrypts the wallet seed (used to create the tokens) with the retrieved key.
  * More info on this approach at https://blog.engelke.com/2014/09/19/saving-cryptographic-keys-in-the-browser/
  */
 export class WalletCryptographyHandler {
@@ -33,11 +32,19 @@ export class WalletCryptographyHandler {
   /* usages for the RSA key */
   private readonly keyUsages: KeyUsage[] = ['encrypt', 'decrypt'];
 
-  /* the crypto library is passed to constructor, this is necessary in order to test the
-     cryptography handler without the crypto.subtle library provided by the window object.
-     In jest context provide a MOCK crypto.subtle library, otherwise provide window.crypto */
-  constructor(cryptography: Crypto) {
-    this.cryptography = cryptography;
+  /**
+   * the crypto library is passed to constructor, this is necessary in order to test the
+   * cryptography handler without the crypto.subtle library provided by the window object.
+   * In jest context provide a MOCK crypto.subtle library, otherwise window.crypto is
+   * selected by default.
+   * @param cryptography MOCK crypto.subtle library or nothing (window.crypto default)
+   */
+  constructor(cryptography?: Crypto) {
+    if (!cryptography) {
+      this.cryptography = window.crypto;
+    } else {
+      this.cryptography = cryptography;
+    }
   }
 
   /**

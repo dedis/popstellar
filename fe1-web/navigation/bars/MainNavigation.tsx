@@ -7,6 +7,7 @@ import STRINGS from 'res/strings';
 import Home from 'parts/Home';
 import Launch from 'parts/Launch';
 import ConnectNavigation from 'navigation/bars/ConnectNavigation';
+import Wallet from 'parts/Wallet';
 
 /**
  * The main tab navigation component
@@ -38,6 +39,10 @@ export default function MainNavigation() {
         component={ConnectNavigation}
       />
       <HomeTopTabNavigator.Screen name={STRINGS.navigation_tab_launch} component={Launch} />
+      <HomeTopTabNavigator.Screen
+        name={STRINGS.navigation_tab_wallet}
+        component={Wallet}
+      />
     </HomeTopTabNavigator.Navigator>
   );
 }
