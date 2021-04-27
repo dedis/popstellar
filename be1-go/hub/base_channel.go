@@ -86,7 +86,7 @@ func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 	msg := publish.Params.Message
 	err := msg.VerifyAndUnmarshalData()
 	if err != nil {
-		return xerrors.Errorf("failed to verify and unmarshal data: %v", err)
+		return xerrors.Errorf("failed to verify and unmarshal data: %w", err)
 	}
 
 	msgIDEncoded := base64.StdEncoding.EncodeToString(msg.MessageID)

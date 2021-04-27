@@ -178,7 +178,7 @@ func (o *organizerHub) handleMessageFromWitness(incomingMessage *IncomingMessage
 func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	log.Printf("organizerHub::handleMessageFromClient: %s", incomingMessage.Message)
 
-	switch (incomingMessage.Socket.socketType) {
+	switch incomingMessage.Socket.socketType {
 	case clientSocket:
 		o.handleMessageFromClient(incomingMessage)
 		return
@@ -245,7 +245,7 @@ type laoChannel struct {
 func (c *laoChannel) Publish(publish message.Publish) error {
 	err := c.baseChannel.VerifyPublishMessage(publish)
 	if err != nil {
-		return xerrors.Errorf("failed to verify Publish message on a lao channel: %v", err)
+		return xerrors.Errorf("failed to verify Publish message on a lao channel: %w", err)
 	}
 
 	msg := publish.Params.Message
@@ -267,7 +267,7 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 
 	if err != nil {
 		log.Printf("failed to process %s object: %v", object, err)
-		return xerrors.Errorf("failed to process %s object: %v", object, err)
+		return xerrors.Errorf("failed to process %s object: %w", object, err)
 	}
 
 	c.broadcastToAllClients(*msg)
@@ -287,7 +287,7 @@ func (c *laoChannel) processLaoObject(msg message.Message) error {
 		err := c.processLaoState(msg.Data.(*message.StateLAOData))
 		if err != nil {
 			log.Printf("failed to process lao/state: %v", err)
-			return xerrors.Errorf("failed to process lao/state: %v", err)
+			return xerrors.Errorf("failed to process lao/state: %w", err)
 		}
 	default:
 		return &message.Error{
@@ -362,7 +362,7 @@ func (c *laoChannel) processLaoState(data *message.StateLAOData) error {
 
 	err := compareLaoUpdateAndState(updateMsgData, data)
 	if err != nil {
-		return xerrors.Errorf("failure while comparing lao/update and lao/state")
+		return xerrors.Errorf("failure while comparing lao/update and lao/state: %w", err)
 	}
 
 	return nil
