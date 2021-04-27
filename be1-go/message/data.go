@@ -273,6 +273,7 @@ type WitnessMessageData struct {
 	MessageID []byte    `json:"message_id"`
 	Signature Signature `json:"signature"`
 }
+
 // ElectionAction represents the action associated with an "election" data message.
 type ElectionAction DataAction
 
@@ -367,7 +368,6 @@ type ElectionResultData struct {
 	Questions         []QuestionResult         `json:"questions"`
 	WitnessSignatures []PublicKeySignaturePair `json:"witness_signatures"`
 }
-
 
 // NewCreateLAOData returns an instance of `CreateLAOData`.
 func NewCreateLAOData(name string, creation Timestamp, organizer PublicKey, witnesses []PublicKey) (*CreateLAOData, error) {

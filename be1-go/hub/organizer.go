@@ -198,7 +198,6 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 
 	encodedID := base64.StdEncoding.EncodeToString(data.ID)
 
-
 	if _, ok := o.channelByID[encodedID]; ok {
 		return &message.Error{
 			Code:        -3,
@@ -221,7 +220,6 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 type laoChannel struct {
 	*baseChannel
 }
-
 
 func (c *laoChannel) Publish(publish message.Publish) error {
 	err := c.baseChannel.VerifyPublishMessage(publish)
@@ -256,7 +254,6 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 	c.broadcastToAllClients(*msg)
 	return nil
 }
-
 
 func (c *laoChannel) processLaoObject(msg message.Message) error {
 	action := message.LaoDataAction(msg.Data.GetAction())
@@ -541,7 +538,7 @@ func (c *laoChannel) createElection(msg message.Message) error {
 		data.StartTime,
 		data.EndTime,
 		false,
-		getAllQuestionsForElectionChannel(data.Questions,data),
+		getAllQuestionsForElectionChannel(data.Questions, data),
 	}
 
 	// Add the SetupElection message to the new election channel
@@ -554,10 +551,10 @@ func (c *laoChannel) createElection(msg message.Message) error {
 	return nil
 }
 
-func getAllQuestionsForElectionChannel(questions []message.Question,data *message.ElectionSetupData)map[string]question{
+func getAllQuestionsForElectionChannel(questions []message.Question, data *message.ElectionSetupData) map[string]question {
 	qs := make(map[string]question)
-	for _,q := range questions{
-		qs[ base64.StdEncoding.EncodeToString(q.ID)] = question{
+	for _, q := range questions {
+		qs[base64.StdEncoding.EncodeToString(q.ID)] = question{
 			q.ID,
 			q.BallotOptions,
 			sync.RWMutex{},
@@ -570,7 +567,6 @@ func getAllQuestionsForElectionChannel(questions []message.Question,data *messag
 
 type electionChannel struct {
 	*baseChannel
-
 
 	// Starting time of the election
 	start message.Timestamp
@@ -609,7 +605,6 @@ type validVote struct {
 
 	// indexes of the ballot options
 	indexes []int
-
 }
 
 func (c *electionChannel) Publish(publish message.Publish) error {
@@ -629,7 +624,7 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 		action := message.ElectionAction(data.GetAction())
 		switch action {
 		case message.CastVoteAction:
-			return castVoteHelper(publish,c)
+			return castVoteHelper(publish, c)
 		case message.ElectionEndAction:
 		case message.ElectionResultAction:
 		}
@@ -638,9 +633,8 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 	return nil
 }
 
-func castVoteHelper(publish message.Publish,c *electionChannel) error{
+func castVoteHelper(publish message.Publish, c *electionChannel) error {
 	msg := publish.Params.Message
-
 
 	voteData, ok := msg.Data.(*message.CastVoteData)
 	if !ok {
@@ -651,28 +645,28 @@ func castVoteHelper(publish message.Publish,c *electionChannel) error{
 	}
 	if voteData.CreatedAt > c.end {
 		return &message.Error{
-			Code : -4,
-			Description:  fmt.Sprintf("Vote cast too late, vote casted at %v and election ended at %v", voteData.CreatedAt,c.end),
+			Code:        -4,
+			Description: fmt.Sprintf("Vote cast too late, vote casted at %v and election ended at %v", voteData.CreatedAt, c.end),
 		}
 	}
 	//This should update any previously set vote if the message ids are the same
 	messageID := base64.StdEncoding.EncodeToString(msg.MessageID)
 	c.inbox[messageID] = *msg
-	for _,q := range voteData.Votes{
+	for _, q := range voteData.Votes {
 
-		QuestionID :=  base64.StdEncoding.EncodeToString(q.QuestionID)
-		qs,ok := c.questions[QuestionID]
-		if ok{
+		QuestionID := base64.StdEncoding.EncodeToString(q.QuestionID)
+		qs, ok := c.questions[QuestionID]
+		if ok {
 			//this is to handle the case when the organizer must handle multiple votes being cast at the same time
 			qs.validVotesMu.RLock()
-			earlierVote,ok := qs.validVotes[msg.Sender.String()]
+			earlierVote, ok := qs.validVotes[msg.Sender.String()]
 			// if the sender didn't previously cast a vote or if the vote is no longer valid update it
 			if !ok {
 				qs.validVotes[msg.Sender.String()] =
 					validVote{voteData.CreatedAt,
 						q.VoteIndexes}
-			}else{
-				if earlierVote.voteTime > voteData.CreatedAt{
+			} else {
+				if earlierVote.voteTime > voteData.CreatedAt {
 					qs.validVotes[msg.Sender.String()] =
 						validVote{voteData.CreatedAt,
 							q.VoteIndexes}
@@ -680,21 +674,15 @@ func castVoteHelper(publish message.Publish,c *electionChannel) error{
 			}
 			//other votes can now change the list of valid votes
 			qs.validVotesMu.RUnlock()
-		}else{
+		} else {
 			return &message.Error{
-				Code: -4,
+				Code:        -4,
 				Description: "No Question with this ID exists",
 			}
 		}
 	}
 	return &message.Error{
-		Code: -4,
+		Code:        -4,
 		Description: "Error in CastVote helper function",
 	}
 }
-
-
-
-
-
-

@@ -296,7 +296,7 @@ func (m *Message) parseElectionData(action ElectionAction, data []byte) error {
 		err := json.Unmarshal(data, result)
 
 		if err != nil {
-			return xerrors.Errorf("failed to parse result of election data: %v",err)
+			return xerrors.Errorf("failed to parse result of election data: %v", err)
 		}
 		m.Data = result
 		return nil
