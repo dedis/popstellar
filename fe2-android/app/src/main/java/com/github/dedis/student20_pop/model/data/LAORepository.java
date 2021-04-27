@@ -17,6 +17,7 @@ import com.github.dedis.student20_pop.model.network.method.Catchup;
 import com.github.dedis.student20_pop.model.network.method.Publish;
 import com.github.dedis.student20_pop.model.network.method.Subscribe;
 import com.github.dedis.student20_pop.model.network.method.Unsubscribe;
+import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
@@ -318,18 +319,25 @@ public class  LAORepository {
     Lao lao = laoById.get(channel).getLao();
     Log.d(TAG, "handleElectionSetup: " + channel + " name " + electionSetup.getName());
 
+    //In the case (that shouldn't happen) where there is no question, we add a "default" question to prevent a crash
+    if (electionSetup.getQuestions().isEmpty()) {
+      Log.d(TAG, "election should have at least one question");
+      electionSetup.getQuestions().add(new ElectionQuestion("default question", "Plurality", false, new ArrayList<>(), electionSetup.getId()));
+    }
+    ElectionQuestion electionQuestion = electionSetup.getQuestions().get(0);
+
     Election election = new Election();
     election.setId(electionSetup.getId());
     election.setName(electionSetup.getName());
     election.setCreation(electionSetup.getCreation());
     election.setStart(electionSetup.getStartTime());
-    election.setQuestion(electionSetup.getQuestions().get(0).getQuestion());
+    election.setQuestion(electionQuestion.getQuestion());
     election.setStart(electionSetup.getStartTime());
     election.setEnd(electionSetup.getEndTime());
-    election.setWriteIn(electionSetup.getQuestions().get(0).getWriteIn());
-    election.setBallotOptions(electionSetup.getQuestions().get(0).getBallotOptions());
+    election.setWriteIn(electionQuestion.getWriteIn());
+    election.setBallotOptions(electionQuestion.getBallotOptions());
 
-    lao.updateElections(election.getId(), election);
+    lao.updateElection(election.getId(), election);
     return false;
 
   }
