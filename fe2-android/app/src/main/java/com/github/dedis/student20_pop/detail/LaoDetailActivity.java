@@ -92,7 +92,7 @@ public class LaoDetailActivity extends AppCompatActivity {
               }
             });
 
-//    // Subscribe to "open Cast Votes event" event
+   // Subscribe to "open cast votes event" event
     mViewModel
             .getOpenCastVotes()
             .observe(
@@ -104,7 +104,7 @@ public class LaoDetailActivity extends AppCompatActivity {
                       }
                     });
 
-    // Subscribe to "Election Display event" event
+      //Subscribe to "open election display" event
     mViewModel
             .getOpenElectionResultsEvent()
             .observe(
@@ -116,7 +116,7 @@ public class LaoDetailActivity extends AppCompatActivity {
                       }
                     });
 
-    // Subscribe to " Manage Election event" event
+      //Subscribe to "open manage election" event
     mViewModel
             .getOpenManageElectionEvent()
             .observe(

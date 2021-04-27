@@ -52,8 +52,8 @@ public class LaoDetailViewModel extends AndroidViewModel {
   private final MutableLiveData<Event<Boolean>> mOpenNewRollCallEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenElectionResultsEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenManageElectionEvent = new MutableLiveData<>();
-  private final MutableLiveData<Event<Boolean>> mElectionCreated = new MutableLiveData<>();
-  private final MutableLiveData<Event<Boolean>> mOpenCastVotes = new MutableLiveData<>();
+  private final MutableLiveData<Event<Boolean>> mElectionCreatedEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<Boolean>> mOpenCastVotesEvent = new MutableLiveData<>();
 
   /*
    * LiveData objects that represent the state in a fragment
@@ -169,7 +169,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
     }
     return createRollCall.getId();
   }
-  public void createNewElection(String name, long start, long end, String voting_method, boolean write_in, List<String> ballot_options, String question) {
+  public void createNewElection(String name, long start, long end, String votingMethod, boolean writeIn, List<String> ballotOptions, String question) {
     Log.d(TAG,"creating a new election with name " + name);
 
     Lao lao = getCurrentLao();
@@ -182,7 +182,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
     ElectionSetup electionSetup;
     String laoId = channel.substring(6);
 
-    electionSetup = new ElectionSetup(name, start, end, voting_method, write_in, ballot_options, question, laoId);
+    electionSetup = new ElectionSetup(name, start, end, votingMethod, writeIn, ballotOptions, question, laoId);
 
     try {
       // Retrieve identity of who is creating the election
@@ -204,7 +204,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
                               answer -> {
                                 if (answer instanceof Result) {
                                   Log.d(TAG, "setup an election");
-                                  mElectionCreated.postValue(new Event<>(true));
+                                  mElectionCreatedEvent.postValue(new Event<>(true));
                                   mCurrentLao.postValue(lao);
                                 }
                                 else {
@@ -258,11 +258,11 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
   public LiveData<Event<Boolean>> getOpenElectionResultsEvent() { return mOpenElectionResultsEvent; }
 
-  public LiveData<Event<Boolean>> getElectionCreated() {return mElectionCreated;}
+  public LiveData<Event<Boolean>> getElectionCreated() {return mElectionCreatedEvent;}
 
   public LiveData<Event<Boolean>> getOpenManageElectionEvent() { return mOpenManageElectionEvent;}
 
-  public LiveData<Event<Boolean>> getOpenCastVotes() {return mOpenCastVotes;}
+  public LiveData<Event<Boolean>> getOpenCastVotes() {return mOpenCastVotesEvent;}
 
   public LiveData<List<com.github.dedis.student20_pop.model.event.Event>> getLaoEvents() { return mLaoEvents; }
 
@@ -327,7 +327,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
     mOpenLaoDetailEvent.postValue(new Event<>(true));
   }
   public void openCastVotes() {
-    mOpenCastVotes.postValue(new Event<>(true));
+    mOpenCastVotesEvent.postValue(new Event<>(true));
   }
 
   public void openIdentity() {
