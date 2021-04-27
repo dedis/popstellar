@@ -20,7 +20,7 @@ var upgrader = websocket.Upgrader{
 }
 
 func WitnessServe(context *cli.Context) error {
-	orgIpAddr := context.String("ip-address")
+	orgAddr := context.String("org-address")
 	port := context.Int("port")
 	pk := context.String("public-key")
 
@@ -42,7 +42,7 @@ func WitnessServe(context *cli.Context) error {
 
 	h := hub.NewWitnessHub(point)
 
-	ws, err := witConnectToOrganizer(orgIpAddr, port)
+	ws, err := witConnectToOrganizer(orgAddr, port)
 	if err != nil {
 		return xerrors.Errorf("failed to connect to organizer: %v", err)
 	}

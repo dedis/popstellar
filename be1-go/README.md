@@ -12,13 +12,15 @@ NAME:
 
 USAGE:
    pop organizer command [command options] [arguments...]
+   pop witness command [command options] [arguments...]
 
 COMMANDS:
-   serve    start the organizer server
+   serve    start the organizer or witness server
    help, h  Shows a list of commands or help for one command
 
 OPTIONS:
    --public-key value, --pk value  base64 encoded organizer's public key
+   --org-address, --org            organizer's IP address for witness to connect to organizer
    --help, -h                      show help (default: false)
 
 ```

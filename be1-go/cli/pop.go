@@ -66,8 +66,8 @@ func main() {
 							Usage: "start the organizer server",
 							Flags: []cli.Flag{
 								&cli.StringFlag{
-									Name: "ip-address",
-									Aliases: []string{"ip"},
+									Name: "org-address",
+									Aliases: []string{"org"},
 									Usage: "ip address of organizer",
 									Value: "localhost",
 								},
