@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-const wallet: HDWallet = new HDWallet();
+const wallet: HDWallet = new HDWallet(undefined);
 
 const Wallet = () => {
   /* this is the UI state of the wallet, starts null (namely homepage)
@@ -34,15 +34,6 @@ const Wallet = () => {
   const [seed, setSeed] = useState('');
   /* boolean set to true if the token recover process is finished */
   const [tokensRecovered, setTokensRecovered] = useState(false);
-
-  /* all the below are temporarily used for demonstration purposes (showing seed in UI) */
-  const [showHideSeedTitle, setShowHideSeedTitle] = useState(STRINGS.show_seed_title);
-  const [visibleSeed, setVisibleSeed] = useState(false);
-  const [recoveredSeed, setRecoveredSeed] = useState('');
-  // eslint-disable-next-line max-len
-  const [showHideEncryptedSeedTitle, setShowHideEncryptedSeedTitle] = useState(STRINGS.show_encrypted_seed_title);
-  const [visibleEncryptedSeed, setVisibleEncryptedSeed] = useState(false);
-  const [recoveredEncryptedSeed, setRecoveredEncryptedSeed] = useState('');
 
   function getStartWalletDisplay() {
     return (
@@ -114,30 +105,10 @@ const Wallet = () => {
     );
   }
 
-  function showHideSeed() {
+  function showTokens() {
     return (
       <View>
-        <TextBlock visibility={visibleSeed} text={recoveredSeed} />
-        <TextBlock text={' '} />
-        <WideButtonView
-          title={showHideSeedTitle}
-          onPress={() => {
-            setShowHideSeedTitle(visibleSeed ? STRINGS.show_seed_title : STRINGS.hide_seed_title);
-            setVisibleSeed(!visibleSeed);
-          }}
-        />
-        <TextBlock text={' '} />
-        <TextBlock visibility={visibleEncryptedSeed} text={recoveredEncryptedSeed} />
-        <TextBlock text={' '} />
-        <WideButtonView
-          title={showHideEncryptedSeedTitle}
-          onPress={() => {
-            setShowHideEncryptedSeedTitle(visibleEncryptedSeed
-              ? STRINGS.show_encrypted_seed_title
-              : STRINGS.hide_encrypted_seed_title);
-            setVisibleEncryptedSeed(!visibleEncryptedSeed);
-          }}
-        />
+        <TextBlock bold text="TOKENS" />
       </View>
     );
   }
@@ -145,12 +116,12 @@ const Wallet = () => {
   function recoverTokens() {
     return (
       <View>
+        <TextBlock bold text={STRINGS.wallet_synced_info} />
+        <TextBlock text={' '} />
         <WideButtonView
           title={STRINGS.test_recover_seed_from_state}
           onPress={() => {
-            setRecoveredEncryptedSeed(wallet.getEncryptedSeedToUint8Array().toString());
-            wallet.getDecryptedSeed().then((s) => setRecoveredSeed(s.toString()))
-              .catch((e) => console.log(e.toString()));
+            // TODO : recover all PoP tokens for this wallet
             setTokensRecovered(true);
           }}
         />
@@ -161,10 +132,8 @@ const Wallet = () => {
   function getWalletDisplay() {
     return (
       <View style={styleContainer.centered}>
-        <TextBlock bold text={STRINGS.wallet_synced_info} />
-        <TextBlock text={' '} />
         { !tokensRecovered && recoverTokens() }
-        { tokensRecovered && showHideSeed() }
+        { tokensRecovered && showTokens() }
       </View>
     );
   }

@@ -1,11 +1,11 @@
 import { WalletStore } from 'store/stores/WalletStore';
+import * as bip39 from 'bip39';
 import { WalletCryptographyHandler } from './WalletCryptographyHandler';
 
 /**
  * bip39 library used for seed generation and verification
  * https://www.npmjs.com/package/bip39
  */
-const bip39 = require('bip39');
 
 export interface WalletState {
   seed: ArrayBuffer;
@@ -18,6 +18,8 @@ export interface WalletState {
  * The tokens are created and retrieved here.
  */
 export class HDWallet {
+  /* The following constants are used (and common) in all derivation paths
+   * example path: m / 888 / 0' / LAO_id' / roll_call_id */
   private static readonly PREFIX: string = 'm';
 
   private static readonly PURPOSE: string = '888';
@@ -32,6 +34,12 @@ export class HDWallet {
   /* local copy of encrypted seed */
   private encryptedSeed!: ArrayBuffer;
 
+  constructor(encryptedSeed: undefined | ArrayBuffer) {
+    if (encryptedSeed !== undefined) {
+      this.encryptedSeed = encryptedSeed;
+    }
+  }
+
   /**
    * this method initializes the wallet:
    * 1. creating the crypto-manager (RSA key in IndexedDB).
@@ -42,26 +50,28 @@ export class HDWallet {
    */
   public async initialize(mnemonic: string): Promise<boolean> {
     if (mnemonic === undefined) {
-      throw new Error('Error while initializing the wallet seed: seed is undefined');
+      console.error('Error while initializing the wallet seed: seed is undefined');
+      return false;
     }
+
     const seedIsValid: boolean = bip39.validateMnemonic(mnemonic);
-    if (seedIsValid) {
-      this.cryptoManager = new WalletCryptographyHandler();
-      const seed: Uint8Array = await bip39.mnemonicToSeed(mnemonic);
-      await this.cryptoManager.initWalletStorage();
-      const encryptedSeed = await this
-        .encryptSeedToStoreInState(seed);
-      this.encryptedSeed = encryptedSeed;
-      WalletStore.store(encryptedSeed);
+    if (!seedIsValid) {
+      return false;
     }
-    return seedIsValid;
+
+    this.cryptoManager = new WalletCryptographyHandler();
+    const seed: Uint8Array = await bip39.mnemonicToSeed(mnemonic);
+    await this.cryptoManager.initWalletStorage();
+    const encryptedSeed = await this.encryptSeedToStoreInState(seed);
+    this.encryptedSeed = encryptedSeed;
+    WalletStore.store(encryptedSeed);
+    return true;
   }
 
   /**
    * retrieves and decrypts the wallet state (seed) from the application store.
    * @return the plaintext wallet seed as a Uint8Array
    */
-  // eslint-disable-next-line class-methods-use-this
   public async getDecryptedSeed(): Promise<Uint8Array> {
     const storedSeed = await WalletStore.get();
     const plaintext: ArrayBuffer = await this.cryptoManager
@@ -103,9 +113,7 @@ export class HDWallet {
    */
   public async fromState(encryptedSeed: ArrayBuffer): Promise<HDWallet> {
     await this.cryptoManager.initWalletStorage();
-    const walletFromState = new HDWallet();
-    walletFromState.setEncryptedSeed(encryptedSeed);
-    WalletStore.store(encryptedSeed);
+    const walletFromState = new HDWallet(encryptedSeed);
     return walletFromState;
   }
 
@@ -114,14 +122,5 @@ export class HDWallet {
    */
   public toState(): ArrayBuffer {
     return this.encryptedSeed;
-  }
-
-  /**
-   * sets the local copy of encrypted seed
-   * @param encryptedSeed wallet's encrypted seed
-   * @private
-   */
-  private setEncryptedSeed(encryptedSeed: ArrayBuffer) {
-    this.encryptedSeed = encryptedSeed;
   }
 }

@@ -19,8 +19,6 @@ export namespace WalletStore {
    * an error if the state was never initialized.
    */
   export async function get(): Promise<ArrayBuffer> {
-    console.log('PoP Application STATE');
-    console.log(getStore().getState());
     const { walletState } = getWalletState(getStore().getState());
 
     if (!walletState) {

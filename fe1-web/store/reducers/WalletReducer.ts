@@ -1,10 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 /**
- * This file represents the reducer for the wallet state. Its
- * job is to handle actions between the application and the
- * storage (e.g. storing the wallet seed)
- * The wallet state is represented by the encrypted wallet seed.
+ * This file represents the reducer for the wallet.
+ * Its job is to store the wallet state.
+ * The wallet state is represented by the wallet's encrypted seed.
  */
 
 interface WalletReducerState {
@@ -26,12 +25,12 @@ const walletSlice = createSlice({
     /* set global wallet state */
     setWalletState: (state, action: PayloadAction<ArrayBuffer>) => {
       if (!action.payload) {
-        console.log('KeyPair storage was set to: null');
+        console.log('Wallet storage was set to: null');
         state.walletState = undefined;
       }
 
       state.walletState = action.payload;
-      console.log(`Wallet storage was updated with new state: ${state.walletState}`);
+      console.log('Wallet storage was updated with new state');
     },
   },
 });
