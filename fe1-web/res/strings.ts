@@ -120,11 +120,6 @@ const STRINGS = {
   meeting_create_location: 'Location',
 
   /* --- Wallet Strings --- */
-  wallet: 'Initialize wallet cryptography handler database',
-  wallet_add: 'Add encryption/decryption key to database ',
-  wallet_remove: 'Remove encryption/decryption key from database ',
-  wallet_encrypt_random_token: 'Encrypt test-token - ed25519 key',
-  wallet_decrypt_random_token: 'Decrypt previously encrypted test-token',
   wallet_private_key_id: 'Private Decryption Key',
   wallet_public_key_id: 'Public Encryption Key',
   wallet_private_key: 'private',
@@ -143,7 +138,6 @@ const STRINGS = {
   setup_wallet: 'SETUP WALLET',
   back_to_wallet_home: 'BACK TO WALLET HOME',
   recover_tokens_title: 'RECOVER POP TOKENS',
-  test_recover_seed_from_state: 'RECOVER SEED FROM STATE TEST',
   show_seed_title: 'SHOW PLAINTEXT SEED',
   hide_seed_title: 'HIDE PLAINTEXT SEED',
   show_encrypted_seed_title: 'SHOW ENCRYPTED SEED',

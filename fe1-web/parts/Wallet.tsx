@@ -119,7 +119,7 @@ const Wallet = () => {
         <TextBlock bold text={STRINGS.wallet_synced_info} />
         <TextBlock text={' '} />
         <WideButtonView
-          title={STRINGS.test_recover_seed_from_state}
+          title={STRINGS.recover_tokens_title}
           onPress={() => {
             // TODO : recover all PoP tokens for this wallet
             setTokensRecovered(true);
