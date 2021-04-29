@@ -125,6 +125,15 @@
     <string name="end_date">end date</string>
     <string name="details">Details</string>
     <string name="manage_election">manage election</string>
+    <string name="current_time">Current Time :</string>
+    <string name="election_start_time">Election Start Time :</string>
+    <string name="election_end_time">Election End Time :</string>
+    <string name="election_question">Election Question : ?</string>
+    <string name="edit_election_name">Edit Election Name</string>
+    <string name="edit_election_question">Edit Election Question</string>
+    <string name="edit_election_ballot_options">Edit Election Ballot Options</string>
+    <string name="edit_election_start_time">Edit Election Start Time</string>
+    <string name="edit_election_end_time">Edit Election End Time</string>
 
 
 </resources>

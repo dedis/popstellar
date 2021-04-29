@@ -12,6 +12,7 @@
     <dimen name="size_title">24sp</dimen>
     <dimen name="size_body">18sp</dimen>
     <dimen name="size_small">12sp</dimen>
+    <dimen name="lao_name">36sp</dimen>
 
     <!-- Camera preview -->
     <integer name="camera_preview_width">240</integer>
@@ -31,5 +32,15 @@
     <dimen name="event_details_width">186dp</dimen>
     <dimen name="date_text_event">15sp</dimen>
     <dimen name="event_buttons_height">43dp</dimen>
+    <dimen name="election_fragment_description_margin">140dp</dimen>
+    <dimen name="election_question_height">80dp</dimen>
+    <dimen name="election_question_margin_top">10dp</dimen>
+    <dimen name="election_end_time_margin">90dp</dimen>
+    <dimen name="election_current_time_margin">127dp</dimen>
+
+
+
+
+
 
 </resources>
