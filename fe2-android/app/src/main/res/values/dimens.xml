@@ -27,4 +27,9 @@
     <!-- QR code -->
     <dimen name="qr_code_size">200dp</dimen>
 
+    <!-- Event -->
+    <dimen name="event_details_width">186dp</dimen>
+    <dimen name="date_text_event">15sp</dimen>
+    <dimen name="event_buttons_height">43dp</dimen>
+
 </resources>

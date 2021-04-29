@@ -284,18 +284,13 @@ EventCategory category = (EventCategory) getGroup(groupPosition);
           String dateEnd = DATE_FORMAT.format(dEnd);
           electionBinding.electionEndDate.setText("End Date : " + dateEnd);
           if(category == PRESENT) {
-           electionBinding.electionActionButton.setText("Cast Vote");
             electionBinding.electionActionButton.setOnClickListener(
                     clicked -> viewModel.openCastVotes());
           }
           else if (category == PAST) {
-            electionBinding.electionActionButton.setText("Election Results");
               electionBinding.electionActionButton.setOnClickListener(
                       clicked -> viewModel.openElectionResults(true));
 
-          }
-          else if (category == FUTURE) {
-            electionBinding.electionActionButton.setVisibility(View.GONE);
           }
 
           electionBinding.electionEditButton.setOnClickListener( clicked -> {
