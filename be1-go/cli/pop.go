@@ -10,8 +10,7 @@ import (
 )
 
 func main() {
-	var app *cli.App
-	app = &cli.App{
+	app := &cli.App{
 		Name:  "pop",
 		Usage: "backend for the PoP project",
 		Commands: []*cli.Command{
