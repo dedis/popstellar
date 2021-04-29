@@ -522,7 +522,6 @@ func (c *laoChannel) processRollCallObject(msg message.Message) error {
 
 	msgIDEncoded := base64.StdEncoding.EncodeToString(msg.MessageID)
 	c.inboxMu.Lock()
-	log.Printf("add message with id, %s", msgIDEncoded)
 	c.inbox[msgIDEncoded] = msg
 	c.inboxMu.Unlock()
 
@@ -567,7 +566,7 @@ func (c *laoChannel) processOpenRollCall(data message.Data, action message.RollC
 	if !c.checkPrevID(rollCallData.Opens) {
 		return &message.Error{
 			Code:        -4,
-			Description: "The field \"opens\" does not correspond to the id of the previous roll call message",
+			Description: "The field `opens` does not correspond to the id of the previous roll call message",
 		}
 	}
 
@@ -593,7 +592,7 @@ func (c *laoChannel) processCloseRollCall(data message.Data) error {
 	if !c.checkPrevID(rollCallData.Closes) {
 		return &message.Error{
 			Code:        -4,
-			Description: "The field \"closes\" does not correspond to the id of the previous roll call message",
+			Description: "The field `closes` does not correspond to the id of the previous roll call message",
 		}
 	}
 	if !c.checkRollCallID(message.Stringer(rollCallData.Closes), rollCallData.ClosedAt, rollCallData.UpdateID) {
