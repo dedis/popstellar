@@ -16,7 +16,7 @@ type witnessHub struct {
 	public kyber.Point
 }
 
-// NewOrganizerHub returns a Organizer Hub.
+// NewWitnessHub returns a Witness Hub.
 func NewWitnessHub(public kyber.Point) Hub {
 	return &witnessHub{
 		messageChan: make(chan IncomingMessage),

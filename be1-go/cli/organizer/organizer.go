@@ -20,8 +20,13 @@ var upgrader = websocket.Upgrader{
 }
 
 // Serve parses the CLI arguments and spawns a hub and a websocket server.
-func OrganizerServe(context *cli.Context) error {
-	port := context.Int("port")
+func Serve(context *cli.Context) error {
+	clientPort := context.Int("client-port")
+	witnessPort := context.Int("witness-port")
+	if clientPort == witnessPort {
+		return xerrors.Errorf("client and witness ports must be different")
+	}
+
 	pk := context.String("public-key")
 
 	if pk == "" {
@@ -44,17 +49,17 @@ func OrganizerServe(context *cli.Context) error {
 	done := make(chan struct{})
 	go h.Start(done)
 
-	go orgCreateAndServeWs(hub.WitnessSocketType, h, port)
-	orgCreateAndServeWs(hub.ClientSocketType, h, port)
+	go createAndServeWs(hub.WitnessSocketType, h, witnessPort)
+	createAndServeWs(hub.ClientSocketType, h, clientPort)
 
 	done <- struct{}{}
 
 	return nil
 }
 
-func orgCreateAndServeWs(socketType hub.SocketType, h hub.Hub, port int) error {
-	http.HandleFunc(string("/org/"+socketType+"/"), func(w http.ResponseWriter, r *http.Request) {
-		orgServeWs(socketType, h, w, r)
+func createAndServeWs(socketType hub.SocketType, h hub.Hub, port int) error {
+	http.HandleFunc(string("/organizer/"+socketType+"/"), func(w http.ResponseWriter, r *http.Request) {
+		serveWs(socketType, h, w, r)
 	})
 
 	log.Printf("Starting the organizer WS server (for %s) at %d", socketType, port)
@@ -66,7 +71,7 @@ func orgCreateAndServeWs(socketType hub.SocketType, h hub.Hub, port int) error {
 	return nil
 }
 
-func orgServeWs(socketType hub.SocketType, h hub.Hub, w http.ResponseWriter, r *http.Request) {
+func serveWs(socketType hub.SocketType, h hub.Hub, w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("failed to upgrade connection: %v", err)

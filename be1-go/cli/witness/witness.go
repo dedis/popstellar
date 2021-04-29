@@ -2,7 +2,6 @@ package witness
 
 import (
 	"encoding/base64"
-	"flag"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/urfave/cli/v2"
@@ -19,9 +18,9 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
-func WitnessServe(context *cli.Context) error {
-	orgAddr := context.String("org-address")
-	port := context.Int("port")
+func Serve(context *cli.Context) error {
+	organizerAddr := context.String("organizer-address")
+	organizerPort := context.Int("organizer-port")
 	pk := context.String("public-key")
 
 	if pk == "" {
@@ -41,7 +40,7 @@ func WitnessServe(context *cli.Context) error {
 
 	h := hub.NewWitnessHub(point)
 
-	ws, err := witConnectToOrganizer(orgAddr, port)
+	ws, err := connectToOrganizer(organizerAddr, organizerPort)
 	if err != nil {
 		return xerrors.Errorf("failed to connect to organizer: %v", err)
 	}
@@ -61,9 +60,11 @@ func WitnessServe(context *cli.Context) error {
 	return nil
 }
 
-func witConnectToOrganizer(orgIpAddr string, port int) (*websocket.Conn, error) {
-	var addr = flag.String("addr", fmt.Sprintf("%s:%d", orgIpAddr, port), "http service address")
-	u := url.URL{Scheme: "ws", Host: *addr, Path: "/org/witness/"}
+func connectToOrganizer(organizerAddr string, port int) (*websocket.Conn, error) {
+	u, err := url.Parse(fmt.Sprintf("ws://%s:%d/organizer/witness/", organizerAddr, port))
+	if err != nil {
+		return nil, xerrors.Errorf("failed to connect to organizer: %v", err)
+	}
 	ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
 		return ws, xerrors.Errorf("failed to connect to organizer: %v", err)

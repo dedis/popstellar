@@ -9,6 +9,7 @@ You may build the `pop` CLI to interact with the server by executing `go build -
 ./pop organizer -h
 NAME:
    pop organizer - manage the organizer
+   pop witness - manage the witness
 
 USAGE:
    pop organizer command [command options] [arguments...]
@@ -19,14 +20,17 @@ COMMANDS:
    help, h  Shows a list of commands or help for one command
 
 OPTIONS:
-   --public-key value, --pk value  base64 encoded organizer's public key
-   --org-address, --org            organizer's IP address for witness to connect to organizer
-   --help, -h                      show help (default: false)
+   --public-key value, --pk value          base64 encoded organizer's public key
+   --organizer-address value, --org value  organizer's IP address for witness to connect to organizer (default value "localhost")
+   --client-port value, --cp value         port on which to open websocket for clients (default value 9000)
+   --witness-port value, --wp value        port on which to open websocket for witnesses (default value 9001)
+   --organizer-port value, --op value      port on which witness connects to organizer (default value 9000)
+   --help, -h                              show help (default: false)
 
 ```
 
-You may start the server at port `9000` by executing `./pop organizer --pk "<base64 encoded pk>" serve`.
-Please use the `-p` flag to specifiy an alternative port.
+You may start the organizer server at ports `9000` for clients and `9001` for witnesses by executing `./pop organizer --pk "<base64 encoded pk>" serve`.
+Please use the `-cp` and `-wp` flags to specify an alternative port.
 
 ## Packages
 
