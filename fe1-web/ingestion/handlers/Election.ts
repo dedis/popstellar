@@ -36,7 +36,6 @@ function handleElectionSetupMessage(msg: Message): boolean {
     start: elecMsg.start_time,
     end: elecMsg.end_time,
     questions: elecMsg.questions,
-
   });
 
   dispatch(addEvent(lao.id, election.toState()));

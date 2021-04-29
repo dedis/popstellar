@@ -120,7 +120,7 @@ const CreateElection = ({ route }: any) => {
         onChangeText={(text: string) => { setElectionQuestion(text); }}
       />
       <TextInputList onChange={setElectionBallots} />
-      <View style={styles.view}>
+      <View style={[styles.view, { zIndex: 'initial' }]}>
         <WideButtonView
           title={STRINGS.general_button_cancel}
           onPress={navigation.goBack}

@@ -48,16 +48,10 @@ export class SetupElection implements MessageData {
     checkTimestampStaleness(msg.start_time);
     if (!msg.end_time) throw new ProtocolError('Undefined \'end_time\' parameter encountered during \'SetupElection\'');
     checkTimestampStaleness(msg.end_time);
-    if (msg.end_time < msg.created_at) throw new ProtocolError('Invalid timestamp encountered: \'end\' parameter smaller than \'creation\'');
+    if (msg.start_time < msg.created_at) throw new ProtocolError('Invalid timestamp encountered: \'start\' parameter smaller than \'created_at\'');
+    this.start_time = msg.start_time;
     if (msg.end_time < msg.start_time) throw new ProtocolError('Invalid timestamp encountered: \'end\' parameter smaller than \'start\'');
     this.end_time = msg.end_time;
-    if (msg.created_at > msg.start_time) {
-      // This avoids errors when the start-time is set before creation time (Which is invalid)
-      // that can happen unwillingly when the organizer takes time creating an election
-      this.start_time = msg.created_at;
-    } else {
-      this.start_time = msg.start_time;
-    }
 
     if (!msg.questions) throw new ProtocolError('Undefined \'questions\' parameter encountered during \'SetupElection\'');
     msg.questions.forEach((question) => {
