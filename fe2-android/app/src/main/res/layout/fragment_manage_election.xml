@@ -216,7 +216,7 @@
                     android:id="@+id/terminate_election"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/terminate_election" />
+                    android:text="@string/cancel_election" />
 
 
             </LinearLayout>
