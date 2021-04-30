@@ -265,17 +265,15 @@ func (m *Message) parseElectionData(action ElectionAction, data []byte) error {
 	switch action {
 	case ElectionSetupAction:
 		setup := &ElectionSetupData{}
-
 		err := json.Unmarshal(data, setup)
-
 		if err != nil {
 			return xerrors.Errorf("failed to parse election setup data: %v", err)
 		}
+
 		m.Data = setup
 		return nil
 	case CastVoteAction:
 		cast := &CastVoteData{}
-
 		err := json.Unmarshal(data, cast)
 		if err != nil {
 			return xerrors.Errorf("failed to parse cast vote data : %v", err)
@@ -285,19 +283,19 @@ func (m *Message) parseElectionData(action ElectionAction, data []byte) error {
 	case ElectionEndAction:
 		end := &ElectionEndData{}
 		err := json.Unmarshal(data, end)
-
 		if err != nil {
 			return xerrors.Errorf("failed to parse end of election data : %v", err)
 		}
+
 		m.Data = end
 		return nil
 	case ElectionResultAction:
 		result := &ElectionResultData{}
 		err := json.Unmarshal(data, result)
-
 		if err != nil {
 			return xerrors.Errorf("failed to parse result of election data: %v", err)
 		}
+
 		m.Data = result
 		return nil
 	default:

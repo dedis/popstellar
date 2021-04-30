@@ -504,10 +504,10 @@ func (c *laoChannel) processElectionObject(msg message.Message) error {
 }
 
 func (c *laoChannel) createElection(msg message.Message) error {
-	o := c.hub
+	organizerHub := c.hub
 
-	o.Lock()
-	defer o.Unlock()
+	organizerHub.Lock()
+	defer organizerHub.Unlock()
 
 	// Check the data
 	data, ok := msg.Data.(*message.ElectionSetupData)
@@ -529,12 +529,12 @@ func (c *laoChannel) createElection(msg message.Message) error {
 	}
 
 	// Compute the new election channel id
-	encodedElectionID := base64.StdEncoding.EncodeToString(data.ID)
+	encodedElectionID := base64.URLEncoding.EncodeToString(data.ID)
 	encodedID := encodedLaoID + "/" + encodedElectionID
 
 	// Create the new election channel
 	electionCh := electionChannel{
-		createBaseChannel(o, "/root/"+encodedID),
+		createBaseChannel(organizerHub, "/root/"+encodedID),
 		data.StartTime,
 		data.EndTime,
 		false,
@@ -546,7 +546,7 @@ func (c *laoChannel) createElection(msg message.Message) error {
 	electionCh.inbox[messageID] = msg
 
 	// Add the new election channel to the organizerHub
-	o.channelByID[encodedID] = &electionCh
+	organizerHub.channelByID[encodedID] = &electionCh
 
 	return nil
 }
@@ -593,6 +593,7 @@ type question struct {
 	validVotesMu sync.RWMutex
 
 	// list of all valid votes
+	// the key represents the public key of the person casting the vote
 	validVotes map[string]validVote
 
 	// Voting method of the election
@@ -624,16 +625,18 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 		action := message.ElectionAction(data.GetAction())
 		switch action {
 		case message.CastVoteAction:
-			return castVoteHelper(publish, c)
+			return c.castVoteHelper(publish)
 		case message.ElectionEndAction:
+			log.Fatal("Not implemented",message.ElectionEndAction)
 		case message.ElectionResultAction:
+			log.Fatal("Not implemented",message.ElectionResultAction)
 		}
 	}
 
 	return nil
 }
 
-func castVoteHelper(publish message.Publish, c *electionChannel) error {
+func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 	msg := publish.Params.Message
 
 	voteData, ok := msg.Data.(*message.CastVoteData)
@@ -643,22 +646,25 @@ func castVoteHelper(publish message.Publish, c *electionChannel) error {
 			Description: "failed to cast data to CastVoteData",
 		}
 	}
+
 	if voteData.CreatedAt > c.end {
 		return &message.Error{
 			Code:        -4,
 			Description: fmt.Sprintf("Vote cast too late, vote casted at %v and election ended at %v", voteData.CreatedAt, c.end),
 		}
 	}
+
+
 	//This should update any previously set vote if the message ids are the same
 	messageID := base64.StdEncoding.EncodeToString(msg.MessageID)
 	c.inbox[messageID] = *msg
 	for _, q := range voteData.Votes {
 
-		QuestionID := base64.StdEncoding.EncodeToString(q.QuestionID)
-		qs, ok := c.questions[QuestionID]
+		questionID := base64.StdEncoding.EncodeToString(q.QuestionID)
+		qs, ok := c.questions[questionID]
 		if ok {
 			//this is to handle the case when the organizer must handle multiple votes being cast at the same time
-			qs.validVotesMu.RLock()
+			qs.validVotesMu.Lock()
 			earlierVote, ok := qs.validVotes[msg.Sender.String()]
 			// if the sender didn't previously cast a vote or if the vote is no longer valid update it
 			if !ok {
@@ -673,7 +679,7 @@ func castVoteHelper(publish message.Publish, c *electionChannel) error {
 				}
 			}
 			//other votes can now change the list of valid votes
-			qs.validVotesMu.RUnlock()
+			qs.validVotesMu.Unlock()
 		} else {
 			return &message.Error{
 				Code:        -4,
