@@ -21,7 +21,7 @@ import { publish } from './JsonRpcApi';
 
 /** Send a server query asking for the creation of a LAO with a given name (String) */
 export function requestCreateLao(laoName: string): Promise<Channel> {
-  const time = Timestamp.EpochNow();
+  const time = new Timestamp(1619626038);
   const pubKey = KeyPairStore.getPublicKey();
 
   const message = new CreateLao({
@@ -216,7 +216,6 @@ export function requestCreateElection(
 ): Promise<void> {
   const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
-
   const message = new SetupElection({
     lao: currentLao.id.toString(),
     id: Hash.fromStringArray(
@@ -225,7 +224,7 @@ export function requestCreateElection(
     name: name,
     version: version,
     created_at: time,
-    start_time: start,
+    start_time: ((start > time) ? start : time),
     end_time: end,
     questions: questions,
   });

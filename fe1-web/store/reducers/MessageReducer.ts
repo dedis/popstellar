@@ -31,14 +31,15 @@ const messagesSlice = createSlice({
 
     // Add a Message to the list of known Messages
     addMessages: {
-      prepare(laoId: Hash | string, messages: ExtendedMessageState | ExtendedMessageState[]): any {
-        const msgs = Array.isArray(messages) ? messages : [messages];
-        return { payload: { laoId: laoId.valueOf(), message: msgs } };
+      prepare: (laoId: string, messages: ExtendedMessageState[]) => {
+        const msgs: ExtendedMessageState[] = Array.isArray(messages) ? messages : [messages];
+        return { payload: { laoId: laoId, messages: msgs } };
       },
-      reducer(state, action: PayloadAction<{
+      reducer: (state, action: PayloadAction<{
         laoId: string;
         messages: ExtendedMessageState[];
-      }>) {
+      }>) => {
+        console.log('We in this');
         const { laoId, messages } = action.payload;
 
         // Lao not initialized, create it in the message state tree
@@ -131,10 +132,10 @@ const messagesSlice = createSlice({
       },
     },
 
-    // Empty the list of known Messages ("reset")
-    clearAllMessages: (state) => {
-      state.byLaoId = {};
-    },
+    // // Empty the list of known Messages ("reset")
+    // clearAllMessages: (state) => {
+    //   state.byLaoId = {};
+    // },
   },
 });
 

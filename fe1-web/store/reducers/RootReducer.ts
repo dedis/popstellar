@@ -8,6 +8,7 @@ import openRollCallIDReducer from './OpenRollCallIDReducer';
 import laoReducer from './LaoReducer';
 import keyPairReducer from './KeyPairReducer';
 import eventsReducer from './EventsReducer';
+import messageReducer from './MessageReducer';
 
 import { wrapWithClearStorageReducer } from './ClearStorageReducer';
 
@@ -20,6 +21,7 @@ const appReducer = persistCombineReducers(persistConfig, {
   ...keyPairReducer,
   ...laoReducer,
   ...eventsReducer,
+  ...messageReducer,
   openedRollCallId: openRollCallIDReducer,
 });
 
