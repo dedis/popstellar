@@ -654,7 +654,6 @@ func castVoteHelper(publish message.Publish, c *electionChannel) error {
 	messageID := base64.StdEncoding.EncodeToString(msg.MessageID)
 	c.inbox[messageID] = *msg
 	for _, q := range voteData.Votes {
-
 		QuestionID := base64.StdEncoding.EncodeToString(q.QuestionID)
 		qs, ok := c.questions[QuestionID]
 		if ok {
