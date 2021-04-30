@@ -239,7 +239,6 @@ public class Wallet {
     SEED = new SeedCalculator().calculateSeed(joiner.toString(), "");
     Log.d(TAG, "ExportSeed: new seed initialized: " + Utils.bytesToHex(SEED));
 
-    IS_SET_UP = true;
     return words;
   }
 

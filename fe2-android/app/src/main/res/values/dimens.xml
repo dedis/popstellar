@@ -25,6 +25,7 @@
     <!-- Button -->
     <dimen name="margin_button">16dp</dimen>
 
+
     <!-- QR code -->
     <dimen name="qr_code_size">200dp</dimen>
 

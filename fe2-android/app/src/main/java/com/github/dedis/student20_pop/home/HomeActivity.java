@@ -1,12 +1,14 @@
 package com.github.dedis.student20_pop.home;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -15,8 +17,10 @@ import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.home.fragments.ConnectingFragment;
+import com.github.dedis.student20_pop.home.fragments.ContentWalletFragment;
 import com.github.dedis.student20_pop.home.fragments.HomeFragment;
 import com.github.dedis.student20_pop.home.fragments.LaunchFragment;
+import com.github.dedis.student20_pop.home.fragments.SeedWalletFragment;
 import com.github.dedis.student20_pop.home.fragments.WalletFragment;
 import com.github.dedis.student20_pop.model.Wallet;
 import com.github.dedis.student20_pop.qrcode.CameraPermissionFragment;
@@ -119,9 +123,26 @@ public class HomeActivity extends AppCompatActivity {
         .observe(
             this,
             booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupWalletFragment();
+              Boolean isSetUp = booleanEvent.getContentIfNotHandled();
+              if (isSetUp != null) {
+                if (isSetUp == true){
+                  setupContentWalletFragment();
+                }else{
+                  setupWalletFragment();
+                }
+
+              }
+            });
+
+    // Subscribe to "open Seed" event
+    mViewModel
+        .getOpenSeedEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean action = booleanEvent.getContentIfNotHandled();
+              if (action != null) {
+                setupSeedWalletFragment();
               }
             });
   }
@@ -140,27 +161,23 @@ public class HomeActivity extends AppCompatActivity {
   public static HomeViewModel obtainViewModel(FragmentActivity activity) {
     ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
     HomeViewModel viewModel = new ViewModelProvider(activity, factory).get(HomeViewModel.class);
-
     return viewModel;
   }
 
   public void setupHomeButton() {
     Button homeButton = (Button) findViewById(R.id.tab_home);
-
     homeButton.setOnClickListener(v -> mViewModel.openHome());
   }
 
   public void setupConnectButton() {
     Button connectButton = (Button) findViewById(R.id.tab_connect);
-
     connectButton.setOnClickListener(v -> {
       if(Wallet.getInstance().isSetUp()){
           mViewModel.openConnect();
       } else {
-        Toast.makeText(getApplicationContext(), "Set up the wallet before do anything", Toast.LENGTH_LONG).show();
-        mViewModel.openWallet();
-
-    }});
+        setUpWalletMessage();
+      }
+    });
   }
 
   public void setupLaunchButton() {
@@ -170,15 +187,32 @@ public class HomeActivity extends AppCompatActivity {
       if(Wallet.getInstance().isSetUp()){
         mViewModel.openLaunch();
       } else {
-        Toast.makeText(getApplicationContext(), "Set up the wallet before do anything", Toast.LENGTH_LONG).show();
-        mViewModel.openWallet();
+        setUpWalletMessage();
       }});
   }
 
-    public void setupWalletButton() {
+  public void setUpWalletMessage(){
+    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    builder.setTitle("Set up the wallet before do anything.");
+    builder.setPositiveButton("Go to wallet", new DialogInterface.OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialog, int which) {
+        mViewModel.openWallet(false);
+      }
+    });
+    builder.show();
+  }
+
+  public void setupWalletButton() {
     Button launchButton = (Button) findViewById(R.id.tab_wallet);
 
-    launchButton.setOnClickListener(v -> mViewModel.openWallet());
+    launchButton.setOnClickListener(v -> {
+      if(Wallet.getInstance().isSetUp()){
+        mViewModel.openWallet(true);
+      } else {
+        mViewModel.openWallet(false);
+      }
+    });
   }
 
   private void setupHomeFragment() {
@@ -246,6 +280,26 @@ public class HomeActivity extends AppCompatActivity {
       walletFragment = WalletFragment.newInstance();
       ActivityUtils.replaceFragmentInActivity(
           getSupportFragmentManager(), walletFragment, R.id.fragment_container_home);
+    }
+  }
+
+  private void setupContentWalletFragment() {
+    ContentWalletFragment contentWalletFragment =
+        (ContentWalletFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_home);
+    if (contentWalletFragment == null) {
+      contentWalletFragment = ContentWalletFragment.newInstance();
+      ActivityUtils.replaceFragmentInActivity(
+          getSupportFragmentManager(), contentWalletFragment, R.id.fragment_container_home);
+    }
+  }
+
+  private void setupSeedWalletFragment() {
+    SeedWalletFragment seedWalletFragment =
+        (SeedWalletFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_home);
+    if (seedWalletFragment == null) {
+      seedWalletFragment = SeedWalletFragment.newInstance();
+      ActivityUtils.replaceFragmentInActivity(
+          getSupportFragmentManager(), seedWalletFragment, R.id.fragment_container_home);
     }
   }
 
