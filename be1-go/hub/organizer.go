@@ -495,6 +495,7 @@ func (c *laoChannel) processElectionObject(msg message.Message) error {
 			Description: fmt.Sprintf("invalid action: %s", action),
 		}
 	}
+	
 	err := c.createElection(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to setup the election %v", err)
@@ -660,8 +661,8 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 	c.inbox[messageID] = *msg
 	for _, q := range voteData.Votes {
 
-		questionID := base64.StdEncoding.EncodeToString(q.QuestionID)
-		qs, ok := c.questions[questionID]
+		QuestionID := base64.StdEncoding.EncodeToString(q.QuestionID)
+		qs, ok := c.questions[QuestionID]
 		if ok {
 			//this is to handle the case when the organizer must handle multiple votes being cast at the same time
 			qs.validVotesMu.Lock()
