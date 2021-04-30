@@ -1,6 +1,5 @@
 package com.github.dedis.student20_pop.detail.fragments.event.creation;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -12,7 +11,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -42,8 +40,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
     private Button submitButton;
 
     private LaoDetailViewModel mLaoDetailViewModel;
-
-    private View view;
 
     //Enum of all voting methods, associated to a string desc for protocol and spinner display
     public enum VotingMethods { PLURALITY("Plurality");
@@ -109,9 +105,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
         electionQuestionText.addTextChangedListener(submitTextWatcher);
         electionNameText.addTextChangedListener(submitTextWatcher);
 
-        //Sets the fragment's view
-        view = mSetupElectionFragBinding.getRoot();
-
         // Set up the basic fields for ballot options, with at least two options
         initNewBallotOptionsField();
 
@@ -121,7 +114,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
 
         mSetupElectionFragBinding.setLifecycleOwner(getActivity());
 
-        return view;
+        return mSetupElectionFragBinding.getRoot();
 
     }
 

@@ -10,6 +10,7 @@ import com.google.gson.annotations.SerializedName;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+
 public class ElectionSetup extends Data {
 
     private String id;
@@ -27,7 +28,7 @@ public class ElectionSetup extends Data {
     /**
      * Constructor for a data setup Election Event
      *
-     * @param name name of the Election
+     * @param name  name of the Election
      * @param start of the Election
      * @param laoId id of the LAO
      */
@@ -68,13 +69,21 @@ public class ElectionSetup extends Data {
         return startTime;
     }
 
-    public long getEndTime() { return endTime; }
+    public long getEndTime() {
+        return endTime;
+    }
 
-    public List<ElectionQuestion> getQuestions() { return questions; }
+    public List<ElectionQuestion> getQuestions() {
+        return questions;
+    }
 
-    public String getLao() { return lao; }
+    public String getLao() {
+        return lao;
+    }
 
-    public String getVersion() { return version; }
+    public String getVersion() {
+        return version;
+    }
 
 
     @Override
