@@ -495,6 +495,7 @@ func (c *laoChannel) processElectionObject(msg message.Message) error {
 			Description: fmt.Sprintf("invalid action: %s", action),
 		}
 	}
+	
 	err := c.createElection(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to setup the election %v", err)
