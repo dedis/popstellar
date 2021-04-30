@@ -19,7 +19,7 @@ public class ElectionTest {
     private long startTime = 0;
     private long endTime = 1;
     private long creationTime = 0;
-    private List<String> ballotOptions = Arrays.asList("candidate1, candidate2");
+    private List<String> ballotOptions = Arrays.asList("candidate1", "candidate2");
     private Election election = new Election();
 
     @Test
