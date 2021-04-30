@@ -204,7 +204,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
                               answer -> {
                                 if (answer instanceof Result) {
                                   Log.d(TAG, "setup an election");
-                                  mElectionCreatedEvent.postValue(new Event<>(true));
+                                 electionCreated();
                                   mCurrentLao.postValue(lao);
                                 }
                                 else {
@@ -322,6 +322,8 @@ public class LaoDetailViewModel extends AndroidViewModel {
   public void openHome() {
     mOpenHomeEvent.setValue(new Event<>(true));
   }
+
+  public void electionCreated() {  mElectionCreatedEvent.postValue(new Event<>(true));}
 
   public void openLaoDetail() {
     mOpenLaoDetailEvent.postValue(new Event<>(true));
