@@ -83,7 +83,7 @@ public class ElectionTest {
 
     @Test
     public void settingAndGettingReturnsCorrespondingEndTime() {
-        election.setStart(endTime);
+        election.setEnd(endTime);
         assertThat(election.getEndTimestamp(), is(endTime));
     }
 
