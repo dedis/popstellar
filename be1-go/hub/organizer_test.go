@@ -150,7 +150,8 @@ func newCloseRollCallData(id []byte, prevID []byte, closedAt message.Timestamp, 
 
 func newCorrectCloseRollCallData(laoID string, prevID []byte, attendees []message.PublicKey) (*message.CloseRollCallData, error) {
 	closedAt := getTime()
-	id, err := message.Hash(message.Stringer('R'), message.Stringer(laoID), message.Stringer(prevID), closedAt)
+	prevID64 := base64.StdEncoding.EncodeToString(prevID)
+	id, err := message.Hash(message.Stringer('R'), message.Stringer(laoID), message.Stringer(prevID64), closedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -173,7 +174,8 @@ func newOpenRollCallData(id []byte, prevID []byte, openedAt message.Timestamp, a
 
 func newCorrectOpenRollCallData(laoID string, prevID []byte, action message.OpenRollCallActionType) (*message.OpenRollCallData, error) {
 	openedAt := getTime()
-	id, err := message.Hash(message.Stringer('R'), message.Stringer(laoID), message.Stringer(prevID), openedAt)
+	prevID64 := base64.StdEncoding.EncodeToString(prevID)
+	id, err := message.Hash(message.Stringer('R'), message.Stringer(laoID), message.Stringer(prevID64), openedAt)
 	if err != nil {
 		return nil, err
 	}

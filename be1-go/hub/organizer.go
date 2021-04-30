@@ -570,7 +570,8 @@ func (c *laoChannel) processOpenRollCall(data message.Data, action message.RollC
 		}
 	}
 
-	if !c.checkRollCallID(message.Stringer(rollCallData.Opens), rollCallData.OpenedAt, rollCallData.UpdateID) {
+	opens := base64.StdEncoding.EncodeToString(rollCallData.Opens)
+	if !c.checkRollCallID(message.Stringer(opens), rollCallData.OpenedAt, rollCallData.UpdateID) {
 		return &message.Error{
 			Code:        -4,
 			Description: "The id of the roll call does not correspond to SHA256(‘R’||lao_id||opens||opened_at)",
@@ -595,7 +596,8 @@ func (c *laoChannel) processCloseRollCall(data message.Data) error {
 			Description: "The field `closes` does not correspond to the id of the previous roll call message",
 		}
 	}
-	if !c.checkRollCallID(message.Stringer(rollCallData.Closes), rollCallData.ClosedAt, rollCallData.UpdateID) {
+	closes := base64.StdEncoding.EncodeToString(rollCallData.Closes)
+	if !c.checkRollCallID(message.Stringer(closes), rollCallData.ClosedAt, rollCallData.UpdateID) {
 		return &message.Error{
 			Code:        -4,
 			Description: "The id of the roll call does not correspond to SHA256(‘R’||lao_id||closes||closed_at)",
