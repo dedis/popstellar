@@ -36,7 +36,6 @@ public class Wallet {
   private static final int PURPOSE =  888;
   private static final int ACCOUNT =  0;
   private byte[] SEED;
-
   private boolean IS_SET_UP = false;
 
   private static final Wallet instance = new Wallet();
@@ -47,7 +46,7 @@ public class Wallet {
   /**
    * Class constructor, initialize the wallet with a new random seed.
    */
-  public Wallet() {
+  private Wallet() {
     SecureRandom random = new SecureRandom();
     byte[] bytes = random.generateSeed(64);
     SEED = bytes;
@@ -61,7 +60,7 @@ public class Wallet {
    */
   public void initialize(String seed){
     if (seed == null) {
-      throw new UnsupportedOperationException("Unable to init seed from a null param!");
+      throw new IllegalArgumentException("Unable to init seed from a null param!");
     }
     SEED = Utils.hexToBytes(seed);
     Log.d(TAG, "New seed initialized: " + Utils.bytesToHex(SEED));
@@ -79,7 +78,7 @@ public class Wallet {
   public Pair<byte[], byte[]> GenerateKeyFromPath(String path)
       throws NoSuchAlgorithmException, InvalidKeyException, ShortBufferException {
     if (path == null) {
-      throw new UnsupportedOperationException("Unable to find keys from a null path!");
+      throw new IllegalArgumentException("Unable to find keys from a null path!");
     }
     //split the path string
     List<String> path_value = new ArrayList<>(Arrays.asList(path.split("/")));
@@ -115,7 +114,7 @@ public class Wallet {
   public Pair<byte[], byte[]> FindKeyPair(String Lao_ID, String Roll_call_ID)
       throws NoSuchAlgorithmException, InvalidKeyException, ShortBufferException {
     if (Lao_ID == null || Roll_call_ID == null) {
-      throw new UnsupportedOperationException("Unable to find keys from a null param");
+      throw new IllegalArgumentException("Unable to find keys from a null param");
     }
     //Generate the string path
     StringJoiner joiner = new StringJoiner("/");
@@ -169,7 +168,7 @@ public class Wallet {
       throws NoSuchAlgorithmException, InvalidKeyException, ShortBufferException {
 
     if (Lao_ID == null || Roll_call_ID == null) {
-      throw new UnsupportedOperationException("Unable to find keys from a null param");
+      throw new IllegalArgumentException("Unable to find keys from a null param");
     }
 
     Pair<byte[], byte[]> key_pair_find = FindKeyPair(Lao_ID,Roll_call_ID);
@@ -199,7 +198,7 @@ public class Wallet {
       Map<Pair<String, String>, List<byte[]>>  knows_Laos_Roll_calls)
       throws NoSuchAlgorithmException, InvalidKeyException, ShortBufferException {
     if (knows_Laos_Roll_calls == null) {
-      throw new UnsupportedOperationException("Unable to find recover keys from a null param");
+      throw new IllegalArgumentException("Unable to find recover keys from a null param");
     }
 
     initialize(seed);
@@ -252,23 +251,11 @@ public class Wallet {
    * @return a Map<Pair<String, String>, Pair<byte[], byte[]>> of the recover key pairs
    *         associated to each Lao and roll-call IDs or null in case of error.
    */
-  /**
-   * Method that allow import mnemonic seed.
-   *
-   * @param words a String.
-   * @param knows_Laos_Roll_calls a Map<Pair<String, String>, List<byte[]>> of keys known Lao_ID
-   *                              and Roll_call_ID and values representing the list of public keys
-   *                              present on roll-call’s results.
-   * @return a Map<Pair<String, String>, Pair<byte[], byte[]>> of the recover key pairs
-   *         associated to each Lao and roll-call IDs or null in case of error.
-   * @throws NoSuchAlgorithmException
-   * @throws InvalidKeyException
-   * @throws ShortBufferException
-   */
   public Map<Pair<String, String>, Pair<byte[], byte[]>> ImportSeed(String words,
-      Map<Pair<String, String>, List<byte[]>>  knows_Laos_Roll_calls)
-      throws NoSuchAlgorithmException, InvalidKeyException, ShortBufferException {
-
+      Map<Pair<String, String>, List<byte[]>>  knows_Laos_Roll_calls) {
+    if (words == null) {
+      throw new IllegalArgumentException("Unable to find recover tokens from a null param");
+    }
     try {
       MnemonicValidator
           .ofWordList(English.INSTANCE)

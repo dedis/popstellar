@@ -74,20 +74,18 @@ public class SeedWalletFragment extends Fragment {
       builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
-          String errorMessage = "Error import key, try again:  ";
+          String errorMessage = "Error import key, try again";
           try {
             String seed = mSeedWalletFragBinding.seedWallet.getText().toString();
-            if(wallet.ImportSeed(seed, new HashMap<>()) == null){
-              Toast.makeText(getContext().getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
+            if (wallet.ImportSeed(seed, new HashMap<>()) == null) {
+              Toast.makeText(getContext().getApplicationContext(), errorMessage, Toast.LENGTH_LONG)
+                  .show();
             } else {
               mHomeViewModel.openWallet(true);
             }
-          } catch (NoSuchAlgorithmException e) {
-            Toast.makeText(getContext().getApplicationContext(), errorMessage + e.getMessage(), Toast.LENGTH_LONG).show();
-          } catch (InvalidKeyException e) {
-            Toast.makeText(getContext().getApplicationContext(), errorMessage + e.getMessage(), Toast.LENGTH_LONG).show();
-          } catch (ShortBufferException e) {
-            Toast.makeText(getContext().getApplicationContext(), errorMessage + e.getMessage(), Toast.LENGTH_LONG).show();
+          } catch (IllegalArgumentException e) {
+            Toast.makeText(getContext().getApplicationContext(),
+                errorMessage + " : " + e.getMessage(), Toast.LENGTH_LONG).show();
           }
         }
       });
@@ -100,4 +98,5 @@ public class SeedWalletFragment extends Fragment {
       builder.show();
     });
   }
+
 }

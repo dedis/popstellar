@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
-import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -119,7 +118,7 @@ public class HomeActivity extends AppCompatActivity {
 
     // Subscribe to "open wallet" event
     mViewModel
-        .getOpenWallerEvent()
+        .getOpenWalletEvent()
         .observe(
             this,
             booleanEvent -> {
@@ -130,7 +129,6 @@ public class HomeActivity extends AppCompatActivity {
                 }else{
                   setupWalletFragment();
                 }
-
               }
             });
 
@@ -172,28 +170,29 @@ public class HomeActivity extends AppCompatActivity {
   public void setupConnectButton() {
     Button connectButton = (Button) findViewById(R.id.tab_connect);
     connectButton.setOnClickListener(v -> {
-      if(Wallet.getInstance().isSetUp()){
-          mViewModel.openConnect();
-      } else {
-        setUpWalletMessage();
-      }
-    });
+      if(walletIsSetUp()){
+        mViewModel.openConnect();
+      }});
   }
 
   public void setupLaunchButton() {
     Button launchButton = (Button) findViewById(R.id.tab_launch);
-
     launchButton.setOnClickListener(v ->{
-      if(Wallet.getInstance().isSetUp()){
+      if(walletIsSetUp()){
         mViewModel.openLaunch();
-      } else {
-        setUpWalletMessage();
       }});
+  }
+
+  private boolean walletIsSetUp() {
+    if(!Wallet.getInstance().isSetUp()){
+      setUpWalletMessage();
+      return false;
+    } else { return true; }
   }
 
   public void setUpWalletMessage(){
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    builder.setTitle("Set up the wallet before do anything.");
+    builder.setTitle("You have to setup up your wallet before connecting.");
     builder.setPositiveButton("Go to wallet", new DialogInterface.OnClickListener() {
       @Override
       public void onClick(DialogInterface dialog, int which) {
@@ -205,14 +204,8 @@ public class HomeActivity extends AppCompatActivity {
 
   public void setupWalletButton() {
     Button launchButton = (Button) findViewById(R.id.tab_wallet);
-
-    launchButton.setOnClickListener(v -> {
-      if(Wallet.getInstance().isSetUp()){
-        mViewModel.openWallet(true);
-      } else {
-        mViewModel.openWallet(false);
-      }
-    });
+    launchButton.setOnClickListener(v ->
+        mViewModel.openWallet(Wallet.getInstance().isSetUp()));
   }
 
   private void setupHomeFragment() {

@@ -207,7 +207,7 @@ public class HomeViewModel extends AndroidViewModel
 
   public LiveData<String> getLaoName() { return mLaoName; }
 
-  public LiveData<Event<Boolean>> getOpenWallerEvent() {
+  public LiveData<Event<Boolean>> getOpenWalletEvent() {
     return mOpenWalletEvent;
   }
 
