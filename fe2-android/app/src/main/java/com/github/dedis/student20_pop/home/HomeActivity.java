@@ -50,8 +50,7 @@ public class HomeActivity extends AppCompatActivity {
     setupWalletButton();
 
     // Subscribe to "open lao" event
-    mViewModel
-        .getOpenLaoEvent()
+    mViewModel.getOpenLaoEvent()
         .observe(
             this,
             stringEvent -> {
@@ -124,7 +123,7 @@ public class HomeActivity extends AppCompatActivity {
             booleanEvent -> {
               Boolean isSetUp = booleanEvent.getContentIfNotHandled();
               if (isSetUp != null) {
-                if (isSetUp == true){
+                if (isSetUp){
                   setupContentWalletFragment();
                 }else{
                   setupWalletFragment();

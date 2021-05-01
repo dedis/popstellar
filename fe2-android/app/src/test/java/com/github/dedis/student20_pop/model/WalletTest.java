@@ -20,15 +20,15 @@ public class WalletTest {
     String Roll_Call_ID = "1234123412341234";
 
     Wallet hdw1 = new Wallet();
-    String[] exp_str = hdw1.ExportSeed();
+    String[] exp_str = hdw1.exportSeed();
     StringJoiner joiner = new StringJoiner(" ");
     for(String i: exp_str) joiner.add(i);
 
-    Pair<byte[], byte[]> res1 =  hdw1.FindKeyPair(Lao_ID,Roll_Call_ID);
+    Pair<byte[], byte[]> res1 =  hdw1.findKeyPair(Lao_ID,Roll_Call_ID);
 
     Wallet hdw2 = new Wallet();
-    hdw2.ImportSeed(joiner.toString(), new HashMap<>());
-    Pair<byte[], byte[]> res2 =  hdw2.FindKeyPair(Lao_ID,Roll_Call_ID);
+    hdw2.importSeed(joiner.toString(), new HashMap<>());
+    Pair<byte[], byte[]> res2 =  hdw2.findKeyPair(Lao_ID,Roll_Call_ID);
 
     assertArrayEquals(res1.first, res2.first);
     assertArrayEquals(res1.second, res2.second);

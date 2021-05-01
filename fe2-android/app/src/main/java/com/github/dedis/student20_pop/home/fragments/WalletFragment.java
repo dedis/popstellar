@@ -1,7 +1,6 @@
 package com.github.dedis.student20_pop.home.fragments;
 
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -18,10 +17,7 @@ import com.github.dedis.student20_pop.databinding.FragmentWalletBinding;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.home.HomeViewModel;
 import com.github.dedis.student20_pop.model.Wallet;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
-import javax.crypto.ShortBufferException;
 
 /** Fragment used to display the Launch UI */
 public class WalletFragment extends Fragment {
@@ -70,44 +66,34 @@ public class WalletFragment extends Fragment {
     mWalletFragBinding.buttonOwnSeed.setOnClickListener(v ->{
       AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
       builder.setTitle("Type the 12 word seed:");
-
       final EditText input = new EditText(getActivity());
-
-      input.setInputType(InputType.TYPE_CLASS_TEXT); //| InputType.TYPE_TEXT_VARIATION_PASSWORD);
+      input.setInputType(InputType.TYPE_CLASS_TEXT); //if you want mode password: | InputType.TYPE_TEXT_VARIATION_PASSWORD );
       input.setText(defaultSeed);
       builder.setView(input);
-
-      builder.setPositiveButton("Set up wallet", new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
+      builder.setPositiveButton("Set up wallet", (dialog,which) -> {
           String errorMessage = "Error import key, try again";
           try {
-            if(wallet.ImportSeed(input.getText().toString(), new HashMap<>()) == null){
+            if(wallet.importSeed(input.getText().toString(), new HashMap<>()) == null){
               Toast.makeText(getContext().getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
             } else {
               mHomeViewModel.openWallet(true);
             }
           } catch (IllegalArgumentException e) {
-            Toast.makeText(getContext().getApplicationContext(), errorMessage +" : "+ e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext().getApplicationContext(),
+                errorMessage +" : "+ e.getMessage(), Toast.LENGTH_LONG).show();
           }
         }
-      });
-
-      builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
+      );
+      builder.setNegativeButton("Cancel",  (dialog,which) -> {
           dialog.cancel();
         }
-      });
-
+      );
       builder.show();
     } );
   }
 
   private void setupNewWalletButton() {
-    mWalletFragBinding.buttonNewWallet.setOnClickListener(v ->{
-      mHomeViewModel.openSeed();
-    });
+    mWalletFragBinding.buttonNewWallet.setOnClickListener(v -> mHomeViewModel.openSeed());
   }
 }
 

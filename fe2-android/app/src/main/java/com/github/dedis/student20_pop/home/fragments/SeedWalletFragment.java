@@ -1,6 +1,5 @@
 package com.github.dedis.student20_pop.home.fragments;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,11 +14,8 @@ import com.github.dedis.student20_pop.databinding.FragmentSeedWalletBinding;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.home.HomeViewModel;
 import com.github.dedis.student20_pop.model.Wallet;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.StringJoiner;
-import javax.crypto.ShortBufferException;
 
 public class SeedWalletFragment extends Fragment {
   public static final String TAG = SeedWalletFragment.class.getSimpleName();
@@ -60,9 +56,9 @@ public class SeedWalletFragment extends Fragment {
   }
 
   private void setupDisplaySeed(){
-    String[] exp_str = wallet.ExportSeed();
+    String[] exportSeed = wallet.exportSeed();
     StringJoiner joiner = new StringJoiner(" ");
-    for(String i: exp_str) joiner.add(i);
+    for(String i: exportSeed) joiner.add(i);
     mSeedWalletFragBinding.seedWallet.setText(joiner.toString());
   }
 
@@ -70,14 +66,11 @@ public class SeedWalletFragment extends Fragment {
     mSeedWalletFragBinding.buttonConfirmSeed.setOnClickListener(v -> {
       AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
       builder.setTitle("You are sure you have saved the words somewhere?");
-
-      builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
+      builder.setPositiveButton("Yes", (dialog, which)-> {
           String errorMessage = "Error import key, try again";
           try {
             String seed = mSeedWalletFragBinding.seedWallet.getText().toString();
-            if (wallet.ImportSeed(seed, new HashMap<>()) == null) {
+            if (wallet.importSeed(seed, new HashMap<>()) == null) {
               Toast.makeText(getContext().getApplicationContext(), errorMessage, Toast.LENGTH_LONG)
                   .show();
             } else {
@@ -88,13 +81,11 @@ public class SeedWalletFragment extends Fragment {
                 errorMessage + " : " + e.getMessage(), Toast.LENGTH_LONG).show();
           }
         }
-      });
-      builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
+      );
+      builder.setNegativeButton("Cancel",(dialog, which)-> {
           dialog.cancel();
         }
-      });
+      );
       builder.show();
     });
   }

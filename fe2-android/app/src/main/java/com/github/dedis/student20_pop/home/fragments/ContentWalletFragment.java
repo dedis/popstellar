@@ -17,7 +17,7 @@ public class ContentWalletFragment extends Fragment {
   public static final String TAG = ContentWalletFragment.class.getSimpleName();
   private FragmentContentWalletBinding mContentWalletFragBinding;
   private HomeViewModel mHomeViewModel;
-  public Wallet wallet;
+  private Wallet wallet;
   public static ContentWalletFragment newInstance() {
     return new ContentWalletFragment();
   }
