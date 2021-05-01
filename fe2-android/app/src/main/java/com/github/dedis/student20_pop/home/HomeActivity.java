@@ -1,7 +1,6 @@
 package com.github.dedis.student20_pop.home;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -115,6 +114,23 @@ public class HomeActivity extends AppCompatActivity {
               }
             });
 
+    subscribeWalletEvents();
+  }
+
+  private void subscribeWalletEvents(){
+
+    // Subscribe to "open Seed" event
+    mViewModel
+        .getOpenSeedEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean action = booleanEvent.getContentIfNotHandled();
+              if (action != null) {
+                setupSeedWalletFragment();
+              }
+            });
+
     // Subscribe to "open wallet" event
     mViewModel
         .getOpenWalletEvent()
@@ -128,18 +144,6 @@ public class HomeActivity extends AppCompatActivity {
                 }else{
                   setupWalletFragment();
                 }
-              }
-            });
-
-    // Subscribe to "open Seed" event
-    mViewModel
-        .getOpenSeedEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean action = booleanEvent.getContentIfNotHandled();
-              if (action != null) {
-                setupSeedWalletFragment();
               }
             });
   }

@@ -67,7 +67,8 @@ public class WalletFragment extends Fragment {
       AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
       builder.setTitle("Type the 12 word seed:");
       final EditText input = new EditText(getActivity());
-      input.setInputType(InputType.TYPE_CLASS_TEXT); //if you want mode password: | InputType.TYPE_TEXT_VARIATION_PASSWORD );
+      // If you want mode password: | InputType.TYPE_TEXT_VARIATION_PASSWORD );
+      input.setInputType(InputType.TYPE_CLASS_TEXT);
       input.setText(defaultSeed);
       builder.setView(input);
       builder.setPositiveButton("Set up wallet", (dialog,which) -> {

@@ -11,13 +11,9 @@ import androidx.fragment.app.FragmentActivity;
 import com.github.dedis.student20_pop.databinding.FragmentContentWalletBinding;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.home.HomeViewModel;
-import com.github.dedis.student20_pop.model.Wallet;
 
 public class ContentWalletFragment extends Fragment {
   public static final String TAG = ContentWalletFragment.class.getSimpleName();
-  private FragmentContentWalletBinding mContentWalletFragBinding;
-  private HomeViewModel mHomeViewModel;
-  private Wallet wallet;
   public static ContentWalletFragment newInstance() {
     return new ContentWalletFragment();
   }
@@ -28,10 +24,10 @@ public class ContentWalletFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    wallet = Wallet.getInstance();
-    mContentWalletFragBinding = FragmentContentWalletBinding.inflate(inflater, container, false);
+    FragmentContentWalletBinding mContentWalletFragBinding = FragmentContentWalletBinding.inflate(inflater, container, false);
 
     FragmentActivity activity = getActivity();
+    HomeViewModel mHomeViewModel;
     if (activity instanceof HomeActivity) {
       mHomeViewModel = HomeActivity.obtainViewModel(activity);
     } else {
@@ -43,12 +39,4 @@ public class ContentWalletFragment extends Fragment {
 
     return mContentWalletFragBinding.getRoot();
   }
-
-  @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
-  }
-
-  //TODO override on backPressed ???
-
 }
