@@ -192,12 +192,7 @@ public class HomeActivity extends AppCompatActivity {
   public void setUpWalletMessage(){
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
     builder.setTitle("You have to setup up your wallet before connecting.");
-    builder.setPositiveButton("Go to wallet", new DialogInterface.OnClickListener() {
-      @Override
-      public void onClick(DialogInterface dialog, int which) {
-        mViewModel.openWallet(false);
-      }
-    });
+    builder.setPositiveButton("Go to wallet", (dialog, which) -> mViewModel.openWallet(false));
     builder.show();
   }
 

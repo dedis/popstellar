@@ -82,10 +82,7 @@ public class SeedWalletFragment extends Fragment {
           }
         }
       );
-      builder.setNegativeButton("Cancel",(dialog, which)-> {
-          dialog.cancel();
-        }
-      );
+      builder.setNegativeButton("Cancel",(dialog, which)-> dialog.cancel());
       builder.show();
     });
   }
