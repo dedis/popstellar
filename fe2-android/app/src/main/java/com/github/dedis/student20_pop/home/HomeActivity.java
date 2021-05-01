@@ -276,7 +276,7 @@ public class HomeActivity extends AppCompatActivity {
 
   private void setupContentWalletFragment() {
     ContentWalletFragment contentWalletFragment =
-        (ContentWalletFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_home);
+        (ContentWalletFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content_wallet);
     if (contentWalletFragment == null) {
       contentWalletFragment = ContentWalletFragment.newInstance();
       ActivityUtils.replaceFragmentInActivity(
@@ -286,7 +286,7 @@ public class HomeActivity extends AppCompatActivity {
 
   private void setupSeedWalletFragment() {
     SeedWalletFragment seedWalletFragment =
-        (SeedWalletFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_home);
+        (SeedWalletFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_seed_wallet);
     if (seedWalletFragment == null) {
       seedWalletFragment = SeedWalletFragment.newInstance();
       ActivityUtils.replaceFragmentInActivity(
