@@ -5,11 +5,11 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
 import com.github.dedis.student20_pop.utility.security.Hash;
+import com.google.gson.annotations.SerializedName;
+
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
+import com.google.gson.annotations.*;
 
 /** Data sent to create a Roll-Call */
 public class CreateRollCall extends Data {
@@ -17,7 +17,9 @@ public class CreateRollCall extends Data {
   private String id;
   private String name;
   private long creation;
+  @SerializedName("proposed_start")
   private long proposedStart;
+  @SerializedName("proposed_end")
   private long proposedEnd;
   private String location;
 

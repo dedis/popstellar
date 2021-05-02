@@ -16,17 +16,11 @@ import com.github.dedis.student20_pop.model.network.answer.Result;
 import com.github.dedis.student20_pop.model.network.method.Message;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
-import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CloseRollCall;
-import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
-import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
 import com.github.dedis.student20_pop.utility.json.JsonAnswerSerializer;
-import com.github.dedis.student20_pop.utility.json.JsonCloseRollCallSerializer;
-import com.github.dedis.student20_pop.utility.json.JsonCreateRollCallSerializer;
 import com.github.dedis.student20_pop.utility.json.JsonDataSerializer;
 import com.github.dedis.student20_pop.utility.json.JsonGenericMessageDeserializer;
 import com.github.dedis.student20_pop.utility.json.JsonMessageGeneralSerializer;
 import com.github.dedis.student20_pop.utility.json.JsonMessageSerializer;
-import com.github.dedis.student20_pop.utility.json.JsonOpenRollCallSerializer;
 import com.github.dedis.student20_pop.utility.json.JsonResultSerializer;
 import com.github.dedis.student20_pop.utility.security.Keys;
 import com.google.android.gms.vision.CameraSource;
@@ -111,9 +105,6 @@ public class Injection {
         .registerTypeAdapter(Result.class, new JsonResultSerializer())
         .registerTypeAdapter(Answer.class, new JsonAnswerSerializer())
         .registerTypeAdapter(MessageGeneral.class, new JsonMessageGeneralSerializer())
-        /*.registerTypeAdapter(CreateRollCall.class, new JsonCreateRollCallSerializer())
-        .registerTypeAdapter(OpenRollCall.class, new JsonOpenRollCallSerializer())
-        .registerTypeAdapter(CloseRollCall.class, new JsonCloseRollCallSerializer())*/
         .create();
   }
 

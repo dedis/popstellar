@@ -4,12 +4,15 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
 import java.util.List;
+import com.google.gson.annotations.*;
 
 /** Data sent to close a Roll-Call */
 public class CloseRollCall extends Data {
 
+  @SerializedName("update_id")
   private final String updateId;
   private final String closes;
+  @SerializedName("closed_at")
   private final long closedAt;
   private final List<String> attendees;
 

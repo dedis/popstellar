@@ -56,7 +56,6 @@ public final class JsonUtils {
         .registerTypeAdapter(Message.class, new JsonMessageSerializer())
         .registerTypeAdapter(Data.class, new JsonDataSerializer())
         .registerTypeAdapter(Answer.class, new JsonAnswerSerializer())
-        .registerTypeAdapter(CreateRollCall.class, new JsonCreateRollCallSerializer())
         .create();
   }
 }

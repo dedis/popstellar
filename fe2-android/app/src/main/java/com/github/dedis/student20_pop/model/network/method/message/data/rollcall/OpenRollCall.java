@@ -4,12 +4,15 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.EventState;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
+import com.google.gson.annotations.*;
 
 /** Data sent to open a roll call */
 public class OpenRollCall extends Data {
 
+  @SerializedName("update_id")
   private final String updateId;
   private final String opens;
+  @SerializedName("opened_at")
   private final long openedAt;
   private String action;
 

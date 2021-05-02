@@ -15,8 +15,10 @@ public class StateLao extends Data {
   private final String id;
   private final String name;
   private final long creation;
+  @SerializedName("last_modified")
   private final long lastModified;
   private final String organizer;
+  @SerializedName("modification_id")
   private final String modificationId;
   private final Set<String> witnesses;
 
