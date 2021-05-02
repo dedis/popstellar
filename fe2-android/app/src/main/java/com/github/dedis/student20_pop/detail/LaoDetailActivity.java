@@ -184,8 +184,6 @@ public class LaoDetailActivity extends AppCompatActivity {
     }
   }
   private void setupScanFragmentRollCall() {
-    /*QRCodeScanningFragment scanningFragment =
-            (QRCodeScanningFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_qrcode);*/
     QRCodeScanningFragment scanningFragment =
             (QRCodeScanningFragment) getSupportFragmentManager().findFragmentById(R.id.add_attendee_layout);
 

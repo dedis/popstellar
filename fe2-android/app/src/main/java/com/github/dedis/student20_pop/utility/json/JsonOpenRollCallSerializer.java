@@ -1,5 +1,7 @@
 package com.github.dedis.student20_pop.utility.json;
 
+import android.util.Log;
+
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
 import com.google.gson.*;
 import java.lang.reflect.Type;
@@ -15,19 +17,27 @@ public class JsonOpenRollCallSerializer
     public OpenRollCall deserialize(
             JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
-        OpenRollCall temp = internalGson.fromJson(json, OpenRollCall.class);
+        JsonObject object = json.getAsJsonObject();
 
+        Log.d("json", object.toString());
         return new OpenRollCall(
-                temp.getUpdateId(),
-                temp.getOpens(),
-                temp.getOpenedAt(),
-                temp.getAction());
+                object.get("update_id").getAsString(),
+                object.get("opens").getAsString(),
+                object.get("opened_at").getAsLong(),
+                object.get("action").getAsString());
     }
 
     @Override
     public JsonElement serialize(
             OpenRollCall src, Type typeOfSrc, JsonSerializationContext context) {
-        JsonObject object = internalGson.toJsonTree(src, OpenRollCall.class).getAsJsonObject();
-        return object;
+        JsonObject result = new JsonObject();
+
+        result.addProperty("object", src.getObject());
+        result.addProperty("action", src.getAction());
+        result.addProperty("update_id", src.getUpdateId());
+        result.addProperty("opens", src.getOpens());
+        result.addProperty("opened_at", src.getOpenedAt());
+
+        return result;
     }
 }

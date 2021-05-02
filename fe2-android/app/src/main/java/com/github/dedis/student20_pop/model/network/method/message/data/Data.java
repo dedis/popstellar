@@ -3,6 +3,7 @@ package com.github.dedis.student20_pop.model.network.method.message.data;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.CLOSE;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.CREATE;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.OPEN;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Action.REOPEN;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.STATE;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.UPDATE;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.WITNESS;
@@ -65,6 +66,7 @@ public abstract class Data {
     // Roll Call
     messagesMap.put(pair(ROLL_CALL, CREATE), CreateRollCall.class);
     messagesMap.put(pair(ROLL_CALL, OPEN), OpenRollCall.class);
+    messagesMap.put(pair(ROLL_CALL, REOPEN), OpenRollCall.class);
     messagesMap.put(pair(ROLL_CALL, CLOSE), CloseRollCall.class);
 
     return Collections.unmodifiableMap(messagesMap);
