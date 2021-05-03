@@ -22,6 +22,8 @@
     <dimen name="camera_preview_margin">40dp</dimen>
     <integer name="requested_preview_width">1600</integer>
     <integer name="requested_preview_height">1024</integer>
+    <dimen name="camera_preview_text_padding_top">50dp</dimen>
+    <dimen name="zero">0dp</dimen>
 
     <!-- Button -->
     <dimen name="margin_button">16dp</dimen>

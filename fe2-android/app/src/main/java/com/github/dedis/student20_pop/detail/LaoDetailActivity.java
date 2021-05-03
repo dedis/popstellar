@@ -72,7 +72,7 @@ public class LaoDetailActivity extends AppCompatActivity {
                     });
     // Subscribe to "new lao event" event
     mViewModel
-            .getNewLaoEventCreationEvent()
+            .getNewLaoEventEvent()
             .observe(
                     this,
                     eventEvent -> {

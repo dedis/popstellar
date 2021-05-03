@@ -18,7 +18,7 @@ import com.github.dedis.student20_pop.model.network.method.Unsubscribe;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
-import com.github.dedis.student20_pop.model.network.method.message.data.EventState;
+import com.github.dedis.student20_pop.model.event.EventState;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;

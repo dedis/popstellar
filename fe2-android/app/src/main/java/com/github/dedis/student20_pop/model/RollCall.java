@@ -1,7 +1,7 @@
 package com.github.dedis.student20_pop.model;
 
 import com.github.dedis.student20_pop.model.event.Event;
-import com.github.dedis.student20_pop.model.network.method.message.data.EventState;
+import com.github.dedis.student20_pop.model.event.EventState;
 
 import java.util.HashSet;
 import java.util.Set;

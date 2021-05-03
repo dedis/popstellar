@@ -22,7 +22,7 @@ import com.github.dedis.student20_pop.model.RollCall;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventCategory;
 import com.github.dedis.student20_pop.model.event.EventType;
-import com.github.dedis.student20_pop.model.network.method.message.data.EventState;
+import com.github.dedis.student20_pop.model.event.EventState;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -202,7 +202,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
                         arrayAdapter,
                         ((dialog, which) -> {
                           dialog.dismiss();
-                          viewModel.newLaoEventCreation(EventType.values()[which]);
+                          viewModel.chooseEventType(EventType.values()[which]);
                         }));
                 builder.show();
               }

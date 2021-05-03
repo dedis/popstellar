@@ -69,11 +69,11 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   private final MutableLiveData<Event<Boolean>> mOpenNewRollCallEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<String>> mOpenRollCallEvent = new MutableLiveData<>();
 
-  private final MutableLiveData<Event<Integer>>  mNbAttendees = new MutableLiveData<>();
+  private final MutableLiveData<Event<Integer>>  mNbAttendeesEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mCloseRollCallEvent = new MutableLiveData<>();
 
   private final MutableLiveData<Event<Boolean>> mCreatedRollCallEvent = new MutableLiveData<>();
-  private final MutableLiveData<Event<String>>  mScanWarning = new MutableLiveData<>();
+  private final MutableLiveData<Event<String>>  mScanWarningEvent = new MutableLiveData<>();
   /*
    * LiveData objects that represent the state in a fragment
    */
@@ -135,12 +135,12 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
    * @param open true if we want to directly open the roll call
    * @return the id of the newly created roll call event, null if fails to create the event
    */
-  public String createNewRollCall(String title, String description, long proposedStart, long proposedEnd, boolean open) {
+  public void createNewRollCall(String title, String description, long proposedStart, long proposedEnd, boolean open) {
     Log.d(TAG, "creating a new roll call with title " + title);
     Lao lao = getCurrentLao();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return null;
+      return;
     }
     String channel = lao.getChannel();
     CreateRollCall createRollCall;
@@ -153,7 +153,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
       String publicKey = Keys.getEncodedKey(publicKeysetHandle);
       byte[] sender = Base64.getDecoder().decode(publicKey);
       PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
-
+      Log.d(TAG, "sending publish message");
       MessageGeneral msg = new MessageGeneral(sender, createRollCall, signer, mGson);
       Disposable disposable =
               mLAORepository
@@ -181,7 +181,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     } catch (GeneralSecurityException | IOException e) {
       Log.d(TAG, PK_FAILURE_MESSAGE, e);
     }
-    return createRollCall.getId();
   }
 
   /**
@@ -358,8 +357,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   public LiveData<Event<String>> getOpenRollCallEvent() {
     return mOpenRollCallEvent;
   }
-  public LiveData<Event<Integer>> getNbAttendees() {
-    return mNbAttendees;
+  public LiveData<Event<Integer>> getNbAttendeesEvent() {
+    return mNbAttendeesEvent;
   }
   public LiveData<Event<Boolean>> getCloseRollCallEvent() {
     return mCloseRollCallEvent;
@@ -367,8 +366,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   public LiveData<Event<Boolean>> getCreatedRollCallEvent() {
     return mCreatedRollCallEvent;
   }
-  public LiveData<Event<String>> getScanWarning() {
-    return mScanWarning;
+  public LiveData<Event<String>> getScanWarningEvent() {
+    return mScanWarningEvent;
   }
 
   public LiveData<List<com.github.dedis.student20_pop.model.event.Event>> getLaoEvents() {
@@ -472,7 +471,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
   public void openQrCodeScanningRollCall() {
     mOpenRollCallEvent.setValue(new Event<>(HomeViewModel.SCAN));
-    mNbAttendees.postValue(new Event<>(attendees.size())); //this to display the initial number of attendees
+    mNbAttendeesEvent.postValue(new Event<>(attendees.size())); //this to display the initial number of attendees
   }
   public void openCameraPermissionRollCall() {
     mOpenRollCallEvent.setValue(new Event<>(HomeViewModel.REQUEST_CAMERA_PERMISSION));
@@ -492,14 +491,14 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     try{
       Base64.getDecoder().decode(barcode.rawValue);
     }catch(IllegalArgumentException e){
-      mScanWarning.postValue(new Event<>("Invalid QR code. Please try again."));
+      mScanWarningEvent.postValue(new Event<>("Invalid QR code. Please try again."));
       return;
     }
     if(attendees.contains(barcode.rawValue)){
-      mScanWarning.postValue(new Event<>("This QR code has already been scanned. Please try again."));
+      mScanWarningEvent.postValue(new Event<>("This QR code has already been scanned. Please try again."));
       return;
     }
     attendees.add(barcode.rawValue);
-    mNbAttendees.postValue(new Event<>(attendees.size()));
+    mNbAttendeesEvent.postValue(new Event<>(attendees.size()));
   }
 }

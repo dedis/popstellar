@@ -53,13 +53,13 @@ public final class QRCodeScanningFragment extends Fragment {
     FragmentActivity activity = getActivity();
     if (activity instanceof HomeActivity) {
       mQRCodeScanningViewModel = HomeActivity.obtainViewModel(activity);
-      mQrCodeFragBinding.addAttendeeTotalText.setVisibility(View.GONE);
-      mQrCodeFragBinding.addAttendeeNumberText.setVisibility(View.GONE);
-      mQrCodeFragBinding.addAttendeeConfirm.setVisibility(View.GONE);
     } else if (activity instanceof LaoDetailActivity) {
       mQRCodeScanningViewModel = LaoDetailActivity.obtainViewModel(activity);
+      mQrCodeFragBinding.addAttendeeTotalText.setVisibility(View.VISIBLE);
+      mQrCodeFragBinding.addAttendeeNumberText.setVisibility(View.VISIBLE);
+      mQrCodeFragBinding.addAttendeeConfirm.setVisibility(View.VISIBLE);
       ((LaoDetailViewModel)mQRCodeScanningViewModel)
-              .getNbAttendees()
+              .getNbAttendeesEvent()
               .observe(
                       this,
                       integerEvent -> {
@@ -69,7 +69,7 @@ public final class QRCodeScanningFragment extends Fragment {
                         }
                       });
       ((LaoDetailViewModel)mQRCodeScanningViewModel)
-              .getScanWarning()
+              .getScanWarningEvent()
               .observe(
                       this,
                       stringEvent -> {

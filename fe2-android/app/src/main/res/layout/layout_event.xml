@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
   <data>
     <import type="android.view.View" />
-    <import type="com.github.dedis.student20_pop.model.network.method.message.data.EventState" />
+    <import type="com.github.dedis.student20_pop.model.event.EventState" />
 
     <variable
         name="event"

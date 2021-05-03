@@ -78,6 +78,10 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        setupConfirmButton();
+        setupOpenButton();
+        setupCancelButton();
+
         mLaoDetailViewModel
                 .getCreatedRollCallEvent()
                 .observe(
@@ -88,7 +92,9 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
                                 mLaoDetailViewModel.openLaoDetail();
                             }
                         });
+    }
 
+    void setupConfirmButton(){
         mFragmentCreateRollCallEventBinding.rollCallConfirm.setOnClickListener(
                 v -> {
                     computeTimesInSeconds();
@@ -97,7 +103,8 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
                     String description = mFragmentCreateRollCallEventBinding.rollCallEventDescriptionText.getText().toString();
                     mLaoDetailViewModel.createNewRollCall(title, description, startTimeInSeconds, endTimeInSeconds, false);
                 });
-
+    }
+    void setupOpenButton(){
         mFragmentCreateRollCallEventBinding.rollCallOpen.setOnClickListener(
                 v -> {
                     computeTimesInSeconds();
@@ -106,11 +113,11 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
                     String description = mFragmentCreateRollCallEventBinding.rollCallEventDescriptionText.getText().toString();
                     mLaoDetailViewModel.createNewRollCall(title, description, startTimeInSeconds, endTimeInSeconds, true);
                 });
-
-
+    }
+    void setupCancelButton(){
         mFragmentCreateRollCallEventBinding.rollCallCancel.setOnClickListener(
-                v -> {
-                    mLaoDetailViewModel.openLaoDetail();
-                });
+            v -> {
+                mLaoDetailViewModel.openLaoDetail();
+            });
     }
 }
