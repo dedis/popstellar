@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.detail.fragments.event.creation;
+/*package com.github.dedis.student20_pop.detail.fragments.event.creation;
 
 import android.widget.DatePicker;
 import android.widget.TimePicker;
@@ -122,4 +122,4 @@ public class ElectionSetupFragmentTest {
             return false;
         }
     }
-}
+} */

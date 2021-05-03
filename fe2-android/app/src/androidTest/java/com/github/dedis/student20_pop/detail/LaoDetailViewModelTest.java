@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.detail;
+/* package com.github.dedis.student20_pop.detail;
 
 
 import androidx.fragment.app.FragmentActivity;
@@ -32,6 +32,6 @@ public class LaoDetailViewModelTest {
     public void creatingNewElection() {
         mLaoDetailViewModel.createNewElection("my election", 0, 1, "Plurality", false,
                 Arrays.asList("candidate1", "candidate2"), "my question");
-        //TODO: test with backend
+        //TDO: test with backend
     }
-}
+} */
