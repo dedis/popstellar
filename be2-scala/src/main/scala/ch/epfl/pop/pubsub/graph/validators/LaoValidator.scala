@@ -7,7 +7,7 @@ import ch.epfl.pop.model.objects.Hash
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
 case object LaoValidator extends ContentValidator {
-  sealed def validateCreateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
+  def validateCreateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CreateLao")
 
     rpcMessage.getParamsMessage match {
@@ -30,7 +30,7 @@ case object LaoValidator extends ContentValidator {
     }
   }
 
-  sealed def validateStateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
+  def validateStateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "StateLao")
 
     rpcMessage.getParamsMessage match {
@@ -55,7 +55,7 @@ case object LaoValidator extends ContentValidator {
     }
   }
 
-  sealed def validateUpdateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
+  def validateUpdateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "UpdateLao")
 
     rpcMessage.getParamsMessage match {

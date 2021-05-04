@@ -7,7 +7,7 @@ import ch.epfl.pop.model.objects.Hash
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
 case object MeetingValidator extends ContentValidator {
-  sealed def validateCreateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
+  def validateCreateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CreateMeeting")
 
     rpcMessage.getParamsMessage match {
@@ -30,7 +30,7 @@ case object MeetingValidator extends ContentValidator {
     }
   }
 
-  sealed def validateStateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
+  def validateStateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "StateMeeting")
 
     rpcMessage.getParamsMessage match {
