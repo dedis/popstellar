@@ -296,9 +296,10 @@ EventCategory category = (EventCategory) getGroup(groupPosition);
           electionBinding.executePendingBindings();
           return electionBinding.getRoot();
 
-          default:
-              return binding.getRoot();
             }
+
+
+return binding.getRoot();
 
   }
 
