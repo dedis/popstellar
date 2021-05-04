@@ -19,6 +19,10 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
+/**
+ * wallet screen to obtain a new mnemonic seed
+ * @constructor
+ */
 const WalletShowSeed = ({ navigation }: IPropTypes) => {
   /* used to set the mnemonic seed inserted by the user */
   const seed: string = HDWallet.getNewGeneratedMnemonicSeed();

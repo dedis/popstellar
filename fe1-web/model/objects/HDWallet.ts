@@ -36,6 +36,11 @@ export class HDWallet {
   /* local copy of encrypted seed */
   private encryptedSeed!: ArrayBuffer;
 
+  /**
+   * a wallet can be created empty and then initialized or
+   * directly with a seed recovered from redux state
+   * @param encryptedSeed the encrypted seed got from redux state
+   */
   constructor(encryptedSeed?: ArrayBuffer) {
     if (encryptedSeed !== undefined) {
       this.encryptedSeed = encryptedSeed;
@@ -111,7 +116,7 @@ export class HDWallet {
 
   /**
    * creates a new wallet object from the state (encryptedSeed)
-   * @param encryptedSerializedSeed wallet's encrypted seed
+   * @param encryptedSerializedSeed wallet's encrypted seed recovered from state
    * @return a new wallet object initialized from the given encrypted seed
    */
   public static async fromState(encryptedSerializedSeed: string): Promise<HDWallet> {
@@ -131,10 +136,22 @@ export class HDWallet {
     return HDWallet.serializeEncryptedSeed(this.encryptedSeed);
   }
 
+  /**
+   * Transforms the given encrypted seed (ArrayBuffer) in string,
+   * only primitive types can be stored in redux state
+   * @param encryptedSeed the encrypted seed as an ArrayBuffer
+   * @private
+   */
   private static serializeEncryptedSeed(encryptedSeed: ArrayBuffer): string {
     return new Int8Array(encryptedSeed).toString();
   }
 
+  /**
+   * Transforms the serialized encrypted seed stored in state back to the
+   * original ArrayBuffer encrypted seed used by the cryptography handler
+   * @param encryptedSeedEncoded
+   * @private
+   */
   private static deSerializeEncryptedSeed(encryptedSeedEncoded: string): ArrayBuffer {
     const buffer = encryptedSeedEncoded.split(this.BUFFER_SEPARATOR);
     const bufView = new Int8Array(buffer.length);

@@ -28,6 +28,10 @@ const styles = StyleSheet.create({
 
 const wallet: HDWallet = new HDWallet();
 
+/**
+ * wallet screen to set an already existing mnemonic
+ * @constructor
+ */
 const WalletSetSeed = ({ navigation }: IPropTypes) => {
   /* used to set the mnemonic seed inserted by the user */
   const [seed, setSeed] = useState('');

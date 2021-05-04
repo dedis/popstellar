@@ -34,11 +34,10 @@ export class WalletCryptographyHandler {
   private readonly keyUsages: KeyUsage[] = ['encrypt', 'decrypt'];
 
   /**
-   * the crypto library is passed to constructor, this is necessary in order to test the
-   * cryptography handler without the crypto.subtle library provided by the window object.
-   * In jest context provide a MOCK crypto.subtle library, otherwise window.crypto is
-   * selected by default.
-   * @param mockCrypto MOCK crypto.subtle library or nothing (window.crypto default)
+   * By default the native or web crypto library are used, provided
+   * by WalletCryptoLibrary.ts or WalletCryptoLibrary.native.ts
+   * OPTIONALLY (test cases) a mock crypto library can be provided
+   * @param mockCrypto a mock crypto library or nothing for default value
    */
   constructor(mockCrypto?: Crypto | object) {
     if (mockCrypto !== undefined) {

@@ -9,8 +9,8 @@ import WalletShowSeed from 'parts/wallet/WalletShowSeed';
 import WalletSyncedSeed from 'parts/wallet/WalletSyncedSeed';
 
 /**
- * Define the Witness stack navigation
- * Allows to navigate to the Witness and the WitnessCamera screen
+ * Define the Wallet stack navigation
+ * Allows to navigate between the wallet screens
  */
 
 const Stack = createStackNavigator();

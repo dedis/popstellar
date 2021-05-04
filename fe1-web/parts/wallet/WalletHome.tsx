@@ -18,6 +18,10 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
+/**
+ * wallet home screen
+ * @constructor
+ */
 const WalletHome = ({ navigation }: IPropTypes) => {
   function getStartWalletDisplay() {
     return (

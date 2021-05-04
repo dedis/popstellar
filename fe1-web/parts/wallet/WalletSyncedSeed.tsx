@@ -15,6 +15,10 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
+/**
+ * wallet UI once the wallet is synced
+ * @constructor
+ */
 const WalletSyncedSeed = () => {
   /* boolean set to true if the token recover process is finished */
   const [tokensRecovered, setTokensRecovered] = useState(false);
