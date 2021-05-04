@@ -26,19 +26,9 @@ public class ManageElectionFragment extends Fragment {
 
     public static final String TAG = ManageElectionFragment.class.getSimpleName();
 
-    protected static final SimpleDateFormat DATE_FORMAT =
+    protected  final SimpleDateFormat DATE_FORMAT =
             new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
-    private FragmentManageElectionBinding mManageElectionFragBinding;
-    private TextView laoName;
-    private TextView electionName;
     private Button terminate;
-    private Button editName;
-    private Button editQuestion;
-    private Button editBallotOptions;
-    private TextView currentTime;
-    private TextView startTime;
-    private TextView endTime;
-    private TextView question;
     private LaoDetailViewModel laoDetailViewModel;
 
 
@@ -52,6 +42,17 @@ public class ManageElectionFragment extends Fragment {
             @NonNull LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
+
+        FragmentManageElectionBinding mManageElectionFragBinding;
+        TextView laoName;
+       TextView electionName;
+        Button editName;
+        Button editQuestion;
+         Button editBallotOptions;
+         TextView currentTime;
+         TextView startTime;
+         TextView endTime;
+         TextView question;
         mManageElectionFragBinding =
                 FragmentManageElectionBinding.inflate(inflater, container, false);
 

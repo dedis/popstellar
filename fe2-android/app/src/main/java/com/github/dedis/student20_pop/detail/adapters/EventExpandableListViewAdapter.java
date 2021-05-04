@@ -192,28 +192,25 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     Context context = parent.getContext();
 
     AddEventListener addEventOnClickListener =
-        new AddEventListener() {
-          @Override
-          public void addEvent() {
-            AlertDialog.Builder builder = new Builder(context);
-            builder.setTitle("Select Event Type");
+            () -> {
+              Builder builder = new Builder(context);
+              builder.setTitle("Select Event Type");
 
-            ArrayAdapter<String> arrayAdapter =
-                new ArrayAdapter<>(context, android.R.layout.select_dialog_singlechoice);
+              ArrayAdapter<String> arrayAdapter =
+                  new ArrayAdapter<>(context, android.R.layout.select_dialog_singlechoice);
 
-            arrayAdapter.add("Roll-Call Event");
-            arrayAdapter.add("Election Event");
+              arrayAdapter.add("Roll-Call Event");
+              arrayAdapter.add("Election Event");
 
-            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
-            builder.setAdapter(
-                arrayAdapter,
-                ((dialog, which) -> {
-                  dialog.dismiss();
-                  viewModel.chooseEventType(EventType.values()[which]);
-                }));
-            builder.show();
-          }
-        };
+              builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+              builder.setAdapter(
+                  arrayAdapter,
+                  ((dialog, which) -> {
+                    dialog.dismiss();
+                    viewModel.chooseEventType(EventType.values()[which]);
+                  }));
+              builder.show();
+            };
 
     binding.setIsFutureCategory(eventCategory.equals(FUTURE));
     binding.setViewmodel(viewModel);
@@ -249,8 +246,6 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
       View convertView,
       ViewGroup parent) {
 
-    // TODO : For the moment, events are displayed the same if user is attendee or organizer,
-    // in the future it could be nice to have a pencil icon to allow organizer to modify an event
 
     ViewDataBinding binding;
     Event event = ((Event) getChild(groupPosition, childPosition));
@@ -260,12 +255,10 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     } else {
       binding = DataBindingUtil.getBinding(convertView);
     }
-      // we use a switch case to handle all the different type of actions we want when we click on a certain event
 
 EventCategory category = (EventCategory) getGroup(groupPosition);
-/* if the election is the present when we click on it it will launch cast vote, if it's in the past it will launch
-            if the election is in the past it will display all the election results */
 
+      // we use a switch case to handle all the different type of actions we want when we click on a certain event
       switch (event.type) {
         case ELECTION:
          LayoutElectionDisplayBinding electionBinding ;
