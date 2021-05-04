@@ -63,11 +63,11 @@ func Serve(context *cli.Context) error {
 func connectToOrganizer(organizerAddr string, port int) (*websocket.Conn, error) {
 	u, err := url.Parse(fmt.Sprintf("ws://%s:%d/organizer/witness/", organizerAddr, port))
 	if err != nil {
-		return nil, xerrors.Errorf("failed to connect to organizer: %v", err)
+		return nil, xerrors.Errorf("failure to connect to organizer: %v", err)
 	}
 	ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
-		return ws, xerrors.Errorf("failed to connect to organizer: %v", err)
+		return ws, xerrors.Errorf("failure to connect to organizer: %v", err)
 	}
 	return ws, nil
 }
