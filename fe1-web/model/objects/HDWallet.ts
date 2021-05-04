@@ -26,7 +26,9 @@ export class HDWallet {
 
   private static readonly ACCOUNT: string = '0';
 
-  private static readonly SEPARATOR: string = '/';
+  private static readonly PATH_SEPARATOR: string = '/';
+
+  private static readonly BUFFER_SEPARATOR: string = ',';
 
   /* cryptography manager: encrypts the seed with RSA key stored in IndexedDB */
   private cryptoManager!: WalletCryptographyHandler;
@@ -34,7 +36,7 @@ export class HDWallet {
   /* local copy of encrypted seed */
   private encryptedSeed!: ArrayBuffer;
 
-  constructor(encryptedSeed: undefined | ArrayBuffer) {
+  constructor(encryptedSeed?: ArrayBuffer) {
     if (encryptedSeed !== undefined) {
       this.encryptedSeed = encryptedSeed;
     }
@@ -60,11 +62,11 @@ export class HDWallet {
     }
 
     this.cryptoManager = new WalletCryptographyHandler();
-    const seed: Uint8Array = await bip39.mnemonicToSeed(mnemonic);
     await this.cryptoManager.initWalletStorage();
+    const seed: Uint8Array = await bip39.mnemonicToSeed(mnemonic);
     const encryptedSeed = await this.encryptSeedToStoreInState(seed);
     this.encryptedSeed = encryptedSeed;
-    WalletStore.store(encryptedSeed);
+    WalletStore.store(HDWallet.serializeEncryptedSeed(this.encryptedSeed));
     return true;
   }
 
@@ -73,7 +75,8 @@ export class HDWallet {
    * @return the plaintext wallet seed as a Uint8Array
    */
   public async getDecryptedSeed(): Promise<Uint8Array> {
-    const storedSeed = await WalletStore.get();
+    const encodedStoredSeed: string = await WalletStore.get();
+    const storedSeed = HDWallet.deSerializeEncryptedSeed(encodedStoredSeed);
     const plaintext: ArrayBuffer = await this.cryptoManager
       .decrypt(storedSeed);
     const seed: Uint8Array = new Uint8Array(plaintext);
@@ -108,19 +111,36 @@ export class HDWallet {
 
   /**
    * creates a new wallet object from the state (encryptedSeed)
-   * @param encryptedSeed wallet's encrypted seed
+   * @param encryptedSerializedSeed wallet's encrypted seed
    * @return a new wallet object initialized from the given encrypted seed
    */
-  public async fromState(encryptedSeed: ArrayBuffer): Promise<HDWallet> {
-    await this.cryptoManager.initWalletStorage();
-    const walletFromState = new HDWallet(encryptedSeed);
-    return walletFromState;
+  public static async fromState(encryptedSerializedSeed: string): Promise<HDWallet> {
+    const wallet: HDWallet = new
+    HDWallet(HDWallet.deSerializeEncryptedSeed(encryptedSerializedSeed));
+
+    wallet.cryptoManager = new WalletCryptographyHandler();
+    await wallet.cryptoManager.initWalletStorage();
+    return wallet;
   }
 
   /**
    * returns the current wallet object to state (encryptedSeed)
+   * serialized as a String in order to be stored in redux state
    */
-  public toState(): ArrayBuffer {
-    return this.encryptedSeed;
+  public toState(): String {
+    return HDWallet.serializeEncryptedSeed(this.encryptedSeed);
+  }
+
+  private static serializeEncryptedSeed(encryptedSeed: ArrayBuffer): string {
+    return new Int8Array(encryptedSeed).toString();
+  }
+
+  private static deSerializeEncryptedSeed(encryptedSeedEncoded: string): ArrayBuffer {
+    const buffer = encryptedSeedEncoded.split(this.BUFFER_SEPARATOR);
+    const bufView = new Int8Array(buffer.length);
+    for (let i = 0; i < buffer.length; i += 1) {
+      bufView[i] = Number(buffer[i]);
+    }
+    return bufView.buffer;
   }
 }

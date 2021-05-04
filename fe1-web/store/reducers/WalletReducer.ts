@@ -7,7 +7,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
  */
 
 interface WalletReducerState {
-  walletState?: ArrayBuffer;
+  walletState?: string;
 }
 
 const initialState: WalletReducerState = {
@@ -23,7 +23,7 @@ const walletSlice = createSlice({
   initialState,
   reducers: {
     /* set global wallet state */
-    setWalletState: (state, action: PayloadAction<ArrayBuffer>) => {
+    setWalletState: (state, action: PayloadAction<string>) => {
       if (!action.payload) {
         console.log('Wallet storage was set to: null');
         state.walletState = undefined;

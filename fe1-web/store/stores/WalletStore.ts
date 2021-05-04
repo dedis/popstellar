@@ -10,7 +10,7 @@ export namespace WalletStore {
    * This function dispatches action to store wallet state.
    * @param walletSeed the RSA-encrypted seed for this wallet
    */
-  export function store(walletSeed: ArrayBuffer): void {
+  export function store(walletSeed: string): void {
     dispatch(setWalletState(walletSeed));
   }
 
@@ -18,7 +18,7 @@ export namespace WalletStore {
    * returns the wallet state: the encrypted wallet seed or throws
    * an error if the state was never initialized.
    */
-  export async function get(): Promise<ArrayBuffer> {
+  export async function get(): Promise<string> {
     const { walletState } = getWalletState(getStore().getState());
 
     if (!walletState) {

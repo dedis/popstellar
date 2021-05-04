@@ -1,5 +1,6 @@
 import { get, set, update } from 'idb-keyval';
 import STRINGS from 'res/strings';
+import { WalletCryptoLibrary } from 'res/adhoc-implementations/WalletCryptoLibrary';
 
 /* wallet cryptography key interface */
 export interface WalletCryptoKey {
@@ -37,13 +38,14 @@ export class WalletCryptographyHandler {
    * cryptography handler without the crypto.subtle library provided by the window object.
    * In jest context provide a MOCK crypto.subtle library, otherwise window.crypto is
    * selected by default.
-   * @param cryptography MOCK crypto.subtle library or nothing (window.crypto default)
+   * @param mockCrypto MOCK crypto.subtle library or nothing (window.crypto default)
    */
-  constructor(cryptography?: Crypto) {
-    if (!cryptography) {
-      this.cryptography = window.crypto;
+  constructor(mockCrypto?: Crypto | object) {
+    if (mockCrypto !== undefined) {
+      // @ts-ignore
+      this.cryptography = mockCrypto;
     } else {
-      this.cryptography = cryptography;
+      this.cryptography = WalletCryptoLibrary.getCrypto();
     }
   }
 
@@ -60,8 +62,9 @@ export class WalletCryptographyHandler {
 
     if (walletIsNotInitialised) {
       await this.handleWalletInitialization();
+      console.log('Wallet cryptography was not initialized');
     }
-    console.log('Wallet storage ready');
+    console.log('Wallet cryptography storage ready');
   }
 
   /**
