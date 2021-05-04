@@ -324,7 +324,10 @@ public class  LAORepository {
     election.setCreation(electionSetup.getCreation());
 
     election.setStart(electionSetup.getStartTime());
-    election.setQuestion(electionSetup.getQuestions().get(0).getQuestion());
+    // We check if the questions list is not empty before accessing the first one
+    if(!electionSetup.getQuestions().isEmpty()) {
+      election.setQuestion(electionSetup.getQuestions().get(0).getQuestion());
+    }
     election.setEnd(electionSetup.getEndTime());
     election.setWriteIn(electionSetup.getQuestions().get(0).getWriteIn());
     election.setBallotOptions(electionSetup.getQuestions().get(0).getBallotOptions());
