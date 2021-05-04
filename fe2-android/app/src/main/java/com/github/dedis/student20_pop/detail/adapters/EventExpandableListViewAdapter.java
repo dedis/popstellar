@@ -295,12 +295,10 @@ EventCategory category = (EventCategory) getGroup(groupPosition);
           electionBinding.setLifecycleOwner(lifecycleOwner);
           electionBinding.executePendingBindings();
           return electionBinding.getRoot();
-
             }
 
 
 return binding.getRoot();
-
   }
 
   /**
