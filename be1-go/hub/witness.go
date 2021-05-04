@@ -1,6 +1,8 @@
 package hub
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
 	"student20_pop/message"
 	"sync"
@@ -49,13 +51,121 @@ func (w *witnessHub) Recv(msg IncomingMessage) {
  */
 func (w *witnessHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 	//TODO
-	//check exactly how we will store a message once we receive it
-	//TODO: find the sender so it can represent the key in the stored messages
-	w.receivedMessages[incomingMessage.Socket.send] = incomingMessage.Message
 }
 
 func (w *witnessHub) handleMessageFromOrganizer(incomingMessage *IncomingMessage) {
-	//TODO
+	witness := WitnessSocket{
+		incomingMessage.Socket,
+	}
+
+	// unmarshal the message like we do for the client
+	genericMsg := &message.GenericMessage{}
+	err := json.Unmarshal(incomingMessage.Message, genericMsg)
+	if err != nil {
+		log.Printf("failed to unmarshal incoming message: %v", err)
+	}
+
+	query := genericMsg.Query
+
+	if query == nil {
+		return
+	}
+	// Does a witness even need a specific channel for different types of messages?
+	channelID := query.GetChannel()
+	log.Printf("channel: %s", channelID)
+
+	id := query.GetID()
+
+		err := query.Publish.Params.Message.VerifyAndUnmarshalData()
+		if err != nil {
+			log.Printf("failed to verify and unmarshal data: %v", err)
+			witness.SendError(query.Publish.ID, err)
+			return
+		}
+
+		if query.Publish.Params.Message.Data.GetAction() == message.DataAction(message.CreateLaoAction) &&
+			query.Publish.Params.Message.Data.GetObject() == message.DataObject(message.LaoObject) {
+			err := witnessHub{}.createLao(*query.Publish)
+			if err != nil {
+				log.Printf("failed to create lao: %v", err)
+				client.SendError(query.Publish.ID, err)
+				return
+			}
+		} else {
+			log.Printf("invalid method: %s", query.GetMethod())
+			client.SendError(id, &message.Error{
+				Code:        -1,
+				Description: "you may only invoke lao/create on /root",
+			})
+			return
+		}
+
+		status := 0
+		result := message.Result{General: &status}
+		log.Printf("sending result: %+v", result)
+		client.SendResult(id, result)
+		return
+	}
+
+	if channelID[:6] != "/root/" {
+		log.Printf("channel id must begin with /root/")
+		client.SendError(id, &message.Error{
+			Code:        -2,
+			Description: "channel id must begin with /root/",
+		})
+		return
+	}
+
+	channelID = channelID[6:]
+	o.RLock()
+	channel, ok := o.channelByID[channelID]
+	if !ok {
+		log.Printf("invalid channel id: %s", channelID)
+		client.SendError(id, &message.Error{
+			Code:        -2,
+			Description: fmt.Sprintf("channel with id %s does not exist", channelID),
+		})
+		return
+	}
+	o.RUnlock()
+
+	method := query.GetMethod()
+	log.Printf("method: %s", method)
+
+	msg := []message.Message{}
+
+	// TODO: use constants
+	switch method {
+	case "subscribe":
+		err = channel.Subscribe(&client, *query.Subscribe)
+	case "unsubscribe":
+		err = channel.Unsubscribe(&client, *query.Unsubscribe)
+	case "publish":
+		err = channel.Publish(*query.Publish)
+	case "message":
+		log.Printf("cannot handle broadcasts right now")
+	case "catchup":
+		msg = channel.Catchup(*query.Catchup)
+		// TODO send catchup response to client
+	}
+
+	if err != nil {
+		log.Printf("failed to process query: %v", err)
+		client.SendError(id, err)
+		return
+	}
+
+	result := message.Result{}
+
+	if method == "catchup" {
+		result.Catchup = msg
+	} else {
+		general := 0
+		result.General = &general
+	}
+
+	client.SendResult(id, result)
+}
 }
 
 func (w *witnessHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
