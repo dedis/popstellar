@@ -90,8 +90,13 @@ public class ManageElectionFragment extends Fragment {
         //On click, terminate button  current Election
         terminate.setOnClickListener(
                 v -> {
+                    // TODO implement the cancel election action when the backend is ready
+                    // wait for the backend response/checks before really cancelling the elction
+                    /*
                     laoDetailViewModel.terminateCurrentElection();
                     laoDetailViewModel.openLaoDetail();
+                    */
+
                 });
 
         // Subscribe to "open home" event
