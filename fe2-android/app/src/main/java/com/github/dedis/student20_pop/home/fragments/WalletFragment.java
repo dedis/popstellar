@@ -25,7 +25,6 @@ public class WalletFragment extends Fragment {
 
   private FragmentWalletBinding mWalletFragBinding;
   private HomeViewModel mHomeViewModel;
-  private Wallet wallet;
   public static WalletFragment newInstance() {
     return new WalletFragment();
   }
@@ -37,7 +36,6 @@ public class WalletFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    wallet = Wallet.getInstance();
     mWalletFragBinding = FragmentWalletBinding.inflate(inflater, container, false);
 
     FragmentActivity activity = getActivity();
