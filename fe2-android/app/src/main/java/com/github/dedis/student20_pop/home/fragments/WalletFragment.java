@@ -1,6 +1,5 @@
 package com.github.dedis.student20_pop.home.fragments;
 
-
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -16,10 +15,8 @@ import androidx.fragment.app.FragmentActivity;
 import com.github.dedis.student20_pop.databinding.FragmentWalletBinding;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.home.HomeViewModel;
-import com.github.dedis.student20_pop.model.Wallet;
-import java.util.HashMap;
 
-/** Fragment used to display the Launch UI */
+/** Fragment used to display the wallet UI */
 public class WalletFragment extends Fragment {
   public static final String TAG = WalletFragment.class.getSimpleName();
 

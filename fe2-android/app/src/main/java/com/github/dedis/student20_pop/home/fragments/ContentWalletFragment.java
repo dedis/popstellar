@@ -12,6 +12,7 @@ import com.github.dedis.student20_pop.databinding.FragmentContentWalletBinding;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.home.HomeViewModel;
 
+/** Fragment used to display the content wallet UI */
 public class ContentWalletFragment extends Fragment {
   public static final String TAG = ContentWalletFragment.class.getSimpleName();
   public static ContentWalletFragment newInstance() {

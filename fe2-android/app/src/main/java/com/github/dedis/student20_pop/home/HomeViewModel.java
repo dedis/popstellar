@@ -5,7 +5,6 @@ import android.app.Application;
 import android.content.pm.PackageManager;
 import android.util.Base64;
 import android.util.Log;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.AndroidViewModel;

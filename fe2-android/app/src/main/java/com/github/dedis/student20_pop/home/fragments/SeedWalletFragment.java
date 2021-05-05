@@ -14,9 +14,9 @@ import com.github.dedis.student20_pop.databinding.FragmentSeedWalletBinding;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.home.HomeViewModel;
 import com.github.dedis.student20_pop.model.Wallet;
-import java.util.HashMap;
 import java.util.StringJoiner;
 
+/** Fragment used to display the new seed UI */
 public class SeedWalletFragment extends Fragment {
   public static final String TAG = SeedWalletFragment.class.getSimpleName();
   private FragmentSeedWalletBinding mSeedWalletFragBinding;
