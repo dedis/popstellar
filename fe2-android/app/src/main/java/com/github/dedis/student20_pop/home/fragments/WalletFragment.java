@@ -1,6 +1,7 @@
 package com.github.dedis.student20_pop.home.fragments;
 
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -66,17 +67,30 @@ public class WalletFragment extends Fragment {
     mWalletFragBinding.buttonOwnSeed.setOnClickListener(v ->{
       AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
       builder.setTitle("Type the 12 word seed:");
+
       final EditText input = new EditText(getActivity());
-      input.setInputType(InputType.TYPE_CLASS_TEXT); // If you want mode password: | InputType.TYPE_TEXT_VARIATION_PASSWORD );
-      input.setText(defaultSeed);
+      input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+      input.setText(defaultSeed); //for facilitate test we set a default seed for login in the Wallet
       builder.setView(input);
+
+      final boolean[] checked = new boolean[] {false};
+      builder.setMultiChoiceItems(new String[]{"show password"}, checked, (dialogInterface, i, b)-> {
+        checked[i] = b;
+        if(b == true) {
+          input.setInputType(InputType.TYPE_CLASS_TEXT);
+        }else{
+          input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        }
+      });
+
       builder.setPositiveButton("Set up wallet", (dialog,which) -> {
           String errorMessage = "Error import key, try again";
           try {
             if(wallet.importSeed(input.getText().toString(), new HashMap<>()) == null){
               Toast.makeText(getContext().getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
             } else {
-              mHomeViewModel.openWallet(true);
+              mHomeViewModel.setIsWalletSetUp(true);
+              mHomeViewModel.openWallet();
             }
           } catch (IllegalArgumentException e) {
             Toast.makeText(getContext().getApplicationContext(),
