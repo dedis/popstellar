@@ -64,7 +64,7 @@ func (w *witnessHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 }
 
 func (w *witnessHub) Start(done chan struct{}) {
-	log.Printf("started witness...")
+	log.Printf("started witness ..")
 
 	for {
 		select {
