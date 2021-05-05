@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
+	"log"
 	"net/http"
 	"net/url"
 	"student20_pop"
@@ -21,6 +22,7 @@ var upgrader = websocket.Upgrader{
 func Serve(context *cli.Context) error {
 	organizerAddr := context.String("organizer-address")
 	organizerPort := context.Int("organizer-port")
+	clientPort := 9001
 	pk := context.String("public-key")
 
 	if pk == "" {
@@ -53,7 +55,7 @@ func Serve(context *cli.Context) error {
 	done := make(chan struct{})
 	h.Start(done)
 
-	//TODO: connect to clients and other witnesses
+	createAndServeWs(hub.ClientSocketType, h, clientPort)
 
 	done <- struct{}{}
 
@@ -70,4 +72,45 @@ func connectToOrganizer(organizerAddr string, port int) (*websocket.Conn, error)
 		return ws, xerrors.Errorf("failure to connect to organizer: %v", err)
 	}
 	return ws, nil
+}
+
+func createAndServeWs(socketType hub.SocketType, h hub.Hub, port int) error {
+	http.HandleFunc(string("/witness/"+socketType+"/"), func(w http.ResponseWriter, r *http.Request) {
+		serveWs(socketType, h, w, r)
+	})
+
+	log.Printf("Starting the witness WS server (for %s) at %d", socketType, port)
+	var err = http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+	if err != nil {
+		return xerrors.Errorf("failed to start the server: %v", err)
+	}
+
+	return nil
+}
+
+func serveWs(socketType hub.SocketType, h hub.Hub, w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Printf("failed to upgrade connection: %v", err)
+		return
+	}
+
+	switch socketType {
+	case hub.ClientSocketType:
+		client := hub.NewClientSocket(h, conn)
+
+		go client.ReadPump()
+		go client.WritePump()
+
+		// cleanup go routine that removes clients that forgot to unsubscribe
+		go func(c *hub.ClientSocket, h hub.Hub) {
+			c.Wait.Wait()
+			h.RemoveClientSocket(c)
+		}(client, h)
+	case hub.WitnessSocketType:
+		witness := hub.NewWitnessSocket(h, conn)
+
+		go witness.ReadPump()
+		go witness.WritePump()
+	}
 }
