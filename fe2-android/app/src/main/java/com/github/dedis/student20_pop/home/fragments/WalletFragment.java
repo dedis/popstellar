@@ -1,7 +1,6 @@
 package com.github.dedis.student20_pop.home.fragments;
 
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -76,7 +75,7 @@ public class WalletFragment extends Fragment {
       final boolean[] checked = new boolean[] {false};
       builder.setMultiChoiceItems(new String[]{"show password"}, checked, (dialogInterface, i, b)-> {
         checked[i] = b;
-        if(b == true) {
+        if(b) {
           input.setInputType(InputType.TYPE_CLASS_TEXT);
         }else{
           input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);

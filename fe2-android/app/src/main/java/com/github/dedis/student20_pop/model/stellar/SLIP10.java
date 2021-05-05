@@ -1,6 +1,5 @@
 package com.github.dedis.student20_pop.model.stellar;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;

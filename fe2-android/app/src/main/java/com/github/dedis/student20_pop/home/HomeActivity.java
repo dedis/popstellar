@@ -20,7 +20,6 @@ import com.github.dedis.student20_pop.home.fragments.HomeFragment;
 import com.github.dedis.student20_pop.home.fragments.LaunchFragment;
 import com.github.dedis.student20_pop.home.fragments.SeedWalletFragment;
 import com.github.dedis.student20_pop.home.fragments.WalletFragment;
-import com.github.dedis.student20_pop.model.Wallet;
 import com.github.dedis.student20_pop.qrcode.CameraPermissionFragment;
 import com.github.dedis.student20_pop.qrcode.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.utility.ActivityUtils;
@@ -187,10 +186,11 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private boolean walletIsSetUp() {
-    if(!mViewModel.isWalletSetUp()){
+    boolean isSetUp = mViewModel.isWalletSetUp();
+    if(!isSetUp){
       setUpWalletMessage();
     }
-    return mViewModel.isWalletSetUp();
+    return isSetUp;
   }
 
   public void setUpWalletMessage(){
