@@ -132,7 +132,7 @@ export class HDWallet {
    * returns the current wallet object to state (encryptedSeed)
    * serialized as a String in order to be stored in redux state
    */
-  public toState(): String {
+  public toState(): string {
     return HDWallet.serializeEncryptedSeed(this.encryptedSeed);
   }
 
