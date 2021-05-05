@@ -12,7 +12,7 @@ import (
 // baseChannel represent a generic channel and contains all the fields that are
 // used in all channels
 type baseChannel struct {
-	hub *organizerHub
+	hub *baseHub
 
 	clientsMu sync.RWMutex
 	clients   map[*ClientSocket]struct{}
@@ -28,7 +28,7 @@ type baseChannel struct {
 }
 
 // CreateBaseChannel return an instance of a `baseChannel`
-func createBaseChannel(h *organizerHub, channelID string) *baseChannel {
+func createBaseChannel(h *baseHub, channelID string) *baseChannel {
 	return &baseChannel{
 		hub:       h,
 		channelID: channelID,
