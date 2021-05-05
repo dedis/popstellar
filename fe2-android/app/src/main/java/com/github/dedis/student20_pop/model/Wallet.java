@@ -2,6 +2,7 @@ package com.github.dedis.student20_pop.model;
 
 import android.util.Log;
 import androidx.core.util.Pair;
+import com.github.dedis.student20_pop.model.stellar.SLIP10;
 import io.github.novacrypto.bip39.MnemonicGenerator;
 import io.github.novacrypto.bip39.MnemonicValidator;
 import io.github.novacrypto.bip39.SeedCalculator;
@@ -93,7 +94,7 @@ public class Wallet {
         .mapToInt(Integer::intValue).toArray();
 
     // derive private and public key
-    byte[] privateKey = deriveEd25519PrivateKey(seed, pathValueInt);
+    byte[] privateKey = SLIP10.deriveEd25519PrivateKey(seed, pathValueInt);
     Ed25519PrivateKeyParameters prK = new Ed25519PrivateKeyParameters(privateKey, 0);
     Ed25519PublicKeyParameters puK = prK.generatePublicKey();
     byte[] publicKey = puK.getEncoded();
@@ -281,53 +282,4 @@ public class Wallet {
     return isSetUp;
   }
 
-
-  /**
-   * Derives only the private key for ED25519 in the manor defined in
-   * <a href="https://github.com/satoshilabs/slips/blob/master/slip-0010.md">SLIP-0010</a>.
-   *
-   * @param seed    Seed, the BIP0039 output.
-   * @param indexes an array of indexes that define the path. E.g. for m/1'/2'/3', pass 1, 2, 3.
-   *                As with Ed25519 non-hardened child indexes are not supported, this function
-   *                treats all indexes as hardened.
-   * @return Private key.
-   * @throws NoSuchAlgorithmException If it cannot find the HmacSHA512 algorithm by name.
-   * @throws ShortBufferException     Occurrence not expected.
-   * @throws InvalidKeyException      Occurrence not expected.
-   */
-  private byte[] deriveEd25519PrivateKey(final byte[] seed, final int... indexes)
-      throws NoSuchAlgorithmException, ShortBufferException, InvalidKeyException {
-
-    final byte[] I = new byte[64];
-    final Mac mac = Mac.getInstance(HMAC_SHA512);
-
-    // I = HMAC-SHA512(Key = bytes("ed25519 seed"), Data = seed)
-    mac.init(new SecretKeySpec("ed25519 seed".getBytes(Charset.forName("UTF-8")), HMAC_SHA512));
-    mac.update(seed);
-    mac.doFinal(I, 0);
-
-    for (int i : indexes) {
-      // I = HMAC-SHA512(Key = c_par, Data = 0x00 || ser256(k_par) || ser32(i'))
-      // which is simply:
-      // I = HMAC-SHA512(Key = Ir, Data = 0x00 || Il || ser32(i'))
-      // Key = Ir
-      mac.init(new SecretKeySpec(I, 32, 32, HMAC_SHA512));
-      // Data = 0x00
-      mac.update((byte) 0x00);
-      // Data += Il
-      mac.update(I, 0, 32);
-      // Data += ser32(i')
-      mac.update((byte) (i >> 24 | 0x80));
-      mac.update((byte) (i >> 16));
-      mac.update((byte) (i >> 8));
-      mac.update((byte) i);
-      // Write to I
-      mac.doFinal(I, 0);
-    }
-
-    final byte[] Il = new byte[32];
-    // copy head 32 bytes of I into Il
-    System.arraycopy(I, 0, Il, 0, 32);
-    return Il;
-  }
 }
