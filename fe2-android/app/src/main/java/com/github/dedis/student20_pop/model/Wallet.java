@@ -130,6 +130,12 @@ public class Wallet {
     return generateKeyFromPath(res);
   }
 
+  /*
+   This method allow to take a 256-bit string, and split it in many 24-bit or less string.
+   So, we convert first the string in an byte array, and we iterate on it taking 3 element (byte)
+   each time concatenate them and append to our result string.
+   (string of the format: 3-byte/3-byte/... )
+   */
   private String convertStringToPath(String string){
     // extract byte form string
     byte[] byteString = Base64.getDecoder().decode(string);
