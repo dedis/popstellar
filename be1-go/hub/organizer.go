@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 	"student20_pop"
-	"sync"
 
 	"student20_pop/message"
 
@@ -17,37 +16,19 @@ import (
 )
 
 type organizerHub struct {
-	messageChan chan IncomingMessage
-
-	sync.RWMutex
-	channelByID map[string]Channel
-
-	public kyber.Point
+	*baseHub
 }
 
 // NewOrganizerHub returns a Organizer Hub.
 func NewOrganizerHub(public kyber.Point) Hub {
 	return &organizerHub{
-		messageChan: make(chan IncomingMessage),
-		channelByID: make(map[string]Channel),
-		public:      public,
+		NewBaseHub(public),
 	}
 }
 
-// RemoveClient removes the client from this hub.
-func (o *organizerHub) RemoveClientSocket(client *ClientSocket) {
-	o.RLock()
-	defer o.RUnlock()
-
-	for _, channel := range o.channelByID {
-		channel.Unsubscribe(client, message.Unsubscribe{})
-	}
-}
-
-// Recv accepts a message and enques it for processing in the hub.
-func (o *organizerHub) Recv(msg IncomingMessage) {
-	log.Printf("organizerHub::Recv")
-	o.messageChan <- msg
+func (o *organizerHub) Start(done chan struct{}) {
+	log.Printf("started organizer hub...")
+	start(o, done, o.messageChan)
 }
 
 func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
@@ -192,19 +173,6 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 
 }
 
-func (o *organizerHub) Start(done chan struct{}) {
-	log.Printf("started organizer hub...")
-
-	for {
-		select {
-		case incomingMessage := <-o.messageChan:
-			o.handleIncomingMessage(&incomingMessage)
-		case <-done:
-			return
-		}
-	}
-}
-
 func (o *organizerHub) createLao(publish message.Publish) error {
 	o.Lock()
 	defer o.Unlock()
@@ -228,7 +196,7 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 	laoChannelID := "/root/" + encodedID
 
 	laoCh := laoChannel{
-		createBaseChannel(o, laoChannelID),
+		createBaseChannel(o.baseHub, laoChannelID),
 	}
 	messageID := base64.StdEncoding.EncodeToString(publish.Params.Message.MessageID)
 	laoCh.inbox[messageID] = *publish.Params.Message
