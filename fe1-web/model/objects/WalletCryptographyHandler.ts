@@ -1,6 +1,6 @@
 import { get, set, update } from 'idb-keyval';
 import STRINGS from 'res/strings';
-import { WalletCryptoLibrary } from 'res/adhoc-implementations/WalletCryptoLibrary';
+import { getCrypto } from 'utils/WalletCryptoLibrary';
 
 /* wallet cryptography key interface */
 export interface WalletCryptoKey {
@@ -15,9 +15,6 @@ export interface WalletCryptoKey {
  * More info on this approach at https://blog.engelke.com/2014/09/19/saving-cryptographic-keys-in-the-browser/
  */
 export class WalletCryptographyHandler {
-  /* the crypto library - passed to constructor */
-  private cryptography: Crypto;
-
   private readonly publicKeyId: string = STRINGS.wallet_public_key_id;
 
   private readonly privateKeyId: string = STRINGS.wallet_private_key_id;
@@ -32,21 +29,6 @@ export class WalletCryptographyHandler {
 
   /* usages for the RSA key */
   private readonly keyUsages: KeyUsage[] = ['encrypt', 'decrypt'];
-
-  /**
-   * By default the native or web crypto library are used, provided
-   * by WalletCryptoLibrary.ts or WalletCryptoLibrary.native.ts
-   * OPTIONALLY (test cases) a mock crypto library can be provided
-   * @param mockCrypto a mock crypto library or nothing for default value
-   */
-  constructor(mockCrypto?: Crypto | object) {
-    if (mockCrypto !== undefined) {
-      // @ts-ignore
-      this.cryptography = mockCrypto;
-    } else {
-      this.cryptography = WalletCryptoLibrary.getCrypto();
-    }
-  }
 
   /**
    * This functions verifies weather or not the wallet storage in IndexedDB database
@@ -75,7 +57,7 @@ export class WalletCryptographyHandler {
     if (key === undefined) {
       throw Error('Error while retrieving encryption key from database: undefined');
     }
-    const ciphertext = await this.cryptography.subtle.encrypt(this.algorithm, key, plaintext);
+    const ciphertext = await getCrypto().subtle.encrypt(this.algorithm, key, plaintext);
     return ciphertext;
   }
 
@@ -88,7 +70,7 @@ export class WalletCryptographyHandler {
     if (key === undefined) {
       throw Error('Error while retrieving decryption key from database: undefined');
     }
-    const plaintext = await this.cryptography.subtle
+    const plaintext = await getCrypto().subtle
       .decrypt(this.algorithm, key, ciphertext);
     return plaintext;
   }
@@ -158,7 +140,7 @@ export class WalletCryptographyHandler {
    * @private
    */
   private async generateRSAKey(): Promise<WalletCryptoKey> {
-    const keyPair = await this.cryptography.subtle.generateKey(
+    const keyPair = await getCrypto().subtle.generateKey(
       this.algorithm, false, this.keyUsages,
     );
     return {

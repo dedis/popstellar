@@ -46,8 +46,6 @@ Object.defineProperty(crypto, 'subtle', {
 /**
  * returns the MOCK SubtleCrypto library on browser for browser context
  */
-export class WalletCryptoLibrary {
-  public static getCrypto() : object {
-    return crypto;
-  }
+export function getMockCrypto() : object {
+  return crypto;
 }

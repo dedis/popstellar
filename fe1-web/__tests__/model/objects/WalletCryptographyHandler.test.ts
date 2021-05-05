@@ -1,10 +1,19 @@
 import 'jest-extended';
 import { WalletCryptographyHandler } from 'model/objects/WalletCryptographyHandler';
 import { sign } from 'tweetnacl';
-import { WalletCryptoLibrary } from 'res/adhoc-implementations/__mocks__/WalletCryptoLibrary';
 
 /* used to simulate indexedDB database to test store/retrieve functions */
-require('fake-indexeddb/auto');
+import 'fake-indexeddb/auto';
+import { getCrypto } from 'utils/WalletCryptoLibrary';
+import { getMockCrypto } from 'utils/__mocks__/WalletCryptoLibrary';
+
+function mockFunction<T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> {
+  return fn as jest.MockedFunction<T>;
+}
+
+jest.mock('utils/WalletCryptoLibrary');
+const getCryptoMock = mockFunction(getCrypto);
+getCryptoMock.mockImplementation(() => getMockCrypto() as Crypto);
 
 /**
  * This test uses a MOCK version of the crypto.subtle API.
@@ -17,8 +26,7 @@ describe('=== Wallet Cryptography Handler tests ===', () => {
     it('should correctly encrypt and decrypt the generated seed', async () => {
       /* this is the MOCK crypto manager, it uses the mock SubtleCrypto library */
 
-      let mockCryptoManager : WalletCryptographyHandler
-      | null = new WalletCryptographyHandler(WalletCryptoLibrary.getCrypto());
+      let mockCryptoManager : WalletCryptographyHandler | null = new WalletCryptographyHandler();
 
       /* seed to encrypt */
       const seed = sign.keyPair().secretKey;
@@ -33,7 +41,7 @@ describe('=== Wallet Cryptography Handler tests ===', () => {
       /* deleting previous manager and creating new instance of wallet manager, this should ensure
          ensure the correct store and retrieve of the RSA key in indexedDB - app restart */
       mockCryptoManager = null;
-      const newMockCryptoManager = new WalletCryptographyHandler(WalletCryptoLibrary.getCrypto());
+      const newMockCryptoManager = new WalletCryptographyHandler();
 
       expect(mockCryptoManager).toBeNull();
 

@@ -81,7 +81,7 @@ export class HDWallet {
    */
   public async getDecryptedSeed(): Promise<Uint8Array> {
     const encodedStoredSeed: string = await WalletStore.get();
-    const storedSeed = HDWallet.deSerializeEncryptedSeed(encodedStoredSeed);
+    const storedSeed = HDWallet.deserializeEncryptedSeed(encodedStoredSeed);
     const plaintext: ArrayBuffer = await this.cryptoManager
       .decrypt(storedSeed);
     const seed: Uint8Array = new Uint8Array(plaintext);
@@ -121,7 +121,7 @@ export class HDWallet {
    */
   public static async fromState(encryptedSerializedSeed: string): Promise<HDWallet> {
     const wallet: HDWallet = new
-    HDWallet(HDWallet.deSerializeEncryptedSeed(encryptedSerializedSeed));
+    HDWallet(HDWallet.deserializeEncryptedSeed(encryptedSerializedSeed));
 
     wallet.cryptoManager = new WalletCryptographyHandler();
     await wallet.cryptoManager.initWalletStorage();
@@ -143,7 +143,7 @@ export class HDWallet {
    * @private
    */
   private static serializeEncryptedSeed(encryptedSeed: ArrayBuffer): string {
-    return new Int8Array(encryptedSeed).toString();
+    return new Uint8Array(encryptedSeed).toString();
   }
 
   /**
@@ -152,9 +152,9 @@ export class HDWallet {
    * @param encryptedSeedEncoded
    * @private
    */
-  private static deSerializeEncryptedSeed(encryptedSeedEncoded: string): ArrayBuffer {
+  private static deserializeEncryptedSeed(encryptedSeedEncoded: string): ArrayBuffer {
     const buffer = encryptedSeedEncoded.split(this.BUFFER_SEPARATOR);
-    const bufView = new Int8Array(buffer.length);
+    const bufView = new Uint8Array(buffer.length);
     for (let i = 0; i < buffer.length; i += 1) {
       bufView[i] = Number(buffer[i]);
     }
