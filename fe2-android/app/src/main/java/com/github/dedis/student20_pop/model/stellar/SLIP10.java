@@ -1,6 +1,7 @@
 package com.github.dedis.student20_pop.model.stellar;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import javax.crypto.Mac;
@@ -16,7 +17,7 @@ public final class SLIP10 {
   private SLIP10() {
   }
 
-  private static final String hmacSHA512algorithm = "HmacSHA512";
+  private static final String HMAC_SHA_512_ALGORITHM = "HmacSHA512";
 
   /**
    * Derives only the private key for ED25519 in the manor defined in
@@ -34,36 +35,34 @@ public final class SLIP10 {
   public static byte[] deriveEd25519PrivateKey(final byte[] seed, final int... indexes)
       throws NoSuchAlgorithmException, ShortBufferException, InvalidKeyException {
 
-    final byte[] I = new byte[64];
-    final Mac mac = Mac.getInstance(hmacSHA512algorithm);
+    final byte[] iMacSha = new byte[64];
+    final Mac mac = Mac.getInstance(HMAC_SHA_512_ALGORITHM);
 
     // I = HMAC-SHA512(Key = bytes("ed25519 seed"), Data = seed)
-    mac.init(new SecretKeySpec("ed25519 seed".getBytes(Charset.forName("UTF-8")), hmacSHA512algorithm));
+    mac.init(new SecretKeySpec("ed25519 seed".getBytes(StandardCharsets.UTF_8),
+        HMAC_SHA_512_ALGORITHM));
     mac.update(seed);
-    mac.doFinal(I, 0);
+    mac.doFinal(iMacSha, 0);
 
     for (int i : indexes) {
-      // I = HMAC-SHA512(Key = c_par, Data = 0x00 || ser256(k_par) || ser32(i'))
-      // which is simply:
-      // I = HMAC-SHA512(Key = Ir, Data = 0x00 || Il || ser32(i'))
       // Key = Ir
-      mac.init(new SecretKeySpec(I, 32, 32, hmacSHA512algorithm));
+      mac.init(new SecretKeySpec(iMacSha, 32, 32, HMAC_SHA_512_ALGORITHM));
       // Data = 0x00
       mac.update((byte) 0x00);
       // Data += Il
-      mac.update(I, 0, 32);
+      mac.update(iMacSha, 0, 32);
       // Data += ser32(i')
       mac.update((byte) (i >> 24 | 0x80));
       mac.update((byte) (i >> 16));
       mac.update((byte) (i >> 8));
       mac.update((byte) i);
       // Write to I
-      mac.doFinal(I, 0);
+      mac.doFinal(iMacSha, 0);
     }
 
-    final byte[] Il = new byte[32];
+    final byte[] ilMacSha = new byte[32];
     // copy head 32 bytes of I into Il
-    System.arraycopy(I, 0, Il, 0, 32);
-    return Il;
+    System.arraycopy(iMacSha, 0, ilMacSha, 0, 32);
+    return ilMacSha;
   }
 }

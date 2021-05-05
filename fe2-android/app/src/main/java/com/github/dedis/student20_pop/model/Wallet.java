@@ -8,7 +8,6 @@ import io.github.novacrypto.bip39.MnemonicValidator;
 import io.github.novacrypto.bip39.SeedCalculator;
 import io.github.novacrypto.bip39.Words;
 import io.github.novacrypto.bip39.wordlists.English;
-import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -19,9 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
-import javax.crypto.Mac;
 import javax.crypto.ShortBufferException;
-import javax.crypto.spec.SecretKeySpec;
 import net.i2p.crypto.eddsa.Utils;
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
@@ -33,11 +30,9 @@ import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 public class Wallet {
 
   private static final String TAG = Wallet.class.getSimpleName();
-  private static final String HMAC_SHA512 = "HmacSHA512";
   private static final int PURPOSE =  888;
   private static final int ACCOUNT =  0;
   private byte[] seed;
-  private boolean isSetUp = false;
 
   private static final Wallet instance = new Wallet();
   public static Wallet getInstance() {
@@ -269,17 +264,12 @@ public class Wallet {
           .validate(words);
       seed = new SeedCalculator().calculateSeed(words, "");
       Log.d(TAG, "ImportSeed: new seed: " + Utils.bytesToHex(seed));
-      isSetUp = true;
       return recoverAllKeys(Utils.bytesToHex(seed), knowsLaosRollCalls);
 
     } catch (Exception e) {
       Log.d(TAG,"Unable to import words:" + e.getMessage());
       return null;
     }
-  }
-
-  public boolean isSetUp(){
-    return isSetUp;
   }
 
 }

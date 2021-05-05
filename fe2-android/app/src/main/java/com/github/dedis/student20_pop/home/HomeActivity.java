@@ -187,23 +187,23 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private boolean walletIsSetUp() {
-    if(!Wallet.getInstance().isSetUp()){
+    if(!mViewModel.isWalletSetUp()){
       setUpWalletMessage();
-      return false;
-    } else { return true; }
+    }
+    return mViewModel.isWalletSetUp();
   }
 
   public void setUpWalletMessage(){
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
     builder.setTitle("You have to setup up your wallet before connecting.");
-    builder.setPositiveButton("Go to wallet", (dialog, which) -> mViewModel.openWallet(false));
+    builder.setPositiveButton("Go to wallet", (dialog, which) -> mViewModel.openWallet());
     builder.show();
   }
 
   public void setupWalletButton() {
     Button launchButton = (Button) findViewById(R.id.tab_wallet);
     launchButton.setOnClickListener(v ->
-        mViewModel.openWallet(Wallet.getInstance().isSetUp()));
+        mViewModel.openWallet());
   }
 
   private void setupHomeFragment() {

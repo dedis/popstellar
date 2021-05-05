@@ -56,10 +56,12 @@ public class HomeViewModel extends AndroidViewModel
   private final MutableLiveData<Event<Boolean>> mOpenWalletEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenSeedEvent = new MutableLiveData<>();
 
+
   /*
    * LiveData objects that represent the state in a fragment
    */
   private final MutableLiveData<String> mConnectingLao = new MutableLiveData<>();
+  private final MutableLiveData<Boolean> mIsWalletSetUp = new MutableLiveData<>(false);
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
   private LiveData<List<Lao>> mLAOs;
 
@@ -207,6 +209,8 @@ public class HomeViewModel extends AndroidViewModel
 
   public LiveData<String> getLaoName() { return mLaoName; }
 
+  public Boolean isWalletSetUp() { return mIsWalletSetUp.getValue(); }
+
   public LiveData<Event<Boolean>> getOpenWalletEvent() {
     return mOpenWalletEvent;
   }
@@ -230,8 +234,8 @@ public class HomeViewModel extends AndroidViewModel
     mOpenConnectingEvent.postValue(new Event<>(true));
   }
   
-  public void openWallet(Boolean isSetUp) {
-    mOpenWalletEvent.postValue(new Event<>(isSetUp));
+  public void openWallet() {
+    mOpenWalletEvent.postValue(new Event<>(isWalletSetUp()));
   }
 
   public void openSeed(){mOpenSeedEvent.postValue(new Event<>(true));}
@@ -277,4 +281,6 @@ public class HomeViewModel extends AndroidViewModel
   public void setLaoName(String name) {
     this.mLaoName.setValue(name);
   }
+
+  public void setIsWalletSetUp(Boolean isSetUp) { this.mIsWalletSetUp.setValue(isSetUp); }
 }

@@ -74,7 +74,8 @@ public class SeedWalletFragment extends Fragment {
               Toast.makeText(getContext().getApplicationContext(), errorMessage, Toast.LENGTH_LONG)
                   .show();
             } else {
-              mHomeViewModel.openWallet(true);
+              mHomeViewModel.setIsWalletSetUp(true);
+              mHomeViewModel.openWallet();
             }
           } catch (IllegalArgumentException e) {
             Toast.makeText(getContext().getApplicationContext(),
