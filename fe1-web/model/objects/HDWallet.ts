@@ -1,5 +1,6 @@
 import { WalletStore } from 'store/stores/WalletStore';
 import * as bip39 from 'bip39';
+import { derivePath, getPublicKey } from 'ed25519-hd-key';
 import { WalletCryptographyHandler } from './WalletCryptographyHandler';
 
 /**
@@ -157,5 +158,23 @@ export class HDWallet {
       bufView[i] = Number(buffer[i]);
     }
     return bufView.buffer;
+  }
+
+  public recoverTokens() {
+    this.generateKeyFromPath("m/0'/2147483647'");
+  }
+
+  public generateKeyFromPath(path: string) {
+    this.getDecryptedSeed().then((seedArray) => {
+      const { key, chainCode } = derivePath(path, seedArray.toString());
+      const publicKey = getPublicKey(key);
+      console.log('key');
+      console.log(key.toString('hex'));
+      console.log('chain code');
+      console.log(chainCode.toString('hex'));
+      console.log('public key');
+      console.log(publicKey.toString('hex'));
+      return { key, publicKey };
+    });
   }
 }
