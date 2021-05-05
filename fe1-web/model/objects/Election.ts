@@ -6,9 +6,9 @@ export interface ElectionState extends LaoEventState {
   lao: string;
   name: string;
   version: string;
-  creation: number;
-  start_time: number;
-  end_time: number;
+  created_at: number;
+  start: number;
+  end: number;
   questions: Question[];
 }
 
@@ -82,9 +82,9 @@ export class Election implements LaoEvent {
       id: new Hash(e.id),
       name: e.name,
       version: e.version,
-      created_at: new Timestamp(e.creation),
-      start: new Timestamp(e.start_time),
-      end: new Timestamp(e.end_time),
+      created_at: new Timestamp(e.created_at),
+      start: new Timestamp(e.start),
+      end: new Timestamp(e.end),
       questions: e.questions,
     });
   }

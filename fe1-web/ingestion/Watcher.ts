@@ -21,7 +21,8 @@ export function makeMessageStoreWatcher(store: Store) {
     const newValue = msgState.unprocessedIds;
     [previousValue, currentValue] = [currentValue, newValue];
 
-    if ((previousValue) && previousValue.length === currentValue.length && previousValue.every((value, index) => value === currentValue[index])) {
+    if ((previousValue) && previousValue.length === currentValue.length
+      && previousValue.every((value, index) => value === currentValue[index])) {
       // no change detected, return immediately
       return;
     }

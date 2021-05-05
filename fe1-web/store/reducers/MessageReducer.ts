@@ -77,20 +77,19 @@ const messagesSlice = createSlice({
       },
       reducer(state, action: PayloadAction<{
         laoId: string;
-        messageId: string;
+        messageIds: string[];
       }>) {
-        const { laoId, messageId } = action.payload;
-
+        const { laoId, messageIds } = action.payload;
         if (!(laoId in state.byLaoId)) {
           return;
         }
-        console.log('MarkExtMessage Executed');
-        state.byLaoId[laoId].byId[messageId] = markExtMessageAsProcessed(
-          state.byLaoId[laoId].byId[messageId],
-        );
-
-        state.byLaoId[laoId].unprocessedIds = state.byLaoId[laoId].unprocessedIds
-          .filter((e) => e !== messageId);
+        messageIds.forEach((messageId: string) => {
+          state.byLaoId[laoId].byId[messageId] = markExtMessageAsProcessed(
+            state.byLaoId[laoId].byId[messageId],
+          );
+          state.byLaoId[laoId].unprocessedIds = state.byLaoId[laoId].unprocessedIds
+            .filter((e) => e !== messageId);
+        });
       },
     },
 
@@ -130,11 +129,6 @@ const messagesSlice = createSlice({
         msg.witness_signatures.push(witnessSignature);
       },
     },
-
-    // Empty the list of known Messages ("reset")
-    clearAllMessages: (state) => {
-      state.byLaoId = {};
-    },
   },
 });
 
@@ -162,7 +156,7 @@ export function makeLaoMessagesState() {
     (state) => getLaosState(state).currentId,
     // Selector: returns a LaoState -- should it return a Lao object?
     (msgMap: Record<string, MessageReducerState>, laoId: string | undefined)
-      : MessageReducerState | undefined => {
+    : MessageReducerState | undefined => {
       if (laoId === undefined || !(laoId in msgMap)) {
         return undefined;
       }
