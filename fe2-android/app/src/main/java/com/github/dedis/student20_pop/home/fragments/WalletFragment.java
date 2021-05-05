@@ -83,17 +83,10 @@ public class WalletFragment extends Fragment {
       });
 
       builder.setPositiveButton("Set up wallet", (dialog,which) -> {
-          String errorMessage = "Error import key, try again";
-          try {
-            if(wallet.importSeed(input.getText().toString(), new HashMap<>()) == null){
-              Toast.makeText(getContext().getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
-            } else {
-              mHomeViewModel.setIsWalletSetUp(true);
-              mHomeViewModel.openWallet();
-            }
-          } catch (IllegalArgumentException e) {
+          if(!mHomeViewModel.importSeed(input.getText().toString())){
             Toast.makeText(getContext().getApplicationContext(),
-                errorMessage +" : "+ e.getMessage(), Toast.LENGTH_LONG).show();
+                "Error import key, try again",
+                Toast.LENGTH_LONG).show();
           }
         }
       );

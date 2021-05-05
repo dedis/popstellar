@@ -67,19 +67,10 @@ public class SeedWalletFragment extends Fragment {
       AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
       builder.setTitle("You are sure you have saved the words somewhere?");
       builder.setPositiveButton("Yes", (dialog, which)-> {
-          String errorMessage = "Error import key, try again";
-          try {
-            String seed = mSeedWalletFragBinding.seedWallet.getText().toString();
-            if (wallet.importSeed(seed, new HashMap<>()) == null) {
-              Toast.makeText(getContext().getApplicationContext(), errorMessage, Toast.LENGTH_LONG)
-                  .show();
-            } else {
-              mHomeViewModel.setIsWalletSetUp(true);
-              mHomeViewModel.openWallet();
-            }
-          } catch (IllegalArgumentException e) {
-            Toast.makeText(getContext().getApplicationContext(),
-                errorMessage + " : " + e.getMessage(), Toast.LENGTH_LONG).show();
+        if(!mHomeViewModel.importSeed(mSeedWalletFragBinding.seedWallet.getText().toString())) {
+          Toast.makeText(getContext().getApplicationContext(),
+              "Error import key, try again",
+              Toast.LENGTH_LONG).show();
           }
         }
       );

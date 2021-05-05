@@ -5,6 +5,7 @@ import android.app.Application;
 import android.content.pm.PackageManager;
 import android.util.Base64;
 import android.util.Log;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.AndroidViewModel;
@@ -14,6 +15,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.github.dedis.student20_pop.Event;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Lao;
+import com.github.dedis.student20_pop.model.Wallet;
 import com.github.dedis.student20_pop.model.data.LAORepository;
 import com.github.dedis.student20_pop.model.network.answer.Error;
 import com.github.dedis.student20_pop.model.network.answer.Result;
@@ -32,6 +34,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -71,6 +74,7 @@ public class HomeViewModel extends AndroidViewModel
   private final Gson mGson;
   private final LAORepository mLAORepository;
   private final AndroidKeysetManager mKeysetManager;
+  private Wallet wallet;
 
   private Disposable disposable;
 
@@ -84,6 +88,7 @@ public class HomeViewModel extends AndroidViewModel
     mLAORepository = laoRepository;
     mGson = gson;
     mKeysetManager = keysetManager;
+    wallet = Wallet.getInstance();
 
     mLAOs =
         LiveDataReactiveStreams.fromPublisher(
@@ -161,6 +166,20 @@ public class HomeViewModel extends AndroidViewModel
       Log.d(TAG, "failed to get public key", e);
     } catch (IOException e) {
       Log.d(TAG, "failed to encode public key", e);
+    }
+  }
+
+  public boolean importSeed(String seed) {
+    try {
+      if(wallet.importSeed(seed, new HashMap<>()) == null){
+        return false;
+      } else {
+        setIsWalletSetUp(true);
+        openWallet();
+        return true;
+      }
+    } catch (IllegalArgumentException e) {
+      return false;
     }
   }
 
