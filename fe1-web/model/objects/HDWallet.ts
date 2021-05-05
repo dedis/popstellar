@@ -84,8 +84,7 @@ export class HDWallet {
     const storedSeed = HDWallet.deserializeEncryptedSeed(encodedStoredSeed);
     const plaintext: ArrayBuffer = await this.cryptoManager
       .decrypt(storedSeed);
-    const seed: Uint8Array = new Uint8Array(plaintext);
-    return seed;
+    return new Uint8Array(plaintext);
   }
 
   /**
@@ -110,8 +109,7 @@ export class HDWallet {
    * @return the RSA-encrypted seed
    */
   private async encryptSeedToStoreInState(seed: Uint8Array): Promise<ArrayBuffer> {
-    const encryptedSeed = await this.cryptoManager.encrypt(seed);
-    return encryptedSeed;
+    return this.cryptoManager.encrypt(seed);
   }
 
   /**

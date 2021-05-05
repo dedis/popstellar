@@ -132,7 +132,8 @@ const STRINGS = {
   wallet_public_key: 'public',
   welcome_to_wallet_display: 'Welcome to your wallet !',
   info_to_set_wallet: 'You may import your seed if you own one or create a new wallet',
-  caution_information_on_seed: 'ATTENTION: if you create a new wallet remember to write down the given seed and store it in a secure place, this is the only backup to your PoP tokens',
+  caution_information_on_seed: 'ATTENTION: if you create a new wallet remember to write down the given seed '
+    + 'and store it in a secure place, this is the only backup to your PoP tokens',
   create_new_wallet_button: ' NEW WALLET ',
   import_seed_button: 'I OWN A SEED',
   type_seed_info: 'Type the 12 word seed',

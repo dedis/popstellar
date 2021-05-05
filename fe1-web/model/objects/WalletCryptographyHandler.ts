@@ -57,8 +57,7 @@ export class WalletCryptographyHandler {
     if (key === undefined) {
       throw Error('Error while retrieving encryption key from database: undefined');
     }
-    const ciphertext = await getCrypto().subtle.encrypt(this.algorithm, key, plaintext);
-    return ciphertext;
+    return getCrypto().subtle.encrypt(this.algorithm, key, plaintext);
   }
 
   /**
@@ -70,9 +69,7 @@ export class WalletCryptographyHandler {
     if (key === undefined) {
       throw Error('Error while retrieving decryption key from database: undefined');
     }
-    const plaintext = await getCrypto().subtle
-      .decrypt(this.algorithm, key, ciphertext);
-    return plaintext;
+    return getCrypto().subtle.decrypt(this.algorithm, key, ciphertext);
   }
 
   /**

@@ -20,9 +20,7 @@ Object.defineProperty(crypto, 'subtle', {
     encrypt: async (s: AesGcmParams, publicKey: CryptoKey, plaintext: Uint8Array) => {
       const ciphertext: string = plaintext.join().concat(publicKey.toString());
       const ciphertextBuffer: ArrayBuffer = Buffer.from(ciphertext);
-      return new Promise((resolve) => {
-        resolve(ciphertextBuffer);
-      });
+      return Promise.resolve(ciphertextBuffer);
     },
 
     /* the mock decrypt function is called AFTER walletCryptoManager destruction.
@@ -36,9 +34,7 @@ Object.defineProperty(crypto, 'subtle', {
       /* undoing public key append by substituting the substring with empty string */
       const plaintext: string = ciphertext.toString().replace(publicKey.toString(), '');
       const plaintextBuffer: ArrayBuffer = Buffer.from(plaintext);
-      return new Promise((resolve) => {
-        resolve(plaintextBuffer);
-      });
+      return Promise.resolve(plaintextBuffer);
     },
   },
 });
