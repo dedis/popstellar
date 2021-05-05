@@ -4,16 +4,8 @@ import { sign } from 'tweetnacl';
 
 /* used to simulate indexedDB database to test store/retrieve functions */
 import 'fake-indexeddb/auto';
-import { getCrypto } from 'utils/WalletCryptoLibrary';
-import { getMockCrypto } from 'utils/__mocks__/WalletCryptoLibrary';
 
-function mockFunction<T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> {
-  return fn as jest.MockedFunction<T>;
-}
-
-jest.mock('utils/WalletCryptoLibrary');
-const getCryptoMock = mockFunction(getCrypto);
-getCryptoMock.mockImplementation(() => getMockCrypto() as Crypto);
+jest.mock('utils/Crypto');
 
 /**
  * This test uses a MOCK version of the crypto.subtle API.
