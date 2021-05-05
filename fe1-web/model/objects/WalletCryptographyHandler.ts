@@ -1,6 +1,6 @@
 import { get, set, update } from 'idb-keyval';
 import STRINGS from 'res/strings';
-import { getCrypto } from 'utils/WalletCryptoLibrary';
+import { getCrypto } from '../../utils/Crypto';
 
 /* wallet cryptography key interface */
 export interface WalletCryptoKey {
