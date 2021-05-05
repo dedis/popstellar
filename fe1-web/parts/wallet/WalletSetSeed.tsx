@@ -36,6 +36,13 @@ const WalletSetSeed = ({ navigation }: IPropTypes) => {
   /* used to set the mnemonic seed inserted by the user */
   const [seed, setSeed] = useState('');
 
+  const initWallet = () => {
+    wallet.initialize(seed)
+      .then((seedIsValid) => ((seedIsValid)
+        ? navigation.navigate(STRINGS.navigation_synced_wallet)
+        : navigation.navigate(STRINGS.navigation_home_tab_wallet)));
+  };
+
   function getInsertSeedWalletDisplay() {
     return (
       <View style={styleContainer.centered}>
@@ -48,10 +55,7 @@ const WalletSetSeed = ({ navigation }: IPropTypes) => {
         <View style={styles.smallPadding} />
         <WideButtonView
           title={STRINGS.setup_wallet}
-          onPress={() => wallet.initialize(seed)
-            .then((seedIsValid) => ((seedIsValid)
-              ? navigation.navigate(STRINGS.navigation_synced_wallet)
-              : navigation.navigate(STRINGS.navigation_home_tab_wallet)))}
+          onPress={() => initWallet()}
         />
         <WideButtonView
           title={STRINGS.back_to_wallet_home}

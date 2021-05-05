@@ -15,6 +15,19 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
+let wallet: HDWallet;
+
+/**
+ * retrieves the tokens from the wallet seed
+ * using HD wallet functionalities
+ */
+const retrieveTokensFromSeed = () => {
+  wallet.getDecryptedSeed()
+    .then(() => {
+      // TODO : recover all PoP tokens from wallet
+    });
+};
+
 /**
  * wallet UI once the wallet is synced
  * @constructor
@@ -23,7 +36,6 @@ const WalletSyncedSeed = () => {
   /* boolean set to true if the token recover process is finished */
   const [tokensRecovered, setTokensRecovered] = useState(false);
 
-  let wallet: HDWallet;
   WalletStore.get().then((encryptedSeed) => HDWallet
     .fromState(encryptedSeed)
     .then((w) => {
@@ -31,6 +43,7 @@ const WalletSyncedSeed = () => {
     }));
 
   function showTokens() {
+    // TODO
     return (
       <View>
         <TextBlock bold text="TOKENS" />
@@ -46,9 +59,8 @@ const WalletSyncedSeed = () => {
         <WideButtonView
           title={STRINGS.recover_tokens_title}
           onPress={() => {
-            wallet.getDecryptedSeed()
-              .then(() => setTokensRecovered(true));
-            // TODO : recover all PoP tokens for this walletHome
+            retrieveTokensFromSeed();
+            setTokensRecovered(true);
           }}
         />
       </View>
