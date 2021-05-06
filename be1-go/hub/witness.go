@@ -76,40 +76,9 @@ func (w *witnessHub) handleMessageFromOrganizer(incomingMessage *IncomingMessage
 
 	id := query.GetID()
 
-		err := query.Publish.Params.Message.VerifyAndUnmarshalData()
-		if err != nil {
-			log.Printf("failed to verify and unmarshal data: %v", err)
-			witness.SendError(query.Publish.ID, err)
-			return
-		}
-
-		if query.Publish.Params.Message.Data.GetAction() == message.DataAction(message.CreateLaoAction) &&
-			query.Publish.Params.Message.Data.GetObject() == message.DataObject(message.LaoObject) {
-			err := witnessHub{}.createLao(*query.Publish)
-			if err != nil {
-				log.Printf("failed to create lao: %v", err)
-				client.SendError(query.Publish.ID, err)
-				return
-			}
-		} else {
-			log.Printf("invalid method: %s", query.GetMethod())
-			client.SendError(id, &message.Error{
-				Code:        -1,
-				Description: "you may only invoke lao/create on /root",
-			})
-			return
-		}
-
-		status := 0
-		result := message.Result{General: &status}
-		log.Printf("sending result: %+v", result)
-		client.SendResult(id, result)
-		return
-	}
-
 	if channelID[:6] != "/root/" {
 		log.Printf("channel id must begin with /root/")
-		client.SendError(id, &message.Error{
+		witness.SendError(id, &message.Error{
 			Code:        -2,
 			Description: "channel id must begin with /root/",
 		})
@@ -117,17 +86,17 @@ func (w *witnessHub) handleMessageFromOrganizer(incomingMessage *IncomingMessage
 	}
 
 	channelID = channelID[6:]
-	o.RLock()
-	channel, ok := o.channelByID[channelID]
+	w.RLock()
+	_, ok := w.channelByID[channelID]
 	if !ok {
 		log.Printf("invalid channel id: %s", channelID)
-		client.SendError(id, &message.Error{
+		witness.SendError(id, &message.Error{
 			Code:        -2,
 			Description: fmt.Sprintf("channel with id %s does not exist", channelID),
 		})
 		return
 	}
-	o.RUnlock()
+	w.RUnlock()
 
 	method := query.GetMethod()
 	log.Printf("method: %s", method)
@@ -137,21 +106,33 @@ func (w *witnessHub) handleMessageFromOrganizer(incomingMessage *IncomingMessage
 	// TODO: use constants
 	switch method {
 	case "subscribe":
-		err = channel.Subscribe(&client, *query.Subscribe)
+		err = &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("No subscribe message is expected to come from other servers"),
+		}
 	case "unsubscribe":
-		err = channel.Unsubscribe(&client, *query.Unsubscribe)
+		err  = &message.Error{
+		Code:        -4,
+		Description: fmt.Sprintf("No unsubscribe message is expected to come from other servers"),
+		}
 	case "publish":
-		err = channel.Publish(*query.Publish)
+		//the witness should not receive any publish messages
+		err = &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("No publish message is expected to come from other servers"),
+		}
 	case "message":
 		log.Printf("cannot handle broadcasts right now")
 	case "catchup":
-		msg = channel.Catchup(*query.Catchup)
+		//TODO: do we need to go throw the channel for this catchup?
+		//msg = channel.Catchup(*query.Catchup)
+		err = w.sendAllMessagesToSender(sender,witness,id)
 		// TODO send catchup response to client
 	}
 
 	if err != nil {
 		log.Printf("failed to process query: %v", err)
-		client.SendError(id, err)
+		witness.SendError(id, err)
 		return
 	}
 
@@ -164,8 +145,21 @@ func (w *witnessHub) handleMessageFromOrganizer(incomingMessage *IncomingMessage
 		result.General = &general
 	}
 
-	client.SendResult(id, result)
+	witness.SendResult(id, result)
 }
+
+func (w *witnessHub)sendAllMessagesToSender(sender message.PublicKey,socket WitnessSocket,id int) error{
+	for _,v := range w.receivedMessages{
+		buf,err := json.Marshal(v)
+		if err != nil{
+			return  &message.Error{
+				Code:        -4,
+				Description: fmt.Sprintf("Failed to Marshal an already received message"),
+			}
+		}
+		socket.Send(buf)
+	}
+	return nil
 }
 
 func (w *witnessHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
