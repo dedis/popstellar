@@ -245,8 +245,8 @@ public class LAORepository {
   }
 
   private boolean handleElectionEnd(String channel, ElectionEnd data) {
-    //TODO:
     Lao lao = laoById.get(channel).getLao();
+
     return false;
   }
 

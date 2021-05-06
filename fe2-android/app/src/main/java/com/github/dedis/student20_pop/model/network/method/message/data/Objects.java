@@ -7,6 +7,7 @@ import java.util.List;
 /** Enumerates all possible messages objects */
 public enum Objects {
   LAO("lao"),
+  ELECTION("election"),
   MEETING("meeting"),
   MESSAGE("message"),
   ROLL_CALL("roll_call");
