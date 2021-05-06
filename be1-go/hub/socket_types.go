@@ -9,18 +9,18 @@ import (
 type SocketType string
 
 const (
-	clientSocket SocketType = "client"
-	organizerSocket SocketType= "organizer"
-	witnessSocket SocketType= "witness"
+	ClientSocketType    SocketType = "client"
+	OrganizerSocketType SocketType = "organizer"
+	WitnessSocketType   SocketType = "witness"
 )
 
 func newSocket(socketType SocketType, h Hub, conn *websocket.Conn) *baseSocket {
-	return &baseSocket {
+	return &baseSocket{
 		socketType: socketType,
-		hub:  h,
-		conn: conn,
-		send: make(chan []byte, 256),
-		Wait: sync.WaitGroup{},
+		hub:        h,
+		conn:       conn,
+		send:       make(chan []byte, 256),
+		Wait:       sync.WaitGroup{},
 	}
 }
 
@@ -29,9 +29,9 @@ type ClientSocket struct {
 }
 
 // NewClient returns an instance of a baseSocket.
-func NewClientSocket (h Hub, conn *websocket.Conn) *ClientSocket {
+func NewClientSocket(h Hub, conn *websocket.Conn) *ClientSocket {
 	return &ClientSocket{
-		newSocket(clientSocket, h, conn),
+		newSocket(ClientSocketType, h, conn),
 	}
 }
 
@@ -40,8 +40,8 @@ type OrganizerSocket struct {
 }
 
 func NewOrganizerSocket(h Hub, conn *websocket.Conn) *OrganizerSocket {
-	return &OrganizerSocket {
-		newSocket(organizerSocket, h, conn),
+	return &OrganizerSocket{
+		newSocket(OrganizerSocketType, h, conn),
 	}
 }
 
@@ -50,7 +50,7 @@ type WitnessSocket struct {
 }
 
 func NewWitnessSocket(h Hub, conn *websocket.Conn) *WitnessSocket {
-	return &WitnessSocket {
-		newSocket(witnessSocket, h, conn),
+	return &WitnessSocket{
+		newSocket(WitnessSocketType, h, conn),
 	}
 }

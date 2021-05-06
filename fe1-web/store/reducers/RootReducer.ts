@@ -9,6 +9,7 @@ import laoReducer from './LaoReducer';
 import keyPairReducer from './KeyPairReducer';
 import eventsReducer from './EventsReducer';
 import messageReducer from './MessageReducer';
+import walletReducer from './WalletReducer';
 
 import { wrapWithClearStorageReducer } from './ClearStorageReducer';
 
@@ -22,6 +23,7 @@ const appReducer = persistCombineReducers(persistConfig, {
   ...laoReducer,
   ...eventsReducer,
   ...messageReducer,
+  ...walletReducer,
   openedRollCallId: openRollCallIDReducer,
 });
 
