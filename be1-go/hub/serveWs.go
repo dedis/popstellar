@@ -1,4 +1,4 @@
-git package hub
+package hub
 
 import (
 	"fmt"
