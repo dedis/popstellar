@@ -179,10 +179,10 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	log.Printf("organizerHub::handleMessageFromClient: %s", incomingMessage.Message)
 
 	switch incomingMessage.Socket.socketType {
-	case clientSocket:
+	case ClientSocketType:
 		o.handleMessageFromClient(incomingMessage)
 		return
-	case witnessSocket:
+	case WitnessSocketType:
 		o.handleMessageFromWitness(incomingMessage)
 		return
 	default:

@@ -35,6 +35,12 @@ const STRINGS = {
   organizer_navigation_creation_meeting: 'Create meeting',
   organizer_navigation_creation_roll_call: 'Create roll call',
 
+  /* --- Wallet Navigation Strings --- */
+  navigation_home_tab_wallet: 'Wallet',
+  navigation_insert_seed_tab_wallet: 'Wallet Setup',
+  navigation_show_seed_wallet: 'New Wallet',
+  navigation_synced_wallet: 'Your Wallet',
+
   /* --- Home Strings --- */
   home_welcome: 'Welcome to Personhood.Online!',
   home_connect_lao: 'To connect to a local organization (LAO), please tap to Connect above',
@@ -120,15 +126,23 @@ const STRINGS = {
   meeting_create_location: 'Location',
 
   /* --- Wallet Strings --- */
-  wallet: 'Initialize wallet cryptography handler database',
-  wallet_add: 'Add encryption/decryption key to database ',
-  wallet_remove: 'Remove encryption/decryption key from database ',
-  wallet_encrypt_random_token: 'Encrypt test-token - ed25519 key',
-  wallet_decrypt_random_token: 'Decrypt previously encrypted test-token',
   wallet_private_key_id: 'Private Decryption Key',
   wallet_public_key_id: 'Public Encryption Key',
-  wallet_public_key: 'public',
   wallet_private_key: 'private',
+  wallet_public_key: 'public',
+  welcome_to_wallet_display: 'Welcome to your wallet !',
+  info_to_set_wallet: 'You may import your seed if you own one or create a new wallet',
+  caution_information_on_seed: 'ATTENTION: if you create a new wallet remember to write down the given seed '
+    + 'and store it in a secure place, this is the only backup to your PoP tokens',
+  create_new_wallet_button: ' NEW WALLET ',
+  import_seed_button: 'I OWN A SEED',
+  type_seed_info: 'Type the 12 word seed',
+  show_seed_info: 'This is the only backup seed for your PoP tokens - store it securely',
+  type_seed_example: 'example:   grape  sock  height  they  tiny  voyage  kid  young  domain  trumpet  three  patrol',
+  wallet_synced_info: 'Your digital wallet is synced !',
+  setup_wallet: 'SETUP WALLET',
+  back_to_wallet_home: 'BACK TO WALLET HOME',
+  recover_tokens_title: 'RECOVER POP TOKENS',
 
   /* --- General creation Strings --- */
   create_description: 'Choose the type of event you want to create',
