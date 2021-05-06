@@ -8,6 +8,8 @@ import java.util.List;
 public enum Action {
   CREATE("create"),
   END("end"),
+  RESULT("result"),
+  SETUP("setup"),
   UPDATE("update_properties"),
   STATE("state"),
   WITNESS("witness"),

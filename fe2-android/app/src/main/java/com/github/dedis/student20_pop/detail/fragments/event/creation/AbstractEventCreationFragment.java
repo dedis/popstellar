@@ -100,9 +100,14 @@ public abstract class AbstractEventCreationFragment extends Fragment {
         });
   }
 
-  public void addDateAndTimeListener(TextWatcher listener) {
+  public void addStartDateAndTimeListener(TextWatcher listener) {
     startTimeEditText.addTextChangedListener(listener);
     startDateEditText.addTextChangedListener(listener);
+  }
+
+  public void addEndDateAndTimeListener(TextWatcher listener) {
+    endTimeEditText.addTextChangedListener(listener);
+    endDateEditText.addTextChangedListener(listener);
   }
 
   public String getStartDate() {
@@ -112,6 +117,10 @@ public abstract class AbstractEventCreationFragment extends Fragment {
   public String getStartTime() {
     return startTimeEditText.getText().toString().trim();
   }
+
+  public String getEndDate() { return endDateEditText.getText().toString().trim(); }
+
+  public String getEndTime() { return endTimeEditText.getText().toString().trim(); }
 
   public void checkDates(int requestCode, int resultCode, Intent data) {
     if (resultCode == Activity.RESULT_OK) {
@@ -264,6 +273,17 @@ public abstract class AbstractEventCreationFragment extends Fragment {
       }
       Instant end = Instant.ofEpochMilli(completeEndTime.getTimeInMillis());
       endTimeInSeconds = end.getEpochSecond();
+    }
+  }
+
+  public void editTextInputChecker(EditText editText, String errorMessage){
+    if(editText != null && errorMessage != null) {
+      if (editText.getText().toString().trim().isEmpty()) {
+        editText.setError(errorMessage);
+      }
+    }
+    else{
+      throw new IllegalArgumentException();
     }
   }
 }

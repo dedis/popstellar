@@ -106,5 +106,24 @@
     <!-- Properties -->
     <string name="test_organization_name">Test Organization Name</string>
     <string name="edit_lao_name">Edit Lao Name</string>
+    <string name="election_name">Election Name</string>
+    <string name="lao_name">LAO name</string>
+    <string name="election_setup">Election Setup</string>
+    <string name="select_a_voting_method">Select a voting method</string>
+    <string name="submit">Submit</string>
+    <string name="todo">TODO</string>
+    <string name="ballot_option_2">Ballot option 2</string>
+
+    <!-- Election Event -->
+    <string name="election_setup_presentation_title_text">Election Setup</string>
+    <string name="add_ballot_options_button_text">Add ballot options</string>
+    <string name="election_setup_name_hint">Election name</string>
+    <string name="election_question_hint">Question :</string>
+    <string name="voting_method_spinner_text">Select a voting method</string>
+    <string name="write_in_switch_text">Allow write in</string>
+    <string name="new_ballot_option_hint">ballot option</string>
+
+
+
 
 </resources>

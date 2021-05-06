@@ -7,10 +7,10 @@ import java.util.List;
 /** Enumerates all possible messages objects */
 public enum Objects {
   LAO("lao"),
-  ELECTION("election"),
   MEETING("meeting"),
   MESSAGE("message"),
-  ROLL_CALL("roll_call");
+  ROLL_CALL("roll_call"),
+  ELECTION("election");
 
   private static final List<Objects> ALL = Collections.unmodifiableList(Arrays.asList(values()));
   private final String object;
