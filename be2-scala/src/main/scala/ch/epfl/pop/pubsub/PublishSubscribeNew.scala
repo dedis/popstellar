@@ -2,17 +2,17 @@ package ch.epfl.pop.pubsub
 
 import akka.NotUsed
 import akka.actor.ActorSystem
-import akka.stream.SinkShape
-import akka.stream.scaladsl.{GraphDSL, Merge, Partition, Sink}
+import akka.http.scaladsl.model.ws.{Message, TextMessage}
+import akka.stream.FlowShape
+import akka.stream.scaladsl.{Flow, GraphDSL, Merge, Partition}
 import ch.epfl.pop.pubsub.graph.handlers.ParamsWithMessageHandler
-import ch.epfl.pop.pubsub.graph.{Answerer, GraphMessage, MessageDecoder, MessageEncoder, Validator}
+import ch.epfl.pop.pubsub.graph.{Answerer, GraphMessage, MessageDecoder, MessageEncoder, PipelineError, Validator}
+
 
 // FIXME rename when old PublishSubscribe file is deleted
 object PublishSubscribeNew extends App {
 
-  implicit val system: ActorSystem = ActorSystem() // typed actors? // FIXME actor system
-
-  val graph = Sink.fromGraph(GraphDSL.create() { implicit builder: GraphDSL.Builder[NotUsed] =>
+  def buildGraph(implicit system: ActorSystem): Flow[Message, Message, NotUsed] = Flow.fromGraph(GraphDSL.create() { implicit builder: GraphDSL.Builder[NotUsed] =>
     import GraphDSL.Implicits._
 
     /* partitioner port numbers */
@@ -23,7 +23,10 @@ object PublishSubscribeNew extends App {
 
 
     /* building blocks */
-    // json-schema validation
+    // input message from the client
+    val input = builder.add(Flow[Message].collect { case TextMessage.Strict(s) => s})
+
+    // json-schema validator
     val schemaValidator = builder.add(Validator.schemaValidator)
 
     val jsonRpcDecoder = builder.add(MessageDecoder.jsonRpcParser)
@@ -36,33 +39,28 @@ object PublishSubscribeNew extends App {
     }))
 
     val hasMessagePartition = builder.add(ParamsWithMessageHandler.graph)
-    val noMessagePartition = ??? // other
+    // val noMessagePartition = ??? // other
 
     val merger = builder.add(Merge[GraphMessage](totalPorts))
 
     val jsonRpcEncoder = builder.add(MessageEncoder.serializer)
     val jsonRpcAnswerer = builder.add(Answerer.answerer)
 
+    // output message (answer) for the client
+    val output = builder.add(Flow[Message])
+
 
     /* glue the components together */
-    schemaValidator ~> jsonRpcDecoder ~> jsonRpcContentValidator ~> methodPartitioner
+    input ~> schemaValidator ~> jsonRpcDecoder ~> jsonRpcContentValidator ~> methodPartitioner
 
     methodPartitioner.out(portPipelineError) ~> merger
     methodPartitioner.out(portParamsWithMessage) ~> hasMessagePartition ~> merger
     methodPartitioner.out(portParams) ~> merger // FIXME add no message partition
 
-    merger ~> jsonRpcEncoder ~> jsonRpcAnswerer
+    merger ~> jsonRpcEncoder ~> jsonRpcAnswerer ~> output
 
 
     /* close the shape */
-    SinkShape(schemaValidator.in)
+    FlowShape(input.in, output.out)
   })
-
-
-
-  // FIXME REMOVE THOSE TESTS (+ object extends App)
-  println("test")
-
-  // val source: Source[Int, NotUsed] = Source(0 to 5)
-  // val a = graph.runWith(source)
 }

@@ -6,8 +6,8 @@ import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 
 object MessageDecoder {
 
-  // Message or TextMessage
   val jsonRpcParser: Flow[Either[JsonString, PipelineError], GraphMessage, NotUsed] = Flow[Either[JsonString, PipelineError]].map {
+    case _ => Right(PipelineError(-12, "json rpc parser output")) // FIXME temporary while parser branch is not mrgered
     case Left(jsonString) =>
       Left(JsonRpcRequest("2.0", MethodType.INVALID, ???, Some(0)))
     // case _ => _ // TODO check if type ok. Else prob Right(pipelineError)
