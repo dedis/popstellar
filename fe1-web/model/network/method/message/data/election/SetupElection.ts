@@ -74,7 +74,23 @@ export class SetupElection implements MessageData {
     if (!msg.questions) {
       throw new ProtocolError('Undefined \'questions\' parameter encountered during \'SetupElection\'');
     }
-    msg.questions.forEach((question) => {
+    SetupElection.validateQuestions(msg.questions);
+    this.questions = msg.questions;
+
+    const lao: Lao = OpenedLaoStore.get();
+
+    const expectedHash = Hash.fromStringArray(
+      EventTags.ELECTION, lao.id.toString(), lao.creation.toString(), msg.name,
+    );
+    if (!expectedHash.equals(msg.id)) {
+      throw new ProtocolError("Invalid 'id' parameter encountered during 'SetupElection':"
+        + ' re-computing the value yields a different result');
+    }
+    this.id = msg.id;
+  }
+
+  public static validateQuestions(questions: Question[]) {
+    questions.forEach((question) => {
       if (!question.id) {
         throw new ProtocolError('Undefined \'question id\' parameter encountered during \'SetupElection\'');
       }
@@ -88,18 +104,6 @@ export class SetupElection implements MessageData {
         throw new ProtocolError('Undefined \'ballot_options\' parameter encountered during \'SetupElection\'');
       }
     });
-    this.questions = msg.questions;
-
-    const lao: Lao = OpenedLaoStore.get();
-
-    const expectedHash = Hash.fromStringArray(
-      EventTags.ELECTION, lao.id.toString(), lao.creation.toString(), msg.name,
-    );
-    if (!expectedHash.equals(msg.id)) {
-      throw new ProtocolError("Invalid 'id' parameter encountered during 'SetupElection':"
-        + ' re-computing the value yields a different result');
-    }
-    this.id = msg.id;
   }
 
   public static fromJson(obj: any): SetupElection {
