@@ -18,6 +18,7 @@ import com.github.dedis.student20_pop.model.network.method.Unsubscribe;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
@@ -222,6 +223,8 @@ public class LAORepository {
       enqueue = handleCloseRollCall(channel, (CloseRollCall) data);
     } else if (data instanceof WitnessMessage) {
       enqueue = handleWitnessMessage(channel, senderPk, (WitnessMessage) data);
+    } else if (data instanceof ElectionEnd) {
+      enqueue = handleElectionEnd(channel, (ElectionEnd) data);
     } else {
       Log.d(TAG, "cannot handle message with data" + data.getClass());
       enqueue = true;
@@ -239,6 +242,12 @@ public class LAORepository {
       }
     }
     return enqueue;
+  }
+
+  private boolean handleElectionEnd(String channel, ElectionEnd data) {
+    //TODO:
+    Lao lao = laoById.get(channel).getLao();
+    return false;
   }
 
   private boolean handleCreateLao(String channel, CreateLao createLao) {
