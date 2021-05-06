@@ -239,11 +239,11 @@ type laoChannel struct {
 	*baseChannel
 }
 
-func (c *laoChannel) Subscribe(client *Client, msg message.Subscribe) error {
+func (c *laoChannel) Subscribe(client *ClientSocket, msg message.Subscribe) error {
 	return c.baseChannel.Subscribe(client, msg)
 }
 
-func (c *laoChannel) Unsubscribe(client *Client, msg message.Unsubscribe) error {
+func (c *laoChannel) Unsubscribe(client *ClientSocket, msg message.Unsubscribe) error {
 	return c.baseChannel.Unsubscribe(client, msg)
 }
 

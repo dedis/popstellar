@@ -19,6 +19,14 @@ type witnessHub struct {
 
 	//TODO:check this is only a draft
 	receivedMessages map[string][]message.Message
+
+	//check if the witness needs
+
+}
+
+//TODO: check if it is useful
+type witnessChannel struct{
+	*baseChannel
 }
 
 
@@ -122,11 +130,11 @@ func (w *witnessHub) handleMessageFromOrganizer(incomingMessage *IncomingMessage
 			Description: fmt.Sprintf("No publish message is expected to come from other servers"),
 		}
 	case "message":
-		log.Printf("cannot handle broadcasts right now")
+
 	case "catchup":
 		//TODO: do we need to go throw the channel for this catchup?
 		//msg = channel.Catchup(*query.Catchup)
-		err = w.sendAllMessagesToSender(sender,witness,id)
+		err = w.sendAllMessagesToSender(witness)
 		// TODO send catchup response to client
 	}
 
@@ -147,8 +155,8 @@ func (w *witnessHub) handleMessageFromOrganizer(incomingMessage *IncomingMessage
 
 	witness.SendResult(id, result)
 }
-
-func (w *witnessHub)sendAllMessagesToSender(sender message.PublicKey,socket WitnessSocket,id int) error{
+//TODO: check if we send the messages correctly to the sender of the catchup message
+func (w *witnessHub)sendAllMessagesToSender(socket WitnessSocket) error{
 	for _,v := range w.receivedMessages{
 		buf,err := json.Marshal(v)
 		if err != nil{
