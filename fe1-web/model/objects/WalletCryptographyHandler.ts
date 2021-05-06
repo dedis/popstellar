@@ -1,5 +1,6 @@
 import { get, set, update } from 'idb-keyval';
 import STRINGS from 'res/strings';
+import { getCrypto } from '../../utils/Crypto';
 
 /* wallet cryptography key interface */
 export interface WalletCryptoKey {
@@ -9,15 +10,11 @@ export interface WalletCryptoKey {
 
 /**
  * This class has the job of handling the cryptography functions of the wallet.
- * It interacts with the IndexedDB database in order to store and retrieve the
- * secret key. It also encrypts and decrypts the wallet seed (used to create the
- * tokens) with the retrieved key.
+ * It interacts with the IndexedDB database in order to store and retrieve the secret key.
+ * It also encrypts and decrypts the wallet seed (used to create the tokens) with the retrieved key.
  * More info on this approach at https://blog.engelke.com/2014/09/19/saving-cryptographic-keys-in-the-browser/
  */
 export class WalletCryptographyHandler {
-  /* the crypto library - passed to constructor */
-  private cryptography: Crypto;
-
   private readonly publicKeyId: string = STRINGS.wallet_public_key_id;
 
   private readonly privateKeyId: string = STRINGS.wallet_private_key_id;
@@ -33,13 +30,6 @@ export class WalletCryptographyHandler {
   /* usages for the RSA key */
   private readonly keyUsages: KeyUsage[] = ['encrypt', 'decrypt'];
 
-  /* the crypto library is passed to constructor, this is necessary in order to test the
-     cryptography handler without the crypto.subtle library provided by the window object.
-     In jest context provide a MOCK crypto.subtle library, otherwise provide window.crypto */
-  constructor(cryptography: Crypto) {
-    this.cryptography = cryptography;
-  }
-
   /**
    * This functions verifies weather or not the wallet storage in IndexedDB database
    * is initialised. If not it initialises the storage.
@@ -53,8 +43,9 @@ export class WalletCryptographyHandler {
 
     if (walletIsNotInitialised) {
       await this.handleWalletInitialization();
+      console.log('Wallet cryptography was not initialized');
     }
-    console.log('Wallet storage ready');
+    console.log('Wallet cryptography storage ready');
   }
 
   /**
@@ -66,8 +57,7 @@ export class WalletCryptographyHandler {
     if (key === undefined) {
       throw Error('Error while retrieving encryption key from database: undefined');
     }
-    const ciphertext = await this.cryptography.subtle.encrypt(this.algorithm, key, plaintext);
-    return ciphertext;
+    return getCrypto().subtle.encrypt(this.algorithm, key, plaintext);
   }
 
   /**
@@ -79,9 +69,7 @@ export class WalletCryptographyHandler {
     if (key === undefined) {
       throw Error('Error while retrieving decryption key from database: undefined');
     }
-    const plaintext = await this.cryptography.subtle
-      .decrypt(this.algorithm, key, ciphertext);
-    return plaintext;
+    return getCrypto().subtle.decrypt(this.algorithm, key, ciphertext);
   }
 
   /**
@@ -149,7 +137,7 @@ export class WalletCryptographyHandler {
    * @private
    */
   private async generateRSAKey(): Promise<WalletCryptoKey> {
-    const keyPair = await this.cryptography.subtle.generateKey(
+    const keyPair = await getCrypto().subtle.generateKey(
       this.algorithm, false, this.keyUsages,
     );
     return {

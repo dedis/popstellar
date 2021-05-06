@@ -1,16 +1,16 @@
-package organizer
+package witness
 
 import (
 	"encoding/base64"
 	"fmt"
-	"log"
-	"net/http"
-	"student20_pop"
-	"student20_pop/hub"
-
 	"github.com/gorilla/websocket"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
+	"log"
+	"net/http"
+	"net/url"
+	"student20_pop"
+	"student20_pop/hub"
 )
 
 var upgrader = websocket.Upgrader{
@@ -19,18 +19,14 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
-// Serve parses the CLI arguments and spawns a hub and a websocket server.
 func Serve(context *cli.Context) error {
-	clientPort := context.Int("client-port")
-	witnessPort := context.Int("witness-port")
-	if clientPort == witnessPort {
-		return xerrors.Errorf("client and witness ports must be different")
-	}
-
+	organizerAddr := context.String("organizer-address")
+	organizerPort := context.Int("organizer-port")
+	clientPort := 9001
 	pk := context.String("public-key")
 
 	if pk == "" {
-		return xerrors.Errorf("organizer's public key is required")
+		return xerrors.Errorf("witness' public key is required")
 	}
 
 	pkBuf, err := base64.StdEncoding.DecodeString(pk)
@@ -44,15 +40,21 @@ func Serve(context *cli.Context) error {
 		return xerrors.Errorf("failed to unmarshal public key: %v", err)
 	}
 
-	h, err := hub.NewOrganizerHub(point)
+	h := hub.NewWitnessHub(point)
+
+	ws, err := connectToOrganizer(organizerAddr, organizerPort)
 	if err != nil {
-		return xerrors.Errorf("failed create the organizer hub: %v", err)
+		return xerrors.Errorf("failed to connect to organizer: %v", err)
 	}
 
-	done := make(chan struct{})
-	go h.Start(done)
+	organizerSocket := hub.NewOrganizerSocket(h, ws)
 
-	go createAndServeWs(hub.WitnessSocketType, h, witnessPort)
+	go organizerSocket.WritePump()
+	go organizerSocket.ReadPump()
+
+	done := make(chan struct{})
+	h.Start(done)
+
 	createAndServeWs(hub.ClientSocketType, h, clientPort)
 
 	done <- struct{}{}
@@ -60,12 +62,24 @@ func Serve(context *cli.Context) error {
 	return nil
 }
 
+func connectToOrganizer(organizerAddr string, port int) (*websocket.Conn, error) {
+	u, err := url.Parse(fmt.Sprintf("ws://%s:%d/organizer/witness/", organizerAddr, port))
+	if err != nil {
+		return nil, xerrors.Errorf("failure to connect to organizer: %v", err)
+	}
+	ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
+	if err != nil {
+		return ws, xerrors.Errorf("failure to connect to organizer: %v", err)
+	}
+	return ws, nil
+}
+
 func createAndServeWs(socketType hub.SocketType, h hub.Hub, port int) error {
-	http.HandleFunc(string("/organizer/"+socketType+"/"), func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(string("/witness/"+socketType+"/"), func(w http.ResponseWriter, r *http.Request) {
 		serveWs(socketType, h, w, r)
 	})
 
-	log.Printf("Starting the organizer WS server (for %s) at %d", socketType, port)
+	log.Printf("Starting the witness WS server (for %s) at %d", socketType, port)
 	var err = http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 	if err != nil {
 		return xerrors.Errorf("failed to start the server: %v", err)
