@@ -30,35 +30,63 @@ export class SetupElection implements MessageData {
   public readonly questions: Question[];
 
   constructor(msg: Partial<SetupElection>) {
-    if (!msg.id) throw new ProtocolError('Undefined \'id\' parameter encountered during \'SetupElection\'');
+    if (!msg.id) {
+      throw new ProtocolError('Undefined \'id\' parameter encountered during \'SetupElection\'');
+    }
 
-    if (!msg.lao) throw new ProtocolError('Undefined \'lao\' parameter encountered during \'SetupElection\'');
+    if (!msg.lao) {
+      throw new ProtocolError('Undefined \'lao\' parameter encountered during \'SetupElection\'');
+    }
     this.lao = msg.lao;
 
-    if (!msg.name) throw new ProtocolError('Undefined \'name\' parameter encountered during \'SetupElection\'');
+    if (!msg.name) {
+      throw new ProtocolError('Undefined \'name\' parameter encountered during \'SetupElection\'');
+    }
     this.name = msg.name;
 
-    if (!msg.version) throw new ProtocolError('Undefined \'version\' parameter encountered during \'SetupElection\'');
+    if (!msg.version) {
+      throw new ProtocolError('Undefined \'version\' parameter encountered during \'SetupElection\'');
+    }
     this.version = msg.version;
 
-    if (!msg.created_at) throw new ProtocolError('Undefined \'created_at\' parameter encountered during \'SetupElection\'');
+    if (!msg.created_at) {
+      throw new ProtocolError('Undefined \'created_at\' parameter encountered during \'SetupElection\'');
+    }
     checkTimestampStaleness(msg.created_at);
     this.created_at = msg.created_at;
-    if (!msg.start_time) throw new ProtocolError('Undefined \'start_time\' parameter encountered during \'SetupElection\'');
+    if (!msg.start_time) {
+      throw new ProtocolError('Undefined \'start_time\' parameter encountered during \'SetupElection\'');
+    }
     checkTimestampStaleness(msg.start_time);
-    if (!msg.end_time) throw new ProtocolError('Undefined \'end_time\' parameter encountered during \'SetupElection\'');
+    if (!msg.end_time) {
+      throw new ProtocolError('Undefined \'end_time\' parameter encountered during \'SetupElection\'');
+    }
     checkTimestampStaleness(msg.end_time);
-    if (msg.start_time < msg.created_at) throw new ProtocolError('Invalid timestamp encountered: \'start\' parameter smaller than \'created_at\'');
+    if (msg.start_time < msg.created_at) {
+      throw new ProtocolError('Invalid timestamp encountered: \'start\' parameter smaller than \'created_at\'');
+    }
     this.start_time = msg.start_time;
-    if (msg.end_time < msg.start_time) throw new ProtocolError('Invalid timestamp encountered: \'end\' parameter smaller than \'start\'');
+    if (msg.end_time < msg.start_time) {
+      throw new ProtocolError('Invalid timestamp encountered: \'end\' parameter smaller than \'start\'');
+    }
     this.end_time = msg.end_time;
 
-    if (!msg.questions) throw new ProtocolError('Undefined \'questions\' parameter encountered during \'SetupElection\'');
+    if (!msg.questions) {
+      throw new ProtocolError('Undefined \'questions\' parameter encountered during \'SetupElection\'');
+    }
     msg.questions.forEach((question) => {
-      if (!question.id) throw new ProtocolError('Undefined \'question id\' parameter encountered during \'SetupElection\'');
-      if (!question.question) throw new ProtocolError('Undefined \'question\' parameter encountered during \'SetupElection\'');
-      if (!question.voting_method) throw new ProtocolError('Undefined \'voting method\' parameter encountered during \'SetupElection\'');
-      if (!question.ballot_options) throw new ProtocolError('Undefined \'ballot_options\' parameter encountered during \'SetupElection\'');
+      if (!question.id) {
+        throw new ProtocolError('Undefined \'question id\' parameter encountered during \'SetupElection\'');
+      }
+      if (!question.question) {
+        throw new ProtocolError('Undefined \'question\' parameter encountered during \'SetupElection\'');
+      }
+      if (!question.voting_method) {
+        throw new ProtocolError('Undefined \'voting method\' parameter encountered during \'SetupElection\'');
+      }
+      if (!question.ballot_options) {
+        throw new ProtocolError('Undefined \'ballot_options\' parameter encountered during \'SetupElection\'');
+      }
     });
     this.questions = msg.questions;
 

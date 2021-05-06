@@ -29,7 +29,7 @@ export class Timestamp extends Number implements Number {
     return new Date(this.valueOf() * 1000);
   }
 
-  public timestampToString(): String {
+  public timestampToString(): string {
     return this.timestampToDate().toLocaleString();
   }
 

@@ -49,7 +49,7 @@ const messagesSlice = createSlice({
             unprocessedIds: [],
           };
         }
-        console.log(messages);
+
         messages.forEach((msg: ExtendedMessageState) => {
           if (msg.message_id in state.byLaoId[laoId].byId) {
             // don't add again a message we have already received

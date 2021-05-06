@@ -244,7 +244,9 @@ describe('=== fromJsonData checks ===', () => {
 
   const dataSetupElection: string = dataElection
     .replace('F_ACTION', ActionType.SETUP)
-    .replace('FF_MODIFICATION', `"lao":"${mockLaoId.toString()}","id":"${electionId.toString()}","name":"${name}","version":"${mockVersion}","created_at":${time},"start_time":${time},"end_time":${CLOSE_TIMESTAMP},"questions":${JSON.stringify(mockQuestions)}`);
+    .replace('FF_MODIFICATION', `"lao":"${mockLaoId.toString()}","id":
+    "${electionId.toString()}","name":"${name}","version":"${mockVersion}","created_at":${time},
+    "start_time":${time},"end_time":${CLOSE_TIMESTAMP},"questions":${JSON.stringify(mockQuestions)}`);
 
   beforeAll(() => {
     storeInit();
