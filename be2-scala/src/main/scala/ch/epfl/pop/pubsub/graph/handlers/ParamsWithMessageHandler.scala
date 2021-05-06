@@ -15,7 +15,6 @@ object ParamsWithMessageHandler {
       val portOther = 1
       val totalPorts = 2
 
-
       /* building blocks */
       val messageDecoder = builder.add(MessageDecoder.messageParser)
       val messageContentValidator = builder.add(Validator.messageContentValidator)

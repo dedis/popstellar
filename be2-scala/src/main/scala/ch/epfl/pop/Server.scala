@@ -26,7 +26,7 @@ object Server {
     val PORT = 8000
     val PATH = ""
 
-    val system = akka.actor.ActorSystem("magic")
+    val system = akka.actor.ActorSystem("pop-be2-inner-actor-system")
     implicit val typedSystem: ActorSystem[Nothing] = system.toTyped
 
     val root = Behaviors.setup[Nothing] { _ =>

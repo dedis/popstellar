@@ -19,8 +19,7 @@ object Answerer {
    */
   private def sendAnswer(graphMessage: GraphMessage): TextMessage = TextMessage.Strict(graphMessage.toString) // FIXME implement
 
-  def answerer(mediator: ActorRef)(implicit system: ActorSystem): Flow[GraphMessage, TextMessage, NotUsed] = {
-    val clientActorRef: ActorRef = system.actorOf(ClientActor.props(mediator))
+  def answerer(clientActorRef: ActorRef, mediator: ActorRef)(implicit system: ActorSystem): Flow[GraphMessage, TextMessage, NotUsed] = {
 
     // Integration point between Akka Streams and the above actor
     val sink: Sink[GraphMessage, NotUsed] = Flow[GraphMessage]

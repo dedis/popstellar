@@ -5,16 +5,19 @@ import akka.actor.{ActorRef, ActorSystem}
 import akka.http.scaladsl.model.ws.{Message, TextMessage}
 import akka.stream.FlowShape
 import akka.stream.scaladsl.{Flow, GraphDSL, Merge, Partition}
-import ch.epfl.pop.pubsub.graph.handlers.ParamsWithMessageHandler
+import ch.epfl.pop.model.network.method.{Broadcast, Publish}
+import ch.epfl.pop.pubsub.graph.handlers.{ParamsHandler, ParamsWithMessageHandler}
 import ch.epfl.pop.pubsub.graph.{Answerer, GraphMessage, MessageDecoder, MessageEncoder, Validator}
 
 
 // FIXME rename when old PublishSubscribe file is deleted
 object PublishSubscribeNew extends App {
 
-  def buildGraph(mediator: ActorRef)(implicit system: ActorSystem): Flow[Message, Message, NotUsed] = Flow.fromGraph(GraphDSL.create() {
+  def buildGraph(mediatorActorRef: ActorRef)(implicit system: ActorSystem): Flow[Message, Message, NotUsed] = Flow.fromGraph(GraphDSL.create() {
     implicit builder: GraphDSL.Builder[NotUsed] => {
       import GraphDSL.Implicits._
+
+      val clientActorRef: ActorRef = system.actorOf(ClientActor.props(mediatorActorRef))
 
       /* partitioner port numbers */
       val portPipelineError = 0
@@ -27,25 +30,24 @@ object PublishSubscribeNew extends App {
       // input message from the client
       val input = builder.add(Flow[Message].collect { case TextMessage.Strict(s) => s })
 
-      // json-schema validator
       val schemaValidator = builder.add(Validator.schemaValidator)
 
       val jsonRpcDecoder = builder.add(MessageDecoder.jsonRpcParser)
       val jsonRpcContentValidator = builder.add(Validator.jsonRpcContentValidator)
 
       val methodPartitioner = builder.add(Partition[GraphMessage](totalPorts, {
-        case Right(_) => portPipelineError // Pipeline error goes directly in merger
-        case _ => portParamsWithMessage // Publish and Broadcast messages
-        case _ => portParams // FIXME route correctly depending on message
+        case Left(_: Publish) | Left(_: Broadcast) => portParamsWithMessage // Publish and Broadcast messages
+        case Left(_) => portParams
+        case _ => portPipelineError // Pipeline error goes directly in merger
       }))
 
       val hasMessagePartition = builder.add(ParamsWithMessageHandler.graph)
-      // val noMessagePartition = ??? // other
+      val noMessagePartition = builder.add(ParamsHandler.graph(clientActorRef))
 
       val merger = builder.add(Merge[GraphMessage](totalPorts))
 
       val jsonRpcEncoder = builder.add(MessageEncoder.serializer)
-      val jsonRpcAnswerer = builder.add(Answerer.answerer(mediator))
+      val jsonRpcAnswerer = builder.add(Answerer.answerer(clientActorRef, mediatorActorRef))
 
       // output message (answer) for the client
       val output = builder.add(Flow[Message])
@@ -56,7 +58,7 @@ object PublishSubscribeNew extends App {
 
       methodPartitioner.out(portPipelineError) ~> merger
       methodPartitioner.out(portParamsWithMessage) ~> hasMessagePartition ~> merger
-      methodPartitioner.out(portParams) ~> merger // FIXME add no message partition
+      methodPartitioner.out(portParams) ~> noMessagePartition ~> merger
 
       merger ~> jsonRpcEncoder ~> jsonRpcAnswerer ~> output
 
