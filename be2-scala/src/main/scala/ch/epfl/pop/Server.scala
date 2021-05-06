@@ -2,6 +2,7 @@ package ch.epfl.pop
 
 import java.util.concurrent.TimeUnit
 
+import akka.actor.ActorRef
 import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.adapter._
 import akka.actor.typed.scaladsl.Behaviors
@@ -9,7 +10,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{RequestContext, RouteResult}
 import akka.util.Timeout
-import ch.epfl.pop.pubsub.PublishSubscribeNew
+import ch.epfl.pop.pubsub.{PubSubMediator, PublishSubscribeNew}
 import org.iq80.leveldb.Options
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
@@ -34,8 +35,9 @@ object Server {
       val options: Options = new Options()
       options.createIfMissing(true)
 
+      val pubSubMediator: ActorRef = system.actorOf(PubSubMediator.props)
       def publishSubscribeRoute: RequestContext => Future[RouteResult] = path(PATH) {
-        handleWebSocketMessages(PublishSubscribeNew.buildGraph(system))
+        handleWebSocketMessages(PublishSubscribeNew.buildGraph(pubSubMediator)(system))
       }
 
       implicit val executionContext: ExecutionContextExecutor = typedSystem.executionContext
