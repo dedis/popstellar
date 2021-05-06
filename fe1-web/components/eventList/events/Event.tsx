@@ -63,7 +63,6 @@ const Event = (props: IPropTypes) => {
       );
     }
     if (event instanceof Election) {
-      console.log(event);
       return (
         <EventElection
           event={event}

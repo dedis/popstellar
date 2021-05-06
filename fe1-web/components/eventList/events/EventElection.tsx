@@ -21,11 +21,11 @@ const EventElection = (props: IPropTypes) => {
       <SectionList
         sections={questions}
         keyExtractor={(item, index) => item + index}
-        renderItem={({ item }) => (
-          <Text>{`\u2022 ${item}`}</Text>
-        )}
         renderSectionHeader={({ section: { title } }) => (
           <Text>{title}</Text>
+        )}
+        renderItem={({ item }) => (
+          <Text>{`\u2022 ${item}`}</Text>
         )}
       />
     </>
