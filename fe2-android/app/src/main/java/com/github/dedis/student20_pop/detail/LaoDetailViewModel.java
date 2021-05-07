@@ -144,7 +144,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
     Lao lao = getCurrentLao();
     if (lao == null) {
-      Log.d(TAG, "failed to retrieve current lao");
+      Log.d(TAG, LAO_FAILURE_MESSAGE);
       return null;
     }
 
@@ -187,7 +187,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
       disposables.add(disposable);
 
     } catch (GeneralSecurityException | IOException e) {
-      Log.d(TAG, "failed to retrieve public key", e);
+      Log.d(TAG, "PK_FAILURE_MESSAGE", e);
       return null;
     }
     return electionSetup.getId();
