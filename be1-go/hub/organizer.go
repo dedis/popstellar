@@ -341,7 +341,7 @@ type laoChannel struct {
 func (c *laoChannel) Publish(publish message.Publish) error {
 	err := c.baseChannel.VerifyPublishMessage(publish)
 	if err != nil {
-		return message.Errorf("failed to verify Publish message on a lao channel: %v", err)
+		return message.NewError("failed to verify Publish message on a lao channel", err)
 	}
 
 	msg := publish.Params.Message

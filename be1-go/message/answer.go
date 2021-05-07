@@ -87,15 +87,16 @@ func (e *Error) Error() string {
 	return e.Description
 }
 
-// Errorf returns an error with the new formatting
-func Errorf(format string, err error) error {
+// NewError returns an error with an updated description
+func NewError(description string, parent error) error {
 	msgError := &Error{}
 
-	if xerrors.As(err, &msgError) {
-		msgError.Description = fmt.Sprintf(format, msgError.Description)
+	if xerrors.As(parent, &msgError) {
+		msgError.Description = fmt.Sprintf("%s: %s", description, msgError.Description)
 		return msgError
 	}
-	return xerrors.Errorf(format, err)
+
+	return xerrors.Errorf("%s: %v", description, parent)
 }
 
 // MarshalJSON marshals an Answer message
