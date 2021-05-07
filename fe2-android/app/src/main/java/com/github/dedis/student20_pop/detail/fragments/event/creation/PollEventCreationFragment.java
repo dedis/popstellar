@@ -102,7 +102,7 @@ public final class PollEventCreationFragment extends AbstractEventCreationFragme
     View view = inflater.inflate(R.layout.fragment_create_poll_event, container, false);
 
     setDateAndTimeView(view, PollEventCreationFragment.this, fragmentManager);
-    addDateAndTimeListener(buttonsTextWatcher);
+    addStartDateAndTimeListener(buttonsTextWatcher);
 
     // Question
     questionEditText = view.findViewById(R.id.question_edit_text);

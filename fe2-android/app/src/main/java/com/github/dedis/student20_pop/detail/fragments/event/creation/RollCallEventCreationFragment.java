@@ -62,7 +62,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
         mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 
         setDateAndTimeView(mFragmentCreateRollCallEventBinding.getRoot(), this, getFragmentManager());
-        addDateAndTimeListener(confirmTextWatcher);
+        addStartDateAndTimeListener(confirmTextWatcher);
         mFragmentCreateRollCallEventBinding.rollCallTitleText.addTextChangedListener(confirmTextWatcher);
 
         mFragmentCreateRollCallEventBinding.setLifecycleOwner(getActivity());
@@ -113,8 +113,8 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     }
     void setupCancelButton(){
         mFragmentCreateRollCallEventBinding.rollCallCancel.setOnClickListener(
-            v ->
-                mLaoDetailViewModel.openLaoDetail()
+                v ->
+                        mLaoDetailViewModel.openLaoDetail()
         );
     }
 }

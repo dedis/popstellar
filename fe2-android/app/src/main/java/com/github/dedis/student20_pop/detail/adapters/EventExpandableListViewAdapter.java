@@ -188,27 +188,28 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
 
     AddEventListener addEventOnClickListener =
-            new AddEventListener() {
-              @Override
-              public void addEvent() {
-                AlertDialog.Builder builder = new Builder(context);
-                builder.setTitle("Select Event Type");
+        new AddEventListener() {
+          @Override
+          public void addEvent() {
+            AlertDialog.Builder builder = new Builder(context);
+            builder.setTitle("Select Event Type");
 
-                ArrayAdapter<String> arrayAdapter =
-                        new ArrayAdapter<>(context, android.R.layout.select_dialog_singlechoice);
+            ArrayAdapter<String> arrayAdapter =
+                new ArrayAdapter<>(context, android.R.layout.select_dialog_singlechoice);
 
-                arrayAdapter.add("Roll-Call Event");
+            arrayAdapter.add("Roll-Call Event");
+            arrayAdapter.add("Election Event");
 
-                builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
-                builder.setAdapter(
-                        arrayAdapter,
-                        ((dialog, which) -> {
-                          dialog.dismiss();
-                          viewModel.chooseEventType(EventType.values()[which]);
-                        }));
-                builder.show();
-              }
-            };
+            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+            builder.setAdapter(
+                arrayAdapter,
+                ((dialog, which) -> {
+                  dialog.dismiss();
+                  viewModel.chooseEventType(EventType.values()[which]);
+                }));
+            builder.show();
+          }
+        };
 
     binding.setIsFutureCategory(eventCategory.equals(FUTURE));
     binding.setViewmodel(viewModel);

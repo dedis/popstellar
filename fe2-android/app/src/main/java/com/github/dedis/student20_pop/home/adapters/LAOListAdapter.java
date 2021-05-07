@@ -23,6 +23,7 @@ public class LAOListAdapter extends BaseAdapter {
 
   private LifecycleOwner lifecycleOwner;
 
+
   public LAOListAdapter(List<Lao> laos, HomeViewModel homeViewModel, LifecycleOwner activity) {
     this.homeViewModel = homeViewModel;
     setList(laos);
