@@ -144,7 +144,6 @@ public final class QRCodeScanningFragment extends Fragment {
     }
   }
   private void setupCloseRollCallButton() {
-    //TODO: do it with confirmation step like pop-up
     mQrCodeFragBinding.addAttendeeConfirm.setOnClickListener(
             v -> ((LaoDetailViewModel)mQRCodeScanningViewModel).closeRollCall());
   }

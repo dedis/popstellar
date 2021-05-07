@@ -130,9 +130,9 @@ public class HomeViewModel extends AndroidViewModel
                                       + ((Error) answer).getError().getDescription());
                     }
                   },
-                  throwable -> {
-                    Log.d(TAG, "timed out waiting for a response for subscribe to lao", throwable);
-                  });
+                  throwable ->
+                    Log.d(TAG, "timed out waiting for a response for subscribe to lao", throwable)
+          );
 
     setConnectingLao(channel);
     openConnecting();

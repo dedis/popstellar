@@ -278,15 +278,12 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
       }
       
       binding.rollcallOpenButton.setOnClickListener(
-              clicked -> {
-                viewModel.openRollCall(rollCall.getId());
-              });
+              clicked -> viewModel.openRollCall(rollCall.getId())
+      );
       binding.rollcallReopenButton.setOnClickListener(
-              clicked -> {
-                viewModel.openRollCall(rollCall.getId());
-              });
-      //TODO: add listener for enterButton for attendees
-
+              clicked ->
+                viewModel.openRollCall(rollCall.getId())
+      );
     }
 
     binding.setLifecycleOwner(lifecycleOwner);

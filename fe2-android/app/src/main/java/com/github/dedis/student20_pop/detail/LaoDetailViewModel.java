@@ -87,7 +87,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                   lao -> lao == null ? new ArrayList<>() : new ArrayList<>(lao.getWitnesses()));
   private final LiveData<String> mCurrentLaoName =
           Transformations.map(mCurrentLao, lao -> lao == null ? "" : lao.getName());
-  private final MutableLiveData<Event<EventType>> mNewLaoEventEvent = new MutableLiveData<>();
   private String mCurrentRollCallId = ""; //used to know which roll call to close
 
   private final LiveData<List<com.github.dedis.student20_pop.model.event.Event>> mLaoEvents = Transformations
@@ -239,9 +238,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                   Log.d(TAG, "failed to open the roll call");
                                 }
                               },
-                              throwable -> {
-                                Log.d(TAG, "timed out waiting for result on roll_call/open", throwable);
-                              });
+                              throwable -> Log.d(TAG, "timed out waiting for result on roll_call/open", throwable)
+                      );
       disposables.add(disposable);
     } catch (GeneralSecurityException | IOException e) {
       Log.d(TAG, PK_FAILURE_MESSAGE, e);
@@ -283,9 +281,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                   Log.d(TAG, "failed to close the roll call");
                                 }
                               },
-                              throwable -> {
-                                Log.d(TAG, "timed out waiting for result on roll_call/close", throwable);
-                              });
+                              throwable -> Log.d(TAG, "timed out waiting for result on roll_call/open", throwable)
+                      );
       disposables.add(disposable);
     } catch (GeneralSecurityException | IOException e) {
       Log.d(TAG, PK_FAILURE_MESSAGE, e);
