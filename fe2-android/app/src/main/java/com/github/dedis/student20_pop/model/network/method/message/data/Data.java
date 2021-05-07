@@ -1,5 +1,20 @@
 package com.github.dedis.student20_pop.model.network.method.message.data;
 
+import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
+import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
+import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
+import com.github.dedis.student20_pop.model.network.method.message.data.meeting.CreateMeeting;
+import com.github.dedis.student20_pop.model.network.method.message.data.meeting.StateMeeting;
+import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessage;
+import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CloseRollCall;
+import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
+import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.CLOSE;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.CREATE;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.OPEN;
@@ -11,20 +26,6 @@ import static com.github.dedis.student20_pop.model.network.method.message.data.O
 import static com.github.dedis.student20_pop.model.network.method.message.data.Objects.MEETING;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Objects.MESSAGE;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Objects.ROLL_CALL;
-
-import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
-import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
-import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
-import com.github.dedis.student20_pop.model.network.method.message.data.meeting.CreateMeeting;
-import com.github.dedis.student20_pop.model.network.method.message.data.meeting.StateMeeting;
-import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessage;
-import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CloseRollCall;
-import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
-import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 /** An abstract high level message */
 public abstract class Data {

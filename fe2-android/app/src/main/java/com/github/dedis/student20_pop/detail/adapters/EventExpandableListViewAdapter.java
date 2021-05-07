@@ -1,9 +1,5 @@
 package com.github.dedis.student20_pop.detail.adapters;
 
-import static com.github.dedis.student20_pop.model.event.EventCategory.FUTURE;
-import static com.github.dedis.student20_pop.model.event.EventCategory.PAST;
-import static com.github.dedis.student20_pop.model.event.EventCategory.PRESENT;
-
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
@@ -12,9 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
+
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
-import com.github.dedis.student20_pop.databinding.LayoutEventBinding;
+
 import com.github.dedis.student20_pop.databinding.LayoutEventCategoryBinding;
 import com.github.dedis.student20_pop.databinding.LayoutRollCallEventBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
@@ -22,8 +19,8 @@ import com.github.dedis.student20_pop.detail.listeners.AddEventListener;
 import com.github.dedis.student20_pop.model.RollCall;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventCategory;
-import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.model.event.EventState;
+import com.github.dedis.student20_pop.model.event.EventType;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -33,6 +30,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+
+import static com.github.dedis.student20_pop.model.event.EventCategory.FUTURE;
+import static com.github.dedis.student20_pop.model.event.EventCategory.PAST;
+import static com.github.dedis.student20_pop.model.event.EventCategory.PRESENT;
 
 public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 

@@ -1,13 +1,16 @@
 package com.github.dedis.student20_pop.detail;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
+
 import com.github.dedis.student20_pop.Injection;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
@@ -17,12 +20,13 @@ import com.github.dedis.student20_pop.detail.fragments.event.creation.MeetingEve
 import com.github.dedis.student20_pop.detail.fragments.event.creation.PollEventCreationFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.RollCallEventCreationFragment;
 import com.github.dedis.student20_pop.home.HomeActivity;
-import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.home.HomeViewModel;
+import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.qrcode.CameraPermissionFragment;
 import com.github.dedis.student20_pop.qrcode.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.utility.ActivityUtils;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+
 import java.util.Objects;
 public class LaoDetailActivity extends AppCompatActivity {
   private static final String TAG = LaoDetailActivity.class.getSimpleName();

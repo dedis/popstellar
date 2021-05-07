@@ -8,9 +8,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentLaoDetailBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;

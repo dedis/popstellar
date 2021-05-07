@@ -2,8 +2,10 @@ package com.github.dedis.student20_pop.model.data;
 
 import com.github.dedis.student20_pop.model.network.GenericMessage;
 import com.github.dedis.student20_pop.model.network.method.Message;
-import io.reactivex.Observable;
+
 import java.util.concurrent.atomic.AtomicInteger;
+
+import io.reactivex.Observable;
 
 public class LAORemoteDataSource implements LAODataSource.Remote {
 

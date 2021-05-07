@@ -9,9 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
+
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.detail.listeners.OnEventCreatedListener;
 

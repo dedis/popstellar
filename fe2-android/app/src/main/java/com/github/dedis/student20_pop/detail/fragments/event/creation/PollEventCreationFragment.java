@@ -14,12 +14,15 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
+
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.detail.adapters.ChoicesListViewAdapter;
 import com.github.dedis.student20_pop.detail.listeners.OnEventCreatedListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
