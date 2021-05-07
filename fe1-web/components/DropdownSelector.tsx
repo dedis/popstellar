@@ -7,7 +7,7 @@ import styles from 'styles/stylesheets/container';
  * Simple dropdown where the user can select options
  * Inputs:
  *  - String array of all options (required)
- *  - function that stores the selected option (required)
+ *  - Callback function for when an item is selected (required)
  *      (e.g. {(method: string) => setSelectedElectionMethod(method)} )
  *  - Default selected option (not required, if not specified then first in the array is chosen)
  */
