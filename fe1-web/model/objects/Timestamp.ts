@@ -40,4 +40,8 @@ export class Timestamp extends Number implements Number {
   public after(other: Timestamp): boolean {
     return this.valueOf() > other.valueOf();
   }
+
+  public addSeconds(seconds: number): Timestamp {
+    return new Timestamp(this.valueOf() + seconds);
+  }
 }

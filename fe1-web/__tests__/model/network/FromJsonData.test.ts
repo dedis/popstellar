@@ -192,7 +192,7 @@ describe('=== fromJsonData checks ===', () => {
     object: ObjectType.ELECTION,
     action: ActionType.SETUP,
     id: electionId,
-    lao: mockLaoId.toString(),
+    lao: mockLaoId,
     name: name,
     version: mockVersion,
     created_at: time,

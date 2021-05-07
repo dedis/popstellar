@@ -13,7 +13,7 @@ export class SetupElection implements MessageData {
 
   public readonly action: ActionType = ActionType.SETUP;
 
-  public readonly lao: string;
+  public readonly lao: Hash;
 
   public readonly id: Hash;
 
@@ -62,11 +62,11 @@ export class SetupElection implements MessageData {
       throw new ProtocolError('Undefined \'end_time\' parameter encountered during \'SetupElection\'');
     }
     checkTimestampStaleness(msg.end_time);
-    if (msg.start_time < msg.created_at) {
+    if (msg.start_time.before(msg.created_at)) {
       throw new ProtocolError('Invalid timestamp encountered: \'start\' parameter smaller than \'created_at\'');
     }
     this.start_time = msg.start_time;
-    if (msg.end_time < msg.start_time) {
+    if (msg.end_time.before(msg.start_time)) {
       throw new ProtocolError('Invalid timestamp encountered: \'end\' parameter smaller than \'start\'');
     }
     this.end_time = msg.end_time;

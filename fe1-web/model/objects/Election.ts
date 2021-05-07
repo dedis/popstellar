@@ -21,7 +21,7 @@ export interface Question {
 }
 
 export class Election implements LaoEvent {
-  public readonly lao: string;
+  public readonly lao: Hash;
 
   public readonly id: Hash;
 
@@ -78,7 +78,7 @@ export class Election implements LaoEvent {
 
   public static fromState(e: ElectionState): Election {
     return new Election({
-      lao: e.lao,
+      lao: new Hash(e.lao),
       id: new Hash(e.id),
       name: e.name,
       version: e.version,
