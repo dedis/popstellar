@@ -672,6 +672,18 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 				qs.validVotes[msg.Sender.String()] =
 					validVote{voteData.CreatedAt,
 						q.VoteIndexes}
+				if qs.method == "Plurality" && len(q.VoteIndexes)<1{
+					return &message.Error{
+						Code:        -4,
+						Description: "No ballot option was chosen for plurality voting method",
+					}
+				}
+				if qs.method == "Approval"&& len(q.VoteIndexes)!=1{
+					return &message.Error{
+						Code:        -4,
+						Description: "Cannot choose multiple ballot options on Approval voting method",
+					}
+				}
 			} else {
 				if earlierVote.voteTime > voteData.CreatedAt {
 					qs.validVotes[msg.Sender.String()] =
