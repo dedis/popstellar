@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.home.adapters;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,7 +67,7 @@ public class LAOListAdapter extends BaseAdapter {
         new LAOItemUserActionsListener() {
           @Override
           public void onLAOClicked(Lao lao) {
-            homeViewModel.openLAO("/root/" + lao.getId());
+            homeViewModel.openLAO(lao.getChannel());
           }
         };
 

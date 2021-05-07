@@ -12,7 +12,6 @@ import com.github.dedis.student20_pop.model.network.method.message.MessageGenera
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.utility.json.JsonAnswerSerializer;
-import com.github.dedis.student20_pop.utility.json.JsonCreateRollCallSerializer;
 import com.github.dedis.student20_pop.utility.json.JsonDataSerializer;
 import com.github.dedis.student20_pop.utility.json.JsonGenericMessageDeserializer;
 import com.github.dedis.student20_pop.utility.json.JsonMessageGeneralSerializer;

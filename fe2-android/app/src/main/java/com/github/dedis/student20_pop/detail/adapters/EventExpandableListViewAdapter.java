@@ -18,13 +18,17 @@ import com.github.dedis.student20_pop.databinding.LayoutEventBinding;
 import com.github.dedis.student20_pop.databinding.LayoutEventCategoryBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.listeners.AddEventListener;
+import com.github.dedis.student20_pop.model.RollCall;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventCategory;
 import com.github.dedis.student20_pop.model.event.EventType;
+import com.github.dedis.student20_pop.model.event.EventState;
+
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -33,8 +37,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
   protected HashMap<EventCategory, List<Event>> eventsMap;
   private final EventCategory[] categories = EventCategory.values();
-  protected static final SimpleDateFormat DATE_FORMAT =
-      new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
+  private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
   private final LifecycleOwner lifecycleOwner;
   private final LaoDetailViewModel viewModel;
 
@@ -44,7 +47,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
    * @param events the list of events of the lao
    */
   public EventExpandableListViewAdapter(
-      List<Event> events, LaoDetailViewModel viewModel, LifecycleOwner lifecycleOwner) {
+          List<Event> events, LaoDetailViewModel viewModel, LifecycleOwner lifecycleOwner) {
     this.eventsMap = new HashMap<>();
     this.eventsMap.put(PAST, new ArrayList<>());
     this.eventsMap.put(PRESENT, new ArrayList<>());
@@ -166,7 +169,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
    */
   @Override
   public View getGroupView(
-      int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+          int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
     EventCategory eventCategory = (EventCategory) getGroup(groupPosition);
 
     LayoutEventCategoryBinding binding;
@@ -181,28 +184,29 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
     Context context = parent.getContext();
 
+
     AddEventListener addEventOnClickListener =
-        new AddEventListener() {
-          @Override
-          public void addEvent() {
-            AlertDialog.Builder builder = new Builder(context);
-            builder.setTitle("Select Event Type");
+            new AddEventListener() {
+              @Override
+              public void addEvent() {
+                AlertDialog.Builder builder = new Builder(context);
+                builder.setTitle("Select Event Type");
 
-            ArrayAdapter<String> arrayAdapter =
-                new ArrayAdapter<>(context, android.R.layout.select_dialog_singlechoice);
+                ArrayAdapter<String> arrayAdapter =
+                        new ArrayAdapter<>(context, android.R.layout.select_dialog_singlechoice);
 
-            arrayAdapter.add("Roll-Call Event");
+                arrayAdapter.add("Roll-Call Event");
 
-            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
-            builder.setAdapter(
-                arrayAdapter,
-                ((dialog, which) -> {
-                  dialog.dismiss();
-                  viewModel.chooseEventType(EventType.values()[which]);
-                }));
-            builder.show();
-          }
-        };
+                builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+                builder.setAdapter(
+                        arrayAdapter,
+                        ((dialog, which) -> {
+                          dialog.dismiss();
+                          viewModel.chooseEventType(EventType.values()[which]);
+                        }));
+                builder.show();
+              }
+            };
 
     binding.setIsFutureCategory(eventCategory.equals(FUTURE));
     binding.setViewmodel(viewModel);
@@ -232,17 +236,17 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
    */
   @Override
   public View getChildView(
-      int groupPosition,
-      int childPosition,
-      boolean isLastChild,
-      View convertView,
-      ViewGroup parent) {
+          int groupPosition,
+          int childPosition,
+          boolean isLastChild,
+          View convertView,
+          ViewGroup parent) {
 
     // TODO : For the moment, events are displayed the same if user is attendee or organizer,
     // in the future it could be nice to have a pencil icon to allow organizer to modify an event
 
     LayoutEventBinding binding;
-    Event event = ((Event) getChild(groupPosition, childPosition));
+
     if (convertView == null) {
       LayoutInflater inflater = LayoutInflater.from(parent.getContext());
       binding = LayoutEventBinding.inflate(inflater, parent, false);
@@ -250,7 +254,48 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
       binding = DataBindingUtil.getBinding(convertView);
     }
 
-    binding.setEvent(event);
+    binding.openButton.setVisibility(View.GONE);
+    binding.reopenButton.setVisibility(View.GONE);
+    binding.scheduledButton.setVisibility(View.GONE);
+    binding.enterButton.setVisibility(View.GONE);
+    binding.closedButton.setVisibility(View.GONE);
+
+    Event event = (Event)getChild(groupPosition, childPosition);
+    if(event instanceof RollCall){
+      RollCall rollCall = (RollCall)event;
+      binding.eventTime.setText("Time: "+DATE_FORMAT.format(new Date(1000*rollCall.getStart())));
+      binding.eventTitle.setText("Roll Call: "+rollCall.getName());
+      binding.eventLocation.setText("Location: "+rollCall.getLocation());
+
+      boolean isOrganizer = viewModel.isOrganizer().getValue();
+
+      if(isOrganizer && rollCall.getState()== EventState.CREATED){
+        binding.openButton.setVisibility(View.VISIBLE);
+      }else if(isOrganizer && rollCall.getState()== EventState.CLOSED){
+        binding.reopenButton.setVisibility(View.VISIBLE);
+      }else if(!isOrganizer && rollCall.getState()== EventState.CREATED){
+        binding.scheduledButton.setVisibility(View.VISIBLE);
+      }else if(!isOrganizer && rollCall.getState()== EventState.OPENED){
+        binding.enterButton.setVisibility(View.VISIBLE);
+      }else if(!isOrganizer && rollCall.getState()== EventState.CLOSED){
+        binding.closedButton.setVisibility(View.VISIBLE);
+      }
+      
+      binding.openButton.setOnClickListener(
+              clicked -> {
+                viewModel.openRollCall(rollCall.getId());
+              });
+      binding.reopenButton.setOnClickListener(
+              clicked -> {
+                viewModel.openRollCall(rollCall.getId());
+              });
+      binding.enterButton.setOnClickListener(
+              clicked -> {
+                viewModel.enterRollCall(rollCall.getId());
+              });
+
+    }
+
     binding.setLifecycleOwner(lifecycleOwner);
 
     binding.executePendingBindings();
@@ -264,10 +309,12 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
    */
   private void putEventsInMap(List<Event> events) {
     Collections.sort(events);
-
+    this.eventsMap.get(PAST).clear();
+    this.eventsMap.get(FUTURE).clear();
+    this.eventsMap.get(PRESENT).clear();
     long now = Instant.now().getEpochSecond();
     for (Event event : events) {
-      if (event.getEndTimestamp() < now) {
+      if (event.getEndTimestamp() <= now) {
         eventsMap.get(PAST).add(event);
       } else if (event.getStartTimestamp() > now) {
         eventsMap.get(FUTURE).add(event);
