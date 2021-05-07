@@ -48,16 +48,17 @@ func (m *GenericMessage) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-type IdStruct struct {
-	ID *int `json:"id"`
-}
-
 // Unmarshal the ID of a message
-func (m *GenericMessage) UnmarshallID(data []byte) (int, bool) {
-	IdStruct := &IdStruct{}
-	json.Unmarshal(data, IdStruct)
-	if IdStruct.ID != nil {
-		return *IdStruct.ID, true
+func (m *GenericMessage) UnmarshalID(data []byte) (int, bool) {
+	type idStruct struct {
+		ID *int `json:"id"`
 	}
+
+	tmp := &idStruct{}
+	json.Unmarshal(data, tmp)
+	if tmp.ID != nil {
+		return *tmp.ID, true
+	}
+
 	return -1, false
 }
