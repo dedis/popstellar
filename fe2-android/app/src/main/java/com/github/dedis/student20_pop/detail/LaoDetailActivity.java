@@ -92,7 +92,7 @@ public class LaoDetailActivity extends AppCompatActivity {
                     stringEvent -> {
                       String action = stringEvent.getContentIfNotHandled();
                       if (action != null) {
-                        if (action==HomeViewModel.SCAN) {
+                        if (action.equals(HomeViewModel.SCAN)) {
                           setupScanFragmentRollCall();
                         }else{
                           setupCameraPermissionFragmentRollCall();
