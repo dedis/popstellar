@@ -16,6 +16,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
 import com.github.dedis.student20_pop.databinding.LayoutEventBinding;
 import com.github.dedis.student20_pop.databinding.LayoutEventCategoryBinding;
+import com.github.dedis.student20_pop.databinding.LayoutRollCallEventBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.listeners.AddEventListener;
 import com.github.dedis.student20_pop.model.RollCall;
@@ -37,7 +38,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
   protected HashMap<EventCategory, List<Event>> eventsMap;
   private final EventCategory[] categories = EventCategory.values();
-  private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
+  private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH);
   private final LifecycleOwner lifecycleOwner;
   private final LaoDetailViewModel viewModel;
 
@@ -245,47 +246,41 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     // TODO : For the moment, events are displayed the same if user is attendee or organizer,
     // in the future it could be nice to have a pencil icon to allow organizer to modify an event
 
-    LayoutEventBinding binding;
+    LayoutRollCallEventBinding binding;
 
     if (convertView == null) {
       LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-      binding = LayoutEventBinding.inflate(inflater, parent, false);
+      binding = LayoutRollCallEventBinding.inflate(inflater, parent, false);
     } else {
       binding = DataBindingUtil.getBinding(convertView);
     }
 
-    binding.openButton.setVisibility(View.GONE);
-    binding.reopenButton.setVisibility(View.GONE);
-    binding.scheduledButton.setVisibility(View.GONE);
-    binding.enterButton.setVisibility(View.GONE);
-    binding.closedButton.setVisibility(View.GONE);
-
     Event event = (Event)getChild(groupPosition, childPosition);
     if(event instanceof RollCall){
       RollCall rollCall = (RollCall)event;
-      binding.eventTime.setText("Time: "+DATE_FORMAT.format(new Date(1000*rollCall.getStart())));
-      binding.eventTitle.setText("Roll Call: "+rollCall.getName());
-      binding.eventLocation.setText("Location: "+rollCall.getLocation());
+      binding.rollcallDate.setText("Start: "+DATE_FORMAT.format(new Date(1000*rollCall.getStart())));
+      binding.rollcallTitle.setText("Roll Call: "+rollCall.getName());
+      binding.rollcallLocation.setText("Location: "+rollCall.getLocation());
 
       boolean isOrganizer = viewModel.isOrganizer().getValue();
 
       if(isOrganizer && rollCall.getState()== EventState.CREATED){
-        binding.openButton.setVisibility(View.VISIBLE);
+        binding.rollcallOpenButton.setVisibility(View.VISIBLE);
       }else if(isOrganizer && rollCall.getState()== EventState.CLOSED){
-        binding.reopenButton.setVisibility(View.VISIBLE);
+        binding.rollcallReopenButton.setVisibility(View.VISIBLE);
       }else if(!isOrganizer && rollCall.getState()== EventState.CREATED){
-        binding.scheduledButton.setVisibility(View.VISIBLE);
+        binding.rollcallScheduledButton.setVisibility(View.VISIBLE);
       }else if(!isOrganizer && rollCall.getState()== EventState.OPENED){
-        binding.enterButton.setVisibility(View.VISIBLE);
+        binding.rollcallEnterButton.setVisibility(View.VISIBLE);
       }else if(!isOrganizer && rollCall.getState()== EventState.CLOSED){
-        binding.closedButton.setVisibility(View.VISIBLE);
+        binding.rollcallClosedButton.setVisibility(View.VISIBLE);
       }
       
-      binding.openButton.setOnClickListener(
+      binding.rollcallOpenButton.setOnClickListener(
               clicked -> {
                 viewModel.openRollCall(rollCall.getId());
               });
-      binding.reopenButton.setOnClickListener(
+      binding.rollcallReopenButton.setOnClickListener(
               clicked -> {
                 viewModel.openRollCall(rollCall.getId());
               });

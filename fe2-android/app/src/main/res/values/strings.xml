@@ -81,11 +81,11 @@
     <string name="add_attendees_number">Number of attendees : %1$d</string>
 
     <!-- Event Buttons -->
-    <string name="open_event">OPEN</string>
-    <string name="reopen_event">REOPEN</string>
-    <string name="scheduled_event">SCHEDULED</string>
-    <string name="enter_event">ENTER</string>
-    <string name="closed_event">CLOSED</string>
+    <string name="open_rollcall">OPEN</string>
+    <string name="reopen_rollcall">REOPEN</string>
+    <string name="scheduled_rollcall">SCHEDULED</string>
+    <string name="enter_rollcall">ENTER</string>
+    <string name="closed_rollcall">CLOSED</string>
 
     <!-- Identity -->
     <string name="identity_name">Name</string>
