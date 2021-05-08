@@ -6,18 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.qrcode.QRCodeScanningFragment;
-import com.google.android.gms.vision.CameraSource;
-import com.google.android.gms.vision.barcode.BarcodeDetector;
-
-import java.util.List;
 
 /**
  * This fragment wraps the QRCodeScanningFragment in order to show the user how many attendees he
@@ -30,19 +23,11 @@ public final class AddAttendeeFragment extends Fragment {
 
   public static final String TAG = AddAttendeeFragment.class.getSimpleName();
   private final String eventId;
-    private CameraSource camera;
-    private BarcodeDetector detector;
 
-  public AddAttendeeFragment(String eventId, CameraSource camera, BarcodeDetector detector) {
+  public AddAttendeeFragment(String eventId) {
     super();
     this.eventId = eventId;
-      this.camera = camera;
-      this.detector = detector;
   }
-
-    public static AddAttendeeFragment newInstance(String eventId, CameraSource camera, BarcodeDetector detector) {
-        return new AddAttendeeFragment(eventId, camera, detector);
-    }
 
   @Nullable
   @Override
@@ -51,11 +36,6 @@ public final class AddAttendeeFragment extends Fragment {
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_add_attendee, container, false);
-
-      QRCodeScanningFragment scanningFragment = QRCodeScanningFragment.newInstance(camera, detector);
-
-      List<String> attendees;
-
 
     Button confirm = view.findViewById(R.id.add_attendee_confirm);
     confirm.setOnClickListener(

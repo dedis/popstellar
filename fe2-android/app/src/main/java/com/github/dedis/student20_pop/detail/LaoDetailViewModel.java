@@ -271,14 +271,13 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     long openedAt = Instant.now().getEpochSecond();
     String channel = lao.getChannel();
     String laoId = channel.substring(6); // removing /root/ prefix
-    String updateId = Hash.hash("R", laoId, id, Long.toString(openedAt));
     Optional<RollCall> optRollCall = lao.getRollCall(id);
     if(!optRollCall.isPresent()){
       Log.d(TAG, "failed to retrieve roll call with id "+id);
       return;
     }
     RollCall rollCall = optRollCall.get();
-    OpenRollCall openRollCall = new OpenRollCall(updateId, id, openedAt, rollCall.getState());
+    OpenRollCall openRollCall = new OpenRollCall(laoId, id, openedAt, rollCall.getState());
     attendees = new HashSet<>(rollCall.getAttendees());
 
     try {
@@ -298,13 +297,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                 if (answer instanceof Result) {
                                   Log.d(TAG, "opened the roll call");
                                   mCurrentRollCallId = openRollCall.getUpdateId();
-                                  if (ContextCompat.checkSelfPermission(
-                                          getApplication().getApplicationContext(), Manifest.permission.CAMERA)
-                                          == PackageManager.PERMISSION_GRANTED) {
-                                    openQrCodeScanningRollCall();
-                                  } else {
-                                    openCameraPermissionRollCall();
-                                  }
+                                  openAttendeeScanning();
                                 } else {
                                   Log.d(TAG, "failed to open the roll call");
                                 }
@@ -317,6 +310,12 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     }
   }
 
+  /**
+   * Closes the roll call event currently open
+   *
+   * <p>Publish a GeneralMessage containing CloseRollCall data.
+   *
+   */
   public void closeRollCall(){
     Log.d(TAG, "call closeRollCall");
     Lao lao = getCurrentLao();
@@ -543,6 +542,15 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   }
   public void openCameraPermissionRollCall() {
     mOpenRollCallEvent.setValue(new Event<>(HomeViewModel.REQUEST_CAMERA_PERMISSION));
+  }
+  public void openAttendeeScanning() {
+    if (ContextCompat.checkSelfPermission(
+            getApplication().getApplicationContext(), Manifest.permission.CAMERA)
+            == PackageManager.PERMISSION_GRANTED) {
+      openQrCodeScanningRollCall();
+    } else {
+      openCameraPermissionRollCall();
+    }
   }
 
   @Override
