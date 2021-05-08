@@ -269,6 +269,8 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 		err = c.processMessageObject(msg.Sender, data)
 	case message.RollCallObject:
 		err = c.processRollCallObject(data)
+	case message.ElectionObject:
+		err = c.processElectionObject(*msg)
 	}
 
 	if err != nil {
