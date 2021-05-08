@@ -653,9 +653,9 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 		case message.CastVoteAction:
 			return c.castVoteHelper(publish)
 		case message.ElectionEndAction:
-			log.Fatal("Not implemented",message.ElectionEndAction)
+			log.Fatal("Not implemented", message.ElectionEndAction)
 		case message.ElectionResultAction:
-			log.Fatal("Not implemented",message.ElectionResultAction)
+			log.Fatal("Not implemented", message.ElectionResultAction)
 		}
 	}
 
@@ -680,7 +680,6 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 		}
 	}
 
-
 	//This should update any previously set vote if the message ids are the same
 	messageID := base64.StdEncoding.EncodeToString(msg.MessageID)
 	c.inbox[messageID] = *msg
@@ -697,13 +696,13 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 				qs.validVotes[msg.Sender.String()] =
 					validVote{voteData.CreatedAt,
 						q.VoteIndexes}
-				if qs.method == "Plurality" && len(q.VoteIndexes)<1{
+				if qs.method == "Plurality" && len(q.VoteIndexes) < 1 {
 					return &message.Error{
 						Code:        -4,
 						Description: "No ballot option was chosen for plurality voting method",
 					}
 				}
-				if qs.method == "Approval"&& len(q.VoteIndexes)!=1{
+				if qs.method == "Approval" && len(q.VoteIndexes) != 1 {
 					return &message.Error{
 						Code:        -4,
 						Description: "Cannot choose multiple ballot options on Approval voting method",
