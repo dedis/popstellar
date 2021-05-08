@@ -13,11 +13,13 @@ public class Election extends Event {
     private long start;
     private long end;
     private boolean writeIn;
-    private String question;
-    private List<String> ballotOptions;
-
+    private List<String> questions;
+    private List<List<String>> ballotsOptions;
+    private List<List<Integer>> votes;
     public Election() {
-        this.ballotOptions = new ArrayList<>();
+        this.ballotsOptions = new ArrayList<>();
+        this.questions = new ArrayList<>();
+        this.votes = new ArrayList<>();
     }
 
     public String getId() {
@@ -62,25 +64,23 @@ public class Election extends Event {
         this.end = end;
     }
 
-    public List<String> getBallotOptions() {
-        return ballotOptions;
+    public List<List<String>> getBallotsOptions() {
+        return ballotsOptions;
     }
 
-    public void setBallotOptions(List<String> ballotOptions) {
-        if (ballotOptions == null)
-            throw new IllegalArgumentException("ballot options can't be null");
-        if (ballotOptions.size() < 2)
-            throw new IllegalArgumentException("ballot must have at least two options");
-        this.ballotOptions = ballotOptions;
+    public void setBallotOptions(List<List<String>> ballotsOptions) {
+        if (ballotsOptions == null || ballotsOptions.isEmpty())
+            throw new IllegalArgumentException("ballots options can't be null or empty");
+        this.ballotsOptions = ballotsOptions;
     }
 
-    public String getQuestion() {
-        return question;
+    public List<String> getQuestions() {
+        return questions;
     }
 
-    public void setQuestion(String question) {
-        if (question == null) throw new IllegalArgumentException("question can't be null");
-        this.question = question;
+    public void setQuestion(List<String> questions) {
+        if (questions == null || questions.isEmpty()) throw new IllegalArgumentException("questions can't be null or empty");
+        this.questions = questions;
     }
 
     public boolean getWriteIn() {
@@ -89,6 +89,16 @@ public class Election extends Event {
 
     public void setWriteIn(boolean writeIn) {
         this.writeIn = writeIn;
+    }
+
+    public List<List<Integer>> getVotes(){
+        return votes;
+    }
+
+    public void setVotes(List<List<Integer>> votes){
+        if(votes == null || votes.isEmpty())
+            throw new IllegalArgumentException("votes can't be null or empty");
+        this.votes = votes;
     }
 
     @Override

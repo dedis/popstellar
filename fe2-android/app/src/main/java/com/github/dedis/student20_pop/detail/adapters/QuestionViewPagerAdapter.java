@@ -14,29 +14,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
+import com.github.dedis.student20_pop.model.Election;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class QuestionViewPagerAdapter extends RecyclerView.Adapter<QuestionViewPagerAdapter.Pager2ViewHolder>{
 
 
-    List<List<String>> ballotsOptions = Arrays.asList(
-            Arrays.asList("Alan Turing", "John von Neumann", "Claude Shannon", "Linus Torvalds", "Ken Thompson", "Tim Berners-Lee", "Charles Babbage", "Barbara Liskov", "Ronald Rivest", "Adi Shamir", "Len Adleman"),
-            Arrays.asList("a", "b", "c", "d"));
-    List<String> questions = Arrays.asList("Favourite C.S guy ?", "Best letter ?");
-    private List<Integer> numbersOfChoices;
-    private  final String VOTES_FULL = "You cannot select more candidates";
+
     private ArrayAdapter<String> ballotAdapter;
     private LaoDetailViewModel mLaoDetailViewModel;
-    private List<List<Integer>> allVotes;
     public QuestionViewPagerAdapter (LaoDetailViewModel mLaoDetailViewModel){
         super();
-
-        this.numbersOfChoices = Arrays.asList(3,1);
         this.mLaoDetailViewModel = mLaoDetailViewModel;
-        allVotes = Arrays.asList(new ArrayList<>(), new ArrayList<>());
     }
     @NonNull
     @Override
@@ -47,61 +38,64 @@ public class QuestionViewPagerAdapter extends RecyclerView.Adapter<QuestionViewP
 
     @Override
     public void onBindViewHolder(@NonNull Pager2ViewHolder holder, int position) {
-        System.out.println("Changed page " + position);
-//        ElectionQuestion electionQuestion = mLaoDetailViewModel.getCurrentElection().getElectionQuestions().get(position);
-//        Election election = mLaoDetailViewModel.getCurrentElection();
-//        String question = electionQuestion.getQuestion();
-//        List<String> ballotOptions = electionQuestion.getBallotOptions();
-        List<String> ballotOptions = ballotsOptions.get(position);
-        String question = questions.get(position);
+        Election election = mLaoDetailViewModel.getCurrentElection();
+
+        //setting the question
+        String question = election.getQuestions().get(position);
         holder.questionView.setText(question);
+
+
+
         //todo change when implemented in the setup
-        int numberOfChoices = numbersOfChoices.get(position);
+        //this will determine the number of option the user can select and vote for
+       // int numberOfChoices = numbersOfChoices.get(position);
+        int numberOfChoices = 1; //by default
+
+        List<Integer> votes = election.getVotes().get(position);
+
+        //setting the list view with ballot options
+        List<String> ballotOptions = election.getBallotsOptions().get(position);
         ballotAdapter.clear();
         ballotAdapter.addAll(ballotOptions);
-        ListView lvBallots = holder.ballotsListView;
-        List<Integer> votes =allVotes.get(position);
-//        List<Integer> votes = election.getVotes().get(position);
-        lvBallots.setAdapter(ballotAdapter);
-        lvBallots.setChoiceMode(
+        ListView ballotsListView = holder.ballotsListView;
+        ballotsListView.setAdapter(ballotAdapter);
+        ballotsListView.setChoiceMode(
                 numberOfChoices > 1
                         ? AbsListView.CHOICE_MODE_MULTIPLE
                         : AbsListView.CHOICE_MODE_SINGLE);
 
 
         AdapterView.OnItemClickListener itemListener = (parent, view, listPosition, id) -> {
-            lvBallots.setClickable(false);
+            ballotsListView.setClickable(false);
             if (numberOfChoices > 1) {
                 if (votes.contains(listPosition)) {
+                    //without the cast listPosition is treated as the index rather than the list element
                     votes.remove((Integer)listPosition);
-                    lvBallots.setItemChecked(listPosition, false);
+                    ballotsListView.setItemChecked(listPosition, false);
                 } else if (votes.size() < numberOfChoices) {
                     votes.add(listPosition);
-                    lvBallots.setItemChecked(listPosition, true);
+                    ballotsListView.setItemChecked(listPosition, true);
                 } else {
-                    lvBallots.setItemChecked(listPosition, false);
-                    //    Toast.makeText(context, VOTES_FULL, Toast.LENGTH_LONG).show();
+                    ballotsListView.setItemChecked(listPosition, false);
                 }
             } else {
-                System.out.println("Size of votes is " + votes.size());
-                System.out.println(votes);
                 if (votes.contains( listPosition)) {
                     votes.clear();
-                    lvBallots.setItemChecked(listPosition, false);
+                    ballotsListView.setItemChecked(listPosition, false);
                 } else {
                     votes.clear();
                     votes.add(listPosition);
                 }
             }
-            lvBallots.setClickable(true);
+            ballotsListView.setClickable(true);
             //   voteButton.setEnabled(votes.size() == numberOfChoices);
         };
-        lvBallots.setOnItemClickListener(itemListener);
+        ballotsListView.setOnItemClickListener(itemListener);
     }
 
     @Override
     public int getItemCount() {
-        return questions.size();// mLaoDetailViewModel.getCurrentElection().getElectionQuestions().size();
+         return mLaoDetailViewModel.getCurrentElection().getQuestions().size();
     }
     class Pager2ViewHolder extends RecyclerView.ViewHolder{
         private ListView ballotsListView;

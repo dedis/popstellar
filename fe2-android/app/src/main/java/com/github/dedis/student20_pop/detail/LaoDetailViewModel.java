@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
 import com.github.dedis.student20_pop.Event;
+import com.github.dedis.student20_pop.model.Election;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.data.LAORepository;
 import com.github.dedis.student20_pop.model.event.EventType;
@@ -50,16 +51,19 @@ public class LaoDetailViewModel extends AndroidViewModel {
   private final MutableLiveData<Event<Boolean>> mShowPropertiesEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mEditPropertiesEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenLaoDetailEvent = new MutableLiveData<>();
-  private final MutableLiveData<Event<EventType>> mChooseNewLaoEventTypeEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<Event<EventType>> mNewLaoEventCreationEvent =
-      new MutableLiveData<>();
+  private final MutableLiveData<Event<EventType>> mChooseNewLaoEventTypeEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<EventType>> mNewLaoEventCreationEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenNewRollCallEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<Boolean>> mOpenElectionResultsEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<Boolean>> mOpenManageElectionEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<Boolean>> mElectionCreated = new MutableLiveData<>();
+  private final MutableLiveData<Event<Boolean>> mOpenCastVotes = new MutableLiveData<>();
 
   /*
    * LiveData objects that represent the state in a fragment
    */
   private final MutableLiveData<Lao> mCurrentLao = new MutableLiveData<>();
+  private final MutableLiveData<Election> mCurrentElection = new MutableLiveData<>(); // Represents the current election being managed/opened in a fragment
   private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
   private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>("");
@@ -322,6 +326,8 @@ public class LaoDetailViewModel extends AndroidViewModel {
     return mWitnesses;
   }
 
+  public Election getCurrentElection() { return mCurrentElection.getValue(); }
+
   public LiveData<List<com.github.dedis.student20_pop.model.event.Event>> getLaoEvents() {
     return mLaoEvents;
   }
@@ -352,6 +358,10 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
   public void closeEditProperties() {
     mEditPropertiesEvent.setValue(new Event<>(false));
+  }
+
+  public void setCurrentElection(Election e) {
+    mCurrentElection.setValue(e);
   }
 
   /**
