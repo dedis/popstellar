@@ -15,7 +15,7 @@ import com.github.dedis.student20_pop.detail.fragments.LaoDetailFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.MeetingEventCreationFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.PollEventCreationFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.RollCallEventCreationFragment;
-import com.github.dedis.student20_pop.detail.fragments.ElectionSetupFragment;
+import com.github.dedis.student20_pop.detail.fragments.event.creation.ElectionSetupFragment;
 import com.github.dedis.student20_pop.detail.fragments.ManageElectionFragment;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.model.event.EventType;

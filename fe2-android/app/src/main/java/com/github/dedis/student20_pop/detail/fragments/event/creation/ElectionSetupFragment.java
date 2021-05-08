@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.detail.fragments;
+package com.github.dedis.student20_pop.detail.fragments.event.creation;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -18,11 +18,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentSetupElectionEventBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
-import com.github.dedis.student20_pop.detail.fragments.event.creation.AbstractEventCreationFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.annotation.NonNull;

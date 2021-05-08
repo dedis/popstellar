@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class ManageElectionFragment extends Fragment {
+public class  ManageElectionFragment extends Fragment {
 
     public static final String TAG = ManageElectionFragment.class.getSimpleName();
 
