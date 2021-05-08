@@ -35,7 +35,7 @@ func NewOrganizerHub(public kyber.Point) Hub {
 }
 
 // RemoveClient removes the client from this hub.
-func (o *organizerHub) RemoveClient(client *Client) {
+func (o *organizerHub) RemoveClientSocket(client *ClientSocket) {
 	o.RLock()
 	defer o.RUnlock()
 
@@ -50,10 +50,10 @@ func (o *organizerHub) Recv(msg IncomingMessage) {
 	o.messageChan <- msg
 }
 
-func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
-	log.Printf("organizerHub::handleIncomingMessage: %s", incomingMessage.Message)
-
-	client := incomingMessage.Client
+func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
+	client := ClientSocket{
+		incomingMessage.Socket,
+	}
 
 	// unmarshal the message
 	genericMsg := &message.GenericMessage{}
@@ -141,9 +141,9 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	// TODO: use constants
 	switch method {
 	case "subscribe":
-		err = channel.Subscribe(client, *query.Subscribe)
+		err = channel.Subscribe(&client, *query.Subscribe)
 	case "unsubscribe":
-		err = channel.Unsubscribe(client, *query.Unsubscribe)
+		err = channel.Unsubscribe(&client, *query.Unsubscribe)
 	case "publish":
 		err = channel.Publish(*query.Publish)
 	case "message":
@@ -169,6 +169,27 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	}
 
 	client.SendResult(id, result)
+}
+
+func (o *organizerHub) handleMessageFromWitness(incomingMessage *IncomingMessage) {
+	//TODO
+}
+
+func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
+	log.Printf("organizerHub::handleMessageFromClient: %s", incomingMessage.Message)
+
+	switch incomingMessage.Socket.socketType {
+	case ClientSocketType:
+		o.handleMessageFromClient(incomingMessage)
+		return
+	case WitnessSocketType:
+		o.handleMessageFromWitness(incomingMessage)
+		return
+	default:
+		log.Printf("error: invalid socket type")
+		return
+	}
+
 }
 
 func (o *organizerHub) Start(done chan struct{}) {
@@ -197,6 +218,12 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 	}
 
 	encodedID := base64.StdEncoding.EncodeToString(data.ID)
+	if _, ok := o.channelByID[encodedID]; ok {
+		return &message.Error{
+			Code:        -3,
+			Description: "failed to create lao: another one with the same ID exists",
+		}
+	}
 
 	if _, ok := o.channelByID[encodedID]; ok {
 		return &message.Error{
@@ -242,8 +269,6 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 		err = c.processMessageObject(msg.Sender, data)
 	case message.RollCallObject:
 		err = c.processRollCallObject(data)
-	case message.ElectionObject:
-		err = c.processElectionObject(*msg)
 	}
 
 	if err != nil {
@@ -495,7 +520,7 @@ func (c *laoChannel) processElectionObject(msg message.Message) error {
 			Description: fmt.Sprintf("invalid action: %s", action),
 		}
 	}
-	
+
 	err := c.createElection(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to setup the election %v", err)
