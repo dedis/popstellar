@@ -95,7 +95,8 @@ const STRINGS = {
   discussion_create_open: 'discussion open',
 
   /* --- Roll-call creation Strings --- */
-  roll_call_create_deadline: 'Deadline:',
+  roll_call_create_proposed_start: 'Proposed Start:',
+  roll_call_create_proposed_end: 'Proposed End:',
   roll_call_create_description: 'Description',
   roll_call_create_location: 'Location*',
   roll_call_create_name: 'Name*',
@@ -117,6 +118,17 @@ const STRINGS = {
   meeting_create_start_time: 'Start time: ',
   meeting_create_finish_time: 'End time: ',
   meeting_create_location: 'Location',
+
+  /* --- Wallet Strings --- */
+  wallet: 'Initialize wallet cryptography handler database',
+  wallet_add: 'Add encryption/decryption key to database ',
+  wallet_remove: 'Remove encryption/decryption key from database ',
+  wallet_encrypt_random_token: 'Encrypt test-token - ed25519 key',
+  wallet_decrypt_random_token: 'Decrypt previously encrypted test-token',
+  wallet_private_key_id: 'Private Decryption Key',
+  wallet_public_key_id: 'Public Encryption Key',
+  wallet_public_key: 'public',
+  wallet_private_key: 'private',
 
   /* --- General creation Strings --- */
   create_description: 'Choose the type of event you want to create',
