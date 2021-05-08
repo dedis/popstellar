@@ -1,11 +1,11 @@
 // fake Event to show how the app works
-import { Hash, LaoEventType } from 'model/objects';
+import { Hash } from 'model/objects';
 
 // @ts-ignore
 const data: LaoEventtate[] = [
   {
     id: Hash.fromString('1').toString(),
-    eventType: LaoEventType.MEETING,
+    eventType: 'MEETING',
     name: 'Event 1',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -15,7 +15,7 @@ const data: LaoEventtate[] = [
   },
   {
     id: Hash.fromString('2').toString(),
-    eventType: LaoEventType.MEETING,
+    eventType: 'MEETING',
     name: 'Event 2',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -25,7 +25,7 @@ const data: LaoEventtate[] = [
   },
   {
     id: Hash.fromString('3').toString(),
-    eventType: LaoEventType.MEETING,
+    eventType: 'MEETING',
     name: 'Event 3',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -35,7 +35,7 @@ const data: LaoEventtate[] = [
   },
   {
     id: Hash.fromString('4').toString(),
-    eventType: LaoEventType.ROLL_CALL,
+    eventType: 'ROLL_CALL',
     name: 'Event 4',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -45,7 +45,7 @@ const data: LaoEventtate[] = [
   },
   {
     id: Hash.fromString('5').toString(),
-    eventType: LaoEventType.ROLL_CALL,
+    eventType: 'ROLL_CALL',
     name: 'Event 5',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -55,7 +55,7 @@ const data: LaoEventtate[] = [
   },
   {
     id: Hash.fromString('6').toString(),
-    eventType: LaoEventType.MEETING,
+    eventType: 'MEETING',
     name: 'Event 6',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -64,7 +64,7 @@ const data: LaoEventtate[] = [
   },
   {
     id: Hash.fromString('7').toString(),
-    eventType: LaoEventType.MEETING,
+    eventType: 'MEETING',
     name: 'Event 7',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -74,7 +74,7 @@ const data: LaoEventtate[] = [
   },
   {
     id: Hash.fromString('8').toString(),
-    eventType: LaoEventType.MEETING,
+    eventType: 'MEETING',
     name: 'Event 8',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -84,7 +84,7 @@ const data: LaoEventtate[] = [
   },
   {
     id: Hash.fromString('9').toString(),
-    eventType: LaoEventType.MEETING,
+    eventType: 'MEETING',
     name: 'Event 9',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -94,7 +94,7 @@ const data: LaoEventtate[] = [
   },
   {
     id: Hash.fromString('10').toString(),
-    eventType: LaoEventType.MEETING,
+    eventType: 'MEETING',
     name: 'Event 10',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -104,7 +104,7 @@ const data: LaoEventtate[] = [
   },
   {
     id: Hash.fromString('11').toString(),
-    eventType: LaoEventType.ROLL_CALL,
+    eventType: 'ROLL_CALL',
     name: 'Event 11',
     start: 1607616483,
     creation: 1607616483,
@@ -114,7 +114,7 @@ const data: LaoEventtate[] = [
   },
   {
     id: Hash.fromString('12').toString(),
-    eventType: LaoEventType.MEETING,
+    eventType: 'MEETING',
     name: 'Event 12',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -124,7 +124,7 @@ const data: LaoEventtate[] = [
   },
   {
     id: Hash.fromString('13').toString(),
-    eventType: LaoEventType.MEETING,
+    eventType: 'MEETING',
     name: 'Event 13',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -134,7 +134,7 @@ const data: LaoEventtate[] = [
   },
   {
     id: Hash.fromString('14').toString(),
-    eventType: LaoEventType.MEETING,
+    eventType: 'MEETING',
     name: 'Event 14',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -144,7 +144,7 @@ const data: LaoEventtate[] = [
   },
   {
     id: Hash.fromString('15').toString(),
-    eventType: LaoEventType.MEETING,
+    eventType: 'MEETING',
     name: 'Event 15',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -154,7 +154,7 @@ const data: LaoEventtate[] = [
   },
   {
     id: Hash.fromString('16').toString(),
-    eventType: LaoEventType.MEETING,
+    eventType: 'MEETING',
     name: 'Event 16',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -164,7 +164,7 @@ const data: LaoEventtate[] = [
   },
   {
     id: Hash.fromString('17').toString(),
-    eventType: LaoEventType.MEETING,
+    eventType: 'MEETING',
     name: 'Event 17',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -174,7 +174,7 @@ const data: LaoEventtate[] = [
   },
   {
     id: Hash.fromString('18').toString(),
-    eventType: LaoEventType.MEETING,
+    eventType: 'MEETING',
     name: 'Event 18',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -184,7 +184,7 @@ const data: LaoEventtate[] = [
   },
   {
     id: Hash.fromString('19').toString(),
-    eventType: LaoEventType.MEETING,
+    eventType: 'MEETING',
     name: 'Event 19',
     creation: 1607616483,
     last_modified: 1607616483,
@@ -194,7 +194,7 @@ const data: LaoEventtate[] = [
   },
   {
     id: Hash.fromString('20').toString(),
-    eventType: LaoEventType.MEETING,
+    eventType: 'MEETING',
     name: 'Event 20',
     creation: 1607616483,
     last_modified: 1607616483,

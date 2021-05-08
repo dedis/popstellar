@@ -26,14 +26,14 @@ class NetworkManager {
   }
 
   /** Connects to a server or returns an existing connection to the server
-   *
+   * Mockserver port: 8080, Go backend: 9000
    * @param host the server's host
    * @param port the server's port
    * @param path the path at which the websocket can be established
    *
    * @returns a new connection to the server, or an existing one if it's already established
    */
-  public connect(host: string, port: number = 8000, path: string = ''): NetworkConnection {
+  public connect(host: string, port: number = 8080, path: string = ''): NetworkConnection {
     const address: string = NetworkManager.buildAddress(host, port, path);
     const existingConnection = this.getConnectionByAddress(address);
 
@@ -54,7 +54,7 @@ class NetworkManager {
     }
   }
 
-  public disconnectFrom(host: string, port: number = 8000, path: string = ''): void {
+  public disconnectFrom(host: string, port: number = 8080, path: string = ''): void {
     const address = NetworkManager.buildAddress(host, port, path);
     const connection = this.getConnectionByAddress(address);
     if (connection !== undefined) {

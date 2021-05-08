@@ -2,6 +2,16 @@ import { Hash } from './Hash';
 import { PublicKey } from './PublicKey';
 import { Signature } from './Signature';
 
+/**
+ * WitnessSignatureState is the interface that should match JSON.stringify(WitnessSignature)
+ * It is used to store witness signatures in a way compatible with the Redux store.
+ */
+export interface WitnessSignatureState {
+  witness: string;
+
+  signature: string;
+}
+
 export class WitnessSignature {
   public witness: PublicKey;
 
@@ -23,5 +33,16 @@ export class WitnessSignature {
    */
   public verify(message_id: Hash) : boolean {
     return this.signature.verify(this.witness, message_id);
+  }
+
+  public static fromJson(ws: WitnessSignatureState): WitnessSignature {
+    return new WitnessSignature({
+      witness: new PublicKey(ws.witness),
+      signature: new Signature(ws.signature),
+    });
+  }
+
+  public toState(): WitnessSignatureState {
+    return JSON.parse(JSON.stringify(this));
   }
 }
