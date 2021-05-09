@@ -23,7 +23,7 @@ public class  ManageElectionFragment extends Fragment {
 
     public static final String TAG = ManageElectionFragment.class.getSimpleName();
 
-    protected static final SimpleDateFormat DATE_FORMAT =
+    private final SimpleDateFormat dateFormat =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
     private Button terminate;
     private LaoDetailViewModel laoDetailViewModel;
@@ -61,9 +61,9 @@ public class  ManageElectionFragment extends Fragment {
         Date dCurrent = new java.util.Date(System.currentTimeMillis()); // Get's the date based on the unix time stamp
         Date dStart = new java.util.Date(laoDetailViewModel.getCurrentElection().getStartTimestamp() * 1000);// *1000 because it needs to be in milisecond
         Date dEnd = new java.util.Date(laoDetailViewModel.getCurrentElection().getEndTimestamp() * 1000);
-        currentTime.setText(DATE_FORMAT.format(dCurrent)); // Set's the start time in the form dd/MM/yyyy HH:mm z
-        startTime.setText(DATE_FORMAT.format(dStart));
-        endTime.setText(DATE_FORMAT.format(dEnd));
+        currentTime.setText(dateFormat.format(dCurrent)); // Set's the start time in the form dd/MM/yyyy HH:mm z
+        startTime.setText(dateFormat.format(dStart));
+        endTime.setText(dateFormat.format(dEnd));
         laoName.setText(laoDetailViewModel.getCurrentLaoName().getValue());
         electionName.setText(laoDetailViewModel.getCurrentElection().getName());
         question.setText("Election Question : " + laoDetailViewModel.getCurrentElection().getQuestion());

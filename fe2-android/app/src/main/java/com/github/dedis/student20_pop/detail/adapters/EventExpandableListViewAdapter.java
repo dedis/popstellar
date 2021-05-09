@@ -253,7 +253,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
         // we use a switch case to handle all the different type of actions we want when we click on a certain event
 
-        switch (event.type) {
+        switch (event.getType()) {
             case ELECTION:
                 LayoutElectionDisplayBinding electionBinding ;
                 if (convertView == null) {
