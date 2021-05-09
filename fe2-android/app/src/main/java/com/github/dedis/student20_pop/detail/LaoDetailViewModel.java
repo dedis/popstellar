@@ -154,6 +154,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
                                 if (answer instanceof Result) {
                                   Log.d(TAG, "setup an election");
                                   openLaoDetail();
+                                  mCurrentLao.postValue(lao);
                                 } else if (answer instanceof Error) {
                                   Log.d(TAG, "failed to setup an election because of the following error : " + ((Error) answer).getError().getDescription());
                                 } else {
