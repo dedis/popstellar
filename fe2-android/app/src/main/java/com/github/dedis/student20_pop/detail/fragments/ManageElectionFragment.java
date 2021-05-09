@@ -7,17 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentManageElectionBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.home.HomeActivity;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -26,8 +23,8 @@ public class  ManageElectionFragment extends Fragment {
 
     public static final String TAG = ManageElectionFragment.class.getSimpleName();
 
-    protected  final SimpleDateFormat DATE_FORMAT =
-            new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
+    protected static final SimpleDateFormat DATE_FORMAT =
+      new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
     private Button terminate;
     private LaoDetailViewModel laoDetailViewModel;
 
@@ -46,9 +43,6 @@ public class  ManageElectionFragment extends Fragment {
         FragmentManageElectionBinding mManageElectionFragBinding;
         TextView laoName;
        TextView electionName;
-        Button editName;
-        Button editQuestion;
-         Button editBallotOptions;
          TextView currentTime;
          TextView startTime;
          TextView endTime;
@@ -58,9 +52,6 @@ public class  ManageElectionFragment extends Fragment {
 
         laoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
         terminate = mManageElectionFragBinding.terminateElection;
-        editName = mManageElectionFragBinding.editName;
-        editQuestion = mManageElectionFragBinding.editQuestion;
-        editBallotOptions = mManageElectionFragBinding.editBallotOptions;
         currentTime = mManageElectionFragBinding.displayedCurrentTime;
         startTime = mManageElectionFragBinding.displayedStartTime;
         endTime = mManageElectionFragBinding.displayedEndTime;
@@ -90,12 +81,9 @@ public class  ManageElectionFragment extends Fragment {
         //On click, terminate button  current Election
         terminate.setOnClickListener(
                 v -> {
-                    // TODO implement the cancel election action when the backend is ready
-                    // wait for the backend response/checks before really cancelling the elction
-                    /*
+                   // TODO implement the cancel election action with backend when the backend is ready
                     laoDetailViewModel.terminateCurrentElection();
                     laoDetailViewModel.openLaoDetail();
-                    */
 
                 });
 

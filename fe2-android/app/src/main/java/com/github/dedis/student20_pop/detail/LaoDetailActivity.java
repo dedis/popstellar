@@ -255,9 +255,17 @@ public class LaoDetailActivity extends AppCompatActivity {
     }
 
   }
+
   //TODO : Implement those two methods
-  private void setupCastVotesFragment() { }
+  private void setupCastVotesFragment() {
+      /*
+      will be implemented in Johan's PR
+       */
+  }
   private void setupElectionResultsFragment() {
+      /*
+      will be implemented in the future
+       */
   }
 
 
