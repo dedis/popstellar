@@ -142,7 +142,7 @@ const STRINGS = {
   wallet_synced_info: 'Your digital wallet is synced !',
   setup_wallet: 'SETUP WALLET',
   back_to_wallet_home: 'BACK TO WALLET HOME',
-  recover_tokens_title: 'RECOVER POP TOKENS',
+  show_tokens_title: 'SHOW POP TOKENS',
 
   /* --- General creation Strings --- */
   create_description: 'Choose the type of event you want to create',

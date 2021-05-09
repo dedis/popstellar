@@ -2,6 +2,7 @@ import { WalletStore } from 'store/stores/WalletStore';
 import * as bip39 from 'bip39';
 import { derivePath, getPublicKey } from 'ed25519-hd-key';
 import { WalletCryptographyHandler } from './WalletCryptographyHandler';
+import { Hash } from './Hash';
 
 /**
  * bip39 library used for seed generation and verification
@@ -29,13 +30,15 @@ export class HDWallet {
 
   private static readonly PATH_SEPARATOR: string = '/';
 
-  private static readonly BUFFER_SEPARATOR: string = ',';
+  private static readonly HARDENED_SYMBOL: string = "'";
 
   /* cryptography manager: encrypts the seed with RSA key stored in IndexedDB */
   private cryptoManager!: WalletCryptographyHandler;
 
   /* local copy of encrypted seed */
   private encryptedSeed!: ArrayBuffer;
+
+  private cachedKeyPairs: Map<[Hash, Hash], string> = new Map();
 
   /**
    * a wallet can be created empty and then initialized or
@@ -152,7 +155,7 @@ export class HDWallet {
    * @private
    */
   private static deserializeEncryptedSeed(encryptedSeedEncoded: string): ArrayBuffer {
-    const buffer = encryptedSeedEncoded.split(this.BUFFER_SEPARATOR);
+    const buffer = encryptedSeedEncoded.split(',');
     const bufView = new Uint8Array(buffer.length);
     for (let i = 0; i < buffer.length; i += 1) {
       bufView[i] = Number(buffer[i]);
@@ -160,21 +163,104 @@ export class HDWallet {
     return bufView.buffer;
   }
 
-  public recoverTokens() {
-    this.generateKeyFromPath("m/0'/2147483647'");
+  public async recoverTokens() {
+    // ====================================================================================
+    // garbage effort river orphan negative kind outside quit hat camera approve first
+    // public key 0074ce75da553a3d206b5fe3a2831dca0908e7058a5bfa69ccaedb9c878587f8ff
+    // private key 074d73938aba32aade6af2d48a2b5e5fdbeae16b94994e0fc2cc4590341b67bf
+
+    const laoId1: Hash = Hash.fromString('LAO1');
+    const rollCallId1: Hash = Hash.fromString('LAO1RC1');
+    const laoId2: Hash = Hash.fromString('1');
+    const rollCallId2: Hash = Hash.fromString('LAO2RC1');
+    const rollCallId3: Hash = Hash.fromString('2');
+
+    const testMap: Map<[Hash, Hash], string[]> = new Map();
+
+    testMap.set([laoId1, rollCallId1], ['ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', '']);
+    testMap.set([laoId2, rollCallId2], ['', '', '', '']);
+    testMap.set([laoId2, rollCallId3], ['0074ce75da553a3d206b5fe3a2831dca0908e7058a5bfa69ccaedb9c878587f8ff', '']);
+
+    // ====================================================================================
+    await this.recoverAllKeys(testMap);
   }
 
-  public generateKeyFromPath(path: string) {
-    this.getDecryptedSeed().then((seedArray) => {
-      const { key, chainCode } = derivePath(path, seedArray.toString());
-      const publicKey = getPublicKey(key);
-      console.log('key');
-      console.log(key.toString('hex'));
-      console.log('chain code');
-      console.log(chainCode.toString('hex'));
-      console.log('public key');
-      console.log(publicKey.toString('hex'));
-      return { key, publicKey };
+  private async recoverAllKeys(allKnownLaoRollCalls: Map<[Hash, Hash], string[]>) {
+    if (allKnownLaoRollCalls === undefined) {
+      throw Error('Error while recovering keys from wallet: undefined parameter');
+    }
+
+    allKnownLaoRollCalls.forEach((attendees: string[], laoAndRollCallId: [Hash, Hash]) => {
+      const laoId: Hash = laoAndRollCallId[0];
+      const rollCallId: Hash = laoAndRollCallId[1];
+      this.recoverKey(laoId, rollCallId, attendees);
     });
+
+    console.log(this.cachedKeyPairs);
+  }
+
+  private async recoverKey(laoId: Hash, rollCallId: Hash, attendees: string[]) {
+    this.generateKeyPair(laoId, rollCallId).then((keyPair) => {
+      const publicKey: string = keyPair.publicKey.toString('hex');
+
+      if (attendees.indexOf(publicKey) !== -1) {
+        this.cachedKeyPairs.set([laoId, rollCallId], publicKey);
+      }
+    });
+  }
+
+  private async generateKeyPair(laoId: Hash, rollCallId:Hash):
+  Promise<{ privateKey: Buffer, publicKey: Buffer }> {
+    const path: string = HDWallet.PREFIX
+      .concat(HDWallet.PATH_SEPARATOR
+        .concat(HDWallet.PURPOSE
+          .concat(HDWallet.HARDENED_SYMBOL
+            .concat(HDWallet.PATH_SEPARATOR
+              .concat(HDWallet.ACCOUNT
+                .concat(HDWallet.HARDENED_SYMBOL)
+                .concat(HDWallet.idToPath(laoId))
+                .concat((HDWallet.idToPath(rollCallId))))))));
+
+    console.log(path);
+    const keyPair = await this.generateKeyFromPath(path);
+    return keyPair;
+  }
+
+  private async generateKeyFromPath(path: string):
+  Promise<{ privateKey: Buffer, publicKey: Buffer }> {
+    return this.getDecryptedSeed()
+      .then((seedArray) => {
+        const hexSeed = Buffer.from(seedArray)
+          .toString('hex');
+        const { key } = derivePath(path, hexSeed);
+        const publicKey = getPublicKey(key);
+
+        console.log('key');
+        console.log(key.toString('hex'));
+        console.log('public key');
+        console.log(publicKey.toString('hex'));
+
+        return {
+          privateKey: key,
+          publicKey: publicKey,
+        };
+      });
+  }
+
+  private static idToPath(id: Hash): string {
+    let idToPath: string = '';
+    for (let i = 0; i + 3 < id.length; i += 3) {
+      idToPath = idToPath.concat(HDWallet.PATH_SEPARATOR
+        .concat(String(id.charCodeAt(i)))
+        .concat(String(id.charCodeAt(i + 1)))
+        .concat(String(id.charCodeAt(i + 2)))
+        .concat(HDWallet.HARDENED_SYMBOL));
+    }
+    return idToPath;
+  }
+
+  public getCachedKeyPairs(): Map<[Hash, Hash], string> {
+    console.log(this.cachedKeyPairs);
+    return this.cachedKeyPairs;
   }
 }

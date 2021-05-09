@@ -41,6 +41,7 @@ const WalletSetSeed = ({ navigation }: IPropTypes) => {
       .then((seedIsValid) => ((seedIsValid)
         ? navigation.navigate(STRINGS.navigation_synced_wallet)
         : navigation.navigate(STRINGS.navigation_home_tab_wallet)));
+    wallet.recoverTokens().then(() => console.log('done'));
   };
 
   function getInsertSeedWalletDisplay() {
