@@ -13,11 +13,14 @@ public class Election extends Event {
     private long start;
     private long end;
     private boolean writeIn;
-    private String question;
-    private List<String> ballotOptions;
+    private List<String> questions;
+    private List<List<String>> ballotsOptions;
+    private List<List<Integer>> votes;
 
     public Election() {
-        this.ballotOptions = new ArrayList<>();
+        this.ballotsOptions = new ArrayList<>();
+        this.questions = new ArrayList<>();
+        votes = new ArrayList<>();
     }
 
     public String getId() {
@@ -62,25 +65,34 @@ public class Election extends Event {
         this.end = end;
     }
 
-    public List<String> getBallotOptions() {
-        return ballotOptions;
+    public List<List<Integer>> getVotes() {
+        return votes;
     }
 
-    public void setBallotOptions(List<String> ballotOptions) {
-        if (ballotOptions == null)
-            throw new IllegalArgumentException("ballot options can't be null");
-        if (ballotOptions.size() < 2)
-            throw new IllegalArgumentException("ballot must have at least two options");
-        this.ballotOptions = ballotOptions;
+    public void setVotes(List<List<Integer>> votes) {
+        if(votes == null) throw new IllegalArgumentException("votes cannot be null");
+        this.votes = votes;
     }
 
-    public String getQuestion() {
-        return question;
+    public List<List<String>> getBallotsOptions() {
+        return ballotsOptions;
     }
 
-    public void setQuestion(String question) {
-        if (question == null) throw new IllegalArgumentException("question can't be null");
-        this.question = question;
+    public void setBallotsOptions(List<List<String>> ballotsOptions) {
+        if (ballotsOptions == null)
+            throw new IllegalArgumentException("ballots options can't be null");
+        if (ballotsOptions.isEmpty())
+            throw new IllegalArgumentException();
+        this.ballotsOptions = ballotsOptions;
+    }
+
+    public List<String> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(List<String> questions) {
+        if (questions == null) throw new IllegalArgumentException("question can't be null");
+        this.questions = questions;
     }
 
     public boolean getWriteIn() {

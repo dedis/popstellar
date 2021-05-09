@@ -335,7 +335,7 @@ public class  LAORepository {
     election.setStart(electionSetup.getStartTime());
     election.setEnd(electionSetup.getEndTime());
     election.setWriteIn(electionQuestion.getWriteIn());
-    election.setBallotOptions(electionQuestion.getBallotOptions());
+    election.setBallotsOptions(electionQuestion.getBallotOptions());
 
     lao.updateElection(election.getId(), election);
     return false;

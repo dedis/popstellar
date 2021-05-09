@@ -2,15 +2,19 @@ package com.github.dedis.student20_pop.detail;
 
 import android.app.Application;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
+
 import com.github.dedis.student20_pop.Event;
+import com.github.dedis.student20_pop.model.Election;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.data.LAORepository;
 import com.github.dedis.student20_pop.model.event.EventType;
+import com.github.dedis.student20_pop.model.network.answer.Error;
 import com.github.dedis.student20_pop.model.network.answer.Result;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
@@ -21,10 +25,7 @@ import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -32,7 +33,11 @@ import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import com.github.dedis.student20_pop.model.network.answer.Error;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class LaoDetailViewModel extends AndroidViewModel {
 
@@ -56,6 +61,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
    * LiveData objects that represent the state in a fragment
    */
   private final MutableLiveData<Lao> mCurrentLao = new MutableLiveData<>();
+  private final MutableLiveData<Election> mCurrentElection = new MutableLiveData<>(); // Represents the current election being managed/opened in a fragment
   private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
   private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>("");
@@ -318,6 +324,8 @@ public class LaoDetailViewModel extends AndroidViewModel {
     return mWitnesses;
   }
 
+  public Election getCurrentElection() { return mCurrentElection.getValue(); }
+
   public LiveData<List<com.github.dedis.student20_pop.model.event.Event>> getLaoEvents() {
     return mLaoEvents;
   }
@@ -348,6 +356,10 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
   public void closeEditProperties() {
     mEditPropertiesEvent.setValue(new Event<>(false));
+  }
+
+  public void setCurrentElection(Election e) {
+    mCurrentElection.setValue(e);
   }
 
   /**

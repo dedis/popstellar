@@ -25,7 +25,7 @@ public class ElectionTest {
     @Test
     public void settingNullParametersThrowsException() {
         assertThrows(IllegalArgumentException.class, () -> election.setName(null));
-        assertThrows(IllegalArgumentException.class, () -> election.setBallotOptions(null));
+        assertThrows(IllegalArgumentException.class, () -> election.setBallotsOptions(null));
         assertThrows(IllegalArgumentException.class, () -> election.setQuestion(null));
         assertThrows(IllegalArgumentException.class, () -> election.setId(null));
     }
@@ -33,9 +33,9 @@ public class ElectionTest {
     @Test
     public void settingBallotOptionsWithSizeLessThan2ThrowsException() {
         List<String> brokenBallotOptions = new ArrayList<>();
-        assertThrows(IllegalArgumentException.class, () -> election.setBallotOptions(brokenBallotOptions));
+        assertThrows(IllegalArgumentException.class, () -> election.setBallotsOptions(brokenBallotOptions));
         brokenBallotOptions.add("candidate1");
-        assertThrows(IllegalArgumentException.class, () -> election.setBallotOptions(brokenBallotOptions));
+        assertThrows(IllegalArgumentException.class, () -> election.setBallotsOptions(brokenBallotOptions));
     }
 
     @Test
@@ -58,7 +58,7 @@ public class ElectionTest {
 
     @Test
     public void settingAndGettingReturnsCorrespondingBallotOptions() {
-        election.setBallotOptions(ballotOptions);
+        election.setBallotsOptions(ballotOptions);
         assertThat(election.getBallotOptions(), is(ballotOptions));
     }
 
