@@ -20,7 +20,7 @@ COMMANDS:
    help, h  Shows a list of commands or help for one command
 
 OPTIONS:
-   --public-key value, --pk value          base64 encoded organizer's public key
+   --public-key value, --pk value          base64url encoded organizer's public key
    --organizer-address value, --org value  organizer's IP address for witness to connect to organizer (default value "localhost")
    --client-port value, --cp value         port on which to open websocket for clients (default value 9000)
    --witness-port value, --wp value        port on which to open websocket for witnesses (default value 9001)
@@ -29,7 +29,7 @@ OPTIONS:
 
 ```
 
-You may start the organizer server at ports `9000` for clients and `9001` for witnesses by executing `./pop organizer --pk "<base64 encoded pk>" serve`.
+You may start the organizer server at ports `9000` for clients and `9001` for witnesses by executing `./pop organizer --pk "<base64url encoded pk>" serve`.
 Please use the `-cp` and `-wp` flags to specify an alternative port.
 
 ## Packages

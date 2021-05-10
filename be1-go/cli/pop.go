@@ -21,7 +21,7 @@ func main() {
 					&cli.StringFlag{
 						Name:    "public-key",
 						Aliases: []string{"pk"},
-						Usage:   "base64 encoded organizer's public key",
+						Usage:   "base64url encoded organizer's public key",
 					},
 				},
 				Subcommands: []*cli.Command{
@@ -53,7 +53,7 @@ func main() {
 					&cli.StringFlag{
 						Name:    "public-key",
 						Aliases: []string{"pk"},
-						Usage:   "base64 encoded witness's public key",
+						Usage:   "base64url encoded witness's public key",
 					},
 				},
 				Subcommands: []*cli.Command{

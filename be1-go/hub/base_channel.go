@@ -89,7 +89,7 @@ func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 		return xerrors.Errorf("failed to verify and unmarshal data: %v", err)
 	}
 
-	msgIDEncoded := base64.StdEncoding.EncodeToString(msg.MessageID)
+	msgIDEncoded := base64.URLEncoding.EncodeToString(msg.MessageID)
 
 	// Check if the message already exists
 	c.inboxMu.RLock()

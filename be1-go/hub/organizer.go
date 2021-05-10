@@ -217,7 +217,7 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 		}
 	}
 
-	encodedID := base64.StdEncoding.EncodeToString(data.ID)
+	encodedID := base64.URLEncoding.EncodeToString(data.ID)
 	if _, ok := o.channelByID[encodedID]; ok {
 		return &message.Error{
 			Code:        -3,
@@ -230,7 +230,7 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 	laoCh := laoChannel{
 		createBaseChannel(o, laoChannelID),
 	}
-	messageID := base64.StdEncoding.EncodeToString(publish.Params.Message.MessageID)
+	messageID := base64.URLEncoding.EncodeToString(publish.Params.Message.MessageID)
 	laoCh.inbox[messageID] = *publish.Params.Message
 
 	o.channelByID[encodedID] = &laoCh
@@ -276,7 +276,7 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 
 func (c *laoChannel) processLaoObject(msg message.Message) error {
 	action := message.LaoDataAction(msg.Data.GetAction())
-	msgIDEncoded := base64.StdEncoding.EncodeToString(msg.MessageID)
+	msgIDEncoded := base64.URLEncoding.EncodeToString(msg.MessageID)
 
 	switch action {
 	case message.UpdateLaoAction:
@@ -302,7 +302,7 @@ func (c *laoChannel) processLaoObject(msg message.Message) error {
 
 func (c *laoChannel) processLaoState(data *message.StateLAOData) error {
 	// Check if we have the update message
-	updateMsgIDEncoded := base64.StdEncoding.EncodeToString(data.ModificationID)
+	updateMsgIDEncoded := base64.URLEncoding.EncodeToString(data.ModificationID)
 
 	c.inboxMu.RLock()
 	updateMsg, ok := c.inbox[updateMsgIDEncoded]
@@ -344,7 +344,7 @@ func (c *laoChannel) processLaoState(data *message.StateLAOData) error {
 	for _, pair := range data.ModificationSignatures {
 		err := schnorr.VerifyWithChecks(student20_pop.Suite, pair.Witness, data.ModificationID, pair.Signature)
 		if err != nil {
-			pk := base64.StdEncoding.EncodeToString(pair.Witness)
+			pk := base64.URLEncoding.EncodeToString(pair.Witness)
 			return &message.Error{
 				Code:        -4,
 				Description: fmt.Sprintf("signature verification failed for witness %s", pk),
@@ -459,7 +459,7 @@ func (c *laoChannel) processMessageObject(public message.PublicKey, data message
 	case message.WitnessAction:
 		witnessData := data.(*message.WitnessMessageData)
 
-		msgEncoded := base64.StdEncoding.EncodeToString(witnessData.MessageID)
+		msgEncoded := base64.URLEncoding.EncodeToString(witnessData.MessageID)
 
 		err := schnorr.VerifyWithChecks(student20_pop.Suite, public, witnessData.MessageID, witnessData.Signature)
 		if err != nil {
