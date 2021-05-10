@@ -11,7 +11,7 @@ export enum EventTags {
 
 export class Hash extends Base64UrlData {
   /**
-     * Create a base64 encoded hash of an array of strings according to the communication protocol
+     * Create a base64url encoded hash of an array of strings according to the communication protocol
      *
      * @param data values to be hashed
      * @return resulting hash
