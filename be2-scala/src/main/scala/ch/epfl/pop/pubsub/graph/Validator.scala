@@ -9,7 +9,7 @@ import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, 
 import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
 
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator._
-import ch.epfl.pop.pubsub.graph.validators.MethodValidator._
+import ch.epfl.pop.pubsub.graph.validators.ParamsValidator._
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.validators.LaoValidator._
 import ch.epfl.pop.pubsub.graph.validators.MeetingValidator._
@@ -20,7 +20,7 @@ object Validator {
 
   private val VALIDATOR_ERROR: PipelineError = PipelineError(
     ErrorCodes.INVALID_ACTION.id,
-    "Internal server fault: Validator was given a message it could not recognize"
+    "Unsupported action: Validator was given a message it could not recognize"
   )
 
   // FIXME implement schema
@@ -45,8 +45,8 @@ object Validator {
       case _ => Right(VALIDATOR_ERROR)
     }
     case Left(_) => Right(PipelineError(
-      ErrorCodes.INVALID_ACTION.id,
-      "Internal server fault: MethodValidator was given a response message"
+      ErrorCodes.SERVER_ERROR.id,
+      "Unsupported action: MethodValidator was given a response message"
     ))
     case graphMessage@_ => graphMessage
   }

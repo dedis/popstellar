@@ -15,7 +15,7 @@ object MessageDecoder {
       case Success(obj) =>
         val fields: Set[String] = obj.fields.keySet
 
-        if (fields.contains("method")) { // FIXME check that the error (if any) is correctly propagated
+        if (fields.contains("method")) {
           Left(obj.convertTo[JsonRpcRequest])
         } else {
           Left(obj.convertTo[JsonRpcResponse])
