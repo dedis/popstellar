@@ -2,17 +2,18 @@ package ch.epfl.pop
 
 import java.util.concurrent.TimeUnit
 
+import akka.actor.ActorRef
 import akka.actor.typed.ActorSystem
+import akka.actor.typed.scaladsl.adapter._
 import akka.actor.typed.scaladsl.Behaviors
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
-import akka.stream.scaladsl.{BroadcastHub, Keep, MergeHub}
+import akka.http.scaladsl.server.{RequestContext, RouteResult}
 import akka.util.Timeout
-import ch.epfl.pop.json.JsonMessages.PropagateMessageServer
-import ch.epfl.pop.pubsub.{ChannelActor, PublishSubscribe}
+import ch.epfl.pop.pubsub.{PubSubMediator, PublishSubscribeNew}
 import org.iq80.leveldb.Options
 
-import scala.concurrent.ExecutionContextExecutor
+import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.io.StdIn
 import scala.util.{Failure, Success}
 
@@ -25,37 +26,35 @@ object Server {
     val PORT = 8000
     val PATH = ""
 
-    val root = Behaviors.setup[Nothing] { context =>
-      implicit val system: ActorSystem[Nothing] = context.system
+    val system = akka.actor.ActorSystem("pop-be2-inner-actor-system")
+    implicit val typedSystem: ActorSystem[Nothing] = system.toTyped
 
-      //Stream that send all published messages to all clients
-      val (publishEntry, subscribeExit) = MergeHub.source[PropagateMessageServer].toMat(BroadcastHub.sink)(Keep.both).run()
+    val root = Behaviors.setup[Nothing] { _ =>
       implicit val timeout: Timeout = Timeout(1, TimeUnit.SECONDS)
-      val actor = context.spawn(ChannelActor(subscribeExit), "actor")
-      //Create database
+      // Create database
       val options: Options = new Options()
       options.createIfMissing(true)
-      val DatabasePath: String = "database"
-      val dbActor = context.spawn(DBActor(DatabasePath), "actorDB")
 
-      def publishSubscribeRoute = path(PATH) {
-        handleWebSocketMessages(PublishSubscribe.messageFlow(actor, dbActor)(timeout, system, publishEntry))
+      val pubSubMediator: ActorRef = system.actorOf(PubSubMediator.props)
+      def publishSubscribeRoute: RequestContext => Future[RouteResult] = path(PATH) {
+        handleWebSocketMessages(PublishSubscribeNew.buildGraph(pubSubMediator)(system))
       }
 
-      implicit val executionContext: ExecutionContextExecutor = system.executionContext
+      implicit val executionContext: ExecutionContextExecutor = typedSystem.executionContext
       val bindingFuture = Http().newServerAt("localhost", PORT).bind(publishSubscribeRoute)
       bindingFuture.onComplete {
-        case Success(value) => println("ch.epfl.pop.Server online at ws://localhost:" + PORT + "/" + PATH)
-        case Failure(exception) => println("ch.epfl.pop.Server failed to start")
+        case Success(_) => println("ch.epfl.pop.Server online at ws://localhost:" + PORT + "/" + PATH)
+        case Failure(_) =>
+          println("ch.epfl.pop.Server failed to start. Terminating actor system")
           system.terminate()
+          typedSystem.terminate()
       }
 
       Behaviors.empty
     }
 
-    val system = ActorSystem[Nothing](root, "pop")
+    ActorSystem[Nothing](root, "pop-be2-actor-system")
 
     StdIn.readLine() // let it run until user presses return
-
   }
 }
