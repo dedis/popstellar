@@ -5,7 +5,6 @@ import akka.actor.{ActorRef, ActorSystem}
 import akka.http.scaladsl.model.ws.TextMessage
 import akka.stream.OverflowStrategy
 import akka.stream.scaladsl.{Flow, Sink, Source}
-import ch.epfl.pop.pubsub.ClientActor
 import ch.epfl.pop.pubsub.ClientActor.{ClientAnswer, ConnectWsHandle, DisconnectWsHandle}
 
 
@@ -33,7 +32,7 @@ object Answerer {
     // Integration point between Akka Streams and above actor
     val source: Source[TextMessage, NotUsed] = Source
       // By using .actorRef, the source emits whatever the actor "wsHandle" sends
-      .actorRef(bufferSize = 10, overflowStrategy = OverflowStrategy.dropBuffer)
+      .actorRef(bufferSize = 50, overflowStrategy = OverflowStrategy.backpressure)
       // Send an answer back to the client (the one represented by wsHandle == clientActorRef)
       .map((graphMessage: GraphMessage) => sendAnswer(graphMessage))
       .mapMaterializedValue { wsHandle =>
