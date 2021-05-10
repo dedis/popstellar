@@ -3,6 +3,7 @@ package ch.epfl.pop.pubsub.graph.validators
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
+
 case object WitnessValidator extends ContentValidator {
   def validateWitnessMessage(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "WitnessMessage")

@@ -6,6 +6,9 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.model.objects.{Hash, Timestamp}
 
+import ch.epfl.pop.jsonNew.MessageDataProtocol._
+import spray.json._
+
 case class CreateRollCall(
                           id: Hash,
                           name: String,
@@ -33,5 +36,6 @@ object CreateRollCall extends Parsable {
     new CreateRollCall(id, name, creation, start, scheduled, location, roll_call_description)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): CreateRollCall = ???
+  override def buildFromJson(messageData: MessageData, payload: String): CreateRollCall =
+    payload.parseJson.asJsObject.convertTo[CreateRollCall]
 }
