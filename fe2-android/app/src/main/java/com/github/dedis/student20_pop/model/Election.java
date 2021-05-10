@@ -68,7 +68,7 @@ public class Election extends Event {
         return ballotsOptions;
     }
 
-    public void setBallotOptions(List<List<String>> ballotsOptions) {
+    public void setBallotsOptions(List<List<String>> ballotsOptions) {
         if (ballotsOptions == null || ballotsOptions.isEmpty())
             throw new IllegalArgumentException("ballots options can't be null or empty");
         this.ballotsOptions = ballotsOptions;

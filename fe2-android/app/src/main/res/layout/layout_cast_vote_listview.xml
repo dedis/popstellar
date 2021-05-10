@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:text="TextView"
             android:textColor="@color/black"
-            android:textSize="22sp"
+            android:textSize="@dimen/size_body"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -25,11 +25,11 @@
         <ListView
             android:id="@+id/list_view_pager2"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="@dimen/cast_vote_dynamic_height"
             android:layout_weight="1"
             android:choiceMode="multipleChoice"
             android:fadeScrollbars="false"
-            android:scrollbarSize="6dp"
+            android:scrollbarSize="@dimen/cast_vote_scrollbar_size"
             android:scrollbarStyle="outsideOverlay"
             android:scrollbars="vertical"
             android:scrollingCache="true"
