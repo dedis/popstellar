@@ -43,6 +43,8 @@
     <!-- Cast vote dimensions -->
     <dimen name="cast_vote_dynamic_height">0dp</dimen>
     <dimen name="cast_vote_scrollbar_size">6dp</dimen>
+    <dimen name="guideline_tab">60dp</dimen>
+    <dimen name="guideline_titles">140 dp</dimen>
 
 
 </resources>
