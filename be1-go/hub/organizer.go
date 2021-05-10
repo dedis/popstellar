@@ -563,7 +563,7 @@ func (c *laoChannel) processOpenRollCall(data message.Data, action message.RollC
 	}
 	rollCallData := data.(*message.OpenRollCallData)
 
-	if !c.checkPrevID(rollCallData.Opens) {
+	if !c.rollCall.checkPrevID(rollCallData.Opens) {
 		return &message.Error{
 			Code:        -4,
 			Description: "The field `opens` does not correspond to the id of the previous roll call message",
@@ -590,7 +590,7 @@ func (c *laoChannel) processCloseRollCall(data message.Data) error {
 		}
 	}
 	rollCallData := data.(*message.CloseRollCallData)
-	if !c.checkPrevID(rollCallData.Closes) {
+	if !c.rollCall.checkPrevID(rollCallData.Closes) {
 		return &message.Error{
 			Code:        -4,
 			Description: "The field `closes` does not correspond to the id of the previous roll call message",
@@ -612,8 +612,8 @@ func (c *laoChannel) processCloseRollCall(data message.Data) error {
 	return nil
 }
 
-func (c *laoChannel) checkPrevID(prevID []byte) bool {
-	return string(prevID) == c.rollCall.id
+func (r *rollCall) checkPrevID(prevID []byte) bool {
+	return string(prevID) == r.id
 }
 
 // Check if the id of the roll call corresponds to the hash of the correct parameters
