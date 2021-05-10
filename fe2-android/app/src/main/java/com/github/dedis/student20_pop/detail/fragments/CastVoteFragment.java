@@ -28,7 +28,7 @@ public class CastVoteFragment extends Fragment {
     private TextView laoNameView;
     private TextView electionNameView;
     private Button voteButton;
-    private FragmentCastVoteBinding mElectionDisplayFragBinding;
+    private FragmentCastVoteBinding mCastVoteFragBinding;
     private LaoDetailViewModel mLaoDetailViewModel;
 
 
@@ -58,15 +58,15 @@ public class CastVoteFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         //Inflate the layout for this fragment
-        mElectionDisplayFragBinding =
+        mCastVoteFragBinding =
                 FragmentCastVoteBinding.inflate(inflater, container, false);
         mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 
-        laoNameView = mElectionDisplayFragBinding.castVoteLaoName;
-        electionNameView = mElectionDisplayFragBinding.castVoteElectionName;
+        laoNameView = mCastVoteFragBinding.castVoteLaoName;
+        electionNameView = mCastVoteFragBinding.castVoteElectionName;
 
         //setUp the cast Vote button
-        voteButton = mElectionDisplayFragBinding.castVoteButton;
+        voteButton = mCastVoteFragBinding.castVoteButton;
         voteButton.setEnabled(false);
 
         //Getting election
@@ -79,16 +79,16 @@ public class CastVoteFragment extends Fragment {
       //  electionNameView.setText(election.getName());
 
 
-        ViewPager2 viewPager2 = mElectionDisplayFragBinding.castVotePager;
+        ViewPager2 viewPager2 = mCastVoteFragBinding.castVotePager;
         QuestionViewPagerAdapter adapter = new QuestionViewPagerAdapter(mLaoDetailViewModel);
         viewPager2.setAdapter(adapter);
 
         //Setting the indicator for horizontal swipe
-        CircleIndicator3 circleIndicator = mElectionDisplayFragBinding.swipeIndicator;
+        CircleIndicator3 circleIndicator = mCastVoteFragBinding.swipeIndicator;
         circleIndicator.setViewPager(viewPager2);
 
 
         voteButton.setOnClickListener(buttonListener);
-        return mElectionDisplayFragBinding.getRoot();
+        return mCastVoteFragBinding.getRoot();
     }
 }
