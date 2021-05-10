@@ -228,9 +228,9 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 	laoChannelID := "/root/" + encodedID
 
 	laoCh := laoChannel{
-		rollCall{},
-		make(map[string]struct{}),
-		createBaseChannel(o, laoChannelID),
+		rollCall:    rollCall{},
+		attendees:   make(map[string]struct{}),
+		baseChannel: createBaseChannel(o, laoChannelID),
 	}
 	messageID := base64.StdEncoding.EncodeToString(publish.Params.Message.MessageID)
 	laoCh.inbox[messageID] = *publish.Params.Message
