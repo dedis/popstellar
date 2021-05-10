@@ -5,8 +5,6 @@ final case class PipelineError(code: Int, description: String)
 object ErrorCodes extends Enumeration {
   type ErrorCodes = Value
 
-  // operation was successful (should never be used)
-  val SUCCESS: ErrorCodes = Value(0, "operation was successful")
   // invalid action
   val INVALID_ACTION: ErrorCodes = Value(-1, "invalid action")
   // invalid resource (e.g. channel does not exist, channel was not subscribed to, etc.)

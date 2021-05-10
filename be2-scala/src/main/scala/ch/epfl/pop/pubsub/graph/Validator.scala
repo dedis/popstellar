@@ -6,6 +6,7 @@ import ch.epfl.pop.model.network.method.{Broadcast, Catchup, Publish, Subscribe,
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
 import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, JsonRpcRequestStateMeeting}
+import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
 import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
 
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator._
@@ -84,10 +85,10 @@ object Validator {
       case message@(_: JsonRpcRequestUpdateLao) => validateUpdateLao(message)
       case message@(_: JsonRpcRequestCreateMeeting) => validateCreateMeeting(message)
       case message@(_: JsonRpcRequestStateMeeting) => validateStateMeeting(message)
-      case message@(_: JsonRpcRequestCreateLao) => validateCreateRollCall(message)
-      case message@(_: JsonRpcRequestStateLao) => validateOpenRollCall(message)
-      case message@(_: JsonRpcRequestUpdateLao) => validateReopenRollCall(message)
-      case message@(_: JsonRpcRequestUpdateLao) => validateCloseRollCall(message)
+      case message@(_: JsonRpcRequestCreateRollCall) => validateCreateRollCall(message)
+      case message@(_: JsonRpcRequestOpenRollCall) => validateOpenRollCall(message)
+      case message@(_: JsonRpcRequestReopenRollCall) => validateReopenRollCall(message)
+      case message@(_: JsonRpcRequestCloseRollCall) => validateCloseRollCall(message)
       case message@(_: JsonRpcRequestWitnessMessage) => validateWitnessMessage(message)
       case _ => Right(VALIDATOR_ERROR)
     }

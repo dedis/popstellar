@@ -8,6 +8,9 @@ import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, 
 import ch.epfl.pop.model.objects.{Channel, Hash}
 import ch.epfl.pop.pubsub.graph.{DbActorNew, ErrorCodes, GraphMessage, PipelineError}
 
+import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
+
 case object MeetingHandler extends MessageHandler {
 
   override val handler: Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
@@ -34,7 +37,7 @@ case object MeetingHandler extends MessageHandler {
 
   def handleStateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
     val modificationId: Hash = rpcMessage.getDecodedData.asInstanceOf[StateMeeting].modification_id
-    dbActor.ask(ref => DbActorNew.Read(rpcMessage.getParamsChannel, modificationId, ref)) match {
+    val ask = dbActor.ask(ref => DbActorNew.Read(rpcMessage.getParamsChannel, modificationId, ref)).map {
       case Some(_) => dbAskWritePropagate(rpcMessage)
       // TODO careful about asynchrony and the fact that the network may reorder some messages
       case _ => Right(PipelineError(
@@ -42,5 +45,6 @@ case object MeetingHandler extends MessageHandler {
         s"Unable to request meeting state: invalid modification_id '$modificationId' (no message associated to this id)"
       ))
     }
+    Await.result(ask, DbActorNew.getDuration)
   }
 }

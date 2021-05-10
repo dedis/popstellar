@@ -6,7 +6,9 @@ import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, Cr
 import ch.epfl.pop.model.objects.Hash
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
-case object RollCallValidator extends MessageDataContentValidator {
+
+case object RollCallValidator extends ContentValidator {
+  // TODO the roll call validator checks with the old roll call specs!
   def validateCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CreateRollCall")
 

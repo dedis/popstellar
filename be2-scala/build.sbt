@@ -8,14 +8,18 @@ coverageEnabled := true
 
 
 
-//For websockets
+// For websockets
 val AkkaVersion = "2.6.8"
 val AkkaHttpVersion = "10.2.0"
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-stream-typed" % AkkaVersion,
   "com.typesafe.akka" %% "akka-http" % AkkaHttpVersion)
-//logging for akka
+
+// Logging for akka
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.1.3" % Runtime
+
+// distributed pub sub cluster
+libraryDependencies += "com.typesafe.akka" %% "akka-cluster-tools" % AkkaVersion
 
 // For LevelDB database
 // https://mvnrepository.com/artifact/org.iq80.leveldb/leveldb
@@ -28,7 +32,7 @@ libraryDependencies += "org.xerial.snappy" % "snappy-java" % "1.1.7.3"
 // Json Parser (https://github.com/spray/spray-json)
 libraryDependencies += "io.spray" %%  "spray-json" % "1.3.5"
 
-//Encryption
+// Encryption
 libraryDependencies += "com.google.crypto.tink" % "tink" % "1.5.0"
 
 // Scala unit tests
