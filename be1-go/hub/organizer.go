@@ -496,6 +496,7 @@ func (c *laoChannel) processRollCallObject(msg message.Message) error {
 	if err != nil {
 		return xerrors.Errorf("failed to unmarshal public key of the sender: %v", err)
 	}
+
 	if !c.hub.public.Equal(senderPoint) {
 		return &message.Error{
 			Code:        -5,
@@ -536,6 +537,7 @@ func (c *laoChannel) processCreateRollCall(data message.Data) error {
 			Description: "The id of the roll call does not correspond to SHA256(‘R’||lao_id||creation||name)",
 		}
 	}
+
 	c.rollCall.id = string(rollCallData.ID)
 	c.rollCall.state = Created
 	return nil
@@ -561,6 +563,7 @@ func (c *laoChannel) processOpenRollCall(data message.Data, action message.RollC
 			}
 		}
 	}
+
 	rollCallData := data.(*message.OpenRollCallData)
 
 	if !c.rollCall.checkPrevID(rollCallData.Opens) {
@@ -577,6 +580,7 @@ func (c *laoChannel) processOpenRollCall(data message.Data, action message.RollC
 			Description: "The id of the roll call does not correspond to SHA256(‘R’||lao_id||opens||opened_at)",
 		}
 	}
+
 	c.rollCall.id = string(rollCallData.UpdateID)
 	c.rollCall.state = Open
 	return nil
@@ -589,6 +593,7 @@ func (c *laoChannel) processCloseRollCall(data message.Data) error {
 			Description: "The roll call can not be closed since it is not open",
 		}
 	}
+
 	rollCallData := data.(*message.CloseRollCallData)
 	if !c.rollCall.checkPrevID(rollCallData.Closes) {
 		return &message.Error{
@@ -596,6 +601,7 @@ func (c *laoChannel) processCloseRollCall(data message.Data) error {
 			Description: "The field `closes` does not correspond to the id of the previous roll call message",
 		}
 	}
+
 	closes := base64.StdEncoding.EncodeToString(rollCallData.Closes)
 	if !c.checkRollCallID(message.Stringer(closes), rollCallData.ClosedAt, rollCallData.UpdateID) {
 		return &message.Error{
@@ -603,12 +609,14 @@ func (c *laoChannel) processCloseRollCall(data message.Data) error {
 			Description: "The id of the roll call does not correspond to SHA256(‘R’||lao_id||closes||closed_at)",
 		}
 	}
+
 	c.rollCall.id = string(rollCallData.UpdateID)
 	c.rollCall.state = Closed
 	c.attendees = map[string]struct{}{}
 	for i := 0; i < len(rollCallData.Attendees); i += 1 {
 		c.attendees[string(rollCallData.Attendees[i])] = struct{}{}
 	}
+
 	return nil
 }
 
@@ -624,5 +632,6 @@ func (c *laoChannel) checkRollCallID(str1, str2 fmt.Stringer, id []byte) bool {
 	if err != nil {
 		return false
 	}
+
 	return bytes.Equal(hash, id)
 }
