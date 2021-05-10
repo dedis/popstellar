@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"os"
-	"strconv"
 	"student20_pop"
 	"student20_pop/message"
 	"testing"
@@ -28,7 +27,7 @@ var suite = student20_pop.Suite
 
 var oHub *organizerHub
 
-var laoCounter = 0
+var laoName = "MyLao"
 
 func generateKeyPair() (keypair, error) {
 	secret := suite.Scalar().Pick(suite.RandomStream())
@@ -46,10 +45,8 @@ func timestamp() message.Timestamp {
 	return message.Timestamp(time.Now().Unix())
 }
 
-func createLao(o *organizerHub, oKeypair keypair) (string, *laoChannel, error) {
+func createLao(o *organizerHub, oKeypair keypair, name string) (string, *laoChannel, error) {
 	// Data of the Lao
-	name := strconv.Itoa(laoCounter)
-	laoCounter += 1
 	creation := timestamp()
 	laoID, err := message.Hash(message.Stringer("L"), oKeypair.publicBuf, creation, message.Stringer(name))
 	if err != nil {
@@ -206,13 +203,13 @@ func TestMain(m *testing.M) {
 }
 
 func TestOrganizer_CreateLAO(t *testing.T) {
-	_, _, err := createLao(oHub, organizerKeyPair)
+	_, _, err := createLao(oHub, organizerKeyPair, laoName)
 	require.NoError(t, err)
 }
 
 // test Created → Opened → Closed → Reopened → Closed
 func TestOrganizer_RollCall(t *testing.T) {
-	laoID, laoChannel, err := createLao(oHub, organizerKeyPair)
+	laoID, laoChannel, err := createLao(oHub, organizerKeyPair, laoName)
 	require.NoError(t, err)
 
 	// Create
@@ -279,7 +276,7 @@ func TestOrganizer_RollCall(t *testing.T) {
 }
 
 func TestOrganizer_CreateRollCallWrongID(t *testing.T) {
-	_, laoChannel, err := createLao(oHub, organizerKeyPair)
+	_, laoChannel, err := createLao(oHub, organizerKeyPair, laoName)
 	require.NoError(t, err)
 
 	// create the roll call
@@ -293,7 +290,7 @@ func TestOrganizer_CreateRollCallWrongID(t *testing.T) {
 }
 
 func TestOrganizer_CreateRollCallWrongSender(t *testing.T) {
-	laoID, laoChannel, err := createLao(oHub, organizerKeyPair)
+	laoID, laoChannel, err := createLao(oHub, organizerKeyPair, laoName)
 	require.NoError(t, err)
 
 	keypair, err := generateKeyPair()
@@ -310,7 +307,7 @@ func TestOrganizer_CreateRollCallWrongSender(t *testing.T) {
 }
 
 func TestOrganizer_RollCallWrongInstructions(t *testing.T) {
-	laoID, laoChannel, err := createLao(oHub, organizerKeyPair)
+	laoID, laoChannel, err := createLao(oHub, organizerKeyPair, laoName)
 	require.NoError(t, err)
 
 	// Create all the data
