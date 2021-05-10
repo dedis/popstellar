@@ -34,7 +34,6 @@ object StateLao extends Parsable {
              modification_id: Hash,
              modification_signatures: List[WitnessSignaturePair]
            ): StateLao = {
-    // FIXME add checks
     new StateLao(id, name, creation, last_modified, organizer, witnesses, modification_id, modification_signatures)
   }
 

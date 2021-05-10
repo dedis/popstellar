@@ -24,7 +24,6 @@ object ReopenRollCall extends Parsable {
              opens: Hash,
              start: Timestamp
            ): ReopenRollCall = {
-    // FIXME add checks
     new ReopenRollCall(update_id, opens, start)
   }
 

@@ -11,7 +11,6 @@ case class Unsubscribe(channel: Channel) extends Params
 
 object Unsubscribe extends Parsable {
   def apply(channel: Channel): Unsubscribe = {
-    // FIXME add checks
     new Unsubscribe(channel)
   }
 

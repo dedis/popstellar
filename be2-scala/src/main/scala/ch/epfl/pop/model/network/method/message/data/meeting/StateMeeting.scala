@@ -38,7 +38,6 @@ object StateMeeting extends Parsable {
              modification_id: Hash,
              modification_signatures: List[WitnessSignaturePair]
            ): StateMeeting = {
-    // FIXME add checks
     new StateMeeting(id, name, creation, last_modified, location, start, end, extra, modification_id, modification_signatures)
   }
 

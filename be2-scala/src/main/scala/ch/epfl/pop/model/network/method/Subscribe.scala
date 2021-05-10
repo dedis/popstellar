@@ -11,7 +11,6 @@ case class Subscribe(channel: Channel) extends Params
 
 object Subscribe extends Parsable {
   def apply(channel: Channel): Subscribe = {
-    // FIXME add checks
     new Subscribe(channel)
   }
 

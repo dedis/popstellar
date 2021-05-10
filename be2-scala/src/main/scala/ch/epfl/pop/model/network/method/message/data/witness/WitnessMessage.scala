@@ -22,7 +22,6 @@ object WitnessMessage extends Parsable {
              message_id: Hash,
              signature: Signature,
            ): WitnessMessage = {
-    // FIXME add checks
     new WitnessMessage(message_id, signature)
   }
 

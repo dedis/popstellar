@@ -32,7 +32,6 @@ object CreateRollCall extends Parsable {
              location: String,
              roll_call_description: Option[String]
            ): CreateRollCall = {
-    // FIXME add checks
     new CreateRollCall(id, name, creation, start, scheduled, location, roll_call_description)
   }
 

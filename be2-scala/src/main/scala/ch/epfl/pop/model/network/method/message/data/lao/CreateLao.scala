@@ -22,7 +22,6 @@ case class CreateLao(
 
 object CreateLao extends Parsable {
   def apply(id: Hash, name: String, creation: Timestamp, organizer: PublicKey, witnesses: List[PublicKey]): CreateLao = {
-    // FIXME add checks
     new CreateLao(id, name, creation, organizer, witnesses)
   }
 

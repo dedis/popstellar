@@ -26,7 +26,6 @@ object CloseRollCall extends Parsable {
              end: Timestamp,
              attendees: List[PublicKey]
            ): CloseRollCall = {
-    // FIXME add checks
     new CloseRollCall(update_id, closes, end, attendees)
   }
 

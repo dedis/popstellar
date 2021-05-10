@@ -16,7 +16,6 @@ case class UpdateLao(id: Hash, name: String, last_modified: Timestamp, witnesses
 
 object UpdateLao extends Parsable {
   def apply(id: Hash, name: String, last_modified: Timestamp, witnesses: List[PublicKey]): UpdateLao = {
-    // FIXME add checks
     new UpdateLao(id, name, last_modified, witnesses)
   }
 

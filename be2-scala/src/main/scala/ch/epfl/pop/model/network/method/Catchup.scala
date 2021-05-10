@@ -11,7 +11,6 @@ case class Catchup(channel: Channel) extends Params
 
 object Catchup extends Parsable {
   def apply(channel: Channel): Catchup = {
-    // FIXME add checks
     new Catchup(channel)
   }
 

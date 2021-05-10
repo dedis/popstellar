@@ -35,7 +35,6 @@ object JsonRpcRequest extends Parsable {
              params: Params,
              id: Option[Int]
            ): JsonRpcRequest = {
-    // FIXME add checks
     new JsonRpcRequest(jsonrpc, method, params, id)
   }
 

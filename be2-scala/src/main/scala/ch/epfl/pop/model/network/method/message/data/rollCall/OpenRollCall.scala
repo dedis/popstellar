@@ -24,7 +24,6 @@ object OpenRollCall extends Parsable {
              opens: Hash,
              start: Timestamp
            ): OpenRollCall = {
-    // FIXME add checks
     new OpenRollCall(update_id, opens, start)
   }
 

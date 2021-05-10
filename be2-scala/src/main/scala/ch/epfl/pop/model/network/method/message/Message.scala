@@ -27,8 +27,7 @@ object Message extends Parsable {
              message_id: Hash,
              witness_signatures: List[WitnessSignaturePair]
            ): Message = {
-    // FIXME add checks
-    new Message(data, sender, signature, message_id, witness_signatures, ???)
+    new Message(data, sender, signature, message_id, witness_signatures, ???) // FIXME
   }
 
   override def buildFromJson(messageData: MessageData, payload: String): Message =

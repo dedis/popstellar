@@ -12,7 +12,6 @@ case class Publish(channel: Channel, message: Message) extends ParamsWithMessage
 
 object Publish extends Parsable {
   def apply(channel: Channel, message: Message): Publish = {
-    // FIXME add checks
     new Publish(channel, message)
   }
 

@@ -32,7 +32,6 @@ object CreateMeeting extends Parsable {
              end: Option[Timestamp],
              extra: Option[Any]
            ): CreateMeeting = {
-    // FIXME add checks
     new CreateMeeting(id, name, creation, location, start, end, extra)
   }
 

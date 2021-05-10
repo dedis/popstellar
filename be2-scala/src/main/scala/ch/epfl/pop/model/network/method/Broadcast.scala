@@ -12,7 +12,6 @@ case class Broadcast(channel: Channel, message: Message) extends ParamsWithMessa
 
 object Broadcast extends Parsable {
   def apply(channel: Channel, message: Message): Broadcast = {
-    // FIXME add checks
     new Broadcast(channel, message)
   }
 
