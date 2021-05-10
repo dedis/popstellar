@@ -42,7 +42,7 @@ func generateKeyPair() (keypair, error) {
 	return keypair{point, pkbuf, secret}, nil
 }
 
-func getTime() message.Timestamp {
+func timestamp() message.Timestamp {
 	return message.Timestamp(time.Now().Unix())
 }
 
@@ -50,7 +50,7 @@ func createLao(o *organizerHub, oKeypair keypair) (string, *laoChannel, error) {
 	// Data of the Lao
 	name := strconv.Itoa(laoCounter)
 	laoCounter += 1
-	creation := getTime()
+	creation := timestamp()
 	laoID, err := message.Hash(message.Stringer("L"), oKeypair.publicBuf, creation, message.Stringer(name))
 	if err != nil {
 		return "", nil, err
@@ -63,7 +63,7 @@ func createLao(o *organizerHub, oKeypair keypair) (string, *laoChannel, error) {
 		},
 		ID:        laoID,
 		Name:      name,
-		Creation:  getTime(),
+		Creation:  creation,
 		Organizer: oKeypair.publicBuf,
 		Witnesses: nil,
 	}
@@ -124,7 +124,7 @@ func newCreateRollCallData(id []byte, creation message.Timestamp, name string) *
 
 func newCorrectCreateRollCallData(laoID string) (*message.CreateRollCallData, error) {
 	name := "my_roll_call"
-	creation := getTime()
+	creation := timestamp()
 	id, err := message.Hash(message.Stringer('R'), message.Stringer(laoID), creation, message.Stringer(name))
 	if err != nil {
 		return nil, err
@@ -149,7 +149,7 @@ func newCloseRollCallData(id []byte, prevID []byte, closedAt message.Timestamp, 
 }
 
 func newCorrectCloseRollCallData(laoID string, prevID []byte, attendees []message.PublicKey) (*message.CloseRollCallData, error) {
-	closedAt := getTime()
+	closedAt := timestamp()
 	prevID64 := base64.StdEncoding.EncodeToString(prevID)
 	id, err := message.Hash(message.Stringer('R'), message.Stringer(laoID), message.Stringer(prevID64), closedAt)
 	if err != nil {
@@ -173,7 +173,7 @@ func newOpenRollCallData(id []byte, prevID []byte, openedAt message.Timestamp, a
 }
 
 func newCorrectOpenRollCallData(laoID string, prevID []byte, action message.OpenRollCallActionType) (*message.OpenRollCallData, error) {
-	openedAt := getTime()
+	openedAt := timestamp()
 	prevID64 := base64.StdEncoding.EncodeToString(prevID)
 	id, err := message.Hash(message.Stringer('R'), message.Stringer(laoID), message.Stringer(prevID64), openedAt)
 	if err != nil {
@@ -284,7 +284,7 @@ func TestOrganizer_CreateRollCallWrongID(t *testing.T) {
 
 	// create the roll call
 	id := []byte{1}
-	dataCreate := newCreateRollCallData(id, getTime(), "my roll call")
+	dataCreate := newCreateRollCallData(id, timestamp(), "my roll call")
 	msg := createMessage(dataCreate, organizerKeyPair.publicBuf)
 	err = laoChannel.processRollCallObject(msg)
 	require.Error(t, err)
