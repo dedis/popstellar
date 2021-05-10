@@ -11,7 +11,10 @@ case class Message(
                     message_id: Hash,
                     witness_signatures: List[WitnessSignaturePair],
                     decodedData: MessageData
-                  )
+                  ) {
+  def addWitnessSignature(ws: WitnessSignaturePair): Message =
+    Message(data, sender, signature, message_id, ws :: witness_signatures, decodedData)
+}
 
 object Message extends Parsable {
   def apply(

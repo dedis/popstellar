@@ -1,7 +1,7 @@
 package ch.epfl.pop.model.network
 
-object Method extends Enumeration {
-  type Method = Value
+object MethodType extends Enumeration {
+  type MethodType = Value
 
   // uninitialized placeholder
   val INVALID: Value = MatchingValue("__INVALID_METHOD__")
@@ -12,7 +12,7 @@ object Method extends Enumeration {
   val UNSUBSCRIBE: Value = MatchingValue("unsubscribe")
   val CATCHUP: Value = MatchingValue("catchup")
 
-  def MatchingValue(v: String): Value with Matching =  new Val(nextId, v) with Matching
+  def MatchingValue(v: String): Value with Matching = new Val(nextId, v) with Matching
   def unapply(s: String): Option[Value] = values.find(s == _.toString)
 }
 

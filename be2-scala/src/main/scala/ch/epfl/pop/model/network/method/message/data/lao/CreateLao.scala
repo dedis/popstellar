@@ -1,6 +1,6 @@
 package ch.epfl.pop.model.network.method.message.data.lao
 
-import ch.epfl.pop.model.network.Parsable
+import ch.epfl.pop.model.network.{JsonRpcRequest, Parsable}
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
@@ -24,4 +24,6 @@ object CreateLao extends Parsable {
   }
 
   override def buildFromJson(messageData: MessageData, payload: String): CreateLao = ???
+
+  def buildFromPartial(messageData: MessageData, payload: JsonRpcRequest): CreateLao = ???
 }

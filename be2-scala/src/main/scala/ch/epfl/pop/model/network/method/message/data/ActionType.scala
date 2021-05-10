@@ -16,6 +16,6 @@ object ActionType extends Enumeration {
   val REOPEN: Value = MatchingValue("reopen")
   val CLOSE: Value = MatchingValue("close")
 
-  def MatchingValue(v: String): Value with Matching =  new Val(nextId, v) with Matching
+  def MatchingValue(v: String): Value with Matching = new Val(nextId, v) with Matching
   def unapply(s: String): Option[Value] = values.find(s == _.toString)
 }
