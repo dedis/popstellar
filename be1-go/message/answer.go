@@ -87,8 +87,8 @@ func (e *Error) Error() string {
 	return e.Description
 }
 
-// InvalidActionError
-func InvalidActionError(action interface{}) error {
+// NewInvalidActionError an error with the code -1 for an invalid action.
+func NewInvalidActionError(action DataAction) error {
 	return &Error{
 		Code:        -1,
 		Description: fmt.Sprintf("invalid action: %s", action),

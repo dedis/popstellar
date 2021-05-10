@@ -307,7 +307,7 @@ func (c *laoChannel) processLaoObject(msg message.Message) error {
 			return xerrors.Errorf("failed to process lao/state: %v", err)
 		}
 	default:
-		return message.InvalidActionError(action)
+		return message.NewInvalidActionError(message.DataAction(action))
 	}
 
 	return nil
@@ -480,7 +480,7 @@ func (c *laoChannel) processMessageObject(public message.PublicKey, data message
 		})
 		c.inboxMu.Unlock()
 	default:
-		return message.InvalidActionError(action)
+		return message.NewInvalidActionError(message.DataAction(action))
 	}
 
 	return nil
@@ -513,7 +513,7 @@ func (c *laoChannel) processRollCallObject(msg message.Message) error {
 	case message.CloseRollCallAction:
 		err = c.processCloseRollCall(data)
 	default:
-		return message.InvalidActionError(action)
+		return message.NewInvalidActionError(message.DataAction(action))
 	}
 
 	if err != nil {
