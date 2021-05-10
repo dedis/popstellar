@@ -7,7 +7,7 @@ import ch.epfl.pop.model.objects.Hash
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
 
-case object MeetingValidator extends ContentValidator {
+case object MeetingValidator extends MessageDataContentValidator {
   def validateCreateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CreateMeeting")
 

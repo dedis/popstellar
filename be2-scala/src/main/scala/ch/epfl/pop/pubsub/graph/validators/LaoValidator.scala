@@ -7,7 +7,7 @@ import ch.epfl.pop.model.objects.Hash
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
 
-case object LaoValidator extends ContentValidator {
+case object LaoValidator extends MessageDataContentValidator {
   def validateCreateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CreateLao")
 
