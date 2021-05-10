@@ -12,6 +12,7 @@ import { channelFromId } from 'model/objects/Channel';
 
 // @ts-ignore
 import testKeyPair from 'test_data/keypair.json';
+
 const mockPublicKey = new PublicKey(testKeyPair.publicKey);
 const mockSecretKey = new PrivateKey(testKeyPair.privateKey);
 
