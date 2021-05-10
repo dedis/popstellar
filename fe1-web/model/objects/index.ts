@@ -1,4 +1,4 @@
-export * from './Base64';
+export * from './Base64Url';
 export * from './Hash';
 export * from './PrivateKey';
 export * from './PublicKey';

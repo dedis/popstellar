@@ -1,5 +1,5 @@
 import {
-  Hash, PublicKey, Base64Data, WitnessSignature, Signature, Timestamp,
+  Hash, PublicKey, Base64UrlData, WitnessSignature, Signature, Timestamp,
 } from 'model/objects';
 import { Message, MessageState } from 'model/network/method/message/Message';
 
@@ -41,7 +41,7 @@ export class ExtendedMessage extends Message {
   public static fromState(state: ExtendedMessageState): ExtendedMessage {
     return new ExtendedMessage({
       // message fields:
-      data: new Base64Data(state.data),
+      data: new Base64UrlData(state.data),
       sender: new PublicKey(state.sender),
       signature: new Signature(state.signature),
       message_id: new Hash(state.message_id),
