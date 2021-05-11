@@ -1,29 +1,34 @@
 package com.github.dedis.student20_pop.detail;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
+
 import com.github.dedis.student20_pop.Injection;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
 import com.github.dedis.student20_pop.detail.fragments.IdentityFragment;
 import com.github.dedis.student20_pop.detail.fragments.LaoDetailFragment;
 import com.github.dedis.student20_pop.detail.fragments.RollCallDetailFragment;
+import com.github.dedis.student20_pop.detail.fragments.event.creation.ElectionSetupFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.MeetingEventCreationFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.PollEventCreationFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.RollCallEventCreationFragment;
 import com.github.dedis.student20_pop.home.HomeActivity;
-import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.home.HomeViewModel;
+import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.qrcode.CameraPermissionFragment;
 import com.github.dedis.student20_pop.qrcode.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.utility.ActivityUtils;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+
 import java.util.Objects;
 public class LaoDetailActivity extends AppCompatActivity {
   private static final String TAG = LaoDetailActivity.class.getSimpleName();
@@ -89,13 +94,11 @@ public class LaoDetailActivity extends AppCompatActivity {
                     stringEvent -> {
                       String action = stringEvent.getContentIfNotHandled();
                       if (action != null) {
-                        switch (action) {
-                          case HomeViewModel.SCAN:
-                            setupScanFragmentRollCall();
-                            break;
-                          default:
-                            setupCameraPermissionFragmentRollCall();
-                        }
+                          if (action.equals(HomeViewModel.SCAN)) {
+                              setupScanFragmentRollCall();
+                          }else{
+                              setupCameraPermissionFragmentRollCall();
+                          }
                       }
                     });
     mViewModel
@@ -120,6 +123,9 @@ public class LaoDetailActivity extends AppCompatActivity {
         break;
       case POLL:
         setupCreatePollFragment();
+        break;
+      case ELECTION:
+        setupCreateElectionSetupFragment();
         break;
       default:
         Log.d(TAG, "unknown event type: " + eventType.toString());
@@ -221,13 +227,24 @@ public class LaoDetailActivity extends AppCompatActivity {
               getSupportFragmentManager(), cameraPermissionFragment, R.id.fragment_container_lao_detail);
     }
   }
-  private void setupRollCallDetailFragment(String pk){
-    RollCallDetailFragment rollCallDetailFragment =
-            (RollCallDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_roll_call_detail);
-    if (rollCallDetailFragment == null) {
-      rollCallDetailFragment = RollCallDetailFragment.newInstance(pk);
+  private void setupRollCallDetailFragment(String pk) {
+      RollCallDetailFragment rollCallDetailFragment =
+              (RollCallDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_roll_call_detail);
+      if (rollCallDetailFragment == null) {
+          rollCallDetailFragment = RollCallDetailFragment.newInstance(pk);
+          ActivityUtils.replaceFragmentInActivity(
+                  getSupportFragmentManager(), rollCallDetailFragment, R.id.fragment_container_lao_detail);
+      }
+  }
+
+  private void setupCreateElectionSetupFragment() {
+    ElectionSetupFragment electionSetupFragment =
+            (ElectionSetupFragment)
+              getSupportFragmentManager().findFragmentById(R.id.fragment_setup_election_event);
+    if (electionSetupFragment == null) {
+      electionSetupFragment = ElectionSetupFragment.newInstance();
       ActivityUtils.replaceFragmentInActivity(
-              getSupportFragmentManager(), rollCallDetailFragment, R.id.fragment_container_lao_detail);
+              getSupportFragmentManager(), electionSetupFragment, R.id.fragment_container_lao_detail);
     }
   }
 }

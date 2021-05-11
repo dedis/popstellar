@@ -6,12 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import com.github.dedis.student20_pop.Injection;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.qrcode.QRCodeScanningFragment;
 import com.google.android.gms.vision.CameraSource;
@@ -52,11 +52,14 @@ public final class AddAttendeeFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_add_attendee, container, false);
 
+<<<<<<< HEAD
       QRCodeScanningFragment scanningFragment = QRCodeScanningFragment.newInstance(camera, detector);
 
       List<String> attendees;
 
 
+=======
+>>>>>>> work-fe2-rollcall-organizer-karim
     Button confirm = view.findViewById(R.id.add_attendee_confirm);
     confirm.setOnClickListener(
         click -> {

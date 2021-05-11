@@ -1,4 +1,5 @@
 package com.github.dedis.student20_pop.qrcode;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -7,10 +8,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+
 import com.github.dedis.student20_pop.databinding.FragmentQrcodeBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
@@ -22,8 +25,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 /** Fragment handling the QR code scanning */
 public final class QRCodeScanningFragment extends Fragment {
@@ -165,7 +168,6 @@ public final class QRCodeScanningFragment extends Fragment {
     }
   }
   private void setupCloseRollCallButton() {
-    //TODO: do it with confirmation step like pop-up
     mQrCodeFragBinding.addAttendeeConfirm.setOnClickListener(
             v -> ((LaoDetailViewModel)mQRCodeScanningViewModel).closeRollCall());
   }

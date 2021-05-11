@@ -3,8 +3,9 @@ package com.github.dedis.student20_pop.model.network.method.message.data.rollcal
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
-import com.google.gson.annotations.*;
 
 /** Data sent to close a Roll-Call */
 public class CloseRollCall extends Data {

@@ -1,19 +1,17 @@
 package com.github.dedis.student20_pop.detail;
+
 import android.Manifest;
-import android.app.AlertDialog;
 import android.app.Application;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
+
 import com.github.dedis.student20_pop.Event;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.home.HomeViewModel;
@@ -21,8 +19,10 @@ import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.RollCall;
 import com.github.dedis.student20_pop.model.data.LAORepository;
 import com.github.dedis.student20_pop.model.event.EventType;
+import com.github.dedis.student20_pop.model.network.answer.Error;
 import com.github.dedis.student20_pop.model.network.answer.Result;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CloseRollCall;
@@ -37,10 +37,7 @@ import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
@@ -52,6 +49,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class LaoDetailViewModel extends AndroidViewModel implements CameraPermissionViewModel,
         QRCodeScanningViewModel {
@@ -126,6 +128,75 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   protected void onCleared() {
     super.onCleared();
     disposables.dispose();
+  }
+
+
+
+  /**
+   * Creates new Election event.
+   *
+   * <p>Publish a GeneralMessage containing ElectionSetup data.
+   *
+   * @param name the name of the election
+   * @param start the start time of the election
+   * @param end the end time of the election
+   * @param votingMethod the type of voting method (e.g Plurality)
+   * @param ballotOptions the list of ballot options
+   * @param question the question associated to the election
+   * @return the id of the newly created election event, null if fails to create the event
+   */
+  public String createNewElection(String name, long start, long end, String votingMethod, boolean writeIn, List<String> ballotOptions, String question) {
+    Log.d(TAG,"creating a new election with name " + name);
+
+    Lao lao = getCurrentLao().getValue();
+    if (lao == null) {
+      Log.d(TAG, LAO_FAILURE_MESSAGE);
+      return null;
+    }
+
+    String channel = lao.getChannel();
+    ElectionSetup electionSetup;
+    String laoId = channel.substring(6);
+
+    electionSetup = new ElectionSetup(name, start, end, votingMethod, writeIn, ballotOptions, question, laoId);
+
+    try {
+      // Retrieve identity of who is creating the election
+      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+      byte[] sender = Base64.getDecoder().decode(publicKey);
+      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+      MessageGeneral msg = new MessageGeneral(sender, electionSetup, signer, mGson);
+
+      Log.d(TAG, "sending publish message");
+      Disposable disposable =
+              mLAORepository
+                      .sendPublish(channel, msg)
+                      .subscribeOn(Schedulers.io())
+                      .observeOn(AndroidSchedulers.mainThread())
+                      .timeout(5, TimeUnit.SECONDS)
+                      .subscribe(
+                              answer -> {
+                                if (answer instanceof Result) {
+                                  Log.d(TAG, "setup an election");
+                                  openLaoDetail();
+                                } else if (answer instanceof Error) {
+                                  Log.d(TAG, "failed to setup an election because of the following error : " + ((Error) answer).getError().getDescription());
+                                } else {
+                                  Log.d(TAG, "failed to setup an election");
+                                }
+                              },
+                              throwable ->
+                                      Log.d(TAG, "timed out waiting for result on election/create", throwable)
+                      );
+
+      disposables.add(disposable);
+
+    } catch (GeneralSecurityException | IOException e) {
+      Log.d(TAG, "PK_FAILURE_MESSAGE", e);
+      return null;
+    }
+    return electionSetup.getId();
   }
 
   /**
@@ -206,15 +277,13 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     long openedAt = Instant.now().getEpochSecond();
     String channel = lao.getChannel();
     String laoId = channel.substring(6); // removing /root/ prefix
-    String updateId = Hash.hash("R", laoId, id, Long.toString(openedAt));
-    Log.d(TAG, id+" "+openedAt);
     Optional<RollCall> optRollCall = lao.getRollCall(id);
     if(!optRollCall.isPresent()){
       Log.d(TAG, "failed to retrieve roll call with id "+id);
       return;
     }
     RollCall rollCall = optRollCall.get();
-    OpenRollCall openRollCall = new OpenRollCall(updateId, id, openedAt, rollCall.getState());
+    OpenRollCall openRollCall = new OpenRollCall(laoId, id, openedAt, rollCall.getState());
     attendees = new HashSet<>(rollCall.getAttendees());
 
     try {
@@ -234,26 +303,25 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                 if (answer instanceof Result) {
                                   Log.d(TAG, "opened the roll call");
                                   mCurrentRollCallId = openRollCall.getUpdateId();
-                                  if (ContextCompat.checkSelfPermission(
-                                          getApplication().getApplicationContext(), Manifest.permission.CAMERA)
-                                          == PackageManager.PERMISSION_GRANTED) {
-                                    openQrCodeScanningRollCall();
-                                  } else {
-                                    openCameraPermissionRollCall();
-                                  }
+                                  openAttendeeScanning();
                                 } else {
                                   Log.d(TAG, "failed to open the roll call");
                                 }
                               },
-                              throwable -> {
-                                Log.d(TAG, "timed out waiting for result on roll_call/open", throwable);
-                              });
+                              throwable -> Log.d(TAG, "timed out waiting for result on roll_call/open", throwable)
+                      );
       disposables.add(disposable);
     } catch (GeneralSecurityException | IOException e) {
       Log.d(TAG, PK_FAILURE_MESSAGE, e);
     }
   }
 
+  /**
+   * Closes the roll call event currently open
+   *
+   * <p>Publish a GeneralMessage containing CloseRollCall data.
+   *
+   */
   public void closeRollCall(){
     Log.d(TAG, "call closeRollCall");
     Lao lao = getCurrentLao().getValue();
@@ -289,9 +357,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                   Log.d(TAG, "failed to close the roll call");
                                 }
                               },
-                              throwable -> {
-                                Log.d(TAG, "timed out waiting for result on roll_call/close", throwable);
-                              });
+                              throwable -> Log.d(TAG, "timed out waiting for result on roll_call/open", throwable)
+                      );
       disposables.add(disposable);
     } catch (GeneralSecurityException | IOException e) {
       Log.d(TAG, PK_FAILURE_MESSAGE, e);
@@ -545,14 +612,24 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     mOpenRollCallEvent.setValue(new Event<>(HomeViewModel.REQUEST_CAMERA_PERMISSION));
   }
 
-  public void enterRollCall(String id){
-    //TODO: access wallet to generate/retrieve pk
-    try {
-      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-      String pk = Keys.getEncodedKey(publicKeysetHandle);
-      mPkRollCallEvent.postValue(new Event<>(pk));
-    } catch (GeneralSecurityException | IOException e) {
-      e.printStackTrace();
+  public void enterRollCall(String id) {
+      //TODO: access wallet to generate/retrieve pk
+      try {
+          KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+          String pk = Keys.getEncodedKey(publicKeysetHandle);
+          mPkRollCallEvent.postValue(new Event<>(pk));
+      } catch (GeneralSecurityException | IOException e) {
+          e.printStackTrace();
+      }
+  }
+
+  public void openAttendeeScanning() {
+    if (ContextCompat.checkSelfPermission(
+            getApplication().getApplicationContext(), Manifest.permission.CAMERA)
+            == PackageManager.PERMISSION_GRANTED) {
+      openQrCodeScanningRollCall();
+    } else {
+      openCameraPermissionRollCall();
     }
   }
 

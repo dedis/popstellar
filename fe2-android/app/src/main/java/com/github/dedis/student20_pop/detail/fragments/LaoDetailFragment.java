@@ -9,22 +9,27 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentLaoDetailBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.adapters.EventExpandableListViewAdapter;
 import com.github.dedis.student20_pop.detail.adapters.WitnessListViewAdapter;
-import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.RollCall;
 import com.github.dedis.student20_pop.model.event.Event;
 
 import net.glxn.qrgen.android.QRCode;
 
 import java.util.ArrayList;
+
+<<<<<<<HEAD
+=======
+        >>>>>>>work-fe2-rollcall-organizer-karim
 
 /** Fragment used to display the LAO Detail UI */
 public class LaoDetailFragment extends Fragment {
@@ -52,7 +57,7 @@ public class LaoDetailFragment extends Fragment {
 
     mLaoDetailFragBinding.setViewModel(mLaoDetailViewModel);
     mLaoDetailFragBinding.setLifecycleOwner(getActivity());
-
+    
     return mLaoDetailFragBinding.getRoot();
   }
 
@@ -168,12 +173,22 @@ public class LaoDetailFragment extends Fragment {
   }
 
   private void setupEventListUpdates() {
+<<<<<<< HEAD
+=======
+
+>>>>>>> work-fe2-rollcall-organizer-karim
     mLaoDetailViewModel
             .getLaoEvents()
             .observe(
                 getActivity(),
                 events -> {
                   Log.d(TAG, "Got an event list update");
+<<<<<<< HEAD
+=======
+                  for(Event event : events){
+                      Log.d(TAG, ((RollCall)event).getDescription());
+                  }
+>>>>>>> work-fe2-rollcall-organizer-karim
                   mEventListViewEventAdapter.replaceList(events);
                 }
             );

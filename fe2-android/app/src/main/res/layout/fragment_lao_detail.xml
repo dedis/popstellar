@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
   <data>
     <import type="android.view.View" />
@@ -34,6 +33,34 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab">
 
+        <ImageButton
+          android:id="@+id/edit_button"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="end"
+          android:src="@drawable/ic_baseline_edit_24"
+          android:visibility="@{view_model.isOrganizer() ? View.VISIBLE : View.GONE}"
+          app:layout_constraintRight_toRightOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          android:contentDescription="@string/edit_lao_name" />
+
+        <TextView
+          android:id="@+id/organization_name"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@{view_model.getCurrentLaoName}"
+          android:textSize="@dimen/size_title"
+          app:layout_constraintLeft_toLeftOf="parent"
+          app:layout_constraintTop_toTopOf="parent" />
+
+
+        <ListView
+          android:id="@+id/witness_list"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textSize="@dimen/size_body"
+          app:layout_constraintLeft_toLeftOf="parent"
+          app:layout_constraintTop_toBottomOf="@id/organization_name" />
 
       <LinearLayout
           android:id="@+id/properties_linear_layout"

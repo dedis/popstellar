@@ -1,10 +1,11 @@
 package com.github.dedis.student20_pop.model.network.method.message.data.rollcall;
 
+import com.github.dedis.student20_pop.model.event.EventState;
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
-import com.github.dedis.student20_pop.model.event.EventState;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
-import com.google.gson.annotations.*;
+import com.github.dedis.student20_pop.utility.security.Hash;
+import com.google.gson.annotations.SerializedName;
 
 /** Data sent to open a roll call */
 public class OpenRollCall extends Data {
@@ -19,14 +20,18 @@ public class OpenRollCall extends Data {
   /**
    * Constructor of a data Open Roll-Call
    *
+<<<<<<< HEAD
    * @param updateId id of this message Hash("R"||laoId||opens||openedAt)
+=======
+   * @param laoId id of lao
+>>>>>>> work-fe2-rollcall-organizer-karim
    * @param opens The 'update_id' of the latest roll call close, or in its absence, the 'id' field
    *     of the roll call creation
    * @param openedAt timestamp corresponding to roll call open
    * @param state the state in which the roll call is when this instance is created
    */
-  public OpenRollCall(String updateId, String opens, long openedAt, EventState state) {
-    this.updateId = updateId;
+  public OpenRollCall(String laoId, String opens, long openedAt, EventState state) {
+    this.updateId = Hash.hash("R", laoId, opens, Long.toString(openedAt));
     this.opens = opens;
     this.openedAt = openedAt;
     if(state==EventState.CLOSED){

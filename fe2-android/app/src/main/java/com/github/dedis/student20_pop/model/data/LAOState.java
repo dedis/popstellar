@@ -1,6 +1,7 @@
 package com.github.dedis.student20_pop.model.data;
 
 import com.github.dedis.student20_pop.model.Lao;
+
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;

@@ -280,9 +280,6 @@ func (c *laoChannel) processLaoObject(msg message.Message) error {
 
 	switch action {
 	case message.UpdateLaoAction:
-		c.inboxMu.Lock()
-		c.inbox[msgIDEncoded] = msg
-		c.inboxMu.Unlock()
 	case message.StateLaoAction:
 		err := c.processLaoState(msg.Data.(*message.StateLAOData))
 		if err != nil {
@@ -295,6 +292,10 @@ func (c *laoChannel) processLaoObject(msg message.Message) error {
 			Description: fmt.Sprintf("invalid action: %s", action),
 		}
 	}
+
+	c.inboxMu.Lock()
+	c.inbox[msgIDEncoded] = msg
+	c.inboxMu.Unlock()
 
 	return nil
 }

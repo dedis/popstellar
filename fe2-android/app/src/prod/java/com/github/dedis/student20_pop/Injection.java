@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.hardware.Camera;
 import android.util.Log;
+
 import com.github.dedis.student20_pop.model.data.LAODatabase;
 import com.github.dedis.student20_pop.model.data.LAOLocalDataSource;
 import com.github.dedis.student20_pop.model.data.LAORemoteDataSource;
@@ -38,8 +39,10 @@ import com.tinder.scarlet.lifecycle.android.AndroidLifecycle;
 import com.tinder.scarlet.messageadapter.gson.GsonMessageAdapter;
 import com.tinder.scarlet.streamadapter.rxjava2.RxJava2StreamAdapterFactory;
 import com.tinder.scarlet.websocket.okhttp.OkHttpClientUtils;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
@@ -105,7 +108,7 @@ public class Injection {
         .registerTypeAdapter(Result.class, new JsonResultSerializer())
         .registerTypeAdapter(Answer.class, new JsonAnswerSerializer())
         .registerTypeAdapter(MessageGeneral.class, new JsonMessageGeneralSerializer())
-        .create();
+            .create();
   }
 
   public static BarcodeDetector provideQRCodeDetector(Context context) {
