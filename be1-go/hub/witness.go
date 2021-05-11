@@ -27,6 +27,13 @@ type witnessHub struct {
 //TODO: check if it is useful
 type witnessChannel struct{
 	*baseChannel
+
+	// key is a string representation of the client's public key and
+	// the value is the client's signature
+	clients map[string]message.PublicKeySignaturePair
+
+	//list of client signatures
+	clientSignatures []message.PublicKey
 }
 
 
@@ -130,7 +137,7 @@ func (w *witnessHub) handleMessageFromOrganizer(incomingMessage *IncomingMessage
 			Description: fmt.Sprintf("No publish message is expected to come from other servers"),
 		}
 	case "message":
-
+		broadcastHelper(msg)
 	case "catchup":
 		//TODO: do we need to go throw the channel for this catchup?
 		//msg = channel.Catchup(*query.Catchup)
@@ -197,4 +204,20 @@ func (w *witnessHub) Start(done chan struct{}) {
 	}
 
 	return
+}
+
+
+func (w* witnessChannel)broadcastHelper(message2 []message.Message){
+	for _,m:= range message2 {
+		messageObj := m.Data.GetObject()
+		switch messageObj {
+		// This should correspond to the client's signature
+		case "witness":
+			//w.inbox[m.???] = m
+
+
+			//TODO: check if we wil store the pk or message signature
+			w.clientSignatures = append(w.clientSignatures,m.Sender)
+		}
+	}
 }
