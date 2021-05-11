@@ -27,8 +27,6 @@ var suite = student20_pop.Suite
 
 var oHub *organizerHub
 
-var laoName = "MyLao"
-
 func generateKeyPair() (keypair, error) {
 	secret := suite.Scalar().Pick(suite.RandomStream())
 	point := suite.Point().Pick(suite.RandomStream())
@@ -203,13 +201,13 @@ func TestMain(m *testing.M) {
 }
 
 func TestOrganizer_CreateLAO(t *testing.T) {
-	_, _, err := createLao(oHub, organizerKeyPair, laoName)
+	_, _, err := createLao(oHub, organizerKeyPair, "my lao")
 	require.NoError(t, err)
 }
 
 // test Created → Opened → Closed → Reopened → Closed
 func TestOrganizer_RollCall(t *testing.T) {
-	laoID, laoChannel, err := createLao(oHub, organizerKeyPair, laoName)
+	laoID, laoChannel, err := createLao(oHub, organizerKeyPair, "lao roll call")
 	require.NoError(t, err)
 
 	// Create
@@ -276,7 +274,7 @@ func TestOrganizer_RollCall(t *testing.T) {
 }
 
 func TestOrganizer_CreateRollCallWrongID(t *testing.T) {
-	_, laoChannel, err := createLao(oHub, organizerKeyPair, laoName)
+	_, laoChannel, err := createLao(oHub, organizerKeyPair, "lao roll call wrong id")
 	require.NoError(t, err)
 
 	// create the roll call
@@ -290,7 +288,7 @@ func TestOrganizer_CreateRollCallWrongID(t *testing.T) {
 }
 
 func TestOrganizer_CreateRollCallWrongSender(t *testing.T) {
-	laoID, laoChannel, err := createLao(oHub, organizerKeyPair, laoName)
+	laoID, laoChannel, err := createLao(oHub, organizerKeyPair, "lao roll call wrong sender")
 	require.NoError(t, err)
 
 	keypair, err := generateKeyPair()
@@ -307,7 +305,7 @@ func TestOrganizer_CreateRollCallWrongSender(t *testing.T) {
 }
 
 func TestOrganizer_RollCallWrongInstructions(t *testing.T) {
-	laoID, laoChannel, err := createLao(oHub, organizerKeyPair, laoName)
+	laoID, laoChannel, err := createLao(oHub, organizerKeyPair, "lao roll call swrong instructions")
 	require.NoError(t, err)
 
 	// Create all the data
