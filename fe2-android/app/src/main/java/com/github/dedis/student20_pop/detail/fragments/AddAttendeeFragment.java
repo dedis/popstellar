@@ -17,7 +17,6 @@ import com.github.dedis.student20_pop.qrcode.QRCodeScanningFragment;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
-import java.util.List;
 
 /**
  * This fragment wraps the QRCodeScanningFragment in order to show the user how many attendees he

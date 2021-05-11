@@ -94,7 +94,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                   lao -> lao == null ? new ArrayList<>() : new ArrayList<>(lao.getWitnesses()));
   private final LiveData<String> mCurrentLaoName =
           Transformations.map(mCurrentLao, lao -> lao == null ? "" : lao.getName());
-  private final MutableLiveData<Event<EventType>> mNewLaoEventEvent = new MutableLiveData<>();
   private String mCurrentRollCallId = ""; //used to know which roll call to close
 
   private final LiveData<List<com.github.dedis.student20_pop.model.event.Event>> mLaoEvents = Transformations
@@ -519,7 +518,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
       long now = Instant.now().getEpochSecond();
       String id = Hash.hash("R", publicKey, Long.toString(lao.getCreation()), mLaoName.getValue());
-      Log.d(TAG, "id: "+id);
       UpdateLao updateLao = new UpdateLao(id, mLaoName.getValue(), now, lao.getWitnesses());
       MessageGeneral msg = new MessageGeneral(sender, updateLao, signer, mGson);
       Disposable disposable =
@@ -532,10 +530,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                               answer -> {
                                 if (answer instanceof Result) {
                                   Log.d(TAG, "updated lao name");
-                                  //String id2 = Hash.hash("R", publicKey, Long.toString(lao.getCreation()), updateLao.getName());
-                                  String id2 = msg.getMessageId();
-                                  Log.d(TAG, "id2: "+id2);
-                                  StateLao stateLao = new StateLao(updateLao.getId(), updateLao.getName(), lao.getCreation(), updateLao.getLastModified(), publicKey, id2, lao.getWitnesses(), new ArrayList<>());
+                                  StateLao stateLao = new StateLao(updateLao.getId(), updateLao.getName(), lao.getCreation(), updateLao.getLastModified(), publicKey, msg.getMessageId(), lao.getWitnesses(), new ArrayList<>());
                                   MessageGeneral stateMsg = new MessageGeneral(sender, stateLao, signer, mGson);
                                   mLAORepository
                                           .sendPublish(channel, stateMsg)
@@ -550,16 +545,14 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                                       Log.d(TAG, "failed to update lao name");
                                                     }
                                                   },
-                                                  throwable -> {
-                                                    Log.d(TAG, "timed out waiting for result on update lao name", throwable);
-                                                  });
+                                                  throwable -> Log.d(TAG, "timed out waiting for result on update lao name", throwable)
+                                          );
                                 } else {
                                   Log.d(TAG, "failed to update lao name");
                                 }
                               },
-                              throwable -> {
-                                Log.d(TAG, "timed out waiting for result on update lao name", throwable);
-                              });
+                              throwable -> Log.d(TAG, "timed out waiting for result on update lao name", throwable)
+                      );
       disposables.add(disposable);
     } catch (GeneralSecurityException | IOException e) {
       Log.d(TAG, PK_FAILURE_MESSAGE, e);
@@ -619,7 +612,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
           String pk = Keys.getEncodedKey(publicKeysetHandle);
           mPkRollCallEvent.postValue(new Event<>(pk));
       } catch (GeneralSecurityException | IOException e) {
-          e.printStackTrace();
+          Log.d(TAG, PK_FAILURE_MESSAGE, e);
       }
   }
 
