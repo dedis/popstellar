@@ -44,7 +44,10 @@ func Serve(context *cli.Context) error {
 		return xerrors.Errorf("failed to unmarshal public key: %v", err)
 	}
 
-	h := hub.NewOrganizerHub(point)
+	h, err := hub.NewOrganizerHub(point)
+	if err != nil {
+		return xerrors.Errorf("failed create the organizer hub: %v", err)
+	}
 
 	done := make(chan struct{})
 	go h.Start(done)

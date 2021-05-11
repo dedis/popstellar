@@ -192,6 +192,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
                 new ArrayAdapter<>(context, android.R.layout.select_dialog_singlechoice);
 
             arrayAdapter.add("Roll-Call Event");
+            arrayAdapter.add("Election Event");
 
             builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
             builder.setAdapter(

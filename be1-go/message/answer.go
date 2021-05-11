@@ -87,13 +87,24 @@ func (e *Error) Error() string {
 	return e.Description
 }
 
+// NewError returns an error with an updated description
+func NewError(description string, parent error) error {
+	msgError := &Error{}
+
+	if xerrors.As(parent, &msgError) {
+		msgError.Description = fmt.Sprintf("%s: %s", description, msgError.Description)
+		return msgError
+	}
+
+	return xerrors.Errorf("%s: %v", description, parent)
+}
+
 // NewInvalidActionError an error with the code -1 for an invalid action.
 func NewInvalidActionError(action DataAction) error {
 	return &Error{
 		Code:        -1,
 		Description: fmt.Sprintf("invalid action: %s", action),
 	}
-}
 
 // MarshalJSON marshals an Answer message
 func (a Answer) MarshalJSON() ([]byte, error) {
