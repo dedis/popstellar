@@ -17,6 +17,7 @@ import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.home.HomeViewModel;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.RollCall;
+import com.github.dedis.student20_pop.model.Wallet;
 import com.github.dedis.student20_pop.model.data.LAORepository;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.model.network.answer.Error;
@@ -40,6 +41,8 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -49,6 +52,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import javax.crypto.ShortBufferException;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -606,13 +611,12 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   }
 
   public void enterRollCall(String id) {
-      //TODO: access wallet to generate/retrieve pk
       try {
-          KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-          String pk = Keys.getEncodedKey(publicKeysetHandle);
-          mPkRollCallEvent.postValue(new Event<>(pk));
-      } catch (GeneralSecurityException | IOException e) {
-          Log.d(TAG, PK_FAILURE_MESSAGE, e);
+        String pk = Base64.getEncoder().encodeToString(Wallet.getInstance().findKeyPair(getCurrentLao().getValue().getId(), id).second);
+        mPkRollCallEvent.postValue(new Event<>(pk));
+        Log.d(TAG, "rollcall pk: "+pk);
+      } catch (NoSuchAlgorithmException | InvalidKeyException | ShortBufferException e) {
+        Log.d(TAG, "failed to retrieve public key from wallet", e);
       }
   }
 
