@@ -4,21 +4,29 @@ import '../../utils/matchers';
 import keyPair from 'test_data/keypair.json';
 
 import {
-  ActionType, CloseRollCall,
+  ActionType,
+  CloseRollCall,
   CreateLao,
-  CreateMeeting, CreateRollCall,
-  ObjectType, OpenRollCall, ReopenRollCall,
-  StateLao, StateMeeting,
-  UpdateLao, WitnessMessage,
+  CreateMeeting,
+  CreateRollCall,
+  ObjectType,
+  OpenRollCall,
+  ReopenRollCall,
+  SetupElection,
+  StateLao,
+  StateMeeting,
+  UpdateLao,
+  WitnessMessage,
 } from 'model/network/method/message/data';
 import { storeInit } from 'store/Storage';
 import { ProtocolError } from 'model/network';
 import {
-  Base64Data, Hash, Lao, PrivateKey, PublicKey, Timestamp, EventTags,
+  Base64Data, EventTags, Hash, Lao, PrivateKey, PublicKey, Timestamp, Question,
 } from 'model/objects';
 import { sign } from 'tweetnacl';
 import { encodeBase64 } from 'tweetnacl-util';
 import { OpenedLaoStore } from 'store';
+import STRINGS from 'res/strings';
 
 const STALE_TIMESTAMP = new Timestamp(1514761200); // 1st january 2018
 const STANDARD_TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
@@ -44,6 +52,7 @@ describe('=== fromJsonData checks ===', () => {
   const time = STANDARD_TIMESTAMP;
   const name = 'poof';
   const location = 'Lausanne';
+  const mockVersion = STRINGS.election_version_identifier;
   const mockLaoId: Hash = Hash.fromStringArray(org.toString(), time.toString(), name);
 
   let temp: any = {};
@@ -152,12 +161,52 @@ describe('=== fromJsonData checks ===', () => {
     message_id: mockMessageId,
     signature: mockSecretKey.sign(mockMessageId),
   };
+  const electionId: Hash = Hash.fromStringArray(
+    'Election', mockLaoId.toString(), time.toString(), name.toString(),
+  );
+  const mockQuestion1 = 'Mock Question 1';
+  const mockQuestion2 = 'Mock Question 2';
+  const mockQuestionId1 = Hash.fromStringArray(
+    EventTags.QUESTION, mockLaoId.toString(), mockQuestion1,
+  );
+  const mockQuestionId2 = Hash.fromStringArray(
+    EventTags.QUESTION, mockLaoId.toString(), mockQuestion2,
+  );
+  const mockBallotOptions = ['Ballot Option 1', 'Ballot Option 2'];
+  const mockQuestionObject1: Question = {
+    id: mockQuestionId1.toString(),
+    question: mockQuestion1,
+    voting_method: STRINGS.election_method_Plurality,
+    ballot_options: mockBallotOptions,
+    write_in: false,
+  };
+  const mockQuestionObject2: Question = {
+    id: mockQuestionId2.toString(),
+    question: mockQuestion2,
+    voting_method: STRINGS.election_method_Approval,
+    ballot_options: mockBallotOptions,
+    write_in: true,
+  };
+  const mockQuestions = [mockQuestionObject1];
+  const sampleSetupElection: Partial<SetupElection> = {
+    object: ObjectType.ELECTION,
+    action: ActionType.SETUP,
+    id: electionId,
+    lao: mockLaoId,
+    name: name,
+    version: mockVersion,
+    created_at: time,
+    start_time: time,
+    end_time: CLOSE_TIMESTAMP,
+    questions: mockQuestions,
+  };
 
   const dataLao: string = `{"object": "${ObjectType.LAO}","action": "F_ACTION",FF_MODIFICATION"id": "${mockLaoId.toString()}","name": "${name}","creation": ${time.toString()},"last_modified": ${CLOSE_TIMESTAMP.toString()},"organizer": "${org.toString()}","witnesses": []}`;
   const dataMeeting: string = `{"object": "${ObjectType.MEETING}","action": "F_ACTION",FF_MODIFICATION"id": "${meetingId.toString()}","name": "${name}","creation": ${time},"last_modified": ${time},"location": "${location}","start": ${time},"end": ${FUTURE_TIMESTAMP.toString()},"extra": { "extra": "extra info" }}`;
   const dataRollCall: string = `{"object": "${ObjectType.ROLL_CALL}","action":"F_ACTION",FF_MODIFICATION}`;
   const dataUpdateLao: string = `{"object": "${ObjectType.LAO}","action": "${ActionType.UPDATE_PROPERTIES}","name": "${name}","id": "${mockLaoId.toString()}","last_modified": ${CLOSE_TIMESTAMP.toString()},"witnesses": ["${sampleKey1.toString()}", "${sampleKey2.toString()}"]}`;
   const dataWitnessMessage: string = `{"object": "${ObjectType.MESSAGE}","action": "${ActionType.WITNESS}","message_id": "${mockMessageId.toString()}","signature": "${mockSecretKey.sign(mockMessageId).toString()}"}`;
+  const dataElection: string = `{"object": "${ObjectType.ELECTION}","action":"F_ACTION",FF_MODIFICATION}`;
 
   const dataCreateLao: string = dataLao
     .replace('F_ACTION', ActionType.CREATE)
@@ -192,6 +241,12 @@ describe('=== fromJsonData checks ===', () => {
   const dataCloseRollCall: string = dataRollCall
     .replace('F_ACTION', ActionType.CLOSE)
     .replace('FF_MODIFICATION', `"update_id":"${rollCallId.toString()}","closes":"${rollCallId.toString()}","closed_at":${CLOSE_TIMESTAMP},"attendees":[]`);
+
+  const dataSetupElection: string = dataElection
+    .replace('F_ACTION', ActionType.SETUP)
+    .replace('FF_MODIFICATION', `"lao":"${mockLaoId.toString()}","id":
+    "${electionId.toString()}","name":"${name}","version":"${mockVersion}","created_at":${time},
+    "start_time":${time},"end_time":${CLOSE_TIMESTAMP},"questions":${JSON.stringify(mockQuestions)}`);
 
   beforeAll(() => {
     storeInit();
@@ -377,6 +432,24 @@ describe('=== fromJsonData checks ===', () => {
       it('\'WitnessMessage\'', () => {
         expect(new WitnessMessage(sampleWitnessMessage)).toBeJsonEqual(sampleWitnessMessage);
       });
+
+      // Setup Election
+      it('\'SetupElection\'', () => {
+        expect(new SetupElection(sampleSetupElection)).toBeJsonEqual(sampleSetupElection);
+        temp = {
+          object: ObjectType.ELECTION,
+          action: ActionType.SETUP,
+          id: electionId,
+          lao: mockLaoId.toString(),
+          name: name,
+          version: mockVersion,
+          created_at: time,
+          start_time: time,
+          end_time: CLOSE_TIMESTAMP,
+          questions: [mockQuestionObject1, mockQuestionObject2],
+        };
+        expect(new SetupElection(temp)).toBeJsonEqual(temp);
+      });
     });
 
     describe('from JSON objects', () => {
@@ -443,6 +516,12 @@ describe('=== fromJsonData checks ===', () => {
         const obj = JSON.parse(dataWitnessMessage);
         expect(WitnessMessage.fromJson(obj)).toBeJsonEqual(sampleWitnessMessage);
       });
+
+      // Setup Election
+      it('\'SetupElection\'', () => {
+        const obj = JSON.parse(dataSetupElection);
+        expect(SetupElection.fromJson(obj)).toBeJsonEqual(sampleSetupElection);
+      });
     });
   });
 
@@ -456,7 +535,7 @@ describe('=== fromJsonData checks ===', () => {
 
     it('should fail when omitting a mandatory parameter', () => {
       // omitted a mandatory parameter (name)
-      const event = () => {
+      let event = () => {
         CreateLao.fromJson({
           object: ObjectType.LAO,
           action: ActionType.CREATE,
@@ -469,6 +548,22 @@ describe('=== fromJsonData checks ===', () => {
 
       expect(event).toThrow(ProtocolError);
       expect(event).toThrow('should have required property \'name\'');
+
+      event = () => {
+        SetupElection.fromJson({
+          object: ObjectType.ELECTION,
+          action: ActionType.SETUP,
+          id: electionId,
+          lao: mockLaoId.toString(),
+          name: name,
+          version: mockVersion,
+          created_at: time,
+          start_time: time,
+          end_time: CLOSE_TIMESTAMP,
+        });
+      };
+      expect(event).toThrow(ProtocolError);
+      expect(event).toThrow('should have required property \'questions\'');
     });
 
     it('should fail when using garbage types', () => {
