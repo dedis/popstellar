@@ -4,6 +4,13 @@ import (
 	"student20_pop/message"
 )
 
+type HubType string
+
+const (
+	OrganizerHubType HubType = "organizer"
+	WitnessHubType   HubType = "witness"
+)
+
 // Hub defines the methods a PoP server must implement to receive messages
 // and handle clients.
 type Hub interface {

@@ -3,13 +3,15 @@ package witness
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/gorilla/websocket"
-	"github.com/urfave/cli/v2"
-	"golang.org/x/xerrors"
+	"log"
 	"net/http"
 	"net/url"
 	"student20_pop"
 	"student20_pop/hub"
+
+	"github.com/gorilla/websocket"
+	"github.com/urfave/cli/v2"
+	"golang.org/x/xerrors"
 )
 
 var upgrader = websocket.Upgrader{
@@ -21,6 +23,7 @@ var upgrader = websocket.Upgrader{
 func Serve(context *cli.Context) error {
 	organizerAddr := context.String("organizer-address")
 	organizerPort := context.Int("organizer-port")
+	clientPort := context.Int("client-port")
 	pk := context.String("public-key")
 
 	if pk == "" {
@@ -38,7 +41,10 @@ func Serve(context *cli.Context) error {
 		return xerrors.Errorf("failed to unmarshal public key: %v", err)
 	}
 
-	h := hub.NewWitnessHub(point)
+	h, err := hub.NewWitnessHub(point)
+	if err != nil {
+		return xerrors.Errorf("failed create the witness hub: %v", err)
+	}
 
 	ws, err := connectToOrganizer(organizerAddr, organizerPort)
 	if err != nil {
@@ -51,9 +57,9 @@ func Serve(context *cli.Context) error {
 	go organizerSocket.ReadPump()
 
 	done := make(chan struct{})
-	h.Start(done)
+	go h.Start(done)
 
-	//TODO: connect to clients and other witnesses
+	hub.CreateAndServeWs(hub.WitnessHubType, hub.ClientSocketType, h, clientPort)
 
 	done <- struct{}{}
 
@@ -61,13 +67,15 @@ func Serve(context *cli.Context) error {
 }
 
 func connectToOrganizer(organizerAddr string, port int) (*websocket.Conn, error) {
-	u, err := url.Parse(fmt.Sprintf("ws://%s:%d/organizer/witness/", organizerAddr, port))
+	address := fmt.Sprintf("ws://%s:%d/organizer/witness/", organizerAddr, port)
+	u, err := url.Parse(address)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to connect to organizer: %v", err)
+		return nil, xerrors.Errorf("failure to connect to organizer: %v", err)
 	}
 	ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
-		return ws, xerrors.Errorf("failed to connect to organizer: %v", err)
+		return ws, xerrors.Errorf("failure to connect to organizer: %v", err)
 	}
+	log.Printf("connected to organizer at %s", address)
 	return ws, nil
 }

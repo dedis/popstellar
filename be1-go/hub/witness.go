@@ -11,10 +11,11 @@ type witnessHub struct {
 }
 
 // NewWitnessHub returns a Witness Hub.
-func NewWitnessHub(public kyber.Point) Hub {
+func NewWitnessHub(public kyber.Point) (Hub, error) {
+	baseHub, err := NewBaseHub(public)
 	return &witnessHub{
-		NewBaseHub(public),
-	}
+		baseHub,
+	}, err
 }
 
 func (w *witnessHub) handleMessageFromOrganizer(incomingMessage *IncomingMessage) {

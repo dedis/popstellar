@@ -1,4 +1,4 @@
-const webSocketsServerPort = 8000;
+const webSocketsServerPort = 8080;
 const WebSocketServer = require('websocket').server;
 const http = require('http');
 
@@ -20,6 +20,7 @@ const wsServer = new WebSocketServer({
 });
 
 const clients = {};
+const laoMessageIds = []; // Note: only handles single lao scenarios
 
 // This code generates unique user id for every user.
 const getUniqueID = () => {
@@ -42,6 +43,9 @@ wsServer.on('request', (request) => {
 
       let answers;
       const JSON_RPC_VERSION = '2.0';
+      if (JSON.parse(message.utf8Data).params.message !== undefined) {
+        laoMessageIds.push(JSON.parse(message.utf8Data).params.message);
+      }
 
       const generalAnswerPositive = {
         jsonrpc: JSON_RPC_VERSION,
@@ -58,6 +62,12 @@ wsServer.on('request', (request) => {
         id: JSON.parse(message.utf8Data).id,
       };
 
+      const generalCatchupAnswerPositive = {
+        jsonrpc: JSON_RPC_VERSION,
+        result: laoMessageIds,
+        id: JSON.parse(message.utf8Data).id,
+      };
+
       answers = [{
         success: 'true',
         error: 'null',
@@ -70,8 +80,12 @@ wsServer.on('request', (request) => {
       // const answers = [{type: "answer", msg: message.utf8Data}];
       // answers = [JSON.parse(message.utf8Data)];
 
-      answers = [generalAnswerPositive, generalAnswerNegative];
-      answers = [generalAnswerPositive];
+      if (JSON.parse(message.utf8Data).method === 'catchup') {
+        answers = [generalCatchupAnswerPositive];
+      } else {
+        answers = [generalAnswerPositive, generalAnswerNegative];
+        answers = [generalAnswerPositive];
+      }
 
       // const idx = 0;
       // const idx = 1;
