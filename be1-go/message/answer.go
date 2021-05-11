@@ -105,6 +105,7 @@ func NewInvalidActionError(action DataAction) error {
 		Code:        -1,
 		Description: fmt.Sprintf("invalid action: %s", action),
 	}
+}
 
 // MarshalJSON marshals an Answer message
 func (a Answer) MarshalJSON() ([]byte, error) {
