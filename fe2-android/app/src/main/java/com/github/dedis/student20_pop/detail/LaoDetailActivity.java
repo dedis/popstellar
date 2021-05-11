@@ -94,11 +94,7 @@ public class LaoDetailActivity extends AppCompatActivity {
                     stringEvent -> {
                       String action = stringEvent.getContentIfNotHandled();
                       if (action != null) {
-                          if (action.equals(HomeViewModel.SCAN)) {
-                              setupScanFragmentRollCall();
-                          }else{
-                              setupCameraPermissionFragmentRollCall();
-                          }
+                          openScanning(action);
                       }
                     });
     mViewModel
@@ -226,6 +222,13 @@ public class LaoDetailActivity extends AppCompatActivity {
       ActivityUtils.replaceFragmentInActivity(
               getSupportFragmentManager(), cameraPermissionFragment, R.id.fragment_container_lao_detail);
     }
+  }
+  private void openScanning(String action){
+      if (action.equals(HomeViewModel.SCAN)) {
+          setupScanFragmentRollCall();
+      }else{
+          setupCameraPermissionFragmentRollCall();
+      }
   }
   private void setupRollCallDetailFragment(String pk) {
       RollCallDetailFragment rollCallDetailFragment =
