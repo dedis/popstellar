@@ -81,20 +81,7 @@ public final class QRCodeScanningFragment extends Fragment {
                       stringEvent -> {
                         String event = stringEvent.getContentIfNotHandled();
                         if (event != null) {
-                          AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                          builder.setTitle("Success");
-                          builder.setMessage(event);
-                          mPreview.stop();
-                          AlertDialog dialog = builder.show();
-                          new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                              if (dialog.isShowing()){
-                                dialog.dismiss();
-                                startCamera();
-                              }
-                            }
-                          }, 2000);
+                          setupSuccessPopup(event);
                         } });
       ((LaoDetailViewModel)mQRCodeScanningViewModel)
               .getScanWarningEvent()
@@ -103,15 +90,7 @@ public final class QRCodeScanningFragment extends Fragment {
                       stringEvent -> {
                         String event = stringEvent.getContentIfNotHandled();
                         if (event != null) {
-                          AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                          builder.setTitle("Warning");
-                          builder.setMessage(event);
-                          mPreview.stop();
-                          builder.setPositiveButton("Ok", (dialog, which) -> {
-                            dialog.dismiss();
-                            startCamera();
-                          });
-                          builder.show();
+                          setupWarningPopup(event);
                         } });
       setupCloseRollCallButton();
 
@@ -174,5 +153,34 @@ public final class QRCodeScanningFragment extends Fragment {
 
   private void closeRollCall() {
     ((LaoDetailViewModel)mQRCodeScanningViewModel).openLaoDetail();
+  }
+
+  private void setupSuccessPopup(String msg){
+    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+    builder.setTitle("Success");
+    builder.setMessage(msg);
+    mPreview.stop();
+    AlertDialog dialog = builder.show();
+    new Handler().postDelayed(new Runnable() {
+      @Override
+      public void run() {
+        if (dialog.isShowing()){
+          dialog.dismiss();
+          startCamera();
+        }
+      }
+    }, 2000);
+  }
+
+  private void setupWarningPopup(String msg){
+    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+    builder.setTitle("Warning");
+    builder.setMessage(msg);
+    mPreview.stop();
+    builder.setPositiveButton("Ok", (dialog, which) -> {
+      dialog.dismiss();
+      startCamera();
+    });
+    builder.show();
   }
 }
