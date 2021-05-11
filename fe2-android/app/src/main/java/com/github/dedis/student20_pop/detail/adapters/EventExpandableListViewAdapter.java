@@ -35,19 +35,12 @@ import static com.github.dedis.student20_pop.model.event.EventCategory.FUTURE;
 import static com.github.dedis.student20_pop.model.event.EventCategory.PAST;
 import static com.github.dedis.student20_pop.model.event.EventCategory.PRESENT;
 
-<<<<<<<HEAD
-=======
-        >>>>>>>work-fe2-rollcall-organizer-karim
 
 public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
   protected HashMap<EventCategory, List<Event>> eventsMap;
   private final EventCategory[] categories = EventCategory.values();
-<<<<<<< HEAD
-  private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
-=======
   private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH);
->>>>>>> work-fe2-rollcall-organizer-karim
   private final LifecycleOwner lifecycleOwner;
   private final LaoDetailViewModel viewModel;
 
@@ -196,29 +189,6 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
 
     AddEventListener addEventOnClickListener =
-<<<<<<< HEAD
-            new AddEventListener() {
-              @Override
-              public void addEvent() {
-                AlertDialog.Builder builder = new Builder(context);
-                builder.setTitle("Select Event Type");
-
-                ArrayAdapter<String> arrayAdapter =
-                        new ArrayAdapter<>(context, android.R.layout.select_dialog_singlechoice);
-
-                arrayAdapter.add("Roll-Call Event");
-
-                builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
-                builder.setAdapter(
-                        arrayAdapter,
-                        ((dialog, which) -> {
-                          dialog.dismiss();
-                          viewModel.chooseEventType(EventType.values()[which]);
-                        }));
-                builder.show();
-              }
-            };
-=======
         new AddEventListener() {
           @Override
           public void addEvent() {
@@ -241,7 +211,6 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
             builder.show();
           }
         };
->>>>>>> work-fe2-rollcall-organizer-karim
 
     binding.setIsFutureCategory(eventCategory.equals(FUTURE));
     binding.setViewmodel(viewModel);
@@ -280,11 +249,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     // TODO : For the moment, events are displayed the same if user is attendee or organizer,
     // in the future it could be nice to have a pencil icon to allow organizer to modify an event
 
-<<<<<<< HEAD
-    LayoutEventBinding binding;
-=======
     LayoutRollCallEventBinding binding;
->>>>>>> work-fe2-rollcall-organizer-karim
 
     if (convertView == null) {
       LayoutInflater inflater = LayoutInflater.from(parent.getContext());
@@ -293,57 +258,16 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
       binding = DataBindingUtil.getBinding(convertView);
     }
 
-<<<<<<< HEAD
-    binding.openButton.setVisibility(View.GONE);
-    binding.reopenButton.setVisibility(View.GONE);
-    binding.scheduledButton.setVisibility(View.GONE);
-    binding.enterButton.setVisibility(View.GONE);
-    binding.closedButton.setVisibility(View.GONE);
-
-    Event event = (Event)getChild(groupPosition, childPosition);
-    if(event instanceof RollCall){
-      RollCall rollCall = (RollCall)event;
-      binding.eventTime.setText("Time: "+DATE_FORMAT.format(new Date(1000*rollCall.getStart())));
-      binding.eventTitle.setText("Roll Call: "+rollCall.getName());
-      binding.eventLocation.setText("Location: "+rollCall.getLocation());
-=======
     Event event = (Event)getChild(groupPosition, childPosition);
     if(event instanceof RollCall){
       RollCall rollCall = (RollCall)event;
       binding.rollcallDate.setText("Start: "+DATE_FORMAT.format(new Date(1000*rollCall.getStart())));
       binding.rollcallTitle.setText("Roll Call: "+rollCall.getName());
       binding.rollcallLocation.setText("Location: "+rollCall.getLocation());
->>>>>>> work-fe2-rollcall-organizer-karim
 
       boolean isOrganizer = viewModel.isOrganizer().getValue();
 
       if(isOrganizer && rollCall.getState()== EventState.CREATED){
-<<<<<<< HEAD
-        binding.openButton.setVisibility(View.VISIBLE);
-      }else if(isOrganizer && rollCall.getState()== EventState.CLOSED){
-        binding.reopenButton.setVisibility(View.VISIBLE);
-      }else if(!isOrganizer && rollCall.getState()== EventState.CREATED){
-        binding.scheduledButton.setVisibility(View.VISIBLE);
-      }else if(!isOrganizer && rollCall.getState()== EventState.OPENED){
-        binding.enterButton.setVisibility(View.VISIBLE);
-      }else if(!isOrganizer && rollCall.getState()== EventState.CLOSED){
-        binding.closedButton.setVisibility(View.VISIBLE);
-      }
-      
-      binding.openButton.setOnClickListener(
-              clicked -> {
-                viewModel.openRollCall(rollCall.getId());
-              });
-      binding.reopenButton.setOnClickListener(
-              clicked -> {
-                viewModel.openRollCall(rollCall.getId());
-              });
-      binding.enterButton.setOnClickListener(
-              clicked -> {
-                viewModel.enterRollCall(rollCall.getId());
-              });
-
-=======
         binding.rollcallOpenButton.setVisibility(View.VISIBLE);
       }else if(isOrganizer && rollCall.getState()== EventState.CLOSED){
         binding.rollcallReopenButton.setVisibility(View.VISIBLE);
@@ -362,7 +286,6 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
               clicked ->
                 viewModel.openRollCall(rollCall.getId())
       );
->>>>>>> work-fe2-rollcall-organizer-karim
     }
 
     binding.setLifecycleOwner(lifecycleOwner);

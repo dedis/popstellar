@@ -27,9 +27,6 @@ import net.glxn.qrgen.android.QRCode;
 
 import java.util.ArrayList;
 
-<<<<<<<HEAD
-=======
-        >>>>>>>work-fe2-rollcall-organizer-karim
 
 /** Fragment used to display the LAO Detail UI */
 public class LaoDetailFragment extends Fragment {
@@ -173,22 +170,15 @@ public class LaoDetailFragment extends Fragment {
   }
 
   private void setupEventListUpdates() {
-<<<<<<< HEAD
-=======
-
->>>>>>> work-fe2-rollcall-organizer-karim
     mLaoDetailViewModel
             .getLaoEvents()
             .observe(
                 getActivity(),
                 events -> {
                   Log.d(TAG, "Got an event list update");
-<<<<<<< HEAD
-=======
                   for(Event event : events){
                       Log.d(TAG, ((RollCall)event).getDescription());
                   }
->>>>>>> work-fe2-rollcall-organizer-karim
                   mEventListViewEventAdapter.replaceList(events);
                 }
             );

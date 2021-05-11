@@ -52,14 +52,6 @@ public final class AddAttendeeFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_add_attendee, container, false);
 
-<<<<<<< HEAD
-      QRCodeScanningFragment scanningFragment = QRCodeScanningFragment.newInstance(camera, detector);
-
-      List<String> attendees;
-
-
-=======
->>>>>>> work-fe2-rollcall-organizer-karim
     Button confirm = view.findViewById(R.id.add_attendee_confirm);
     confirm.setOnClickListener(
         click -> {
