@@ -265,6 +265,12 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
       binding.rollcallTitle.setText("Roll Call: "+rollCall.getName());
       binding.rollcallLocation.setText("Location: "+rollCall.getLocation());
 
+      binding.rollcallOpenButton.setVisibility(View.GONE);
+      binding.rollcallReopenButton.setVisibility(View.GONE);
+      binding.rollcallScheduledButton.setVisibility(View.GONE);
+      binding.rollcallEnterButton.setVisibility(View.GONE);
+      binding.rollcallClosedButton.setVisibility(View.GONE);
+
       boolean isOrganizer = viewModel.isOrganizer().getValue();
 
       if(isOrganizer && rollCall.getState()== EventState.CREATED){
@@ -286,6 +292,10 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
               clicked ->
                 viewModel.openRollCall(rollCall.getId())
       );
+      binding.rollcallEnterButton.setOnClickListener(
+              clicked -> {
+                viewModel.enterRollCall(rollCall.getId());
+              });
     }
 
     binding.setLifecycleOwner(lifecycleOwner);
