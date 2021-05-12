@@ -26,7 +26,11 @@ class NetworkManager {
   }
 
   /** Connects to a server or returns an existing connection to the server
-   * Mockserver port: 8080, Go backend: 9000
+   * Mockserver port: 8080
+   * Go backend default organizer port: 9000
+   * The full path to connect to the backend is:
+   * as organizer ws://host:clientport/organizer/client/
+   * as a witness: ws://host:witnessport/organizer/witness/
    * @param host the server's host
    * @param port the server's port
    * @param path the path at which the websocket can be established
