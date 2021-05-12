@@ -7,7 +7,11 @@ import ch.epfl.pop.jsonNew.HighLevelProtocol._
 import ch.epfl.pop.jsonNew.MessageDataProtocol._
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
-import ch.epfl.pop.model.network.method.message.data.{DataBuilder, MessageData, ProtocolException}
+import ch.epfl.pop.model.network.method.message.data.{ActionType, DataBuilder, MessageData, ObjectType, ProtocolException}
+import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
+import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, JsonRpcRequestStateMeeting}
+import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
+import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
 import spray.json._
 
 import scala.util.{Failure, Success, Try}
@@ -56,6 +60,32 @@ object MessageDecoder {
   private def parseMessageData(dataString: String, _object: ObjectType, action: ActionType): MessageData =
     DataBuilder.buildData(_object, action, dataString)
 
+  /**
+   * Type casts a general JsonRpcRequest <request> into a typed request (model/network/requests)
+   *
+   * @param request JsonRpcRequest to be type casted
+   * @throws java.lang.IllegalArgumentException if the data header (object and action) is either missing
+   *                                            or is an invalid combination
+   * @return a type casted JsonRpcRequest
+   */
+  @throws(classOf[IllegalArgumentException])
+  private def typeCastRequest(request: JsonRpcRequest): JsonRpcRequest = request.getDecodedData match {
+    case Some(data) => (data._object, data.action) match {
+      case (ObjectType.LAO, ActionType.CREATE) => request.toTypedRequest(JsonRpcRequestCreateLao)
+      case (ObjectType.LAO, ActionType.STATE) => request.toTypedRequest(JsonRpcRequestStateLao)
+      case (ObjectType.LAO, ActionType.UPDATE_PROPERTIES) => request.toTypedRequest(JsonRpcRequestUpdateLao)
+      case (ObjectType.MEETING, ActionType.CREATE) => request.toTypedRequest(JsonRpcRequestCreateMeeting)
+      case (ObjectType.MEETING, ActionType.STATE) => request.toTypedRequest(JsonRpcRequestStateMeeting)
+      case (ObjectType.ROLL_CALL, ActionType.CLOSE) => request.toTypedRequest(JsonRpcRequestCloseRollCall)
+      case (ObjectType.ROLL_CALL, ActionType.CREATE) => request.toTypedRequest(JsonRpcRequestCreateRollCall)
+      case (ObjectType.ROLL_CALL, ActionType.OPEN) => request.toTypedRequest(JsonRpcRequestOpenRollCall)
+      case (ObjectType.ROLL_CALL, ActionType.REOPEN) => request.toTypedRequest(JsonRpcRequestReopenRollCall)
+      case (ObjectType.MESSAGE, ActionType.WITNESS) => request.toTypedRequest(JsonRpcRequestWitnessMessage)
+      case _ => throw new IllegalArgumentException(s"Illegal ('object'/'action') = (${data._object}/${data.action}) combination")
+    }
+    case _ => throw new IllegalArgumentException(s"Unable to infer type of JsonRpcRequest (decoded 'data' field is missing)")
+  }
+
 
   /**
    * Decides whether a graph message 'data' field should be decoded or not.
@@ -69,15 +99,25 @@ object MessageDecoder {
       case Some(_) => graphMessage // do nothing if 'data' already decoded
       case _ if !jsonRpcRequest.hasParamsMessage => graphMessage // do nothing if rpc-message doesn't contain any message
       case _ =>
+        // json string representation of the 'data' field
         val jsonString: String = jsonRpcRequest.getEncodedData.get.decode()
+
+        // Try to extract data header from the json string
         Try(jsonString.parseJson.asJsObject.getFields("object", "action")) match {
-          case Success(Seq(objectString@JsString(_), actionString@JsString(_))) => Try {
-            val messageData = parseMessageData(jsonString, objectString.convertTo[ObjectType], actionString.convertTo[ActionType])
-            jsonRpcRequest.setDecodedData(messageData)
-          } match {
-            case Success(_) => graphMessage // everything worked at expected, 'decodedData' field was populated
-            case Failure(exception) => Right(PipelineError(ErrorCodes.INVALID_DATA.id, s"Invalid data: $exception"))
-          }
+
+          // if the header is correct (both 'object' and 'action' are present and both strings)
+          case Success(Seq(objectString@JsString(_), actionString@JsString(_))) =>
+            var typedRequest = jsonRpcRequest // filler for the typed request
+
+            Try {
+              val messageData = parseMessageData(jsonString, objectString.convertTo[ObjectType], actionString.convertTo[ActionType])
+              jsonRpcRequest.setDecodedData(messageData)
+              typedRequest = typeCastRequest(jsonRpcRequest)
+            } match {
+              case Success(_) => Left(typedRequest) // everything worked at expected, 'decodedData' field was populated
+              case Failure(exception) => Right(PipelineError(ErrorCodes.INVALID_DATA.id, s"Invalid data: $exception"))
+            }
+
           case Success(_) => Right(PipelineError(
             ErrorCodes.INVALID_DATA.id,
             "Invalid data: Unable to parse 'data' field: 'object' or 'action' field is missing/wrongly formatted"

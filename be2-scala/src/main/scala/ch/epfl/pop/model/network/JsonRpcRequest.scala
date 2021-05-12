@@ -16,10 +16,10 @@ class JsonRpcRequest(
   override def validateContent(): Option[PipelineError] = ??? // params.validateContent() // define recursively?s
 
   // defensive methods in case protocol structure changes
-  def getParams: Params = this.params
-  def getParamsChannel: Channel = this.params.channel
-  def hasParamsMessage: Boolean = this.params.hasMessage
-  def getParamsMessage: Option[Message] = Try(this.params.asInstanceOf[ParamsWithMessage].message) match {
+  def getParams: Params = params
+  def getParamsChannel: Channel = params.channel
+  def hasParamsMessage: Boolean = params.hasMessage
+  def getParamsMessage: Option[Message] = Try(params.asInstanceOf[ParamsWithMessage].message) match {
     case Success(message) => Some(message)
     case _ => None
   }
@@ -34,6 +34,17 @@ class JsonRpcRequest(
   def setDecodedData(decodedData: MessageData): Unit = this.getParamsMessage match {
     case Some(message) => message.decodedData = Some(decodedData)
     case _ =>
+  }
+
+  /**
+   * Returns a typed request (model/network/requests) that can be instantiated with <typedConstructor>
+   *
+   * @param typedConstructor a constructor able to instantiate a typed request of type <T>
+   * @tparam T type of the typed request
+   * @return a typed request with the same parameters as <this>
+   */
+  def toTypedRequest[T](typedConstructor: (String, MethodType.MethodType, Params, Option[Int]) => T): T = {
+    typedConstructor(jsonrpc, method, params, id)
   }
 }
 
