@@ -81,11 +81,37 @@ object HighLevelProtocol extends DefaultJsonProtocol {
     }
   }
 
-  implicit val broadcastFormat: JsonFormat[Broadcast] = jsonFormat2(Broadcast.apply)
-  implicit val catchupFormat: JsonFormat[Catchup] = jsonFormat1(Catchup.apply)
-  implicit val publishFormat: JsonFormat[Publish] = jsonFormat2(Publish.apply)
-  implicit val subscribeFormat: JsonFormat[Subscribe] = jsonFormat1(Subscribe.apply)
-  implicit val unsubscribeFormat: JsonFormat[Unsubscribe] = jsonFormat1(Unsubscribe.apply)
+  implicit object BroadcastFormat extends RootJsonFormat[Broadcast] {
+    override def read(json: JsValue): Broadcast = {
+      val params: ParamsWithMessage = json.convertTo[Params].asInstanceOf[ParamsWithMessage]
+      Broadcast(params.channel, params.message)
+    }
+    override def write(obj: Broadcast): JsValue = obj.toJson(ParamsFormat.write)
+  }
+
+  implicit object CatchupFormat extends RootJsonFormat[Catchup] {
+    override def read(json: JsValue): Catchup = Catchup(json.convertTo[Params].channel)
+    override def write(obj: Catchup): JsValue = obj.toJson(ParamsFormat.write)
+  }
+
+  implicit object PublishFormat extends RootJsonFormat[Publish] {
+    override def read(json: JsValue): Publish = {
+      val params: ParamsWithMessage = json.convertTo[Params].asInstanceOf[ParamsWithMessage]
+      Publish(params.channel, params.message)
+    }
+    override def write(obj: Publish): JsValue = obj.toJson(ParamsFormat.write)
+  }
+
+  implicit object SubscribeFormat extends RootJsonFormat[Subscribe] {
+    override def read(json: JsValue): Subscribe = Subscribe(json.convertTo[Params].channel)
+    override def write(obj: Subscribe): JsValue = obj.toJson(ParamsFormat.write)
+  }
+
+  implicit object UnsubscribeFormat extends RootJsonFormat[Unsubscribe] {
+    override def read(json: JsValue): Unsubscribe = Unsubscribe(json.convertTo[Params].channel)
+    override def write(obj: Unsubscribe): JsValue = obj.toJson(ParamsFormat.write)
+  }
+
 
   implicit val errorObjectFormat: JsonFormat[ErrorObject] = jsonFormat2(ErrorObject.apply)
 
@@ -96,18 +122,25 @@ object HighLevelProtocol extends DefaultJsonProtocol {
     final private val PARAM_ID: String = "id"
 
     override def read(json: JsValue): JsonRpcRequest = json.asJsObject.getFields(PARAM_JSON_RPC, PARAM_METHOD, PARAM_PARAMS, PARAM_ID) match {
-      case Seq(JsString(version), method@JsString(_), params@JsObject(_), optId) =>
+      case Seq(JsString(version), methodJsString@JsString(_), paramsJsObject@JsObject(_), optId) => {
+
+        val method: MethodType = methodJsString.convertTo[MethodType]
+        val params: Params = method match {
+          case MethodType.BROADCAST => paramsJsObject.convertTo[Broadcast]
+          case MethodType.PUBLISH => paramsJsObject.convertTo[Publish]
+          case MethodType.SUBSCRIBE => paramsJsObject.convertTo[Subscribe]
+          case MethodType.UNSUBSCRIBE => paramsJsObject.convertTo[Unsubscribe]
+          case MethodType.CATCHUP => paramsJsObject.convertTo[Catchup]
+        }
+
         val id: Option[Int] = optId match {
           case JsNumber(id) => Some(id.toInt)
           case JsNull => None
           case _ => throw new IllegalArgumentException(s"Can't parse json value $optId to an id (number or null)")
         }
-        JsonRpcRequest(
-          version,
-          method.convertTo[MethodType],
-          params.convertTo[Params],
-          id
-        )
+
+        JsonRpcRequest(version, method, params, id)
+      }
       case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a JsonRpcRequest object")
     }
 

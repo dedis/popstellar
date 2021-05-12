@@ -5,6 +5,7 @@ import akka.actor.{ActorRef, ActorSystem}
 import akka.http.scaladsl.model.ws.{Message, TextMessage}
 import akka.stream.FlowShape
 import akka.stream.scaladsl.{Flow, GraphDSL, Merge, Partition}
+import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.{Broadcast, Publish}
 import ch.epfl.pop.pubsub.graph.handlers.{ParamsHandler, ParamsWithMessageHandler}
 import ch.epfl.pop.pubsub.graph.{Answerer, GraphMessage, MessageDecoder, MessageEncoder, Validator}
@@ -36,7 +37,7 @@ object PublishSubscribeNew extends App {
       val jsonRpcContentValidator = builder.add(Validator.jsonRpcContentValidator)
 
       val methodPartitioner = builder.add(Partition[GraphMessage](totalPorts, {
-        case Left(_: Publish) | Left(_: Broadcast) => portParamsWithMessage // Publish and Broadcast messages
+        case Left(m: JsonRpcRequest) if m.hasParamsMessage => portParamsWithMessage // Publish and Broadcast messages
         case Left(_) => portParams
         case _ => portPipelineError // Pipeline error goes directly in merger
       }))

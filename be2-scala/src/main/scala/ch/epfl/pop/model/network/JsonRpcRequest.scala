@@ -18,6 +18,11 @@ class JsonRpcRequest(
   // defensive methods in case protocol structure changes
   def getParams: Params = this.params
   def getParamsChannel: Channel = this.params.channel
+  def hasParamsMessage: Boolean = this.params.hasMessage
+  def hasParamsMessage2: Boolean = Try(this.params.asInstanceOf[ParamsWithMessage].message) match {
+    case Success(_) => true
+    case _ => false
+  }
   def getParamsMessage: Option[Message] = Try(this.params.asInstanceOf[ParamsWithMessage].message) match {
     case Success(message) => Some(message)
     case _ => None

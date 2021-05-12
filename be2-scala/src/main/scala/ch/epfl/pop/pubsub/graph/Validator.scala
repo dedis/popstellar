@@ -53,10 +53,10 @@ object Validator {
   }
 
   private def validateMessageContent(graphMessage: GraphMessage): GraphMessage = graphMessage match {
-    case Left(jsonRpcMessage) => jsonRpcMessage match {
-      case _: Broadcast => validateMessage(jsonRpcMessage)
+    case Left(jsonRpcRequest: JsonRpcRequest) => jsonRpcRequest.getParams match {
+      case _: Broadcast => validateMessage(jsonRpcRequest)
       case _: Catchup => graphMessage
-      case _: Publish => validateMessage(jsonRpcMessage)
+      case _: Publish => validateMessage(jsonRpcRequest)
       case _: Subscribe => graphMessage
       case _: Unsubscribe => graphMessage
       case _ => Right(VALIDATOR_ERROR)
