@@ -56,7 +56,7 @@ public class HomeActivity extends AppCompatActivity {
             stringEvent -> {
               String laoId = stringEvent.getContentIfNotHandled();
               if (laoId != null) {
-                openLaoDetails(laoId);
+                openLaoDetails(laoId, true);
               }
             });
 
@@ -147,6 +147,18 @@ public class HomeActivity extends AppCompatActivity {
                 }
               }
             });
+
+    // Subscribe to "open lao wallet" event
+    mViewModel
+        .getOpenLaoWalletEvent()
+        .observe(
+                this,
+                stringEvent -> {
+                  String laoId = stringEvent.getContentIfNotHandled();
+                  if (laoId != null) {
+                    openLaoDetails(laoId, false);
+                  }
+                });
   }
 
   @Override
@@ -296,10 +308,22 @@ public class HomeActivity extends AppCompatActivity {
     }
   }
 
-  private void openLaoDetails(String laoId) {
+  private void openLaoDetails(String laoId, boolean openLaoDetail) { //change to enum??
     Intent intent = new Intent(this, LaoDetailActivity.class);
     Log.d(TAG, "Trying to open lao detail for lao with id " + laoId);
     intent.putExtra("LAO_ID", laoId);
+    if(openLaoDetail) {
+      intent.putExtra("FRAGMENT_TO_OPEN", "LaoDetail");
+    }else{
+      intent.putExtra("FRAGMENT_TO_OPEN", "ContentWallet");
+    }
     startActivityForResult(intent, LAO_DETAIL_REQUEST_CODE);
   }
+
+  /*private void openLaoWallet(String laoId) {
+    Intent intent = new Intent(this, LaoWalletActivity.class);
+    Log.d(TAG, "Trying to open lao wallet for lao with id " + laoId);
+    intent.putExtra("LAO_ID", laoId);
+    startActivityForResult(intent, LAO_WALLET_REQUEST_CODE);
+  }*/
 }

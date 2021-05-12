@@ -86,6 +86,7 @@
     <string name="scheduled_rollcall">SCHEDULED</string>
     <string name="enter_rollcall">ENTER</string>
     <string name="closed_rollcall">CLOSED</string>
+    <string name="attendees_list_rollcall">ATTENDEES</string>
 
     <string name="back">BACK</string>
 

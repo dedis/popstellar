@@ -270,6 +270,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
       binding.rollcallScheduledButton.setVisibility(View.GONE);
       binding.rollcallEnterButton.setVisibility(View.GONE);
       binding.rollcallClosedButton.setVisibility(View.GONE);
+      binding.rollcallAttendeesListButton.setVisibility(View.GONE);
 
       boolean isOrganizer = viewModel.isOrganizer().getValue();
 

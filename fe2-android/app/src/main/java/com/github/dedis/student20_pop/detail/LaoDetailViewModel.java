@@ -77,6 +77,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   private final MutableLiveData<Event<EventType>> mNewLaoEventCreationEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenNewRollCallEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<String>> mOpenRollCallEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<String>> mOpenAttendeesListEvent = new MutableLiveData<>();
 
   private final MutableLiveData<Event<Integer>>  mNbAttendeesEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mCloseRollCallEvent = new MutableLiveData<>();
@@ -104,6 +105,11 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   private final LiveData<List<com.github.dedis.student20_pop.model.event.Event>> mLaoEvents = Transformations
           .map(mCurrentLao,
                   lao -> lao == null ? new ArrayList<com.github.dedis.student20_pop.model.event.Event>() :
+                          lao.getRollCalls().values().stream().collect(Collectors.toList()));
+
+  private final LiveData<List<com.github.dedis.student20_pop.model.RollCall>> mLaoRollCalls = Transformations
+          .map(mCurrentLao,
+                  lao -> lao == null ? new ArrayList<com.github.dedis.student20_pop.model.RollCall>() :
                           lao.getRollCalls().values().stream().collect(Collectors.toList()));
 
   /*
@@ -434,6 +440,9 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   public LiveData<Event<String>> getOpenRollCallEvent() {
     return mOpenRollCallEvent;
   }
+  public LiveData<Event<String>> getOpenAttendeesListEvent() {
+    return mOpenRollCallEvent;
+  }
   public LiveData<Event<Integer>> getNbAttendeesEvent() {
     return mNbAttendeesEvent;
   }
@@ -455,6 +464,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
   public LiveData<List<com.github.dedis.student20_pop.model.event.Event>> getLaoEvents() {
     return mLaoEvents;
+  }
+
+  public LiveData<List<com.github.dedis.student20_pop.model.RollCall>> getLaoRollCalls() {
+    return mLaoRollCalls;
   }
 
   /*
@@ -628,6 +641,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     } else {
       openCameraPermissionRollCall();
     }
+  }
+
+  public void openAttendeesList(String rollCallId){
+    mOpenAttendeesListEvent.postValue(new Event<>(rollCallId));
   }
 
   @Override

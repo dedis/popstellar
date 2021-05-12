@@ -85,7 +85,7 @@ public final class HomeFragment extends Fragment {
   private void setupListAdapter() {
     ListView listView = mHomeFragBinding.laoList;
 
-    mListAdapter = new LAOListAdapter(new ArrayList<Lao>(0), mHomeViewModel, getActivity());
+    mListAdapter = new LAOListAdapter(new ArrayList<Lao>(0), mHomeViewModel, getActivity(), true);
 
     listView.setAdapter(mListAdapter);
   }

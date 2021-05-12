@@ -16,6 +16,7 @@ import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
 import com.github.dedis.student20_pop.detail.fragments.IdentityFragment;
 import com.github.dedis.student20_pop.detail.fragments.LaoDetailFragment;
+import com.github.dedis.student20_pop.detail.fragments.LaoWalletFragment;
 import com.github.dedis.student20_pop.detail.fragments.RollCallDetailFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.ElectionSetupFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.MeetingEventCreationFragment;
@@ -40,7 +41,12 @@ public class LaoDetailActivity extends AppCompatActivity {
     mViewModel = obtainViewModel(this);
     mViewModel.subscribeToLao(
             (String) Objects.requireNonNull(getIntent().getExtras()).get("LAO_ID"));
-    setupLaoFragment();
+    if(getIntent().getExtras().get("FRAGMENT_TO_OPEN").equals("LaoDetail")){
+        Log.d(TAG, "detail");
+          setupLaoFragment();
+    }else{
+          setupLaoWalletFragment();
+    }
     setupHomeButton();
     setupIdentityButton();
     // Subscribe to "open lao detail event"
@@ -250,4 +256,14 @@ public class LaoDetailActivity extends AppCompatActivity {
               getSupportFragmentManager(), electionSetupFragment, R.id.fragment_container_lao_detail);
     }
   }
+
+    private void setupLaoWalletFragment() {
+        LaoWalletFragment laoWalletFragment =
+                (LaoWalletFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_lao_wallet);
+        if (laoWalletFragment == null) {
+            laoWalletFragment = LaoWalletFragment.newInstance();
+            ActivityUtils.replaceFragmentInActivity(
+                    getSupportFragmentManager(), laoWalletFragment, R.id.fragment_container_lao_detail);
+        }
+    }
 }
