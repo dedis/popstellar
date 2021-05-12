@@ -11,6 +11,10 @@ import { WalletStore } from 'store/stores/WalletStore';
 import { Hash } from 'model/objects';
 
 const styles = StyleSheet.create({
+  smallPadding: {
+    padding: '1rem',
+  } as ViewStyle,
+
   largePadding: {
     padding: '2rem',
   } as ViewStyle,
@@ -36,17 +40,25 @@ const WalletSyncedSeed = () => {
 
   function showTokens() {
     const tokens: string[] = [];
+    const laoAndRollCallId: string[] = [];
 
+    let i = 0;
     cachedKeyPairs.forEach((value, key) => {
-      tokens[0] = value;
-      tokens[1] = value;
-      tokens[2] = value;
+      const ids: string[] = key.toString().split(',');
+      laoAndRollCallId[i] = `LAO ID - ${ids[0]}  |  roll call ID - ${ids[1]}`;
+      tokens[i] = value;
+      i += 1;
     });
 
     return (
       <View>
+        <TextBlock bold text={laoAndRollCallId[0]} />
         <TextBlock text={tokens[0]} />
+        <View style={styles.smallPadding} />
+        <TextBlock bold text={laoAndRollCallId[1]} />
         <TextBlock text={tokens[1]} />
+        <View style={styles.smallPadding} />
+        <TextBlock bold text={laoAndRollCallId[2]} />
         <TextBlock text={tokens[2]} />
       </View>
     );
