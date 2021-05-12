@@ -14,7 +14,14 @@ object ObjectProtocol extends DefaultJsonProtocol {
     override def write(obj: Base64Data): JsValue = JsString(obj.data)
   }
 
-  implicit val channelFormat: JsonFormat[Channel] = jsonFormat1(Channel.apply)
+  implicit object ChannelFormat extends JsonFormat[Channel] {
+    override def read(json: JsValue): Channel = json match {
+      case JsString(value) => Channel(value)
+      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a Channel object")
+    }
+
+    override def write(obj: Channel): JsValue = JsString(obj.channel)
+  }
 
   implicit object HashFormat extends JsonFormat[Hash] {
     override def read(json: JsValue): Hash = json match {

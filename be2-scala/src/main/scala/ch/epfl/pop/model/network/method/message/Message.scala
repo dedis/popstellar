@@ -13,7 +13,7 @@ case class Message(
                     signature: Signature,
                     message_id: Hash,
                     witness_signatures: List[WitnessSignaturePair],
-                    decodedData: MessageData
+                    decodedData: Option[MessageData]
                   ) {
   def addWitnessSignature(ws: WitnessSignaturePair): Message =
     Message(data, sender, signature, message_id, ws :: witness_signatures, decodedData)
@@ -27,7 +27,7 @@ object Message extends Parsable {
              message_id: Hash,
              witness_signatures: List[WitnessSignaturePair]
            ): Message = {
-    new Message(data, sender, signature, message_id, witness_signatures, ???) // FIXME
+    new Message(data, sender, signature, message_id, witness_signatures, None) // FIXME None
   }
 
   override def buildFromJson(messageData: MessageData, payload: String): Message =

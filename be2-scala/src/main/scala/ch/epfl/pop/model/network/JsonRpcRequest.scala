@@ -23,7 +23,7 @@ class JsonRpcRequest(
     case _ => None
   }
   def getDecodedData: Option[MessageData] = this.getParamsMessage match {
-    case Some(message) => Some(message.decodedData)
+    case Some(message) => message.decodedData
     case _ => None
   }
 }

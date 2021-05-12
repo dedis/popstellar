@@ -6,7 +6,10 @@ import ch.epfl.pop.model.network.method._
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects.{Base64Data, Hash, PublicKey, Signature, WitnessSignaturePair}
 import ObjectProtocol._
+import ch.epfl.pop.model.objects.Channel
 import spray.json._
+
+import scala.collection.immutable.ListMap
 
 object HighLevelProtocol extends DefaultJsonProtocol {
 
@@ -42,14 +45,40 @@ object HighLevelProtocol extends DefaultJsonProtocol {
         case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a Message object")
       }
 
-    override def write(obj: Message): JsValue =
-      JsObject(
-        PARAM_DATA -> obj.data.toJson,
-        PARAM_SENDER -> obj.sender.toJson,
-        PARAM_SIGNATURE -> obj.signature.toJson,
-        PARAM_MESSAGE_ID -> obj.message_id.toJson,
-        PARAM_WITNESS_SIG -> obj.witness_signatures.toJson // FIXME does this work? Otherwise use "JsArray(obj.witness_signatures.map(_.toJson).toVector))"
-      )
+    override def write(obj: Message): JsValue = JsObject(
+      PARAM_DATA -> obj.data.toJson,
+      PARAM_SENDER -> obj.sender.toJson,
+      PARAM_SIGNATURE -> obj.signature.toJson,
+      PARAM_MESSAGE_ID -> obj.message_id.toJson,
+      PARAM_WITNESS_SIG -> obj.witness_signatures.toJson // FIXME does this work? Otherwise use "JsArray(obj.witness_signatures.map(_.toJson).toVector))"
+    )
+  }
+
+  implicit object ParamsFormat extends RootJsonFormat[Params] {
+    final private val PARAM_CHANNEL: String = "channel"
+    final private val OPTIONAL_PARAM_MESSAGE: String = "message"
+
+    override def read(json: JsValue): Params = json.asJsObject.getFields(PARAM_CHANNEL) match {
+      case Seq(channel@JsString(_)) => json.asJsObject.getFields(OPTIONAL_PARAM_MESSAGE) match {
+        case Seq(message@JsObject(_)) =>
+          println("channel: " +channel)
+          new ParamsWithMessage(channel.convertTo[Channel], message.convertTo[Message])
+        case Seq(_) => throw new IllegalArgumentException(s"Unrecognizable message value in $json")
+        case _ => new Params(channel.convertTo[Channel])
+      }
+      case _ => throw new IllegalArgumentException(s"Unrecognizable channel value in $json")
+    }
+
+    override def write(obj: Params): JsValue = {
+      var jsObjectContent: ListMap[String, JsValue] = ListMap[String, JsValue](PARAM_CHANNEL -> obj.channel.toJson)
+
+      obj match {
+        case params: ParamsWithMessage => jsObjectContent += (OPTIONAL_PARAM_MESSAGE -> params.message.toJson)
+        case _ =>
+      }
+
+      JsObject(jsObjectContent)
+    }
   }
 
   implicit val broadcastFormat: JsonFormat[Broadcast] = jsonFormat2(Broadcast.apply)
@@ -66,9 +95,35 @@ object HighLevelProtocol extends DefaultJsonProtocol {
     final private val PARAM_PARAMS: String = "params"
     final private val PARAM_ID: String = "id"
 
-    override def read(json: JsValue): JsonRpcRequest = ???
+    override def read(json: JsValue): JsonRpcRequest = json.asJsObject.getFields(PARAM_JSON_RPC, PARAM_METHOD, PARAM_PARAMS, PARAM_ID) match {
+      case Seq(JsString(version), method@JsString(_), params@JsObject(_), optId) =>
+        val id: Option[Int] = optId match {
+          case JsNumber(id) => Some(id.toInt)
+          case JsNull => None
+          case _ => throw new IllegalArgumentException(s"Can't parse json value $optId to an id (number or null)")
+        }
+        JsonRpcRequest(
+          version,
+          method.convertTo[MethodType],
+          params.convertTo[Params],
+          id
+        )
+      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a JsonRpcRequest object")
+    }
 
-    override def write(obj: JsonRpcRequest): JsValue = ???
+    override def write(obj: JsonRpcRequest): JsValue = {
+      val optId: JsValue = obj.id match {
+        case Some(idx) => idx.toJson
+        case _ => JsNull
+      }
+
+      JsObject(
+        PARAM_JSON_RPC -> obj.jsonrpc.toJson,
+        PARAM_METHOD -> obj.method.toJson,
+        PARAM_PARAMS -> obj.params.toJson,
+        PARAM_ID -> optId
+      )
+    }
   }
 
   implicit object jsonRpcResponseFormat extends RootJsonFormat[JsonRpcResponse] {
