@@ -32,7 +32,7 @@ object Answerer {
     // Integration point between Akka Streams and above actor
     val source: Source[TextMessage, NotUsed] = Source
       // By using .actorRef, the source emits whatever the actor "wsHandle" sends
-      .actorRef(bufferSize = 50, overflowStrategy = OverflowStrategy.backpressure)
+      .actorRef(bufferSize = 50, overflowStrategy = OverflowStrategy.dropBuffer) // TODO OverflowStrategy.backpressure is not allowed!
       // Send an answer back to the client (the one represented by wsHandle == clientActorRef)
       .map((graphMessage: GraphMessage) => sendAnswer(graphMessage))
       .mapMaterializedValue { wsHandle =>
