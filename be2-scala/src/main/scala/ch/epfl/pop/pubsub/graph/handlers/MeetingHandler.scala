@@ -5,7 +5,7 @@ import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.meeting.StateMeeting
 import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, JsonRpcRequestStateMeeting}
-import ch.epfl.pop.model.objects.{Channel, Hash}
+import ch.epfl.pop.model.objects.Hash
 import ch.epfl.pop.pubsub.graph.{DbActorNew, ErrorCodes, GraphMessage, PipelineError}
 
 import scala.concurrent.Await
@@ -26,7 +26,7 @@ case object MeetingHandler extends MessageHandler {
   }
 
   def handleCreateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
-    Channel.decodeSubChannel(rpcMessage.getParamsChannel) match {
+    rpcMessage.getParamsChannel.decodeSubChannel match {
       case Some(_) => dbAskWritePropagate(rpcMessage)
       case _ => Right(PipelineError(
         ErrorCodes.INVALID_DATA.id,

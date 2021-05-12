@@ -24,7 +24,7 @@ case object RollCallHandler extends MessageHandler {
   }
 
   def handleCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage =
-    Channel.decodeSubChannel(rpcMessage.getParamsChannel) match {
+    rpcMessage.getParamsChannel.decodeSubChannel match {
       case Some(_) => dbAskWritePropagate(rpcMessage)
       case _ => Right(PipelineError(
         ErrorCodes.INVALID_DATA.id,

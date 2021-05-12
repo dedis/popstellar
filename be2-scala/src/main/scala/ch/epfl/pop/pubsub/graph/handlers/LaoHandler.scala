@@ -15,7 +15,6 @@ import ch.epfl.pop.pubsub.graph.{DbActorNew, ErrorCodes, GraphMessage, PipelineE
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
-import scala.util.Success
 
 case object LaoHandler extends MessageHandler {
 
@@ -34,10 +33,10 @@ case object LaoHandler extends MessageHandler {
 
   def handleCreateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
     val messageData: CreateLao = CreateLao.buildFromPartial(rpcMessage.getDecodedData.get, rpcMessage)
-    val channel: String = s"${Channel.rootChannelPrefix}${messageData.id}"
+    val channel: Channel = Channel(s"${Channel.rootChannelPrefix}${messageData.id}")
 
     val subActor: AskableActorRef = ??? // FIXME temporary for the project to compile. Should be mnodified when subscribe/unsubscribe implemented
-    val ask = subActor.ask(ref => CreateMessage(channel, ref)).map {
+    val ask = subActor.ask(ref => CreateMessage(channel.channel, ref)).map {
       case true =>
         // Publish on the LAO main channel
         val ask = dbActor.ask(ref => DbActorNew.Write(channel, rpcMessage.getParamsMessage.get, ref)).map {

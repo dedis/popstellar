@@ -25,7 +25,7 @@ object DbActorNew {
    * @param message the message to write in the database
    * @param replyTo the actor to respond to
    */
-  final case class Write(channel: Channel.Channel, message: Message, replyTo: ActorRef[Boolean]) extends DbMessage
+  final case class Write(channel: Channel, message: Message, replyTo: ActorRef[Boolean]) extends DbMessage
 
   /**
    * Request to read a specific messages on a channel
@@ -33,7 +33,7 @@ object DbActorNew {
    * @param id the id of the message we want to read
    * @param replyTo the actor to reply to
    */
-  final case class Read(channel: Channel.Channel, id: Hash, replyTo: ActorRef[Option[Message]]) extends DbMessage
+  final case class Read(channel: Channel, id: Hash, replyTo: ActorRef[Option[Message]]) extends DbMessage
 
 
   def getInstance: AskableActorRef = INSTANCE

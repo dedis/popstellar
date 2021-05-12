@@ -1,5 +1,6 @@
 package ch.epfl.pop.jsonNew
 
+import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.model.objects.{Base64Data, Hash, PublicKey, Signature, Timestamp, WitnessSignaturePair}
 import spray.json._
 
@@ -12,6 +13,8 @@ object ObjectProtocol extends DefaultJsonProtocol {
 
     override def write(obj: Base64Data): JsValue = JsString(obj.data)
   }
+
+  implicit val channelFormat: JsonFormat[Channel] = jsonFormat1(Channel.apply)
 
   implicit object HashFormat extends JsonFormat[Hash] {
     override def read(json: JsValue): Hash = json match {

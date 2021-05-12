@@ -2,7 +2,7 @@ package ch.epfl.pop.pubsub
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.event.LoggingReceive
-import ch.epfl.pop.model.objects.Channel.Channel
+import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.ClientActor.{SubscribeTo, UnsubscribeFrom}
 import ch.epfl.pop.pubsub.PubSubMediator.{SubscribeToAck, SubscribeToNAck, UnsubscribeFromAck, UnsubscribeFromNAck}
 

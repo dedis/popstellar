@@ -2,7 +2,7 @@ package ch.epfl.pop.model.network
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.{Params, ParamsWithMessage}
 import ch.epfl.pop.model.network.method.message.data.MessageData
-import ch.epfl.pop.model.objects.Channel.Channel
+import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.graph.PipelineError
 
 import scala.util.{Success, Try}

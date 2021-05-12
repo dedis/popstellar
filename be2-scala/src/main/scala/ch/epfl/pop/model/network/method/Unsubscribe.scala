@@ -2,7 +2,7 @@ package ch.epfl.pop.model.network.method
 
 import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.network.method.message.data.MessageData
-import ch.epfl.pop.model.objects.Channel.Channel
+import ch.epfl.pop.model.objects.Channel
 
 import ch.epfl.pop.jsonNew.HighLevelProtocol._
 import spray.json._

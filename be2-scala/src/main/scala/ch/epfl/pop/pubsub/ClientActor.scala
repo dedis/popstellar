@@ -2,7 +2,7 @@ package ch.epfl.pop.pubsub
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.event.LoggingReceive
-import ch.epfl.pop.model.objects.Channel.Channel
+import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.graph.GraphMessage
 import ClientActor._
 import ch.epfl.pop.pubsub.PubSubMediator.{PubSubMediatorMessage, SubscribeToAck, SubscribeToNAck, UnsubscribeFromAck, UnsubscribeFromNAck}
@@ -47,7 +47,7 @@ case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging {
       log.info(s"Sending an answer back to client $wsHandle")
       messageWsHandle(clientAnswer)
 
-    case _ => println("CASE OTHER (should never happen). FIXME remove");
+    case m@_ => println("UNKNOWN MESSAGE TO CLIENT ACTOR: " + m)
   }
 }
 
