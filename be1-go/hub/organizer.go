@@ -547,7 +547,7 @@ func (c *laoChannel) createElection(msg message.Message) error {
 	}
 
 	// Check if the Lao ID of the message corresponds to the channel ID
-	encodedLaoID := base64.StdEncoding.EncodeToString(data.LaoID)
+	encodedLaoID := base64.URLEncoding.EncodeToString(data.LaoID)
 	channelID := c.channelID[6:]
 	if channelID != encodedLaoID {
 		return &message.Error{
@@ -570,7 +570,7 @@ func (c *laoChannel) createElection(msg message.Message) error {
 	}
 
 	// Add the SetupElection message to the new election channel
-	messageID := base64.StdEncoding.EncodeToString(msg.MessageID)
+	messageID := base64.URLEncoding.EncodeToString(msg.MessageID)
 	electionCh.inbox[messageID] = msg
 
 	// Add the new election channel to the organizerHub
@@ -683,11 +683,11 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 	}
 
 	//This should update any previously set vote if the message ids are the same
-	messageID := base64.StdEncoding.EncodeToString(msg.MessageID)
+	messageID := base64.URLEncoding.EncodeToString(msg.MessageID)
 	c.inbox[messageID] = *msg
 	for _, q := range voteData.Votes {
 
-		QuestionID := base64.StdEncoding.EncodeToString(q.QuestionID)
+		QuestionID := base64.URLEncoding.EncodeToString(q.QuestionID)
 		qs, ok := c.questions[QuestionID]
 		if ok {
 			//this is to handle the case when the organizer must handle multiple votes being cast at the same time
