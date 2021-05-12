@@ -8,7 +8,7 @@ import ch.epfl.pop.model.objects.Channel.Channel
 import ch.epfl.pop.jsonNew.HighLevelProtocol._
 import spray.json._
 
-case class Broadcast(channel: Channel, message: Message) extends ParamsWithMessage
+case class Broadcast(override val channel: Channel, override val message: Message) extends ParamsWithMessage(channel, message)
 
 object Broadcast extends Parsable {
   def apply(channel: Channel, message: Message): Broadcast = {

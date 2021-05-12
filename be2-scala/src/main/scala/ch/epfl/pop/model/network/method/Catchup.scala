@@ -7,7 +7,7 @@ import ch.epfl.pop.model.objects.Channel.Channel
 import ch.epfl.pop.jsonNew.HighLevelProtocol._
 import spray.json._
 
-case class Catchup(channel: Channel) extends Params
+case class Catchup(override val channel: Channel) extends Params(channel)
 
 object Catchup extends Parsable {
   def apply(channel: Channel): Catchup = {

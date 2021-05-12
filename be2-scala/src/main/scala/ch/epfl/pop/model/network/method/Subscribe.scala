@@ -7,7 +7,7 @@ import ch.epfl.pop.model.objects.Channel.Channel
 import ch.epfl.pop.jsonNew.HighLevelProtocol._
 import spray.json._
 
-case class Subscribe(channel: Channel) extends Params
+case class Subscribe(override val channel: Channel) extends Params(channel)
 
 object Subscribe extends Parsable {
   def apply(channel: Channel): Subscribe = {
