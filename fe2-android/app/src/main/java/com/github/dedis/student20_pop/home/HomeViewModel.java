@@ -3,7 +3,7 @@ package com.github.dedis.student20_pop.home;
 import android.Manifest;
 import android.app.Application;
 import android.content.pm.PackageManager;
-import android.util.Base64;
+import java.util.Base64;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -133,7 +133,7 @@ public class HomeViewModel extends AndroidViewModel
     try {
       KeysetHandle myKey = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
       String organizer = Keys.getEncodedKey(myKey);
-      byte[] organizerBuf = Base64.decode(organizer, Base64.NO_WRAP);
+      byte[] organizerBuf = Base64.getUrlDecoder().decode(organizer);
 
       Log.d(TAG, "creating lao with name " + laoName);
       CreateLao createLao = new CreateLao(laoName, organizer);

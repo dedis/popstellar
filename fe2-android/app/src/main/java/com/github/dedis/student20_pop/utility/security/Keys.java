@@ -1,6 +1,6 @@
 package com.github.dedis.student20_pop.utility.security;
 
-import android.util.Base64;
+import java.util.Base64;
 import com.google.crypto.tink.CleartextKeysetHandle;
 import com.google.crypto.tink.JsonKeysetWriter;
 import com.google.crypto.tink.KeysetHandle;
@@ -23,8 +23,8 @@ public class Keys {
     JsonObject keyData = keyObject.get("keyData").getAsJsonObject();
 
     String encoded = keyData.get("value").getAsString();
-    byte[] buf = Base64.decode(encoded, Base64.NO_WRAP);
+    byte[] buf = Base64.getUrlDecoder().decode(encoded);
 
-    return Base64.encodeToString(buf, 2, 32, Base64.NO_WRAP);
+    return Base64.getUrlEncoder().encodeToString(buf);
   }
 }

@@ -26,10 +26,10 @@ public class JsonMessageGeneralSerializer
       throws JsonParseException {
     JsonObject root = json.getAsJsonObject();
 
-    byte[] messageId = Base64.getDecoder().decode(root.get("message_id").getAsString());
-    byte[] dataBuf = Base64.getDecoder().decode(root.get("data").getAsString());
-    byte[] sender = Base64.getDecoder().decode(root.get("sender").getAsString());
-    byte[] signature = Base64.getDecoder().decode(root.get("signature").getAsString());
+    byte[] messageId = Base64.getUrlDecoder().decode(root.get("message_id").getAsString());
+    byte[] dataBuf = Base64.getUrlDecoder().decode(root.get("data").getAsString());
+    byte[] sender = Base64.getUrlDecoder().decode(root.get("sender").getAsString());
+    byte[] signature = Base64.getUrlDecoder().decode(root.get("signature").getAsString());
 
     PublicKeyVerify verifier = new Ed25519Verify(sender);
     try {
