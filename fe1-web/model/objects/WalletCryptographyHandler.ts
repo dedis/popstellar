@@ -45,7 +45,6 @@ export class WalletCryptographyHandler {
       await this.handleWalletInitialization();
       console.log('Wallet cryptography was not initialized');
     }
-    console.log('Wallet cryptography storage ready');
   }
 
   /**

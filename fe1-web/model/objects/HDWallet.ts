@@ -173,10 +173,10 @@ export class HDWallet {
 
     const testMap: Map<[Hash, Hash], string[]> = new Map();
 
-    testMap.set([laoId1, rollCallId1], ['00de96de1c98a0ad97a7b55971d0edb19f56e9cd70e3c121500240086449adcf1d', '']);
+    testMap.set([laoId1, rollCallId1], ['001a8828bdb40320421f4769a8ca16f652ddaad5cd13213578eddc98698200c140', '']);
     testMap.set([laoId1, rollCallId2], ['fffffffffffffff', '', 'fffffffffffffff', '']);
-    testMap.set([laoId2, rollCallId3], ['fffffffffffffff', '', '00efce8eb0e05d577202ad34be5b1ebf2a8ab671466236376381bef0237c6a94a4']);
-    testMap.set([laoId2, rollCallId4], ['0094aad4a28529c6e3b77ba96f0ee54a6ff139c8908ab41935b85781706899b953', 'fffffffffffffff']);
+    testMap.set([laoId2, rollCallId3], ['fffffffffffffff', '', '00cf3cb2d461cf51feeab3e8f0ffbcd2ebc8055ac001f858063fce4f1c0cc456a0']);
+    testMap.set([laoId2, rollCallId4], ['0059d8a5fa53d26b816ba250d46ebbede4d93eda3531a89ff329698e5a2d9be753', 'fffffffffffffff']);
 
     // ====================================================================================
     return this.recoverAllKeys(testMap);
@@ -236,10 +236,12 @@ export class HDWallet {
         const { key } = derivePath(path, hexSeed);
         const publicKey = getPublicKey(key);
 
-        console.log('key');
+        console.log('===========================================================');
+        console.log('private key');
         console.log(key.toString('hex'));
         console.log('public key');
         console.log(publicKey.toString('hex'));
+        console.log('===========================================================');
 
         return {
           privateKey: key,
@@ -250,11 +252,25 @@ export class HDWallet {
 
   private static idToPath(id: Hash): string {
     let idToPath: string = '';
-    for (let i = 0; i + 3 < id.length; i += 3) {
+    const remainder = id.length % 3;
+
+    let i;
+    for (i = 0; i + 3 <= id.length; i += 3) {
       idToPath = idToPath.concat(HDWallet.PATH_SEPARATOR
         .concat(String(id.charCodeAt(i)))
         .concat(String(id.charCodeAt(i + 1)))
         .concat(String(id.charCodeAt(i + 2)))
+        .concat(HDWallet.HARDENED_SYMBOL));
+    }
+
+    if (remainder === 1) {
+      idToPath = idToPath.concat(HDWallet.PATH_SEPARATOR
+        .concat(String(id.charCodeAt(i)))
+        .concat(HDWallet.HARDENED_SYMBOL));
+    } else if (remainder === 2) {
+      idToPath = idToPath.concat(HDWallet.PATH_SEPARATOR
+        .concat(String(id.charCodeAt(i)))
+        .concat(String(id.charCodeAt(i + 1)))
         .concat(HDWallet.HARDENED_SYMBOL));
     }
     return idToPath;
