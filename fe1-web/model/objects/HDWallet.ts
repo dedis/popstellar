@@ -38,8 +38,6 @@ export class HDWallet {
   /* local copy of encrypted seed */
   private encryptedSeed!: ArrayBuffer;
 
-  private cachedKeyPairs: Map<[Hash, Hash], string> = new Map();
-
   /**
    * a wallet can be created empty and then initialized or
    * directly with a seed recovered from redux state
@@ -73,8 +71,7 @@ export class HDWallet {
     this.cryptoManager = new WalletCryptographyHandler();
     await this.cryptoManager.initWalletStorage();
     const seed: Uint8Array = await bip39.mnemonicToSeed(mnemonic);
-    const encryptedSeed = await this.encryptSeedToStoreInState(seed);
-    this.encryptedSeed = encryptedSeed;
+    this.encryptedSeed = await this.encryptSeedToStoreInState(seed);
     WalletStore.store(HDWallet.serializeEncryptedSeed(this.encryptedSeed));
     return true;
   }
@@ -163,7 +160,7 @@ export class HDWallet {
     return bufView.buffer;
   }
 
-  public async recoverTokens() {
+  public async recoverTokens(): Promise<Map<[Hash, Hash], string>> {
     // ====================================================================================
     // garbage effort river orphan negative kind outside quit hat camera approve first
     // public key 0074ce75da553a3d206b5fe3a2831dca0908e7058a5bfa69ccaedb9c878587f8ff
@@ -182,29 +179,34 @@ export class HDWallet {
     testMap.set([laoId2, rollCallId3], ['0074ce75da553a3d206b5fe3a2831dca0908e7058a5bfa69ccaedb9c878587f8ff', '']);
 
     // ====================================================================================
-    await this.recoverAllKeys(testMap);
+    return this.recoverAllKeys(testMap);
   }
 
-  private async recoverAllKeys(allKnownLaoRollCalls: Map<[Hash, Hash], string[]>) {
+  private async recoverAllKeys(allKnownLaoRollCalls: Map<[Hash, Hash], string[]>):
+  Promise<Map<[Hash, Hash], string>> {
     if (allKnownLaoRollCalls === undefined) {
       throw Error('Error while recovering keys from wallet: undefined parameter');
     }
 
+    const cachedKeyPairs: Map<[Hash, Hash], string> = new Map();
+
     allKnownLaoRollCalls.forEach((attendees: string[], laoAndRollCallId: [Hash, Hash]) => {
       const laoId: Hash = laoAndRollCallId[0];
       const rollCallId: Hash = laoAndRollCallId[1];
-      this.recoverKey(laoId, rollCallId, attendees);
+      this.recoverKey(laoId, rollCallId, attendees, cachedKeyPairs);
     });
 
-    console.log(this.cachedKeyPairs);
+    console.log(cachedKeyPairs);
+    return cachedKeyPairs;
   }
 
-  private async recoverKey(laoId: Hash, rollCallId: Hash, attendees: string[]) {
+  private async recoverKey(laoId: Hash, rollCallId: Hash, attendees: string[],
+    cachedKeyPairs: Map<[Hash, Hash], string>) {
     this.generateKeyPair(laoId, rollCallId).then((keyPair) => {
       const publicKey: string = keyPair.publicKey.toString('hex');
 
       if (attendees.indexOf(publicKey) !== -1) {
-        this.cachedKeyPairs.set([laoId, rollCallId], publicKey);
+        cachedKeyPairs.set([laoId, rollCallId], publicKey);
       }
     });
   }
@@ -222,8 +224,7 @@ export class HDWallet {
                 .concat((HDWallet.idToPath(rollCallId))))))));
 
     console.log(path);
-    const keyPair = await this.generateKeyFromPath(path);
-    return keyPair;
+    return this.generateKeyFromPath(path);
   }
 
   private async generateKeyFromPath(path: string):
@@ -257,10 +258,5 @@ export class HDWallet {
         .concat(HDWallet.HARDENED_SYMBOL));
     }
     return idToPath;
-  }
-
-  public getCachedKeyPairs(): Map<[Hash, Hash], string> {
-    console.log(this.cachedKeyPairs);
-    return this.cachedKeyPairs;
   }
 }

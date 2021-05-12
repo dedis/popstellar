@@ -8,6 +8,7 @@ import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
 import { HDWallet } from 'model/objects/HDWallet';
 import { WalletStore } from 'store/stores/WalletStore';
+import { Hash } from 'model/objects';
 
 const styles = StyleSheet.create({
   largePadding: {
@@ -15,7 +16,7 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-let wallet: HDWallet;
+let cachedKeyPairs: Map<[Hash, Hash], string>;
 
 /**
  * wallet UI once the wallet is synced
@@ -27,23 +28,26 @@ const WalletSyncedSeed = () => {
 
   WalletStore.get().then((encryptedSeed) => HDWallet
     .fromState(encryptedSeed)
-    .then((w) => {
-      wallet = w;
+    .then((wallet) => {
+      wallet.recoverTokens().then((cachedTokens) => {
+        cachedKeyPairs = cachedTokens;
+      });
     }));
 
   function showTokens() {
-    const a: string[] = [];
+    const tokens: string[] = [];
 
-    wallet.getCachedKeyPairs().forEach((value) => {
-      console.log(value);
-      a[0] = value;
+    cachedKeyPairs.forEach((value, key) => {
+      tokens[0] = value;
+      tokens[1] = value;
+      tokens[2] = value;
     });
-
-    const test = (a[0] === undefined) ? 'TOKENS' : a[0];
 
     return (
       <View>
-        <TextBlock text={test} />
+        <TextBlock text={tokens[0]} />
+        <TextBlock text={tokens[1]} />
+        <TextBlock text={tokens[2]} />
       </View>
     );
   }
