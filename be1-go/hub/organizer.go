@@ -381,7 +381,7 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 	case message.MessageObject:
 		err = c.processMessageObject(msg.Sender, data)
 	case message.RollCallObject:
-		err = c.processRollCallObject(data)
+		err = c.processRollCallObject(*msg)
 	case message.ElectionObject:
 		err = c.processElectionObject(*msg)
 	}
@@ -942,8 +942,9 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 		Code:        -4,
 		Description: "Error in CastVote helper function",
 	}
+}
 
-func (r *rollCall) checkPrevID(prevID []byte) bool {
+func (r *rollCall) checkPrevID(prevID [] byte) bool {
 	return string(prevID) == r.id
 }
 
