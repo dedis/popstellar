@@ -41,6 +41,5 @@ object StateMeeting extends Parsable {
     new StateMeeting(id, name, creation, last_modified, location, start, end, extra, modification_id, modification_signatures)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): StateMeeting =
-    payload.parseJson.asJsObject.convertTo[StateMeeting]
+  override def buildFromJson(payload: String): StateMeeting = payload.parseJson.asJsObject.convertTo[StateMeeting]
 }

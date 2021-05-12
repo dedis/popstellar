@@ -1,6 +1,6 @@
 package ch.epfl.pop.jsonNew
 
-import ch.epfl.pop.model.objects.{Hash, Timestamp, WitnessSignaturePair}
+import ch.epfl.pop.model.objects.{Hash, PublicKey, Signature, Timestamp, WitnessSignaturePair}
 import ch.epfl.pop.model.network.method.message.data.lao._
 import ch.epfl.pop.model.network.method.message.data.meeting._
 import ch.epfl.pop.model.network.method.message.data.rollCall._
@@ -8,7 +8,6 @@ import ch.epfl.pop.model.network.method.message.data.witness._
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
-
 import ObjectProtocol._
 import spray.json._
 
@@ -37,9 +36,16 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
 
   // ----------------------------------- DATA FORMATTERS ----------------------------------- //
-  implicit val createLaoFormat: JsonFormat[CreateLao] = jsonFormat5(CreateLao.apply)
-  implicit val stateLaoFormat: JsonFormat[StateLao] = jsonFormat8(StateLao.apply)
-  implicit val updateLaoFormat: JsonFormat[UpdateLao] = jsonFormat4(UpdateLao.apply)
+  /*
+   * NOTE : I had to use 'jsonFormat' instead of 'jsonFormatN' (which directly infers both
+   * parameter types and parameter names) because of the fact the MessageData subclasses
+   * override two val from the MessageData trait. The solution is to explicitly state every
+   * argument type and name
+   */
+
+  implicit val createLaoFormat: JsonFormat[CreateLao] = jsonFormat[Hash, String, Timestamp, PublicKey, List[PublicKey], CreateLao](CreateLao.apply, "id", "name", "creation", "organizer", "witnesses")
+  implicit val stateLaoFormat: JsonFormat[StateLao] = jsonFormat[Hash, String, Timestamp, Timestamp, PublicKey, List[PublicKey], Hash, List[WitnessSignaturePair], StateLao](StateLao.apply, "id", "name", "creation", "last_modified", "organizer", "witnesses", "modification_id", "modification_signatures")
+  implicit val updateLaoFormat: JsonFormat[UpdateLao] = jsonFormat[Hash, String, Timestamp, List[PublicKey], UpdateLao](UpdateLao.apply, "id", "name", "last_modified", "witnesses")
 
   implicit object CreateMeetingFormat extends RootJsonFormat[CreateMeeting] {
     final private val PARAM_ID: String = "id"
@@ -155,10 +161,10 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     }
   }
 
-  implicit val closeRollCallFormat: JsonFormat[CloseRollCall] = jsonFormat4(CloseRollCall.apply)
-  implicit val createRollCallFormat: JsonFormat[CreateRollCall] = jsonFormat7(CreateRollCall.apply)
-  implicit val openRollCallFormat: JsonFormat[OpenRollCall] = jsonFormat3(OpenRollCall.apply)
-  implicit val reopenRollCallFormat: JsonFormat[ReopenRollCall] = jsonFormat3(ReopenRollCall.apply)
+  implicit val closeRollCallFormat: JsonFormat[CloseRollCall] = jsonFormat[Hash, Hash, Timestamp, List[PublicKey], CloseRollCall](CloseRollCall.apply, "update_id", "closes", "end", "attendees")
+  implicit val createRollCallFormat: JsonFormat[CreateRollCall] = jsonFormat[Hash, String, Timestamp, Option[Timestamp], Option[Timestamp], String, Option[String], CreateRollCall](CreateRollCall.apply, "id", "name", "creation", "start", "scheduled", "location", "roll_call_description")
+  implicit val openRollCallFormat: JsonFormat[OpenRollCall] = jsonFormat[Hash, Hash, Timestamp, OpenRollCall](OpenRollCall.apply, "update_id", "opens", "start")
+  implicit val reopenRollCallFormat: JsonFormat[ReopenRollCall] = jsonFormat[Hash, Hash, Timestamp, ReopenRollCall](ReopenRollCall.apply, "update_id", "opens", "start")
 
-  implicit val witnessMessageFormat: JsonFormat[WitnessMessage] = jsonFormat2(WitnessMessage.apply)
+  implicit val witnessMessageFormat: JsonFormat[WitnessMessage] = jsonFormat[Hash, Signature, WitnessMessage](WitnessMessage.apply, "message_id", "signature")
 }

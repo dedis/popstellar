@@ -2,7 +2,7 @@ package ch.epfl.pop.model.network
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.{Params, ParamsWithMessage}
 import ch.epfl.pop.model.network.method.message.data.MessageData
-import ch.epfl.pop.model.objects.Channel
+import ch.epfl.pop.model.objects.{Base64Data, Channel}
 import ch.epfl.pop.pubsub.graph.PipelineError
 
 import scala.util.{Success, Try}
@@ -19,17 +19,21 @@ class JsonRpcRequest(
   def getParams: Params = this.params
   def getParamsChannel: Channel = this.params.channel
   def hasParamsMessage: Boolean = this.params.hasMessage
-  def hasParamsMessage2: Boolean = Try(this.params.asInstanceOf[ParamsWithMessage].message) match {
-    case Success(_) => true
-    case _ => false
-  }
   def getParamsMessage: Option[Message] = Try(this.params.asInstanceOf[ParamsWithMessage].message) match {
     case Success(message) => Some(message)
+    case _ => None
+  }
+  def getEncodedData: Option[Base64Data] = this.getParamsMessage match {
+    case Some(message) => Some(message.data)
     case _ => None
   }
   def getDecodedData: Option[MessageData] = this.getParamsMessage match {
     case Some(message) => message.decodedData
     case _ => None
+  }
+  def setDecodedData(decodedData: MessageData): Unit = this.getParamsMessage match {
+    case Some(message) => message.decodedData = Some(decodedData)
+    case _ =>
   }
 }
 
@@ -43,5 +47,5 @@ object JsonRpcRequest extends Parsable {
     new JsonRpcRequest(jsonrpc, method, params, id)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): JsonRpcRequest = ???
+  override def buildFromJson(payload: String): JsonRpcRequest = ???
 }

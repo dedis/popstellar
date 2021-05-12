@@ -35,6 +35,5 @@ object CreateRollCall extends Parsable {
     new CreateRollCall(id, name, creation, start, scheduled, location, roll_call_description)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): CreateRollCall =
-    payload.parseJson.asJsObject.convertTo[CreateRollCall]
+  override def buildFromJson(payload: String): CreateRollCall = payload.parseJson.asJsObject.convertTo[CreateRollCall]
 }

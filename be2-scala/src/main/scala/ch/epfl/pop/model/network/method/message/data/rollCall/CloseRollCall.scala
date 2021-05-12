@@ -29,8 +29,7 @@ object CloseRollCall extends Parsable {
     new CloseRollCall(update_id, closes, end, attendees)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): CloseRollCall =
-    payload.parseJson.asJsObject.convertTo[CloseRollCall]
+  override def buildFromJson(payload: String): CloseRollCall = payload.parseJson.asJsObject.convertTo[CloseRollCall]
 }
 
 

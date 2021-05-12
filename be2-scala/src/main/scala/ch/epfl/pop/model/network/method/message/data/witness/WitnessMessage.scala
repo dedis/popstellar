@@ -25,6 +25,5 @@ object WitnessMessage extends Parsable {
     new WitnessMessage(message_id, signature)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): WitnessMessage =
-    payload.parseJson.asJsObject.convertTo[WitnessMessage]
+  override def buildFromJson(payload: String): WitnessMessage = payload.parseJson.asJsObject.convertTo[WitnessMessage]
 }

@@ -1,7 +1,5 @@
 package ch.epfl.pop.model.network
 
-import ch.epfl.pop.model.network.method.message.data.MessageData
-
 case class JsonRpcResponse(
                            jsonrpc: String,
                            result: Option[ResultObject],
@@ -19,5 +17,5 @@ object JsonRpcResponse extends Parsable {
     new JsonRpcResponse(jsonrpc, result, error, id)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): JsonRpcResponse = ???
+  override def buildFromJson(payload: String): JsonRpcResponse = ???
 }

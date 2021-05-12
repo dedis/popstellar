@@ -19,6 +19,5 @@ object UpdateLao extends Parsable {
     new UpdateLao(id, name, last_modified, witnesses)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): UpdateLao =
-    payload.parseJson.asJsObject.convertTo[UpdateLao]
+  override def buildFromJson(payload: String): UpdateLao = payload.parseJson.asJsObject.convertTo[UpdateLao]
 }

@@ -1,7 +1,6 @@
 package ch.epfl.pop.model.network.method
 
 import ch.epfl.pop.model.network.Parsable
-import ch.epfl.pop.model.network.method.message.data.MessageData
 import ch.epfl.pop.model.objects.Channel
 
 import ch.epfl.pop.jsonNew.HighLevelProtocol._
@@ -14,6 +13,5 @@ object Catchup extends Parsable {
     new Catchup(channel)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): Catchup =
-    payload.parseJson.asJsObject.convertTo[Catchup]
+  override def buildFromJson(payload: String): Catchup = payload.parseJson.asJsObject.convertTo[Catchup]
 }

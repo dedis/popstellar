@@ -27,7 +27,6 @@ object ReopenRollCall extends Parsable {
     new ReopenRollCall(update_id, opens, start)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): ReopenRollCall =
-    payload.parseJson.asJsObject.convertTo[ReopenRollCall]
+  override def buildFromJson(payload: String): ReopenRollCall = payload.parseJson.asJsObject.convertTo[ReopenRollCall]
 }
 

@@ -16,7 +16,7 @@ object ParamsWithMessageHandler {
       val totalPorts = 2
 
       /* building blocks */
-      val messageDecoder = builder.add(MessageDecoder.messageParser)
+      val messageDecoder = builder.add(MessageDecoder.dataParser)
       val messageContentValidator = builder.add(Validator.messageContentValidator)
 
       val handlerPartitioner = builder.add(Partition[GraphMessage](totalPorts, {

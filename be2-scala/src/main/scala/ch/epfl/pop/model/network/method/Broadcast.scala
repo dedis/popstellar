@@ -2,7 +2,6 @@ package ch.epfl.pop.model.network.method
 
 import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.message.data.MessageData
 import ch.epfl.pop.model.objects.Channel
 
 import ch.epfl.pop.jsonNew.HighLevelProtocol._
@@ -15,6 +14,5 @@ object Broadcast extends Parsable {
     new Broadcast(channel, message)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): Broadcast =
-    payload.parseJson.asJsObject.convertTo[Broadcast]
+  override def buildFromJson(payload: String): Broadcast = payload.parseJson.asJsObject.convertTo[Broadcast]
 }
