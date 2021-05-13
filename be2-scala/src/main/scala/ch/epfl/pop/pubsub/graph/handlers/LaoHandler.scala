@@ -10,7 +10,7 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao}
 import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
 import ch.epfl.pop.model.objects.{Channel, Hash}
-import ch.epfl.pop.pubsub.graph.{DbActorNew, ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -61,7 +61,7 @@ case object LaoHandler extends MessageHandler {
 
   def handleStateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
     val modificationId: Hash = rpcMessage.getDecodedData.asInstanceOf[StateLao].modification_id
-    val ask = dbActor.ask(ref => DbActorNew.Read(rpcMessage.getParamsChannel, modificationId, ref)).map {
+    val ask = dbActor.ask(ref => DbActor.Read(rpcMessage.getParamsChannel, modificationId, ref)).map {
       case Some(_) => dbAskWritePropagate(rpcMessage)
       // TODO careful about asynchrony and the fact that the network may reorder some messages
       case _ => Right(PipelineError(
@@ -69,7 +69,7 @@ case object LaoHandler extends MessageHandler {
         s"Unable to request lao state: invalid modification_id '$modificationId' (no message associated to this id)"
       ))
     }
-    Await.result(ask, DbActorNew.getDuration)
+    Await.result(ask, DbActor.getDuration)
   }
 
   def handleUpdateLao(rpcMessage: JsonRpcRequest): GraphMessage = dbAskWritePropagate(rpcMessage)

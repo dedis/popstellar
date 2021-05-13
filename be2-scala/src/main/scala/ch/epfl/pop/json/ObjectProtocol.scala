@@ -1,4 +1,4 @@
-package ch.epfl.pop.jsonNew
+package ch.epfl.pop.json
 
 import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.model.objects.{Base64Data, Hash, PublicKey, Signature, Timestamp, WitnessSignaturePair}

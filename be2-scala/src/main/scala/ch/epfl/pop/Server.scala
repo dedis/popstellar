@@ -10,7 +10,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{RequestContext, RouteResult}
 import akka.util.Timeout
-import ch.epfl.pop.pubsub.{PubSubMediator, PublishSubscribeNew}
+import ch.epfl.pop.pubsub.{PubSubMediator, PublishSubscribe}
 import org.iq80.leveldb.Options
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
@@ -37,7 +37,7 @@ object Server {
 
       val pubSubMediator: ActorRef = system.actorOf(PubSubMediator.props)
       def publishSubscribeRoute: RequestContext => Future[RouteResult] = path(PATH) {
-        handleWebSocketMessages(PublishSubscribeNew.buildGraph(pubSubMediator)(system))
+        handleWebSocketMessages(PublishSubscribe.buildGraph(pubSubMediator)(system))
       }
 
       implicit val executionContext: ExecutionContextExecutor = typedSystem.executionContext

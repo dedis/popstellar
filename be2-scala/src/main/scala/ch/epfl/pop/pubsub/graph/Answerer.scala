@@ -8,7 +8,7 @@ import akka.stream.scaladsl.{Flow, Sink, Source}
 import ch.epfl.pop.model.network.JsonRpcResponse
 import ch.epfl.pop.pubsub.ClientActor.{ClientAnswer, ConnectWsHandle, DisconnectWsHandle}
 
-import ch.epfl.pop.jsonNew.HighLevelProtocol._
+import ch.epfl.pop.json.HighLevelProtocol._
 import spray.json._
 
 object Answerer {

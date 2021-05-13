@@ -3,8 +3,8 @@ package ch.epfl.pop.pubsub.graph
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
-import ch.epfl.pop.jsonNew.HighLevelProtocol._
-import ch.epfl.pop.jsonNew.MessageDataProtocol._
+import ch.epfl.pop.json.HighLevelProtocol._
+import ch.epfl.pop.json.MessageDataProtocol._
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, DataBuilder, MessageData, ObjectType, ProtocolException}

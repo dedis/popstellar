@@ -6,7 +6,7 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.model.objects.{Hash, PublicKey, Timestamp, WitnessSignaturePair}
 
-import ch.epfl.pop.jsonNew.MessageDataProtocol._
+import ch.epfl.pop.json.MessageDataProtocol._
 import spray.json._
 
 case class StateLao(

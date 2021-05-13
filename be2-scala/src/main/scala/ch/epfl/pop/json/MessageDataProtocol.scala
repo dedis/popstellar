@@ -1,4 +1,4 @@
-package ch.epfl.pop.jsonNew
+package ch.epfl.pop.json
 
 import ch.epfl.pop.model.objects.{Hash, PublicKey, Signature, Timestamp, WitnessSignaturePair}
 import ch.epfl.pop.model.network.method.message.data.lao._

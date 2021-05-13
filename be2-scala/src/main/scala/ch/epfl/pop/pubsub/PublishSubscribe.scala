@@ -11,7 +11,7 @@ import ch.epfl.pop.pubsub.graph.{Answerer, GraphMessage, MessageDecoder, AnswerG
 
 
 // FIXME rename when old PublishSubscribe file is deleted
-object PublishSubscribeNew extends App {
+object PublishSubscribe extends App {
 
   def buildGraph(mediatorActorRef: ActorRef)(implicit system: ActorSystem): Flow[Message, Message, NotUsed] = Flow.fromGraph(GraphDSL.create() {
     implicit builder: GraphDSL.Builder[NotUsed] => {

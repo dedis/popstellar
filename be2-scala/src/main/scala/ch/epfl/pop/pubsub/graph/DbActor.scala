@@ -11,7 +11,7 @@ import ch.epfl.pop.model.objects.{Channel, Hash}
 import scala.concurrent.duration.{Duration, FiniteDuration}
 
 // FIXME will remove DBActor once everything is working
-object DbActorNew {
+object DbActor {
 
   final val DURATION: FiniteDuration = Duration(1, TimeUnit.SECONDS)
   final val TIMEOUT: Timeout = Timeout(DURATION)

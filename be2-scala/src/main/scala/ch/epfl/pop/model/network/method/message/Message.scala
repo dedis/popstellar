@@ -4,7 +4,7 @@ import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.network.method.message.data.MessageData
 import ch.epfl.pop.model.objects.{Base64Data, Hash, PublicKey, Signature, WitnessSignaturePair}
 
-import ch.epfl.pop.jsonNew.HighLevelProtocol._
+import ch.epfl.pop.json.HighLevelProtocol._
 import spray.json._
 
 case class Message(

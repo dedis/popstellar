@@ -7,7 +7,7 @@ import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, O
 import ch.epfl.pop.model.objects.{Hash, PublicKey, Timestamp}
 
 import spray.json._
-import ch.epfl.pop.jsonNew.MessageDataProtocol._
+import ch.epfl.pop.json.MessageDataProtocol._
 
 case class CreateLao(
                       id: Hash,

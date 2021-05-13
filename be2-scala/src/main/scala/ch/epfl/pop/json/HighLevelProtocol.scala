@@ -1,4 +1,4 @@
-package ch.epfl.pop.jsonNew
+package ch.epfl.pop.json
 
 import ch.epfl.pop.model.network.{ErrorObject, JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
 import ch.epfl.pop.model.network.MethodType.MethodType
