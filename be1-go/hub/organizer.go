@@ -9,6 +9,7 @@ import (
 	"student20_pop"
 
 	"student20_pop/message"
+	"student20_pop/validation"
 
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
@@ -51,7 +52,7 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 	}
 
 	// Verify the message
-	err := o.verifyJson(byteMessage, GenericMsgSchema)
+	err := o.schemaValidator.VerifyJson(byteMessage, validation.GenericMsgSchema)
 	if err != nil {
 		log.Printf("failed to verify incoming message: %v", err)
 		client.SendError(&id, err)
@@ -86,7 +87,7 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 		msg := query.Publish.Params.Message
 
 		// Verify the data
-		err := o.verifyJson(msg.RawData, DataSchema)
+		err := o.schemaValidator.VerifyJson(msg.RawData, validation.DataSchema)
 		if err != nil {
 			log.Printf("failed to validate the data: %v", err)
 			client.SendError(&id, err)

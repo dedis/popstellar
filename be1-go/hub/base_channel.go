@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"log"
 	"student20_pop/message"
+	"student20_pop/validation"
 	"sync"
 
 	"golang.org/x/xerrors"
@@ -86,7 +87,7 @@ func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 	msg := publish.Params.Message
 
 	// Verify the data
-	err := c.hub.verifyJson(msg.RawData, DataSchema)
+	err := c.hub.schemaValidator.VerifyJson(msg.RawData, validation.DataSchema)
 	if err != nil {
 		return message.NewError("failed to validate the data", err)
 	}

@@ -1,14 +1,12 @@
 package hub
 
 import (
-	"fmt"
 	"log"
-	"path/filepath"
 	"sync"
 
 	"student20_pop/message"
+	"student20_pop/validation"
 
-	"github.com/xeipuuv/gojsonschema"
 	"go.dedis.ch/kyber/v3"
 	"golang.org/x/xerrors"
 )
@@ -21,44 +19,22 @@ type baseHub struct {
 
 	public kyber.Point
 
-	schemas map[string]*gojsonschema.Schema
+	schemaValidator *validation.SchemaValidator
 }
-
-const (
-	GenericMsgSchema string = "genericMsgSchema"
-	DataSchema       string = "dataSchema"
-)
 
 // NewBaseHub returns a Base Hub.
 func NewBaseHub(public kyber.Point) (*baseHub, error) {
-	// Import the Json schemas defined in the protocol section
-	protocolPath, err := filepath.Abs("../protocol")
-	if err != nil {
-		return nil, xerrors.Errorf("failed to load the path for the json schemas: %v", err)
-	}
-	protocolPath = "file://" + protocolPath
 
-	schemas := make(map[string]*gojsonschema.Schema)
-
-	// Import the schema for generic messages
-	genericMsgLoader := gojsonschema.NewReferenceLoader(protocolPath + "/genericMessage.json")
-	genericMsgSchema, err := gojsonschema.NewSchema(genericMsgLoader)
+	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
-		return nil, xerrors.Errorf("failed to load the json schema for generic messages: %v", err)
+		return nil, xerrors.Errorf("failed create the schema validator: %v", err)
 	}
-	schemas[GenericMsgSchema] = genericMsgSchema
 
-	// Impot the schema for data
-	dataSchemaLoader := gojsonschema.NewReferenceLoader(protocolPath + "/query/method/message/data/data.json")
-	dataSchema, err := gojsonschema.NewSchema(dataSchemaLoader)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to load the json schema for data: %v", err)
-	}
-	schemas[DataSchema] = dataSchema
 	return &baseHub{
-		messageChan: make(chan IncomingMessage),
-		channelByID: make(map[string]Channel),
-		public:      public,
+		messageChan:     make(chan IncomingMessage),
+		channelByID:     make(map[string]Channel),
+		public:          public,
+		schemaValidator: schemaValidator,
 	}, nil
 }
 
@@ -87,31 +63,4 @@ func start(h Hub, done chan struct{}, messageChan chan IncomingMessage) {
 			return
 		}
 	}
-}
-
-func (b *baseHub) verifyJson(byteMessage []byte, schemaName string) error {
-	// Validate the Json "byteMessage" with a schema
-	messageLoader := gojsonschema.NewBytesLoader(byteMessage)
-	resultErrors, err := b.schemas[schemaName].Validate(messageLoader)
-	if err != nil {
-		return &message.Error{
-			Code:        -1,
-			Description: err.Error(),
-		}
-	}
-	errorsList := resultErrors.Errors()
-	descriptionErrors := ""
-	// Concatenate all error descriptions
-	for index, e := range errorsList {
-		descriptionErrors += fmt.Sprintf(" (%d) %s", index+1, e.Description())
-	}
-
-	if len(errorsList) > 0 {
-		return &message.Error{
-			Code:        -1,
-			Description: descriptionErrors,
-		}
-	}
-
-	return nil
 }
