@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  ScrollView,
   StyleSheet, View, ViewStyle,
 } from 'react-native';
 import styleContainer from 'styles/stylesheets/container';
@@ -29,6 +30,29 @@ let cachedKeyPairs: Map<[Hash, Hash], string>;
 const WalletSyncedSeed = () => {
   /* boolean set to true if the token recover process is finished */
   const [tokensRecovered, setTokensRecovered] = useState(false);
+  const [showPublicKey, setShowPublicKey] = useState(false);
+
+  function hideButton() {
+    return (
+      <WideButtonView
+        title={STRINGS.hide_public_keys}
+        onPress={() => {
+          setShowPublicKey(false);
+        }}
+      />
+    );
+  }
+
+  function showButton() {
+    return (
+      <WideButtonView
+        title={STRINGS.show_public_keys}
+        onPress={() => {
+          setShowPublicKey(true);
+        }}
+      />
+    );
+  }
 
   WalletStore.get().then((encryptedSeed) => HDWallet
     .fromState(encryptedSeed)
@@ -45,22 +69,28 @@ const WalletSyncedSeed = () => {
     let i = 0;
     cachedKeyPairs.forEach((value, key) => {
       const ids: string[] = key.toString().split(',');
-      laoAndRollCallId[i] = `LAO ID - ${ids[0]}  |  roll call ID - ${ids[1]}`;
+      laoAndRollCallId[i] = `LAO ID           :  ${ids[0]} \n Roll Call ID      :  ${ids[1]}`;
       tokens[i] = value;
       i += 1;
     });
 
     return (
-      <View>
-        <TextBlock bold text={laoAndRollCallId[0]} />
-        <TextBlock text={tokens[0]} />
+      <ScrollView>
+        <View style={styles.largePadding} />
+        <TextBlock bold text={STRINGS.your_tokens_title} />
         <View style={styles.smallPadding} />
-        <TextBlock bold text={laoAndRollCallId[1]} />
-        <TextBlock text={tokens[1]} />
-        <View style={styles.smallPadding} />
-        <TextBlock bold text={laoAndRollCallId[2]} />
-        <TextBlock text={tokens[2]} />
-      </View>
+        { laoAndRollCallId.map((value, key) => (
+          <View>
+            <View style={styles.smallPadding} />
+            <TextBlock text={value} />
+            <TextBlock bold text={tokens[key]} visibility={showPublicKey} />
+            <View style={styles.smallPadding} />
+          </View>
+        ))}
+        {!showPublicKey && showButton()}
+        {showPublicKey && hideButton()}
+        <View style={styles.largePadding} />
+      </ScrollView>
     );
   }
 

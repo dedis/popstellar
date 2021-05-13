@@ -158,6 +158,9 @@ const STRINGS = {
   setup_wallet: 'SETUP WALLET',
   back_to_wallet_home: 'BACK TO WALLET HOME',
   show_tokens_title: 'SHOW POP TOKENS',
+  show_public_keys: 'SHOW PUBLIC KEYS',
+  hide_public_keys: 'HIDE PUBLIC KEYS',
+  your_tokens_title: 'Your PoP Tokens',
 
   /* --- General creation Strings --- */
   create_description: 'Choose the type of event you want to create',
