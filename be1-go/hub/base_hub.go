@@ -27,7 +27,7 @@ func NewBaseHub(public kyber.Point) (*baseHub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
-		return nil, xerrors.Errorf("failed create the schema validator: %v", err)
+		return nil, xerrors.Errorf("failed to create the schema validator: %v", err)
 	}
 
 	return &baseHub{
