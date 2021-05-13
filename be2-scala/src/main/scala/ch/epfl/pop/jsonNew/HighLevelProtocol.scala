@@ -1,6 +1,6 @@
 package ch.epfl.pop.jsonNew
 
-import ch.epfl.pop.model.network.{ErrorObject, JsonRpcRequest, JsonRpcResponse, MethodType}
+import ch.epfl.pop.model.network.{ErrorObject, JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
 import ch.epfl.pop.model.network.MethodType.MethodType
 import ch.epfl.pop.model.network.method._
 import ch.epfl.pop.model.network.method.message.Message
@@ -60,13 +60,11 @@ object HighLevelProtocol extends DefaultJsonProtocol {
 
     override def read(json: JsValue): Params = json.asJsObject.getFields(PARAM_CHANNEL) match {
       case Seq(channel@JsString(_)) => json.asJsObject.getFields(OPTIONAL_PARAM_MESSAGE) match {
-        case Seq(message@JsObject(_)) =>
-          println("channel: " +channel)
-          new ParamsWithMessage(channel.convertTo[Channel], message.convertTo[Message])
-        case Seq(_) => throw new IllegalArgumentException(s"Unrecognizable message value in $json")
+        case Seq(message@JsObject(_)) => new ParamsWithMessage(channel.convertTo[Channel], message.convertTo[Message])
+        case Seq(_) => throw new IllegalArgumentException(s"Unrecognizable '$OPTIONAL_PARAM_MESSAGE' value in $json")
         case _ => new Params(channel.convertTo[Channel])
       }
-      case _ => throw new IllegalArgumentException(s"Unrecognizable channel value in $json")
+      case _ => throw new IllegalArgumentException(s"Unrecognizable '$PARAM_CHANNEL' value in $json")
     }
 
     override def write(obj: Params): JsValue = {
@@ -114,6 +112,20 @@ object HighLevelProtocol extends DefaultJsonProtocol {
 
 
   implicit val errorObjectFormat: JsonFormat[ErrorObject] = jsonFormat2(ErrorObject.apply)
+  implicit object ResultObjectFormat extends RootJsonFormat[ResultObject] {
+    override def read(json: JsValue): ResultObject = json match {
+      case JsNumber(resultInt) => new ResultObject(resultInt.toInt)
+      case JsArray(resultArray) => new ResultObject(resultArray.map(_.convertTo[Message]).toList)
+      case _ => throw new IllegalArgumentException(s"Unrecognizable channel value in $json")
+    }
+    override def write(obj: ResultObject): JsValue = {
+      if (obj.isIntResult) {
+        JsNumber(obj.resultInt.get)
+      } else {
+        JsArray(obj.resultMessages.get.map(m => m.toJson).toVector)
+      }
+    }
+  }
 
   implicit object jsonRpcRequestFormat extends RootJsonFormat[JsonRpcRequest] {
     final private val PARAM_JSON_RPC: String = "jsonrpc"
@@ -165,8 +177,45 @@ object HighLevelProtocol extends DefaultJsonProtocol {
     final private val PARAM_ERROR: String = "error"
     final private val PARAM_ID: String = "id"
 
-    override def read(json: JsValue): JsonRpcResponse = ???
+    override def read(json: JsValue): JsonRpcResponse = json.asJsObject.getFields(PARAM_JSON_RPC, PARAM_ID) match {
+      case Seq(JsString(version), id) =>
+        val idOpt: Option[Int] = id match {
+          case JsNumber(idx) => Some(idx.toInt)
+          case JsNull => None
+          case _ => throw new IllegalArgumentException(s"Unable to parse json value $id to an id (number or null)")
+        }
 
-    override def write(obj: JsonRpcResponse): JsValue = ???
+        val (resultOpt, errorOpt): (Option[ResultObject], Option[ErrorObject]) = json.asJsObject.getFields(PARAM_RESULT) match {
+          case Seq(result) => (Some(result.convertTo[ResultObject]), None)
+          case _ => json.asJsObject.getFields(PARAM_ERROR) match {
+            case Seq(error) => (None, Some(error.convertTo[ErrorObject]))
+            case _ => throw new IllegalArgumentException(
+              s"Unable to parse json answer $json to a JsonRpcResponse object: 'result' and 'error' fields are missing or wrongly formatted"
+            )
+          }
+        }
+
+        JsonRpcResponse(version, resultOpt, errorOpt, idOpt)
+      case _ => throw new IllegalArgumentException(
+        s"Unable to parse json answer $json to a JsonRpcResponse object: 'jsonrpc' or 'id' field missing or wrongly formatted"
+      )
+    }
+
+    override def write(obj: JsonRpcResponse): JsValue = {
+      var jsObjectContent: ListMap[String, JsValue] = ListMap[String, JsValue](PARAM_JSON_RPC -> obj.jsonrpc.toJson)
+
+      obj.id match {
+        case Some(idx) => jsObjectContent += (PARAM_ID -> idx.toJson)
+        case _ => jsObjectContent += (PARAM_ID -> JsNull)
+      }
+
+      if (obj.isPositive) {
+        jsObjectContent += (PARAM_RESULT -> obj.result.get.toJson)
+      } else {
+        jsObjectContent += (PARAM_ERROR -> obj.error.get.toJson)
+      }
+
+      JsObject(jsObjectContent)
+    }
   }
 }
