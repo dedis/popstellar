@@ -13,7 +13,7 @@ case object MeetingValidator extends MessageDataContentValidator {
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: CreateMeeting = message.decodedData.asInstanceOf[CreateMeeting]
+        val data: CreateMeeting = message.decodedData.get.asInstanceOf[CreateMeeting]
         val expectedHash: Hash = Hash.fromStrings() // FIXME get id from db
 
         if (!validateTimestampStaleness(data.creation)) {
@@ -36,7 +36,7 @@ case object MeetingValidator extends MessageDataContentValidator {
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: StateMeeting = message.decodedData.asInstanceOf[StateMeeting]
+        val data: StateMeeting = message.decodedData.get.asInstanceOf[StateMeeting]
         val expectedHash: Hash = Hash.fromStrings() // FIXME get id from db
 
         if (!validateTimestampStaleness(data.creation)) {

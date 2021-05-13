@@ -14,7 +14,7 @@ case object RollCallValidator extends MessageDataContentValidator {
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: CreateRollCall = message.decodedData.asInstanceOf[CreateRollCall]
+        val data: CreateRollCall = message.decodedData.get.asInstanceOf[CreateRollCall]
         val expectedHash: Hash = Hash.fromStrings() // FIXME get id from db
 
         if (!validateTimestampStaleness(data.creation)) {
@@ -40,7 +40,7 @@ case object RollCallValidator extends MessageDataContentValidator {
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: OpenRollCall = message.decodedData.asInstanceOf[OpenRollCall]
+        val data: OpenRollCall = message.decodedData.get.asInstanceOf[OpenRollCall]
 
         if (!validateTimestampStaleness(data.start)) {
           Right(validationError(s"stale 'start' timestamp (${data.start})"))
@@ -57,7 +57,7 @@ case object RollCallValidator extends MessageDataContentValidator {
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: ReopenRollCall = message.decodedData.asInstanceOf[ReopenRollCall]
+        val data: ReopenRollCall = message.decodedData.get.asInstanceOf[ReopenRollCall]
 
         if (!validateTimestampStaleness(data.start)) {
           Right(validationError(s"stale 'start' timestamp (${data.start})"))
@@ -74,7 +74,7 @@ case object RollCallValidator extends MessageDataContentValidator {
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: CloseRollCall = message.decodedData.asInstanceOf[CloseRollCall]
+        val data: CloseRollCall = message.decodedData.get.asInstanceOf[CloseRollCall]
 
         if (!validateTimestampStaleness(data.end)) {
           Right(validationError(s"stale 'end' timestamp (${data.end})"))
