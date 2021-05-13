@@ -2,16 +2,16 @@ package ch.epfl.pop.pubsub.graph
 
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
-import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.json.HighLevelProtocol._
 import ch.epfl.pop.json.MessageDataProtocol._
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
-import ch.epfl.pop.model.network.method.message.data.{ActionType, DataBuilder, MessageData, ObjectType, ProtocolException}
+import ch.epfl.pop.model.network.method.message.data._
 import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
 import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, JsonRpcRequestStateMeeting}
 import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
 import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
+import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import spray.json._
 
 import scala.util.{Failure, Success, Try}

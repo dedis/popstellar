@@ -1,9 +1,8 @@
 package ch.epfl.pop.model.network.method
 
+import ch.epfl.pop.json.HighLevelProtocol._
 import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.objects.Channel
-
-import ch.epfl.pop.json.HighLevelProtocol._
 import spray.json._
 
 case class Unsubscribe(override val channel: Channel) extends Params(channel)

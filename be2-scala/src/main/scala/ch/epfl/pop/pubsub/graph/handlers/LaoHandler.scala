@@ -1,9 +1,6 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
-import java.util.concurrent.TimeUnit
-
 import akka.NotUsed
-import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
@@ -14,7 +11,6 @@ import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineErro
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.Duration
 
 case object LaoHandler extends MessageHandler {
 

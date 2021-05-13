@@ -1,7 +1,6 @@
 package ch.epfl.pop.json
 
-import ch.epfl.pop.model.objects.Channel
-import ch.epfl.pop.model.objects.{Base64Data, Hash, PublicKey, Signature, Timestamp, WitnessSignaturePair}
+import ch.epfl.pop.model.objects._
 import spray.json._
 
 object ObjectProtocol extends DefaultJsonProtocol {

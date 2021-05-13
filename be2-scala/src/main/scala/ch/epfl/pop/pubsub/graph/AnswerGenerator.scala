@@ -2,7 +2,7 @@ package ch.epfl.pop.pubsub.graph
 
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
-import ch.epfl.pop.model.network.{ErrorObject, JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
+import ch.epfl.pop.model.network._
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 
 object AnswerGenerator {

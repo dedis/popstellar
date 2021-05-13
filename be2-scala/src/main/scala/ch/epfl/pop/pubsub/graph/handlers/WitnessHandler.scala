@@ -1,9 +1,7 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.NotUsed
-import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
-import akka.util.Timeout
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage

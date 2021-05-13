@@ -5,10 +5,9 @@ import akka.actor.{ActorRef, ActorSystem}
 import akka.http.scaladsl.model.ws.TextMessage
 import akka.stream.OverflowStrategy
 import akka.stream.scaladsl.{Flow, Sink, Source}
+import ch.epfl.pop.json.HighLevelProtocol._
 import ch.epfl.pop.model.network.JsonRpcResponse
 import ch.epfl.pop.pubsub.ClientActor.{ClientAnswer, ConnectWsHandle, DisconnectWsHandle}
-
-import ch.epfl.pop.json.HighLevelProtocol._
 import spray.json._
 
 object Answerer {

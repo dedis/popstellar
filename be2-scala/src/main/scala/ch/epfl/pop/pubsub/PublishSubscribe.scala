@@ -7,7 +7,7 @@ import akka.stream.FlowShape
 import akka.stream.scaladsl.{Flow, GraphDSL, Merge, Partition}
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.pubsub.graph.handlers.{ParamsHandler, ParamsWithMessageHandler}
-import ch.epfl.pop.pubsub.graph.{Answerer, GraphMessage, MessageDecoder, AnswerGenerator, Validator}
+import ch.epfl.pop.pubsub.graph._
 
 
 // FIXME rename when old PublishSubscribe file is deleted

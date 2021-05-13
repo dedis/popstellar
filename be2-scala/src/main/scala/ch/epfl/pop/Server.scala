@@ -4,8 +4,8 @@ import java.util.concurrent.TimeUnit
 
 import akka.actor.ActorRef
 import akka.actor.typed.ActorSystem
-import akka.actor.typed.scaladsl.adapter._
 import akka.actor.typed.scaladsl.Behaviors
+import akka.actor.typed.scaladsl.adapter._
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{RequestContext, RouteResult}

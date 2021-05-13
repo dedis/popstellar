@@ -1,7 +1,7 @@
 package ch.epfl.pop.model.network.requests.rollCall
 
-import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.network.method.Params
+import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 
 final case class JsonRpcRequestOpenRollCall(
                                              override val jsonrpc: String,

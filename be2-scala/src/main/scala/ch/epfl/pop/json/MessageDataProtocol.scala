@@ -1,14 +1,14 @@
 package ch.epfl.pop.json
 
-import ch.epfl.pop.model.objects.{Hash, PublicKey, Signature, Timestamp, WitnessSignaturePair}
+import ch.epfl.pop.json.ObjectProtocol._
+import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
+import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.lao._
 import ch.epfl.pop.model.network.method.message.data.meeting._
 import ch.epfl.pop.model.network.method.message.data.rollCall._
 import ch.epfl.pop.model.network.method.message.data.witness._
-import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
-import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
-import ObjectProtocol._
+import ch.epfl.pop.model.objects._
 import spray.json._
 
 import scala.collection.immutable.ListMap

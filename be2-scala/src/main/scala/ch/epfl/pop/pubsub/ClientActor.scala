@@ -3,9 +3,9 @@ package ch.epfl.pop.pubsub
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.event.LoggingReceive
 import ch.epfl.pop.model.objects.Channel
-import ch.epfl.pop.pubsub.graph.{GraphMessage, JsonString}
-import ClientActor._
-import ch.epfl.pop.pubsub.PubSubMediator.{PubSubMediatorMessage, SubscribeToAck, SubscribeToNAck, UnsubscribeFromAck, UnsubscribeFromNAck}
+import ch.epfl.pop.pubsub.ClientActor._
+import ch.epfl.pop.pubsub.PubSubMediator._
+import ch.epfl.pop.pubsub.graph.GraphMessage
 
 import scala.collection.mutable
 import scala.util.Failure

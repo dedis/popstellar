@@ -4,7 +4,6 @@ import akka.NotUsed
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
-import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 
 case object RollCallHandler extends MessageHandler {

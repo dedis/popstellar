@@ -1,10 +1,9 @@
 package ch.epfl.pop.model.network.method
 
+import ch.epfl.pop.json.HighLevelProtocol._
 import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects.Channel
-
-import ch.epfl.pop.json.HighLevelProtocol._
 import spray.json._
 
 case class Broadcast(override val channel: Channel, override val message: Message) extends ParamsWithMessage(channel, message)

@@ -1,12 +1,11 @@
 package ch.epfl.pop.json
 
-import ch.epfl.pop.model.network.{ErrorObject, JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
+import ch.epfl.pop.json.ObjectProtocol._
 import ch.epfl.pop.model.network.MethodType.MethodType
 import ch.epfl.pop.model.network.method._
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.objects.{Base64Data, Hash, PublicKey, Signature, WitnessSignaturePair}
-import ObjectProtocol._
-import ch.epfl.pop.model.objects.Channel
+import ch.epfl.pop.model.network._
+import ch.epfl.pop.model.objects._
 import spray.json._
 
 import scala.collection.immutable.ListMap
