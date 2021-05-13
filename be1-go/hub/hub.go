@@ -19,8 +19,6 @@ type Hub interface {
 	Recv(msg IncomingMessage)
 
 	RemoveClientSocket(client *ClientSocket)
-
-	handleIncomingMessage(incomingMessage *IncomingMessage)
 }
 
 // IncomingMessage wraps the raw message from the websocket connection and pairs

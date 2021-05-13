@@ -48,6 +48,12 @@ func (w *witnessHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 }
 
 func (w *witnessHub) Start(done chan struct{}) {
-	log.Printf("started witness ..")
-	start(w, done, w.messageChan)
+	for {
+		select {
+		case incomingMessage := <-w.messageChan:
+			w.handleIncomingMessage(&incomingMessage)
+		case <-done:
+			return
+		}
+	}
 }
