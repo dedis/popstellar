@@ -39,7 +39,7 @@ const WalletSetSeed = ({ navigation }: IPropTypes) => {
     wallet.initialize(seed)
       .then((seedIsValid) => ((seedIsValid)
         ? navigation.navigate(STRINGS.navigation_synced_wallet)
-        : navigation.navigate(STRINGS.navigation_home_tab_wallet)));
+        : navigation.navigate(STRINGS.navigation_wallet_error)));
   };
 
   function getInsertSeedWalletDisplay() {

@@ -10,6 +10,7 @@ import WideButtonView from 'components/WideButtonView';
 import { HDWallet } from 'model/objects/HDWallet';
 import { WalletStore } from 'store/stores/WalletStore';
 import { Hash } from 'model/objects';
+import CopiableTextBlock from 'components/CopiableTextBlock';
 
 const styles = StyleSheet.create({
   smallPadding: {
@@ -83,7 +84,7 @@ const WalletSyncedSeed = () => {
           <View>
             <View style={styles.smallPadding} />
             <TextBlock text={value} />
-            <TextBlock bold text={tokens[key]} visibility={showPublicKey} />
+            <CopiableTextBlock id={key} text={tokens[key]} visibility={showPublicKey} />
             <View style={styles.smallPadding} />
           </View>
         ))}

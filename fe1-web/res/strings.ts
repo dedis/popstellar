@@ -41,6 +41,7 @@ const STRINGS = {
   navigation_insert_seed_tab_wallet: 'Wallet Setup',
   navigation_show_seed_wallet: 'New Wallet',
   navigation_synced_wallet: 'Your Wallet',
+  navigation_wallet_error: 'Error',
 
   /* --- Home Strings --- */
   home_welcome: 'Welcome to Personhood.Online!',
@@ -161,6 +162,7 @@ const STRINGS = {
   show_public_keys: 'SHOW PUBLIC KEYS',
   hide_public_keys: 'HIDE PUBLIC KEYS',
   your_tokens_title: 'Your PoP Tokens',
+  wallet_error: 'A synchronization error with your wallet occurred',
 
   /* --- General creation Strings --- */
   create_description: 'Choose the type of event you want to create',
