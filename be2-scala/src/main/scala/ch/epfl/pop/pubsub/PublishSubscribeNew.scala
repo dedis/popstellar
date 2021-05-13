@@ -6,9 +6,8 @@ import akka.http.scaladsl.model.ws.{Message, TextMessage}
 import akka.stream.FlowShape
 import akka.stream.scaladsl.{Flow, GraphDSL, Merge, Partition}
 import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.network.method.{Broadcast, Publish}
 import ch.epfl.pop.pubsub.graph.handlers.{ParamsHandler, ParamsWithMessageHandler}
-import ch.epfl.pop.pubsub.graph.{Answerer, GraphMessage, MessageDecoder, MessageEncoder, Validator}
+import ch.epfl.pop.pubsub.graph.{Answerer, GraphMessage, MessageDecoder, AnswerGenerator, Validator}
 
 
 // FIXME rename when old PublishSubscribe file is deleted
@@ -47,7 +46,7 @@ object PublishSubscribeNew extends App {
 
       val merger = builder.add(Merge[GraphMessage](totalPorts))
 
-      val jsonRpcEncoder = builder.add(MessageEncoder.serializer)
+      val jsonRpcAnswerGenerator = builder.add(AnswerGenerator.generator)
       val jsonRpcAnswerer = builder.add(Answerer.answerer(clientActorRef, mediatorActorRef))
 
       // output message (answer) for the client
@@ -61,7 +60,7 @@ object PublishSubscribeNew extends App {
       methodPartitioner.out(portParamsWithMessage) ~> hasMessagePartition ~> merger
       methodPartitioner.out(portParams) ~> noMessagePartition ~> merger
 
-      merger ~> jsonRpcEncoder ~> jsonRpcAnswerer ~> output
+      merger ~> jsonRpcAnswerGenerator ~> jsonRpcAnswerer ~> output
 
 
       /* close the shape */

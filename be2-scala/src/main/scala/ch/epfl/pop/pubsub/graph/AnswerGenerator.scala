@@ -5,9 +5,9 @@ import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.{ErrorObject, JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 
-object MessageEncoder {
+object AnswerGenerator {
 
-  def serializeMessage(graphMessage: GraphMessage): GraphMessage = graphMessage match {
+  def generateAnswer(graphMessage: GraphMessage): GraphMessage = graphMessage match {
     // Note: the output message (if successful) is an answer
     // The standard output is always a JsonMessage (pipeline errors are transformed into negative answers)
     case Left(rpcRequest: JsonRpcRequest) => rpcRequest.method match {
@@ -37,5 +37,5 @@ object MessageEncoder {
     ))
   }
 
-  val serializer: Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map(serializeMessage)
+  val generator: Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map(generateAnswer)
 }
