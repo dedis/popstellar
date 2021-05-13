@@ -6,6 +6,7 @@ import akka.NotUsed
 import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.JsonRpcRequest
+import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao}
 import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
 import ch.epfl.pop.model.objects.{Channel, Hash}
@@ -32,21 +33,31 @@ case object LaoHandler extends MessageHandler {
   }
 
   def handleCreateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
-    val messageData: CreateLao = CreateLao.buildFromPartial(rpcMessage.getDecodedData.get, rpcMessage)
-    val channel: Channel = Channel(s"${Channel.rootChannelPrefix}${messageData.id}")
+    rpcMessage.getParamsMessage match {
+      case Some(message: Message) =>
+        val data: CreateLao = message.decodedData.get.asInstanceOf[CreateLao]
+        val channel: Channel = Channel(s"${Channel.rootChannelPrefix}${data.id}")
 
-    val subActor: AskableActorRef = ??? // FIXME temporary for the project to compile. Should be mnodified when subscribe/unsubscribe implemented
-    val ask = subActor.ask(ref => CreateMessage(channel.channel, ref)).map {
-      case true =>
-        // Publish on the LAO main channel
-        val ask = dbActor.ask(ref => DbActorNew.Write(channel, rpcMessage.getParamsMessage.get, ref)).map {
-          case true => Left(rpcMessage)
-          case _ => Right(PipelineError(-10, "")) // FIXME add DbActor "answers" with error description if failed
+        Left(rpcMessage)
+        /*
+        val subActor: AskableActorRef = ??? // FIXME temporary for the project to compile. Should be modified when subscribe/unsubscribe implemented
+        val ask = subActor.ask(ref => CreateMessage(channel.channel, ref)).map {
+          case true =>
+            // Publish on the LAO main channel
+            val ask = dbActor.ask(ref => DbActorNew.Write(channel, rpcMessage.getParamsMessage.get, ref)).map {
+              case true => Left(rpcMessage)
+              case _ => Right(PipelineError(-10, "")) // FIXME add DbActor "answers" with error description if failed
+            }
+            Await.result(ask, DbActorNew.getDuration)
+          case _ => Right(PipelineError(ErrorCodes.ALREADY_EXISTS.id, s"Unable to create lao: channel '$channel' already exists"))
         }
-        Await.result(ask, DbActorNew.getDuration)
-      case _ => Right(PipelineError(ErrorCodes.ALREADY_EXISTS.id, s"Unable to create lao: channel '$channel' already exists"))
+        Await.result(ask, Duration(1, TimeUnit.SECONDS))
+       */
+      case _ => Right(PipelineError(
+        ErrorCodes.SERVER_ERROR.id,
+        s"Unable to handle lao message $rpcMessage. Not a Publish/Broadcast message"
+      ))
     }
-    Await.result(ask, Duration(1, TimeUnit.SECONDS))
   }
 
   def handleStateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
