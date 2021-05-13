@@ -2,6 +2,7 @@ package hub
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"log"
 	"student20_pop/message"
 	"student20_pop/validation"
@@ -77,6 +78,24 @@ func (c *baseChannel) Catchup(catchup message.Catchup) []message.Message {
 	}
 
 	return result
+}
+
+func (c *baseChannel) broadcastToAllClients(msg message.Message) {
+	c.clientsMu.RLock()
+	defer c.clientsMu.RUnlock()
+
+	query := message.Query{
+		Broadcast: message.NewBroadcast(c.channelID, &msg),
+	}
+
+	buf, err := json.Marshal(query)
+	if err != nil {
+		log.Fatalf("failed to marshal broadcast query: %v", err)
+	}
+
+	for client := range c.clients {
+		client.Send(buf)
+	}
 }
 
 // Verify the if a Publish message is valid
