@@ -266,8 +266,11 @@ func (h *baseHub) createLao(publish message.Publish) error {
 	laoChannelID := "/root/" + encodedID
 
 	laoCh := laoChannel{
-		createBaseChannel(h, laoChannelID),
+		rollCall:    rollCall{},
+		attendees:   make(map[string]struct{}),
+		baseChannel: createBaseChannel(h, laoChannelID),
 	}
+
 	messageID := base64.StdEncoding.EncodeToString(publish.Params.Message.MessageID)
 	laoCh.inbox[messageID] = *publish.Params.Message
 

@@ -190,10 +190,13 @@ func createMessage(data message.Data, publicKey message.PublicKey) message.Messa
 func TestMain(m *testing.M) {
 	organizerKeyPair, _ = generateKeyPair()
 
+	baseHub, err := NewBaseHub(organizerKeyPair.public)
+	if err != nil {
+		panic(err)
+	}
+
 	oHub = &organizerHub{
-		messageChan: make(chan IncomingMessage),
-		channelByID: make(map[string]Channel),
-		public:      organizerKeyPair.public,
+		baseHub: baseHub,
 	}
 
 	res := m.Run()
