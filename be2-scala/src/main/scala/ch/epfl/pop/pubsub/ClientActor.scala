@@ -3,11 +3,12 @@ package ch.epfl.pop.pubsub
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.event.LoggingReceive
 import ch.epfl.pop.model.objects.Channel
-import ch.epfl.pop.pubsub.graph.GraphMessage
+import ch.epfl.pop.pubsub.graph.{GraphMessage, JsonString}
 import ClientActor._
 import ch.epfl.pop.pubsub.PubSubMediator.{PubSubMediatorMessage, SubscribeToAck, SubscribeToNAck, UnsubscribeFromAck, UnsubscribeFromNAck}
 
 import scala.collection.mutable
+import scala.util.Failure
 
 
 case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging {
@@ -44,10 +45,13 @@ case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging {
         log.info(s"Actor $self received NACK mediator $mediator for the unsubscribe from channel '$channel' request for reason: $reason")
     }
     case clientAnswer@ClientAnswer(_) =>
-      log.info(s"Sending an answer back to client $wsHandle")
+      log.info(s"Sending an answer back to client $wsHandle: $clientAnswer")
       messageWsHandle(clientAnswer)
 
-    case m@_ => println("UNKNOWN MESSAGE TO CLIENT ACTOR: " + m)
+    case m@_ => m match {
+      case Failure(exception: Exception) => println("FAILURE : " + m + exception.getMessage)
+      case _ => println("UNKNOWN MESSAGE TO CLIENT ACTOR: " + m)
+    }
   }
 }
 

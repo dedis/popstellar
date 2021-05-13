@@ -5,8 +5,11 @@ import akka.actor.{ActorRef, ActorSystem}
 import akka.http.scaladsl.model.ws.TextMessage
 import akka.stream.OverflowStrategy
 import akka.stream.scaladsl.{Flow, Sink, Source}
+import ch.epfl.pop.model.network.JsonRpcResponse
 import ch.epfl.pop.pubsub.ClientActor.{ClientAnswer, ConnectWsHandle, DisconnectWsHandle}
 
+import ch.epfl.pop.jsonNew.HighLevelProtocol._
+import spray.json._
 
 object Answerer {
 
@@ -16,7 +19,11 @@ object Answerer {
    * @param graphMessage terminal pipeline message
    * @return the message sent
    */
-  private def sendAnswer(graphMessage: GraphMessage): TextMessage = TextMessage.Strict(graphMessage.toString) // FIXME implement
+  private def sendAnswer(graphMessage: GraphMessage): TextMessage = graphMessage match {
+    // Note: The encoding of the answer is done here as the ClientActor must always receive a GraphMessage
+    case Left(rpcAnswer: JsonRpcResponse) => TextMessage.Strict(rpcAnswer.toJson.toString)
+    case _ => println("An unknown error occurred in Answerer.sendAnswer"); ???
+  }
 
   def answerer(clientActorRef: ActorRef, mediator: ActorRef)(implicit system: ActorSystem): Flow[GraphMessage, TextMessage, NotUsed] = {
 

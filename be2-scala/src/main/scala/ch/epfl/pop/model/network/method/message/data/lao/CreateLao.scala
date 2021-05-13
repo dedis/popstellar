@@ -26,6 +26,4 @@ object CreateLao extends Parsable {
   }
 
   override def buildFromJson(payload: String): CreateLao = payload.parseJson.asJsObject.convertTo[CreateLao]
-
-  def buildFromPartial(messageData: MessageData, payload: JsonRpcRequest): CreateLao = ???
 }
