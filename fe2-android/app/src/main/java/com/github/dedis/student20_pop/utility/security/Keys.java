@@ -23,9 +23,8 @@ public class Keys {
     JsonObject keyData = keyObject.get("keyData").getAsJsonObject();
 
     String encoded = keyData.get("value").getAsString();
-    byte[] buf = Base64.decode(encoded, Base64.URL_SAFE);
+    byte[] buf = Base64.decode(encoded, Base64.NO_WRAP);
 
-    //return Base64.getUrlEncoder().encodeToString(buf);
-    return Base64.encodeToString(buf, 2, 32, Base64.URL_SAFE);
+    return Base64.encodeToString(buf, 2, 32, Base64.NO_WRAP | Base64.URL_SAFE);
   }
 }

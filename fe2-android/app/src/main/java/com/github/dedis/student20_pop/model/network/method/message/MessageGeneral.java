@@ -1,6 +1,6 @@
 package com.github.dedis.student20_pop.model.network.method.message;
 
-import java.util.Base64;
+import android.util.Base64;
 import android.util.Log;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessage;
@@ -95,15 +95,15 @@ public final class MessageGeneral {
   }
 
   public String getMessageId() {
-    return Base64.getUrlEncoder().encodeToString(this.messageId);
+    return Base64.encodeToString(this.messageId, Base64.NO_WRAP | Base64.URL_SAFE);
   }
 
   public String getSender() {
-    return Base64.getUrlEncoder().encodeToString(this.sender);
+    return Base64.encodeToString(this.sender, Base64.NO_WRAP | Base64.URL_SAFE);
   }
 
   public String getSignature() {
-    return Base64.getUrlEncoder().encodeToString(this.signature);
+    return Base64.encodeToString(this.signature, Base64.NO_WRAP | Base64.URL_SAFE);
   }
 
   public List<PublicKeySignaturePair> getWitnessSignatures() {
@@ -115,7 +115,7 @@ public final class MessageGeneral {
   }
 
   public String getDataEncoded() {
-    return Base64.getUrlEncoder().encodeToString(this.dataBuf);
+    return Base64.encodeToString(this.dataBuf, Base64.NO_WRAP | Base64.URL_SAFE);
   }
 
   public boolean verify() {
@@ -125,8 +125,8 @@ public final class MessageGeneral {
       if (data instanceof WitnessMessage) {
         WitnessMessage witnessMessage = (WitnessMessage) data;
 
-        byte[] signatureBuf = Base64.getUrlDecoder().decode(witnessMessage.getSignature());
-        byte[] messageIdBuf = Base64.getUrlDecoder().decode(witnessMessage.getMessageId());
+        byte[] signatureBuf = Base64.decode(witnessMessage.getSignature(), Base64.NO_WRAP | Base64.URL_SAFE);
+        byte[] messageIdBuf = Base64.decode(witnessMessage.getMessageId(), Base64.NO_WRAP | Base64.URL_SAFE);
 
         verifier.verify(signatureBuf, messageIdBuf);
       }

@@ -13,7 +13,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
+import android.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -134,7 +134,7 @@ public class Wallet {
    */
   private String convertStringToPath(String string){
     // extract byte form string
-    byte[] byteString = Base64.getUrlDecoder().decode(string);
+    byte[] byteString = Base64.decode(string, Base64.NO_WRAP | Base64.URL_SAFE);
 
     // create 31-bit index path
     StringJoiner joiner = new StringJoiner("/");
