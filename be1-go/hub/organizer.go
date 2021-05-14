@@ -783,7 +783,9 @@ func (c *laoChannel) createElection(msg message.Message) error {
 
 	// Add the SetupElection message to the new election channel
 	messageID := base64.URLEncoding.EncodeToString(msg.MessageID)
+	c.inboxMu.Lock()
 	electionCh.inbox[messageID] = msg
+	electionCh.inboxMu.Unlock()
 
 	// Add the new election channel to the organizerHub
 	organizerHub.channelByID[encodedID] = &electionCh
@@ -794,7 +796,7 @@ func (c *laoChannel) createElection(msg message.Message) error {
 func getAllQuestionsForElectionChannel(questions []message.Question, data *message.ElectionSetupData) map[string]question {
 	qs := make(map[string]question)
 	for _, q := range questions {
-		qs[base64.StdEncoding.EncodeToString(q.ID)] = question{
+		qs[base64.URLEncoding.EncodeToString(q.ID)] = question{
 			q.ID,
 			q.BallotOptions,
 			sync.RWMutex{},
