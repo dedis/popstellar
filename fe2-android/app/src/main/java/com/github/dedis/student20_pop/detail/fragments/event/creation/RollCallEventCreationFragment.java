@@ -106,10 +106,20 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {
-                String id = createRollCall();
-                openRollCall(id);
+                createAndOpenRollCall();
               }
             });
+
+      mLaoDetailViewModel
+          .getCreatedRollCallEvent()
+          .observe(
+                  this,
+                  booleanEvent -> {
+                      Boolean action = booleanEvent.getContentIfNotHandled();
+                      if (action != null) {
+                          mLaoDetailViewModel.openLaoDetail();
+                      }
+                  });
   }
 
   private void setupConfirmButton() {
@@ -125,30 +135,19 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     mFragBinding.rollCallCancel.setOnClickListener(v -> mLaoDetailViewModel.openLaoDetail());
   }
 
-  private String createRollCall() {
-    computeTimesInSeconds();
+  private void createRollCall() {
+      computeTimesInSeconds();
 
-    long now = Instant.now().getEpochSecond();
-    long start = startTimeInSeconds > now ? 0 : startTimeInSeconds;
-    long scheduled = startTimeInSeconds >= now ? startTimeInSeconds : 0;
-
-    String id =
-        mLaoDetailViewModel.createNewRollCall(
-            rollCallTitleEditText.getText().toString(),
-            mFragBinding.rollCallEventDescriptionText.getText().toString(),
-            start,
-            scheduled);
-
-    if (id == null) {
-      Toast.makeText(getActivity(), "Something went wrong, try again later.", Toast.LENGTH_LONG)
-          .show();
-    }
-
-    return id;
+      String title = mFragBinding.rollCallTitleText.getText().toString();
+      String description = mFragBinding.rollCallEventDescriptionText.getText().toString();
+      mLaoDetailViewModel.createNewRollCall(title, description, startTimeInSeconds, endTimeInSeconds, false);
   }
 
-  private void openRollCall(String rollCallId) {
-    Log.d(TAG, "opening new roll call");
-    mLaoDetailViewModel.openRollCall(rollCallId);
+  private void createAndOpenRollCall() {
+      computeTimesInSeconds();
+
+      String title = mFragBinding.rollCallTitleText.getText().toString();
+      String description = mFragBinding.rollCallEventDescriptionText.getText().toString();
+      mLaoDetailViewModel.createNewRollCall(title, description, startTimeInSeconds, endTimeInSeconds, true);
   }
 }

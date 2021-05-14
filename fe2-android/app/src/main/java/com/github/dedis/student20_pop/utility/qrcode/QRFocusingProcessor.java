@@ -1,6 +1,7 @@
 package com.github.dedis.student20_pop.utility.qrcode;
 
 import android.util.SparseArray;
+
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.FocusingProcessor;
 import com.google.android.gms.vision.Tracker;
