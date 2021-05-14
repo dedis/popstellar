@@ -15,7 +15,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 import java.security.GeneralSecurityException;
-import android.util.Base64;
+import java.util.Base64;
 import java.util.List;
 
 public class JsonMessageGeneralSerializer
@@ -26,10 +26,10 @@ public class JsonMessageGeneralSerializer
       throws JsonParseException {
     JsonObject root = json.getAsJsonObject();
 
-    byte[] messageId = Base64.decode(root.get("message_id").getAsString(), Base64.NO_WRAP | Base64.URL_SAFE);
-    byte[] dataBuf = Base64.decode(root.get("data").getAsString(),Base64.NO_WRAP | Base64.URL_SAFE);
-    byte[] sender = Base64.decode(root.get("sender").getAsString(), Base64.NO_WRAP | Base64.URL_SAFE);
-    byte[] signature = Base64.decode(root.get("signature").getAsString(), Base64.NO_WRAP | Base64.URL_SAFE);
+    byte[] messageId = Base64.getUrlDecoder().decode(root.get("message_id").getAsString());
+    byte[] dataBuf = Base64.getUrlDecoder().decode(root.get("data").getAsString());
+    byte[] sender = Base64.getUrlDecoder().decode(root.get("sender").getAsString());
+    byte[] signature = Base64.getUrlDecoder().decode(root.get("signature").getAsString());
 
     PublicKeyVerify verifier = new Ed25519Verify(sender);
     try {

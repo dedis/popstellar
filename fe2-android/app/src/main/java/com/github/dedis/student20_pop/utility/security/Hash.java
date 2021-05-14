@@ -5,7 +5,7 @@ import com.github.dedis.student20_pop.exceptions.PoPException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import android.util.Base64;
+import java.util.Base64;
 
 /** SHA256 Hashing Class */
 public class Hash {
@@ -36,7 +36,7 @@ public class Hash {
         digest.update(str.getBytes(StandardCharsets.UTF_8));
       }
       byte[] digestBuf = digest.digest();
-      return Base64.encodeToString(digestBuf, Base64.NO_WRAP | Base64.URL_SAFE);
+      return Base64.getUrlEncoder().encodeToString(digestBuf);
     } catch (NoSuchAlgorithmException e) {
       Log.e(TAG, "failed to hash", e);
       throw new PoPException("failed to retrieve SHA-256 instance", e);

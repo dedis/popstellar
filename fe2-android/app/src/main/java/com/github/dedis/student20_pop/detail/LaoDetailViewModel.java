@@ -28,7 +28,7 @@ import io.reactivex.schedulers.Schedulers;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import android.util.Base64;
+import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -137,7 +137,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
       // Retrieve identity of who is creating the election
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
       String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-      byte[] sender = Base64.decode(publicKey, Base64.NO_WRAP | Base64.URL_SAFE);
+      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
       PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
       MessageGeneral msg = new MessageGeneral(sender, electionSetup, signer, mGson);
 
@@ -205,7 +205,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
     try {
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
       String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-      byte[] sender = Base64.decode(publicKey,Base64.NO_WRAP | Base64.URL_SAFE );
+      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
 
       PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
       MessageGeneral msg = new MessageGeneral(sender, createRollCall, signer, mGson);
