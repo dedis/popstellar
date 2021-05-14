@@ -3,7 +3,14 @@ package com.github.dedis.student20_pop.utility.json;
 import com.github.dedis.student20_pop.model.network.method.Message;
 import com.github.dedis.student20_pop.model.network.method.Method;
 import com.github.dedis.student20_pop.model.network.method.Query;
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+
 import java.lang.reflect.Type;
 
 /** Json serializer and deserializer for the low level messages */

@@ -80,6 +80,13 @@
     <string name="add_attendee_unsuccessful">Error when adding attendee</string>
     <string name="add_attendees_number">Number of attendees : %1$d</string>
 
+    <!-- Event Buttons -->
+    <string name="open_rollcall">OPEN</string>
+    <string name="reopen_rollcall">REOPEN</string>
+    <string name="scheduled_rollcall">SCHEDULED</string>
+    <string name="enter_rollcall">ENTER</string>
+    <string name="closed_rollcall">CLOSED</string>
+
     <!-- Identity -->
     <string name="identity_name">Name</string>
     <string name="identity_title">Title</string>
@@ -107,6 +114,7 @@
     <!-- Properties -->
     <string name="test_organization_name">Test Organization Name</string>
     <string name="edit_lao_name">Edit Lao Name</string>
+    <string name="total">Total:</string>
     <string name="election_name">Election Name</string>
     <string name="lao_name">LAO name</string>
     <string name="election_setup">Election Setup</string>
@@ -123,9 +131,6 @@
     <string name="voting_method_spinner_text">Select a voting method</string>
     <string name="write_in_switch_text">Allow write in</string>
     <string name="new_ballot_option_hint">ballot option</string>
-
-
-
 
     <!-- Wallet -->
     <string name="button_own_seed">I own a seed</string>

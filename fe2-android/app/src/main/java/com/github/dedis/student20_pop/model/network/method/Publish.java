@@ -1,6 +1,7 @@
 package com.github.dedis.student20_pop.model.network.method;
 
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
+
 import java.util.Objects;
 
 /** Publish a message on a channel */
