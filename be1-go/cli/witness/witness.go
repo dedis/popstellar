@@ -22,7 +22,7 @@ var upgrader = websocket.Upgrader{
 func Serve(context *cli.Context) error {
 	organizerAddr := context.String("organizer-address")
 	organizerPort := context.Int("organizer-port")
-	clientPort := 9001
+	clientPort := context.Int("client-port")
 	pk := context.String("public-key")
 
 	if pk == "" {
@@ -53,9 +53,9 @@ func Serve(context *cli.Context) error {
 	go organizerSocket.ReadPump()
 
 	done := make(chan struct{})
-	h.Start(done)
+	go h.Start(done)
 
-	createAndServeWs(hub.ClientSocketType, h, clientPort)
+	hub.CreateAndServeWs(hub.WitnessHubType, hub.ClientSocketType, h, clientPort)
 
 	done <- struct{}{}
 
@@ -63,7 +63,8 @@ func Serve(context *cli.Context) error {
 }
 
 func connectToOrganizer(organizerAddr string, port int) (*websocket.Conn, error) {
-	u, err := url.Parse(fmt.Sprintf("ws://%s:%d/organizer/witness/", organizerAddr, port))
+	address := fmt.Sprintf("ws://%s:%d/organizer/witness/", organizerAddr, port)
+	u, err := url.Parse(address)
 	if err != nil {
 		return nil, xerrors.Errorf("failure to connect to organizer: %v", err)
 	}
@@ -71,46 +72,6 @@ func connectToOrganizer(organizerAddr string, port int) (*websocket.Conn, error)
 	if err != nil {
 		return ws, xerrors.Errorf("failure to connect to organizer: %v", err)
 	}
+	log.Printf("connected to organizer at %s", address)
 	return ws, nil
-}
-
-func createAndServeWs(socketType hub.SocketType, h hub.Hub, port int) error {
-	http.HandleFunc(string("/witness/"+socketType+"/"), func(w http.ResponseWriter, r *http.Request) {
-		serveWs(socketType, h, w, r)
-	})
-
-	log.Printf("Starting the witness WS server (for %s) at %d", socketType, port)
-	var err = http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
-	if err != nil {
-		return xerrors.Errorf("failed to start the server: %v", err)
-	}
-
-	return nil
-}
-
-func serveWs(socketType hub.SocketType, h hub.Hub, w http.ResponseWriter, r *http.Request) {
-	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Printf("failed to upgrade connection: %v", err)
-		return
-	}
-
-	switch socketType {
-	case hub.ClientSocketType:
-		client := hub.NewClientSocket(h, conn)
-
-		go client.ReadPump()
-		go client.WritePump()
-
-		// cleanup go routine that removes clients that forgot to unsubscribe
-		go func(c *hub.ClientSocket, h hub.Hub) {
-			c.Wait.Wait()
-			h.RemoveClientSocket(c)
-		}(client, h)
-	case hub.WitnessSocketType:
-		witness := hub.NewWitnessSocket(h, conn)
-
-		go witness.ReadPump()
-		go witness.WritePump()
-	}
 }
