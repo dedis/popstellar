@@ -20,9 +20,11 @@ var upgrader = websocket.Upgrader{
 }
 
 func Serve(context *cli.Context) error {
-	organizerAddr := context.String("organizer-address")
+	organizerAddress := context.String("organizer-address")
 	organizerPort := context.Int("organizer-port")
 	clientPort := context.Int("client-port")
+	witnessPort := context.Int("witness-port")
+	otherWitness := context.String("other-witness")
 	pk := context.String("public-key")
 
 	if pk == "" {
@@ -42,36 +44,57 @@ func Serve(context *cli.Context) error {
 
 	h := hub.NewWitnessHub(point)
 
-	ws, err := connectToOrganizer(organizerAddr, organizerPort)
+	err = connectToSocket(hub.OrganizerSocketType, organizerAddress, h, organizerPort)
 	if err != nil {
 		return xerrors.Errorf("failed to connect to organizer: %v", err)
 	}
 
-	organizerSocket := hub.NewOrganizerSocket(h, ws)
+	err = connectToSocket(hub.WitnessSocketType, otherWitness, h, organizerPort)
+	if err != nil {
+		return xerrors.Errorf("failed to connect to witness: %v", err)
+	}
 
-	go organizerSocket.WritePump()
-	go organizerSocket.ReadPump()
+	go hub.CreateAndServeWs(hub.WitnessHubType, hub.ClientSocketType, h, clientPort)
+	go hub.CreateAndServeWs(hub.WitnessHubType, hub.WitnessSocketType, h, witnessPort)
 
 	done := make(chan struct{})
-	go h.Start(done)
-
-	hub.CreateAndServeWs(hub.WitnessHubType, hub.ClientSocketType, h, clientPort)
+	h.Start(done)
 
 	done <- struct{}{}
 
 	return nil
 }
 
-func connectToOrganizer(organizerAddr string, port int) (*websocket.Conn, error) {
-	address := fmt.Sprintf("ws://%s:%d/organizer/witness/", organizerAddr, port)
-	u, err := url.Parse(address)
+func connectToSocket(socketType hub.SocketType, address string, h hub.Hub, port int) error {
+	var urlString = ""
+	switch socketType {
+	case hub.OrganizerSocketType:
+		urlString = fmt.Sprintf("ws://%s:%d/%s/witness/", address, port, socketType)
+	case hub.WitnessSocketType:
+		if address == "" {
+			return nil
+		}
+		urlString = fmt.Sprintf("ws://%s/%s/witness/", address, socketType)
+	}
+	u, err := url.Parse(urlString)
 	if err != nil {
-		return nil, xerrors.Errorf("failure to connect to organizer: %v", err)
+		return xerrors.Errorf("parsing, %v", err)
 	}
 	ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
-		return ws, xerrors.Errorf("failure to connect to organizer: %v", err)
+		return xerrors.Errorf("dialing, %v", err)
 	}
 	log.Printf("connected to organizer at %s", address)
-	return ws, nil
+	switch socketType {
+	case hub.OrganizerSocketType:
+		organizerSocket := hub.NewOrganizerSocket(h, ws)
+		go organizerSocket.WritePump()
+		go organizerSocket.ReadPump()
+	case hub.WitnessSocketType:
+		witnessSocket := hub.NewWitnessSocket(h, ws)
+		go witnessSocket.WritePump()
+		go witnessSocket.ReadPump()
+	}
+
+	return nil
 }
