@@ -4,6 +4,7 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
 import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 /** Data received to track the state of a meeting */

@@ -99,6 +99,14 @@ func NewError(description string, parent error) error {
 	return xerrors.Errorf("%s: %v", description, parent)
 }
 
+// NewInvalidActionError an error with the code -1 for an invalid action.
+func NewInvalidActionError(action DataAction) error {
+	return &Error{
+		Code:        -1,
+		Description: fmt.Sprintf("invalid action: %s", action),
+	}
+}
+
 // MarshalJSON marshals an Answer message
 func (a Answer) MarshalJSON() ([]byte, error) {
 	type internal struct {

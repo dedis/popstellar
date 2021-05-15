@@ -13,7 +13,7 @@ import { JsonRpcMethod, JsonRpcRequest } from 'model/network';
 import { CreateLao } from 'model/network/method/message/data';
 import { JsonRpcParamsWithMessage } from 'model/network/method/JsonRpcParamsWithMessage';
 
-const JSON_RPC_FIELDS: string[] = ['method', 'params', 'id']; // jsonrpc version is not stored, thus only 3 fields
+const JSON_RPC_FIELDS: string[] = ['method', 'params', 'id', 'jsonrpc'];
 const QUERY_FIELD_COUNT = JSON_RPC_FIELDS.length;
 
 const METHODS = Object.keys(JsonRpcMethod)
