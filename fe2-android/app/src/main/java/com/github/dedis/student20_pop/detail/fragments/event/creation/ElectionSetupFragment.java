@@ -126,6 +126,18 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
         setupElectionCancelButton();
         setupElectionSpinner();
         setupElectionSubmitButton();
+
+        // subscribe to the election create event
+        mLaoDetailViewModel
+                .getElectionCreated()
+                .observe(
+                        this,
+                        booleanEvent -> {
+                            Boolean action = booleanEvent.getContentIfNotHandled();
+                            if (action != null) {
+                                mLaoDetailViewModel.openLaoDetail();
+                            }
+                        });
     }
 
 

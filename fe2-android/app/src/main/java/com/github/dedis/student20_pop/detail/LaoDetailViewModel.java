@@ -100,7 +100,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   //  Multiple events from Lao may be concatenated using Stream.concat()
   private final LiveData<List<com.github.dedis.student20_pop.model.event.Event>> mLaoEvents = Transformations
           .map(mCurrentLao,
-                  lao -> lao == null ? new ArrayList<com.github.dedis.student20_pop.model.event.Event>() :
+                  lao -> lao == null ? new ArrayList<>() :
                           Stream.concat(lao.getRollCalls().values().stream(),lao.getElections().values().stream()).collect(Collectors.toList()));
 
   /*
@@ -180,8 +180,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                               answer -> {
                                 if (answer instanceof Result) {
                                   Log.d(TAG, "setup an election");
-                                  openLaoDetail();
-                                  mCurrentLao.postValue(lao);
+                                  mElectionCreatedEvent.postValue(new Event<>(true));
                                 } else if (answer instanceof Error) {
                                   Log.d(TAG, "failed to setup an election because of the following error : " + ((Error) answer).getError().getDescription());
                                 } else {

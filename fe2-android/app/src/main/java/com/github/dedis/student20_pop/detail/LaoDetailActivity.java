@@ -76,16 +76,15 @@ public class LaoDetailActivity extends AppCompatActivity {
                     });
     // Subscribe to "new lao event" event
     mViewModel
-        .getNewLaoEventEvent()
-        .observe(
-            this,
-            eventEvent -> {
-              EventType eventType = eventEvent.getContentIfNotHandled();
-              if (eventType != null) {
-                handleNewEvent(eventType);
-              }
-            });
-
+            .getNewLaoEventEvent()
+            .observe(
+                    this,
+                    eventEvent -> {
+                      EventType eventType = eventEvent.getContentIfNotHandled();
+                      if (eventType != null) {
+                        handleNewEvent(eventType);
+                      }
+                    });
     mViewModel
             .getOpenRollCallEvent()
             .observe(
@@ -94,7 +93,7 @@ public class LaoDetailActivity extends AppCompatActivity {
                       String action = stringEvent.getContentIfNotHandled();
                       if (action != null) {
                         if (action.equals(HomeViewModel.SCAN)) {
-                          setupScanFragmentRo llCall();
+                          setupScanFragmentRollCall();
                         }else{
                           setupCameraPermissionFragmentRollCall();
                         }
