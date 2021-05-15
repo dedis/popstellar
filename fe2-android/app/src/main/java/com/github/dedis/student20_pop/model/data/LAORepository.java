@@ -530,7 +530,7 @@ public class LAORepository {
       }
     }
     */
-    
+
     mRemoteDataSource.sendMessage(publish);
     return answer;
   }

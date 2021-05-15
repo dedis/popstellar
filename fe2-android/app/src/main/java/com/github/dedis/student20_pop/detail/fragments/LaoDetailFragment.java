@@ -22,6 +22,7 @@ import com.github.dedis.student20_pop.detail.adapters.WitnessListViewAdapter;
 import com.github.dedis.student20_pop.model.Election;
 import com.github.dedis.student20_pop.model.RollCall;
 import com.github.dedis.student20_pop.model.event.Event;
+import com.github.dedis.student20_pop.model.event.EventType;
 
 import java.util.ArrayList;
 
@@ -166,9 +167,8 @@ public class LaoDetailFragment extends Fragment {
                 events -> {
                   Log.d(TAG, "Got an event list update");
                   for(Event event : events){
-                      switch(event.getType()) {
-                          case ROLL_CALL: Log.d(TAG, ((RollCall) event).getDescription());
-
+                      if(event.getType() == EventType.ROLL_CALL) {
+                          Log.d(TAG, ((RollCall) event).getDescription());
                       }
                   }
                   mEventListViewEventAdapter.replaceList(events);

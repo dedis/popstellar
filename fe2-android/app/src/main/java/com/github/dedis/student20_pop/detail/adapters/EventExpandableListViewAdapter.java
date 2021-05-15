@@ -1,6 +1,5 @@
 package com.github.dedis.student20_pop.detail.adapters;
 
-import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,14 +11,14 @@ import android.widget.BaseExpandableListAdapter;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
 
+import com.github.dedis.student20_pop.databinding.LayoutElectionDisplayBinding;
+import com.github.dedis.student20_pop.databinding.LayoutEventBinding;
 import com.github.dedis.student20_pop.databinding.LayoutEventCategoryBinding;
 import com.github.dedis.student20_pop.databinding.LayoutRollCallEventBinding;
-import com.github.dedis.student20_pop.databinding.LayoutEventBinding;
-import com.github.dedis.student20_pop.databinding.LayoutElectionDisplayBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.listeners.AddEventListener;
-import com.github.dedis.student20_pop.model.RollCall;
 import com.github.dedis.student20_pop.model.Election;
+import com.github.dedis.student20_pop.model.RollCall;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventCategory;
 import com.github.dedis.student20_pop.model.event.EventState;
@@ -255,11 +254,16 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         switch (event.getType()) {
             case ELECTION: {
               handleElection(convertView,parent,event,category);
+
             }
+            break;
+
 
             case ROLL_CALL: {
-               handleRollCall(convertView,parent,event,category);
+               handleRollCall(convertView,parent,event);
+
             }
+            break;
 
 
             default: {
@@ -280,6 +284,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
             }
 
         }
+        return convertView;
 
     }
 
@@ -369,7 +374,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
     }
 
-    private View handleRollCall(View convertView, ViewGroup parent, Event event, EventCategory category) {
+    private View handleRollCall(View convertView, ViewGroup parent, Event event) {
 
         LayoutRollCallEventBinding binding;
 
