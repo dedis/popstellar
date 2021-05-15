@@ -4,7 +4,6 @@ import com.github.dedis.student20_pop.model.network.GenericMessage;
 import com.github.dedis.student20_pop.model.network.answer.Answer;
 import com.github.dedis.student20_pop.model.network.method.Message;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
-import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -56,7 +55,6 @@ public final class JsonUtils {
         .registerTypeAdapter(Message.class, new JsonMessageSerializer())
         .registerTypeAdapter(Data.class, new JsonDataSerializer())
         .registerTypeAdapter(Answer.class, new JsonAnswerSerializer())
-        .registerTypeAdapter(CreateRollCall.class, new JsonCreateRollCallSerializer())
         .create();
   }
 }

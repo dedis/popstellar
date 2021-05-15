@@ -2,6 +2,7 @@ package hub
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"log"
 	"student20_pop/message"
 	"sync"
@@ -78,13 +79,39 @@ func (c *baseChannel) Catchup(catchup message.Catchup) []message.Message {
 	return result
 }
 
+func (c *baseChannel) broadcastToAllClients(msg message.Message) {
+	c.clientsMu.RLock()
+	defer c.clientsMu.RUnlock()
+
+	query := message.Query{
+		Broadcast: message.NewBroadcast(c.channelID, &msg),
+	}
+
+	buf, err := json.Marshal(query)
+	if err != nil {
+		log.Fatalf("failed to marshal broadcast query: %v", err)
+	}
+
+	for client := range c.clients {
+		client.Send(buf)
+	}
+}
+
 // Verify the if a Publish message is valid
 func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 	log.Printf("received a publish with id: %d", publish.ID)
 
 	// Check if the structure of the message is correct
 	msg := publish.Params.Message
-	err := msg.VerifyAndUnmarshalData()
+
+	// Verify the data
+	err := c.hub.verifyJson(msg.RawData, DataSchema)
+	if err != nil {
+		return message.NewError("failed to validate the data", err)
+	}
+
+	// Unmarshal the data
+	err = msg.VerifyAndUnmarshalData()
 	if err != nil {
 		return xerrors.Errorf("failed to verify and unmarshal data: %v", err)
 	}

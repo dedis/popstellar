@@ -7,12 +7,15 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatDialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.detail.fragments.pickers.DatePickerFragment;
 import com.github.dedis.student20_pop.detail.fragments.pickers.TimePickerFragment;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;

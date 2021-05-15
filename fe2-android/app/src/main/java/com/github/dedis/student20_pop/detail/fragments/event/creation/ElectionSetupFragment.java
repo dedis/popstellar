@@ -14,9 +14,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentSetupElectionEventBinding;
@@ -25,8 +24,9 @@ import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ElectionSetupFragment extends AbstractEventCreationFragment implements AdapterView.OnItemSelectedListener {
 

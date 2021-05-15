@@ -1,44 +1,64 @@
 package com.github.dedis.student20_pop.detail;
 
+import android.Manifest;
 import android.app.Application;
+import android.content.pm.PackageManager;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
+
 import com.github.dedis.student20_pop.Event;
-import com.github.dedis.student20_pop.model.Election;
+import com.github.dedis.student20_pop.R;
+import com.github.dedis.student20_pop.home.HomeViewModel;
 import com.github.dedis.student20_pop.model.Lao;
+import com.github.dedis.student20_pop.model.RollCall;
+import com.github.dedis.student20_pop.model.Election;
 import com.github.dedis.student20_pop.model.data.LAORepository;
 import com.github.dedis.student20_pop.model.event.EventType;
+import com.github.dedis.student20_pop.model.network.answer.Error;
 import com.github.dedis.student20_pop.model.network.answer.Result;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
+import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
-import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall.StartType;
+import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
+import com.github.dedis.student20_pop.qrcode.CameraPermissionViewModel;
+import com.github.dedis.student20_pop.qrcode.QRCodeScanningViewModel;
+import com.github.dedis.student20_pop.utility.security.Hash;
 import com.github.dedis.student20_pop.utility.security.Keys;
+import com.google.android.gms.vision.barcode.Barcode;
 import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
 import java.util.stream.Stream;
-import com.github.dedis.student20_pop.model.network.answer.Error;
-public class LaoDetailViewModel extends AndroidViewModel {
+import io.reactivex.android.schedulers.AndroidSchedulers;import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
+public class LaoDetailViewModel extends AndroidViewModel implements CameraPermissionViewModel,
+        QRCodeScanningViewModel {
   public static final String TAG = LaoDetailViewModel.class.getSimpleName();
-
+  private static final String LAO_FAILURE_MESSAGE = "failed to retrieve current lao";
+  private static final String PK_FAILURE_MESSAGE = "failed to retrieve public key";
   /*
    * LiveData objects for capturing events like button clicks
    */
@@ -50,11 +70,17 @@ public class LaoDetailViewModel extends AndroidViewModel {
   private final MutableLiveData<Event<EventType>> mChooseNewLaoEventTypeEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<EventType>> mNewLaoEventCreationEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenNewRollCallEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<String>> mOpenRollCallEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenElectionResultsEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenManageElectionEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mElectionCreatedEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenCastVotesEvent = new MutableLiveData<>();
 
+  private final MutableLiveData<Event<Integer>>  mNbAttendeesEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<Boolean>> mCloseRollCallEvent = new MutableLiveData<>();
+
+  private final MutableLiveData<Event<Boolean>> mCreatedRollCallEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<String>>  mScanWarningEvent = new MutableLiveData<>();
   /*
    * LiveData objects that represent the state in a fragment
    */
@@ -64,12 +90,12 @@ public class LaoDetailViewModel extends AndroidViewModel {
   private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>("");
   private final LiveData<List<String>> mWitnesses =
-      Transformations.map(
-          mCurrentLao,
-          lao -> lao == null ? new ArrayList<>() : new ArrayList<>(lao.getWitnesses()));
-
+          Transformations.map(
+                  mCurrentLao,
+                  lao -> lao == null ? new ArrayList<>() : new ArrayList<>(lao.getWitnesses()));
   private final LiveData<String> mCurrentLaoName =
-      Transformations.map(mCurrentLao, lao -> lao == null ? "" : lao.getName());
+          Transformations.map(mCurrentLao, lao -> lao == null ? "" : lao.getName());
+  private String mCurrentRollCallId = ""; //used to know which roll call to close
 
   //  Multiple events from Lao may be concatenated using Stream.concat()
   private final LiveData<List<com.github.dedis.student20_pop.model.event.Event>> mLaoEvents = Transformations
@@ -84,18 +110,19 @@ public class LaoDetailViewModel extends AndroidViewModel {
   private final AndroidKeysetManager mKeysetManager;
   private CompositeDisposable disposables;
   private Gson mGson;
+  private Set<String> attendees = new HashSet<>();
 
   public LaoDetailViewModel(
-      @NonNull Application application,
-      LAORepository laoRepository,
-      Gson gson,
-      AndroidKeysetManager keysetManager) {
+          @NonNull Application application,
+          LAORepository laoRepository,
+          Gson gson,
+          AndroidKeysetManager keysetManager) {
     super(application);
-
     mLAORepository = laoRepository;
     mKeysetManager = keysetManager;
     mGson = gson;
     disposables = new CompositeDisposable();
+
   }
 
   @Override
@@ -124,7 +151,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
     Lao lao = getCurrentLao();
     if (lao == null) {
-      Log.d(TAG, "failed to retrieve current lao");
+      Log.d(TAG, LAO_FAILURE_MESSAGE);
       return null;
     }
 
@@ -168,7 +195,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
       disposables.add(disposable);
 
     } catch (GeneralSecurityException | IOException e) {
-      Log.d(TAG, "failed to retrieve public key", e);
+      Log.d(TAG, "PK_FAILURE_MESSAGE", e);
       return null;
     }
     return electionSetup.getId();
@@ -181,63 +208,57 @@ public class LaoDetailViewModel extends AndroidViewModel {
    *
    * @param title       the title of the roll call
    * @param description the description of the roll call, can be empty
-   * @param start       the start time of the roll call, zero if start type is SCHEDULED
-   * @param scheduled   the scheduled time of the roll call, zero if start type is NOW
+   * @param proposedStart       the proposed start time of the roll call
+   * @param proposedEnd   the proposed end time of the roll call
+   * @param open true if we want to directly open the roll call
    * @return the id of the newly created roll call event, null if fails to create the event
    */
-  public String createNewRollCall(String title, String description, long start, long scheduled) {
+  public void createNewRollCall(String title, String description, long proposedStart, long proposedEnd, boolean open) {
     Log.d(TAG, "creating a new roll call with title " + title);
-
     Lao lao = getCurrentLao();
     if (lao == null) {
-      Log.d(TAG, "failed to retrieve current lao");
-      return null;
+      Log.d(TAG, LAO_FAILURE_MESSAGE);
+      return;
     }
-
     String channel = lao.getChannel();
     CreateRollCall createRollCall;
     String laoId = channel.substring(6); // removing /root/ prefix
-    if (start != 0) {
-      createRollCall = new CreateRollCall(title, start, StartType.NOW, "", description, laoId);
-    } else {
-      createRollCall =
-          new CreateRollCall(title, scheduled, StartType.SCHEDULED, "", description, laoId);
-    }
+    createRollCall = new CreateRollCall(title, proposedStart, proposedEnd, "Lausanne", description, laoId);
 
     try {
+
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
       String publicKey = Keys.getEncodedKey(publicKeysetHandle);
       byte[] sender = Base64.getDecoder().decode(publicKey);
-
       PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
-      MessageGeneral msg = new MessageGeneral(sender, createRollCall, signer, mGson);
-
       Log.d(TAG, "sending publish message");
+      MessageGeneral msg = new MessageGeneral(sender, createRollCall, signer, mGson);
       Disposable disposable =
-          mLAORepository
-              .sendPublish(channel, msg)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .timeout(5, TimeUnit.SECONDS)
-              .subscribe(
-                  answer -> {
-                    if (answer instanceof Result) {
-                      Log.d(TAG, "created a roll call successfully");
-                      openLaoDetail();
-                    } else {
-                      Log.d(TAG, "failed to create a roll call");
-                    }
-                  },
-                  throwable -> {
-                    Log.d(TAG, "timed out waiting for result on roll_call/create", throwable);
-                  });
-
+              mLAORepository
+                      .sendPublish(channel, msg)
+                      .subscribeOn(Schedulers.io())
+                      .observeOn(AndroidSchedulers.mainThread())
+                      .timeout(5, TimeUnit.SECONDS)
+                      .subscribe(
+                              answer -> {
+                                if (answer instanceof Result) {
+                                  Log.d(TAG, "created a roll call with id: "+createRollCall.getId());
+                                  if(open){
+                                    openRollCall(createRollCall.getId());
+                                  }else{
+                                    mCreatedRollCallEvent.postValue(new Event<>(true));
+                                  }
+                                } else {
+                                  Log.d(TAG, "failed to create a roll call");
+                                }
+                              },
+                              throwable -> {
+                                Log.d(TAG, "timed out waiting for result on roll_call/create", throwable);
+                              });
       disposables.add(disposable);
     } catch (GeneralSecurityException | IOException e) {
-      Log.d(TAG, "failed to retrieve public key", e);
-      return null;
+      Log.d(TAG, PK_FAILURE_MESSAGE, e);
     }
-    return createRollCall.getId();
   }
 
 
@@ -249,9 +270,102 @@ public class LaoDetailViewModel extends AndroidViewModel {
    * @param id the roll call id to open
    */
   public void openRollCall(String id) {
-    Log.d(TAG, "opening a roll call with id " + id);
+    Log.d(TAG, "call openRollCall");
 
-    //TODO: implement open roll call
+    Lao lao = getCurrentLao();
+    if (lao == null) {
+      Log.d(TAG, LAO_FAILURE_MESSAGE);
+      return;
+    }
+    long openedAt = Instant.now().getEpochSecond();
+    String channel = lao.getChannel();
+    String laoId = channel.substring(6); // removing /root/ prefix
+    Optional<RollCall> optRollCall = lao.getRollCall(id);
+    if(!optRollCall.isPresent()){
+      Log.d(TAG, "failed to retrieve roll call with id "+id);
+      return;
+    }
+    RollCall rollCall = optRollCall.get();
+    OpenRollCall openRollCall = new OpenRollCall(laoId, id, openedAt, rollCall.getState());
+    attendees = new HashSet<>(rollCall.getAttendees());
+
+    try {
+      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+      byte[] sender = Base64.getDecoder().decode(publicKey);
+      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+      MessageGeneral msg = new MessageGeneral(sender, openRollCall, signer, mGson);
+      Disposable disposable =
+              mLAORepository
+                      .sendPublish(channel, msg)
+                      .subscribeOn(Schedulers.io())
+                      .observeOn(AndroidSchedulers.mainThread())
+                      .timeout(5, TimeUnit.SECONDS)
+                      .subscribe(
+                              answer -> {
+                                if (answer instanceof Result) {
+                                  Log.d(TAG, "opened the roll call");
+                                  mCurrentRollCallId = openRollCall.getUpdateId();
+                                  openAttendeeScanning();
+                                } else {
+                                  Log.d(TAG, "failed to open the roll call");
+                                }
+                              },
+                              throwable -> Log.d(TAG, "timed out waiting for result on roll_call/open", throwable)
+                      );
+      disposables.add(disposable);
+    } catch (GeneralSecurityException | IOException e) {
+      Log.d(TAG, PK_FAILURE_MESSAGE, e);
+    }
+  }
+
+  /**
+   * Closes the roll call event currently open
+   *
+   * <p>Publish a GeneralMessage containing CloseRollCall data.
+   *
+   */
+  public void closeRollCall(){
+    Log.d(TAG, "call closeRollCall");
+    Lao lao = getCurrentLao();
+    if (lao == null) {
+      Log.d(TAG, LAO_FAILURE_MESSAGE);
+      return;
+    }
+    long end = Instant.now().getEpochSecond();
+    String channel = lao.getChannel();
+    String laoId = channel.substring(6); // removing /root/ prefix
+    String updateId = Hash.hash("R", laoId, mCurrentRollCallId, Long.toString(end));
+    CloseRollCall closeRollCall = new CloseRollCall(updateId, mCurrentRollCallId, end, new ArrayList<>(attendees));
+    try {
+      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+      byte[] sender = Base64.getDecoder().decode(publicKey);
+      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+      MessageGeneral msg = new MessageGeneral(sender, closeRollCall, signer, mGson);
+      Disposable disposable =
+              mLAORepository
+                      .sendPublish(channel, msg)
+                      .subscribeOn(Schedulers.io())
+                      .observeOn(AndroidSchedulers.mainThread())
+                      .timeout(5, TimeUnit.SECONDS)
+                      .subscribe(
+                              answer -> {
+                                if (answer instanceof Result) {
+                                  Log.d(TAG, "closed the roll call");
+                                  mCurrentRollCallId = "";
+                                  attendees.clear();
+                                  openLaoDetail();
+                                } else {
+                                  Log.d(TAG, "failed to close the roll call");
+                                }
+                              },
+                              throwable -> Log.d(TAG, "timed out waiting for result on roll_call/open", throwable)
+                      );
+      disposables.add(disposable);
+    } catch (GeneralSecurityException | IOException e) {
+      Log.d(TAG, PK_FAILURE_MESSAGE, e);
+    }
   }
 
   /**
@@ -272,7 +386,6 @@ public class LaoDetailViewModel extends AndroidViewModel {
   public LiveData<Event<Boolean>> getOpenLaoDetailEvent() {
     return mOpenLaoDetailEvent;
   }
-
   public LiveData<Event<Boolean>> getOpenElectionResultsEvent() { return mOpenElectionResultsEvent; }
 
   public LiveData<Event<Boolean>> getElectionCreated() {return mElectionCreatedEvent;}
@@ -286,15 +399,12 @@ public class LaoDetailViewModel extends AndroidViewModel {
   public LiveData<Event<Boolean>> getOpenHomeEvent() {
     return mOpenHomeEvent;
   }
-
   public LiveData<Event<Boolean>> getOpenIdentityEvent() {
     return mOpenIdentityEvent;
   }
-
   public LiveData<Event<Boolean>> getShowPropertiesEvent() {
     return mShowPropertiesEvent;
   }
-
   public LiveData<Event<Boolean>> getEditPropertiesEvent() {
     return mEditPropertiesEvent;
   }
@@ -314,7 +424,6 @@ public class LaoDetailViewModel extends AndroidViewModel {
   public Lao getCurrentLao() {
     return mCurrentLao.getValue();
   }
-
   public LiveData<String> getCurrentLaoName() {
     return mCurrentLaoName;
   }
@@ -329,6 +438,21 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
   public LiveData<List<String>> getWitnesses() {
     return mWitnesses;
+  }
+  public LiveData<Event<String>> getOpenRollCallEvent() {
+    return mOpenRollCallEvent;
+  }
+  public LiveData<Event<Integer>> getNbAttendeesEvent() {
+    return mNbAttendeesEvent;
+  }
+  public LiveData<Event<Boolean>> getCloseRollCallEvent() {
+    return mCloseRollCallEvent;
+  }
+  public LiveData<Event<Boolean>> getCreatedRollCallEvent() {
+    return mCreatedRollCallEvent;
+  }
+  public LiveData<Event<String>> getScanWarningEvent() {
+    return mScanWarningEvent;
   }
 
   public Election getCurrentElection() { return mCurrentElection.getValue(); }
@@ -352,16 +476,13 @@ public class LaoDetailViewModel extends AndroidViewModel {
   public void openIdentity() {
     mOpenIdentityEvent.setValue(new Event<>(true));
   }
-
   public void toggleShowHideProperties() {
     boolean val = showProperties.getValue();
     showProperties.postValue(!val);
   }
-
   public void openEditProperties() {
     mEditPropertiesEvent.setValue(new Event<>(true));
   }
-
   public void closeEditProperties() {
     mEditPropertiesEvent.setValue(new Event<>(false));
   }
@@ -410,19 +531,15 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
   public void confirmEdit() {
     closeEditProperties();
-
     if (!mLaoName.getValue().isEmpty()) {
       updateLaoName();
     }
   }
-
   public void updateLaoName() {
     // TODO: Create an `UpdateLao` message and publish it. Observe the response on a background
     // thread and update the UI accordingly.
-
     Log.d(TAG, "Updating lao name to " + mLaoName.getValue());
   }
-
   public void cancelEdit() {
     mLaoName.setValue("");
     closeEditProperties();
@@ -430,29 +547,29 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
   public void subscribeToLao(String laoId) {
     disposables.add(
-        mLAORepository
-            .getLaoObservable(laoId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                lao -> {
-                  Log.d(TAG, "got an update for lao: " + lao.getName());
-                  mCurrentLao.postValue(lao);
-                  try {
-                    KeysetHandle publicKeysetHandle =
-                        mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-                    boolean isOrganizer =
-                        lao.getOrganizer().equals(Keys.getEncodedKey(publicKeysetHandle));
-                    Log.d(TAG, "isOrganizer: " + isOrganizer);
-                    mIsOrganizer.postValue(isOrganizer);
-                    return;
-                  } catch (GeneralSecurityException e) {
-                    Log.d(TAG, "failed to get public keyset handle", e);
-                  } catch (IOException e) {
-                    Log.d(TAG, "failed to get public key", e);
-                  }
-                  mIsOrganizer.postValue(false);
-                }));
+            mLAORepository
+                    .getLaoObservable(laoId)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            lao -> {
+                              Log.d(TAG, "got an update for lao: " + lao.getName());
+                              mCurrentLao.postValue(lao);
+                              try {
+                                KeysetHandle publicKeysetHandle =
+                                        mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+                                boolean isOrganizer =
+                                        lao.getOrganizer().equals(Keys.getEncodedKey(publicKeysetHandle));
+                                Log.d(TAG, "isOrganizer: " + isOrganizer);
+                                mIsOrganizer.postValue(isOrganizer);
+                                return;
+                              } catch (GeneralSecurityException e) {
+                                Log.d(TAG, "failed to get public keyset handle", e);
+                              } catch (IOException e) {
+                                Log.d(TAG, "failed to get public key", e);
+                              }
+                              mIsOrganizer.postValue(false);
+                            }));
   }
 
   public void setCurrentLaoName(String laoName) {
@@ -460,5 +577,47 @@ public class LaoDetailViewModel extends AndroidViewModel {
       Log.d(TAG, "New name for current LAO: " + laoName);
       mLaoName.setValue(laoName);
     }
+  }
+
+  public void openQrCodeScanningRollCall() {
+    mOpenRollCallEvent.setValue(new Event<>(HomeViewModel.SCAN));
+    mNbAttendeesEvent.postValue(new Event<>(attendees.size())); //this to display the initial number of attendees
+  }
+  public void openCameraPermissionRollCall() {
+    mOpenRollCallEvent.setValue(new Event<>(HomeViewModel.REQUEST_CAMERA_PERMISSION));
+  }
+  public void openAttendeeScanning() {
+    if (ContextCompat.checkSelfPermission(
+            getApplication().getApplicationContext(), Manifest.permission.CAMERA)
+            == PackageManager.PERMISSION_GRANTED) {
+      openQrCodeScanningRollCall();
+    } else {
+      openCameraPermissionRollCall();
+    }
+  }
+
+  @Override
+  public void onPermissionGranted() {
+    openQrCodeScanningRollCall();
+  }
+  @Override
+  public int getScanDescription() {
+    return R.string.qrcode_scanning_add_attendee;
+  }
+  @Override
+  public void onQRCodeDetected(Barcode barcode) {
+    Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
+    try{
+      Base64.getDecoder().decode(barcode.rawValue);
+    }catch(IllegalArgumentException e){
+      mScanWarningEvent.postValue(new Event<>("Invalid QR code. Please try again."));
+      return;
+    }
+    if(attendees.contains(barcode.rawValue)){
+      mScanWarningEvent.postValue(new Event<>("This QR code has already been scanned. Please try again."));
+      return;
+    }
+    attendees.add(barcode.rawValue);
+    mNbAttendeesEvent.postValue(new Event<>(attendees.size()));
   }
 }

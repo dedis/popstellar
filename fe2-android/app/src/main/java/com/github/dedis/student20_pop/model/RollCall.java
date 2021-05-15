@@ -1,7 +1,7 @@
 package com.github.dedis.student20_pop.model;
 
 import com.github.dedis.student20_pop.model.event.Event;
-import com.github.dedis.student20_pop.model.event.EventType;
+import com.github.dedis.student20_pop.model.event.EventState;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,8 +12,8 @@ public class RollCall extends Event {
   private String name;
   private long creation;
   private long start;
-  private long scheduled;
   private long end;
+  private EventState state;
   private Set<String> attendees;
 
   private String location;
@@ -55,20 +55,20 @@ public class RollCall extends Event {
     this.start = start;
   }
 
-  public long getScheduled() {
-    return scheduled;
-  }
-
-  public void setScheduled(long scheduled) {
-    this.scheduled = scheduled;
-  }
-
   public long getEnd() {
     return end;
   }
 
   public void setEnd(long end) {
     this.end = end;
+  }
+
+  public EventState getState() {
+    return state;
+  }
+
+  public void setState(EventState state) {
+    this.state= state;
   }
 
   public Set<String> getAttendees() {
@@ -97,15 +97,7 @@ public class RollCall extends Event {
 
   @Override
   public long getStartTimestamp() {
-    if (start != 0) {
-      return start;
-    }
-    return scheduled;
-  }
-
-  @Override
-  public EventType getType() {
-    return EventType.ROLL_CALL;
+    return start;
   }
 
   @Override

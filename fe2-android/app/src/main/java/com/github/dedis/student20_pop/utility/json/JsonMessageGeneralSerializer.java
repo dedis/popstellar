@@ -13,6 +13,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+
 import java.lang.reflect.Type;
 import java.security.GeneralSecurityException;
 import java.util.Base64;
