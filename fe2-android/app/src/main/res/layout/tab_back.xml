@@ -23,7 +23,7 @@
         android:id="@+id/tab_back"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:text="Back"
+        android:text="@string/back"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/guideline_horizontal_tab_back"
         app:layout_constraintStart_toStartOf="@+id/guideline_vertical_tab_back"

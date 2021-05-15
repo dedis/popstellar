@@ -21,7 +21,6 @@ public class RollCall extends Event {
 
   public RollCall() {
     this.attendees = new HashSet<>();
-    type = EventType.ROLL_CALL;
   }
 
   public String getId() {
@@ -102,6 +101,11 @@ public class RollCall extends Event {
       return start;
     }
     return scheduled;
+  }
+
+  @Override
+  public EventType getType() {
+    return EventType.ROLL_CALL;
   }
 
   @Override

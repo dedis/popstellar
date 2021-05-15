@@ -1,6 +1,7 @@
 package com.github.dedis.student20_pop.model;
 
 import com.github.dedis.student20_pop.model.event.Event;
+import com.github.dedis.student20_pop.model.event.EventCategory;
 import com.github.dedis.student20_pop.model.event.EventType;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,6 @@ public class Election extends Event {
 
 
     public Election() {
-        type = EventType.ELECTION;
         this.ballotOptions = new ArrayList<>();
     }
 
@@ -98,6 +98,11 @@ public class Election extends Event {
     @Override
     public long getStartTimestamp() {
         return start;
+    }
+
+    @Override
+    public EventType getType() {
+        return EventType.ELECTION;
     }
 
     @Override

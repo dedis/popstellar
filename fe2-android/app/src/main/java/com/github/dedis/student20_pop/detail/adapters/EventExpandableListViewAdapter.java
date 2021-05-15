@@ -255,40 +255,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
         switch (event.getType()) {
             case ELECTION:
-                LayoutElectionDisplayBinding electionBinding ;
-                if (convertView == null) {
-                    LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-                    electionBinding = LayoutElectionDisplayBinding.inflate(inflater, parent, false);
-                } else {
-                    electionBinding = DataBindingUtil.getBinding(convertView);
-                }
-                Election election =(Election) event;
-                electionBinding.setElection(election);
-                Date dStart = new java.util.Date(Long.valueOf(election.getStartTimestamp())*1000);// *1000 because it needs to be in milisecond
-                String dateStart = DATE_FORMAT.format(dStart);
-                electionBinding.electionStartDate.setText("Start date : " +dateStart);
-                Date dEnd = new java.util.Date(Long.valueOf(election.getEndTimestamp())*1000);
-                String dateEnd = DATE_FORMAT.format(dEnd);
-                electionBinding.electionEndDate.setText("End Date : " + dateEnd);
-                if(category == PRESENT) {
-                    electionBinding.electionActionButton.setOnClickListener(
-                            clicked -> viewModel.openCastVotes());
-                }
-                else if (category == PAST) {
-                    electionBinding.electionActionButton.setOnClickListener(
-                            clicked -> viewModel.openElectionResults(true));
-
-                }
-
-                electionBinding.electionEditButton.setOnClickListener( clicked -> {
-                    viewModel.setCurrentElection(election);
-                    viewModel.openManageElection(true);
-                });
-                electionBinding.setEventCategory(category);
-                electionBinding.setViewModel(viewModel);
-                electionBinding.setLifecycleOwner(lifecycleOwner);
-                electionBinding.executePendingBindings();
-                return electionBinding.getRoot();
+                handleElection(convertView,  parent, event,  category);
 
             default: return binding.getRoot();
         }
@@ -325,4 +292,58 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return true;
     }
+
+    /**
+     * A helper method used to handle the display of the elections
+     * @param convertView the old view to reuse, if possible. You should check that this view is
+     *     non-null and of an appropriate type before using. If it is not possible to convert this
+     *     view to display the correct data, this method can create a new view. It is not guaranteed
+     *     that the convertView will have been previously created by {@link #getChildView(int, int,
+     *     boolean, View, ViewGroup)}.
+     * @param parent the parent that this view will eventually be attached to
+     * @param event the election Event
+     * @param category the event category ( Past,Present or Future)
+     * @return the View corresponding to the child at the specified position
+     */
+
+    private View handleElection(View convertView, ViewGroup parent, Event event, EventCategory category) {
+        LayoutElectionDisplayBinding electionBinding ;
+        if (convertView == null) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            electionBinding = LayoutElectionDisplayBinding.inflate(inflater, parent, false);
+        } else {
+            electionBinding = DataBindingUtil.getBinding(convertView);
+        }
+        Election election =(Election) event;
+        electionBinding.setElection(election);
+        Date dStart = new java.util.Date(Long.valueOf(election.getStartTimestamp())*1000);// *1000 because it needs to be in milisecond
+        String dateStart = DATE_FORMAT.format(dStart);
+        electionBinding.electionStartDate.setText("Start date : " +dateStart);
+        Date dEnd = new java.util.Date(Long.valueOf(election.getEndTimestamp())*1000);
+        String dateEnd = DATE_FORMAT.format(dEnd);
+        electionBinding.electionEndDate.setText("End Date : " + dateEnd);
+        if(category == PRESENT) {
+            electionBinding.electionActionButton.setOnClickListener(
+                    clicked -> viewModel.openCastVotes());
+        }
+        else if (category == PAST) {
+            electionBinding.electionActionButton.setOnClickListener(
+                    clicked -> viewModel.openElectionResults(true));
+
+        }
+
+        electionBinding.electionEditButton.setOnClickListener( clicked -> {
+            viewModel.setCurrentElection(election);
+            viewModel.openManageElection(true);
+        });
+        electionBinding.setEventCategory(category);
+        electionBinding.setViewModel(viewModel);
+        electionBinding.setLifecycleOwner(lifecycleOwner);
+        electionBinding.executePendingBindings();
+        return electionBinding.getRoot();
+
+
+    }
 }
+
+

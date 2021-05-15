@@ -27,7 +27,7 @@
             android:id="@+id/manage_election_scrollview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop= "@dimen/manage_election_scroll_view"
             android:fillViewport="true"
             android:orientation="vertical"
             app:layout_constraintTop_toBottomOf="@id/manage_election_guideline_horizontal">
@@ -65,7 +65,7 @@
                 <LinearLayout
                     android:id="@+id/manage_election_details"
                     android:layout_width="match_parent"
-                    android:layout_height="275dp"
+                    android:layout_height="@dimen/manage_election_linear_layout"
                     android:orientation="vertical"
                     app:layout_constraintTop_toBottomOf="@id/manage_election_title">
 
@@ -87,7 +87,7 @@
                         android:id="@+id/current_time"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="@dimen/election_question_margin_top"
                         app:layout_constrainedHeight="true"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/manage_election_title">
@@ -115,7 +115,7 @@
                         android:id="@+id/start_time"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="@dimen/election_question_margin_top"
                         app:layout_constrainedHeight="true"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/manage_election_title">
@@ -143,7 +143,7 @@
                         android:id="@+id/end_time"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="@dimen/election_question_margin_top"
                         app:layout_constrainedHeight="true"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/manage_election_title">

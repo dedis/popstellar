@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
     <data>
         <import type="android.view.View" />
         <import type="com.github.dedis.student20_pop.model.event.EventCategory" />
@@ -31,10 +30,10 @@
                 android:id="@+id/election_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
+                android:layout_marginStart="@dimen/election_title_margin_start"
                 android:gravity="start"
                 android:text="@{`Election : `+election.name}"
-                android:textSize="15sp"
+                android:textSize="@dimen/event_displayed_name"
                 android:textStyle="bold" />
 
             <TextView
