@@ -1,5 +1,7 @@
 package com.github.dedis.student20_pop.model.network.method.message;
 
+import android.util.Base64;
+
 public class PublicKeySignaturePair {
 
   private byte[] witness;
@@ -17,5 +19,13 @@ public class PublicKeySignaturePair {
 
   public byte[] getSignature() {
     return signature;
+  }
+
+  public String getWitnessEncoded() {
+    return Base64.encodeToString(this.witness, Base64.NO_WRAP);
+  }
+
+  public String getSignatureEncoded() {
+    return Base64.encodeToString(this.signature, Base64.NO_WRAP);
   }
 }
