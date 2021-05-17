@@ -22,7 +22,7 @@ COMMANDS:
 OPTIONS:
    --public-key value, --pk value          base64 encoded organizer's public key
    --organizer-address value, --org value  organizer's IP address for witness to connect to organizer (default value "localhost")
-   --client-port value, --cp value         port on which to open websocket for clients (default value 9000)
+   --client-port value, --cp value         port on which to open websocket for clients (default value 9000 for organizer, 9002 for witness)
    --witness-port value, --wp value        port on which to open websocket for witnesses (default value 9001)
    --organizer-port value, --op value      port on which witness connects to organizer (default value 9000)
    --help, -h                              show help (default: false)
@@ -31,6 +31,11 @@ OPTIONS:
 
 You may start the organizer server at ports `9000` for clients and `9001` for witnesses by executing `./pop organizer --pk "<base64 encoded pk>" serve`.
 Please use the `-cp` and `-wp` flags to specify an alternative port.
+The full path to connect to the organizer as a client is `ws://host:clientport/organizer/client/` and as a witness `ws://host:witnessport/organizer/witness/`. 
+
+You may start the witness server at ports `9002` for clients and `9001` for organizer by executing `./pop witness --pk "<base64 encoded pk>" serve`.
+Please use the `-cp` and `-op` flags to specify an alternative port.
+The full path to connect to the organizer as a client is `ws://host:clientport/organizer/client/` and as a witness `ws://host:witnessport/organizer/witness/`.
 
 ## Packages
 
