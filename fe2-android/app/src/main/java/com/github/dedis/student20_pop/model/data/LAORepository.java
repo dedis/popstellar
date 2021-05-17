@@ -280,6 +280,8 @@ public class LAORepository {
     Election election = electionOption.get();
 
     election.setOrganizerRegisteredVotes(data.getRegisteredVotes());
+
+    lao.updateElection(election.getId(), election);
     return false;
   }
 
