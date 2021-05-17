@@ -25,6 +25,7 @@ import java.util.List;
 
 public class JsonMessageGeneralSerializer
         implements JsonSerializer<MessageGeneral>, JsonDeserializer<MessageGeneral> {
+  private final String SIG = "signature";
   @Override
   public MessageGeneral deserialize(
           JsonElement json, Type typeOfT, JsonDeserializationContext context)
@@ -34,7 +35,7 @@ public class JsonMessageGeneralSerializer
     byte[] messageId = Base64.getDecoder().decode(root.get("message_id").getAsString());
     byte[] dataBuf = Base64.getDecoder().decode(root.get("data").getAsString());
     byte[] sender = Base64.getDecoder().decode(root.get("sender").getAsString());
-    byte[] signature = Base64.getDecoder().decode(root.get("signature").getAsString());
+    byte[] signature = Base64.getDecoder().decode(root.get(SIG).getAsString());
 
     PublicKeyVerify verifier = new Ed25519Verify(sender);
     try {
@@ -49,7 +50,7 @@ public class JsonMessageGeneralSerializer
     while(it.hasNext()){
       JsonElement element = it.next();
       String witness = element.getAsJsonObject().get("witness").getAsString();
-      String sig = element.getAsJsonObject().get("signature").getAsString();
+      String sig = element.getAsJsonObject().get(SIG).getAsString();
       witnessSignatures.add(new PublicKeySignaturePair(Base64.getDecoder().decode(witness), Base64.getDecoder().decode(sig)));
     }
 
@@ -66,7 +67,7 @@ public class JsonMessageGeneralSerializer
 
     result.addProperty("message_id", src.getMessageId());
     result.addProperty("sender", src.getSender());
-    result.addProperty("signature", src.getSignature());
+    result.addProperty(SIG, src.getSignature());
 
     result.addProperty("data", src.getDataEncoded());
 
@@ -74,7 +75,7 @@ public class JsonMessageGeneralSerializer
     for(PublicKeySignaturePair element:src.getWitnessSignatures()){
       JsonObject sigObj = new JsonObject();
       sigObj.addProperty("witness", element.getWitnessEncoded());
-      sigObj.addProperty("signature", element.getSignatureEncoded());
+      sigObj.addProperty(SIG, element.getSignatureEncoded());
       jsonArray.add(sigObj);
     }
     result.add("witness_signatures", jsonArray);
