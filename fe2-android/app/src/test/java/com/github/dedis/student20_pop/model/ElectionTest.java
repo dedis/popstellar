@@ -1,6 +1,8 @@
 package com.github.dedis.student20_pop.model;
 
 
+import com.github.dedis.student20_pop.utility.security.Hash;
+
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -95,6 +97,15 @@ public class ElectionTest {
     public void settingAndGettingReturnsCorrespondingCreationTime() {
         election.setStart(creationTime);
         assertThat(election.getCreation(), is(creationTime));
+    }
+
+    @Test
+    public void settingSameRegisteredVotesAndComparingReturnsTrue() {
+        List<String> registeredVotes = Arrays.asList("voteId1", "voteId2", "voteId3", "voteId4");
+        String hashed = Hash.hash(registeredVotes.toString());
+        election.setOrganizerRegisteredVotes(hashed);
+        election.setWitnessRegisteredVotes(registeredVotes.toString());
+        assertThat(election.compareRegisteredVotes(), is(true));
     }
     
     @Test
