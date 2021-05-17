@@ -50,14 +50,14 @@ public class ElectionEndTest {
 
     @Test
     public void fieldsCantBeNull() {
-        assertThrows(IllegalArgumentException.class, () -> { ElectionEnd electionEnd = new ElectionEnd(null, createdAt, laoId, registeredVotes);});
-        assertThrows(IllegalArgumentException.class, () -> { ElectionEnd electionEnd = new ElectionEnd(electionId, createdAt, null, registeredVotes);});
-        assertThrows(IllegalArgumentException.class, () -> { ElectionEnd electionEnd = new ElectionEnd(electionId, createdAt, laoId, null);});
+        assertThrows(IllegalArgumentException.class, () -> new ElectionEnd(null, createdAt, laoId, registeredVotes));
+        assertThrows(IllegalArgumentException.class, () -> new ElectionEnd(electionId, createdAt, null, registeredVotes));
+        assertThrows(IllegalArgumentException.class, () -> new ElectionEnd(electionId, createdAt, laoId, null));
     }
 
     @Test
     public void createdAtCantBeNegative() {
-        assertThrows(IllegalArgumentException.class, () -> { ElectionEnd electionEnd = new ElectionEnd(electionId, -1, laoId, registeredVotes);});
+        assertThrows(IllegalArgumentException.class, () -> new ElectionEnd(electionId, -1, laoId, registeredVotes));
     }
 
 }

@@ -62,22 +62,22 @@ public class ElectionSetupTest {
 
     @Test
     public void fieldsCantBeNull() {
-        assertThrows(IllegalArgumentException.class, () -> {ElectionSetup electionSetup = new ElectionSetup(null, start, end, votingMethod, writeIn, ballotOptions, question, laoId);});
-        assertThrows(IllegalArgumentException.class, () -> {ElectionSetup electionSetup = new ElectionSetup(electionSetupName, start, end, null, writeIn, ballotOptions, question, laoId);});
-        assertThrows(IllegalArgumentException.class, () -> {ElectionSetup electionSetup = new ElectionSetup(electionSetupName, start, end, votingMethod, writeIn, null, question, laoId);});
-        assertThrows(IllegalArgumentException.class, () -> {ElectionSetup electionSetup = new ElectionSetup(electionSetupName, start, end, votingMethod, writeIn, ballotOptions, null, laoId);});
-        assertThrows(IllegalArgumentException.class, () -> {ElectionSetup electionSetup = new ElectionSetup(electionSetupName, start, end, votingMethod, writeIn, ballotOptions, question, null);});
+        assertThrows(IllegalArgumentException.class, () -> new ElectionSetup(null, start, end, votingMethod, writeIn, ballotOptions, question, laoId));
+        assertThrows(IllegalArgumentException.class, () -> new ElectionSetup(electionSetupName, start, end, null, writeIn, ballotOptions, question, laoId));
+        assertThrows(IllegalArgumentException.class, () -> new ElectionSetup(electionSetupName, start, end, votingMethod, writeIn, null, question, laoId));
+        assertThrows(IllegalArgumentException.class, () -> new ElectionSetup(electionSetupName, start, end, votingMethod, writeIn, ballotOptions, null, laoId));
+        assertThrows(IllegalArgumentException.class, () -> new ElectionSetup(electionSetupName, start, end, votingMethod, writeIn, ballotOptions, question, null));
     }
 
     @Test
     public void endCantHappenBeforeStart() {
-        assertThrows(IllegalArgumentException.class, () -> {ElectionSetup electionSetup = new ElectionSetup(electionSetupName, 2, 1, votingMethod, writeIn, ballotOptions, question, laoId);});
+        assertThrows(IllegalArgumentException.class, () -> new ElectionSetup(electionSetupName, 2, 1, votingMethod, writeIn, ballotOptions, question, laoId));
     }
 
     @Test
     public void timestampsCantBeNegative() {
-        assertThrows(IllegalArgumentException.class, () -> {ElectionSetup electionSetup = new ElectionSetup(electionSetupName, -1, end, votingMethod, writeIn, ballotOptions, question, laoId);});
-        assertThrows(IllegalArgumentException.class, () -> {ElectionSetup electionSetup = new ElectionSetup(electionSetupName, start, -1, votingMethod, writeIn, ballotOptions, question, laoId);});
+        assertThrows(IllegalArgumentException.class, () -> new ElectionSetup(electionSetupName, -1, end, votingMethod, writeIn, ballotOptions, question, laoId));
+        assertThrows(IllegalArgumentException.class, () -> new ElectionSetup(electionSetupName, start, -1, votingMethod, writeIn, ballotOptions, question, laoId));
     }
 
     @Test

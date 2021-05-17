@@ -26,12 +26,12 @@ public class ElectionQuestionResultTest {
 
     @Test
     public void fieldsCantBeNull() {
-        assertThrows(IllegalArgumentException.class, () -> { ElectionQuestionResult electionQuestionResult = new ElectionQuestionResult(null, results);});
-        assertThrows(IllegalArgumentException.class, () -> { ElectionQuestionResult electionQuestionResult = new ElectionQuestionResult(questionId, null);});
+        assertThrows(IllegalArgumentException.class, () -> new ElectionQuestionResult(null, results));
+        assertThrows(IllegalArgumentException.class, () -> new ElectionQuestionResult(questionId, null));
     }
 
     @Test
     public void resultsCantBeEmpty() {
-        assertThrows(IllegalArgumentException.class, () -> { ElectionQuestionResult electionQuestionResult = new ElectionQuestionResult(questionId, new HashMap<>());});
+        assertThrows(IllegalArgumentException.class, () -> new ElectionQuestionResult(questionId, new HashMap<>()));
     }
 }

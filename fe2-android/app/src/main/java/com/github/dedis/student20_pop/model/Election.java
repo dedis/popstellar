@@ -1,12 +1,14 @@
 package com.github.dedis.student20_pop.model;
 
 import com.github.dedis.student20_pop.model.event.Event;
+import com.github.dedis.student20_pop.utility.security.Hash;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class Election extends Event {
 
@@ -18,6 +20,12 @@ public class Election extends Event {
     private boolean writeIn;
     private String question;
     private List<String> ballotOptions;
+
+    //Used by witness to store in local the hash corresponding to the registered votes
+    private String witnessRegisteredVotes;
+    //Registered votes recorded by the organizer at the end of an election
+    private String organizerRegisteredVotes;
+
     private Map<String, Integer> resultsMap;
 
     public Election() {
@@ -66,6 +74,22 @@ public class Election extends Event {
         checkTime(end);
         this.end = end;
     }
+
+    /**
+     * Takes the votes ids, and hashes them into a string. It can then be used by the witness to compare with
+     * the registered votes sent by the organizer at the end of an election.
+     * @param registeredVoteIds
+     */
+    public void setWitnessRegisteredVotes(String... registeredVoteIds) {
+        if (registeredVoteIds == null) throw new IllegalArgumentException("registered votes shouldn't be null");
+        this.witnessRegisteredVotes = Hash.hash(registeredVoteIds);
+    }
+
+    public void setOrganizerRegisteredVotes(String organizerRegisteredVotes) {
+        if (organizerRegisteredVotes == null || organizerRegisteredVotes.isEmpty()) throw new IllegalArgumentException("registered votes shouldn't be null, nor empty.");
+        this.organizerRegisteredVotes = organizerRegisteredVotes;
+    }
+
 
     public void setResultsMap(Map<String, Integer> unsortedWinnerMap) {
         if (unsortedWinnerMap == null) throw new IllegalArgumentException("the map of winners shoud not be null");
@@ -117,5 +141,15 @@ public class Election extends Event {
     @Override
     public long getEndTimestamp() {
         return end;
+    }
+
+    /**
+     * This method is used by the witness to compare local registered votes with
+     * the ones received from organizer back-end
+     */
+    public boolean compareRegisteredVotes() {
+        if (witnessRegisteredVotes == null) throw new IllegalArgumentException("Witness registered votes have not been set !");
+        if (organizerRegisteredVotes == null) throw new IllegalArgumentException("Organizer registered votes have not been set !");
+        return witnessRegisteredVotes.equals(organizerRegisteredVotes);
     }
 }

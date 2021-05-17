@@ -260,7 +260,10 @@ public class LAORepository {
   private boolean handleElectionResult(String channel, ElectionResult data) {
     Lao lao = laoById.get(channel).getLao();
 
-    Election election = lao.getElection(channel.substring(channel.substring(6).length() + 7)).get();
+    Optional<Election> electionOption = lao.getElection(channel.substring(channel.substring(6).length() + 7));
+    if (!electionOption.isPresent()) throw new IllegalArgumentException("the election should be present when receiving a result");
+    Election election = electionOption.get();
+
     List<ElectionQuestionResult> questions = data.getElectionQuestionResults();
     if (questions.isEmpty()) throw new IllegalArgumentException("the questions results shouldn't be empty");
     election.setResultsMap(questions.get(0).getResults());
@@ -270,7 +273,13 @@ public class LAORepository {
   }
 
   private boolean handleElectionEnd(String channel, ElectionEnd data) {
-    //TODO: witness must compare registered votes in ElectionEnd
+    Lao lao = laoById.get(channel).getLao();
+
+    Optional<Election> electionOption = lao.getElection(channel.substring(channel.substring(6).length() + 7));
+    if (!electionOption.isPresent()) throw new IllegalArgumentException("the election should be present when receiving a result");
+    Election election = electionOption.get();
+
+    election.setOrganizerRegisteredVotes(data.getRegisteredVotes());
     return false;
   }
 

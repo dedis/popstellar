@@ -22,12 +22,12 @@ public class ElectionResultTest {
 
     @Test
     public void questionsCantBeNull() {
-        assertThrows(IllegalArgumentException.class, () -> { ElectionResult electionResult = new ElectionResult(null);});
+        assertThrows(IllegalArgumentException.class, () -> new ElectionResult(null));
     }
 
     @Test
     public void questionsCantBeEmpty() {
-        assertThrows(IllegalArgumentException.class, () -> { ElectionResult electionResult = new ElectionResult(new ArrayList<>()); });
+        assertThrows(IllegalArgumentException.class, () -> new ElectionResult(new ArrayList<>()));
     }
 
     @Test
