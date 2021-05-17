@@ -5,6 +5,7 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
 import com.google.gson.annotations.SerializedName;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,8 +16,10 @@ public class StateLao extends Data {
   private final String id;
   private final String name;
   private final long creation;
+  @SerializedName("last_modified")
   private final long lastModified;
   private final String organizer;
+  @SerializedName("modification_id")
   private final String modificationId;
   private final Set<String> witnesses;
 

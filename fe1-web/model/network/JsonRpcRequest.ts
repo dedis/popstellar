@@ -10,6 +10,8 @@ import { validateJsonRpcRequest } from './validation';
  * This class represents a JSON-RPC 2.0 Request (or Notification)
  */
 export class JsonRpcRequest {
+  public readonly jsonrpc: string;
+
   public readonly method: JsonRpcMethod;
 
   public readonly id?: number;
@@ -50,6 +52,7 @@ export class JsonRpcRequest {
     this.method = req.method;
     this.id = (req.id === undefined || req.id === null) ? undefined : req.id;
     this.params = req.params;
+    this.jsonrpc = '2.0';
   }
 
   static fromJson(jsonString: string): JsonRpcRequest {
