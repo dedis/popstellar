@@ -40,10 +40,10 @@ func main() {
 		Value:   9002,
 	}
 	otherWitnessFlag := &cli.StringFlag{
-		Name:	"other-witness",
+		Name:    "other-witness",
 		Aliases: []string{"ow"},
 		Usage:   "address and port to connect to other witness",
-		Value:	 "",
+		Value:   "",
 	}
 
 	app := &cli.App{
