@@ -41,6 +41,7 @@ public class ElectionSetup extends Data {
             List<String> ballotOptions,
             String question,
             String laoId) {
+        if (name == null || start < 0 || end < 0 || end < start || votingMethod == null || ballotOptions == null || question == null || laoId == null) throw new IllegalArgumentException();
         this.name = name;
         this.createdAt = Instant.now().toEpochMilli();
         this.startTime = start;

@@ -257,22 +257,17 @@ public class  LAORepository {
   private boolean handleElectionResult(String channel, ElectionResult data) {
     Lao lao = laoById.get(channel).getLao();
 
-    //Easier way to retrieve election id ?
-    String laoId = channel.substring(6);
-    int startIdx = laoId.length() + 7;
-
-    Election election = lao.getElection(channel.substring(startIdx)).get();
+    Election election = lao.getElection(channel.substring(channel.substring(6).length() + 7)).get();
     List<ElectionQuestionResult> questions = data.getElectionQuestionResults();
     if (questions.isEmpty()) throw new IllegalArgumentException("the questions results shouldn't be empty");
-    election.setWinnerList(questions.get(0).getResults());
+    election.setResultsMap(questions.get(0).getResults());
     
     lao.updateElection(election.getId(), election);
     return false;
   }
 
   private boolean handleElectionEnd(String channel, ElectionEnd data) {
-    Lao lao = laoById.get(channel).getLao();
-
+    //TODO: witness must compare registered votes in ElectionEnd
     return false;
   }
 

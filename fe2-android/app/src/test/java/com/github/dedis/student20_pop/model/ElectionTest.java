@@ -1,10 +1,14 @@
 package com.github.dedis.student20_pop.model;
 
+
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -91,5 +95,34 @@ public class ElectionTest {
     public void settingAndGettingReturnsCorrespondingCreationTime() {
         election.setStart(creationTime);
         assertThat(election.getCreation(), is(creationTime));
+    }
+    
+    @Test
+    public void resultsAreCorrectlySorted() {
+        Map<String, Integer> unsortedResultsMap = new LinkedHashMap<>();
+        unsortedResultsMap.put("Candidate1", 30);
+        unsortedResultsMap.put("Candidate2", 23);
+        unsortedResultsMap.put("Candidate3", 16);
+        unsortedResultsMap.put("Candidate4", 43);
+        election.setResultsMap(unsortedResultsMap);
+        Map<String, Integer> sortedMap = election.getResultsMap();
+        Iterator<Map.Entry<String, Integer>> mapIterator = sortedMap.entrySet().iterator();
+
+        Map.Entry<String, Integer> firstResult = mapIterator.next();
+        assertThat(firstResult.getKey(), is("Candidate4"));
+        assertThat(firstResult.getValue(), is(43));
+
+        Map.Entry<String, Integer> secondResult = mapIterator.next();
+        assertThat(secondResult.getKey(), is("Candidate1"));
+        assertThat(secondResult.getValue(), is(30));
+
+        Map.Entry<String, Integer> thirdResult = mapIterator.next();
+        assertThat(thirdResult.getKey(), is("Candidate2"));
+        assertThat(thirdResult.getValue(), is(23));
+
+        Map.Entry<String, Integer> fourthResult = mapIterator.next();
+        assertThat(fourthResult.getKey(), is("Candidate3"));
+        assertThat(fourthResult.getValue(), is(16));
+
     }
 }

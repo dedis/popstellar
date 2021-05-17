@@ -3,7 +3,10 @@ package com.github.dedis.student20_pop.model;
 import com.github.dedis.student20_pop.model.event.Event;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Election extends Event {
 
@@ -15,11 +18,11 @@ public class Election extends Event {
     private boolean writeIn;
     private String question;
     private List<String> ballotOptions;
-    private List<String> winnerList;
+    private Map<String, Integer> resultsMap;
 
     public Election() {
         this.ballotOptions = new ArrayList<>();
-        this.winnerList = new ArrayList<>();
+        this.resultsMap = new LinkedHashMap<>();
     }
 
     public String getId() {
@@ -64,13 +67,17 @@ public class Election extends Event {
         this.end = end;
     }
 
-    public void setWinnerList(List<String> winnerList) {
-        if (winnerList == null) throw new IllegalArgumentException("the list of winners shoud not be null");
-        this.winnerList = winnerList;
+    public void setResultsMap(Map<String, Integer> unsortedWinnerMap) {
+        if (unsortedWinnerMap == null) throw new IllegalArgumentException("the map of winners shoud not be null");
+        //Sorts the map in descending order of votes
+        unsortedWinnerMap.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .forEachOrdered(x -> resultsMap.put(x.getKey(), x.getValue()));
     }
 
-    public List<String> getWinnerList() {
-        return winnerList;
+    public Map<String, Integer> getResultsMap() {
+        return resultsMap;
     }
 
     public List<String> getBallotOptions() {

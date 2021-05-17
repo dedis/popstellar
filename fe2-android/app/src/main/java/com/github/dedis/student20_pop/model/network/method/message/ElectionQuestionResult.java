@@ -1,13 +1,14 @@
 package com.github.dedis.student20_pop.model.network.method.message;
 
-import java.util.List;
+import java.util.Map;
 
 public class ElectionQuestionResult {
 
     private String id;
-    private List<String> results;
+    private Map<String, Integer> results;
 
-    public ElectionQuestionResult(String id, List<String> results) {
+    public ElectionQuestionResult(String id, Map<String, Integer> results) {
+        if (id == null || results == null || results.isEmpty()) throw new IllegalArgumentException();
         this.id = id;
         this.results = results;
     }
@@ -16,8 +17,8 @@ public class ElectionQuestionResult {
         return id;
     }
 
-    public List<String> getResults() {
+    public Map<String, Integer> getResults() {
         return results;
     }
-
 }
+

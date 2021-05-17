@@ -16,6 +16,14 @@ public class ElectionEnd extends Data {
     @SerializedName(value = "registered_votes")
     private String registeredVotes; //hashed
 
+    public ElectionEnd(String electionId, long createdAt, String laoId, String registeredVotes) {
+        if (electionId == null || createdAt < 0 || laoId == null || registeredVotes == null) throw new IllegalArgumentException();
+        this.createdAt = createdAt;
+        this.electionId = electionId;
+        this.laoId = laoId;
+        this.registeredVotes = registeredVotes;
+    }
+
 
     @Override
     public String getObject() {
