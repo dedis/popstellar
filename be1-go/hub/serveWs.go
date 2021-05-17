@@ -15,7 +15,8 @@ var upgrader = websocket.Upgrader{
 }
 
 func CreateAndServeWs(hubType HubType, socketType SocketType, h Hub, port int) error {
-	http.HandleFunc("/"+string(hubType)+"/"+string(socketType)+"/", func(w http.ResponseWriter, r *http.Request) {
+	path := fmt.Sprintf("/%s/%s/", hubType, socketType)
+	http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		serveWs(socketType, h, w, r)
 	})
 
