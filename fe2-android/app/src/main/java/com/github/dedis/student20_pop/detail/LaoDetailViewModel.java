@@ -283,7 +283,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     try {
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
       String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-      byte[] sender = Base64.getDecoder().decode(publicKey);
+      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
       PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
       MessageGeneral msg = new MessageGeneral(sender, openRollCall, signer, mGson);
       Disposable disposable =
