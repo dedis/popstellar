@@ -913,6 +913,7 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 					validVote{voteData.CreatedAt,
 						q.VoteIndexes}
 				if err :=checkMethodProperties(qs,q);err != nil{
+					qs.validVotesMu.Unlock()
 					return err
 				}
 			} else {
