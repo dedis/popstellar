@@ -4,8 +4,10 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"log"
+	"sort"
 	"student20_pop/message"
 	"sync"
+	"time"
 
 	"golang.org/x/xerrors"
 )
@@ -19,7 +21,7 @@ type baseChannel struct {
 	clients   map[*ClientSocket]struct{}
 
 	inboxMu sync.RWMutex
-	inbox   map[string]message.Message
+	inbox   map[string]messageInfo
 
 	// /root/<ID>
 	channelID string
@@ -28,13 +30,18 @@ type baseChannel struct {
 	witnesses []message.PublicKey
 }
 
+type messageInfo struct {
+	message    message.Message
+	storedTime message.Timestamp
+}
+
 // CreateBaseChannel return an instance of a `baseChannel`
 func createBaseChannel(h *organizerHub, channelID string) *baseChannel {
 	return &baseChannel{
 		hub:       h,
 		channelID: channelID,
 		clients:   make(map[*ClientSocket]struct{}),
-		inbox:     make(map[string]message.Message),
+		inbox:     make(map[string]messageInfo),
 	}
 }
 
@@ -71,12 +78,39 @@ func (c *baseChannel) Catchup(catchup message.Catchup) []message.Message {
 	c.inboxMu.RLock()
 	defer c.inboxMu.RUnlock()
 
+	timestampMap := make(map[message.Timestamp]message.Message)
+	for _, msgInfo := range c.inbox {
+		timestampMap[msgInfo.storedTime] = msgInfo.message
+	}
+
+	timestamps := []message.Timestamp{}
+	for timestamp := range timestampMap {
+		timestamps = append(timestamps, timestamp)
+	}
+
+	// Sort the timestamps in ascending order
+	sort.Slice(timestamps, func(i, j int) bool { return timestamps[i] < timestamps[j] })
+
 	result := make([]message.Message, 0, len(c.inbox))
-	for _, msg := range c.inbox {
-		result = append(result, msg)
+	for _, timestamp := range timestamps {
+		result = append(result, timestampMap[timestamp])
 	}
 
 	return result
+}
+
+func (c *baseChannel) storeMessage(msg message.Message) {
+	msgIDEncoded := base64.StdEncoding.EncodeToString(msg.MessageID)
+	storedTime := message.Timestamp(time.Now().UnixNano())
+
+	messageInfo := messageInfo{
+		message:    msg,
+		storedTime: storedTime,
+	}
+
+	c.inboxMu.Lock()
+	c.inbox[msgIDEncoded] = messageInfo
+	c.inboxMu.Unlock()
 }
 
 func (c *baseChannel) broadcastToAllClients(msg message.Message) {

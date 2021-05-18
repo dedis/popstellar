@@ -328,8 +328,7 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 		attendees:   make(map[string]struct{}),
 		baseChannel: createBaseChannel(o, laoChannelID),
 	}
-	messageID := base64.StdEncoding.EncodeToString(publish.Params.Message.MessageID)
-	laoCh.inbox[messageID] = *publish.Params.Message
+	laoCh.storeMessage(*publish.Params.Message)
 
 	o.channelByID[encodedID] = &laoCh
 
@@ -389,7 +388,6 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 
 func (c *laoChannel) processLaoObject(msg message.Message) error {
 	action := message.LaoDataAction(msg.Data.GetAction())
-	msgIDEncoded := base64.StdEncoding.EncodeToString(msg.MessageID)
 
 	switch action {
 	case message.UpdateLaoAction:
@@ -403,9 +401,7 @@ func (c *laoChannel) processLaoObject(msg message.Message) error {
 		return message.NewInvalidActionError(message.DataAction(action))
 	}
 
-	c.inboxMu.Lock()
-	c.inbox[msgIDEncoded] = msg
-	c.inboxMu.Unlock()
+	c.storeMessage(msg)
 
 	return nil
 }
@@ -415,7 +411,7 @@ func (c *laoChannel) processLaoState(data *message.StateLAOData) error {
 	updateMsgIDEncoded := base64.StdEncoding.EncodeToString(data.ModificationID)
 
 	c.inboxMu.RLock()
-	updateMsg, ok := c.inbox[updateMsgIDEncoded]
+	updateMsgInfo, ok := c.inbox[updateMsgIDEncoded]
 	c.inboxMu.RUnlock()
 
 	if !ok {
@@ -463,7 +459,7 @@ func (c *laoChannel) processLaoState(data *message.StateLAOData) error {
 	}
 
 	// Check if the updates are consistent with the update message
-	updateMsgData, ok := updateMsg.Data.(*message.UpdateLAOData)
+	updateMsgData, ok := updateMsgInfo.message.Data.(*message.UpdateLAOData)
 	if !ok {
 		return &message.Error{
 			Code:        -4,
@@ -562,7 +558,7 @@ func (c *laoChannel) processMessageObject(public message.PublicKey, data message
 		}
 
 		c.inboxMu.Lock()
-		msg, ok := c.inbox[msgEncoded]
+		msgInfo, ok := c.inbox[msgEncoded]
 		if !ok {
 			// TODO: We received a witness signature before the message itself.
 			// We ignore it for now but it might be worth keeping it until we
@@ -571,7 +567,7 @@ func (c *laoChannel) processMessageObject(public message.PublicKey, data message
 			c.inboxMu.Unlock()
 			return nil
 		}
-		msg.WitnessSignatures = append(msg.WitnessSignatures, message.PublicKeySignaturePair{
+		msgInfo.message.WitnessSignatures = append(msgInfo.message.WitnessSignatures, message.PublicKeySignaturePair{
 			Witness:   public,
 			Signature: witnessData.Signature,
 		})
@@ -618,10 +614,7 @@ func (c *laoChannel) processRollCallObject(msg message.Message) error {
 		return xerrors.Errorf("failed to process %v roll-call action: %v", action, err)
 	}
 
-	msgIDEncoded := base64.StdEncoding.EncodeToString(msg.MessageID)
-	c.inboxMu.Lock()
-	c.inbox[msgIDEncoded] = msg
-	c.inboxMu.Unlock()
+	c.storeMessage(msg)
 
 	return nil
 }
