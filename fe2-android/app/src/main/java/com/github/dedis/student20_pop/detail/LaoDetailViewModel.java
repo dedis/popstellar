@@ -152,7 +152,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   public String createNewElection(String name, long start, long end, String votingMethod, boolean writeIn, List<String> ballotOptions, String question) {
     Log.d(TAG,"creating a new election with name " + name);
 
-    Lao lao = getCurrentLao().getValue();
+    Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return null;
@@ -217,7 +217,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
    */
   public void createNewRollCall(String title, String description, long proposedStart, long proposedEnd, boolean open) {
     Log.d(TAG, "creating a new roll call with title " + title);
-    Lao lao = getCurrentLao().getValue();
+    Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return;
@@ -273,7 +273,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   public void openRollCall(String id) {
     Log.d(TAG, "call openRollCall");
 
-    Lao lao = getCurrentLao().getValue();
+    Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return;
@@ -328,7 +328,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
    */
   public void closeRollCall(){
     Log.d(TAG, "call closeRollCall");
-    Lao lao = getCurrentLao().getValue();
+    Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return;
@@ -415,6 +415,9 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
   public LiveData<Lao> getCurrentLao() {
     return mCurrentLao;
+  }
+  public Lao getCurrentLaoValue() {
+    return mCurrentLao.getValue();
   }
   public LiveData<String> getCurrentLaoName() {
     return mCurrentLaoName;
@@ -513,7 +516,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     // thread and update the UI accordingly.
     Log.d(TAG, "Updating lao name to " + mLaoName.getValue());
 
-    Lao lao = getCurrentLao().getValue();
+    Lao lao = getCurrentLaoValue();
     String channel = lao.getChannel();
     try {
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
@@ -611,10 +614,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   }
 
   public void enterRollCall(String id) {
+      String firstLaoId = getCurrentLaoValue().getChannel().substring(6); // use the laoId set at creation + need to remove /root/ prefix
       try {
-        String pk = Base64.getEncoder().encodeToString(Wallet.getInstance().findKeyPair(getCurrentLao().getValue().getId(), id).second);
+        String pk = Base64.getUrlEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, id).second);
         mPkRollCallEvent.postValue(new Event<>(pk));
-        Log.d(TAG, "rollcall pk: "+pk);
       } catch (NoSuchAlgorithmException | InvalidKeyException | ShortBufferException e) {
         Log.d(TAG, "failed to retrieve public key from wallet", e);
       }
@@ -642,7 +645,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   public void onQRCodeDetected(Barcode barcode) {
     Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
     try{
-      Base64.getDecoder().decode(barcode.rawValue);
+      Base64.getUrlDecoder().decode(barcode.rawValue);
     }catch(IllegalArgumentException e){
       mScanWarningEvent.postValue(new Event<>("Invalid QR code. Please try again."));
       return;

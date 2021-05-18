@@ -354,6 +354,7 @@ public class LAORepository {
 
     RollCall rollCall = new RollCall();
     rollCall.setId(createRollCall.getId());
+    rollCall.setPersistentId(createRollCall.getId());
     rollCall.setCreation(createRollCall.getCreation());
     rollCall.setState(EventState.CREATED);
     rollCall.setStart(createRollCall.getProposedStart());
