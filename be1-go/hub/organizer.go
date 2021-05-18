@@ -783,7 +783,7 @@ func (c *laoChannel) createElection(msg message.Message) error {
 
 	// Add the SetupElection message to the new election channel
 	messageID := base64.URLEncoding.EncodeToString(msg.MessageID)
-	c.inboxMu.Lock()
+	electionCh.inboxMu.Lock()
 	electionCh.inbox[messageID] = msg
 	electionCh.inboxMu.Unlock()
 
