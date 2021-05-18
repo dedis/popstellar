@@ -912,8 +912,8 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 				qs.validVotes[msg.Sender.String()] =
 					validVote{voteData.CreatedAt,
 						q.VoteIndexes}
-				qs.validVotesMu.Unlock()
-				if err :=checkMethodProperties(qs,q);err != nil{
+				if err :=checkMethodProperties(qs.method,len(q.VoteIndexes));err != nil{
+					qs.validVotesMu.Unlock()
 					return err
 				}
 			} else {
@@ -937,16 +937,15 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 		Description: "Error in CastVote helper function",
 	}
 }
-func checkMethodProperties(qs question, q message.Vote) error{
-	qs.validVotesMu.Lock()
-	defer qs.validVotesMu.Unlock()
-	if qs.method == "Plurality" && len(q.VoteIndexes) < 1 {
+func checkMethodProperties(method message.VotingMethod, length int) error{
+
+	if method == "Plurality" && length < 1 {
 		return &message.Error{
 			Code:        -4,
 			Description: "No ballot option was chosen for plurality voting method",
 		}
 	}
-	if qs.method == "Approval" && len(q.VoteIndexes) != 1 {
+	if method == "Approval" && length != 1 {
 		return &message.Error{
 			Code:        -4,
 			Description: "Cannot choose multiple ballot options on Approval voting method",
