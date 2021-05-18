@@ -20,11 +20,7 @@ public class OpenRollCall extends Data {
   /**
    * Constructor of a data Open Roll-Call
    *
-<<<<<<< HEAD
-   * @param updateId id of this message Hash("R"||laoId||opens||openedAt)
-=======
    * @param laoId id of lao
->>>>>>> work-fe2-rollcall-organizer-karim
    * @param opens The 'update_id' of the latest roll call close, or in its absence, the 'id' field
    *     of the roll call creation
    * @param openedAt timestamp corresponding to roll call open

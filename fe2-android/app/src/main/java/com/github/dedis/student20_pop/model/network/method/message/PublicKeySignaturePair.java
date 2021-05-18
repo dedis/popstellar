@@ -22,10 +22,10 @@ public class PublicKeySignaturePair {
   }
 
   public String getWitnessEncoded() {
-    return Base64.getUrlEncoder().encodeToString(this.witness);
+    return Base64.getEncoder().encodeToString(this.witness);
   }
 
   public String getSignatureEncoded() {
-    return Base64.getUrlEncoder().encodeToString(this.signature);
+    return Base64.getEncoder().encodeToString(this.signature);
   }
 }

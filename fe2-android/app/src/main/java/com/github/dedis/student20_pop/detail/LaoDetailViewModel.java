@@ -512,8 +512,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     }
   }
   public void updateLaoName() {
-    // TODO: Create an `UpdateLao` message and publish it. Observe the response on a background
-    // thread and update the UI accordingly.
     Log.d(TAG, "Updating lao name to " + mLaoName.getValue());
 
     Lao lao = getCurrentLaoValue();
@@ -525,8 +523,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
       PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
 
       long now = Instant.now().getEpochSecond();
-      String id = Hash.hash("R", publicKey, Long.toString(lao.getCreation()), mLaoName.getValue());
-      UpdateLao updateLao = new UpdateLao(id, mLaoName.getValue(), now, lao.getWitnesses());
+      UpdateLao updateLao = new UpdateLao(publicKey, lao.getCreation(), mLaoName.getValue(), now, lao.getWitnesses());
       MessageGeneral msg = new MessageGeneral(sender, updateLao, signer, mGson);
       Disposable disposable =
               mLAORepository
@@ -616,7 +613,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   public void enterRollCall(String id) {
       String firstLaoId = getCurrentLaoValue().getChannel().substring(6); // use the laoId set at creation + need to remove /root/ prefix
       try {
-        String pk = Base64.getUrlEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, id).second);
+        String pk = Base64.getEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, id).second);
         mPkRollCallEvent.postValue(new Event<>(pk));
       } catch (NoSuchAlgorithmException | InvalidKeyException | ShortBufferException e) {
         Log.d(TAG, "failed to retrieve public key from wallet", e);
@@ -645,7 +642,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   public void onQRCodeDetected(Barcode barcode) {
     Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
     try{
-      Base64.getUrlDecoder().decode(barcode.rawValue);
+      Base64.getDecoder().decode(barcode.rawValue);
     }catch(IllegalArgumentException e){
       mScanWarningEvent.postValue(new Event<>("Invalid QR code. Please try again."));
       return;

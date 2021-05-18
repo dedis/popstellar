@@ -1,6 +1,8 @@
 package com.github.dedis.student20_pop.utility.json;
 
 
+import android.util.Log;
+
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
@@ -51,7 +53,7 @@ public class JsonMessageGeneralSerializer
       JsonElement element = it.next();
       String witness = element.getAsJsonObject().get("witness").getAsString();
       String sig = element.getAsJsonObject().get(SIG).getAsString();
-      witnessSignatures.add(new PublicKeySignaturePair(Base64.getUrlDecoder().decode(witness), Base64.getUrlDecoder().decode(sig)));
+      witnessSignatures.add(new PublicKeySignaturePair(Base64.getDecoder().decode(witness), Base64.getDecoder().decode(sig)));
     }
 
     JsonElement dataElement = JsonParser.parseString(new String(dataBuf));
@@ -79,6 +81,7 @@ public class JsonMessageGeneralSerializer
       jsonArray.add(sigObj);
     }
     result.add("witness_signatures", jsonArray);
+    Log.d("JSON", result.toString());
 
     return result;
   }
