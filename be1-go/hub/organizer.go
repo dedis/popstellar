@@ -912,17 +912,8 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 				qs.validVotes[msg.Sender.String()] =
 					validVote{voteData.CreatedAt,
 						q.VoteIndexes}
-				if qs.method == "Plurality" && len(q.VoteIndexes) < 1 {
-					return &message.Error{
-						Code:        -4,
-						Description: "No ballot option was chosen for plurality voting method",
-					}
-				}
-				if qs.method == "Approval" && len(q.VoteIndexes) != 1 {
-					return &message.Error{
-						Code:        -4,
-						Description: "Cannot choose multiple ballot options on Approval voting method",
-					}
+				if err :=checkMethodProperties(qs,q);err != nil{
+					return err
 				}
 			} else {
 				if earlierVote.voteTime > voteData.CreatedAt {
@@ -944,6 +935,21 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 		Code:        -4,
 		Description: "Error in CastVote helper function",
 	}
+}
+func checkMethodProperties(qs question, q message.Vote) error{
+	if qs.method == "Plurality" && len(q.VoteIndexes) < 1 {
+		return &message.Error{
+			Code:        -4,
+			Description: "No ballot option was chosen for plurality voting method",
+		}
+	}
+	if qs.method == "Approval" && len(q.VoteIndexes) != 1 {
+		return &message.Error{
+			Code:        -4,
+			Description: "Cannot choose multiple ballot options on Approval voting method",
+		}
+	}
+	return nil
 }
 
 func (r *rollCall) checkPrevID(prevID [] byte) bool {
