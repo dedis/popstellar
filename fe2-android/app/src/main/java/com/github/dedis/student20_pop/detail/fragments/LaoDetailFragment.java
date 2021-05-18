@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.detail.fragments;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,7 +23,10 @@ import com.github.dedis.student20_pop.detail.adapters.WitnessListViewAdapter;
 import com.github.dedis.student20_pop.model.RollCall;
 import com.github.dedis.student20_pop.model.event.Event;
 
+import net.glxn.qrgen.android.QRCode;
+
 import java.util.ArrayList;
+
 
 /** Fragment used to display the LAO Detail UI */
 public class LaoDetailFragment extends Fragment {
@@ -102,6 +106,15 @@ public class LaoDetailFragment extends Fragment {
               Log.d(TAG, "Got a list update for LAO events");
               mEventListViewEventAdapter.replaceList(events);
             });
+
+      mLaoDetailViewModel
+          .getCurrentLao()
+          .observe(
+              getActivity(),
+              lao -> {
+                Bitmap myBitmap = QRCode.from(lao.getChannel()).bitmap();
+                mLaoDetailFragBinding.channelQrCode.setImageBitmap(myBitmap);
+              });
   }
 
   private void setupPropertiesButton() {
@@ -157,7 +170,6 @@ public class LaoDetailFragment extends Fragment {
   }
 
   private void setupEventListUpdates() {
-
     mLaoDetailViewModel
             .getLaoEvents()
             .observe(
