@@ -618,7 +618,7 @@ func (c *laoChannel) processRollCallObject(msg message.Message) error {
 		return xerrors.Errorf("failed to process %v roll-call action: %v", action, err)
 	}
 
-	msgIDEncoded := base64.StdEncoding.EncodeToString(msg.MessageID)
+	msgIDEncoded := base64.URLEncoding.EncodeToString(msg.MessageID)
 	c.inboxMu.Lock()
 	c.inbox[msgIDEncoded] = msg
 	c.inboxMu.Unlock()
@@ -670,7 +670,7 @@ func (c *laoChannel) processOpenRollCall(data message.Data, action message.RollC
 		}
 	}
 
-	opens := base64.StdEncoding.EncodeToString(rollCallData.Opens)
+	opens := base64.URLEncoding.EncodeToString(rollCallData.Opens)
 	if !c.checkRollCallID(message.Stringer(opens), rollCallData.OpenedAt, rollCallData.UpdateID) {
 		return &message.Error{
 			Code:        -4,
@@ -699,7 +699,7 @@ func (c *laoChannel) processCloseRollCall(data message.Data) error {
 		}
 	}
 
-	closes := base64.StdEncoding.EncodeToString(rollCallData.Closes)
+	closes := base64.URLEncoding.EncodeToString(rollCallData.Closes)
 	if !c.checkRollCallID(message.Stringer(closes), rollCallData.ClosedAt, rollCallData.UpdateID) {
 		return &message.Error{
 			Code:        -4,
