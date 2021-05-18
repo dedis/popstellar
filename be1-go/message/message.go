@@ -1,7 +1,9 @@
 package message
 
 import (
+	"bytes"
 	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
 	"student20_pop"
 
@@ -9,9 +11,11 @@ import (
 	"golang.org/x/xerrors"
 )
 
+type base64urlBytes []byte
+
 type internalMessage struct {
-	MessageID         []byte                   `json:"message_id"`
-	Data              []byte                   `json:"data"`
+	MessageID         base64urlBytes           `json:"message_id"`
+	Data              base64urlBytes           `json:"data"`
 	Sender            PublicKey                `json:"sender"`
 	Signature         Signature                `json:"signature"`
 	WitnessSignatures []PublicKeySignaturePair `json:"witness_signatures"`
@@ -19,12 +23,12 @@ type internalMessage struct {
 
 // Message represents the `params.Message` field in the payload.
 type Message struct {
-	MessageID         []byte                   `json:"message_id"`
+	MessageID         base64urlBytes           `json:"message_id"`
 	Data              Data                     `json:"data"`
 	Sender            PublicKey                `json:"sender"`
 	Signature         Signature                `json:"signature"`
 	WitnessSignatures []PublicKeySignaturePair `json:"witness_signatures"`
-	RawData           []byte
+	RawData           base64urlBytes
 }
 
 // NewMessage returns an instance of a `Message`.
@@ -94,6 +98,25 @@ func (m *Message) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+func (b base64urlBytes) MarshalJSON() ([]byte, error) {
+	dst := make([]byte, base64.URLEncoding.EncodedLen(len(b))+2)
+	dst[0], dst[len(dst)-1] = '"', '"'
+	base64.URLEncoding.Encode(dst[1:], []byte(b))
+	return dst, nil
+}
+
+func (b *base64urlBytes) UnmarshalJSON(data []byte) error {
+	if len(data) > 2 {
+		dst := make([]byte, base64.URLEncoding.DecodedLen(len(data)-2))
+		base64.URLEncoding.Decode(dst, data[1:len(data)-1])
+
+		paddingCharNum := bytes.Count(data, []byte{'='})
+		*b = base64urlBytes(dst[0 : len(dst)-paddingCharNum])
+	}
+
+	return nil
+}
+
 // VerifyAndUnmarshalData verifies the signature in the Message and returns an
 // error in case of failure. If the verification suceeds it tries to unmarshal
 // the RawData field into one of the implementations of `Data`.
@@ -139,7 +162,7 @@ func (m *Message) VerifyAndUnmarshalData() error {
 	return nil
 }
 
-func (m *Message) parseRollCallData(action RollCallAction, data []byte) error {
+func (m *Message) parseRollCallData(action RollCallAction, data base64urlBytes) error {
 	switch action {
 	case CreateRollCallAction:
 		create := &CreateRollCallData{}
@@ -176,7 +199,7 @@ func (m *Message) parseRollCallData(action RollCallAction, data []byte) error {
 	}
 }
 
-func (m *Message) parseMessageData(action MessageDataAction, data []byte) error {
+func (m *Message) parseMessageData(action MessageDataAction, data base64urlBytes) error {
 	if action != WitnessAction {
 		return xerrors.Errorf("invalid action type: %s", action)
 	}
@@ -192,7 +215,7 @@ func (m *Message) parseMessageData(action MessageDataAction, data []byte) error 
 	return nil
 }
 
-func (m *Message) parseMeetingData(action MeetingDataAction, data []byte) error {
+func (m *Message) parseMeetingData(action MeetingDataAction, data base64urlBytes) error {
 	switch action {
 	case CreateMeetingAction:
 		create := &CreateMeetingData{}
@@ -220,7 +243,7 @@ func (m *Message) parseMeetingData(action MeetingDataAction, data []byte) error 
 	}
 }
 
-func (m *Message) parseLAOData(action LaoDataAction, data []byte) error {
+func (m *Message) parseLAOData(action LaoDataAction, data base64urlBytes) error {
 	switch action {
 	case CreateLaoAction:
 		create := &CreateLAOData{}
