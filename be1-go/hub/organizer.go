@@ -905,7 +905,7 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 		qs, ok := c.questions[QuestionID]
 		if ok {
 			//this is to handle the case when the organizer must handle multiple votes being cast at the same time
-			qs.validVotesMu.Lock()
+			//qs.validVotesMu.Lock()
 			earlierVote, ok := qs.validVotes[msg.Sender.String()]
 			// if the sender didn't previously cast a vote or if the vote is no longer valid update it
 			if !ok {
@@ -913,7 +913,7 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 					validVote{voteData.CreatedAt,
 						q.VoteIndexes}
 				if err :=checkMethodProperties(qs.method,len(q.VoteIndexes));err != nil{
-					qs.validVotesMu.Unlock()
+					//qs.validVotesMu.Unlock()
 					return err
 				}
 			} else {
@@ -924,7 +924,7 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 				}
 			}
 			//other votes can now change the list of valid votes
-			qs.validVotesMu.Unlock()
+			//qs.validVotesMu.Unlock()
 		} else {
 			return &message.Error{
 				Code:        -4,
