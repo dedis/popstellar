@@ -9,20 +9,22 @@ import {
   StateLao,
   UpdateLao,
   WitnessMessage,
+  CastVote,
 } from 'model/network/method/message/data';
 import {
-  Channel, channelFromId, ROOT_CHANNEL,
+  Channel, channelFromId, channelFromIds, ROOT_CHANNEL,
 } from 'model/objects/Channel';
 import {
   OpenedLaoStore, KeyPairStore,
 } from 'store';
-import { Question } from 'model/objects/Election';
+import { Question, Vote } from 'model/objects/Election';
 import { publish } from './JsonRpcApi';
 
 /** Send a server query asking for the creation of a LAO with a given name (String) */
 export function requestCreateLao(laoName: string): Promise<Channel> {
-  const time = Timestamp.EpochNow();
+  //const time = Timestamp.EpochNow();
   const pubKey = KeyPairStore.getPublicKey();
+  const time = new Timestamp(1621343387);
 
   const message = new CreateLao({
     id: Hash.fromStringArray(pubKey.toString(), time.toString(), laoName),
@@ -232,4 +234,22 @@ export function requestCreateElection(
 
   const laoCh = channelFromId(currentLao.id);
   return publish(laoCh, message);
+}
+
+/** Sends a server query which creates a Vote in an ongoing election */
+export function castVote(
+  election_id: Hash,
+  votes: Vote[],
+): Promise<void> {
+  const time: Timestamp = Timestamp.EpochNow();
+  const currentLao: Lao = OpenedLaoStore.get();
+  const message = new CastVote({
+    lao: currentLao.id,
+    election: election_id,
+    created_at: time,
+    votes: votes,
+  });
+
+  const elecCh = channelFromIds(currentLao.id, election_id);
+  return publish(elecCh, message);
 }

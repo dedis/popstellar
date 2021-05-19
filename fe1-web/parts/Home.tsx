@@ -11,6 +11,7 @@ import STRINGS from 'res/strings';
 
 import LAOItem from 'components/LAOItem';
 import TextBlock from 'components/TextBlock';
+import CheckboxList from '../components/CheckboxList';
 
 /**
  * Manage the Home screen component: if the user is not connected to any LAO, a welcome message
@@ -42,6 +43,7 @@ function getConnectedLaosDisplay(laos: Lao[]) {
 function getWelcomeMessageDisplay() {
   return (
     <View style={styleContainer.centered}>
+      <CheckboxList values={['Gamli', 'Sjomli', 'Mac']} clickableOptions={1} onChange={(values: string[]) => console.log(values)} title="Test Question" />
       <TextBlock bold text={STRINGS.home_welcome} />
       <TextBlock bold text={STRINGS.home_connect_lao} />
       <TextBlock bold text={STRINGS.home_launch_lao} />

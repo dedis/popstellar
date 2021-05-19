@@ -8,6 +8,7 @@ import dataOpenRollCall from 'protocol/query/method/message/data/dataOpenRollCal
 import dataCloseRollCall from 'protocol/query/method/message/data/dataCloseRollCall.json';
 import dataWitnessMessage from 'protocol/query/method/message/data/dataWitnessMessage.json';
 import dataElectionSetup from 'protocol/query/method/message/data/dataElectionSetup.json';
+import dataCastVote from 'protocol/query/method/message/data/dataCastVote.json';
 
 const dataSchemas = [
   dataCreateLao,
@@ -22,6 +23,7 @@ const dataSchemas = [
   dataCloseRollCall,
 
   dataElectionSetup,
+  dataCastVote,
 
   dataWitnessMessage,
 ];

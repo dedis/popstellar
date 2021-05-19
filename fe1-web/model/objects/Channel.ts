@@ -9,3 +9,9 @@ export function channelFromId(value?: Hash) : Channel {
   const ch = value.valueOf();
   return `${ROOT_CHANNEL}/${ch}`;
 }
+
+export function channelFromIds(...args: Hash[]): Channel {
+  let channel = ROOT_CHANNEL;
+  args.forEach((ch) => { channel += `/${ch.valueOf()}`; });
+  return channel;
+}

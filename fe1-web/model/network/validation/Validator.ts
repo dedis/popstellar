@@ -25,6 +25,7 @@ export enum ActionType {
   // uninitialized placeholder
   INVALID = '__INVALID_ACTION__',
 
+  CAST_VOTE = 'cast_vote',
   CREATE = 'create',
   SETUP = 'setup',
   UPDATE_PROPERTIES = 'update_properties',
@@ -70,6 +71,7 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
   },
   [ObjectType.ELECTION]: {
     [ActionType.SETUP]: 'dataSetupElection',
+    [ActionType.CAST_VOTE]: 'dataCastVote',
   },
 };
 

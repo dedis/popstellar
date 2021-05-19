@@ -20,6 +20,13 @@ export interface Question {
   write_in: boolean,
 }
 
+export interface Vote {
+  id: Hash,
+  question: Hash,
+  vote?: number[],
+  write_in?: string,
+}
+
 export class Election implements LaoEvent {
   public readonly lao: Hash;
 
