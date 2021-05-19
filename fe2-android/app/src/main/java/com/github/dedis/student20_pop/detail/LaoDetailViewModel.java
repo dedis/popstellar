@@ -617,6 +617,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         mPkRollCallEvent.postValue(new Event<>(pk));
       } catch (NoSuchAlgorithmException | InvalidKeyException | ShortBufferException e) {
         Log.d(TAG, "failed to retrieve public key from wallet", e);
+      } catch (GeneralSecurityException e) {
+        Log.d(TAG, "failed to retrieve public key from wallet", e);;
       }
   }
 

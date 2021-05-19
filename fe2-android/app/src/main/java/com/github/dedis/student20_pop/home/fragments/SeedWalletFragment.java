@@ -17,6 +17,8 @@ import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.home.HomeViewModel;
 import com.github.dedis.student20_pop.model.Wallet;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.StringJoiner;
 
 /** Fragment used to display the new seed UI */
@@ -59,7 +61,14 @@ public class SeedWalletFragment extends Fragment {
   }
 
   private void setupDisplaySeed(){
-    String[] exportSeed = wallet.exportSeed();
+    String[] exportSeed = new String[0];
+    try {
+      exportSeed = wallet.exportSeed(getActivity().getApplicationContext());
+    } catch (IOException | GeneralSecurityException e) {
+      Toast.makeText(getContext().getApplicationContext(),
+          "Error import key, try again"+ e.getMessage(),
+          Toast.LENGTH_LONG).show();
+    }
     StringJoiner joiner = new StringJoiner(" ");
     for(String i: exportSeed) joiner.add(i);
     mSeedWalletFragBinding.seedWallet.setText(joiner.toString());
