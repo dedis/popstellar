@@ -11,6 +11,9 @@ import { HDWallet } from 'model/objects/HDWallet';
 import { WalletStore } from 'store/stores/WalletStore';
 import { Hash } from 'model/objects';
 import CopiableTextBlock from 'components/CopiableTextBlock';
+import QRCode from 'components/QRCode';
+import PROPS_TYPE from 'res/Props';
+import PropTypes from 'prop-types';
 
 const styles = StyleSheet.create({
   smallPadding: {
@@ -28,12 +31,13 @@ let cachedKeyPairs: Map<[Hash, Hash], string>;
  * wallet UI once the wallet is synced
  * @constructor
  */
-const WalletSyncedSeed = () => {
+const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   /* boolean set to true if the token recover process is finished */
   const [tokensRecovered, setTokensRecovered] = useState(false);
   const [showPublicKey, setShowPublicKey] = useState(false);
+  const [showQRPublicKey, setShowQRPublicKey] = useState(false);
 
-  function hideButton() {
+  function hideStringButton() {
     return (
       <WideButtonView
         title={STRINGS.hide_public_keys}
@@ -44,12 +48,34 @@ const WalletSyncedSeed = () => {
     );
   }
 
-  function showButton() {
+  function showStringButton() {
     return (
       <WideButtonView
         title={STRINGS.show_public_keys}
         onPress={() => {
           setShowPublicKey(true);
+        }}
+      />
+    );
+  }
+
+  function hideQRButton() {
+    return (
+      <WideButtonView
+        title={STRINGS.hide_qr_public_keys}
+        onPress={() => {
+          setShowQRPublicKey(false);
+        }}
+      />
+    );
+  }
+
+  function showQRButton() {
+    return (
+      <WideButtonView
+        title={STRINGS.show_qr_public_keys}
+        onPress={() => {
+          setShowQRPublicKey(true);
         }}
       />
     );
@@ -86,10 +112,17 @@ const WalletSyncedSeed = () => {
             <TextBlock text={value} />
             <CopiableTextBlock id={key} text={tokens[key]} visibility={showPublicKey} />
             <View style={styles.smallPadding} />
+            <QRCode value={tokens[key]} visibility={showQRPublicKey} />
           </View>
         ))}
-        {!showPublicKey && showButton()}
-        {showPublicKey && hideButton()}
+        {!showPublicKey && showStringButton()}
+        {showPublicKey && hideStringButton()}
+        {!showQRPublicKey && showQRButton()}
+        {showQRPublicKey && hideQRButton()}
+        <WideButtonView
+          title={STRINGS.back_to_wallet_home}
+          onPress={() => navigation.navigate(STRINGS.navigation_home_tab_wallet)}
+        />
         <View style={styles.largePadding} />
       </ScrollView>
     );
@@ -121,5 +154,12 @@ const WalletSyncedSeed = () => {
 
   return getWalletDisplay();
 };
+
+const propTypes = {
+  navigation: PROPS_TYPE.navigation.isRequired,
+};
+WalletSyncedSeed.propTypes = propTypes;
+
+type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default WalletSyncedSeed;

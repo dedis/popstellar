@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {
   StyleSheet, View, ViewStyle,
 } from 'react-native';
-import CopyButton from 'components/DeleteButton';
+import CopyButton from 'components/CopyButton';
 import TextBlock from './TextBlock';
 import { Views } from '../styles';
 

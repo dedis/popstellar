@@ -161,6 +161,8 @@ const STRINGS = {
   show_tokens_title: 'SHOW POP TOKENS',
   show_public_keys: 'SHOW PUBLIC KEYS',
   hide_public_keys: 'HIDE PUBLIC KEYS',
+  show_qr_public_keys: 'SHOW QR KEYS',
+  hide_qr_public_keys: 'HIDE QR KEYS',
   your_tokens_title: 'Your PoP Tokens',
   wallet_error: 'A synchronization error with your wallet occurred',
 
