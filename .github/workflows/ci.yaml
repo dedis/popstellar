@@ -92,7 +92,9 @@ jobs:
 
   be1-go:
     name: Be1-Go
-    runs-on: ubuntu-latest
+    strategy:
+      matrix: [ubuntu-latest, windows-latest]
+    runs-on: ${{matrix.platform}}
 
     defaults:
       run:
