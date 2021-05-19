@@ -7,6 +7,7 @@ import com.github.dedis.student20_pop.model.entities.Meeting;
 import com.github.dedis.student20_pop.model.entities.ModificationSignature;
 import com.github.dedis.student20_pop.model.entities.Person;
 import com.github.dedis.student20_pop.model.entities.RollCall;
+
 import java.util.List;
 
 public class LAOLocalDataSource implements LAODataSource.Local {
