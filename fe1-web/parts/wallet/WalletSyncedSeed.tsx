@@ -94,13 +94,26 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
     const laoAndRollCallId: string[] = [];
 
     let i = 0;
+
+    if (cachedKeyPairs.size === 0) {
+      return (
+        <View>
+          <TextBlock text={STRINGS.no_tokens_in_wallet} />
+          <View style={styles.largePadding} />
+          <WideButtonView
+            title={STRINGS.back_to_wallet_home}
+            onPress={() => navigation.navigate(STRINGS.navigation_home_tab_wallet)}
+          />
+        </View>
+      );
+    }
+
     cachedKeyPairs.forEach((value, key) => {
       const ids: string[] = key.toString().split(',');
       laoAndRollCallId[i] = `LAO ID           :  ${ids[0]} \n Roll Call ID      :  ${ids[1]}`;
       tokens[i] = value;
       i += 1;
     });
-
     return (
       <ScrollView>
         <View style={styles.largePadding} />
