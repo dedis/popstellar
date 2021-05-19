@@ -8,6 +8,7 @@ import WalletSetSeed from 'parts/wallet/WalletSetSeed';
 import WalletShowSeed from 'parts/wallet/WalletShowSeed';
 import WalletSyncedSeed from 'parts/wallet/WalletSyncedSeed';
 import WalletError from 'parts/wallet/WalletError';
+import WalletGenerateToken from 'parts/wallet/WalletGenerateToken';
 
 /**
  * Define the Wallet stack navigation
@@ -42,7 +43,11 @@ export default function WalletNavigation() {
       <Stack.Screen
          name={STRINGS.navigation_wallet_error}
          component={WalletError}
-       />
+      />
+      <Stack.Screen
+         name={STRINGS.navigation_wallet_new_token}
+         component={WalletGenerateToken}
+      />
     </Stack.Navigator>
   );
 }

@@ -91,7 +91,8 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
 
   function showTokens() {
     const tokens: string[] = [];
-    const laoAndRollCallId: string[] = [];
+    const laoId: string[] = [];
+    const rollCallId: string[] = [];
 
     let i = 0;
 
@@ -109,8 +110,10 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
     }
 
     cachedKeyPairs.forEach((value, key) => {
+      console.log(key.toString());
       const ids: string[] = key.toString().split(',');
-      laoAndRollCallId[i] = `LAO ID           :  ${ids[0]} \n Roll Call ID      :  ${ids[1]}`;
+      laoId[i] = ids[0];
+      rollCallId[i] = ids[1];
       tokens[i] = value;
       i += 1;
     });
@@ -119,10 +122,14 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
         <View style={styles.largePadding} />
         <TextBlock bold text={STRINGS.your_tokens_title} />
         <View style={styles.smallPadding} />
-        { laoAndRollCallId.map((value, key) => (
+        { laoId.map((value, key) => (
           <View>
             <View style={styles.smallPadding} />
-            <TextBlock text={value} />
+            <TextBlock bold text="LAO ID" />
+            <CopiableTextBlock id={key} text={value} visibility />
+            <TextBlock bold text="Roll Call ID" />
+            <CopiableTextBlock id={key} text={rollCallId[key]} visibility />
+            <View style={styles.smallPadding} />
             <CopiableTextBlock id={key} text={tokens[key]} visibility={showPublicKey} />
             <View style={styles.smallPadding} />
             <QRCode value={tokens[key]} visibility={showQRPublicKey} />
@@ -132,6 +139,10 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
         {showPublicKey && hideStringButton()}
         {!showQRPublicKey && showQRButton()}
         {showQRPublicKey && hideQRButton()}
+        <WideButtonView
+          title={STRINGS.generate_new_token}
+          onPress={() => navigation.navigate(STRINGS.navigation_wallet_new_token)}
+        />
         <WideButtonView
           title={STRINGS.back_to_wallet_home}
           onPress={() => navigation.navigate(STRINGS.navigation_home_tab_wallet)}

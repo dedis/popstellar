@@ -163,20 +163,16 @@ export class HDWallet {
   public async recoverTokens(): Promise<Map<[Hash, Hash], string>> {
     // ====================================================================================
     // garbage effort river orphan negative kind outside quit hat camera approve first
-    const laoId1: Hash = Hash.fromString('LAO1');
-    const laoId2: Hash = Hash.fromString('LAO2');
+    const laoId1: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
+    const laoId2: Hash = new Hash('SyJ3d9TdH8Ycb4hPSGQdArTRIdP9Moywi1Ux/Kzav4o=');
 
-    const rollCallId1: Hash = Hash.fromString('LAO1RC1');
-    const rollCallId2: Hash = Hash.fromString('LAO1RC2');
-    const rollCallId3: Hash = Hash.fromString('LAO2RC1');
-    const rollCallId4: Hash = Hash.fromString('LAO2RC2');
+    const rollCallId1: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
+    const rollCallId2: Hash = new Hash('SyJ3d9TdH8Ycb4hPSGQdArTRIdP9Moywi1Ux/Kzav4o=');
 
     const testMap: Map<[Hash, Hash], string[]> = new Map();
 
-    testMap.set([laoId1, rollCallId1], ['001a8828bdb40320421f4769a8ca16f652ddaad5cd13213578eddc98698200c140', '']);
-    testMap.set([laoId1, rollCallId2], ['fffffffffffffff', '', 'fffffffffffffff', '']);
-    testMap.set([laoId2, rollCallId3], ['fffffffffffffff', '', '00cf3cb2d461cf51feeab3e8f0ffbcd2ebc8055ac001f858063fce4f1c0cc456a0']);
-    testMap.set([laoId2, rollCallId4], ['0059d8a5fa53d26b816ba250d46ebbede4d93eda3531a89ff329698e5a2d9be753', 'fffffffffffffff']);
+    testMap.set([laoId1, rollCallId1], ['007bdbd94f1d4de2d2c624e2926795a34f02c56dd42a837ab2615e5941e7df64c9', '']);
+    testMap.set([laoId2, rollCallId2], ['fffffffffffffff', '', 'ffdddddddffffffff', '00ec35a46b4ec5132aa28b5f1e1d5d5c4cc4bc2948251444d652ac1c5dc41ee3a9']);
 
     // ====================================================================================
     return this.recoverAllKeys(testMap);
@@ -211,7 +207,12 @@ export class HDWallet {
     });
   }
 
-  public async generateKeyPair(laoId: Hash, rollCallId:Hash):
+  public async generateToken(laoId: Hash, rollCallId:Hash): Promise<string> {
+    return this.generateKeyPair(laoId, rollCallId)
+      .then((keyPair) => keyPair.publicKey.toString('hex'));
+  }
+
+  private async generateKeyPair(laoId: Hash, rollCallId:Hash):
   Promise<{ privateKey: Buffer, publicKey: Buffer }> {
     const path: string = HDWallet.PREFIX
       .concat(HDWallet.PATH_SEPARATOR

@@ -27,8 +27,8 @@ const CopiableTextBlock = (props: IPropTypes) => {
 
   return (
     <View style={styles.view}>
-      <TextBlock bold text={text} key={id} visibility={visibility} />
       <CopyButton action={() => navigator.clipboard.writeText(text)} />
+      <TextBlock text={text} key={id} visibility={visibility} />
     </View>
   );
 };
