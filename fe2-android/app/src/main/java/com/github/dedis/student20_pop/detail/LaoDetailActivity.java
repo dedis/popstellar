@@ -14,6 +14,7 @@ import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
 import com.github.dedis.student20_pop.detail.fragments.IdentityFragment;
 import com.github.dedis.student20_pop.detail.fragments.LaoDetailFragment;
+import com.github.dedis.student20_pop.detail.fragments.RollCallDetailFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.ElectionSetupFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.MeetingEventCreationFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.PollEventCreationFragment;
@@ -38,7 +39,6 @@ public class LaoDetailActivity extends AppCompatActivity {
     mViewModel = obtainViewModel(this);
     mViewModel.subscribeToLao(
             (String) Objects.requireNonNull(getIntent().getExtras()).get("LAO_ID"));
-
     setupLaoFragment();
     setupHomeButton();
     setupIdentityButton();
@@ -68,11 +68,17 @@ public class LaoDetailActivity extends AppCompatActivity {
                     stringEvent -> {
                       String action = stringEvent.getContentIfNotHandled();
                       if (action != null) {
-                        if (action.equals(HomeViewModel.SCAN)) {
-                          setupScanFragmentRollCall();
-                        }else{
-                          setupCameraPermissionFragmentRollCall();
-                        }
+                          openScanning(action);
+                      }
+                    });
+    mViewModel
+            .getPkRollCallEvent()
+            .observe(
+                    this,
+                    stringEvent -> {
+                      String pk = stringEvent.getContentIfNotHandled();
+                      if (pk != null) {
+                        setupRollCallDetailFragment(pk);
                       }
                     });
 
@@ -222,7 +228,6 @@ public class LaoDetailActivity extends AppCompatActivity {
     }
   }
   private void setupCameraPermissionFragmentRollCall() {
-
     CameraPermissionFragment cameraPermissionFragment =
             (CameraPermissionFragment)
                     getSupportFragmentManager().findFragmentById(R.id.fragment_camera_perm);
@@ -231,6 +236,22 @@ public class LaoDetailActivity extends AppCompatActivity {
       ActivityUtils.replaceFragmentInActivity(
               getSupportFragmentManager(), cameraPermissionFragment, R.id.fragment_container_lao_detail);
     }
+  }
+  private void openScanning(String action){
+      if (action.equals(HomeViewModel.SCAN)) {
+          setupScanFragmentRollCall();
+      }else{
+          setupCameraPermissionFragmentRollCall();
+      }
+  }
+  private void setupRollCallDetailFragment(String pk) {
+      RollCallDetailFragment rollCallDetailFragment =
+              (RollCallDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_roll_call_detail);
+      if (rollCallDetailFragment == null) {
+          rollCallDetailFragment = RollCallDetailFragment.newInstance(pk);
+          ActivityUtils.replaceFragmentInActivity(
+                  getSupportFragmentManager(), rollCallDetailFragment, R.id.fragment_container_lao_detail);
+      }
   }
 
   private void setupCreateElectionSetupFragment() {
