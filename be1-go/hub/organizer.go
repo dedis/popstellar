@@ -34,6 +34,8 @@ const (
 	DataSchema       string = "dataSchema"
 )
 
+const rootPrefix = "/root/"
+
 // NewOrganizerHub returns a Organizer Hub.
 func NewOrganizerHub(public kyber.Point) (Hub, error) {
 	// Import the Json schemas defined in the protocol section
@@ -179,7 +181,7 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 		return
 	}
 
-	if channelID[:6] != "/root/" {
+	if channelID[:6] != rootPrefix {
 		log.Printf("channel id must begin with /root/")
 		client.SendError(&id, &message.Error{
 			Code:        -2,
@@ -327,7 +329,7 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 			Description: "failed to create lao: another one with the same ID exists",
 		}
 	}
-	laoChannelID := "/root/" + encodedID
+	laoChannelID := rootPrefix + encodedID
 
 	laoCh := laoChannel{
 		rollCall:    rollCall{},
@@ -774,7 +776,7 @@ func (c *laoChannel) createElection(msg message.Message) error {
 
 	// Create the new election channel
 	electionCh := electionChannel{
-		createBaseChannel(organizerHub, "/root/"+encodedID),
+		createBaseChannel(organizerHub, rootPrefix+encodedID),
 		data.StartTime,
 		data.EndTime,
 		false,
@@ -954,7 +956,7 @@ func checkMethodProperties(method message.VotingMethod, length int) error{
 	return nil
 }
 
-func (r *rollCall) checkPrevID(prevID [] byte) bool {
+func (r *rollCall) checkPrevID(prevID []byte) bool {
 	return string(prevID) == r.id
 }
 
