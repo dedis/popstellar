@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
 
 import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.LifecycleOwner;
 
 import com.github.dedis.student20_pop.databinding.LayoutElectionDisplayBinding;
@@ -251,43 +252,36 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
         Event event = ((Event) getChild(groupPosition, childPosition));
         EventCategory category = (EventCategory) getGroup(groupPosition);
-
+        LayoutEventBinding layoutEventBinding;
+        if (convertView == null) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            layoutEventBinding = LayoutEventBinding.inflate(inflater, parent, false);
+        } else {
+            layoutEventBinding = DataBindingUtil.getBinding(convertView);
+        }
         switch (event.getType()) {
+
             case ELECTION: {
               setUpElectionElement(parent,convertView,(Election)event,category);
+              break;
 
             }
-            break;
 
 
             case ROLL_CALL: {
               setupRollCallElement(parent,convertView,(RollCall)event);
 
             }
-            break;
 
-
-            default: {
-
-                LayoutEventBinding binding;
-                if (convertView == null) {
-                    LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-                    binding = LayoutEventBinding.inflate(inflater, parent, false);
-                } else {
-                    binding = DataBindingUtil.getBinding(convertView);
-                }
-
-                binding.setEvent(event);
-                binding.setLifecycleOwner(lifecycleOwner);
-                return binding.getRoot();
 
 
             }
+        layoutEventBinding.setEvent(event);
+        layoutEventBinding.setLifecycleOwner(lifecycleOwner);
+        return layoutEventBinding.getRoot();
 
         }
-        return convertView;
 
-    }
 
     /**
      * A helper method that places the events in the correct key-value pair according to their times
