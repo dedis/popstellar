@@ -9,7 +9,6 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
 
 import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.LifecycleOwner;
 
 import com.github.dedis.student20_pop.databinding.LayoutElectionDisplayBinding;
@@ -259,18 +258,17 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         } else {
             layoutEventBinding = DataBindingUtil.getBinding(convertView);
         }
-            if(event.getType() == EventType.ELECTION) {
-                setUpElectionElement(parent,convertView,(Election)event,category);
-            }
-            else if (event.getType() == EventType.ROLL_CALL) {
-                setUpElectionElement(parent, convertView, (Election) event, category);
-            }
+        if (event.getType() == EventType.ELECTION) {
+            setupElectionElement(parent, convertView, (Election) event, category);
+        } else if (event.getType() == EventType.ROLL_CALL) {
+            setupRollCallElement(parent, convertView, (RollCall) event);
+        }
 
         layoutEventBinding.setEvent(event);
         layoutEventBinding.setLifecycleOwner(lifecycleOwner);
         return layoutEventBinding.getRoot();
 
-        }
+    }
 
 
     /**
@@ -295,17 +293,17 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         }
     }
 
-  /**
-   * Whether the child at the specified position is selectable.
-   *
-   * @param groupPosition the position of the group that contains the child
-   * @param childPosition the position of the child within the group
-   * @return whether the child is selectable.
-   */
-  @Override
-  public boolean isChildSelectable(int groupPosition, int childPosition) {
-    return true;
-  }
+    /**
+     * Whether the child at the specified position is selectable.
+     *
+     * @param groupPosition the position of the group that contains the child
+     * @param childPosition the position of the child within the group
+     * @return whether the child is selectable.
+     */
+    @Override
+    public boolean isChildSelectable(int groupPosition, int childPosition) {
+        return true;
+    }
 
     /**
      * A helper method used to handle the display of the elections
@@ -316,12 +314,12 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
      *                    that the convertView will have been previously created by {@link #getChildView(int, int,
      *                    boolean, View, ViewGroup)}.
      * @param parent      the parent that this view will eventually be attached to
-     * @param election       the election Event
+     * @param election    the election Event
      * @param category    the event category ( Past,Present or Future)
      * @return the View corresponding to the child at the specified position
      */
 
-    private View setUpElectionElement( ViewGroup parent,View convertView, Election election, EventCategory category) {
+    private View setupElectionElement(ViewGroup parent, View convertView, Election election, EventCategory category) {
         LayoutElectionDisplayBinding electionBinding;
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
@@ -358,59 +356,60 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
     }
 
-  /**
-   * Setup the text and buttons that appear for a roll call in the list
-   * @param rollCall the roll call object we want to display
-   * @return
-   */
-  private View setupRollCallElement(ViewGroup parent,View convertView, RollCall rollCall){
-    LayoutRollCallEventBinding binding;
+    /**
+     * Setup the text and buttons that appear for a roll call in the list
+     *
+     * @param rollCall the roll call object we want to display
+     * @return
+     */
+    private View setupRollCallElement(ViewGroup parent, View convertView, RollCall rollCall) {
+        LayoutRollCallEventBinding binding;
 
-    if (convertView == null) {
-      LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-      binding = LayoutRollCallEventBinding.inflate(inflater, parent, false);
-    } else {
-      binding = DataBindingUtil.getBinding(convertView);
+        if (convertView == null) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            binding = LayoutRollCallEventBinding.inflate(inflater, parent, false);
+        } else {
+            binding = DataBindingUtil.getBinding(convertView);
+        }
+
+        binding.rollcallDate.setText("Start: " + DATE_FORMAT.format(new Date(1000 * rollCall.getStart())));
+        binding.rollcallTitle.setText("Roll Call: " + rollCall.getName());
+        binding.rollcallLocation.setText("Location: " + rollCall.getLocation());
+
+        binding.rollcallOpenButton.setVisibility(View.GONE);
+        binding.rollcallReopenButton.setVisibility(View.GONE);
+        binding.rollcallScheduledButton.setVisibility(View.GONE);
+        binding.rollcallEnterButton.setVisibility(View.GONE);
+        binding.rollcallClosedButton.setVisibility(View.GONE);
+
+        boolean isOrganizer = viewModel.isOrganizer().getValue();
+
+        if (isOrganizer && rollCall.getState() == EventState.CREATED) {
+            binding.rollcallOpenButton.setVisibility(View.VISIBLE);
+        } else if (isOrganizer && rollCall.getState() == EventState.CLOSED) {
+            binding.rollcallReopenButton.setVisibility(View.VISIBLE);
+        } else if (!isOrganizer && rollCall.getState() == EventState.CREATED) {
+            binding.rollcallScheduledButton.setVisibility(View.VISIBLE);
+        } else if (!isOrganizer && rollCall.getState() == EventState.OPENED) {
+            binding.rollcallEnterButton.setVisibility(View.VISIBLE);
+        } else if (!isOrganizer && rollCall.getState() == EventState.CLOSED) {
+            binding.rollcallClosedButton.setVisibility(View.VISIBLE);
+        }
+
+        binding.rollcallOpenButton.setOnClickListener(
+                clicked -> viewModel.openRollCall(rollCall.getId())
+        );
+        binding.rollcallReopenButton.setOnClickListener(
+                clicked ->
+                        viewModel.openRollCall(rollCall.getId())
+        );
+        binding.rollcallEnterButton.setOnClickListener(
+                clicked ->
+                        viewModel.enterRollCall(rollCall.getPersistentId())
+        );
+        binding.setLifecycleOwner(lifecycleOwner);
+
+        binding.executePendingBindings();
+        return binding.getRoot();
     }
-
-    binding.rollcallDate.setText("Start: "+DATE_FORMAT.format(new Date(1000*rollCall.getStart())));
-    binding.rollcallTitle.setText("Roll Call: "+rollCall.getName());
-    binding.rollcallLocation.setText("Location: "+rollCall.getLocation());
-
-    binding.rollcallOpenButton.setVisibility(View.GONE);
-    binding.rollcallReopenButton.setVisibility(View.GONE);
-    binding.rollcallScheduledButton.setVisibility(View.GONE);
-    binding.rollcallEnterButton.setVisibility(View.GONE);
-    binding.rollcallClosedButton.setVisibility(View.GONE);
-
-    boolean isOrganizer = viewModel.isOrganizer().getValue();
-
-    if(isOrganizer && rollCall.getState()== EventState.CREATED){
-      binding.rollcallOpenButton.setVisibility(View.VISIBLE);
-    }else if(isOrganizer && rollCall.getState()== EventState.CLOSED){
-      binding.rollcallReopenButton.setVisibility(View.VISIBLE);
-    }else if(!isOrganizer && rollCall.getState()== EventState.CREATED){
-      binding.rollcallScheduledButton.setVisibility(View.VISIBLE);
-    }else if(!isOrganizer && rollCall.getState()== EventState.OPENED){
-      binding.rollcallEnterButton.setVisibility(View.VISIBLE);
-    }else if(!isOrganizer && rollCall.getState()== EventState.CLOSED){
-      binding.rollcallClosedButton.setVisibility(View.VISIBLE);
-    }
-
-    binding.rollcallOpenButton.setOnClickListener(
-            clicked -> viewModel.openRollCall(rollCall.getId())
-    );
-    binding.rollcallReopenButton.setOnClickListener(
-            clicked ->
-                    viewModel.openRollCall(rollCall.getId())
-    );
-    binding.rollcallEnterButton.setOnClickListener(
-            clicked ->
-                    viewModel.enterRollCall(rollCall.getPersistentId())
-    );
-    binding.setLifecycleOwner(lifecycleOwner);
-
-    binding.executePendingBindings();
-    return binding.getRoot();
-  }
 }

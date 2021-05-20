@@ -20,7 +20,6 @@ import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.adapters.EventExpandableListViewAdapter;
 import com.github.dedis.student20_pop.detail.adapters.WitnessListViewAdapter;
-import com.github.dedis.student20_pop.model.Election;
 import com.github.dedis.student20_pop.model.RollCall;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventType;
