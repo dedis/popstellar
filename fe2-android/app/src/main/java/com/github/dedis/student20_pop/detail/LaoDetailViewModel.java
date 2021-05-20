@@ -226,7 +226,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
    */
   public void createNewRollCall(String title, String description, long proposedStart, long proposedEnd, boolean open) {
     Log.d(TAG, "creating a new roll call with title " + title);
-    Lao lao = getCurrentLao();
+    Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return;
