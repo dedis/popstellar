@@ -39,11 +39,11 @@ func main() {
 		Usage:   "port to listen websocket connections from witnesses on",
 		Value:   9002,
 	}
-	otherWitnessFlag := &cli.StringFlag{
+	otherWitnessFlag := &cli.StringSliceFlag{
 		Name:    "other-witness",
 		Aliases: []string{"ow"},
 		Usage:   "address and port to connect to other witness",
-		Value:   "",
+		Value:   nil,
 	}
 
 	app := &cli.App{

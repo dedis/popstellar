@@ -24,7 +24,7 @@ func Serve(context *cli.Context) error {
 	organizerPort := context.Int("organizer-port")
 	clientPort := context.Int("client-port")
 	witnessPort := context.Int("witness-port")
-	otherWitness := context.String("other-witness")
+	otherWitness := context.StringSlice("other-witness")
 	pk := context.String("public-key")
 
 	if pk == "" {
@@ -49,9 +49,11 @@ func Serve(context *cli.Context) error {
 		return xerrors.Errorf("failed to connect to organizer: %v", err)
 	}
 
-	err = connectToSocket(hub.WitnessSocketType, otherWitness, h, organizerPort)
-	if err != nil {
-		return xerrors.Errorf("failed to connect to witness: %v", err)
+	for i := range otherWitness {
+		err = connectToSocket(hub.WitnessSocketType, otherWitness[i], h, organizerPort)
+		if err != nil {
+			return xerrors.Errorf("failed to connect to witness: %v", err)
+		}
 	}
 
 	go hub.CreateAndServeWs(hub.WitnessHubType, hub.ClientSocketType, h, clientPort)
@@ -84,7 +86,7 @@ func connectToSocket(socketType hub.SocketType, address string, h hub.Hub, port 
 	if err != nil {
 		return xerrors.Errorf("dialing, %v", err)
 	}
-	log.Printf("connected to organizer at %s", address)
+	log.Printf("connected to %s at %s", socketType, urlString)
 	switch socketType {
 	case hub.OrganizerSocketType:
 		organizerSocket := hub.NewOrganizerSocket(h, ws)
