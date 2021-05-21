@@ -349,7 +349,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                       .sendPublish(channel, msg)
                       .subscribeOn(Schedulers.io())
                       .observeOn(AndroidSchedulers.mainThread())
-                      .timeout(20, TimeUnit.SECONDS)
+                      .timeout(5, TimeUnit.SECONDS)
                       .subscribe(
                               answer -> {
                                 if (answer instanceof Result) {

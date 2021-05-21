@@ -49,7 +49,6 @@
             android:id="@+id/channel_qr_code"
             android:layout_width="@dimen/channel_qr_code_size"
             android:layout_height="@dimen/channel_qr_code_size"
-            android:visibility="@{view_model.isOrganizer() ? View.VISIBLE : View.GONE}"
             android:layout_gravity="center" />
 
         <ImageButton
