@@ -110,20 +110,22 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 			//qs.validVotesMu.Lock()
 			earlierVote, ok := qs.validVotes[msg.Sender.String()]
 			// if the sender didn't previously cast a vote or if the vote is no longer valid update it
+			err := xerrors.Errorf("dummyError")
 			if !ok {
 				qs.validVotes[msg.Sender.String()] =
 					validVote{voteData.CreatedAt,
 						q.VoteIndexes}
-				if err :=checkMethodProperties(qs.method,len(q.VoteIndexes));err != nil{
+				err =checkMethodProperties(qs.method,len(q.VoteIndexes))
 					//qs.validVotesMu.Unlock()
-					return err
-				}
 			} else {
 				if earlierVote.voteTime > voteData.CreatedAt {
 					qs.validVotes[msg.Sender.String()] =
 						validVote{voteData.CreatedAt,
 							q.VoteIndexes}
 				}
+			}
+			if err != nil{
+				return err
 			}
 			//other votes can now change the list of valid votes
 			//qs.validVotesMu.Unlock()
@@ -134,10 +136,7 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 			}
 		}
 	}
-	return &message.Error{
-		Code:        -4,
-		Description: "Error in CastVote helper function",
-	}
+	return nil
 }
 func checkMethodProperties(method message.VotingMethod, length int) error{
 
