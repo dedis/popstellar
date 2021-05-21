@@ -255,6 +255,7 @@ public class LAORepository {
 
     lao.setName(createLao.getName());
     lao.setCreation(createLao.getCreation());
+    lao.setLastModified(createLao.getCreation());
     lao.setOrganizer(createLao.getOrganizer());
     lao.setId(createLao.getId());
 
@@ -284,6 +285,7 @@ public class LAORepository {
   private boolean handleStateLao(String channel, StateLao stateLao) {
     Lao lao = laoById.get(channel).getLao();
 
+    Log.d(TAG, "received: "+stateLao.getName());
     if (!messageById.containsKey(stateLao.getModificationId())) {
       // queue it if we haven't received the update message yet
       return true;
@@ -300,6 +302,7 @@ public class LAORepository {
         return false;
       }
     }
+
 
     // TODO: verify if lao/state_lao is consistent with the lao/update message
 
@@ -351,6 +354,7 @@ public class LAORepository {
 
     RollCall rollCall = new RollCall();
     rollCall.setId(createRollCall.getId());
+    rollCall.setPersistentId(createRollCall.getId());
     rollCall.setCreation(createRollCall.getCreation());
     rollCall.setState(EventState.CREATED);
     rollCall.setStart(createRollCall.getProposedStart());

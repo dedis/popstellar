@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,7 +35,7 @@ public final class MessageGeneral {
 
   private byte[] messageId;
 
-  private List<PublicKeySignaturePair> witnessSignatures;
+  private List<PublicKeySignaturePair> witnessSignatures = new ArrayList<>();
 
   private PublicKeyVerify verifier;
 
@@ -50,22 +51,22 @@ public final class MessageGeneral {
   }
 
   public MessageGeneral(
-      byte[] sender,
-      Data data,
-      List<PublicKeySignaturePair> witnessSignatures,
-      PublicKeySign signer,
-      Gson gson) {
+          byte[] sender,
+          Data data,
+          List<PublicKeySignaturePair> witnessSignatures,
+          PublicKeySign signer,
+          Gson gson) {
     this(sender, data, signer, gson);
     this.witnessSignatures = witnessSignatures;
   }
 
   public MessageGeneral(
-      byte[] sender,
-      byte[] dataBuf,
-      Data data,
-      byte[] signature,
-      byte[] messageId,
-      List<PublicKeySignaturePair> witnessSignatures) {
+          byte[] sender,
+          byte[] dataBuf,
+          Data data,
+          byte[] signature,
+          byte[] messageId,
+          List<PublicKeySignaturePair> witnessSignatures) {
     this.sender = sender;
     this.messageId = messageId;
     this.dataBuf = dataBuf;

@@ -111,29 +111,27 @@ public class HomeViewModel extends AndroidViewModel
   @Override
   public void onQRCodeDetected(Barcode barcode) {
     Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
-    // TODO: retrieve lao id/name from barcode.rawValue
-    // TODO: send subscribe and switch to the home screen on an answer
     String channel = barcode.rawValue;
     mLAORepository
           .sendSubscribe(channel)
           .observeOn(AndroidSchedulers.mainThread())
-          .timeout(5, TimeUnit.SECONDS)
+          .timeout(3, TimeUnit.SECONDS)
           .subscribe(
                   answer -> {
                     if (answer instanceof Result) {
                       Log.d(TAG, "got success result for subscribe to lao");
-                      openHome();
                     } else {
                       Log.d(
                               TAG,
                               "got failure result for subscribe to lao: "
                                       + ((Error) answer).getError().getDescription());
                     }
+                    openHome();
                   },
-                  throwable ->
-                    Log.d(TAG, "timed out waiting for a response for subscribe to lao", throwable)
-          );
-
+                  throwable -> {
+                    Log.d(TAG, "timed out waiting for a response for subscribe to lao", throwable);
+                    openHome(); //so that it doesn't load forever
+                  });
     setConnectingLao(channel);
     openConnecting();
   }
