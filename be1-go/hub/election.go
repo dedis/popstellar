@@ -52,6 +52,57 @@ type validVote struct {
 	indexes []int
 }
 
+
+func (c *laoChannel) createElection(msg message.Message) error {
+	organizerHub := c.hub
+
+	organizerHub.Lock()
+	defer organizerHub.Unlock()
+
+	// Check the data
+	data, ok := msg.Data.(*message.ElectionSetupData)
+	if !ok {
+		return &message.Error{
+			Code:        -4,
+			Description: "failed to cast data to SetupElectionData",
+		}
+	}
+
+	// Check if the Lao ID of the message corresponds to the channel ID
+	encodedLaoID := base64.URLEncoding.EncodeToString(data.LaoID)
+	channelID := c.channelID[6:]
+	if channelID != encodedLaoID {
+		return &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("Lao ID of the message (Lao: %s) is different from the channelID (channel: %s)", encodedLaoID, channelID),
+		}
+	}
+
+	// Compute the new election channel id
+	encodedElectionID := base64.URLEncoding.EncodeToString(data.ID)
+	encodedID := encodedLaoID + "/" + encodedElectionID
+
+	// Create the new election channel
+	electionCh := electionChannel{
+		createBaseChannel(organizerHub, rootPrefix+encodedID),
+		data.StartTime,
+		data.EndTime,
+		false,
+		getAllQuestionsForElectionChannel(data.Questions, data),
+	}
+
+	// Add the SetupElection message to the new election channel
+	messageID := base64.URLEncoding.EncodeToString(msg.MessageID)
+	electionCh.inboxMu.Lock()
+	electionCh.inbox[messageID] = msg
+	electionCh.inboxMu.Unlock()
+
+	// Add the new election channel to the organizerHub
+	organizerHub.channelByID[encodedID] = &electionCh
+
+	return nil
+}
+
 func (c *electionChannel) Publish(publish message.Publish) error {
 	err := c.baseChannel.VerifyPublishMessage(publish)
 	if err != nil {
@@ -157,4 +208,18 @@ func changeVote(qs *question, earlierVote validVote,sender string,created messag
 			validVote{created,
 				indexes}
 	}
+}
+
+func getAllQuestionsForElectionChannel(questions []message.Question, data *message.ElectionSetupData) map[string]question {
+	qs := make(map[string]question)
+	for _, q := range questions {
+		qs[base64.URLEncoding.EncodeToString(q.ID)] = question{
+			q.ID,
+			q.BallotOptions,
+			sync.RWMutex{},
+			make(map[string]validVote),
+			q.VotingMethod,
+		}
+	}
+	return qs
 }
