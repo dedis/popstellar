@@ -1,6 +1,7 @@
 package com.github.dedis.student20_pop.model.network.method.message.data.election;
 
-import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestionResult;
+import com.github.dedis.student20_pop.model.network.method.message.ElectionResultQuestion;
+import com.github.dedis.student20_pop.model.network.method.message.QuestionResult;
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
 import org.junit.Test;
@@ -16,8 +17,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 
 public class ElectionResultTest {
-    private Map<String, Integer> results = new HashMap<String, Integer>() {{put("Candidate1", 30);}};
-    private List<ElectionQuestionResult> questions = Arrays.asList(new ElectionQuestionResult("question id", results));
+    private List<QuestionResult> results = Arrays.asList(new QuestionResult("Candidate1", 40));
+    private List<ElectionResultQuestion> questions = Arrays.asList(new ElectionResultQuestion("question id", results));
     private ElectionResult electionResult = new ElectionResult(questions);
 
     @Test

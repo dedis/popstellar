@@ -1,9 +1,12 @@
 package com.github.dedis.student20_pop.model;
 
 import com.github.dedis.student20_pop.model.event.Event;
+import com.github.dedis.student20_pop.model.network.method.message.QuestionResult;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionResult;
 import com.github.dedis.student20_pop.utility.security.Hash;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,11 +28,11 @@ public class Election extends Event {
     //Registered votes recorded by the organizer at the end of an election
     private String organizerRegisteredVotes;
 
-    private Map<String, Integer> resultsMap;
+    private List<QuestionResult> results;
 
     public Election() {
         this.ballotOptions = new ArrayList<>();
-        this.resultsMap = new LinkedHashMap<>();
+        this.results = new ArrayList<>();
     }
 
     public String getId() {
@@ -90,17 +93,14 @@ public class Election extends Event {
     }
 
 
-    public void setResultsMap(Map<String, Integer> unsortedWinnerMap) {
-        if (unsortedWinnerMap == null) throw new IllegalArgumentException("the map of winners shoud not be null");
-        //Sorts the map in descending order of votes
-        unsortedWinnerMap.entrySet()
-                .stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .forEachOrdered(x -> resultsMap.put(x.getKey(), x.getValue()));
+    public void setResults(List<QuestionResult> results) {
+        if (results == null) throw new IllegalArgumentException("the list of winners should not be null");
+        results.sort((r1, r2) -> r2.getCount().compareTo(r1.getCount()));
+        this.results = results;
     }
 
-    public Map<String, Integer> getResultsMap() {
-        return resultsMap;
+    public List<QuestionResult> getResults() {
+        return results;
     }
 
     public List<String> getBallotOptions() {

@@ -1,6 +1,7 @@
 package com.github.dedis.student20_pop.model;
 
 
+import com.github.dedis.student20_pop.model.network.method.message.QuestionResult;
 import com.github.dedis.student20_pop.utility.security.Hash;
 
 import org.junit.Test;
@@ -110,30 +111,29 @@ public class ElectionTest {
     
     @Test
     public void resultsAreCorrectlySorted() {
-        Map<String, Integer> unsortedResultsMap = new LinkedHashMap<>();
-        unsortedResultsMap.put("Candidate1", 30);
-        unsortedResultsMap.put("Candidate2", 23);
-        unsortedResultsMap.put("Candidate3", 16);
-        unsortedResultsMap.put("Candidate4", 43);
-        election.setResultsMap(unsortedResultsMap);
-        Map<String, Integer> sortedMap = election.getResultsMap();
-        Iterator<Map.Entry<String, Integer>> mapIterator = sortedMap.entrySet().iterator();
+        List<QuestionResult> unsortedResults = new ArrayList<>();
+        unsortedResults.add(new QuestionResult("Candidate1", 30));
+        unsortedResults.add(new QuestionResult("Candidate2", 23));
+        unsortedResults.add(new QuestionResult("Candidate3", 16));
+        unsortedResults.add(new QuestionResult("Candidate4", 43));
+        election.setResults(unsortedResults);
+        List<QuestionResult> sortedResults = election.getResults();
 
-        Map.Entry<String, Integer> firstResult = mapIterator.next();
-        assertThat(firstResult.getKey(), is("Candidate4"));
-        assertThat(firstResult.getValue(), is(43));
+        QuestionResult firstResult = sortedResults.get(0);
+        assertThat(firstResult.getName(), is("Candidate4"));
+        assertThat(firstResult.getCount(), is(43));
 
-        Map.Entry<String, Integer> secondResult = mapIterator.next();
-        assertThat(secondResult.getKey(), is("Candidate1"));
-        assertThat(secondResult.getValue(), is(30));
+        QuestionResult secondResult = sortedResults.get(1);
+        assertThat(secondResult.getName(), is("Candidate1"));
+        assertThat(secondResult.getCount(), is(30));
 
-        Map.Entry<String, Integer> thirdResult = mapIterator.next();
-        assertThat(thirdResult.getKey(), is("Candidate2"));
-        assertThat(thirdResult.getValue(), is(23));
+        QuestionResult thirdResult = sortedResults.get(2);
+        assertThat(thirdResult.getName(), is("Candidate2"));
+        assertThat(thirdResult.getCount(), is(23));
 
-        Map.Entry<String, Integer> fourthResult = mapIterator.next();
-        assertThat(fourthResult.getKey(), is("Candidate3"));
-        assertThat(fourthResult.getValue(), is(16));
+        QuestionResult fourthResult = sortedResults.get(3);
+        assertThat(fourthResult.getName(), is("Candidate3"));
+        assertThat(fourthResult.getCount(), is(16));
 
     }
 }

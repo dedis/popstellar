@@ -1,8 +1,13 @@
 package com.github.dedis.student20_pop.model.network.method.message;
 
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionResult;
+
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -11,27 +16,27 @@ import static org.junit.Assert.assertThrows;
 
 public class ElectionQuestionResultTest {
     private String questionId = "questionId";
-    private Map<String, Integer> results =  new HashMap<String, Integer>() {{put("Candidate1", 30);}};
-    private ElectionQuestionResult electionQuestionResult = new ElectionQuestionResult(questionId, results);
+    private List<QuestionResult> results = Arrays.asList(new QuestionResult("Candidate1", 30));
+    private ElectionResultQuestion electionQuestionResult = new ElectionResultQuestion(questionId, results);
 
     @Test
-    public void electionQuestionGetterReturnsCorrectQuestionId() {
+    public void electionQuestionResultGetterReturnsCorrectQuestionId() {
         assertThat(electionQuestionResult.getId(), is(questionId));
     }
 
     @Test
-    public void electionQuestionGetterReturnsCorrectResults() {
+    public void electionQuestionResultGetterReturnsCorrectResults() {
         assertThat(electionQuestionResult.getResults(), is(results));
     }
 
     @Test
     public void fieldsCantBeNull() {
-        assertThrows(IllegalArgumentException.class, () -> new ElectionQuestionResult(null, results));
-        assertThrows(IllegalArgumentException.class, () -> new ElectionQuestionResult(questionId, null));
+        assertThrows(IllegalArgumentException.class, () -> new ElectionResultQuestion(null, results));
+        assertThrows(IllegalArgumentException.class, () -> new ElectionResultQuestion(questionId, null));
     }
 
     @Test
     public void resultsCantBeEmpty() {
-        assertThrows(IllegalArgumentException.class, () -> new ElectionQuestionResult(questionId, new HashMap<>()));
+        assertThrows(IllegalArgumentException.class, () -> new ElectionResultQuestion(questionId, new ArrayList<>()));
     }
 }

@@ -20,7 +20,7 @@ import com.github.dedis.student20_pop.model.network.method.Publish;
 import com.github.dedis.student20_pop.model.network.method.Subscribe;
 import com.github.dedis.student20_pop.model.network.method.Unsubscribe;
 import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
-import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestionResult;
+import com.github.dedis.student20_pop.model.network.method.message.ElectionResultQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
@@ -264,10 +264,9 @@ public class LAORepository {
     if (!electionOption.isPresent()) throw new IllegalArgumentException("the election should be present when receiving a result");
     Election election = electionOption.get();
 
-    List<ElectionQuestionResult> questions = data.getElectionQuestionResults();
+    List<ElectionResultQuestion> questions = data.getElectionQuestionResults();
     if (questions.isEmpty()) throw new IllegalArgumentException("the questions results shouldn't be empty");
-    election.setResultsMap(questions.get(0).getResults());
-    
+    election.setResults(questions.get(0).getResults());
     lao.updateElection(election.getId(), election);
     return false;
   }
