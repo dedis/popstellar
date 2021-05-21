@@ -18,18 +18,17 @@ import net.glxn.qrgen.android.QRCode;
 
 public class RollCallDetailFragment extends Fragment {
     public static final String TAG = RollCallDetailFragment.class.getSimpleName();
+    private static final String EXTRA_PK = "pk";
 
     private FragmentRollCallBinding mRollCallFragBinding;
     private LaoDetailViewModel mLaoDetailViewModel;
-    private String pk;
-
-    public RollCallDetailFragment(String pk){
-        super();
-        this.pk = pk;
-    }
 
     public static RollCallDetailFragment newInstance(String pk) {
-        return new RollCallDetailFragment(pk);
+        RollCallDetailFragment rollCallDetailFragment = new RollCallDetailFragment();
+        Bundle bundle = new Bundle(1);
+        bundle.putString(EXTRA_PK, pk);
+        rollCallDetailFragment.setArguments(bundle);
+        return rollCallDetailFragment;
     }
 
     @Nullable
@@ -40,6 +39,7 @@ public class RollCallDetailFragment extends Fragment {
             @Nullable Bundle savedInstanceState) {
         mRollCallFragBinding = FragmentRollCallBinding.inflate(inflater, container, false);
 
+        String pk = this.getArguments().getString(EXTRA_PK);
         Bitmap myBitmap = QRCode.from(pk).bitmap();
         mRollCallFragBinding.pkQrCode.setImageBitmap(myBitmap);
 
