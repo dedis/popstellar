@@ -165,17 +165,15 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 		//this is to handle the case when the organizer must handle multiple votes being cast at the same time
 		earlierVote, ok := qs.validVotes[msg.Sender.String()]
 		// if the sender didn't previously cast a vote or if the vote is no longer valid update it
-		err := xerrors.Errorf("dummyError")
 		if !ok {
 			qs.validVotes[msg.Sender.String()] =
 				validVote{voteData.CreatedAt,
 					q.VoteIndexes}
-			err = checkMethodProperties(qs.method, len(q.VoteIndexes))
+			if err := checkMethodProperties(qs.method, len(q.VoteIndexes)); err != nil{
+				return err
+			}
 		} else {
 			changeVote(&qs, earlierVote, msg.Sender.String(), voteData.CreatedAt, q.VoteIndexes)
-		}
-		if err != nil {
-			return err
 		}
 		//other votes can now change the list of valid votes
 	}
