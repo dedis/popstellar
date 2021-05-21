@@ -52,7 +52,6 @@ type validVote struct {
 	indexes []int
 }
 
-
 func (c *laoChannel) createElection(msg message.Message) error {
 	organizerHub := c.hub
 
@@ -88,7 +87,7 @@ func (c *laoChannel) createElection(msg message.Message) error {
 		data.StartTime,
 		data.EndTime,
 		false,
-		getAllQuestionsForElectionChannel(data.Questions, data),
+		getAllQuestionsForElectionChannel(data.Questions),
 	}
 
 	// Add the SetupElection message to the new election channel
@@ -156,36 +155,33 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 
 		QuestionID := base64.URLEncoding.EncodeToString(q.QuestionID)
 		qs, ok := c.questions[QuestionID]
-		if ok {
-			//this is to handle the case when the organizer must handle multiple votes being cast at the same time
-			//qs.validVotesMu.Lock()
-			earlierVote, ok := qs.validVotes[msg.Sender.String()]
-			// if the sender didn't previously cast a vote or if the vote is no longer valid update it
-			err := xerrors.Errorf("dummyError")
-			if !ok {
-				qs.validVotes[msg.Sender.String()] =
-					validVote{voteData.CreatedAt,
-						q.VoteIndexes}
-				err =checkMethodProperties(qs.method,len(q.VoteIndexes))
-					//qs.validVotesMu.Unlock()
-			} else {
-				changeVote(&qs,earlierVote,msg.Sender.String(),voteData.CreatedAt,q.VoteIndexes)
-			}
-			if err != nil{
-				return err
-			}
-			//other votes can now change the list of valid votes
-			//qs.validVotesMu.Unlock()
-		} else {
+
+		if !ok {
 			return &message.Error{
 				Code:        -4,
 				Description: "No Question with this ID exists",
 			}
 		}
+		//this is to handle the case when the organizer must handle multiple votes being cast at the same time
+		earlierVote, ok := qs.validVotes[msg.Sender.String()]
+		// if the sender didn't previously cast a vote or if the vote is no longer valid update it
+		err := xerrors.Errorf("dummyError")
+		if !ok {
+			qs.validVotes[msg.Sender.String()] =
+				validVote{voteData.CreatedAt,
+					q.VoteIndexes}
+			err = checkMethodProperties(qs.method, len(q.VoteIndexes))
+		} else {
+			changeVote(&qs, earlierVote, msg.Sender.String(), voteData.CreatedAt, q.VoteIndexes)
+		}
+		if err != nil {
+			return err
+		}
+		//other votes can now change the list of valid votes
 	}
 	return nil
 }
-func checkMethodProperties(method message.VotingMethod, length int) error{
+func checkMethodProperties(method message.VotingMethod, length int) error {
 
 	if method == "Plurality" && length < 1 {
 		return &message.Error{
@@ -202,23 +198,27 @@ func checkMethodProperties(method message.VotingMethod, length int) error{
 	return nil
 }
 
-func changeVote(qs *question, earlierVote validVote,sender string,created message.Timestamp,indexes [] int){
+func changeVote(qs *question, earlierVote validVote, sender string, created message.Timestamp, indexes []int) {
 	if earlierVote.voteTime > created {
+		qs.validVotesMu.Lock()
 		qs.validVotes[sender] =
-			validVote{created,
-				indexes}
+			validVote{
+				voteTime: created,
+				indexes:  indexes,
+			}
+		qs.validVotesMu.Unlock()
 	}
 }
 
-func getAllQuestionsForElectionChannel(questions []message.Question, data *message.ElectionSetupData) map[string]question {
+func getAllQuestionsForElectionChannel(questions []message.Question) map[string]question {
 	qs := make(map[string]question)
 	for _, q := range questions {
 		qs[base64.URLEncoding.EncodeToString(q.ID)] = question{
-			q.ID,
-			q.BallotOptions,
-			sync.RWMutex{},
-			make(map[string]validVote),
-			q.VotingMethod,
+			id:            q.ID,
+			ballotOptions: q.BallotOptions,
+			validVotesMu:  sync.RWMutex{},
+			validVotes:    make(map[string]validVote),
+			method:        q.VotingMethod,
 		}
 	}
 	return qs
