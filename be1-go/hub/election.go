@@ -118,11 +118,7 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 				err =checkMethodProperties(qs.method,len(q.VoteIndexes))
 					//qs.validVotesMu.Unlock()
 			} else {
-				if earlierVote.voteTime > voteData.CreatedAt {
-					qs.validVotes[msg.Sender.String()] =
-						validVote{voteData.CreatedAt,
-							q.VoteIndexes}
-				}
+				changeVote(&qs,earlierVote,msg.Sender.String(),voteData.CreatedAt,q.VoteIndexes)
 			}
 			if err != nil{
 				return err
@@ -153,4 +149,12 @@ func checkMethodProperties(method message.VotingMethod, length int) error{
 		}
 	}
 	return nil
+}
+
+func changeVote(qs *question, earlierVote validVote,sender string,created message.Timestamp,indexes [] int){
+	if earlierVote.voteTime > created {
+		qs.validVotes[sender] =
+			validVote{created,
+				indexes}
+	}
 }
