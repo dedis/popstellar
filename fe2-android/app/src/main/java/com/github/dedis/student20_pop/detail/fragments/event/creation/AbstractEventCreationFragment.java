@@ -7,12 +7,15 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatDialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.detail.fragments.pickers.DatePickerFragment;
 import com.github.dedis.student20_pop.detail.fragments.pickers.TimePickerFragment;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -100,9 +103,14 @@ public abstract class AbstractEventCreationFragment extends Fragment {
         });
   }
 
-  public void addDateAndTimeListener(TextWatcher listener) {
+  public void addStartDateAndTimeListener(TextWatcher listener) {
     startTimeEditText.addTextChangedListener(listener);
     startDateEditText.addTextChangedListener(listener);
+  }
+
+  public void addEndDateAndTimeListener(TextWatcher listener) {
+    endTimeEditText.addTextChangedListener(listener);
+    endDateEditText.addTextChangedListener(listener);
   }
 
   public String getStartDate() {
@@ -112,6 +120,10 @@ public abstract class AbstractEventCreationFragment extends Fragment {
   public String getStartTime() {
     return startTimeEditText.getText().toString().trim();
   }
+
+  public String getEndDate() { return endDateEditText.getText().toString().trim(); }
+
+  public String getEndTime() { return endTimeEditText.getText().toString().trim(); }
 
   public void checkDates(int requestCode, int resultCode, Intent data) {
     if (resultCode == Activity.RESULT_OK) {
@@ -264,6 +276,17 @@ public abstract class AbstractEventCreationFragment extends Fragment {
       }
       Instant end = Instant.ofEpochMilli(completeEndTime.getTimeInMillis());
       endTimeInSeconds = end.getEpochSecond();
+    }
+  }
+
+  public void editTextInputChecker(EditText editText, String errorMessage){
+    if(editText != null && errorMessage != null) {
+      if (editText.getText().toString().trim().isEmpty()) {
+        editText.setError(errorMessage);
+      }
+    }
+    else{
+      throw new IllegalArgumentException();
     }
   }
 }

@@ -24,4 +24,6 @@
 *.db
 *.lock
 
-be1-go/pop
+
+.DS_Store
+**/.DS_Store
