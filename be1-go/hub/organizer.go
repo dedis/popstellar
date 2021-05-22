@@ -123,6 +123,7 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 			Description: fmt.Sprintf("failed to unmarshal incoming message: %v", err),
 		}
 		log.Printf("%v", err)
+
 		client.SendError(&id, err)
 		return
 	}
@@ -174,6 +175,7 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 			if err != nil {
 				err = message.NewError("failed to create lao", err)
 				log.Printf("%v", err)
+
 				client.SendError(&id, err)
 				return
 			}
