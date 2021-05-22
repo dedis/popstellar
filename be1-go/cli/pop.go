@@ -43,7 +43,6 @@ func main() {
 		Name:    "other-witness",
 		Aliases: []string{"ow"},
 		Usage:   "address and port to connect to other witness",
-		Value:   nil,
 	}
 
 	app := &cli.App{
