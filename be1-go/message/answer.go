@@ -29,10 +29,10 @@ type Error struct {
 }
 
 // PublicKey represents a user's public key.
-type PublicKey base64urlBytes
+type PublicKey Base64UrlBytes
 
 // Signature represents a signature.
-type Signature base64urlBytes
+type Signature Base64UrlBytes
 
 // String returns the base64 encoded representation of the public key.
 func (p PublicKey) String() string {
