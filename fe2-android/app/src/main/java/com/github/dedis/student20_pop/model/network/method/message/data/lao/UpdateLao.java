@@ -3,7 +3,6 @@ package com.github.dedis.student20_pop.model.network.method.message.data.lao;
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
-import com.github.dedis.student20_pop.utility.security.Hash;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.HashSet;
@@ -23,14 +22,13 @@ public class UpdateLao extends Data {
   /**
    * Constructor for a data Update LAO
    *
-   * @param organizer public key of the LAO
-   * @param creation creation time
+   * @param id of the LAO update message, Hash(organizer||creation||name)
    * @param name name of the LAO
    * @param lastModified time of last modification
    * @param witnesses list of witnesses of the LAO
    */
-  public UpdateLao(String organizer, long creation, String name, long lastModified, Set<String> witnesses) {
-    this.id = Hash.hash("R", organizer, Long.toString(creation), name);
+  public UpdateLao(String id, String name, long lastModified, Set<String> witnesses) {
+    this.id = id;
     this.name = name;
     this.lastModified = lastModified;
     this.witnesses = witnesses;

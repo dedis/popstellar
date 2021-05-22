@@ -3,7 +3,6 @@ package com.github.dedis.student20_pop.qrcode;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +26,6 @@ import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
-
 /** Fragment handling the QR code scanning */
 public final class QRCodeScanningFragment extends Fragment {
   public static final String TAG = QRCodeScanningFragment.class.getSimpleName();
@@ -75,22 +73,21 @@ public final class QRCodeScanningFragment extends Fragment {
                         }
                       });
       ((LaoDetailViewModel)mQRCodeScanningViewModel)
-              .getAttendeeScanConfirmEvent()
-              .observe(
-                      this,
-                      stringEvent -> {
-                        String event = stringEvent.getContentIfNotHandled();
-                        if (event != null) {
-                          setupSuccessPopup(event);
-                        } });
-      ((LaoDetailViewModel)mQRCodeScanningViewModel)
               .getScanWarningEvent()
               .observe(
                       this,
                       stringEvent -> {
                         String event = stringEvent.getContentIfNotHandled();
                         if (event != null) {
-                          setupWarningPopup(event);
+                          AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                          builder.setTitle("Warning");
+                          builder.setMessage(event);
+                          mPreview.stop();
+                          builder.setPositiveButton("Ok", (dialog, which) -> {
+                            dialog.dismiss();
+                            startCamera();
+                          });
+                          builder.show();
                         } });
       setupCloseRollCallButton();
 
@@ -153,34 +150,5 @@ public final class QRCodeScanningFragment extends Fragment {
 
   private void closeRollCall() {
     ((LaoDetailViewModel)mQRCodeScanningViewModel).openLaoDetail();
-  }
-
-  private void setupSuccessPopup(String msg){
-    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-    builder.setTitle("Success");
-    builder.setMessage(msg);
-    mPreview.stop();
-    AlertDialog dialog = builder.show();
-    new Handler().postDelayed(new Runnable() {
-      @Override
-      public void run() {
-        if (dialog.isShowing()){
-          dialog.dismiss();
-          startCamera();
-        }
-      }
-    }, 2000);
-  }
-
-  private void setupWarningPopup(String msg){
-    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-    builder.setTitle("Warning");
-    builder.setMessage(msg);
-    mPreview.stop();
-    builder.setPositiveButton("Ok", (dialog, which) -> {
-      dialog.dismiss();
-      startCamera();
-    });
-    builder.show();
   }
 }

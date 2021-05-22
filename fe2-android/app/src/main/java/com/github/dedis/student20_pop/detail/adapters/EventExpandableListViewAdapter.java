@@ -35,7 +35,6 @@ import static com.github.dedis.student20_pop.model.event.EventCategory.FUTURE;
 import static com.github.dedis.student20_pop.model.event.EventCategory.PAST;
 import static com.github.dedis.student20_pop.model.event.EventCategory.PRESENT;
 
-
 public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
   protected HashMap<EventCategory, List<Event>> eventsMap;
@@ -260,7 +259,38 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
     Event event = (Event)getChild(groupPosition, childPosition);
     if(event instanceof RollCall){
-      setupRollCallElement(binding, (RollCall)event);
+      RollCall rollCall = (RollCall)event;
+      binding.rollcallDate.setText("Start: "+DATE_FORMAT.format(new Date(1000*rollCall.getStart())));
+      binding.rollcallTitle.setText("Roll Call: "+rollCall.getName());
+      binding.rollcallLocation.setText("Location: "+rollCall.getLocation());
+
+      binding.rollcallOpenButton.setVisibility(View.GONE);
+      binding.rollcallReopenButton.setVisibility(View.GONE);
+      binding.rollcallScheduledButton.setVisibility(View.GONE);
+      binding.rollcallEnterButton.setVisibility(View.GONE);
+      binding.rollcallClosedButton.setVisibility(View.GONE);
+      
+      boolean isOrganizer = viewModel.isOrganizer().getValue();
+
+      if(isOrganizer && rollCall.getState()== EventState.CREATED){
+        binding.rollcallOpenButton.setVisibility(View.VISIBLE);
+      }else if(isOrganizer && rollCall.getState()== EventState.CLOSED){
+        binding.rollcallReopenButton.setVisibility(View.VISIBLE);
+      }else if(!isOrganizer && rollCall.getState()== EventState.CREATED){
+        binding.rollcallScheduledButton.setVisibility(View.VISIBLE);
+      }else if(!isOrganizer && rollCall.getState()== EventState.OPENED){
+        binding.rollcallEnterButton.setVisibility(View.VISIBLE);
+      }else if(!isOrganizer && rollCall.getState()== EventState.CLOSED){
+        binding.rollcallClosedButton.setVisibility(View.VISIBLE);
+      }
+      
+      binding.rollcallOpenButton.setOnClickListener(
+              clicked -> viewModel.openRollCall(rollCall.getId())
+      );
+      binding.rollcallReopenButton.setOnClickListener(
+              clicked ->
+                viewModel.openRollCall(rollCall.getId())
+      );
     }
 
     binding.setLifecycleOwner(lifecycleOwner);
@@ -301,48 +331,5 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
   @Override
   public boolean isChildSelectable(int groupPosition, int childPosition) {
     return true;
-  }
-
-  /**
-   * Setup the text and buttons that appear for a roll call in the list
-   * @param binding the binding that contains the roll call information
-   * @param rollCall the roll call object we want to display
-   */
-  private void setupRollCallElement(LayoutRollCallEventBinding binding, RollCall rollCall){
-    binding.rollcallDate.setText("Start: "+DATE_FORMAT.format(new Date(1000*rollCall.getStart())));
-    binding.rollcallTitle.setText("Roll Call: "+rollCall.getName());
-    binding.rollcallLocation.setText("Location: "+rollCall.getLocation());
-
-    binding.rollcallOpenButton.setVisibility(View.GONE);
-    binding.rollcallReopenButton.setVisibility(View.GONE);
-    binding.rollcallScheduledButton.setVisibility(View.GONE);
-    binding.rollcallEnterButton.setVisibility(View.GONE);
-    binding.rollcallClosedButton.setVisibility(View.GONE);
-
-    boolean isOrganizer = viewModel.isOrganizer().getValue();
-
-    if(isOrganizer && rollCall.getState()== EventState.CREATED){
-      binding.rollcallOpenButton.setVisibility(View.VISIBLE);
-    }else if(isOrganizer && rollCall.getState()== EventState.CLOSED){
-      binding.rollcallReopenButton.setVisibility(View.VISIBLE);
-    }else if(!isOrganizer && rollCall.getState()== EventState.CREATED){
-      binding.rollcallScheduledButton.setVisibility(View.VISIBLE);
-    }else if(!isOrganizer && rollCall.getState()== EventState.OPENED){
-      binding.rollcallEnterButton.setVisibility(View.VISIBLE);
-    }else if(!isOrganizer && rollCall.getState()== EventState.CLOSED){
-      binding.rollcallClosedButton.setVisibility(View.VISIBLE);
-    }
-
-    binding.rollcallOpenButton.setOnClickListener(
-            clicked -> viewModel.openRollCall(rollCall.getId())
-    );
-    binding.rollcallReopenButton.setOnClickListener(
-            clicked ->
-                    viewModel.openRollCall(rollCall.getId())
-    );
-    binding.rollcallEnterButton.setOnClickListener(
-            clicked ->
-                    viewModel.enterRollCall(rollCall.getPersistentId())
-    );
   }
 }
