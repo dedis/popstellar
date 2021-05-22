@@ -6,11 +6,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"path/filepath"
 	"student20_pop"
 	"sync"
 
 	"student20_pop/message"
 
+	"github.com/xeipuuv/gojsonschema"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
@@ -23,15 +25,49 @@ type organizerHub struct {
 	channelByID map[string]Channel
 
 	public kyber.Point
+
+	schemas map[string]*gojsonschema.Schema
 }
 
+const (
+	GenericMsgSchema string = "genericMsgSchema"
+	DataSchema       string = "dataSchema"
+)
+
 // NewOrganizerHub returns a Organizer Hub.
-func NewOrganizerHub(public kyber.Point) Hub {
+func NewOrganizerHub(public kyber.Point) (Hub, error) {
+	// Import the Json schemas defined in the protocol section
+	protocolPath, err := filepath.Abs("../protocol")
+	if err != nil {
+		return nil, xerrors.Errorf("failed to load the path for the json schemas: %v", err)
+	}
+	protocolPath = "file://" + protocolPath
+
+	schemas := make(map[string]*gojsonschema.Schema)
+
+	// Import the schema for generic messages
+	genericMsgLoader := gojsonschema.NewReferenceLoader(protocolPath + "/genericMessage.json")
+	genericMsgSchema, err := gojsonschema.NewSchema(genericMsgLoader)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to load the json schema for generic messages: %v", err)
+	}
+	schemas[GenericMsgSchema] = genericMsgSchema
+
+	// Impot the schema for data
+	dataSchemaLoader := gojsonschema.NewReferenceLoader(protocolPath + "/query/method/message/data/data.json")
+	dataSchema, err := gojsonschema.NewSchema(dataSchemaLoader)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to load the json schema for data: %v", err)
+	}
+	schemas[DataSchema] = dataSchema
+
+	// Create the organizer hub
 	return &organizerHub{
 		messageChan: make(chan IncomingMessage),
 		channelByID: make(map[string]Channel),
 		public:      public,
-	}
+		schemas:     schemas,
+	}, nil
 }
 
 // RemoveClient removes the client from this hub.
@@ -54,12 +90,41 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 	client := ClientSocket{
 		incomingMessage.Socket,
 	}
+	byteMessage := incomingMessage.Message
 
-	// unmarshal the message
+	// Check if the GenericMessage has a field "id"
 	genericMsg := &message.GenericMessage{}
-	err := json.Unmarshal(incomingMessage.Message, genericMsg)
+	id, ok := genericMsg.UnmarshalID(byteMessage)
+	if !ok {
+		err := &message.Error{
+			Code:        -4,
+			Description: "The message does not have a valid `id` field",
+		}
+		log.Printf("%v", err)
+		client.SendError(nil, err)
+		return
+	}
+
+	// Verify the message
+	err := o.verifyJson(byteMessage, GenericMsgSchema)
 	if err != nil {
-		log.Printf("failed to unmarshal incoming message: %v", err)
+		err = message.NewError("failed to verify incoming message", err)
+		log.Printf("%v", err)
+		client.SendError(&id, err)
+		return
+	}
+
+	// Unmarshal the message
+	err = json.Unmarshal(byteMessage, genericMsg)
+	if err != nil {
+		// Return a error of type "-4 request data is invalid" for all the unmarshalling problems of the incoming message
+		err = &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("failed to unmarshal incoming message: %v", err),
+		}
+		log.Printf("%v", err)
+		client.SendError(&id, err)
+		return
 	}
 
 	query := genericMsg.Query
@@ -71,19 +136,35 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 	channelID := query.GetChannel()
 	log.Printf("channel: %s", channelID)
 
-	id := query.GetID()
-
 	if channelID == "/root" {
 		if query.Publish == nil {
 			log.Printf("only publish is allowed on /root")
-			client.SendError(query.GetID(), err)
+			client.SendError(&id, err)
 			return
 		}
 
-		err := query.Publish.Params.Message.VerifyAndUnmarshalData()
+		// Check if the structure of the message is correct
+		msg := query.Publish.Params.Message
+
+		// Verify the data
+		err := o.verifyJson(msg.RawData, DataSchema)
 		if err != nil {
-			log.Printf("failed to verify and unmarshal data: %v", err)
-			client.SendError(query.Publish.ID, err)
+			err = message.NewError("failed to validate the data", err)
+			log.Printf("%v", err)
+			client.SendError(&id, err)
+			return
+		}
+
+		// Unmarshal the data
+		err = query.Publish.Params.Message.VerifyAndUnmarshalData()
+		if err != nil {
+			// Return a error of type "-4 request data is invalid" for all the verifications and unmarshalling problems of the data
+			err = &message.Error{
+				Code:        -4,
+				Description: fmt.Sprintf("failed to verify and unmarshal data: %v", err),
+			}
+			log.Printf("%v", err)
+			client.SendError(&id, err)
 			return
 		}
 
@@ -91,13 +172,14 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 			query.Publish.Params.Message.Data.GetObject() == message.DataObject(message.LaoObject) {
 			err := o.createLao(*query.Publish)
 			if err != nil {
-				log.Printf("failed to create lao: %v", err)
-				client.SendError(query.Publish.ID, err)
+				err = message.NewError("failed to create lao", err)
+				log.Printf("%v", err)
+				client.SendError(&id, err)
 				return
 			}
 		} else {
 			log.Printf("invalid method: %s", query.GetMethod())
-			client.SendError(id, &message.Error{
+			client.SendError(&id, &message.Error{
 				Code:        -1,
 				Description: "you may only invoke lao/create on /root",
 			})
@@ -113,7 +195,7 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 
 	if channelID[:6] != "/root/" {
 		log.Printf("channel id must begin with /root/")
-		client.SendError(id, &message.Error{
+		client.SendError(&id, &message.Error{
 			Code:        -2,
 			Description: "channel id must begin with /root/",
 		})
@@ -125,7 +207,7 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 	channel, ok := o.channelByID[channelID]
 	if !ok {
 		log.Printf("invalid channel id: %s", channelID)
-		client.SendError(id, &message.Error{
+		client.SendError(&id, &message.Error{
 			Code:        -2,
 			Description: fmt.Sprintf("channel with id %s does not exist", channelID),
 		})
@@ -155,7 +237,7 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 
 	if err != nil {
 		log.Printf("failed to process query: %v", err)
-		client.SendError(id, err)
+		client.SendError(&id, err)
 		return
 	}
 
@@ -173,16 +255,17 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 
 func (o *organizerHub) handleMessageFromWitness(incomingMessage *IncomingMessage) {
 	//TODO
+
 }
 
 func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	log.Printf("organizerHub::handleMessageFromClient: %s", incomingMessage.Message)
 
 	switch incomingMessage.Socket.socketType {
-	case clientSocket:
+	case ClientSocketType:
 		o.handleMessageFromClient(incomingMessage)
 		return
-	case witnessSocket:
+	case WitnessSocketType:
 		o.handleMessageFromWitness(incomingMessage)
 		return
 	default:
@@ -203,6 +286,33 @@ func (o *organizerHub) Start(done chan struct{}) {
 			return
 		}
 	}
+}
+
+func (o *organizerHub) verifyJson(byteMessage []byte, schemaName string) error {
+	// Validate the Json "byteMessage" with a schema
+	messageLoader := gojsonschema.NewBytesLoader(byteMessage)
+	resultErrors, err := o.schemas[schemaName].Validate(messageLoader)
+	if err != nil {
+		return &message.Error{
+			Code:        -4,
+			Description: err.Error(),
+		}
+	}
+	errorsList := resultErrors.Errors()
+	descriptionErrors := ""
+	// Concatenate all error descriptions
+	for index, e := range errorsList {
+		descriptionErrors += fmt.Sprintf(" (%d) %s", index+1, e.Description())
+	}
+
+	if len(errorsList) > 0 {
+		return &message.Error{
+			Code:        -4,
+			Description: descriptionErrors,
+		}
+	}
+
+	return nil
 }
 
 func (o *organizerHub) createLao(publish message.Publish) error {
@@ -228,7 +338,9 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 	laoChannelID := "/root/" + encodedID
 
 	laoCh := laoChannel{
-		createBaseChannel(o, laoChannelID),
+		rollCall:    rollCall{},
+		attendees:   make(map[string]struct{}),
+		baseChannel: createBaseChannel(o, laoChannelID),
 	}
 	messageID := base64.StdEncoding.EncodeToString(publish.Params.Message.MessageID)
 	laoCh.inbox[messageID] = *publish.Params.Message
@@ -239,13 +351,28 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 }
 
 type laoChannel struct {
+	rollCall  rollCall
+	attendees map[string]struct{}
 	*baseChannel
+}
+
+type rollCallState string
+
+const (
+	Open    rollCallState = "open"
+	Closed  rollCallState = "closed"
+	Created rollCallState = "created"
+)
+
+type rollCall struct {
+	state rollCallState
+	id    string
 }
 
 func (c *laoChannel) Publish(publish message.Publish) error {
 	err := c.baseChannel.VerifyPublishMessage(publish)
 	if err != nil {
-		return xerrors.Errorf("failed to verify Publish message on a lao channel: %w", err)
+		return message.NewError("failed to verify Publish message on a lao channel", err)
 	}
 
 	msg := publish.Params.Message
@@ -262,7 +389,7 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 	case message.MessageObject:
 		err = c.processMessageObject(msg.Sender, data)
 	case message.RollCallObject:
-		err = c.processRollCallObject(data)
+		err = c.processRollCallObject(*msg)
 	}
 
 	if err != nil {
@@ -280,9 +407,6 @@ func (c *laoChannel) processLaoObject(msg message.Message) error {
 
 	switch action {
 	case message.UpdateLaoAction:
-		c.inboxMu.Lock()
-		c.inbox[msgIDEncoded] = msg
-		c.inboxMu.Unlock()
 	case message.StateLaoAction:
 		err := c.processLaoState(msg.Data.(*message.StateLAOData))
 		if err != nil {
@@ -290,11 +414,12 @@ func (c *laoChannel) processLaoObject(msg message.Message) error {
 			return xerrors.Errorf("failed to process lao/state: %w", err)
 		}
 	default:
-		return &message.Error{
-			Code:        -1,
-			Description: fmt.Sprintf("invalid action: %s", action),
-		}
+		return message.NewInvalidActionError(message.DataAction(action))
 	}
+
+	c.inboxMu.Lock()
+	c.inbox[msgIDEncoded] = msg
+	c.inboxMu.Unlock()
 
 	return nil
 }
@@ -421,24 +546,6 @@ func compareLaoUpdateAndState(update *message.UpdateLAOData, state *message.Stat
 	return nil
 }
 
-func (c *laoChannel) broadcastToAllClients(msg message.Message) {
-	c.clientsMu.RLock()
-	defer c.clientsMu.RUnlock()
-
-	query := message.Query{
-		Broadcast: message.NewBroadcast(c.baseChannel.channelID, &msg),
-	}
-
-	buf, err := json.Marshal(query)
-	if err != nil {
-		log.Fatalf("failed to marshal broadcast query: %v", err)
-	}
-
-	for client := range c.clients {
-		client.Send(buf)
-	}
-}
-
 func (c *laoChannel) processMeetingObject(data message.Data) error {
 	action := message.MeetingDataAction(data.GetAction())
 
@@ -484,24 +591,158 @@ func (c *laoChannel) processMessageObject(public message.PublicKey, data message
 		})
 		c.inboxMu.Unlock()
 	default:
-		return &message.Error{
-			Code:        -1,
-			Description: fmt.Sprintf("invalid action: %s", action),
-		}
+		return message.NewInvalidActionError(message.DataAction(action))
 	}
 
 	return nil
 }
 
-func (c *laoChannel) processRollCallObject(data message.Data) error {
+func (c *laoChannel) processRollCallObject(msg message.Message) error {
+	sender := msg.Sender
+	data := msg.Data
+
+	// Check if the sender of the roll call message is the organizer
+	senderPoint := student20_pop.Suite.Point()
+	err := senderPoint.UnmarshalBinary(sender)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal public key of the sender: %v", err)
+	}
+
+	if !c.hub.public.Equal(senderPoint) {
+		return &message.Error{
+			Code:        -5,
+			Description: "The sender of the roll call message has a different public key from the organizer",
+		}
+	}
+
 	action := message.RollCallAction(data.GetAction())
 
 	switch action {
 	case message.CreateRollCallAction:
-	case message.RollCallAction(message.OpenRollCallAction):
-	case message.RollCallAction(message.ReopenRollCallAction):
+		err = c.processCreateRollCall(data)
+	case message.RollCallAction(message.OpenRollCallAction), message.RollCallAction(message.ReopenRollCallAction):
+		err = c.processOpenRollCall(data, action)
 	case message.CloseRollCallAction:
+		err = c.processCloseRollCall(data)
+	default:
+		return message.NewInvalidActionError(message.DataAction(action))
+	}
+
+	if err != nil {
+		return xerrors.Errorf("failed to process %v roll-call action: %v", action, err)
+	}
+
+	msgIDEncoded := base64.StdEncoding.EncodeToString(msg.MessageID)
+	c.inboxMu.Lock()
+	c.inbox[msgIDEncoded] = msg
+	c.inboxMu.Unlock()
+
+	return nil
+}
+
+func (c *laoChannel) processCreateRollCall(data message.Data) error {
+	rollCallData := data.(*message.CreateRollCallData)
+	if !c.checkRollCallID(rollCallData.Creation, message.Stringer(rollCallData.Name), rollCallData.ID) {
+		return &message.Error{
+			Code:        -4,
+			Description: "The id of the roll call does not correspond to SHA256(‘R’||lao_id||creation||name)",
+		}
+	}
+
+	c.rollCall.id = string(rollCallData.ID)
+	c.rollCall.state = Created
+	return nil
+}
+
+func (c *laoChannel) processOpenRollCall(data message.Data, action message.RollCallAction) error {
+	if action == message.RollCallAction(message.OpenRollCallAction) {
+		// If the action is an OpenRollCallAction,
+		// the previous roll call action should be a CreateRollCallAction
+		if c.rollCall.state != Created {
+			return &message.Error{
+				Code:        -1,
+				Description: "The roll call can not be opened since it has not been created previously",
+			}
+		}
+	} else {
+		// If the action is an RepenRollCallAction,
+		// the previous roll call action should be a CloseRollCallAction
+		if c.rollCall.state != Closed {
+			return &message.Error{
+				Code:        -1,
+				Description: "The roll call can not be reopened since it has not been closed previously",
+			}
+		}
+	}
+
+	rollCallData := data.(*message.OpenRollCallData)
+
+	if !c.rollCall.checkPrevID(rollCallData.Opens) {
+		return &message.Error{
+			Code:        -4,
+			Description: "The field `opens` does not correspond to the id of the previous roll call message",
+		}
+	}
+
+	opens := base64.StdEncoding.EncodeToString(rollCallData.Opens)
+	if !c.checkRollCallID(message.Stringer(opens), rollCallData.OpenedAt, rollCallData.UpdateID) {
+		return &message.Error{
+			Code:        -4,
+			Description: "The id of the roll call does not correspond to SHA256(‘R’||lao_id||opens||opened_at)",
+		}
+	}
+
+	c.rollCall.id = string(rollCallData.UpdateID)
+	c.rollCall.state = Open
+	return nil
+}
+
+func (c *laoChannel) processCloseRollCall(data message.Data) error {
+	if c.rollCall.state != Open {
+		return &message.Error{
+			Code:        -1,
+			Description: "The roll call can not be closed since it is not open",
+		}
+	}
+
+	rollCallData := data.(*message.CloseRollCallData)
+	if !c.rollCall.checkPrevID(rollCallData.Closes) {
+		return &message.Error{
+			Code:        -4,
+			Description: "The field `closes` does not correspond to the id of the previous roll call message",
+		}
+	}
+
+	closes := base64.StdEncoding.EncodeToString(rollCallData.Closes)
+	if !c.checkRollCallID(message.Stringer(closes), rollCallData.ClosedAt, rollCallData.UpdateID) {
+		return &message.Error{
+			Code:        -4,
+			Description: "The id of the roll call does not correspond to SHA256(‘R’||lao_id||closes||closed_at)",
+		}
+	}
+
+	c.rollCall.id = string(rollCallData.UpdateID)
+	c.rollCall.state = Closed
+	c.attendees = map[string]struct{}{}
+	for i := 0; i < len(rollCallData.Attendees); i += 1 {
+		c.attendees[string(rollCallData.Attendees[i])] = struct{}{}
 	}
 
 	return nil
+}
+
+func (r *rollCall) checkPrevID(prevID []byte) bool {
+	return string(prevID) == r.id
+}
+
+// Check if the id of the roll call corresponds to the hash of the correct parameters
+// Return true if the hash corresponds to the id and false otherwise
+func (c *laoChannel) checkRollCallID(str1, str2 fmt.Stringer, id []byte) bool {
+	laoID := c.channelID[6:]
+	hash, err := message.Hash(message.Stringer('R'), message.Stringer(laoID), str1, str2)
+	if err != nil {
+		return false
+	}
+
+	return bytes.Equal(hash, id)
 }

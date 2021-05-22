@@ -2,11 +2,11 @@ package hub
 
 import (
 	"encoding/base64"
+	"encoding/json"
+	"fmt"
 	"log"
 	"student20_pop/message"
 	"sync"
-
-	"golang.org/x/xerrors"
 )
 
 // baseChannel represent a generic channel and contains all the fields that are
@@ -78,15 +78,45 @@ func (c *baseChannel) Catchup(catchup message.Catchup) []message.Message {
 	return result
 }
 
+func (c *baseChannel) broadcastToAllClients(msg message.Message) {
+	c.clientsMu.RLock()
+	defer c.clientsMu.RUnlock()
+
+	query := message.Query{
+		Broadcast: message.NewBroadcast(c.channelID, &msg),
+	}
+
+	buf, err := json.Marshal(query)
+	if err != nil {
+		log.Fatalf("failed to marshal broadcast query: %v", err)
+	}
+
+	for client := range c.clients {
+		client.Send(buf)
+	}
+}
+
 // Verify the if a Publish message is valid
 func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 	log.Printf("received a publish with id: %d", publish.ID)
 
 	// Check if the structure of the message is correct
 	msg := publish.Params.Message
-	err := msg.VerifyAndUnmarshalData()
+
+	// Verify the data
+	err := c.hub.verifyJson(msg.RawData, DataSchema)
 	if err != nil {
-		return xerrors.Errorf("failed to verify and unmarshal data: %w", err)
+		return message.NewError("failed to validate the data", err)
+	}
+
+	// Unmarshal the data
+	err = msg.VerifyAndUnmarshalData()
+	if err != nil {
+		// Return a error of type "-4 request data is invalid" for all the verifications and unmarshalling problems of the data
+		return &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("failed to verify and unmarshal data: %v", err),
+		}
 	}
 
 	msgIDEncoded := base64.StdEncoding.EncodeToString(msg.MessageID)
