@@ -120,6 +120,7 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 			Code:        -4,
 			Description: fmt.Sprintf("failed to unmarshal incoming message: %v", err),
 		}
+
 		client.SendError(&id, err)
 		return
 	}
@@ -139,6 +140,7 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 				Code:        -4,
 				Description: "only publish is allowed on /root",
 			}
+
 			client.SendError(&id, err)
 			return
 		}
@@ -173,6 +175,7 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 			if err != nil {
 				err = message.NewError("failed to create lao", err)
 				log.Printf("%v", err)
+
 				client.SendError(&id, err)
 				return
 			}
