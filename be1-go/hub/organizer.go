@@ -395,7 +395,6 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 	}
 
 	if err != nil {
-		log.Printf("failed to process %s object: %v", object, err)
 		errorDescription := fmt.Sprintf("failed to process %s object", object)
 		return message.NewError(errorDescription, err)
 	}
@@ -413,7 +412,6 @@ func (c *laoChannel) processLaoObject(msg message.Message) error {
 	case message.StateLaoAction:
 		err := c.processLaoState(msg.Data.(*message.StateLAOData))
 		if err != nil {
-			log.Printf("failed to process lao/state: %v", err)
 			return message.NewError("failed to process lao/state", err)
 		}
 	default:
