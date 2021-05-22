@@ -49,8 +49,8 @@ func Serve(context *cli.Context) error {
 		return xerrors.Errorf("failed to connect to organizer: %v", err)
 	}
 
-	for i := range otherWitness {
-		err = connectToSocket(hub.WitnessSocketType, otherWitness[i], h, organizerPort)
+	for _, otherWit := range otherWitness {
+		err = connectToSocket(hub.WitnessSocketType, otherWit, h, organizerPort)
 		if err != nil {
 			return xerrors.Errorf("failed to connect to witness: %v", err)
 		}
