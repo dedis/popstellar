@@ -129,13 +129,13 @@ func (u *UpdateLAOData) GetTimestamp() Timestamp {
 type StateLAOData struct {
 	*GenericData
 
-	ID                     base64UrlBytes           `json:"id"`
+	ID                     Base64URLBytes           `json:"id"`
 	Name                   string                   `json:"name"`
 	LastModified           Timestamp                `json:"last_modified"`
 	Creation               Timestamp                `json:"creation"`
 	Organizer              PublicKey                `json:"organizer"`
 	Witnesses              []PublicKey              `json:"witnesses"`
-	ModificationID         base64UrlBytes           `json:"modification_id"`
+	ModificationID         Base64URLBytes           `json:"modification_id"`
 	ModificationSignatures []PublicKeySignaturePair `json:"modification_signatures"`
 }
 
@@ -162,7 +162,7 @@ var (
 type CreateMeetingData struct {
 	*GenericData
 
-	ID       base64UrlBytes `json:"id"`
+	ID       Base64URLBytes `json:"id"`
 	Name     string         `json:"name"`
 	Creation Timestamp      `json:"creation"`
 	Location string         `json:"location"`
@@ -182,7 +182,7 @@ func (c *CreateMeetingData) GetTimestamp() Timestamp {
 type StateMeetingData struct {
 	*GenericData
 
-	ID       base64UrlBytes `json:"id"`
+	ID       Base64URLBytes `json:"id"`
 	Name     string         `json:"name"`
 	Creation Timestamp      `json:"creation"`
 	Location string         `json:"location"`
@@ -190,7 +190,7 @@ type StateMeetingData struct {
 	Start Timestamp `json:"start"`
 	End   Timestamp `json:"end"`
 
-	ModificationID         base64UrlBytes           `json:"modification_id"`
+	ModificationID         Base64URLBytes           `json:"modification_id"`
 	ModificationSignatures []PublicKeySignaturePair `json:"modification_signatures"`
 
 	Extra json.RawMessage `json:"extra"`
@@ -216,7 +216,7 @@ var (
 type CreateRollCallData struct {
 	*GenericData
 
-	ID            base64UrlBytes `json:"id"`
+	ID            Base64URLBytes `json:"id"`
 	Name          string         `json:"name"`
 	Creation      Timestamp      `json:"creation"`
 	ProposedStart Timestamp      `json:"proposed_start"`
@@ -241,8 +241,8 @@ var (
 type OpenRollCallData struct {
 	*GenericData
 
-	UpdateID base64UrlBytes `json:"update_id"`
-	Opens    base64UrlBytes `json:"opens"`
+	UpdateID Base64URLBytes `json:"update_id"`
+	Opens    Base64URLBytes `json:"opens"`
 	OpenedAt Timestamp      `json:"opened_at"`
 }
 
@@ -250,8 +250,8 @@ type OpenRollCallData struct {
 type CloseRollCallData struct {
 	*GenericData
 
-	UpdateID  base64UrlBytes `json:"update_id"`
-	Closes    base64UrlBytes `json:"closes"`
+	UpdateID  Base64URLBytes `json:"update_id"`
+	Closes    Base64URLBytes `json:"closes"`
 	ClosedAt  Timestamp      `json:"closed_at"`
 	Attendees []PublicKey    `json:"attendees"`
 }
@@ -268,7 +268,7 @@ var (
 type WitnessMessageData struct {
 	*GenericData
 
-	MessageID base64UrlBytes `json:"message_id"`
+	MessageID Base64URLBytes `json:"message_id"`
 	Signature Signature      `json:"signature"`
 }
 
