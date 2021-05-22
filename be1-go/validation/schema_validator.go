@@ -37,6 +37,8 @@ func (s *SchemaValidator) RegisterSchema(schema schema) error {
 	return nil
 }
 
+// VerifyJson verifies that the 'byteMessage' follow the schema protocol of name 'schemaName',
+// it returns an error if it is not the case.
 func (s *SchemaValidator) VerifyJson(byteMessage []byte, schemaName string) error {
 	// Validate the Json "byteMessage" with a schema
 	messageLoader := gojsonschema.NewBytesLoader(byteMessage)
@@ -65,6 +67,7 @@ func (s *SchemaValidator) VerifyJson(byteMessage []byte, schemaName string) erro
 	return nil
 }
 
+// NewSchemaValidator returns a Schema Validator
 func NewSchemaValidator() (*SchemaValidator, error) {
 	// Import the Json schemas defined in the protocol section
 	protocolPath, err := filepath.Abs("../protocol")
@@ -77,12 +80,18 @@ func NewSchemaValidator() (*SchemaValidator, error) {
 
 	protocolPath = "file://" + protocolPath
 
-	genericMsgSchema := schema{GenericMsgSchema, protocolPath + "/genericMessage.json"}
-	dataSchema := schema{DataSchema, protocolPath + "/query/method/message/data/data.json"}
+	genericMsgSchema := schema{
+		name: GenericMsgSchema,
+		path: protocolPath + "/genericMessage.json",
+	}
+	dataSchema := schema{
+		name: DataSchema,
+		path: protocolPath + "/query/method/message/data/data.json"}
 
 	return NewSchemaValidatorWithSchemas(genericMsgSchema, dataSchema)
 }
 
+// NewSchemaValidatorWithSchemas returns a Schema Validator for the schemas 'schemas'
 func NewSchemaValidatorWithSchemas(schemas ...schema) (*SchemaValidator, error) {
 	// Instantiate schema
 	schemaValidator := &SchemaValidator{
