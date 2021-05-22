@@ -39,11 +39,11 @@ func Serve(context *cli.Context) error {
 		return xerrors.Errorf("failed create the organizer hub: %v", err)
 	}
 
-	done := make(chan struct{})
-	go h.Start(done)
-
 	go hub.CreateAndServeWs(hub.OrganizerHubType, hub.WitnessSocketType, h, witnessPort)
-	hub.CreateAndServeWs(hub.OrganizerHubType, hub.ClientSocketType, h, clientPort)
+	go hub.CreateAndServeWs(hub.OrganizerHubType, hub.ClientSocketType, h, clientPort)
+
+	done := make(chan struct{})
+	h.Start(done)
 
 	done <- struct{}{}
 
