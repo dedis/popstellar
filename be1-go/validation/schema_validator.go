@@ -3,6 +3,7 @@ package validation
 import (
 	"fmt"
 	"path/filepath"
+	"strings"
 
 	"student20_pop/message"
 
@@ -70,6 +71,10 @@ func NewSchemaValidator() (*SchemaValidator, error) {
 	if err != nil {
 		return nil, xerrors.Errorf("failed to load the path for the json schemas: %v", err)
 	}
+
+	// Replace the '\\' from windows path with '/'
+	protocolPath = strings.ReplaceAll(protocolPath, "\\", "/")
+
 	protocolPath = "file://" + protocolPath
 
 	genericMsgSchema := schema{GenericMsgSchema, protocolPath + "/genericMessage.json"}
