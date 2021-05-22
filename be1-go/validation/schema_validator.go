@@ -43,7 +43,7 @@ func (s *SchemaValidator) VerifyJson(byteMessage []byte, schemaName string) erro
 	if err != nil {
 		return &message.Error{
 			Code:        -1,
-			Description: err.Error(),
+			Description: fmt.Sprintf("failed to validate schema: %s", err.Error()),
 		}
 	}
 
