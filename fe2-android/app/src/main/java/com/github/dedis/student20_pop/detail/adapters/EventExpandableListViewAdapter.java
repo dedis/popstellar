@@ -251,17 +251,17 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
         Event event = ((Event) getChild(groupPosition, childPosition));
         EventCategory category = (EventCategory) getGroup(groupPosition);
+        if (event.getType() == EventType.ELECTION) {
+            return setupElectionElement(parent, convertView, (Election) event, category);
+        } else if (event.getType() == EventType.ROLL_CALL) {
+            return setupRollCallElement(parent, convertView, (RollCall) event);
+        }
         LayoutEventBinding layoutEventBinding;
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             layoutEventBinding = LayoutEventBinding.inflate(inflater, parent, false);
         } else {
             layoutEventBinding = DataBindingUtil.getBinding(convertView);
-        }
-        if (event.getType() == EventType.ELECTION) {
-            setupElectionElement(parent, convertView, (Election) event, category);
-        } else if (event.getType() == EventType.ROLL_CALL) {
-            setupRollCallElement(parent, convertView, (RollCall) event);
         }
 
         layoutEventBinding.setEvent(event);
