@@ -6,6 +6,10 @@ import androidx.core.util.Pair;
 import com.github.dedis.student20_pop.Injection;
 import com.github.dedis.student20_pop.model.stellar.SLIP10;
 import com.google.crypto.tink.Aead;
+import com.google.crypto.tink.Config;
+import com.google.crypto.tink.KeysetHandle;
+import com.google.crypto.tink.aead.AeadConfig;
+import com.google.crypto.tink.config.TinkConfig;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import io.github.novacrypto.bip39.MnemonicGenerator;
 import io.github.novacrypto.bip39.MnemonicValidator;
@@ -287,6 +291,7 @@ public class Wallet {
   private void initKeysManeger(Context applicationContext)
       throws IOException, GeneralSecurityException {
     keysetManager = Injection.provideAndroidKeysetManager(applicationContext);
+    AeadConfig.register();
     aead = keysetManager.getKeysetHandle().getPrimitive(Aead.class);
   }
 

@@ -1,6 +1,7 @@
 package com.github.dedis.student20_pop.home.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,6 +69,7 @@ public class SeedWalletFragment extends Fragment {
       Toast.makeText(getContext().getApplicationContext(),
           "Error import key, try again"+ e.getMessage(),
           Toast.LENGTH_LONG).show();
+      Log.d(TAG,"Error "+ e.getMessage());
     }
     StringJoiner joiner = new StringJoiner(" ");
     for(String i: exportSeed) joiner.add(i);
