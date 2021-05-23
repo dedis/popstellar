@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
 
+import com.github.dedis.student20_pop.detail.fragments.ElectionResultFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.ElectionSetupFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.RollCallEventCreationFragment;
 import com.github.dedis.student20_pop.home.HomeActivity;
@@ -203,6 +204,17 @@ public class LaoDetailActivity extends AppCompatActivity {
       electionSetupFragment = ElectionSetupFragment.newInstance();
       ActivityUtils.replaceFragmentInActivity(
               getSupportFragmentManager(), electionSetupFragment, R.id.fragment_container_lao_detail);
+    }
+  }
+
+  private void setupCreateElectionResultsFragment(){
+    ElectionResultFragment electionResultFragment =
+            (ElectionResultFragment)
+              getSupportFragmentManager().findFragmentById(R.id.election_result);
+    if(electionResultFragment == null){
+      electionResultFragment = ElectionResultFragment.newInstance();
+      ActivityUtils.replaceFragmentInActivity(
+              getSupportFragmentManager(), electionResultFragment, R.id.fragment_container_lao_detail);
     }
   }
 }
