@@ -37,7 +37,7 @@ describe('=== Primitive objects checks ===', () => {
     it('works against expected data', () => {
       const hash: Hash = Hash.fromStringArray('abcd', '1234');
       // Old b64 value was 61I7DQkiMtdHFM5VygjbFqrVmn4NAl0wSVxkj6Q5iDw=
-      expect(hash.toString()).toEqual('w6tSOw0JIjLDl0cUw45Vw4oIw5sWwqrDlcKafg0CXTBJXGTCj8KkOcKIPA');
+      expect(hash.toString()).toEqual('w6tSOw0JIjLDl0cUw45Vw4oIw5sWwqrDlcKafg0CXTBJXGTCj8KkOcKIPA==');
     });
 
     it('equals work properly', () => {
