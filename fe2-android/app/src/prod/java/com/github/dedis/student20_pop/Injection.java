@@ -47,12 +47,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 public class Injection {
-<<<<<<< HEAD
 
-  private static String SERVER_URL = "ws://10.0.2.2:8080/organizer/client/";
-=======
   private static String SERVER_URL = "ws://10.0.2.2:9000/organizer/client";
->>>>>>> master
 
   private static final String TAG = "INJECTION";
 
