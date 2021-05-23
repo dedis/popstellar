@@ -9,7 +9,7 @@ export class Base64UrlData extends String {
   }
 
   public static encode(text: string | Buffer) : Base64UrlData {
-    return new Base64UrlData(base64url.encode(text));
+    return new Base64UrlData(this.addPadding(base64url.encode(text)));
   }
 
   public decode(): string {
@@ -25,6 +25,14 @@ export class Base64UrlData extends String {
   }
 
   public static fromBase64(b64: string): string {
-    return base64url.fromBase64(b64);
+    return this.addPadding(base64url.fromBase64(b64));
+  }
+
+  public static addPadding(str: string): string {
+    let paddedStr = str;
+    while ((paddedStr.length % 4) !== 0) {
+      paddedStr += '=';
+    }
+    return paddedStr;
   }
 }
