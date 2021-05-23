@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import ParagraphBlock from 'components/ParagraphBlock';
 import PropTypes from 'prop-types';
-import { Election, EventTags, Hash, Timestamp, Vote } from 'model/objects';
+import {
+  Election, EventTags, Hash, Timestamp, Vote,
+} from 'model/objects';
 import {
   SectionList, StyleSheet, Text, TextStyle,
 } from 'react-native';
@@ -41,7 +43,6 @@ const EventElection = (props: IPropTypes) => {
   };
 
   const refactorVotes = (selected: number[][]) => {
-    // Todo: Get index of selected ballot options, convert to string and put in list
     // id: SHA256('Vote'||election_id||question_id||(vote_index(es)|write_in))
     // concatenate vote indexes - must use delimiter"
     const votes: Vote[] = selected.map((item, idx) => ({
