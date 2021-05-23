@@ -1,4 +1,4 @@
-import { Base64Data } from 'model/objects';
+import { Base64UrlData } from 'model/objects';
 import { ActionType, MessageData, ObjectType } from './MessageData';
 import { CreateLao, StateLao, UpdateLao } from './lao';
 import { CreateMeeting, StateMeeting } from './meeting';
@@ -8,9 +8,9 @@ import {
 import { WitnessMessage } from './witness';
 import {CastVote, SetupElection} from './election';
 
-export function encodeMessageData(msgData: MessageData): Base64Data {
+export function encodeMessageData(msgData: MessageData): Base64UrlData {
   const data = JSON.stringify(msgData);
-  return Base64Data.encode(data);
+  return Base64UrlData.encode(data);
 }
 
 function buildLaoMessage(msgData: MessageData): MessageData {

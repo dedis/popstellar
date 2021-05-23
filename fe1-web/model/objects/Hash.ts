@@ -1,5 +1,5 @@
 import { sha256 } from 'js-sha256';
-import { Base64Data } from './Base64';
+import { Base64UrlData } from './Base64Url';
 
 /** Enumeration of all possible event tags used in hash creation */
 export enum EventTags {
@@ -10,9 +10,10 @@ export enum EventTags {
   VOTE = 'Vote',
 }
 
-export class Hash extends Base64Data {
+export class Hash extends Base64UrlData {
   /**
-     * Create a base64 encoded hash of an array of strings according to the communication protocol
+     * Create a base64url encoded hash of an array of strings according to the
+     * communication protocol
      *
      * @param data values to be hashed
      * @return resulting hash
@@ -37,7 +38,7 @@ export class Hash extends Base64Data {
     const bString = hash.update(data).array();
     const str = String.fromCharCode(...bString);
 
-    return Base64Data.encode(str);
+    return Base64UrlData.encode(str);
   }
 
   public equals(o: Hash): boolean {
