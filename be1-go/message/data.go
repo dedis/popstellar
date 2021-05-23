@@ -88,11 +88,11 @@ var (
 type CreateLAOData struct {
 	*GenericData
 
-	ID        []byte      `json:"id"`
-	Name      string      `json:"name"`
-	Creation  Timestamp   `json:"creation"`
-	Organizer PublicKey   `json:"organizer"`
-	Witnesses []PublicKey `json:"witnesses"`
+	ID        Base64URLBytes `json:"id"`
+	Name      string         `json:"name"`
+	Creation  Timestamp      `json:"creation"`
+	Organizer PublicKey      `json:"organizer"`
+	Witnesses []PublicKey    `json:"witnesses"`
 }
 
 // GetTimestamp returns the creation timestamp.
@@ -114,10 +114,10 @@ func (c *CreateLAOData) setID() error {
 type UpdateLAOData struct {
 	*GenericData
 
-	ID           []byte      `json:"id"`
-	Name         string      `json:"name"`
-	LastModified Timestamp   `json:"last_modified"`
-	Witnesses    []PublicKey `json:"witnesses"`
+	ID           Base64URLBytes `json:"id"`
+	Name         string         `json:"name"`
+	LastModified Timestamp      `json:"last_modified"`
+	Witnesses    []PublicKey    `json:"witnesses"`
 }
 
 // GetTimestamp returns the last modified timestamp.
