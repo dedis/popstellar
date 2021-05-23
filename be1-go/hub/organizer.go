@@ -164,7 +164,6 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 				Code:        -4,
 				Description: fmt.Sprintf("failed to verify and unmarshal data: %v", err),
 			}
-			log.Printf("%v", err)
 			client.SendError(&id, err)
 			return
 		}
@@ -174,7 +173,6 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 			err := o.createLao(*query.Publish)
 			if err != nil {
 				err = message.NewError("failed to create lao", err)
-				log.Printf("%v", err)
 
 				client.SendError(&id, err)
 				return
