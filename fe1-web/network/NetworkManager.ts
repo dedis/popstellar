@@ -19,6 +19,7 @@ class NetworkManager {
     return (path === '')
       ? base
       : `${base}/${path}`;
+    // return 'wss://popdemo.dedis.ch/client';
   }
 
   private getConnectionByAddress(address: string): NetworkConnection | undefined {

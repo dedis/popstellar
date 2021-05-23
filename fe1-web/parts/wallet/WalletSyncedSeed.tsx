@@ -140,10 +140,6 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
         {!showQRPublicKey && showQRButton()}
         {showQRPublicKey && hideQRButton()}
         <WideButtonView
-          title={STRINGS.generate_new_token}
-          onPress={() => navigation.navigate(STRINGS.navigation_wallet_new_token)}
-        />
-        <WideButtonView
           title={STRINGS.back_to_wallet_home}
           onPress={() => navigation.navigate(STRINGS.navigation_home_tab_wallet)}
         />

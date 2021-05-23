@@ -4,7 +4,6 @@ import {
 import styleContainer from 'styles/stylesheets/container';
 import STRINGS from 'res/strings';
 import WideButtonView from 'components/WideButtonView';
-import PROPS_TYPE from 'res/Props';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { WalletStore } from 'store/stores/WalletStore';
@@ -26,11 +25,17 @@ const styles = StyleSheet.create({
   } as TextStyle,
 });
 
-const WalletGenerateToken = ({ navigation }: IPropTypes) => {
+const GenerateToken = (props: IPropTypes) => {
+  const { laoIdIn } = props;
+
   const [rollCallId, setRollCallId] = useState('');
   const [laoId, setLaoId] = useState('');
   const [token, setToken] = useState('');
   const [showQRPublicKey, setShowQRPublicKey] = useState(false);
+
+  if (laoIdIn !== undefined) {
+    setLaoId(laoIdIn);
+  }
 
   function showTextInputView() {
     return (
@@ -46,6 +51,7 @@ const WalletGenerateToken = ({ navigation }: IPropTypes) => {
           placeholder={STRINGS.identity_insert_roll_call_id_for_token}
           onChangeText={(input: string) => setRollCallId(input)}
         />
+        <View style={styles.largePadding} />
         <WideButtonView
           title={STRINGS.identity_generate_token_button_title}
           disabled={rollCallId === '' || laoId === ''}
@@ -67,10 +73,23 @@ const WalletGenerateToken = ({ navigation }: IPropTypes) => {
   function showLaoAndRollCallInfo() {
     return (
       <View style={styleContainer.centered}>
+        <TextBlock bold text="Your public key" />
+        <CopiableTextBlock id={0} text={token} visibility />
+        <View style={styles.largePadding} />
         <TextBlock bold text="LAO ID" />
         <CopiableTextBlock id={0} text={laoId} visibility />
         <TextBlock bold text="Roll Call ID" />
         <CopiableTextBlock id={1} text={rollCallId} visibility />
+        <View style={styles.largePadding} />
+        <WideButtonView
+          title={STRINGS.cancel_generate_new_token}
+          onPress={() => {
+            setRollCallId('');
+            setLaoId('');
+            setToken('');
+            setShowQRPublicKey(false);
+          }}
+        />
       </View>
     );
   }
@@ -82,10 +101,6 @@ const WalletGenerateToken = ({ navigation }: IPropTypes) => {
         <View style={styles.largePadding} />
         <QRCode value={token} visibility={showQRPublicKey} />
         {showQRPublicKey && showLaoAndRollCallInfo()}
-        <WideButtonView
-          title={STRINGS.cancel_generate_new_token}
-          onPress={() => navigation.navigate(STRINGS.navigation_synced_wallet)}
-        />
         <View style={styles.largePadding} />
       </View>
     );
@@ -95,10 +110,12 @@ const WalletGenerateToken = ({ navigation }: IPropTypes) => {
 };
 
 const propTypes = {
-  navigation: PROPS_TYPE.navigation.isRequired,
+  laoIdIn: PropTypes.string,
 };
-WalletGenerateToken.propTypes = propTypes;
+GenerateToken.propTypes = propTypes;
 
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
+type IPropTypes = {
+  laoIdIn: string | undefined,
+};
 
-export default WalletGenerateToken;
+export default GenerateToken;
