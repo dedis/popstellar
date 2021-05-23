@@ -14,12 +14,12 @@ public class ElectionTest {
 
     private String name = "my election name";
     private String id = "my election id";
-    private String question = "my question";
+    private List<String> questions = Arrays.asList("my questions");
     private boolean writeIn = false;
     private long startTime = 0;
     private long endTime = 1;
     private long creationTime = 0;
-    private List<String> ballotOptions = Arrays.asList("candidate1", "candidate2");
+    private List<List<String>> ballotsOptions = Arrays.asList(Arrays.asList("candidate1", "candidate2"));
     private Election election = new Election();
 
     @Test
@@ -32,9 +32,7 @@ public class ElectionTest {
 
     @Test
     public void settingBallotOptionsWithSizeLessThan2ThrowsException() {
-        List<String> brokenBallotOptions = new ArrayList<>();
-        assertThrows(IllegalArgumentException.class, () -> election.setBallotsOptions(brokenBallotOptions));
-        brokenBallotOptions.add("candidate1");
+        List<List<String>> brokenBallotOptions = new ArrayList<>();
         assertThrows(IllegalArgumentException.class, () -> election.setBallotsOptions(brokenBallotOptions));
     }
 
@@ -52,14 +50,14 @@ public class ElectionTest {
 
     @Test
     public void settingAndGettingReturnsCorrespondingQuestion() {
-        election.setQuestion(question);
-        assertThat(election.getQuestion(), is(question));
+        election.setQuestion(questions);
+        assertThat(election.getQuestions(), is(questions));
     }
 
     @Test
     public void settingAndGettingReturnsCorrespondingBallotOptions() {
-        election.setBallotsOptions(ballotOptions);
-        assertThat(election.getBallotOptions(), is(ballotOptions));
+        election.setBallotsOptions(ballotsOptions);
+        assertThat(election.getBallotsOptions(), is(ballotsOptions));
     }
 
     @Test
