@@ -10,10 +10,8 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
 import com.github.dedis.student20_pop.databinding.FragmentContentWalletBinding;
-import com.github.dedis.student20_pop.databinding.FragmentHomeBinding;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.home.HomeViewModel;
 import com.github.dedis.student20_pop.home.adapters.LAOListAdapter;

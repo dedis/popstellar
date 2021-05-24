@@ -79,6 +79,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   private final MutableLiveData<Event<Boolean>> mOpenNewRollCallEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<String>> mOpenRollCallEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<String>> mOpenAttendeesListEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<Boolean>> mOpenLaoWalletEvent = new MutableLiveData<>();
 
   private final MutableLiveData<Event<Integer>>  mNbAttendeesEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mCloseRollCallEvent = new MutableLiveData<>();
@@ -118,6 +119,12 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                   lao -> lao == null ? new ArrayList<com.github.dedis.student20_pop.model.RollCall>() :
                           lao.getRollCalls().values().stream().filter(rollcall->rollcall.getState()== EventState.CLOSED).filter(rollcall->attended_or_organized(lao, rollcall)).collect(Collectors.toList()));
 
+  /**
+   * Predicate used for filtering rollcalls to make sure that the user either attended the rollcall or was the organizer
+   * @param lao
+   * @param rollcall
+   * @return
+   */
   private boolean attended_or_organized(Lao lao, RollCall rollcall){
     //find out if user is the organizer
     boolean isOrganizer = false;
@@ -134,7 +141,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
       return false;
     }
     //find out if user has attended the rollcall
-    String firstLaoId = getCurrentLaoValue().getChannel().substring(6);
+    String firstLaoId = lao.getChannel().substring(6);
     String pk = "";
     try {
       pk = Base64.getEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, rollcall.getPersistentId()).second);
@@ -477,7 +484,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     return mOpenRollCallEvent;
   }
   public LiveData<Event<String>> getOpenAttendeesListEvent() {
-    return mOpenRollCallEvent;
+    return mOpenAttendeesListEvent;
+  }
+  public LiveData<Event<Boolean>> getOpenLaoWalletEvent() {
+    return mOpenLaoWalletEvent;
   }
   public LiveData<Event<Integer>> getNbAttendeesEvent() {
     return mNbAttendeesEvent;
@@ -662,11 +672,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
   public void enterRollCall(String id) {
       String firstLaoId = getCurrentLaoValue().getChannel().substring(6); // use the laoId set at creation + need to remove /root/ prefix
-      Log.d(TAG, "lao1: "+firstLaoId);
-      Log.d(TAG, "lao1: "+id);
       try {
         String pk = Base64.getEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, id).second);
-        Log.d(TAG, "token1: "+pk);
         mPkRollCallEvent.postValue(new Event<>(pk));
       } catch (NoSuchAlgorithmException | InvalidKeyException | ShortBufferException e) {
         Log.d(TAG, "failed to retrieve public key from wallet", e);
@@ -681,6 +688,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     } else {
       openCameraPermissionRollCall();
     }
+  }
+
+  public void openLaoWallet(){
+    mOpenLaoWalletEvent.postValue(new Event<>(true));
   }
 
   public void openAttendeesList(String rollCallId){

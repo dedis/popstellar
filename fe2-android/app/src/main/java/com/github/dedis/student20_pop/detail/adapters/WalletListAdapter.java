@@ -8,14 +8,9 @@ import android.widget.BaseAdapter;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
 
-import com.github.dedis.student20_pop.databinding.LayoutLaoHomeBinding;
 import com.github.dedis.student20_pop.databinding.LayoutRollCallEventBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
-import com.github.dedis.student20_pop.home.HomeViewModel;
-import com.github.dedis.student20_pop.home.listeners.LAOItemUserActionsListener;
-import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.RollCall;
-import com.github.dedis.student20_pop.model.event.EventState;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -71,7 +66,7 @@ public class WalletListAdapter extends BaseAdapter {
         }
 
         RollCall rollCall = rollCalls.get(position);
-        binding.rollcallDate.setText("Start: "+DATE_FORMAT.format(new Date(1000*rollCall.getStart())));
+        binding.rollcallDate.setText("Ended: "+DATE_FORMAT.format(new Date(1000*rollCall.getEnd())));
         binding.rollcallTitle.setText("Roll Call: "+rollCall.getName());
         binding.rollcallLocation.setText("Location: "+rollCall.getLocation());
 

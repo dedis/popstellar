@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.student20_pop.Injection;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
+import com.github.dedis.student20_pop.detail.fragments.AttendeesListFragment;
 import com.github.dedis.student20_pop.detail.fragments.IdentityFragment;
 import com.github.dedis.student20_pop.detail.fragments.LaoDetailFragment;
 import com.github.dedis.student20_pop.detail.fragments.LaoWalletFragment;
@@ -112,6 +113,26 @@ public class LaoDetailActivity extends AppCompatActivity {
                         setupRollCallDetailFragment(pk);
                       }
                     });
+      mViewModel
+              .getOpenLaoWalletEvent()
+              .observe(
+                      this,
+                      booleanEvent -> {
+                          Boolean event = booleanEvent.getContentIfNotHandled();
+                          if (event != null) {
+                              setupLaoWalletFragment();
+                          }
+                      });
+      mViewModel
+              .getOpenAttendeesListEvent()
+              .observe(
+                      this,
+                      stringEvent -> {
+                          String id = stringEvent.getContentIfNotHandled();
+                          if (id != null) {
+                              setupAttendeesListFragment(id);
+                          }
+                      });
   }
   public void handleNewEvent(EventType eventType) {
     Log.d(TAG, "event type: " + eventType.toString());
@@ -263,6 +284,16 @@ public class LaoDetailActivity extends AppCompatActivity {
             laoWalletFragment = LaoWalletFragment.newInstance();
             ActivityUtils.replaceFragmentInActivity(
                     getSupportFragmentManager(), laoWalletFragment, R.id.fragment_container_lao_detail);
+        }
+    }
+
+    private void setupAttendeesListFragment(String id) {
+        AttendeesListFragment attendeesListFragment =
+                (AttendeesListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_attendees_list);
+        if (attendeesListFragment == null) {
+            attendeesListFragment = AttendeesListFragment.newInstance(id);
+            ActivityUtils.replaceFragmentInActivity(
+                    getSupportFragmentManager(), attendeesListFragment, R.id.fragment_container_lao_detail);
         }
     }
 }
