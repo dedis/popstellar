@@ -3,19 +3,11 @@ package com.github.dedis.student20_pop.model;
 import android.content.Context;
 import android.util.Log;
 import androidx.core.util.Pair;
-import com.github.dedis.student20_pop.Injection;
 import com.github.dedis.student20_pop.model.stellar.SLIP10;
-import com.github.dedis.student20_pop.utility.security.Keys;
 import com.google.crypto.tink.Aead;
-import com.google.crypto.tink.Config;
-import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.aead.AeadConfig;
-import com.google.crypto.tink.aead.AeadKeyTemplates;
 import com.google.crypto.tink.aead.AesGcmKeyManager;
-import com.google.crypto.tink.aead.subtle.AeadFactory;
-import com.google.crypto.tink.config.TinkConfig;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
-import com.google.crypto.tink.signature.Ed25519PrivateKeyManager;
 import io.github.novacrypto.bip39.MnemonicGenerator;
 import io.github.novacrypto.bip39.MnemonicValidator;
 import io.github.novacrypto.bip39.SeedCalculator;
@@ -243,7 +235,7 @@ public class Wallet {
   public String[] exportSeed(Context applicationContext)
       throws GeneralSecurityException, IOException {
 
-    initKeysManeger(applicationContext);
+    initKeysManager(applicationContext);
     SecureRandom random = new SecureRandom();
     byte[] entropy = random.generateSeed(Words.TWELVE.byteLength());
 
@@ -279,7 +271,7 @@ public class Wallet {
     if (words == null) {
       throw new IllegalArgumentException("Unable to find recover tokens from a null param");
     }
-    initKeysManeger(applicationContext);
+    initKeysManager(applicationContext);
     try {
       MnemonicValidator
           .ofWordList(English.INSTANCE)
@@ -293,7 +285,7 @@ public class Wallet {
       return null;
     }
   }
-  private void initKeysManeger(Context applicationContext)
+  private void initKeysManager(Context applicationContext)
       throws IOException, GeneralSecurityException {
     AesGcmKeyManager.register(true);
     AeadConfig.register();
