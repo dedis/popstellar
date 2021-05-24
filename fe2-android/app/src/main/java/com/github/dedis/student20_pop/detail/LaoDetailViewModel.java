@@ -119,6 +119,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                           lao.getRollCalls().values().stream().filter(rollcall->rollcall.getState()== EventState.CLOSED).filter(rollcall->attended_or_organized(lao, rollcall)).collect(Collectors.toList()));
 
   private boolean attended_or_organized(Lao lao, RollCall rollcall){
+    //find out if user is the organizer
     boolean isOrganizer = false;
     try {
       KeysetHandle publicKeysetHandle =
@@ -127,10 +128,21 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
               lao.getOrganizer().equals(Keys.getEncodedKey(publicKeysetHandle));
     } catch (GeneralSecurityException e) {
       Log.d(TAG, "failed to get public keyset handle", e);
+      return false;
     } catch (IOException e) {
       Log.d(TAG, "failed to get public key", e);
+      return false;
     }
-    return rollcall.getAttendees().contains(getRollCallToken(rollcall.getPersistentId())) || isOrganizer;
+    //find out if user has attended the rollcall
+    String firstLaoId = getCurrentLaoValue().getChannel().substring(6);
+    String pk = "";
+    try {
+      pk = Base64.getEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, rollcall.getPersistentId()).second);
+    } catch (NoSuchAlgorithmException | InvalidKeyException | ShortBufferException e) {
+      Log.d(TAG, "failed to retrieve public key from wallet", e);
+      return false;
+    }
+    return rollcall.getAttendees().contains(pk) || isOrganizer;
   }
 
   /*
@@ -659,20 +671,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
       } catch (NoSuchAlgorithmException | InvalidKeyException | ShortBufferException e) {
         Log.d(TAG, "failed to retrieve public key from wallet", e);
       }
-  }
-
-  public String getRollCallToken(String id){
-    String firstLaoId = getCurrentLaoValue().getChannel().substring(6); // use the laoId set at creation + need to remove /root/ prefix
-    Log.d(TAG, "lao2: "+firstLaoId);
-    Log.d(TAG, "lao2: "+id);
-    String pk = "";
-    try {
-      pk = Base64.getEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, id).second);
-    } catch (NoSuchAlgorithmException | InvalidKeyException | ShortBufferException e) {
-      Log.d(TAG, "failed to retrieve public key from wallet", e);
-    }
-    Log.d(TAG, "token2: "+pk);
-    return pk;
   }
 
   public void openAttendeeScanning() {
