@@ -67,9 +67,9 @@ public class SeedWalletFragment extends Fragment {
       exportSeed = wallet.exportSeed(getActivity().getApplicationContext());
     } catch (IOException | GeneralSecurityException e) {
       Toast.makeText(getContext().getApplicationContext(),
-          "Error import key, try again"+ e.getMessage(),
+          "Error import key, try again",
           Toast.LENGTH_LONG).show();
-      Log.d(TAG,"Error "+ e.getMessage());
+      Log.d(TAG, e.getMessage());
     }
     StringJoiner joiner = new StringJoiner(" ");
     for(String i: exportSeed) joiner.add(i);
