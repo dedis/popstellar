@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessage;
+import com.github.dedis.student20_pop.utility.security.Hash;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.PublicKeyVerify;
 import com.google.crypto.tink.subtle.Ed25519Verify;
@@ -85,16 +86,7 @@ public final class MessageGeneral {
   }
 
   private void generateId() {
-    try {
-      MessageDigest hasher = MessageDigest.getInstance("SHA-256");
-
-      hasher.update(this.dataBuf);
-      hasher.update(this.signature);
-
-      this.messageId = hasher.digest();
-    } catch (NoSuchAlgorithmException e) {
-      Log.d(TAG, "failed to generate id", e);
-    }
+    this.messageId = Hash.hash(Base64.getUrlEncoder().encodeToString(this.dataBuf), Base64.getUrlEncoder().encodeToString(this.signature)).getBytes();
   }
 
   public String getMessageId() {
