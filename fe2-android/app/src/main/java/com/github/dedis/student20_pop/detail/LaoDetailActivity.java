@@ -113,6 +113,9 @@ public class LaoDetailActivity extends AppCompatActivity {
                         setupRollCallDetailFragment(pk);
                       }
                     });
+    subscribeWalletEvents();
+  }
+  private void subscribeWalletEvents(){
       mViewModel
               .getOpenLaoWalletEvent()
               .observe(

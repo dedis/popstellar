@@ -74,7 +74,7 @@ public class AttendeesListFragment extends Fragment {
     private void setupAttendeesListAdapter() {
         ListView listView = mAttendeesListBinding.attendeesList;
 
-        mAttendeesListAdapter = new AttendeesListAdapter(new ArrayList<>(rollCall.getAttendees()), mLaoDetailViewModel, getActivity());
+        mAttendeesListAdapter = new AttendeesListAdapter(new ArrayList<>(rollCall.getAttendees()), getActivity());
         listView.setAdapter(mAttendeesListAdapter);
     }
 }

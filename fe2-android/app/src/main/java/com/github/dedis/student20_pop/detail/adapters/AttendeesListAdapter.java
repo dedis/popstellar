@@ -10,7 +10,6 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
 
 import com.github.dedis.student20_pop.databinding.LayoutAttendeeBinding;
-import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 
 import net.glxn.qrgen.android.QRCode;
 
@@ -19,10 +18,8 @@ import java.util.List;
 public class AttendeesListAdapter extends BaseAdapter {
     private List<String> attendees;
     private LifecycleOwner lifecycleOwner;
-    private final LaoDetailViewModel viewModel;
 
-    public AttendeesListAdapter(List<String> attendees, LaoDetailViewModel viewModel, LifecycleOwner activity) {
-        this.viewModel = viewModel;
+    public AttendeesListAdapter(List<String> attendees, LifecycleOwner activity) {
         setList(attendees);
         lifecycleOwner = activity;
     }

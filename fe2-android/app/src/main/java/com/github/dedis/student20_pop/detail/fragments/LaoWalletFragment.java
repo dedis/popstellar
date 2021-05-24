@@ -17,7 +17,6 @@ import com.github.dedis.student20_pop.databinding.FragmentLaoWalletBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.adapters.WalletListAdapter;
-import com.github.dedis.student20_pop.model.RollCall;
 
 import java.util.ArrayList;
 
@@ -77,7 +76,7 @@ public class LaoWalletFragment extends Fragment {
     private void setupWalletListAdapter() {
         ListView listView = mFragmentLaoWalletBinding.walletList;
 
-        mWalletListAdapter = new WalletListAdapter(new ArrayList<RollCall>(0), mLaoDetailViewModel, getActivity());
+        mWalletListAdapter = new WalletListAdapter(new ArrayList<>(0), mLaoDetailViewModel, getActivity());
 
         listView.setAdapter(mWalletListAdapter);
     }

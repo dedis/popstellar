@@ -319,11 +319,4 @@ public class HomeActivity extends AppCompatActivity {
     }
     startActivityForResult(intent, LAO_DETAIL_REQUEST_CODE);
   }
-
-  /*private void openLaoWallet(String laoId) {
-    Intent intent = new Intent(this, LaoWalletActivity.class);
-    Log.d(TAG, "Trying to open lao wallet for lao with id " + laoId);
-    intent.putExtra("LAO_ID", laoId);
-    startActivityForResult(intent, LAO_WALLET_REQUEST_CODE);
-  }*/
 }

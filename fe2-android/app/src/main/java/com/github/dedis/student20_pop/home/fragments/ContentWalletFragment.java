@@ -15,7 +15,6 @@ import com.github.dedis.student20_pop.databinding.FragmentContentWalletBinding;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.home.HomeViewModel;
 import com.github.dedis.student20_pop.home.adapters.LAOListAdapter;
-import com.github.dedis.student20_pop.model.Lao;
 
 import java.util.ArrayList;
 
@@ -64,7 +63,7 @@ public class ContentWalletFragment extends Fragment {
 
                   mListAdapter.replaceList(laos);
 
-                  if (laos.size() > 0) {
+                  if (!laos.isEmpty()) {
                     mContentWalletBinding.welcomeScreen.setVisibility(View.GONE);
                     mContentWalletBinding.listScreen.setVisibility(View.VISIBLE);
                   }
@@ -74,7 +73,7 @@ public class ContentWalletFragment extends Fragment {
   private void setupListAdapter() {
     ListView listView = mContentWalletBinding.laoList;
 
-    mListAdapter = new LAOListAdapter(new ArrayList<Lao>(0), mHomeViewModel, getActivity(), false);
+    mListAdapter = new LAOListAdapter(new ArrayList<>(0), mHomeViewModel, getActivity(), false);
 
     listView.setAdapter(mListAdapter);
   }

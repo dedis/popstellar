@@ -114,10 +114,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                   lao -> lao == null ? new ArrayList<com.github.dedis.student20_pop.model.RollCall>() :
                           lao.getRollCalls().values().stream().collect(Collectors.toList()));
 
-  private LiveData<List<com.github.dedis.student20_pop.model.RollCall>> mLaoAttendedRollCalls = Transformations
+  private final LiveData<List<com.github.dedis.student20_pop.model.RollCall>> mLaoAttendedRollCalls = Transformations
           .map(mCurrentLao,
                   lao -> lao == null ? new ArrayList<com.github.dedis.student20_pop.model.RollCall>() :
-                          lao.getRollCalls().values().stream().filter(rollcall->rollcall.getState()== EventState.CLOSED).filter(rollcall->attended_or_organized(lao, rollcall)).collect(Collectors.toList()));
+                          lao.getRollCalls().values().stream().filter(rollcall->rollcall.getState()== EventState.CLOSED).filter(rollcall->attendedOrOrganized(lao, rollcall)).collect(Collectors.toList()));
 
   /**
    * Predicate used for filtering rollcalls to make sure that the user either attended the rollcall or was the organizer
@@ -125,7 +125,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
    * @param rollcall
    * @return
    */
-  private boolean attended_or_organized(Lao lao, RollCall rollcall){
+  private boolean attendedOrOrganized(Lao lao, RollCall rollcall){
     //find out if user is the organizer
     boolean isOrganizer = false;
     try {
