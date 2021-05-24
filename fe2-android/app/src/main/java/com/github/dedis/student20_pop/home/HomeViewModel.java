@@ -288,7 +288,6 @@ public class HomeViewModel extends AndroidViewModel
   public void openSeed(){mOpenSeedEvent.postValue(new Event<>(true));}
 
   public void openLaoWallet(String laoId) {
-    Log.d(TAG, "ho");
     mOpenLaoWalletEvent.postValue(new Event<>(laoId));
   }
 

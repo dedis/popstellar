@@ -72,6 +72,8 @@ public class LaoWalletFragment extends Fragment {
                             mWalletListAdapter.replaceList(rollCalls);
                         });
 
+        mFragmentLaoWalletBinding.backButton.setOnClickListener(clicked -> mLaoDetailViewModel.openHome());
+
         /*mLaoDetailViewModel
                 .getCurrentLao()
                 .observe(
