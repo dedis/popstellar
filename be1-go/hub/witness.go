@@ -116,7 +116,7 @@ func (w *witnessHub) handleMessageFromOrganizer(incomingMessage *IncomingMessage
 	method := query.GetMethod()
 	log.Printf("method: %s", method)
 
-	msg := []message.Message{}
+	var msg []message.Message
 
 	// TODO: use constants
 	switch method {

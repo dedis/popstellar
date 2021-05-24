@@ -643,13 +643,6 @@ type validVote struct {
 	indexes []int
 
 }
-func (c *electionChannel) Subscribe(client *Client, msg message.Subscribe) error {
-	return c.baseChannel.Subscribe(client, msg)
-}
-
-func (c *electionChannel) Unsubscribe(client *Client, msg message.Unsubscribe) error {
-	return c.baseChannel.Unsubscribe(client, msg)
-}
 
 func (c *electionChannel) Publish(publish message.Publish) error {
 	err := c.baseChannel.VerifyPublishMessage(publish)
@@ -675,8 +668,4 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 	}
 
 	return nil
-}
-
-func (c *electionChannel) Catchup(catchup message.Catchup) []message.Message {
-	return c.baseChannel.Catchup(catchup)
 }
