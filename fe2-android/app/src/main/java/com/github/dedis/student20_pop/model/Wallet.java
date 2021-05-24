@@ -5,12 +5,17 @@ import android.util.Log;
 import androidx.core.util.Pair;
 import com.github.dedis.student20_pop.Injection;
 import com.github.dedis.student20_pop.model.stellar.SLIP10;
+import com.github.dedis.student20_pop.utility.security.Keys;
 import com.google.crypto.tink.Aead;
 import com.google.crypto.tink.Config;
 import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.aead.AeadConfig;
+import com.google.crypto.tink.aead.AeadKeyTemplates;
+import com.google.crypto.tink.aead.AesGcmKeyManager;
+import com.google.crypto.tink.aead.subtle.AeadFactory;
 import com.google.crypto.tink.config.TinkConfig;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
+import com.google.crypto.tink.signature.Ed25519PrivateKeyManager;
 import io.github.novacrypto.bip39.MnemonicGenerator;
 import io.github.novacrypto.bip39.MnemonicValidator;
 import io.github.novacrypto.bip39.SeedCalculator;
@@ -290,8 +295,14 @@ public class Wallet {
   }
   private void initKeysManeger(Context applicationContext)
       throws IOException, GeneralSecurityException {
-    keysetManager = Injection.provideAndroidKeysetManager(applicationContext);
+    AesGcmKeyManager.register(true);
     AeadConfig.register();
+    keysetManager =
+        new AndroidKeysetManager.Builder()
+            .withSharedPref(applicationContext, "POP_KEYSET_2",  "POP_KEYSET_SP_2")
+            .withKeyTemplate(AesGcmKeyManager.rawAes256GcmTemplate())
+            .withMasterKeyUri("android-keystore://POP_MASTER_KEY_2")
+            .build();
     aead = keysetManager.getKeysetHandle().getPrimitive(Aead.class);
   }
 
