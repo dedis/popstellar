@@ -28,7 +28,7 @@ public class ContentWalletFragment extends Fragment {
     return new ContentWalletFragment();
   }
 
-  private FragmentHomeBinding mHomeFragBinding;
+  private FragmentContentWalletBinding mContentWalletBinding;
   private HomeViewModel mHomeViewModel;
   private LAOListAdapter mListAdapter;
 
@@ -38,14 +38,14 @@ public class ContentWalletFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    mHomeFragBinding = FragmentHomeBinding.inflate(inflater, container, false);
+    mContentWalletBinding = FragmentContentWalletBinding.inflate(inflater, container, false);
 
     mHomeViewModel = HomeActivity.obtainViewModel(getActivity());
 
-    mHomeFragBinding.setViewmodel(mHomeViewModel);
-    mHomeFragBinding.setLifecycleOwner(getActivity());
+    mContentWalletBinding.setViewmodel(mHomeViewModel);
+    mContentWalletBinding.setLifecycleOwner(getActivity());
 
-    return mHomeFragBinding.getRoot();
+    return mContentWalletBinding.getRoot();
   }
 
   @Override
@@ -66,16 +66,15 @@ public class ContentWalletFragment extends Fragment {
 
                   mListAdapter.replaceList(laos);
 
-                  // TODO: perhaps move this to data binding
                   if (laos.size() > 0) {
-                    mHomeFragBinding.welcomeScreen.setVisibility(View.GONE);
-                    mHomeFragBinding.listScreen.setVisibility(View.VISIBLE);
+                    mContentWalletBinding.welcomeScreen.setVisibility(View.GONE);
+                    mContentWalletBinding.listScreen.setVisibility(View.VISIBLE);
                   }
                 });
   }
 
   private void setupListAdapter() {
-    ListView listView = mHomeFragBinding.laoList;
+    ListView listView = mContentWalletBinding.laoList;
 
     mListAdapter = new LAOListAdapter(new ArrayList<Lao>(0), mHomeViewModel, getActivity(), false);
 

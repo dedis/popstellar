@@ -49,4 +49,7 @@
     <dimen name="election_setup_add_ballot_button_width">148dp</dimen>
     <dimen name="election_setup_add_ballot_button_margin_top">30dp</dimen>
 
+    <!-- Wallet dimensions -->
+    <dimen name="wallet_divider_height">1dp</dimen>
+
 </resources>

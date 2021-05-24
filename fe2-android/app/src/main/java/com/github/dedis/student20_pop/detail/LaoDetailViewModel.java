@@ -19,6 +19,7 @@ import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.RollCall;
 import com.github.dedis.student20_pop.model.Wallet;
 import com.github.dedis.student20_pop.model.data.LAORepository;
+import com.github.dedis.student20_pop.model.event.EventState;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.model.network.answer.Error;
 import com.github.dedis.student20_pop.model.network.answer.Result;
@@ -111,6 +112,26 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
           .map(mCurrentLao,
                   lao -> lao == null ? new ArrayList<com.github.dedis.student20_pop.model.RollCall>() :
                           lao.getRollCalls().values().stream().collect(Collectors.toList()));
+
+  private LiveData<List<com.github.dedis.student20_pop.model.RollCall>> mLaoAttendedRollCalls = Transformations
+          .map(mCurrentLao,
+                  lao -> lao == null ? new ArrayList<com.github.dedis.student20_pop.model.RollCall>() :
+                          lao.getRollCalls().values().stream().filter(rollcall->rollcall.getState()== EventState.CLOSED).filter(rollcall->attended_or_organized(lao, rollcall)).collect(Collectors.toList()));
+
+  private boolean attended_or_organized(Lao lao, RollCall rollcall){
+    boolean isOrganizer = false;
+    try {
+      KeysetHandle publicKeysetHandle =
+              mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+      isOrganizer =
+              lao.getOrganizer().equals(Keys.getEncodedKey(publicKeysetHandle));
+    } catch (GeneralSecurityException e) {
+      Log.d(TAG, "failed to get public keyset handle", e);
+    } catch (IOException e) {
+      Log.d(TAG, "failed to get public key", e);
+    }
+    return rollcall.getAttendees().contains(getRollCallToken(rollcall.getPersistentId())) || isOrganizer;
+  }
 
   /*
    * Dependencies for this class
@@ -473,6 +494,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     return mLaoRollCalls;
   }
 
+  public LiveData<List<com.github.dedis.student20_pop.model.RollCall>> getLaoAttendedRollCalls() {
+    return mLaoAttendedRollCalls;
+  }
+
   /*
    * Methods that modify the state or post an Event to update the UI.
    */
@@ -625,12 +650,29 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
   public void enterRollCall(String id) {
       String firstLaoId = getCurrentLaoValue().getChannel().substring(6); // use the laoId set at creation + need to remove /root/ prefix
+      Log.d(TAG, "lao1: "+firstLaoId);
+      Log.d(TAG, "lao1: "+id);
       try {
         String pk = Base64.getEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, id).second);
+        Log.d(TAG, "token1: "+pk);
         mPkRollCallEvent.postValue(new Event<>(pk));
       } catch (NoSuchAlgorithmException | InvalidKeyException | ShortBufferException e) {
         Log.d(TAG, "failed to retrieve public key from wallet", e);
       }
+  }
+
+  public String getRollCallToken(String id){
+    String firstLaoId = getCurrentLaoValue().getChannel().substring(6); // use the laoId set at creation + need to remove /root/ prefix
+    Log.d(TAG, "lao2: "+firstLaoId);
+    Log.d(TAG, "lao2: "+id);
+    String pk = "";
+    try {
+      pk = Base64.getEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, id).second);
+    } catch (NoSuchAlgorithmException | InvalidKeyException | ShortBufferException e) {
+      Log.d(TAG, "failed to retrieve public key from wallet", e);
+    }
+    Log.d(TAG, "token2: "+pk);
+    return pk;
   }
 
   public void openAttendeeScanning() {

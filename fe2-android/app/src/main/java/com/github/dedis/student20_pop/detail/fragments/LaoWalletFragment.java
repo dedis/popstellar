@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentLaoDetailBinding;
 import com.github.dedis.student20_pop.databinding.FragmentLaoWalletBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
@@ -47,7 +48,9 @@ public class LaoWalletFragment extends Fragment {
         mFragmentLaoWalletBinding = FragmentLaoWalletBinding.inflate(inflater, container, false);
 
         mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
-        Log.d(TAG, "hihi");
+
+        mFragmentLaoWalletBinding.setViewModel(mLaoDetailViewModel);
+        mFragmentLaoWalletBinding.setLifecycleOwner(getActivity());
 
         return mFragmentLaoWalletBinding.getRoot();
     }
@@ -56,11 +59,12 @@ public class LaoWalletFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        setupPropertiesButton();
         setupWalletListAdapter();
         setupWalletListUpdates();
 
         mLaoDetailViewModel
-                .getLaoRollCalls()
+                .getLaoAttendedRollCalls()
                 .observe(
                         getActivity(),
                         rollCalls -> {
@@ -78,6 +82,12 @@ public class LaoWalletFragment extends Fragment {
                         });*/
     }
 
+    private void setupPropertiesButton() {
+        Button propertiesButton = (Button) getActivity().findViewById(R.id.tab_properties);
+
+        propertiesButton.setOnClickListener(clicked -> mLaoDetailViewModel.toggleShowHideProperties());
+    }
+
     private void setupWalletListAdapter() {
         ListView listView = mFragmentLaoWalletBinding.walletList;
 
@@ -88,7 +98,7 @@ public class LaoWalletFragment extends Fragment {
 
     private void setupWalletListUpdates() {
         mLaoDetailViewModel
-                .getLaoRollCalls()
+                .getLaoAttendedRollCalls()
                 .observe(
                         getActivity(),
                         rollCalls -> {

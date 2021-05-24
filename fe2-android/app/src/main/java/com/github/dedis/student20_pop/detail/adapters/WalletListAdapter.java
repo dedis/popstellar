@@ -87,18 +87,6 @@ public class WalletListAdapter extends BaseAdapter {
                 clicked -> viewModel.openAttendeesList(rollCall.getId())
         );
 
-        /*LAOItemUserActionsListener userActionsListener =
-                new LAOItemUserActionsListener() {
-                    @Override
-                    public void onLAOClicked(Lao lao) {
-                        if(openLaoDetail) {
-                            homeViewModel.openLAO(lao.getChannel());
-                        }else{
-                            homeViewModel.openLaoWallet(lao.getChannel());
-                        }
-                    }
-                };*/
-
         binding.setLifecycleOwner(lifecycleOwner);
         binding.executePendingBindings();
 
