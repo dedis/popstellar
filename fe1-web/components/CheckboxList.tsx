@@ -31,6 +31,7 @@ const CheckboxList = (props: IPropTypes) => {
   const { onChange } = props;
   const { clickableOptions } = props;
   const { title } = props;
+  const { disabled } = props;
   const [checked, setChecked] = useState(new Array(values.length).fill(false));
 
   return (
@@ -39,6 +40,7 @@ const CheckboxList = (props: IPropTypes) => {
       <View style={{ ...styles.view, flexDirection: 'row' }}>
         {values.map((value, idx) => (
           <CheckBox
+            disabled={disabled}
             title={value}
             checked={checked[idx]}
             checkedIcon="dot-circle-o"
@@ -75,12 +77,14 @@ const propTypes = {
   onChange: PropTypes.func.isRequired,
   clickableOptions: PropTypes.number,
   title: PropTypes.string.isRequired,
+  disabled: PropTypes.bool,
 };
 
 CheckboxList.propTypes = propTypes;
 
 CheckboxList.defaultProps = {
   clickableOptions: 1,
+  disabled: false,
 };
 
 type IPropTypes = {
@@ -88,6 +92,7 @@ type IPropTypes = {
   values: string[],
   onChange: Function,
   title: string,
+  disabled: boolean,
 };
 
 export default CheckboxList;

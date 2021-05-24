@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
-import ParagraphBlock from 'components/ParagraphBlock';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Election, EventTags, Hash, Timestamp, Vote,
 } from 'model/objects';
 import {
-  SectionList, StyleSheet, Text, TextStyle,
+  StyleSheet, Text, TextStyle, SectionList
 } from 'react-native';
 import { Typography } from 'styles';
 import { castVote } from 'network';
 import CheckboxList from 'components/CheckboxList';
 import WideButtonView from 'components/WideButtonView';
+import TimeDisplay from 'components/TimeDisplay';
+import STRINGS from 'res/strings';
+import * as Spacing from '../../../styles/spacing';
 
 /**
  * Component used to display a Election event in the LAO event list
@@ -20,17 +22,27 @@ const styles = StyleSheet.create({
   text: {
     ...Typography.base,
   } as TextStyle,
+  textOptions: {
+    marginHorizontal: Spacing.s,
+    fontSize: 16,
+    textAlign: 'center',
+  } as TextStyle,
+  textQuestions: {
+    ...Typography.base,
+    fontSize: 20,
+  } as TextStyle,
 });
 
 const EventElection = (props: IPropTypes) => {
   const { event } = props;
-  const startsAtString = event.start.before(Timestamp.EpochNow()) ? 'Started at' : 'Starts at';
-  const endsAtString = event.end.before(Timestamp.EpochNow()) ? 'Ended at' : 'Ends at';
   const questions = event.questions.map((q) => ({ title: q.question, data: q.ballot_options }));
   const [selectedBallots, setSelectedBallots] = useState(new Array(questions.length).fill([]));
   const [hasVoted, setHasVoted] = useState(false);
-  const isRunning = (event.start.before(Timestamp.EpochNow())
+  const [isRunning, setIsRunning] = useState(event.start.before(Timestamp.EpochNow())
     && event.end.after(Timestamp.EpochNow()));
+  const untilStart = (event.start.valueOf() - Timestamp.EpochNow().valueOf()) * 1000;
+  const untilEnd = (event.end.valueOf() - Timestamp.EpochNow().valueOf()) * 1000;
+
   const updateSelectedBallots = (values: number[], idx: number) => {
     setSelectedBallots((prev) => prev.map((item, id) => ((idx === id) ? values : item)));
   };
@@ -64,6 +76,28 @@ const EventElection = (props: IPropTypes) => {
       });
   };
 
+  // This makes sure the screen gets updated when the event starts
+  useEffect(() => {
+    if (untilStart >= 0) {
+      const startTimer = setTimeout(() => {
+        setIsRunning(true);
+      }, untilStart);
+      return () => clearTimeout(startTimer);
+    }
+    return () => {};
+  }, []);
+
+  // This makes sure the screen gets updated when the event ends - user can't vote anymore
+  useEffect(() => {
+    if (untilEnd >= 0) {
+      const endTimer = setTimeout(() => {
+        setIsRunning(false);
+      }, untilEnd);
+      return () => clearTimeout(endTimer);
+    }
+    return () => {};
+  }, []);
+
   let electionScreen;
   if (hasVoted) {
     electionScreen = <Text style={styles.text}>Vote Confirmed</Text>;
@@ -76,7 +110,7 @@ const EventElection = (props: IPropTypes) => {
       />
     ))),
       <WideButtonView
-        title="Cast Vote"
+        title={STRINGS.cast_vote}
         onPress={onCastVote}
       />];
   } else {
@@ -85,10 +119,10 @@ const EventElection = (props: IPropTypes) => {
         sections={questions}
         keyExtractor={(item, index) => item + index}
         renderSectionHeader={({ section: { title } }) => (
-          <Text>{title}</Text>
+          <Text style={styles.textQuestions}>{title}</Text>
         )}
         renderItem={({ item }) => (
-          <Text>{`\u2022 ${item}`}</Text>
+          <Text style={styles.textOptions}>{`\u2022 ${item}`}</Text>
         )}
       />
     );
@@ -96,8 +130,7 @@ const EventElection = (props: IPropTypes) => {
 
   return (
     <>
-      <ParagraphBlock text={`${startsAtString} ${event.start.timestampToString()}`} />
-      <ParagraphBlock text={`${endsAtString} ${event.end.timestampToString()}`} />
+      <TimeDisplay start={event.start.valueOf()} end={event.end.valueOf()} />
       {electionScreen}
     </>
   );

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Platform, TextInput, ScrollView,
+  View, Platform, TextInput, ScrollView, StyleSheet, ViewStyle,
 } from 'react-native';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigation } from '@react-navigation/native';
@@ -10,18 +10,17 @@ import DatePicker from 'components/DatePicker';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import {
-  Hash, Lao, Timestamp, Question, EventTags,
+  Hash, Lao, Timestamp, Question, EventTags, channelFromIds,
 } from 'model/objects';
 import TextBlock from 'components/TextBlock';
 import DropdownSelector from 'components/DropdownSelector';
 import TextInputList from 'components/TextInputList';
 import { requestCreateElection } from 'network';
 import { OpenedLaoStore } from 'store';
+import { subscribeToChannel } from 'network/CommunicationApi';
 
 /**
  * UI to create an Election Event
- *
- * TODO Implement support for multiple questions
  */
 
 const CreateElection = ({ route }: any) => {
@@ -34,12 +33,8 @@ const CreateElection = ({ route }: any) => {
 
   const [startDate, setStartDate] = useState(Timestamp.dateToTimestamp(initialStartDate));
   const [endDate, setEndDate] = useState(Timestamp.dateToTimestamp(initialEndDate));
-
   const [electionName, setElectionName] = useState('');
-  const [electionQuestion, setElectionQuestion] = useState('');
-  const [electionBallots, setElectionBallots] = useState(['']);
   const votingMethods = [STRINGS.election_method_Plurality, STRINGS.election_method_Approval];
-  const [votingMethod, setVotingMethod] = useState(votingMethods[0]);
   const minBallotOptions = 2;
   const currentLao: Lao = OpenedLaoStore.get();
   const emptyQuestion = { question: '', voting_method: votingMethods[0], ballot_options: [''] };
@@ -71,7 +66,6 @@ const CreateElection = ({ route }: any) => {
     );
   };
 
-
   const getQuestionObjects = (): Question[] => questions.map((item) => (
     {
       ...item,
@@ -90,15 +84,25 @@ const CreateElection = ({ route }: any) => {
 
   const onConfirmPress = () => {
     console.log(getQuestionObjects());
+    const electionId = Hash.fromStringArray(
+      EventTags.ELECTION, currentLao.id.toString(), currentLao.creation.toString(), electionName,
+    );
     requestCreateElection(
       electionName,
+      electionId,
       STRINGS.election_version_identifier,
       startDate,
       endDate,
       getQuestionObjects(),
     )
       .then(() => {
-        navigation.navigate(STRINGS.organizer_navigation_tab_home);
+        // Subscribe to the election channel, to receive all the casted votes
+        const electionChannel = channelFromIds(currentLao.id, electionId);
+        subscribeToChannel(electionChannel).then(() => {
+          navigation.navigate(STRINGS.organizer_navigation_tab_home);
+        }).catch((err) => {
+          console.error('Could not subscribe to Election channel, error:', err);
+        });
       })
       .catch((err) => {
         console.error('Could not create Election, error:', err);

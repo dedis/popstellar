@@ -115,6 +115,9 @@ const STRINGS = {
   election_method_Approval: 'Approval',
   election_version_identifier: '1.0.0',
 
+  /* --- Cast Vote Strings --- */
+  cast_vote: 'Cast Vote',
+
   /* --- Roll-call creation Strings --- */
   roll_call_create_proposed_start: 'Proposed Start:',
   roll_call_create_proposed_end: 'Proposed End:',
@@ -139,6 +142,10 @@ const STRINGS = {
   meeting_create_start_time: 'Start time: ',
   meeting_create_finish_time: 'End time: ',
   meeting_create_location: 'Location',
+
+  /* --- Time Display Strings --- */
+  time_display_start: 'Start: ',
+  time_display_end: 'End: ',
 
   /* --- Wallet Strings --- */
   wallet_private_key_id: 'Private Decryption Key',

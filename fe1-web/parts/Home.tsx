@@ -11,7 +11,7 @@ import STRINGS from 'res/strings';
 
 import LAOItem from 'components/LAOItem';
 import TextBlock from 'components/TextBlock';
-import CheckboxList from '../components/CheckboxList';
+import TimeDisplay from 'components/TimeDisplay';
 
 /**
  * Manage the Home screen component: if the user is not connected to any LAO, a welcome message

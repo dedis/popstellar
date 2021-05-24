@@ -22,9 +22,8 @@ import { publish } from './JsonRpcApi';
 
 /** Send a server query asking for the creation of a LAO with a given name (String) */
 export function requestCreateLao(laoName: string): Promise<Channel> {
-  //const time = Timestamp.EpochNow();
+  const time = Timestamp.EpochNow();
   const pubKey = KeyPairStore.getPublicKey();
-  const time = new Timestamp(1621343387);
 
   const message = new CreateLao({
     id: Hash.fromStringArray(pubKey.toString(), time.toString(), laoName),
@@ -211,6 +210,7 @@ export function requestCloseRollCall(rollCallId: Number, attendees: PublicKey[])
  *  start and end are also specified as a timestamp */
 export function requestCreateElection(
   name: string,
+  id: Hash,
   version: string,
   start: Timestamp,
   end: Timestamp,
@@ -221,9 +221,7 @@ export function requestCreateElection(
   const timeBuffer = 60;
   const message = new SetupElection({
     lao: currentLao.id,
-    id: Hash.fromStringArray(
-      EventTags.ELECTION, currentLao.id.toString(), currentLao.creation.toString(), name,
-    ),
+    id: id,
     name: name,
     version: version,
     created_at: time,
