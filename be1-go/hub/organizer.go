@@ -651,5 +651,6 @@ func (c *laoChannel) processElectionObject(msg message.Message) error {
 		return xerrors.Errorf("failed to setup the election %v", err)
 	}
 
+	log.Printf("Election has created with success")
 	return nil
 }

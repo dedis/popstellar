@@ -163,6 +163,7 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 			}
 		}
 		//this is to handle the case when the organizer must handle multiple votes being cast at the same time
+		qs.validVotesMu.Lock()
 		earlierVote, ok := qs.validVotes[msg.Sender.String()]
 		// if the sender didn't previously cast a vote or if the vote is no longer valid update it
 
@@ -177,7 +178,10 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 			changeVote(&qs, earlierVote, msg.Sender.String(), voteData.CreatedAt, q.VoteIndexes)
 		}
 		//other votes can now change the list of valid votes
+		qs.validVotesMu.Unlock()
 	}
+
+	log.Printf("Vote casted with success")
 	return nil
 }
 func checkMethodProperties(method message.VotingMethod, length int) error {
@@ -199,13 +203,11 @@ func checkMethodProperties(method message.VotingMethod, length int) error {
 
 func changeVote(qs *question, earlierVote validVote, sender string, created message.Timestamp, indexes []int) {
 	if earlierVote.voteTime > created {
-		qs.validVotesMu.Lock()
 		qs.validVotes[sender] =
 			validVote{
 				voteTime: created,
 				indexes:  indexes,
 			}
-		qs.validVotesMu.Unlock()
 	}
 }
 
