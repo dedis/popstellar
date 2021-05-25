@@ -3,10 +3,11 @@ package hub
 import (
 	"encoding/base64"
 	"fmt"
-	"golang.org/x/xerrors"
 	"log"
 	"student20_pop/message"
 	"sync"
+
+	"golang.org/x/xerrors"
 )
 
 type electionChannel struct {
@@ -91,10 +92,7 @@ func (c *laoChannel) createElection(msg message.Message) error {
 	}
 
 	// Add the SetupElection message to the new election channel
-	messageID := base64.URLEncoding.EncodeToString(msg.MessageID)
-	electionCh.inboxMu.Lock()
-	electionCh.inbox[messageID] = msg
-	electionCh.inboxMu.Unlock()
+	electionCh.storeMessage(msg)
 
 	// Add the new election channel to the organizerHub
 	organizerHub.channelByID[encodedID] = &electionCh
@@ -167,7 +165,7 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 		earlierVote, ok := qs.validVotes[msg.Sender.String()]
 		// if the sender didn't previously cast a vote or if the vote is no longer valid update it
 
-		if err := checkMethodProperties(qs.method, len(q.VoteIndexes)); err != nil{
+		if err := checkMethodProperties(qs.method, len(q.VoteIndexes)); err != nil {
 			return err
 		}
 		if !ok {
