@@ -7,6 +7,7 @@ import (
 
 	"student20_pop/message"
 
+	"github.com/urfave/cli/v2"
 	"github.com/xeipuuv/gojsonschema"
 	"golang.org/x/xerrors"
 )
@@ -23,7 +24,29 @@ type schema struct {
 const (
 	GenericMsgSchema string = "genericMsgSchema"
 	DataSchema       string = "dataSchema"
+	ProtocolURL      string = "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol"
 )
+
+type ProtocolLoader struct {
+	Online bool
+	Path   string
+}
+
+// If the "protocol-path" flag is set, it is used to load the protocol otherwise the URL on github website is used.
+func GetProtocolLoader(context *cli.Context) ProtocolLoader {
+	protocolFlag := "protocol-path"
+	if context.IsSet(protocolFlag) {
+		return ProtocolLoader{
+			Online: false,
+			Path:   context.String(protocolFlag),
+		}
+	} else {
+		return ProtocolLoader{
+			Online: true,
+			Path:   ProtocolURL,
+		}
+	}
+}
 
 // RegisterSchema adds a JSON schema specified by the path
 func (s *SchemaValidator) RegisterSchema(schema schema) error {
@@ -68,25 +91,27 @@ func (s *SchemaValidator) VerifyJson(byteMessage []byte, schemaName string) erro
 }
 
 // NewSchemaValidator returns a Schema Validator
-func NewSchemaValidator() (*SchemaValidator, error) {
-	// Import the Json schemas defined in the protocol section
-	protocolPath, err := filepath.Abs("../protocol")
-	if err != nil {
-		return nil, xerrors.Errorf("failed to load the path for the json schemas: %v", err)
+func NewSchemaValidator(protocolLoader ProtocolLoader) (*SchemaValidator, error) {
+	// If the protocol path is an offline path, the path is cleaned
+	if !protocolLoader.Online {
+		path, err := filepath.Abs(protocolLoader.Path)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to load the path for the json schemas: %v", err)
+		}
+
+		// Replace the '\\' from windows path with '/'
+		path = strings.ReplaceAll(path, "\\", "/")
+
+		protocolLoader.Path = "file://" + path
 	}
-
-	// Replace the '\\' from windows path with '/'
-	protocolPath = strings.ReplaceAll(protocolPath, "\\", "/")
-
-	protocolPath = "file://" + protocolPath
 
 	genericMsgSchema := schema{
 		name: GenericMsgSchema,
-		path: protocolPath + "/genericMessage.json",
+		path: protocolLoader.Path + "/genericMessage.json",
 	}
 	dataSchema := schema{
 		name: DataSchema,
-		path: protocolPath + "/query/method/message/data/data.json"}
+		path: protocolLoader.Path + "/query/method/message/data/data.json"}
 
 	return NewSchemaValidatorWithSchemas(genericMsgSchema, dataSchema)
 }

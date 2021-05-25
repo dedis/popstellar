@@ -6,6 +6,7 @@ import (
 	"os"
 	"student20_pop"
 	"student20_pop/message"
+	"student20_pop/validation"
 	"testing"
 	"time"
 
@@ -190,7 +191,12 @@ func createMessage(data message.Data, publicKey message.PublicKey) message.Messa
 func TestMain(m *testing.M) {
 	organizerKeyPair, _ = generateKeyPair()
 
-	baseHub, err := NewBaseHub(organizerKeyPair.public)
+	protocolLoader := validation.ProtocolLoader{
+		Online: false,
+		Path:   "../../protocol",
+	}
+
+	baseHub, err := NewBaseHub(organizerKeyPair.public, protocolLoader)
 	if err != nil {
 		panic(err)
 	}

@@ -2,6 +2,7 @@ package hub
 
 import (
 	"log"
+	"student20_pop/validation"
 
 	"go.dedis.ch/kyber/v3"
 )
@@ -11,8 +12,8 @@ type witnessHub struct {
 }
 
 // NewWitnessHub returns a Witness Hub.
-func NewWitnessHub(public kyber.Point) (Hub, error) {
-	baseHub, err := NewBaseHub(public)
+func NewWitnessHub(public kyber.Point, protocolLoader validation.ProtocolLoader) (Hub, error) {
+	baseHub, err := NewBaseHub(public, protocolLoader)
 	return &witnessHub{
 		baseHub,
 	}, err
