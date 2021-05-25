@@ -96,18 +96,18 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 	genericMsg := &message.GenericMessage{}
 	id, ok := genericMsg.UnmarshalID(byteMessage)
 	if !ok {
-		log.Printf("The message does not have a valid `id` field")
-		client.SendError(nil, &message.Error{
-			Code:        -1,
+		err := &message.Error{
+			Code:        -4,
 			Description: "The message does not have a valid `id` field",
-		})
+		}
+		client.SendError(nil, err)
 		return
 	}
 
 	// Verify the message
 	err := o.verifyJson(byteMessage, GenericMsgSchema)
 	if err != nil {
-		log.Printf("failed to verify incoming message: %v", err)
+		err = message.NewError("failed to verify incoming message", err)
 		client.SendError(&id, err)
 		return
 	}
@@ -115,7 +115,12 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 	// Unmarshal the message
 	err = json.Unmarshal(byteMessage, genericMsg)
 	if err != nil {
-		log.Printf("failed to unmarshal incoming message: %v", err)
+		// Return a error of type "-4 request data is invalid" for all the unmarshalling problems of the incoming message
+		err = &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("failed to unmarshal incoming message: %v", err),
+		}
+
 		client.SendError(&id, err)
 		return
 	}
@@ -131,7 +136,11 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 
 	if channelID == "/root" {
 		if query.Publish == nil {
-			log.Printf("only publish is allowed on /root")
+			err = &message.Error{
+				Code:        -4,
+				Description: "only publish is allowed on /root",
+			}
+
 			client.SendError(&id, err)
 			return
 		}
@@ -142,7 +151,7 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 		// Verify the data
 		err := o.verifyJson(msg.RawData, DataSchema)
 		if err != nil {
-			log.Printf("failed to validate the data: %v", err)
+			err = message.NewError("failed to validate the data", err)
 			client.SendError(&id, err)
 			return
 		}
@@ -150,7 +159,11 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 		// Unmarshal the data
 		err = query.Publish.Params.Message.VerifyAndUnmarshalData()
 		if err != nil {
-			log.Printf("failed to verify and unmarshal data: %v", err)
+			// Return a error of type "-4 request data is invalid" for all the verifications and unmarshalling problems of the data
+			err = &message.Error{
+				Code:        -4,
+				Description: fmt.Sprintf("failed to verify and unmarshal data: %v", err),
+			}
 			client.SendError(&id, err)
 			return
 		}
@@ -159,7 +172,8 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 			query.Publish.Params.Message.Data.GetObject() == message.DataObject(message.LaoObject) {
 			err := o.createLao(*query.Publish)
 			if err != nil {
-				log.Printf("failed to create lao: %v", err)
+				err = message.NewError("failed to create lao", err)
+
 				client.SendError(&id, err)
 				return
 			}
@@ -222,7 +236,7 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 	}
 
 	if err != nil {
-		log.Printf("failed to process query: %v", err)
+		err = message.NewError("failed to process query", err)
 		client.SendError(&id, err)
 		return
 	}
@@ -280,7 +294,7 @@ func (o *organizerHub) verifyJson(byteMessage []byte, schemaName string) error {
 	resultErrors, err := o.schemas[schemaName].Validate(messageLoader)
 	if err != nil {
 		return &message.Error{
-			Code:        -1,
+			Code:        -4,
 			Description: err.Error(),
 		}
 	}
@@ -293,7 +307,7 @@ func (o *organizerHub) verifyJson(byteMessage []byte, schemaName string) error {
 
 	if len(errorsList) > 0 {
 		return &message.Error{
-			Code:        -1,
+			Code:        -4,
 			Description: descriptionErrors,
 		}
 	}
@@ -379,8 +393,8 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 	}
 
 	if err != nil {
-		log.Printf("failed to process %s object: %v", object, err)
-		return xerrors.Errorf("failed to process %s object: %v", object, err)
+		errorDescription := fmt.Sprintf("failed to process %s object", object)
+		return message.NewError(errorDescription, err)
 	}
 
 	c.broadcastToAllClients(*msg)
@@ -396,8 +410,7 @@ func (c *laoChannel) processLaoObject(msg message.Message) error {
 	case message.StateLaoAction:
 		err := c.processLaoState(msg.Data.(*message.StateLAOData))
 		if err != nil {
-			log.Printf("failed to process lao/state: %v", err)
-			return xerrors.Errorf("failed to process lao/state: %v", err)
+			return message.NewError("failed to process lao/state", err)
 		}
 	default:
 		return message.NewInvalidActionError(message.DataAction(action))
@@ -473,7 +486,7 @@ func (c *laoChannel) processLaoState(data *message.StateLAOData) error {
 
 	err := compareLaoUpdateAndState(updateMsgData, data)
 	if err != nil {
-		return xerrors.Errorf("failure while comparing lao/update and lao/state")
+		return message.NewError("failure while comparing lao/update and lao/state", err)
 	}
 
 	return nil
@@ -591,7 +604,10 @@ func (c *laoChannel) processRollCallObject(msg message.Message) error {
 	senderPoint := student20_pop.Suite.Point()
 	err := senderPoint.UnmarshalBinary(sender)
 	if err != nil {
-		return xerrors.Errorf("failed to unmarshal public key of the sender: %v", err)
+		return &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("failed to unmarshal public key of the sender: %v", err),
+		}
 	}
 
 	if !c.hub.public.Equal(senderPoint) {
@@ -615,7 +631,8 @@ func (c *laoChannel) processRollCallObject(msg message.Message) error {
 	}
 
 	if err != nil {
-		return xerrors.Errorf("failed to process %v roll-call action: %v", action, err)
+		errorDescription := fmt.Sprintf("failed to process %v roll-call action", action)
+		return message.NewError(errorDescription, err)
 	}
 
 	msgIDEncoded := base64.URLEncoding.EncodeToString(msg.MessageID)
