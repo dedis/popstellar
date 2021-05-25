@@ -127,7 +127,7 @@ func NewSchemaValidatorWithSchemas(schemas ...schema) (*SchemaValidator, error) 
 	for _, schema := range schemas {
 		err := schemaValidator.RegisterSchema(schema)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to register a json schema: %v", schema.path, err)
+			return nil, xerrors.Errorf("failed to register a json schema: %v", err)
 		}
 	}
 
