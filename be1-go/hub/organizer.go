@@ -11,7 +11,6 @@ import (
 
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"golang.org/x/xerrors"
 )
 
 type organizerHub struct {
@@ -69,8 +68,8 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 	}
 
 	if err != nil {
-		log.Printf("failed to process %s object: %v", object, err)
-		return xerrors.Errorf("failed to process %s object: %v", object, err)
+		errorDescription := fmt.Sprintf("failed to process %s object", object)
+		return message.NewError(errorDescription, err)
 	}
 
 	c.broadcastToAllClients(*msg)
@@ -86,8 +85,7 @@ func (c *laoChannel) processLaoObject(msg message.Message) error {
 	case message.StateLaoAction:
 		err := c.processLaoState(msg.Data.(*message.StateLAOData))
 		if err != nil {
-			log.Printf("failed to process lao/state: %v", err)
-			return xerrors.Errorf("failed to process lao/state: %v", err)
+			return message.NewError("failed to process lao/state", err)
 		}
 	default:
 		return message.NewInvalidActionError(message.DataAction(action))
@@ -163,7 +161,7 @@ func (c *laoChannel) processLaoState(data *message.StateLAOData) error {
 
 	err := compareLaoUpdateAndState(updateMsgData, data)
 	if err != nil {
-		return xerrors.Errorf("failure while comparing lao/update and lao/state")
+		return message.NewError("failure while comparing lao/update and lao/state", err)
 	}
 
 	return nil
@@ -281,7 +279,10 @@ func (c *laoChannel) processRollCallObject(msg message.Message) error {
 	senderPoint := student20_pop.Suite.Point()
 	err := senderPoint.UnmarshalBinary(sender)
 	if err != nil {
-		return xerrors.Errorf("failed to unmarshal public key of the sender: %v", err)
+		return &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("failed to unmarshal public key of the sender: %v", err),
+		}
 	}
 
 	if !c.hub.public.Equal(senderPoint) {
@@ -305,7 +306,8 @@ func (c *laoChannel) processRollCallObject(msg message.Message) error {
 	}
 
 	if err != nil {
-		return xerrors.Errorf("failed to process %v roll-call action: %v", action, err)
+		errorDescription := fmt.Sprintf("failed to process %v roll-call action", action)
+		return message.NewError(errorDescription, err)
 	}
 
 	msgIDEncoded := base64.StdEncoding.EncodeToString(msg.MessageID)

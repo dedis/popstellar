@@ -58,6 +58,7 @@ func (h *baseHub) Recv(msg IncomingMessage) {
 }
 
 func (h *baseHub) Start(done chan struct{}) {
+	log.Printf("started hub...")
 	for {
 		select {
 		case incomingMessage := <-h.messageChan:
@@ -78,18 +79,18 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 	genericMsg := &message.GenericMessage{}
 	id, ok := genericMsg.UnmarshalID(byteMessage)
 	if !ok {
-		log.Printf("The message does not have a valid `id` field")
-		client.SendError(nil, &message.Error{
-			Code:        -1,
+		err := &message.Error{
+			Code:        -4,
 			Description: "The message does not have a valid `id` field",
-		})
+		}
+		client.SendError(nil, err)
 		return
 	}
 
 	// Verify the message
 	err := h.schemaValidator.VerifyJson(byteMessage, validation.GenericMsgSchema)
 	if err != nil {
-		log.Printf("failed to verify incoming message: %v", err)
+		err = message.NewError("failed to verify incoming message", err)
 		client.SendError(&id, err)
 		return
 	}
@@ -97,7 +98,12 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 	// Unmarshal the message
 	err = json.Unmarshal(byteMessage, genericMsg)
 	if err != nil {
-		log.Printf("failed to unmarshal incoming message: %v", err)
+		// Return a error of type "-4 request data is invalid" for all the unmarshalling problems of the incoming message
+		err = &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("failed to unmarshal incoming message: %v", err),
+		}
+
 		client.SendError(&id, err)
 		return
 	}
@@ -113,7 +119,11 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 
 	if channelID == "/root" {
 		if query.Publish == nil {
-			log.Printf("only publish is allowed on /root")
+			err = &message.Error{
+				Code:        -4,
+				Description: "only publish is allowed on /root",
+			}
+
 			client.SendError(&id, err)
 			return
 		}
@@ -124,7 +134,7 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 		// Verify the data
 		err := h.schemaValidator.VerifyJson(msg.RawData, validation.DataSchema)
 		if err != nil {
-			log.Printf("failed to validate the data: %v", err)
+			err = message.NewError("failed to validate the data", err)
 			client.SendError(&id, err)
 			return
 		}
@@ -132,7 +142,11 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 		// Unmarshal the data
 		err = query.Publish.Params.Message.VerifyAndUnmarshalData()
 		if err != nil {
-			log.Printf("failed to verify and unmarshal data: %v", err)
+			// Return a error of type "-4 request data is invalid" for all the verifications and unmarshalling problems of the data
+			err = &message.Error{
+				Code:        -4,
+				Description: fmt.Sprintf("failed to verify and unmarshal data: %v", err),
+			}
 			client.SendError(&id, err)
 			return
 		}
@@ -141,7 +155,8 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 			query.Publish.Params.Message.Data.GetObject() == message.DataObject(message.LaoObject) {
 			err := h.createLao(*query.Publish)
 			if err != nil {
-				log.Printf("failed to create lao: %v", err)
+				err = message.NewError("failed to create lao", err)
+
 				client.SendError(&id, err)
 				return
 			}
@@ -204,7 +219,7 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 	}
 
 	if err != nil {
-		log.Printf("failed to process query: %v", err)
+		err = message.NewError("failed to process query", err)
 		client.SendError(&id, err)
 		return
 	}

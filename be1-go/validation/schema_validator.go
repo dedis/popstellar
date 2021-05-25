@@ -45,7 +45,7 @@ func (s *SchemaValidator) VerifyJson(byteMessage []byte, schemaName string) erro
 	resultErrors, err := s.schemas[schemaName].Validate(messageLoader)
 	if err != nil {
 		return &message.Error{
-			Code:        -1,
+			Code:        -4,
 			Description: fmt.Sprintf("failed to validate schema: %s", err.Error()),
 		}
 	}
@@ -59,7 +59,7 @@ func (s *SchemaValidator) VerifyJson(byteMessage []byte, schemaName string) erro
 
 	if len(errorsList) > 0 {
 		return &message.Error{
-			Code:        -1,
+			Code:        -4,
 			Description: descriptionErrors,
 		}
 	}
