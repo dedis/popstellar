@@ -6,8 +6,6 @@ import (
 	"log"
 	"student20_pop/message"
 	"sync"
-
-	"golang.org/x/xerrors"
 )
 
 type electionChannel struct {
@@ -103,7 +101,7 @@ func (c *laoChannel) createElection(msg message.Message) error {
 func (c *electionChannel) Publish(publish message.Publish) error {
 	err := c.baseChannel.VerifyPublishMessage(publish)
 	if err != nil {
-		return xerrors.Errorf("failed to verify publish message on an election channel: %v", err)
+		return message.NewError("failed to verify publish message on an election channel", err)
 	}
 
 	msg := publish.Params.Message
