@@ -30,10 +30,43 @@ OPTIONS:
 ```
 
 You may start the organizer server at ports `9000` for clients and `9001` for witnesses by executing `./pop organizer --pk "<base64 encoded pk>" serve`.
+```bash
+./pop organizer --pk "<base64 encoded pk>" serve -help
+NAME:
+   pop organizer serve - start the organizer server
+
+USAGE:
+   pop organizer serve [command options] [arguments...]
+
+OPTIONS:
+   --protocol-path value, --proto value  path to the protocol, if it is not set the github URL of the protocol is used instead
+   --client-port value, --cp value       port to listen websocket connections from clients on (default: 9000)
+   --witness-port value, --wp value      port to listen websocket connections from witnesses on (default: 9001)
+   --help, -h                            show help (default: false)
+
+```
 Please use the `-cp` and `-wp` flags to specify an alternative port.
 The full path to connect to the organizer as a client is `ws://host:clientport/organizer/client/` and as a witness `ws://host:witnessport/organizer/witness/`. 
 
 You may start the witness server at ports `9002` for clients and `9001` for organizer by executing `./pop witness --pk "<base64 encoded pk>" serve`.
+
+```bash
+./pop witness --pk "<base64 encoded pk>" serve -help
+NAME:
+   pop witness serve - start the organizer server
+
+USAGE:
+   pop witness serve [command options] [arguments...]
+
+OPTIONS:
+   --protocol-path value, --proto value    path to the protocol, if it is not set the github URL of the protocol is used instead
+   --organizer-address value, --org value  ip address of organizer (default: "localhost")
+   --organizer-port value, --op value      port on which to connect to organizer websocket (default: 9001)
+   --client-port value, --cp value         port to listen websocket connections from clients on (default: 9002)
+   --help, -h                              show help (default: false)
+
+```
+
 Please use the `-cp` and `-op` flags to specify an alternative port.
 The full path to connect to the organizer as a client is `ws://host:clientport/organizer/client/` and as a witness `ws://host:witnessport/organizer/witness/`.
 
