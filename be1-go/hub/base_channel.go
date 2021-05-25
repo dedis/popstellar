@@ -78,22 +78,24 @@ func (c *baseChannel) Catchup(catchup message.Catchup) []message.Message {
 	c.inboxMu.RLock()
 	defer c.inboxMu.RUnlock()
 
-	timestampMap := make(map[message.Timestamp]message.Message)
+	messages := make([]messageInfo, 0, len(c.inbox))
+	// iterate over map and collect all the values (messageInfo instances)
 	for _, msgInfo := range c.inbox {
-		timestampMap[msgInfo.storedTime] = msgInfo.message
+		messages = append(messages, msgInfo)
+		log.Printf("Control: %v", msgInfo.storedTime)
 	}
 
-	timestamps := []message.Timestamp{}
-	for timestamp := range timestampMap {
-		timestamps = append(timestamps, timestamp)
-	}
-
-	// Sort the timestamps in ascending order
-	sort.Slice(timestamps, func(i, j int) bool { return timestamps[i] < timestamps[j] })
+	// sort.Slice on messages based on the timestamp
+	sort.Slice(messages, func(i, j int) bool {
+		return messages[i].storedTime < messages[j].storedTime
+	})
 
 	result := make([]message.Message, 0, len(c.inbox))
-	for _, timestamp := range timestamps {
-		result = append(result, timestampMap[timestamp])
+
+	// iterate and extract the messages[i].message field and
+	// append it to the result slice
+	for _, msgInfo := range messages {
+		result = append(result, msgInfo.message)
 	}
 
 	return result
