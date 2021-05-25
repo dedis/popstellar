@@ -81,7 +81,6 @@ func (c *baseChannel) Catchup(catchup message.Catchup) []message.Message {
 	// iterate over map and collect all the values (messageInfo instances)
 	for _, msgInfo := range c.inbox {
 		messages = append(messages, msgInfo)
-		log.Printf("Control: %v", msgInfo.storedTime)
 	}
 
 	// sort.Slice on messages based on the timestamp
