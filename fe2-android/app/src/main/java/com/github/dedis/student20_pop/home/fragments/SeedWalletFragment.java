@@ -61,11 +61,11 @@ public class SeedWalletFragment extends Fragment {
     setupConfirmSeedButton();
   }
 
-  private void setupDisplaySeed(){
+  private void setupDisplaySeed() {
     String[] exportSeed = new String[0];
     try {
-      exportSeed = wallet.exportSeed(getActivity().getApplicationContext());
-    } catch (IOException | GeneralSecurityException e) {
+      exportSeed = wallet.exportSeed();
+    } catch (Exception e) {
       Toast.makeText(getContext().getApplicationContext(),
           "Error import key, try again",
           Toast.LENGTH_LONG).show();

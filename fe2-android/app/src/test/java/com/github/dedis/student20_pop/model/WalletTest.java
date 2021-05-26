@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.model;
 
+import android.content.Context;
 import androidx.core.util.Pair;
 
 import org.junit.Test;
@@ -17,9 +18,9 @@ public class WalletTest {
 
   @Test
   public void importSeedAndExportSeedAreCoherent()
-      throws NoSuchAlgorithmException, InvalidKeyException, ShortBufferException {
+      throws Exception {
 
-    /*
+
     String Lao_ID = "1234123412341234";
     String Roll_Call_ID = "1234123412341234";
 
@@ -36,6 +37,6 @@ public class WalletTest {
 
     assertArrayEquals(res1.first, res2.first);
     assertArrayEquals(res1.second, res2.second);
-    */
+
   }
 }

@@ -70,6 +70,23 @@ public class Wallet {
     this.seed = Utils.hexToBytes(seed);
     Log.d(TAG, "New seed initialized: " + Utils.bytesToHex(this.seed));
   }
+  /**
+   * Method to init the AndroidKeysetManager
+   *
+   * @param applicationContext
+   */
+  public void initKeysManager(Context applicationContext)
+      throws IOException, GeneralSecurityException {
+    AesGcmKeyManager.register(true);
+    AeadConfig.register();
+    keysetManager =
+        new AndroidKeysetManager.Builder()
+            .withSharedPref(applicationContext, "POP_KEYSET_2",  "POP_KEYSET_SP_2")
+            .withKeyTemplate(AesGcmKeyManager.rawAes256GcmTemplate())
+            .withMasterKeyUri("android-keystore://POP_MASTER_KEY_2")
+            .build();
+    aead = keysetManager.getKeysetHandle().getPrimitive(Aead.class);
+  }
 
   /**
    * Method that allow generate a different key for each path that you give.
@@ -232,27 +249,30 @@ public class Wallet {
    *
    * @return an array of words: mnemonic sentence representing the seed for the wallet.
    */
-  public String[] exportSeed(Context applicationContext)
-      throws GeneralSecurityException, IOException {
+  public String[] exportSeed()
+      throws Exception {
+    if(keysetManager != null) {
+      SecureRandom random = new SecureRandom();
+      byte[] entropy = random.generateSeed(Words.TWELVE.byteLength());
 
-    initKeysManager(applicationContext);
-    SecureRandom random = new SecureRandom();
-    byte[] entropy = random.generateSeed(Words.TWELVE.byteLength());
+      StringBuilder sb = new StringBuilder();
+      MnemonicGenerator generator = new MnemonicGenerator(English.INSTANCE);
+      generator.createMnemonic(entropy, sb::append);
 
-    StringBuilder sb = new StringBuilder();
-    MnemonicGenerator generator = new MnemonicGenerator(English.INSTANCE);
-    generator.createMnemonic(entropy, sb::append);
+      String[] words = sb.toString().split(" ");
+      Log.d(TAG, "the array of word generated:" + Arrays.toString(words));
 
-    String[] words = sb.toString().split(" ");
-    Log.d(TAG,"the array of word generated:" + Arrays.toString(words));
+      StringJoiner joiner = new StringJoiner(" ");
+      for (String i : words)
+        joiner.add(i);
+      seed = aead.encrypt(new SeedCalculator().calculateSeed(joiner.toString(), ""),
+          new byte[0]);
+      Log.d(TAG, "ExportSeed: new seed initialized: " + Utils.bytesToHex(seed));
 
-    StringJoiner joiner = new StringJoiner(" ");
-    for(String i: words) joiner.add(i);
-    seed = aead.encrypt(new SeedCalculator().calculateSeed(joiner.toString(), ""),
-        new byte[0]);
-    Log.d(TAG, "ExportSeed: new seed initialized: " + Utils.bytesToHex(seed));
-
-    return words;
+      return words;
+    } else {
+      throw new Exception("key set manager not init!");
+    }
   }
 
   /**
@@ -266,36 +286,25 @@ public class Wallet {
    *         associated to each Lao and roll-call IDs or null in case of error.
    */
   public Map<Pair<String, String>, Pair<byte[], byte[]>> importSeed(String words,
-      Map<Pair<String, String>, List<byte[]>>  knowsLaosRollCalls, Context applicationContext)
-      throws IOException, GeneralSecurityException {
+      Map<Pair<String, String>, List<byte[]>>  knowsLaosRollCalls){
     if (words == null) {
       throw new IllegalArgumentException("Unable to find recover tokens from a null param");
     }
-    initKeysManager(applicationContext);
-    try {
-      MnemonicValidator
-          .ofWordList(English.INSTANCE)
-          .validate(words);
-      seed = aead.encrypt(new SeedCalculator().calculateSeed(words, ""), new byte[0]);
-      Log.d(TAG, "ImportSeed: new seed: " + Utils.bytesToHex(seed));
-      return recoverAllKeys(Utils.bytesToHex(seed), knowsLaosRollCalls);
+    if(keysetManager != null) {
+      try {
+        MnemonicValidator
+            .ofWordList(English.INSTANCE)
+            .validate(words);
+        seed = aead.encrypt(new SeedCalculator().calculateSeed(words, ""), new byte[0]);
+        Log.d(TAG, "ImportSeed: new seed: " + Utils.bytesToHex(seed));
+        return recoverAllKeys(Utils.bytesToHex(seed), knowsLaosRollCalls);
 
-    } catch (Exception e) {
-      Log.d(TAG,"Unable to import words:" + e.getMessage());
+      } catch (Exception e) {
+        Log.d(TAG, "Unable to import words:" + e.getMessage());
+        return null;
+      }
+    } else {
       return null;
     }
   }
-  private void initKeysManager(Context applicationContext)
-      throws IOException, GeneralSecurityException {
-    AesGcmKeyManager.register(true);
-    AeadConfig.register();
-    keysetManager =
-        new AndroidKeysetManager.Builder()
-            .withSharedPref(applicationContext, "POP_KEYSET_2",  "POP_KEYSET_SP_2")
-            .withKeyTemplate(AesGcmKeyManager.rawAes256GcmTemplate())
-            .withMasterKeyUri("android-keystore://POP_MASTER_KEY_2")
-            .build();
-    aead = keysetManager.getKeysetHandle().getPrimitive(Aead.class);
-  }
-
 }

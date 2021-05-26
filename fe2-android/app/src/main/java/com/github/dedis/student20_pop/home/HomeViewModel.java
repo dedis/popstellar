@@ -193,14 +193,14 @@ public class HomeViewModel extends AndroidViewModel
 
   public boolean importSeed(String seed) {
     try {
-      if(wallet.importSeed(seed, new HashMap<>(), getApplication().getApplicationContext()) == null){
+      if(wallet.importSeed(seed, new HashMap<>()) == null){
         return false;
       } else {
         setIsWalletSetUp(true);
         openWallet();
         return true;
       }
-    } catch (IllegalArgumentException | IOException | GeneralSecurityException e) {
+    } catch (Exception e) {
       return false;
     }
   }
