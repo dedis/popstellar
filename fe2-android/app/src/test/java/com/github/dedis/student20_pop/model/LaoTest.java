@@ -33,6 +33,7 @@ public class LaoTest {
   //  private static final List<Lao> LAOS_WITH_NULL =
   //      new ArrayList<>(Arrays.asList(LAO_1, null, LAO_FOR_EVENTS));
   //
+
   //  @Test
   //  public void createLaoNullParametersTest() {
   //    assertThrows(IllegalArgumentException.class, () -> new Lao(null, ORGANIZER, HOST));
