@@ -24,7 +24,9 @@ export namespace KeyPairStore {
 
       const keyPair: KeyPair = new KeyPair({
         publicKey: new PublicKey(Base64UrlData.fromBase64(encodeBase64(pair.publicKey)).valueOf()),
-        privateKey: new PrivateKey(Base64UrlData.fromBase64(encodeBase64(pair.secretKey)).valueOf()),
+        privateKey: new PrivateKey(
+          Base64UrlData.fromBase64(encodeBase64(pair.secretKey)).valueOf(),
+        ),
       });
 
       store(keyPair);
