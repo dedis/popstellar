@@ -20,14 +20,15 @@ COMMANDS:
    help, h  Shows a list of commands or help for one command
 
 OPTIONS:
-   --public-key value, --pk value          base64 encoded organizer's public key
+   --public-key value, --pk value          base64url encoded organizer's public key
    --help, -h                              show help (default: false)
 
 ```
 
-You may start the organizer server at ports `9000` for clients and `9001` for witnesses by executing `./pop organizer --pk "<base64 encoded pk>" serve`.
+<<<<<<< HEAD
+You may start the organizer server at ports `9000` for clients and `9001` for witnesses by executing `./pop organizer --pk "<base64url encoded pk>" serve`.
 ```bash
-./pop organizer --pk "<base64 encoded pk>" serve -help
+./pop organizer --pk "<base64url encoded pk>" serve -help
 NAME:
    pop organizer serve - start the organizer server
 
@@ -41,13 +42,14 @@ OPTIONS:
    --help, -h                            show help (default: false)
 
 ```
+
 Please use the `-cp` and `-wp` flags to specify an alternative port.
 The full path to connect to the organizer as a client is `ws://host:clientport/organizer/client/` and as a witness `ws://host:witnessport/organizer/witness/`. 
 
 You may start the witness server at ports `9002` for clients and `9001` for organizer by executing `./pop witness --pk "<base64 encoded pk>" serve`.
 
 ```bash
-./pop witness --pk "<base64 encoded pk>" serve -help
+./pop witness --pk "<base64url encoded pk>" serve -help
 NAME:
    pop witness serve - start the organizer server
 

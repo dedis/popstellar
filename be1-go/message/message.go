@@ -2,6 +2,7 @@ package message
 
 import (
 	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
 	"student20_pop"
 
@@ -9,9 +10,11 @@ import (
 	"golang.org/x/xerrors"
 )
 
+type Base64URLBytes []byte
+
 type internalMessage struct {
-	MessageID         []byte                   `json:"message_id"`
-	Data              []byte                   `json:"data"`
+	MessageID         Base64URLBytes           `json:"message_id"`
+	Data              Base64URLBytes           `json:"data"`
 	Sender            PublicKey                `json:"sender"`
 	Signature         Signature                `json:"signature"`
 	WitnessSignatures []PublicKeySignaturePair `json:"witness_signatures"`
@@ -19,12 +22,12 @@ type internalMessage struct {
 
 // Message represents the `params.Message` field in the payload.
 type Message struct {
-	MessageID         []byte                   `json:"message_id"`
+	MessageID         Base64URLBytes           `json:"message_id"`
 	Data              Data                     `json:"data"`
 	Sender            PublicKey                `json:"sender"`
 	Signature         Signature                `json:"signature"`
 	WitnessSignatures []PublicKeySignaturePair `json:"witness_signatures"`
-	RawData           []byte
+	RawData           Base64URLBytes
 }
 
 // NewMessage returns an instance of a `Message`.
@@ -94,6 +97,81 @@ func (m *Message) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// MarshalJSON implements custom marshaling logic for Base64URLBytes.
+func (b Base64URLBytes) MarshalJSON() ([]byte, error) {
+	dst := make([]byte, base64.URLEncoding.EncodedLen(len(b)))
+	base64.URLEncoding.Encode(dst, []byte(b))
+
+	// we call the marshaller on a string type because we want
+	// the output to be enclosed between quotes
+	return json.Marshal(string(dst))
+}
+
+// UnmarshalJSON implements custom unmarshaling logic for Base64URLBytes.
+func (b *Base64URLBytes) UnmarshalJSON(data []byte) error {
+	// We first unmarshal the string type. Refer to MarshalJSON for
+	// more information
+	var tmp string
+
+	err := json.Unmarshal(data, &tmp)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal base64Url bytes: %v", err)
+	}
+
+	// We now base64 URL Decode the value enclosed between the quotes
+	dst := make([]byte, base64.URLEncoding.DecodedLen(len(tmp)))
+
+	n, err := base64.URLEncoding.Decode(dst, []byte(tmp))
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal base64Url bytes: %v", err)
+	}
+
+	// Since base64 URL encoding pads the output we must slice the output
+	// buffer to the actual amount of data encoded
+	*b = Base64URLBytes(dst[:n])
+
+	return nil
+}
+
+// MarshalJSON implements custom marshaling logic for a Signature.
+func (s Signature) MarshalJSON() ([]byte, error) {
+	b := Base64URLBytes(s)
+	result, err := b.MarshalJSON()
+	if err != nil {
+		return nil, xerrors.Errorf("failed to marshal signature: %v", err)
+	}
+	return result, nil
+}
+
+// MarshalJSON implements custom unmarshaling logic for a Signature.
+func (s *Signature) UnmarshalJSON(data []byte) error {
+	err := json.Unmarshal(data, (*Base64URLBytes)(s))
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal signature: %v", err)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements custom marshaling logic for a PublicKey.
+func (p PublicKey) MarshalJSON() ([]byte, error) {
+	b := Base64URLBytes(p)
+	result, err := b.MarshalJSON()
+	if err != nil {
+		return nil, xerrors.Errorf("failed to marshal public key: %v", err)
+	}
+	return result, nil
+}
+
+// MarshalJSON implements custom unmarshaling logic for a PublicKey.
+func (p *PublicKey) UnmarshalJSON(data []byte) error {
+	err := json.Unmarshal(data, (*Base64URLBytes)(p))
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal public key: %v", err)
+	}
+	return nil
+}
+
 // VerifyAndUnmarshalData verifies the signature in the Message and returns an
 // error in case of failure. If the verification suceeds it tries to unmarshal
 // the RawData field into one of the implementations of `Data`.
@@ -144,7 +222,7 @@ func (m *Message) VerifyAndUnmarshalData() error {
 	return nil
 }
 
-func (m *Message) parseRollCallData(action RollCallAction, data []byte) error {
+func (m *Message) parseRollCallData(action RollCallAction, data Base64URLBytes) error {
 	switch action {
 	case CreateRollCallAction:
 		create := &CreateRollCallData{}
@@ -181,7 +259,7 @@ func (m *Message) parseRollCallData(action RollCallAction, data []byte) error {
 	}
 }
 
-func (m *Message) parseMessageData(action MessageDataAction, data []byte) error {
+func (m *Message) parseMessageData(action MessageDataAction, data Base64URLBytes) error {
 	if action != WitnessAction {
 		return xerrors.Errorf("invalid action type: %s", action)
 	}
@@ -197,7 +275,7 @@ func (m *Message) parseMessageData(action MessageDataAction, data []byte) error 
 	return nil
 }
 
-func (m *Message) parseMeetingData(action MeetingDataAction, data []byte) error {
+func (m *Message) parseMeetingData(action MeetingDataAction, data Base64URLBytes) error {
 	switch action {
 	case CreateMeetingAction:
 		create := &CreateMeetingData{}
@@ -225,7 +303,7 @@ func (m *Message) parseMeetingData(action MeetingDataAction, data []byte) error 
 	}
 }
 
-func (m *Message) parseLAOData(action LaoDataAction, data []byte) error {
+func (m *Message) parseLAOData(action LaoDataAction, data Base64URLBytes) error {
 	switch action {
 	case CreateLaoAction:
 		create := &CreateLAOData{}

@@ -7,6 +7,8 @@ import (
 
 	"student20_pop/message"
 
+	_ "embed"
+
 	"github.com/urfave/cli/v2"
 	"github.com/xeipuuv/gojsonschema"
 	"golang.org/x/xerrors"

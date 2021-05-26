@@ -14,6 +14,8 @@ import (
 	"golang.org/x/xerrors"
 )
 
+const rootPrefix = "/root/"
+
 type baseHub struct {
 	messageChan chan IncomingMessage
 
@@ -176,7 +178,7 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 		return
 	}
 
-	if channelID[:6] != "/root/" {
+	if channelID[:6] != rootPrefix {
 		log.Printf("channel id must begin with /root/")
 		client.SendError(&id, &message.Error{
 			Code:        -2,
@@ -194,6 +196,7 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 			Code:        -2,
 			Description: fmt.Sprintf("channel with id %s does not exist", channelID),
 		})
+		h.RUnlock()
 		return
 	}
 	h.RUnlock()
@@ -270,7 +273,7 @@ func (h *baseHub) createLao(publish message.Publish) error {
 		}
 	}
 
-	encodedID := base64.StdEncoding.EncodeToString(data.ID)
+	encodedID := base64.URLEncoding.EncodeToString(data.ID)
 	if _, ok := h.channelByID[encodedID]; ok {
 		return &message.Error{
 			Code:        -3,
@@ -278,7 +281,7 @@ func (h *baseHub) createLao(publish message.Publish) error {
 		}
 	}
 
-	laoChannelID := "/root/" + encodedID
+	laoChannelID := rootPrefix + encodedID
 
 	laoCh := laoChannel{
 		rollCall:    rollCall{},
@@ -286,7 +289,7 @@ func (h *baseHub) createLao(publish message.Publish) error {
 		baseChannel: createBaseChannel(h, laoChannelID),
 	}
 
-	messageID := base64.StdEncoding.EncodeToString(publish.Params.Message.MessageID)
+	messageID := base64.URLEncoding.EncodeToString(publish.Params.Message.MessageID)
 	laoCh.inbox[messageID] = *publish.Params.Message
 
 	h.channelByID[encodedID] = &laoCh

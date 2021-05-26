@@ -91,11 +91,11 @@ var (
 type CreateLAOData struct {
 	*GenericData
 
-	ID        []byte      `json:"id"`
-	Name      string      `json:"name"`
-	Creation  Timestamp   `json:"creation"`
-	Organizer PublicKey   `json:"organizer"`
-	Witnesses []PublicKey `json:"witnesses"`
+	ID        Base64URLBytes `json:"id"`
+	Name      string         `json:"name"`
+	Creation  Timestamp      `json:"creation"`
+	Organizer PublicKey      `json:"organizer"`
+	Witnesses []PublicKey    `json:"witnesses"`
 }
 
 // GetTimestamp returns the creation timestamp.
@@ -117,10 +117,10 @@ func (c *CreateLAOData) setID() error {
 type UpdateLAOData struct {
 	*GenericData
 
-	ID           []byte      `json:"id"`
-	Name         string      `json:"name"`
-	LastModified Timestamp   `json:"last_modified"`
-	Witnesses    []PublicKey `json:"witnesses"`
+	ID           Base64URLBytes `json:"id"`
+	Name         string         `json:"name"`
+	LastModified Timestamp      `json:"last_modified"`
+	Witnesses    []PublicKey    `json:"witnesses"`
 }
 
 // GetTimestamp returns the last modified timestamp.
@@ -132,13 +132,13 @@ func (u *UpdateLAOData) GetTimestamp() Timestamp {
 type StateLAOData struct {
 	*GenericData
 
-	ID                     []byte                   `json:"id"`
+	ID                     Base64URLBytes           `json:"id"`
 	Name                   string                   `json:"name"`
 	LastModified           Timestamp                `json:"last_modified"`
 	Creation               Timestamp                `json:"creation"`
 	Organizer              PublicKey                `json:"organizer"`
 	Witnesses              []PublicKey              `json:"witnesses"`
-	ModificationID         []byte                   `json:"modification_id"`
+	ModificationID         Base64URLBytes           `json:"modification_id"`
 	ModificationSignatures []PublicKeySignaturePair `json:"modification_signatures"`
 }
 
@@ -165,10 +165,10 @@ var (
 type CreateMeetingData struct {
 	*GenericData
 
-	ID       []byte    `json:"id"`
-	Name     string    `json:"name"`
-	Creation Timestamp `json:"creation"`
-	Location string    `json:"location"`
+	ID       Base64URLBytes `json:"id"`
+	Name     string         `json:"name"`
+	Creation Timestamp      `json:"creation"`
+	Location string         `json:"location"`
 
 	Start Timestamp `json:"start"`
 	End   Timestamp `json:"end"`
@@ -185,15 +185,15 @@ func (c *CreateMeetingData) GetTimestamp() Timestamp {
 type StateMeetingData struct {
 	*GenericData
 
-	ID       []byte    `json:"id"`
-	Name     string    `json:"name"`
-	Creation Timestamp `json:"creation"`
-	Location string    `json:"location"`
+	ID       Base64URLBytes `json:"id"`
+	Name     string         `json:"name"`
+	Creation Timestamp      `json:"creation"`
+	Location string         `json:"location"`
 
 	Start Timestamp `json:"start"`
 	End   Timestamp `json:"end"`
 
-	ModificationID         []byte                   `json:"modification_id"`
+	ModificationID         Base64URLBytes           `json:"modification_id"`
 	ModificationSignatures []PublicKeySignaturePair `json:"modification_signatures"`
 
 	Extra json.RawMessage `json:"extra"`
@@ -219,13 +219,13 @@ var (
 type CreateRollCallData struct {
 	*GenericData
 
-	ID            []byte    `json:"id"`
-	Name          string    `json:"name"`
-	Creation      Timestamp `json:"creation"`
-	ProposedStart Timestamp `json:"proposed_start"`
-	ProposedEnd   Timestamp `json:"proposed_end"`
-	Location      string    `json:"location"`
-	Description   string    `json:"description,omitempty"`
+	ID            Base64URLBytes `json:"id"`
+	Name          string         `json:"name"`
+	Creation      Timestamp      `json:"creation"`
+	ProposedStart Timestamp      `json:"proposed_start"`
+	ProposedEnd   Timestamp      `json:"proposed_end"`
+	Location      string         `json:"location"`
+	Description   string         `json:"description,omitempty"`
 }
 
 // OpenRollCallActionType represents the actions associated with opening or
@@ -244,19 +244,19 @@ var (
 type OpenRollCallData struct {
 	*GenericData
 
-	UpdateID []byte    `json:"update_id"`
-	Opens    []byte    `json:"opens"`
-	OpenedAt Timestamp `json:"opened_at"`
+	UpdateID Base64URLBytes `json:"update_id"`
+	Opens    Base64URLBytes `json:"opens"`
+	OpenedAt Timestamp      `json:"opened_at"`
 }
 
 // CloseRollCallData represents the message data used for closing a roll call.
 type CloseRollCallData struct {
 	*GenericData
 
-	UpdateID  []byte      `json:"update_id"`
-	Closes    []byte      `json:"closes"`
-	ClosedAt  Timestamp   `json:"closed_at"`
-	Attendees []PublicKey `json:"attendees"`
+	UpdateID  Base64URLBytes `json:"update_id"`
+	Closes    Base64URLBytes `json:"closes"`
+	ClosedAt  Timestamp      `json:"closed_at"`
+	Attendees []PublicKey    `json:"attendees"`
 }
 
 // MessageDataAction represents the actions associated with a "message" data message.
@@ -271,8 +271,8 @@ var (
 type WitnessMessageData struct {
 	*GenericData
 
-	MessageID []byte    `json:"message_id"`
-	Signature Signature `json:"signature"`
+	MessageID Base64URLBytes `json:"message_id"`
+	Signature Signature      `json:"signature"`
 }
 
 // ElectionAction represents the action associated with an "election" data message.

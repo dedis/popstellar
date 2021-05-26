@@ -31,9 +31,9 @@ func Serve(context *cli.Context) error {
 		return xerrors.Errorf("witness' public key is required")
 	}
 
-	pkBuf, err := base64.StdEncoding.DecodeString(pk)
+	pkBuf, err := base64.URLEncoding.DecodeString(pk)
 	if err != nil {
-		return xerrors.Errorf("failed to base64 decode public key: %v", err)
+		return xerrors.Errorf("failed to base64url decode public key: %v", err)
 	}
 
 	point := student20_pop.Suite.Point()
