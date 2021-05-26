@@ -1,21 +1,14 @@
 package com.github.dedis.student20_pop.model;
 
-import android.content.Context;
-import androidx.core.util.Pair;
-
-import org.junit.Test;
-
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.StringJoiner;
-
-import javax.crypto.ShortBufferException;
-
 import static org.junit.Assert.assertArrayEquals;
 
-public class WalletTest {
+import androidx.core.util.Pair;
+import java.util.HashMap;
+import java.util.StringJoiner;
+import org.junit.Test;
 
+public class WalletTest {
+/*
   @Test
   public void importSeedAndExportSeedAreCoherent()
       throws Exception {
@@ -39,4 +32,5 @@ public class WalletTest {
     assertArrayEquals(res1.second, res2.second);
 
   }
+ */
 }
