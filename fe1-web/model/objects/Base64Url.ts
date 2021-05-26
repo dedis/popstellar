@@ -24,11 +24,11 @@ export class Base64UrlData extends String {
     return base64url.toBuffer(this.valueOf());
   }
 
-  public static fromBase64(b64: string): string {
-    return this.addPadding(base64url.fromBase64(b64));
+  public static fromBase64(b64: string): Base64UrlData {
+    return new Base64UrlData(this.addPadding(base64url.fromBase64(b64)));
   }
 
-  public static addPadding(str: string): string {
+  private static addPadding(str: string): string {
     let paddedStr = str;
     while ((paddedStr.length % 4) !== 0) {
       paddedStr += '=';

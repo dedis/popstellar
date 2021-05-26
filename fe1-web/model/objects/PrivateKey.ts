@@ -14,6 +14,6 @@ export class PrivateKey extends Base64UrlData {
       data.toBuffer(),
       this.toBuffer(),
     );
-    return new Signature(Base64UrlData.fromBase64(encodeBase64(signature)));
+    return new Signature(Base64UrlData.fromBase64(encodeBase64(signature)).valueOf());
   }
 }
