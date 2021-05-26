@@ -64,6 +64,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class LaoDetailViewModel extends AndroidViewModel implements CameraPermissionViewModel,
         QRCodeScanningViewModel {
+
     public static final String TAG = LaoDetailViewModel.class.getSimpleName();
     private static final String LAO_FAILURE_MESSAGE = "failed to retrieve current lao";
     private static final String PK_FAILURE_MESSAGE = "failed to retrieve public key";

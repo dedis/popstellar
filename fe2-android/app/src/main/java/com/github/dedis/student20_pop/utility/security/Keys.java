@@ -26,7 +26,6 @@ public class Keys {
 
     String encoded = keyData.get("value").getAsString();
     byte[] buf = Base64.decode(encoded, Base64.NO_WRAP);
-
-    return Base64.encodeToString(buf, 2, 32, Base64.NO_WRAP);
+    return Base64.encodeToString(buf, 2, 32, Base64.NO_WRAP | Base64.URL_SAFE);
   }
 }
