@@ -271,7 +271,7 @@ public class Wallet {
 
       return words;
     } else {
-      throw new Exception("key set manager not init!");
+      throw new IllegalArgumentException("key set manager not init!");
     }
   }
 

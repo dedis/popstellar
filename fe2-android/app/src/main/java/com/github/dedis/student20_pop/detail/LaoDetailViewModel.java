@@ -693,9 +693,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         try {
             String pk = Base64.getEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, id).second);
             mPkRollCallEvent.postValue(new Event<>(pk));
-        } catch (NoSuchAlgorithmException | InvalidKeyException | ShortBufferException e) {
-            Log.d(TAG, errorMessage, e);
-        } catch (GeneralSecurityException e) {
+        } catch (Exception e) {
             Log.d(TAG, errorMessage, e);
         }
     }
