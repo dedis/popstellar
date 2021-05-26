@@ -4,7 +4,6 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"student20_pop"
 
 	"go.dedis.ch/kyber/v3/sign/schnorr"
@@ -105,7 +104,7 @@ func (b Base64URLBytes) MarshalJSON() ([]byte, error) {
 
 	// we call the marshaller on a string type because we want
 	// the output to be enclosed between quotes
-	return json.Marshal(fmt.Sprintf("%s", dst))
+	return json.Marshal(string(dst))
 }
 
 // UnmarshalJSON implements custom unmarshaling logic for Base64URLBytes.
