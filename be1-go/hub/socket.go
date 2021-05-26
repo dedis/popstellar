@@ -135,6 +135,7 @@ func (s *baseSocket) Send(msg []byte) {
 
 // message to the socket.
 func (s *baseSocket) SendError(id *int, err error) {
+	log.Printf("Error: %v", err)
 	msgError := &message.Error{}
 
 	if xerrors.As(err, &msgError) {

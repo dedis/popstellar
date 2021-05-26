@@ -4,10 +4,11 @@ import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.network.method.message.QuestionResult;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionResult;
 import com.github.dedis.student20_pop.utility.security.Hash;
-
+import com.github.dedis.student20_pop.model.event.EventType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class Election extends Event {
 
     private List<QuestionResult> results;
 
+
     public Election() {
         this.ballotOptions = new ArrayList<>();
         this.results = new ArrayList<>();
@@ -43,6 +45,7 @@ public class Election extends Event {
         if (id == null) throw new IllegalArgumentException("Election's id shouldn't be null");
         this.id = id;
     }
+
 
     public String getName() {
         return name;
@@ -135,6 +138,11 @@ public class Election extends Event {
     @Override
     public long getStartTimestamp() {
         return start;
+    }
+
+    @Override
+    public EventType getType() {
+        return EventType.ELECTION;
     }
 
     @Override

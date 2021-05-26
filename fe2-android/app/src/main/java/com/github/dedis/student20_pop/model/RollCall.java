@@ -2,6 +2,7 @@ package com.github.dedis.student20_pop.model;
 
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventState;
+import com.github.dedis.student20_pop.model.event.EventType;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -9,6 +10,7 @@ import java.util.Set;
 public class RollCall extends Event {
 
   private String id;
+  private String persistentId;
   private String name;
   private long creation;
   private long start;
@@ -29,6 +31,14 @@ public class RollCall extends Event {
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public String getPersistentId() {
+    return persistentId;
+  }
+
+  public void setPersistentId(String persistentId) {
+    this.persistentId = persistentId;
   }
 
   public String getName() {
@@ -98,6 +108,11 @@ public class RollCall extends Event {
   @Override
   public long getStartTimestamp() {
     return start;
+  }
+
+  @Override
+  public EventType getType() {
+    return EventType.ROLL_CALL;
   }
 
   @Override
