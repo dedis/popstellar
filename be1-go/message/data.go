@@ -8,9 +8,9 @@ import (
 	"golang.org/x/xerrors"
 )
 
-type stringer string
+type Stringer string
 
-func (s stringer) String() string {
+func (s Stringer) String() string {
 	return string(s)
 }
 
@@ -30,6 +30,9 @@ var (
 
 	// RollCallObject represents a "roll call" message data.
 	RollCallObject DataObject = "roll_call"
+
+	//ElectionObject represents a "election" message data
+	ElectionObject DataObject = "election"
 )
 
 // DataAction represents the type for the "action" key associated with the
@@ -88,11 +91,11 @@ var (
 type CreateLAOData struct {
 	*GenericData
 
-	ID        []byte      `json:"id"`
-	Name      string      `json:"name"`
-	Creation  Timestamp   `json:"creation"`
-	Organizer PublicKey   `json:"organizer"`
-	Witnesses []PublicKey `json:"witnesses"`
+	ID        Base64URLBytes `json:"id"`
+	Name      string         `json:"name"`
+	Creation  Timestamp      `json:"creation"`
+	Organizer PublicKey      `json:"organizer"`
+	Witnesses []PublicKey    `json:"witnesses"`
 }
 
 // GetTimestamp returns the creation timestamp.
@@ -101,7 +104,7 @@ func (c *CreateLAOData) GetTimestamp() Timestamp {
 }
 
 func (c *CreateLAOData) setID() error {
-	id, err := hash(stringer("L"), c.Organizer, c.Creation, stringer(c.Name))
+	id, err := Hash(Stringer("L"), c.Organizer, c.Creation, Stringer(c.Name))
 	if err != nil {
 		return xerrors.Errorf("error creating hash: %v", err)
 	}
@@ -114,10 +117,10 @@ func (c *CreateLAOData) setID() error {
 type UpdateLAOData struct {
 	*GenericData
 
-	ID           []byte      `json:"id"`
-	Name         string      `json:"name"`
-	LastModified Timestamp   `json:"last_modified"`
-	Witnesses    []PublicKey `json:"witnesses"`
+	ID           Base64URLBytes `json:"id"`
+	Name         string         `json:"name"`
+	LastModified Timestamp      `json:"last_modified"`
+	Witnesses    []PublicKey    `json:"witnesses"`
 }
 
 // GetTimestamp returns the last modified timestamp.
@@ -129,13 +132,13 @@ func (u *UpdateLAOData) GetTimestamp() Timestamp {
 type StateLAOData struct {
 	*GenericData
 
-	ID                     []byte                   `json:"id"`
+	ID                     Base64URLBytes           `json:"id"`
 	Name                   string                   `json:"name"`
 	LastModified           Timestamp                `json:"last_modified"`
 	Creation               Timestamp                `json:"creation"`
 	Organizer              PublicKey                `json:"organizer"`
 	Witnesses              []PublicKey              `json:"witnesses"`
-	ModificationID         []byte                   `json:"modification_id"`
+	ModificationID         Base64URLBytes           `json:"modification_id"`
 	ModificationSignatures []PublicKeySignaturePair `json:"modification_signatures"`
 }
 
@@ -162,10 +165,10 @@ var (
 type CreateMeetingData struct {
 	*GenericData
 
-	ID       []byte    `json:"id"`
-	Name     string    `json:"name"`
-	Creation Timestamp `json:"creation"`
-	Location string    `json:"location"`
+	ID       Base64URLBytes `json:"id"`
+	Name     string         `json:"name"`
+	Creation Timestamp      `json:"creation"`
+	Location string         `json:"location"`
 
 	Start Timestamp `json:"start"`
 	End   Timestamp `json:"end"`
@@ -182,15 +185,15 @@ func (c *CreateMeetingData) GetTimestamp() Timestamp {
 type StateMeetingData struct {
 	*GenericData
 
-	ID       []byte    `json:"id"`
-	Name     string    `json:"name"`
-	Creation Timestamp `json:"creation"`
-	Location string    `json:"location"`
+	ID       Base64URLBytes `json:"id"`
+	Name     string         `json:"name"`
+	Creation Timestamp      `json:"creation"`
+	Location string         `json:"location"`
 
 	Start Timestamp `json:"start"`
 	End   Timestamp `json:"end"`
 
-	ModificationID         []byte                   `json:"modification_id"`
+	ModificationID         Base64URLBytes           `json:"modification_id"`
 	ModificationSignatures []PublicKeySignaturePair `json:"modification_signatures"`
 
 	Extra json.RawMessage `json:"extra"`
@@ -216,13 +219,13 @@ var (
 type CreateRollCallData struct {
 	*GenericData
 
-	ID          []byte    `json:"id"`
-	Name        string    `json:"name"`
-	Creation    Timestamp `json:"creation"`
-	Start       Timestamp `json:"start"`
-	Scheduled   Timestamp `json:"scheduled"`
-	Location    string    `json:"location"`
-	Description string    `json:"roll_call_description"`
+	ID            Base64URLBytes `json:"id"`
+	Name          string         `json:"name"`
+	Creation      Timestamp      `json:"creation"`
+	ProposedStart Timestamp      `json:"proposed_start"`
+	ProposedEnd   Timestamp      `json:"proposed_end"`
+	Location      string         `json:"location"`
+	Description   string         `json:"description,omitempty"`
 }
 
 // OpenRollCallActionType represents the actions associated with opening or
@@ -241,18 +244,19 @@ var (
 type OpenRollCallData struct {
 	*GenericData
 
-	ID    []byte    `json:"id"`
-	Start Timestamp `json:"start"`
+	UpdateID Base64URLBytes `json:"update_id"`
+	Opens    Base64URLBytes `json:"opens"`
+	OpenedAt Timestamp      `json:"opened_at"`
 }
 
 // CloseRollCallData represents the message data used for closing a roll call.
 type CloseRollCallData struct {
 	*GenericData
 
-	ID        []byte      `json:"id"`
-	Start     Timestamp   `json:"start"`
-	End       Timestamp   `json:"end"`
-	Attendees []PublicKey `json:"attendees"`
+	UpdateID  Base64URLBytes `json:"update_id"`
+	Closes    Base64URLBytes `json:"closes"`
+	ClosedAt  Timestamp      `json:"closed_at"`
+	Attendees []PublicKey    `json:"attendees"`
 }
 
 // MessageDataAction represents the actions associated with a "message" data message.
@@ -267,8 +271,103 @@ var (
 type WitnessMessageData struct {
 	*GenericData
 
-	MessageID []byte    `json:"message_id"`
-	Signature Signature `json:"signature"`
+	MessageID Base64URLBytes `json:"message_id"`
+	Signature Signature      `json:"signature"`
+}
+
+// ElectionAction represents the action associated with an "election" data message.
+type ElectionAction DataAction
+
+var (
+	// ElectionSetupAction represents the action associated with the data for setting up an election.
+	ElectionSetupAction ElectionAction = "setup"
+
+	// CastVoteAction represents the action associated with the data for casting a vote in
+	// an election.
+	CastVoteAction ElectionAction = "cast_vote"
+
+	// ElectionEndAction represents the action associated with the data for ending an election.
+	ElectionEndAction ElectionAction = "end"
+
+	// ElectionResultAction represents the action associated with the data for the tallying of
+	// an election.
+	ElectionResultAction ElectionAction = "result"
+)
+
+// VotingMethod represents the method used for a particular vote.
+type VotingMethod string
+
+var (
+	// PluralityMethod represents the relative majority voting method.
+	PluralityMethod VotingMethod = "Plurality"
+	// ApprovalMethod represents a single-winner electoral system where each voter may
+	// approve any number of ballot options.
+	ApprovalMethod VotingMethod = "Approval"
+)
+
+// BallotOption represents a response option to a question.
+type BallotOption string
+
+// Question represents a question that is asked during an election.
+type Question struct {
+	ID            PublicKey      `json:"id"`
+	QuestionAsked string         `json:"question"`
+	VotingMethod  VotingMethod   `json:"voting_method"`
+	BallotOptions []BallotOption `json:"ballot_options"`
+	WriteIn       bool           `json:"write_in"`
+}
+
+// ElectionSetupData represents the message data used for setting up an election.
+type ElectionSetupData struct {
+	*GenericData
+
+	ID        []byte     `json:"id"`
+	LaoID     []byte     `json:"lao"`
+	Name      string     `json:"name"`
+	Version   string     `json:"version"`
+	CreatedAt Timestamp  `json:"created_at"`
+	StartTime Timestamp  `json:"start_time"`
+	EndTime   Timestamp  `json:"end_time"`
+	Questions []Question `json:"questions"`
+}
+
+// Vote represents a vote in an election.
+type Vote struct {
+	ID          PublicKey `json:"id"`
+	QuestionID  []byte    `json:"question"`
+	VoteIndexes []int     `json:"vote"`
+	WriteIn     string    `json:"write_in"`
+}
+
+// CastVoteData represents the message data used for casting a vote during an election.
+type CastVoteData struct {
+	*GenericData
+	LaoID      []byte    `json:"lao"`
+	ElectionID []byte    `json:"election"`
+	CreatedAt  Timestamp `json:"created_at"`
+	Votes      []Vote    `json:"votes"`
+}
+
+// ElectionEndData represents the message data used for ending an election.
+type ElectionEndData struct {
+	*GenericData
+	LaoID           []byte    `json:"lao"`
+	ElectionID      []byte    `json:"election"`
+	CreatedAt       Timestamp `json:"created_at"`
+	RegisteredVotes []byte    `json:"registered_votes"`
+}
+
+// QuestionResult represents the result of a question in an election.
+type QuestionResult struct {
+	ID     PublicKey      `json:"id"`
+	Result []BallotOption `json:"result"`
+}
+
+// ElectionResultData represents the message data for the result of an election.
+type ElectionResultData struct {
+	*GenericData
+	Questions         []QuestionResult         `json:"questions"`
+	WitnessSignatures []PublicKeySignaturePair `json:"witness_signatures"`
 }
 
 // NewCreateLAOData returns an instance of `CreateLAOData`.
@@ -292,7 +391,7 @@ func NewCreateLAOData(name string, creation Timestamp, organizer PublicKey, witn
 	return create, nil
 }
 
-func hash(strs ...fmt.Stringer) ([]byte, error) {
+func Hash(strs ...fmt.Stringer) ([]byte, error) {
 	h := sha256.New()
 	for i, str := range strs {
 		s := str.String()

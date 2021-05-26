@@ -21,7 +21,7 @@ func main() {
 					&cli.StringFlag{
 						Name:    "public-key",
 						Aliases: []string{"pk"},
-						Usage:   "base64 encoded organizer's public key",
+						Usage:   "base64url encoded organizer's public key",
 					},
 				},
 				Subcommands: []*cli.Command{
@@ -53,7 +53,7 @@ func main() {
 					&cli.StringFlag{
 						Name:    "public-key",
 						Aliases: []string{"pk"},
-						Usage:   "base64 encoded witness's public key",
+						Usage:   "base64url encoded witness's public key",
 					},
 				},
 				Subcommands: []*cli.Command{
@@ -71,7 +71,13 @@ func main() {
 								Name:    "organizer-port",
 								Aliases: []string{"op"},
 								Usage:   "port on which to connect to organizer websocket",
-								Value:   9000,
+								Value:   9001,
+							},
+							&cli.IntFlag{
+								Name:    "client-port",
+								Aliases: []string{"cp"},
+								Usage:   "port to listen websocket connections from clients on",
+								Value:   9002,
 							},
 						},
 						Action: witness.Serve,

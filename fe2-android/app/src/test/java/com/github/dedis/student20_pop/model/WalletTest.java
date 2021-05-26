@@ -1,14 +1,17 @@
 package com.github.dedis.student20_pop.model;
 
-import static org.junit.Assert.assertArrayEquals;
-
 import androidx.core.util.Pair;
+
+import org.junit.Test;
+
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.StringJoiner;
+
 import javax.crypto.ShortBufferException;
-import org.junit.Test;
+
+import static org.junit.Assert.assertArrayEquals;
 
 public class WalletTest {
 

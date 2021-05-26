@@ -26,7 +26,7 @@ public class ElectionTest {
     public void settingNullParametersThrowsException() {
         assertThrows(IllegalArgumentException.class, () -> election.setName(null));
         assertThrows(IllegalArgumentException.class, () -> election.setBallotsOptions(null));
-        assertThrows(IllegalArgumentException.class, () -> election.setQuestion(null));
+        assertThrows(IllegalArgumentException.class, () -> election.setQuestions(null));
         assertThrows(IllegalArgumentException.class, () -> election.setId(null));
     }
 
@@ -50,7 +50,7 @@ public class ElectionTest {
 
     @Test
     public void settingAndGettingReturnsCorrespondingQuestion() {
-        election.setQuestion(questions);
+        election.setQuestions(questions);
         assertThat(election.getQuestions(), is(questions));
     }
 

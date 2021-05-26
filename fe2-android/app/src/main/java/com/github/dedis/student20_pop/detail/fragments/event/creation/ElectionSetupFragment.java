@@ -14,9 +14,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentSetupElectionEventBinding;
@@ -25,8 +24,9 @@ import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ElectionSetupFragment extends AbstractEventCreationFragment implements AdapterView.OnItemSelectedListener {
 
@@ -68,8 +68,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
                 public void afterTextChanged(Editable s) {
                     Log.d(TAG, "ballot options is" + ballotOptions.toString());
                     boolean areFieldsFilled =
-                        !electionNameText.getText().toString().trim().isEmpty() && !getStartDate().isEmpty() && !getStartTime().isEmpty() && !getEndDate().isEmpty() && !getEndTime().isEmpty() &&
-                                !electionQuestionText.getText().toString().trim().isEmpty() && numberBallotOptions >= 2;
+                            !electionNameText.getText().toString().trim().isEmpty() && !getStartDate().isEmpty() && !getStartTime().isEmpty() && !getEndDate().isEmpty() && !getEndTime().isEmpty() &&
+                                    !electionQuestionText.getText().toString().trim().isEmpty() && numberBallotOptions >= 2;
                     submitButton.setEnabled(areFieldsFilled);}
             };
 
@@ -126,6 +126,18 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
         setupElectionCancelButton();
         setupElectionSpinner();
         setupElectionSubmitButton();
+
+        // subscribe to the election create event
+        mLaoDetailViewModel
+                .getElectionCreated()
+                .observe(
+                        this,
+                        booleanEvent -> {
+                            Boolean action = booleanEvent.getContentIfNotHandled();
+                            if (action != null) {
+                                mLaoDetailViewModel.openLaoDetail();
+                            }
+                        });
     }
 
 
