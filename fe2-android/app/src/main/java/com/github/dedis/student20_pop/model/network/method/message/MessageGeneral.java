@@ -12,8 +12,6 @@ import com.google.crypto.tink.subtle.Ed25519Verify;
 import com.google.gson.Gson;
 
 import java.security.GeneralSecurityException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 

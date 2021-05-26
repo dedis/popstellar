@@ -93,9 +93,11 @@ public class HomeViewModel extends AndroidViewModel
     mKeysetManager = keysetManager;
     wallet = Wallet.getInstance();
 
-    mLAOs =
+     mLAOs =
         LiveDataReactiveStreams.fromPublisher(
             mLAORepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
+
+
   }
 
   @Override

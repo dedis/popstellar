@@ -34,6 +34,8 @@ const (
 	DataSchema       string = "dataSchema"
 )
 
+const rootPrefix = "/root/"
+
 // NewOrganizerHub returns a Organizer Hub.
 func NewOrganizerHub(public kyber.Point) (Hub, error) {
 	// Import the Json schemas defined in the protocol section
@@ -96,18 +98,18 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 	genericMsg := &message.GenericMessage{}
 	id, ok := genericMsg.UnmarshalID(byteMessage)
 	if !ok {
-		log.Printf("The message does not have a valid `id` field")
-		client.SendError(nil, &message.Error{
-			Code:        -1,
+		err := &message.Error{
+			Code:        -4,
 			Description: "The message does not have a valid `id` field",
-		})
+		}
+		client.SendError(nil, err)
 		return
 	}
 
 	// Verify the message
 	err := o.verifyJson(byteMessage, GenericMsgSchema)
 	if err != nil {
-		log.Printf("failed to verify incoming message: %v", err)
+		err = message.NewError("failed to verify incoming message", err)
 		client.SendError(&id, err)
 		return
 	}
@@ -115,7 +117,12 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 	// Unmarshal the message
 	err = json.Unmarshal(byteMessage, genericMsg)
 	if err != nil {
-		log.Printf("failed to unmarshal incoming message: %v", err)
+		// Return a error of type "-4 request data is invalid" for all the unmarshalling problems of the incoming message
+		err = &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("failed to unmarshal incoming message: %v", err),
+		}
+
 		client.SendError(&id, err)
 		return
 	}
@@ -131,7 +138,11 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 
 	if channelID == "/root" {
 		if query.Publish == nil {
-			log.Printf("only publish is allowed on /root")
+			err = &message.Error{
+				Code:        -4,
+				Description: "only publish is allowed on /root",
+			}
+
 			client.SendError(&id, err)
 			return
 		}
@@ -142,7 +153,7 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 		// Verify the data
 		err := o.verifyJson(msg.RawData, DataSchema)
 		if err != nil {
-			log.Printf("failed to validate the data: %v", err)
+			err = message.NewError("failed to validate the data", err)
 			client.SendError(&id, err)
 			return
 		}
@@ -150,7 +161,11 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 		// Unmarshal the data
 		err = query.Publish.Params.Message.VerifyAndUnmarshalData()
 		if err != nil {
-			log.Printf("failed to verify and unmarshal data: %v", err)
+			// Return a error of type "-4 request data is invalid" for all the verifications and unmarshalling problems of the data
+			err = &message.Error{
+				Code:        -4,
+				Description: fmt.Sprintf("failed to verify and unmarshal data: %v", err),
+			}
 			client.SendError(&id, err)
 			return
 		}
@@ -159,7 +174,8 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 			query.Publish.Params.Message.Data.GetObject() == message.DataObject(message.LaoObject) {
 			err := o.createLao(*query.Publish)
 			if err != nil {
-				log.Printf("failed to create lao: %v", err)
+				err = message.NewError("failed to create lao", err)
+
 				client.SendError(&id, err)
 				return
 			}
@@ -179,7 +195,7 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 		return
 	}
 
-	if channelID[:6] != "/root/" {
+	if channelID[:6] != rootPrefix {
 		log.Printf("channel id must begin with /root/")
 		client.SendError(&id, &message.Error{
 			Code:        -2,
@@ -197,6 +213,7 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 			Code:        -2,
 			Description: fmt.Sprintf("channel with id %s does not exist", channelID),
 		})
+		o.RUnlock()
 		return
 	}
 	o.RUnlock()
@@ -222,7 +239,7 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 	}
 
 	if err != nil {
-		log.Printf("failed to process query: %v", err)
+		err = message.NewError("failed to process query", err)
 		client.SendError(&id, err)
 		return
 	}
@@ -280,7 +297,7 @@ func (o *organizerHub) verifyJson(byteMessage []byte, schemaName string) error {
 	resultErrors, err := o.schemas[schemaName].Validate(messageLoader)
 	if err != nil {
 		return &message.Error{
-			Code:        -1,
+			Code:        -4,
 			Description: err.Error(),
 		}
 	}
@@ -293,7 +310,7 @@ func (o *organizerHub) verifyJson(byteMessage []byte, schemaName string) error {
 
 	if len(errorsList) > 0 {
 		return &message.Error{
-			Code:        -1,
+			Code:        -4,
 			Description: descriptionErrors,
 		}
 	}
@@ -313,7 +330,7 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 		}
 	}
 
-	encodedID := base64.StdEncoding.EncodeToString(data.ID)
+	encodedID := base64.URLEncoding.EncodeToString(data.ID)
 	if _, ok := o.channelByID[encodedID]; ok {
 		return &message.Error{
 			Code:        -3,
@@ -321,14 +338,20 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 		}
 	}
 
-	laoChannelID := "/root/" + encodedID
+	if _, ok := o.channelByID[encodedID]; ok {
+		return &message.Error{
+			Code:        -3,
+			Description: "failed to create lao: another one with the same ID exists",
+		}
+	}
+	laoChannelID := rootPrefix + encodedID
 
 	laoCh := laoChannel{
 		rollCall:    rollCall{},
 		attendees:   make(map[string]struct{}),
 		baseChannel: createBaseChannel(o, laoChannelID),
 	}
-	messageID := base64.StdEncoding.EncodeToString(publish.Params.Message.MessageID)
+	messageID := base64.URLEncoding.EncodeToString(publish.Params.Message.MessageID)
 	laoCh.inbox[messageID] = *publish.Params.Message
 
 	o.channelByID[encodedID] = &laoCh
@@ -376,11 +399,13 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 		err = c.processMessageObject(msg.Sender, data)
 	case message.RollCallObject:
 		err = c.processRollCallObject(*msg)
+	case message.ElectionObject:
+		err = c.processElectionObject(*msg)
 	}
 
 	if err != nil {
-		log.Printf("failed to process %s object: %v", object, err)
-		return xerrors.Errorf("failed to process %s object: %v", object, err)
+		errorDescription := fmt.Sprintf("failed to process %s object", object)
+		return message.NewError(errorDescription, err)
 	}
 
 	c.broadcastToAllClients(*msg)
@@ -389,15 +414,14 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 
 func (c *laoChannel) processLaoObject(msg message.Message) error {
 	action := message.LaoDataAction(msg.Data.GetAction())
-	msgIDEncoded := base64.StdEncoding.EncodeToString(msg.MessageID)
+	msgIDEncoded := base64.URLEncoding.EncodeToString(msg.MessageID)
 
 	switch action {
 	case message.UpdateLaoAction:
 	case message.StateLaoAction:
 		err := c.processLaoState(msg.Data.(*message.StateLAOData))
 		if err != nil {
-			log.Printf("failed to process lao/state: %v", err)
-			return xerrors.Errorf("failed to process lao/state: %v", err)
+			return message.NewError("failed to process lao/state", err)
 		}
 	default:
 		return message.NewInvalidActionError(message.DataAction(action))
@@ -412,7 +436,7 @@ func (c *laoChannel) processLaoObject(msg message.Message) error {
 
 func (c *laoChannel) processLaoState(data *message.StateLAOData) error {
 	// Check if we have the update message
-	updateMsgIDEncoded := base64.StdEncoding.EncodeToString(data.ModificationID)
+	updateMsgIDEncoded := base64.URLEncoding.EncodeToString(data.ModificationID)
 
 	c.inboxMu.RLock()
 	updateMsg, ok := c.inbox[updateMsgIDEncoded]
@@ -454,7 +478,7 @@ func (c *laoChannel) processLaoState(data *message.StateLAOData) error {
 	for _, pair := range data.ModificationSignatures {
 		err := schnorr.VerifyWithChecks(student20_pop.Suite, pair.Witness, data.ModificationID, pair.Signature)
 		if err != nil {
-			pk := base64.StdEncoding.EncodeToString(pair.Witness)
+			pk := base64.URLEncoding.EncodeToString(pair.Witness)
 			return &message.Error{
 				Code:        -4,
 				Description: fmt.Sprintf("signature verification failed for witness %s", pk),
@@ -473,7 +497,7 @@ func (c *laoChannel) processLaoState(data *message.StateLAOData) error {
 
 	err := compareLaoUpdateAndState(updateMsgData, data)
 	if err != nil {
-		return xerrors.Errorf("failure while comparing lao/update and lao/state")
+		return message.NewError("failure while comparing lao/update and lao/state", err)
 	}
 
 	return nil
@@ -551,7 +575,7 @@ func (c *laoChannel) processMessageObject(public message.PublicKey, data message
 	case message.WitnessAction:
 		witnessData := data.(*message.WitnessMessageData)
 
-		msgEncoded := base64.StdEncoding.EncodeToString(witnessData.MessageID)
+		msgEncoded := base64.URLEncoding.EncodeToString(witnessData.MessageID)
 
 		err := schnorr.VerifyWithChecks(student20_pop.Suite, public, witnessData.MessageID, witnessData.Signature)
 		if err != nil {
@@ -591,7 +615,10 @@ func (c *laoChannel) processRollCallObject(msg message.Message) error {
 	senderPoint := student20_pop.Suite.Point()
 	err := senderPoint.UnmarshalBinary(sender)
 	if err != nil {
-		return xerrors.Errorf("failed to unmarshal public key of the sender: %v", err)
+		return &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("failed to unmarshal public key of the sender: %v", err),
+		}
 	}
 
 	if !c.hub.public.Equal(senderPoint) {
@@ -615,10 +642,11 @@ func (c *laoChannel) processRollCallObject(msg message.Message) error {
 	}
 
 	if err != nil {
-		return xerrors.Errorf("failed to process %v roll-call action: %v", action, err)
+		errorDescription := fmt.Sprintf("failed to process %v roll-call action", action)
+		return message.NewError(errorDescription, err)
 	}
 
-	msgIDEncoded := base64.StdEncoding.EncodeToString(msg.MessageID)
+	msgIDEncoded := base64.URLEncoding.EncodeToString(msg.MessageID)
 	c.inboxMu.Lock()
 	c.inbox[msgIDEncoded] = msg
 	c.inboxMu.Unlock()
@@ -626,109 +654,21 @@ func (c *laoChannel) processRollCallObject(msg message.Message) error {
 	return nil
 }
 
-func (c *laoChannel) processCreateRollCall(data message.Data) error {
-	rollCallData := data.(*message.CreateRollCallData)
-	if !c.checkRollCallID(rollCallData.Creation, message.Stringer(rollCallData.Name), rollCallData.ID) {
-		return &message.Error{
-			Code:        -4,
-			Description: "The id of the roll call does not correspond to SHA256(‘R’||lao_id||creation||name)",
-		}
-	}
+func (c *laoChannel) processElectionObject(msg message.Message) error {
+	action := message.ElectionAction(msg.Data.GetAction())
 
-	c.rollCall.id = string(rollCallData.ID)
-	c.rollCall.state = Created
-	return nil
-}
-
-func (c *laoChannel) processOpenRollCall(data message.Data, action message.RollCallAction) error {
-	if action == message.RollCallAction(message.OpenRollCallAction) {
-		// If the action is an OpenRollCallAction,
-		// the previous roll call action should be a CreateRollCallAction
-		if c.rollCall.state != Created {
-			return &message.Error{
-				Code:        -1,
-				Description: "The roll call can not be opened since it has not been created previously",
-			}
-		}
-	} else {
-		// If the action is an RepenRollCallAction,
-		// the previous roll call action should be a CloseRollCallAction
-		if c.rollCall.state != Closed {
-			return &message.Error{
-				Code:        -1,
-				Description: "The roll call can not be reopened since it has not been closed previously",
-			}
-		}
-	}
-
-	rollCallData := data.(*message.OpenRollCallData)
-
-	if !c.rollCall.checkPrevID(rollCallData.Opens) {
-		return &message.Error{
-			Code:        -4,
-			Description: "The field `opens` does not correspond to the id of the previous roll call message",
-		}
-	}
-
-	opens := base64.StdEncoding.EncodeToString(rollCallData.Opens)
-	if !c.checkRollCallID(message.Stringer(opens), rollCallData.OpenedAt, rollCallData.UpdateID) {
-		return &message.Error{
-			Code:        -4,
-			Description: "The id of the roll call does not correspond to SHA256(‘R’||lao_id||opens||opened_at)",
-		}
-	}
-
-	c.rollCall.id = string(rollCallData.UpdateID)
-	c.rollCall.state = Open
-	return nil
-}
-
-func (c *laoChannel) processCloseRollCall(data message.Data) error {
-	if c.rollCall.state != Open {
+	if action != message.ElectionSetupAction {
 		return &message.Error{
 			Code:        -1,
-			Description: "The roll call can not be closed since it is not open",
+			Description: fmt.Sprintf("invalid action: %s", action),
 		}
 	}
 
-	rollCallData := data.(*message.CloseRollCallData)
-	if !c.rollCall.checkPrevID(rollCallData.Closes) {
-		return &message.Error{
-			Code:        -4,
-			Description: "The field `closes` does not correspond to the id of the previous roll call message",
-		}
-	}
-
-	closes := base64.StdEncoding.EncodeToString(rollCallData.Closes)
-	if !c.checkRollCallID(message.Stringer(closes), rollCallData.ClosedAt, rollCallData.UpdateID) {
-		return &message.Error{
-			Code:        -4,
-			Description: "The id of the roll call does not correspond to SHA256(‘R’||lao_id||closes||closed_at)",
-		}
-	}
-
-	c.rollCall.id = string(rollCallData.UpdateID)
-	c.rollCall.state = Closed
-	c.attendees = map[string]struct{}{}
-	for i := 0; i < len(rollCallData.Attendees); i += 1 {
-		c.attendees[string(rollCallData.Attendees[i])] = struct{}{}
-	}
-
-	return nil
-}
-
-func (r *rollCall) checkPrevID(prevID []byte) bool {
-	return string(prevID) == r.id
-}
-
-// Check if the id of the roll call corresponds to the hash of the correct parameters
-// Return true if the hash corresponds to the id and false otherwise
-func (c *laoChannel) checkRollCallID(str1, str2 fmt.Stringer, id []byte) bool {
-	laoID := c.channelID[6:]
-	hash, err := message.Hash(message.Stringer('R'), message.Stringer(laoID), str1, str2)
+	err := c.createElection(msg)
 	if err != nil {
-		return false
+		return xerrors.Errorf("failed to setup the election %v", err)
 	}
 
-	return bytes.Equal(hash, id)
+	log.Printf("Election has created with success")
+	return nil
 }

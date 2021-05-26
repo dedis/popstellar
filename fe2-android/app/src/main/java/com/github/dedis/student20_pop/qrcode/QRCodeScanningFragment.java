@@ -159,14 +159,16 @@ public final class QRCodeScanningFragment extends Fragment {
     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
     builder.setTitle("Success");
     builder.setMessage(msg);
+    builder.setOnDismissListener(dialog -> startCamera());
+    AlertDialog alert = builder.create();
+    alert.setCanceledOnTouchOutside(true);
     mPreview.stop();
-    AlertDialog dialog = builder.show();
+    alert.show();
     new Handler().postDelayed(new Runnable() {
       @Override
       public void run() {
-        if (dialog.isShowing()){
-          dialog.dismiss();
-          startCamera();
+        if (alert.isShowing()){
+          alert.dismiss();
         }
       }
     }, 2000);
@@ -176,11 +178,15 @@ public final class QRCodeScanningFragment extends Fragment {
     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
     builder.setTitle("Warning");
     builder.setMessage(msg);
-    mPreview.stop();
+    builder.setOnDismissListener(dialog -> startCamera());
     builder.setPositiveButton("Ok", (dialog, which) -> {
-      dialog.dismiss();
-      startCamera();
+      if(dialog!=null){
+        dialog.dismiss();
+      }
     });
-    builder.show();
+    AlertDialog alert = builder.create();
+    alert.setCanceledOnTouchOutside(true);
+    mPreview.stop();
+    alert.show();
   }
 }
