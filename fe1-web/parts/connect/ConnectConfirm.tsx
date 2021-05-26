@@ -64,7 +64,7 @@ function validateLaoId(laoId: string): Channel | undefined {
 }
 
 const ConnectConfirm = ({ navigation }: IPropTypes) => {
-  const [serverUrl, setServerUrl] = useState('https://127.0.0.1:8080');
+  const [serverUrl, setServerUrl] = useState('https://127.0.0.1:9000');
   const [laoId, setLaoId] = useState('');
 
   const onButtonConfirm = () => {

@@ -212,11 +212,11 @@ export function requestCreateElection(
   name: string,
   id: Hash,
   version: string,
+  createdAt: Timestamp,
   start: Timestamp,
   end: Timestamp,
   questions: Question[],
 ): Promise<void> {
-  const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
   const timeBuffer = 60;
   const message = new SetupElection({
@@ -224,8 +224,8 @@ export function requestCreateElection(
     id: id,
     name: name,
     version: version,
-    created_at: time,
-    start_time: ((start.before(time)) ? time : start),
+    created_at: createdAt,
+    start_time: ((start.before(createdAt)) ? createdAt : start),
     end_time: ((end.before(start)) ? (start.addSeconds(timeBuffer)) : end),
     questions: questions,
   });
@@ -251,3 +251,35 @@ export function castVote(
   const elecCh = channelFromIds(currentLao.id, election_id);
   return publish(elecCh, message);
 }
+
+/** Sends a server query which creates a Vote in an ongoing election */
+export function terminateElection(
+  election_id: Hash,
+): Promise<void> {
+  const time: Timestamp = Timestamp.EpochNow();
+  const currentLao: Lao = OpenedLaoStore.get();
+  const message = new CastVote({
+    lao: currentLao.id,
+    election: election_id,
+    created_at: time,
+  });
+
+  const elecCh = channelFromIds(currentLao.id, election_id);
+  return publish(elecCh, message);
+}
+//
+// “channel”: “/root/<lao_id>/<election_id>” // LAO-Election channel
+// “message”: {
+// “data”: base64({ /* Base 64 representation of the object
+// 			“object”: “election”, // Constant
+// 			“action”: “end”, // Constant
+// 			“lao”: <lao_id>, // ID of the LAO
+// 			“election”: <election_id>, // ID of the election
+// 			“created_at”: <UNIX timestamp>, // Vote submitted time in UTC
+// 			“registered_votes”: SHA256(<vote_id>, <vote_id>, ...),
+// 			}),
+// 		"sender": <base64>, /* Public key of organizer */
+//     "signature": <base64>, /* Signature by organizer over "data" */
+//     "message_id": <base64>, /* hash(data||signature) */
+//     "witness_signatures": [], /*Signature by witnesses(sender||data)*/
+//   },

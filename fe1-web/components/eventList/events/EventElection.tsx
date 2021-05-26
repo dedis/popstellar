@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Election, EventTags, Hash, Timestamp, Vote,
+  Election, ElectionStatus, EventTags, Hash, Timestamp, Vote,
 } from 'model/objects';
 import {
-  StyleSheet, Text, TextStyle, SectionList
+  SectionList, StyleSheet, Text, TextStyle,
 } from 'react-native';
 import { Typography } from 'styles';
 import { castVote } from 'network';
@@ -12,6 +12,7 @@ import CheckboxList from 'components/CheckboxList';
 import WideButtonView from 'components/WideButtonView';
 import TimeDisplay from 'components/TimeDisplay';
 import STRINGS from 'res/strings';
+import { Badge, LinearProgress } from 'react-native-elements';
 import * as Spacing from '../../../styles/spacing';
 
 /**
@@ -35,11 +36,11 @@ const styles = StyleSheet.create({
 
 const EventElection = (props: IPropTypes) => {
   const { event } = props;
+  const { isOrganizer } = props;
   const questions = event.questions.map((q) => ({ title: q.question, data: q.ballot_options }));
   const [selectedBallots, setSelectedBallots] = useState(new Array(questions.length).fill([]));
-  const [hasVoted, setHasVoted] = useState(false);
-  const [isRunning, setIsRunning] = useState(event.start.before(Timestamp.EpochNow())
-    && event.end.after(Timestamp.EpochNow()));
+  const [hasVoted, setHasVoted] = useState(0);
+  const [status, setStatus] = useState(event.getStatus());
   const untilStart = (event.start.valueOf() - Timestamp.EpochNow().valueOf()) * 1000;
   const untilEnd = (event.end.valueOf() - Timestamp.EpochNow().valueOf()) * 1000;
 
@@ -68,19 +69,22 @@ const EventElection = (props: IPropTypes) => {
   };
 
   const onCastVote = () => {
-    console.log('Casting vote: ', selectedBallots);
     castVote(event.id, refactorVotes(selectedBallots))
-      .then(() => setHasVoted(true))
+      .then(() => setHasVoted((prev) => prev + 1))
       .catch((err) => {
         console.error('Could not cast Vote, error:', err);
       });
+  };
+
+  const onTerminateElection = () => {
+    console.log('Terminating Election');
   };
 
   // This makes sure the screen gets updated when the event starts
   useEffect(() => {
     if (untilStart >= 0) {
       const startTimer = setTimeout(() => {
-        setIsRunning(true);
+        setStatus(ElectionStatus.RUNNING);
       }, untilStart);
       return () => clearTimeout(startTimer);
     }
@@ -91,7 +95,7 @@ const EventElection = (props: IPropTypes) => {
   useEffect(() => {
     if (untilEnd >= 0) {
       const endTimer = setTimeout(() => {
-        setIsRunning(false);
+        setStatus(ElectionStatus.FINISHED);
       }, untilEnd);
       return () => clearTimeout(endTimer);
     }
@@ -99,20 +103,35 @@ const EventElection = (props: IPropTypes) => {
   }, []);
 
   let electionScreen;
-  if (hasVoted) {
-    electionScreen = <Text style={styles.text}>Vote Confirmed</Text>;
-  } else if (isRunning) {
-    electionScreen = [(questions.map((q, idx) => (
-      <CheckboxList
-        title={q.title}
-        values={q.data}
-        onChange={(values: number[]) => updateSelectedBallots(values, idx)}
-      />
-    ))),
-      <WideButtonView
-        title={STRINGS.cast_vote}
-        onPress={onCastVote}
-      />];
+  if (status === ElectionStatus.FINISHED) {
+    electionScreen = (
+      <>
+        <Text style={styles.text}>Election finished</Text>
+        {isOrganizer && (
+          <WideButtonView
+            title="Terminate Election / Tally Votes"
+            onPress={onTerminateElection}
+          />
+        )}
+      </>
+    );
+  } else if (status === ElectionStatus.RUNNING) {
+    electionScreen = (
+      <>
+        {(questions.map((q, idx) => (
+          <CheckboxList
+            title={q.title}
+            values={q.data}
+            onChange={(values: number[]) => updateSelectedBallots(values, idx)}
+          />
+        )))}
+        <WideButtonView
+          title={STRINGS.cast_vote}
+          onPress={onCastVote}
+        />
+        <Badge value={hasVoted} status="success" />
+      </>
+    );
   } else {
     electionScreen = (
       <SectionList
@@ -138,6 +157,7 @@ const EventElection = (props: IPropTypes) => {
 
 const propTypes = {
   event: PropTypes.instanceOf(Election).isRequired,
+  isOrganizer: PropTypes.bool.isRequired,
 };
 EventElection.propTypes = propTypes;
 

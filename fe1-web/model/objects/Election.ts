@@ -27,6 +27,12 @@ export interface Vote {
   write_in?: string,
 }
 
+export enum ElectionStatus {
+  NOTSTARTED = 'not started',
+  RUNNING = 'running',
+  FINISHED = 'finished',
+}
+
 export class Election implements LaoEvent {
   public readonly lao: Hash;
 
@@ -102,5 +108,15 @@ export class Election implements LaoEvent {
       ...obj,
       eventType: LaoEventType.ELECTION,
     };
+  }
+
+  public getStatus(): ElectionStatus {
+    const now = Timestamp.EpochNow();
+    if (now.before(this.start)) {
+      return ElectionStatus.NOTSTARTED;
+    } if (now.after(this.start) && now.before(this.end)) {
+      return ElectionStatus.RUNNING;
+    }
+    return ElectionStatus.FINISHED;
   }
 }

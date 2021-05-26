@@ -17,6 +17,7 @@ export enum ActionType {
 
   CAST_VOTE = 'cast_vote',
   CREATE = 'create',
+  END = 'end',
   SETUP = 'setup',
   UPDATE_PROPERTIES = 'update_properties',
   STATE = 'state',

@@ -84,13 +84,15 @@ const CreateElection = ({ route }: any) => {
 
   const onConfirmPress = () => {
     console.log(getQuestionObjects());
+    const createdAt = Timestamp.EpochNow();
     const electionId = Hash.fromStringArray(
-      EventTags.ELECTION, currentLao.id.toString(), currentLao.creation.toString(), electionName,
+      EventTags.ELECTION, currentLao.id.toString(), createdAt.toString(), electionName,
     );
     requestCreateElection(
       electionName,
       electionId,
       STRINGS.election_version_identifier,
+      createdAt,
       startDate,
       endDate,
       getQuestionObjects(),
