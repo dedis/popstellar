@@ -1,6 +1,6 @@
 package com.github.dedis.student20_pop.model.network.method.message;
 
-
+;
 import com.github.dedis.student20_pop.utility.security.Hash;
 import com.google.gson.annotations.SerializedName;
 
@@ -50,6 +50,8 @@ public class  ElectionQuestion {
 
     public String getVotingMethod() { return votingMethod; }
 
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -96,6 +98,6 @@ public class  ElectionQuestion {
                 + '}';
     }
 
-
 }
+
 

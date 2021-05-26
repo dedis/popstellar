@@ -23,7 +23,9 @@ import com.github.dedis.student20_pop.model.data.LAORepository;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.model.network.answer.Error;
 import com.github.dedis.student20_pop.model.network.answer.Result;
+import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.CastVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
@@ -139,6 +141,109 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     protected void onCleared() {
         super.onCleared();
         disposables.dispose();
+    }
+
+    public void endElection(Election election) {
+        Log.d(TAG, "ending election with name : " + election.getName());
+        System.out.println( election.getStartTimestamp());
+        Lao lao = getCurrentLaoValue();
+        if (lao == null) {
+            Log.d(TAG, "failed to retrieve current lao");
+            return;
+        }
+
+        String channel = election.getChannel();
+        String laoId = lao.getChannel().substring(6); // removing /root/ prefix
+        ElectionEnd electionEnd = new ElectionEnd(election.getId(), laoId, election.computerRegisteredVotes());
+
+        try {
+            KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+            String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+            byte[] sender = Base64.getDecoder().decode(publicKey);
+
+            PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+            MessageGeneral msg = new MessageGeneral(sender, electionEnd, signer, mGson);
+
+            Log.d(TAG, "sending publish message");
+            Disposable disposable =
+                    mLAORepository
+                            .sendPublish(channel, msg)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .timeout(5, TimeUnit.SECONDS)
+                            .subscribe(
+                                    answer -> {
+                                        if (answer instanceof Result) {
+                                            Log.d(TAG, "ended election successfully");
+                                            // Toast ? + send back to election screen or details screen ?
+                                            openLaoDetail();
+                                        } else {
+                                            Log.d(TAG, "failed to end the election");
+                                        }
+                                    },
+                                    throwable -> {
+                                        Log.d(TAG, "timed out waiting for result on election/end", throwable);
+                                    });
+
+            disposables.add(disposable);
+        } catch (GeneralSecurityException | IOException e) {
+            Log.d(TAG, "failed to retrieve public key", e);
+            return;
+        }
+    }
+
+    public void sendVote(Election election, List<List<Long>> votes) {
+        Log.d(TAG, "sending a new vote in election : " + election.getName());
+        System.out.println( election.getStartTimestamp());
+        Lao lao = getCurrentLaoValue();
+        if (lao == null) {
+            Log.d(TAG, "failed to retrieve current lao");
+            return;
+        }
+
+        String channel = election.getChannel();
+
+        //todo change when multiple questions
+        ElectionQuestion electionQuestion = election.getElectionQuestions().get(0);
+        CastVote  castVote;
+        String laoId = lao.getChannel().substring(6); // removing /root/ prefix
+        castVote = new CastVote(electionQuestion.getWriteIn(), votes, electionQuestion.getId(), election.getId(), laoId);
+
+
+        try {
+            KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+            String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+            byte[] sender = Base64.getDecoder().decode(publicKey);
+
+            PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+            MessageGeneral msg = new MessageGeneral(sender, castVote, signer, mGson);
+
+            Log.d(TAG, "sending publish message");
+            Disposable disposable =
+                    mLAORepository
+                            .sendPublish(channel, msg)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .timeout(5, TimeUnit.SECONDS)
+                            .subscribe(
+                                    answer -> {
+                                        if (answer instanceof Result) {
+                                            Log.d(TAG, "sent a vote successfully");
+                                            // Toast ? + send back to election screen or details screen ?
+                                            openLaoDetail();
+                                        } else {
+                                            Log.d(TAG, "failed to send the vote");
+                                        }
+                                    },
+                                    throwable -> {
+                                        Log.d(TAG, "timed out waiting for result on cast_vote", throwable);
+                                    });
+
+            disposables.add(disposable);
+        } catch (GeneralSecurityException | IOException e) {
+            Log.d(TAG, "failed to retrieve public key", e);
+            return;
+        }
     }
 
 

@@ -15,6 +15,7 @@ public enum Action {
   WITNESS("witness"),
   OPEN("open"),
   REOPEN("reopen"),
+  CAST_VOTE("cast_vote"),
   CLOSE("close");
 
   private static final List<Action> ALL = Collections.unmodifiableList(Arrays.asList(values()));

@@ -5,6 +5,8 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
 import com.google.gson.annotations.SerializedName;
 
+import java.time.Instant;
+
 public class ElectionEnd extends Data {
 
     @SerializedName(value = "election")
@@ -16,9 +18,9 @@ public class ElectionEnd extends Data {
     @SerializedName(value = "registered_votes")
     private String registeredVotes; //hashed
 
-    public ElectionEnd(String electionId, long createdAt, String laoId, String registeredVotes) {
-        if (electionId == null || createdAt < 0 || laoId == null || registeredVotes == null) throw new IllegalArgumentException();
-        this.createdAt = createdAt;
+    public ElectionEnd(String electionId, String laoId, String registeredVotes) {
+        if (electionId == null || laoId == null || registeredVotes == null) throw new IllegalArgumentException();
+        this.createdAt = Instant.now().getEpochSecond();
         this.electionId = electionId;
         this.laoId = laoId;
         this.registeredVotes = registeredVotes;

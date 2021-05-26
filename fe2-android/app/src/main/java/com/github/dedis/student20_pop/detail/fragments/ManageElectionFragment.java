@@ -15,8 +15,11 @@ import com.github.dedis.student20_pop.databinding.FragmentManageElectionBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.home.HomeActivity;
+import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class  ManageElectionFragment extends Fragment {
@@ -66,7 +69,11 @@ public class  ManageElectionFragment extends Fragment {
         endTime.setText(dateFormat.format(dEnd));
         laoName.setText(laoDetailViewModel.getCurrentLaoName().getValue());
         electionName.setText(laoDetailViewModel.getCurrentElection().getName());
-        question.setText("Election Question : " + laoDetailViewModel.getCurrentElection().getQuestion());
+
+        List<ElectionQuestion> electionQuestions = laoDetailViewModel.getCurrentElection().getElectionQuestions();
+        if (electionQuestions.isEmpty()) question.setText("No election question !");
+        else question.setText("Election Question : " + electionQuestions.get(0).getQuestion());
+
         mManageElectionFragBinding.setLifecycleOwner(getActivity());
         return mManageElectionFragBinding.getRoot();
 
