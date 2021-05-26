@@ -38,7 +38,7 @@ public class Hash {
         digest.update(str.getBytes(StandardCharsets.UTF_8));
       }
       byte[] digestBuf = digest.digest();
-      return Base64.getEncoder().encodeToString(digestBuf);
+      return Base64.getUrlEncoder().encodeToString(digestBuf);
     } catch (NoSuchAlgorithmException e) {
       Log.e(TAG, "failed to hash", e);
       throw new PoPException("failed to retrieve SHA-256 instance", e);
