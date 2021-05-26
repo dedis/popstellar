@@ -128,10 +128,7 @@ public class LAORepository {
     websocketEvents
         .subscribeOn(Schedulers.io())
         .filter(event -> event.getClass().equals(WebSocket.Event.OnConnectionOpened.class))
-        .subscribe(
-            event -> {
-              subscribedChannels.forEach(channel -> sendSubscribe(channel));
-            });
+        .subscribe(event -> subscribedChannels.forEach(this::sendSubscribe));
   }
 
   private void startSubscription() {
