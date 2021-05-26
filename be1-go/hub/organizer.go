@@ -213,6 +213,7 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 			Code:        -2,
 			Description: fmt.Sprintf("channel with id %s does not exist", channelID),
 		})
+		o.RUnlock()
 		return
 	}
 	o.RUnlock()
