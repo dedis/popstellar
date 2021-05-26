@@ -13,6 +13,9 @@ import com.github.dedis.student20_pop.databinding.FragmentElectionResultBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.adapters.ElectionResultPagerAdapter;
+import com.github.dedis.student20_pop.model.Election;
+
+import java.util.Arrays;
 
 public class ElectionResultFragment extends Fragment {
 
@@ -43,20 +46,34 @@ public class ElectionResultFragment extends Fragment {
                 FragmentElectionResultBinding.inflate(inflater, container, false);
         mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 
+        laoNameView = mElectionResultFragBinding.electionResultLaoName;
+        electionNameView = mElectionResultFragBinding.electionResultPresentationTitle;
+
         //Getting election
-        //  election = mLaoDetailViewModel.getCurrentElection();
+        Election election = mLaoDetailViewModel.getCurrentElection();
+
+        ///// Setting up static data for testing //////////////////////////////////////////////////////
+        if(election == null)
+            election = new Election();
+
+        election.setName("Election of delegate");
+        election.setQuestions(Arrays.asList("Who for 1st delegate", "Who for 2nd delegate"));
+        election.setBallotsOptions(Arrays.asList(Arrays.asList("A", "B"), Arrays.asList("C", "D", "E")));
+        election.setVotes(Arrays.asList(Arrays.asList(21, 6), Arrays.asList(2,7,9)));
+        /////////////////////////////////////////////////////////////////////////////////////////////////
+
 
         //Setting the Lao Name
         laoNameView.setText(mLaoDetailViewModel.getCurrentLaoName().getValue());
-
+       // laoNameView.setText("Some Title");
         //Setting election name
-        //  electionNameView.setText(election.getName());
+          electionNameView.setText(election.getName());
 
         ElectionResultPagerAdapter adapter = new ElectionResultPagerAdapter(mLaoDetailViewModel);
         ViewPager2 viewPager2 = mElectionResultFragBinding.electionResultPager;
         viewPager2.setAdapter(adapter);
 
-
+        mElectionResultFragBinding.setLifecycleOwner(getActivity());
         return mElectionResultFragBinding.getRoot();
     }
 }
