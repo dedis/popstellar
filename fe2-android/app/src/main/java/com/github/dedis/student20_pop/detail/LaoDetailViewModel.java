@@ -689,11 +689,14 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
     public void enterRollCall(String id) {
         String firstLaoId = getCurrentLaoValue().getChannel().substring(6); // use the laoId set at creation + need to remove /root/ prefix
+        String errorMessage = "failed to retrieve public key from wallet";
         try {
             String pk = Base64.getEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, id).second);
             mPkRollCallEvent.postValue(new Event<>(pk));
         } catch (NoSuchAlgorithmException | InvalidKeyException | ShortBufferException e) {
-            Log.d(TAG, "failed to retrieve public key from wallet", e);
+            Log.d(TAG, errorMessage, e);
+        } catch (GeneralSecurityException e) {
+            Log.d(TAG, errorMessage, e);
         }
     }
 
