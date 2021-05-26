@@ -91,6 +91,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
    */
   private final MutableLiveData<Lao> mCurrentLao = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
+  private final MutableLiveData<Boolean> mIsWitness = new MutableLiveData<>();
   private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>("");
   private final LiveData<List<String>> mWitnesses =
@@ -425,6 +426,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
   public LiveData<Boolean> isOrganizer() {
     return mIsOrganizer;
+  }
+
+  public LiveData<Boolean> isWitness() {
+    return mIsWitness;
   }
 
   public LiveData<Boolean> getShowProperties() {
