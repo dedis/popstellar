@@ -51,7 +51,7 @@ func (c *laoChannel) processOpenRollCall(data message.Data, action message.RollC
 		}
 	}
 
-	opens := base64.StdEncoding.EncodeToString(rollCallData.Opens)
+	opens := base64.URLEncoding.EncodeToString(rollCallData.Opens)
 	if !c.checkRollCallID(message.Stringer(opens), rollCallData.OpenedAt, rollCallData.UpdateID) {
 		return &message.Error{
 			Code:        -4,
@@ -80,7 +80,7 @@ func (c *laoChannel) processCloseRollCall(data message.Data) error {
 		}
 	}
 
-	closes := base64.StdEncoding.EncodeToString(rollCallData.Closes)
+	closes := base64.URLEncoding.EncodeToString(rollCallData.Closes)
 	if !c.checkRollCallID(message.Stringer(closes), rollCallData.ClosedAt, rollCallData.UpdateID) {
 		return &message.Error{
 			Code:        -4,
@@ -97,7 +97,6 @@ func (c *laoChannel) processCloseRollCall(data message.Data) error {
 
 	return nil
 }
-
 
 // Helper functions
 
