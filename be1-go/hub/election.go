@@ -145,8 +145,7 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 	}
 
 	//This should update any previously set vote if the message ids are the same
-	messageID := base64.URLEncoding.EncodeToString(msg.MessageID)
-	c.inbox[messageID] = *msg
+	c.storeMessage(*msg)
 	for _, q := range voteData.Votes {
 
 		QuestionID := base64.URLEncoding.EncodeToString(q.QuestionID)
