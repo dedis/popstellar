@@ -17,50 +17,33 @@ export class EndElection implements MessageData {
 
   public readonly created_at: Timestamp;
 
-  public readonly votes: Vote[];
+  public readonly registered_votes: Hash;
 
   constructor(msg: Partial<EndElection>) {
     if (!msg.election) {
-      throw new ProtocolError('Undefined \'id\' parameter encountered during \'CastVote\'');
+      throw new ProtocolError('Undefined \'id\' parameter encountered during \'EndElection\'');
     }
 
     if (!msg.lao) {
-      throw new ProtocolError('Undefined \'lao\' parameter encountered during \'CastVote\'');
+      throw new ProtocolError('Undefined \'lao\' parameter encountered during \'EndElection\'');
     }
     this.lao = msg.lao;
 
     if (!msg.created_at) {
-      throw new ProtocolError('Undefined \'created_at\' parameter encountered during \'CastVote\'');
+      throw new ProtocolError('Undefined \'created_at\' parameter encountered during \'EndElection\'');
     }
     checkTimestampStaleness(msg.created_at);
     this.created_at = msg.created_at;
-    if (!msg.votes) {
-      throw new ProtocolError('Undefined \'votes\' parameter encountered during \'CastVote\'');
+    if (!msg.registered_votes) {
+      throw new ProtocolError('Undefined \'registered_votes\' parameter encountered during \'EndElection\'');
     }
-    EndElection.validateVotes(msg.votes);
-    this.votes = msg.votes;
+
+    this.registered_votes = msg.registered_votes;
 
     if (!msg.election) {
-      throw new ProtocolError('Invalid \'election\' parameter encountered during \'CastVote\'');
+      throw new ProtocolError('Invalid \'election\' parameter encountered during \'EndElection\'');
     }
     this.election = msg.election;
-  }
-
-  public static validateVotes(votes: Vote[]) {
-    votes.forEach((vote) => {
-      if (!vote.id) {
-        throw new ProtocolError('Undefined \'vote id\' parameter encountered during \'CastVote\'');
-      }
-      if (!vote.question) {
-        throw new ProtocolError('Undefined \'question id\' parameter encountered during \'CastVote\'');
-      }
-      if (!vote.vote && !vote.write_in) {
-        throw new ProtocolError('Undefined \'vote or write in\' parameters encountered during \'CastVote\'');
-      }
-      if (vote.vote && vote.write_in) {
-        throw new ProtocolError('Defined both \'vote\' and \'write_in\' parameters, only 1 is allowed, encountered during \'CastVote\'');
-      }
-    });
   }
 
   public static fromJson(obj: any): EndElection {

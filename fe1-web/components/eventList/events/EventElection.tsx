@@ -7,7 +7,7 @@ import {
   SectionList, StyleSheet, Text, TextStyle,
 } from 'react-native';
 import { Typography } from 'styles';
-import { castVote } from 'network';
+import { castVote, terminateElection } from 'network';
 import CheckboxList from 'components/CheckboxList';
 import WideButtonView from 'components/WideButtonView';
 import TimeDisplay from 'components/TimeDisplay';
@@ -78,6 +78,11 @@ const EventElection = (props: IPropTypes) => {
 
   const onTerminateElection = () => {
     console.log('Terminating Election');
+    terminateElection(event.id, Hash.fromString('test'))
+      .then(() => console.log('Election Terminated'))
+      .catch((err) => {
+        console.error('Could not terminate election, error:', err);
+      });
   };
 
   // This makes sure the screen gets updated when the event starts

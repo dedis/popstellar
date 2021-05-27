@@ -19,6 +19,7 @@ import {
 } from 'store';
 import { Question, Vote } from 'model/objects/Election';
 import { publish } from './JsonRpcApi';
+import {EndElection} from "../model/network/method/message/data/election/EndElection";
 
 /** Send a server query asking for the creation of a LAO with a given name (String) */
 export function requestCreateLao(laoName: string): Promise<Channel> {
@@ -254,16 +255,18 @@ export function castVote(
 
 /** Sends a server query which creates a Vote in an ongoing election */
 export function terminateElection(
-  election_id: Hash,
+  electionId: Hash,
+  registeredVotes: Hash,
 ): Promise<void> {
   const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
-  const message = new CastVote({
+  const message = new EndElection({
     lao: currentLao.id,
-    election: election_id,
+    election: electionId,
     created_at: time,
+    registered_votes: registeredVotes,
   });
 
-  const elecCh = channelFromIds(currentLao.id, election_id);
+  const elecCh = channelFromIds(currentLao.id, electionId);
   return publish(elecCh, message);
 }
