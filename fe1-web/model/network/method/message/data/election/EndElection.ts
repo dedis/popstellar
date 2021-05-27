@@ -5,21 +5,6 @@ import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness } from '../Checker';
-// “channel”: “/root/<lao_id>/<election_id>” // LAO-Election channel
-// “message”: {
-// “data”: base64({ /* Base 64 representation of the object
-// 			“object”: “election”, // Constant
-// 			“action”: “end”, // Constant
-// 			“lao”: <lao_id>, // ID of the LAO
-// 			“election”: <election_id>, // ID of the election
-// 			“created_at”: <UNIX timestamp>, // Vote submitted time in UTC
-// 			“registered_votes”: SHA256(<vote_id>, <vote_id>, ...),
-// 			}),
-// 		"sender": <base64>, /* Public key of organizer */
-//     "signature": <base64>, /* Signature by organizer over "data" */
-//     "message_id": <base64>, /* hash(data||signature) */
-//     "witness_signatures": [], /*Signature by witnesses(sender||data)*/
-//   },
 
 export class EndElection implements MessageData {
   public readonly object: ObjectType = ObjectType.ELECTION;

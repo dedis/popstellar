@@ -12,7 +12,7 @@ import CheckboxList from 'components/CheckboxList';
 import WideButtonView from 'components/WideButtonView';
 import TimeDisplay from 'components/TimeDisplay';
 import STRINGS from 'res/strings';
-import { Badge, LinearProgress } from 'react-native-elements';
+import { Badge } from 'react-native-elements';
 import * as Spacing from '../../../styles/spacing';
 
 /**

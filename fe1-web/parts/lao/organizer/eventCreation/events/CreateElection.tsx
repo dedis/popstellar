@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Platform, TextInput, ScrollView, StyleSheet, ViewStyle,
+  View, Platform, TextInput, ScrollView,
 } from 'react-native';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigation } from '@react-navigation/native';
