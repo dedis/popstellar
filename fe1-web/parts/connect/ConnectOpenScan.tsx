@@ -51,13 +51,6 @@ const ConnectOpenScan = ({ navigation }: IPropTypes) => {
             navigation.navigate(STRINGS.navigation_tab_connect);
           }}
         />
-        <WideButtonView
-          title={STRINGS.connect_connecting_validate}
-          onPress={() => {
-            setQrWasScanned(true);
-            navigation.navigate(STRINGS.connect_confirm_title);
-          }}
-        />
       </View>
     );
 };
