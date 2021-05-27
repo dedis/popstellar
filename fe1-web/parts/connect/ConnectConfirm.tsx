@@ -63,16 +63,14 @@ function validateLaoId(laoId: string): Channel | undefined {
   return undefined;
 }
 
-const ConnectConfirm = ({ navigation }: IPropTypes) => {
-  const laoIdIn = 'NO-ID';
-
+const ConnectConfirm = ({ navigation, route }: IPropTypes) => {
   const [serverUrl, setServerUrl] = useState('wss://popdemo.dedis.ch/52af0cf9'); // https://127.0.0.1:8080
-  const [laoId, setLaoId] = useState('');
+  // eslint-disable-next-line prefer-const
+  let [laoId, setLaoId] = useState('');
 
-  if (laoIdIn !== 'NO-ID') {
-    console.log('PASSED');
-    console.log(laoIdIn);
-    setLaoId(laoIdIn);
+  if (route.params) {
+    laoId = route.params.laoIdIn;
+    console.log(laoId);
   }
 
   const onButtonConfirm = () => {

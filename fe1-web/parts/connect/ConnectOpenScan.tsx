@@ -41,7 +41,7 @@ const ConnectOpenScan = ({ navigation }: IPropTypes) => {
           delay={300}
           onError={handleError}
           onScan={handleScan}
-          style={{ width: '40%' }}
+          style={{ width: '30%' }}
         />
         <ActivityIndicator size="large" color={Colors.blue} />
         <WideButtonView
