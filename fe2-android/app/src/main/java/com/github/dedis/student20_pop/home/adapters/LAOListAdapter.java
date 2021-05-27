@@ -4,12 +4,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
+
 import com.github.dedis.student20_pop.databinding.LayoutLaoHomeBinding;
 import com.github.dedis.student20_pop.home.HomeViewModel;
 import com.github.dedis.student20_pop.home.listeners.LAOItemUserActionsListener;
 import com.github.dedis.student20_pop.model.Lao;
+
 import java.util.List;
 
 public class LAOListAdapter extends BaseAdapter {
@@ -19,6 +22,7 @@ public class LAOListAdapter extends BaseAdapter {
   private List<Lao> laos;
 
   private LifecycleOwner lifecycleOwner;
+
 
   public LAOListAdapter(List<Lao> laos, HomeViewModel homeViewModel, LifecycleOwner activity) {
     this.homeViewModel = homeViewModel;
@@ -66,7 +70,7 @@ public class LAOListAdapter extends BaseAdapter {
         new LAOItemUserActionsListener() {
           @Override
           public void onLAOClicked(Lao lao) {
-            homeViewModel.openLAO("/root/" + lao.getId());
+            homeViewModel.openLAO(lao.getChannel());
           }
         };
 

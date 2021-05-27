@@ -43,8 +43,13 @@ const CreateMeeting = ({ route }: any) => {
   const onConfirmPress = () => {
     const endTime = (endDate.valueOf() === -1) ? undefined : endDate;
 
-    requestCreateMeeting(meetingName, startDate, location || undefined, endTime);
-    navigation.goBack();
+    requestCreateMeeting(meetingName, startDate, location || undefined, endTime)
+      .then(() => {
+        navigation.navigate(STRINGS.organizer_navigation_tab_home);
+      })
+      .catch((err) => {
+        console.error('Could not create meeting, error:', err);
+      });
   };
 
   const onChangeStartTime = (date: Date) => {

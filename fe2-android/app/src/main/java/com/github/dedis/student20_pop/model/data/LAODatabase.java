@@ -1,9 +1,11 @@
 package com.github.dedis.student20_pop.model.data;
 
 import android.content.Context;
+
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+
 import com.github.dedis.student20_pop.model.data.dao.LAODao;
 import com.github.dedis.student20_pop.model.entities.LAO;
 import com.github.dedis.student20_pop.model.entities.LAOWitnessCrossRef;
@@ -11,6 +13,7 @@ import com.github.dedis.student20_pop.model.entities.Meeting;
 import com.github.dedis.student20_pop.model.entities.ModificationSignature;
 import com.github.dedis.student20_pop.model.entities.Person;
 import com.github.dedis.student20_pop.model.entities.RollCall;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 

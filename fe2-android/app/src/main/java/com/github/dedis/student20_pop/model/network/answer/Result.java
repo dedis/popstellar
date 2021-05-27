@@ -1,6 +1,7 @@
 package com.github.dedis.student20_pop.model.network.answer;
 
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
+
 import java.util.List;
 import java.util.Optional;
 

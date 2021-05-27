@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
+
 import com.github.dedis.student20_pop.model.entities.LAO;
 import com.github.dedis.student20_pop.model.entities.LAOEntity;
 import com.github.dedis.student20_pop.model.entities.LAOWitnessCrossRef;
@@ -14,6 +15,7 @@ import com.github.dedis.student20_pop.model.entities.Meeting;
 import com.github.dedis.student20_pop.model.entities.ModificationSignature;
 import com.github.dedis.student20_pop.model.entities.Person;
 import com.github.dedis.student20_pop.model.entities.RollCall;
+
 import java.util.List;
 import java.util.stream.Collectors;
 

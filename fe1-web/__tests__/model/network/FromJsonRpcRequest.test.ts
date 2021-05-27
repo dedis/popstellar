@@ -3,17 +3,17 @@ import '../../utils/matchers';
 
 import keyPair from 'test_data/keypair.json';
 
-import { CreateLao } from 'model/network/method/message/data';
-import { storeInit } from 'store/Storage';
-import { JsonRpcMethod, JsonRpcRequest } from 'model/network';
-import {
-  Base64Data, Hash, Lao, PrivateKey, PublicKey,
-} from 'model/objects';
 import { OpenedLaoStore } from 'store';
-import { JsonRpcParamsWithMessage } from 'model/network/method/JsonRpcParamsWithMessage';
+import { storeInit } from 'store/Storage';
+import {
+  Base64UrlData, Hash, Lao, PrivateKey, PublicKey,
+} from 'model/objects';
 import { ROOT_CHANNEL } from 'model/objects/Channel';
+import { JsonRpcMethod, JsonRpcRequest } from 'model/network';
+import { CreateLao } from 'model/network/method/message/data';
+import { JsonRpcParamsWithMessage } from 'model/network/method/JsonRpcParamsWithMessage';
 
-const JSON_RPC_FIELDS: string[] = ['method', 'params', 'id']; // jsonrpc version is not stored, thus only 3 fields
+const JSON_RPC_FIELDS: string[] = ['method', 'params', 'id', 'jsonrpc'];
 const QUERY_FIELD_COUNT = JSON_RPC_FIELDS.length;
 
 const METHODS = Object.keys(JsonRpcMethod)
@@ -42,7 +42,7 @@ function checkParams(obj: any, isRoot: boolean = false): void {
     expect(obj.channel).toBe(ROOT_CHANNEL);
   } else {
     expect(obj.channel).toMatch(/\/root\/[A-Za-z0-9+/]*[=]*/);
-    expect(obj.channel.slice(ROOT_CHANNEL.length + 1)).toBeBase64();
+    expect(obj.channel.slice(ROOT_CHANNEL.length + 1)).toBeBase64Url();
   }
   expect(obj.message).toBeObject();
 }
@@ -51,16 +51,16 @@ function checkMessage(obj: any): void {
   expect(obj).toBeObject();
   expect(obj).toContainAllKeys(['data', 'sender', 'signature', 'message_id', 'witness_signatures']);
 
-  expect(obj.data).toBeBase64();
+  expect(obj.data).toBeBase64Url();
 
-  expect(obj.sender).toBeBase64();
+  expect(obj.sender).toBeBase64Url();
   expect(obj.sender).toBeJsonEqual(mockPublicKey);
 
-  expect(obj.signature).toBeBase64();
+  expect(obj.signature).toBeBase64Url();
   const signExpected = mockSecretKey.sign(obj.data);
   expect(obj.signature).toBeJsonEqual(signExpected);
 
-  expect(obj.message_id).toBeBase64();
+  expect(obj.message_id).toBeBase64Url();
   const hashExpected = Hash.fromStringArray(obj.data, obj.signature);
   expect(obj.message_id).toBeJsonEqual(hashExpected);
 
@@ -86,7 +86,7 @@ describe('=== fromJsonJsonRpcRequest checks ===', () => {
     channel: string = '/root/bGFvX2lk', // note: hardcoded value for testing
     id: number = 0,
   ): string {
-    const data64: Base64Data = Base64Data.encode(data);
+    const data64: Base64UrlData = Base64UrlData.encode(data);
     return `{
         "jsonrpc": "2.0",
         "method": "${method.toString()}",

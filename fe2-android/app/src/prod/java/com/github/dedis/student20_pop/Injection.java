@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.hardware.Camera;
 import android.util.Log;
+
 import com.github.dedis.student20_pop.model.data.LAODatabase;
 import com.github.dedis.student20_pop.model.data.LAOLocalDataSource;
 import com.github.dedis.student20_pop.model.data.LAORemoteDataSource;
@@ -16,14 +17,8 @@ import com.github.dedis.student20_pop.model.network.answer.Result;
 import com.github.dedis.student20_pop.model.network.method.Message;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
-import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionQuestion;
-import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
-import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.utility.json.JsonAnswerSerializer;
-import com.github.dedis.student20_pop.utility.json.JsonCreateRollCallSerializer;
 import com.github.dedis.student20_pop.utility.json.JsonDataSerializer;
-import com.github.dedis.student20_pop.utility.json.JsonElectionQuestionSerializer;
-import com.github.dedis.student20_pop.utility.json.JsonElectionSetupSerializer;
 import com.github.dedis.student20_pop.utility.json.JsonGenericMessageDeserializer;
 import com.github.dedis.student20_pop.utility.json.JsonMessageGeneralSerializer;
 import com.github.dedis.student20_pop.utility.json.JsonMessageSerializer;
@@ -44,13 +39,16 @@ import com.tinder.scarlet.lifecycle.android.AndroidLifecycle;
 import com.tinder.scarlet.messageadapter.gson.GsonMessageAdapter;
 import com.tinder.scarlet.streamadapter.rxjava2.RxJava2StreamAdapterFactory;
 import com.tinder.scarlet.websocket.okhttp.OkHttpClientUtils;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 public class Injection {
-  private static String SERVER_URL = "ws://10.0.2.2:8080";
+
+  private static String SERVER_URL = "ws://10.0.2.2:9000/organizer/client";
 
   private static final String TAG = "INJECTION";
 
@@ -110,10 +108,7 @@ public class Injection {
         .registerTypeAdapter(Data.class, new JsonDataSerializer())
         .registerTypeAdapter(Result.class, new JsonResultSerializer())
         .registerTypeAdapter(Answer.class, new JsonAnswerSerializer())
-        .registerTypeAdapter(CreateRollCall.class, new JsonCreateRollCallSerializer())
         .registerTypeAdapter(MessageGeneral.class, new JsonMessageGeneralSerializer())
-            .registerTypeAdapter(ElectionQuestion.class, new JsonElectionQuestionSerializer())
-            .registerTypeAdapter(ElectionSetup.class, new JsonElectionSetupSerializer())
             .create();
   }
 

@@ -1,4 +1,4 @@
-import { Base64Data } from 'model/objects';
+import { Base64UrlData } from 'model/objects';
 import { ActionType, MessageData, ObjectType } from './MessageData';
 import { CreateLao, StateLao, UpdateLao } from './lao';
 import { CreateMeeting, StateMeeting } from './meeting';
@@ -6,10 +6,11 @@ import {
   CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall,
 } from './rollCall';
 import { WitnessMessage } from './witness';
+import { SetupElection } from './election';
 
-export function encodeMessageData(msgData: MessageData): Base64Data {
+export function encodeMessageData(msgData: MessageData): Base64UrlData {
   const data = JSON.stringify(msgData);
-  return Base64Data.encode(data);
+  return Base64UrlData.encode(data);
 }
 
 function buildLaoMessage(msgData: MessageData): MessageData {
@@ -33,6 +34,15 @@ function buildMeetingMessage(msgData: MessageData): MessageData {
       return StateMeeting.fromJson(msgData);
     default:
       throw new Error(`Unknown action '${msgData.action}' encountered while creating a meeting MessageData`);
+  }
+}
+
+function buildElectionMessage(msgData: MessageData): MessageData {
+  switch (msgData.action) {
+    case ActionType.SETUP:
+      return SetupElection.fromJson(msgData);
+    default:
+      throw new Error(`Unknown action '${msgData.action}' encountered while creating a election MessageData`);
   }
 }
 
@@ -62,6 +72,9 @@ export function buildMessageData(msgData: MessageData): MessageData {
 
     case ObjectType.MEETING:
       return buildMeetingMessage(msgData);
+
+    case ObjectType.ELECTION:
+      return buildElectionMessage(msgData);
 
     case ObjectType.MESSAGE:
       return buildWitnessMessage(msgData);

@@ -5,6 +5,7 @@
     <string name="tab_home">Home</string>
     <string name="tab_connect">Connect</string>
     <string name="tab_launch">Launch</string>
+    <string name="tab_wallet">Wallet</string>
     <string name="tab_identity">Identity</string>
     <string name="tab_properties">Show/Hide Properties</string>
 
@@ -45,6 +46,7 @@
     <string name="past_events">Past Events</string>
     <string name="present_events">Present Events</string>
     <string name="future_events">Future Events</string>
+    <string name = "handle_events">Handle Events</string>
 
     <!-- Poll Event -->
     <string name="poll_event">Poll Event</string>
@@ -79,6 +81,15 @@
     <string name="add_attendee_unsuccessful">Error when adding attendee</string>
     <string name="add_attendees_number">Number of attendees : %1$d</string>
 
+    <!-- Event Buttons -->
+    <string name="open_rollcall">OPEN</string>
+    <string name="reopen_rollcall">REOPEN</string>
+    <string name="scheduled_rollcall">SCHEDULED</string>
+    <string name="enter_rollcall">ENTER</string>
+    <string name="closed_rollcall">CLOSED</string>
+
+    <string name="back">BACK</string>
+
     <!-- Identity -->
     <string name="identity_name">Name</string>
     <string name="identity_title">Title</string>
@@ -95,6 +106,7 @@
     <string name="close_roll_call">Close Roll-Call</string>
     <string name="scan_all_attendees_question">Are you sure you have scan all attendees ?</string>
     <string name="roll_call_title_required">Roll-Call Title required</string>
+    <string name="show_qrcode_to_organizer">Please show the QR code to the organizer</string>
 
     <!-- Witness -->
     <string name="delete_witness_dialog_title">Delete ?</string>
@@ -106,6 +118,7 @@
     <!-- Properties -->
     <string name="test_organization_name">Test Organization Name</string>
     <string name="edit_lao_name">Edit Lao Name</string>
+    <string name="total">Total:</string>
     <string name="election_name">Election Name</string>
     <string name="lao_name">LAO name</string>
     <string name="election_setup">Election Setup</string>
@@ -114,9 +127,43 @@
     <string name="todo">TODO</string>
     <string name="ballot_option_2">Ballot option 2</string>
 
-    <!-- E-voting -->
+    <!-- Election Event -->
+    <string name="election_setup_presentation_title_text">Election Setup</string>
+    <string name="add_ballot_options_button_text">Add ballot options</string>
+    <string name="election_setup_name_hint">Election name</string>
+    <string name="election_question_hint">Question :</string>
+    <string name="voting_method_spinner_text">Select a voting method</string>
+    <string name="write_in_switch_text">Allow write in</string>
+    <string name="new_ballot_option_hint">ballot option</string>
+
     <string name="elections">Elections</string>
+    <string name="voting_management">Voting Management</string>
+    <string name="cancel_election">Cancel Election</string>
+    <string name="displayed_end_time">displayed end time</string>
+    <string name="displayed_current_time">displayed current time</string>
+    <string name="start_date">start date</string>
+    <string name="end_date">end date</string>
+    <string name="details">Details</string>
+    <string name="manage_election">manage election</string>
+    <string name="current_time">Current Time :</string>
+    <string name="election_start_time">Election Start Time :</string>
+    <string name="election_end_time">Election End Time :</string>
+    <string name="election_question">Election Question : ?</string>
+    <string name="edit_election_name">Edit Election Name</string>
+    <string name="edit_election_question">Edit Election Question</string>
+    <string name="edit_election_ballot_options">Edit Election Ballot Options</string>
+    <string name="edit_election_start_time">Edit Election Start Time</string>
+    <string name="edit_election_end_time">Edit Election End Time</string>
 
 
-
+    <!-- Wallet -->
+    <string name="button_own_seed">I own a seed</string>
+    <string name="button_new_wallet">New wallet</string>
+    <string name="text_title_wallet">Welcome to your wallet !</string>
+    <string name="text_help_wallet">You may import your seed if you own one or create a new wallet.</string>
+    <string name="text_help_new_wallet">ATTENTION: if you create a new wallet remember to write down
+        the given seed and store it secure place, this is the only backup to your PoP tokens.</string>
+    <string name="text_seed_wallet">This is the only backup for your PoP tokens - store it securely</string>
+    <string name="confirm_button">Confirm</string>
+    <string name="content_title">Tokens</string>
 </resources>
