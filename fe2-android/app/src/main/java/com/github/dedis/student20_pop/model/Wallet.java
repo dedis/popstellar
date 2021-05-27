@@ -218,9 +218,7 @@ public class Wallet {
    *                              present on roll-call’s results.
    * @return a Map<Pair<String, String>, Pair<byte[], byte[]>> of the recover key pairs
    * associated to each Lao and roll-call IDs.
-   * @throws NoSuchAlgorithmException
-   * @throws InvalidKeyException
-   * @throws ShortBufferException
+   * @throws GeneralSecurityException
    */
   public Map<Pair<String, String>, Pair<byte[], byte[]>> recoverAllKeys(String seed,
       Map<Pair<String, String>, List<byte[]>>  knowsLaosRollCalls)
@@ -249,8 +247,7 @@ public class Wallet {
    *
    * @return an array of words: mnemonic sentence representing the seed for the wallet.
    */
-  public String[] exportSeed()
-      throws Exception {
+  public String[] exportSeed() throws GeneralSecurityException {
     if(keysetManager != null) {
       SecureRandom random = new SecureRandom();
       byte[] entropy = random.generateSeed(Words.TWELVE.byteLength());
