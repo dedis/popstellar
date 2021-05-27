@@ -19,6 +19,7 @@ import com.github.dedis.student20_pop.model.Election;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.RollCall;
 import com.github.dedis.student20_pop.model.Wallet;
+import com.github.dedis.student20_pop.model.WitnessMessage;
 import com.github.dedis.student20_pop.model.data.LAORepository;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.model.network.answer.Error;
@@ -374,6 +375,58 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         }
 
     }
+/*
+    public void signMessage(WitnessMessage witnessMessage) {
+        Log.d(TAG, "signing message with ID " + witnessMessage.getMessageId() );
+        Lao lao = getCurrentLaoValue();
+        if (lao == null) {
+            Log.d(TAG, LAO_FAILURE_MESSAGE);
+            return;
+        }
+        String channel = lao.getChannel();
+        com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessage signatureMessage;
+        String laoId = channel.substring(6); // removing /root/ prefix
+        signatureMessage = new com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessage(witnessMessage.getMessageId(),Base64.getUrlEncoder().encodeToString())
+
+
+        try {
+
+            KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+            String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+            byte[] sender = Base64.getUrlDecoder().decode(publicKey);
+            PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+            Log.d(TAG, "sending publish message");
+            MessageGeneral msg = new MessageGeneral(sender, createRollCall, signer, mGson);
+            Disposable disposable =
+                    mLAORepository
+                            .sendPublish(channel, msg)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .timeout(5, TimeUnit.SECONDS)
+                            .subscribe(
+                                    answer -> {
+                                        if (answer instanceof Result) {
+                                            Log.d(TAG, "created a roll call with id: " + createRollCall.getId());
+                                            if (open) {
+                                                openRollCall(createRollCall.getId());
+                                            } else {
+                                                mCreatedRollCallEvent.postValue(new Event<>(true));
+                                            }
+                                        } else {
+                                            Log.d(TAG, "failed to create a roll call");
+                                        }
+                                    },
+                                    throwable -> {
+                                        Log.d(TAG, "timed out waiting for result on roll_call/create", throwable);
+                                    });
+            disposables.add(disposable);
+        } catch (GeneralSecurityException | IOException e) {
+            Log.d(TAG, PK_FAILURE_MESSAGE, e);
+        }
+    }
+    
+ */
+
 
     /**
      * Remove specific witness from the LAO's list of witnesses.

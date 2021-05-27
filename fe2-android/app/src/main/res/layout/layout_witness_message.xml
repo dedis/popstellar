@@ -3,7 +3,7 @@
     <data>
         <variable
             name="message"
-            type="com.github.dedis.student20_pop.model.event.Event" />
+            type="com.github.dedis.student20_pop.model.WitnessMessage" />
     </data>
 
     <LinearLayout
@@ -11,43 +11,50 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-    <LinearLayout
-        android:id="@+id/witness_message_layout"
-        android:layout_width="296dp"
-        android:layout_height= "wrap_content"
-        android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/witness_message_layout"
+            android:layout_width="235dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/message_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/margin_text"
-            android:gravity="center"
-            android:text="Message Title"
-            android:textSize="@dimen/size_body"
-            android:textStyle="bold" />
+            <TextView
+                android:id="@+id/message_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/margin_text"
+                android:gravity="center"
+                android:text="@{`Message Title : `+message.title}"
+                android:textSize="@dimen/size_body"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/message_description"
-            android:text="Message Description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/margin_text" />
+            <TextView
+                android:id="@+id/message_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/margin_text"
+                android:text="@{`Description : `+message.description}" />
 
-        <TextView
-            android:id="@+id/message_id"
-            android:text="Message ID"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/margin_text" />
+            <TextView
+                android:id="@+id/message_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/margin_text"
+                android:text="@{`Message ID : `+message.messageId}" />
 
-    </LinearLayout>
+        </LinearLayout>
 
         <Button
             android:id="@+id/sign_message_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="SIGN MESSAGE" />
+
+        <ImageButton
+            android:id="@+id/witness_message_check_mark"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:contentDescription="message signed"
+            android:src="@drawable/check_mark" />
 
     </LinearLayout>
 

@@ -1,11 +1,17 @@
 package com.github.dedis.student20_pop.detail.adapters;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
 
+import com.github.dedis.student20_pop.R;
+import com.github.dedis.student20_pop.databinding.LayoutWitnessMessageBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.model.WitnessMessage;
 
@@ -49,16 +55,54 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return messages.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return  position;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        return null;
+        LayoutWitnessMessageBinding binding;
+        if (convertView == null) {
+            // inflate
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+
+            binding = LayoutWitnessMessageBinding.inflate(inflater, parent, false);
+        } else {
+            binding = DataBindingUtil.getBinding(convertView);
+        }
+        Context context = parent.getContext();
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder adb = new AlertDialog.Builder(context);
+                adb.setTitle("Sign Message");
+                adb.setMessage(" Are you sure you want to sign message with ID" + messages.get(position).getMessageId());
+                adb.setNegativeButton("Cancel", null);
+                adb.setPositiveButton(
+                        "Confirm",
+                        (dialog, which) -> {
+                            viewModel.signMessage(messages.get(position));
+                        });
+                adb.show();
+
+            }
+        };
+        binding.signMessageButton.setOnClickListener(clicked -> {
+
+        });
+
+        binding.setMessage(messages.get(position));
+        binding.setLifecycleOwner(lifecycleOwner);
+
+        binding.executePendingBindings();
+
+        return binding.getRoot();
+
+
+
     }
 }
