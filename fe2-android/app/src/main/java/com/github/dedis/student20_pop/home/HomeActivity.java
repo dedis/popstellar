@@ -308,7 +308,7 @@ public class HomeActivity extends AppCompatActivity {
     }
   }
 
-  private void openLaoDetails(String laoId, boolean openLaoDetail) { //change to enum??
+  private void openLaoDetails(String laoId, boolean openLaoDetail) {
     Intent intent = new Intent(this, LaoDetailActivity.class);
     Log.d(TAG, "Trying to open lao detail for lao with id " + laoId);
     intent.putExtra("LAO_ID", laoId);

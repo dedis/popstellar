@@ -109,24 +109,17 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                   lao -> lao == null ? new ArrayList<com.github.dedis.student20_pop.model.event.Event>() :
                           lao.getRollCalls().values().stream().collect(Collectors.toList()));
 
-  private final LiveData<List<com.github.dedis.student20_pop.model.RollCall>> mLaoRollCalls = Transformations
+  private final LiveData<Boolean> isOrganizer = Transformations
+          .map(mCurrentLao,
+                  lao -> lao == null ? false :
+                          checkOrganizer(lao));
+
+  /*private final LiveData<List<com.github.dedis.student20_pop.model.RollCall>> mLaoAttendedRollCalls = Transformations
           .map(mCurrentLao,
                   lao -> lao == null ? new ArrayList<com.github.dedis.student20_pop.model.RollCall>() :
-                          lao.getRollCalls().values().stream().collect(Collectors.toList()));
+                          lao.getRollCalls().values().stream().filter(rollcall->rollcall.getState()== EventState.CLOSED).filter(rollcall->attendedOrOrganized(lao, rollcall)).collect(Collectors.toList()));*/
 
-  private final LiveData<List<com.github.dedis.student20_pop.model.RollCall>> mLaoAttendedRollCalls = Transformations
-          .map(mCurrentLao,
-                  lao -> lao == null ? new ArrayList<com.github.dedis.student20_pop.model.RollCall>() :
-                          lao.getRollCalls().values().stream().filter(rollcall->rollcall.getState()== EventState.CLOSED).filter(rollcall->attendedOrOrganized(lao, rollcall)).collect(Collectors.toList()));
-
-  /**
-   * Predicate used for filtering rollcalls to make sure that the user either attended the rollcall or was the organizer
-   * @param lao
-   * @param rollcall
-   * @return
-   */
-  private boolean attendedOrOrganized(Lao lao, RollCall rollcall){
-    //find out if user is the organizer
+  private boolean checkOrganizer(Lao lao){
     boolean isOrganizer = false;
     try {
       KeysetHandle publicKeysetHandle =
@@ -140,8 +133,30 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
       Log.d(TAG, "failed to get public key", e);
       return false;
     }
+    return isOrganizer;
+  }
+  /**
+   * Predicate used for filtering rollcalls to make sure that the user either attended the rollcall or was the organizer
+   * @param rollcall
+   * @return
+   */
+  private boolean attendedOrOrganized(RollCall rollcall){
+    //find out if user is the organizer
+    /*boolean isOrganizer = false;
+    try {
+      KeysetHandle publicKeysetHandle =
+              mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+      isOrganizer =
+              lao.getOrganizer().equals(Keys.getEncodedKey(publicKeysetHandle));
+    } catch (GeneralSecurityException e) {
+      Log.d(TAG, "failed to get public keyset handle", e);
+      return false;
+    } catch (IOException e) {
+      Log.d(TAG, "failed to get public key", e);
+      return false;
+    }*/
     //find out if user has attended the rollcall
-    String firstLaoId = lao.getChannel().substring(6);
+    String firstLaoId = getCurrentLaoValue().getChannel().substring(6);
     String pk = "";
     try {
       pk = Base64.getEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, rollcall.getPersistentId()).second);
@@ -149,7 +164,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
       Log.d(TAG, "failed to retrieve public key from wallet", e);
       return false;
     }
-    return rollcall.getAttendees().contains(pk) || isOrganizer;
+    return rollcall.getAttendees().contains(pk) || isOrganizer().getValue();
   }
 
   /*
@@ -512,11 +527,16 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     return mLaoEvents;
   }
 
-  public LiveData<List<com.github.dedis.student20_pop.model.RollCall>> getLaoRollCalls() {
-    return mLaoRollCalls;
-  }
-
   public LiveData<List<com.github.dedis.student20_pop.model.RollCall>> getLaoAttendedRollCalls() {
+    /*return Transformations
+            .map(mLaoEvents,
+                    laoEvents -> laoEvents == null ? new ArrayList<com.github.dedis.student20_pop.model.RollCall>() :
+                            laoEvents.stream().filter(event->event instanceof RollCall).map(event->(RollCall)event).filter(rollcall->rollcall.getState()== EventState.CLOSED).filter(rollcall->attendedOrOrganized(rollcall)).collect(Collectors.toList()));*/
+    //return new MutableLiveData<List<com.github.dedis.student20_pop.model.RollCall>>(mLaoEvents.getValue().stream().filter(event->event instanceof RollCall).map(event->(RollCall)event).filter(rollcall->rollcall.getState()== EventState.CLOSED).filter(rollcall->attendedOrOrganized(rollcall)).collect(Collectors.toList()));
+    LiveData<List<com.github.dedis.student20_pop.model.RollCall>> mLaoAttendedRollCalls = Transformations
+            .map(mCurrentLao,
+                    lao -> lao == null ? new ArrayList<com.github.dedis.student20_pop.model.RollCall>() :
+                            lao.getRollCalls().values().stream().filter(rollcall->rollcall.getState()== EventState.CLOSED).filter(rollcall->attendedOrOrganized(rollcall)).collect(Collectors.toList()));
     return mLaoAttendedRollCalls;
   }
 
