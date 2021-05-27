@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import {
   StyleSheet, View, ViewStyle, TextInput, TextStyle,
 } from 'react-native';
+
 import PropTypes from 'prop-types';
 
 import { getNetworkManager } from 'network';
-import { subscribeToChannel } from 'network/CommunicationApi';
+import { establishLaoConnection } from 'network/CommunicationApi';
 import { Channel, channelFromId, Hash } from 'model/objects';
 
 import { Spacing, Typography } from 'styles';
@@ -44,7 +45,6 @@ function connectTo(serverUrl: string): boolean {
 
     const portNum = port ? parseInt(port, 10) : undefined;
     const path = pathname.replace(/^\/+/g, '');
-
     getNetworkManager().connect(hostname, portNum, path || undefined);
   } catch (err) {
     console.error(`Cannot connect to '${serverUrl}' as it is an invalid URL`, err);
@@ -64,8 +64,16 @@ function validateLaoId(laoId: string): Channel | undefined {
 }
 
 const ConnectConfirm = ({ navigation }: IPropTypes) => {
-  const [serverUrl, setServerUrl] = useState('https://127.0.0.1:9000');
+  const laoIdIn = 'NO-ID';
+
+  const [serverUrl, setServerUrl] = useState('wss://popdemo.dedis.ch/52af0cf9'); // https://127.0.0.1:8080
   const [laoId, setLaoId] = useState('');
+
+  if (laoIdIn !== 'NO-ID') {
+    console.log('PASSED');
+    console.log(laoIdIn);
+    setLaoId(laoIdIn);
+  }
 
   const onButtonConfirm = () => {
     const parentNavigation = navigation.dangerouslyGetParent();
@@ -87,7 +95,7 @@ const ConnectConfirm = ({ navigation }: IPropTypes) => {
       return;
     }
 
-    subscribeToChannel(channel)
+    establishLaoConnection(channel)
       .then(() => {
         parentNavigation.navigate(STRINGS.app_navigation_tab_organizer, {
           screen: 'Attendee',
@@ -128,6 +136,7 @@ const ConnectConfirm = ({ navigation }: IPropTypes) => {
 const propTypes = {
   navigation: PROPS_TYPE.navigation.isRequired,
 };
+
 ConnectConfirm.propTypes = propTypes;
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

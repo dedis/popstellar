@@ -15,10 +15,11 @@ class NetworkManager {
   }
 
   private static buildAddress(host: string, port: number, path: string): string {
-    const base = `ws://${host}:${port}`;
+    const base = `wss://${host}:${port}`;
     return (path === '')
       ? base
       : `${base}/${path}`;
+    // return 'wss://popdemo.dedis.ch/client';
   }
 
   private getConnectionByAddress(address: string): NetworkConnection | undefined {
