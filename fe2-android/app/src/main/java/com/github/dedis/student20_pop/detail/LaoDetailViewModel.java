@@ -424,7 +424,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             Log.d(TAG, PK_FAILURE_MESSAGE, e);
         }
     }
-    
+
  */
 
 
