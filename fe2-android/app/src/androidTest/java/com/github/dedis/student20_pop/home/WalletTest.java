@@ -5,6 +5,7 @@ import static org.junit.Assert.assertArrayEquals;
 import android.app.Application;
 import android.content.Context;
 import androidx.core.util.Pair;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.model.Wallet;
@@ -18,8 +19,8 @@ import org.junit.Test;
 
 public class WalletTest {
 
-  @Rule
-  public ActivityScenarioRule<HomeActivity> rule = new ActivityScenarioRule<>(HomeActivity.class);
+
+  private Context context = ApplicationProvider.getApplicationContext();
 
   @Test
   public void importSeedAndExportSeedAreCoherent()
@@ -30,16 +31,9 @@ public class WalletTest {
     String Roll_Call_ID = "1234123412341234";
 
     Wallet hdw1 = new Wallet();
-    rule.getScenario().onActivity(activity ->
-    {
-      try {
-        hdw1.initKeysManager(activity.getApplicationContext());
-      } catch (IOException e) {
-        e.printStackTrace();
-      } catch (GeneralSecurityException e) {
-        e.printStackTrace();
-      }
-    });
+
+    hdw1.initKeysManager(context);
+
     String[] exp_str = hdw1.exportSeed();
     StringJoiner joiner = new StringJoiner(" ");
     for(String i: exp_str) joiner.add(i);
@@ -47,16 +41,7 @@ public class WalletTest {
     Pair<byte[], byte[]> res1 =  hdw1.findKeyPair(Lao_ID,Roll_Call_ID);
 
     Wallet hdw2 = new Wallet();
-    rule.getScenario().onActivity(activity ->
-    {
-      try {
-        hdw2.initKeysManager(activity.getApplicationContext());
-      } catch (IOException e) {
-        e.printStackTrace();
-      } catch (GeneralSecurityException e) {
-        e.printStackTrace();
-      }
-    });
+    hdw2.initKeysManager(context);
     hdw2.importSeed(joiner.toString(), new HashMap<>());
     Pair<byte[], byte[]> res2 =  hdw2.findKeyPair(Lao_ID,Roll_Call_ID);
 
