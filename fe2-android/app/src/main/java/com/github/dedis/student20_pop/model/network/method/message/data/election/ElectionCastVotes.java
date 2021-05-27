@@ -27,23 +27,17 @@ public class ElectionCastVotes extends Data {
      * Constructor for a data Cast Vote Election Event
      *
      * @param laoId id of the LAO
-     * @param question  id of the question
-     * @param votes list of vote indexes corresponding to the the ballot_options
+     * @param votes list of the Election Vote where an ElectionVote Object represents the corresponding votes for one question
      */
     public ElectionCastVotes(
-            boolean write_in,
-            List<List<Long>> votes,
-            String question,
+            List<ElectionVote> votes,
             String electionId,
             String laoId) {
         this.creation = Instant.now().toEpochMilli();
         this.votes = new ArrayList<>();
         this.laoId = laoId;
         this.electionId = electionId;
-        for (int i = 0; i < votes.size(); i++) {
-            ElectionVote vote = new ElectionVote(question, votes.get(i), write_in, electionId);
-            this.votes.add(vote);
-        }
+       this.votes = votes;
     }
 
 
@@ -61,12 +55,12 @@ public class ElectionCastVotes extends Data {
 
     @Override
     public String getObject() {
-        return Objects.ELECTION_CAST.getObject();
+        return Objects.ELECTION.getObject();
     }
 
     @Override
     public String getAction() {
-        return Action.CREATE.getAction();
+        return Action.CAST_VOTE.getAction();
     }
 
     @Override

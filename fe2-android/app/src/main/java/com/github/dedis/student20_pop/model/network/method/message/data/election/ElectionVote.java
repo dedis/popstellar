@@ -1,40 +1,34 @@
 package com.github.dedis.student20_pop.model.network.method.message.data.election;
 
-import androidx.annotation.Nullable;
-
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
-import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.utility.security.Hash;
+import com.google.gson.annotations.SerializedName;
 
-import java.security.cert.PKIXRevocationChecker;
-import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public class ElectionVote extends Data {
 
     private String id;
-    private String question_id; // id of the question
-    private List<Long> vote_results;
-    private Boolean write_in;
+    @SerializedName(value = "question")
+    private String questionId; // id of the question
+    private List<Integer> votes;
+    private Boolean writeIn;
 
     /**
      * Constructor for a data Question, for the election setup
      */
     public ElectionVote(
-            String question_id,
-            List<Long> vote_results,
-            Boolean write_in,
+            String questionId,
+            List<Integer> votes,
+            Boolean writeIn,
             String electionId) {
 
-        this.question_id = question_id;
-        this.write_in = write_in;
-        this.vote_results = vote_results;
-        this.id = Hash.hash("Vote", electionId, question_id, vote_results.toString(),   write_in.toString());
+        this.questionId = questionId;
+        this.writeIn = writeIn;
+        this.votes = votes;
+        this.id = Hash.hash("Vote", electionId, questionId, votes.toString(), writeIn.toString());
     }
 
 
@@ -43,21 +37,25 @@ public class ElectionVote extends Data {
     }
 
     public String getQuestionId() {
-        return question_id;
+        return questionId;
     }
 
-    public Boolean getWriteIn() { return write_in; }
+    public Boolean getWriteIn() {
+        return writeIn;
+    }
 
-    public List<Long> getVote_results(){ return vote_results;}
+    public List<Integer> getVote_results() {
+        return votes;
+    }
 
     @Override
     public String getObject() {
-        return Objects.ELECTION_VOTE.getObject();
+        return Objects.ELECTION.getObject();
     }
 
     @Override
     public String getAction() {
-        return Action.CREATE.getAction();
+        return Action.CAST_VOTE.getAction();
     }
 
     @Override
