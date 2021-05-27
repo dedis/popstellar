@@ -44,6 +44,7 @@ public class Wallet {
   private Aead aead;
 
   private static final Wallet instance = new Wallet();
+  
   public static Wallet getInstance() {
     return instance;
   }
