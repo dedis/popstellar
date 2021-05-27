@@ -127,6 +127,7 @@ const EventElection = (props: IPropTypes) => {
           <CheckboxList
             title={q.title}
             values={q.data}
+            key={q.title + idx.toString()}
             onChange={(values: number[]) => updateSelectedBallots(values, idx)}
           />
         )))}

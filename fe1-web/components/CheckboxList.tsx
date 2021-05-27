@@ -40,6 +40,7 @@ const CheckboxList = (props: IPropTypes) => {
       <View style={{ ...styles.view, flexDirection: 'row' }}>
         {values.map((value, idx) => (
           <CheckBox
+            key={value + idx.toString()}
             disabled={disabled}
             title={value}
             checked={checked[idx]}
