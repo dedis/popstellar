@@ -64,7 +64,6 @@ import io.reactivex.schedulers.Schedulers;
 
 public class LaoDetailViewModel extends AndroidViewModel implements CameraPermissionViewModel,
         QRCodeScanningViewModel {
-          
     public static final String TAG = LaoDetailViewModel.class.getSimpleName();
     private static final String LAO_FAILURE_MESSAGE = "failed to retrieve current lao";
     private static final String PK_FAILURE_MESSAGE = "failed to retrieve public key";
@@ -174,7 +173,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             // Retrieve identity of who is creating the election
             KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
             String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-            byte[] sender = Base64.getDecoder().decode(publicKey);
+            byte[] sender = Base64.getUrlDecoder().decode(publicKey);
             PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
             MessageGeneral msg = new MessageGeneral(sender, electionSetup, signer, mGson);
 
@@ -237,7 +236,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
             KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
             String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-            byte[] sender = Base64.getDecoder().decode(publicKey);
+            byte[] sender = Base64.getUrlDecoder().decode(publicKey);
             PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
             Log.d(TAG, "sending publish message");
             MessageGeneral msg = new MessageGeneral(sender, createRollCall, signer, mGson);
@@ -299,7 +298,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         try {
             KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
             String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-            byte[] sender = Base64.getDecoder().decode(publicKey);
+            byte[] sender = Base64.getUrlDecoder().decode(publicKey);
             PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
             MessageGeneral msg = new MessageGeneral(sender, openRollCall, signer, mGson);
             Disposable disposable =
@@ -346,7 +345,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         try {
             KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
             String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-            byte[] sender = Base64.getDecoder().decode(publicKey);
+            byte[] sender = Base64.getUrlDecoder().decode(publicKey);
             PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
             MessageGeneral msg = new MessageGeneral(sender, closeRollCall, signer, mGson);
             Disposable disposable =
@@ -601,7 +600,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         try {
             KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
             String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-            byte[] sender = Base64.getDecoder().decode(publicKey);
+            byte[] sender = Base64.getUrlDecoder().decode(publicKey);
             PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
 
             long now = Instant.now().getEpochSecond();
@@ -691,7 +690,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         String firstLaoId = getCurrentLaoValue().getChannel().substring(6); // use the laoId set at creation + need to remove /root/ prefix
         String errorMessage = "failed to retrieve public key from wallet";
         try {
-            String pk = Base64.getEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, id).second);
+            String pk = Base64.getUrlEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, id).second);
             mPkRollCallEvent.postValue(new Event<>(pk));
         } catch (Exception e) {
             Log.d(TAG, errorMessage, e);
@@ -722,7 +721,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     public void onQRCodeDetected(Barcode barcode) {
         Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
         try {
-            Base64.getDecoder().decode(barcode.rawValue);
+            Base64.getUrlDecoder().decode(barcode.rawValue);
         } catch (IllegalArgumentException e) {
             mScanWarningEvent.postValue(new Event<>("Invalid QR code. Please try again."));
             return;

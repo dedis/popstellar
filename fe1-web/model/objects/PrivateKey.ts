@@ -1,19 +1,19 @@
-import { decodeBase64, encodeBase64 } from 'tweetnacl-util';
+import { encodeBase64 } from 'tweetnacl-util';
 import { sign } from 'tweetnacl';
 import { Signature } from './Signature';
-import { Base64Data } from './Base64';
+import { Base64UrlData } from './Base64Url';
 
-export class PrivateKey extends Base64Data {
+export class PrivateKey extends Base64UrlData {
   /**
    * Sign some base64 data with the private key
    *
    * @param data the data to be signed with the private key
    */
-  public sign(data: Base64Data): Signature {
+  public sign(data: Base64UrlData): Signature {
     const signature = sign.detached(
-      decodeBase64(data.toString()),
-      decodeBase64(this.toString()),
+      data.toBuffer(),
+      this.toBuffer(),
     );
-    return new Signature(encodeBase64(signature));
+    return new Signature(Base64UrlData.fromBase64(encodeBase64(signature)).valueOf());
   }
 }

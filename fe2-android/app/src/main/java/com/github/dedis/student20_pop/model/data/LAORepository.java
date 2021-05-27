@@ -1,6 +1,6 @@
 package com.github.dedis.student20_pop.model.data;
 
-import android.util.Base64;
+import java.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -296,7 +296,7 @@ public class LAORepository {
       PublicKeyVerify verifier = new Ed25519Verify(pair.getWitness());
       try {
         verifier.verify(
-            pair.getSignature(), Base64.decode(stateLao.getModificationId(), Base64.NO_WRAP));
+            pair.getSignature(), Base64.getUrlDecoder().decode(stateLao.getModificationId()));
       } catch (GeneralSecurityException e) {
         Log.d(TAG, "failed to verify witness signature in lao/state_lao");
         return false;
@@ -420,13 +420,13 @@ public class LAORepository {
     String messageId = message.getMessageId();
     String signature = message.getSignature();
 
-    byte[] senderPkBuf = Base64.decode(senderPk, Base64.NO_WRAP);
-    byte[] signatureBuf = Base64.decode(signature, Base64.NO_WRAP);
+    byte[] senderPkBuf = Base64.getUrlDecoder().decode(senderPk);
+    byte[] signatureBuf = Base64.getUrlDecoder().decode(signature);
 
     // Verify signature
     try {
       PublicKeyVerify verifier = new Ed25519Verify(senderPkBuf);
-      verifier.verify(signatureBuf, Base64.decode(messageId, Base64.NO_WRAP));
+      verifier.verify(signatureBuf, Base64.getUrlDecoder().decode(messageId));
     } catch (GeneralSecurityException e) {
       Log.d(TAG, "failed to verify witness signature " + e.getMessage());
       return false;
@@ -445,7 +445,7 @@ public class LAORepository {
         // Let's check if we have enough signatures
         Set<String> signaturesCollectedSoFar =
             msg.getWitnessSignatures().stream()
-                .map(ob -> Base64.encodeToString(ob.getWitness(), Base64.NO_WRAP))
+                .map(ob -> Base64.getUrlEncoder().encodeToString(ob.getWitness()))
                 .collect(Collectors.toSet());
         if (lao.getWitnesses().equals(signaturesCollectedSoFar)) {
 
@@ -466,7 +466,7 @@ public class LAORepository {
                       updateLao.getWitnesses(),
                       msg.getWitnessSignatures());
 
-              byte[] ourPkBuf = Base64.decode(ourKey, Base64.NO_WRAP);
+              byte[] ourPkBuf = Base64.getUrlDecoder().decode(ourKey);
               PublicKeySign signer =
                   mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
               MessageGeneral stateLaoMsg = new MessageGeneral(ourPkBuf, stateLao, signer, mGson);
