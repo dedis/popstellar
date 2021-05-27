@@ -1,4 +1,5 @@
 import {
+  Base64UrlData,
   KeyPair, KeyPairState, PrivateKey, PublicKey,
 } from 'model/objects';
 import { sign } from 'tweetnacl';
@@ -22,8 +23,10 @@ export namespace KeyPairStore {
       const pair = sign.keyPair();
 
       const keyPair: KeyPair = new KeyPair({
-        publicKey: new PublicKey(encodeBase64(pair.publicKey)),
-        privateKey: new PrivateKey(encodeBase64(pair.secretKey)),
+        publicKey: new PublicKey(Base64UrlData.fromBase64(encodeBase64(pair.publicKey)).valueOf()),
+        privateKey: new PrivateKey(
+          Base64UrlData.fromBase64(encodeBase64(pair.secretKey)).valueOf(),
+        ),
       });
 
       store(keyPair);
