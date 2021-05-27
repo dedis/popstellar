@@ -6,7 +6,7 @@ import {
 import PropTypes from 'prop-types';
 
 import { getNetworkManager } from 'network';
-import { establishLaoConnection } from 'network/CommunicationApi';
+import { subscribeToChannel } from 'network/CommunicationApi';
 import { Channel, channelFromId, Hash } from 'model/objects';
 
 import { Spacing, Typography } from 'styles';
@@ -95,7 +95,7 @@ const ConnectConfirm = ({ navigation }: IPropTypes) => {
       return;
     }
 
-    establishLaoConnection(channel)
+    subscribeToChannel(channel)
       .then(() => {
         parentNavigation.navigate(STRINGS.app_navigation_tab_organizer, {
           screen: 'Attendee',

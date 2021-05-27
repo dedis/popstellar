@@ -69,11 +69,11 @@ const setOrganizerKeyPair = () => {
 function getWelcomeMessageDisplay() {
   return (
     <View style={styleContainer.centered}>
-      <WideButtonView onPress={storeKeyPair} title="Set Random Keypair" />
-      <WideButtonView onPress={setOrganizerKeyPair} title="Set Organizer Keypair" />
       <TextBlock bold text={STRINGS.home_welcome} />
       <TextBlock bold text={STRINGS.home_connect_lao} />
       <TextBlock bold text={STRINGS.home_launch_lao} />
+      <WideButtonView onPress={storeKeyPair} title="Set Random Keypair" />
+      <WideButtonView onPress={setOrganizerKeyPair} title="Set Organizer Keypair" />
     </View>
   );
 }
