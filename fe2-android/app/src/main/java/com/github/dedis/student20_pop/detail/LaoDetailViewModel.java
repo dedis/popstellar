@@ -142,6 +142,14 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         disposables.dispose();
     }
 
+    /**
+     * Sends a ElectionCastVotes message .
+     *
+     * <p>Publish a GeneralMessage containing ElectionCastVotes data.
+     *
+     * @param election          the name of the election
+     * @param castVotes         the corresponding votes for that election
+     */
     public void sendVote(Election election, ElectionCastVotes castVotes) {
         Log.d(TAG, "sending a new vote in election : " + election.getName());
         System.out.println( election.getStartTimestamp());
