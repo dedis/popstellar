@@ -147,24 +147,23 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
      *
      * <p>Publish a GeneralMessage containing ElectionCastVotes data.
      *
-     * @param election          the name of the election
      * @param castVotes         the corresponding votes for that election
      */
-    public void sendVote(Election election, ElectionCastVotes castVotes) {
-        Log.d(TAG, "sending a new vote in election : " + election.getName());
-        System.out.println( election.getStartTimestamp());
+    public void sendVote( ElectionCastVotes castVotes) {
+        if (mCurrentElection.getValue() == null) {
+            Log.d(TAG, "failed to retrieve current election");
+            return;
+        }
+        Log.d(TAG, "sending a new vote in election : " + mCurrentElection.getValue());
+        System.out.println( mCurrentElection.getValue().getStartTimestamp());
         Lao lao = getCurrentLao().getValue();
         if (lao == null) {
             Log.d(TAG, "failed to retrieve current lao");
             return;
         }
 
-        if (election == null) {
-            Log.d(TAG, "failed to retrieve current election");
-            return;
-        }
 
-        String electionChannel = lao.getChannel() + "/" +election.getId();
+        String electionChannel = lao.getChannel() + "/" +mCurrentElection.getValue().getId();
 
         try {
             // Retrieve identity of who is sending the votes
