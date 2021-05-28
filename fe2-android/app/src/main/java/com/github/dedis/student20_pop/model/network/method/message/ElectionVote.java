@@ -1,14 +1,11 @@
-package com.github.dedis.student20_pop.model.network.method.message.data.election;
+package com.github.dedis.student20_pop.model.network.method.message;
 
-import com.github.dedis.student20_pop.model.network.method.message.data.Action;
-import com.github.dedis.student20_pop.model.network.method.message.data.Data;
-import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
 import com.github.dedis.student20_pop.utility.security.Hash;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class ElectionVote extends Data {
+public class ElectionVote  {
 
     private String id;
     @SerializedName(value = "question")
@@ -48,15 +45,6 @@ public class ElectionVote extends Data {
         return votes;
     }
 
-    @Override
-    public String getObject() {
-        return Objects.ELECTION.getObject();
-    }
-
-    @Override
-    public String getAction() {
-        return Action.CAST_VOTE.getAction();
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -85,7 +73,19 @@ public class ElectionVote extends Data {
 
     @Override
     public String toString() {
-        return null;
+        return "ElectionQuestion{"
+                + "id='"
+                + id
+                + '\''
+                + ", question ID='"
+                + questionId
+                + '\''
+                + ", votes='"
+                + votes
+                + '\''
+                + ", write in='"
+                + writeIn
+                + '}';
     }
 
 

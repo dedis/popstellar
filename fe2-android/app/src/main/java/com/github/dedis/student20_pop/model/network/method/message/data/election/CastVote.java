@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.model.network.method.message.data.election;
 
+import com.github.dedis.student20_pop.model.network.method.message.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
@@ -74,6 +75,7 @@ public class CastVote extends Data {
         CastVote that = (CastVote) o;
         return java.util.Objects.equals(getLaoId(), that.getLaoId())
                 && createdAt == that.getCreation()
+                && election == that.getElectionId()
                 && java.util.Objects.equals(votes, that.getVotes());
     }
 
