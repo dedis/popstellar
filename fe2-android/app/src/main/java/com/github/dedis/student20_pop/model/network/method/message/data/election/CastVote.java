@@ -3,18 +3,19 @@ package com.github.dedis.student20_pop.model.network.method.message.data.electio
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
+import com.google.gson.annotations.SerializedName;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ElectionCastVotes extends Data {
+public class CastVote extends Data {
 
-
-    private long creation; // time the votes were submited
-    private String laoId;
-    private String electionId;
+    @SerializedName(value = "created_at")
+    private long createdAt; // time the votes were submited
+    private String lao;
+    private String election;
     private List<ElectionVote> votes;
 
     /**
@@ -23,28 +24,28 @@ public class ElectionCastVotes extends Data {
      * @param laoId id of the LAO
      * @param votes list of the Election Vote where an ElectionVote Object represents the corresponding votes for one question
      */
-    public ElectionCastVotes(
+    public CastVote(
             List<ElectionVote> votes,
             String electionId,
             String laoId) {
-        this.creation = Instant.now().toEpochMilli();
+        this.createdAt = Instant.now().getEpochSecond();
         this.votes = new ArrayList<>();
-        this.laoId = laoId;
-        this.electionId = electionId;
+        this.lao = laoId;
+        this.election = electionId;
         this.votes = votes;
     }
 
 
     public String getLaoId() {
-        return laoId;
+        return lao;
     }
 
     public String getElectionId() {
-        return electionId;
+        return election;
     }
 
     public long getCreation() {
-        return creation;
+        return createdAt;
     }
 
     public List<ElectionVote> getVotes() {
@@ -70,9 +71,9 @@ public class ElectionCastVotes extends Data {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        ElectionCastVotes that = (ElectionCastVotes) o;
+        CastVote that = (CastVote) o;
         return java.util.Objects.equals(getLaoId(), that.getLaoId())
-                && creation == that.getCreation()
+                && createdAt == that.getCreation()
                 && java.util.Objects.equals(votes, that.getVotes());
     }
 
@@ -87,7 +88,27 @@ public class ElectionCastVotes extends Data {
     //TODO
     @Override
     public String toString() {
-        return null;
+        StringBuilder builder = null;
+        for (ElectionVote vote: votes) {
+            builder.append(vote.toString());
+        }
+        return "CastVote{"
+                + "lao='"
+                + lao
+                + '\''
+                + ", creation='"
+                + createdAt
+                + '\''
+                + ", election='"
+                + election
+                + '\''
+                + ", votes = { '"
+                + builder
+                + '\''
+                + '}'
+                + '\''
+                + '}';
+
     }
 
 }

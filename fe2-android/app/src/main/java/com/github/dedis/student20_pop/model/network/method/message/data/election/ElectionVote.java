@@ -44,7 +44,7 @@ public class ElectionVote extends Data {
         return writeIn;
     }
 
-    public List<Integer> getVote_results() {
+    public List<Integer> getVotes() {
         return votes;
     }
 
@@ -70,7 +70,7 @@ public class ElectionVote extends Data {
         return getQuestionId() == that.getQuestionId()
                 && getWriteIn() == that.getWriteIn()
                 && java.util.Objects.equals(getId(), that.getId())
-                && java.util.Objects.equals(getVote_results(), that.getVote_results());
+                && java.util.Objects.equals(getVotes(), that.getVotes());
 
     }
 
@@ -78,12 +78,11 @@ public class ElectionVote extends Data {
     public int hashCode() {
         return java.util.Objects.hash(
                 getId(),
-                getVote_results(),
+                getVotes(),
                 getWriteIn(),
                 getQuestionId());
     }
 
-    //TODO
     @Override
     public String toString() {
         return null;
