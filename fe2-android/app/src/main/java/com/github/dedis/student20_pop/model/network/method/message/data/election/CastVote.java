@@ -90,7 +90,7 @@ public class CastVote extends Data {
     //TODO
     @Override
     public String toString() {
-        StringBuilder builder = null;
+        StringBuilder builder = new StringBuilder();
         for (ElectionVote vote: votes) {
             builder.append(vote.toString());
         }
