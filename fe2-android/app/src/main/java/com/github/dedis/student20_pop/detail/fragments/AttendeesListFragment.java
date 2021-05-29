@@ -56,7 +56,7 @@ public class AttendeesListFragment extends Fragment {
             rollCall = optRollCall.get();
         }
 
-        mAttendeesListBinding.rollcallName.setText(rollCall.getName());
+        mAttendeesListBinding.rollcallName.setText("Roll Call: "+rollCall.getName());
         mAttendeesListBinding.setLifecycleOwner(getActivity());
 
         return mAttendeesListBinding.getRoot();

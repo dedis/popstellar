@@ -131,7 +131,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     String firstLaoId = lao.getChannel().substring(6);
     String pk = "";
     try {
-      pk = Base64.getEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, rollcall.getPersistentId()).second);
+      pk = Base64.getUrlEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, rollcall.getPersistentId()).second);
     } catch (NoSuchAlgorithmException | InvalidKeyException | ShortBufferException e) {
       Log.d(TAG, "failed to retrieve public key from wallet", e);
       return false;
