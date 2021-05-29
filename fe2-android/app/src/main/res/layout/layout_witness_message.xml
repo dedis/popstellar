@@ -47,13 +47,13 @@
             android:id="@+id/sign_message_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="SIGN MESSAGE" />
+            android:text="@string/sign_message" />
 
         <ImageButton
             android:id="@+id/witness_message_check_mark"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:contentDescription="message signed"
+            android:contentDescription="@string/message_signed"
             android:src="@drawable/check_mark" />
 
     </LinearLayout>

@@ -41,6 +41,8 @@ import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
 
+import org.glassfish.grizzly.compression.lzma.impl.Base;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
@@ -375,8 +377,11 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         }
 
     }
-/*
     public void signMessage(WitnessMessage witnessMessage) {
+        String messageId = witnessMessage.getMessageId();
+        byte[] messageIdBuf = Base64.getUrlDecoder().decode(messageId); /** Base 64 URL decoded message ID*/
+        String signature = null;  /** Base 64 URL encoded signature of the message that we want to sign*/
+        com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessage signatureMessage; /** Message of type WitnessMessage that will be handled by LAORepository*/
         Log.d(TAG, "signing message with ID " + witnessMessage.getMessageId() );
         Lao lao = getCurrentLaoValue();
         if (lao == null) {
@@ -384,10 +389,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             return;
         }
         String channel = lao.getChannel();
-        com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessage signatureMessage;
-        String laoId = channel.substring(6); // removing /root/ prefix
-        signatureMessage = new com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessage(witnessMessage.getMessageId(),Base64.getUrlEncoder().encodeToString())
-
 
         try {
 
@@ -395,8 +396,14 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             String publicKey = Keys.getEncodedKey(publicKeysetHandle);
             byte[] sender = Base64.getUrlDecoder().decode(publicKey);
             PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+            try {
+                signature = Base64.getUrlEncoder().encodeToString(signer.sign(messageIdBuf));
+            } catch (GeneralSecurityException e) {
+                Log.d(TAG, "failed to generate signature", e);
+            }
             Log.d(TAG, "sending publish message");
-            MessageGeneral msg = new MessageGeneral(sender, createRollCall, signer, mGson);
+            signatureMessage = new com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessage(witnessMessage.getMessageId(),signature);
+            MessageGeneral msg = new MessageGeneral(sender, signatureMessage, signer, mGson);
             Disposable disposable =
                     mLAORepository
                             .sendPublish(channel, msg)
@@ -406,18 +413,14 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                             .subscribe(
                                     answer -> {
                                         if (answer instanceof Result) {
-                                            Log.d(TAG, "created a roll call with id: " + createRollCall.getId());
-                                            if (open) {
-                                                openRollCall(createRollCall.getId());
-                                            } else {
-                                                mCreatedRollCallEvent.postValue(new Event<>(true));
-                                            }
+                                            Log.d(TAG, "Signed message  with id: " + messageId);
+
                                         } else {
-                                            Log.d(TAG, "failed to create a roll call");
+                                            Log.d(TAG, "failed to sign message ");
                                         }
                                     },
                                     throwable -> {
-                                        Log.d(TAG, "timed out waiting for result on roll_call/create", throwable);
+                                        Log.d(TAG, "timed out waiting for result on sign message", throwable);
                                     });
             disposables.add(disposable);
         } catch (GeneralSecurityException | IOException e) {
@@ -425,7 +428,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         }
     }
 
- */
 
 
     /**

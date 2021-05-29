@@ -397,6 +397,8 @@ public class LAORepository {
     return false;
   }
 
+
+
   private boolean handleOpenRollCall(String channel, OpenRollCall openRollCall) {
     Lao lao = laoById.get(channel).getLao();
     Log.d(TAG, "handleOpenRollCall: " + channel);
