@@ -269,7 +269,6 @@ public class HomeViewModel extends AndroidViewModel
    */
 
   public void openLAO(String laoId) {
-    Log.d(TAG, "hi");
     mOpenLaoEvent.setValue(new Event<>(laoId));
   }
 

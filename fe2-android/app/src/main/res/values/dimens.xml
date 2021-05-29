@@ -51,5 +51,7 @@
 
     <!-- Wallet dimensions -->
     <dimen name="wallet_divider_height">1dp</dimen>
+    <dimen name="wallet_qr_code_size">100dp</dimen>
+    <dimen name="wallet_attendee_width">300dp</dimen>
 
 </resources>

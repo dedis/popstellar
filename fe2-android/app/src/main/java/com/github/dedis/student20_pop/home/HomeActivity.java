@@ -56,7 +56,7 @@ public class HomeActivity extends AppCompatActivity {
             stringEvent -> {
               String laoId = stringEvent.getContentIfNotHandled();
               if (laoId != null) {
-                openLaoDetails(laoId, true);
+                openLaoDetails(laoId);
               }
             });
 
@@ -156,7 +156,7 @@ public class HomeActivity extends AppCompatActivity {
                 stringEvent -> {
                   String laoId = stringEvent.getContentIfNotHandled();
                   if (laoId != null) {
-                    openLaoDetails(laoId, false);
+                    openContentWallet(laoId);
                   }
                 });
   }
@@ -308,7 +308,15 @@ public class HomeActivity extends AppCompatActivity {
     }
   }
 
-  private void openLaoDetails(String laoId, boolean openLaoDetail) {
+  private void openLaoDetails(String laoId) {
+    openLaoDetailActivity(laoId, true);
+  }
+
+  private void openContentWallet(String laoId) {
+    openLaoDetailActivity(laoId, false);
+  }
+
+  private void openLaoDetailActivity(String laoId, boolean openLaoDetail) {
     Intent intent = new Intent(this, LaoDetailActivity.class);
     Log.d(TAG, "Trying to open lao detail for lao with id " + laoId);
     intent.putExtra("LAO_ID", laoId);
