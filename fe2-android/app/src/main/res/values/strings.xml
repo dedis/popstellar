@@ -46,6 +46,7 @@
     <string name="past_events">Past Events</string>
     <string name="present_events">Present Events</string>
     <string name="future_events">Future Events</string>
+    <string name = "handle_events">Handle Events</string>
 
     <!-- Poll Event -->
     <string name="poll_event">Poll Event</string>
@@ -135,6 +136,26 @@
     <string name="voting_method_spinner_text">Select a voting method</string>
     <string name="write_in_switch_text">Allow write in</string>
     <string name="new_ballot_option_hint">ballot option</string>
+
+    <string name="elections">Elections</string>
+    <string name="voting_management">Voting Management</string>
+    <string name="cancel_election">Cancel Election</string>
+    <string name="displayed_end_time">displayed end time</string>
+    <string name="displayed_current_time">displayed current time</string>
+    <string name="start_date">start date</string>
+    <string name="end_date">end date</string>
+    <string name="details">Details</string>
+    <string name="manage_election">manage election</string>
+    <string name="current_time">Current Time :</string>
+    <string name="election_start_time">Election Start Time :</string>
+    <string name="election_end_time">Election End Time :</string>
+    <string name="election_question">Election Question : ?</string>
+    <string name="edit_election_name">Edit Election Name</string>
+    <string name="edit_election_question">Edit Election Question</string>
+    <string name="edit_election_ballot_options">Edit Election Ballot Options</string>
+    <string name="edit_election_start_time">Edit Election Start Time</string>
+    <string name="edit_election_end_time">Edit Election End Time</string>
+
 
     <!-- Wallet -->
     <string name="button_own_seed">I own a seed</string>

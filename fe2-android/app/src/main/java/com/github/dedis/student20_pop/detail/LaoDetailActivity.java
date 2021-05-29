@@ -5,12 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
-
 import com.github.dedis.student20_pop.Injection;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
@@ -23,6 +21,7 @@ import com.github.dedis.student20_pop.detail.fragments.event.creation.ElectionSe
 import com.github.dedis.student20_pop.detail.fragments.event.creation.MeetingEventCreationFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.PollEventCreationFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.RollCallEventCreationFragment;
+import com.github.dedis.student20_pop.detail.fragments.ManageElectionFragment;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.home.HomeViewModel;
 import com.github.dedis.student20_pop.model.event.EventType;
@@ -61,38 +60,13 @@ public class LaoDetailActivity extends AppCompatActivity {
                       }
                     });
     // Subscribe to "open home" event
-    mViewModel
-            .getOpenHomeEvent()
-            .observe(
-                    this,
-                    booleanEvent -> {
-                      Boolean event = booleanEvent.getContentIfNotHandled();
-                      if (event != null) {
-                        setupHomeActivity();
-                      }
-                    });
+    setupHomeActivity();
     // Subscribe to "open identity" event
-    mViewModel
-            .getOpenIdentityEvent()
-            .observe(
-                    this,
-                    booleanEvent -> {
-                      Boolean event = booleanEvent.getContentIfNotHandled();
-                      if (event != null) {
-                        setupIdentityFragment();
-                      }
-                    });
+    setupIdentityFragment();
     // Subscribe to "new lao event" event
-    mViewModel
-            .getNewLaoEventEvent()
-            .observe(
-                    this,
-                    eventEvent -> {
-                      EventType eventType = eventEvent.getContentIfNotHandled();
-                      if (eventType != null) {
-                        handleNewEvent(eventType);
-                      }
-                    });
+    handleNewEvent();
+
+    // Subscribe to "open roll call" event
     mViewModel
             .getOpenRollCallEvent()
             .observe(
@@ -114,6 +88,15 @@ public class LaoDetailActivity extends AppCompatActivity {
                       }
                     });
     subscribeWalletEvents();
+
+      // Subscribe to "open cast votes event" event
+      setupCastVotesFragment();
+
+      //Subscribe to "open election display" event
+      setupElectionResultsFragment();
+
+      //Subscribe to "open manage election" event
+      setupManageElectionFragment();
   }
   private void subscribeWalletEvents(){
       mViewModel
@@ -137,24 +120,36 @@ public class LaoDetailActivity extends AppCompatActivity {
                           }
                       });
   }
-  public void handleNewEvent(EventType eventType) {
-    Log.d(TAG, "event type: " + eventType.toString());
-    switch (eventType) {
-      case MEETING:
-        setupCreateMeetingFragment();
-        break;
-      case ROLL_CALL:
-        setupCreateRollCallFragment();
-        break;
-      case POLL:
-        setupCreatePollFragment();
-        break;
-      case ELECTION:
-        setupCreateElectionSetupFragment();
-        break;
-      default:
-        Log.d(TAG, "unknown event type: " + eventType.toString());
-    }
+
+
+  public void handleNewEvent() {
+    mViewModel
+            .getNewLaoEventEvent()
+            .observe(
+                    this,
+                    eventEvent -> {
+                      EventType eventType = eventEvent.getContentIfNotHandled();
+                      if (eventType != null) {
+                        Log.d(TAG, "event type: " + eventType.toString());
+                        switch (eventType) {
+                          case MEETING:
+                            setupCreateMeetingFragment();
+                            break;
+                          case ROLL_CALL:
+                            setupCreateRollCallFragment();
+                            break;
+                          case POLL:
+                            setupCreatePollFragment();
+                            break;
+                          case ELECTION:
+                            setupCreateElectionSetupFragment();
+                            break;
+                          default:
+                            Log.d(TAG, "unknown event type: " + eventType.toString());
+                        }
+                      }
+                    });
+
   }
   public static LaoDetailViewModel obtainViewModel(FragmentActivity activity) {
     ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
@@ -180,18 +175,36 @@ public class LaoDetailActivity extends AppCompatActivity {
     }
   }
   private void setupHomeActivity() {
-    Intent intent = new Intent(this, HomeActivity.class);
-    setResult(HomeActivity.LAO_DETAIL_REQUEST_CODE, intent);
-    finish();
+    mViewModel
+            .getOpenHomeEvent()
+            .observe(
+                    this,
+                    booleanEvent -> {
+                      Boolean event = booleanEvent.getContentIfNotHandled();
+                      if (event != null) {
+                        Intent intent = new Intent(this, HomeActivity.class);
+                        setResult(HomeActivity.LAO_DETAIL_REQUEST_CODE, intent);
+                        finish();
+                      }
+                    });
   }
   private void setupIdentityFragment() {
-    IdentityFragment identityFragment =
-            (IdentityFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_identity);
-    if (identityFragment == null) {
-      identityFragment = IdentityFragment.newInstance();
-      ActivityUtils.replaceFragmentInActivity(
-              getSupportFragmentManager(), identityFragment, R.id.fragment_container_lao_detail);
-    }
+    mViewModel
+            .getOpenIdentityEvent()
+            .observe(
+                    this,
+                    booleanEvent -> {
+                      Boolean event = booleanEvent.getContentIfNotHandled();
+                      if (event != null) {
+                        IdentityFragment identityFragment =
+                                (IdentityFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_identity);
+                        if (identityFragment == null) {
+                          identityFragment = IdentityFragment.newInstance();
+                          ActivityUtils.replaceFragmentInActivity(
+                                  getSupportFragmentManager(), identityFragment, R.id.fragment_container_lao_detail);
+                        }
+                      }
+                    });
   }
   private void setupCreateMeetingFragment() {
     MeetingEventCreationFragment meetingCreationFragment =
@@ -299,4 +312,40 @@ public class LaoDetailActivity extends AppCompatActivity {
                     getSupportFragmentManager(), attendeesListFragment, R.id.fragment_container_lao_detail);
         }
     }
+
+  private void setupManageElectionFragment() {
+
+    mViewModel
+            .getOpenManageElectionEvent()
+            .observe(
+                    this,
+                    booleanEvent -> {
+                      Boolean event = booleanEvent.getContentIfNotHandled();
+                      if(event!= null) {
+                        ManageElectionFragment manageElectionFragment =
+                                (ManageElectionFragment)
+                                        getSupportFragmentManager().findFragmentById(R.id.fragment_manage_election);
+                        if (manageElectionFragment == null) {
+                          manageElectionFragment = ManageElectionFragment.newInstance();
+                          ActivityUtils.replaceFragmentInActivity(
+                                  getSupportFragmentManager(), manageElectionFragment, R.id.fragment_container_lao_detail);
+                        }
+                      }
+                    });
+
+  }
+
+  //TODO : Implement those two methods
+  private void setupCastVotesFragment() {
+      /*
+      will be implemented in Johan's PR
+       */
+  }
+  private void setupElectionResultsFragment() {
+      /*
+      will be implemented in the future
+       */
+  }
+
+
 }

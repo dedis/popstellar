@@ -21,12 +21,13 @@ import {
 import { storeInit } from 'store/Storage';
 import { ProtocolError } from 'model/network';
 import {
-  Base64Data, EventTags, Hash, Lao, PrivateKey, PublicKey, Timestamp, Question,
+  Base64UrlData, EventTags, Hash, Lao, PrivateKey, PublicKey, Timestamp, Question,
 } from 'model/objects';
 import { sign } from 'tweetnacl';
 import { encodeBase64 } from 'tweetnacl-util';
 import { OpenedLaoStore } from 'store';
 import STRINGS from 'res/strings';
+import base64url from 'base64url';
 
 const STALE_TIMESTAMP = new Timestamp(1514761200); // 1st january 2018
 const STANDARD_TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
@@ -38,7 +39,10 @@ export const mockSecretKey = new PrivateKey(keyPair.privateKey);
 
 const generateKeyPair = () => {
   const pair = sign.keyPair();
-  const keys = { pubKey: encodeBase64(pair.publicKey), secKey: encodeBase64(pair.secretKey) };
+  const keys = {
+    pubKey: base64url.fromBase64(encodeBase64(pair.publicKey)),
+    secKey: base64url.fromBase64(encodeBase64(pair.secretKey)),
+  };
   return { pubKey: new PublicKey(keys.pubKey), secKey: new PrivateKey(keys.secKey) };
 };
 
@@ -46,7 +50,7 @@ describe('=== fromJsonData checks ===', () => {
   const sampleKey1: PublicKey = generateKeyPair().pubKey;
   const sampleKey2: PublicKey = generateKeyPair().pubKey;
 
-  const mockMessageId = Base64Data.encode('message_id');
+  const mockMessageId = Base64UrlData.encode('message_id');
 
   const org = mockPublicKey;
   const time = STANDARD_TIMESTAMP;
@@ -600,7 +604,7 @@ describe('=== fromJsonData checks ===', () => {
         CreateLao.fromJson({
           object: ObjectType.LAO,
           action: ActionType.CREATE,
-          id: Base64Data.encode('garbage id'),
+          id: Base64UrlData.encode('garbage id'),
           name: name,
           creation: time,
           organizer: org,
@@ -727,7 +731,7 @@ describe('=== fromJsonData checks ===', () => {
         WitnessMessage.fromJson({
           object: ObjectType.MESSAGE,
           action: ActionType.WITNESS,
-          message_id: Base64Data.encode('inconsistent message_id').valueOf(),
+          message_id: Base64UrlData.encode('inconsistent message_id').valueOf(),
           signature: mockSecretKey.sign(mockMessageId).valueOf(),
         });
       }).toThrow(ProtocolError);
@@ -738,7 +742,7 @@ describe('=== fromJsonData checks ===', () => {
           object: ObjectType.MESSAGE,
           action: ActionType.WITNESS,
           message_id: mockMessageId.valueOf(),
-          signature: mockSecretKey.sign(Base64Data.encode('inconsistent message_id')).valueOf(),
+          signature: mockSecretKey.sign(Base64UrlData.encode('inconsistent message_id')).valueOf(),
         });
       }).toThrow(ProtocolError);
     });

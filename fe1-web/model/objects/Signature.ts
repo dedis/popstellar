@@ -1,21 +1,20 @@
 import { sign } from 'tweetnacl';
-import { decodeBase64 } from 'tweetnacl-util';
 import { PublicKey } from './PublicKey';
-import { Base64Data } from './Base64';
+import { Base64UrlData } from './Base64Url';
 
-export class Signature extends Base64Data {
+export class Signature extends Base64UrlData {
   /**
    * Verify the signature for the message data and return true iff verification succeeded
    *
    * @param key public key of the presumed sender
-   * @param data base64 signed message
+   * @param data base64Url signed message
    * @return true iff the signature verification succeeded
    */
-  public verify(key: PublicKey, data: Base64Data): boolean {
+  public verify(key: PublicKey, data: Base64UrlData): boolean {
     return sign.detached.verify(
-      decodeBase64(data.toString()),
-      decodeBase64(this.toString()),
-      decodeBase64(key.toString()),
+      data.toBuffer(),
+      this.toBuffer(),
+      key.toBuffer(),
     );
   }
 }
