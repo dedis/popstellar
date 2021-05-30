@@ -3,15 +3,14 @@ package witness
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/gorilla/websocket"
+	"github.com/urfave/cli/v2"
+	"golang.org/x/xerrors"
 	"log"
 	"net/http"
 	"net/url"
 	"student20_pop"
 	"student20_pop/hub"
-
-	"github.com/gorilla/websocket"
-	"github.com/urfave/cli/v2"
-	"golang.org/x/xerrors"
 )
 
 var upgrader = websocket.Upgrader{
@@ -61,15 +60,17 @@ func Serve(context *cli.Context) error {
 	go hub.CreateAndServeWs(hub.WitnessHubType, hub.WitnessSocketType, h, witnessPort)
 
 	done := make(chan struct{})
-	h.Start(done)
+	hub.SetupCloseHandler(done)
 
-	done <- struct{}{}
+	h.Start(done)
 
 	return nil
 }
 
+
+
 func connectToSocket(socketType hub.SocketType, address string, h hub.Hub, port int) error {
-	var url string
+	var urlString string
 	switch socketType {
 	case hub.OrganizerSocketType:
 		urlString = fmt.Sprintf("ws://%s:%d/%s/witness/", address, port, socketType)
@@ -81,7 +82,7 @@ func connectToSocket(socketType hub.SocketType, address string, h hub.Hub, port 
 	}
 	u, err := url.Parse(urlString)
 	if err != nil {
-		return xerrors.Errorf("failed to parse connection url %s %v", url, err)
+		return xerrors.Errorf("failed to parse connection url %s %v", urlString, err)
 	}
 	ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {

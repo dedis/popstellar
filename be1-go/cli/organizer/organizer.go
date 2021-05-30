@@ -43,6 +43,8 @@ func Serve(context *cli.Context) error {
 	go hub.CreateAndServeWs(hub.OrganizerHubType, hub.ClientSocketType, h, clientPort)
 
 	done := make(chan struct{})
+	hub.SetupCloseHandler(done)
+
 	h.Start(done)
 
 	done <- struct{}{}

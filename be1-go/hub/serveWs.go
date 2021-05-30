@@ -6,6 +6,9 @@ import (
 	"golang.org/x/xerrors"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 var upgrader = websocket.Upgrader{
@@ -54,4 +57,12 @@ func serveWs(socketType SocketType, h Hub, w http.ResponseWriter, r *http.Reques
 		go witness.ReadPump()
 		go witness.WritePump()
 	}
+}
+
+func SetupCloseHandler(done chan struct{}) {
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		done <- struct{}{}
+	}()
 }
