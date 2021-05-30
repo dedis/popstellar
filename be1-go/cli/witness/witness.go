@@ -85,7 +85,7 @@ func connectToSocket(socketType hub.SocketType, address string, h hub.Hub, port 
 	}
 	ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
-		return xerrors.Errorf("dialing, %v", err)
+		return xerrors.Errorf("failed to dial %v", err)
 	}
 	log.Printf("connected to %s at %s", socketType, urlString)
 	switch socketType {
