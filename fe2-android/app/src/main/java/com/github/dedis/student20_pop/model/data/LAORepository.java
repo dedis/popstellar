@@ -7,6 +7,7 @@ import com.github.dedis.student20_pop.model.Election;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.PendingUpdate;
 import com.github.dedis.student20_pop.model.RollCall;
+import com.github.dedis.student20_pop.model.WitnessMessage;
 import com.github.dedis.student20_pop.model.event.EventState;
 import com.github.dedis.student20_pop.model.network.GenericMessage;
 import com.github.dedis.student20_pop.model.network.answer.Answer;
@@ -25,7 +26,7 @@ import com.github.dedis.student20_pop.model.network.method.message.data.election
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
-import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessage;
+import com.github.dedis.student20_pop.model.network.method.message.data.message.Witness;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
@@ -245,15 +246,15 @@ public class LAORepository {
       enqueue = handleOpenRollCall(channel, (OpenRollCall) data);
     } else if (data instanceof CloseRollCall) {
       enqueue = handleCloseRollCall(channel, (CloseRollCall) data);
-    } else if (data instanceof WitnessMessage) {
-      enqueue = handleWitnessMessage(channel, senderPk, (WitnessMessage) data);
+    } else if (data instanceof Witness) {
+      enqueue = handleWitnessMessage(channel, senderPk, (Witness) data);
     } else {
       Log.d(TAG, "cannot handle message with data" + data.getClass());
       enqueue = true;
     }
 
     // Trigger an onNext
-    if (!(data instanceof WitnessMessage)) {
+    if (!(data instanceof Witness)) {
       LAOState laoState = laoById.get(channel);
       laoState.publish();
       if (data instanceof StateLao || data instanceof CreateLao) {
@@ -392,7 +393,14 @@ public class LAORepository {
     rollCall.setLocation(createRollCall.getLocation());
     rollCall.setDescription(createRollCall.getDescription().orElse(""));
 
+
     lao.updateRollCall(rollCall.getId(), rollCall);
+
+    WitnessMessage message = new WitnessMessage(createRollCall.getId());
+    message.setTitle("New Roll Call Creation with name : " + rollCall.getName());
+    message.setDescription("ID : " + rollCall.getId() + "\n" + "Location : " + rollCall.getLocation());
+
+    lao.updateWitnessMessage(message.getMessageId(),message);
 
     return false;
   }
@@ -445,7 +453,7 @@ public class LAORepository {
     return false;
   }
 
-  private boolean handleWitnessMessage(String channel, String senderPk, WitnessMessage message) {
+  private boolean handleWitnessMessage(String channel, String senderPk, Witness message) {
     String messageId = message.getMessageId();
     String signature = message.getSignature();
 

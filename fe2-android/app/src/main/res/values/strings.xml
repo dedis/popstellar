@@ -171,4 +171,5 @@
     <!-- Witness -->
     <string name="sign_message">SIGN MESSAGE</string>
     <string name="message_signed">MESSAGE SIGNED</string>
+    <string name="witness_messages">WITNESS MESSAGES</string>
 </resources>

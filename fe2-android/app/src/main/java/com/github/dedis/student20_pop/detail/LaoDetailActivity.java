@@ -15,6 +15,7 @@ import com.github.dedis.student20_pop.ViewModelFactory;
 import com.github.dedis.student20_pop.detail.fragments.IdentityFragment;
 import com.github.dedis.student20_pop.detail.fragments.LaoDetailFragment;
 import com.github.dedis.student20_pop.detail.fragments.RollCallDetailFragment;
+import com.github.dedis.student20_pop.detail.fragments.WitnessMessageFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.ElectionSetupFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.MeetingEventCreationFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.PollEventCreationFragment;
@@ -42,6 +43,7 @@ public class LaoDetailActivity extends AppCompatActivity {
     setupLaoFragment();
     setupHomeButton();
     setupIdentityButton();
+    setupWitnessMessageButton();
     // Subscribe to "open lao detail event"
     mViewModel
             .getOpenLaoDetailEvent()
@@ -57,6 +59,8 @@ public class LaoDetailActivity extends AppCompatActivity {
     setupHomeActivity();
     // Subscribe to "open identity" event
     setupIdentityFragment();
+    // Subscribe to " open witness message" event
+      setupWitnessMessageFragment();
     // Subscribe to "new lao event" event
     handleNewEvent();
 
@@ -137,6 +141,10 @@ public class LaoDetailActivity extends AppCompatActivity {
     Button identityButton = (Button) findViewById(R.id.tab_identity);
     identityButton.setOnClickListener(v -> mViewModel.openIdentity());
   }
+    public void setupWitnessMessageButton() {
+        Button witnessMessageButton = findViewById(R.id.tab_witness);
+        witnessMessageButton.setOnClickListener(v -> mViewModel.openWitnessMessage());
+    }
   private void setupLaoFragment() {
     LaoDetailFragment laoDetailFragment =
             (LaoDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_lao_detail);
@@ -177,7 +185,28 @@ public class LaoDetailActivity extends AppCompatActivity {
                         }
                       }
                     });
+
   }
+
+    private void setupWitnessMessageFragment() {
+        mViewModel
+                .getOpenWitnessMessageEvent()
+                .observe(
+                        this,
+                        booleanEvent -> {
+                            Boolean event = booleanEvent.getContentIfNotHandled();
+                            if (event != null) {
+                                WitnessMessageFragment witnessMessageFragment =
+                                        (WitnessMessageFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_witness_message);
+                                if (witnessMessageFragment == null) {
+                                    witnessMessageFragment = witnessMessageFragment.newInstance();
+                                    ActivityUtils.replaceFragmentInActivity(
+                                            getSupportFragmentManager(), witnessMessageFragment, R.id.fragment_container_lao_detail);
+                                }
+                            }
+                        });
+
+    }
   private void setupCreateMeetingFragment() {
     MeetingEventCreationFragment meetingCreationFragment =
             (MeetingEventCreationFragment)

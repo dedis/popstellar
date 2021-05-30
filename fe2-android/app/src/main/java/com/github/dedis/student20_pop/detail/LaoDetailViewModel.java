@@ -28,6 +28,7 @@ import com.github.dedis.student20_pop.model.network.method.message.MessageGenera
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
+import com.github.dedis.student20_pop.model.network.method.message.data.message.Witness;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
@@ -40,8 +41,6 @@ import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
-
-import org.glassfish.grizzly.compression.lzma.impl.Base;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -76,6 +75,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
      */
     private final MutableLiveData<Event<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mOpenIdentityEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<Boolean>> mOpenWitnessMessageEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mShowPropertiesEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mEditPropertiesEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mOpenLaoDetailEvent = new MutableLiveData<>();
@@ -102,6 +102,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     private final MutableLiveData<Lao> mCurrentLao = new MutableLiveData<>();
     private final MutableLiveData<Election> mCurrentElection = new MutableLiveData<>(); // Represents the current election being managed/opened in a fragment
     private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> mIsWitness = new MutableLiveData<>() ;
     private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
     private final MutableLiveData<String> mLaoName = new MutableLiveData<>("");
     private final LiveData<List<String>> mWitnesses =
@@ -115,6 +116,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             .map(mCurrentLao,
                     lao -> lao == null ? new ArrayList<>() :
                             Stream.concat(lao.getRollCalls().values().stream(), lao.getElections().values().stream()).collect(Collectors.toList()));
+    private final LiveData<List<WitnessMessage>> mWitnessMessages =
+            Transformations.map(
+                    mCurrentLao,
+                    lao->lao == null ? new ArrayList<>() : new ArrayList<>(lao.getWitnessMessages().values()));
     /*
      * Dependencies for this class
      */
@@ -381,7 +386,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         String messageId = witnessMessage.getMessageId();
         byte[] messageIdBuf = Base64.getUrlDecoder().decode(messageId); /** Base 64 URL decoded message ID*/
         String signature = null;  /** Base 64 URL encoded signature of the message that we want to sign*/
-        com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessage signatureMessage; /** Message of type WitnessMessage that will be handled by LAORepository*/
+        Witness signatureMessage; /** Message of type WitnessMessage that will be handled by LAORepository*/
         Log.d(TAG, "signing message with ID " + witnessMessage.getMessageId() );
         Lao lao = getCurrentLaoValue();
         if (lao == null) {
@@ -402,7 +407,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                 Log.d(TAG, "failed to generate signature", e);
             }
             Log.d(TAG, "sending publish message");
-            signatureMessage = new com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessage(witnessMessage.getMessageId(),signature);
+            signatureMessage = new Witness(witnessMessage.getMessageId(),signature);
             MessageGeneral msg = new MessageGeneral(sender, signatureMessage, signer, mGson);
             Disposable disposable =
                     mLAORepository
@@ -477,6 +482,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         return mOpenIdentityEvent;
     }
 
+    public LiveData<Event<Boolean>> getOpenWitnessMessageEvent() { return mOpenWitnessMessageEvent; }
+
     public LiveData<Event<Boolean>> getShowPropertiesEvent() {
         return mShowPropertiesEvent;
     }
@@ -520,12 +527,33 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         return mIsOrganizer;
     }
 
+    public LiveData<Boolean> isWitness() {
+        try {
+            KeysetHandle publicKeysetHandle =
+                    mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+            boolean isWitness =
+                    getCurrentLaoValue().getWitnesses().contains(Keys.getEncodedKey(publicKeysetHandle));
+            Log.d(TAG, "isWitness: " + isWitness);
+            mIsWitness.postValue(isWitness);
+
+        } catch (GeneralSecurityException e) {
+            Log.d(TAG, "failed to get public keyset handle", e);
+        } catch (IOException e) {
+            Log.d(TAG, "failed to get public key", e);
+        }
+        mIsWitness.postValue(false);
+        return mIsWitness;}
+
     public LiveData<Boolean> getShowProperties() {
         return showProperties;
     }
 
     public LiveData<List<String>> getWitnesses() {
         return mWitnesses;
+    }
+
+    public LiveData<List<WitnessMessage>> getWitnessMessages() {
+        return mWitnessMessages;
     }
 
     public LiveData<Event<String>> getOpenRollCallEvent() {
@@ -585,6 +613,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
     public void openIdentity() {
         mOpenIdentityEvent.setValue(new Event<>(true));
+    }
+
+    public void openWitnessMessage() {
+        mOpenWitnessMessageEvent.setValue(new Event<>(true));
     }
 
     public void toggleShowHideProperties() {

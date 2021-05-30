@@ -6,7 +6,7 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
 import com.google.gson.annotations.SerializedName;
 
 /** Data sent to attest the message as a witness */
-public class WitnessMessage extends Data {
+public class Witness extends Data {
 
   @SerializedName("message_id")
   private final String messageId;
@@ -19,7 +19,7 @@ public class WitnessMessage extends Data {
    * @param messageId ID of the message
    * @param signature signature by the witness over the message ID
    */
-  public WitnessMessage(String messageId, String signature) {
+  public Witness(String messageId, String signature) {
     this.messageId = messageId;
     this.signature = signature;
   }
@@ -46,7 +46,7 @@ public class WitnessMessage extends Data {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    WitnessMessage that = (WitnessMessage) o;
+    Witness that = (Witness) o;
     return java.util.Objects.equals(getMessageId(), that.getMessageId())
         && java.util.Objects.equals(getSignature(), that.getSignature());
   }
