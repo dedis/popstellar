@@ -69,7 +69,7 @@ func Serve(context *cli.Context) error {
 }
 
 func connectToSocket(socketType hub.SocketType, address string, h hub.Hub, port int) error {
-	var urlString = ""
+	var url string
 	switch socketType {
 	case hub.OrganizerSocketType:
 		urlString = fmt.Sprintf("ws://%s:%d/%s/witness/", address, port, socketType)
