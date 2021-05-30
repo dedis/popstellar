@@ -81,7 +81,7 @@ func connectToSocket(socketType hub.SocketType, address string, h hub.Hub, port 
 	}
 	u, err := url.Parse(urlString)
 	if err != nil {
-		return xerrors.Errorf("parsing, %v", err)
+		return xerrors.Errorf("failed to parse connection url %s %v", url, err)
 	}
 	ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
