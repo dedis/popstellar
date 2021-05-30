@@ -1,5 +1,5 @@
 import 'jest-extended';
-import * as b64 from 'base-64';
+import base64url from 'base64url';
 
 declare global {
   namespace jest {
@@ -8,7 +8,7 @@ declare global {
     // we put R in the last one should be instead, to prevent complaints from TypeScript
 
     interface Matchers<R> {
-      toBeBase64(received: R)
+      toBeBase64Url(received: R)
       : CustomMatcherResult;
 
       toBeJsonEqual(received: any, expected: R)
@@ -17,7 +17,7 @@ declare global {
       toBeDistinctArray(received: R)
       : jest.CustomMatcherResult;
 
-      toBeBase64Array(received: R)
+      toBeBase64UrlArray(received: R)
       : jest.CustomMatcherResult;
 
       toBeKeySignatureArray(received: string, keyField: string, signature: R)
@@ -53,21 +53,21 @@ expect.extend({
     };
   },
 
-  toBeBase64(value: any): jest.CustomMatcherResult {
+  toBeBase64Url(value: any): jest.CustomMatcherResult {
     if (this.isNot) {
-      throw new Error('Unsupported negation on toBeBase64 matcher');
+      throw new Error('Unsupported negation on toBeBase64Url matcher');
     }
 
     try {
-      b64.decode(value.toString());
+      base64url.decode(value.toString());
       return {
         pass: true,
-        message: () => `Expected '${value}' not to be a valid Base64 string`,
+        message: () => `Expected '${value}' not to be a valid Base64Url string`,
       };
     } catch (error) {
       return {
         pass: false,
-        message: () => `Expected '${value}' to be a valid Base64 string`,
+        message: () => `Expected '${value}' to be a valid Base64Url string`,
       };
     }
   },
@@ -85,14 +85,14 @@ expect.extend({
     };
   },
 
-  toBeBase64Array(value: any): jest.CustomMatcherResult {
+  toBeBase64UrlArray(value: any): jest.CustomMatcherResult {
     if (this.isNot) {
       throw new Error('Unsupported negation on toBeBase64Array matcher');
     }
 
     expect(value).toBeArray();
     value.forEach((item: any) => {
-      expect(item).toBeBase64();
+      expect(item).toBeBase64Url();
     });
 
     return {
@@ -117,9 +117,9 @@ expect.extend({
       expect(item).toEqual(
         expect.objectContaining(expectedObj),
       );
-      expect(item[keyField]).toBeBase64();
+      expect(item[keyField]).toBeBase64Url();
       expect(item[keyField].length).toEqual(44); /* EdDSA public key length in base64 */
-      expect(item[signature]).toBeBase64();
+      expect(item[signature]).toBeBase64Url();
     });
     return {
       pass: true,

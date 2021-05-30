@@ -13,7 +13,7 @@ func main() {
 	publicKeyFlag := &cli.StringFlag{
 		Name:    "public-key",
 		Aliases: []string{"pk"},
-		Usage:   "base64 encoded witness's public key",
+		Usage:   "base64url encoded server's public key",
 	}
 	organizerAddressFlag := &cli.StringFlag{
 		Name:    "organizer-address",

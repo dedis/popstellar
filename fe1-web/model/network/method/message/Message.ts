@@ -1,5 +1,5 @@
 import {
-  Base64Data, Hash, PublicKey, Signature, WitnessSignature, WitnessSignatureState,
+  Base64UrlData, Hash, PublicKey, Signature, WitnessSignature, WitnessSignatureState,
 } from 'model/objects';
 import { KeyPairStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
@@ -27,7 +27,7 @@ export interface MessageState {
  * Message represents the Message object in the PoP protocol
  */
 export class Message {
-  public readonly data: Base64Data;
+  public readonly data: Base64UrlData;
 
   public readonly sender: PublicKey;
 
@@ -87,7 +87,7 @@ export class Message {
 
   public static fromJson(obj: any): Message {
     return new Message({
-      data: new Base64Data(obj.data.toString()),
+      data: new Base64UrlData(obj.data.toString()),
       sender: new PublicKey(obj.sender.toString()),
       signature: new Signature(obj.signature.toString()),
       message_id: new Hash(obj.message_id.toString()),
@@ -106,7 +106,7 @@ export class Message {
    * ATTENTION: This may need updating as part of the Digital Wallet project -- 2021-03-03
    */
   public static fromData(data: MessageData, witnessSignatures?: WitnessSignature[]): Message {
-    const encodedDataJson: Base64Data = encodeMessageData(data);
+    const encodedDataJson: Base64UrlData = encodeMessageData(data);
     const signature: Signature = KeyPairStore.getPrivateKey().sign(encodedDataJson);
 
     return new Message({

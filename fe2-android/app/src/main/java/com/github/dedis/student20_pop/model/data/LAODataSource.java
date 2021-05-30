@@ -8,16 +8,17 @@ import com.github.dedis.student20_pop.model.entities.Person;
 import com.github.dedis.student20_pop.model.entities.RollCall;
 import com.github.dedis.student20_pop.model.network.GenericMessage;
 import com.github.dedis.student20_pop.model.network.method.Message;
-
-import java.util.List;
-
+import com.tinder.scarlet.WebSocket;
 import io.reactivex.Observable;
+import java.util.List;
 
 public interface LAODataSource {
 
   interface Remote {
 
     Observable<GenericMessage> observeMessage();
+
+    Observable<WebSocket.Event> observeWebsocket();
 
     void sendMessage(Message msg);
 
