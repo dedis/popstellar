@@ -27,7 +27,6 @@ public class WitnessMessage  {
      *
      * @param pk public key of the witness
      */
-    public boolean isSignedBy(String pk) { return witnesses.contains(pk);}
 
 
     /**

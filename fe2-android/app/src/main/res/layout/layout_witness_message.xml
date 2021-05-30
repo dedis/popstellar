@@ -4,6 +4,9 @@
         <variable
             name="message"
             type="com.github.dedis.student20_pop.model.WitnessMessage" />
+        <variable
+            name="viewmodel"
+            type="com.github.dedis.student20_pop.detail.LaoDetailViewModel" />
     </data>
 
     <LinearLayout
@@ -47,12 +50,14 @@
             android:id="@+id/sign_message_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="@string/sign_message" />
+            android:clickable="@{viewmodel.isWitness() &amp;&amp; !viewmodel.isSignedByCurrentWitness()}"
+            android:text="@{viewmodel.isSignedByCurrentWitness()  ? ` SIGNED MESSAGE ` : ` SIGN MESSAGE `}" />
 
         <ImageButton
             android:id="@+id/witness_message_check_mark"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:visibility="@{viewmodel.isWitness() &amp;&amp; !viewmodel.isSignedByCurrentWitness()}"
             android:contentDescription="@string/message_signed"
             android:src="@drawable/check_mark" />
 

@@ -103,6 +103,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     private final MutableLiveData<Election> mCurrentElection = new MutableLiveData<>(); // Represents the current election being managed/opened in a fragment
     private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
     private final MutableLiveData<Boolean> mIsWitness = new MutableLiveData<>() ;
+    private final MutableLiveData<Boolean> mIsSignedByCurrentWitness = new MutableLiveData<>();
     private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
     private final MutableLiveData<String> mLaoName = new MutableLiveData<>("");
     private final LiveData<List<String>> mWitnesses =
@@ -535,6 +536,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                     getCurrentLaoValue().getWitnesses().contains(Keys.getEncodedKey(publicKeysetHandle));
             Log.d(TAG, "isWitness: " + isWitness);
             mIsWitness.postValue(isWitness);
+            return mIsWitness;
 
         } catch (GeneralSecurityException e) {
             Log.d(TAG, "failed to get public keyset handle", e);
@@ -543,6 +545,26 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         }
         mIsWitness.postValue(false);
         return mIsWitness;}
+
+     public LiveData<Boolean> isSignedByCurrentWitness(Set<String> witnesses) {
+         try {
+             KeysetHandle publicKeysetHandle =
+                     mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+             boolean isSignedByCurrentWitness =
+                     witnesses.contains(Keys.getEncodedKey(publicKeysetHandle));
+             Log.d(TAG, "isSignedByCurrentWitness: " + isSignedByCurrentWitness);
+             mIsSignedByCurrentWitness.postValue(isSignedByCurrentWitness);
+             return mIsSignedByCurrentWitness;
+
+         } catch (GeneralSecurityException e) {
+             Log.d(TAG, "failed to get public keyset handle", e);
+         } catch (IOException e) {
+             Log.d(TAG, "failed to get public key", e);
+         }
+         mIsSignedByCurrentWitness.postValue(false);
+         return  mIsSignedByCurrentWitness;
+
+     }
 
     public LiveData<Boolean> getShowProperties() {
         return showProperties;
