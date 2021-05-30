@@ -12,7 +12,6 @@ import STRINGS from 'res/strings';
 import Home from 'parts/Home';
 import Identity from 'parts/lao/Identity';
 import Attendee from 'parts/lao/attendee/Attendee';
-import GenerateToken from 'parts/lao/GenerateToken';
 import OrganizerNavigation from './organizer/OrganizerNavigation';
 import WitnessNavigation from './witness/WitnessNavigation';
 
@@ -81,8 +80,6 @@ function LaoNavigation() {
   const publicKeyRaw = getKeyPairState(getStore().getState()).keyPair?.publicKey;
   const publicKey = publicKeyRaw ? new PublicKey(publicKeyRaw) : undefined;
 
-  const GenerateTokenComponent = () => <GenerateToken laoIdIn={lao?.id.toString()} />;
-
   const isOrganizer = !!(lao && publicKey && (publicKey.equals(lao.organizer)));
   const isWitness = !!(lao && publicKey && lao.witnesses.some((w) => publicKey.equals(w)));
 
@@ -105,11 +102,6 @@ function LaoNavigation() {
       <OrganizationTopTabNavigator.Screen
         name={STRINGS.organization_navigation_tab_identity}
         component={Identity}
-      />
-
-      <OrganizationTopTabNavigator.Screen
-        name={STRINGS.navigation_wallet_new_token}
-        component={GenerateTokenComponent}
       />
 
       <OrganizationTopTabNavigator.Screen
