@@ -63,14 +63,14 @@ export class HDWallet {
       return false;
     }
 
-    const seedIsValid: boolean = bip39.validateMnemonic(mnemonic);
+    const seedIsValid: boolean = bip39.validateMnemonic(mnemonic.toLowerCase());
     if (!seedIsValid) {
       return false;
     }
 
     this.cryptoManager = new WalletCryptographyHandler();
     await this.cryptoManager.initWalletStorage();
-    const seed: Uint8Array = await bip39.mnemonicToSeed(mnemonic);
+    const seed: Uint8Array = await bip39.mnemonicToSeed(mnemonic.toLowerCase());
     this.encryptedSeed = await this.encryptSeedToStoreInState(seed);
     WalletStore.store(HDWallet.serializeEncryptedSeed(this.encryptedSeed));
     return true;
