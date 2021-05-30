@@ -160,8 +160,8 @@ export class HDWallet {
     return bufView.buffer;
   }
 
+  // =========================================REMOVE==============================================
   public async recoverTokens(): Promise<Map<[Hash, Hash], string>> {
-    // ====================================================================================
     // garbage effort river orphan negative kind outside quit hat camera approve first
     const laoId1: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
     const laoId2: Hash = new Hash('SyJ3d9TdH8Ycb4hPSGQdArTRIdP9Moywi1Ux/Kzav4o=');
@@ -171,14 +171,13 @@ export class HDWallet {
 
     const testMap: Map<[Hash, Hash], string[]> = new Map();
 
-    testMap.set([laoId1, rollCallId1], ['007bdbd94f1d4de2d2c624e2926795a34f02c56dd42a837ab2615e5941e7df64c9', '']);
-    testMap.set([laoId2, rollCallId2], ['fffffffffffffff', '', 'ffdddddddffffffff', '00ec35a46b4ec5132aa28b5f1e1d5d5c4cc4bc2948251444d652ac1c5dc41ee3a9']);
-
-    // ====================================================================================
+    testMap.set([laoId1, rollCallId1], ['7147759d146897111bcf74f60a1948b1d3a22c9199a6b88c236eb7326adc2efc', '']);
+    testMap.set([laoId2, rollCallId2], ['fffffffffffffff', '', 'ffdddddddffffffff', '2c23cfe90936a65839fb64dfb961690c3d8a5a1262f0156cf059b0c45a2eabff']);
     return this.recoverAllKeys(testMap);
   }
+  // =========================================REMOVE==============================================
 
-  private async recoverAllKeys(allKnownLaoRollCalls: Map<[Hash, Hash], string[]>):
+  public async recoverAllKeys(allKnownLaoRollCalls: Map<[Hash, Hash], string[]>):
   Promise<Map<[Hash, Hash], string>> {
     if (allKnownLaoRollCalls === undefined) {
       throw Error('Error while recovering keys from wallet: undefined parameter');
@@ -224,7 +223,6 @@ export class HDWallet {
                 .concat(HDWallet.idToPath(laoId))
                 .concat((HDWallet.idToPath(rollCallId))))))));
 
-    console.log(path);
     return this.generateKeyFromPath(path);
   }
 
@@ -235,14 +233,7 @@ export class HDWallet {
         const hexSeed = Buffer.from(seedArray)
           .toString('hex');
         const { key } = derivePath(path, hexSeed);
-        const publicKey = getPublicKey(key);
-
-        console.log('===========================================================');
-        console.log('private key');
-        console.log(key.toString('hex'));
-        console.log('public key');
-        console.log(publicKey.toString('hex'));
-        console.log('===========================================================');
+        const publicKey = getPublicKey(key, false);
 
         return {
           privateKey: key,
@@ -251,27 +242,29 @@ export class HDWallet {
       });
   }
 
-  private static idToPath(id: Hash): string {
+  private static idToPath(idIn: Hash): string {
+    const id = idIn.toBuffer();
     let idToPath: string = '';
+
     const remainder = id.length % 3;
 
     let i;
     for (i = 0; i + 3 <= id.length; i += 3) {
       idToPath = idToPath.concat(HDWallet.PATH_SEPARATOR
-        .concat(String(id.charCodeAt(i)))
-        .concat(String(id.charCodeAt(i + 1)))
-        .concat(String(id.charCodeAt(i + 2)))
+        .concat(String(id.readUInt8(i)))
+        .concat(String(id.readUInt8(i + 1)))
+        .concat(String(id.readUInt8(i + 2)))
         .concat(HDWallet.HARDENED_SYMBOL));
     }
 
     if (remainder === 1) {
       idToPath = idToPath.concat(HDWallet.PATH_SEPARATOR
-        .concat(String(id.charCodeAt(i)))
+        .concat(String(id.readUInt8(i)))
         .concat(HDWallet.HARDENED_SYMBOL));
     } else if (remainder === 2) {
       idToPath = idToPath.concat(HDWallet.PATH_SEPARATOR
-        .concat(String(id.charCodeAt(i)))
-        .concat(String(id.charCodeAt(i + 1)))
+        .concat(String(id.readUInt8(i)))
+        .concat(String(id.readUInt8(i + 1)))
         .concat(HDWallet.HARDENED_SYMBOL));
     }
     return idToPath;

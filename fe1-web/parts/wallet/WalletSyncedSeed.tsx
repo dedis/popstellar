@@ -94,8 +94,6 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
     const laoId: string[] = [];
     const rollCallId: string[] = [];
 
-    let i = 0;
-
     if (cachedKeyPairs.size === 0) {
       return (
         <View>
@@ -109,14 +107,16 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
       );
     }
 
+    let i = 0;
+
     cachedKeyPairs.forEach((value, key) => {
-      console.log(key.toString());
       const ids: string[] = key.toString().split(',');
       laoId[i] = ids[0];
       rollCallId[i] = ids[1];
       tokens[i] = value;
       i += 1;
     });
+
     return (
       <ScrollView>
         <View style={styles.largePadding} />
