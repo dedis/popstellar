@@ -174,7 +174,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             // Retrieve identity of who is creating the election
             KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
             String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-            byte[] sender = Base64.getDecoder().decode(publicKey);
+            byte[] sender = Base64.getUrlDecoder().decode(publicKey);
             PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
             MessageGeneral msg = new MessageGeneral(sender, electionSetup, signer, mGson);
 
@@ -237,7 +237,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
             KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
             String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-            byte[] sender = Base64.getDecoder().decode(publicKey);
+            byte[] sender = Base64.getUrlDecoder().decode(publicKey);
             PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
             Log.d(TAG, "sending publish message");
             MessageGeneral msg = new MessageGeneral(sender, createRollCall, signer, mGson);
@@ -299,7 +299,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         try {
             KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
             String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-            byte[] sender = Base64.getDecoder().decode(publicKey);
+            byte[] sender = Base64.getUrlDecoder().decode(publicKey);
             PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
             MessageGeneral msg = new MessageGeneral(sender, openRollCall, signer, mGson);
             Disposable disposable =
@@ -346,7 +346,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         try {
             KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
             String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-            byte[] sender = Base64.getDecoder().decode(publicKey);
+            byte[] sender = Base64.getUrlDecoder().decode(publicKey);
             PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
             MessageGeneral msg = new MessageGeneral(sender, closeRollCall, signer, mGson);
             Disposable disposable =
@@ -601,7 +601,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         try {
             KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
             String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-            byte[] sender = Base64.getDecoder().decode(publicKey);
+            byte[] sender = Base64.getUrlDecoder().decode(publicKey);
             PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
 
             long now = Instant.now().getEpochSecond();
@@ -690,7 +690,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     public void enterRollCall(String id) {
         String firstLaoId = getCurrentLaoValue().getChannel().substring(6); // use the laoId set at creation + need to remove /root/ prefix
         try {
-            String pk = Base64.getEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, id).second);
+            String pk = Base64.getUrlEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, id).second);
             mPkRollCallEvent.postValue(new Event<>(pk));
         } catch (NoSuchAlgorithmException | InvalidKeyException | ShortBufferException e) {
             Log.d(TAG, "failed to retrieve public key from wallet", e);
@@ -721,7 +721,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     public void onQRCodeDetected(Barcode barcode) {
         Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
         try {
-            Base64.getDecoder().decode(barcode.rawValue);
+            Base64.getUrlDecoder().decode(barcode.rawValue);
         } catch (IllegalArgumentException e) {
             mScanWarningEvent.postValue(new Event<>("Invalid QR code. Please try again."));
             return;
