@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 public class AttendeesListFragment extends Fragment {
-    public static final String TAG = LaoWalletFragment.class.getSimpleName();
+    public static final String TAG = AttendeesListFragment.class.getSimpleName();
     public static final String EXTRA_ID = "id";
 
     private LaoDetailViewModel mLaoDetailViewModel;
