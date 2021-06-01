@@ -10,7 +10,8 @@ public class ElectionVote  {
     private String id;
     @SerializedName(value = "question")
     private String questionId; // id of the question
-    private List<Integer> votes;
+    private List<Integer> vote;
+    @SerializedName(value = "write_in")
     private Boolean writeIn;
 
     /**
@@ -18,14 +19,14 @@ public class ElectionVote  {
      */
     public ElectionVote(
             String questionId,
-            List<Integer> votes,
+            List<Integer> vote,
             Boolean writeIn,
             String electionId) {
 
         this.questionId = questionId;
         this.writeIn = writeIn;
-        this.votes = votes;
-        this.id = Hash.hash("Vote", electionId, questionId, votes.toString(), writeIn.toString());
+        this.vote = vote;
+        this.id = Hash.hash("Vote", electionId, questionId, vote.toString(), writeIn.toString());
     }
 
 
@@ -42,7 +43,7 @@ public class ElectionVote  {
     }
 
     public List<Integer> getVotes() {
-        return votes;
+        return vote;
     }
 
 
@@ -81,7 +82,7 @@ public class ElectionVote  {
                 + questionId
                 + '\''
                 + ", votes='"
-                + votes
+                + vote
                 + '\''
                 + ", write in='"
                 + writeIn

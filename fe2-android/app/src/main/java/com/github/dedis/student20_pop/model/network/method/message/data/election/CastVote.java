@@ -87,7 +87,6 @@ public class CastVote extends Data {
                 getVotes());
     }
 
-    //TODO
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
