@@ -13,8 +13,8 @@ type inbox struct {
 	msgs  map[string]*messageInfo
 }
 
-func createInbox() inbox {
-	return inbox{
+func createInbox() *inbox {
+	return &inbox{
 		mutex: sync.RWMutex{},
 		msgs:  make(map[string]*messageInfo),
 	}
@@ -22,7 +22,7 @@ func createInbox() inbox {
 
 // addWitnessSig adds a signature of witness to a message of ID `messageID`.
 // if no message has ID `messageID`, does nothing
-func (i inbox) addWitnessSig(messageID []byte, public message.PublicKey, signature message.Signature) {
+func (i *inbox) addWitnessSig(messageID []byte, public message.PublicKey, signature message.Signature) {
 	msg, ok := i.getMessage(messageID)
 	if !ok {
 		// TODO: We received a witness signature before the message itself.
@@ -39,7 +39,7 @@ func (i inbox) addWitnessSig(messageID []byte, public message.PublicKey, signatu
 }
 
 // storeMessage stores a message inside the inbox
-func (i inbox) storeMessage(msg message.Message) {
+func (i *inbox) storeMessage(msg message.Message) {
 	msgIDEncoded := base64.URLEncoding.EncodeToString(msg.MessageID)
 	storedTime := message.Timestamp(time.Now().UnixNano())
 
@@ -54,7 +54,7 @@ func (i inbox) storeMessage(msg message.Message) {
 }
 
 // getMessage returns the message of messageID if it exists.
-func (i inbox) getMessage(messageID []byte) (message.Message, bool) {
+func (i *inbox) getMessage(messageID []byte) (message.Message, bool) {
 	msgIDEncoded := base64.URLEncoding.EncodeToString(messageID)
 
 	i.mutex.RLock()

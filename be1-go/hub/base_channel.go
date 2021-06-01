@@ -17,7 +17,7 @@ type baseChannel struct {
 	clientsMu sync.RWMutex
 	clients   map[*ClientSocket]struct{}
 
-	inbox inbox
+	inbox *inbox
 
 	// /root/<ID>
 	channelID string
