@@ -78,7 +78,7 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
         View.OnClickListener listener = v -> {
             AlertDialog.Builder adb = new AlertDialog.Builder(context);
             adb.setTitle("Sign Message");
-            adb.setMessage(" Are you sure you want to sign message with ID" + messages.get(position).getMessageId());
+            adb.setMessage(" Are you sure you want to sign message with ID : " + messages.get(position).getMessageId());
             adb.setNegativeButton("Cancel", null);
             adb.setPositiveButton(
                     "Confirm",
@@ -91,6 +91,7 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
         binding.signMessageButton.setOnClickListener(listener);
 
         binding.setMessage(messages.get(position));
+        binding.setViewmodel(viewModel);
         binding.setLifecycleOwner(lifecycleOwner);
 
         binding.executePendingBindings();

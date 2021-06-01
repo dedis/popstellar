@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
     <data>
+        <import type="android.view.View" />
         <variable
             name="message"
             type="com.github.dedis.student20_pop.model.WitnessMessage" />
@@ -16,7 +17,7 @@
 
         <LinearLayout
             android:id="@+id/witness_message_layout"
-            android:layout_width="235dp"
+            android:layout_width="271dp"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
@@ -26,8 +27,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/margin_text"
                 android:gravity="center"
-                android:text="@{`Message Title : `+message.title}"
-                android:textSize="@dimen/size_body"
+                android:text="@{message.title}"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -35,29 +36,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/margin_text"
-                android:text="@{`Description : `+message.description}" />
-
-            <TextView
-                android:id="@+id/message_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/margin_text"
-                android:text="@{`Message ID : `+message.messageId}" />
+                android:text="@{message.description}"
+                android:textSize="13sp" />
 
         </LinearLayout>
 
         <Button
             android:id="@+id/sign_message_button"
-            android:layout_width="wrap_content"
+            android:layout_width="102dp"
             android:layout_height="match_parent"
-            android:clickable="@{viewmodel.isWitness() &amp;&amp; !viewmodel.isSignedByCurrentWitness()}"
-            android:text="@{viewmodel.isSignedByCurrentWitness()  ? ` SIGNED MESSAGE ` : ` SIGN MESSAGE `}" />
+            android:clickable="@{viewmodel.isWitness() &amp;&amp; !viewmodel.isSignedByCurrentWitness(message.getWitnesses())}"
+            android:text="@{viewmodel.isSignedByCurrentWitness(message.getWitnesses())  ? ` SIGNED MESSAGE ` : ` SIGN MESSAGE `}" />
 
         <ImageButton
             android:id="@+id/witness_message_check_mark"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:visibility="@{viewmodel.isWitness() &amp;&amp; !viewmodel.isSignedByCurrentWitness()}"
+            android:visibility="@{(viewmodel.isWitness() &amp;&amp; viewmodel.isSignedByCurrentWitness(message.getWitnesses())) ? View.VISIBLE : View.GONE}"
             android:contentDescription="@string/message_signed"
             android:src="@drawable/check_mark" />
 

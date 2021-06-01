@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -62,10 +63,12 @@ public class LaoDetailFragment extends Fragment {
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
+    setupWitnessMessageButton();
     setupPropertiesButton();
     setupEditPropertiesButton();
     setupConfirmEditButton();
     setupCancelEditButton();
+    setupAddWitnessButton();
 
     setupEventListAdapter();
     setupEventListUpdates();
@@ -117,11 +120,23 @@ public class LaoDetailFragment extends Fragment {
               });
   }
 
+
+  private void setupWitnessMessageButton() {
+        Button witnessMessageButton = (Button) getActivity().findViewById(R.id.tab_witness_message_button);
+        witnessMessageButton.setOnClickListener(v -> mLaoDetailViewModel.openWitnessMessage());
+    }
+
+  private void setupAddWitnessButton() {
+      mLaoDetailFragBinding.addWitnessButton.setOnClickListener(v -> mLaoDetailViewModel.openAddWitness());
+  }
+
   private void setupPropertiesButton() {
     Button propertiesButton = (Button) getActivity().findViewById(R.id.tab_properties);
 
     propertiesButton.setOnClickListener(clicked -> mLaoDetailViewModel.toggleShowHideProperties());
   }
+
+
 
   private void setupEditPropertiesButton() {
     mLaoDetailFragBinding.editButton.setOnClickListener(

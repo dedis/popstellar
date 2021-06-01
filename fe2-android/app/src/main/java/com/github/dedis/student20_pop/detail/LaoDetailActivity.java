@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.student20_pop.Injection;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
+import com.github.dedis.student20_pop.databinding.FragmentLaoDetailBinding;
 import com.github.dedis.student20_pop.detail.fragments.IdentityFragment;
 import com.github.dedis.student20_pop.detail.fragments.LaoDetailFragment;
 import com.github.dedis.student20_pop.detail.fragments.RollCallDetailFragment;
@@ -43,7 +44,6 @@ public class LaoDetailActivity extends AppCompatActivity {
     setupLaoFragment();
     setupHomeButton();
     setupIdentityButton();
-    setupWitnessMessageButton();
     // Subscribe to "open lao detail event"
     mViewModel
             .getOpenLaoDetailEvent()
@@ -62,6 +62,8 @@ public class LaoDetailActivity extends AppCompatActivity {
     // Subscribe to " open witness message" event
       setupWitnessMessageFragment();
     // Subscribe to "new lao event" event
+
+      setupAddWitness();
     handleNewEvent();
 
     // Subscribe to "open roll call" event
@@ -141,10 +143,7 @@ public class LaoDetailActivity extends AppCompatActivity {
     Button identityButton = (Button) findViewById(R.id.tab_identity);
     identityButton.setOnClickListener(v -> mViewModel.openIdentity());
   }
-    public void setupWitnessMessageButton() {
-        Button witnessMessageButton = findViewById(R.id.tab_witness);
-        witnessMessageButton.setOnClickListener(v -> mViewModel.openWitnessMessage());
-    }
+
   private void setupLaoFragment() {
     LaoDetailFragment laoDetailFragment =
             (LaoDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_lao_detail);
@@ -239,6 +238,37 @@ public class LaoDetailActivity extends AppCompatActivity {
               getSupportFragmentManager(), pollCreationFragment, R.id.fragment_container_lao_detail);
     }
   }
+
+
+    private void setupAddWitness(){
+        mViewModel
+                .getOpenAddWitness()
+                .observe(
+                        this,
+                        booleanEvent -> {
+                            Boolean event = booleanEvent.getContentIfNotHandled();
+                            if (event != null) {
+                                QRCodeScanningFragment scanningFragment =
+                                        (QRCodeScanningFragment) getSupportFragmentManager().findFragmentById(R.id.qr_code);
+
+                                if (scanningFragment == null) {
+                                    Context context = getApplicationContext();
+                                    BarcodeDetector qrCodeDetector = Injection.provideQRCodeDetector(context);
+                                    int width = getResources().getInteger(R.integer.camera_preview_width);
+                                    int height = getResources().getInteger(R.integer.camera_preview_height);
+                                    scanningFragment =
+                                            QRCodeScanningFragment.newInstance(
+                                                    Injection.provideCameraSource(context, qrCodeDetector, width, height),
+                                                    qrCodeDetector);
+                                    ActivityUtils.replaceFragmentInActivity(
+                                            getSupportFragmentManager(), scanningFragment, R.id.fragment_container_lao_detail);
+                                }
+                                }
+                            }
+                );
+
+    }
+
   private void setupScanFragmentRollCall() {
     QRCodeScanningFragment scanningFragment =
             (QRCodeScanningFragment) getSupportFragmentManager().findFragmentById(R.id.add_attendee_layout);

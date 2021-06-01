@@ -51,6 +51,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -397,8 +398,8 @@ public class LAORepository {
     lao.updateRollCall(rollCall.getId(), rollCall);
 
     WitnessMessage message = new WitnessMessage(createRollCall.getId());
-    message.setTitle("New Roll Call Creation with name : " + rollCall.getName());
-    message.setDescription("ID : " + rollCall.getId() + "\n" + "Location : " + rollCall.getLocation());
+    message.setTitle("New Roll Call Creation " );
+    message.setDescription("Name : " + rollCall.getName() + "\n" + "Location : " + rollCall.getLocation()  + "\n" + "Message ID : " + rollCall.getId());
 
     lao.updateWitnessMessage(message.getMessageId(),message);
 
@@ -475,6 +476,16 @@ public class LAORepository {
       msg.getWitnessSignatures().add(new PublicKeySignaturePair(senderPkBuf, signatureBuf));
 
       Lao lao = laoById.get(channel).getLao();
+      try {
+         WitnessMessage witnessMessage = lao.getWitnessMessage(messageId).get();
+        witnessMessage.addWitness(senderPk);
+        lao.updateWitnessMessage(messageId,witnessMessage);
+        Log.d(TAG, "Signed message  with id: " + messageId);
+      } catch(NoSuchElementException e) {
+        Log.d(TAG, "Failed to retrieve the witness message in the lao with ID " + messageId);
+
+      }
+
       Set<PendingUpdate> pendingUpdates = lao.getPendingUpdates();
       if (pendingUpdates.contains(messageId)) {
         // We're waiting to collect signatures for this one

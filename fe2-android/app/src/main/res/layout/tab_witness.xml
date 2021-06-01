@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/tab_witness"
+    android:id="@+id/tab_witness_message"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -28,7 +28,7 @@
         app:layout_constraintGuide_percent="@dimen/guideline_vertical_tab_wallet" />
 
     <Button
-        android:id="@+id/tab_properties"
+        android:id="@+id/tab_witness_message_button"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:text="@string/witness_messages"

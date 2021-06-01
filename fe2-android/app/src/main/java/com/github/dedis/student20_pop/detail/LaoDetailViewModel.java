@@ -87,6 +87,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     private final MutableLiveData<Event<Boolean>> mOpenManageElectionEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mElectionCreatedEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mOpenCastVotesEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<Boolean>> mOpenAddWitness = new MutableLiveData<>();
 
     private final MutableLiveData<Event<Integer>> mNbAttendeesEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mCloseRollCallEvent = new MutableLiveData<>();
@@ -419,7 +420,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                             .subscribe(
                                     answer -> {
                                         if (answer instanceof Result) {
-                                            Log.d(TAG, "Signed message  with id: " + messageId);
+                                            Log.d(TAG, "Verifying the signature of  message  with id: " + messageId);
 
                                         } else {
                                             Log.d(TAG, "failed to sign message ");
@@ -535,7 +536,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             boolean isWitness =
                     getCurrentLaoValue().getWitnesses().contains(Keys.getEncodedKey(publicKeysetHandle));
             Log.d(TAG, "isWitness: " + isWitness);
-            mIsWitness.postValue(isWitness);
+            mIsWitness.postValue(true);
             return mIsWitness;
 
         } catch (GeneralSecurityException e) {
@@ -580,6 +581,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
     public LiveData<Event<String>> getOpenRollCallEvent() {
         return mOpenRollCallEvent;
+    }
+
+    public LiveData<Event<Boolean>> getOpenAddWitness() {
+        return mOpenAddWitness;
     }
 
     public LiveData<Event<Integer>> getNbAttendeesEvent() {
@@ -640,6 +645,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     public void openWitnessMessage() {
         mOpenWitnessMessageEvent.setValue(new Event<>(true));
     }
+
+    public void openAddWitness() { mOpenAddWitness.setValue(new Event<>(true));}
 
     public void toggleShowHideProperties() {
         boolean val = showProperties.getValue();
