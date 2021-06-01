@@ -1,14 +1,12 @@
 package hub
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
 	"sort"
 	"student20_pop/message"
 	"sync"
-	"time"
 )
 
 // baseChannel represent a generic channel and contains all the fields that are
@@ -19,8 +17,7 @@ type baseChannel struct {
 	clientsMu sync.RWMutex
 	clients   map[*ClientSocket]struct{}
 
-	inboxMu sync.RWMutex
-	inbox   map[string]messageInfo
+	inbox inbox
 
 	// /root/<ID>
 	channelID string
@@ -74,13 +71,13 @@ func (c *baseChannel) Unsubscribe(client *ClientSocket, msg message.Unsubscribe)
 func (c *baseChannel) Catchup(catchup message.Catchup) []message.Message {
 	log.Printf("received a catchup with id: %d", catchup.ID)
 
-	c.inboxMu.RLock()
-	defer c.inboxMu.RUnlock()
+	c.inbox.mutex.RLock()
+	defer c.inbox.mutex.RUnlock()
 
-	messages := make([]messageInfo, 0, len(c.inbox))
+	messages := make([]messageInfo, 0, len(c.inbox.msgs))
 	// iterate over map and collect all the values (messageInfo instances)
-	for _, msgInfo := range c.inbox {
-		messages = append(messages, msgInfo)
+	for _, msgInfo := range c.inbox.msgs {
+		messages = append(messages, *msgInfo)
 	}
 
 	// sort.Slice on messages based on the timestamp
@@ -88,7 +85,7 @@ func (c *baseChannel) Catchup(catchup message.Catchup) []message.Message {
 		return messages[i].storedTime < messages[j].storedTime
 	})
 
-	result := make([]message.Message, 0, len(c.inbox))
+	result := make([]message.Message, 0, len(c.inbox.msgs))
 
 	// iterate and extract the messages[i].message field and
 	// append it to the result slice
@@ -97,20 +94,6 @@ func (c *baseChannel) Catchup(catchup message.Catchup) []message.Message {
 	}
 
 	return result
-}
-
-func (c *baseChannel) storeMessage(msg message.Message) {
-	msgIDEncoded := base64.URLEncoding.EncodeToString(msg.MessageID)
-	storedTime := message.Timestamp(time.Now().UnixNano())
-
-	messageInfo := messageInfo{
-		message:    msg,
-		storedTime: storedTime,
-	}
-
-	c.inboxMu.Lock()
-	c.inbox[msgIDEncoded] = messageInfo
-	c.inboxMu.Unlock()
 }
 
 func (c *baseChannel) broadcastToAllClients(msg message.Message) {
@@ -154,18 +137,13 @@ func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 		}
 	}
 
-	msgIDEncoded := base64.URLEncoding.EncodeToString(msg.MessageID)
-
 	// Check if the message already exists
-	c.inboxMu.RLock()
-	if _, ok := c.inbox[msgIDEncoded]; ok {
-		c.inboxMu.RUnlock()
+	if _, ok := c.inbox.getMessage(msg.MessageID); ok {
 		return &message.Error{
 			Code:        -3,
 			Description: "message already exists",
 		}
 	}
-	c.inboxMu.RUnlock()
 
 	return nil
 }

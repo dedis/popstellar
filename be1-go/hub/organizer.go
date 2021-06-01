@@ -351,7 +351,7 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 		attendees:   make(map[string]struct{}),
 		baseChannel: createBaseChannel(o, laoChannelID),
 	}
-	laoCh.storeMessage(*publish.Params.Message)
+	laoCh.inbox.storeMessage(*publish.Params.Message)
 
 	o.channelByID[encodedID] = &laoCh
 
@@ -425,18 +425,16 @@ func (c *laoChannel) processLaoObject(msg message.Message) error {
 		return message.NewInvalidActionError(message.DataAction(action))
 	}
 
-	c.storeMessage(msg)
+	c.inbox.storeMessage(msg)
 
 	return nil
 }
 
 func (c *laoChannel) processLaoState(data *message.StateLAOData) error {
 	// Check if we have the update message
-	updateMsgIDEncoded := base64.URLEncoding.EncodeToString(data.ModificationID)
+	msg, ok := c.inbox.getMessage(data.ModificationID)
 
-	c.inboxMu.RLock()
-	updateMsgInfo, ok := c.inbox[updateMsgIDEncoded]
-	c.inboxMu.RUnlock()
+	updateMsgIDEncoded := base64.URLEncoding.EncodeToString(data.ModificationID)
 
 	if !ok {
 		return &message.Error{
@@ -483,7 +481,7 @@ func (c *laoChannel) processLaoState(data *message.StateLAOData) error {
 	}
 
 	// Check if the updates are consistent with the update message
-	updateMsgData, ok := updateMsgInfo.message.Data.(*message.UpdateLAOData)
+	updateMsgData, ok := msg.Data.(*message.UpdateLAOData)
 	if !ok {
 		return &message.Error{
 			Code:        -4,
@@ -571,8 +569,6 @@ func (c *laoChannel) processMessageObject(public message.PublicKey, data message
 	case message.WitnessAction:
 		witnessData := data.(*message.WitnessMessageData)
 
-		msgEncoded := base64.URLEncoding.EncodeToString(witnessData.MessageID)
-
 		err := schnorr.VerifyWithChecks(student20_pop.Suite, public, witnessData.MessageID, witnessData.Signature)
 		if err != nil {
 			return &message.Error{
@@ -581,21 +577,7 @@ func (c *laoChannel) processMessageObject(public message.PublicKey, data message
 			}
 		}
 
-		c.inboxMu.Lock()
-		msgInfo, ok := c.inbox[msgEncoded]
-		if !ok {
-			// TODO: We received a witness signature before the message itself.
-			// We ignore it for now but it might be worth keeping it until we
-			// actually receive the message
-			log.Printf("failed to find message_id %s for witness message", msgEncoded)
-			c.inboxMu.Unlock()
-			return nil
-		}
-		msgInfo.message.WitnessSignatures = append(msgInfo.message.WitnessSignatures, message.PublicKeySignaturePair{
-			Witness:   public,
-			Signature: witnessData.Signature,
-		})
-		c.inboxMu.Unlock()
+		c.inbox.addWitnessSig(witnessData.MessageID, public, witnessData.Signature)
 	default:
 		return message.NewInvalidActionError(message.DataAction(action))
 	}
@@ -642,7 +624,7 @@ func (c *laoChannel) processRollCallObject(msg message.Message) error {
 		return message.NewError(errorDescription, err)
 	}
 
-	c.storeMessage(msg)
+	c.inbox.storeMessage(msg)
 
 	return nil
 }
