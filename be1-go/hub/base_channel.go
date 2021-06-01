@@ -37,7 +37,7 @@ func createBaseChannel(h *organizerHub, channelID string) *baseChannel {
 		hub:       h,
 		channelID: channelID,
 		clients:   make(map[*ClientSocket]struct{}),
-		inbox:     make(map[string]messageInfo),
+		inbox:     createInbox(),
 	}
 }
 

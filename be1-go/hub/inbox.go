@@ -13,6 +13,13 @@ type inbox struct {
 	msgs  map[string]*messageInfo
 }
 
+func createInbox() inbox {
+	return inbox{
+		mutex: sync.RWMutex{},
+		msgs:  make(map[string]*messageInfo),
+	}
+}
+
 // addWitnessSig adds a signature of witness to a message of ID `messageID`.
 // if no message has ID `messageID`, does nothing
 func (i inbox) addWitnessSig(messageID []byte, public message.PublicKey, signature message.Signature) {

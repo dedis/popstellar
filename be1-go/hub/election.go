@@ -90,7 +90,7 @@ func (c *laoChannel) createElection(msg message.Message) error {
 	}
 
 	// Add the SetupElection message to the new election channel
-	electionCh.storeMessage(msg)
+	electionCh.inbox.storeMessage(msg)
 
 	// Add the new election channel to the organizerHub
 	organizerHub.channelByID[encodedID] = &electionCh
@@ -145,7 +145,7 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 	}
 
 	//This should update any previously set vote if the message ids are the same
-	c.storeMessage(*msg)
+	c.inbox.storeMessage(*msg)
 	for _, q := range voteData.Votes {
 
 		QuestionID := base64.URLEncoding.EncodeToString(q.QuestionID)
