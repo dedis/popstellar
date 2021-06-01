@@ -213,6 +213,7 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 			Code:        -2,
 			Description: fmt.Sprintf("channel with id %s does not exist", channelID),
 		})
+		o.RUnlock()
 		return
 	}
 	o.RUnlock()
@@ -329,7 +330,7 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 		}
 	}
 
-	encodedID := base64.StdEncoding.EncodeToString(data.ID)
+	encodedID := base64.URLEncoding.EncodeToString(data.ID)
 	if _, ok := o.channelByID[encodedID]; ok {
 		return &message.Error{
 			Code:        -3,
@@ -431,7 +432,7 @@ func (c *laoChannel) processLaoObject(msg message.Message) error {
 
 func (c *laoChannel) processLaoState(data *message.StateLAOData) error {
 	// Check if we have the update message
-	updateMsgIDEncoded := base64.StdEncoding.EncodeToString(data.ModificationID)
+	updateMsgIDEncoded := base64.URLEncoding.EncodeToString(data.ModificationID)
 
 	c.inboxMu.RLock()
 	updateMsgInfo, ok := c.inbox[updateMsgIDEncoded]
@@ -473,7 +474,7 @@ func (c *laoChannel) processLaoState(data *message.StateLAOData) error {
 	for _, pair := range data.ModificationSignatures {
 		err := schnorr.VerifyWithChecks(student20_pop.Suite, pair.Witness, data.ModificationID, pair.Signature)
 		if err != nil {
-			pk := base64.StdEncoding.EncodeToString(pair.Witness)
+			pk := base64.URLEncoding.EncodeToString(pair.Witness)
 			return &message.Error{
 				Code:        -4,
 				Description: fmt.Sprintf("signature verification failed for witness %s", pk),
@@ -570,7 +571,7 @@ func (c *laoChannel) processMessageObject(public message.PublicKey, data message
 	case message.WitnessAction:
 		witnessData := data.(*message.WitnessMessageData)
 
-		msgEncoded := base64.StdEncoding.EncodeToString(witnessData.MessageID)
+		msgEncoded := base64.URLEncoding.EncodeToString(witnessData.MessageID)
 
 		err := schnorr.VerifyWithChecks(student20_pop.Suite, public, witnessData.MessageID, witnessData.Signature)
 		if err != nil {

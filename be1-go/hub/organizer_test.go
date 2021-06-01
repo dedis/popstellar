@@ -89,7 +89,7 @@ func createLao(o *organizerHub, oKeypair keypair, name string) (string, *laoChan
 		},
 	}
 	o.createLao(publish)
-	id := base64.StdEncoding.EncodeToString(laoID)
+	id := base64.URLEncoding.EncodeToString(laoID)
 
 	channel, ok := oHub.channelByID[id]
 	if !ok {
@@ -145,7 +145,7 @@ func newCloseRollCallData(id []byte, prevID []byte, closedAt message.Timestamp, 
 
 func newCorrectCloseRollCallData(laoID string, prevID []byte, attendees []message.PublicKey) (*message.CloseRollCallData, error) {
 	closedAt := timestamp()
-	prevID64 := base64.StdEncoding.EncodeToString(prevID)
+	prevID64 := base64.URLEncoding.EncodeToString(prevID)
 	id, err := message.Hash(message.Stringer('R'), message.Stringer(laoID), message.Stringer(prevID64), closedAt)
 	if err != nil {
 		return nil, err
@@ -169,7 +169,7 @@ func newOpenRollCallData(id []byte, prevID []byte, openedAt message.Timestamp, a
 
 func newCorrectOpenRollCallData(laoID string, prevID []byte, action message.OpenRollCallActionType) (*message.OpenRollCallData, error) {
 	openedAt := timestamp()
-	prevID64 := base64.StdEncoding.EncodeToString(prevID)
+	prevID64 := base64.URLEncoding.EncodeToString(prevID)
 	id, err := message.Hash(message.Stringer('R'), message.Stringer(laoID), message.Stringer(prevID64), openedAt)
 	if err != nil {
 		return nil, err
