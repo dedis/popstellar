@@ -100,7 +100,7 @@ func (c *baseChannel) Catchup(catchup message.Catchup) []message.Message {
 }
 
 func (c *baseChannel) storeMessage(msg message.Message) {
-	msgIDEncoded := base64.StdEncoding.EncodeToString(msg.MessageID)
+	msgIDEncoded := base64.URLEncoding.EncodeToString(msg.MessageID)
 	storedTime := message.Timestamp(time.Now().UnixNano())
 
 	messageInfo := messageInfo{
