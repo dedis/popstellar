@@ -47,7 +47,5 @@ func Serve(context *cli.Context) error {
 
 	h.Start(done)
 
-	done <- struct{}{}
-
 	return nil
 }

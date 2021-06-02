@@ -59,6 +59,10 @@ func (s *baseSocket) ReadPump() {
 
 	log.Printf("listening for messages from %s", s.socketType)
 
+	done := make(chan struct{})
+
+	SetupCloseHandler(done)
+
 	s.conn.SetReadLimit(maxMessageSize)
 	s.conn.SetReadDeadline(time.Now().Add(pongWait))
 	s.conn.SetPongHandler(func(string) error { s.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
@@ -80,6 +84,11 @@ func (s *baseSocket) ReadPump() {
 		}
 
 		s.hub.Recv(msg)
+
+		select {
+		case <-done:
+			return
+		}
 	}
 }
 
@@ -93,6 +102,10 @@ func (s *baseSocket) WritePump() {
 	}()
 
 	s.Wait.Add(1)
+
+	done := make(chan struct{})
+
+	SetupCloseHandler(done)
 
 	for {
 		select {
@@ -121,6 +134,8 @@ func (s *baseSocket) WritePump() {
 				log.Printf("failed to send ping: %v", err)
 				return
 			}
+		case <-done:
+			return
 		}
 	}
 }
