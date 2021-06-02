@@ -40,6 +40,13 @@ public class ElectionTest {
     }
 
     @Test
+    public void settingAndGettingReturnsCorrespondingEndBoolean() {
+        assertThat(election.getEnded(), is(false));
+        election.setEnded(true);
+        assertThat(election.getEnded(), is(true));
+    }
+
+    @Test
     public void settingAndGettingReturnsCorrespondingId() {
         election.setId(id);
         assertThat(election.getId(), is(id));

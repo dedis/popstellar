@@ -25,6 +25,9 @@ public class Election extends Event {
     private long end;
     private List<ElectionQuestion> electionQuestions;
 
+    //boolean to verify if the election is ended
+    private boolean isEnded = false;
+
     //Map that associates each sender pk to their votes
     private Map<String, List<ElectionVote>> voteMap;
 
@@ -35,6 +38,14 @@ public class Election extends Event {
         this.results = new ArrayList<>();
         this.electionQuestions = new ArrayList<>();
         this.voteMap = new TreeMap<>();
+    }
+
+    public void setEnded(boolean isEnded) {
+        this.isEnded = isEnded;
+    }
+
+    public boolean getEnded() {
+        return isEnded;
     }
 
     public String getId() {
