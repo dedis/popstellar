@@ -2,42 +2,87 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
   <data>
     <import type="android.view.View" />
-
     <variable
-      name="view_model"
-      type="com.github.dedis.student20_pop.home.HomeViewModel" />
+        name="viewmodel"
+        type="com.github.dedis.student20_pop.home.HomeViewModel"/>
   </data>
   <androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/fragment_content_wallet"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+      android:id="@+id/fragment_content_wallet"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      >
 
-  <androidx.constraintlayout.widget.Guideline
-    android:id="@+id/guideline_horizontal_tab"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal"
-    app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
-
-  <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:orientation="vertical"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab">
-
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_horizontal_tab"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab"/>
 
     <TextView
-      android:textStyle="bold"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:gravity="center"
-      android:text="@string/content_title"
-      android:textSize="@dimen/size_title" />
-  </LinearLayout>
+        android:id="@+id/title_wallet"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/content_title"
+        android:textSize="@dimen/size_title"
+        app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab"/>
 
+    <LinearLayout
+        android:id="@+id/welcome_screen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab">
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginHorizontal="@dimen/margin_text"
+          android:gravity="center"
+          android:text="@string/wallet_empty"
+          android:textSize="@dimen/size_title"
+          android:textStyle="bold" />
+
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginHorizontal="@dimen/margin_text"
+          android:gravity="center"
+          android:text="@string/tokens_introduction"
+          android:textSize="@dimen/size_body"
+          android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/list_screen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/title_wallet">
+
+      <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+          android:id="@+id/swipe_refresh"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content">
+
+        <ListView
+            android:id="@+id/lao_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/margin_button"
+            android:layout_marginRight="@dimen/margin_button"
+            android:divider="@color/white"
+            android:dividerHeight="@dimen/margin_top" />
+      </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </LinearLayout>
 
   </androidx.constraintlayout.widget.ConstraintLayout>
-  </layout>
+</layout>
