@@ -250,15 +250,15 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
             ViewGroup parent) {
 
         Event event = ((Event) getChild(groupPosition, childPosition));
-        LayoutEventBinding layoutEventBinding;
+        LayoutEventBinding layoutEventBinding ;
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             layoutEventBinding = LayoutEventBinding.inflate(inflater, parent, false);
         } else {
             layoutEventBinding = DataBindingUtil.getBinding(convertView);
         }
-        assert layoutEventBinding != null;
-        layoutEventBinding.setEvent(event);
+            layoutEventBinding.setEvent(event);
+
         EventCategory category = (EventCategory) getGroup(groupPosition);
         if (event.getType() == EventType.ELECTION) {
             return setupElectionElement((Election) event, category,layoutEventBinding);
@@ -341,7 +341,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         electionBinding.setViewModel(viewModel);
         electionBinding.setLifecycleOwner(lifecycleOwner);
         electionBinding.executePendingBindings();
-        return electionBinding.getRoot();
+        return layoutEventBinding.getRoot();
     }
 
     /**
@@ -392,6 +392,6 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         binding.setLifecycleOwner(lifecycleOwner);
 
         binding.executePendingBindings();
-        return binding.getRoot();
+        return layoutEventBinding.getRoot();
     }
 }
