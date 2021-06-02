@@ -45,7 +45,7 @@ func Serve(cliCtx *cli.Context) error {
 		return xerrors.Errorf("failed create the organizer hub: %v", err)
 	}
 
-	ctx, cancel := context.WithCancel(cliCtx)
+	ctx, cancel := context.WithCancel(cliCtx.Context)
 	defer cancel()
 
 	wg := &sync.WaitGroup{}
