@@ -87,6 +87,7 @@
     <string name="scheduled_rollcall">SCHEDULED</string>
     <string name="enter_rollcall">ENTER</string>
     <string name="closed_rollcall">CLOSED</string>
+    <string name="attendees_list_rollcall">ATTENDEES</string>
 
     <string name="back">BACK</string>
 
@@ -170,4 +171,8 @@
     <string name="text_seed_wallet">This is the only backup for your PoP tokens - store it securely</string>
     <string name="confirm_button">Confirm</string>
     <string name="content_title">Tokens</string>
+    <string name="wallet_empty">Your wallet is empty</string>
+    <string name="tokens_introduction">If you would like to receive tokens, please connect to a LAO and participate in a roll call.\n
+        If you are an organizer, you can look at the attendees\' public tokens of the roll calls you organize.</string>
+
 </resources>

@@ -72,4 +72,9 @@
     <dimen name="guideline_titles">140dp</dimen>
     <dimen name="swipe_indicator_height">25dp</dimen>
 
+    <!-- Wallet dimensions -->
+    <dimen name="wallet_divider_height">1dp</dimen>
+    <dimen name="wallet_qr_code_size">100dp</dimen>
+    <dimen name="wallet_attendee_width">300dp</dimen>
+
 </resources>
