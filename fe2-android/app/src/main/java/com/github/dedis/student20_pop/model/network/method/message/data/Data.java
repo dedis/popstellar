@@ -5,7 +5,7 @@ import com.github.dedis.student20_pop.model.network.method.message.data.lao.Stat
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.meeting.CreateMeeting;
 import com.github.dedis.student20_pop.model.network.method.message.data.meeting.StateMeeting;
-import com.github.dedis.student20_pop.model.network.method.message.data.message.Witness;
+import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessageSignature;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
@@ -62,7 +62,7 @@ public abstract class Data {
     messagesMap.put(pair(MEETING, STATE), StateMeeting.class);
 
     // Message
-    messagesMap.put(pair(MESSAGE, WITNESS), Witness.class);
+    messagesMap.put(pair(MESSAGE, WITNESS), WitnessMessageSignature.class);
 
     // Roll Call
     messagesMap.put(pair(ROLL_CALL, CREATE), CreateRollCall.class);

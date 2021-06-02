@@ -38,19 +38,25 @@ public final class QRCodeScanningFragment extends Fragment {
   private CameraSource camera;
   private CameraPreview mPreview;
   private BarcodeDetector barcodeDetector;
-  /** Fragment constructor */
+
+  /**
+   * Fragment constructor
+   */
   public QRCodeScanningFragment(CameraSource camera, BarcodeDetector detector) {
     super();
     this.camera = camera;
     this.barcodeDetector = detector;
   }
+
   public static QRCodeScanningFragment newInstance(CameraSource camera, BarcodeDetector detector) {
     return new QRCodeScanningFragment(camera, detector);
   }
+
   @Override
   public void onAttach(@NonNull Context context) {
     super.onAttach(context);
   }
+
   @Override
   public View onCreateView(
           @NonNull LayoutInflater inflater,
@@ -58,64 +64,70 @@ public final class QRCodeScanningFragment extends Fragment {
           @Nullable Bundle savedInstanceState) {
     mQrCodeFragBinding = FragmentQrcodeBinding.inflate(inflater, container, false);
     FragmentActivity activity = getActivity();
-    if (activity instanceof HomeActivity) {
-      mQRCodeScanningViewModel = HomeActivity.obtainViewModel(activity);
-    } else if (activity instanceof LaoDetailActivity) {
-      mQRCodeScanningViewModel = LaoDetailActivity.obtainViewModel(activity);
-      if (false) {
-        mQrCodeFragBinding.scanDescription.setText(R.string.qrcode_scanning_add_witness);
-      } else {
-        mQrCodeFragBinding.addAttendeeTotalText.setVisibility(View.VISIBLE);
-        mQrCodeFragBinding.addAttendeeNumberText.setVisibility(View.VISIBLE);
-        mQrCodeFragBinding.addAttendeeConfirm.setVisibility(View.VISIBLE);
-        ((LaoDetailViewModel) mQRCodeScanningViewModel)
-                .getNbAttendeesEvent()
-                .observe(
-                        this,
-                        integerEvent -> {
-                          Integer event = integerEvent.getContentIfNotHandled();
-                          if (event != null) {
-                            mQrCodeFragBinding.addAttendeeNumberText.setText(event.toString());
-                          }
-                        });
-        ((LaoDetailViewModel) mQRCodeScanningViewModel)
-                .getAttendeeScanConfirmEvent()
-                .observe(
-                        this,
-                        stringEvent -> {
-                          String event = stringEvent.getContentIfNotHandled();
-                          if (event != null) {
-                            setupSuccessPopup(event);
-                          }
-                        });
-        ((LaoDetailViewModel) mQRCodeScanningViewModel)
-                .getScanWarningEvent()
-                .observe(
-                        this,
-                        stringEvent -> {
-                          String event = stringEvent.getContentIfNotHandled();
-                          if (event != null) {
-                            setupWarningPopup(event);
-                          }
-                        });
-        setupCloseRollCallButton();
+    mQRCodeScanningViewModel = (activity instanceof HomeActivity) ? HomeActivity.obtainViewModel(activity) : LaoDetailActivity.obtainViewModel(activity);
 
-        // Subscribe to "close roll call" event
-        ((LaoDetailViewModel) mQRCodeScanningViewModel)
-                .getCloseRollCallEvent()
-                .observe(
-                        this,
-                        booleanEvent -> {
-                          Boolean action = booleanEvent.getContentIfNotHandled();
-                          if (action != null) {
-                            closeRollCall();
-                          }
-                        });
-      }
+    if(activity instanceof HomeActivity) {
+      mQRCodeScanningViewModel = HomeActivity.obtainViewModel(activity);
     }
-      else {
+    else if(activity instanceof LaoDetailActivity) {
+      mQRCodeScanningViewModel = LaoDetailActivity.obtainViewModel(activity);
+      ((LaoDetailViewModel) mQRCodeScanningViewModel)
+              .getAttendeeScanConfirmEvent()
+              .observe(
+                      this,
+                      stringEvent -> {
+                        String event = stringEvent.getContentIfNotHandled();
+                        if (event != null) {
+                          setupSuccessPopup(event);
+                        }
+                      });
+    }
+    else {
       throw new IllegalArgumentException("cannot obtain view model");
     }
+
+
+    if (mQRCodeScanningViewModel.getScanningAction() == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
+
+      mQrCodeFragBinding.addAttendeeTotalText.setVisibility(View.VISIBLE);
+      mQrCodeFragBinding.addAttendeeNumberText.setVisibility(View.VISIBLE);
+      mQrCodeFragBinding.addAttendeeConfirm.setVisibility(View.VISIBLE);
+      ((LaoDetailViewModel) mQRCodeScanningViewModel)
+              .getNbAttendeesEvent()
+              .observe(
+                      this,
+                      integerEvent -> {
+                        Integer event = integerEvent.getContentIfNotHandled();
+                        if (event != null) {
+                          mQrCodeFragBinding.addAttendeeNumberText.setText(event.toString());
+                        }
+                      });
+
+      ((LaoDetailViewModel) mQRCodeScanningViewModel)
+              .getScanWarningEvent()
+              .observe(
+                      this,
+                      stringEvent -> {
+                        String event = stringEvent.getContentIfNotHandled();
+                        if (event != null) {
+                          setupWarningPopup(event);
+                        }
+                      });
+      setupCloseRollCallButton();
+
+      // Subscribe to "close roll call" event
+      ((LaoDetailViewModel) mQRCodeScanningViewModel)
+              .getCloseRollCallEvent()
+              .observe(
+                      this,
+                      booleanEvent -> {
+                        Boolean action = booleanEvent.getContentIfNotHandled();
+                        if (action != null) {
+                          closeRollCall();
+                        }
+                      });
+    }
+
     mPreview = mQrCodeFragBinding.qrCameraPreview;
     mQrCodeFragBinding.scanDescription.setText(mQRCodeScanningViewModel.getScanDescription());
     mQrCodeFragBinding.setLifecycleOwner(activity);

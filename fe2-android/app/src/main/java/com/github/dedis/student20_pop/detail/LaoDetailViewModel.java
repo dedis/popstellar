@@ -28,7 +28,7 @@ import com.github.dedis.student20_pop.model.network.method.message.MessageGenera
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
-import com.github.dedis.student20_pop.model.network.method.message.data.message.Witness;
+import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessageSignature;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
@@ -393,7 +393,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         String messageId = witnessMessage.getMessageId();
         byte[] messageIdBuf = Base64.getUrlDecoder().decode(messageId); /** Base 64 URL decoded message ID*/
         String signature = null;  /** Base 64 URL encoded signature of the message that we want to sign*/
-        Witness signatureMessage; /** Message of type WitnessMessage that will be handled by LAORepository*/
+        WitnessMessageSignature signatureMessage; /** Message of type WitnessMessage that will be handled by LAORepository*/
         Log.d(TAG, "signing message with ID " + witnessMessage.getMessageId() );
         Lao lao = getCurrentLaoValue();
         if (lao == null) {
@@ -414,7 +414,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                 Log.d(TAG, "failed to generate signature", e);
             }
             Log.d(TAG, "sending publish message");
-            signatureMessage = new Witness(witnessMessage.getMessageId(),signature);
+            signatureMessage = new WitnessMessageSignature(witnessMessage.getMessageId(),signature);
             MessageGeneral msg = new MessageGeneral(sender, signatureMessage, signer, mGson);
             Disposable disposable =
                     mLAORepository
@@ -844,8 +844,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     @Override
     public int getScanDescription() {
         if(scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE)
-        return R.string.qrcode_scanning_add_attendee;
-        else return R.string.qrcode_scanning_add_witness;
+        return R.string.qrcode_scanning_add_attendee; // Message to add attendees to a roll call
+        else return R.string.qrcode_scanning_add_witness; // Message to add a witness
     }
 
     @Override
@@ -868,7 +868,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             mNbAttendeesEvent.postValue(new Event<>(attendees.size()));
         }
         else if(scanningAction== (ScanningAction.ADD_WITNESS)) {
-
+        // TODO : Implement a method updateNewWitnesses() to send a AddNewWitnesses() message when the backend is ready
         }
     }
 }

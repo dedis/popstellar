@@ -24,6 +24,7 @@ import com.github.dedis.student20_pop.model.network.method.message.MessageGenera
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.student20_pop.qrcode.CameraPermissionViewModel;
 import com.github.dedis.student20_pop.qrcode.QRCodeScanningViewModel;
+import com.github.dedis.student20_pop.qrcode.ScanningAction;
 import com.github.dedis.student20_pop.utility.security.Keys;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.crypto.tink.KeysetHandle;
@@ -78,6 +79,7 @@ public class HomeViewModel extends AndroidViewModel
   private final LAORepository mLAORepository;
   private final AndroidKeysetManager mKeysetManager;
   private Wallet wallet;
+  private final ScanningAction scanningAction = ScanningAction.ADD_LAO_PARTICIPANT;
 
   private Disposable disposable;
 
@@ -259,6 +261,8 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   public LiveData<Event<Boolean>> getOpenSeedEvent() { return mOpenSeedEvent; }
+
+  public ScanningAction getScanningAction() {return scanningAction;}
 
 
   /*

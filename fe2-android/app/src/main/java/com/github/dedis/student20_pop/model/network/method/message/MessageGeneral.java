@@ -4,7 +4,7 @@ import java.util.Base64;
 import android.util.Log;
 
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
-import com.github.dedis.student20_pop.model.network.method.message.data.message.Witness;
+import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessageSignature;
 import com.github.dedis.student20_pop.utility.security.Hash;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.PublicKeyVerify;
@@ -115,8 +115,8 @@ public final class MessageGeneral {
     try {
       verifier.verify(signature, dataBuf);
 
-      if (data instanceof Witness) {
-        Witness witness = (Witness) data;
+      if (data instanceof WitnessMessageSignature) {
+        WitnessMessageSignature witness = (WitnessMessageSignature) data;
 
         byte[] signatureBuf = Base64.getUrlDecoder().decode(witness.getSignature());
         byte[] messageIdBuf = Base64.getUrlDecoder().decode(witness.getMessageId());

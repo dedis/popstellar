@@ -26,7 +26,7 @@ import com.github.dedis.student20_pop.model.network.method.message.data.election
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
-import com.github.dedis.student20_pop.model.network.method.message.data.message.Witness;
+import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessageSignature;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
@@ -247,15 +247,15 @@ public class LAORepository {
       enqueue = handleOpenRollCall(channel, (OpenRollCall) data);
     } else if (data instanceof CloseRollCall) {
       enqueue = handleCloseRollCall(channel, (CloseRollCall) data);
-    } else if (data instanceof Witness) {
-      enqueue = handleWitnessMessage(channel, senderPk, (Witness) data);
+    } else if (data instanceof WitnessMessageSignature) {
+      enqueue = handleWitnessMessage(channel, senderPk, (WitnessMessageSignature) data);
     } else {
       Log.d(TAG, "cannot handle message with data" + data.getClass());
       enqueue = true;
     }
 
     // Trigger an onNext
-    if (!(data instanceof Witness)) {
+    if (!(data instanceof WitnessMessageSignature)) {
       LAOState laoState = laoById.get(channel);
       laoState.publish();
       if (data instanceof StateLao || data instanceof CreateLao) {
@@ -454,7 +454,7 @@ public class LAORepository {
     return false;
   }
 
-  private boolean handleWitnessMessage(String channel, String senderPk, Witness message) {
+  private boolean handleWitnessMessage(String channel, String senderPk, WitnessMessageSignature message) {
     String messageId = message.getMessageId();
     String signature = message.getSignature();
 
