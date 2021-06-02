@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
   <data>
+    <import type="android.view.View" />
+    <import type="com.github.dedis.student20_pop.model.event.EventType" />
     <variable
         name="event"
         type="com.github.dedis.student20_pop.model.event.Event" />
@@ -12,20 +14,21 @@
       android:layout_height="wrap_content"
       android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/event_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/margin_text"
-        android:gravity="center"
-        android:textSize="@dimen/size_body"
-        android:textStyle="bold" />
+    <!-- Display for a Roll Call -->
+    <include
+        android:id="@+id/include_layout_roll_call"
+        layout="@layout/layout_roll_call_event"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="@{event.getType() == EventType.ROLL_CALL ? View.VISIBLE : View.GONE}"/>
 
-    <TextView
-        android:id="@+id/event_description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/margin_text" />
+    <!-- Display for an Election -->
+    <include
+        android:id="@+id/include_layout_election"
+        layout="@layout/layout_election_display"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="@{event.getType() == EventType.ELECTION ? View.VISIBLE : View.GONE}"/>
 
   </LinearLayout>
 </layout>
