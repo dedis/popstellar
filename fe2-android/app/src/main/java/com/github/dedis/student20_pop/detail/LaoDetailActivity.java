@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.student20_pop.Injection;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
-import com.github.dedis.student20_pop.databinding.FragmentLaoDetailBinding;
 import com.github.dedis.student20_pop.detail.fragments.IdentityFragment;
 import com.github.dedis.student20_pop.detail.fragments.LaoDetailFragment;
 import com.github.dedis.student20_pop.detail.fragments.RollCallDetailFragment;
@@ -27,6 +26,7 @@ import com.github.dedis.student20_pop.home.HomeViewModel;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.qrcode.CameraPermissionFragment;
 import com.github.dedis.student20_pop.qrcode.QRCodeScanningFragment;
+import com.github.dedis.student20_pop.qrcode.ScanningAction;
 import com.github.dedis.student20_pop.utility.ActivityUtils;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
@@ -61,9 +61,9 @@ public class LaoDetailActivity extends AppCompatActivity {
     setupIdentityFragment();
     // Subscribe to " open witness message" event
       setupWitnessMessageFragment();
-    // Subscribe to "new lao event" event
-
+      //Subscribe to "add witness" event
       setupAddWitness();
+    // Subscribe to "new lao event" event
     handleNewEvent();
 
     // Subscribe to "open roll call" event
@@ -248,6 +248,7 @@ public class LaoDetailActivity extends AppCompatActivity {
                         booleanEvent -> {
                             Boolean event = booleanEvent.getContentIfNotHandled();
                             if (event != null) {
+                                mViewModel.setScanningAction(ScanningAction.ADD_WITNESS);
                                 QRCodeScanningFragment scanningFragment =
                                         (QRCodeScanningFragment) getSupportFragmentManager().findFragmentById(R.id.qr_code);
 
@@ -298,6 +299,7 @@ public class LaoDetailActivity extends AppCompatActivity {
   }
   private void openScanning(String action){
       if (action.equals(HomeViewModel.SCAN)) {
+          mViewModel.setScanningAction(ScanningAction.ADD_ROLL_CALL_ATTENDEE);
           setupScanFragmentRollCall();
       }else{
           setupCameraPermissionFragmentRollCall();

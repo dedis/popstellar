@@ -34,6 +34,7 @@ import com.github.dedis.student20_pop.model.network.method.message.data.rollcall
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
 import com.github.dedis.student20_pop.qrcode.CameraPermissionViewModel;
 import com.github.dedis.student20_pop.qrcode.QRCodeScanningViewModel;
+import com.github.dedis.student20_pop.qrcode.ScanningAction;
 import com.github.dedis.student20_pop.utility.security.Hash;
 import com.github.dedis.student20_pop.utility.security.Keys;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -51,6 +52,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -97,6 +99,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
     private final MutableLiveData<Event<String>> mAttendeeScanConfirmEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<String>> mScanWarningEvent = new MutableLiveData<>();
+
+
     /*
      * LiveData objects that represent the state in a fragment
      */
@@ -131,6 +135,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     private final CompositeDisposable disposables;
     private final Gson mGson;
     private Set<String> attendees = new HashSet<>();
+    private  ScanningAction scanningAction;
 
     public LaoDetailViewModel(
             @NonNull Application application,
@@ -472,6 +477,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         return mOpenCastVotesEvent;
     }
 
+    public ScanningAction getScanningAction() {return scanningAction;}
+
     public LiveData<List<com.github.dedis.student20_pop.model.event.Event>> getLaoEvents() {
         return mLaoEvents;
     }
@@ -619,6 +626,9 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         mCurrentElection.setValue(e);
     }
 
+    public void setScanningAction(ScanningAction scanningAction) {
+       this.scanningAction = scanningAction;
+    }
     /*
      * Methods that modify the state or post an Event to update the UI.
      */
@@ -646,7 +656,9 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         mOpenWitnessMessageEvent.setValue(new Event<>(true));
     }
 
-    public void openAddWitness() { mOpenAddWitness.setValue(new Event<>(true));}
+    public void openAddWitness() {
+        mOpenAddWitness.setValue(new Event<>(true));
+    }
 
     public void toggleShowHideProperties() {
         boolean val = showProperties.getValue();
@@ -830,7 +842,9 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
     @Override
     public int getScanDescription() {
+        if(scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE)
         return R.string.qrcode_scanning_add_attendee;
+        else return R.string.qrcode_scanning_add_witness;
     }
 
     @Override
@@ -842,12 +856,18 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             mScanWarningEvent.postValue(new Event<>("Invalid QR code. Please try again."));
             return;
         }
-        if (attendees.contains(barcode.rawValue)) {
+
+        if (attendees.contains(barcode.rawValue) || Objects.requireNonNull(mWitnesses.getValue()).contains(barcode.rawValue)) {
             mScanWarningEvent.postValue(new Event<>("This QR code has already been scanned. Please try again."));
             return;
         }
-        attendees.add(barcode.rawValue);
-        mAttendeeScanConfirmEvent.postValue(new Event<>("Attendee has been added."));
-        mNbAttendeesEvent.postValue(new Event<>(attendees.size()));
+        if(scanningAction== (ScanningAction.ADD_ROLL_CALL_ATTENDEE)) {
+            attendees.add(barcode.rawValue);
+            mAttendeeScanConfirmEvent.postValue(new Event<>("Attendee has been added."));
+            mNbAttendeesEvent.postValue(new Event<>(attendees.size()));
+        }
+        else if(scanningAction== (ScanningAction.ADD_WITNESS)) {
+
+        }
     }
 }
