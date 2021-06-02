@@ -42,8 +42,12 @@ public class CreateRollCall extends Data {
       @Nullable String description,
       String laoId) {
     this.name = name;
-    this.creation = Instant.now().toEpochMilli();
-    this.proposedStart= proposedStart;
+    this.creation = Instant.now().getEpochSecond();
+    if(proposedStart <= this.creation){
+      this.proposedStart = this.creation;
+    }else{
+      this.proposedStart = proposedStart;
+    }
     this.proposedEnd = proposedEnd;
     this.location = location;
     this.description = description;

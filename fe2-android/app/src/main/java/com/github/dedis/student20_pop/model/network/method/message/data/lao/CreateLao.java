@@ -39,7 +39,7 @@ public class CreateLao extends Data {
   public CreateLao(String name, String organizer) {
     this.name = name;
     this.organizer = organizer;
-    this.creation = Instant.now().toEpochMilli();
+    this.creation = Instant.now().getEpochSecond();
     this.id = Hash.hash("L", organizer, Long.toString(creation), name);
     this.witnesses = new ArrayList<>();
   }
