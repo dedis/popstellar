@@ -211,6 +211,11 @@ export class HDWallet {
       .then((keyPair) => keyPair.publicKey.toString('hex'));
   }
 
+  public tokenIsInRollCall(laoId: Hash, rollCallId:Hash): boolean {
+    // TODO
+    return true;
+  }
+
   private async generateKeyPair(laoId: Hash, rollCallId:Hash):
   Promise<{ privateKey: Buffer, publicKey: Buffer }> {
     const path: string = HDWallet.PREFIX
