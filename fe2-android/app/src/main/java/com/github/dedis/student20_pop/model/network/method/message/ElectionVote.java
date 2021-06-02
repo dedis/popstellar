@@ -10,7 +10,7 @@ public class ElectionVote {
     private String id; //id of the vote
     @SerializedName(value = "question")
     private String questionId; // id of the question
-    private List<Long> votes;
+    private List<Integer> votes;
     private Boolean writeIn;
 
     /**
@@ -18,7 +18,7 @@ public class ElectionVote {
      */
     public ElectionVote(
             String questionId,
-            List<Long> votes,
+            List<Integer> votes,
             Boolean writeIn,
             String electionId) {
 
@@ -39,7 +39,7 @@ public class ElectionVote {
 
     public Boolean getWriteIn() { return writeIn; }
 
-    public List<Long> getVoteResults(){ return votes;}
+    public List<Integer> getVoteResults(){ return votes;}
 
     @Override
     public boolean equals(Object o) {

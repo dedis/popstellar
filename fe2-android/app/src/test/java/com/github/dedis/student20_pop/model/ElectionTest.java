@@ -1,6 +1,10 @@
 package com.github.dedis.student20_pop.model;
 
 
+import android.util.Log;
+
+import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
+import com.github.dedis.student20_pop.model.network.method.message.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.QuestionResult;
 import com.github.dedis.student20_pop.utility.security.Hash;
 
@@ -12,6 +16,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -19,31 +24,14 @@ import static org.junit.Assert.assertThrows;
 
 public class ElectionTest {
 
+    private ElectionQuestion electionQuestion = new ElectionQuestion("my question", "Plurality",
+            false, Arrays.asList("candidate1", "candidate2"), "my election id");
     private String name = "my election name";
     private String id = "my election id";
-    private String question = "my question";
-    private boolean writeIn = false;
     private long startTime = 0;
     private long endTime = 1;
-    private long creationTime = 0;
-    private List<String> ballotOptions = Arrays.asList("candidate1", "candidate2");
+    private String channel = "channel id";
     private Election election = new Election();
-
-    @Test
-    public void settingNullParametersThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> election.setName(null));
-        assertThrows(IllegalArgumentException.class, () -> election.setBallotOptions(null));
-        assertThrows(IllegalArgumentException.class, () -> election.setQuestion(null));
-        assertThrows(IllegalArgumentException.class, () -> election.setId(null));
-    }
-
-    @Test
-    public void settingBallotOptionsWithSizeLessThan2ThrowsException() {
-        List<String> brokenBallotOptions = new ArrayList<>();
-        assertThrows(IllegalArgumentException.class, () -> election.setBallotOptions(brokenBallotOptions));
-        brokenBallotOptions.add("candidate1");
-        assertThrows(IllegalArgumentException.class, () -> election.setBallotOptions(brokenBallotOptions));
-    }
 
     @Test
     public void settingAndGettingReturnsCorrespondingName() {
@@ -58,21 +46,15 @@ public class ElectionTest {
     }
 
     @Test
-    public void settingAndGettingReturnsCorrespondingQuestion() {
-        election.setQuestion(question);
-        assertThat(election.getQuestion(), is(question));
+    public void settingAndGettingReturnsCorrespondingElectionQuestion() {
+        election.setElectionQuestions(Arrays.asList(electionQuestion));
+        assertThat(election.getElectionQuestions().get(0), is(electionQuestion));
     }
 
     @Test
-    public void settingAndGettingReturnsCorrespondingBallotOptions() {
-        election.setBallotOptions(ballotOptions);
-        assertThat(election.getBallotOptions(), is(ballotOptions));
-    }
-
-    @Test
-    public void settingAndGettingReturnsCorrespondingWriteIn() {
-        election.setWriteIn(writeIn);
-        assertThat(election.getWriteIn(), is(writeIn));
+    public void settingAndGettingReturnsCorrespondingChannel() {
+        election.setChannel(channel);
+        assertThat(election.getChannel(), is(channel));
     }
 
     @Test
@@ -95,18 +77,25 @@ public class ElectionTest {
     }
 
     @Test
-    public void settingAndGettingReturnsCorrespondingCreationTime() {
-        election.setStart(creationTime);
-        assertThat(election.getCreation(), is(creationTime));
-    }
-
-    @Test
     public void settingSameRegisteredVotesAndComparingReturnsTrue() {
-        List<String> registeredVotes = Arrays.asList("voteId1", "voteId2", "voteId3", "voteId4");
-        String hashed = Hash.hash(registeredVotes.toString());
-        election.setOrganizerRegisteredVotes(hashed);
-        election.setWitnessRegisteredVotes(registeredVotes.toString());
-        assertThat(election.compareRegisteredVotes(), is(true));
+        List<ElectionVote> votes1 = Arrays.asList(new ElectionVote("my question id", Arrays.asList(1), false, "my election id"),
+                new ElectionVote("my question id", Arrays.asList(2), false, "my election id"));
+        List<ElectionVote> votes2 = Arrays.asList(new ElectionVote("my question id", Arrays.asList(3), false, "my election id"),
+                new ElectionVote("my question id", Arrays.asList(4), false, "my election id"));
+        //challenge the ordering, by putting first sender2, then sender1
+        election.putSenderVotes("sender2", votes2);
+        election.putSenderVotes("sender1", votes1);
+
+        List<String> listOfVoteIds = new ArrayList<>();
+        for (ElectionVote vote: votes1) {
+            listOfVoteIds.add(vote.getId());
+        }
+        for (ElectionVote vote: votes2) {
+            listOfVoteIds.add(vote.getId());
+        }
+        System.out.println("in test " + listOfVoteIds);
+        String hash = Hash.hash(listOfVoteIds.toString());
+        assertThat(election.computerRegisteredVotes(), is(hash));
     }
     
     @Test

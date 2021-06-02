@@ -1,5 +1,7 @@
 package com.github.dedis.student20_pop.model;
 
+import android.util.Log;
+
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.ElectionVote;
@@ -11,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class Election extends Event {
 
@@ -31,7 +34,7 @@ public class Election extends Event {
     public Election() {
         this.results = new ArrayList<>();
         this.electionQuestions = new ArrayList<>();
-        this.voteMap = new HashMap<>();
+        this.voteMap = new TreeMap<>();
     }
 
     public String getId() {
@@ -61,14 +64,17 @@ public class Election extends Event {
     }
 
     public void setCreation(long creation) {
+        if (creation < 0) throw new IllegalArgumentException();
         this.creation = creation;
     }
 
     public void setStart(long start) {
+        if (start < 0) throw new IllegalArgumentException();
         this.start = start;
     }
 
     public void setEnd(long end) {
+        if (end < 0) throw new IllegalArgumentException();
         this.end = end;
     }
 
@@ -94,17 +100,17 @@ public class Election extends Event {
     }
 
     /**
-     * Computes the hash for the registered votes, when terminating an election
+     * Computes the hash for the registered votes, when terminating an election (ordered by sender pk)
      * @return the hash of all registered votes
      */
     public String computerRegisteredVotes() {
-        //TODO: Must have same ordering as backend
         List<String> listOfVoteIds = new ArrayList<>();
         for (List<ElectionVote> votes: voteMap.values()) {
             for (ElectionVote vote: votes) {
                 listOfVoteIds.add(vote.getId());
             }
         }
+        System.out.println(listOfVoteIds.toString());
         return Hash.hash(listOfVoteIds.toString());
     }
 

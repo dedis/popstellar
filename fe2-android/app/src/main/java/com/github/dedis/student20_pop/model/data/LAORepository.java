@@ -40,11 +40,9 @@ import com.google.crypto.tink.PublicKeyVerify;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.crypto.tink.subtle.Ed25519Verify;
 import com.google.gson.Gson;
-<<<<<<< HEAD
 
 import org.bouncycastle.jcajce.provider.keystore.bc.BcKeyStoreSpi;
 
-=======
 import com.tinder.scarlet.WebSocket;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -52,7 +50,6 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
->>>>>>> master
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -385,25 +382,6 @@ public class LAORepository {
     Lao lao = laoById.get(channel).getLao();
     Log.d(TAG, "handleElectionSetup: " + channel + " name " + electionSetup.getName());
 
-<<<<<<< HEAD
-=======
-    // In the case (that shouldn't happen) where there is no question, we add a "default" question
-    // to prevent a crash
-    if (electionSetup.getQuestions().isEmpty()) {
-      Log.d(TAG, "election should have at least one question");
-      electionSetup
-          .getQuestions()
-          .add(
-              new ElectionQuestion(
-                  "default question",
-                  "Plurality",
-                  false,
-                  new ArrayList<>(),
-                  electionSetup.getId()));
-    }
-    ElectionQuestion electionQuestion = electionSetup.getQuestions().get(0);
-
->>>>>>> master
     Election election = new Election();
     election.setId(electionSetup.getId());
     election.setName(electionSetup.getName());

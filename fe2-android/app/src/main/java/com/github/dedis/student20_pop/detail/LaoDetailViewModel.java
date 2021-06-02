@@ -187,7 +187,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         try {
             KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
             String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-            byte[] sender = Base64.getDecoder().decode(publicKey);
+            byte[] sender = Base64.getUrlDecoder().decode(publicKey);
 
             PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
             MessageGeneral msg = new MessageGeneral(sender, electionEnd, signer, mGson);
@@ -220,7 +220,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         }
     }
 
-    public void sendVote(Election election, List<List<Long>> votes) {
+    public void sendVote(Election election, List<List<Integer>> votes) {
         Log.d(TAG, "sending a new vote in election : " + election.getName());
         System.out.println( election.getStartTimestamp());
         Lao lao = getCurrentLaoValue();
@@ -241,7 +241,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         try {
             KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
             String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-            byte[] sender = Base64.getDecoder().decode(publicKey);
+            byte[] sender = Base64.getUrlDecoder().decode(publicKey);
 
             PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
             MessageGeneral msg = new MessageGeneral(sender, castVote, signer, mGson);

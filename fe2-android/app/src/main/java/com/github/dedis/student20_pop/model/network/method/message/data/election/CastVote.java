@@ -28,7 +28,7 @@ public class CastVote extends Data {
      */
     public CastVote(
             boolean writeIn,
-            List<List<Long>> votes,
+            List<List<Integer>> votes,
             String questionId,
             String electionId,
             String laoId) {
