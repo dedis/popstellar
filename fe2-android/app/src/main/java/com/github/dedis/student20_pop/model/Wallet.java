@@ -142,19 +142,23 @@ public class Wallet {
   private String convertStringToPath(String string){
     // extract byte form string
     byte[] byteString = Base64.getUrlDecoder().decode(string);
+    int remainder = byteString.length % 3;
 
     // create 31-bit index path
     StringJoiner joiner = new StringJoiner("/");
-    int i = 0;
-    while(i < byteString.length){
-      int res = 0;
-      for(int j=i; j<i+3 && j< byteString.length; j++){
-        int buffer =  byteString[j];
-        buffer = buffer & 0xFF; // "extract" the first 8 bit
-        res = (buffer << j%3*8) | res;
-      }
-      i+= 3;
-      joiner.add(Integer.toString(res));
+    int i;
+    for (i = 0; i + 3 <= byteString.length; i += 3) { ;
+      String path = Integer.toString(byteString[i] & 0xFF)
+          .concat(Integer.toString(byteString[i+1] & 0xFF))
+          .concat(Integer.toString(byteString[i+2] & 0xFF));
+
+      joiner.add(path);
+    }
+    if (remainder == 1) {
+      joiner.add(Integer.toString(byteString[i] & 0xFF));
+    } else if (remainder == 2) {
+      joiner.add(Integer.toString(byteString[i] & 0xFF)
+          .concat(Integer.toString(byteString[i+1] & 0xFF)));
     }
     return joiner.toString();
   }
