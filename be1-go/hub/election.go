@@ -167,7 +167,7 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 		earlierVote, ok := qs.validVotes[msg.Sender.String()]
 		// if the sender didn't previously cast a vote or if the vote is no longer valid update it
 
-		if err := checkMethodProperties(qs.method, len(q.VoteIndexes)); err != nil{
+		if err := checkMethodProperties(qs.method, len(q.VoteIndexes)); err != nil {
 			return err
 		}
 		if !ok {

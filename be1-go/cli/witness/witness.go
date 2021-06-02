@@ -1,16 +1,22 @@
 package witness
 
 import (
+	"context"
 	"encoding/base64"
 	"fmt"
-	"github.com/gorilla/websocket"
-	"github.com/urfave/cli/v2"
-	"golang.org/x/xerrors"
 	"log"
 	"net/http"
 	"net/url"
+	"os"
+	"os/signal"
 	"student20_pop"
 	"student20_pop/hub"
+	"sync"
+	"syscall"
+
+	"github.com/gorilla/websocket"
+	"github.com/urfave/cli/v2"
+	"golang.org/x/xerrors"
 )
 
 var upgrader = websocket.Upgrader{
@@ -19,13 +25,13 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
-func Serve(context *cli.Context) error {
-	organizerAddress := context.String("organizer-address")
-	organizerPort := context.Int("organizer-port")
-	clientPort := context.Int("client-port")
-	witnessPort := context.Int("witness-port")
-	otherWitness := context.StringSlice("other-witness")
-	pk := context.String("public-key")
+func Serve(cliCtx *cli.Context) error {
+	organizerAddress := cliCtx.String("organizer-address")
+	organizerPort := cliCtx.Int("organizer-port")
+	clientPort := cliCtx.Int("client-port")
+	witnessPort := cliCtx.Int("witness-port")
+	otherWitness := cliCtx.StringSlice("other-witness")
+	pk := cliCtx.String("public-key")
 
 	if pk == "" {
 		return xerrors.Errorf("witness' public key is required")
@@ -44,32 +50,52 @@ func Serve(context *cli.Context) error {
 
 	h := hub.NewWitnessHub(point)
 
-	err = connectToSocket(hub.OrganizerSocketType, organizerAddress, h, organizerPort)
+	ctx, cancel := context.WithCancel(cliCtx.Context)
+	defer cancel()
+
+	wg := &sync.WaitGroup{}
+
+	err = connectToSocket(ctx, hub.OrganizerSocketType, organizerAddress, h, organizerPort, wg)
 	if err != nil {
 		return xerrors.Errorf("failed to connect to organizer: %v", err)
 	}
 
 	for _, otherWit := range otherWitness {
-		err = connectToSocket(hub.WitnessSocketType, otherWit, h, organizerPort)
+		err = connectToSocket(ctx, hub.WitnessSocketType, otherWit, h, organizerPort, wg)
 		if err != nil {
 			return xerrors.Errorf("failed to connect to witness: %v", err)
 		}
 	}
 
-	go hub.CreateAndServeWs(hub.WitnessHubType, hub.ClientSocketType, h, clientPort)
-	go hub.CreateAndServeWs(hub.WitnessHubType, hub.WitnessSocketType, h, witnessPort)
+	clientSrv := hub.CreateAndServeWS(ctx, hub.WitnessHubType, hub.ClientSocketType, h, clientPort, wg)
+	witnessSrv := hub.CreateAndServeWS(ctx, hub.WitnessHubType, hub.WitnessSocketType, h, witnessPort, wg)
 
-	done := make(chan struct{})
-	hub.SetupCloseHandler(done)
+	go func() {
+		defer cancel()
+		done := make(chan os.Signal, 1)
+		signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)
+		<-done
 
-	h.Start(done)
+		err := clientSrv.Shutdown(ctx)
+		if err != nil {
+			log.Fatalf("failed to shutdown client server: %v", err)
+		}
+
+		err = witnessSrv.Shutdown(ctx)
+		if err != nil {
+			log.Fatalf("failed to shutdown witness server: %v", err)
+		}
+
+	}()
+
+	go h.Start(ctx, wg)
+
+	wg.Wait()
 
 	return nil
 }
 
-
-
-func connectToSocket(socketType hub.SocketType, address string, h hub.Hub, port int) error {
+func connectToSocket(ctx context.Context, socketType hub.SocketType, address string, h hub.Hub, port int, wg *sync.WaitGroup) error {
 	var urlString string
 	switch socketType {
 	case hub.OrganizerSocketType:
@@ -80,24 +106,28 @@ func connectToSocket(socketType hub.SocketType, address string, h hub.Hub, port 
 		}
 		urlString = fmt.Sprintf("ws://%s/%s/witness/", address, socketType)
 	}
+
 	u, err := url.Parse(urlString)
 	if err != nil {
 		return xerrors.Errorf("failed to parse connection url %s %v", urlString, err)
 	}
+
 	ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
 		return xerrors.Errorf("failed to dial %v", err)
 	}
+
 	log.Printf("connected to %s at %s", socketType, urlString)
+
 	switch socketType {
 	case hub.OrganizerSocketType:
-		organizerSocket := hub.NewOrganizerSocket(h, ws)
-		go organizerSocket.WritePump()
-		go organizerSocket.ReadPump()
+		organizerSocket := hub.NewOrganizerSocket(h, ws, wg)
+		go organizerSocket.WritePump(ctx)
+		go organizerSocket.ReadPump(ctx)
 	case hub.WitnessSocketType:
-		witnessSocket := hub.NewWitnessSocket(h, ws)
-		go witnessSocket.WritePump()
-		go witnessSocket.ReadPump()
+		witnessSocket := hub.NewWitnessSocket(h, ws, wg)
+		go witnessSocket.WritePump(ctx)
+		go witnessSocket.ReadPump(ctx)
 	}
 
 	return nil

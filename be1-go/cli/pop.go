@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 	"student20_pop/cli/organizer"
@@ -91,7 +92,7 @@ func main() {
 		},
 	}
 
-	err := app.Run(os.Args)
+	err := app.RunContext(context.Background(), os.Args)
 	if err != nil {
 		log.Fatal(err)
 	}

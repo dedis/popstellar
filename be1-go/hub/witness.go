@@ -1,6 +1,8 @@
 package hub
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"sync"
 
@@ -63,14 +65,18 @@ func (w *witnessHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 
 }
 
-func (w *witnessHub) Start(done chan struct{}) {
+func (w *witnessHub) Start(ctx context.Context, wg *sync.WaitGroup) {
+	wg.Add(1)
+	defer wg.Done()
+
 	log.Printf("started witness...")
 
 	for {
 		select {
 		case incomingMessage := <-w.messageChan:
 			w.handleIncomingMessage(&incomingMessage)
-		case <-done:
+		case <-ctx.Done():
+			fmt.Println("closing the hub...")
 			return
 		}
 	}
