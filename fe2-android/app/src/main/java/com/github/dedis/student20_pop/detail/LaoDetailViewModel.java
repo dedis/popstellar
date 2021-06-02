@@ -20,6 +20,7 @@ import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.RollCall;
 import com.github.dedis.student20_pop.model.Wallet;
 import com.github.dedis.student20_pop.model.data.LAORepository;
+import com.github.dedis.student20_pop.model.event.EventState;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.model.network.answer.Error;
 import com.github.dedis.student20_pop.model.network.answer.Result;
@@ -79,6 +80,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     private final MutableLiveData<Event<EventType>> mNewLaoEventCreationEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mOpenNewRollCallEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<String>> mOpenRollCallEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<String>> mOpenAttendeesListEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<Boolean>> mOpenLaoWalletEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mOpenElectionResultsEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mOpenManageElectionEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mElectionCreatedEvent = new MutableLiveData<>();
@@ -111,6 +114,31 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             .map(mCurrentLao,
                     lao -> lao == null ? new ArrayList<>() :
                             Stream.concat(lao.getRollCalls().values().stream(), lao.getElections().values().stream()).collect(Collectors.toList()));
+
+  private final LiveData<List<com.github.dedis.student20_pop.model.RollCall>> mLaoAttendedRollCalls = Transformations
+          .map(mCurrentLao,
+                  lao -> lao == null ? new ArrayList<com.github.dedis.student20_pop.model.RollCall>() :
+                          lao.getRollCalls().values().stream().filter(rollcall->rollcall.getState()== EventState.CLOSED).filter(rollcall->attendedOrOrganized(lao, rollcall)).collect(Collectors.toList()));
+
+  /**
+   * Predicate used for filtering rollcalls to make sure that the user either attended the rollcall or was the organizer
+   * @param lao
+   * @param rollcall
+   * @return boolean saying whether user attended or organized the given roll call
+   */
+  private boolean attendedOrOrganized(Lao lao, RollCall rollcall){
+    //find out if user has attended the rollcall
+    String firstLaoId = lao.getChannel().substring(6);
+    String pk = "";
+    try {
+      pk = Base64.getUrlEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, rollcall.getPersistentId()).second);
+    } catch (NoSuchAlgorithmException | InvalidKeyException | ShortBufferException e) {
+      Log.d(TAG, "failed to retrieve public key from wallet", e);
+      return false;
+    }
+    return rollcall.getAttendees().contains(pk) || isOrganizer().getValue();
+  }
+
     /*
      * Dependencies for this class
      */
@@ -173,7 +201,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             // Retrieve identity of who is creating the election
             KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
             String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-            byte[] sender = Base64.getDecoder().decode(publicKey);
+            byte[] sender = Base64.getUrlDecoder().decode(publicKey);
             PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
             MessageGeneral msg = new MessageGeneral(sender, electionSetup, signer, mGson);
 
@@ -236,7 +264,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
             KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
             String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-            byte[] sender = Base64.getDecoder().decode(publicKey);
+            byte[] sender = Base64.getUrlDecoder().decode(publicKey);
             PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
             Log.d(TAG, "sending publish message");
             MessageGeneral msg = new MessageGeneral(sender, createRollCall, signer, mGson);
@@ -298,7 +326,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         try {
             KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
             String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-            byte[] sender = Base64.getDecoder().decode(publicKey);
+            byte[] sender = Base64.getUrlDecoder().decode(publicKey);
             PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
             MessageGeneral msg = new MessageGeneral(sender, openRollCall, signer, mGson);
             Disposable disposable =
@@ -345,7 +373,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         try {
             KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
             String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-            byte[] sender = Base64.getDecoder().decode(publicKey);
+            byte[] sender = Base64.getUrlDecoder().decode(publicKey);
             PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
             MessageGeneral msg = new MessageGeneral(sender, closeRollCall, signer, mGson);
             Disposable disposable =
@@ -413,6 +441,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         return mLaoEvents;
     }
 
+    public LiveData<List<com.github.dedis.student20_pop.model.RollCall>> getLaoAttendedRollCalls() {
+        return mLaoAttendedRollCalls;
+    }
+
     public LiveData<Event<Boolean>> getOpenHomeEvent() {
         return mOpenHomeEvent;
     }
@@ -474,6 +506,14 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
     public LiveData<Event<String>> getOpenRollCallEvent() {
         return mOpenRollCallEvent;
+    }
+
+    public LiveData<Event<String>> getOpenAttendeesListEvent() {
+      return mOpenAttendeesListEvent;
+    }
+
+    public LiveData<Event<Boolean>> getOpenLaoWalletEvent() {
+      return mOpenLaoWalletEvent;
     }
 
     public LiveData<Event<Integer>> getNbAttendeesEvent() {
@@ -600,7 +640,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         try {
             KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
             String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-            byte[] sender = Base64.getDecoder().decode(publicKey);
+            byte[] sender = Base64.getUrlDecoder().decode(publicKey);
             PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
 
             long now = Instant.now().getEpochSecond();
@@ -666,14 +706,14 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                         boolean isOrganizer =
                                                 lao.getOrganizer().equals(Keys.getEncodedKey(publicKeysetHandle));
                                         Log.d(TAG, "isOrganizer: " + isOrganizer);
-                                        mIsOrganizer.postValue(isOrganizer);
+                                        mIsOrganizer.setValue(isOrganizer);
                                         return;
                                     } catch (GeneralSecurityException e) {
                                         Log.d(TAG, "failed to get public keyset handle", e);
                                     } catch (IOException e) {
                                         Log.d(TAG, "failed to get public key", e);
                                     }
-                                    mIsOrganizer.postValue(false);
+                                    mIsOrganizer.setValue(false);
                                 }));
     }
 
@@ -689,7 +729,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     public void enterRollCall(String id) {
         String firstLaoId = getCurrentLaoValue().getChannel().substring(6); // use the laoId set at creation + need to remove /root/ prefix
         try {
-            String pk = Base64.getEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, id).second);
+            String pk = Base64.getUrlEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, id).second);
             mPkRollCallEvent.postValue(new Event<>(pk));
         } catch (NoSuchAlgorithmException | InvalidKeyException | ShortBufferException e) {
             Log.d(TAG, "failed to retrieve public key from wallet", e);
@@ -706,6 +746,14 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         }
     }
 
+    public void openLaoWallet(){
+      mOpenLaoWalletEvent.postValue(new Event<>(true));
+    }
+
+    public void openAttendeesList(String rollCallId){
+      mOpenAttendeesListEvent.postValue(new Event<>(rollCallId));
+    }
+
     @Override
     public void onPermissionGranted() {
         openQrCodeScanningRollCall();
@@ -720,7 +768,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     public void onQRCodeDetected(Barcode barcode) {
         Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
         try {
-            Base64.getDecoder().decode(barcode.rawValue);
+            Base64.getUrlDecoder().decode(barcode.rawValue);
         } catch (IllegalArgumentException e) {
             mScanWarningEvent.postValue(new Event<>("Invalid QR code. Please try again."));
             return;

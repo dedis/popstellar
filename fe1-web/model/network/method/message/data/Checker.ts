@@ -1,5 +1,5 @@
 import {
-  Base64Data, Hash, PublicKey, Timestamp, WitnessSignature,
+  Base64UrlData, Hash, PublicKey, Timestamp, WitnessSignature,
 } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
 
@@ -23,7 +23,7 @@ export function checkAttendees(attendees: PublicKey[]) {
   }
 }
 
-export function checkWitnessSignatures(witSig: WitnessSignature[], data: Base64Data) {
+export function checkWitnessSignatures(witSig: WitnessSignature[], data: Base64UrlData) {
   if (!witSig.every((ws) => ws.verify(data))) {
     throw new ProtocolError('Invalid witness signatures parameter encountered: invalid signature');
   }

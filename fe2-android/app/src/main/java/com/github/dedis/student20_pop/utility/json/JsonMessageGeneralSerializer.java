@@ -34,10 +34,11 @@ public class JsonMessageGeneralSerializer
           throws JsonParseException {
     JsonObject root = json.getAsJsonObject();
 
-    byte[] messageId = Base64.getDecoder().decode(root.get("message_id").getAsString());
-    byte[] dataBuf = Base64.getDecoder().decode(root.get("data").getAsString());
-    byte[] sender = Base64.getDecoder().decode(root.get("sender").getAsString());
-    byte[] signature = Base64.getDecoder().decode(root.get(SIG).getAsString());
+
+    byte[] messageId = Base64.getUrlDecoder().decode(root.get("message_id").getAsString());
+    byte[] dataBuf = Base64.getUrlDecoder().decode(root.get("data").getAsString());
+    byte[] sender = Base64.getUrlDecoder().decode(root.get("sender").getAsString());
+    byte[] signature = Base64.getUrlDecoder().decode(root.get(SIG).getAsString());
 
     PublicKeyVerify verifier = new Ed25519Verify(sender);
     try {
@@ -53,7 +54,7 @@ public class JsonMessageGeneralSerializer
       JsonElement element = it.next();
       String witness = element.getAsJsonObject().get("witness").getAsString();
       String sig = element.getAsJsonObject().get(SIG).getAsString();
-      witnessSignatures.add(new PublicKeySignaturePair(Base64.getDecoder().decode(witness), Base64.getDecoder().decode(sig)));
+      witnessSignatures.add(new PublicKeySignaturePair(Base64.getUrlDecoder().decode(witness), Base64.getUrlDecoder().decode(sig)));
     }
 
     JsonElement dataElement = JsonParser.parseString(new String(dataBuf));
