@@ -7,15 +7,21 @@ import java.util.List;
 
 public class ElectionVote  {
 
-    private String id;
+    private String id; /** Id of the object ElectionVote : Hash(“Vote”||election_id||
+     || question_id||(vote_index(es)|write_in))
+     **/
     @SerializedName(value = "question")
     private String questionId; // id of the question
-    private List<Integer> vote;
+    private List<Integer> vote; // list of indexes for the votes
     @SerializedName(value = "write_in")
-    private Boolean writeIn;
+    private Boolean writeIn; // enables to write in in ballot options
 
     /**
      * Constructor for a data Question, for the election setup
+     * @param questionId the Id of the question
+     * @param vote the list of indexes for the ballot options chose by the voter
+     * @param writeIn enables write in
+     * @param electionId Id of the election
      */
     public ElectionVote(
             String questionId,

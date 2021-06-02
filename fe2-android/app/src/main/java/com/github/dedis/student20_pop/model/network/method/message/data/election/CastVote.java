@@ -14,35 +14,34 @@ import java.util.List;
 public class CastVote extends Data {
 
     @SerializedName(value = "created_at")
-    private long createdAt; // time the votes were submited
-    private String lao;
-    private String election;
+    private long createdAt; // time the votes were submitted
+    private String laoId; // Id of the lao
+    private String electionId; // Id of the election
     private List<ElectionVote> votes;
 
     /**
      * Constructor for a data Cast Vote Election Event
-     *
-     * @param laoId id of the LAO
      * @param votes list of the Election Vote where an ElectionVote Object represents the corresponding votes for one question
+     * @param electionId Id of the election for which to votee
+     * @param laoId id of the LAO
      */
     public CastVote(
             List<ElectionVote> votes,
             String electionId,
             String laoId) {
         this.createdAt = Instant.now().getEpochSecond();
-        this.votes = new ArrayList<>();
-        this.lao = laoId;
-        this.election = electionId;
         this.votes = votes;
+        this.electionId = electionId;
+        this.laoId = laoId;
     }
 
 
     public String getLaoId() {
-        return lao;
+        return laoId;
     }
 
     public String getElectionId() {
-        return election;
+        return electionId;
     }
 
     public long getCreation() {
@@ -75,7 +74,7 @@ public class CastVote extends Data {
         CastVote that = (CastVote) o;
         return java.util.Objects.equals(getLaoId(), that.getLaoId())
                 && createdAt == that.getCreation()
-                && election == that.getElectionId()
+                && electionId == that.getElectionId()
                 && java.util.Objects.equals(votes, that.getVotes());
     }
 
@@ -95,13 +94,13 @@ public class CastVote extends Data {
         }
         return "CastVote{"
                 + "lao='"
-                + lao
+                + laoId
                 + '\''
                 + ", creation='"
                 + createdAt
                 + '\''
                 + ", election='"
-                + election
+                + electionId
                 + '\''
                 + ", votes = { '"
                 + builder
