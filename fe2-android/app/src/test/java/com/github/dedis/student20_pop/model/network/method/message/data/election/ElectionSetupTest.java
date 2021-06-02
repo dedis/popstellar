@@ -22,7 +22,6 @@ public class ElectionSetupTest {
     private List<String> ballotOptions = Arrays.asList("candidate1", "candidate2");
     private String question = "which is the best ?";
     private String laoId = "my lao id";
-
     private ElectionSetup electionSetup = new ElectionSetup(electionSetupName, start, end, votingMethod, writeIn, ballotOptions, question, laoId);
 
     @Test

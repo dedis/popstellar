@@ -1,10 +1,8 @@
 package com.github.dedis.student20_pop.model.data;
 
-import android.util.Base64;
+import java.util.Base64;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
-
 import com.github.dedis.student20_pop.model.Election;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.PendingUpdate;
@@ -42,13 +40,24 @@ import com.google.crypto.tink.PublicKeyVerify;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.crypto.tink.subtle.Ed25519Verify;
 import com.google.gson.Gson;
+<<<<<<< HEAD
 
 import org.bouncycastle.jcajce.provider.keystore.bc.BcKeyStoreSpi;
 
+=======
+import com.tinder.scarlet.WebSocket;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
+>>>>>>> master
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -56,14 +65,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.BehaviorSubject;
-import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subjects.Subject;
-
 public class LAORepository {
+
   private static final String TAG = LAORepository.class.getSimpleName();
   private static volatile LAORepository INSTANCE = null;
 
@@ -84,6 +87,8 @@ public class LAORepository {
   // Outstanding subscribes
   private Map<Integer, String> subscribeRequests;
 
+  private Set<String> subscribedChannels;
+
   // Outstanding catchups
   private Map<Integer, String> catchupRequests;
 
@@ -92,6 +97,9 @@ public class LAORepository {
 
   // Observable for view models that need access to all LAO Names
   private BehaviorSubject<List<Lao>> allLaoSubject;
+
+  // Observable to subscribe to LAOs on reconnection
+  private Observable<WebSocket.Event> websocketEvents;
 
   private Observable<GenericMessage> upstream;
 
@@ -117,8 +125,20 @@ public class LAORepository {
 
     upstream = mRemoteDataSource.observeMessage().share();
 
+    subscribedChannels = new HashSet<>();
+    websocketEvents = mRemoteDataSource.observeWebsocket();
+
     // subscribe to incoming messages and the unprocessed message queue
     startSubscription();
+
+    subscribeToWebsocketEvents();
+  }
+
+  private void subscribeToWebsocketEvents() {
+    websocketEvents
+        .subscribeOn(Schedulers.io())
+        .filter(event -> event.getClass().equals(WebSocket.Event.OnConnectionOpened.class))
+        .subscribe(event -> subscribedChannels.forEach(this::sendSubscribe));
   }
 
   private void startSubscription() {
@@ -298,7 +318,12 @@ public class LAORepository {
 
     Log.d(
         TAG,
-        "Setting name as " + createLao.getName() + " creation time as " + createLao.getCreation() + " lao channel is " + channel);
+        "Setting name as "
+            + createLao.getName()
+            + " creation time as "
+            + createLao.getCreation()
+            + " lao channel is "
+            + channel);
 
     return false;
   }
@@ -322,7 +347,7 @@ public class LAORepository {
   private boolean handleStateLao(String channel, StateLao stateLao) {
     Lao lao = laoById.get(channel).getLao();
 
-    Log.d(TAG, "received: "+stateLao.getName());
+    Log.d(TAG, "received: " + stateLao.getName());
     if (!messageById.containsKey(stateLao.getModificationId())) {
       // queue it if we haven't received the update message yet
       return true;
@@ -333,13 +358,12 @@ public class LAORepository {
       PublicKeyVerify verifier = new Ed25519Verify(pair.getWitness());
       try {
         verifier.verify(
-            pair.getSignature(), Base64.decode(stateLao.getModificationId(), Base64.NO_WRAP));
+            pair.getSignature(), Base64.getUrlDecoder().decode(stateLao.getModificationId()));
       } catch (GeneralSecurityException e) {
         Log.d(TAG, "failed to verify witness signature in lao/state_lao");
         return false;
       }
     }
-
 
     // TODO: verify if lao/state_lao is consistent with the lao/update message
 
@@ -357,11 +381,29 @@ public class LAORepository {
     return false;
   }
 
-
   private boolean handleElectionSetup(String channel, ElectionSetup electionSetup) {
     Lao lao = laoById.get(channel).getLao();
     Log.d(TAG, "handleElectionSetup: " + channel + " name " + electionSetup.getName());
 
+<<<<<<< HEAD
+=======
+    // In the case (that shouldn't happen) where there is no question, we add a "default" question
+    // to prevent a crash
+    if (electionSetup.getQuestions().isEmpty()) {
+      Log.d(TAG, "election should have at least one question");
+      electionSetup
+          .getQuestions()
+          .add(
+              new ElectionQuestion(
+                  "default question",
+                  "Plurality",
+                  false,
+                  new ArrayList<>(),
+                  electionSetup.getId()));
+    }
+    ElectionQuestion electionQuestion = electionSetup.getQuestions().get(0);
+
+>>>>>>> master
     Election election = new Election();
     election.setId(electionSetup.getId());
     election.setName(electionSetup.getName());
@@ -449,13 +491,13 @@ public class LAORepository {
     String messageId = message.getMessageId();
     String signature = message.getSignature();
 
-    byte[] senderPkBuf = Base64.decode(senderPk, Base64.NO_WRAP);
-    byte[] signatureBuf = Base64.decode(signature, Base64.NO_WRAP);
+    byte[] senderPkBuf = Base64.getUrlDecoder().decode(senderPk);
+    byte[] signatureBuf = Base64.getUrlDecoder().decode(signature);
 
     // Verify signature
     try {
       PublicKeyVerify verifier = new Ed25519Verify(senderPkBuf);
-      verifier.verify(signatureBuf, Base64.decode(messageId, Base64.NO_WRAP));
+      verifier.verify(signatureBuf, Base64.getUrlDecoder().decode(messageId));
     } catch (GeneralSecurityException e) {
       Log.d(TAG, "failed to verify witness signature " + e.getMessage());
       return false;
@@ -474,7 +516,7 @@ public class LAORepository {
         // Let's check if we have enough signatures
         Set<String> signaturesCollectedSoFar =
             msg.getWitnessSignatures().stream()
-                .map(ob -> Base64.encodeToString(ob.getWitness(), Base64.NO_WRAP))
+                .map(ob -> Base64.getUrlEncoder().encodeToString(ob.getWitness()))
                 .collect(Collectors.toSet());
         if (lao.getWitnesses().equals(signaturesCollectedSoFar)) {
 
@@ -495,7 +537,7 @@ public class LAORepository {
                       updateLao.getWitnesses(),
                       msg.getWitnessSignatures());
 
-              byte[] ourPkBuf = Base64.decode(ourKey, Base64.NO_WRAP);
+              byte[] ourPkBuf = Base64.getUrlDecoder().decode(ourKey);
               PublicKeySign signer =
                   mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
               MessageGeneral stateLaoMsg = new MessageGeneral(ourPkBuf, stateLao, signer, mGson);
@@ -579,6 +621,9 @@ public class LAORepository {
     Single<Answer> answer = createSingle(id);
     mRemoteDataSource.sendMessage(subscribe);
     Log.d(TAG, "sending subscribe");
+
+    subscribedChannels.add(channel);
+
     return answer;
   }
 
@@ -601,7 +646,7 @@ public class LAORepository {
                     Log.d(TAG, "request id: " + ((Answer) genericMessage).getId());
                   }
                   return genericMessage instanceof Answer
-                          && ((Answer) genericMessage).getId() == id;
+                      && ((Answer) genericMessage).getId() == id;
                 })
             .map(
                 genericMessage -> {
