@@ -691,6 +691,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
      */
     public void chooseEventType(EventType eventType) {
         mChooseNewLaoEventTypeEvent.postValue(new Event<>(eventType));
+
     }
 
     /**
