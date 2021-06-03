@@ -69,7 +69,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     public static final String TAG = LaoDetailViewModel.class.getSimpleName();
     private static final String LAO_FAILURE_MESSAGE = "failed to retrieve current lao";
     private static final String PK_FAILURE_MESSAGE = "failed to retrieve public key";
-    private static final String PUBLISH_MESSAGE = "sending publish message" ;
+    private static final String PUBLISH_MESSAGE = "sending publish message";
 
     /*
      * LiveData objects for capturing events like button clicks
@@ -120,9 +120,9 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
      */
     private final LAORepository mLAORepository;
     private final AndroidKeysetManager mKeysetManager;
-    private String mCurrentRollCallId = ""; //used to know which roll call to close
     private final CompositeDisposable disposables;
     private final Gson mGson;
+    private String mCurrentRollCallId = ""; //used to know which roll call to close
     private Set<String> attendees = new HashSet<>();
 
     public LaoDetailViewModel(
@@ -149,15 +149,15 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
      *
      * <p>Publish a GeneralMessage containing ElectionCastVotes data.
      *
-     * @param castVotes         the corresponding votes for that election
+     * @param castVotes the corresponding votes for that election
      */
-    public void sendVote( CastVote castVotes) {
+    public void sendVote(CastVote castVotes) {
         Election election = mCurrentElection.getValue();
         if (election == null) {
             Log.d(TAG, "failed to retrieve current election");
             return;
         }
-        Log.d(TAG, "sending a new vote in election : " + election + " with election start time"+ election.getStartTimestamp());
+        Log.d(TAG, "sending a new vote in election : " + election + " with election start time" + election.getStartTimestamp());
         Lao lao = getCurrentLaoValue();
         if (lao == null) {
             Log.d(TAG, LAO_FAILURE_MESSAGE);
@@ -199,6 +199,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             Log.d(TAG, PK_FAILURE_MESSAGE, e);
         }
     }
+
     /**
      * Creates new Election event.
      *

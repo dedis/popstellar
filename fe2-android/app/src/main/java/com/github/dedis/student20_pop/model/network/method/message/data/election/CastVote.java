@@ -7,7 +7,6 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
 import com.google.gson.annotations.SerializedName;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,9 +20,10 @@ public class CastVote extends Data {
 
     /**
      * Constructor for a data Cast Vote Election Event
-     * @param votes list of the Election Vote where an ElectionVote Object represents the corresponding votes for one question
+     *
+     * @param votes      list of the Election Vote where an ElectionVote Object represents the corresponding votes for one question
      * @param electionId Id of the election for which to votee
-     * @param laoId id of the LAO
+     * @param laoId      id of the LAO
      */
     public CastVote(
             List<ElectionVote> votes,
@@ -89,7 +89,7 @@ public class CastVote extends Data {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        for (ElectionVote vote: votes) {
+        for (ElectionVote vote : votes) {
             builder.append(vote.toString());
         }
         return "CastVote{"
