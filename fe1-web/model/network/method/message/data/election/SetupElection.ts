@@ -77,10 +77,13 @@ export class SetupElection implements MessageData {
     SetupElection.validateQuestions(msg.questions);
     this.questions = msg.questions;
 
-    const lao: Lao = OpenedLaoStore.get();
+    if (!msg.lao) {
+      throw new ProtocolError('Undefined \'lao\' parameter encountered during \'SetupElection\'');
+    }
+    this.lao = msg.lao;
 
     const expectedHash = Hash.fromStringArray(
-      EventTags.ELECTION, lao.id.toString(), msg.created_at.toString(), msg.name,
+      EventTags.ELECTION, msg.lao.toString(), msg.created_at.toString(), msg.name,
     );
     if (!expectedHash.equals(msg.id)) {
       throw new ProtocolError("Invalid 'id' parameter encountered during 'SetupElection':"

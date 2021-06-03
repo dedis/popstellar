@@ -1,11 +1,7 @@
-import { Message } from 'model/network/method/message';
-import {
-  ActionType, ObjectType, SetupElection,
-} from 'model/network/method/message/data';
-import { Election } from 'model/objects';
-import {
-  getStore, dispatch, addEvent, makeCurrentLao,
-} from 'store';
+import {Message} from 'model/network/method/message';
+import {ActionType, ObjectType, SetupElection,} from 'model/network/method/message/data';
+import {Election} from 'model/objects';
+import {addEvent, dispatch, getStore, makeCurrentLao,} from 'store';
 
 const getCurrentLao = makeCurrentLao();
 
@@ -42,6 +38,23 @@ function handleElectionSetupMessage(msg: Message): boolean {
   return true;
 }
 
+function handleCastVoteMessage(msg: Message): boolean {
+  if (msg.messageData.object !== ObjectType.ELECTION
+    || msg.messageData.action !== ActionType.CAST_VOTE) {
+    console.warn('handleCastVoteMessage was called to process an unsupported message', msg);
+    return false;
+  }
+  const makeErr = (err: string) => `election/cast-vote was not processed: ${err}`;
+  const storeState = getStore().getState();
+  const lao = getCurrentLao(storeState);
+  if (!lao) {
+    console.warn(makeErr('no LAO is currently active'));
+    return false;
+  }
+
+  return true;
+}
+
 export function handleElectionMessage(msg: Message) {
   if (msg.messageData.object !== ObjectType.ELECTION) {
     console.warn('handleElectionMessage was called to process an unsupported message', msg);
@@ -51,6 +64,8 @@ export function handleElectionMessage(msg: Message) {
   switch (msg.messageData.action) {
     case ActionType.SETUP:
       return handleElectionSetupMessage(msg);
+    case ActionType.CAST_VOTE:
+      return handleCastVoteMessage(msg);
 
     default:
       console.warn('A Election message was received but'
