@@ -26,6 +26,9 @@ type electionChannel struct {
 	// Questions asked to the participants
 	//the key will be the string representation of the id of type byte[]
 	questions map[string]question
+
+	// attendees that took part in the roll call string of their PK
+	attendees []string
 }
 
 type question struct {
@@ -44,6 +47,7 @@ type question struct {
 
 	// Voting method of the election
 	method message.VotingMethod
+
 }
 
 type validVote struct {
@@ -90,6 +94,7 @@ func (c *laoChannel) createElection(msg message.Message) error {
 		data.EndTime,
 		false,
 		getAllQuestionsForElectionChannel(data.Questions),
+				getAllAttendees(c.attendees),
 	}
 
 	// Add the SetupElection message to the new election channel
@@ -147,6 +152,20 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 		return &message.Error{
 			Code:        -4,
 			Description: fmt.Sprintf("Vote cast too late, vote casted at %v and election ended at %v", voteData.CreatedAt, c.end),
+		}
+	}
+	
+	senderPK := msg.Sender.String()
+	ok = false
+	for _, attendee := range c.attendees{
+		if attendee == senderPK{
+			ok = true
+		}
+	}
+	if !ok{
+		return &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("Only attendees can cast a vote in an election"),
 		}
 	}
 
@@ -227,6 +246,14 @@ func getAllQuestionsForElectionChannel(questions []message.Question) map[string]
 		}
 	}
 	return qs
+}
+
+func getAllAttendees(attendees map[string]struct{})[]string{
+	keys := make([]string,len(attendees))
+	for k,_ := range attendees{
+		keys = append(keys,k)
+	}
+	return keys
 }
 
 func (c *electionChannel) endElectionHelper(publish message.Publish) error {
