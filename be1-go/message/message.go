@@ -213,7 +213,7 @@ func (m *Message) VerifyAndUnmarshalData() error {
 	case DataObject(ElectionObject):
 		err := m.parseElectionData(ElectionAction(action), m.RawData)
 		if err != nil {
-			xerrors.Errorf("error parsing election data %v", err)
+			return xerrors.Errorf("error parsing election data %v", err)
 		}
 	default:
 		return xerrors.Errorf("failed to parse data object of type: %s", gd.GetObject())
@@ -339,7 +339,7 @@ func (m *Message) parseLAOData(action LaoDataAction, data Base64URLBytes) error 
 	}
 
 }
-func (m *Message) parseElectionData(action ElectionAction, data []byte) error {
+func (m *Message) parseElectionData(action ElectionAction, data Base64URLBytes) error {
 	switch action {
 	case ElectionSetupAction:
 		setup := &ElectionSetupData{}
