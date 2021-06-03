@@ -37,7 +37,7 @@ export class Hash extends Base64UrlData {
     const bString = hash.update(data).array();
     const str = String.fromCharCode(...bString);
 
-    return Base64UrlData.encode(str);
+    return Base64UrlData.encode(str, 'binary');
   }
 
   public equals(o: Hash): boolean {
