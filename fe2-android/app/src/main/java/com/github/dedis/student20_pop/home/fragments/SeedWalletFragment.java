@@ -58,17 +58,25 @@ public class SeedWalletFragment extends Fragment {
 
   private void setupDisplaySeed() {
     String[] exportSeed = new String[0];
+    String err = "Error import key, try again";
     try {
       exportSeed = wallet.exportSeed();
     } catch (Exception e) {
       Toast.makeText(getContext().getApplicationContext(),
-          "Error import key, try again",
+          err,
           Toast.LENGTH_LONG).show();
       Log.d(TAG, e.getMessage());
     }
-    StringJoiner joiner = new StringJoiner(" ");
-    for(String i: exportSeed) joiner.add(i);
-    mSeedWalletFragBinding.seedWallet.setText(joiner.toString());
+    if(exportSeed != null) {
+      StringJoiner joiner = new StringJoiner(" ");
+      for (String i : exportSeed)
+        joiner.add(i);
+      mSeedWalletFragBinding.seedWallet.setText(joiner.toString());
+    } else{
+      Toast.makeText(getContext().getApplicationContext(),
+          err,
+          Toast.LENGTH_LONG).show();
+    }
   }
 
   private void setupConfirmSeedButton() {

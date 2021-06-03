@@ -44,7 +44,7 @@ public class Wallet {
   private Aead aead;
 
   private static final Wallet instance = new Wallet();
-  
+
   public static Wallet getInstance() {
     return instance;
   }
@@ -269,7 +269,8 @@ public class Wallet {
 
       return words;
     } else {
-      throw new IllegalArgumentException("key set manager not init!");
+      Log.d(TAG, "key set manager not init!");
+      return null;
     }
   }
 
