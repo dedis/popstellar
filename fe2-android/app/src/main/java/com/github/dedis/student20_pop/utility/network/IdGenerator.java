@@ -3,9 +3,14 @@ package com.github.dedis.student20_pop.utility.network;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.utility.security.Hash;
 
+/** ID Generator class */
 public class IdGenerator {
 
     static final String SUFFIX_ELECTION_QUESTION = "Question";
+
+    private IdGenerator() {
+        throw new IllegalStateException("Utility class");
+    }
 
     /**
      * Generate the id for dataCreateLao and dataUpdateLao.
