@@ -115,6 +115,13 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 		return xerrors.Errorf("failed to verify publish message on an election channel: %v", err)
 	}
 
+	//TODO: add check for the following fields
+	//sender := publish.Params.Message.Sender
+	//checkParams(publish.Params)
+	//publishMethod := publish.Method
+	//publishID := publish.ID
+	//publishChannel := publish.Params.Channel
+
 	msg := publish.Params.Message
 
 	data := msg.Data
@@ -126,13 +133,21 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 		action := message.ElectionAction(data.GetAction())
 		switch action {
 		case message.CastVoteAction:
-			return c.castVoteHelper(publish)
+			err = c.castVoteHelper(publish)
 		case message.ElectionEndAction:
-			log.Fatal("Not implemented", message.ElectionEndAction)
+			err = c.endElectionHelper(publish)
 		case message.ElectionResultAction:
 			log.Fatal("Not implemented", message.ElectionResultAction)
 		}
 	}
+
+	if err != nil{
+		action := message.ElectionAction(data.GetAction())
+		errorDescription := fmt.Sprintf("failed to process %s action", action)
+		return message.NewError(errorDescription, err)
+	}
+
+	c.broadcastToAllClients(*msg)
 
 	return nil
 }
@@ -154,7 +169,7 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 			Description: fmt.Sprintf("Vote cast too late, vote casted at %v and election ended at %v", voteData.CreatedAt, c.end),
 		}
 	}
-	
+
 	senderPK := msg.Sender.String()
 	ok = false
 	for _, attendee := range c.attendees{
