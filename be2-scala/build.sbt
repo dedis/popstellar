@@ -2,9 +2,15 @@ name := "pop"
 
 version := "0.1"
 
-scalaVersion := "2.13.3"
+scalaVersion := "2.13.5"
 
 coverageEnabled := true
+
+scapegoatVersion in ThisBuild := "1.4.8"
+scapegoatReports := Seq("xml")
+
+// temporarily report scapegoat errors as warnings, to avoid broken builds
+scalacOptions in Scapegoat += "-P:scapegoat:overrideLevels:all=Warning"
 
 
 
