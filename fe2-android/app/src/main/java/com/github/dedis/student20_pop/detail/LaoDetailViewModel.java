@@ -368,8 +368,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         long end = Instant.now().getEpochSecond();
         String channel = lao.getChannel();
         String laoId = channel.substring(6); // removing /root/ prefix
-        String updateId = Hash.hash("R", laoId, mCurrentRollCallId, Long.toString(end));
-        CloseRollCall closeRollCall = new CloseRollCall(updateId, mCurrentRollCallId, end, new ArrayList<>(attendees));
+        CloseRollCall closeRollCall = new CloseRollCall(laoId, mCurrentRollCallId, end, new ArrayList<>(attendees));
         try {
             KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
             String publicKey = Keys.getEncodedKey(publicKeysetHandle);

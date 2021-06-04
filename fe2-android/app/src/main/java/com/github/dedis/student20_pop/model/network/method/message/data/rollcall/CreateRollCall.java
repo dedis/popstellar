@@ -5,7 +5,7 @@ import androidx.annotation.Nullable;
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
-import com.github.dedis.student20_pop.utility.security.Hash;
+import com.github.dedis.student20_pop.utility.network.IdGenerator;
 import com.google.gson.annotations.SerializedName;
 
 import java.time.Instant;
@@ -33,6 +33,7 @@ public class CreateRollCall extends Data {
    * @param proposedEnd of the Roll-Call
    * @param location location of the Roll-Call
    * @param description can be null
+   * @param laoId ID of the LAO
    */
   public CreateRollCall(
       String name,
@@ -47,7 +48,7 @@ public class CreateRollCall extends Data {
     this.proposedEnd = proposedEnd;
     this.location = location;
     this.description = description;
-    this.id = Hash.hash("R", laoId, Long.toString(creation), name);
+    this.id = IdGenerator.generateCreateRollCallId(laoId, creation, name);
   }
 
   public CreateRollCall(
