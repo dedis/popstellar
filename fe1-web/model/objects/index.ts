@@ -1,4 +1,4 @@
-export * from './Base64';
+export * from './Base64Url';
 export * from './Hash';
 export * from './PrivateKey';
 export * from './PublicKey';
@@ -6,7 +6,11 @@ export * from './KeyPair';
 export * from './Signature';
 export * from './Timestamp';
 export * from './WitnessSignature';
+export * from './Channel';
 export * from './Lao';
 export * from './RollCall';
+export * from './Meeting';
 export * from './LaoEvent';
 export * from './LaoEventBuilder';
+export * from './Election';
+export * from './HDWallet';

@@ -6,14 +6,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import com.github.dedis.student20_pop.databinding.FragmentHomeBinding;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.home.HomeViewModel;
 import com.github.dedis.student20_pop.home.adapters.LAOListAdapter;
 import com.github.dedis.student20_pop.model.Lao;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -82,7 +85,7 @@ public final class HomeFragment extends Fragment {
   private void setupListAdapter() {
     ListView listView = mHomeFragBinding.laoList;
 
-    mListAdapter = new LAOListAdapter(new ArrayList<Lao>(0), mHomeViewModel, getActivity());
+    mListAdapter = new LAOListAdapter(new ArrayList<Lao>(0), mHomeViewModel, getActivity(), true);
 
     listView.setAdapter(mListAdapter);
   }

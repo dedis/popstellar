@@ -1,11 +1,13 @@
 package com.github.dedis.student20_pop.model.data;
 
-import android.util.Base64;
+import java.util.Base64;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import com.github.dedis.student20_pop.model.Election;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.PendingUpdate;
 import com.github.dedis.student20_pop.model.RollCall;
+import com.github.dedis.student20_pop.model.event.EventState;
 import com.github.dedis.student20_pop.model.network.GenericMessage;
 import com.github.dedis.student20_pop.model.network.answer.Answer;
 import com.github.dedis.student20_pop.model.network.answer.Error;
@@ -15,16 +17,17 @@ import com.github.dedis.student20_pop.model.network.method.Catchup;
 import com.github.dedis.student20_pop.model.network.method.Publish;
 import com.github.dedis.student20_pop.model.network.method.Subscribe;
 import com.github.dedis.student20_pop.model.network.method.Unsubscribe;
+import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessage;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
-import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall.StartType;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
 import com.github.dedis.student20_pop.utility.security.Keys;
 import com.google.crypto.tink.KeysetHandle;
@@ -33,6 +36,7 @@ import com.google.crypto.tink.PublicKeyVerify;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.crypto.tink.subtle.Ed25519Verify;
 import com.google.gson.Gson;
+import com.tinder.scarlet.WebSocket;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
@@ -43,6 +47,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -72,6 +77,8 @@ public class LAORepository {
   // Outstanding subscribes
   private Map<Integer, String> subscribeRequests;
 
+  private Set<String> subscribedChannels;
+
   // Outstanding catchups
   private Map<Integer, String> catchupRequests;
 
@@ -80,6 +87,9 @@ public class LAORepository {
 
   // Observable for view models that need access to all LAO Names
   private BehaviorSubject<List<Lao>> allLaoSubject;
+
+  // Observable to subscribe to LAOs on reconnection
+  private Observable<WebSocket.Event> websocketEvents;
 
   private Observable<GenericMessage> upstream;
 
@@ -105,8 +115,20 @@ public class LAORepository {
 
     upstream = mRemoteDataSource.observeMessage().share();
 
+    subscribedChannels = new HashSet<>();
+    websocketEvents = mRemoteDataSource.observeWebsocket();
+
     // subscribe to incoming messages and the unprocessed message queue
     startSubscription();
+
+    subscribeToWebsocketEvents();
+  }
+
+  private void subscribeToWebsocketEvents() {
+    websocketEvents
+        .subscribeOn(Schedulers.io())
+        .filter(event -> event.getClass().equals(WebSocket.Event.OnConnectionOpened.class))
+        .subscribe(event -> subscribedChannels.forEach(this::sendSubscribe));
   }
 
   private void startSubscription() {
@@ -173,13 +195,14 @@ public class LAORepository {
                 .map(x -> x.getValue().getLao())
                 .collect(Collectors.toList()));
         Log.d(TAG, "createLaoRequest contains this id. posted allLaos to `allLaoSubject`");
+        sendSubscribe(channel);
         sendCatchup(channel);
       }
 
       return;
     }
 
-    Log.d(TAG, "Got a braodcast");
+    Log.d(TAG, "Got a broadcast");
 
     // We've a Broadcast
     Broadcast broadcast = (Broadcast) genericMessage;
@@ -206,11 +229,14 @@ public class LAORepository {
     String senderPk = message.getSender();
 
     Data data = message.getData();
+    Log.d(TAG, "data with class: " + data.getClass());
     boolean enqueue = false;
     if (data instanceof CreateLao) {
       enqueue = handleCreateLao(channel, (CreateLao) data);
     } else if (data instanceof UpdateLao) {
       enqueue = handleUpdateLao(channel, message.getMessageId(), (UpdateLao) data);
+    } else if (data instanceof ElectionSetup) {
+      enqueue = handleElectionSetup(channel, (ElectionSetup) data);
     } else if (data instanceof StateLao) {
       enqueue = handleStateLao(channel, (StateLao) data);
     } else if (data instanceof CreateRollCall) {
@@ -245,12 +271,18 @@ public class LAORepository {
 
     lao.setName(createLao.getName());
     lao.setCreation(createLao.getCreation());
+    lao.setLastModified(createLao.getCreation());
     lao.setOrganizer(createLao.getOrganizer());
     lao.setId(createLao.getId());
 
     Log.d(
         TAG,
-        "Setting name as " + createLao.getName() + " creation time as " + createLao.getCreation());
+        "Setting name as "
+            + createLao.getName()
+            + " creation time as "
+            + createLao.getCreation()
+            + " lao channel is "
+            + channel);
 
     return false;
   }
@@ -274,6 +306,7 @@ public class LAORepository {
   private boolean handleStateLao(String channel, StateLao stateLao) {
     Lao lao = laoById.get(channel).getLao();
 
+    Log.d(TAG, "received: " + stateLao.getName());
     if (!messageById.containsKey(stateLao.getModificationId())) {
       // queue it if we haven't received the update message yet
       return true;
@@ -284,7 +317,7 @@ public class LAORepository {
       PublicKeyVerify verifier = new Ed25519Verify(pair.getWitness());
       try {
         verifier.verify(
-            pair.getSignature(), Base64.decode(stateLao.getModificationId(), Base64.NO_WRAP));
+            pair.getSignature(), Base64.getUrlDecoder().decode(stateLao.getModificationId()));
       } catch (GeneralSecurityException e) {
         Log.d(TAG, "failed to verify witness signature in lao/state_lao");
         return false;
@@ -307,29 +340,67 @@ public class LAORepository {
     return false;
   }
 
+  private boolean handleElectionSetup(String channel, ElectionSetup electionSetup) {
+    Lao lao = laoById.get(channel).getLao();
+    Log.d(TAG, "handleElectionSetup: " + channel + " name " + electionSetup.getName());
+
+    // In the case (that shouldn't happen) where there is no question, we add a "default" question
+    // to prevent a crash
+    if (electionSetup.getQuestions().isEmpty()) {
+      Log.d(TAG, "election should have at least one question");
+      electionSetup
+          .getQuestions()
+          .add(
+              new ElectionQuestion(
+                  "default question",
+                  "Plurality",
+                  false,
+                  new ArrayList<>(),
+                  electionSetup.getId()));
+    }
+    ElectionQuestion electionQuestion = electionSetup.getQuestions().get(0);
+
+    Election election = new Election();
+    election.setId(electionSetup.getId());
+    election.setName(electionSetup.getName());
+    election.setCreation(electionSetup.getCreation());
+    election.setStart(electionSetup.getStartTime());
+    election.setQuestion(electionQuestion.getQuestion());
+    election.setStart(electionSetup.getStartTime());
+    election.setEnd(electionSetup.getEndTime());
+    election.setWriteIn(electionQuestion.getWriteIn());
+    election.setBallotOptions(electionQuestion.getBallotOptions());
+
+    lao.updateElection(election.getId(), election);
+    return false;
+  }
+
   private boolean handleCreateRollCall(String channel, CreateRollCall createRollCall) {
     Lao lao = laoById.get(channel).getLao();
     Log.d(TAG, "handleCreateRollCall: " + channel + " name " + createRollCall.getName());
 
     RollCall rollCall = new RollCall();
     rollCall.setId(createRollCall.getId());
+    rollCall.setPersistentId(createRollCall.getId());
     rollCall.setCreation(createRollCall.getCreation());
-
-    if (createRollCall.getStartType() == StartType.NOW) {
-      rollCall.setStart(createRollCall.getStartTime());
-    } else {
-      rollCall.setScheduled(createRollCall.getStartTime());
-    }
+    rollCall.setState(EventState.CREATED);
+    rollCall.setStart(createRollCall.getProposedStart());
+    rollCall.setEnd(createRollCall.getProposedEnd());
+    rollCall.setName(createRollCall.getName());
+    rollCall.setLocation(createRollCall.getLocation());
 
     rollCall.setLocation(createRollCall.getLocation());
     rollCall.setDescription(createRollCall.getDescription().orElse(""));
 
     lao.updateRollCall(rollCall.getId(), rollCall);
+
     return false;
   }
 
   private boolean handleOpenRollCall(String channel, OpenRollCall openRollCall) {
     Lao lao = laoById.get(channel).getLao();
+    Log.d(TAG, "handleOpenRollCall: " + channel);
+    Log.d(TAG, openRollCall.getOpens());
 
     String updateId = openRollCall.getUpdateId();
     String opens = openRollCall.getOpens();
@@ -340,7 +411,8 @@ public class LAORepository {
     }
 
     RollCall rollCall = rollCallOptional.get();
-    rollCall.setStart(openRollCall.getStart());
+    rollCall.setStart(openRollCall.getOpenedAt());
+    rollCall.setState(EventState.OPENED);
     // We might be opening a closed one
     rollCall.setEnd(0);
     rollCall.setId(updateId);
@@ -351,6 +423,7 @@ public class LAORepository {
 
   private boolean handleCloseRollCall(String channel, CloseRollCall closeRollCall) {
     Lao lao = laoById.get(channel).getLao();
+    Log.d(TAG, "handleCloseRollCall: " + channel);
 
     String updateId = closeRollCall.getUpdateId();
     String closes = closeRollCall.getCloses();
@@ -361,25 +434,26 @@ public class LAORepository {
     }
 
     RollCall rollCall = rollCallOptional.get();
-    rollCall.setEnd(closeRollCall.getEnd());
+    rollCall.setEnd(closeRollCall.getClosedAt());
     rollCall.setId(updateId);
     rollCall.getAttendees().addAll(closeRollCall.getAttendees());
+    rollCall.setState(EventState.CLOSED);
 
     lao.updateRollCall(closes, rollCall);
-    return true;
+    return false;
   }
 
   private boolean handleWitnessMessage(String channel, String senderPk, WitnessMessage message) {
     String messageId = message.getMessageId();
     String signature = message.getSignature();
 
-    byte[] senderPkBuf = Base64.decode(senderPk, Base64.NO_WRAP);
-    byte[] signatureBuf = Base64.decode(signature, Base64.NO_WRAP);
+    byte[] senderPkBuf = Base64.getUrlDecoder().decode(senderPk);
+    byte[] signatureBuf = Base64.getUrlDecoder().decode(signature);
 
     // Verify signature
     try {
       PublicKeyVerify verifier = new Ed25519Verify(senderPkBuf);
-      verifier.verify(signatureBuf, Base64.decode(messageId, Base64.NO_WRAP));
+      verifier.verify(signatureBuf, Base64.getUrlDecoder().decode(messageId));
     } catch (GeneralSecurityException e) {
       Log.d(TAG, "failed to verify witness signature " + e.getMessage());
       return false;
@@ -398,7 +472,7 @@ public class LAORepository {
         // Let's check if we have enough signatures
         Set<String> signaturesCollectedSoFar =
             msg.getWitnessSignatures().stream()
-                .map(ob -> Base64.encodeToString(ob.getWitness(), Base64.NO_WRAP))
+                .map(ob -> Base64.getUrlEncoder().encodeToString(ob.getWitness()))
                 .collect(Collectors.toSet());
         if (lao.getWitnesses().equals(signaturesCollectedSoFar)) {
 
@@ -419,7 +493,7 @@ public class LAORepository {
                       updateLao.getWitnesses(),
                       msg.getWitnessSignatures());
 
-              byte[] ourPkBuf = Base64.decode(ourKey, Base64.NO_WRAP);
+              byte[] ourPkBuf = Base64.getUrlDecoder().decode(ourKey);
               PublicKeySign signer =
                   mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
               MessageGeneral stateLaoMsg = new MessageGeneral(ourPkBuf, stateLao, signer, mGson);
@@ -474,26 +548,38 @@ public class LAORepository {
     Single<Answer> answer = createSingle(id);
 
     Publish publish = new Publish(channel, id, message);
-
     if (message.getData() instanceof CreateLao) {
       CreateLao data = (CreateLao) message.getData();
       createLaoRequests.put(id, "/root/" + data.getId());
     }
+    // Uncomment to test display without message from Backend
+
+    /*
+    else {
+      if(message.getData() instanceof ElectionSetup) {
+        handleElectionSetup(channel,(ElectionSetup) message.getData());
+      }
+    }
+    */
 
     mRemoteDataSource.sendMessage(publish);
     return answer;
   }
 
   public Single<Answer> sendSubscribe(String channel) {
+
     int id = mRemoteDataSource.incrementAndGetRequestId();
 
     Subscribe subscribe = new Subscribe(channel, id);
 
-    mRemoteDataSource.sendMessage(subscribe);
     subscribeRequests.put(id, channel);
 
     Single<Answer> answer = createSingle(id);
     mRemoteDataSource.sendMessage(subscribe);
+    Log.d(TAG, "sending subscribe");
+
+    subscribedChannels.add(channel);
+
     return answer;
   }
 
@@ -512,7 +598,9 @@ public class LAORepository {
         upstream
             .filter(
                 genericMessage -> {
-                  Log.d(TAG, "request id: " + ((Answer) genericMessage).getId());
+                  if (genericMessage instanceof Answer) {
+                    Log.d(TAG, "request id: " + ((Answer) genericMessage).getId());
+                  }
                   return genericMessage instanceof Answer
                       && ((Answer) genericMessage).getId() == id;
                 })

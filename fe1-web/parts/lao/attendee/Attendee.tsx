@@ -14,7 +14,6 @@ import LaoProperties from 'components/eventList/LaoProperties';
  * TODO By default only the past and present section are open.
  * TODO use the data receive by the organization server
  */
-// FIXME refactor when Event storage available
 const Attendee = () => {
   const eventList = makeEventsList();
   const events = useSelector(eventList);

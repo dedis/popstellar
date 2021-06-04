@@ -25,9 +25,15 @@ function dateToTimestamp(date: Date): Timestamp {
 const CreateRollCall = ({ route }: any) => {
   const styles = route.params;
   const navigation = useNavigation();
-  const initialDate = new Date();
+  const initialStartDate = new Date();
+  const initialEndDate = new Date();
+  // Sets initial start date 5 minutes in the future to avoid: proposed_start < creation
+  initialStartDate.setMinutes(initialStartDate.getMinutes() + 5);
+  // Sets initial end date to 1 hour later than start date
+  initialEndDate.setHours(initialEndDate.getHours() + 1);
 
-  const [startDate, setStartDate] = useState(dateToTimestamp(initialDate));
+  const [proposedStartDate, setProposedStartDate] = useState(dateToTimestamp(initialStartDate));
+  const [proposedEndDate, setProposedEndDate] = useState(dateToTimestamp(initialEndDate));
 
   const [rollCallName, setRollCallName] = useState('');
   const [rollCallLocation, setRollCallLocation] = useState('');
@@ -35,14 +41,21 @@ const CreateRollCall = ({ route }: any) => {
 
   const buildDatePickerWeb = () => {
     const startTime = new Date(0);
-    startTime.setUTCSeconds(startDate.valueOf());
+    const endTime = new Date(0);
+    startTime.setUTCSeconds(proposedStartDate.valueOf());
+    endTime.setUTCSeconds(proposedEndDate.valueOf());
 
     return (
       <View style={styles.view}>
-        <ParagraphBlock text={STRINGS.roll_call_create_deadline} />
+        <ParagraphBlock text={STRINGS.roll_call_create_proposed_start} />
         <DatePicker
           selected={startTime}
-          onChange={(date: Date) => setStartDate(dateToTimestamp(date))}
+          onChange={(date: Date) => setProposedStartDate(dateToTimestamp(date))}
+        />
+        <ParagraphBlock text={STRINGS.roll_call_create_proposed_end} />
+        <DatePicker
+          selected={endTime}
+          onChange={(date: Date) => setProposedEndDate(dateToTimestamp(date))}
         />
       </View>
     );
@@ -50,17 +63,21 @@ const CreateRollCall = ({ route }: any) => {
 
   const buttonsVisibility: boolean = (rollCallName !== '' && rollCallLocation !== '');
 
-  const onConfirmPress = () => {
+  const createRollCall = () => {
     const description = (rollCallDescription === '') ? undefined : rollCallDescription;
-    requestCreateRollCall(rollCallName, rollCallLocation, startDate, undefined, description);
-    navigation.goBack();
+    requestCreateRollCall(
+      rollCallName, rollCallLocation, proposedStartDate, proposedEndDate,
+      description,
+    )
+      .then(() => {
+        navigation.navigate(STRINGS.organizer_navigation_tab_home);
+      })
+      .catch((err) => {
+        console.error('Could not create roll call, error:', err);
+      });
   };
 
-  const onOpenPress = () => {
-    console.error('Does nothing for now! See parts/.../CreateRollCall.tsx');
-    // requestOpenRollCall(ROLL_CALL_ID, new Timestamp(Math.floor((new Date()).getTime() / 1000)))
-    // navigation.goBack()
-  };
+  const onConfirmPress = () => createRollCall();
 
   return (
     <ScrollView>
@@ -86,11 +103,6 @@ const CreateRollCall = ({ route }: any) => {
       <WideButtonView
         title={STRINGS.general_button_confirm}
         onPress={onConfirmPress}
-        disabled={!buttonsVisibility}
-      />
-      <WideButtonView
-        title={STRINGS.general_button_open}
-        onPress={onOpenPress}
         disabled={!buttonsVisibility}
       />
       <WideButtonView

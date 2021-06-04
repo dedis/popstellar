@@ -7,10 +7,8 @@ import testKeyPair from 'test_data/keypair.json';
 import * as msApi from 'network/MessageApi';
 import * as wsApi from 'network/JsonRpcApi';
 import { storeInit } from 'store/Storage';
-import { KeyPairStore, OpenedLaoStore } from 'store';
-import {
-  Base64Data, Hash, Lao, PrivateKey, PublicKey, Timestamp, KeyPair,
-} from 'model/objects';
+import { KeyPairStore } from 'store/stores/KeyPairStore';
+import { OpenedLaoStore } from 'store/stores/OpenedLaoStore';
 import {
   ActionType, CloseRollCall,
   CreateLao, CreateMeeting, CreateRollCall,
@@ -19,6 +17,9 @@ import {
   StateLao, StateMeeting,
   UpdateLao, WitnessMessage,
 } from 'model/network/method/message/data';
+import {
+  Base64UrlData, Hash, Lao, PrivateKey, PublicKey, Timestamp, KeyPair,
+} from 'model/objects';
 import { Channel } from 'model/objects/Channel';
 
 function mockFunction<T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> {
@@ -83,7 +84,7 @@ function checkDataCreateLao(obj: MessageData) {
   expect(data).toContainKeys([...defaultDataFields, 'id', 'name', 'creation',
     'organizer', 'witnesses']);
 
-  expect(data.id).toBeBase64();
+  expect(data.id).toBeBase64Url();
 
   expect(data.name).toBeString();
   expect(data.name).toBe(mockEventName);
@@ -91,10 +92,10 @@ function checkDataCreateLao(obj: MessageData) {
   expect(data.creation).toBeNumberObject();
   expect(data.creation.valueOf()).toBeGreaterThan(0);
 
-  expect(data.organizer).toBeBase64();
+  expect(data.organizer).toBeBase64Url();
   expect(data.organizer).toBeJsonEqual(KeyPairStore.getPublicKey());
 
-  expect(data.witnesses).toBeBase64Array();
+  expect(data.witnesses).toBeBase64UrlArray();
   expect(data.witnesses).toBeDistinctArray();
 
   // check id
@@ -113,7 +114,7 @@ function checkDataUpdateLao(obj: MessageData) {
   expect(data).toBeObject();
   expect(data).toContainKeys([...defaultDataFields, 'id', 'name', 'last_modified', 'witnesses']);
 
-  expect(data.id).toBeBase64();
+  expect(data.id).toBeBase64Url();
 
   expect(data.name).toBeString();
   expect(data.name).toBe(mockEventName);
@@ -123,7 +124,7 @@ function checkDataUpdateLao(obj: MessageData) {
 
   expect(data.witnesses).toBeArray();
   data.witnesses.forEach((wit) => {
-    expect(wit).toBeBase64();
+    expect(wit).toBeBase64Url();
   });
   expect(data.witnesses).toHaveLength(new Set(data.witnesses).size);
 
@@ -146,7 +147,7 @@ function checkDataStateLao(obj: MessageData) {
   expect(data).toContainKeys([...defaultDataFields, 'id', 'name', 'creation',
     'last_modified', 'organizer', 'witnesses', 'modification_id', 'modification_signatures']);
 
-  expect(data.id).toBeBase64();
+  expect(data.id).toBeBase64Url();
 
   expect(data.name).toBeString();
   expect(data.name).toBe(OpenedLaoStore.get().name);
@@ -158,13 +159,13 @@ function checkDataStateLao(obj: MessageData) {
   expect(data.last_modified.valueOf()).toBeGreaterThan(0);
   expect(data.last_modified.valueOf() + 1).toBeGreaterThan(data.creation.valueOf());
 
-  expect(data.organizer).toBeBase64();
+  expect(data.organizer).toBeBase64Url();
   expect(data.organizer).toBeJsonEqual(OpenedLaoStore.get().organizer);
 
-  expect(data.witnesses).toBeBase64Array();
+  expect(data.witnesses).toBeBase64UrlArray();
   expect(data.witnesses).toBeDistinctArray();
 
-  expect(data.modification_id).toBeBase64();
+  expect(data.modification_id).toBeBase64Url();
 
   expect(data.modification_signatures).toBeKeySignatureArray('witness', 'signature');
 
@@ -185,7 +186,7 @@ function checkDataCreateMeeting(obj: MessageData) {
   const expectedMinFields = [...defaultDataFields, 'id', 'name', 'creation', 'start'];
   expect(data).toContainKeys(expectedMinFields);
 
-  expect(data.id).toBeBase64();
+  expect(data.id).toBeBase64Url();
 
   expect(data.name).toBeString();
   expect(data.name).toBe(mockEventName);
@@ -204,6 +205,7 @@ function checkDataCreateMeeting(obj: MessageData) {
 
   if ('end' in data) {
     expect(data.end).toBeNumberObject();
+    // @ts-ignore
     expect(data.end.valueOf()).toBeGreaterThan(0);
     // @ts-ignore
     expect(data.end.valueOf() + 1).toBeGreaterThan(data.start.valueOf());
@@ -231,7 +233,7 @@ function checkDataStateMeeting(obj: MessageData) {
     'last_modified', 'start', 'modification_id', 'modification_signatures'];
   expect(data).toContainKeys(expectedMinFields);
 
-  expect(data.id).toBeBase64();
+  expect(data.id).toBeBase64Url();
 
   expect(data.name).toBeString();
   expect(data.name).toBe(mockCurrentLao.params.message.data.name);
@@ -263,7 +265,7 @@ function checkDataStateMeeting(obj: MessageData) {
     expect(data.extra).toBeObject();
   }
 
-  expect(data.modification_id).toBeBase64();
+  expect(data.modification_id).toBeBase64Url();
 
   expect(data.modification_signatures).toBeKeySignatureArray('witness', 'signature');
 
@@ -279,8 +281,8 @@ function checkDataWitnessMessage(obj: MessageData) {
   const data: WitnessMessage = obj as WitnessMessage;
 
   expect(data).toContainKeys([...defaultDataFields, 'message_id', 'signature']);
-  expect(data.message_id).toBeBase64();
-  expect(data.signature).toBeBase64();
+  expect(data.message_id).toBeBase64Url();
+  expect(data.signature).toBeBase64Url();
 }
 
 function checkDataCreateRollCall(obj: MessageData) {
@@ -290,14 +292,9 @@ function checkDataCreateRollCall(obj: MessageData) {
   const data: CreateRollCall = obj as CreateRollCall;
 
   expect(data).toBeObject();
-  expect(data).toContainKeys([...defaultDataFields, 'id', 'name', 'creation', 'location']);
+  expect(data).toContainKeys([...defaultDataFields, 'id', 'name', 'creation', 'location', 'proposed_start', 'proposed_end']);
 
-  const startInData = 'start' in data;
-  const scheduledInData = 'scheduled' in data;
-  const xor = !(startInData && scheduledInData) && (startInData || scheduledInData);
-  expect(xor).toBe(true);
-
-  expect(data.id).toBeBase64();
+  expect(data.id).toBeBase64Url();
 
   expect(data.name).toBeString();
   expect(data.name).toBe(mockEventName);
@@ -305,25 +302,23 @@ function checkDataCreateRollCall(obj: MessageData) {
   expect(data.creation).toBeNumberObject();
   expect(data.creation.valueOf()).toBeGreaterThan(0);
 
-  if ('start' in data) {
-    expect(data.start).toBeNumberObject();
-    expect(data.start.valueOf()).toBeGreaterThan(0);
-    // @ts-ignore
-    expect(data.start.valueOf() + 1).toBeGreaterThan(data.creation.valueOf());
-  }
+  expect(data.proposed_start).toBeNumberObject();
+  // @ts-ignore
+  expect(data.proposed_start.valueOf()).toBeGreaterThan(0);
+  // @ts-ignore
+  expect(data.proposed_start.valueOf() + 1).toBeGreaterThan(data.creation.valueOf());
 
-  if ('scheduled' in data) {
-    expect(data.scheduled).toBeNumberObject();
-    expect(data.scheduled.valueOf()).toBeGreaterThan(0);
-    // @ts-ignore
-    expect(data.scheduled.valueOf() + 1).toBeGreaterThan(data.creation.valueOf());
-  }
+  expect(data.proposed_end).toBeNumberObject();
+  // @ts-ignore
+  expect(data.proposed_end.valueOf()).toBeGreaterThan(0);
+  // @ts-ignore
+  expect(data.proposed_end.valueOf() + 1).toBeGreaterThan(data.creation.valueOf());
 
   expect(data.location).toBeString();
   expect(data.location).toBe(mockLocation);
 
-  if ('roll_call_description' in data) {
-    expect(data.roll_call_description).toBeString();
+  if ('description' in data) {
+    expect(data.description).toBeString();
   }
 
   // check id
@@ -340,12 +335,13 @@ function checkDataOpenRollCall(obj: MessageData) {
   const data: OpenRollCall = obj as OpenRollCall;
 
   expect(data).toBeObject();
-  expect(data).toContainKeys([...defaultDataFields, 'id', 'start']);
+  expect(data).toContainKeys([...defaultDataFields, 'update_id', 'opens', 'opened_at']);
 
-  expect(data.update_id).toBeBase64();
+  expect(data.update_id).toBeBase64Url();
+  expect(data.opens).toBeBase64Url();
 
-  expect(data.start).toBeNumberObject();
-  expect(data.start.valueOf()).toBeGreaterThan(0);
+  expect(data.opened_at).toBeNumberObject();
+  expect(data.opened_at.valueOf()).toBeGreaterThan(0);
 
   // check id
   const expected = Hash.fromStringArray('R', OpenedLaoStore.get().id.toString(), '444', 'r-cName'); // 444 and r-cName are for now hardocded in the APi
@@ -360,12 +356,12 @@ function checkDataReopenRollCall(obj: MessageData) {
 
   const data: ReopenRollCall = obj as ReopenRollCall;
 
-  expect(data).toContainKeys([...defaultDataFields, 'id', 'start']);
+  expect(data).toContainKeys([...defaultDataFields, 'id', 'opens', 'opened_at']);
 
-  expect(data.update_id).toBeBase64();
-
-  expect(data.start).toBeNumberObject();
-  expect(data.start.valueOf()).toBeGreaterThan(0);
+  expect(data.update_id).toBeBase64Url();
+  expect(data.opens).toBeBase64Url();
+  expect(data.opened_at).toBeNumberObject();
+  expect(data.opened_at.valueOf()).toBeGreaterThan(0);
 
   // check id
   const expected = Hash.fromStringArray('R', OpenedLaoStore.get().id.toString(), '444', 'r-cName'); // 444 and r-cName are for now hardocded in the APi
@@ -381,14 +377,14 @@ function checkDataCloseRollCall(obj: MessageData) {
   const data: CloseRollCall = obj as CloseRollCall;
 
   expect(data).toBeObject();
-  expect(data).toContainKeys([...defaultDataFields, 'id', 'start', 'end', 'attendees']);
+  expect(data).toContainKeys([...defaultDataFields, 'update_id', 'closes', 'closed_at', 'attendees']);
 
-  expect(data.update_id).toBeBase64();
+  expect(data.update_id).toBeBase64Url();
 
-  expect(data.end).toBeNumberObject();
-  expect(data.end.valueOf()).toBeGreaterThan(0);
+  expect(data.closed_at).toBeNumberObject();
+  expect(data.closed_at.valueOf()).toBeGreaterThan(0);
 
-  expect(data.attendees).toBeBase64Array();
+  expect(data.attendees).toBeBase64UrlArray();
   expect(data.attendees).toBeDistinctArray();
 
   // check id
@@ -397,7 +393,7 @@ function checkDataCloseRollCall(obj: MessageData) {
 }
 
 describe('=== WebsocketApi tests ===', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     storeInit();
 
     const org: PublicKey = KeyPairStore.getPublicKey();
@@ -450,20 +446,15 @@ describe('=== WebsocketApi tests ===', () => {
 */
     it('should create the correct request for requestWitnessMessage', async () => {
       setMockCheck(checkDataWitnessMessage);
-      await msApi.requestWitnessMessage('/root', Base64Data.encode('randomMessageId'));
+      await msApi.requestWitnessMessage('/root', Base64UrlData.encode('randomMessageId'));
     });
 
     it('should create the correct request for requestCreateRollCall', async () => {
       setMockCheck(checkDataCreateRollCall);
-      const mockScheduledTime = mockStartTime + 1;
       const mockDescription = 'random description';
-      await msApi.requestCreateRollCall(mockEventName, mockLocation, mockStartTime);
-      await msApi.requestCreateRollCall(mockEventName, mockLocation, undefined, mockScheduledTime);
+      await msApi.requestCreateRollCall(mockEventName, mockLocation, mockStartTime, mockEndTime);
       await msApi.requestCreateRollCall(
-        mockEventName, mockLocation, mockStartTime, undefined, mockDescription,
-      );
-      await msApi.requestCreateRollCall(
-        mockEventName, mockLocation, undefined, mockScheduledTime, mockDescription,
+        mockEventName, mockLocation, mockStartTime, mockEndTime, mockDescription,
       );
     });
     /*

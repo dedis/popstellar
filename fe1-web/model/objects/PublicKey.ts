@@ -1,3 +1,3 @@
-import { Base64Data } from './Base64';
+import { Base64UrlData } from './Base64Url';
 
-export class PublicKey extends Base64Data {}
+export class PublicKey extends Base64UrlData {}

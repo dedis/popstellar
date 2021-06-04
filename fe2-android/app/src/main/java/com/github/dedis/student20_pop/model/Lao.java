@@ -21,11 +21,12 @@ public final class Lao {
   private Set<PendingUpdate> pendingUpdates;
 
   private Map<String, RollCall> rollCalls;
-
+  private Map<String,Election> elections;
   public Lao(String id) {
     this.channel = id;
     this.id = id;
     this.rollCalls = new HashMap<>();
+    this.elections = new HashMap<>();
     this.witnesses = new HashSet<>();
     this.pendingUpdates = new HashSet<>();
   }
@@ -43,8 +44,42 @@ public final class Lao {
     rollCalls.put(newId, rollCall);
   }
 
+  public void updateElection(String prevId, Election election) {
+    if (elections.containsKey(prevId)) {
+      elections.remove(prevId);
+    }
+    String newId = election.getId();
+    elections.put(newId, election);
+  }
+
   public Optional<RollCall> getRollCall(String id) {
     return Optional.ofNullable(rollCalls.get(id));
+  }
+
+  public Optional<Election> getElection(String id) {
+    return Optional.ofNullable(elections.get(id));
+  }
+
+  /**
+   * Removes an election from the list of elections.
+   *
+   * @param id       the id of the Election
+   * @return true if the election was deleted
+   */
+  public boolean removeElection(String id) {
+    return (elections.remove(id) != null ) ;
+
+  }
+
+  /**
+   * Removes a roll call from the list of roll calls.
+   *
+   * @param id       the id of the Roll Call
+   * @return true if the roll call was deleted
+   */
+  public boolean removeRollCall(String id) {
+    return (rollCalls.remove(id) != null ) ;
+
   }
 
   public Long getLastModified() {
@@ -119,6 +154,8 @@ public final class Lao {
     this.pendingUpdates = pendingUpdates;
   }
 
+  public Map<String, Election> getElections() {return elections;}
+
   public Map<String, RollCall> getRollCalls() {
     return rollCalls;
   }
@@ -126,4 +163,5 @@ public final class Lao {
   public void setRollCalls(Map<String, RollCall> rollCalls) {
     this.rollCalls = rollCalls;
   }
+
 }
