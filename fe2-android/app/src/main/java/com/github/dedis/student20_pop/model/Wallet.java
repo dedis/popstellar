@@ -147,7 +147,7 @@ public class Wallet {
     // create 31-bit index path
     StringJoiner joiner = new StringJoiner("/");
     int i;
-    for (i = 0; i + 3 <= byteString.length; i += 3) { ;
+    for (i = 0; i + 3 <= byteString.length; i += 3) {
       String path = Integer.toString(byteString[i] & 0xFF)
           .concat(Integer.toString(byteString[i+1] & 0xFF))
           .concat(Integer.toString(byteString[i+2] & 0xFF));
