@@ -1,3 +1,5 @@
+import sbtsonar.SonarPlugin.autoImport.sonarProperties
+
 name := "pop"
 
 version := "0.1"
@@ -12,6 +14,17 @@ scapegoatReports := Seq("xml")
 // temporarily report scapegoat errors as warnings, to avoid broken builds
 scalacOptions in Scapegoat += "-P:scapegoat:overrideLevels:all=Warning"
 
+// Configure Sonar
+sonarProperties := Map(
+  "sonar.organization" -> "dedis",
+  "sonar.projectKey" -> "dedis_student_21_pop_be2",
+  "sonar.sources" -> "src/main/scala",
+  //"sonar.tests" -> "src/test/scala",
+  "sonar.sourceEncoding" -> "UTF-8",
+  "sonar.scala.version" -> "2.13.5",
+  "sonar.scala.scoverage.reportPath" -> "target/scala-2.13/scoverage-report/scoverage.xml",
+  "sonar.scala.scapegoat.reportPath" -> "target/scala-2.13/scapegoat-report/scapegoat.xml"
+)
 
 
 // For websockets
