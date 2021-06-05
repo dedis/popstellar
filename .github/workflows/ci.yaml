@@ -155,7 +155,7 @@ jobs:
     - name: Test with race detector
       if: ${{ always() }}  # execute even if previous steps failed
       run: |
-        go test -race -v ./...
+        make test_race
 
     - name: Run code analysis
       if: ${{ matrix.platform == 'ubuntu-latest' }}  # execute even if previous steps failed

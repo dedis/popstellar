@@ -1,14 +1,19 @@
 .PHONY: test
 
-build:
+define execute_command
 	make copy_protocol
-	go build -o pop ./cli/
+    $(1)
 	make clean_protocol
+endef
+
+build:
+	$(call execute_command, go build -o pop ./cli/)
 
 test:
-	make copy_protocol
-	go test -v ./...
-	make clean_protocol
+	$(call execute_command, go test -v ./...)
+
+test_race:
+	$(call execute_command, go test -race -v ./...)
 
 copy_protocol:
 	cp -r ../protocol ./validation 
