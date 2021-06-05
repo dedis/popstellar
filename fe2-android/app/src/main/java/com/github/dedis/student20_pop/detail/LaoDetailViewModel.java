@@ -135,6 +135,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     private final CompositeDisposable disposables;
     private final Gson mGson;
     private Set<String> attendees = new HashSet<>();
+    private Set<String> witnesses = new HashSet<>(); // used to dynamically update the set of witnesses when WR code scanned
     private  ScanningAction scanningAction;
 
     public LaoDetailViewModel(
@@ -657,6 +658,13 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     }
 
     public void openAddWitness() {
+
+        Lao lao = getCurrentLaoValue();
+        if (lao == null) {
+            Log.d(TAG, LAO_FAILURE_MESSAGE);
+            return;
+        }
+        witnesses = new HashSet<>(lao.getWitnesses());
         mOpenAddWitness.setValue(new Event<>(true));
     }
 
@@ -775,6 +783,64 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         }
     }
 
+    public void updateLaoWitnesses() {
+        Log.d(TAG, "Updating lao witnesses " );
+
+        Lao lao = getCurrentLaoValue();
+
+        if (lao == null) {
+            Log.d(TAG, LAO_FAILURE_MESSAGE);
+            return;
+        }
+        String channel = lao.getChannel();
+        try {
+            KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+            String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+            byte[] sender = Base64.getUrlDecoder().decode(publicKey);
+            PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+
+            long now = Instant.now().getEpochSecond();
+            UpdateLao updateLao = new UpdateLao(publicKey, lao.getCreation(), lao.getName(), now, witnesses);
+            MessageGeneral msg = new MessageGeneral(sender, updateLao, signer, mGson);
+            Disposable disposable =
+                    mLAORepository
+                            .sendPublish(channel, msg)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .timeout(5, TimeUnit.SECONDS)
+                            .subscribe(
+                                    answer -> {
+                                        if (answer instanceof Result) {
+                                            Log.d(TAG, "updated lao witnesses");
+                                            StateLao stateLao = new StateLao(updateLao.getId(), updateLao.getName(), lao.getCreation(), updateLao.getLastModified(), publicKey, msg.getMessageId(), updateLao.getWitnesses(), new ArrayList<>());
+                                            MessageGeneral stateMsg = new MessageGeneral(sender, stateLao, signer, mGson);
+                                            mLAORepository
+                                                    .sendPublish(channel, stateMsg)
+                                                    .subscribeOn(Schedulers.io())
+                                                    .observeOn(AndroidSchedulers.mainThread())
+                                                    .timeout(5, TimeUnit.SECONDS)
+                                                    .subscribe(
+                                                            answer2 -> {
+                                                                if (answer2 instanceof Result) {
+                                                                    Log.d(TAG, "updated lao state with new witnesses");
+                                                                } else {
+                                                                    Log.d(TAG, "failed to update lao state with new witnesses");
+                                                                }
+                                                            },
+                                                            throwable -> Log.d(TAG, "timed out waiting for result on update lao witnesses", throwable)
+                                                    );
+                                        } else {
+                                            Log.d(TAG, "failed to update lao witnesses");
+                                        }
+                                    },
+                                    throwable -> Log.d(TAG, "timed out waiting for result on update lao witnesses", throwable)
+                            );
+            disposables.add(disposable);
+        } catch (GeneralSecurityException | IOException e) {
+            Log.d(TAG, PK_FAILURE_MESSAGE, e);
+        }
+    }
+
     public void cancelEdit() {
         mLaoName.setValue("");
         closeEditProperties();
@@ -868,7 +934,9 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             mNbAttendeesEvent.postValue(new Event<>(attendees.size()));
         }
         else if(scanningAction== (ScanningAction.ADD_WITNESS)) {
-        // TODO : Implement a method updateNewWitnesses() to send a AddNewWitnesses() message when the backend is ready
+        witnesses.add(barcode.rawValue);
+        updateLaoWitnesses();
+
         }
     }
 }
