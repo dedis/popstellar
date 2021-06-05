@@ -1,13 +1,16 @@
 package com.github.dedis.student20_pop.model;
 
 import android.util.Log;
+
 import androidx.core.util.Pair;
+
 import com.github.dedis.student20_pop.model.stellar.SLIP10;
-import io.github.novacrypto.bip39.MnemonicGenerator;
-import io.github.novacrypto.bip39.MnemonicValidator;
-import io.github.novacrypto.bip39.SeedCalculator;
-import io.github.novacrypto.bip39.Words;
-import io.github.novacrypto.bip39.wordlists.English;
+
+import net.i2p.crypto.eddsa.Utils;
+
+import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
+import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
+
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -18,10 +21,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+
 import javax.crypto.ShortBufferException;
-import net.i2p.crypto.eddsa.Utils;
-import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
-import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
+
+import io.github.novacrypto.bip39.MnemonicGenerator;
+import io.github.novacrypto.bip39.MnemonicValidator;
+import io.github.novacrypto.bip39.SeedCalculator;
+import io.github.novacrypto.bip39.Words;
+import io.github.novacrypto.bip39.wordlists.English;
 
 /**
  * This class represent a wallet that will enable users to store their PoP tokens with reasonable,
@@ -134,7 +141,7 @@ public class Wallet {
    */
   private String convertStringToPath(String string){
     // extract byte form string
-    byte[] byteString = Base64.getDecoder().decode(string);
+    byte[] byteString = Base64.getUrlDecoder().decode(string);
 
     // create 31-bit index path
     StringJoiner joiner = new StringJoiner("/");

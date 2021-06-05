@@ -321,40 +321,40 @@ type Question struct {
 type ElectionSetupData struct {
 	*GenericData
 
-	ID        []byte     `json:"id"`
-	LaoID     []byte     `json:"lao"`
-	Name      string     `json:"name"`
-	Version   string     `json:"version"`
-	CreatedAt Timestamp  `json:"created_at"`
-	StartTime Timestamp  `json:"start_time"`
-	EndTime   Timestamp  `json:"end_time"`
-	Questions []Question `json:"questions"`
+	ID        Base64URLBytes `json:"id"`
+	LaoID     Base64URLBytes `json:"lao"`
+	Name      string         `json:"name"`
+	Version   string         `json:"version"`
+	CreatedAt Timestamp      `json:"created_at"`
+	StartTime Timestamp      `json:"start_time"`
+	EndTime   Timestamp      `json:"end_time"`
+	Questions []Question     `json:"questions"`
 }
 
 // Vote represents a vote in an election.
 type Vote struct {
-	ID          PublicKey `json:"id"`
-	QuestionID  []byte    `json:"question"`
-	VoteIndexes []int     `json:"vote"`
-	WriteIn     string    `json:"write_in"`
+	ID          PublicKey      `json:"id"`
+	QuestionID  Base64URLBytes `json:"question"`
+	VoteIndexes []int          `json:"vote"`
+	WriteIn     string         `json:"write_in"`
 }
 
 // CastVoteData represents the message data used for casting a vote during an election.
 type CastVoteData struct {
 	*GenericData
-	LaoID      []byte    `json:"lao"`
-	ElectionID []byte    `json:"election"`
-	CreatedAt  Timestamp `json:"created_at"`
-	Votes      []Vote    `json:"votes"`
+	LaoID      Base64URLBytes `json:"lao"`
+	ElectionID Base64URLBytes `json:"election"`
+	CreatedAt  Timestamp      `json:"created_at"`
+	Votes      []Vote         `json:"votes"`
 }
 
 // ElectionEndData represents the message data used for ending an election.
 type ElectionEndData struct {
 	*GenericData
-	LaoID           []byte    `json:"lao"`
-	ElectionID      []byte    `json:"election"`
-	CreatedAt       Timestamp `json:"created_at"`
-	RegisteredVotes []byte    `json:"registered_votes"`
+	LaoID           Base64URLBytes `json:"lao"`
+	ElectionID      Base64URLBytes `json:"election"`
+	CreatedAt       Timestamp      `json:"created_at"`
+	RegisteredVotes Base64URLBytes `json:"registered_votes"`
 }
 
 // QuestionResult represents the result of a question in an election.
