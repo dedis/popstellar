@@ -28,9 +28,9 @@ type baseHub struct {
 }
 
 // NewBaseHub returns a Base Hub.
-func NewBaseHub(public kyber.Point, protocolLoader validation.ProtocolLoader) (*baseHub, error) {
+func NewBaseHub(public kyber.Point) (*baseHub, error) {
 
-	schemaValidator, err := validation.NewSchemaValidator(protocolLoader)
+	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create the schema validator: %v", err)
 	}

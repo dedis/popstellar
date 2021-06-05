@@ -1,15 +1,14 @@
 package validation
 
 import (
+	"embed"
 	"fmt"
-	"path/filepath"
-	"strings"
+	"net/http"
 
 	"student20_pop/message"
 
 	_ "embed"
 
-	"github.com/urfave/cli/v2"
 	"github.com/xeipuuv/gojsonschema"
 	"golang.org/x/xerrors"
 )
@@ -23,36 +22,17 @@ type schema struct {
 	path string
 }
 
+//go:embed protocol
+var protocolFS embed.FS
+
 const (
 	GenericMsgSchema string = "genericMsgSchema"
 	DataSchema       string = "dataSchema"
-	ProtocolURL      string = "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol"
 )
 
-type ProtocolLoader struct {
-	Online bool
-	Path   string
-}
-
-// If the "protocol-path" flag is set, it is used to load the protocol otherwise the URL on github website is used.
-func GetProtocolLoader(context *cli.Context) ProtocolLoader {
-	protocolFlag := "protocol-path"
-	if context.IsSet(protocolFlag) {
-		return ProtocolLoader{
-			Online: false,
-			Path:   context.String(protocolFlag),
-		}
-	} else {
-		return ProtocolLoader{
-			Online: true,
-			Path:   ProtocolURL,
-		}
-	}
-}
-
 // RegisterSchema adds a JSON schema specified by the path
-func (s *SchemaValidator) RegisterSchema(schema schema) error {
-	msgLoader := gojsonschema.NewReferenceLoader(schema.path)
+func (s *SchemaValidator) RegisterSchema(fs http.FileSystem, schema schema) error {
+	msgLoader := gojsonschema.NewReferenceLoaderFileSystem(schema.path, fs)
 	msgSchema, err := gojsonschema.NewSchema(msgLoader)
 	if err != nil {
 		return xerrors.Errorf("failed to load the json schema with path `%s`: %v", schema.path, err)
@@ -93,33 +73,20 @@ func (s *SchemaValidator) VerifyJson(byteMessage []byte, schemaName string) erro
 }
 
 // NewSchemaValidator returns a Schema Validator
-func NewSchemaValidator(protocolLoader ProtocolLoader) (*SchemaValidator, error) {
-	// If the protocol path is an offline path, the path is cleaned
-	if !protocolLoader.Online {
-		path, err := filepath.Abs(protocolLoader.Path)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to load the path for the json schemas: %v", err)
-		}
-
-		// Replace the '\\' from windows path with '/'
-		path = strings.ReplaceAll(path, "\\", "/")
-
-		protocolLoader.Path = "file://" + path
-	}
-
+func NewSchemaValidator() (*SchemaValidator, error) {
 	genericMsgSchema := schema{
 		name: GenericMsgSchema,
-		path: protocolLoader.Path + "/genericMessage.json",
+		path: "file:///protocol/genericMessage.json",
 	}
 	dataSchema := schema{
 		name: DataSchema,
-		path: protocolLoader.Path + "/query/method/message/data/data.json"}
+		path: "file:///protocol/query/method/message/data/data.json"}
 
-	return NewSchemaValidatorWithSchemas(genericMsgSchema, dataSchema)
+	return NewSchemaValidatorWithSchemas(http.FS(protocolFS), genericMsgSchema, dataSchema)
 }
 
 // NewSchemaValidatorWithSchemas returns a Schema Validator for the schemas 'schemas'
-func NewSchemaValidatorWithSchemas(schemas ...schema) (*SchemaValidator, error) {
+func NewSchemaValidatorWithSchemas(fs http.FileSystem, schemas ...schema) (*SchemaValidator, error) {
 	// Instantiate schema
 	schemaValidator := &SchemaValidator{
 		schemas: make(map[string]*gojsonschema.Schema),
@@ -127,7 +94,7 @@ func NewSchemaValidatorWithSchemas(schemas ...schema) (*SchemaValidator, error) 
 
 	// Register the paths
 	for _, schema := range schemas {
-		err := schemaValidator.RegisterSchema(schema)
+		err := schemaValidator.RegisterSchema(fs, schema)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to register a json schema: %v", err)
 		}

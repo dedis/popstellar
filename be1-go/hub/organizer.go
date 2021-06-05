@@ -8,7 +8,6 @@ import (
 	"student20_pop"
 
 	"student20_pop/message"
-	"student20_pop/validation"
 
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
@@ -20,8 +19,8 @@ type organizerHub struct {
 }
 
 // NewOrganizerHub returns a Organizer Hub.
-func NewOrganizerHub(public kyber.Point, protocolLoader validation.ProtocolLoader) (Hub, error) {
-	baseHub, err := NewBaseHub(public, protocolLoader)
+func NewOrganizerHub(public kyber.Point) (Hub, error) {
+	baseHub, err := NewBaseHub(public)
 	return &organizerHub{
 		baseHub,
 	}, err

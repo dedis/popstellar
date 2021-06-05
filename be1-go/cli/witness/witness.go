@@ -8,7 +8,6 @@ import (
 	"net/url"
 	"student20_pop"
 	"student20_pop/hub"
-	"student20_pop/validation"
 
 	"github.com/gorilla/websocket"
 	"github.com/urfave/cli/v2"
@@ -42,9 +41,7 @@ func Serve(context *cli.Context) error {
 		return xerrors.Errorf("failed to unmarshal public key: %v", err)
 	}
 
-	protocolLoader := validation.GetProtocolLoader(context)
-
-	h, err := hub.NewWitnessHub(point, protocolLoader)
+	h, err := hub.NewWitnessHub(point)
 	if err != nil {
 		return xerrors.Errorf("failed create the witness hub: %v", err)
 	}

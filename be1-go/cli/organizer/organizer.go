@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"student20_pop"
 	"student20_pop/hub"
-	"student20_pop/validation"
 
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
@@ -35,9 +34,7 @@ func Serve(context *cli.Context) error {
 		return xerrors.Errorf("failed to unmarshal public key: %v", err)
 	}
 
-	protocolLoader := validation.GetProtocolLoader(context)
-
-	h, err := hub.NewOrganizerHub(point, protocolLoader)
+	h, err := hub.NewOrganizerHub(point)
 	if err != nil {
 		return xerrors.Errorf("failed create the organizer hub: %v", err)
 	}
