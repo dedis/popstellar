@@ -135,12 +135,12 @@ jobs:
 
     - name: Run go vet
       run: |
-        go vet ./...
+        make vet
 
     - name: Run staticcheck
       if: ${{ always() }}  # execute even if previous steps failed
       run: |
-        staticcheck ./...
+        make staticcheck
 
     - name: Build
       if: ${{ always() }}  # execute even if previous steps failed

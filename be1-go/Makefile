@@ -15,6 +15,12 @@ test:
 test_race:
 	$(call execute_command, go test -race -v ./...)
 
+staticcheck:
+	$(call execute_command, staticcheck ./...)
+
+vet:
+	$(call execute_command, go vet ./...)
+
 copy_protocol:
 	cp -r ../protocol ./validation 
 
