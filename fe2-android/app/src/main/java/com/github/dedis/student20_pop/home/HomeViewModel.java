@@ -48,6 +48,7 @@ public class HomeViewModel extends AndroidViewModel
   public static final String TAG = HomeViewModel.class.getSimpleName();
   public static final String SCAN = "SCAN";
   public static final String REQUEST_CAMERA_PERMISSION = "REQUEST_CAMERA_PERMISSION";
+  private static final ScanningAction scanningAction = ScanningAction.ADD_LAO_PARTICIPANT;
 
   /*
    * LiveData objects for capturing events like button clicks
@@ -62,6 +63,7 @@ public class HomeViewModel extends AndroidViewModel
   private final MutableLiveData<Event<Boolean>> mCancelConnectEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenWalletEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenSeedEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<String>> mOpenLaoWalletEvent = new MutableLiveData<>();
 
 
   /*
@@ -79,7 +81,6 @@ public class HomeViewModel extends AndroidViewModel
   private final LAORepository mLAORepository;
   private final AndroidKeysetManager mKeysetManager;
   private Wallet wallet;
-  private final ScanningAction scanningAction = ScanningAction.ADD_LAO_PARTICIPANT;
 
   private Disposable disposable;
 
@@ -110,6 +111,11 @@ public class HomeViewModel extends AndroidViewModel
   @Override
   public int getScanDescription() {
     return R.string.qrcode_scanning_connect_lao;
+  }
+
+  @Override
+  public ScanningAction getScanningAction() {
+    return scanningAction;
   }
 
   @Override
@@ -262,7 +268,9 @@ public class HomeViewModel extends AndroidViewModel
 
   public LiveData<Event<Boolean>> getOpenSeedEvent() { return mOpenSeedEvent; }
 
-  public ScanningAction getScanningAction() {return scanningAction;}
+  public LiveData<Event<String>> getOpenLaoWalletEvent() {
+    return mOpenLaoWalletEvent;
+  }
 
 
   /*
@@ -286,6 +294,10 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   public void openSeed(){mOpenSeedEvent.postValue(new Event<>(true));}
+
+  public void openLaoWallet(String laoId) {
+    mOpenLaoWalletEvent.postValue(new Event<>(laoId));
+  }
 
   public void openConnect() {
     if (ActivityCompat.checkSelfPermission(
