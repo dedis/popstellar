@@ -79,6 +79,12 @@
             android:visibility="gone"
             android:enabled="false"
             android:text="@string/closed_rollcall" />
+        <Button
+            android:id="@+id/rollcall_attendees_list_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="@string/attendees_list_rollcall" />
 
     </LinearLayout>
 
