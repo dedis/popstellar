@@ -123,6 +123,8 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 			log.Fatal("Not implemented", message.ElectionEndAction)
 		case message.ElectionResultAction:
 			log.Fatal("Not implemented", message.ElectionResultAction)
+		default:
+			return message.NewInvalidActionError(message.DataAction(action))
 		}
 	}
 
