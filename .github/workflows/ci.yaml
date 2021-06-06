@@ -140,7 +140,9 @@ jobs:
     - name: Run staticcheck
       if: ${{ always() }}  # execute even if previous steps failed
       run: |
+        make copy_protocol
         staticcheck ./...
+        make clean_protocol
 
     - name: Build
       if: ${{ always() }}  # execute even if previous steps failed
