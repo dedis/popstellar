@@ -118,13 +118,22 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 		action := message.ElectionAction(data.GetAction())
 		switch action {
 		case message.CastVoteAction:
-			return c.castVoteHelper(publish)
+			err = c.castVoteHelper(publish)
 		case message.ElectionEndAction:
 			log.Fatal("Not implemented", message.ElectionEndAction)
 		case message.ElectionResultAction:
 			log.Fatal("Not implemented", message.ElectionResultAction)
 		}
 	}
+
+	if err != nil {
+		action := message.ElectionAction(data.GetAction())
+		errorDescription := fmt.Sprintf("failed to process %s action", action)
+		return message.NewError(errorDescription, err)
+	}
+
+	c.broadcastToAllClients(*msg)
+	return nil
 
 	return nil
 }
@@ -149,7 +158,9 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 
 	//This should update any previously set vote if the message ids are the same
 	messageID := base64.URLEncoding.EncodeToString(msg.MessageID)
+	c.inboxMu.Lock()
 	c.inbox[messageID] = *msg
+	c.inboxMu.Unlock()
 	for _, q := range voteData.Votes {
 
 		QuestionID := base64.URLEncoding.EncodeToString(q.QuestionID)

@@ -394,7 +394,7 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 	case message.LaoObject:
 		err = c.processLaoObject(*msg)
 	case message.MeetingObject:
-		err = c.processMeetingObject(data)
+		err = c.processMeetingObject(data,*msg)
 	case message.MessageObject:
 		err = c.processMessageObject(msg.Sender, data)
 	case message.RollCallObject:
@@ -556,7 +556,7 @@ func compareLaoUpdateAndState(update *message.UpdateLAOData, state *message.Stat
 	return nil
 }
 
-func (c *laoChannel) processMeetingObject(data message.Data) error {
+func (c *laoChannel) processMeetingObject(data message.Data,msg message.Message) error {
 	action := message.MeetingDataAction(data.GetAction())
 
 	switch action {
@@ -564,6 +564,11 @@ func (c *laoChannel) processMeetingObject(data message.Data) error {
 	case message.UpdateMeetingAction:
 	case message.StateMeetingAction:
 	}
+	
+	msgIDEncoded := base64.URLEncoding.EncodeToString(msg.MessageID)
+	c.inboxMu.Lock()
+	c.inbox[msgIDEncoded] = msg
+	c.inboxMu.Unlock()
 
 	return nil
 }
