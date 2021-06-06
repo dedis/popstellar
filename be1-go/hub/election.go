@@ -133,7 +133,6 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 	}
 
 	c.broadcastToAllClients(*msg)
-	return nil
 
 	return nil
 }

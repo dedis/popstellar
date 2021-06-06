@@ -564,7 +564,7 @@ func (c *laoChannel) processMeetingObject(data message.Data,msg message.Message)
 	case message.UpdateMeetingAction:
 	case message.StateMeetingAction:
 	}
-	
+
 	msgIDEncoded := base64.URLEncoding.EncodeToString(msg.MessageID)
 	c.inboxMu.Lock()
 	c.inbox[msgIDEncoded] = msg
