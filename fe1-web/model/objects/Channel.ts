@@ -1,7 +1,7 @@
 import { Hash } from './Hash';
 
 export type Channel = string;
-export const ROOT_CHANNEL: Channel = '';
+export const ROOT_CHANNEL: Channel = '/root';
 
 export function channelFromId(value?: Hash) : Channel {
   if (value === undefined) return ROOT_CHANNEL;
