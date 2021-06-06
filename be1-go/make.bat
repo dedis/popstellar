@@ -1,6 +1,3 @@
-@echo off
-
-
 IF /I "%1"=="build" GOTO build
 IF /I "%1"=="test" GOTO test
 IF /I "%1"=="test_race" GOTO test_race
@@ -10,29 +7,38 @@ IF /I "%1"=="clean_protocol" GOTO clean_protocol
 GOTO error
 
 :build
-	%call execute_command, go build -o pop ./cli/%
+	CALL :copy_protocol
+	go build -o pop ./cli/
+	CALL :clean_protocol
 	GOTO :EOF
 
 :test
-	%call execute_command, go test -v ./...%
+	CALL :copy_protocol
+	go test -v ./...
+	CALL :clean_protocol
 	GOTO :EOF
 
 :test_race
-	%call execute_command, go test -race -v ./...%
+	CALL :copy_protocol
+	go test -race -v ./...
+	CALL :clean_protocol
+
 	GOTO :EOF
 
 :vet
-	%call execute_command, go vet ./...%
+	CALL :copy_protocol
+	go vet ./...
+	CALL :clean_protocol
 	GOTO :EOF
 
 :copy_protocol
-	XCOPY /Y ../protocol ./validation -r
+	XCOPY /E /H /Y ..\protocol\ validation\protocol\
 	GOTO :EOF
 
 :clean_protocol
-	DEL /Q validation/protocol -rf
+	RMDIR /S /Q validation\protocol\
 	GOTO :EOF
-
+	
 :error
     IF "%1"=="" (
         ECHO make: *** No targets specified and no makefile found.  Stop.
