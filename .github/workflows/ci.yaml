@@ -140,7 +140,7 @@ jobs:
     - name: Run staticcheck
       if: ${{ always() }}  # execute even if previous steps failed
       run: |
-        make staticcheck
+        staticcheck ./...
 
     - name: Build
       if: ${{ always() }}  # execute even if previous steps failed

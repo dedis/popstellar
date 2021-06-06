@@ -7,8 +7,6 @@ import (
 
 	"student20_pop/message"
 
-	_ "embed"
-
 	"github.com/xeipuuv/gojsonschema"
 	"golang.org/x/xerrors"
 )

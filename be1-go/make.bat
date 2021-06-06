@@ -4,7 +4,6 @@
 IF /I "%1"=="build" GOTO build
 IF /I "%1"=="test" GOTO test
 IF /I "%1"=="test_race" GOTO test_race
-IF /I "%1"=="staticcheck" GOTO staticcheck
 IF /I "%1"=="vet" GOTO vet
 IF /I "%1"=="copy_protocol" GOTO copy_protocol
 IF /I "%1"=="clean_protocol" GOTO clean_protocol
@@ -20,10 +19,6 @@ GOTO error
 
 :test_race
 	%call execute_command, go test -race -v ./...%
-	GOTO :EOF
-
-:staticcheck
-	%call execute_command, staticcheck ./...%
 	GOTO :EOF
 
 :vet
