@@ -23,11 +23,13 @@ public class LAOListAdapter extends BaseAdapter {
 
   private LifecycleOwner lifecycleOwner;
 
+  private boolean openLaoDetail;
 
-  public LAOListAdapter(List<Lao> laos, HomeViewModel homeViewModel, LifecycleOwner activity) {
+  public LAOListAdapter(List<Lao> laos, HomeViewModel homeViewModel, LifecycleOwner activity, boolean openLaoDetail) {
     this.homeViewModel = homeViewModel;
     setList(laos);
     lifecycleOwner = activity;
+    this.openLaoDetail = openLaoDetail;
   }
 
   public void replaceList(List<Lao> laos) {
@@ -70,7 +72,11 @@ public class LAOListAdapter extends BaseAdapter {
         new LAOItemUserActionsListener() {
           @Override
           public void onLAOClicked(Lao lao) {
-            homeViewModel.openLAO(lao.getChannel());
+            if(openLaoDetail) {
+              homeViewModel.openLAO(lao.getChannel());
+            }else{
+              homeViewModel.openLaoWallet(lao.getChannel());
+            }
           }
         };
 

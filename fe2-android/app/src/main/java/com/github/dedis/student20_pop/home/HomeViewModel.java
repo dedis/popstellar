@@ -61,6 +61,7 @@ public class HomeViewModel extends AndroidViewModel
   private final MutableLiveData<Event<Boolean>> mCancelConnectEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenWalletEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenSeedEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<String>> mOpenLaoWalletEvent = new MutableLiveData<>();
 
 
   /*
@@ -260,6 +261,10 @@ public class HomeViewModel extends AndroidViewModel
 
   public LiveData<Event<Boolean>> getOpenSeedEvent() { return mOpenSeedEvent; }
 
+  public LiveData<Event<String>> getOpenLaoWalletEvent() {
+    return mOpenLaoWalletEvent;
+  }
+
 
   /*
    * Methods that modify the state or post an Event to update the UI.
@@ -282,6 +287,10 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   public void openSeed(){mOpenSeedEvent.postValue(new Event<>(true));}
+
+  public void openLaoWallet(String laoId) {
+    mOpenLaoWalletEvent.postValue(new Event<>(laoId));
+  }
 
   public void openConnect() {
     if (ActivityCompat.checkSelfPermission(
