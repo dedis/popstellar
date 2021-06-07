@@ -16,16 +16,32 @@ func (c *laoChannel) processCreateRollCall(data message.Data) error {
 		}
 	}
 
-	c.rollCall.id = string(rollCallData.ID)
-	c.rollCall.state = Created
+	id := base64.URLEncoding.EncodeToString(rollCallData.ID)
+	_, ok := c.rollCalls[id]
+	if ok {
+		return &message.Error{
+			Code:        -3,
+			Description: "A Roll call with the same ID already exists",
+		}
+	}
+
+	c.rollCalls[id] = Created
 	return nil
 }
 
 func (c *laoChannel) processOpenRollCall(data message.Data, action message.RollCallAction) error {
+
+	rollCallData := data.(*message.OpenRollCallData)
+
+	state, err := c.getRollCallState(rollCallData.Opens)
+	if err != nil {
+		return message.NewError("The field `opens` does not correspond to any current roll call ID", err)
+	}
+
 	if action == message.RollCallAction(message.OpenRollCallAction) {
 		// If the action is an OpenRollCallAction,
 		// the previous roll call action should be a CreateRollCallAction
-		if c.rollCall.state != Created {
+		if *state != Created {
 			return &message.Error{
 				Code:        -1,
 				Description: "The roll call can not be opened since it has not been created previously",
@@ -34,20 +50,11 @@ func (c *laoChannel) processOpenRollCall(data message.Data, action message.RollC
 	} else {
 		// If the action is an RepenRollCallAction,
 		// the previous roll call action should be a CloseRollCallAction
-		if c.rollCall.state != Closed {
+		if *state != Closed {
 			return &message.Error{
 				Code:        -1,
 				Description: "The roll call can not be reopened since it has not been closed previously",
 			}
-		}
-	}
-
-	rollCallData := data.(*message.OpenRollCallData)
-
-	if !c.rollCall.checkPrevID(rollCallData.Opens) {
-		return &message.Error{
-			Code:        -4,
-			Description: "The field `opens` does not correspond to the id of the previous roll call message",
 		}
 	}
 
@@ -59,24 +66,23 @@ func (c *laoChannel) processOpenRollCall(data message.Data, action message.RollC
 		}
 	}
 
-	c.rollCall.id = string(rollCallData.UpdateID)
-	c.rollCall.state = Open
+	c.updateRollCall(rollCallData.Opens, rollCallData.UpdateID, Open)
 	return nil
 }
 
 func (c *laoChannel) processCloseRollCall(data message.Data) error {
-	if c.rollCall.state != Open {
+
+	rollCallData := data.(*message.CloseRollCallData)
+
+	state, err := c.getRollCallState(rollCallData.Closes)
+	if err != nil {
+		return message.NewError("The field `closes` does not correspond to any current roll call ID", err)
+	}
+
+	if *state != Open {
 		return &message.Error{
 			Code:        -1,
 			Description: "The roll call can not be closed since it is not open",
-		}
-	}
-
-	rollCallData := data.(*message.CloseRollCallData)
-	if !c.rollCall.checkPrevID(rollCallData.Closes) {
-		return &message.Error{
-			Code:        -4,
-			Description: "The field `closes` does not correspond to the id of the previous roll call message",
 		}
 	}
 
@@ -88,20 +94,14 @@ func (c *laoChannel) processCloseRollCall(data message.Data) error {
 		}
 	}
 
-	c.rollCall.id = string(rollCallData.UpdateID)
-	c.rollCall.state = Closed
+	c.updateRollCall(rollCallData.Closes, rollCallData.Closes, Closed)
+
 	c.attendees = map[string]struct{}{}
 	for i := 0; i < len(rollCallData.Attendees); i += 1 {
 		c.attendees[string(rollCallData.Attendees[i])] = struct{}{}
 	}
 
 	return nil
-}
-
-// Helper functions
-
-func (r *rollCall) checkPrevID(prevID []byte) bool {
-	return string(prevID) == r.id
 }
 
 // Check if the id of the roll call corresponds to the hash of the correct parameters
@@ -114,4 +114,31 @@ func (c *laoChannel) checkRollCallID(str1, str2 fmt.Stringer, id []byte) bool {
 	}
 
 	return bytes.Equal(hash, id)
+}
+
+// getRollCallState returns the state of the rollCall of ID `rollCallID`
+// If no roll call has the ID `rollCallID`, returns an error
+func (c *laoChannel) getRollCallState(rollCallID []byte) (*rollCallState, error) {
+	id := base64.URLEncoding.EncodeToString(rollCallID)
+
+	rollCallState, ok := c.rollCalls[id]
+	if !ok {
+		return nil, &message.Error{
+			Code:        -4,
+			Description: "The ID does not correspond to the id of any current roll call",
+		}
+	}
+
+	return &rollCallState, nil
+}
+
+func (c *laoChannel) updateRollCall(oldID, newID []byte, newState rollCallState) {
+	old := base64.URLEncoding.EncodeToString(oldID)
+	new := base64.URLEncoding.EncodeToString(newID)
+
+	// Delete the old roll call entry
+	delete(c.rollCalls, old)
+
+	// Set the new rollcall ID with the new state
+	c.rollCalls[new] = newState
 }

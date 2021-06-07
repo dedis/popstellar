@@ -347,7 +347,7 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 	laoChannelID := rootPrefix + encodedID
 
 	laoCh := laoChannel{
-		rollCall:    rollCall{},
+		rollCalls:   make(map[string]rollCallState),
 		attendees:   make(map[string]struct{}),
 		baseChannel: createBaseChannel(o, laoChannelID),
 	}
@@ -360,7 +360,11 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 }
 
 type laoChannel struct {
-	rollCall  rollCall
+	// The key corresponds to the current ID of the roll call
+	// and value is the state of that roll call
+	rollCalls map[string]rollCallState
+
+	// The key corresponds to the public key of an attendee
 	attendees map[string]struct{}
 	*baseChannel
 }
@@ -372,11 +376,6 @@ const (
 	Closed  rollCallState = "closed"
 	Created rollCallState = "created"
 )
-
-type rollCall struct {
-	state rollCallState
-	id    string
-}
 
 func (c *laoChannel) Publish(publish message.Publish) error {
 	err := c.baseChannel.VerifyPublishMessage(publish)
