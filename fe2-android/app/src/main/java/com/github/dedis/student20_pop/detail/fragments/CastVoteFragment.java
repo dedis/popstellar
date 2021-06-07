@@ -80,7 +80,7 @@ public class CastVoteFragment extends Fragment {
 
 
         ViewPager2 viewPager2 = mCastVoteFragBinding.castVotePager;
-        QuestionViewPagerAdapter adapter = new QuestionViewPagerAdapter(mLaoDetailViewModel);
+        QuestionViewPagerAdapter adapter = new QuestionViewPagerAdapter(mLaoDetailViewModel, mCastVoteFragBinding);
         viewPager2.setAdapter(adapter);
 
         //Setting the indicator for horizontal swipe

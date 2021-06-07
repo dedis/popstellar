@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -13,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.student20_pop.R;
+import com.github.dedis.student20_pop.databinding.FragmentCastVoteBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.model.Election;
 
@@ -25,14 +27,18 @@ public class QuestionViewPagerAdapter extends RecyclerView.Adapter<QuestionViewP
 
     private ArrayAdapter<String> ballotAdapter;
     private LaoDetailViewModel mLaoDetailViewModel;
-    public QuestionViewPagerAdapter (LaoDetailViewModel mLaoDetailViewModel){
+    private FragmentCastVoteBinding castVoteBinding;
+    private Button voteButton;
+    public QuestionViewPagerAdapter (LaoDetailViewModel mLaoDetailViewModel, FragmentCastVoteBinding castVoteBinding){
         super();
         this.mLaoDetailViewModel = mLaoDetailViewModel;
+        this.castVoteBinding = castVoteBinding;
     }
     @NonNull
     @Override
     public Pager2ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ballotAdapter = new ArrayAdapter<>(parent.getContext(), android.R.layout.simple_list_item_single_choice, new ArrayList<>());
+        voteButton = castVoteBinding.castVoteButton;
         return new Pager2ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_cast_vote_listview,parent, false));
     }
 
@@ -88,7 +94,7 @@ public class QuestionViewPagerAdapter extends RecyclerView.Adapter<QuestionViewP
                 }
             }
             ballotsListView.setClickable(true);
-            //   voteButton.setEnabled(votes.size() == numberOfChoices);
+            // voteButton.setEnabled(votes.size() == numberOfChoices);
         };
         ballotsListView.setOnItemClickListener(itemListener);
     }
