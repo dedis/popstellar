@@ -27,7 +27,7 @@ type baseChannel struct {
 }
 
 type messageInfo struct {
-	message    message.Message
+	message    *message.Message
 	storedTime message.Timestamp
 }
 
@@ -90,7 +90,7 @@ func (c *baseChannel) Catchup(catchup message.Catchup) []message.Message {
 	// iterate and extract the messages[i].message field and
 	// append it to the result slice
 	for _, msgInfo := range messages {
-		result = append(result, msgInfo.message)
+		result = append(result, *msgInfo.message)
 	}
 
 	return result
