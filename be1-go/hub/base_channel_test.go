@@ -24,7 +24,7 @@ func TestBaseChannel_RollCallOrder(t *testing.T) {
 		// Store the message in the inbox
 		channel.inbox.storeMessage(message)
 
-		// Wait before storing a new message
+		// Wait before storing a new message to be able to have an unique timestamp for each message
 		time.Sleep(time.Microsecond)
 	}
 

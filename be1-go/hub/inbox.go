@@ -2,6 +2,7 @@ package hub
 
 import (
 	"encoding/base64"
+	"fmt"
 	"log"
 	"student20_pop/message"
 	"sync"
@@ -20,10 +21,10 @@ func createInbox() *inbox {
 	}
 }
 
-// addWitnessSig adds a signature of witness to a message of ID `messageID`.
+// addWitnessSignature adds a signature of witness to a message of ID `messageID`.
 // if the signature was correctly added return true
 // otherwise returns false
-func (i *inbox) addWitnessSignature(messageID []byte, public message.PublicKey, signature message.Signature) bool {
+func (i *inbox) addWitnessSignature(messageID []byte, public message.PublicKey, signature message.Signature) error {
 	msg, ok := i.getMessage(messageID)
 	if !ok {
 		// TODO: We received a witness signature before the message itself.
@@ -31,7 +32,10 @@ func (i *inbox) addWitnessSignature(messageID []byte, public message.PublicKey, 
 		// actually receive the message
 		msgIDEncoded := base64.URLEncoding.EncodeToString(messageID)
 		log.Printf("failed to find message_id %s for witness message", msgIDEncoded)
-		return false
+		return &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("failed to find message_id %s for witness message", msgIDEncoded),
+		}
 	}
 	i.mutex.Lock()
 	msg.WitnessSignatures = append(msg.WitnessSignatures, message.PublicKeySignaturePair{
@@ -39,7 +43,7 @@ func (i *inbox) addWitnessSignature(messageID []byte, public message.PublicKey, 
 		Signature: signature,
 	})
 	i.mutex.Unlock()
-	return true
+	return nil
 }
 
 // storeMessage stores a message inside the inbox

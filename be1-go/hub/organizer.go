@@ -579,7 +579,10 @@ func (c *laoChannel) processMessageObject(public message.PublicKey, data message
 			}
 		}
 
-		c.inbox.addWitnessSignature(witnessData.MessageID, public, witnessData.Signature)
+		err = c.inbox.addWitnessSignature(witnessData.MessageID, public, witnessData.Signature)
+		if err != nil {
+			return message.NewError("Failed to add a witness signature", err)
+		}
 	default:
 		return message.NewInvalidActionError(message.DataAction(action))
 	}
