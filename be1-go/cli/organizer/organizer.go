@@ -7,6 +7,7 @@ import (
 	"golang.org/x/xerrors"
 	"student20_pop"
 	"student20_pop/hub"
+	"student20_pop/network"
 	"sync"
 )
 
@@ -50,14 +51,14 @@ func Serve(cliCtx *cli.Context) error {
 	wg := &sync.WaitGroup{}
 
 	// increment wait group and create and serve servers for witnesses and clients
-	clientSrv := hub.CreateAndServeWS(ctx, hub.OrganizerHubType, hub.ClientSocketType, h, clientPort, wg)
-	witnessSrv := hub.CreateAndServeWS(ctx, hub.OrganizerHubType, hub.WitnessSocketType, h, witnessPort, wg)
+	clientSrv := network.CreateAndServeWS(ctx, hub.OrganizerHubType, hub.ClientSocketType, h, clientPort, wg)
+	witnessSrv := network.CreateAndServeWS(ctx, hub.OrganizerHubType, hub.WitnessSocketType, h, witnessPort, wg)
 
 	// increment wait group and launch organizer hub
 	go h.Start(ctx, wg)
 
 	// shut down client server and witness server when ctrl+c received
-	hub.ShutdownServers(ctx, witnessSrv, clientSrv)
+	network.ShutdownServers(ctx, witnessSrv, clientSrv)
 
 	// wait for all goroutines to finish
 	wg.Wait()

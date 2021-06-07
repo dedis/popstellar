@@ -1,16 +1,13 @@
-package hub
+package network
 
 import (
 	"context"
 	"fmt"
+	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
-	"os"
-	"os/signal"
+	"student20_pop/hub"
 	"sync"
-	"syscall"
-
-	"github.com/gorilla/websocket"
 )
 
 var upgrader = websocket.Upgrader{
@@ -19,7 +16,7 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
-func CreateAndServeWS(ctx context.Context, hubType HubType, socketType SocketType, h Hub, port int, wg *sync.WaitGroup) *http.Server {
+func CreateAndServeWS(ctx context.Context, hubType hub.HubType, socketType hub.SocketType, h hub.Hub, port int, wg *sync.WaitGroup) *http.Server {
 	wg.Add(1)
 	srv := &http.Server{Addr: fmt.Sprintf(":%d", port)}
 
@@ -43,7 +40,7 @@ func CreateAndServeWS(ctx context.Context, hubType HubType, socketType SocketTyp
 	return srv
 }
 
-func serveWs(ctx context.Context, socketType SocketType, h Hub, w http.ResponseWriter, r *http.Request, wg *sync.WaitGroup) {
+func serveWs(ctx context.Context, socketType hub.SocketType, h hub.Hub, w http.ResponseWriter, r *http.Request, wg *sync.WaitGroup) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("failed to upgrade connection: %v", err)
@@ -51,40 +48,21 @@ func serveWs(ctx context.Context, socketType SocketType, h Hub, w http.ResponseW
 	}
 
 	switch socketType {
-	case ClientSocketType:
-		client := NewClientSocket(h, conn, wg)
+	case hub.ClientSocketType:
+		client := hub.NewClientSocket(h, conn, wg)
 
 		go client.ReadPump(ctx)
 		go client.WritePump(ctx)
 
 		// cleanup go routine that removes clients that forgot to unsubscribe
-		go func(c *ClientSocket, h Hub) {
+		go func(c *hub.ClientSocket, h hub.Hub) {
 			c.Wait.Wait()
 			h.RemoveClientSocket(c)
 		}(client, h)
-	case WitnessSocketType:
-		witness := NewWitnessSocket(h, conn, wg)
+	case hub.WitnessSocketType:
+		witness := hub.NewWitnessSocket(h, conn, wg)
 
 		go witness.ReadPump(ctx)
 		go witness.WritePump(ctx)
 	}
-}
-
-func ShutdownServers(ctx context.Context, witnessSrv *http.Server, clientSrv *http.Server) {
-	done := make(chan os.Signal, 1)
-	signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)
-	<-done
-
-	log.Println("received ctrl+c")
-	err := clientSrv.Shutdown(ctx)
-	if err != nil {
-		log.Fatalf("failed to shutdown client server: %v", err)
-	}
-
-	err = witnessSrv.Shutdown(ctx)
-	if err != nil {
-		log.Fatalf("failed to shutdown witness server: %v", err)
-	}
-
-	log.Println("shutdown both servers")
 }
