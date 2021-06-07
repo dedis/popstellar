@@ -12,6 +12,11 @@
         android:layout_height="match_parent"
         >
 
+        <include
+            layout="@layout/tab_back"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_horizontal_tab_witness_message"
             android:layout_width="match_parent"

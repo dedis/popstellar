@@ -8,12 +8,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentQrcodeBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
@@ -91,7 +93,7 @@ public final class QRCodeScanningFragment extends Fragment {
 
 
         if (mQRCodeScanningViewModel.getScanningAction() == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-
+            mQrCodeFragBinding.setScanningAction(ScanningAction.ADD_ROLL_CALL_ATTENDEE);
             mQrCodeFragBinding.addAttendeeTotalText.setVisibility(View.VISIBLE);
             mQrCodeFragBinding.addAttendeeNumberText.setVisibility(View.VISIBLE);
             mQrCodeFragBinding.addAttendeeConfirm.setVisibility(View.VISIBLE);
@@ -131,6 +133,12 @@ public final class QRCodeScanningFragment extends Fragment {
                                 }
                             });
         }
+        else if (mQRCodeScanningViewModel.getScanningAction() == ScanningAction.ADD_WITNESS) {
+            mQrCodeFragBinding.setScanningAction(ScanningAction.ADD_WITNESS);
+        }
+        else if(mQRCodeScanningViewModel.getScanningAction() == ScanningAction.ADD_LAO_PARTICIPANT) {
+            mQrCodeFragBinding.setScanningAction(ScanningAction.ADD_LAO_PARTICIPANT);
+        }
 
         mPreview = mQrCodeFragBinding.qrCameraPreview;
         mQrCodeFragBinding.scanDescription.setText(mQRCodeScanningViewModel.getScanDescription());
@@ -140,6 +148,15 @@ public final class QRCodeScanningFragment extends Fragment {
                 new QRFocusingProcessor(
                         barcodeDetector, BarcodeTracker.getInstance(mQRCodeScanningViewModel)));
         return mQrCodeFragBinding.getRoot();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if(mQRCodeScanningViewModel.getScanningAction() == ScanningAction.ADD_WITNESS) {
+            Button back = (Button) getActivity().findViewById(R.id.tab_back);
+            back.setOnClickListener(c->((LaoDetailViewModel) mQRCodeScanningViewModel).openLaoDetail());
+        }
     }
 
     @Override

@@ -1,9 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <import type="android.view.View" />
+        <import type="com.github.dedis.student20_pop.qrcode.ScanningAction" />
+        <variable
+            name="scanningAction"
+            type="com.github.dedis.student20_pop.qrcode.ScanningAction" />
+    </data>
     <androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/fragment_qrcode"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+
+        <include
+            android:id="@+id/qr_code_tab_back"
+            layout="@layout/tab_back"
+            android:visibility= "@{(scanningAction == ScanningAction.ADD_WITNESS || scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE ) ? View.VISIBLE : View.GONE}"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_horizontal"
             android:layout_width="match_parent"
