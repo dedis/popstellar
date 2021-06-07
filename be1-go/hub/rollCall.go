@@ -94,7 +94,7 @@ func (c *laoChannel) processCloseRollCall(data message.Data) error {
 		}
 	}
 
-	c.updateRollCall(rollCallData.Closes, rollCallData.Closes, Closed)
+	c.updateRollCall(rollCallData.Closes, rollCallData.UpdateID, Closed)
 
 	c.attendees = map[string]struct{}{}
 	for i := 0; i < len(rollCallData.Attendees); i += 1 {
@@ -125,7 +125,7 @@ func (c *laoChannel) getRollCallState(rollCallID []byte) (*rollCallState, error)
 	if !ok {
 		return nil, &message.Error{
 			Code:        -4,
-			Description: "The ID does not correspond to the id of any current roll call",
+			Description: "The ID does not correspond to the ID of any current roll call",
 		}
 	}
 

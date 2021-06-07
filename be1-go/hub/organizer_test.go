@@ -216,8 +216,10 @@ func TestOrganizer_RollCall(t *testing.T) {
 	msg := createMessage(dataCreate, organizerKeyPair.publicBuf)
 	err = laoChannel.processRollCallObject(msg)
 	require.NoError(t, err)
-	require.Equal(t, laoChannel.rollCall.state, Created)
-	require.Equal(t, laoChannel.rollCall.id, string(dataCreate.ID))
+
+	state, err := laoChannel.getRollCallState(dataCreate.ID)
+	require.NoError(t, err)
+	require.Equal(t, *state, Created)
 
 	// Open
 	dataOpen, err := newCorrectOpenRollCallData(laoID, dataCreate.ID, message.OpenRollCallAction)
@@ -225,8 +227,10 @@ func TestOrganizer_RollCall(t *testing.T) {
 	msg = createMessage(dataOpen, organizerKeyPair.publicBuf)
 	err = laoChannel.processRollCallObject(msg)
 	require.NoError(t, err)
-	require.Equal(t, laoChannel.rollCall.state, Open)
-	require.Equal(t, laoChannel.rollCall.id, string(dataOpen.UpdateID))
+
+	state, err = laoChannel.getRollCallState(dataOpen.UpdateID)
+	require.NoError(t, err)
+	require.Equal(t, *state, Open)
 
 	// Generate public keys
 	var attendees []message.PublicKey
@@ -243,8 +247,11 @@ func TestOrganizer_RollCall(t *testing.T) {
 	msg = createMessage(dataClose1, organizerKeyPair.publicBuf)
 	err = laoChannel.processRollCallObject(msg)
 	require.NoError(t, err)
-	require.Equal(t, laoChannel.rollCall.state, Closed)
-	require.Equal(t, laoChannel.rollCall.id, string(dataClose1.UpdateID))
+
+	state, err = laoChannel.getRollCallState(dataClose1.UpdateID)
+	require.NoError(t, err)
+	require.Equal(t, *state, Closed)
+
 	for _, attendee := range attendees[:8] {
 		_, ok := laoChannel.attendees[string(attendee)]
 		require.True(t, ok)
@@ -256,8 +263,10 @@ func TestOrganizer_RollCall(t *testing.T) {
 	msg = createMessage(dataReopen, organizerKeyPair.publicBuf)
 	err = laoChannel.processRollCallObject(msg)
 	require.NoError(t, err)
-	require.Equal(t, laoChannel.rollCall.state, Open)
-	require.Equal(t, laoChannel.rollCall.id, string(dataReopen.UpdateID))
+
+	state, err = laoChannel.getRollCallState(dataReopen.UpdateID)
+	require.NoError(t, err)
+	require.Equal(t, *state, Open)
 
 	// Close
 	dataClose2, err := newCorrectCloseRollCallData(laoID, dataReopen.UpdateID, attendees)
@@ -265,8 +274,11 @@ func TestOrganizer_RollCall(t *testing.T) {
 	msg = createMessage(dataClose2, organizerKeyPair.publicBuf)
 	err = laoChannel.processRollCallObject(msg)
 	require.NoError(t, err)
-	require.Equal(t, laoChannel.rollCall.state, Closed)
-	require.Equal(t, laoChannel.rollCall.id, string(dataClose2.UpdateID))
+
+	state, err = laoChannel.getRollCallState(dataClose2.UpdateID)
+	require.NoError(t, err)
+	require.Equal(t, *state, Closed)
+
 	for _, attendee := range attendees {
 		_, ok := laoChannel.attendees[string(attendee)]
 		require.True(t, ok)
@@ -283,8 +295,9 @@ func TestOrganizer_CreateRollCallWrongID(t *testing.T) {
 	msg := createMessage(dataCreate, organizerKeyPair.publicBuf)
 	err = laoChannel.processRollCallObject(msg)
 	require.Error(t, err)
-	require.Equal(t, string(laoChannel.rollCall.state), "")
-	require.Equal(t, string(laoChannel.rollCall.id), "")
+
+	_, err = laoChannel.getRollCallState(dataCreate.ID)
+	require.Error(t, err)
 }
 
 func TestOrganizer_CreateRollCallWrongSender(t *testing.T) {
@@ -300,8 +313,8 @@ func TestOrganizer_CreateRollCallWrongSender(t *testing.T) {
 	msg := createMessage(dataCreate, keypair.publicBuf)
 	err = laoChannel.processRollCallObject(msg)
 	require.Error(t, err)
-	require.Equal(t, string(laoChannel.rollCall.state), "")
-	require.Equal(t, string(laoChannel.rollCall.id), "")
+	_, err = laoChannel.getRollCallState(dataCreate.ID)
+	require.Error(t, err)
 }
 
 func TestOrganizer_RollCallWrongInstructions(t *testing.T) {
