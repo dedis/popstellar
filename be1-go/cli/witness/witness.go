@@ -70,7 +70,7 @@ func Serve(cliCtx *cli.Context) error {
 	witnessSrv := hub.CreateAndServeWS(ctx, hub.WitnessHubType, hub.WitnessSocketType, h, witnessPort, wg)
 
 	// shut down client server and witness server when ctrl+c received
-	go hub.ShutDownServers(ctx, cancel, clientSrv, witnessSrv)
+	go hub.ShutDownServers(ctx, cancel, clientSrv, witnessSrv, wg)
 
 	// increment wait group and launch organizer hub
 	go h.Start(ctx, wg)
