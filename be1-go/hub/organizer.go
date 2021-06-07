@@ -577,7 +577,7 @@ func (c *laoChannel) processMessageObject(public message.PublicKey, data message
 			}
 		}
 
-		c.inbox.addWitnessSig(witnessData.MessageID, public, witnessData.Signature)
+		c.inbox.addWitnessSignature(witnessData.MessageID, public, witnessData.Signature)
 	default:
 		return message.NewInvalidActionError(message.DataAction(action))
 	}
