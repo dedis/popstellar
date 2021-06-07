@@ -574,7 +574,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             boolean isWitness =
                     getCurrentLaoValue().getWitnesses().contains(Keys.getEncodedKey(publicKeysetHandle));
             Log.d(TAG, "isWitness: " + isWitness);
-            mIsWitness.postValue(isWitness);
+            mIsWitness.setValue(isWitness);
             return mIsWitness;
 
         } catch (GeneralSecurityException e) {
@@ -582,7 +582,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         } catch (IOException e) {
             Log.d(TAG, "failed to get public key", e);
         }
-        mIsWitness.postValue(false);
+        mIsWitness.setValue(false);
         return mIsWitness;}
 
      public LiveData<Boolean> isSignedByCurrentWitness(Set<String> witnesses) {
@@ -592,7 +592,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
              boolean isSignedByCurrentWitness =
                      witnesses.contains(Keys.getEncodedKey(publicKeysetHandle));
              Log.d(TAG, "isSignedByCurrentWitness: " + isSignedByCurrentWitness);
-             mIsSignedByCurrentWitness.postValue(isSignedByCurrentWitness);
+             mIsSignedByCurrentWitness.setValue(isSignedByCurrentWitness);
              return mIsSignedByCurrentWitness;
 
          } catch (GeneralSecurityException e) {
@@ -600,7 +600,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
          } catch (IOException e) {
              Log.d(TAG, "failed to get public key", e);
          }
-         mIsSignedByCurrentWitness.postValue(false);
+         mIsSignedByCurrentWitness.setValue(false);
          return  mIsSignedByCurrentWitness;
 
      }

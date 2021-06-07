@@ -45,7 +45,7 @@
             android:id="@+id/sign_message_button"
             android:layout_width="153dp"
             android:layout_height="match_parent"
-            android:clickable="@{viewmodel.isWitness() &amp;&amp; !viewmodel.isSignedByCurrentWitness(message.getWitnesses())}"
+            android:clickable="@{!viewmodel.isSignedByCurrentWitness(message.getWitnesses())}"
             android:text="@{viewmodel.isSignedByCurrentWitness(message.getWitnesses())  ? ` SIGNED MESSAGE ` : ` SIGN MESSAGE `}" />
 
     </LinearLayout>

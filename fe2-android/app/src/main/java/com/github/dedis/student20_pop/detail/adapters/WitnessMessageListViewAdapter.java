@@ -77,15 +77,25 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
         Context context = parent.getContext();
         View.OnClickListener listener = v -> {
             AlertDialog.Builder adb = new AlertDialog.Builder(context);
-            adb.setTitle("Sign Message");
-            adb.setMessage(" Are you sure you want to sign message with ID : " + messages.get(position).getMessageId());
-            adb.setNegativeButton("Cancel", null);
-            adb.setPositiveButton(
-                    "Confirm",
-                    (dialog, which) -> {
-                        viewModel.signMessage(messages.get(position));
-                    });
-            adb.show();
+            if(viewModel.isWitness().getValue()) {
+                adb.setTitle("Sign Message");
+                adb.setMessage(" Are you sure you want to sign message with ID : " + messages.get(position).getMessageId());
+                adb.setNegativeButton("Cancel", null);
+                adb.setPositiveButton(
+                        "Confirm",
+                        (dialog, which) -> {
+                            viewModel.signMessage(messages.get(position));
+                        });
+            }
+            else {
+                adb.setTitle("You are not a witness");
+                adb.setMessage("You need to be a witness in order to sign this message");
+                adb.setCancelable(false);
+                adb.setPositiveButton("Ok",(dialog,which)->{});
+
+            }
+                adb.show();
+
 
         };
         binding.signMessageButton.setOnClickListener(listener);
