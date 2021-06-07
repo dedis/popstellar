@@ -37,50 +37,6 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   const [showPublicKey, setShowPublicKey] = useState(false);
   const [showQRPublicKey, setShowQRPublicKey] = useState(false);
 
-  function hideStringButton() {
-    return (
-      <WideButtonView
-        title={STRINGS.hide_public_keys}
-        onPress={() => {
-          setShowPublicKey(false);
-        }}
-      />
-    );
-  }
-
-  function showStringButton() {
-    return (
-      <WideButtonView
-        title={STRINGS.show_public_keys}
-        onPress={() => {
-          setShowPublicKey(true);
-        }}
-      />
-    );
-  }
-
-  function hideQRButton() {
-    return (
-      <WideButtonView
-        title={STRINGS.hide_qr_public_keys}
-        onPress={() => {
-          setShowQRPublicKey(false);
-        }}
-      />
-    );
-  }
-
-  function showQRButton() {
-    return (
-      <WideButtonView
-        title={STRINGS.show_qr_public_keys}
-        onPress={() => {
-          setShowQRPublicKey(true);
-        }}
-      />
-    );
-  }
-
   WalletStore.get().then((encryptedSeed) => HDWallet
     .fromState(encryptedSeed)
     .then((wallet) => {
@@ -117,26 +73,85 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
       i += 1;
     });
 
+    /* the below 4 functions are to manage user interaction with buttons */
+    function hidePublicKeyButton() {
+      return (
+        <WideButtonView
+          title={STRINGS.hide_public_keys}
+          onPress={() => {
+            setShowPublicKey(false);
+          }}
+        />
+      );
+    }
+
+    function showPublicKeyButton() {
+      return (
+        <WideButtonView
+          title={STRINGS.show_public_keys}
+          onPress={() => {
+            setShowPublicKey(true);
+          }}
+        />
+      );
+    }
+
+    function hideQRButton() {
+      return (
+        <WideButtonView
+          title={STRINGS.hide_qr_public_keys}
+          onPress={() => {
+            setShowQRPublicKey(false);
+          }}
+        />
+      );
+    }
+
+    function showQRButton() {
+      return (
+        <WideButtonView
+          title={STRINGS.show_qr_public_keys}
+          onPress={() => {
+            setShowQRPublicKey(true);
+          }}
+        />
+      );
+    }
+
+    /* this functions displays the LAOId the RollCallId and the public key generated from the two */
+    function displayTokens() {
+      return (
+        <View>
+          { laoId.map((value, key) => (
+            <View key={value + 1} style={styleContainer.centered}>
+              <View style={styles.smallPadding} />
+              <TextBlock key={value + 2} bold text={STRINGS.lao_id} />
+              <CopiableTextBlock key={value + 3} id={key} text={value} visibility />
+              <TextBlock key={value + 4} bold text={STRINGS.roll_call_id} />
+              <CopiableTextBlock key={value + 5} id={key} text={rollCallId[key]} visibility />
+              <View style={styles.smallPadding} />
+              <CopiableTextBlock
+                key={value + 6}
+                id={key}
+                text={tokens[key]}
+                visibility={showPublicKey}
+              />
+              <View style={styles.smallPadding} />
+              <QRCode key={value + 7} value={tokens[key]} visibility={showQRPublicKey} />
+            </View>
+          ))}
+        </View>
+      );
+    }
+
     return (
       <ScrollView>
         <View style={styles.largePadding} />
         <TextBlock bold text={STRINGS.your_tokens_title} />
         <View style={styles.smallPadding} />
-        { laoId.map((value, key) => (
-          <View>
-            <View style={styles.smallPadding} />
-            <TextBlock bold text="LAO ID" />
-            <CopiableTextBlock id={key} text={value} visibility />
-            <TextBlock bold text="Roll Call ID" />
-            <CopiableTextBlock id={key} text={rollCallId[key]} visibility />
-            <View style={styles.smallPadding} />
-            <CopiableTextBlock id={key} text={tokens[key]} visibility={showPublicKey} />
-            <View style={styles.smallPadding} />
-            <QRCode value={tokens[key]} visibility={showQRPublicKey} />
-          </View>
-        ))}
-        {!showPublicKey && showStringButton()}
-        {showPublicKey && hideStringButton()}
+        { displayTokens() }
+        {!showPublicKey && showPublicKeyButton()}
+        {showPublicKey && hidePublicKeyButton()}
         {!showQRPublicKey && showQRButton()}
         {showQRPublicKey && hideQRButton()}
         <WideButtonView
