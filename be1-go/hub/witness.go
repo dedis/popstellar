@@ -2,7 +2,6 @@ package hub
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"sync"
 

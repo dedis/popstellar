@@ -24,9 +24,7 @@ func CreateAndServeWS(ctx context.Context, hubType HubType, socketType SocketTyp
 	srv := &http.Server{Addr: fmt.Sprintf(":%d", port)}
 
 	path := fmt.Sprintf("/%s/%s/", hubType, socketType)
-	log.Printf("handling: %s", path)
 	http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		log.Println("In here")
 		serveWs(ctx, socketType, h, w, r, wg)
 	})
 
