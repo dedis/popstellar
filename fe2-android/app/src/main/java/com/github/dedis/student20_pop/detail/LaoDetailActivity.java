@@ -338,9 +338,24 @@ public class LaoDetailActivity extends AppCompatActivity {
       }
   }
 
-  //TODO : Implement those two methods
   private void setupCastVotesFragment() {
-
+      mViewModel
+              .getOpenCastVotes()
+              .observe(
+                      this,
+                      booleanEvent -> {
+                          Boolean event = booleanEvent.getContentIfNotHandled();
+                          if(event != null){
+                              CastVoteFragment castVoteFragment =
+                                      (CastVoteFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_cast_vote);
+                              if(castVoteFragment == null){
+                                  castVoteFragment = castVoteFragment.newInstance();
+                                  ActivityUtils.replaceFragmentInActivity(
+                                          getSupportFragmentManager(), castVoteFragment, R.id.fragment_container_lao_detail);
+                              }
+                          }
+                      }
+              );
   }
   private void setupElectionResultsFragment() {
       /*
