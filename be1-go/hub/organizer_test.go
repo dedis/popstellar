@@ -363,6 +363,7 @@ func requireSameKeys(t *testing.T, keysList []message.PublicKey, keysMap map[str
 }
 func TestOrganizer_MultipleRollCalls(t *testing.T) {
 	laoID, laoChannel, err := createLao(oHub, organizerKeyPair, "lao 2 rollcalls")
+	require.NoError(t, err)
 
 	// Generate public keys
 	var attendees []message.PublicKey
