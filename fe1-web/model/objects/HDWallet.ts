@@ -163,23 +163,6 @@ export class HDWallet {
     return bufView.buffer;
   }
 
-  // =========================================REMOVE==============================================
-  public async recoverTokens(): Promise<Map<[Hash, Hash], string>> {
-    // garbage effort river orphan negative kind outside quit hat camera approve first
-    const laoId1: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
-    const laoId2: Hash = new Hash('SyJ3d9TdH8Ycb4hPSGQdArTRIdP9Moywi1Ux/Kzav4o=');
-
-    const rollCallId1: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
-    const rollCallId2: Hash = new Hash('SyJ3d9TdH8Ycb4hPSGQdArTRIdP9Moywi1Ux/Kzav4o=');
-
-    const testMap: Map<[Hash, Hash], string[]> = new Map();
-
-    testMap.set([laoId1, rollCallId1], ['7147759d146897111bcf74f60a1948b1d3a22c9199a6b88c236eb7326adc2efc', '']);
-    testMap.set([laoId2, rollCallId2], ['fffffffffffffff', '', 'ffdddddddffffffff', '2c23cfe90936a65839fb64dfb961690c3d8a5a1262f0156cf059b0c45a2eabff']);
-    return this.recoverAllKeys(testMap);
-  }
-  // =========================================REMOVE==============================================
-
   /**
    * This is the main function for the wallet to find all the tokens associated with it, by checking
    * through all known Laos and Roll Calls of that LAO weather or not the token generated bu the
