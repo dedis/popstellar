@@ -117,9 +117,8 @@ func newCreateRollCallData(id []byte, creation message.Timestamp, name string) *
 	return data
 }
 
-func newCorrectCreateRollCallData(laoID string) (*message.CreateRollCallData, error) {
+func newCorrectCreateRollCallData(laoID string, creation message.Timestamp) (*message.CreateRollCallData, error) {
 	name := "my_roll_call"
-	creation := timestamp()
 	id, err := message.Hash(message.Stringer('R'), message.Stringer(laoID), creation, message.Stringer(name))
 	if err != nil {
 		return nil, err
@@ -211,7 +210,7 @@ func TestOrganizer_RollCall(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create
-	dataCreate, err := newCorrectCreateRollCallData(laoID)
+	dataCreate, err := newCorrectCreateRollCallData(laoID, timestamp())
 	require.NoError(t, err)
 	msg := createMessage(dataCreate, organizerKeyPair.publicBuf)
 	err = laoChannel.processRollCallObject(msg)
@@ -253,7 +252,7 @@ func TestOrganizer_RollCall(t *testing.T) {
 	require.Equal(t, *state, Closed)
 
 	for _, attendee := range attendees[:8] {
-		_, ok := laoChannel.attendees[string(attendee)]
+		_, ok := laoChannel.attendees[base64.URLEncoding.EncodeToString(attendee)]
 		require.True(t, ok)
 	}
 
@@ -280,7 +279,7 @@ func TestOrganizer_RollCall(t *testing.T) {
 	require.Equal(t, *state, Closed)
 
 	for _, attendee := range attendees {
-		_, ok := laoChannel.attendees[string(attendee)]
+		_, ok := laoChannel.attendees[base64.URLEncoding.EncodeToString(attendee)]
 		require.True(t, ok)
 	}
 }
@@ -308,7 +307,7 @@ func TestOrganizer_CreateRollCallWrongSender(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create the roll call
-	dataCreate, err := newCorrectCreateRollCallData(laoID)
+	dataCreate, err := newCorrectCreateRollCallData(laoID, timestamp())
 	require.NoError(t, err)
 	msg := createMessage(dataCreate, keypair.publicBuf)
 	err = laoChannel.processRollCallObject(msg)
@@ -322,7 +321,7 @@ func TestOrganizer_RollCallWrongInstructions(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create all the data
-	dataCreate, err := newCorrectCreateRollCallData(laoID)
+	dataCreate, err := newCorrectCreateRollCallData(laoID, timestamp())
 	require.NoError(t, err)
 
 	dataOpen, err := newCorrectOpenRollCallData(laoID, dataCreate.ID, message.OpenRollCallAction)
@@ -352,4 +351,97 @@ func TestOrganizer_RollCallWrongInstructions(t *testing.T) {
 
 	}
 
+}
+
+func requireSameKeys(t *testing.T, keysList []message.PublicKey, keysMap map[string]struct{}) {
+	require.Equal(t, len(keysList), len(keysMap))
+	for _, key := range keysList {
+		stringKey := base64.URLEncoding.EncodeToString(key)
+		_, ok := keysMap[stringKey]
+		require.True(t, ok)
+	}
+}
+func TestOrganizer_MultipleRollCalls(t *testing.T) {
+	laoID, laoChannel, err := createLao(oHub, organizerKeyPair, "lao 2 rollcalls")
+
+	// Generate public keys
+	var attendees []message.PublicKey
+
+	for i := 0; i < 5; i++ {
+		keypair, err := generateKeyPair()
+		require.NoError(t, err)
+		attendees = append(attendees, keypair.publicBuf)
+	}
+
+	// Get the time
+	time := timestamp()
+	// Create all the data for the roll call 1
+	keylist1 := attendees[:1]
+	keylist3 := attendees[:2]
+
+	dataCreate1, err := newCorrectCreateRollCallData(laoID, time)
+	require.NoError(t, err)
+	msgCreate1 := createMessage(dataCreate1, organizerKeyPair.publicBuf)
+
+	dataOpen1, err := newCorrectOpenRollCallData(laoID, dataCreate1.ID, message.OpenRollCallAction)
+	require.NoError(t, err)
+	msgOpen1 := createMessage(dataOpen1, organizerKeyPair.publicBuf)
+
+	dataClose1, err := newCorrectCloseRollCallData(laoID, dataOpen1.UpdateID, keylist1)
+	require.NoError(t, err)
+	msgClose1 := createMessage(dataClose1, organizerKeyPair.publicBuf)
+
+	dataReopen1, err := newCorrectOpenRollCallData(laoID, dataClose1.UpdateID, message.ReopenRollCallAction)
+	require.NoError(t, err)
+	msgReopen1 := createMessage(dataReopen1, organizerKeyPair.publicBuf)
+
+	dataClose3, err := newCorrectCloseRollCallData(laoID, dataReopen1.UpdateID, keylist3)
+	require.NoError(t, err)
+	msgClose3 := createMessage(dataClose3, organizerKeyPair.publicBuf)
+
+	// Create all the data for the roll call 1
+	keylist2 := attendees[3:]
+
+	dataCreate2, err := newCorrectCreateRollCallData(laoID, time+10)
+	require.NoError(t, err)
+	msgCreate2 := createMessage(dataCreate2, organizerKeyPair.publicBuf)
+
+	dataOpen2, err := newCorrectOpenRollCallData(laoID, dataCreate2.ID, message.OpenRollCallAction)
+	require.NoError(t, err)
+	msgOpen2 := createMessage(dataOpen2, organizerKeyPair.publicBuf)
+
+	dataClose2, err := newCorrectCloseRollCallData(laoID, dataOpen2.UpdateID, keylist2)
+	require.NoError(t, err)
+	msgClose2 := createMessage(dataClose2, organizerKeyPair.publicBuf)
+
+	// Process the messages for the 2 roll calls
+	err = laoChannel.processRollCallObject(msgCreate1)
+	require.NoError(t, err)
+	err = laoChannel.processRollCallObject(msgCreate2)
+	require.NoError(t, err)
+
+	err = laoChannel.processRollCallObject(msgOpen1)
+	require.NoError(t, err)
+
+	err = laoChannel.processRollCallObject(msgOpen2)
+	require.NoError(t, err)
+
+	// Close the first roll call for the first time
+	err = laoChannel.processRollCallObject(msgClose1)
+	require.NoError(t, err)
+
+	requireSameKeys(t, keylist1, laoChannel.attendees)
+
+	err = laoChannel.processRollCallObject(msgReopen1)
+	require.NoError(t, err)
+
+	// Close the second roll call
+	err = laoChannel.processRollCallObject(msgClose2)
+	require.NoError(t, err)
+	requireSameKeys(t, keylist2, laoChannel.attendees)
+
+	// Close the first roll call for the second time
+	err = laoChannel.processRollCallObject(msgClose3)
+	require.NoError(t, err)
+	requireSameKeys(t, keylist3, laoChannel.attendees)
 }

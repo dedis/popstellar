@@ -98,7 +98,8 @@ func (c *laoChannel) processCloseRollCall(data message.Data) error {
 
 	c.attendees = map[string]struct{}{}
 	for i := 0; i < len(rollCallData.Attendees); i += 1 {
-		c.attendees[string(rollCallData.Attendees[i])] = struct{}{}
+		attendee := base64.URLEncoding.EncodeToString(rollCallData.Attendees[i])
+		c.attendees[attendee] = struct{}{}
 	}
 
 	return nil
