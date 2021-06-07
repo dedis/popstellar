@@ -53,11 +53,11 @@ func Serve(cliCtx *cli.Context) error {
 	clientSrv := hub.CreateAndServeWS(ctx, hub.OrganizerHubType, hub.ClientSocketType, h, clientPort, wg)
 	witnessSrv := hub.CreateAndServeWS(ctx, hub.OrganizerHubType, hub.WitnessSocketType, h, witnessPort, wg)
 
-	// shut down client server and witness server when ctrl+c received
-	go hub.ShutDownServers(ctx, cancel, witnessSrv, clientSrv, wg)
-
 	// increment wait group and launch organizer hub
 	go h.Start(ctx, wg)
+
+	// shut down client server and witness server when ctrl+c received
+	hub.ShutdownServers(ctx, witnessSrv, clientSrv)
 
 	// wait for all goroutines to finish
 	wg.Wait()

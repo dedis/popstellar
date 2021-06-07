@@ -70,11 +70,7 @@ func serveWs(ctx context.Context, socketType SocketType, h Hub, w http.ResponseW
 	}
 }
 
-func ShutDownServers(ctx context.Context, cancel context.CancelFunc, witnessSrv *http.Server, clientSrv *http.Server, wg *sync.WaitGroup) {
-	wg.Add(1)
-	defer wg.Done()
-
-	defer cancel()
+func ShutdownServers(ctx context.Context, witnessSrv *http.Server, clientSrv *http.Server) {
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)
 	<-done
