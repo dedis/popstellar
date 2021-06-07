@@ -28,13 +28,7 @@ import me.relex.circleindicator.CircleIndicator3;
  */
 public class CastVoteFragment extends Fragment {
 
-
-    private TextView laoNameView;
-    private TextView electionNameView;
     private Button voteButton;
-    private FragmentCastVoteBinding mCastVoteFragBinding;
-    private LaoDetailViewModel mLaoDetailViewModel;
-
 
     private View.OnClickListener buttonListener = v -> {
         voteButton.setEnabled(false);
@@ -52,22 +46,18 @@ public class CastVoteFragment extends Fragment {
         return new CastVoteFragment();
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         //Inflate the layout for this fragment
-        mCastVoteFragBinding =
+        FragmentCastVoteBinding mCastVoteFragBinding =
                 FragmentCastVoteBinding.inflate(inflater, container, false);
-        mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
+        LaoDetailViewModel mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 
-        laoNameView = mCastVoteFragBinding.castVoteLaoName;
-        electionNameView = mCastVoteFragBinding.castVoteElectionName;
+        TextView laoNameView = mCastVoteFragBinding.castVoteLaoName;
+        TextView electionNameView = mCastVoteFragBinding.castVoteElectionName;
         //setUp the cast Vote button
         voteButton = mCastVoteFragBinding.castVoteButton;
         voteButton.setEnabled(false);
