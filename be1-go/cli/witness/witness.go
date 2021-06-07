@@ -4,19 +4,15 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"log"
-	"net/http"
-	"net/url"
-	"os"
-	"os/signal"
-	"student20_pop"
-	"student20_pop/hub"
-	"sync"
-	"syscall"
-
 	"github.com/gorilla/websocket"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
+	"log"
+	"net/http"
+	"net/url"
+	"student20_pop"
+	"student20_pop/hub"
+	"sync"
 )
 
 var upgrader = websocket.Upgrader{
@@ -26,17 +22,20 @@ var upgrader = websocket.Upgrader{
 }
 
 func Serve(cliCtx *cli.Context) error {
+
+	// get command line args which specify public key, organizer address, port for organizer,
+	// clients, witnesses, other witness' addresses
 	organizerAddress := cliCtx.String("organizer-address")
 	organizerPort := cliCtx.Int("organizer-port")
 	clientPort := cliCtx.Int("client-port")
 	witnessPort := cliCtx.Int("witness-port")
 	otherWitness := cliCtx.StringSlice("other-witness")
 	pk := cliCtx.String("public-key")
-
 	if pk == "" {
 		return xerrors.Errorf("witness' public key is required")
 	}
 
+	// decode public key and unmarshal public key
 	pkBuf, err := base64.URLEncoding.DecodeString(pk)
 	if err != nil {
 		return xerrors.Errorf("failed to base64url decode public key: %v", err)
@@ -48,18 +47,23 @@ func Serve(cliCtx *cli.Context) error {
 		return xerrors.Errorf("failed to unmarshal public key: %v", err)
 	}
 
+	// create organizer hub
 	h := hub.NewWitnessHub(point)
 
+	// make context release resources associated with it when all operations are done
 	ctx, cancel := context.WithCancel(cliCtx.Context)
 	defer cancel()
 
+	// create wait group which waits for goroutines to finish
 	wg := &sync.WaitGroup{}
 
+	// increment wait group and connect to organizer's witness server
 	err = connectToSocket(ctx, hub.OrganizerSocketType, organizerAddress, h, organizerPort, wg)
 	if err != nil {
 		return xerrors.Errorf("failed to connect to organizer: %v", err)
 	}
 
+	// increment wait group and connect to other witnesses
 	for _, otherWit := range otherWitness {
 		err = connectToSocket(ctx, hub.WitnessSocketType, otherWit, h, organizerPort, wg)
 		if err != nil {
@@ -67,29 +71,17 @@ func Serve(cliCtx *cli.Context) error {
 		}
 	}
 
+	// increment wait group and create and serve servers for witnesses and clients
 	clientSrv := hub.CreateAndServeWS(ctx, hub.WitnessHubType, hub.ClientSocketType, h, clientPort, wg)
 	witnessSrv := hub.CreateAndServeWS(ctx, hub.WitnessHubType, hub.WitnessSocketType, h, witnessPort, wg)
 
-	go func() {
-		defer cancel()
-		done := make(chan os.Signal, 1)
-		signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)
-		<-done
+	// shut down client server and witness server when ctrl+c received
+	go hub.ShutDownServers(ctx, cancel, clientSrv, witnessSrv)
 
-		err := clientSrv.Shutdown(ctx)
-		if err != nil {
-			log.Fatalf("failed to shutdown client server: %v", err)
-		}
-
-		err = witnessSrv.Shutdown(ctx)
-		if err != nil {
-			log.Fatalf("failed to shutdown witness server: %v", err)
-		}
-
-	}()
-
+	// increment wait group and launch organizer hub
 	go h.Start(ctx, wg)
 
+	// wait for all goroutines to finish
 	wg.Wait()
 
 	return nil

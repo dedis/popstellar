@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
 	"sync"
+	"syscall"
 
 	"github.com/gorilla/websocket"
 )
@@ -67,4 +70,24 @@ func serveWs(ctx context.Context, socketType SocketType, h Hub, w http.ResponseW
 		go witness.ReadPump(ctx)
 		go witness.WritePump(ctx)
 	}
+}
+
+func ShutDownServers(ctx context.Context, cancel context.CancelFunc, witnessSrv *http.Server, clientSrv *http.Server) {
+	defer cancel()
+	done := make(chan os.Signal, 1)
+	signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)
+	<-done
+
+	log.Println("received ctrl+c")
+	err := clientSrv.Shutdown(ctx)
+	if err != nil {
+		log.Fatalf("failed to shutdown client server: %v", err)
+	}
+
+	err = witnessSrv.Shutdown(ctx)
+	if err != nil {
+		log.Fatalf("failed to shutdown witness server: %v", err)
+	}
+
+	log.Println("shutdown both servers")
 }
