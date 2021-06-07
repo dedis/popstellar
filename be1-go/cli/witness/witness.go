@@ -8,19 +8,13 @@ import (
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 	"log"
-	"net/http"
 	"net/url"
 	"student20_pop"
 	"student20_pop/hub"
 	"sync"
 )
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-	CheckOrigin:     func(r *http.Request) bool { return true },
-}
-
+// Serve parses the CLI arguments and spawns a hub and a websocket server.
 func Serve(cliCtx *cli.Context) error {
 
 	// get command line args which specify public key, organizer address, port for organizer,
