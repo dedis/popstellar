@@ -40,7 +40,17 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   WalletStore.get().then((encryptedSeed) => HDWallet
     .fromState(encryptedSeed)
     .then((wallet) => {
-      wallet.recoverTokens().then((cachedTokens) => {
+      /*
+       * TODO: recover the keys. For this the following map has to be passed to the
+       *  recoverAllKeys function of the wallet (at the moment an EMPTY map is passed)
+       *  [LAO ID 1, ROLL CALL ID 1] => [publicKey1, publicKey2, ... , publicKeyN]
+       *  [LAO ID 1, ROLL CALL ID 2] => [publicKey1, publicKey2, ... , publicKeyN]
+       *  .....
+       *  [LAO ID N, ROLL CALL ID N] => [publicKey1, publicKey2, ... , publicKeyN]
+       */
+
+      /* */
+      wallet.recoverAllKeys(new Map()).then((cachedTokens) => {
         cachedKeyPairs = cachedTokens;
       });
     }));
