@@ -301,6 +301,11 @@ public class LAORepository {
     // implementation
     // begins with zero witnesses. As a result, we should update the LAO immediately if the current
     // state has no witnesses and not wait for witness messages
+    WitnessMessage message = new WitnessMessage(messageId);
+    message.setTitle("Update Lao " );
+    message.setDescription(" Lao Name : " + lao.getName() + "\n" + "Message ID : " + messageId);
+
+    lao.updateWitnessMessage(message.getMessageId(),message);
     lao.getPendingUpdates().add(new PendingUpdate(updateLao.getLastModified(), messageId));
     return false;
   }
@@ -374,6 +379,12 @@ public class LAORepository {
     election.setBallotOptions(electionQuestion.getBallotOptions());
 
     lao.updateElection(election.getId(), election);
+
+    WitnessMessage message = new WitnessMessage(election.getId());
+    message.setTitle("New Election Setup " );
+    message.setDescription("Name : " + election.getName() + "\n" + "Question : " + election.getQuestion()  + "\n" + "Message ID : " + election.getId());
+
+    lao.updateWitnessMessage(message.getMessageId(),message);
     return false;
   }
 

@@ -574,7 +574,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             boolean isWitness =
                     getCurrentLaoValue().getWitnesses().contains(Keys.getEncodedKey(publicKeysetHandle));
             Log.d(TAG, "isWitness: " + isWitness);
-            mIsWitness.postValue(true);
+            mIsWitness.postValue(isWitness);
             return mIsWitness;
 
         } catch (GeneralSecurityException e) {
