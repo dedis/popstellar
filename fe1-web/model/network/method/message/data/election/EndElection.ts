@@ -1,5 +1,5 @@
 import {
-  Hash, Timestamp, Vote,
+  Hash, Timestamp,
 } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';

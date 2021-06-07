@@ -1,7 +1,10 @@
-import {Message} from 'model/network/method/message';
-import {ActionType, ObjectType, SetupElection,} from 'model/network/method/message/data';
-import {Election} from 'model/objects';
-import {addEvent, dispatch, getStore, makeCurrentLao,} from 'store';
+import { Message } from 'model/network/method/message';
+import { ActionType, ObjectType, SetupElection } from 'model/network/method/message/data';
+import { channelFromIds, Election } from 'model/objects';
+import {
+  addEvent, dispatch, getStore, makeCurrentLao,
+} from 'store';
+import { subscribeToChannel } from 'network/CommunicationApi';
 
 const getCurrentLao = makeCurrentLao();
 
@@ -35,7 +38,14 @@ function handleElectionSetupMessage(msg: Message): boolean {
   });
 
   dispatch(addEvent(lao.id, election.toState()));
-  return true;
+  // Subscribing to the election channel corresponding to that election
+  let isSubscribed = false;
+  const electionChannel = channelFromIds(election.lao, election.id);
+  subscribeToChannel(electionChannel).then(() => { isSubscribed = true; }).catch((err) => {
+    console.error('Could not subscribe to Election channel, error:', err);
+    isSubscribed = false;
+  });
+  return isSubscribed;
 }
 
 function handleCastVoteMessage(msg: Message): boolean {

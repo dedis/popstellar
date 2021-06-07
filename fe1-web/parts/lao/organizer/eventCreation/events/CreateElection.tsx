@@ -98,13 +98,7 @@ const CreateElection = ({ route }: any) => {
       getQuestionObjects(),
     )
       .then(() => {
-        // Subscribe to the election channel, to receive all the casted votes
-        const electionChannel = channelFromIds(currentLao.id, electionId);
-        subscribeToChannel(electionChannel).then(() => {
-          navigation.navigate(STRINGS.organizer_navigation_tab_home);
-        }).catch((err) => {
-          console.error('Could not subscribe to Election channel, error:', err);
-        });
+        navigation.navigate(STRINGS.organizer_navigation_tab_home);
       })
       .catch((err) => {
         console.error('Could not create Election, error:', err);

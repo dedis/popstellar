@@ -1,6 +1,7 @@
+import {
+  Hash, Timestamp
+} from 'model/objects';
 import { LaoEvent, LaoEventState, LaoEventType } from './LaoEvent';
-import { Hash } from './Hash';
-import { Timestamp } from './Timestamp';
 
 export interface ElectionState extends LaoEventState {
   lao: string;
