@@ -76,7 +76,7 @@ func (w *witnessHub) Start(ctx context.Context, wg *sync.WaitGroup) {
 		case incomingMessage := <-w.messageChan:
 			w.handleIncomingMessage(&incomingMessage)
 		case <-ctx.Done():
-			fmt.Println("closing the hub...")
+			log.Println("closing the hub...")
 			return
 		}
 	}
