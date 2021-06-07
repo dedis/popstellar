@@ -64,7 +64,7 @@ function validateLaoId(laoId: string): Channel | undefined {
 }
 
 const ConnectConfirm = ({ navigation, route }: IPropTypes) => {
-  const [serverUrl, setServerUrl] = useState('wss://popdemo.dedis.ch/52af0cf9'); // https://127.0.0.1:8080
+  const [serverUrl, setServerUrl] = useState('wss://popdemo.dedis.ch/52af0cf9'); // wss://127.0.0.1:9000
   const [laoId, setLaoId] = useState('');
 
   if (route.params && laoId === '') {
