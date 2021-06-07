@@ -5,14 +5,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
+
 import com.github.dedis.student20_pop.Injection;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
 import com.github.dedis.student20_pop.detail.fragments.AttendeesListFragment;
+import com.github.dedis.student20_pop.detail.fragments.CastVoteFragment;
 import com.github.dedis.student20_pop.detail.fragments.IdentityFragment;
 import com.github.dedis.student20_pop.detail.fragments.LaoDetailFragment;
 import com.github.dedis.student20_pop.detail.fragments.LaoWalletFragment;
@@ -21,7 +24,6 @@ import com.github.dedis.student20_pop.detail.fragments.event.creation.ElectionSe
 import com.github.dedis.student20_pop.detail.fragments.event.creation.MeetingEventCreationFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.PollEventCreationFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.RollCallEventCreationFragment;
-import com.github.dedis.student20_pop.detail.fragments.ManageElectionFragment;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.home.HomeViewModel;
 import com.github.dedis.student20_pop.model.event.EventType;
@@ -314,32 +316,31 @@ public class LaoDetailActivity extends AppCompatActivity {
     }
 
   private void setupManageElectionFragment() {
+      {
+          mViewModel
+                  .getOpenCastVotes()
+                  .observe(
+                          this,
+                          booleanEvent -> {
+                              Boolean event = booleanEvent.getContentIfNotHandled();
+                              if(event != null){
+                                  CastVoteFragment castVoteFragment =
+                                          (CastVoteFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_cast_vote);
+                                  if(castVoteFragment == null){
+                                      castVoteFragment = castVoteFragment.newInstance();
+                                      ActivityUtils.replaceFragmentInActivity(
+                                              getSupportFragmentManager(), castVoteFragment, R.id.fragment_container_lao_detail);
+                                  }
+                              }
+                          }
+                  );
 
-    mViewModel
-            .getOpenManageElectionEvent()
-            .observe(
-                    this,
-                    booleanEvent -> {
-                      Boolean event = booleanEvent.getContentIfNotHandled();
-                      if(event!= null) {
-                        ManageElectionFragment manageElectionFragment =
-                                (ManageElectionFragment)
-                                        getSupportFragmentManager().findFragmentById(R.id.fragment_manage_election);
-                        if (manageElectionFragment == null) {
-                          manageElectionFragment = ManageElectionFragment.newInstance();
-                          ActivityUtils.replaceFragmentInActivity(
-                                  getSupportFragmentManager(), manageElectionFragment, R.id.fragment_container_lao_detail);
-                        }
-                      }
-                    });
-
+      }
   }
 
   //TODO : Implement those two methods
   private void setupCastVotesFragment() {
-      /*
-      will be implemented in Johan's PR
-       */
+
   }
   private void setupElectionResultsFragment() {
       /*
