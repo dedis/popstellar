@@ -107,6 +107,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
     private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
     private final MutableLiveData<String> mLaoName = new MutableLiveData<>("");
+    private List<List<Integer>> currentElectionVotes;
     private final LiveData<List<String>> mWitnesses =
             Transformations.map(
                     mCurrentLao,
@@ -550,6 +551,22 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
     public void setCurrentElection(Election e) {
         mCurrentElection.setValue(e);
+    }
+
+    public List<List<Integer>> getCurrentElectionVotes() {
+        return currentElectionVotes;
+    }
+
+    public void setCurrentElectionVotes(List<List<Integer>> currentElectionVotes) {
+        if(currentElectionVotes == null)
+            throw new IllegalArgumentException();
+        this.currentElectionVotes = currentElectionVotes;
+    }
+
+    public void setCurrentElectionQuestionVotes(List<Integer> votes, int position){
+        if(votes == null || position < 0 || position >= votes.size())
+            throw new IllegalArgumentException();
+        currentElectionVotes.set(position, votes);
     }
 
     /*

@@ -14,6 +14,10 @@ import com.github.dedis.student20_pop.databinding.FragmentCastVoteBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.adapters.QuestionViewPagerAdapter;
+import com.github.dedis.student20_pop.model.Election;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import me.relex.circleindicator.CircleIndicator3;
 
@@ -64,19 +68,23 @@ public class CastVoteFragment extends Fragment {
 
         laoNameView = mCastVoteFragBinding.castVoteLaoName;
         electionNameView = mCastVoteFragBinding.castVoteElectionName;
-
         //setUp the cast Vote button
         voteButton = mCastVoteFragBinding.castVoteButton;
         voteButton.setEnabled(false);
 
         //Getting election
-      //  election = mLaoDetailViewModel.getCurrentElection();
+        Election election = mLaoDetailViewModel.getCurrentElection();
 
         //Setting the Lao Name
         laoNameView.setText(mLaoDetailViewModel.getCurrentLaoName().getValue());
 
         //Setting election name
-      //  electionNameView.setText(election.getName());
+        electionNameView.setText(election.getName());
+
+        int numberOfQuestions = 0;
+       // numberOfQuestions = election.getElectionQuestions(numberOfQuestions);
+        //Setting up the votes for the adapter
+        mLaoDetailViewModel.setCurrentElectionVotes(setEmptyVoteList(numberOfQuestions));
 
 
         ViewPager2 viewPager2 = mCastVoteFragBinding.castVotePager;
@@ -90,5 +98,13 @@ public class CastVoteFragment extends Fragment {
 
         voteButton.setOnClickListener(buttonListener);
         return mCastVoteFragBinding.getRoot();
+    }
+
+    private List<List<Integer>> setEmptyVoteList(int size){
+        List<List<Integer>> votes = new ArrayList<>();
+        for(int i = 0; i<size; i++){
+            votes.add(new ArrayList<>());
+        }
+        return votes;
     }
 }

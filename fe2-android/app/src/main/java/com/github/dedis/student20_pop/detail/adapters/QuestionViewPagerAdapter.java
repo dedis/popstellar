@@ -57,7 +57,7 @@ public class QuestionViewPagerAdapter extends RecyclerView.Adapter<QuestionViewP
        // int numberOfChoices = numbersOfChoices.get(position);
         int numberOfChoices = 1; //by default
 
-        List<Integer> votes = election.getVotes().get(position);
+        List<Integer> votes = new ArrayList<>();
 
         //setting the list view with ballot options
         List<String> ballotOptions = election.getBallotsOptions().get(position);
@@ -72,6 +72,8 @@ public class QuestionViewPagerAdapter extends RecyclerView.Adapter<QuestionViewP
 
 
         AdapterView.OnItemClickListener itemListener = (parent, view, listPosition, id) -> {
+            //in this listener the position refers to the index of the question and
+            // the list position is the index of the ballot that was clicked on
             ballotsListView.setClickable(false);
             if (numberOfChoices > 1) {
                 if (votes.contains(listPosition)) {
@@ -93,8 +95,9 @@ public class QuestionViewPagerAdapter extends RecyclerView.Adapter<QuestionViewP
                     votes.add(listPosition);
                 }
             }
+            mLaoDetailViewModel.setCurrentElectionQuestionVotes(votes, position);
             ballotsListView.setClickable(true);
-            // voteButton.setEnabled(votes.size() == numberOfChoices);
+            voteButton.setEnabled(checkEachQuestion());
         };
         ballotsListView.setOnItemClickListener(itemListener);
     }
@@ -102,6 +105,15 @@ public class QuestionViewPagerAdapter extends RecyclerView.Adapter<QuestionViewP
     @Override
     public int getItemCount() {
          return mLaoDetailViewModel.getCurrentElection().getQuestions().size();
+    }
+
+    private boolean checkEachQuestion(){
+        List<List<Integer>> allVotes = mLaoDetailViewModel.getCurrentElectionVotes();
+        for(List<Integer> vote : allVotes){
+            if(vote == null || vote.isEmpty())
+                return false;
+        }
+        return true;
     }
     class Pager2ViewHolder extends RecyclerView.ViewHolder{
         private ListView ballotsListView;
