@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-func createWitnessHub() Hub {
+func CreateWitnessHub() Hub {
 	pk := "OgFFZz2TVilTSICEdJbAO3otWGfh17SmPo6i5as7XAg="
 	pkBuf, err := base64.URLEncoding.DecodeString(pk)
 	if err != nil {
@@ -28,12 +28,12 @@ func createWitnessHub() Hub {
 // to complete
 func TestNewWitnessHub(t *testing.T) {
 	pk := "invalid pk"
-	pkBuf, err := base64.URLEncoding.DecodeString(pk)
+	_, err := base64.URLEncoding.DecodeString(pk)
 	if (err == nil) {
 		t.Errorf("decoded invalid string")
 	}
 	pk = "OgFFZz2TVilTSICEdJbAO3otWGfh17SmPo6i5as7XAg="
-	pkBuf, err = base64.URLEncoding.DecodeString(pk)
+	pkBuf, err := base64.URLEncoding.DecodeString(pk)
 	if err != nil {
 		t.Errorf("could not decode public key")
 	}
@@ -49,7 +49,7 @@ func TestWitnessHub_Start(t *testing.T) {
 	parent := context.Background()
 	ctx, cancel := context.WithCancel(parent)
 	wg := &sync.WaitGroup{}
-	witnessHub := createWitnessHub()
+	witnessHub := CreateWitnessHub()
 	if witnessHub == nil {
 		t.Errorf("could not create witness hub")
 	}
