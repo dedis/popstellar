@@ -4,14 +4,12 @@ import android.Manifest;
 import android.app.Application;
 import android.content.pm.PackageManager;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
-
 import com.github.dedis.student20_pop.Event;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.home.HomeViewModel;
@@ -41,11 +39,12 @@ import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
-
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -56,13 +55,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javax.crypto.ShortBufferException;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 public class LaoDetailViewModel extends AndroidViewModel implements CameraPermissionViewModel,
         QRCodeScanningViewModel {
@@ -135,7 +127,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     String pk = "";
     try {
       pk = Base64.getUrlEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, rollcall.getPersistentId()).second);
-    } catch (NoSuchAlgorithmException | InvalidKeyException | ShortBufferException e) {
+    } catch (GeneralSecurityException e) {
       Log.d(TAG, "failed to retrieve public key from wallet", e);
       return false;
     }
@@ -788,11 +780,12 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
     public void enterRollCall(String id) {
         String firstLaoId = getCurrentLaoValue().getChannel().substring(6); // use the laoId set at creation + need to remove /root/ prefix
+        String errorMessage = "failed to retrieve public key from wallet";
         try {
             String pk = Base64.getUrlEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, id).second);
             mPkRollCallEvent.postValue(new Event<>(pk));
-        } catch (NoSuchAlgorithmException | InvalidKeyException | ShortBufferException e) {
-            Log.d(TAG, "failed to retrieve public key from wallet", e);
+        } catch (Exception e) {
+            Log.d(TAG, errorMessage, e);
         }
     }
 
@@ -841,4 +834,5 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         mAttendeeScanConfirmEvent.postValue(new Event<>("Attendee has been added."));
         mNbAttendeesEvent.postValue(new Event<>(attendees.size()));
     }
+
 }
