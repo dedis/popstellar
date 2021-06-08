@@ -15,8 +15,8 @@ import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.adapters.QuestionViewPagerAdapter;
 import com.github.dedis.student20_pop.model.Election;
-import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
-import com.github.dedis.student20_pop.model.network.method.message.ElectionVote;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionQuestion;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionVote;
 
 import java.util.ArrayList;
 import java.util.List;

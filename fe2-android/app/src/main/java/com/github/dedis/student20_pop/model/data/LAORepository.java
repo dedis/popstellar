@@ -18,7 +18,7 @@ import com.github.dedis.student20_pop.model.network.method.Catchup;
 import com.github.dedis.student20_pop.model.network.method.Publish;
 import com.github.dedis.student20_pop.model.network.method.Subscribe;
 import com.github.dedis.student20_pop.model.network.method.Unsubscribe;
-import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;

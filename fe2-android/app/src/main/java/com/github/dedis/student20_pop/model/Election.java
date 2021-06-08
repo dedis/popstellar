@@ -2,7 +2,7 @@ package com.github.dedis.student20_pop.model;
 
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventType;
-import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionQuestion;
 
 import java.util.ArrayList;
 import java.util.List;

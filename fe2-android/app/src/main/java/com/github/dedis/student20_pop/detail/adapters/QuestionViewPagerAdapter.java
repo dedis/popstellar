@@ -17,7 +17,7 @@ import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentCastVoteBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.model.Election;
-import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionQuestion;
 
 import java.util.ArrayList;
 import java.util.List;
