@@ -23,6 +23,7 @@ import com.github.dedis.student20_pop.model.data.LAORepository;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.model.network.answer.Error;
 import com.github.dedis.student20_pop.model.network.answer.Result;
+import com.github.dedis.student20_pop.model.network.method.message.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.CastVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
@@ -40,6 +41,7 @@ import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -149,9 +151,9 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
      *
      * <p>Publish a GeneralMessage containing ElectionCastVotes data.
      *
-     * @param castVotes the corresponding votes for that election
+     * @param votes the corresponding votes for that election
      */
-    public void sendVote(CastVote castVotes) {
+    public void sendVote(List<ElectionVote> votes) {
         Election election = mCurrentElection.getValue();
         if (election == null) {
             Log.d(TAG, "failed to retrieve current election");
@@ -163,9 +165,12 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             Log.d(TAG, LAO_FAILURE_MESSAGE);
             return;
         }
+        String laoChannel = lao.getChannel();
+        String laoId = laoChannel.substring(6);
+        CastVote castVote = new CastVote(votes,election.getId(),laoId);
 
-
-        String electionChannel = lao.getChannel() + "/" + election.getId();
+        //TODO change this to election.getChannel() when method is implemented in Victor's PR
+        String electionChannel = laoChannel + "/" + election.getId();
 
         try {
             // Retrieve identity of who is sending the votes
@@ -174,7 +179,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             byte[] sender = Base64.getUrlDecoder().decode(publicKey);
 
             PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
-            MessageGeneral msg = new MessageGeneral(sender, castVotes, signer, mGson);
+            MessageGeneral msg = new MessageGeneral(sender, castVote, signer, mGson);
 
             Log.d(TAG, PUBLISH_MESSAGE);
             Disposable disposable =

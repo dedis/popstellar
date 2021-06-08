@@ -13,26 +13,35 @@ public class ElectionVote  {
     @SerializedName(value = "question")
     private String questionId; // id of the question
     private List<Integer> vote; // list of indexes for the votes
+    private Boolean writeInEnabled; // represents a boolean to know whether write_in is allowed or not
     @SerializedName(value = "write_in")
-    private Boolean writeIn; // enables to write in in ballot options
+    private String writeIn; // If write in is enabled this represents the writeIn string
 
     /**
-     * Constructor for a data Question, for the election setup
+     * Constructor for a data Vote, for cast vote . It represents a Vote for one Question.
      * @param questionId the Id of the question
      * @param vote the list of indexes for the ballot options chose by the voter
-     * @param writeIn enables write in
+     * @param writeInEnabled parameter to know if write is enabled or not
+     * @param writeIn string corresponding to the write_in
      * @param electionId Id of the election
      */
     public ElectionVote(
             String questionId,
             List<Integer> vote,
-            Boolean writeIn,
+            Boolean writeInEnabled,String writeIn,
             String electionId) {
 
         this.questionId = questionId;
-        this.writeIn = writeIn;
-        this.vote = vote;
-        this.id = Hash.hash("Vote", electionId, questionId, vote.toString(), writeIn.toString());
+        if(writeInEnabled) { // If write in is enabled the Id is formed with the write_in string
+            this.writeIn = writeIn;
+            this.vote = null;
+            this.id = Hash.hash("Vote", electionId, questionId, writeIn);
+        }
+        else { // If write in is not enabled the Id is formed with the vote indexes
+            this.writeIn = null;
+            this.vote = vote;
+            this.id = Hash.hash("Vote", electionId, questionId, vote.toString());
+        }
     }
 
 
@@ -44,7 +53,7 @@ public class ElectionVote  {
         return questionId;
     }
 
-    public Boolean getWriteIn() {
+    public String getWriteIn() {
         return writeIn;
     }
 
@@ -80,19 +89,32 @@ public class ElectionVote  {
 
     @Override
     public String toString() {
-        return "ElectionQuestion{"
-                + "id='"
-                + id
-                + '\''
-                + ", question ID='"
-                + questionId
-                + '\''
-                + ", votes='"
-                + vote
-                + '\''
-                + ", write in='"
-                + writeIn
-                + '}';
+        if(writeInEnabled) {
+            return "ElectionQuestion{"
+                    + "id='"
+                    + id
+                    + '\''
+                    + ", question ID='"
+                    + questionId
+                    + '\''
+                    + ", write in='"
+                    + writeIn
+                    + '}';
+        }
+        else {
+            return "ElectionQuestion{"
+                    + "id='"
+                    + id
+                    + '\''
+                    + ", question ID='"
+                    + questionId
+                    + '\''
+                    + ", votes='"
+                    + vote.toString()
+                    + '}';
+
+        }
+
     }
 
 

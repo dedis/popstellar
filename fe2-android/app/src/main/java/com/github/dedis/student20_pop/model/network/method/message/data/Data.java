@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.model.network.method.message.data;
 
+import com.github.dedis.student20_pop.model.network.method.message.data.election.CastVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
@@ -76,7 +77,7 @@ public abstract class Data {
 
     // Election
     messagesMap.put(pair(ELECTION,SETUP), ElectionSetup.class);
-    messagesMap.put(pair(ELECTION,CAST_VOTE), ElectionSetup.class);
+    messagesMap.put(pair(ELECTION,CAST_VOTE), CastVote.class);
 
 
     return Collections.unmodifiableMap(messagesMap);

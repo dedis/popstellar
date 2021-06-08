@@ -14,7 +14,9 @@ public class CastVote extends Data {
 
     @SerializedName(value = "created_at")
     private long createdAt; // time the votes were submitted
+    @SerializedName(value = "lao")
     private String laoId; // Id of the lao
+    @SerializedName(value = "election")
     private String electionId; // Id of the election
     private List<ElectionVote> votes;
 
@@ -103,10 +105,7 @@ public class CastVote extends Data {
                 + electionId
                 + '\''
                 + ", votes = { '"
-                + builder
-                + '\''
-                + '}'
-                + '\''
+                + builder.toString()
                 + '}';
 
     }
