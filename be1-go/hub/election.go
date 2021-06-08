@@ -120,6 +120,8 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 
 	object := data.GetObject()
 
+	log.Printf("Before handling the election object")
+
 	if object == message.ElectionObject {
 
 		action := message.ElectionAction(data.GetAction())
@@ -244,6 +246,7 @@ func getAllQuestionsForElectionChannel(questions []message.Question) map[string]
 }
 
 func (c *electionChannel) endElectionHelper(publish message.Publish) error {
+	log.Printf("Handling election end")
 	endElectionData, ok := publish.Params.Message.Data.(*message.ElectionEndData)
 	if !ok {
 		return &message.Error{
@@ -257,6 +260,7 @@ func (c *electionChannel) endElectionHelper(publish message.Publish) error {
 			Description: "Can't send end election message before the end of the election",
 		}
 	}
+	log.Printf("Hashing the votes")
 	// since we eliminated (in cast vote) the duplicate votes we are sure that the voter casted one vote for one question
 	for _,question := range c.questions{
 		hashed,err := sortHashVotes(question.validVotes)
@@ -268,6 +272,7 @@ func (c *electionChannel) endElectionHelper(publish message.Publish) error {
 		}
 		endElectionData.RegisteredVotes = hashed
 	}
+	log.Printf("Votes are hashed")
 	msg := publish.Params.Message
 	messageID := base64.URLEncoding.EncodeToString(msg.MessageID)
 	c.inboxMu.Lock()
