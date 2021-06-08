@@ -2,6 +2,8 @@ package com.github.dedis.student20_pop.model;
 
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventType;
+import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,13 +14,10 @@ public class Election extends Event {
     private long creation;
     private long start;
     private long end;
-    private boolean writeIn;
 
-    private List<String> questions;
-    private List<List<String>> ballotsOptions;
+    private List<ElectionQuestion> electionQuestions;
     public Election() {
-        this.ballotsOptions = new ArrayList<>();
-        this.questions = new ArrayList<>();
+      this.electionQuestions = new ArrayList<>();
     }
 
     public String getId() {
@@ -63,33 +62,14 @@ public class Election extends Event {
         this.end = end;
     }
 
-    public List<List<String>> getBallotsOptions() {
-        return ballotsOptions;
+
+    public List<ElectionQuestion> getElectionQuestions() {
+        return electionQuestions;
     }
 
-    public void setBallotsOptions(List<List<String>> ballotsOptions) {
-        if (ballotsOptions == null || ballotsOptions.isEmpty())
-            throw new IllegalArgumentException("ballots options can't be null or empty");
-        this.ballotsOptions = ballotsOptions;
+    public void setElectionQuestions(List<ElectionQuestion> electionQuestions) {
+        this.electionQuestions = electionQuestions;
     }
-
-    public List<String> getQuestions() {
-        return questions;
-    }
-
-    public void setQuestions(List<String> questions) {
-        if (questions == null || questions.isEmpty()) throw new IllegalArgumentException("questions can't be null or empty");
-        this.questions = questions;
-    }
-
-    public boolean getWriteIn() {
-        return writeIn;
-    }
-
-    public void setWriteIn(boolean writeIn) {
-        this.writeIn = writeIn;
-    }
-
 
     @Override
     public long getStartTimestamp() {
