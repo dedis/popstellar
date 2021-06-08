@@ -211,6 +211,7 @@ export class HDWallet {
       .then((keyPair) => keyPair);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars,class-methods-use-this
   public tokenIsInRollCall(laoId: Hash, rollCallId: Hash): boolean {
     // TODO
     return true;
