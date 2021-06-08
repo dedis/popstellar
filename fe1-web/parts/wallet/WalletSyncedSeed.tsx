@@ -49,8 +49,18 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
        *  [LAO ID N, ROLL CALL ID N] => [publicKey1, publicKey2, ... , publicKeyN]
        */
 
-      /* */
-      wallet.recoverAllKeys(new Map()).then((cachedTokens) => {
+      /* =================================== REMOVE =================================== */
+      // garbage effort river orphan negative kind outside quit hat camera approve first
+      const laoId1: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
+      const laoId2: Hash = new Hash('SyJ3d9TdH8Ycb4hPSGQdArTRIdP9Moywi1Ux/Kzav4o=');
+      const rollCallId1: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
+      const rollCallId2: Hash = new Hash('SyJ3d9TdH8Ycb4hPSGQdArTRIdP9Moywi1Ux/Kzav4o=');
+      const testMap: Map<[Hash, Hash], string[]> = new Map();
+      testMap.set([laoId1, rollCallId1], ['7147759d146897111bcf74f60a1948b1d3a22c9199a6b88c236eb7326adc2efc', '']);
+      testMap.set([laoId2, rollCallId2], ['fffffffffffffff', '', 'ffdddddddffffffff', '2c23cfe90936a65839fb64dfb961690c3d8a5a1262f0156cf059b0c45a2eabff']);
+      /* =================================== REMOVE =================================== */
+
+      wallet.recoverAllKeys(testMap).then((cachedTokens) => {
         cachedKeyPairs = cachedTokens;
       });
     }));
@@ -77,7 +87,9 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
 
     cachedKeyPairs.forEach((value, key) => {
       const ids: string[] = key.toString().split(',');
+      // eslint-disable-next-line prefer-destructuring
       laoId[i] = ids[0];
+      // eslint-disable-next-line prefer-destructuring
       rollCallId[i] = ids[1];
       tokens[i] = value;
       i += 1;
