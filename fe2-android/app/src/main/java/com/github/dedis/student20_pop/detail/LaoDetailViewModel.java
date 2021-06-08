@@ -41,7 +41,6 @@ import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -167,7 +166,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         }
         String laoChannel = lao.getChannel();
         String laoId = laoChannel.substring(6);
-        CastVote castVote = new CastVote(votes,election.getId(),laoId);
+        CastVote castVote = new CastVote(votes, election.getId(), laoId);
 
         //TODO change this to election.getChannel() when method is implemented in Victor's PR
         String electionChannel = laoChannel + "/" + election.getId();
