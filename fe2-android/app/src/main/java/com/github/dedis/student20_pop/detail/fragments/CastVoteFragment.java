@@ -70,6 +70,7 @@ public class CastVoteFragment extends Fragment {
 
         TextView laoNameView = mCastVoteFragBinding.castVoteLaoName;
         TextView electionNameView = mCastVoteFragBinding.castVoteElectionName;
+
         //setUp the cast Vote button
         voteButton = mCastVoteFragBinding.castVoteButton;
         voteButton.setEnabled(false);
@@ -84,10 +85,11 @@ public class CastVoteFragment extends Fragment {
         electionNameView.setText(election.getName());
 
         int numberOfQuestions = election.getElectionQuestions().size();
+
         //Setting up the votes for the adapter
         mLaoDetailViewModel.setCurrentElectionVotes(setEmptyVoteList(numberOfQuestions));
 
-
+        //Setting the viewPager and its adapter
         ViewPager2 viewPager2 = mCastVoteFragBinding.castVotePager;
         QuestionViewPagerAdapter adapter = new QuestionViewPagerAdapter(mLaoDetailViewModel, mCastVoteFragBinding);
         viewPager2.setAdapter(adapter);

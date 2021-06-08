@@ -53,7 +53,6 @@ public class QuestionViewPagerAdapter extends RecyclerView.Adapter<QuestionViewP
 
 
 
-        //todo change when implemented in the setup
         //this will determine the number of option the user can select and vote for
         //If another voting method is implemented in setUp, this can be adapted
         int numberOfChoices = 1; //by default
