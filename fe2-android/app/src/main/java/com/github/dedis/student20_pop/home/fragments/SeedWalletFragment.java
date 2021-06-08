@@ -16,6 +16,7 @@ import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.home.HomeViewModel;
 import com.github.dedis.student20_pop.model.Wallet;
 import java.util.StringJoiner;
+import org.glassfish.grizzly.utils.ArrayUtils;
 
 /** Fragment used to display the new seed UI */
 public class SeedWalletFragment extends Fragment {
@@ -67,7 +68,7 @@ public class SeedWalletFragment extends Fragment {
           Toast.LENGTH_LONG).show();
       Log.d(TAG, e.getMessage());
     }
-    if(exportSeed != null) {
+    if(exportSeed != null && exportSeed.length > 0) {
       StringJoiner joiner = new StringJoiner(" ");
       for (String i : exportSeed)
         joiner.add(i);
