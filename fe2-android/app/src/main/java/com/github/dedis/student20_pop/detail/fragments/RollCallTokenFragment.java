@@ -20,6 +20,7 @@ import com.github.dedis.student20_pop.model.Wallet;
 
 import net.glxn.qrgen.android.QRCode;
 
+import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -70,7 +71,7 @@ public class RollCallTokenFragment extends Fragment {
             Pair<byte[], byte[]> token = Wallet.getInstance().findKeyPair(firstLaoId, rollCallId);
             sk = Base64.getUrlEncoder().encodeToString(token.first);
             pk = Base64.getUrlEncoder().encodeToString(token.second);
-        } catch (NoSuchAlgorithmException | InvalidKeyException | ShortBufferException e) {
+        } catch (GeneralSecurityException e) {
             Log.d(TAG, "failed to retrieve token from wallet", e);
             mLaoDetailViewModel.openLaoWallet();
         }

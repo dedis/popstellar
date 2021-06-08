@@ -203,7 +203,7 @@ public class HomeViewModel extends AndroidViewModel
         openWallet();
         return true;
       }
-    } catch (IllegalArgumentException e) {
+    } catch (Exception e) {
       return false;
     }
   }
