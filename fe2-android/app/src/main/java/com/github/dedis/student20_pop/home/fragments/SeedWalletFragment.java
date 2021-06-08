@@ -16,7 +16,6 @@ import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.home.HomeViewModel;
 import com.github.dedis.student20_pop.model.Wallet;
 import java.util.StringJoiner;
-import org.glassfish.grizzly.utils.ArrayUtils;
 
 /** Fragment used to display the new seed UI */
 public class SeedWalletFragment extends Fragment {
