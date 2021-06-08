@@ -10,7 +10,6 @@ import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.utility.security.Hash;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -121,7 +120,6 @@ public class Election extends Event {
                 listOfVoteIds.add(vote.getId());
             }
         }
-        System.out.println(listOfVoteIds.toString());
         return Hash.hash(listOfVoteIds.toString());
     }
 

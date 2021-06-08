@@ -179,10 +179,9 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
     public void endElection(Election election) {
         Log.d(TAG, "ending election with name : " + election.getName());
-        System.out.println( election.getStartTimestamp());
         Lao lao = getCurrentLaoValue();
         if (lao == null) {
-            Log.d(TAG, "failed to retrieve current lao");
+            Log.d(TAG, LAO_FAILURE_MESSAGE);
             return;
         }
 
@@ -198,7 +197,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
             MessageGeneral msg = new MessageGeneral(sender, electionEnd, signer, mGson);
 
-            Log.d(TAG, "sending publish message");
+            Log.d(TAG, PUBLISH_MESSAGE);
             Disposable disposable =
                     mLAORepository
                             .sendPublish(channel, msg)
@@ -215,14 +214,11 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                             Log.d(TAG, "failed to end the election");
                                         }
                                     },
-                                    throwable -> {
-                                        Log.d(TAG, "timed out waiting for result on election/end", throwable);
-                                    });
+                                    throwable -> Log.d(TAG, "timed out waiting for result on election/end", throwable));
 
             disposables.add(disposable);
         } catch (GeneralSecurityException | IOException e) {
-            Log.d(TAG, "failed to retrieve public key", e);
-            return;
+            Log.d(TAG, PK_FAILURE_MESSAGE, e);
         }
     }
 
@@ -246,12 +242,12 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             Log.d(TAG, LAO_FAILURE_MESSAGE);
             return;
         }
+
         String laoChannel = lao.getChannel();
         String laoId = laoChannel.substring(6);
         CastVote castVote = new CastVote(votes, election.getId(), laoId);
-
-        //TODO change this to election.getChannel() when method is implemented in Victor's PR
-        String electionChannel = laoChannel + "/" + election.getId();
+        //Is channel set ?
+        String electionChannel = election.getChannel();
 
         try {
             // Retrieve identity of who is sending the votes
@@ -279,17 +275,15 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                             Log.d(TAG, "failed to send the vote");
                                         }
                                     },
-                                    throwable -> {
-                                        Log.d(TAG, "timed out waiting for result on cast_vote", throwable);
-                                    });
+                                    throwable ->
+                                        Log.d(TAG, "timed out waiting for result on cast_vote", throwable));
 
             disposables.add(disposable);
         } catch (GeneralSecurityException | IOException e) {
-            Log.d(TAG, "failed to retrieve public key", e);
-            return;
+            Log.d(TAG, PK_FAILURE_MESSAGE, e);
         }
     }
-    
+
 
     /**
      * Creates new Election event.
