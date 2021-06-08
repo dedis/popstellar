@@ -19,6 +19,7 @@ import com.github.dedis.student20_pop.detail.fragments.CastVoteFragment;
 import com.github.dedis.student20_pop.detail.fragments.IdentityFragment;
 import com.github.dedis.student20_pop.detail.fragments.LaoDetailFragment;
 import com.github.dedis.student20_pop.detail.fragments.LaoWalletFragment;
+import com.github.dedis.student20_pop.detail.fragments.ManageElectionFragment;
 import com.github.dedis.student20_pop.detail.fragments.RollCallDetailFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.ElectionSetupFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.MeetingEventCreationFragment;
@@ -316,26 +317,23 @@ public class LaoDetailActivity extends AppCompatActivity {
     }
 
   private void setupManageElectionFragment() {
-      {
-          mViewModel
-                  .getOpenCastVotes()
-                  .observe(
-                          this,
-                          booleanEvent -> {
-                              Boolean event = booleanEvent.getContentIfNotHandled();
-                              if(event != null){
-                                  CastVoteFragment castVoteFragment =
-                                          (CastVoteFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_cast_vote);
-                                  if(castVoteFragment == null){
-                                      castVoteFragment = castVoteFragment.newInstance();
-                                      ActivityUtils.replaceFragmentInActivity(
-                                              getSupportFragmentManager(), castVoteFragment, R.id.fragment_container_lao_detail);
-                                  }
+      mViewModel
+              .getOpenManageElectionEvent()
+              .observe(
+                      this,
+                      booleanEvent -> {
+                          Boolean event = booleanEvent.getContentIfNotHandled();
+                          if(event!= null) {
+                              ManageElectionFragment manageElectionFragment =
+                                      (ManageElectionFragment)
+                                              getSupportFragmentManager().findFragmentById(R.id.fragment_manage_election);
+                              if (manageElectionFragment == null) {
+                                  manageElectionFragment = ManageElectionFragment.newInstance();
+                                  ActivityUtils.replaceFragmentInActivity(
+                                          getSupportFragmentManager(), manageElectionFragment, R.id.fragment_container_lao_detail);
                               }
                           }
-                  );
-
-      }
+                      });
   }
 
   private void setupCastVotesFragment() {
