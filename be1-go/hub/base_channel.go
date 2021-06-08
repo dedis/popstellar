@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"student20_pop/message"
+	"student20_pop/validation"
 	"sync"
 )
 
@@ -21,7 +22,8 @@ type baseChannel struct {
 	inbox   map[string]message.Message
 
 	// /root/<ID>
-	channelID string
+	channelID   string
+	idValidator *validation.IdValidatior
 
 	witnessMu sync.Mutex
 	witnesses []message.PublicKey
@@ -30,10 +32,11 @@ type baseChannel struct {
 // CreateBaseChannel return an instance of a `baseChannel`
 func createBaseChannel(h *organizerHub, channelID string) *baseChannel {
 	return &baseChannel{
-		hub:       h,
-		channelID: channelID,
-		clients:   make(map[*ClientSocket]struct{}),
-		inbox:     make(map[string]message.Message),
+		hub:         h,
+		channelID:   channelID,
+		idValidator: validation.NewIdValidator(channelID),
+		clients:     make(map[*ClientSocket]struct{}),
+		inbox:       make(map[string]message.Message),
 	}
 }
 
@@ -117,6 +120,12 @@ func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 			Code:        -4,
 			Description: fmt.Sprintf("failed to verify and unmarshal data: %v", err),
 		}
+	}
+
+	// Verify all the IDs in the data are correct
+	err = c.idValidator.VerifyID(msg.Data)
+	if err != nil {
+		return message.NewError("failed to verify the ID of the provided data", err)
 	}
 
 	msgIDEncoded := base64.URLEncoding.EncodeToString(msg.MessageID)
