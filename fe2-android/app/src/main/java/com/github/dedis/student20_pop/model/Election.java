@@ -16,11 +16,9 @@ public class Election extends Event {
 
     private List<String> questions;
     private List<List<String>> ballotsOptions;
-    private List<List<Integer>> votes;
     public Election() {
         this.ballotsOptions = new ArrayList<>();
         this.questions = new ArrayList<>();
-        this.votes = new ArrayList<>();
     }
 
     public String getId() {
@@ -92,15 +90,6 @@ public class Election extends Event {
         this.writeIn = writeIn;
     }
 
-    public List<List<Integer>> getVotes(){
-        return votes;
-    }
-
-    public void setVotes(List<List<Integer>> votes){
-        if(votes == null || votes.isEmpty())
-            throw new IllegalArgumentException("votes can't be null or empty");
-        this.votes = votes;
-    }
 
     @Override
     public long getStartTimestamp() {

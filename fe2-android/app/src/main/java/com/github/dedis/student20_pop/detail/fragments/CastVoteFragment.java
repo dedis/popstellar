@@ -29,9 +29,14 @@ import me.relex.circleindicator.CircleIndicator3;
 public class CastVoteFragment extends Fragment {
 
     private Button voteButton;
-
+    private LaoDetailViewModel mLaoDetailViewModel;
     private View.OnClickListener buttonListener = v -> {
         voteButton.setEnabled(false);
+//        List<ElectionVote> electionVotes = new ArrayList<>();
+//        List<String> questions = mLaoDetailViewModel.getCurrentElection().getQuestions();
+//        for(int i = 0; i < questions.size(); i++){
+//            mLaoDetailViewModel.get
+//        }
         // mLaoDetailViewModel.sendVote(election); This method is defined in Maxim's branch
     };
 
@@ -54,7 +59,7 @@ public class CastVoteFragment extends Fragment {
         //Inflate the layout for this fragment
         FragmentCastVoteBinding mCastVoteFragBinding =
                 FragmentCastVoteBinding.inflate(inflater, container, false);
-        LaoDetailViewModel mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
+         mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 
         TextView laoNameView = mCastVoteFragBinding.castVoteLaoName;
         TextView electionNameView = mCastVoteFragBinding.castVoteElectionName;
@@ -71,8 +76,7 @@ public class CastVoteFragment extends Fragment {
         //Setting election name
         electionNameView.setText(election.getName());
 
-        int numberOfQuestions = 0;
-       // numberOfQuestions = election.getElectionQuestions(numberOfQuestions);
+        int numberOfQuestions = election.getQuestions().size();
         //Setting up the votes for the adapter
         mLaoDetailViewModel.setCurrentElectionVotes(setEmptyVoteList(numberOfQuestions));
 
