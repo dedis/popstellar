@@ -24,7 +24,9 @@ import com.github.dedis.student20_pop.model.event.EventState;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.model.network.answer.Error;
 import com.github.dedis.student20_pop.model.network.answer.Result;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.CastVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
@@ -33,7 +35,6 @@ import com.github.dedis.student20_pop.model.network.method.message.data.rollcall
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
 import com.github.dedis.student20_pop.qrcode.CameraPermissionViewModel;
 import com.github.dedis.student20_pop.qrcode.QRCodeScanningViewModel;
-import com.github.dedis.student20_pop.utility.security.Hash;
 import com.github.dedis.student20_pop.utility.security.Keys;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.crypto.tink.KeysetHandle;
@@ -68,6 +69,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     public static final String TAG = LaoDetailViewModel.class.getSimpleName();
     private static final String LAO_FAILURE_MESSAGE = "failed to retrieve current lao";
     private static final String PK_FAILURE_MESSAGE = "failed to retrieve public key";
+    private static final String PUBLISH_MESSAGE = "sending publish message";
+
     /*
      * LiveData objects for capturing events like button clicks
      */
@@ -144,9 +147,9 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
      */
     private final LAORepository mLAORepository;
     private final AndroidKeysetManager mKeysetManager;
-    private String mCurrentRollCallId = ""; //used to know which roll call to close
     private final CompositeDisposable disposables;
     private final Gson mGson;
+    private String mCurrentRollCallId = ""; //used to know which roll call to close
     private Set<String> attendees = new HashSet<>();
 
     public LaoDetailViewModel(
@@ -168,6 +171,64 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         disposables.dispose();
     }
 
+    /**
+     * Sends a ElectionCastVotes message .
+     *
+     * <p>Publish a GeneralMessage containing ElectionCastVotes data.
+     *
+     * @param votes the corresponding votes for that election
+     */
+    public void sendVote(List<ElectionVote> votes) {
+        Election election = mCurrentElection.getValue();
+        if (election == null) {
+            Log.d(TAG, "failed to retrieve current election");
+            return;
+        }
+        Log.d(TAG, "sending a new vote in election : " + election + " with election start time" + election.getStartTimestamp());
+        Lao lao = getCurrentLaoValue();
+        if (lao == null) {
+            Log.d(TAG, LAO_FAILURE_MESSAGE);
+            return;
+        }
+        String laoChannel = lao.getChannel();
+        String laoId = laoChannel.substring(6);
+        CastVote castVote = new CastVote(votes, election.getId(), laoId);
+
+        //TODO change this to election.getChannel() when method is implemented in Victor's PR
+        String electionChannel = laoChannel + "/" + election.getId();
+
+        try {
+            // Retrieve identity of who is sending the votes
+            KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+            String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+            byte[] sender = Base64.getUrlDecoder().decode(publicKey);
+
+            PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+            MessageGeneral msg = new MessageGeneral(sender, castVote, signer, mGson);
+
+            Log.d(TAG, PUBLISH_MESSAGE);
+            Disposable disposable =
+                    mLAORepository
+                            .sendPublish(electionChannel, msg)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .timeout(5, TimeUnit.SECONDS)
+                            .subscribe(
+                                    answer -> {
+                                        if (answer instanceof Result) {
+                                            Log.d(TAG, "sent a vote successfully");
+                                            openLaoDetail();
+                                        } else {
+                                            Log.d(TAG, "failed to send the vote");
+                                        }
+                                    },
+                                    throwable -> Log.d(TAG, "timed out waiting for result on cast_vote", throwable));
+
+            disposables.add(disposable);
+        } catch (GeneralSecurityException | IOException e) {
+            Log.d(TAG, PK_FAILURE_MESSAGE, e);
+        }
+    }
 
     /**
      * Creates new Election event.
@@ -205,7 +266,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
             MessageGeneral msg = new MessageGeneral(sender, electionSetup, signer, mGson);
 
-            Log.d(TAG, "sending publish message");
+            Log.d(TAG, PUBLISH_MESSAGE);
             Disposable disposable =
                     mLAORepository
                             .sendPublish(channel, msg)
@@ -230,7 +291,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             disposables.add(disposable);
 
         } catch (GeneralSecurityException | IOException e) {
-            Log.d(TAG, "PK_FAILURE_MESSAGE", e);
+            Log.d(TAG, PK_FAILURE_MESSAGE, e);
             return null;
         }
         return electionSetup.getId();
@@ -266,7 +327,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             String publicKey = Keys.getEncodedKey(publicKeysetHandle);
             byte[] sender = Base64.getUrlDecoder().decode(publicKey);
             PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
-            Log.d(TAG, "sending publish message");
+            Log.d(TAG, PUBLISH_MESSAGE);
             MessageGeneral msg = new MessageGeneral(sender, createRollCall, signer, mGson);
             Disposable disposable =
                     mLAORepository
@@ -368,8 +429,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         long end = Instant.now().getEpochSecond();
         String channel = lao.getChannel();
         String laoId = channel.substring(6); // removing /root/ prefix
-        String updateId = Hash.hash("R", laoId, mCurrentRollCallId, Long.toString(end));
-        CloseRollCall closeRollCall = new CloseRollCall(updateId, mCurrentRollCallId, end, new ArrayList<>(attendees));
+        CloseRollCall closeRollCall = new CloseRollCall(laoId, mCurrentRollCallId, end, new ArrayList<>(attendees));
         try {
             KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
             String publicKey = Keys.getEncodedKey(publicKeysetHandle);
