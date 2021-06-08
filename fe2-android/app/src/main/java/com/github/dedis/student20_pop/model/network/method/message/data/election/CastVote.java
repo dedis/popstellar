@@ -14,46 +14,44 @@ import java.util.List;
 public class CastVote extends Data {
 
     @SerializedName(value = "created_at")
-    private long createdAt; // time the votes were submited
-    private String lao;
-    private String election;
+    private long createdAt; // time the votes were submitted
+    @SerializedName(value = "lao")
+    private String laoId; // Id of the lao
+    @SerializedName(value = "election")
+    private String electionId; // Id of the election
     private List<ElectionVote> votes;
 
-    /**
-     * Constructor for a data Cast Vote Election Event
-     *
-     * @param laoId id of the LAO
-     * @param questionId  id of the question
-     * @param votes list of vote indexes corresponding to the the ballot_options
+     /**
+     * @param votes      list of the Election Vote where an ElectionVote Object represents the corresponding votes for one question
+     * @param electionId Id of the election for which to votee
+     * @param laoId      id of the LAO
      */
     public CastVote(
-            boolean writeIn,
-            List<List<Integer>> votes,
-            String questionId,
+            List<ElectionVote> votes,
             String electionId,
             String laoId) {
         this.createdAt = Instant.now().getEpochSecond();
-        this.votes = new ArrayList<>();
-        this.lao = laoId;
-        this.election = electionId;
-        for (int i = 0; i < votes.size(); i++) {
-            ElectionVote vote = new ElectionVote(questionId, votes.get(i), writeIn, electionId);
-            this.votes.add(vote);
-        }
+        this.votes = votes;
+        this.electionId = electionId;
+        this.laoId = laoId;
     }
 
 
     public String getLaoId() {
-        return lao;
+        return laoId;
     }
-    public String getElectionId(){return election;}
+
+    public String getElectionId() {
+        return electionId;
+    }
 
     public long getCreation() {
         return createdAt;
     }
 
-    public List<ElectionVote> getVotes() { return Collections.unmodifiableList(votes); }
-
+    public List<ElectionVote> getVotes() {
+        return Collections.unmodifiableList(votes);
+    }
 
     @Override
     public String getObject() {
@@ -76,6 +74,7 @@ public class CastVote extends Data {
         CastVote that = (CastVote) o;
         return java.util.Objects.equals(getLaoId(), that.getLaoId())
                 && createdAt == that.getCreation()
+                && electionId == that.getElectionId()
                 && java.util.Objects.equals(votes, that.getVotes());
     }
 
@@ -89,27 +88,29 @@ public class CastVote extends Data {
 
     @Override
     public String toString() {
-        StringBuilder builder = null;
-        for (ElectionVote vote: votes) {
+        StringBuilder builder = new StringBuilder();
+        for (ElectionVote vote : votes) {
             builder.append(vote.toString());
         }
         return "CastVote{"
                 + "lao='"
-                + lao
+                + laoId
                 + '\''
                 + ", creation='"
                 + createdAt
                 + '\''
                 + ", election='"
-                + election
                 + '\''
                 + ", votes = { '"
                 + builder
                 + '\''
                 + '}'
                 + '\''
+                + electionId
+                + '\''
+                + ", votes = { '"
+                + builder.toString()
                 + '}';
-
     }
 
 }

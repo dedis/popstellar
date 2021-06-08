@@ -7,25 +7,46 @@ import java.util.List;
 
 public class ElectionVote {
 
-    private String id; //id of the vote
+
+    private String id;
+    /**
+     * Id of the object ElectionVote : Hash(“Vote”||election_id||
+     * || question_id||(vote_index(es)|write_in))
+     **/
     @SerializedName(value = "question")
     private String questionId; // id of the question
-    private List<Integer> votes;
-    private Boolean writeIn;
+    private List<Integer> vote; // list of indexes for the votes
+    private boolean writeInEnabled; // represents a boolean to know whether write_in is allowed or not
+    @SerializedName(value = "write_in")
+    private String writeIn; // If write in is enabled this represents the writeIn string
 
     /**
-     * Constructor for a data Question, for the election setup
+     * Constructor for a data Vote, for cast vote . It represents a Vote for one Question.
+     *
+     * @param questionId     the Id of the question
+     * @param vote           the list of indexes for the ballot options chose by the voter
+     * @param writeInEnabled parameter to know if write is enabled or not
+     * @param writeIn        string corresponding to the write_in
+     * @param electionId     Id of the election
      */
     public ElectionVote(
             String questionId,
-            List<Integer> votes,
-            Boolean writeIn,
+            List<Integer> vote,
+            boolean writeInEnabled,
+            String writeIn,
             String electionId) {
 
         this.questionId = questionId;
-        this.writeIn = writeIn;
-        this.votes = votes;
-        this.id = Hash.hash("Vote", electionId, questionId, votes.toString());
+        this.writeInEnabled = writeInEnabled;
+        if (writeInEnabled) { // If write in is enabled the Id is formed with the write_in string
+            this.writeIn = writeIn;
+            this.vote = null;
+            this.id = Hash.hash("Vote", electionId, questionId, writeIn);
+        } else { // If write in is not enabled the Id is formed with the vote indexes
+            this.writeIn = null;
+            this.vote = vote;
+            this.id = Hash.hash("Vote", electionId, questionId, vote.toString());
+        }
     }
 
 
@@ -37,9 +58,13 @@ public class ElectionVote {
         return questionId;
     }
 
-    public Boolean getWriteIn() { return writeIn; }
+    public String getWriteIn() {
+        return writeIn;
+    }
 
-    public List<Integer> getVoteResults(){ return votes;}
+    public List<Integer> getVotes() {
+        return vote;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -53,7 +78,7 @@ public class ElectionVote {
         return getQuestionId() == that.getQuestionId()
                 && getWriteIn() == that.getWriteIn()
                 && java.util.Objects.equals(getId(), that.getId())
-                && java.util.Objects.equals(getVoteResults(), that.getVoteResults());
+                && java.util.Objects.equals(getVotes(), that.getVotes());
 
     }
 
@@ -61,16 +86,40 @@ public class ElectionVote {
     public int hashCode() {
         return java.util.Objects.hash(
                 getId(),
-                getVoteResults(),
+                getVotes(),
                 getWriteIn(),
                 getQuestionId());
     }
 
-    //TODO
     @Override
     public String toString() {
-        return null;
+        if (writeInEnabled) {
+            return "ElectionQuestion{"
+                    + "id='"
+                    + id
+                    + '\''
+                    + ", question ID='"
+                    + questionId
+                    + '\''
+                    + ", write in='"
+                    + writeIn
+                    + '}';
+        } else {
+            return "ElectionQuestion{"
+                    + "id='"
+                    + id
+                    + '\''
+                    + ", question ID='"
+                    + questionId
+                    + '\''
+                    + ", votes='"
+                    + vote.toString()
+                    + '}';
+
+        }
+
     }
 
 
 }
+

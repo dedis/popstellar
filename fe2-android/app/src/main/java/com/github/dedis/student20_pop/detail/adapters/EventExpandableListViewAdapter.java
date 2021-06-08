@@ -250,22 +250,24 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
             ViewGroup parent) {
 
         Event event = ((Event) getChild(groupPosition, childPosition));
-        EventCategory category = (EventCategory) getGroup(groupPosition);
-        if (event.getType() == EventType.ELECTION) {
-            return setupElectionElement(parent, convertView, (Election) event, category);
-        } else if (event.getType() == EventType.ROLL_CALL) {
-            return setupRollCallElement(parent, convertView, (RollCall) event);
-        }
-        LayoutEventBinding layoutEventBinding;
+        LayoutEventBinding layoutEventBinding ;
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             layoutEventBinding = LayoutEventBinding.inflate(inflater, parent, false);
         } else {
             layoutEventBinding = DataBindingUtil.getBinding(convertView);
         }
+            layoutEventBinding.setEvent(event);
 
-        layoutEventBinding.setEvent(event);
+        EventCategory category = (EventCategory) getGroup(groupPosition);
+        if (event.getType() == EventType.ELECTION) {
+            return setupElectionElement((Election) event, category,layoutEventBinding);
+        } else if (event.getType() == EventType.ROLL_CALL) {
+            return setupRollCallElement((RollCall) event,layoutEventBinding);
+        }
+
         layoutEventBinding.setLifecycleOwner(lifecycleOwner);
+        layoutEventBinding.executePendingBindings();
         return layoutEventBinding.getRoot();
 
     }
@@ -308,25 +310,13 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     /**
      * A helper method used to handle the display of the elections
      *
-     * @param convertView the old view to reuse, if possible. You should check that this view is
-     *                    non-null and of an appropriate type before using. If it is not possible to convert this
-     *                    view to display the correct data, this method can create a new view. It is not guaranteed
-     *                    that the convertView will have been previously created by {@link #getChildView(int, int,
-     *                    boolean, View, ViewGroup)}.
-     * @param parent      the parent that this view will eventually be attached to
      * @param election    the election Event
      * @param category    the event category ( Past,Present or Future)
+     * @param layoutEventBinding the binding of the generic layoutEvent that we use to display events
      * @return the View corresponding to the child at the specified position
      */
-
-    private View setupElectionElement(ViewGroup parent, View convertView, Election election, EventCategory category) {
-        LayoutElectionDisplayBinding electionBinding;
-        if (convertView == null) {
-            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            electionBinding = LayoutElectionDisplayBinding.inflate(inflater, parent, false);
-        } else {
-            electionBinding = DataBindingUtil.getBinding(convertView);
-        }
+    private View setupElectionElement( Election election, EventCategory category,LayoutEventBinding layoutEventBinding) {
+        LayoutElectionDisplayBinding electionBinding = layoutEventBinding.includeLayoutElection;
         electionBinding.setElection(election);
         Date dStart = new java.util.Date(Long.valueOf(election.getStartTimestamp()) * 1000);// *1000 because it needs to be in milisecond
         String dateStart = DATE_FORMAT.format(dStart);
@@ -356,26 +346,18 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         electionBinding.setViewModel(viewModel);
         electionBinding.setLifecycleOwner(lifecycleOwner);
         electionBinding.executePendingBindings();
-        return electionBinding.getRoot();
-
-
+        return layoutEventBinding.getRoot();
     }
 
     /**
      * Setup the text and buttons that appear for a roll call in the list
      *
-     * @param rollCall the roll call object we want to display
-     * @return
+     * @param rollCall the rollCall Event
+     * @param layoutEventBinding the binding of the generic layoutEvent that we use to display events
+     * @return the View corresponding to the child at the specified position
      */
-    private View setupRollCallElement(ViewGroup parent, View convertView, RollCall rollCall) {
-        LayoutRollCallEventBinding binding;
-
-        if (convertView == null) {
-            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            binding = LayoutRollCallEventBinding.inflate(inflater, parent, false);
-        } else {
-            binding = DataBindingUtil.getBinding(convertView);
-        }
+    private View setupRollCallElement( RollCall rollCall,LayoutEventBinding layoutEventBinding) {
+        LayoutRollCallEventBinding binding = layoutEventBinding.includeLayoutRollCall;
 
         binding.rollcallDate.setText("Start: " + DATE_FORMAT.format(new Date(1000 * rollCall.getStart())));
         binding.rollcallTitle.setText("Roll Call: " + rollCall.getName());
@@ -415,6 +397,6 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         binding.setLifecycleOwner(lifecycleOwner);
 
         binding.executePendingBindings();
-        return binding.getRoot();
+        return layoutEventBinding.getRoot();
     }
 }
