@@ -25,7 +25,7 @@ type electionChannel struct {
 	questions map[string]question
 
 	// attendees that took part in the roll call string of their PK
-	attendees []string
+	attendees map[string]struct{}
 }
 
 type question struct {
@@ -95,9 +95,9 @@ func (c *laoChannel) createElection(msg message.Message) error {
 
 	// Add the SetupElection message to the new election channel
 	messageID := base64.URLEncoding.EncodeToString(msg.MessageID)
-	c.inboxMu.Lock()
-	c.inbox[messageID] = msg
-	c.inboxMu.Unlock()
+	electionCh.inboxMu.Lock()
+	electionCh.inbox[messageID] = msg
+	electionCh.inboxMu.Unlock()
 
 	// Add the new election channel to the organizerHub
 	organizerHub.channelByID[encodedID] = &electionCh
@@ -162,12 +162,7 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 	}
 
 	senderPK := msg.Sender.String()
-	ok = false
-	for _, attendee := range c.attendees {
-		if attendee == senderPK {
-			ok = true
-		}
-	}
+	_,ok = c.attendees[senderPK]
 	if !ok {
 		return &message.Error{
 			Code:        -4,
@@ -254,10 +249,10 @@ func getAllQuestionsForElectionChannel(questions []message.Question) map[string]
 	return qs
 }
 
-func getAllAttendees(attendees map[string]struct{}) []string {
-	keys := make([]string, len(attendees))
+func getAllAttendees(attendees map[string]struct{}) map[string]struct{} {
+	keys := make(map[string]struct{}, len(attendees))
 	for k := range attendees {
-		keys = append(keys, k)
+		keys[k] = struct{}{}
 	}
 	return keys
 }
