@@ -10,6 +10,7 @@ import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.utility.security.Hash;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -110,17 +111,18 @@ public class Election extends Event {
     }
 
     /**
-     * Computes the hash for the registered votes, when terminating an election (ordered by sender pk)
+     * Computes the hash for the registered votes, when terminating an election (sorted by vote id's alphabetical order)
      * @return the hash of all registered votes
      */
     public String computerRegisteredVotes() {
-        List<String> listOfVoteIds = new ArrayList<>();
+        List<String> listOfVoteIds = new ArrayList<>();;
         for (List<ElectionVote> votes: voteMap.values()) {
             for (ElectionVote vote: votes) {
                 listOfVoteIds.add(vote.getId());
             }
         }
-        return Hash.hash(listOfVoteIds.toString());
+        java.util.Collections.sort(listOfVoteIds);
+        return Hash.hash(listOfVoteIds.toArray(new String[0]));
     }
 
 

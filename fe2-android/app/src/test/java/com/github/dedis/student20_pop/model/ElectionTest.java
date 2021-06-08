@@ -100,8 +100,8 @@ public class ElectionTest {
         for (ElectionVote vote: votes2) {
             listOfVoteIds.add(vote.getId());
         }
-        System.out.println("in test " + listOfVoteIds);
-        String hash = Hash.hash(listOfVoteIds.toString());
+        java.util.Collections.sort(listOfVoteIds);
+        String hash = Hash.hash(listOfVoteIds.get(0), listOfVoteIds.get(1), listOfVoteIds.get(2), listOfVoteIds.get(3));
         assertThat(election.computerRegisteredVotes(), is(hash));
     }
     
