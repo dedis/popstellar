@@ -15,6 +15,8 @@ import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.adapters.QuestionViewPagerAdapter;
 import com.github.dedis.student20_pop.model.Election;
+import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
+import com.github.dedis.student20_pop.model.network.method.message.ElectionVote;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,14 +32,19 @@ public class CastVoteFragment extends Fragment {
 
     private Button voteButton;
     private LaoDetailViewModel mLaoDetailViewModel;
+
     private View.OnClickListener buttonListener = v -> {
         voteButton.setEnabled(false);
-//        List<ElectionVote> electionVotes = new ArrayList<>();
-//        List<String> questions = mLaoDetailViewModel.getCurrentElection().getQuestions();
-//        for(int i = 0; i < questions.size(); i++){
-//            mLaoDetailViewModel.get
-//        }
-        // mLaoDetailViewModel.sendVote(election); This method is defined in Maxim's branch
+        List<ElectionVote> electionVotes = new ArrayList<>();
+        List<ElectionQuestion> electionQuestions = mLaoDetailViewModel.getCurrentElection().getElectionQuestions();
+        for(int i = 0; i < electionQuestions.size(); i++){
+            ElectionQuestion electionQuestion = electionQuestions.get(i);
+            List<Integer> votes = mLaoDetailViewModel.getCurrentElectionVotes().get(i);
+            ElectionVote electionVote = new ElectionVote(electionQuestion.getId(),votes,
+                    electionQuestion.getWriteIn(),null,mLaoDetailViewModel.getCurrentElection().getId());
+            electionVotes.add(electionVote);
+        }
+        mLaoDetailViewModel.sendVote(electionVotes);
     };
 
 
@@ -76,7 +83,7 @@ public class CastVoteFragment extends Fragment {
         //Setting election name
         electionNameView.setText(election.getName());
 
-        int numberOfQuestions = election.getQuestions().size();
+        int numberOfQuestions = election.getElectionQuestions().size();
         //Setting up the votes for the adapter
         mLaoDetailViewModel.setCurrentElectionVotes(setEmptyVoteList(numberOfQuestions));
 

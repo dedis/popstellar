@@ -17,6 +17,7 @@ import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentCastVoteBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.model.Election;
+import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +48,8 @@ public class QuestionViewPagerAdapter extends RecyclerView.Adapter<QuestionViewP
         Election election = mLaoDetailViewModel.getCurrentElection();
 
         //setting the question
-        String question = election.getQuestions().get(position);
-        holder.questionView.setText(question);
+        ElectionQuestion question = election.getElectionQuestions().get(position);
+        holder.questionView.setText(question.getQuestion());
 
 
 
@@ -60,7 +61,7 @@ public class QuestionViewPagerAdapter extends RecyclerView.Adapter<QuestionViewP
         List<Integer> votes = new ArrayList<>();
 
         //setting the list view with ballot options
-        List<String> ballotOptions = election.getBallotsOptions().get(position);
+        List<String> ballotOptions = question.getBallotOptions();
         ballotAdapter.clear();
         ballotAdapter.addAll(ballotOptions);
         ListView ballotsListView = holder.ballotsListView;
@@ -104,7 +105,7 @@ public class QuestionViewPagerAdapter extends RecyclerView.Adapter<QuestionViewP
 
     @Override
     public int getItemCount() {
-         return mLaoDetailViewModel.getCurrentElection().getQuestions().size();
+         return mLaoDetailViewModel.getCurrentElection().getElectionQuestions().size();
     }
 
     private boolean checkEachQuestion(){
