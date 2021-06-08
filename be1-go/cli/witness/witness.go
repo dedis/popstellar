@@ -76,7 +76,6 @@ func Serve(cliCtx *cli.Context) error {
 	// shut down client server and witness server when ctrl+c received
 	network.ShutdownServers(ctx, clientSrv, witnessSrv)
 
-
 	// cancel the context
 	cancel()
 	
