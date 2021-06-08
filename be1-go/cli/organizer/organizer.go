@@ -60,6 +60,9 @@ func Serve(cliCtx *cli.Context) error {
 	// shut down client server and witness server when ctrl+c received
 	network.ShutdownServers(ctx, witnessSrv, clientSrv)
 
+	// cancel the context
+	cancel()
+	
 	// wait for all goroutines to finish
 	wg.Wait()
 
