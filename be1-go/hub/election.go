@@ -94,6 +94,10 @@ func (c *laoChannel) createElection(msg message.Message) error {
 	c.inboxMu.Lock()
 	c.inbox[messageID] = msg
 	c.inboxMu.Unlock()
+	// Saving on election channel too so it self-contains the entire election history
+	electionCh.inboxMu.Lock()
+	electionCh.inbox[messageID] = msg
+	electionCh.inboxMu.Unlock()
 
 	// Add the new election channel to the organizerHub
 	organizerHub.channelByID[encodedID] = &electionCh
