@@ -262,16 +262,16 @@ func (c *electionChannel) endElectionHelper(publish message.Publish) error {
 	}
 	log.Printf("Hashing the votes")
 	// since we eliminated (in cast vote) the duplicate votes we are sure that the voter casted one vote for one question
-	for _,question := range c.questions{
-		hashed,err := sortHashVotes(question.validVotes)
-		if err != nil {
-			return &message.Error{
-				Code:        -4,
-				Description: "Error while hashing",
-			}
-		}
-		endElectionData.RegisteredVotes = hashed
-	}
+	//for _,question := range c.questions{
+	//	hashed,err := sortHashVotes(question.validVotes)
+	//	if err != nil {
+	//		return &message.Error{
+	//			Code:        -4,
+	//			Description: "Error while hashing",
+	//		}
+	//	}
+	//	endElectionData.RegisteredVotes = hashed
+	//}
 	log.Printf("Votes are hashed")
 	msg := publish.Params.Message
 	messageID := base64.URLEncoding.EncodeToString(msg.MessageID)
