@@ -31,7 +31,7 @@ public class ElectionVote {
     public ElectionVote(
             String questionId,
             List<Integer> vote,
-            Boolean writeInEnabled,
+            boolean writeInEnabled,
             String writeIn,
             String electionId) {
 
