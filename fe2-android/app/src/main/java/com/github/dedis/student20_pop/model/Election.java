@@ -68,6 +68,7 @@ public class Election extends Event {
     }
 
     public void setElectionQuestions(List<ElectionQuestion> electionQuestions) {
+        if(electionQuestions == null) throw new IllegalArgumentException();
         this.electionQuestions = electionQuestions;
     }
 

@@ -2,7 +2,6 @@ package com.github.dedis.student20_pop.model;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,16 +24,9 @@ public class ElectionTest {
     @Test
     public void settingNullParametersThrowsException() {
         assertThrows(IllegalArgumentException.class, () -> election.setName(null));
-        assertThrows(IllegalArgumentException.class, () -> election.setBallotsOptions(null));
-        assertThrows(IllegalArgumentException.class, () -> election.setQuestions(null));
         assertThrows(IllegalArgumentException.class, () -> election.setId(null));
     }
 
-    @Test
-    public void settingBallotOptionsWithSizeLessThan2ThrowsException() {
-        List<List<String>> brokenBallotOptions = new ArrayList<>();
-        assertThrows(IllegalArgumentException.class, () -> election.setBallotsOptions(brokenBallotOptions));
-    }
 
     @Test
     public void settingAndGettingReturnsCorrespondingName() {
@@ -49,28 +41,15 @@ public class ElectionTest {
     }
 
     @Test
-    public void settingAndGettingReturnsCorrespondingQuestion() {
-        election.setQuestions(questions);
-        assertThat(election.getQuestions(), is(questions));
-    }
-
-    @Test
-    public void settingAndGettingReturnsCorrespondingBallotOptions() {
-        election.setBallotsOptions(ballotsOptions);
-        assertThat(election.getBallotsOptions(), is(ballotsOptions));
-    }
-
-    @Test
-    public void settingAndGettingReturnsCorrespondingWriteIn() {
-        election.setWriteIn(writeIn);
-        assertThat(election.getWriteIn(), is(writeIn));
-    }
-
-    @Test
     public void settingNegativeTimesThrowsException() {
         assertThrows(IllegalArgumentException.class, () -> election.setStart(-1));
         assertThrows(IllegalArgumentException.class, () -> election.setEnd(-1));
         assertThrows(IllegalArgumentException.class, () -> election.setCreation(-1));
+    }
+
+    @Test
+    public void settingNullElectionQuestionsThrowsException(){
+        assertThrows(IllegalArgumentException.class, () -> election.setElectionQuestions(null));
     }
 
     @Test
