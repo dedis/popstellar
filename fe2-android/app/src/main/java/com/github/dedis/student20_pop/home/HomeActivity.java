@@ -7,7 +7,6 @@ import android.util.Log;
 import android.widget.Button;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -22,6 +21,7 @@ import com.github.dedis.student20_pop.home.fragments.HomeFragment;
 import com.github.dedis.student20_pop.home.fragments.LaunchFragment;
 import com.github.dedis.student20_pop.home.fragments.SeedWalletFragment;
 import com.github.dedis.student20_pop.home.fragments.WalletFragment;
+import com.github.dedis.student20_pop.model.Wallet;
 import com.github.dedis.student20_pop.qrcode.CameraPermissionFragment;
 import com.github.dedis.student20_pop.qrcode.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.utility.ActivityUtils;
@@ -185,33 +185,14 @@ public class HomeActivity extends AppCompatActivity {
 
   public void setupConnectButton() {
     Button connectButton = (Button) findViewById(R.id.tab_connect);
-    connectButton.setOnClickListener(v -> {
-      if(walletIsSetUp()){
-        mViewModel.openConnect();
-      }});
+    connectButton.setOnClickListener(v ->
+        mViewModel.openConnect());
   }
 
   public void setupLaunchButton() {
     Button launchButton = (Button) findViewById(R.id.tab_launch);
-    launchButton.setOnClickListener(v ->{
-      if(walletIsSetUp()){
-        mViewModel.openLaunch();
-      }});
-  }
-
-  private boolean walletIsSetUp() {
-    boolean isSetUp = mViewModel.isWalletSetUp();
-    if(!isSetUp){
-      setUpWalletMessage();
-    }
-    return isSetUp;
-  }
-
-  public void setUpWalletMessage(){
-    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    builder.setTitle("You have to setup up your wallet before connecting.");
-    builder.setPositiveButton("Go to wallet", (dialog, which) -> mViewModel.openWallet());
-    builder.show();
+    launchButton.setOnClickListener(v ->
+        mViewModel.openLaunch());
   }
 
   public void setupWalletButton() {

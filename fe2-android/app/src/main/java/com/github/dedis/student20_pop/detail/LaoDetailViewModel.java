@@ -80,6 +80,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     private final MutableLiveData<Event<EventType>> mNewLaoEventCreationEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mOpenNewRollCallEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<String>> mOpenRollCallEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<String>> mOpenRollCallTokenEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<String>> mOpenAttendeesListEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mOpenLaoWalletEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mOpenElectionResultsEvent = new MutableLiveData<>();
@@ -92,6 +93,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
     private final MutableLiveData<Event<Boolean>> mCreatedRollCallEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<String>> mPkRollCallEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<Boolean>> mWalletMessageEvent = new MutableLiveData<>();
 
     private final MutableLiveData<Event<String>> mAttendeeScanConfirmEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<String>> mScanWarningEvent = new MutableLiveData<>();
@@ -508,6 +510,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         return mOpenRollCallEvent;
     }
 
+    public LiveData<Event<String>> getOpenRollCallTokenEvent() {
+        return mOpenRollCallTokenEvent;
+    }
+
     public LiveData<Event<String>> getOpenAttendeesListEvent() {
       return mOpenAttendeesListEvent;
     }
@@ -538,6 +544,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
     public LiveData<Event<String>> getPkRollCallEvent() {
         return mPkRollCallEvent;
+    }
+
+    public LiveData<Event<Boolean>> getWalletMessageEvent() {
+        return mWalletMessageEvent;
     }
 
     public Election getCurrentElection() {
@@ -727,6 +737,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     }
 
     public void enterRollCall(String id) {
+        if(!Wallet.getInstance().isSetUp()){
+            mWalletMessageEvent.setValue(new Event<>(true));
+            return;
+        }
         String firstLaoId = getCurrentLaoValue().getChannel().substring(6); // use the laoId set at creation + need to remove /root/ prefix
         try {
             String pk = Base64.getUrlEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, id).second);
@@ -750,8 +764,16 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
       mOpenLaoWalletEvent.postValue(new Event<>(true));
     }
 
+    public void openRollCallToken(String rollCallId){
+        mOpenRollCallTokenEvent.postValue(new Event<>(rollCallId));
+    }
+
     public void openAttendeesList(String rollCallId){
       mOpenAttendeesListEvent.postValue(new Event<>(rollCallId));
+    }
+
+    public void logoutWallet(){
+        Wallet.getInstance().logout();
     }
 
     @Override
