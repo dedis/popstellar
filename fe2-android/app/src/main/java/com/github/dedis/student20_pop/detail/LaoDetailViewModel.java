@@ -44,6 +44,8 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -54,6 +56,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.crypto.ShortBufferException;
 
 public class LaoDetailViewModel extends AndroidViewModel implements CameraPermissionViewModel,
         QRCodeScanningViewModel {
@@ -124,7 +127,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     String pk = "";
     try {
       pk = Base64.getUrlEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, rollcall.getPersistentId()).second);
-    } catch (NoSuchAlgorithmException | InvalidKeyException | ShortBufferException e) {
+    } catch (GeneralSecurityException e) {
       Log.d(TAG, "failed to retrieve public key from wallet", e);
       return false;
     }
