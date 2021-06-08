@@ -56,7 +56,7 @@ func NewOrganizerHub(public kyber.Point) (Hub, error) {
 	}
 	schemas[GenericMsgSchema] = genericMsgSchema
 
-	// Impot the schema for data
+	// Import the schema for data
 	dataSchemaLoader := gojsonschema.NewReferenceLoader(protocolPath + "/query/method/message/data/data.json")
 	dataSchema, err := gojsonschema.NewSchema(dataSchemaLoader)
 	if err != nil {
