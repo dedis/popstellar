@@ -4,8 +4,8 @@ import android.util.ArraySet;
 
 import com.github.dedis.student20_pop.model.event.EventState;
 import com.github.dedis.student20_pop.model.event.EventType;
-import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.meeting.CreateMeeting;
@@ -18,9 +18,11 @@ import org.junit.Test;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNull;
 
 public class IdGeneratorTest {
 
@@ -31,6 +33,7 @@ public class IdGeneratorTest {
     private final long time = Instant.now().getEpochSecond();
     private final String votingMethod = "Plurality";
     private final String question = "Question";
+    private final String writeIn = "Write In";
     private final String location = "Location";
 
     @Test
@@ -95,5 +98,24 @@ public class IdGeneratorTest {
         // Hash(“Question”||election_id||question)
         String expectedId = Hash.hash(IdGenerator.SUFFIX_ELECTION_QUESTION, electionSetup.getId(), question);
         assertThat(electionSetup.getQuestions().get(0).getId(), is(expectedId));
+    }
+
+    @Test
+    public void generateElectionVoteIdWriteInEnabledTest() {
+        ElectionVote electionVote = new ElectionVote(id, new ArrayList<>(), true, writeIn, id);
+        // WriteIn enabled so id is Hash('Vote'||election_id||question_id||write_in)
+        String expectedId = Hash.hash(IdGenerator.SUFFIX_ELECTION_VOTE, id, electionVote.getQuestionId(), electionVote.getWriteIn());
+        assertThat(electionVote.getId(), is(expectedId));
+        assertNull(electionVote.getVotes());
+    }
+
+    @Test
+    public void generateElectionVoteIdWriteDisabledTest() {
+        ArrayList<Integer> voteIndex = new ArrayList<>(Arrays.asList(1, 2, 3));
+        ElectionVote electionVote = new ElectionVote(id, voteIndex, false, writeIn, id);
+        // WriteIn enabled so id is Hash('Vote'||election_id||question_id||vote_index(es)) with concatenated vote indexes
+        String expectedId = Hash.hash(IdGenerator.SUFFIX_ELECTION_VOTE, id, electionVote.getQuestionId(), electionVote.getVotes().toString());
+        assertThat(electionVote.getId(), is(expectedId));
+        assertNull(electionVote.getWriteIn());
     }
 }

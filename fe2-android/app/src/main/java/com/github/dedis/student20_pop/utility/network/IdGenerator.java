@@ -3,10 +3,13 @@ package com.github.dedis.student20_pop.utility.network;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.utility.security.Hash;
 
+import java.util.List;
+
 /** ID Generator class */
 public class IdGenerator {
 
     static final String SUFFIX_ELECTION_QUESTION = "Question";
+    static final String SUFFIX_ELECTION_VOTE = "Vote";
 
     private IdGenerator() {
         throw new IllegalStateException("Utility class");
@@ -102,5 +105,22 @@ public class IdGenerator {
      */
     public static String generateElectionQuestionId(String electionId, String question) {
         return Hash.hash(SUFFIX_ELECTION_QUESTION, electionId, question);
+    }
+
+    /**
+     * Generate the id for a vote of dataCastVote.
+     * https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataCastVote.json
+     *
+     * @param electionId ID of the Election
+     * @param questionId ID of the Election question
+     * @param voteIndex index(es) of the vote
+     * @param writeIn string representing the write in
+     * @param writeInEnabled boolean representing if write enabled or not
+     * @return the ID of an election question computed as Hash('Vote'||election_id||question_id||(vote_index(es)|write_in))
+     */
+    public static String generateElectionVoteId(String electionId, String questionId, List<Integer> voteIndex, String writeIn, boolean writeInEnabled) {
+        // If write_in is enabled the id is formed with the write_in string
+        // If write_in is not enabled the id is formed with the vote indexes (formatted as [int1, int2, ...])
+        return Hash.hash(SUFFIX_ELECTION_VOTE, electionId, questionId, writeInEnabled ? writeIn : voteIndex.toString());
     }
 }

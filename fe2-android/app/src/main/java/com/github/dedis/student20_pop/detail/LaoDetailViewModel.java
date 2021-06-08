@@ -24,7 +24,7 @@ import com.github.dedis.student20_pop.model.event.EventState;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.model.network.answer.Error;
 import com.github.dedis.student20_pop.model.network.answer.Result;
-import com.github.dedis.student20_pop.model.network.method.message.ElectionVote;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.CastVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
