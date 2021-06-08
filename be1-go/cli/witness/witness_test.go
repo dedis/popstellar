@@ -12,7 +12,7 @@ import (
 	"testing"
 )
 
-func TestServe(t *testing.T) {
+func TestConnectToSocket(t *testing.T) {
 	buffer := bytes.Buffer{}
 	log.SetOutput(&buffer)
 
