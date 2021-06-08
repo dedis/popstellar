@@ -21,6 +21,7 @@ func TestCreateAndServeWS(t *testing.T) {
 
 	srv := CreateAndServeWS(ctx, "witness", "client", hub, 9000, wg)
 	srv.Shutdown(ctx)
+	wg.Wait()
 
 	str := buffer.String()
 
