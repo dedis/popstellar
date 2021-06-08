@@ -67,25 +67,16 @@ public final class QRCodeScanningFragment extends Fragment {
             @Nullable Bundle savedInstanceState) {
         mQrCodeFragBinding = FragmentQrcodeBinding.inflate(inflater, container, false);
         FragmentActivity activity = getActivity();
-        mQRCodeScanningViewModel = (activity instanceof HomeActivity) ? HomeActivity.obtainViewModel(activity) : LaoDetailActivity.obtainViewModel(activity);
 
         if (activity instanceof HomeActivity) {
             mQRCodeScanningViewModel = HomeActivity.obtainViewModel(activity);
+
         } else if (activity instanceof LaoDetailActivity) {
             mQRCodeScanningViewModel = LaoDetailActivity.obtainViewModel(activity);
 
             // Subscribe to "scan warning " event when the same QR code is scanned twice for example
             // It is used in the LaoDetailActivity whatever the scanning action is
-            ((LaoDetailViewModel) mQRCodeScanningViewModel)
-                    .getScanWarningEvent()
-                    .observe(
-                            this,
-                            stringEvent -> {
-                                String event = stringEvent.getContentIfNotHandled();
-                                if (event != null) {
-                                    setupWarningPopup(event);
-                                }
-                            });
+            observeWarningEvent();
 
         } else {
             throw new IllegalArgumentException("cannot obtain view model");
@@ -97,41 +88,18 @@ public final class QRCodeScanningFragment extends Fragment {
             mQrCodeFragBinding.addAttendeeTotalText.setVisibility(View.VISIBLE);
             mQrCodeFragBinding.addAttendeeNumberText.setVisibility(View.VISIBLE);
             mQrCodeFragBinding.addAttendeeConfirm.setVisibility(View.VISIBLE);
-            ((LaoDetailViewModel) mQRCodeScanningViewModel)
-                    .getNbAttendeesEvent()
-                    .observe(
-                            this,
-                            integerEvent -> {
-                                Integer event = integerEvent.getContentIfNotHandled();
-                                if (event != null) {
-                                    mQrCodeFragBinding.addAttendeeNumberText.setText(event.toString());
-                                }
-                            });
 
-            ((LaoDetailViewModel) mQRCodeScanningViewModel)
-                    .getAttendeeScanConfirmEvent()
-                    .observe(
-                            this,
-                            stringEvent -> {
-                                String event = stringEvent.getContentIfNotHandled();
-                                if (event != null) {
-                                    setupSuccessPopup(event);
-                                }
-                            });
+            // Subscribe to " Nb of attendees"  event
+            observeNbAttendeesEvent();
 
+            // Subscribe to " Attendees scan confirm " event
+            observeScanConfirmEvent();
+
+            // set up the listener for the button that closes the roll call
             setupCloseRollCallButton();
 
             // Subscribe to "close roll call" event
-            ((LaoDetailViewModel) mQRCodeScanningViewModel)
-                    .getCloseRollCallEvent()
-                    .observe(
-                            this,
-                            booleanEvent -> {
-                                Boolean action = booleanEvent.getContentIfNotHandled();
-                                if (action != null) {
-                                    closeRollCall();
-                                }
-                            });
+           observeCloseRollCallEvent();
         }
         else if (mQRCodeScanningViewModel.getScanningAction() == ScanningAction.ADD_WITNESS) {
             mQrCodeFragBinding.setScanningAction(ScanningAction.ADD_WITNESS);
@@ -234,5 +202,56 @@ public final class QRCodeScanningFragment extends Fragment {
         alert.setCanceledOnTouchOutside(true);
         mPreview.stop();
         alert.show();
+    }
+
+    void observeWarningEvent() {
+        ((LaoDetailViewModel) mQRCodeScanningViewModel)
+                .getScanWarningEvent()
+                .observe(
+                        this,
+                        stringEvent -> {
+                            String event = stringEvent.getContentIfNotHandled();
+                            if (event != null) {
+                                setupWarningPopup(event);
+                            }
+                        });
+    }
+
+    void observeNbAttendeesEvent() {
+        ((LaoDetailViewModel) mQRCodeScanningViewModel)
+                .getNbAttendeesEvent()
+                .observe(
+                        this,
+                        integerEvent -> {
+                            Integer event = integerEvent.getContentIfNotHandled();
+                            if (event != null) {
+                                mQrCodeFragBinding.addAttendeeNumberText.setText(event.toString());
+                            }
+                        });
+    }
+
+    void observeScanConfirmEvent() {
+        ((LaoDetailViewModel) mQRCodeScanningViewModel)
+                .getAttendeeScanConfirmEvent()
+                .observe(
+                        this,
+                        stringEvent -> {
+                            String event = stringEvent.getContentIfNotHandled();
+                            if (event != null) {
+                                setupSuccessPopup(event);
+                            }
+                        });
+    }
+    void observeCloseRollCallEvent() {
+        ((LaoDetailViewModel) mQRCodeScanningViewModel)
+                .getCloseRollCallEvent()
+                .observe(
+                        this,
+                        booleanEvent -> {
+                            Boolean action = booleanEvent.getContentIfNotHandled();
+                            if (action != null) {
+                                closeRollCall();
+                            }
+                        });
     }
 }

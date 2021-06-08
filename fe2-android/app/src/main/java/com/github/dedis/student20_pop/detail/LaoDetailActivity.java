@@ -226,7 +226,7 @@ public class LaoDetailActivity extends AppCompatActivity {
                                 WitnessMessageFragment witnessMessageFragment =
                                         (WitnessMessageFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_witness_message);
                                 if (witnessMessageFragment == null) {
-                                    witnessMessageFragment = witnessMessageFragment.newInstance();
+                                    witnessMessageFragment = WitnessMessageFragment.newInstance();
                                     ActivityUtils.replaceFragmentInActivity(
                                             getSupportFragmentManager(), witnessMessageFragment, R.id.fragment_container_lao_detail);
                                 }

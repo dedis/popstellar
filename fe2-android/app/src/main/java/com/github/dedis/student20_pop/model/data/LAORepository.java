@@ -1,8 +1,9 @@
 package com.github.dedis.student20_pop.model.data;
 
-import java.util.Base64;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
+
 import com.github.dedis.student20_pop.model.Election;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.PendingUpdate;
@@ -38,28 +39,31 @@ import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.crypto.tink.subtle.Ed25519Verify;
 import com.google.gson.Gson;
 import com.tinder.scarlet.WebSocket;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class LAORepository {
 
   private static final String TAG = LAORepository.class.getSimpleName();
+  private static final String MESSAGE_ID = "Message ID : ";
   private static volatile LAORepository INSTANCE = null;
 
   private final LAODataSource.Remote mRemoteDataSource;
@@ -303,7 +307,7 @@ public class LAORepository {
     // state has no witnesses and not wait for witness messages
     WitnessMessage message = new WitnessMessage(messageId);
     message.setTitle("Update Lao " );
-    message.setDescription(" Lao Name : " + lao.getName() + "\n" + "Message ID : " + messageId);
+    message.setDescription(" Lao Name : " + lao.getName() + "\n" + MESSAGE_ID + messageId);
 
     lao.updateWitnessMessage(message.getMessageId(),message);
     lao.getPendingUpdates().add(new PendingUpdate(updateLao.getLastModified(), messageId));
@@ -382,7 +386,7 @@ public class LAORepository {
 
     WitnessMessage message = new WitnessMessage(election.getId());
     message.setTitle("New Election Setup " );
-    message.setDescription("Name : " + election.getName() + "\n" + "Question : " + election.getQuestion()  + "\n" + "Message ID : " + election.getId());
+    message.setDescription("Name : " + election.getName() + "\n" + "Question : " + election.getQuestion()  + "\n" + MESSAGE_ID + election.getId());
 
     lao.updateWitnessMessage(message.getMessageId(),message);
     return false;
@@ -410,7 +414,7 @@ public class LAORepository {
 
     WitnessMessage message = new WitnessMessage(createRollCall.getId());
     message.setTitle("New Roll Call Creation " );
-    message.setDescription("Name : " + rollCall.getName() + "\n" + "Location : " + rollCall.getLocation()  + "\n" + "Message ID : " + rollCall.getId());
+    message.setDescription("Name : " + rollCall.getName() + "\n" + "Location : " + rollCall.getLocation()  + "\n" + MESSAGE_ID + rollCall.getId());
 
     lao.updateWitnessMessage(message.getMessageId(),message);
 
@@ -487,14 +491,22 @@ public class LAORepository {
       msg.getWitnessSignatures().add(new PublicKeySignaturePair(senderPkBuf, signatureBuf));
 
       Lao lao = laoById.get(channel).getLao();
-      try {
-         WitnessMessage witnessMessage = lao.getWitnessMessage(messageId).get();
+      if (lao == null) {
+        Log.d(TAG, "failed to retrieve the lao with channel " + channel);
+        return false;
+      }
+      Optional<WitnessMessage> optionalWitnessMessage = lao.getWitnessMessage(messageId);
+      WitnessMessage witnessMessage;
+      // We update the corresponding  witness message of the lao with a new witness that signed it.
+      if(optionalWitnessMessage.isPresent()) {
+        witnessMessage = optionalWitnessMessage.get();
         witnessMessage.addWitness(senderPk);
         lao.updateWitnessMessage(messageId,witnessMessage);
         Log.d(TAG, "Signed message  with id: " + messageId);
-      } catch(NoSuchElementException e) {
+      }
+      else {
         Log.d(TAG, "Failed to retrieve the witness message in the lao with ID " + messageId);
-
+        return false;
       }
 
       Set<PendingUpdate> pendingUpdates = lao.getPendingUpdates();
