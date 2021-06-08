@@ -79,8 +79,7 @@ public class Injection {
 
       Ed25519PrivateKeyManager.registerPair(true);
       PublicKeySignWrapper.register();
-
-      // TODO: move to background thread
+      
       AndroidKeysetManager keysetManager =
           new AndroidKeysetManager.Builder()
               .withSharedPref(applicationContext, KEYSET_NAME, SHARED_PREF_FILE_NAME)
