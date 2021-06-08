@@ -92,6 +92,8 @@ func connectToSocket(ctx context.Context, socketType hub.SocketType, address str
 			return nil
 		}
 		urlString = fmt.Sprintf("ws://%s/%s/witness/", address, socketType)
+	default:
+		return xerrors.Errorf("invalid socket type")
 	}
 
 	u, err := url.Parse(urlString)
