@@ -24,7 +24,7 @@ import com.github.dedis.student20_pop.model.event.EventState;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.model.network.answer.Error;
 import com.github.dedis.student20_pop.model.network.answer.Result;
-import com.github.dedis.student20_pop.model.network.method.message.ElectionVote;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.CastVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
@@ -35,7 +35,6 @@ import com.github.dedis.student20_pop.model.network.method.message.data.rollcall
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
 import com.github.dedis.student20_pop.qrcode.CameraPermissionViewModel;
 import com.github.dedis.student20_pop.qrcode.QRCodeScanningViewModel;
-import com.github.dedis.student20_pop.utility.security.Hash;
 import com.github.dedis.student20_pop.utility.security.Keys;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.crypto.tink.KeysetHandle;
@@ -430,8 +429,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         long end = Instant.now().getEpochSecond();
         String channel = lao.getChannel();
         String laoId = channel.substring(6); // removing /root/ prefix
-        String updateId = Hash.hash("R", laoId, mCurrentRollCallId, Long.toString(end));
-        CloseRollCall closeRollCall = new CloseRollCall(updateId, mCurrentRollCallId, end, new ArrayList<>(attendees));
+        CloseRollCall closeRollCall = new CloseRollCall(laoId, mCurrentRollCallId, end, new ArrayList<>(attendees));
         try {
             KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
             String publicKey = Keys.getEncodedKey(publicKeysetHandle);
