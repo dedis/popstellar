@@ -171,7 +171,7 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 	if !ok {
 		return &message.Error{
 			Code:        -4,
-			Description: fmt.Sprintf("Only attendees can cast a vote in an election"),
+			Description: "Only attendees can cast a vote in an election",
 		}
 	}
 
@@ -256,7 +256,7 @@ func getAllQuestionsForElectionChannel(questions []message.Question) map[string]
 
 func getAllAttendees(attendees map[string]struct{}) []string {
 	keys := make([]string, len(attendees))
-	for k, _ := range attendees {
+	for k := range attendees {
 		keys = append(keys, k)
 	}
 	return keys
