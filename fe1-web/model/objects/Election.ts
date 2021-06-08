@@ -11,6 +11,7 @@ export interface ElectionState extends LaoEventState {
   start: number;
   end: number;
   questions: Question[];
+  registered_votes: RegisteredVote[];
 }
 
 export interface Question {
@@ -26,6 +27,13 @@ export interface Vote {
   question: Hash,
   vote?: number[],
   write_in?: string,
+}
+
+export interface RegisteredVote {
+  createdAt: Timestamp;
+  sender: Hash,
+  votes: Vote[],
+  messageId: Hash,
 }
 
 export enum ElectionStatus {
@@ -50,6 +58,8 @@ export class Election implements LaoEvent {
   public readonly end: Timestamp;
 
   public readonly questions: Question[];
+
+  public registered_votes: RegisteredVote[];
 
   constructor(obj: Partial<Election>) {
     if (obj === undefined || obj === null) {
@@ -80,6 +90,11 @@ export class Election implements LaoEvent {
     if (obj.questions === undefined) {
       throw new Error("Undefined 'questions' when creating 'RollCall'");
     }
+    if (obj.registered_votes === undefined) {
+      this.registered_votes = [];
+    } else {
+      this.registered_votes = obj.registered_votes;
+    }
     this.lao = obj.lao;
     this.id = obj.id;
     this.name = obj.name;
@@ -100,6 +115,7 @@ export class Election implements LaoEvent {
       start: new Timestamp(e.start),
       end: new Timestamp(e.end),
       questions: e.questions,
+      registered_votes: e.registered_votes,
     });
   }
 

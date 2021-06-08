@@ -116,7 +116,7 @@ const CreateElection = ({ route }: any) => {
       { /* see archive branches for date picker used for native apps */ }
       { Platform.OS === 'web' && buildDatePickerWeb() }
       { questions.map((value, idx) => (
-        <View>
+        <View key={idx.toString()}>
           <TextInput
             style={styles.textInput}
             placeholder={STRINGS.election_create_question}

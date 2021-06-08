@@ -39,7 +39,6 @@ class NetworkManager {
    */
   public connect(host: string, port: number = 9000, path: string = 'organizer/client/'): NetworkConnection {
     const address: string = NetworkManager.buildAddress(host, port, path);
-    // const address = 'wss://popdemo.dedis.ch/52af0cf9';
     const existingConnection = this.getConnectionByAddress(address);
 
     if (existingConnection !== undefined) {
