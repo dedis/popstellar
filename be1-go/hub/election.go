@@ -89,7 +89,7 @@ func (c *laoChannel) createElection(msg message.Message) error {
 		getAllQuestionsForElectionChannel(data.Questions),
 	}
 
-	// Add the SetupElection message to the new election channel
+	// Saving the election channel creation message on the lao channel
 	messageID := base64.URLEncoding.EncodeToString(msg.MessageID)
 	c.inboxMu.Lock()
 	c.inbox[messageID] = msg
