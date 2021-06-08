@@ -85,10 +85,10 @@ public class ElectionTest {
 
     @Test
     public void settingSameRegisteredVotesAndComparingReturnsTrue() {
-        List<ElectionVote> votes1 = Arrays.asList(new ElectionVote("my question id", Arrays.asList(1), false, "my election id"),
-                new ElectionVote("my question id", Arrays.asList(2), false, "my election id"));
-        List<ElectionVote> votes2 = Arrays.asList(new ElectionVote("my question id", Arrays.asList(3), false, "my election id"),
-                new ElectionVote("my question id", Arrays.asList(4), false, "my election id"));
+        List<ElectionVote> votes1 = Arrays.asList(new ElectionVote("my question id", Arrays.asList(1), false, "", "my election id"),
+                new ElectionVote("my question id", Arrays.asList(2), false, "", "my election id"));
+        List<ElectionVote> votes2 = Arrays.asList(new ElectionVote("my question id", Arrays.asList(3), false, "", "my election id"),
+                new ElectionVote("my question id", Arrays.asList(4), false, "", "my election id"));
         //challenge the ordering, by putting first sender2, then sender1
         election.putSenderVotes("sender2", votes2);
         election.putSenderVotes("sender1", votes1);
