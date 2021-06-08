@@ -62,9 +62,8 @@ public class ContentWalletFragment extends Fragment {
         builder.setTitle(R.string.logout_title);
         builder.setMessage(R.string.logout_message);
         builder.setPositiveButton(R.string.confirm, (dialog, which) ->
-        {
-          mHomeViewModel.logoutWallet();
-        });
+          mHomeViewModel.logoutWallet()
+        );
         builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
         AlertDialog alert = builder.create();
         alert.setCanceledOnTouchOutside(true);

@@ -81,7 +81,8 @@ public class WalletListAdapter extends BaseAdapter {
                 clicked -> viewModel.openAttendeesList(rollCall.getId())
         );
 
-        if(!viewModel.isOrganizer().getValue()){
+        Boolean isOrganizer = viewModel.isOrganizer().getValue();
+        if(isOrganizer!=null && !isOrganizer){
             binding.rollcallTokenButton.setVisibility(View.VISIBLE);
             binding.rollcallTokenButton.setOnClickListener(
                     clicked -> viewModel.openRollCallToken(rollCall.getId())

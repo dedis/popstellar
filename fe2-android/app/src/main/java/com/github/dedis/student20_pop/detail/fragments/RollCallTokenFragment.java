@@ -21,12 +21,8 @@ import com.github.dedis.student20_pop.model.Wallet;
 import net.glxn.qrgen.android.QRCode;
 
 import java.security.GeneralSecurityException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Optional;
-
-import javax.crypto.ShortBufferException;
 
 public class RollCallTokenFragment extends Fragment {
     public static final String TAG = RollCallTokenFragment.class.getSimpleName();
