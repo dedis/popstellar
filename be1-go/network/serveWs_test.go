@@ -36,7 +36,3 @@ func TestCreateAndServeWS(t *testing.T) {
 		t.Errorf("servers not stopping")
 	}
 }
-
-func otherFunc() {
-
-}
