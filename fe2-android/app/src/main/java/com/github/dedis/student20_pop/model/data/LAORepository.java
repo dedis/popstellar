@@ -545,7 +545,7 @@ public class LAORepository {
      * @return false if there was a problem signing the message
      */
 
-    public boolean verifySignature(String messageId, byte[] senderPkBuf, byte[] signatureBuf) {
+    private boolean verifySignature(String messageId, byte[] senderPkBuf, byte[] signatureBuf) {
         try {
             PublicKeyVerify verifier = new Ed25519Verify(senderPkBuf);
             verifier.verify(signatureBuf, Base64.getUrlDecoder().decode(messageId));
@@ -563,7 +563,7 @@ public class LAORepository {
      * @param senderPk  Base 64 URL encoded public key of the signer
      * @return false if there was a problem updating WitnessMessage
      */
-    public boolean updateWitnessMessage(Lao lao, String messageId, String senderPk) {
+    private boolean updateWitnessMessage(Lao lao, String messageId, String senderPk) {
 
         Optional<WitnessMessage> optionalWitnessMessage = lao.getWitnessMessage(messageId);
         WitnessMessage witnessMessage;
@@ -588,7 +588,7 @@ public class LAORepository {
      * @param messageId Base 64 URL encoded Id of the message to sign
      * @param channel   Represents the channel on which to send the stateLao message
      */
-    public void sendStateLao(Lao lao, MessageGeneral msg, String messageId, String channel) {
+    private void sendStateLao(Lao lao, MessageGeneral msg, String messageId, String channel) {
 
         try {
             KeysetHandle handle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
