@@ -3,6 +3,9 @@ import * as bip39 from 'bip39';
 import { derivePath, getPublicKey } from 'ed25519-hd-key';
 import { WalletCryptographyHandler } from './WalletCryptographyHandler';
 import { Hash } from './Hash';
+import { KeyPair } from './KeyPair';
+import { PublicKey } from './PublicKey';
+import { PrivateKey } from './PrivateKey';
 
 /**
  * bip39 library used for seed generation and verification
@@ -160,23 +163,15 @@ export class HDWallet {
     return bufView.buffer;
   }
 
-  // =========================================REMOVE==============================================
-  public async recoverTokens(): Promise<Map<[Hash, Hash], string>> {
-    // garbage effort river orphan negative kind outside quit hat camera approve first
-    const laoId1: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
-    const laoId2: Hash = new Hash('SyJ3d9TdH8Ycb4hPSGQdArTRIdP9Moywi1Ux/Kzav4o=');
-
-    const rollCallId1: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
-    const rollCallId2: Hash = new Hash('SyJ3d9TdH8Ycb4hPSGQdArTRIdP9Moywi1Ux/Kzav4o=');
-
-    const testMap: Map<[Hash, Hash], string[]> = new Map();
-
-    testMap.set([laoId1, rollCallId1], ['7147759d146897111bcf74f60a1948b1d3a22c9199a6b88c236eb7326adc2efc', '']);
-    testMap.set([laoId2, rollCallId2], ['fffffffffffffff', '', 'ffdddddddffffffff', '2c23cfe90936a65839fb64dfb961690c3d8a5a1262f0156cf059b0c45a2eabff']);
-    return this.recoverAllKeys(testMap);
-  }
-  // =========================================REMOVE==============================================
-
+  /**
+   * This is the main function for the wallet to find all the tokens associated with it, by checking
+   * through all known Laos and Roll Calls of that LAO weather or not the token generated bu the
+   * respective LAO and RollCall Id is actually present in the roll call history list (namely the
+   * public key was scanned and added to server during the roll call.
+   *
+   * @param allKnownLaoRollCalls This is the map the wallet should recieve mapping all LAO and Roll
+   * Call ids to a list of public keys which where present during the roll call.
+   */
   public async recoverAllKeys(allKnownLaoRollCalls: Map<[Hash, Hash], string[]>):
   Promise<Map<[Hash, Hash], string>> {
     if (allKnownLaoRollCalls === undefined) {
@@ -198,7 +193,7 @@ export class HDWallet {
   private async recoverKey(laoId: Hash, rollCallId: Hash, attendees: string[],
     cachedKeyPairs: Map<[Hash, Hash], string>) {
     this.generateKeyPair(laoId, rollCallId).then((keyPair) => {
-      const publicKey: string = keyPair.publicKey.toString('hex');
+      const publicKey: string = keyPair.publicKey.toString();
 
       if (attendees.indexOf(publicKey) !== -1) {
         cachedKeyPairs.set([laoId, rollCallId], publicKey);
@@ -206,13 +201,23 @@ export class HDWallet {
     });
   }
 
-  public async generateToken(laoId: Hash, rollCallId:Hash): Promise<string> {
+  /**
+   * Returns the token created by the path and wallet seed according to LAOId and RollCallId
+   * @param laoId the id of the LAO
+   * @param rollCallId the id of the Roll Call
+   */
+  public async generateToken(laoId: Hash, rollCallId:Hash): Promise<KeyPair> {
     return this.generateKeyPair(laoId, rollCallId)
-      .then((keyPair) => keyPair.publicKey.toString('hex'));
+      .then((keyPair) => keyPair);
   }
 
-  private async generateKeyPair(laoId: Hash, rollCallId:Hash):
-  Promise<{ privateKey: Buffer, publicKey: Buffer }> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars,class-methods-use-this
+  public tokenIsInRollCall(laoId: Hash, rollCallId: Hash): boolean {
+    // TODO
+    return true;
+  }
+
+  private async generateKeyPair(laoId: Hash, rollCallId:Hash): Promise<KeyPair> {
     const path: string = HDWallet.PREFIX
       .concat(HDWallet.PATH_SEPARATOR
         .concat(HDWallet.PURPOSE
@@ -226,19 +231,19 @@ export class HDWallet {
     return this.generateKeyFromPath(path);
   }
 
-  private async generateKeyFromPath(path: string):
-  Promise<{ privateKey: Buffer, publicKey: Buffer }> {
+  private async generateKeyFromPath(path: string): Promise<KeyPair> {
     return this.getDecryptedSeed()
       .then((seedArray) => {
         const hexSeed = Buffer.from(seedArray)
           .toString('hex');
-        const { key } = derivePath(path, hexSeed);
-        const publicKey = getPublicKey(key, false);
 
-        return {
-          privateKey: key,
-          publicKey: publicKey,
-        };
+        const { key } = derivePath(path, hexSeed);
+        const pubKey = getPublicKey(key, false);
+
+        return new KeyPair({
+          publicKey: new PublicKey(pubKey.toString('hex')),
+          privateKey: new PrivateKey(key.toString('hex')),
+        });
       });
   }
 
