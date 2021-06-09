@@ -279,13 +279,15 @@ public class LAORepository {
     return enqueue;
   }
 
-  private boolean handleElectionEnd(String channel) {
-    Lao lao = laoById.get(channel).getLao();
-
+  private Election getElectionByChannel(String channel, Lao lao) {
     Optional<Election> electionOption = lao.getElection(channel.substring(channel.substring(6).length() + 7));
     if (!electionOption.isPresent()) throw new IllegalArgumentException(ABSENT_ELECTION_ERROR_MESSAGE);
-    Election election = electionOption.get();
+    return electionOption.get();
+  }
 
+  private boolean handleElectionEnd(String channel) {
+    Lao lao = laoById.get(channel).getLao();
+    Election election = getElectionByChannel(channel, lao);
     election.setEnded(true);
     lao.updateElection(election.getId(), election);
 
@@ -294,18 +296,17 @@ public class LAORepository {
 
   private boolean handleCastVote(String channel, CastVote data, String senderPk, String messageId) {
     Lao lao = laoById.get(channel).getLao();
-
-    Optional<Election> electionOption = lao.getElection(channel.substring(channel.substring(6).length() + 7));
-    if (!electionOption.isPresent()) throw new IllegalArgumentException(ABSENT_ELECTION_ERROR_MESSAGE);
-    Election election = electionOption.get();
+    Election election = getElectionByChannel(channel, lao);
 
     //We ignore the vote iff the election is ended and the cast vote message was created after the end timestamp
     if (election.getEndTimestamp() >= data.getCreation() || !election.isEnded()) {
       /* We retrieve previous cast vote message stored for the given sender, and consider the new vote iff its creation
       is after (hence preventing reordering attacks) */
-      String previousMessageId = election.getMessageMap().entrySet().stream()
-              .filter(entry -> senderPk.equals(entry.getValue())).map(Map.Entry::getKey).findFirst().get();
-      if (((CastVote) messageById.get(previousMessageId).getData()).getCreation() <= data.getCreation()) {
+      Optional<String> previousMessageIdOption = election.getMessageMap().entrySet().stream()
+              .filter(entry -> senderPk.equals(entry.getValue())).map(Map.Entry::getKey).findFirst();
+      //If there is no previous message, or that this message is the youngest of all received messages, then we consider the votes
+      if (!previousMessageIdOption.isPresent() ||
+              ((CastVote) messageById.get(previousMessageIdOption.get()).getData()).getCreation() <= data.getCreation()) {
         election.putVotesBySender(senderPk, data.getVotes());
         election.putSenderByMessageId(senderPk, messageId);
         lao.updateElection(election.getId(), election);
@@ -316,10 +317,7 @@ public class LAORepository {
 
   private boolean handleElectionResult(String channel, ElectionResult data) {
     Lao lao = laoById.get(channel).getLao();
-
-    Optional<Election> electionOption = lao.getElection(channel.substring(channel.substring(6).length() + 7));
-    if (!electionOption.isPresent()) throw new IllegalArgumentException(ABSENT_ELECTION_ERROR_MESSAGE);
-    Election election = electionOption.get();
+    Election election = getElectionByChannel(channel, lao);
 
     List<ElectionResultQuestion> questions = data.getElectionQuestionResults();
     if (questions.isEmpty()) throw new IllegalArgumentException("the questions results shouldn't be empty");
