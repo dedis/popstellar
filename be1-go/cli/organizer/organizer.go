@@ -62,7 +62,7 @@ func Serve(cliCtx *cli.Context) error {
 
 	// cancel the context
 	cancel()
-	
+
 	// wait for all goroutines to finish
 	wg.Wait()
 
