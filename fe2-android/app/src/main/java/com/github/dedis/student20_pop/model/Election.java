@@ -1,6 +1,5 @@
 package com.github.dedis.student20_pop.model;
 
-import android.util.Log;
 
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
@@ -10,7 +9,9 @@ import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.utility.security.Hash;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -30,6 +31,8 @@ public class Election extends Event {
 
     //Map that associates each sender pk to their votes
     private Map<String, List<ElectionVote>> voteMap;
+    //Map that associates each messageId to its sender
+    private Map<String, String> messageMap;
 
     //Results of an election
     private List<QuestionResult> results;
@@ -37,14 +40,15 @@ public class Election extends Event {
     public Election() {
         this.results = new ArrayList<>();
         this.electionQuestions = new ArrayList<>();
-        this.voteMap = new TreeMap<>();
+        this.voteMap = new HashMap<>();
+        this.messageMap = new TreeMap<>();
     }
 
     public void setEnded(boolean isEnded) {
         this.isEnded = isEnded;
     }
 
-    public boolean getEnded() {
+    public boolean isEnded() {
         return isEnded;
     }
 
@@ -89,9 +93,18 @@ public class Election extends Event {
         this.end = end;
     }
 
-    public void putSenderVotes(String senderPk, List<ElectionVote> votes) {
+    public void putVotesBySender(String senderPk, List<ElectionVote> votes) {
         if (senderPk == null) throw new IllegalArgumentException("Sender public key cannot be null.");
-        voteMap.put(senderPk, votes);
+        if (votes == null || votes.isEmpty()) throw new IllegalArgumentException("votes cannot be null or empty");
+        //The list must be sorted by order of question ids
+        List<ElectionVote> votesCopy = new ArrayList<>(votes);
+        Collections.sort(votesCopy, (Comparator<ElectionVote>) (v1, v2) -> v1.getQuestionId().compareTo(v2.getQuestionId()));
+        voteMap.put(senderPk, votesCopy);
+    }
+
+    public void putSenderByMessageId(String senderPk, String messageId) {
+        if (senderPk == null || messageId == null) throw new IllegalArgumentException("Sender public key or message id cannot be null.");
+        messageMap.put(messageId, senderPk);
     }
 
     public void setChannel(String channel) {this.channel = channel;}
@@ -111,17 +124,17 @@ public class Election extends Event {
     }
 
     /**
-     * Computes the hash for the registered votes, when terminating an election (sorted by vote id's alphabetical order)
+     * Computes the hash for the registered votes, when terminating an election (sorted by message id's alphabetical order)
      * @return the hash of all registered votes
      */
     public String computerRegisteredVotes() {
-        List<String> listOfVoteIds = new ArrayList<>();;
-        for (List<ElectionVote> votes: voteMap.values()) {
-            for (ElectionVote vote: votes) {
+        List<String> listOfVoteIds = new ArrayList<>();
+        //Since messageMap is a TreeMap, votes will already be sorted in the alphabetical order of messageIds
+        for (String senderPk: messageMap.values()) {
+            for (ElectionVote vote: voteMap.get(senderPk)) {
                 listOfVoteIds.add(vote.getId());
             }
         }
-        java.util.Collections.sort(listOfVoteIds);
         return Hash.hash(listOfVoteIds.toArray(new String[0]));
     }
 

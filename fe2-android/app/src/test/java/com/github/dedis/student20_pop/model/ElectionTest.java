@@ -1,8 +1,6 @@
 package com.github.dedis.student20_pop.model;
 
 
-import android.util.Log;
-
 import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.QuestionResult;
@@ -12,11 +10,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -41,9 +35,9 @@ public class ElectionTest {
 
     @Test
     public void settingAndGettingReturnsCorrespondingEndBoolean() {
-        assertThat(election.getEnded(), is(false));
+        assertThat(election.isEnded(), is(false));
         election.setEnded(true);
-        assertThat(election.getEnded(), is(true));
+        assertThat(election.isEnded(), is(true));
     }
 
     @Test
@@ -85,23 +79,15 @@ public class ElectionTest {
 
     @Test
     public void settingSameRegisteredVotesAndComparingReturnsTrue() {
-        List<ElectionVote> votes1 = Arrays.asList(new ElectionVote("my question id", Arrays.asList(1), false, "", "my election id"),
-                new ElectionVote("my question id", Arrays.asList(2), false, "", "my election id"));
-        List<ElectionVote> votes2 = Arrays.asList(new ElectionVote("my question id", Arrays.asList(3), false, "", "my election id"),
-                new ElectionVote("my question id", Arrays.asList(4), false, "", "my election id"));
-        //challenge the ordering, by putting first sender2, then sender1
-        election.putSenderVotes("sender2", votes2);
-        election.putSenderVotes("sender1", votes1);
-
-        List<String> listOfVoteIds = new ArrayList<>();
-        for (ElectionVote vote: votes1) {
-            listOfVoteIds.add(vote.getId());
-        }
-        for (ElectionVote vote: votes2) {
-            listOfVoteIds.add(vote.getId());
-        }
-        java.util.Collections.sort(listOfVoteIds);
-        String hash = Hash.hash(listOfVoteIds.get(0), listOfVoteIds.get(1), listOfVoteIds.get(2), listOfVoteIds.get(3));
+        List<ElectionVote> votes1 = Arrays.asList(new ElectionVote("b", Arrays.asList(1), false, "", "my election id"),
+                new ElectionVote("a", Arrays.asList(2), false, "", "my election id"));
+        List<ElectionVote> votes2 = Arrays.asList(new ElectionVote("c", Arrays.asList(3), false, "", "my election id"),
+                new ElectionVote("d", Arrays.asList(4), false, "", "my election id"));
+        election.putVotesBySender("sender2", votes2);
+        election.putSenderByMessageId("sender1", "message1");
+        election.putSenderByMessageId("sender2", "message2");
+        election.putVotesBySender("sender1", votes1);
+        String hash = Hash.hash(votes1.get(1).getId(), votes1.get(0).getId(), votes2.get(0).getId(), votes2.get(1).getId());
         assertThat(election.computerRegisteredVotes(), is(hash));
     }
     

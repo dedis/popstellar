@@ -2,6 +2,8 @@ package com.github.dedis.student20_pop.model.data;
 
 import java.util.Base64;
 import android.util.Log;
+import android.util.Pair;
+
 import androidx.annotation.NonNull;
 import com.github.dedis.student20_pop.model.Election;
 import com.github.dedis.student20_pop.model.Lao;
@@ -18,10 +20,12 @@ import com.github.dedis.student20_pop.model.network.method.Publish;
 import com.github.dedis.student20_pop.model.network.method.Subscribe;
 import com.github.dedis.student20_pop.model.network.method.Unsubscribe;
 import com.github.dedis.student20_pop.model.network.method.message.ElectionResultQuestion;
+import com.github.dedis.student20_pop.model.network.method.message.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.CastVote;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionResult;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
@@ -250,10 +254,12 @@ public class LAORepository {
       enqueue = handleCloseRollCall(channel, (CloseRollCall) data);
     } else if (data instanceof WitnessMessage) {
       enqueue = handleWitnessMessage(channel, senderPk, (WitnessMessage) data);
-    } else if (data instanceof  ElectionResult) {
+    } else if (data instanceof ElectionResult) {
       enqueue = handleElectionResult(channel, (ElectionResult) data);
+    } else if (data instanceof ElectionEnd) {
+      enqueue = handleElectionEnd(channel);
     } else if (data instanceof  CastVote) {
-      enqueue = handleCastVote(channel, (CastVote) data, senderPk);
+      enqueue = handleCastVote(channel, (CastVote) data, senderPk, message.getMessageId());
     } else {
       Log.d(TAG, "cannot handle message with data" + data.getClass());
       enqueue = true;
@@ -273,15 +279,32 @@ public class LAORepository {
     return enqueue;
   }
 
-  private boolean handleCastVote(String channel, CastVote data, String senderPk) {
+  private boolean handleElectionEnd(String channel) {
     Lao lao = laoById.get(channel).getLao();
 
     Optional<Election> electionOption = lao.getElection(channel.substring(channel.substring(6).length() + 7));
     if (!electionOption.isPresent()) throw new IllegalArgumentException("the election should be present when receiving a result");
     Election election = electionOption.get();
 
-    election.putSenderVotes(senderPk, data.getVotes());
+    election.setEnded(true);
     lao.updateElection(election.getId(), election);
+
+    return false;
+  }
+
+  private boolean handleCastVote(String channel, CastVote data, String senderPk, String messageId) {
+    Lao lao = laoById.get(channel).getLao();
+
+    Optional<Election> electionOption = lao.getElection(channel.substring(channel.substring(6).length() + 7));
+    if (!electionOption.isPresent()) throw new IllegalArgumentException("the election should be present when receiving a result");
+    Election election = electionOption.get();
+
+    //We ignore the vote iff the election is ended and the cast vote message was created after the end timestamp
+    if (election.getEndTimestamp() >= data.getCreation() || !election.isEnded()) {
+      election.putVotesBySender(senderPk, data.getVotes());
+      election.putSenderByMessageId(senderPk, messageId);
+      lao.updateElection(election.getId(), election);
+    }
     return false;
   }
 
