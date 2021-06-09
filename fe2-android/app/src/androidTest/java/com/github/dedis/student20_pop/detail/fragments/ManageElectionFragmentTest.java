@@ -2,6 +2,7 @@ package com.github.dedis.student20_pop.detail.fragments;
 
 import android.view.View;
 
+import androidx.fragment.app.testing.FragmentScenario;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -23,6 +24,8 @@ import org.junit.Test;
 
 public class ManageElectionFragmentTest {
 
+
+/*
     private final int YEAR = 2022;
       private final int MONTH_OF_YEAR = 10;
       private final int DAY_OF_MONTH = 10;
@@ -30,6 +33,7 @@ public class ManageElectionFragmentTest {
       private final int HOURS = 12;
       private final int MINUTES = 15;
       private final String TIME = "" + HOURS + ":" + MINUTES;
+*/
 
       @Rule
       public ActivityScenarioRule<LaoDetailActivity> activityScenarioRule =
@@ -54,6 +58,7 @@ public class ManageElectionFragmentTest {
                   @Override
                   public void perform(LaoDetailActivity laoDetailActivity) {
                     decorView = laoDetailActivity.getWindow().getDecorView();
+
                   }
                 });
 

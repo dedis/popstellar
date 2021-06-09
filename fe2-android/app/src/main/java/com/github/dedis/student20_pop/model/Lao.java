@@ -164,4 +164,8 @@ public final class Lao {
     this.rollCalls = rollCalls;
   }
 
+  public void setElections(Map<String, Election> elections) {
+    this.elections = elections;
+  }
+
 }
