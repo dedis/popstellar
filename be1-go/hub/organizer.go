@@ -2,6 +2,7 @@ package hub
 
 import (
 	"bytes"
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -283,14 +284,18 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 
 }
 
-func (o *organizerHub) Start(done chan struct{}) {
+func (o *organizerHub) Start(ctx context.Context, wg *sync.WaitGroup) {
+	wg.Add(1)
+	defer wg.Done()
+
 	log.Printf("started organizer hub...")
 
 	for {
 		select {
 		case incomingMessage := <-o.messageChan:
 			o.handleIncomingMessage(&incomingMessage)
-		case <-done:
+		case <-ctx.Done():
+			log.Println("closing the hub...")
 			return
 		}
 	}
