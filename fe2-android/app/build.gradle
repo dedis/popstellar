@@ -114,6 +114,7 @@ dependencies {
     androidTestImplementation 'net.jodah:concurrentunit:0.4.6'
     androidTestImplementation 'org.glassfish.tyrus:tyrus-server:1.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-contrib:3.0.2'
+    debugImplementation 'androidx.fragment:fragment-testing:1.3.4'
 
     androidTestUtil 'androidx.test:orchestrator:1.3.0'
 }
