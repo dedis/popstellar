@@ -366,7 +366,8 @@ type BallotOptionCount struct{
 
 // QuestionResult represents the result of a question in an election.
 type QuestionResult struct {
-	ID     PublicKey      `json:"id"`
+	//ID     PublicKey      `json:"id"`
+	ID     string      `json:"id"`
 	//Result []BallotOption `json:"result"`
 	Result2 []BallotOptionCount `json:"result"`
 }

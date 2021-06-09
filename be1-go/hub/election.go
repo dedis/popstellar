@@ -130,8 +130,12 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 			err = c.castVoteHelper(publish)
 		case message.ElectionEndAction:
 			err = c.endElectionHelper(publish)
+			err  = c.electionResultHelper(*msg)
+			if err != nil{
+				return nil
+			}
 		case message.ElectionResultAction:
-			err = c.electionResultHelper(publish)
+			err = c.electionResultHelper(*msg)
 		default:
 			return message.NewInvalidActionError(message.DataAction(action))
 		}
@@ -246,7 +250,6 @@ func getAllQuestionsForElectionChannel(questions []message.Question) map[string]
 }
 
 func (c *electionChannel) endElectionHelper(publish message.Publish) error {
-	log.Printf("Handling election end")
 	endElectionData, ok := publish.Params.Message.Data.(*message.ElectionEndData)
 	if !ok {
 		return &message.Error{
@@ -260,7 +263,7 @@ func (c *electionChannel) endElectionHelper(publish message.Publish) error {
 			Description: "Can't send end election message before the end of the election",
 		}
 	}
-	log.Printf("Hashing the votes")
+	// TODO: check if the hashing is done correctly
 	// since we eliminated (in cast vote) the duplicate votes we are sure that the voter casted one vote for one question
 	//for _,question := range c.questions{
 	//	hashed,err := sortHashVotes(question.validVotes)
@@ -272,7 +275,6 @@ func (c *electionChannel) endElectionHelper(publish message.Publish) error {
 	//	}
 	//	endElectionData.RegisteredVotes = hashed
 	//}
-	log.Printf("Votes are hashed")
 	msg := publish.Params.Message
 	messageID := base64.URLEncoding.EncodeToString(msg.MessageID)
 	c.inboxMu.Lock()
@@ -304,22 +306,27 @@ func sortHashVotes(votes2 map[string]validVote)([]byte,error) {
 	return h.Sum(nil), nil
 }
 
-func (c *electionChannel) electionResultHelper(publish message.Publish) error{
-	msg := publish.Params.Message
+func (c *electionChannel) electionResultHelper(msg message.Message) error{
+	//msg := publish.Params.Message
 
-	resultData, ok := msg.Data.(*message.ElectionResultData)
-	if !ok {
-		return &message.Error{
-			Code:        -4,
-			Description: "failed to cast data to ElectionResultData",
-		}
+	//resultData, ok := msg.Data.(*message.ElectionResultData)
+	//if !ok {
+	//	return &message.Error{
+	//		Code:        -4,
+	//		Description: "failed to cast data to ElectionResultData",
+	//	}
+	//}
+	resultData := message.ElectionResultData{
+		GenericData:       nil,
+		Questions:         nil,
+		WitnessSignatures: nil,
 	}
 
-	questions := resultData.Questions
-	for _,q := range questions{
+	//questions := resultData.Questions
+	for id := range c.questions{
 		// q.iD is the public key of the question, we convert it to string
 		// to retrieve the votes for that question in the election channel
-		question,ok := c.questions[q.ID.String()]
+		question,ok := c.questions[id]
 		if !ok{
 			return &message.Error{
 				Code:        -4,
@@ -348,11 +355,20 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 				})
 			}
 			resultData.Questions = append(resultData.Questions,message.QuestionResult{
-				ID :q.ID,
+				ID : id,
 				//Result: questionResults,
 				Result2: questionResults2,
 			})
 		}
 	}
+
+	c.broadcastToAllClients(msg)
+
 	return nil
+}
+
+func (c* electionChannel) publishResults(m message.Message){
+	m.Data = message.ElectionResultData{
+
+	}
 }
