@@ -21,7 +21,6 @@ func Serve(cliCtx *cli.Context) error {
 	// get command line args which specify public key, organizer address, port for organizer,
 	// clients, witnesses, other witness' addresses
 	organizerAddress := cliCtx.String("organizer-address")
-	organizerPort := cliCtx.Int("organizer-port")
 	clientPort := cliCtx.Int("client-port")
 	witnessPort := cliCtx.Int("witness-port")
 	otherWitness := cliCtx.StringSlice("other-witness")
@@ -53,14 +52,14 @@ func Serve(cliCtx *cli.Context) error {
 	wg := &sync.WaitGroup{}
 
 	// increment wait group and connect to organizer's witness server
-	err = connectToSocket(ctx, hub.OrganizerSocketType, organizerAddress, h, organizerPort, wg)
+	err = connectToSocket(ctx, hub.OrganizerSocketType, organizerAddress, h, wg)
 	if err != nil {
 		return xerrors.Errorf("failed to connect to organizer: %v", err)
 	}
 
 	// increment wait group and connect to other witnesses
 	for _, otherWit := range otherWitness {
-		err = connectToSocket(ctx, hub.WitnessSocketType, otherWit, h, organizerPort, wg)
+		err = connectToSocket(ctx, hub.WitnessSocketType, otherWit, h, wg)
 		if err != nil {
 			return xerrors.Errorf("failed to connect to witness: %v", err)
 		}
@@ -85,20 +84,8 @@ func Serve(cliCtx *cli.Context) error {
 	return nil
 }
 
-func connectToSocket(ctx context.Context, socketType hub.SocketType, address string, h hub.Hub, port int, wg *sync.WaitGroup) error {
-	var urlString string
-	switch socketType {
-	case hub.OrganizerSocketType:
-		urlString = fmt.Sprintf("ws://%s:%d/%s/witness/", address, port, socketType)
-	case hub.WitnessSocketType:
-		if address == "" {
-			return nil
-		}
-		urlString = fmt.Sprintf("ws://%s/%s/witness/", address, socketType)
-	default:
-		return xerrors.Errorf("invalid socket type")
-	}
-
+func connectToSocket(ctx context.Context, socketType hub.SocketType, address string, h hub.Hub, wg *sync.WaitGroup) error {
+	urlString := fmt.Sprintf("ws://%s/%s/witness/", address, socketType)
 	u, err := url.Parse(urlString)
 	if err != nil {
 		return xerrors.Errorf("failed to parse connection url %s %v", urlString, err)

@@ -21,10 +21,9 @@ COMMANDS:
 
 OPTIONS:
    --public-key value, --pk value          base64url encoded organizer's public key
-   --organizer-address value, --org value  organizer's IP address for witness to connect to organizer (default value "localhost")
+   --organizer-address value, --org value  organizer's address and port for witness to connect to organizer (default value "localhost:9000")
    --client-port value, --cp value         port on which to open websocket for clients (default value 9000 for organizer, 9002 for witness)
    --witness-port value, --wp value        port on which to open websocket for witnesses (default value 9002)
-   --organizer-port value, --op value      port on which witness connects to organizer (default value 9001)
    --other-witness value, --ow value       address and port on which to connect to another witness, can be used as many times as necessary
    --help, -h                              show help (default: false)
 
