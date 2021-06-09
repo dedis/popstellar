@@ -70,6 +70,8 @@ public class LAORepository {
   private final AndroidKeysetManager mKeysetManager;
   private final Gson mGson;
 
+  private static final String ABSENT_ELECTION_ERROR_MESSAGE = "the election should be present when receiving a result";
+
   // A subject that represents unprocessed messages
   private Subject<GenericMessage> unprocessed;
 
@@ -281,7 +283,7 @@ public class LAORepository {
     Lao lao = laoById.get(channel).getLao();
 
     Optional<Election> electionOption = lao.getElection(channel.substring(channel.substring(6).length() + 7));
-    if (!electionOption.isPresent()) throw new IllegalArgumentException("the election should be present when receiving a result");
+    if (!electionOption.isPresent()) throw new IllegalArgumentException(ABSENT_ELECTION_ERROR_MESSAGE);
     Election election = electionOption.get();
 
     election.setEnded(true);
@@ -294,7 +296,7 @@ public class LAORepository {
     Lao lao = laoById.get(channel).getLao();
 
     Optional<Election> electionOption = lao.getElection(channel.substring(channel.substring(6).length() + 7));
-    if (!electionOption.isPresent()) throw new IllegalArgumentException("the election should be present when receiving a result");
+    if (!electionOption.isPresent()) throw new IllegalArgumentException(ABSENT_ELECTION_ERROR_MESSAGE);
     Election election = electionOption.get();
 
     //We ignore the vote iff the election is ended and the cast vote message was created after the end timestamp
@@ -310,7 +312,7 @@ public class LAORepository {
     Lao lao = laoById.get(channel).getLao();
 
     Optional<Election> electionOption = lao.getElection(channel.substring(channel.substring(6).length() + 7));
-    if (!electionOption.isPresent()) throw new IllegalArgumentException("the election should be present when receiving a result");
+    if (!electionOption.isPresent()) throw new IllegalArgumentException(ABSENT_ELECTION_ERROR_MESSAGE);
     Election election = electionOption.get();
 
     List<ElectionResultQuestion> questions = data.getElectionQuestionResults();
