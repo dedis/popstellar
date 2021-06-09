@@ -26,7 +26,7 @@ func main() {
 		Name:    "organizer-port",
 		Aliases: []string{"op"},
 		Usage:   "port on which to connect to organizer websocket",
-		Value:   9002,
+		Value:   9001,
 	}
 	clientPortFlag := &cli.IntFlag{
 		Name:    "client-port",
