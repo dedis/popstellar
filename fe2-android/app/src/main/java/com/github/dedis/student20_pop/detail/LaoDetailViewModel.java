@@ -442,7 +442,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                             Log.d(TAG, "closed the roll call");
                                             mCurrentRollCallId = "";
                                             attendees.clear();
-                                            openLaoDetail();
+                                            mCloseRollCallEvent.setValue(new Event<>(true));
                                         } else {
                                             Log.d(TAG, "failed to close the roll call");
                                         }

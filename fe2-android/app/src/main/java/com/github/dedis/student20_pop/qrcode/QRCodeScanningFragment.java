@@ -8,12 +8,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentQrcodeBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
@@ -37,6 +39,8 @@ public final class QRCodeScanningFragment extends Fragment {
   private CameraSource camera;
   private CameraPreview mPreview;
   private BarcodeDetector barcodeDetector;
+  private Integer nbAttendees = 0;
+  private FragmentActivity mActivity;
   /** Fragment constructor */
   public QRCodeScanningFragment(CameraSource camera, BarcodeDetector detector) {
     super();
@@ -56,11 +60,11 @@ public final class QRCodeScanningFragment extends Fragment {
           @Nullable ViewGroup container,
           @Nullable Bundle savedInstanceState) {
     mQrCodeFragBinding = FragmentQrcodeBinding.inflate(inflater, container, false);
-    FragmentActivity activity = getActivity();
-    if (activity instanceof HomeActivity) {
-      mQRCodeScanningViewModel = HomeActivity.obtainViewModel(activity);
-    } else if (activity instanceof LaoDetailActivity) {
-      mQRCodeScanningViewModel = LaoDetailActivity.obtainViewModel(activity);
+    mActivity = getActivity();
+    if (mActivity instanceof HomeActivity) {
+      mQRCodeScanningViewModel = HomeActivity.obtainViewModel(mActivity);
+    } else if (mActivity instanceof LaoDetailActivity) {
+      mQRCodeScanningViewModel = LaoDetailActivity.obtainViewModel(mActivity);
       mQrCodeFragBinding.addAttendeeTotalText.setVisibility(View.VISIBLE);
       mQrCodeFragBinding.addAttendeeNumberText.setVisibility(View.VISIBLE);
       mQrCodeFragBinding.addAttendeeConfirm.setVisibility(View.VISIBLE);
@@ -71,7 +75,8 @@ public final class QRCodeScanningFragment extends Fragment {
                       integerEvent -> {
                         Integer event = integerEvent.getContentIfNotHandled();
                         if (event != null) {
-                          mQrCodeFragBinding.addAttendeeNumberText.setText(event.toString());
+                          nbAttendees = event;
+                          mQrCodeFragBinding.addAttendeeNumberText.setText(nbAttendees.toString());
                         }
                       });
       ((LaoDetailViewModel)mQRCodeScanningViewModel)
@@ -92,7 +97,7 @@ public final class QRCodeScanningFragment extends Fragment {
                         if (event != null) {
                           setupWarningPopup(event);
                         } });
-      setupCloseRollCallButton();
+      setupCloseRollCallButtons();
 
       // Subscribe to "close roll call" event
       ((LaoDetailViewModel)mQRCodeScanningViewModel)
@@ -110,7 +115,7 @@ public final class QRCodeScanningFragment extends Fragment {
     }
     mPreview = mQrCodeFragBinding.qrCameraPreview;
     mQrCodeFragBinding.scanDescription.setText(mQRCodeScanningViewModel.getScanDescription());
-    mQrCodeFragBinding.setLifecycleOwner(activity);
+    mQrCodeFragBinding.setLifecycleOwner(mActivity);
     // TODO: consider removing coupling with QRFocusingProcessor
     barcodeDetector.setProcessor(
             new QRFocusingProcessor(
@@ -146,9 +151,35 @@ public final class QRCodeScanningFragment extends Fragment {
       }
     }
   }
-  private void setupCloseRollCallButton() {
+  /*Button homeButton = (Button) findViewById(R.id.tab_home);
+    homeButton.setOnClickListener(v -> mViewModel.openHome());*/
+  private void setupCloseRollCallButtons() {
+    /*mQrCodeFragBinding.addAttendeeConfirm.setOnClickListener(
+            v -> ((LaoDetailViewModel)mQRCodeScanningViewModel).closeRollCall());*/
+
     mQrCodeFragBinding.addAttendeeConfirm.setOnClickListener(
-            v -> ((LaoDetailViewModel)mQRCodeScanningViewModel).closeRollCall());
+            clicked -> setupClickCloseListener()
+    );
+    mActivity.findViewById(R.id.tab_home).setOnClickListener(
+            clicked -> setupClickCloseListener()
+    );
+    mActivity.findViewById(R.id.tab_identity).setOnClickListener(
+            clicked -> setupClickCloseListener()
+    );
+  }
+  private void setupClickCloseListener(){
+    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+    builder.setTitle("Close Roll Call");
+    builder.setMessage("You have scanned "+nbAttendees+" attendees.");
+    builder.setOnDismissListener(dialog -> startCamera());
+    builder.setPositiveButton(R.string.confirm, (dialog, which) ->
+            ((LaoDetailViewModel)mQRCodeScanningViewModel).closeRollCall()
+    );
+    builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
+    AlertDialog alert = builder.create();
+    alert.setCanceledOnTouchOutside(true);
+    mPreview.stop();
+    alert.show();
   }
 
   private void closeRollCall() {
