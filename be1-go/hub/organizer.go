@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"path/filepath"
+	"strings"
 	"student20_pop"
 	"sync"
 
@@ -43,6 +44,10 @@ func NewOrganizerHub(public kyber.Point) (Hub, error) {
 	if err != nil {
 		return nil, xerrors.Errorf("failed to load the path for the json schemas: %v", err)
 	}
+
+	// Replace the '\\' from windows path with '/'
+	protocolPath = strings.ReplaceAll(protocolPath, "\\", "/")
+
 	protocolPath = "file://" + protocolPath
 
 	schemas := make(map[string]*gojsonschema.Schema)

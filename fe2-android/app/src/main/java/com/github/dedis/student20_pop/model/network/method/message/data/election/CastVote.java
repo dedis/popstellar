@@ -7,7 +7,6 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
 import com.google.gson.annotations.SerializedName;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 

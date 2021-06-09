@@ -2,7 +2,6 @@ package com.github.dedis.student20_pop.model.data;
 
 import java.util.Base64;
 import android.util.Log;
-import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import com.github.dedis.student20_pop.model.Election;
@@ -20,7 +19,6 @@ import com.github.dedis.student20_pop.model.network.method.Publish;
 import com.github.dedis.student20_pop.model.network.method.Subscribe;
 import com.github.dedis.student20_pop.model.network.method.Unsubscribe;
 import com.github.dedis.student20_pop.model.network.method.message.ElectionResultQuestion;
-import com.github.dedis.student20_pop.model.network.method.message.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;

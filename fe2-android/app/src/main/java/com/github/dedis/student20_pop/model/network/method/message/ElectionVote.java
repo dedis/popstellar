@@ -1,6 +1,6 @@
 package com.github.dedis.student20_pop.model.network.method.message;
 
-import com.github.dedis.student20_pop.utility.security.Hash;
+import com.github.dedis.student20_pop.utility.network.IdGenerator;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -38,15 +38,9 @@ public class ElectionVote {
 
         this.questionId = questionId;
         this.writeInEnabled = writeInEnabled;
-        if (writeInEnabled) { // If write in is enabled the Id is formed with the write_in string
-            this.writeIn = writeIn;
-            this.vote = null;
-            this.id = Hash.hash("Vote", electionId, questionId, writeIn);
-        } else { // If write in is not enabled the Id is formed with the vote indexes
-            this.writeIn = null;
-            this.vote = vote;
-            this.id = Hash.hash("Vote", electionId, questionId, vote.toString());
-        }
+        this.vote = writeInEnabled ? null : vote;
+        this.writeIn = writeInEnabled ? writeIn : null;
+        this.id = IdGenerator.generateElectionVoteId(electionId, questionId, vote, writeIn, writeInEnabled);
     }
 
 
