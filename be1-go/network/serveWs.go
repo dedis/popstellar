@@ -58,7 +58,7 @@ func serveWs(ctx context.Context, socketType hub.SocketType, h hub.Hub, w http.R
 		go func(c *hub.ClientSocket, h hub.Hub) {
 			c.Wait.Wait()
 			h.RemoveClientSocket(c)
-		} (client, h)
+		}(client, h)
 	case hub.WitnessSocketType:
 		witness := hub.NewWitnessSocket(h, conn, wg)
 

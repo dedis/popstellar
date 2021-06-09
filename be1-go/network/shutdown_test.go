@@ -28,7 +28,7 @@ func TestShutdownServers(t *testing.T) {
 
 	str := buffer.String()
 	condition := strings.Contains(str, "shutdown both servers") && !strings.Contains(str, "failed")
-	if (!condition) {
+	if !condition {
 		t.Errorf("failed to correctly shutdown both servers")
 	}
 }

@@ -29,7 +29,7 @@ func CreateWitnessHub() Hub {
 func TestNewWitnessHub(t *testing.T) {
 	pk := "invalid pk"
 	_, err := base64.URLEncoding.DecodeString(pk)
-	if (err == nil) {
+	if err == nil {
 		t.Errorf("decoded invalid string")
 	}
 	pk = "OgFFZz2TVilTSICEdJbAO3otWGfh17SmPo6i5as7XAg="
@@ -62,7 +62,7 @@ func TestWitnessHub_Start(t *testing.T) {
 
 	condition := strings.Contains(buffer.String(), "started witness...") && strings.Contains(buffer.String(), "closing the hub...")
 
-	if (!condition) {
+	if !condition {
 		t.Errorf("wrong strings logged in witnessHub start")
 	}
 }
