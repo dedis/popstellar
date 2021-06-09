@@ -23,6 +23,12 @@ public final class Lao {
   private Map<String, RollCall> rollCalls;
   private Map<String,Election> elections;
   public Lao(String id) {
+    if(id == null) {
+      throw new IllegalArgumentException(" The id is null");
+    }
+    else if(id.isEmpty()) {
+      throw new IllegalArgumentException(" The id of the Lao is empty");
+    }
     this.channel = id;
     this.id = id;
     this.rollCalls = new HashMap<>();
@@ -33,6 +39,13 @@ public final class Lao {
 
   public Lao(String id, String name) {
     this(id);
+    if(name == null) {
+      throw new IllegalArgumentException(" The name of the Lao is null");
+    }
+    else if(name.isEmpty()) {
+      throw new IllegalArgumentException(" The name of the Lao is empty");
+    }
+    else
     this.name = name;
   }
 

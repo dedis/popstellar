@@ -2,7 +2,6 @@ package com.github.dedis.student20_pop.detail.fragments;
 
 import android.view.View;
 
-import androidx.fragment.app.testing.FragmentScenario;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;

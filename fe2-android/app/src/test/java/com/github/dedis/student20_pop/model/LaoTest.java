@@ -100,14 +100,22 @@ public class LaoTest {
                            }}
         );
         RollCall r1 = new RollCall();
-        assert(LAO_1.getRollCalls().get(rollCallId1) != r1);
+        r1.setId("New r1 id");
         LAO_1.updateRollCall(rollCallId1,r1);
-        LAO_1.updateRollCall(rollCallId3,r1);
-        assert(LAO_1.getRollCalls().containsKey(rollCallId1));
+        assert(!LAO_1.getRollCalls().containsKey(rollCallId1));
+        assert(LAO_1.getRollCalls().containsKey("New r1 id"));
         assert(LAO_1.getRollCalls().containsKey(rollCallId2));
         assert(LAO_1.getRollCalls().containsKey(rollCallId3));
-        assert(LAO_1.getRollCalls().get(rollCallId1) == r1);
-        assert(LAO_1.getRollCalls().get(rollCallId3) == r1);
+        assert(LAO_1.getRollCalls().get("New r1 id") == r1);
+
+        // we create a different roll call that has the same Id as the first one
+        RollCall r2 = new RollCall();
+        r2.setId(r1.getId());
+
+        LAO_1.updateRollCall(r1.getId(),r2);
+        assert(LAO_1.getRollCalls().get(r1.getId()) != r1);
+        assert(LAO_1.getRollCalls().get(r1.getId()) == r2);
+
 
     }
 
@@ -121,14 +129,21 @@ public class LaoTest {
                            }}
         );
         Election e1 = new Election();
-        assert(LAO_1.getElections().get(electionId1) != e1);
+        e1.setId("New e1 id");
         LAO_1.updateElection(electionId1,e1);
-        LAO_1.updateElection(electionId3,e1);
-        assert(LAO_1.getElections().containsKey(electionId1));
+        assert(!LAO_1.getElections().containsKey(electionId1));
+        assert(LAO_1.getElections().containsKey("New e1 id"));
         assert(LAO_1.getElections().containsKey(electionId2));
         assert(LAO_1.getElections().containsKey(electionId3));
-        assert(LAO_1.getElections().get(rollCallId1) == e1);
-        assert(LAO_1.getElections().get(rollCallId3) == e1);
+        assert(LAO_1.getElections().get("New e1 id") == e1);
+
+        // we create a different election that has the same Id as the first one
+        Election e2 = new Election();
+        e2.setId(e1.getId());
+
+        LAO_1.updateElection(e1.getId(),e2);
+        assert(LAO_1.getElections().get(e1.getId()) != e1);
+        assert(LAO_1.getElections().get(e1.getId()) == e2);
 
     }
 
