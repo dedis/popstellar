@@ -83,10 +83,16 @@ public class LaoDetailActivity extends AppCompatActivity {
               .getCloseRollCallEvent()
               .observe(
                       this,
-                      booleanEvent -> {
-                          Boolean action = booleanEvent.getContentIfNotHandled();
-                          if (action != null) {
-                              setupLaoFragment();
+                      integerEvent -> {
+                          Integer nextFragment = integerEvent.getContentIfNotHandled();
+                          if (nextFragment != null) {
+                              if (nextFragment.equals(R.id.fragment_lao_detail)) {
+                                  mViewModel.openLaoDetail();
+                              }else if(nextFragment.equals(R.id.fragment_home)){
+                                  mViewModel.openHome();
+                              }else if(nextFragment.equals(R.id.fragment_identity)){
+                                  mViewModel.openIdentity();
+                              }
                           }
                       });
     mViewModel
@@ -304,13 +310,7 @@ public class LaoDetailActivity extends AppCompatActivity {
           setupCameraPermissionFragmentRollCall();
       }
   }
-    private void closeRollCallNextFragment(String nextFragment){
-        if (nextFragment.equals("LaoFragment")) {
-            setupLaoFragment();
-        }else if(nextFragment.equals("HomeFragment")){
-            setupHomeActivity();
-        }
-    }
+
   private void setupRollCallDetailFragment(String pk) {
       RollCallDetailFragment rollCallDetailFragment =
               (RollCallDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_roll_call_detail);

@@ -84,7 +84,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     private final MutableLiveData<Event<Boolean>> mOpenCastVotesEvent = new MutableLiveData<>();
 
     private final MutableLiveData<Event<Integer>> mNbAttendeesEvent = new MutableLiveData<>();
-    private final MutableLiveData<Event<Boolean>> mCloseRollCallEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<Integer>> mAskCloseRollCallEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<Integer>> mCloseRollCallEvent = new MutableLiveData<>();
 
     private final MutableLiveData<Event<Boolean>> mCreatedRollCallEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<String>> mPkRollCallEvent = new MutableLiveData<>();
@@ -413,7 +414,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
      *
      * <p>Publish a GeneralMessage containing CloseRollCall data.
      */
-    public void closeRollCall() {
+    public void closeRollCall(int nextFragment) {
         Log.d(TAG, "call closeRollCall");
         Lao lao = getCurrentLaoValue();
         if (lao == null) {
@@ -442,7 +443,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                             Log.d(TAG, "closed the roll call");
                                             mCurrentRollCallId = "";
                                             attendees.clear();
-                                            mCloseRollCallEvent.setValue(new Event<>(true));
+                                            mCloseRollCallEvent.setValue(new Event<>(nextFragment));
                                         } else {
                                             Log.d(TAG, "failed to close the roll call");
                                         }
@@ -578,7 +579,11 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         return mNbAttendeesEvent;
     }
 
-    public LiveData<Event<Boolean>> getCloseRollCallEvent() {
+    public LiveData<Event<Integer>> getAskCloseRollCallEvent() {
+        return mAskCloseRollCallEvent;
+    }
+
+    public LiveData<Event<Integer>> getCloseRollCallEvent() {
         return mCloseRollCallEvent;
     }
 
@@ -614,7 +619,11 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
      * Methods that modify the state or post an Event to update the UI.
      */
     public void openHome() {
-        mOpenHomeEvent.setValue(new Event<>(true));
+        if(mCurrentRollCallId.equals("")){
+            mOpenHomeEvent.setValue(new Event<>(true));
+        }else{
+            mAskCloseRollCallEvent.setValue(new Event<>(R.id.fragment_home));
+        }
     }
 
     public void electionCreated() {
@@ -630,7 +639,11 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     }
 
     public void openIdentity() {
-        mOpenIdentityEvent.setValue(new Event<>(true));
+        if(mCurrentRollCallId.equals("")){
+            mOpenIdentityEvent.setValue(new Event<>(true));
+        }else{
+            mAskCloseRollCallEvent.setValue(new Event<>(R.id.fragment_identity));
+        }
     }
 
     public void toggleShowHideProperties() {
