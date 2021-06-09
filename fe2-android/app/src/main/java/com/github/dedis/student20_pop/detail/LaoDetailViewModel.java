@@ -59,13 +59,7 @@ import java.util.stream.Collectors;
 
 import java.util.stream.Stream;
 
-import javax.crypto.ShortBufferException;
 
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 public class LaoDetailViewModel extends AndroidViewModel implements CameraPermissionViewModel,
         QRCodeScanningViewModel {
