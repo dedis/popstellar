@@ -46,8 +46,6 @@ import okhttp3.logging.HttpLoggingInterceptor;
 
 public class Injection {
 
-  private static String SERVER_URL = "ws://10.0.2.2:9000/organizer/client";
-
   private static final String TAG = "INJECTION";
 
   private static final String KEYSET_NAME = "POP_KEYSET";
@@ -142,11 +140,10 @@ public class Injection {
       Log.d(TAG, "creating new Scarlet");
       SCARLET_INSTANCE =
           new Scarlet.Builder()
-              .webSocketFactory(OkHttpClientUtils.newWebSocketFactory(okHttpClient, SERVER_URL))
+              .webSocketFactory(OkHttpClientUtils.newWebSocketFactory(okHttpClient, "ws://mock"))
               .addMessageAdapterFactory(new GsonMessageAdapter.Factory(gson))
               .addStreamAdapterFactory(new RxJava2StreamAdapterFactory())
               .lifecycle(AndroidLifecycle.ofApplicationForeground(application))
-              // .backoffStrategy(new ExponentialBackoffStrategy())
               .build();
 
     }
