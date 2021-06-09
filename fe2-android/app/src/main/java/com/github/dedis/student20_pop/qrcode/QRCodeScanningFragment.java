@@ -39,7 +39,7 @@ public final class QRCodeScanningFragment extends Fragment {
   private CameraPreview mPreview;
   private BarcodeDetector barcodeDetector;
   private Integer nbAttendees = 0;
-  private FragmentActivity mActivity;
+
   /** Fragment constructor */
   public QRCodeScanningFragment(CameraSource camera, BarcodeDetector detector) {
     super();
@@ -59,11 +59,11 @@ public final class QRCodeScanningFragment extends Fragment {
           @Nullable ViewGroup container,
           @Nullable Bundle savedInstanceState) {
     mQrCodeFragBinding = FragmentQrcodeBinding.inflate(inflater, container, false);
-    mActivity = getActivity();
-    if (mActivity instanceof HomeActivity) {
-      mQRCodeScanningViewModel = HomeActivity.obtainViewModel(mActivity);
-    } else if (mActivity instanceof LaoDetailActivity) {
-      mQRCodeScanningViewModel = LaoDetailActivity.obtainViewModel(mActivity);
+    FragmentActivity activity = getActivity();
+    if (activity instanceof HomeActivity) {
+      mQRCodeScanningViewModel = HomeActivity.obtainViewModel(activity);
+    } else if (activity instanceof LaoDetailActivity) {
+      mQRCodeScanningViewModel = LaoDetailActivity.obtainViewModel(activity);
       mQrCodeFragBinding.addAttendeeTotalText.setVisibility(View.VISIBLE);
       mQrCodeFragBinding.addAttendeeNumberText.setVisibility(View.VISIBLE);
       mQrCodeFragBinding.addAttendeeConfirm.setVisibility(View.VISIBLE);
@@ -102,7 +102,7 @@ public final class QRCodeScanningFragment extends Fragment {
     }
     mPreview = mQrCodeFragBinding.qrCameraPreview;
     mQrCodeFragBinding.scanDescription.setText(mQRCodeScanningViewModel.getScanDescription());
-    mQrCodeFragBinding.setLifecycleOwner(mActivity);
+    mQrCodeFragBinding.setLifecycleOwner(activity);
     // TODO: consider removing coupling with QRFocusingProcessor
     barcodeDetector.setProcessor(
             new QRFocusingProcessor(
@@ -169,10 +169,6 @@ public final class QRCodeScanningFragment extends Fragment {
     alert.setCanceledOnTouchOutside(true);
     mPreview.stop();
     alert.show();
-  }
-
-  private void closeRollCall() {
-    ((LaoDetailViewModel)mQRCodeScanningViewModel).openLaoDetail();
   }
 
   private void setupSuccessPopup(String msg){
