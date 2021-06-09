@@ -6,14 +6,15 @@ import {
 import {
   SectionList, StyleSheet, Text, TextStyle,
 } from 'react-native';
-import { Typography } from 'styles';
+import { Spacing, Typography } from 'styles';
 import { castVote, terminateElection } from 'network';
 import CheckboxList from 'components/CheckboxList';
 import WideButtonView from 'components/WideButtonView';
 import TimeDisplay from 'components/TimeDisplay';
 import STRINGS from 'res/strings';
 import { Badge } from 'react-native-elements';
-import * as Spacing from '../../../styles/spacing';
+import { dispatch, getStore, updateEvent } from 'store';
+import { getEventFromId } from '../../../ingestion/handlers/Utils';
 
 /**
  * Component used to display a Election event in the LAO event list
@@ -35,14 +36,19 @@ const styles = StyleSheet.create({
 });
 
 const EventElection = (props: IPropTypes) => {
-  const { event } = props;
+  const { election } = props;
   const { isOrganizer } = props;
-  const questions = event.questions.map((q) => ({ title: q.question, data: q.ballot_options }));
+  const questions = election.questions.map((q) => ({ title: q.question, data: q.ballot_options }));
   const [selectedBallots, setSelectedBallots] = useState(new Array(questions.length).fill([]));
   const [hasVoted, setHasVoted] = useState(0);
-  const [status, setStatus] = useState(event.getStatus());
-  const untilStart = (event.start.valueOf() - Timestamp.EpochNow().valueOf()) * 1000;
-  const untilEnd = (event.end.valueOf() - Timestamp.EpochNow().valueOf()) * 1000;
+  const untilStart = (election.start.valueOf() - Timestamp.EpochNow().valueOf()) * 1000;
+  const untilEnd = (election.end.valueOf() - Timestamp.EpochNow().valueOf()) * 1000;
+  const storeState = getStore().getState();
+  const electionFromStore = getEventFromId(storeState, election.id) as Election;
+  if (!electionFromStore) {
+    console.debug('Error in Election display: Election doesnt exist in store');
+    return undefined;
+  }
 
   const updateSelectedBallots = (values: number[], idx: number) => {
     setSelectedBallots((prev) => prev.map((item, id) => ((idx === id) ? values : item)));
@@ -55,30 +61,48 @@ const EventElection = (props: IPropTypes) => {
     return concatenated;
   };
 
+  // Prepares the votes with the hash and the vote indexes to match the protocol
+  // id: SHA256('Vote'||election_id||question_id||(vote_index(es)|write_in))
   const refactorVotes = (selected: number[][]) => {
-    // id: SHA256('Vote'||election_id||question_id||(vote_index(es)|write_in))
-    // concatenate vote indexes - must use delimiter"
     const votes: Vote[] = selected.map((item, idx) => ({
       id: Hash.fromStringArray(
-        EventTags.VOTE, event.id.toString(), event.questions[idx].id, concatenateIndexes(item),
+        EventTags.VOTE,
+        election.id.toString(),
+        election.questions[idx].id,
+        concatenateIndexes(item),
       ),
-      question: new Hash(event.questions[idx].id),
+      question: new Hash(election.questions[idx].id),
       vote: item,
     }));
     return votes;
   };
 
   const onCastVote = () => {
-    castVote(event.id, refactorVotes(selectedBallots))
+    castVote(election.id, refactorVotes(selectedBallots))
       .then(() => setHasVoted((prev) => prev + 1))
       .catch((err) => {
         console.error('Could not cast Vote, error:', err);
       });
   };
 
+  const calculateVoteHash = () => {
+    const votes = electionFromStore.registered_votes.map((registeredVote) => (
+      {
+        messageId: registeredVote.messageId,
+        voteIDs: registeredVote.votes.map((vote) => vote.id),
+      }
+    ));
+    // Sort by message ID
+    votes.sort((a, b) => (a.messageId.valueOf() < b.messageId.valueOf() ? -1 : 1));
+    const arrayToHash: Hash[] = [];
+    votes.forEach((registeredVote) => { arrayToHash.push(...registeredVote.voteIDs); });
+    const stringArray: string[] = arrayToHash.map((hash) => hash.valueOf());
+    return Hash.fromStringArray(...stringArray);
+  };
+
   const onTerminateElection = () => {
     console.log('Terminating Election');
-    terminateElection(event.id, Hash.fromString('test'))
+    terminateElection(election.id, calculateVoteHash())
       .then(() => console.log('Election Terminated'))
       .catch((err) => {
         console.error('Could not terminate election, error:', err);
@@ -89,7 +113,9 @@ const EventElection = (props: IPropTypes) => {
   useEffect(() => {
     if (untilStart >= 0) {
       const startTimer = setTimeout(() => {
-        setStatus(ElectionStatus.RUNNING);
+        election.electionStatus = ElectionStatus.RUNNING;
+        dispatch(updateEvent(election.lao, election.toState()));
+        // setStatus(ElectionStatus.RUNNING);
       }, untilStart);
       return () => clearTimeout(startTimer);
     }
@@ -100,69 +126,91 @@ const EventElection = (props: IPropTypes) => {
   useEffect(() => {
     if (untilEnd >= 0) {
       const endTimer = setTimeout(() => {
-        setStatus(ElectionStatus.FINISHED);
+        election.electionStatus = ElectionStatus.FINISHED;
+        dispatch(updateEvent(election.lao, election.toState()));
+        // setStatus(ElectionStatus.FINISHED);
       }, untilEnd);
       return () => clearTimeout(endTimer);
     }
     return () => {};
   }, []);
 
-  let electionScreen;
-  if (status === ElectionStatus.FINISHED) {
-    electionScreen = (
-      <>
-        <Text style={styles.text}>Election finished</Text>
-        {isOrganizer && (
-          <WideButtonView
-            title="Terminate Election / Tally Votes"
-            onPress={onTerminateElection}
+  // Here we use the election object form the redux store in order to see the electionStatus
+  // update when an  incoming electionEnd or electionResult message comes (in handler/Election.ts)
+  const getElectionDisplay = (status: ElectionStatus) => {
+    switch (status) {
+      case ElectionStatus.NOTSTARTED:
+        return (
+          <SectionList
+            sections={questions}
+            keyExtractor={(item, index) => item + index}
+            renderSectionHeader={({ section: { title } }) => (
+              <Text style={styles.textQuestions}>{title}</Text>
+            )}
+            renderItem={({ item }) => (
+              <Text style={styles.textOptions}>{`\u2022 ${item}`}</Text>
+            )}
           />
-        )}
-      </>
-    );
-  } else if (status === ElectionStatus.RUNNING) {
-    electionScreen = (
-      <>
-        {(questions.map((q, idx) => (
-          <CheckboxList
-            key={q.title + idx.toString()}
-            title={q.title}
-            values={q.data}
-            onChange={(values: number[]) => updateSelectedBallots(values, idx)}
-          />
-        )))}
-        <WideButtonView
-          title={STRINGS.cast_vote}
-          onPress={onCastVote}
-        />
-        <Badge value={hasVoted} status="success" />
-      </>
-    );
-  } else {
-    electionScreen = (
-      <SectionList
-        sections={questions}
-        keyExtractor={(item, index) => item + index}
-        renderSectionHeader={({ section: { title } }) => (
-          <Text style={styles.textQuestions}>{title}</Text>
-        )}
-        renderItem={({ item }) => (
-          <Text style={styles.textOptions}>{`\u2022 ${item}`}</Text>
-        )}
-      />
-    );
-  }
+        );
+      case ElectionStatus.RUNNING:
+        return (
+          <>
+            {(questions.map((q, idx) => (
+              <CheckboxList
+                key={q.title + idx.toString()}
+                title={q.title}
+                values={q.data}
+                onChange={(values: number[]) => updateSelectedBallots(values, idx)}
+              />
+            )))}
+            <WideButtonView
+              title={STRINGS.cast_vote}
+              onPress={onCastVote}
+            />
+            <Badge value={hasVoted} status="success" />
+          </>
+        );
+      case ElectionStatus.FINISHED:
+        return (
+          <>
+            <Text style={styles.text}>Election finished</Text>
+            {isOrganizer && (
+              <WideButtonView
+                title="Terminate Election / Tally Votes"
+                onPress={onTerminateElection}
+              />
+            )}
+          </>
+        );
+      case ElectionStatus.TERMINATED:
+        return (
+          <>
+            <Text style={styles.text}>Election Terminated</Text>
+            <Text style={styles.text}>Waiting for result</Text>
+          </>
+        );
+      case ElectionStatus.RESULT:
+        return (
+          <>
+            <Text style={styles.text}>Election Result</Text>
+          </>
+        );
+      default:
+        console.warn('Election Status was undefined in Election display', electionFromStore);
+        return undefined;
+    }
+  };
 
   return (
     <>
-      <TimeDisplay start={event.start.valueOf()} end={event.end.valueOf()} />
-      {electionScreen}
+      <TimeDisplay start={election.start.valueOf()} end={election.end.valueOf()} />
+      {getElectionDisplay(electionFromStore.electionStatus)}
     </>
   );
 };
 
 const propTypes = {
-  event: PropTypes.instanceOf(Election).isRequired,
+  election: PropTypes.instanceOf(Election).isRequired,
   isOrganizer: PropTypes.bool.isRequired,
 };
 EventElection.propTypes = propTypes;

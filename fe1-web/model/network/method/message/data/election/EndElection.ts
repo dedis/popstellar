@@ -50,7 +50,7 @@ export class EndElection implements MessageData {
     const { errors } = validateDataObject(ObjectType.ELECTION, ActionType.END, obj);
 
     if (errors !== null) {
-      throw new ProtocolError(`Invalid cast vote\n\n${errors}`);
+      throw new ProtocolError(`Invalid election end\n\n${errors}`);
     }
 
     return new EndElection({

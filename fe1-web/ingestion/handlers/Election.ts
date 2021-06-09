@@ -1,10 +1,17 @@
 import { Message } from 'model/network/method/message';
 import {
-  ActionType, ObjectType, SetupElection, CastVote,
+  ActionType,
+  CastVote,
+  ElectionResult,
+  EndElection,
+  ObjectType,
+  SetupElection,
 } from 'model/network/method/message/data';
-import { channelFromIds, Election, RegisteredVote } from 'model/objects';
 import {
-  addEvent, updateEvent, dispatch, getStore, makeCurrentLao, KeyPairStore,
+  channelFromIds, Election, ElectionStatus, RegisteredVote,
+} from 'model/objects';
+import {
+  addEvent, dispatch, getStore, KeyPairStore, makeCurrentLao, updateEvent,
 } from 'store';
 import { subscribeToChannel } from 'network/CommunicationApi';
 import { getEventFromId } from './Utils';
@@ -82,7 +89,7 @@ function handleCastVoteMessage(msg: Message): boolean {
   const election = getEventFromId(storeState, castVoteMsg.election) as Election;
   if (!election) {
     console.warn(makeErr('No active election to register vote '));
-    return true;
+    return false;
   }
 
   if (election.registered_votes.some(
@@ -100,6 +107,55 @@ function handleCastVoteMessage(msg: Message): boolean {
   return true;
 }
 
+function handleElectionEndMessage(msg: Message) {
+  if (msg.messageData.object !== ObjectType.ELECTION
+    || msg.messageData.action !== ActionType.END) {
+    console.warn('handleElectionEndMessage was called to process an unsupported message', msg);
+    return false;
+  }
+  const makeErr = (err: string) => `election/end was not processed: ${err}`;
+  const storeState = getStore().getState();
+  const lao = getCurrentLao(storeState);
+  if (!lao) {
+    console.warn(makeErr('no LAO is currently active'));
+    return false;
+  }
+  const ElectionEndMsg = msg.messageData as EndElection;
+  const election = getEventFromId(storeState, ElectionEndMsg.election) as Election;
+  if (!election) {
+    console.warn(makeErr('No active election to end'));
+    return false;
+  }
+  election.electionStatus = ElectionStatus.TERMINATED;
+  dispatch(updateEvent(lao.id, election.toState()));
+  return true;
+}
+
+function handleElectionResultMessage(msg: Message) {
+  if (msg.messageData.object !== ObjectType.ELECTION
+    || msg.messageData.action !== ActionType.RESULT) {
+    console.warn('handleElectionResultMessage was called to process an unsupported message', msg);
+    return false;
+  }
+  const makeErr = (err: string) => `election/Result was not processed: ${err}`;
+  const storeState = getStore().getState();
+  const lao = getCurrentLao(storeState);
+  if (!lao) {
+    console.warn(makeErr('no LAO is currently active'));
+    return false;
+  }
+  const ElectionResultMsg = msg.messageData as ElectionResult;
+  // const election = getEventFromId(storeState, ElectionResultMsg.election) as Election;
+  // if (!election) {
+  //   console.warn(makeErr('No active election to end'));
+  //   return false;
+  // }
+  // election.electionStatus = ElectionStatus.RESULT;
+  // dispatch(updateEvent(lao.id, election.toState()));
+  console.log('received election Result message: ', ElectionResultMsg);
+  return true;
+}
+
 export function handleElectionMessage(msg: Message) {
   if (msg.messageData.object !== ObjectType.ELECTION) {
     console.warn('handleElectionMessage was called to process an unsupported message', msg);
@@ -111,6 +167,10 @@ export function handleElectionMessage(msg: Message) {
       return handleElectionSetupMessage(msg);
     case ActionType.CAST_VOTE:
       return handleCastVoteMessage(msg);
+    case ActionType.END:
+      return handleElectionEndMessage(msg);
+    case ActionType.RESULT:
+      return handleElectionResultMessage(msg);
 
     default:
       console.warn('A Election message was received but'

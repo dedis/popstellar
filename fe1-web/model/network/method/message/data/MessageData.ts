@@ -24,6 +24,7 @@ export enum ActionType {
   WITNESS = 'witness',
   OPEN = 'open',
   REOPEN = 'reopen',
+  RESULT = 'result',
   CLOSE = 'close',
 }
 

@@ -65,7 +65,7 @@ const Event = (props: IPropTypes) => {
     if (event instanceof Election) {
       return (
         <EventElection
-          event={event}
+          election={event}
           isOrganizer
         />
       );

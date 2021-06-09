@@ -1,5 +1,5 @@
 import {
-  Hash, Timestamp
+  Hash, Timestamp,
 } from 'model/objects';
 import { LaoEvent, LaoEventState, LaoEventType } from './LaoEvent';
 
@@ -39,7 +39,9 @@ export interface RegisteredVote {
 export enum ElectionStatus {
   NOTSTARTED = 'not started',
   RUNNING = 'running',
-  FINISHED = 'finished',
+  FINISHED = 'finished', // When the time is over
+  TERMINATED = 'terminated', // When manually terminated by organizer
+  RESULT = 'result', // When result is available
 }
 
 export class Election implements LaoEvent {
@@ -59,36 +61,38 @@ export class Election implements LaoEvent {
 
   public readonly questions: Question[];
 
+  public electionStatus: ElectionStatus;
+
   public registered_votes: RegisteredVote[];
 
   constructor(obj: Partial<Election>) {
     if (obj === undefined || obj === null) {
-      throw new Error('Error encountered while creating a RollCall object: '
+      throw new Error('Error encountered while creating a Election object: '
         + 'undefined/null parameters');
     }
     if (obj.lao === undefined) {
-      throw new Error("Undefined 'lao' when creating 'RollCall'");
+      throw new Error("Undefined 'lao' when creating 'Election'");
     }
     if (obj.id === undefined) {
-      throw new Error("Undefined 'id' when creating 'RollCall'");
+      throw new Error("Undefined 'id' when creating 'Election'");
     }
     if (obj.name === undefined) {
-      throw new Error("Undefined 'name' when creating 'RollCall'");
+      throw new Error("Undefined 'name' when creating 'Election'");
     }
     if (obj.version === undefined) {
-      throw new Error("Undefined 'version' when creating 'RollCall'");
+      throw new Error("Undefined 'version' when creating 'Election'");
     }
     if (obj.created_at === undefined) {
-      throw new Error("Undefined 'creation' when creating 'RollCall'");
+      throw new Error("Undefined 'creation' when creating 'Election'");
     }
     if (obj.start === undefined) {
-      throw new Error("Undefined 'start' when creating 'RollCall'");
+      throw new Error("Undefined 'start' when creating 'Election'");
     }
     if (obj.end === undefined) {
-      throw new Error("Undefined 'end' when creating 'RollCall'");
+      throw new Error("Undefined 'end' when creating 'Election'");
     }
     if (obj.questions === undefined) {
-      throw new Error("Undefined 'questions' when creating 'RollCall'");
+      throw new Error("Undefined 'questions' when creating 'Election'");
     }
     if (obj.registered_votes === undefined) {
       this.registered_votes = [];
@@ -103,6 +107,8 @@ export class Election implements LaoEvent {
     this.start = obj.start;
     this.end = obj.end;
     this.questions = obj.questions;
+    // Sets the election status automatically
+    this.electionStatus = Election.getElectionStatus(obj.start, obj.end);
   }
 
   public static fromState(e: ElectionState): Election {
@@ -131,7 +137,17 @@ export class Election implements LaoEvent {
     const now = Timestamp.EpochNow();
     if (now.before(this.start)) {
       return ElectionStatus.NOTSTARTED;
-    } if (now.after(this.start) && now.before(this.end)) {
+    } if (now.before(this.end)) {
+      return ElectionStatus.RUNNING;
+    }
+    return ElectionStatus.FINISHED;
+  }
+
+  private static getElectionStatus(start: Timestamp, end: Timestamp): ElectionStatus {
+    const now = Timestamp.EpochNow();
+    if (now.before(start)) {
+      return ElectionStatus.NOTSTARTED;
+    } if (now.before(end)) {
       return ElectionStatus.RUNNING;
     }
     return ElectionStatus.FINISHED;
