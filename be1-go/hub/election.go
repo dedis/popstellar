@@ -89,7 +89,10 @@ func (c *laoChannel) createElection(msg message.Message) error {
 		getAllQuestionsForElectionChannel(data.Questions),
 	}
 
-	// Add the SetupElection message to the new election channel
+	// Saving the election channel creation message on the lao channel
+  c.inbox.storeMessage(msg)
+  
+	// Saving on election channel too so it self-contains the entire election history
 	electionCh.inbox.storeMessage(msg)
 
 	// Add the new election channel to the organizerHub
