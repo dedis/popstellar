@@ -90,7 +90,7 @@ func (c *laoChannel) createElection(msg message.Message) error {
 		data.EndTime,
 		false,
 		getAllQuestionsForElectionChannel(data.Questions),
-		getAllAttendees(c.attendees),
+		c.attendees,
 	}
 
 	// Saving the election channel creation message on the lao channel
@@ -164,8 +164,7 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 			Description: fmt.Sprintf("Vote cast too late, vote casted at %v and election ended at %v", voteData.CreatedAt, c.end),
 		}
 	}
-
-	senderPK := msg.Sender.String()
+	senderPK := base64.URLEncoding.EncodeToString(msg.Sender)
 	_,ok = c.attendees[senderPK]
 	if !ok {
 		return &message.Error{
@@ -253,10 +252,3 @@ func getAllQuestionsForElectionChannel(questions []message.Question) map[string]
 	return qs
 }
 
-func getAllAttendees(attendees map[string]struct{}) map[string]struct{} {
-	keys := make(map[string]struct{}, len(attendees))
-	for k := range attendees {
-		keys[k] = struct{}{}
-	}
-	return keys
-}
