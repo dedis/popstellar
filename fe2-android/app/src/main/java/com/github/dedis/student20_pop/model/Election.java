@@ -93,6 +93,10 @@ public class Election extends Event {
         this.end = end;
     }
 
+    public Map<String, String> getMessageMap() {
+        return messageMap;
+    }
+
     public void putVotesBySender(String senderPk, List<ElectionVote> votes) {
         if (senderPk == null) throw new IllegalArgumentException("Sender public key cannot be null.");
         if (votes == null || votes.isEmpty()) throw new IllegalArgumentException("votes cannot be null or empty");

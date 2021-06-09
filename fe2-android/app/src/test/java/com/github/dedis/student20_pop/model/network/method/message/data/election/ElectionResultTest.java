@@ -28,7 +28,8 @@ public class ElectionResultTest {
 
     @Test
     public void questionsCantBeEmpty() {
-        assertThrows(IllegalArgumentException.class, () -> new ElectionResult(new ArrayList<>()));
+        List<ElectionResultQuestion> emptyList = new ArrayList<>();
+        assertThrows(IllegalArgumentException.class, () -> new ElectionResult(emptyList));
     }
 
     @Test

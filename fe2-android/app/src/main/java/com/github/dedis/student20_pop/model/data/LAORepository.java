@@ -301,9 +301,15 @@ public class LAORepository {
 
     //We ignore the vote iff the election is ended and the cast vote message was created after the end timestamp
     if (election.getEndTimestamp() >= data.getCreation() || !election.isEnded()) {
-      election.putVotesBySender(senderPk, data.getVotes());
-      election.putSenderByMessageId(senderPk, messageId);
-      lao.updateElection(election.getId(), election);
+      /* We retrieve previous cast vote message stored for the given sender, and consider the new vote iff its creation
+      is after (hence preventing reordering attacks) */
+      String previousMessageId = election.getMessageMap().entrySet().stream()
+              .filter(entry -> senderPk.equals(entry.getValue())).map(Map.Entry::getKey).findFirst().get();
+      if (((CastVote) messageById.get(previousMessageId).getData()).getCreation() <= data.getCreation()) {
+        election.putVotesBySender(senderPk, data.getVotes());
+        election.putSenderByMessageId(senderPk, messageId);
+        lao.updateElection(election.getId(), election);
+      }
     }
     return false;
   }
