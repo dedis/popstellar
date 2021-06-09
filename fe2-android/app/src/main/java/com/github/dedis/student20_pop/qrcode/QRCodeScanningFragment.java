@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -162,9 +161,8 @@ public final class QRCodeScanningFragment extends Fragment {
     builder.setTitle("Close Roll Call");
     builder.setMessage("You have scanned "+nbAttendees+" attendees.");
     builder.setOnDismissListener(dialog -> startCamera());
-    builder.setPositiveButton(R.string.confirm, (dialog, which) -> {
-              ((LaoDetailViewModel)mQRCodeScanningViewModel).closeRollCall(nextFragment);
-    }
+    builder.setPositiveButton(R.string.confirm, (dialog, which) ->
+              ((LaoDetailViewModel)mQRCodeScanningViewModel).closeRollCall(nextFragment)
     );
     builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
     AlertDialog alert = builder.create();
