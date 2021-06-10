@@ -1,7 +1,6 @@
 package com.github.dedis.student20_pop.model;
 
 import org.junit.Test;
-import java.lang.Object;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -223,32 +222,32 @@ public class LaoTest {
 
     @Test
     public void getAndSetChannelTest() {
-       LAO_1.setChannel("new channel");
-       assertThat(LAO_1.getChannel(),is("new channel"));
+        LAO_1.setChannel("new channel");
+        assertThat(LAO_1.getChannel(), is("new channel"));
     }
 
     @Test
     public void setAndGetModificationIdTest() {
         LAO_1.setModificationId("Modification Id");
-        assertThat(LAO_1.getModificationId(),is("Modification Id"));
+        assertThat(LAO_1.getModificationId(), is("Modification Id"));
     }
 
     @Test
     public void setAndGetCreation() {
         LAO_1.setCreation(new Long(0xFF));
-        assertThat(LAO_1.getCreation(),is(new Long(0xFF)));
+        assertThat(LAO_1.getCreation(), is(new Long(0xFF)));
     }
 
     @Test
     public void setAndGetLastModified() {
         LAO_1.setLastModified(new Long(0xFF));
-        assertThat(LAO_1.getLastModified(),is(new Long(0xFF)));
+        assertThat(LAO_1.getLastModified(), is(new Long(0xFF)));
     }
 
     @Test
     public void setAndGetId() {
         LAO_1.setId("New Id");
-        assertThat(LAO_1.getId(),is("New Id"));
+        assertThat(LAO_1.getId(), is("New Id"));
     }
 
 }
