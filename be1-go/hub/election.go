@@ -131,13 +131,13 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 			err = c.castVoteHelper(publish)
 		case message.ElectionEndAction:
 			err = c.endElectionHelper(publish)
-			err = c.electionResultHelper(*msg)
+			err = c.electionResultHelper(publish)
 			if err != nil{
 				log.Printf("End and Result broadcasted")
 				return nil
 			}
 		case message.ElectionResultAction:
-			err = c.electionResultHelper(*msg)
+			err = c.electionResultHelper(publish)
 		default:
 			return message.NewInvalidActionError(message.DataAction(action))
 		}
@@ -309,7 +309,7 @@ func sortHashVotes(votes2 map[string]validVote)([]byte,error) {
 	return h.Sum(nil), nil
 }
 
-func (c *electionChannel) electionResultHelper(msg message.Message) error{
+func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 	//msg := publish.Params.Message
 
 	//resultData, ok := msg.Data.(*message.ElectionResultData)
@@ -319,7 +319,8 @@ func (c *electionChannel) electionResultHelper(msg message.Message) error{
 	//		Description: "failed to cast data to ElectionResultData",
 	//	}
 	//}
-	c.broadcastToAllClients(msg)
+	msg := publish.Params.Message
+	c.broadcastToAllClients(*msg)
 
 	resultData := message.ElectionResultData{
 		GenericData:       nil,
@@ -379,7 +380,11 @@ func (c *electionChannel) electionResultHelper(msg message.Message) error{
 	//	//client.Send()
 	//}
 
-	c.broadcastToAllClients(msg)
+	c.broadcastToAllClients(*msg)
+	messageID := base64.URLEncoding.EncodeToString(msg.MessageID)
+	c.inboxMu.Lock()
+	c.inbox[messageID] = *msg
+	c.inboxMu.Unlock()
 
 	return nil
 }
