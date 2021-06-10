@@ -139,7 +139,7 @@ public class Election extends Event {
                 listOfVoteIds.add(vote.getId());
             }
         }
-        if (listOfVoteIds.isEmpty()) return Hash.hash("");
+        if (listOfVoteIds.isEmpty()) return Hash.hash("novotes");
         else return Hash.hash(listOfVoteIds.toArray(new String[0]));
     }
 
