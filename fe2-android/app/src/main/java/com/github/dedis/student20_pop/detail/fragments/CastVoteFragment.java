@@ -39,7 +39,7 @@ public class CastVoteFragment extends Fragment {
         List<ElectionQuestion> electionQuestions = mLaoDetailViewModel.getCurrentElection().getElectionQuestions();
         for(int i = 0; i < electionQuestions.size(); i++){
             ElectionQuestion electionQuestion = electionQuestions.get(i);
-            List<Integer> votes = mLaoDetailViewModel.getCurrentElectionVotes().get(i);
+            List<Integer> votes = mLaoDetailViewModel.getCurrentElectionVotes().getValue().get(i);
             ElectionVote electionVote = new ElectionVote(electionQuestion.getId(),votes,
                     electionQuestion.getWriteIn(),null,mLaoDetailViewModel.getCurrentElection().getId());
             electionVotes.add(electionVote);

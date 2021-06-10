@@ -108,7 +108,7 @@ public class QuestionViewPagerAdapter extends RecyclerView.Adapter<QuestionViewP
     }
 
     private boolean checkEachQuestion(){
-        List<List<Integer>> allVotes = mLaoDetailViewModel.getCurrentElectionVotes();
+        List<List<Integer>> allVotes = mLaoDetailViewModel.getCurrentElectionVotes().getValue();
         for(List<Integer> vote : allVotes){
             if(vote == null || vote.isEmpty())
                 return false;
