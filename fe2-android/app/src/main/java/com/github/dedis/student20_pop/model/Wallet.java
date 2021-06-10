@@ -40,7 +40,6 @@ public class Wallet {
   private static final int PURPOSE =  888;
   private static final int ACCOUNT =  0;
   private byte[] seed;
-  private AndroidKeysetManager keysetManager;
   private Aead aead;
 
   private static final Wallet instance = new Wallet();
@@ -80,7 +79,7 @@ public class Wallet {
       throws IOException, GeneralSecurityException {
     AesGcmKeyManager.register(true);
     AeadConfig.register();
-    keysetManager =
+    AndroidKeysetManager keysetManager =
         new AndroidKeysetManager.Builder()
             .withSharedPref(applicationContext, "POP_KEYSET_2",  "POP_KEYSET_SP_2")
             .withKeyTemplate(AesGcmKeyManager.rawAes256GcmTemplate())
@@ -94,9 +93,7 @@ public class Wallet {
    *
    * @param path a String path of the form: m/i/j/k/... where i,j,k,.. are 31-bit integer.
    * @return a Pair<byte[], byte[]> representing the keys pair: first=private_key; second=public_key.
-   * @throws NoSuchAlgorithmException
-   * @throws InvalidKeyException
-   * @throws ShortBufferException
+   * @throws GeneralSecurityException
    */
   public Pair<byte[], byte[]> generateKeyFromPath(String path)
       throws GeneralSecurityException {
@@ -130,9 +127,7 @@ public class Wallet {
    * @param laoID a String.
    * @param rollCallID a String.
    * @return a Pair<byte[], byte[]> representing the keys pair.
-   * @throws NoSuchAlgorithmException
-   * @throws InvalidKeyException
-   * @throws ShortBufferException
+   * @throws GeneralSecurityException
    */
   public Pair<byte[], byte[]> findKeyPair(String laoID, String rollCallID)
       throws GeneralSecurityException {
@@ -192,9 +187,7 @@ public class Wallet {
    *                         on roll-call’s results.
    * @return the key pair Pair<byte[], byte[]> (PoP token) if the user as in that roll-call
    * participated else null.
-   * @throws NoSuchAlgorithmException
-   * @throws InvalidKeyException
-   * @throws ShortBufferException
+   * @throws GeneralSecurityException
    */
   public Pair<byte[], byte[]> recoverKey(String laoID, String rollCallID,
       List<byte[]> rollCallTokens)
@@ -250,7 +243,9 @@ public class Wallet {
    * Method that encode the seed into a form that is easier for humans to securely back-up
    * and retrieve.
    *
-   * @return an array of words: mnemonic sentence representing the seed for the wallet.
+   * @return an array of words: mnemonic sentence representing the seed for the wallet in case that
+   * the key set manager is not init return a empty array.
+   * @throws GeneralSecurityException
    */
   public String[] exportSeed() throws GeneralSecurityException {
     if(aead != null) {
