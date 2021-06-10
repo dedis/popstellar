@@ -33,13 +33,6 @@ public class WitnessMessage {
     }
 
     /**
-     * Method that checks whether the current message has been signed by the Witness public key provided
-     *
-     * @param pk public key of the witness
-     */
-
-
-    /**
      * Method to add a new witness that have signed the message
      *
      * @param pk public key of the witness that have signed  the message

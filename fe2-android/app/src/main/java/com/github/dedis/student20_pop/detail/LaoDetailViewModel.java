@@ -38,6 +38,7 @@ import com.github.dedis.student20_pop.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.student20_pop.qrcode.ScanningAction;
 import com.github.dedis.student20_pop.utility.security.Hash;
 import com.github.dedis.student20_pop.utility.security.Keys;
+import com.github.dedis.student20_pop.utility.security.Signature;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.PublicKeySign;
@@ -441,7 +442,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
 
             // generate the signature of the message
-            signature = generateSignature(signer, messageIdBuf);
+            signature = Signature.generateSignature(signer, messageIdBuf);
 
             Log.d(TAG, PUBLISH_MESSAGE);
             signatureMessage = new WitnessMessageSignature(witnessMessage.getMessageId(), signature);
@@ -992,21 +993,4 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         }
     }
 
-    /**
-     * Helper method to generate signature of a message
-     *
-     * @param signer       public key of witness signing the message
-     * @param messageIdBuf Base 64 URL decoded message ID
-     * @return the String signature of the messageIdBuf
-     */
-    public String generateSignature(PublicKeySign signer, byte[] messageIdBuf) {
-        String signature = null;
-
-        try {
-            signature = Base64.getUrlEncoder().encodeToString(signer.sign(messageIdBuf));
-        } catch (GeneralSecurityException e) {
-            Log.d(TAG, "failed to generate signature", e);
-        }
-        return signature;
-    }
 }

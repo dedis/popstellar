@@ -32,6 +32,7 @@ import com.github.dedis.student20_pop.model.network.method.message.data.rollcall
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
 import com.github.dedis.student20_pop.utility.security.Keys;
+import com.github.dedis.student20_pop.utility.security.Signature;
 import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.PublicKeyVerify;
@@ -494,7 +495,7 @@ public class LAORepository {
         byte[] signatureBuf = Base64.getUrlDecoder().decode(signature);
 
         // Verify signature
-        if (!verifySignature(messageId, senderPkBuf, signatureBuf)) {
+        if (!Signature.verifySignature(messageId, senderPkBuf, signatureBuf)) {
             return false;
         }
 
@@ -536,25 +537,6 @@ public class LAORepository {
         return true;
     }
 
-    /**
-     * Helper method to verify signature of a message
-     *
-     * @param messageId    Base 64 URL encode Id of the message to sign
-     * @param senderPkBuf  Base 64 decoded public key of the signer
-     * @param signatureBuf Base 64 URL decoded signature of the signer
-     * @return false if there was a problem signing the message
-     */
-
-    private boolean verifySignature(String messageId, byte[] senderPkBuf, byte[] signatureBuf) {
-        try {
-            PublicKeyVerify verifier = new Ed25519Verify(senderPkBuf);
-            verifier.verify(signatureBuf, Base64.getUrlDecoder().decode(messageId));
-        } catch (GeneralSecurityException e) {
-            Log.d(TAG, "failed to verify witness signature " + e.getMessage());
-            return false;
-        }
-        return true;
-    }
 
     /**
      * Helper method to update the WitnessMessage of the lao with the new witness signing
