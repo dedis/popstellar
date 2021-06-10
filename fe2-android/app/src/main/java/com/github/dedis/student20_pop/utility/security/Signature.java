@@ -10,7 +10,7 @@ import java.security.GeneralSecurityException;
 import java.util.Base64;
 
 public class Signature {
-    public static final String TAG = Hash.class.getSimpleName();
+    public static final String TAG = Signature.class.getSimpleName();
 
     /**
      * Helper method to verify signature of a message
