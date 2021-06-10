@@ -22,7 +22,7 @@ func TestConnectToSocket(t *testing.T) {
 	h := hub.NewWitnessHub(student20_pop.Suite.Point())
 	witnessSrv := network.CreateAndServeWS(ctx, hub.WitnessHubType, hub.WitnessSocketType, h, 9000, wg)
 
-	err := connectToSocket(ctx, hub.WitnessSocketType, "localhost:9000", h, 9000, wg)
+	err := connectToSocket(ctx, hub.WitnessSocketType, "localhost:9000", h, wg)
 	if err != nil {
 		t.Errorf("unable to connect to server")
 	}
