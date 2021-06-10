@@ -1,40 +1,26 @@
 package com.github.dedis.student20_pop.home;
 
-import androidx.core.util.Pair;
-
-import net.i2p.crypto.eddsa.Utils;
-import org.junit.Test;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
-
-import android.app.Application;
 import android.content.Context;
 import androidx.core.util.Pair;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.model.Wallet;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.StringJoiner;
-import org.junit.Before;
-import org.junit.Rule;
+import net.i2p.crypto.eddsa.Utils;
 import org.junit.Test;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
 
 public class WalletTest {
-
-
-
 
   private Context context = ApplicationProvider.getApplicationContext();
 
   @Test
   public void importSeedAndExportSeedAreCoherent()
       throws Exception {
-
 
     String Lao_ID = "1234123412341234";
     String Roll_Call_ID = "1234123412341234";
@@ -56,17 +42,17 @@ public class WalletTest {
 
     assertArrayEquals(res1.first, res2.first);
     assertArrayEquals(res1.second, res2.second);
-
   }
 
 
   @Test
   public void crossValidationWithFe1Web()
-      throws GeneralSecurityException {
+      throws GeneralSecurityException, IOException {
     String Lao_ID = "T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=";
     String Roll_Call_ID = "T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=";
 
     Wallet hdw = new Wallet();
+    hdw.initKeysManager(context);
     hdw.importSeed("garbage effort river orphan negative kind outside quit hat camera approve first", new HashMap<>());
     Pair<byte[], byte[]> res =  hdw.findKeyPair(Lao_ID,Roll_Call_ID);
     assertEquals("9e8ca414e088b2276d140bb69302269ccede242197e1f1751c45ec40b01678a0", Utils.bytesToHex(res.first));

@@ -253,7 +253,7 @@ public class Wallet {
    * @return an array of words: mnemonic sentence representing the seed for the wallet.
    */
   public String[] exportSeed() throws GeneralSecurityException {
-    if(keysetManager != null) {
+    if(aead != null) {
       SecureRandom random = new SecureRandom();
       byte[] entropy = random.generateSeed(Words.TWELVE.byteLength());
 
@@ -293,7 +293,7 @@ public class Wallet {
     if (words == null) {
       throw new IllegalArgumentException("Unable to find recover tokens from a null param");
     }
-    if(keysetManager != null) {
+    if(aead != null) {
       try {
         MnemonicValidator
             .ofWordList(English.INSTANCE)
