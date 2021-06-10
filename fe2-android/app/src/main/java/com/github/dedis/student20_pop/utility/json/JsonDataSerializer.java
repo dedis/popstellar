@@ -1,5 +1,7 @@
 package com.github.dedis.student20_pop.utility.json;
 
+import android.util.Log;
+
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
@@ -23,6 +25,7 @@ public class JsonDataSerializer implements JsonSerializer<Data>, JsonDeserialize
   @Override
   public Data deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
+    Log.d("JsonDataSerializer", "deseriliazing data");
     JsonObject obj = json.getAsJsonObject();
     Objects object = Objects.find(obj.get(OBJECT).getAsString());
     Action action = Action.find(obj.get(ACTION).getAsString());

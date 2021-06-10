@@ -85,7 +85,6 @@ public abstract class Data {
     messagesMap.put(pair(ELECTION, END), ElectionEnd.class);
     messagesMap.put(pair(ELECTION, RESULT), ElectionResult.class);
 
-
     return Collections.unmodifiableMap(messagesMap);
   }
 
