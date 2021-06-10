@@ -1,6 +1,7 @@
 package com.github.dedis.student20_pop.model.network.method.message.data;
 
 import com.github.dedis.student20_pop.model.network.method.message.data.election.CastVote;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionResult;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
@@ -21,6 +22,7 @@ import java.util.Optional;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.CAST_VOTE;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.CLOSE;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.CREATE;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Action.END;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.OPEN;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.REOPEN;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.RESULT;
@@ -80,6 +82,7 @@ public abstract class Data {
     // Election
     messagesMap.put(pair(ELECTION,SETUP), ElectionSetup.class);
     messagesMap.put(pair(ELECTION,CAST_VOTE), CastVote.class);
+    messagesMap.put(pair(ELECTION, END), ElectionEnd.class);
     messagesMap.put(pair(ELECTION, RESULT), ElectionResult.class);
 
 
