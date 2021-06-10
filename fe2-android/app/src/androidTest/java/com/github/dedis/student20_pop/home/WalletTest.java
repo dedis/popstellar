@@ -1,30 +1,48 @@
-package com.github.dedis.student20_pop.model;
+package com.github.dedis.student20_pop.home;
 
 import androidx.core.util.Pair;
 
 import net.i2p.crypto.eddsa.Utils;
 import org.junit.Test;
+import static org.junit.Assert.assertArrayEquals;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+
+import android.app.Application;
+import android.content.Context;
+import androidx.core.util.Pair;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import com.github.dedis.student20_pop.home.HomeActivity;
+import com.github.dedis.student20_pop.model.Wallet;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.StringJoiner;
-
-import javax.crypto.ShortBufferException;
-
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 public class WalletTest {
 
+
+
+
+  private Context context = ApplicationProvider.getApplicationContext();
+
   @Test
   public void importSeedAndExportSeedAreCoherent()
-      throws NoSuchAlgorithmException, InvalidKeyException, ShortBufferException {
+      throws Exception {
+
 
     String Lao_ID = "1234123412341234";
     String Roll_Call_ID = "1234123412341234";
 
     Wallet hdw1 = new Wallet();
+
+    hdw1.initKeysManager(context);
+
     String[] exp_str = hdw1.exportSeed();
     StringJoiner joiner = new StringJoiner(" ");
     for(String i: exp_str) joiner.add(i);
@@ -32,16 +50,19 @@ public class WalletTest {
     Pair<byte[], byte[]> res1 =  hdw1.findKeyPair(Lao_ID,Roll_Call_ID);
 
     Wallet hdw2 = new Wallet();
+    hdw2.initKeysManager(context);
     hdw2.importSeed(joiner.toString(), new HashMap<>());
     Pair<byte[], byte[]> res2 =  hdw2.findKeyPair(Lao_ID,Roll_Call_ID);
 
     assertArrayEquals(res1.first, res2.first);
     assertArrayEquals(res1.second, res2.second);
+
   }
+
 
   @Test
   public void crossValidationWithFe1Web()
-      throws NoSuchAlgorithmException, InvalidKeyException, ShortBufferException {
+      throws GeneralSecurityException {
     String Lao_ID = "T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=";
     String Roll_Call_ID = "T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=";
 
@@ -52,4 +73,5 @@ public class WalletTest {
     assertEquals("7147759d146897111bcf74f60a1948b1d3a22c9199a6b88c236eb7326adc2efc", Utils.bytesToHex(res.second));
 
   }
+
 }
