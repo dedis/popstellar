@@ -71,14 +71,14 @@ export class CreateRollCall implements MessageData {
     if (!msg.id) {
       throw new ProtocolError("Undefined 'id' parameter encountered during 'CreateRollCall'");
     }
-    const lao: Lao = OpenedLaoStore.get();
-    const expectedHash = Hash.fromStringArray(
-      EventTags.ROLL_CALL, lao.id.toString(), msg.creation.toString(), msg.name,
-    );
-    if (!expectedHash.equals(msg.id)) {
-      throw new ProtocolError("Invalid 'id' parameter encountered during 'CreateRollCall':"
-        + ' re-computing the value yields a different result');
-    }
+    // const lao: Lao = OpenedLaoStore.get();
+    // const expectedHash = Hash.fromStringArray(
+    //   EventTags.ROLL_CALL, lao.id.toString(), msg.creation.toString(), msg.name,
+    // );
+    // if (!expectedHash.equals(msg.id)) {
+    //   throw new ProtocolError("Invalid 'id' parameter encountered during 'CreateRollCall':"
+    //     + ' re-computing the value yields a different result');
+    // }
     this.id = msg.id;
   }
 
