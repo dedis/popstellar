@@ -50,6 +50,11 @@ public final class Lao {
   }
 
   public void updateRollCall(String prevId, RollCall rollCall) {
+
+    if(rollCall == null) {
+      throw new IllegalArgumentException(" The roll call is null");
+    }
+
     if (rollCalls.containsKey(prevId)) {
       rollCalls.remove(prevId);
     }
@@ -58,6 +63,10 @@ public final class Lao {
   }
 
   public void updateElection(String prevId, Election election) {
+
+    if(election == null) {
+      throw new IllegalArgumentException(" The election is null");
+    }
     if (elections.containsKey(prevId)) {
       elections.remove(prevId);
     }
@@ -124,6 +133,13 @@ public final class Lao {
   }
 
   public void setId(String id) {
+    if(id == null) {
+      throw new IllegalArgumentException(" The Id of the Lao is null");
+    }
+    else if(id.isEmpty()) {
+      throw new IllegalArgumentException(" The id of the Lao is empty");
+    }
+
     this.id = id;
   }
 
@@ -132,6 +148,14 @@ public final class Lao {
   }
 
   public void setName(String name) {
+
+    if(name == null) {
+      throw new IllegalArgumentException(" The name of the Lao is null");
+    }
+    else if(name.isEmpty()) {
+      throw new IllegalArgumentException(" The name of the Lao is empty");
+    }
+
     this.name = name;
   }
 
@@ -160,6 +184,13 @@ public final class Lao {
   }
 
   public void setWitnesses(Set<String> witnesses) {
+
+    if(witnesses == null) {
+      throw new IllegalArgumentException(" The witnesses set is null");
+    }
+    for (String witness : witnesses) {
+      if (witness == null) throw new IllegalArgumentException("One of the witnesses in the set is null");
+    }
     this.witnesses = witnesses;
   }
 
