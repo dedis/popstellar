@@ -15,8 +15,6 @@ import io.github.novacrypto.bip39.Words;
 import io.github.novacrypto.bip39.wordlists.English;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
-import javax.crypto.ShortBufferException;
 import net.i2p.crypto.eddsa.Utils;
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
@@ -40,7 +37,6 @@ public class Wallet {
   private static final int PURPOSE =  888;
   private static final int ACCOUNT =  0;
   private byte[] seed;
-  private AndroidKeysetManager keysetManager;
   private Aead aead;
   private boolean isSetup = false;
 
@@ -79,7 +75,7 @@ public class Wallet {
       throws IOException, GeneralSecurityException {
     AesGcmKeyManager.register(true);
     AeadConfig.register();
-    keysetManager =
+    AndroidKeysetManager keysetManager =
         new AndroidKeysetManager.Builder()
             .withSharedPref(applicationContext, "POP_KEYSET_2",  "POP_KEYSET_SP_2")
             .withKeyTemplate(AesGcmKeyManager.rawAes256GcmTemplate())
@@ -93,9 +89,7 @@ public class Wallet {
    *
    * @param path a String path of the form: m/i/j/k/... where i,j,k,.. are 31-bit integer.
    * @return a Pair<byte[], byte[]> representing the keys pair: first=private_key; second=public_key.
-   * @throws NoSuchAlgorithmException
-   * @throws InvalidKeyException
-   * @throws ShortBufferException
+   * @throws GeneralSecurityException
    */
   public Pair<byte[], byte[]> generateKeyFromPath(String path)
       throws GeneralSecurityException {
@@ -129,9 +123,7 @@ public class Wallet {
    * @param laoID a String.
    * @param rollCallID a String.
    * @return a Pair<byte[], byte[]> representing the keys pair.
-   * @throws NoSuchAlgorithmException
-   * @throws InvalidKeyException
-   * @throws ShortBufferException
+   * @throws GeneralSecurityException
    */
   public Pair<byte[], byte[]> findKeyPair(String laoID, String rollCallID)
       throws GeneralSecurityException {
@@ -161,19 +153,23 @@ public class Wallet {
   private String convertStringToPath(String string){
     // extract byte form string
     byte[] byteString = Base64.getUrlDecoder().decode(string);
+    int remainder = byteString.length % 3;
 
     // create 31-bit index path
     StringJoiner joiner = new StringJoiner("/");
-    int i = 0;
-    while(i < byteString.length){
-      int res = 0;
-      for(int j=i; j<i+3 && j< byteString.length; j++){
-        int buffer =  byteString[j];
-        buffer = buffer & 0xFF; // "extract" the first 8 bit
-        res = (buffer << j%3*8) | res;
-      }
-      i+= 3;
-      joiner.add(Integer.toString(res));
+    int i;
+    for (i = 0; i + 3 <= byteString.length; i += 3) {
+      String path = Integer.toString(byteString[i] & 0xFF)
+          .concat(Integer.toString(byteString[i+1] & 0xFF))
+          .concat(Integer.toString(byteString[i+2] & 0xFF));
+
+      joiner.add(path);
+    }
+    if (remainder == 1) {
+      joiner.add(Integer.toString(byteString[i] & 0xFF));
+    } else if (remainder == 2) {
+      joiner.add(Integer.toString(byteString[i] & 0xFF)
+          .concat(Integer.toString(byteString[i+1] & 0xFF)));
     }
     return joiner.toString();
   }
@@ -187,9 +183,7 @@ public class Wallet {
    *                         on roll-call’s results.
    * @return the key pair Pair<byte[], byte[]> (PoP token) if the user as in that roll-call
    * participated else null.
-   * @throws NoSuchAlgorithmException
-   * @throws InvalidKeyException
-   * @throws ShortBufferException
+   * @throws GeneralSecurityException
    */
   public Pair<byte[], byte[]> recoverKey(String laoID, String rollCallID,
       List<byte[]> rollCallTokens)
@@ -245,10 +239,12 @@ public class Wallet {
    * Method that encode the seed into a form that is easier for humans to securely back-up
    * and retrieve.
    *
-   * @return an array of words: mnemonic sentence representing the seed for the wallet.
+   * @return an array of words: mnemonic sentence representing the seed for the wallet in case that
+   * the key set manager is not init return a empty array.
+   * @throws GeneralSecurityException
    */
   public String[] exportSeed() throws GeneralSecurityException {
-    if(keysetManager != null) {
+    if(aead != null) {
       SecureRandom random = new SecureRandom();
       byte[] entropy = random.generateSeed(Words.TWELVE.byteLength());
 
@@ -288,7 +284,7 @@ public class Wallet {
     if (words == null) {
       throw new IllegalArgumentException("Unable to find recover tokens from a null param");
     }
-    if(keysetManager != null) {
+    if(aead != null) {
       try {
         MnemonicValidator
             .ofWordList(English.INSTANCE)
