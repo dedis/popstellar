@@ -75,6 +75,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     private final MutableLiveData<Event<EventType>> mNewLaoEventCreationEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mOpenNewRollCallEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<String>> mOpenRollCallEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<String>> mOpenRollCallTokenEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<String>> mOpenAttendeesListEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mOpenLaoWalletEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mOpenElectionResultsEvent = new MutableLiveData<>();
@@ -83,10 +84,12 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     private final MutableLiveData<Event<Boolean>> mOpenCastVotesEvent = new MutableLiveData<>();
 
     private final MutableLiveData<Event<Integer>> mNbAttendeesEvent = new MutableLiveData<>();
-    private final MutableLiveData<Event<Boolean>> mCloseRollCallEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<Integer>> mAskCloseRollCallEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<Integer>> mCloseRollCallEvent = new MutableLiveData<>();
 
     private final MutableLiveData<Event<Boolean>> mCreatedRollCallEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<String>> mPkRollCallEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<Boolean>> mWalletMessageEvent = new MutableLiveData<>();
 
     private final MutableLiveData<Event<String>> mAttendeeScanConfirmEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<String>> mScanWarningEvent = new MutableLiveData<>();
@@ -411,7 +414,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
      *
      * <p>Publish a GeneralMessage containing CloseRollCall data.
      */
-    public void closeRollCall() {
+    public void closeRollCall(int nextFragment) {
         Log.d(TAG, "call closeRollCall");
         Lao lao = getCurrentLaoValue();
         if (lao == null) {
@@ -440,7 +443,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                             Log.d(TAG, "closed the roll call");
                                             mCurrentRollCallId = "";
                                             attendees.clear();
-                                            openLaoDetail();
+                                            mCloseRollCallEvent.setValue(new Event<>(nextFragment));
                                         } else {
                                             Log.d(TAG, "failed to close the roll call");
                                         }
@@ -560,6 +563,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         return mOpenRollCallEvent;
     }
 
+    public LiveData<Event<String>> getOpenRollCallTokenEvent() {
+        return mOpenRollCallTokenEvent;
+    }
+
     public LiveData<Event<String>> getOpenAttendeesListEvent() {
       return mOpenAttendeesListEvent;
     }
@@ -572,7 +579,11 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         return mNbAttendeesEvent;
     }
 
-    public LiveData<Event<Boolean>> getCloseRollCallEvent() {
+    public LiveData<Event<Integer>> getAskCloseRollCallEvent() {
+        return mAskCloseRollCallEvent;
+    }
+
+    public LiveData<Event<Integer>> getCloseRollCallEvent() {
         return mCloseRollCallEvent;
     }
 
@@ -592,6 +603,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         return mPkRollCallEvent;
     }
 
+    public LiveData<Event<Boolean>> getWalletMessageEvent() {
+        return mWalletMessageEvent;
+    }
+
     public Election getCurrentElection() {
         return mCurrentElection.getValue();
     }
@@ -604,7 +619,11 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
      * Methods that modify the state or post an Event to update the UI.
      */
     public void openHome() {
-        mOpenHomeEvent.setValue(new Event<>(true));
+        if(mCurrentRollCallId.equals("")){
+            mOpenHomeEvent.setValue(new Event<>(true));
+        }else{
+            mAskCloseRollCallEvent.setValue(new Event<>(R.id.fragment_home));
+        }
     }
 
     public void electionCreated() {
@@ -620,7 +639,11 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     }
 
     public void openIdentity() {
-        mOpenIdentityEvent.setValue(new Event<>(true));
+        if(mCurrentRollCallId.equals("")){
+            mOpenIdentityEvent.setValue(new Event<>(true));
+        }else{
+            mAskCloseRollCallEvent.setValue(new Event<>(R.id.fragment_identity));
+        }
     }
 
     public void toggleShowHideProperties() {
@@ -779,6 +802,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     }
 
     public void enterRollCall(String id) {
+        if(!Wallet.getInstance().isSetUp()){
+            mWalletMessageEvent.setValue(new Event<>(true));
+            return;
+        }
         String firstLaoId = getCurrentLaoValue().getChannel().substring(6); // use the laoId set at creation + need to remove /root/ prefix
         String errorMessage = "failed to retrieve public key from wallet";
         try {
@@ -803,8 +830,16 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
       mOpenLaoWalletEvent.postValue(new Event<>(true));
     }
 
+    public void openRollCallToken(String rollCallId){
+        mOpenRollCallTokenEvent.postValue(new Event<>(rollCallId));
+    }
+
     public void openAttendeesList(String rollCallId){
       mOpenAttendeesListEvent.postValue(new Event<>(rollCallId));
+    }
+
+    public void logoutWallet(){
+        Wallet.getInstance().logout();
     }
 
     @Override

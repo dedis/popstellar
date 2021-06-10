@@ -38,6 +38,7 @@ public class Wallet {
   private static final int ACCOUNT =  0;
   private byte[] seed;
   private Aead aead;
+  private boolean isSetup = false;
 
   private static final Wallet instance = new Wallet();
 
@@ -49,10 +50,7 @@ public class Wallet {
    * Class constructor, initialize the wallet with a new random seed.
    */
   public Wallet() {
-    SecureRandom random = new SecureRandom();
-    byte[] bytes = random.generateSeed(64);
-    seed = bytes;
-    Log.d(TAG, "Wallet initialized with a new random seed: " + Utils.bytesToHex(seed));
+    setRandomSeed();
   }
 
   /**
@@ -65,6 +63,7 @@ public class Wallet {
       throw new IllegalArgumentException("Unable to init seed from a null param!");
     }
     this.seed = Utils.hexToBytes(seed);
+    isSetup = true;
     Log.d(TAG, "New seed initialized: " + Utils.bytesToHex(this.seed));
   }
   /**
@@ -301,5 +300,31 @@ public class Wallet {
     } else {
       return null;
     }
+  }
+
+  /**
+   * Determine whether wallet has been initialized
+   * @return true if wallet has been set up, false otherwise
+   */
+  public boolean isSetUp(){
+    return isSetup;
+  }
+
+  /**
+   * Logout the wallet by replacing the seed by a random one
+   */
+  public void logout(){
+    setRandomSeed();
+  }
+
+  /**
+   * Utility function to initialize the wallet with a new random seed.
+   */
+  private void setRandomSeed(){
+    SecureRandom random = new SecureRandom();
+    byte[] bytes = random.generateSeed(64);
+    seed = bytes;
+    isSetup = false;
+    Log.d(TAG, "Wallet initialized with a new random seed: " + Utils.bytesToHex(seed));
   }
 }
