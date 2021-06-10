@@ -347,7 +347,7 @@ public class LaoDetailActivity extends AppCompatActivity {
                               CastVoteFragment castVoteFragment =
                                       (CastVoteFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_cast_vote);
                               if(castVoteFragment == null){
-                                  castVoteFragment = castVoteFragment.newInstance();
+                                  castVoteFragment = CastVoteFragment.newInstance();
                                   ActivityUtils.replaceFragmentInActivity(
                                           getSupportFragmentManager(), castVoteFragment, R.id.fragment_container_lao_detail);
                               }
