@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.home;
+/*package com.github.dedis.student20_pop.home;
 
 
 import static androidx.test.espresso.Espresso.onView;
@@ -259,4 +259,4 @@ public class WalletFragmentTest {
       }
     };
   }
-}
+}*/
