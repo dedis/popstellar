@@ -3,6 +3,7 @@ package hub
 import (
 	"crypto/sha256"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"golang.org/x/xerrors"
 	"log"
@@ -148,6 +149,7 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 		return message.NewError(errorDescription, err)
 	}
 
+	log.Printf("Broadcasting to all clients on election channel")
 	c.broadcastToAllClients(*msg)
 
 	return nil
@@ -320,7 +322,7 @@ func (c *electionChannel) electionResultHelper(msg *message.Message) error{
 	resultData := message.ElectionResultData{
 		GenericData:       nil,
 		Questions:         nil,
-		WitnessSignatures: nil,
+		WitnessSignatures: msg.WitnessSignatures,
 	}
 
 	//questions := resultData.Questions
@@ -363,7 +365,19 @@ func (c *electionChannel) electionResultHelper(msg *message.Message) error{
 		}
 	}
 	msg.Data = resultData
-	c.broadcastToAllClients(*msg)
+	ms2 := message.Message{
+		MessageID:         message.Hash(resultData,msg.Signature),
+		Data:              resultData,
+		Sender:            msg.Sender,
+		Signature:         msg.Signature,
+		WitnessSignatures: msg.WitnessSignatures,
+		RawData:           nil,
+	}
+	for client := range c.clients{
+		client.Send()
+	}
+
+	c.broadcastToAllClients(ms2)
 
 	return nil
 }
@@ -372,4 +386,8 @@ func (c* electionChannel) publishResults(m message.Message){
 	m.Data = message.ElectionResultData{
 
 	}
+}
+
+func hashDataSender(data message.ElectionResultData, signature message.Signature){
+	data.GenericData.
 }
