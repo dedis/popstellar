@@ -34,14 +34,19 @@ import com.google.crypto.tink.signature.PublicKeySignWrapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tinder.scarlet.Scarlet;
+import com.tinder.scarlet.WebSocket;
+import com.tinder.scarlet.WebSocket.Factory;
 import com.tinder.scarlet.lifecycle.android.AndroidLifecycle;
 import com.tinder.scarlet.messageadapter.gson.GsonMessageAdapter;
 import com.tinder.scarlet.streamadapter.rxjava2.RxJava2StreamAdapterFactory;
 import com.tinder.scarlet.websocket.okhttp.OkHttpClientUtils;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import org.jetbrains.annotations.NotNull;
 
 
 public class Injection {
@@ -54,12 +59,6 @@ public class Injection {
 
   private static final String MASTER_KEY_URI = "android-keystore://POP_MASTER_KEY";
 
-  private static OkHttpClient OK_HTTP_CLIENT_INSTANCE;
-
-  private static Scarlet SCARLET_INSTANCE;
-
-  private static LAOService LAO_SERVICE_INSTANCE;
-
   private static AndroidKeysetManager KEYSET_MANAGER;
 
   private Injection() {}
@@ -68,35 +67,7 @@ public class Injection {
   @SuppressWarnings("unused")
   public static AndroidKeysetManager provideAndroidKeysetManager(Context applicationContext)
       throws GeneralSecurityException, IOException {
-    if (KEYSET_MANAGER == null) {
-      SharedPreferences.Editor editor =
-          applicationContext
-              .getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE)
-              .edit();
-      editor.apply();
-
-      Ed25519PrivateKeyManager.registerPair(true);
-      PublicKeySignWrapper.register();
-      
-      AndroidKeysetManager keysetManager =
-          new AndroidKeysetManager.Builder()
-              .withSharedPref(applicationContext, KEYSET_NAME, SHARED_PREF_FILE_NAME)
-              .withKeyTemplate(Ed25519PrivateKeyManager.rawEd25519Template())
-              .withMasterKeyUri(MASTER_KEY_URI)
-              .build();
-
-      KeysetHandle publicKeysetHandle = keysetManager.getKeysetHandle().getPublicKeysetHandle();
-
-      try {
-        String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-        Log.d(TAG, "public key = " + publicKey);
-      } catch (IOException e) {
-        Log.e(TAG, "failed to retrieve public key", e);
-      }
-
-      KEYSET_MANAGER = keysetManager;
-    }
-    return KEYSET_MANAGER;
+    return null;
   }
 
   public static Gson provideGson() {
@@ -122,41 +93,18 @@ public class Injection {
   }
 
   public static OkHttpClient provideOkHttpClient() {
-    if (OK_HTTP_CLIENT_INSTANCE == null) {
-      Log.d(TAG, "creating new OkHttpClient");
-      OK_HTTP_CLIENT_INSTANCE =
-          new OkHttpClient.Builder()
-              .addInterceptor(
-                  new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
-              .build();
-    }
-    return OK_HTTP_CLIENT_INSTANCE;
+    return null;
   }
 
   @SuppressWarnings("unused")
   public static Scarlet provideScarlet(
       Application application, OkHttpClient okHttpClient, Gson gson) {
-    if (SCARLET_INSTANCE == null) {
-      Log.d(TAG, "creating new Scarlet");
-      SCARLET_INSTANCE =
-          new Scarlet.Builder()
-              .webSocketFactory(OkHttpClientUtils.newWebSocketFactory(okHttpClient, "ws://mock"))
-              .addMessageAdapterFactory(new GsonMessageAdapter.Factory(gson))
-              .addStreamAdapterFactory(new RxJava2StreamAdapterFactory())
-              .lifecycle(AndroidLifecycle.ofApplicationForeground(application))
-              .build();
-
-    }
-    return SCARLET_INSTANCE;
+    return null;
   }
 
   @SuppressWarnings("unused")
   public static LAOService provideLAOService(Scarlet scarlet) {
-
-    if (LAO_SERVICE_INSTANCE == null) {
-      LAO_SERVICE_INSTANCE = scarlet.create(LAOService.class);
-    }
-    return LAO_SERVICE_INSTANCE;
+    return null;
   }
 
   @SuppressWarnings("unused")
@@ -164,10 +112,35 @@ public class Injection {
       Application application, LAOService service, AndroidKeysetManager keysetManager, Gson gson){
     LAODatabase db = LAODatabase.getDatabase(application);
     return LAORepository.getInstance(
-        LAORemoteDataSource.getInstance(service),
+        LAORemoteDataSource.getInstance(getMockService()),
         LAOLocalDataSource.getInstance(db),
         keysetManager,
         gson);
+  }
+
+  private static LAOService getMockService(){
+   return new LAOService() {
+     @Override
+     public void sendMessage(Message msg) {
+     }
+
+     @Override
+     public Observable<GenericMessage> observeMessage() {
+       return new Observable<GenericMessage>() {
+         @Override
+         protected void subscribeActual(Observer<? super GenericMessage> observer) {
+         }
+       };
+     }
+     @Override
+     public Observable<WebSocket.Event> observeWebsocket() {
+       return new Observable<WebSocket.Event>() {
+         @Override
+         protected void subscribeActual(Observer<? super WebSocket.Event> observer) {
+         }
+       };
+     }
+   };
   }
 
 }
