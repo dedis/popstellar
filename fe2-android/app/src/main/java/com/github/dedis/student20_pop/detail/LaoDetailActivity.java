@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.Button;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -21,6 +22,7 @@ import com.github.dedis.student20_pop.detail.fragments.LaoDetailFragment;
 import com.github.dedis.student20_pop.detail.fragments.LaoWalletFragment;
 import com.github.dedis.student20_pop.detail.fragments.ManageElectionFragment;
 import com.github.dedis.student20_pop.detail.fragments.RollCallDetailFragment;
+import com.github.dedis.student20_pop.detail.fragments.RollCallTokenFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.ElectionSetupFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.MeetingEventCreationFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.PollEventCreationFragment;
@@ -80,6 +82,22 @@ public class LaoDetailActivity extends AppCompatActivity {
                           openScanning(action);
                       }
                     });
+      mViewModel
+              .getCloseRollCallEvent()
+              .observe(
+                      this,
+                      integerEvent -> {
+                          Integer nextFragment = integerEvent.getContentIfNotHandled();
+                          if (nextFragment != null) {
+                              if (nextFragment.equals(R.id.fragment_lao_detail)) {
+                                  mViewModel.openLaoDetail();
+                              }else if(nextFragment.equals(R.id.fragment_home)){
+                                  mViewModel.openHome();
+                              }else if(nextFragment.equals(R.id.fragment_identity)){
+                                  mViewModel.openIdentity();
+                              }
+                          }
+                      });
     mViewModel
             .getPkRollCallEvent()
             .observe(
@@ -113,6 +131,16 @@ public class LaoDetailActivity extends AppCompatActivity {
                           }
                       });
       mViewModel
+              .getOpenRollCallTokenEvent()
+              .observe(
+                      this,
+                      stringEvent -> {
+                          String id = stringEvent.getContentIfNotHandled();
+                          if (id != null) {
+                              setupRollCallTokenFragment(id);
+                          }
+                      });
+      mViewModel
               .getOpenAttendeesListEvent()
               .observe(
                       this,
@@ -120,6 +148,16 @@ public class LaoDetailActivity extends AppCompatActivity {
                           String id = stringEvent.getContentIfNotHandled();
                           if (id != null) {
                               setupAttendeesListFragment(id);
+                          }
+                      });
+      mViewModel
+              .getWalletMessageEvent()
+              .observe(
+                      this,
+                      booleanEvent -> {
+                          Boolean event = booleanEvent.getContentIfNotHandled();
+                          if (event != null) {
+                              setUpWalletMessage();
                           }
                       });
   }
@@ -275,6 +313,7 @@ public class LaoDetailActivity extends AppCompatActivity {
           setupCameraPermissionFragmentRollCall();
       }
   }
+
   private void setupRollCallDetailFragment(String pk) {
       RollCallDetailFragment rollCallDetailFragment =
               (RollCallDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_roll_call_detail);
@@ -303,6 +342,16 @@ public class LaoDetailActivity extends AppCompatActivity {
             laoWalletFragment = LaoWalletFragment.newInstance();
             ActivityUtils.replaceFragmentInActivity(
                     getSupportFragmentManager(), laoWalletFragment, R.id.fragment_container_lao_detail);
+        }
+    }
+
+    private void setupRollCallTokenFragment(String id) {
+        RollCallTokenFragment rollCallTokenFragment =
+                (RollCallTokenFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_rollcall_token);
+        if (rollCallTokenFragment == null) {
+            rollCallTokenFragment = RollCallTokenFragment.newInstance(id);
+            ActivityUtils.replaceFragmentInActivity(
+                    getSupportFragmentManager(), rollCallTokenFragment, R.id.fragment_container_lao_detail);
         }
     }
 
@@ -335,6 +384,14 @@ public class LaoDetailActivity extends AppCompatActivity {
                           }
                       });
   }
+
+
+    public void setUpWalletMessage(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("You have to setup up your wallet before connecting.");
+        builder.setPositiveButton("Ok", (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
 
   private void setupCastVotesFragment() {
       mViewModel
