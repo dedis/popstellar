@@ -316,6 +316,7 @@ public class LAORepository {
   }
 
   private boolean handleElectionResult(String channel, ElectionResult data) {
+    Log.d(TAG, "handling election result");
     Lao lao = laoById.get(channel).getLao();
     Election election = getElectionByChannel(channel, lao);
 
