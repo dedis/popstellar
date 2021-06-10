@@ -197,7 +197,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                         if (answer instanceof Result) {
                                             Log.d(TAG, "ended election successfully");
                                             getCurrentElection().setEnded(true);
-                                            openLaoDetail();
                                         } else {
                                             Log.d(TAG, "failed to end the election");
                                         }
