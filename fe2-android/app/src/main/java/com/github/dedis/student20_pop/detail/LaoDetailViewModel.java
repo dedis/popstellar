@@ -627,7 +627,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     }
 
     public void setCurrentElectionVotes(List<List<Integer>> currentElectionVotes) {
-        if(mCurrentElectionVotes == null)
+        if(currentElectionVotes == null)
             throw new IllegalArgumentException();
         mCurrentElectionVotes.setValue(currentElectionVotes);
     }
