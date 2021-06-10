@@ -257,7 +257,7 @@ func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage)
 		general := 0
 		result.General = &general
 	}
-
+	log.Printf("Sending result")
 	client.SendResult(id, result)
 }
 

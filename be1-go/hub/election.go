@@ -130,8 +130,9 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 			err = c.castVoteHelper(publish)
 		case message.ElectionEndAction:
 			err = c.endElectionHelper(publish)
-			err  = c.electionResultHelper(*msg)
+			err = c.electionResultHelper(*msg)
 			if err != nil{
+				log.Printf("End and Result broadcasted")
 				return nil
 			}
 		case message.ElectionResultAction:
