@@ -323,6 +323,7 @@ public class LAORepository {
     List<ElectionResultQuestion> questions = data.getElectionQuestionResults();
     if (questions.isEmpty()) throw new IllegalArgumentException("the questions results shouldn't be empty");
     election.setResults(questions.get(0).getResults());
+    election.setResultsReady(true);
     lao.updateElection(election.getId(), election);
     return false;
   }

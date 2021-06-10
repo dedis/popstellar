@@ -1,6 +1,8 @@
 package com.github.dedis.student20_pop.model;
 
 
+import androidx.lifecycle.MutableLiveData;
+
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.ElectionVote;
@@ -34,6 +36,8 @@ public class Election extends Event {
     //Map that associates each messageId to its sender
     private Map<String, String> messageMap;
 
+    private final MutableLiveData<com.github.dedis.student20_pop.Event<Boolean>> areResultsReady = new MutableLiveData<>(new com.github.dedis.student20_pop.Event<>(false));
+
     //Results of an election
     private List<QuestionResult> results;
 
@@ -43,6 +47,10 @@ public class Election extends Event {
         this.voteMap = new HashMap<>();
         this.messageMap = new TreeMap<>();
     }
+
+    public void setResultsReady(boolean areResultsReady) {this.areResultsReady.postValue(new com.github.dedis.student20_pop.Event<>(areResultsReady));}
+
+    public MutableLiveData<com.github.dedis.student20_pop.Event<Boolean>> getResultsReady() {return areResultsReady;}
 
     public void setEnded(boolean isEnded) {
         this.isEnded = isEnded;
