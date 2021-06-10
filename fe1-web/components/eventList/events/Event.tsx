@@ -50,10 +50,10 @@ const Event = (props: IPropTypes) => {
       );
     }
     if (event instanceof RollCall) {
-      if (isOrganizer) {
-        console.log('is organizer => returning null in Event');
-        return null;
-      }
+      // if (isOrganizer) {
+      //   console.log('is organizer => returning null in Event');
+      //   return null;
+      // }
       return (
         <EventRollCall
           event={event}

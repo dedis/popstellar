@@ -111,8 +111,8 @@ export class RollCall implements LaoEvent {
       creation: new Timestamp(rc.creation),
       proposed_start: new Timestamp(rc.proposed_start),
       proposed_end: new Timestamp(rc.proposed_end),
-      opened_at: new Timestamp(rc.opened_at),
-      closed_at: new Timestamp(rc.closed_at),
+      opened_at: rc.opened_at ? new Timestamp(rc.opened_at) : undefined,
+      closed_at: rc.closed_at ? new Timestamp(rc.closed_at) : undefined,
       status: rc.status,
       attendees: rc.attendees?.map((a) => new PublicKey(a)),
     });
@@ -123,7 +123,7 @@ export class RollCall implements LaoEvent {
     return {
       ...obj,
       start: this.start.valueOf(),
-      end: this.end.valueOf(),
+      end: this.start.valueOf(),
       eventType: LaoEventType.ROLL_CALL,
     };
   }
