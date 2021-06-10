@@ -8,7 +8,7 @@ import {
   SetupElection,
 } from 'model/network/method/message/data';
 import {
-  channelFromIds, Election, ElectionStatus, RegisteredVote,
+  channelFromIds, Election, ElectionStatus, RegisteredVote, Channel, getLastChannel,
 } from 'model/objects';
 import {
   addEvent, dispatch, getStore, KeyPairStore, makeCurrentLao, updateEvent,
@@ -108,6 +108,7 @@ function handleCastVoteMessage(msg: Message): boolean {
 }
 
 function handleElectionEndMessage(msg: Message) {
+  console.log('Handling Election end message');
   if (msg.messageData.object !== ObjectType.ELECTION
     || msg.messageData.action !== ActionType.END) {
     console.warn('handleElectionEndMessage was called to process an unsupported message', msg);
@@ -126,6 +127,7 @@ function handleElectionEndMessage(msg: Message) {
     console.warn(makeErr('No active election to end'));
     return false;
   }
+  console.log('In election end, channel is:', msg.channel);
   election.electionStatus = ElectionStatus.TERMINATED;
   dispatch(updateEvent(lao.id, election.toState()));
   return true;
@@ -144,14 +146,19 @@ function handleElectionResultMessage(msg: Message) {
     console.warn(makeErr('no LAO is currently active'));
     return false;
   }
+  if (!msg.channel) {
+    console.warn(makeErr('No channel found is message'));
+    return false;
+  }
+  const electionId = getLastChannel(msg.channel);
   const ElectionResultMsg = msg.messageData as ElectionResult;
-  // const election = getEventFromId(storeState, ElectionResultMsg.election) as Election;
-  // if (!election) {
-  //   console.warn(makeErr('No active election to end'));
-  //   return false;
-  // }
-  // election.electionStatus = ElectionStatus.RESULT;
-  // dispatch(updateEvent(lao.id, election.toState()));
+  const election = getEventFromId(storeState, electionId) as Election;
+  if (!election) {
+    console.warn(makeErr('No active election for the result'));
+    return false;
+  }
+  election.electionStatus = ElectionStatus.RESULT;
+  dispatch(updateEvent(lao.id, election.toState()));
   console.log('received election Result message: ', ElectionResultMsg);
   return true;
 }

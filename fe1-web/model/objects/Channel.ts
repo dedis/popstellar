@@ -15,3 +15,8 @@ export function channelFromIds(...args: Hash[]): Channel {
   args.forEach((ch) => { channel += `/${ch.valueOf()}`; });
   return channel;
 }
+
+export function getLastChannel(channel: Channel): Hash {
+  const channels = channel.split('/');
+  return new Hash(channels[channels.length - 1]);
+}

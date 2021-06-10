@@ -22,8 +22,8 @@ import ListCollapsibleIcon from '../ListCollapsibleIcon';
 */
 const Event = (props: IPropTypes) => {
   const { event } = props;
-  const { renderItemFn } = props;
   const { isOrganizer } = props;
+  const { renderItemFn } = props;
 
   const [toggleChildrenVisible, setToggleChildrenVisible] = useState(false);
 
@@ -66,7 +66,7 @@ const Event = (props: IPropTypes) => {
       return (
         <EventElection
           election={event}
-          isOrganizer
+          isOrganizer={isOrganizer}
         />
       );
     }

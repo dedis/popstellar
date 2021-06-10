@@ -18,6 +18,7 @@ export function makeMessageStoreWatcher(store: Store) {
     }
 
     const msgState = getLaoMessagesState(laoId, state);
+    console.log('Message state is: ', msgState);
     const newValue = msgState.unprocessedIds;
     [previousValue, currentValue] = [currentValue, newValue];
 

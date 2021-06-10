@@ -6,7 +6,7 @@ import {
   CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall,
 } from './rollCall';
 import { WitnessMessage } from './witness';
-import { CastVote, ElectionResult, SetupElection } from './election';
+import {CastVote, ElectionResult, EndElection, SetupElection} from './election';
 
 export function encodeMessageData(msgData: MessageData): Base64UrlData {
   const data = JSON.stringify(msgData);
@@ -44,7 +44,7 @@ function buildElectionMessage(msgData: MessageData): MessageData {
     case ActionType.CAST_VOTE:
       return CastVote.fromJson(msgData);
     case ActionType.END:
-      return ElectionResult.fromJson(msgData);
+      return EndElection.fromJson(msgData);
     case ActionType.RESULT:
       return ElectionResult.fromJson(msgData);
     default:

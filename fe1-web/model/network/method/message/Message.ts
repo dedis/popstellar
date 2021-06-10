@@ -1,5 +1,5 @@
 import {
-  Base64UrlData, Hash, PublicKey, Signature, WitnessSignature, WitnessSignatureState,
+  Base64UrlData, Hash, PublicKey, Signature, WitnessSignature, WitnessSignatureState, Channel,
 } from 'model/objects';
 import { KeyPairStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
@@ -21,6 +21,8 @@ export interface MessageState {
   message_id: string;
 
   witness_signatures: WitnessSignatureState[];
+
+  channel?: Channel;
 }
 
 /**
@@ -44,6 +46,10 @@ export class Message {
   public get messageData() {
     return this.#messageData;
   }
+
+  // The channel field gets assigned for all incoming messages in JsonRpcWithMessage.ts
+  // In order to use it when handling the messages, such as the election result msg
+  public channel?: Channel;
 
   constructor(msg: Partial<Message>) {
     if (!msg.data) {
@@ -74,6 +80,10 @@ export class Message {
       }
     });
 
+    if (msg.channel) {
+      this.channel = msg.channel;
+    }
+
     this.data = msg.data;
     this.sender = msg.sender;
     this.signature = msg.signature;
@@ -94,11 +104,13 @@ export class Message {
       witness_signatures: obj.witness_signatures.map(
         (ws: WitnessSignatureState) => WitnessSignature.fromJson(ws),
       ),
+      channel: obj.channel,
     });
   }
 
   /**
    * Creates a Message object from a given MessageData and signatures
+   * We don't add the channel property here as we don't want to send that over the network
    *
    * @param data The MessageData to be signed and hashed
    * @param witnessSignatures The signatures of the witnesses

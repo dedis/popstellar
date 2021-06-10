@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Election, ElectionStatus, EventTags, Hash, Timestamp, Vote,
+  Election, ElectionStatus, EventTags, Hash, RegisteredVote, Timestamp, Vote,
 } from 'model/objects';
 import {
   SectionList, StyleSheet, Text, TextStyle,
@@ -13,8 +13,8 @@ import WideButtonView from 'components/WideButtonView';
 import TimeDisplay from 'components/TimeDisplay';
 import STRINGS from 'res/strings';
 import { Badge } from 'react-native-elements';
-import { dispatch, getStore, updateEvent } from 'store';
-import { getEventFromId } from '../../../ingestion/handlers/Utils';
+import { dispatch, updateEvent } from 'store';
+import { useSelector } from 'react-redux';
 
 /**
  * Component used to display a Election event in the LAO event list
@@ -43,8 +43,10 @@ const EventElection = (props: IPropTypes) => {
   const [hasVoted, setHasVoted] = useState(0);
   const untilStart = (election.start.valueOf() - Timestamp.EpochNow().valueOf()) * 1000;
   const untilEnd = (election.end.valueOf() - Timestamp.EpochNow().valueOf()) * 1000;
-  const storeState = getStore().getState();
-  const electionFromStore = getEventFromId(storeState, election.id) as Election;
+  // This makes sure the election status is always updated
+  const electionFromStore = useSelector((state) => (
+    // @ts-ignore
+    state.events.byLaoId[election.lao].byId[election.id]));
   if (!electionFromStore) {
     console.debug('Error in Election display: Election doesnt exist in store');
     return undefined;
@@ -86,14 +88,17 @@ const EventElection = (props: IPropTypes) => {
   };
 
   const calculateVoteHash = () => {
-    const votes = electionFromStore.registered_votes.map((registeredVote) => (
-      {
-        messageId: registeredVote.messageId,
-        voteIDs: registeredVote.votes.map((vote) => vote.id),
-      }
-    ));
+    const votes: { messageId: number, voteIDs: Hash[]; }[] = electionFromStore.registered_votes.map(
+      (registeredVote: RegisteredVote) => (
+        {
+          messageId: registeredVote.messageId,
+          voteIDs: registeredVote.votes.map((vote) => vote.id),
+        }
+      ),
+    );
     // Sort by message ID
-    votes.sort((a, b) => (a.messageId.valueOf() < b.messageId.valueOf() ? -1 : 1));
+    votes.sort((a, b) => (
+      a.messageId.valueOf() < b.messageId.valueOf() ? -1 : 1));
     const arrayToHash: Hash[] = [];
     votes.forEach((registeredVote) => { arrayToHash.push(...registeredVote.voteIDs); });
     const stringArray: string[] = arrayToHash.map((hash) => hash.valueOf());
