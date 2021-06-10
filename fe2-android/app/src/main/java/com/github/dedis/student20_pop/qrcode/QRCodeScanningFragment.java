@@ -96,7 +96,18 @@ public final class QRCodeScanningFragment extends Fragment {
                         if (event != null) {
                           setupWarningPopup(event);
                         } });
-      setupCloseRollCallButtons();
+      setupCloseRollCallButton();
+      //observe events that require current open rollcall to be closed
+      ((LaoDetailViewModel)mQRCodeScanningViewModel)
+              .getAskCloseRollCallEvent()
+              .observe(
+                      this,
+                      integerEvent -> {
+                        Integer nextFragment = integerEvent.getContentIfNotHandled();
+                        if (nextFragment != null) {
+                          setupClickCloseListener(nextFragment);
+                        }
+                      });
     }else {
       throw new IllegalArgumentException("cannot obtain view model");
     }
@@ -139,21 +150,10 @@ public final class QRCodeScanningFragment extends Fragment {
     }
   }
 
-  private void setupCloseRollCallButtons() {
+  private void setupCloseRollCallButton() {
     mQrCodeFragBinding.addAttendeeConfirm.setOnClickListener(
             clicked -> setupClickCloseListener(R.id.fragment_lao_detail)
     );
-    //observe events that require current open rollcall to be closed
-    ((LaoDetailViewModel)mQRCodeScanningViewModel)
-            .getAskCloseRollCallEvent()
-            .observe(
-                    this,
-                    integerEvent -> {
-                      Integer nextFragment = integerEvent.getContentIfNotHandled();
-                      if (nextFragment != null) {
-                        setupClickCloseListener(nextFragment);
-                      }
-                    });
   }
 
   private void setupClickCloseListener(int nextFragment){
