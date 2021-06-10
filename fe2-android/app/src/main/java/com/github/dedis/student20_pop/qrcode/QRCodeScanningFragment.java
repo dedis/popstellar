@@ -41,6 +41,7 @@ public final class QRCodeScanningFragment extends Fragment {
     private CameraSource camera;
     private CameraPreview mPreview;
     private BarcodeDetector barcodeDetector;
+    private Integer nbAttendees = 0;
 
     /**
      * Fragment constructor
@@ -98,8 +99,8 @@ public final class QRCodeScanningFragment extends Fragment {
             // set up the listener for the button that closes the roll call
             setupCloseRollCallButton();
 
-            // Subscribe to "close roll call" event
-           observeCloseRollCallEvent();
+            // Subscribe to "ask close roll call" event
+           observeAskCloseRollCallEvent();
         }
         else if (mQRCodeScanningViewModel.getScanningAction() == ScanningAction.ADD_WITNESS) {
             mQrCodeFragBinding.setScanningAction(ScanningAction.ADD_WITNESS);
@@ -162,12 +163,23 @@ public final class QRCodeScanningFragment extends Fragment {
 
     private void setupCloseRollCallButton() {
         mQrCodeFragBinding.addAttendeeConfirm.setOnClickListener(
-                v -> ((LaoDetailViewModel) mQRCodeScanningViewModel).closeRollCall());
+                clicked -> setupClickCloseListener(R.id.fragment_lao_detail));
     }
 
-    private void closeRollCall() {
-        ((LaoDetailViewModel) mQRCodeScanningViewModel).openLaoDetail();
-    }
+  private void setupClickCloseListener(int nextFragment){
+    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+    builder.setTitle("Close Roll Call");
+    builder.setMessage("You have scanned "+nbAttendees+" attendees.");
+    builder.setOnDismissListener(dialog -> startCamera());
+    builder.setPositiveButton(R.string.confirm, (dialog, which) ->
+              ((LaoDetailViewModel)mQRCodeScanningViewModel).closeRollCall(nextFragment)
+    );
+    builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
+    AlertDialog alert = builder.create();
+    alert.setCanceledOnTouchOutside(true);
+    mPreview.stop();
+    alert.show();
+  }
 
     private void setupSuccessPopup(String msg) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -225,7 +237,9 @@ public final class QRCodeScanningFragment extends Fragment {
                         integerEvent -> {
                             Integer event = integerEvent.getContentIfNotHandled();
                             if (event != null) {
-                                mQrCodeFragBinding.addAttendeeNumberText.setText(event.toString());
+                              nbAttendees = event;
+                              mQrCodeFragBinding.addAttendeeNumberText.setText(nbAttendees.toString());
+
                             }
                         });
     }
@@ -242,16 +256,17 @@ public final class QRCodeScanningFragment extends Fragment {
                             }
                         });
     }
-    void observeCloseRollCallEvent() {
-        ((LaoDetailViewModel) mQRCodeScanningViewModel)
-                .getCloseRollCallEvent()
-                .observe(
-                        this,
-                        booleanEvent -> {
-                            Boolean action = booleanEvent.getContentIfNotHandled();
-                            if (action != null) {
-                                closeRollCall();
-                            }
-                        });
+    void observeAskCloseRollCallEvent() {
+      //observe events that require current open roll call to be closed
+      ((LaoDetailViewModel)mQRCodeScanningViewModel)
+              .getAskCloseRollCallEvent()
+              .observe(
+                      this,
+                      integerEvent -> {
+                        Integer nextFragment = integerEvent.getContentIfNotHandled();
+                        if (nextFragment != null) {
+                          setupClickCloseListener(nextFragment);
+                        }
+                      });
     }
 }

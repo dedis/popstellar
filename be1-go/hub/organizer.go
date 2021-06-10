@@ -2,11 +2,13 @@ package hub
 
 import (
 	"bytes"
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
 	"path/filepath"
+	"strings"
 	"student20_pop"
 	"sync"
 
@@ -43,6 +45,10 @@ func NewOrganizerHub(public kyber.Point) (Hub, error) {
 	if err != nil {
 		return nil, xerrors.Errorf("failed to load the path for the json schemas: %v", err)
 	}
+
+	// Replace the '\\' from windows path with '/'
+	protocolPath = strings.ReplaceAll(protocolPath, "\\", "/")
+
 	protocolPath = "file://" + protocolPath
 
 	schemas := make(map[string]*gojsonschema.Schema)
@@ -278,14 +284,18 @@ func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 
 }
 
-func (o *organizerHub) Start(done chan struct{}) {
+func (o *organizerHub) Start(ctx context.Context, wg *sync.WaitGroup) {
+	wg.Add(1)
+	defer wg.Done()
+
 	log.Printf("started organizer hub...")
 
 	for {
 		select {
 		case incomingMessage := <-o.messageChan:
 			o.handleIncomingMessage(&incomingMessage)
-		case <-done:
+		case <-ctx.Done():
+			log.Println("closing the hub...")
 			return
 		}
 	}
@@ -351,8 +361,7 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 		attendees:   make(map[string]struct{}),
 		baseChannel: createBaseChannel(o, laoChannelID),
 	}
-	messageID := base64.URLEncoding.EncodeToString(publish.Params.Message.MessageID)
-	laoCh.inbox[messageID] = *publish.Params.Message
+	laoCh.inbox.storeMessage(*publish.Params.Message)
 
 	o.channelByID[encodedID] = &laoCh
 
@@ -394,7 +403,7 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 	case message.LaoObject:
 		err = c.processLaoObject(*msg)
 	case message.MeetingObject:
-		err = c.processMeetingObject(data)
+		err = c.processMeetingObject(data, *msg)
 	case message.MessageObject:
 		err = c.processMessageObject(msg.Sender, data)
 	case message.RollCallObject:
@@ -414,7 +423,6 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 
 func (c *laoChannel) processLaoObject(msg message.Message) error {
 	action := message.LaoDataAction(msg.Data.GetAction())
-	msgIDEncoded := base64.URLEncoding.EncodeToString(msg.MessageID)
 
 	switch action {
 	case message.UpdateLaoAction:
@@ -427,20 +435,16 @@ func (c *laoChannel) processLaoObject(msg message.Message) error {
 		return message.NewInvalidActionError(message.DataAction(action))
 	}
 
-	c.inboxMu.Lock()
-	c.inbox[msgIDEncoded] = msg
-	c.inboxMu.Unlock()
+	c.inbox.storeMessage(msg)
 
 	return nil
 }
 
 func (c *laoChannel) processLaoState(data *message.StateLAOData) error {
 	// Check if we have the update message
-	updateMsgIDEncoded := base64.URLEncoding.EncodeToString(data.ModificationID)
+	msg, ok := c.inbox.getMessage(data.ModificationID)
 
-	c.inboxMu.RLock()
-	updateMsg, ok := c.inbox[updateMsgIDEncoded]
-	c.inboxMu.RUnlock()
+	updateMsgIDEncoded := base64.URLEncoding.EncodeToString(data.ModificationID)
 
 	if !ok {
 		return &message.Error{
@@ -487,7 +491,7 @@ func (c *laoChannel) processLaoState(data *message.StateLAOData) error {
 	}
 
 	// Check if the updates are consistent with the update message
-	updateMsgData, ok := updateMsg.Data.(*message.UpdateLAOData)
+	updateMsgData, ok := msg.Data.(*message.UpdateLAOData)
 	if !ok {
 		return &message.Error{
 			Code:        -4,
@@ -556,7 +560,7 @@ func compareLaoUpdateAndState(update *message.UpdateLAOData, state *message.Stat
 	return nil
 }
 
-func (c *laoChannel) processMeetingObject(data message.Data) error {
+func (c *laoChannel) processMeetingObject(data message.Data, msg message.Message) error {
 	action := message.MeetingDataAction(data.GetAction())
 
 	switch action {
@@ -564,6 +568,8 @@ func (c *laoChannel) processMeetingObject(data message.Data) error {
 	case message.UpdateMeetingAction:
 	case message.StateMeetingAction:
 	}
+
+	c.inbox.storeMessage(msg)
 
 	return nil
 }
@@ -575,8 +581,6 @@ func (c *laoChannel) processMessageObject(public message.PublicKey, data message
 	case message.WitnessAction:
 		witnessData := data.(*message.WitnessMessageData)
 
-		msgEncoded := base64.URLEncoding.EncodeToString(witnessData.MessageID)
-
 		err := schnorr.VerifyWithChecks(student20_pop.Suite, public, witnessData.MessageID, witnessData.Signature)
 		if err != nil {
 			return &message.Error{
@@ -585,21 +589,10 @@ func (c *laoChannel) processMessageObject(public message.PublicKey, data message
 			}
 		}
 
-		c.inboxMu.Lock()
-		msg, ok := c.inbox[msgEncoded]
-		if !ok {
-			// TODO: We received a witness signature before the message itself.
-			// We ignore it for now but it might be worth keeping it until we
-			// actually receive the message
-			log.Printf("failed to find message_id %s for witness message", msgEncoded)
-			c.inboxMu.Unlock()
-			return nil
+		err = c.inbox.addWitnessSignature(witnessData.MessageID, public, witnessData.Signature)
+		if err != nil {
+			return message.NewError("Failed to add a witness signature", err)
 		}
-		msg.WitnessSignatures = append(msg.WitnessSignatures, message.PublicKeySignaturePair{
-			Witness:   public,
-			Signature: witnessData.Signature,
-		})
-		c.inboxMu.Unlock()
 	default:
 		return message.NewInvalidActionError(message.DataAction(action))
 	}
@@ -646,10 +639,7 @@ func (c *laoChannel) processRollCallObject(msg message.Message) error {
 		return message.NewError(errorDescription, err)
 	}
 
-	msgIDEncoded := base64.URLEncoding.EncodeToString(msg.MessageID)
-	c.inboxMu.Lock()
-	c.inbox[msgIDEncoded] = msg
-	c.inboxMu.Unlock()
+	c.inbox.storeMessage(msg)
 
 	return nil
 }
@@ -666,7 +656,7 @@ func (c *laoChannel) processElectionObject(msg message.Message) error {
 
 	err := c.createElection(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to setup the election %v", err)
+		return message.NewError("failed to setup the election", err)
 	}
 
 	log.Printf("Election has created with success")

@@ -3,7 +3,6 @@ package hub
 import (
 	"encoding/base64"
 	"fmt"
-	"golang.org/x/xerrors"
 	"log"
 	"student20_pop/message"
 	"sync"
@@ -90,11 +89,11 @@ func (c *laoChannel) createElection(msg message.Message) error {
 		getAllQuestionsForElectionChannel(data.Questions),
 	}
 
-	// Add the SetupElection message to the new election channel
-	messageID := base64.URLEncoding.EncodeToString(msg.MessageID)
-	electionCh.inboxMu.Lock()
-	electionCh.inbox[messageID] = msg
-	electionCh.inboxMu.Unlock()
+	// Saving the election channel creation message on the lao channel
+  c.inbox.storeMessage(msg)
+  
+	// Saving on election channel too so it self-contains the entire election history
+	electionCh.inbox.storeMessage(msg)
 
 	// Add the new election channel to the organizerHub
 	organizerHub.channelByID[encodedID] = &electionCh
@@ -105,7 +104,7 @@ func (c *laoChannel) createElection(msg message.Message) error {
 func (c *electionChannel) Publish(publish message.Publish) error {
 	err := c.baseChannel.VerifyPublishMessage(publish)
 	if err != nil {
-		return xerrors.Errorf("failed to verify publish message on an election channel: %v", err)
+		return message.NewError("failed to verify publish message on an election channel", err)
 	}
 
 	msg := publish.Params.Message
@@ -119,13 +118,23 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 		action := message.ElectionAction(data.GetAction())
 		switch action {
 		case message.CastVoteAction:
-			return c.castVoteHelper(publish)
+			err = c.castVoteHelper(publish)
 		case message.ElectionEndAction:
 			log.Fatal("Not implemented", message.ElectionEndAction)
 		case message.ElectionResultAction:
 			log.Fatal("Not implemented", message.ElectionResultAction)
+		default:
+			return message.NewInvalidActionError(message.DataAction(action))
 		}
 	}
+
+	if err != nil {
+		action := message.ElectionAction(data.GetAction())
+		errorDescription := fmt.Sprintf("failed to process %s action", action)
+		return message.NewError(errorDescription, err)
+	}
+
+	c.broadcastToAllClients(*msg)
 
 	return nil
 }
@@ -149,8 +158,7 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 	}
 
 	//This should update any previously set vote if the message ids are the same
-	messageID := base64.URLEncoding.EncodeToString(msg.MessageID)
-	c.inbox[messageID] = *msg
+	c.inbox.storeMessage(*msg)
 	for _, q := range voteData.Votes {
 
 		QuestionID := base64.URLEncoding.EncodeToString(q.QuestionID)
@@ -167,7 +175,7 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 		earlierVote, ok := qs.validVotes[msg.Sender.String()]
 		// if the sender didn't previously cast a vote or if the vote is no longer valid update it
 
-		if err := checkMethodProperties(qs.method, len(q.VoteIndexes)); err != nil{
+		if err := checkMethodProperties(qs.method, len(q.VoteIndexes)); err != nil {
 			return err
 		}
 		if !ok {
