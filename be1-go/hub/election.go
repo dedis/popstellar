@@ -3,7 +3,7 @@ package hub
 import (
 	"crypto/sha256"
 	"encoding/base64"
-	"encoding/json"
+	//"encoding/json"
 	"fmt"
 	"golang.org/x/xerrors"
 	"log"
@@ -365,19 +365,19 @@ func (c *electionChannel) electionResultHelper(msg *message.Message) error{
 		}
 	}
 	msg.Data = resultData
-	ms2 := message.Message{
-		MessageID:         message.Hash(resultData,msg.Signature),
-		Data:              resultData,
-		Sender:            msg.Sender,
-		Signature:         msg.Signature,
-		WitnessSignatures: msg.WitnessSignatures,
-		RawData:           nil,
-	}
-	for client := range c.clients{
-		client.Send()
-	}
+	//ms2 := message.Message{
+	//	MessageID:         nil,
+	//	Data:              resultData,
+	//	Sender:            msg.Sender,
+	//	Signature:         msg.Signature,
+	//	WitnessSignatures: msg.WitnessSignatures,
+	//	RawData:           nil,
+	//}
+	//for client := range c.clients{
+	//	//client.Send()
+	//}
 
-	c.broadcastToAllClients(ms2)
+	c.broadcastToAllClients(*msg)
 
 	return nil
 }
@@ -389,5 +389,5 @@ func (c* electionChannel) publishResults(m message.Message){
 }
 
 func hashDataSender(data message.ElectionResultData, signature message.Signature){
-	data.GenericData.
+	//data.GenericData.
 }
