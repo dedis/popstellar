@@ -147,6 +147,18 @@ public class HomeActivity extends AppCompatActivity {
                 }
               }
             });
+
+    // Subscribe to "open lao wallet" event
+    mViewModel
+        .getOpenLaoWalletEvent()
+        .observe(
+                this,
+                stringEvent -> {
+                  String laoId = stringEvent.getContentIfNotHandled();
+                  if (laoId != null) {
+                    openContentWallet(laoId);
+                  }
+                });
   }
 
   @Override
@@ -167,6 +179,7 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   public void setupHomeButton() {
+
     Button homeButton = (Button) findViewById(R.id.tab_home);
     homeButton.setOnClickListener(v -> mViewModel.openHome());
   }
@@ -297,9 +310,22 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void openLaoDetails(String laoId) {
+    openLaoDetailActivity(laoId, true);
+  }
+
+  private void openContentWallet(String laoId) {
+    openLaoDetailActivity(laoId, false);
+  }
+
+  private void openLaoDetailActivity(String laoId, boolean openLaoDetail) {
     Intent intent = new Intent(this, LaoDetailActivity.class);
     Log.d(TAG, "Trying to open lao detail for lao with id " + laoId);
     intent.putExtra("LAO_ID", laoId);
+    if(openLaoDetail) {
+      intent.putExtra("FRAGMENT_TO_OPEN", "LaoDetail");
+    }else{
+      intent.putExtra("FRAGMENT_TO_OPEN", "ContentWallet");
+    }
     startActivityForResult(intent, LAO_DETAIL_REQUEST_CODE);
   }
 }
