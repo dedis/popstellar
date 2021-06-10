@@ -8,6 +8,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const messageID = "oJYBapM5ZuVrnggAwzQMa3oBLrFSjEQY-hv_JQRgs1U="
+
 func TestInbox_AddWitnessSignature(t *testing.T) {
 	inbox := createInbox()
 
@@ -19,7 +21,7 @@ func TestInbox_AddWitnessSignature(t *testing.T) {
 
 	require.Equal(t, 1, len(inbox.msgs))
 
-	buf, err := base64.URLEncoding.DecodeString("oJYBapM5ZuVrnggAwzQMa3oBLrFSjEQY-hv_JQRgs1U=")
+	buf, err := base64.URLEncoding.DecodeString(messageID)
 	require.NoError(t, err)
 
 	// Add the witness signature to the message in the inbox
@@ -36,7 +38,7 @@ func TestInbox_AddWitnessSignature(t *testing.T) {
 func TestInbox_AddSigWrongMessages(t *testing.T) {
 	inbox := createInbox()
 
-	buf, err := base64.URLEncoding.DecodeString("oJYBapM5ZuVrnggAwzQMa3oBLrFSjEQY-hv_JQRgs1U=")
+	buf, err := base64.URLEncoding.DecodeString(messageID)
 	require.NoError(t, err)
 
 	// Add the witness signature to the message in the inbox
@@ -61,7 +63,7 @@ func TestInbox_AddWitnessSignatures(t *testing.T) {
 
 	require.Equal(t, 1, len(inbox.msgs))
 
-	buf, err := base64.URLEncoding.DecodeString("oJYBapM5ZuVrnggAwzQMa3oBLrFSjEQY-hv_JQRgs1U=")
+	buf, err := base64.URLEncoding.DecodeString(messageID)
 	require.NoError(t, err)
 
 	signaturesNumber := 100
