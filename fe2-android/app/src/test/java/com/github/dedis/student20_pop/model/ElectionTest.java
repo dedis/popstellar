@@ -9,7 +9,6 @@ import com.github.dedis.student20_pop.utility.security.Hash;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,12 +23,31 @@ public class ElectionTest {
             false, Arrays.asList("candidate1", "candidate2"), "my election id");
     private String name = "my election name";
     private String id = "my election id";
+<<<<<<< HEAD
     private long startTime = 0;
     private long endTime = 1;
     private String channel = "channel id";
     private Election election = new Election();
 
     @Test
+=======
+    private List<String> questions = Arrays.asList("my questions");
+    private boolean writeIn = false;
+    private long startTime = 0;
+    private long endTime = 1;
+    private long creationTime = 0;
+    private List<List<String>> ballotsOptions = Arrays.asList(Arrays.asList("candidate1", "candidate2"));
+    private Election election = new Election();
+
+    @Test
+    public void settingNullParametersThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> election.setName(null));
+        assertThrows(IllegalArgumentException.class, () -> election.setId(null));
+    }
+
+
+    @Test
+>>>>>>> master
     public void settingAndGettingReturnsCorrespondingName() {
         election.setName(name);
         assertThat(election.getName(), is(name));
@@ -42,6 +60,7 @@ public class ElectionTest {
     }
 
     @Test
+<<<<<<< HEAD
     public void settingAndGettingReturnsCorrespondingId() {
         election.setId(id);
         assertThat(election.getId(), is(id));
@@ -60,10 +79,17 @@ public class ElectionTest {
     }
 
     @Test
+=======
+>>>>>>> master
     public void settingNegativeTimesThrowsException() {
         assertThrows(IllegalArgumentException.class, () -> election.setStart(-1));
         assertThrows(IllegalArgumentException.class, () -> election.setEnd(-1));
         assertThrows(IllegalArgumentException.class, () -> election.setCreation(-1));
+    }
+
+    @Test
+    public void settingNullElectionQuestionsThrowsException(){
+        assertThrows(IllegalArgumentException.class, () -> election.setElectionQuestions(null));
     }
 
     @Test

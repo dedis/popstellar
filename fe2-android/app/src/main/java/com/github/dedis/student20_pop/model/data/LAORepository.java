@@ -1,9 +1,9 @@
 package com.github.dedis.student20_pop.model.data;
 
-import java.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+
 import com.github.dedis.student20_pop.model.Election;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.PendingUpdate;
@@ -43,8 +43,7 @@ import com.google.gson.Gson;
 
 import com.tinder.scarlet.WebSocket;
 import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.Single;;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.PublishSubject;
@@ -52,11 +51,11 @@ import io.reactivex.subjects.Subject;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -64,6 +63,13 @@ import java.util.stream.Collectors;
 
 import static com.github.dedis.student20_pop.model.event.EventState.CLOSED;
 import static com.github.dedis.student20_pop.model.event.EventState.OPENED;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
+
 
 public class LAORepository {
 
@@ -353,7 +359,6 @@ public class LAORepository {
 
     List<ElectionResultQuestion> questions = data.getElectionQuestionResults();
     if (questions.isEmpty()) throw new IllegalArgumentException("the questions results shouldn't be empty");
-    election.setResults(questions.get(0).getResults());
     lao.updateElection(election.getId(), election);
     return false;
   }

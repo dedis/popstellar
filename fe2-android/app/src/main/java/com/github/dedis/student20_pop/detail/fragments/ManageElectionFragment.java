@@ -73,7 +73,6 @@ public class  ManageElectionFragment extends Fragment {
         List<ElectionQuestion> electionQuestions = laoDetailViewModel.getCurrentElection().getElectionQuestions();
         if (electionQuestions.isEmpty()) question.setText("No election question !");
         else question.setText("Election Question : " + electionQuestions.get(0).getQuestion());
-
         mManageElectionFragBinding.setLifecycleOwner(getActivity());
         return mManageElectionFragBinding.getRoot();
 

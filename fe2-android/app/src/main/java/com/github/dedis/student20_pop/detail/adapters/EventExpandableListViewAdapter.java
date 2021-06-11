@@ -335,7 +335,6 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
             electionBinding.electionActionButton.setOnClickListener(
                     clicked -> viewModel.endElection(election));
         }
-
         electionBinding.electionEditButton.setOnClickListener(clicked -> viewModel.openManageElection(true));
         electionBinding.setEventCategory(category);
         electionBinding.setViewModel(viewModel);
