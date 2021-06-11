@@ -16,6 +16,7 @@ import com.github.dedis.student20_pop.Injection;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
 import com.github.dedis.student20_pop.detail.fragments.AttendeesListFragment;
+import com.github.dedis.student20_pop.detail.fragments.CastVoteFragment;
 import com.github.dedis.student20_pop.detail.fragments.IdentityFragment;
 import com.github.dedis.student20_pop.detail.fragments.LaoDetailFragment;
 import com.github.dedis.student20_pop.detail.fragments.LaoWalletFragment;
@@ -462,8 +463,8 @@ public class LaoDetailActivity extends AppCompatActivity {
                                 }
                             }
                         });
+}
 
-    }
 
     public void setUpWalletMessage() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -472,11 +473,25 @@ public class LaoDetailActivity extends AppCompatActivity {
         builder.show();
     }
 
-    //TODO : Implement those two methods
+
     private void setupCastVotesFragment() {
-      /*
-      will be implemented in Johan's PR
-       */
+      mViewModel
+              .getOpenCastVotes()
+              .observe(
+                      this,
+                      booleanEvent -> {
+                          Boolean event = booleanEvent.getContentIfNotHandled();
+                          if(event != null){
+                              CastVoteFragment castVoteFragment =
+                                      (CastVoteFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_cast_vote);
+                              if(castVoteFragment == null){
+                                  castVoteFragment = CastVoteFragment.newInstance();
+                                  ActivityUtils.replaceFragmentInActivity(
+                                          getSupportFragmentManager(), castVoteFragment, R.id.fragment_container_lao_detail);
+                              }
+                          }
+                      }
+              );
     }
 
     private void setupElectionResultsFragment() {
