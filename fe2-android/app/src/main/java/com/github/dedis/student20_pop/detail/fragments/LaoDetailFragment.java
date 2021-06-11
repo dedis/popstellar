@@ -23,6 +23,7 @@ import com.github.dedis.student20_pop.detail.adapters.WitnessListViewAdapter;
 import com.github.dedis.student20_pop.model.RollCall;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventType;
+import com.github.dedis.student20_pop.qrcode.ScanningAction;
 
 import net.glxn.qrgen.android.QRCode;
 
@@ -128,7 +129,11 @@ public class LaoDetailFragment extends Fragment {
     }
 
     private void setupAddWitnessButton() {
-        mLaoDetailFragBinding.addWitnessButton.setOnClickListener(v -> mLaoDetailViewModel.openAddWitness());
+        mLaoDetailFragBinding.addWitnessButton.setOnClickListener(v -> {
+                mLaoDetailViewModel.setScanningAction(ScanningAction.ADD_WITNESS);
+                mLaoDetailViewModel.openScanning();
+        }) ;
+
     }
 
     private void setupPropertiesButton() {

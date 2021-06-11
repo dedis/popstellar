@@ -305,16 +305,21 @@ public class LaoDetailActivity extends AppCompatActivity {
     }
   }
 
-
     private void setupAddWitness(){
+
+        // Subscribe to "open witness " event
         mViewModel
                 .getOpenAddWitness()
                 .observe(
                         this,
-                        booleanEvent -> {
-                            Boolean event = booleanEvent.getContentIfNotHandled();
-                            if (event != null) {
-                                mViewModel.setScanningAction(ScanningAction.ADD_WITNESS);
+                        stringEvent -> {
+                            String action = stringEvent.getContentIfNotHandled();
+                            if (action != null) {
+                                openScanning(action);
+                            }
+                        });
+    }
+    private void setupScanFragmentWitness(){
                                 QRCodeScanningFragment scanningFragment =
                                         (QRCodeScanningFragment) getSupportFragmentManager().findFragmentById(R.id.qr_code);
 
@@ -331,10 +336,7 @@ public class LaoDetailActivity extends AppCompatActivity {
                                             getSupportFragmentManager(), scanningFragment, R.id.fragment_container_lao_detail);
                                 }
                                 }
-                            }
-                );
 
-    }
 
   private void setupScanFragmentRollCall() {
     QRCodeScanningFragment scanningFragment =
@@ -353,7 +355,7 @@ public class LaoDetailActivity extends AppCompatActivity {
               getSupportFragmentManager(), scanningFragment, R.id.fragment_container_lao_detail);
     }
   }
-  private void setupCameraPermissionFragmentRollCall() {
+  private void setupCameraPermissionFragment() {
     CameraPermissionFragment cameraPermissionFragment =
             (CameraPermissionFragment)
                     getSupportFragmentManager().findFragmentById(R.id.fragment_camera_perm);
@@ -365,10 +367,14 @@ public class LaoDetailActivity extends AppCompatActivity {
   }
   private void openScanning(String action){
       if (action.equals(HomeViewModel.SCAN)) {
-          mViewModel.setScanningAction(ScanningAction.ADD_ROLL_CALL_ATTENDEE);
-          setupScanFragmentRollCall();
+          if(mViewModel.getScanningAction() == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
+              setupScanFragmentRollCall();
+          }
+          else {
+              setupScanFragmentWitness();
+          }
       }else{
-          setupCameraPermissionFragmentRollCall();
+          setupCameraPermissionFragment();
       }
   }
 

@@ -90,7 +90,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     private final MutableLiveData<Event<Boolean>> mOpenManageElectionEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mElectionCreatedEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mOpenCastVotesEvent = new MutableLiveData<>();
-    private final MutableLiveData<Event<Boolean>> mOpenAddWitness = new MutableLiveData<>();
+    private final MutableLiveData<Event<String>> mOpenAddWitness = new MutableLiveData<>();
 
     private final MutableLiveData<Event<Integer>> mNbAttendeesEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Integer>> mAskCloseRollCallEvent = new MutableLiveData<>();
@@ -413,7 +413,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                         if (answer instanceof Result) {
                                             Log.d(TAG, "opened the roll call");
                                             mCurrentRollCallId = openRollCall.getUpdateId();
-                                            openAttendeeScanning();
+                                            scanningAction = ScanningAction.ADD_ROLL_CALL_ATTENDEE;
+                                            openScanning();
                                         } else {
                                             Log.d(TAG, "failed to open the roll call");
                                         }
@@ -684,7 +685,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         return mOpenRollCallEvent;
     }
 
-    public LiveData<Event<Boolean>> getOpenAddWitness() {
+    public LiveData<Event<String>> getOpenAddWitness() {
         return mOpenAddWitness;
     }
 
@@ -775,7 +776,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         mOpenWitnessMessageEvent.setValue(new Event<>(true));
     }
 
-    public void openAddWitness() {
+    private void openAddWitness() {
 
         Lao lao = getCurrentLaoValue();
         if (lao == null) {
@@ -783,7 +784,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             return;
         }
         witnesses = new HashSet<>(lao.getWitnesses());
-        mOpenAddWitness.setValue(new Event<>(true));
+        mOpenAddWitness.setValue(new Event<>(HomeViewModel.SCAN));
     }
 
     public void toggleShowHideProperties() {
@@ -995,8 +996,13 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         mNbAttendeesEvent.postValue(new Event<>(attendees.size())); //this to display the initial number of attendees
     }
 
-    public void openCameraPermissionRollCall() {
-        mOpenRollCallEvent.setValue(new Event<>(HomeViewModel.REQUEST_CAMERA_PERMISSION));
+    public void openCameraPermission() {
+        if(scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
+            mOpenRollCallEvent.setValue(new Event<>(HomeViewModel.REQUEST_CAMERA_PERMISSION));
+        }
+        else {
+            mOpenAddWitness.setValue(new Event<>(HomeViewModel.REQUEST_CAMERA_PERMISSION));
+        }
     }
 
     public void enterRollCall(String id) {
@@ -1014,13 +1020,19 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         }
     }
 
-    public void openAttendeeScanning() {
+    public void openScanning() {
         if (ContextCompat.checkSelfPermission(
                 getApplication().getApplicationContext(), Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
-            openQrCodeScanningRollCall();
-        } else {
-            openCameraPermissionRollCall();
+            if ((scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE)) {
+                openQrCodeScanningRollCall();
+            } else {
+                if(scanningAction == ScanningAction.ADD_WITNESS)
+                openAddWitness();
+            }
+        }
+        else {
+            openCameraPermission();
         }
     }
 
@@ -1042,7 +1054,12 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
     @Override
     public void onPermissionGranted() {
-        openQrCodeScanningRollCall();
+        if(scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
+            openQrCodeScanningRollCall();
+        }
+        else if(scanningAction == ScanningAction.ADD_WITNESS) {
+            openAddWitness();
+        }
     }
 
     @Override
