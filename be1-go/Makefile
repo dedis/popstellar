@@ -1,25 +1,22 @@
 .PHONY: test
 
-define execute_command
-	make copy_protocol
-    $(1)
-	make clean_protocol
-endef
+build: protocol
+	go build -o pop ./cli/
 
-build:
-	$(call execute_command, go build -o pop ./cli/)
+lint:
+	@go get -v honnef.co/go/tools/cmd/staticcheck
+	@go mod tidy
+	staticcheck ./...
 
-test:
-	$(call execute_command, go test -v ./...)
+check: protocol lint vet
+	go test -v ./...
+	go test -v -race ./...
 
-test_race:
-	$(call execute_command, go test -race -v ./...)
+vet: protocol
+	go vet ./...
 
-vet:
-	$(call execute_command, go vet ./...)
-
-copy_protocol:
+protocol:
 	cp -r ../protocol ./validation 
 
-clean_protocol:
+clean:
 	rm -rf validation/protocol

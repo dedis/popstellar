@@ -128,36 +128,18 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-go-
 
-    - name: Setup dependencies
+    - name: Run check target
       run: |
-        go mod download
-        go get -v honnef.co/go/tools/cmd/staticcheck
+        make check
 
     - name: Run go vet
       run: |
         make vet
 
-    - name: Run staticcheck
-      if: ${{ always() }}  # execute even if previous steps failed
-      run: |
-        make copy_protocol
-        staticcheck ./...
-        make clean_protocol
-
     - name: Build
       if: ${{ always() }}  # execute even if previous steps failed
       run: |
         make build
-
-    - name: Test
-      if: ${{ always() }}  # execute even if previous steps failed
-      run: |
-        make test
-
-    - name: Test with race detector
-      if: ${{ always() }}  # execute even if previous steps failed
-      run: |
-        make test_race
 
     - name: Run code analysis
       if: ${{ matrix.platform == 'ubuntu-latest' }}  # execute even if previous steps failed

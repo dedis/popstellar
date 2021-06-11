@@ -105,7 +105,7 @@ func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 	msg := publish.Params.Message
 
 	// Verify the data
-	err := c.hub.schemaValidator.VerifyJson(msg.RawData, validation.DataSchema)
+	err := c.hub.schemaValidator.VerifyJson(msg.RawData, validation.Data)
 	if err != nil {
 		return message.NewError("failed to validate the data", err)
 	}

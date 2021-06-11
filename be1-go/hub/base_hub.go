@@ -90,7 +90,7 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 	}
 
 	// Verify the message
-	err := h.schemaValidator.VerifyJson(byteMessage, validation.GenericMsgSchema)
+	err := h.schemaValidator.VerifyJson(byteMessage, validation.GenericMessage)
 	if err != nil {
 		err = message.NewError("failed to verify incoming message", err)
 		client.SendError(&id, err)
@@ -134,7 +134,7 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 		msg := query.Publish.Params.Message
 
 		// Verify the data
-		err := h.schemaValidator.VerifyJson(msg.RawData, validation.DataSchema)
+		err := h.schemaValidator.VerifyJson(msg.RawData, validation.Data)
 		if err != nil {
 			err = message.NewError("failed to validate the data", err)
 			client.SendError(&id, err)

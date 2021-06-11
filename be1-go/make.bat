@@ -1,41 +1,42 @@
 IF /I "%1"=="build" GOTO build
-IF /I "%1"=="test" GOTO test
-IF /I "%1"=="test_race" GOTO test_race
+IF /I "%1"=="lint" GOTO lint
+IF /I "%1"=="check" GOTO check
 IF /I "%1"=="vet" GOTO vet
-IF /I "%1"=="copy_protocol" GOTO copy_protocol
-IF /I "%1"=="clean_protocol" GOTO clean_protocol
+IF /I "%1"=="protocol" GOTO protocol 
+IF /I "%1"=="clean" GOTO clean
 GOTO error
 
 :build
-	CALL :copy_protocol
+	CALL :protocol
 	go build -o pop ./cli/
-	CALL :clean_protocol
 	GOTO :EOF
 
-:test
-	CALL :copy_protocol
+:lint
+	go get -v honnef.co/go/tools/cmd/staticcheck
+	go mod tidy
+	staticcheck ./...
+	GOTO :EOF
+
+:check
+	CALL :protocol
+	CALL :lint
+	CALL :vet
+
 	go test -v ./...
-	CALL :clean_protocol
-	GOTO :EOF
-
-:test_race
-	CALL :copy_protocol
 	go test -race -v ./...
-	CALL :clean_protocol
 
 	GOTO :EOF
 
 :vet
-	CALL :copy_protocol
+	CALL :protocol
 	go vet ./...
-	CALL :clean_protocol
 	GOTO :EOF
 
-:copy_protocol
+:protocol
 	XCOPY /E /H /Y ..\protocol\ validation\protocol\
 	GOTO :EOF
 
-:clean_protocol
+:clean
 	RMDIR /S /Q validation\protocol\
 	GOTO :EOF
 	
