@@ -16,14 +16,24 @@ import static org.hamcrest.Matchers.allOf;
 
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
+import com.github.dedis.student20_pop.home.HomeActivity;
+import com.github.dedis.student20_pop.home.HomeViewModel;
+import com.github.dedis.student20_pop.model.Lao;
+import com.github.dedis.student20_pop.utility.network.IdGenerator;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.time.Instant;
+
 public class ManageElectionFragmentTest {
 
-
+    private final String organizer = "kdwaN5WgQhKuDk89H-EcPM58H_lDubHC_7bUHI-_ix0=";
+    private final String name = "Lao Name";
+    private final long creation = Instant.now().getEpochSecond();
+    private final String id = IdGenerator.generateLaoId(organizer, creation, name);
+    private final Lao lao = new Lao (id,name);
 /*
     private final int YEAR = 2022;
       private final int MONTH_OF_YEAR = 10;
@@ -35,8 +45,8 @@ public class ManageElectionFragmentTest {
 */
 
       @Rule
-      public ActivityScenarioRule<LaoDetailActivity> activityScenarioRule =
-          new ActivityScenarioRule<>(LaoDetailActivity.class);
+      public ActivityScenarioRule<HomeActivity> activityScenarioRule =
+          new ActivityScenarioRule<>(HomeActivity.class);
 
       private View decorView;
 
@@ -45,28 +55,36 @@ public class ManageElectionFragmentTest {
         activityScenarioRule
             .getScenario()
             .onActivity(
-                new ActivityScenario.ActivityAction<LaoDetailActivity>() {
+                new ActivityScenario.ActivityAction<HomeActivity>() {
 
                   /**
                    * This method is invoked on the main thread with the reference to the Activity.
                    *
-                   * @param laoDetailActivity an Activity instrumented by the {@link ActivityScenario}. It
+                   * @param homeActivity an Activity instrumented by the {@link ActivityScenario}. It
      never
                    *     be null.
                    */
                   @Override
-                  public void perform(LaoDetailActivity laoDetailActivity) {
-                    decorView = laoDetailActivity.getWindow().getDecorView();
+                  public void perform(HomeActivity homeActivity) {
+                    decorView = homeActivity.getWindow().getDecorView();
+                    HomeViewModel homeViewModel = HomeActivity.obtainViewModel(homeActivity);
+                    homeViewModel.openLAO(id);
 
                   }
                 });
 
         onView(
                 allOf(
-                    withId(R.id.election_edit_button), // here we find the election edit button on any election and click
+                    withId(R.id.add_future_event_button), // here we find the  button to add new  election and click
                                                           // on it
                     withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
             .perform(click());
+          onView(
+                  allOf(
+                          withId(R.id.add_future_event_button), // here we find the  button to add new  election and click
+                          // on it
+                          withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
+                  .perform(click());
 
       }
 
