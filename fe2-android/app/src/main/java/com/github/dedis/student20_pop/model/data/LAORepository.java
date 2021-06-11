@@ -2,6 +2,7 @@ package com.github.dedis.student20_pop.model.data;
 
 import android.util.Base64;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.github.dedis.student20_pop.model.Election;
@@ -37,12 +38,7 @@ import com.google.crypto.tink.PublicKeyVerify;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.crypto.tink.subtle.Ed25519Verify;
 import com.google.gson.Gson;
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.BehaviorSubject;
-import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subjects.Subject;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -53,6 +49,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
 public class  LAORepository {
 
