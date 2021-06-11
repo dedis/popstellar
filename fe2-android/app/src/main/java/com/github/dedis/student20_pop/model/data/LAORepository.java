@@ -273,7 +273,7 @@ public class LAORepository {
     }
 
     // Trigger an onNext
-    if (!(data instanceof WitnessMessage)) {
+    if (!(data instanceof WitnessMessage) && isLaoChannel(channel)) {
       LAOState laoState = laoById.get(channel);
       laoState.publish();
       if (data instanceof StateLao || data instanceof CreateLao) {
