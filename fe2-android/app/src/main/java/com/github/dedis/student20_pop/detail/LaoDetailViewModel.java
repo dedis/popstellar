@@ -878,8 +878,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                     answer -> {
                                         if (answer instanceof Result) {
                                             Log.d(TAG, "updated lao name");
-                                            StateLao stateLao = new StateLao(updateLao.getId(), updateLao.getName(), lao.getCreation(), updateLao.getLastModified(), publicKey, msg.getMessageId(), lao.getWitnesses(), new ArrayList<>());
-                                            MessageGeneral stateMsg = new MessageGeneral(sender, stateLao, signer, mGson);
                                             sendStateLao("lao name", updateLao, lao, sender, signer, channel, publicKey, msg);
                                         } else {
                                             Log.d(TAG, "failed to update lao name");
@@ -926,8 +924,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                     answer -> {
                                         if (answer instanceof Result) {
                                             Log.d(TAG, "updated lao witnesses");
-                                            StateLao stateLao = new StateLao(updateLao.getId(), updateLao.getName(), lao.getCreation(), updateLao.getLastModified(), publicKey, msg.getMessageId(), updateLao.getWitnesses(), new ArrayList<>());
-                                            MessageGeneral stateMsg = new MessageGeneral(sender, stateLao, signer, mGson);
                                             sendStateLao("lao state with new witnesses", updateLao, lao, sender, signer, channel, publicKey, msg);
                                         } else {
                                             Log.d(TAG, "failed to update lao witnesses");
@@ -1006,7 +1002,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     public void openCameraPermission() {
         if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
             mOpenRollCallEvent.setValue(new Event<>(HomeViewModel.REQUEST_CAMERA_PERMISSION));
-        } else if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
+        } else if (scanningAction == ScanningAction.ADD_WITNESS) {
             mOpenAddWitness.setValue(new Event<>(HomeViewModel.REQUEST_CAMERA_PERMISSION));
         }
     }
