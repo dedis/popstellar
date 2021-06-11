@@ -35,9 +35,9 @@ public class ElectionTest {
 
     @Test
     public void settingAndGettingReturnsCorrespondingEndBoolean() {
-        assertThat(election.isEnded(), is(false));
+        assertThat(election.isEnded().getValue(), is(false));
         election.setEnded(true);
-        assertThat(election.isEnded(), is(true));
+        assertThat(election.isEnded().getValue(), is(true));
     }
 
     @Test
