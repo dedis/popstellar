@@ -3,14 +3,15 @@ package com.github.dedis.student20_pop.home;
 import android.Manifest;
 import android.app.Application;
 import android.content.pm.PackageManager;
-import android.util.Base64;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.LiveDataReactiveStreams;
 import androidx.lifecycle.MutableLiveData;
+
 import com.github.dedis.student20_pop.Event;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.model.Lao;
@@ -28,14 +29,17 @@ import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 
 public class HomeViewModel extends AndroidViewModel
     implements CameraPermissionViewModel, QRCodeScanningViewModel {
@@ -57,6 +61,7 @@ public class HomeViewModel extends AndroidViewModel
   private final MutableLiveData<Event<Boolean>> mCancelConnectEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenWalletEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenSeedEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<String>> mOpenLaoWalletEvent = new MutableLiveData<>();
 
 
   /*
@@ -89,9 +94,11 @@ public class HomeViewModel extends AndroidViewModel
     mKeysetManager = keysetManager;
     wallet = Wallet.getInstance();
 
-    mLAOs =
+     mLAOs =
         LiveDataReactiveStreams.fromPublisher(
             mLAORepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
+
+
   }
 
   @Override
@@ -107,9 +114,28 @@ public class HomeViewModel extends AndroidViewModel
   @Override
   public void onQRCodeDetected(Barcode barcode) {
     Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
-    // TODO: retrieve lao id/name from barcode.rawValue
-    // TODO: send subscribe and switch to the home screen on an answer
-    setConnectingLao("lao id");
+    String channel = "/root/"+barcode.rawValue;
+    mLAORepository
+          .sendSubscribe(channel)
+          .observeOn(AndroidSchedulers.mainThread())
+          .timeout(3, TimeUnit.SECONDS)
+          .subscribe(
+                  answer -> {
+                    if (answer instanceof Result) {
+                      Log.d(TAG, "got success result for subscribe to lao");
+                    } else {
+                      Log.d(
+                              TAG,
+                              "got failure result for subscribe to lao: "
+                                      + ((Error) answer).getError().getDescription());
+                    }
+                    openHome();
+                  },
+                  throwable -> {
+                    Log.d(TAG, "timed out waiting for a response for subscribe to lao", throwable);
+                    openHome(); //so that it doesn't load forever
+                  });
+    setConnectingLao(channel);
     openConnecting();
   }
 
@@ -133,7 +159,7 @@ public class HomeViewModel extends AndroidViewModel
     try {
       KeysetHandle myKey = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
       String organizer = Keys.getEncodedKey(myKey);
-      byte[] organizerBuf = Base64.decode(organizer, Base64.NO_WRAP);
+      byte[] organizerBuf = Base64.getUrlDecoder().decode(organizer);
 
       Log.d(TAG, "creating lao with name " + laoName);
       CreateLao createLao = new CreateLao(laoName, organizer);
@@ -177,7 +203,7 @@ public class HomeViewModel extends AndroidViewModel
         openWallet();
         return true;
       }
-    } catch (IllegalArgumentException e) {
+    } catch (Exception e) {
       return false;
     }
   }
@@ -235,6 +261,10 @@ public class HomeViewModel extends AndroidViewModel
 
   public LiveData<Event<Boolean>> getOpenSeedEvent() { return mOpenSeedEvent; }
 
+  public LiveData<Event<String>> getOpenLaoWalletEvent() {
+    return mOpenLaoWalletEvent;
+  }
+
 
   /*
    * Methods that modify the state or post an Event to update the UI.
@@ -257,6 +287,10 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   public void openSeed(){mOpenSeedEvent.postValue(new Event<>(true));}
+
+  public void openLaoWallet(String laoId) {
+    mOpenLaoWalletEvent.postValue(new Event<>(laoId));
+  }
 
   public void openConnect() {
     if (ActivityCompat.checkSelfPermission(
@@ -301,4 +335,10 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   public void setIsWalletSetUp(Boolean isSetUp) { this.mIsWalletSetUp.setValue(isSetUp); }
+
+  public void logoutWallet(){
+    Wallet.getInstance().logout();
+    setIsWalletSetUp(false);
+    openWallet();
+  }
 }

@@ -6,12 +6,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
+
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.LayoutWitnessesListViewBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.listeners.WitnessDeleteListener;
+
 import java.util.List;
 
 /** Adapter to show witnesses of an Event */

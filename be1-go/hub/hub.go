@@ -1,13 +1,22 @@
 package hub
 
 import (
+	"context"
 	"student20_pop/message"
+	"sync"
+)
+
+type HubType string
+
+const (
+	OrganizerHubType HubType = "organizer"
+	WitnessHubType   HubType = "witness"
 )
 
 // Hub defines the methods a PoP server must implement to receive messages
 // and handle clients.
 type Hub interface {
-	Start(done chan struct{})
+	Start(ctx context.Context, wg *sync.WaitGroup)
 
 	Recv(msg IncomingMessage)
 

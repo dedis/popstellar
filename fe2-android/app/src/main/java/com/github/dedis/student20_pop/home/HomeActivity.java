@@ -5,11 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
+
 import com.github.dedis.student20_pop.Injection;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
@@ -145,6 +146,18 @@ public class HomeActivity extends AppCompatActivity {
                 }
               }
             });
+
+    // Subscribe to "open lao wallet" event
+    mViewModel
+        .getOpenLaoWalletEvent()
+        .observe(
+                this,
+                stringEvent -> {
+                  String laoId = stringEvent.getContentIfNotHandled();
+                  if (laoId != null) {
+                    openContentWallet(laoId);
+                  }
+                });
   }
 
   @Override
@@ -165,39 +178,21 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   public void setupHomeButton() {
+
     Button homeButton = (Button) findViewById(R.id.tab_home);
     homeButton.setOnClickListener(v -> mViewModel.openHome());
   }
 
   public void setupConnectButton() {
     Button connectButton = (Button) findViewById(R.id.tab_connect);
-    connectButton.setOnClickListener(v -> {
-      if(walletIsSetUp()){
-        mViewModel.openConnect();
-      }});
+    connectButton.setOnClickListener(v ->
+        mViewModel.openConnect());
   }
 
   public void setupLaunchButton() {
     Button launchButton = (Button) findViewById(R.id.tab_launch);
-    launchButton.setOnClickListener(v ->{
-      if(walletIsSetUp()){
-        mViewModel.openLaunch();
-      }});
-  }
-
-  private boolean walletIsSetUp() {
-    boolean isSetUp = mViewModel.isWalletSetUp();
-    if(!isSetUp){
-      setUpWalletMessage();
-    }
-    return isSetUp;
-  }
-
-  public void setUpWalletMessage(){
-    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    builder.setTitle("You have to setup up your wallet before connecting.");
-    builder.setPositiveButton("Go to wallet", (dialog, which) -> mViewModel.openWallet());
-    builder.show();
+    launchButton.setOnClickListener(v ->
+        mViewModel.openLaunch());
   }
 
   public void setupWalletButton() {
@@ -295,9 +290,22 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void openLaoDetails(String laoId) {
+    openLaoDetailActivity(laoId, true);
+  }
+
+  private void openContentWallet(String laoId) {
+    openLaoDetailActivity(laoId, false);
+  }
+
+  private void openLaoDetailActivity(String laoId, boolean openLaoDetail) {
     Intent intent = new Intent(this, LaoDetailActivity.class);
     Log.d(TAG, "Trying to open lao detail for lao with id " + laoId);
     intent.putExtra("LAO_ID", laoId);
+    if(openLaoDetail) {
+      intent.putExtra("FRAGMENT_TO_OPEN", "LaoDetail");
+    }else{
+      intent.putExtra("FRAGMENT_TO_OPEN", "ContentWallet");
+    }
     startActivityForResult(intent, LAO_DETAIL_REQUEST_CODE);
   }
 }

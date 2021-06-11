@@ -1,16 +1,19 @@
 package com.github.dedis.student20_pop.model.network.method.message;
 
-import android.util.Base64;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import android.util.Log;
+
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessage;
+import com.github.dedis.student20_pop.utility.security.Hash;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.PublicKeyVerify;
 import com.google.crypto.tink.subtle.Ed25519Verify;
 import com.google.gson.Gson;
+
 import java.security.GeneralSecurityException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,7 +35,7 @@ public final class MessageGeneral {
 
   private byte[] messageId;
 
-  private List<PublicKeySignaturePair> witnessSignatures;
+  private List<PublicKeySignaturePair> witnessSignatures = new ArrayList<>();
 
   private PublicKeyVerify verifier;
 
@@ -48,22 +51,22 @@ public final class MessageGeneral {
   }
 
   public MessageGeneral(
-      byte[] sender,
-      Data data,
-      List<PublicKeySignaturePair> witnessSignatures,
-      PublicKeySign signer,
-      Gson gson) {
+          byte[] sender,
+          Data data,
+          List<PublicKeySignaturePair> witnessSignatures,
+          PublicKeySign signer,
+          Gson gson) {
     this(sender, data, signer, gson);
     this.witnessSignatures = witnessSignatures;
   }
 
   public MessageGeneral(
-      byte[] sender,
-      byte[] dataBuf,
-      Data data,
-      byte[] signature,
-      byte[] messageId,
-      List<PublicKeySignaturePair> witnessSignatures) {
+          byte[] sender,
+          byte[] dataBuf,
+          Data data,
+          byte[] signature,
+          byte[] messageId,
+          List<PublicKeySignaturePair> witnessSignatures) {
     this.sender = sender;
     this.messageId = messageId;
     this.dataBuf = dataBuf;
@@ -82,28 +85,19 @@ public final class MessageGeneral {
   }
 
   private void generateId() {
-    try {
-      MessageDigest hasher = MessageDigest.getInstance("SHA-256");
-
-      hasher.update(this.dataBuf);
-      hasher.update(this.signature);
-
-      this.messageId = hasher.digest();
-    } catch (NoSuchAlgorithmException e) {
-      Log.d(TAG, "failed to generate id", e);
-    }
+    this.messageId = Hash.hash(Base64.getUrlEncoder().encodeToString(this.dataBuf), Base64.getUrlEncoder().encodeToString(this.signature)).getBytes();
   }
 
   public String getMessageId() {
-    return Base64.encodeToString(this.messageId, Base64.NO_WRAP);
+    return new String(this.messageId, StandardCharsets.UTF_8);
   }
 
   public String getSender() {
-    return Base64.encodeToString(this.sender, Base64.NO_WRAP);
+    return Base64.getUrlEncoder().encodeToString(this.sender);
   }
 
   public String getSignature() {
-    return Base64.encodeToString(this.signature, Base64.NO_WRAP);
+    return Base64.getUrlEncoder().encodeToString(this.signature);
   }
 
   public List<PublicKeySignaturePair> getWitnessSignatures() {
@@ -115,7 +109,7 @@ public final class MessageGeneral {
   }
 
   public String getDataEncoded() {
-    return Base64.encodeToString(this.dataBuf, Base64.NO_WRAP);
+    return Base64.getUrlEncoder().encodeToString(this.dataBuf);
   }
 
   public boolean verify() {
@@ -125,8 +119,8 @@ public final class MessageGeneral {
       if (data instanceof WitnessMessage) {
         WitnessMessage witnessMessage = (WitnessMessage) data;
 
-        byte[] signatureBuf = Base64.decode(witnessMessage.getSignature(), Base64.NO_WRAP);
-        byte[] messageIdBuf = Base64.decode(witnessMessage.getMessageId(), Base64.NO_WRAP);
+        byte[] signatureBuf = Base64.getUrlDecoder().decode(witnessMessage.getSignature());
+        byte[] messageIdBuf = Base64.getUrlDecoder().decode(witnessMessage.getMessageId());
 
         verifier.verify(signatureBuf, messageIdBuf);
       }

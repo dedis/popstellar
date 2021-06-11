@@ -1,7 +1,7 @@
 import 'jest-extended';
 
 import {
-  Base64Data,
+  Base64UrlData,
   Hash, KeyPair, KeyPairState,
   Lao, LaoState,
   PrivateKey,
@@ -17,10 +17,10 @@ const mockPublicKey = new PublicKey(testKeyPair.publicKey);
 const mockSecretKey = new PrivateKey(testKeyPair.privateKey);
 
 describe('=== Primitive objects checks ===', () => {
-  describe('Base64Data', () => {
+  describe('Base64UrlData', () => {
     it('should encode and decode properly', () => {
       const string: string = 'string';
-      expect(Base64Data.encode(string).decode()).toBe(string);
+      expect(Base64UrlData.encode(string).decode()).toBe(string);
     });
   });
 
@@ -36,7 +36,6 @@ describe('=== Primitive objects checks ===', () => {
   describe('Hash', () => {
     it('works against expected data', () => {
       const hash: Hash = Hash.fromStringArray('abcd', '1234');
-
       expect(hash.toString()).toEqual('61I7DQkiMtdHFM5VygjbFqrVmn4NAl0wSVxkj6Q5iDw=');
     });
 
@@ -52,7 +51,7 @@ describe('=== Primitive objects checks ===', () => {
 
   describe('PrivateKey & Signature', () => {
     it('creates signature properly', () => {
-      const message: Base64Data = Base64Data.encode('message');
+      const message: Base64UrlData = Base64UrlData.encode('message');
 
       expect(mockSecretKey.sign(message).verify(mockPublicKey, message)).toBe(true);
     });

@@ -46,6 +46,7 @@
     <string name="past_events">Past Events</string>
     <string name="present_events">Present Events</string>
     <string name="future_events">Future Events</string>
+    <string name = "handle_events">Handle Events</string>
 
     <!-- Poll Event -->
     <string name="poll_event">Poll Event</string>
@@ -80,6 +81,16 @@
     <string name="add_attendee_unsuccessful">Error when adding attendee</string>
     <string name="add_attendees_number">Number of attendees : %1$d</string>
 
+    <!-- Event Buttons -->
+    <string name="open_rollcall">OPEN</string>
+    <string name="reopen_rollcall">REOPEN</string>
+    <string name="scheduled_rollcall">SCHEDULED</string>
+    <string name="enter_rollcall">ENTER</string>
+    <string name="closed_rollcall">CLOSED</string>
+    <string name="attendees_list_rollcall">ATTENDEES</string>
+
+    <string name="back">BACK</string>
+
     <!-- Identity -->
     <string name="identity_name">Name</string>
     <string name="identity_title">Title</string>
@@ -94,8 +105,9 @@
     <string name="event_description">Event Description</string>
     <string name="qrcode_scanning_add_attendee">Please scan each participant’s Roll-call QR code exactly once.</string>
     <string name="close_roll_call">Close Roll-Call</string>
-    <string name="scan_all_attendees_question">Are you sure you have scan all attendees ?</string>
+    <string name="scan_all_attendees_question">Are you sure you have scanned all attendees ?</string>
     <string name="roll_call_title_required">Roll-Call Title required</string>
+    <string name="show_qrcode_to_organizer">Please show the QR code to the organizer</string>
 
     <!-- Witness -->
     <string name="delete_witness_dialog_title">Delete ?</string>
@@ -107,6 +119,7 @@
     <!-- Properties -->
     <string name="test_organization_name">Test Organization Name</string>
     <string name="edit_lao_name">Edit Lao Name</string>
+    <string name="total">Total:</string>
     <string name="election_name">Election Name</string>
     <string name="lao_name">LAO name</string>
     <string name="election_setup">Election Setup</string>
@@ -124,7 +137,24 @@
     <string name="write_in_switch_text">Allow write in</string>
     <string name="new_ballot_option_hint">ballot option</string>
 
-
+    <string name="elections">Elections</string>
+    <string name="voting_management">Voting Management</string>
+    <string name="cancel_election">Cancel Election</string>
+    <string name="displayed_end_time">displayed end time</string>
+    <string name="displayed_current_time">displayed current time</string>
+    <string name="start_date">start date</string>
+    <string name="end_date">end date</string>
+    <string name="details">Details</string>
+    <string name="manage_election">manage election</string>
+    <string name="current_time">Current Time :</string>
+    <string name="election_start_time">Election Start Time :</string>
+    <string name="election_end_time">Election End Time :</string>
+    <string name="election_question">Election Question : ?</string>
+    <string name="edit_election_name">Edit Election Name</string>
+    <string name="edit_election_question">Edit Election Question</string>
+    <string name="edit_election_ballot_options">Edit Election Ballot Options</string>
+    <string name="edit_election_start_time">Edit Election Start Time</string>
+    <string name="edit_election_end_time">Edit Election End Time</string>
 
 
     <!-- Wallet -->
@@ -137,4 +167,11 @@
     <string name="text_seed_wallet">This is the only backup for your PoP tokens - store it securely</string>
     <string name="confirm_button">Confirm</string>
     <string name="content_title">Tokens</string>
+    <string name="wallet_empty">Your wallet is empty</string>
+    <string name="tokens_introduction">If you would like to receive tokens, please connect to a LAO and participate in a roll call.\n
+        If you are an organizer, you can look at the attendees\' public tokens of the roll calls you organize.</string>
+    <string name="token_button">TOKEN</string>
+    <string name="logout_button">LOGOUT</string>
+    <string name="logout_title">Log out</string>
+    <string name="logout_message">This action will delete the current seed of your wallet and your tokens will be lost. They can be recovered later once you import the current seed.</string>
 </resources>

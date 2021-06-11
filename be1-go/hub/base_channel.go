@@ -1,12 +1,12 @@
 package hub
 
 import (
-	"encoding/base64"
+	"encoding/json"
+	"fmt"
 	"log"
+	"sort"
 	"student20_pop/message"
 	"sync"
-
-	"golang.org/x/xerrors"
 )
 
 // baseChannel represent a generic channel and contains all the fields that are
@@ -17,8 +17,7 @@ type baseChannel struct {
 	clientsMu sync.RWMutex
 	clients   map[*ClientSocket]struct{}
 
-	inboxMu sync.RWMutex
-	inbox   map[string]message.Message
+	inbox *inbox
 
 	// /root/<ID>
 	channelID string
@@ -27,13 +26,18 @@ type baseChannel struct {
 	witnesses []message.PublicKey
 }
 
+type messageInfo struct {
+	message    *message.Message
+	storedTime message.Timestamp
+}
+
 // CreateBaseChannel return an instance of a `baseChannel`
 func createBaseChannel(h *organizerHub, channelID string) *baseChannel {
 	return &baseChannel{
 		hub:       h,
 		channelID: channelID,
 		clients:   make(map[*ClientSocket]struct{}),
-		inbox:     make(map[string]message.Message),
+		inbox:     createInbox(),
 	}
 }
 
@@ -67,15 +71,47 @@ func (c *baseChannel) Unsubscribe(client *ClientSocket, msg message.Unsubscribe)
 func (c *baseChannel) Catchup(catchup message.Catchup) []message.Message {
 	log.Printf("received a catchup with id: %d", catchup.ID)
 
-	c.inboxMu.RLock()
-	defer c.inboxMu.RUnlock()
+	c.inbox.mutex.RLock()
+	defer c.inbox.mutex.RUnlock()
 
-	result := make([]message.Message, 0, len(c.inbox))
-	for _, msg := range c.inbox {
-		result = append(result, msg)
+	messages := make([]messageInfo, 0, len(c.inbox.msgs))
+	// iterate over map and collect all the values (messageInfo instances)
+	for _, msgInfo := range c.inbox.msgs {
+		messages = append(messages, *msgInfo)
+	}
+
+	// sort.Slice on messages based on the timestamp
+	sort.Slice(messages, func(i, j int) bool {
+		return messages[i].storedTime < messages[j].storedTime
+	})
+
+	result := make([]message.Message, 0, len(c.inbox.msgs))
+
+	// iterate and extract the messages[i].message field and
+	// append it to the result slice
+	for _, msgInfo := range messages {
+		result = append(result, *msgInfo.message)
 	}
 
 	return result
+}
+
+func (c *baseChannel) broadcastToAllClients(msg message.Message) {
+	c.clientsMu.RLock()
+	defer c.clientsMu.RUnlock()
+
+	query := message.Query{
+		Broadcast: message.NewBroadcast(c.channelID, &msg),
+	}
+
+	buf, err := json.Marshal(query)
+	if err != nil {
+		log.Fatalf("failed to marshal broadcast query: %v", err)
+	}
+
+	for client := range c.clients {
+		client.Send(buf)
+	}
 }
 
 // Verify the if a Publish message is valid
@@ -84,23 +120,30 @@ func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 
 	// Check if the structure of the message is correct
 	msg := publish.Params.Message
-	err := msg.VerifyAndUnmarshalData()
+
+	// Verify the data
+	err := c.hub.verifyJson(msg.RawData, DataSchema)
 	if err != nil {
-		return xerrors.Errorf("failed to verify and unmarshal data: %v", err)
+		return message.NewError("failed to validate the data", err)
 	}
 
-	msgIDEncoded := base64.StdEncoding.EncodeToString(msg.MessageID)
+	// Unmarshal the data
+	err = msg.VerifyAndUnmarshalData()
+	if err != nil {
+		// Return a error of type "-4 request data is invalid" for all the verifications and unmarshalling problems of the data
+		return &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("failed to verify and unmarshal data: %v", err),
+		}
+	}
 
 	// Check if the message already exists
-	c.inboxMu.RLock()
-	if _, ok := c.inbox[msgIDEncoded]; ok {
-		c.inboxMu.RUnlock()
+	if _, ok := c.inbox.getMessage(msg.MessageID); ok {
 		return &message.Error{
 			Code:        -3,
 			Description: "message already exists",
 		}
 	}
-	c.inboxMu.RUnlock()
 
 	return nil
 }

@@ -1,16 +1,7 @@
 package com.github.dedis.student20_pop.model.network.method.message.data;
 
-import static com.github.dedis.student20_pop.model.network.method.message.data.Action.CLOSE;
-import static com.github.dedis.student20_pop.model.network.method.message.data.Action.CREATE;
-import static com.github.dedis.student20_pop.model.network.method.message.data.Action.OPEN;
-import static com.github.dedis.student20_pop.model.network.method.message.data.Action.STATE;
-import static com.github.dedis.student20_pop.model.network.method.message.data.Action.UPDATE;
-import static com.github.dedis.student20_pop.model.network.method.message.data.Action.WITNESS;
-import static com.github.dedis.student20_pop.model.network.method.message.data.Objects.LAO;
-import static com.github.dedis.student20_pop.model.network.method.message.data.Objects.MEETING;
-import static com.github.dedis.student20_pop.model.network.method.message.data.Objects.MESSAGE;
-import static com.github.dedis.student20_pop.model.network.method.message.data.Objects.ROLL_CALL;
-
+import com.github.dedis.student20_pop.model.network.method.message.data.election.CastVote;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
@@ -20,10 +11,26 @@ import com.github.dedis.student20_pop.model.network.method.message.data.message.
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import static com.github.dedis.student20_pop.model.network.method.message.data.Action.CAST_VOTE;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Action.CLOSE;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Action.CREATE;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Action.OPEN;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Action.REOPEN;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Action.SETUP;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Action.STATE;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Action.UPDATE;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Action.WITNESS;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Objects.ELECTION;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Objects.LAO;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Objects.MEETING;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Objects.MESSAGE;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Objects.ROLL_CALL;
 
 /** An abstract high level message */
 public abstract class Data {
@@ -65,7 +72,13 @@ public abstract class Data {
     // Roll Call
     messagesMap.put(pair(ROLL_CALL, CREATE), CreateRollCall.class);
     messagesMap.put(pair(ROLL_CALL, OPEN), OpenRollCall.class);
+    messagesMap.put(pair(ROLL_CALL, REOPEN), OpenRollCall.class);
     messagesMap.put(pair(ROLL_CALL, CLOSE), CloseRollCall.class);
+
+    // Election
+    messagesMap.put(pair(ELECTION,SETUP), ElectionSetup.class);
+    messagesMap.put(pair(ELECTION,CAST_VOTE), CastVote.class);
+
 
     return Collections.unmodifiableMap(messagesMap);
   }

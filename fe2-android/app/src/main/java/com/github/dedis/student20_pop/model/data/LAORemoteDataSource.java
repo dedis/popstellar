@@ -1,8 +1,8 @@
 package com.github.dedis.student20_pop.model.data;
 
-
 import com.github.dedis.student20_pop.model.network.GenericMessage;
 import com.github.dedis.student20_pop.model.network.method.Message;
+import com.tinder.scarlet.WebSocket;
 import io.reactivex.Observable;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -28,6 +28,10 @@ public class LAORemoteDataSource implements LAODataSource.Remote {
 
   public Observable<GenericMessage> observeMessage() {
     return laoService.observeMessage();
+  }
+
+  public Observable<WebSocket.Event> observeWebsocket() {
+    return laoService.observeWebsocket();
   }
 
   public void sendMessage(Message msg) {

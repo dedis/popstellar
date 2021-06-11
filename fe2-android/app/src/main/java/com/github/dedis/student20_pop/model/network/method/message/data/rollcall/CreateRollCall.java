@@ -1,14 +1,14 @@
 package com.github.dedis.student20_pop.model.network.method.message.data.rollcall;
 
 import androidx.annotation.Nullable;
+
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
-import com.github.dedis.student20_pop.utility.security.Hash;
+import com.github.dedis.student20_pop.utility.network.IdGenerator;
+import com.google.gson.annotations.SerializedName;
+
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 /** Data sent to create a Roll-Call */
@@ -17,8 +17,10 @@ public class CreateRollCall extends Data {
   private String id;
   private String name;
   private long creation;
-  private transient long start;
-  private transient StartType startType;
+  @SerializedName("proposed_start")
+  private long proposedStart;
+  @SerializedName("proposed_end")
+  private long proposedEnd;
   private String location;
 
   @Nullable private transient String description;
@@ -27,40 +29,45 @@ public class CreateRollCall extends Data {
    * Constructor for a data Create Roll-Call Event
    *
    * @param name name of the Roll-Call
-   * @param start of the Roll-Call
-   * @param startType of the Roll-Call, either scheduled or now
+   * @param proposedStart of the Roll-Call
+   * @param proposedEnd of the Roll-Call
    * @param location location of the Roll-Call
    * @param description can be null
+   * @param laoId ID of the LAO
    */
   public CreateRollCall(
       String name,
-      long start,
-      StartType startType,
+      long proposedStart,
+      long proposedEnd,
       String location,
       @Nullable String description,
       String laoId) {
     this.name = name;
-    this.creation = Instant.now().toEpochMilli();
-    this.start = start;
-    this.startType = startType;
+    this.creation = Instant.now().getEpochSecond();
+    if(proposedStart <= this.creation){
+      this.proposedStart = this.creation;
+    }else{
+      this.proposedStart = proposedStart;
+    }
+    this.proposedEnd = proposedEnd;
     this.location = location;
     this.description = description;
-    this.id = Hash.hash("R", laoId, Long.toString(creation), name);
+    this.id = IdGenerator.generateCreateRollCallId(laoId, creation, name);
   }
 
   public CreateRollCall(
       String id,
       String name,
       long creation,
-      long start,
-      StartType startType,
+      long proposedStart,
+      long proposedEnd,
       String location,
       String description) {
     this.id = id;
     this.name = name;
     this.creation = creation;
-    this.start = start;
-    this.startType = startType;
+    this.proposedStart= proposedStart;
+    this.proposedEnd = proposedEnd;
     this.location = location;
     this.description = description;
   }
@@ -77,12 +84,12 @@ public class CreateRollCall extends Data {
     return creation;
   }
 
-  public long getStartTime() {
-    return start;
+  public long getProposedStart() {
+    return proposedStart;
   }
 
-  public StartType getStartType() {
-    return startType;
+  public long getProposedEnd() {
+    return proposedEnd;
   }
 
   public String getLocation() {
@@ -113,10 +120,10 @@ public class CreateRollCall extends Data {
     }
     CreateRollCall that = (CreateRollCall) o;
     return getCreation() == that.getCreation()
-        && start == that.start
+        && proposedStart == that.proposedStart
+        && proposedEnd == that.proposedEnd
         && java.util.Objects.equals(getId(), that.getId())
         && java.util.Objects.equals(getName(), that.getName())
-        && getStartType() == that.getStartType()
         && java.util.Objects.equals(getLocation(), that.getLocation())
         && java.util.Objects.equals(getDescription(), that.getDescription());
   }
@@ -127,8 +134,8 @@ public class CreateRollCall extends Data {
         getId(),
         getName(),
         getCreation(),
-        getStartTime(),
-        getStartType(),
+        getProposedStart(),
+        getProposedEnd(),
         getLocation(),
         getDescription());
   }
@@ -145,9 +152,9 @@ public class CreateRollCall extends Data {
         + ", creation="
         + creation
         + ", start="
-        + start
+        + proposedStart
         + ", startType="
-        + startType
+        + proposedEnd
         + ", location='"
         + location
         + '\''
@@ -155,25 +162,5 @@ public class CreateRollCall extends Data {
         + description
         + '\''
         + '}';
-  }
-
-  /** Enumeration of the different starting types of a roll call */
-  public enum StartType {
-    NOW("start"),
-    SCHEDULED("scheduled");
-
-    public static final List<StartType> ALL =
-        Collections.unmodifiableList(Arrays.asList(StartType.values()));
-
-    // Name of the time json member for that type
-    private final String jsonType;
-
-    StartType(String jsonType) {
-      this.jsonType = jsonType;
-    }
-
-    public String getJsonMember() {
-      return jsonType;
-    }
   }
 }
