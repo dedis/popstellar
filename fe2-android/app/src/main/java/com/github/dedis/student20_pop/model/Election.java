@@ -4,6 +4,7 @@ package com.github.dedis.student20_pop.model;
 import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.student20_pop.model.event.Event;
+import com.github.dedis.student20_pop.model.event.EventState;
 import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.QuestionResult;
@@ -28,14 +29,12 @@ public class Election extends Event {
     private long end;
     private List<ElectionQuestion> electionQuestions;
 
-    private MutableLiveData<Boolean> isEnded = new MutableLiveData<>(false);
-    private final MutableLiveData<Boolean> areResultsReady = new MutableLiveData<>(false);
-
     //Map that associates each sender pk to their votes
     private Map<String, List<ElectionVote>> voteMap;
     //Map that associates each messageId to its sender
     private Map<String, String> messageMap;
 
+    private EventState state;
 
     //Results of an election
     private List<QuestionResult> results;
@@ -45,18 +44,6 @@ public class Election extends Event {
         this.electionQuestions = new ArrayList<>();
         this.voteMap = new HashMap<>();
         this.messageMap = new TreeMap<>();
-    }
-
-    public void setResultsReady(boolean areResultsReady) {this.areResultsReady.postValue(areResultsReady);}
-
-    public MutableLiveData<Boolean> areResultsReady() {return areResultsReady;}
-
-    public void setEnded(boolean isEnded) {
-        this.isEnded.postValue(isEnded);
-    }
-
-    public MutableLiveData<Boolean> isEnded() {
-        return isEnded;
     }
 
     public String getId() {
@@ -88,6 +75,14 @@ public class Election extends Event {
     public void setCreation(long creation) {
         if (creation < 0) throw new IllegalArgumentException();
         this.creation = creation;
+    }
+
+    public void setEventState(EventState state) {
+        this.state = state;
+    }
+
+    public EventState getState() {
+        return state;
     }
 
     public void setStart(long start) {

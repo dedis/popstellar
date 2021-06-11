@@ -62,6 +62,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static com.github.dedis.student20_pop.model.event.EventState.CLOSED;
+
 public class LAORepository {
 
   private static final String TAG = LAORepository.class.getSimpleName();
@@ -318,7 +320,7 @@ public class LAORepository {
   private boolean handleElectionEnd(String channel) {
     Lao lao = getLaoByChannel(channel);
     Election election = getElectionByChannel(channel);
-    election.setEnded(true);
+    election.setEventState(CLOSED);
     lao.updateElection(election.getId(), election);
     return false;
   }
@@ -327,11 +329,8 @@ public class LAORepository {
     Lao lao = getLaoByChannel(channel);
     Election election = getElectionByChannel(channel);
 
-    Boolean isEnded = election.isEnded().getValue();
-    if (isEnded == null) isEnded = false;
-
     //We ignore the vote iff the election is ended and the cast vote message was created after the end timestamp
-    if (election.getEndTimestamp() >= data.getCreation() || !isEnded) {
+    if (election.getEndTimestamp() >= data.getCreation() || election.getState()!= CLOSED) {
       /* We retrieve previous cast vote message stored for the given sender, and consider the new vote iff its creation
       is after (hence preventing reordering attacks) */
       Optional<String> previousMessageIdOption = election.getMessageMap().entrySet().stream()
@@ -354,7 +353,6 @@ public class LAORepository {
     List<ElectionResultQuestion> questions = data.getElectionQuestionResults();
     if (questions.isEmpty()) throw new IllegalArgumentException("the questions results shouldn't be empty");
     election.setResults(questions.get(0).getResults());
-    election.setResultsReady(true);
     lao.updateElection(election.getId(), election);
     return false;
   }

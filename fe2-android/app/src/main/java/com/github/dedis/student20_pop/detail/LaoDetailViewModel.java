@@ -82,6 +82,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     private final MutableLiveData<Event<Boolean>> mOpenManageElectionEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mElectionCreatedEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mOpenCastVotesEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<Boolean>> mEndElectionEvent = new MutableLiveData<>();
 
     private final MutableLiveData<Event<Integer>> mNbAttendeesEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mCloseRollCallEvent = new MutableLiveData<>();
@@ -196,7 +197,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                     answer -> {
                                         if (answer instanceof Result) {
                                             Log.d(TAG, "ended election successfully");
-                                            getCurrentElection().setEnded(true);
+                                            endElectionEvent();
                                         } else {
                                             Log.d(TAG, "failed to end the election");
                                         }
@@ -523,6 +524,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         return mOpenLaoDetailEvent;
     }
 
+    public LiveData<Event<Boolean>> getEndElectionEvent() {
+        return mEndElectionEvent;
+    }
+
     public LiveData<Event<Boolean>> getOpenElectionResultsEvent() {
         return mOpenElectionResultsEvent;
     }
@@ -671,6 +676,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
     public void openIdentity() {
         mOpenIdentityEvent.setValue(new Event<>(true));
+    }
+
+    public void endElectionEvent() {
+        mEndElectionEvent.postValue(new Event<>(true));
     }
 
     public void toggleShowHideProperties() {
