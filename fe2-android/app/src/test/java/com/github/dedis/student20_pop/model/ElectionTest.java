@@ -1,6 +1,7 @@
 package com.github.dedis.student20_pop.model;
 
 
+import com.github.dedis.student20_pop.model.event.EventState;
 import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.QuestionResult;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.github.dedis.student20_pop.model.event.EventState.OPENED;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
@@ -34,10 +36,9 @@ public class ElectionTest {
     }
 
     @Test
-    public void settingAndGettingReturnsCorrespondingEndBoolean() {
-        assertThat(election.isEnded().getValue(), is(false));
-        election.setEnded(true);
-        assertThat(election.isEnded().getValue(), is(true));
+    public void settingAndGettingReturnsCorrespondingState() {
+        election.setEventState(OPENED);
+        assertThat(election.getState(), is(OPENED));
     }
 
     @Test

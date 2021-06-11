@@ -63,6 +63,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.github.dedis.student20_pop.model.event.EventState.CLOSED;
+import static com.github.dedis.student20_pop.model.event.EventState.OPENED;
 
 public class LAORepository {
 
@@ -447,6 +448,7 @@ public class LAORepository {
 
       election.setStart(electionSetup.getStartTime());
       election.setEnd(electionSetup.getEndTime());
+      election.setEventState(OPENED);
 
       //Once the election is created, we subscribe to the election channel
       sendSubscribe(election.getChannel());
