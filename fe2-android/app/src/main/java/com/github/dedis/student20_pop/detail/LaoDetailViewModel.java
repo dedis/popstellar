@@ -104,6 +104,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     private final MutableLiveData<Event<Boolean>> mWalletMessageEvent = new MutableLiveData<>();
 
     private final MutableLiveData<Event<String>> mAttendeeScanConfirmEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<Boolean>> mWitnessScanConfirmEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<String>> mScanWarningEvent = new MutableLiveData<>();
     /*
      * LiveData objects that represent the state in a fragment
@@ -725,6 +726,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         return mAttendeeScanConfirmEvent;
     }
 
+    public LiveData<Event<Boolean>> getWitnessScanConfirmEvent() {
+        return mWitnessScanConfirmEvent;
+    }
+
     public LiveData<Event<String>> getScanWarningEvent() {
         return mScanWarningEvent;
     }
@@ -1108,9 +1113,9 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             mAttendeeScanConfirmEvent.postValue(new Event<>("Attendee has been added."));
             mNbAttendeesEvent.postValue(new Event<>(attendees.size()));
         } else if (scanningAction == (ScanningAction.ADD_WITNESS)) {
+            mWitnessScanConfirmEvent.postValue(new Event<>(true));
             witnesses.add(barcode.rawValue);
             updateLaoWitnesses();
-
         }
     }
 

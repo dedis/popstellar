@@ -405,7 +405,7 @@ public class LAORepository {
 
         WitnessMessage message = new WitnessMessage(election.getId());
         message.setTitle("New Election Setup ");
-        message.setDescription("Name : " + election.getName() + "\n" + "Question : " + election.getQuestion() + "\n" + MESSAGE_ID + election.getId());
+        message.setDescription("Name : " + election.getName() + "\n" + "Question : " + election.getElectionQuestions().get(0).getQuestion() + "\n" + MESSAGE_ID + election.getId());
 
         lao.updateWitnessMessage(message.getMessageId(), message);
         return false;

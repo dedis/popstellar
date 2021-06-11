@@ -94,7 +94,7 @@ public final class QRCodeScanningFragment extends Fragment {
             observeNbAttendeesEvent();
 
             // Subscribe to " Attendees scan confirm " event
-            observeScanConfirmEvent();
+            observeAttendeeScanConfirmEvent();
 
             // set up the listener for the button that closes the roll call
             setupCloseRollCallButton();
@@ -103,7 +103,10 @@ public final class QRCodeScanningFragment extends Fragment {
             observeAskCloseRollCallEvent();
         } else if (mQRCodeScanningViewModel.getScanningAction() == ScanningAction.ADD_WITNESS) {
             mQrCodeFragBinding.setScanningAction(ScanningAction.ADD_WITNESS);
+            // Subscribe to " Witness scan confirm " event
+            observeWitnessScanConfirmEvent();
         } else if (mQRCodeScanningViewModel.getScanningAction() == ScanningAction.ADD_LAO_PARTICIPANT) {
+
             mQrCodeFragBinding.setScanningAction(ScanningAction.ADD_LAO_PARTICIPANT);
         }
 
@@ -121,7 +124,7 @@ public final class QRCodeScanningFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (mQRCodeScanningViewModel.getScanningAction() == ScanningAction.ADD_WITNESS) {
-            Button back = (Button) getActivity().findViewById(R.id.tab_back);
+            Button back = getActivity().findViewById(R.id.tab_back);
             back.setOnClickListener(c -> ((LaoDetailViewModel) mQRCodeScanningViewModel).openLaoDetail());
         }
     }
@@ -242,7 +245,20 @@ public final class QRCodeScanningFragment extends Fragment {
                         });
     }
 
-    void observeScanConfirmEvent() {
+    void observeWitnessScanConfirmEvent() {
+        ((LaoDetailViewModel) mQRCodeScanningViewModel)
+                .getWitnessScanConfirmEvent()
+                .observe(
+                        this,
+                        booleanEvent -> {
+                            Boolean event = booleanEvent.getContentIfNotHandled();
+                            if (event != null) {
+                                setUpWitnessSuccessAlert();
+                            }
+                        });
+    }
+
+    void observeAttendeeScanConfirmEvent() {
         ((LaoDetailViewModel) mQRCodeScanningViewModel)
                 .getAttendeeScanConfirmEvent()
                 .observe(
@@ -267,5 +283,14 @@ public final class QRCodeScanningFragment extends Fragment {
                                 setupClickCloseListener(nextFragment);
                             }
                         });
+    }
+
+    void setUpWitnessSuccessAlert() {
+        AlertDialog.Builder adb = new AlertDialog.Builder(getActivity());
+            adb.setTitle("Successful Scan");
+            adb.setMessage("A new witness was added to this Lao");
+            adb.setCancelable(false);
+            adb.setPositiveButton("Ok", null);
+            adb.show();
     }
 }
