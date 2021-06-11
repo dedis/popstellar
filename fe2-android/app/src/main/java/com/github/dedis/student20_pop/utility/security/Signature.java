@@ -11,6 +11,9 @@ import java.util.Base64;
 
 public class Signature {
     public static final String TAG = Signature.class.getSimpleName();
+    private Signature() {
+        throw new IllegalStateException("Utility class");
+    }
 
     /**
      * Helper method to verify signature of a message

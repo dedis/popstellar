@@ -130,9 +130,9 @@ public class LaoDetailFragment extends Fragment {
 
     private void setupAddWitnessButton() {
         mLaoDetailFragBinding.addWitnessButton.setOnClickListener(v -> {
-                mLaoDetailViewModel.setScanningAction(ScanningAction.ADD_WITNESS);
-                mLaoDetailViewModel.openScanning();
-        }) ;
+            mLaoDetailViewModel.setScanningAction(ScanningAction.ADD_WITNESS);
+            mLaoDetailViewModel.openScanning();
+        });
 
     }
 

@@ -4,12 +4,14 @@ import android.Manifest;
 import android.app.Application;
 import android.content.pm.PackageManager;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
+
 import com.github.dedis.student20_pop.Event;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.home.HomeViewModel;
@@ -23,10 +25,10 @@ import com.github.dedis.student20_pop.model.event.EventState;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.model.network.answer.Error;
 import com.github.dedis.student20_pop.model.network.answer.Result;
-import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.CastVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessageSignature;
@@ -36,7 +38,6 @@ import com.github.dedis.student20_pop.model.network.method.message.data.rollcall
 import com.github.dedis.student20_pop.qrcode.CameraPermissionViewModel;
 import com.github.dedis.student20_pop.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.student20_pop.qrcode.ScanningAction;
-import com.github.dedis.student20_pop.utility.security.Hash;
 import com.github.dedis.student20_pop.utility.security.Keys;
 import com.github.dedis.student20_pop.utility.security.Signature;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -44,10 +45,7 @@ import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
@@ -61,6 +59,11 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class LaoDetailViewModel extends AndroidViewModel implements CameraPermissionViewModel,
         QRCodeScanningViewModel {
@@ -128,38 +131,18 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                     mCurrentLao,
                     lao -> lao == null ? new ArrayList<>() : new ArrayList<>(lao.getWitnessMessages().values()));
 
-  private final LiveData<List<com.github.dedis.student20_pop.model.RollCall>> mLaoAttendedRollCalls = Transformations
-          .map(mCurrentLao,
-                  lao -> lao == null ? new ArrayList<com.github.dedis.student20_pop.model.RollCall>() :
-                          lao.getRollCalls().values().stream().filter(rollcall->rollcall.getState()== EventState.CLOSED).filter(rollcall->attendedOrOrganized(lao, rollcall)).collect(Collectors.toList()));
-
-  /**
-   * Predicate used for filtering rollcalls to make sure that the user either attended the rollcall or was the organizer
-   * @param lao
-   * @param rollcall
-   * @return boolean saying whether user attended or organized the given roll call
-   */
-  private boolean attendedOrOrganized(Lao lao, RollCall rollcall){
-    //find out if user has attended the rollcall
-    String firstLaoId = lao.getChannel().substring(6);
-    String pk = "";
-    try {
-      pk = Base64.getUrlEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, rollcall.getPersistentId()).second);
-    } catch (GeneralSecurityException e) {
-      Log.d(TAG, "failed to retrieve public key from wallet", e);
-      return false;
-    }
-    return rollcall.getAttendees().contains(pk) || isOrganizer().getValue();
-  }
-
+    private final LiveData<List<com.github.dedis.student20_pop.model.RollCall>> mLaoAttendedRollCalls = Transformations
+            .map(mCurrentLao,
+                    lao -> lao == null ? new ArrayList<com.github.dedis.student20_pop.model.RollCall>() :
+                            lao.getRollCalls().values().stream().filter(rollcall -> rollcall.getState() == EventState.CLOSED).filter(rollcall -> attendedOrOrganized(lao, rollcall)).collect(Collectors.toList()));
     /*
      * Dependencies for this class
      */
     private final LAORepository mLAORepository;
     private final AndroidKeysetManager mKeysetManager;
-    private String mCurrentRollCallId = ""; //used to know which roll call to close
     private final CompositeDisposable disposables;
     private final Gson mGson;
+    private String mCurrentRollCallId = ""; //used to know which roll call to close
     private Set<String> attendees = new HashSet<>();
     private Set<String> witnesses = new HashSet<>(); // used to dynamically update the set of witnesses when WR code scanned
     private ScanningAction scanningAction;
@@ -175,6 +158,26 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         mGson = gson;
         disposables = new CompositeDisposable();
 
+    }
+
+    /**
+     * Predicate used for filtering rollcalls to make sure that the user either attended the rollcall or was the organizer
+     *
+     * @param lao
+     * @param rollcall
+     * @return boolean saying whether user attended or organized the given roll call
+     */
+    private boolean attendedOrOrganized(Lao lao, RollCall rollcall) {
+        //find out if user has attended the rollcall
+        String firstLaoId = lao.getChannel().substring(6);
+        String pk = "";
+        try {
+            pk = Base64.getUrlEncoder().encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, rollcall.getPersistentId()).second);
+        } catch (GeneralSecurityException e) {
+            Log.d(TAG, "failed to retrieve public key from wallet", e);
+            return false;
+        }
+        return rollcall.getAttendees().contains(pk) || isOrganizer().getValue();
     }
 
     @Override
@@ -745,9 +748,9 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
      * Methods that modify the state or post an Event to update the UI.
      */
     public void openHome() {
-        if(mCurrentRollCallId.equals("")){
+        if (mCurrentRollCallId.equals("")) {
             mOpenHomeEvent.setValue(new Event<>(true));
-        }else{
+        } else {
             mAskCloseRollCallEvent.setValue(new Event<>(R.id.fragment_home));
         }
     }
@@ -765,9 +768,9 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     }
 
     public void openIdentity() {
-        if(mCurrentRollCallId.equals("")){
+        if (mCurrentRollCallId.equals("")) {
             mOpenIdentityEvent.setValue(new Event<>(true));
-        }else{
+        } else {
             mAskCloseRollCallEvent.setValue(new Event<>(R.id.fragment_identity));
         }
     }
@@ -848,6 +851,9 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         }
     }
 
+    /**
+     * Method to update the name  of a Lao by sending an updateLao msg and a stateLao msg to the backend
+     */
     public void updateLaoName() {
         Log.d(TAG, "Updating lao name to " + mLaoName.getValue());
 
@@ -874,21 +880,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                             Log.d(TAG, "updated lao name");
                                             StateLao stateLao = new StateLao(updateLao.getId(), updateLao.getName(), lao.getCreation(), updateLao.getLastModified(), publicKey, msg.getMessageId(), lao.getWitnesses(), new ArrayList<>());
                                             MessageGeneral stateMsg = new MessageGeneral(sender, stateLao, signer, mGson);
-                                            mLAORepository
-                                                    .sendPublish(channel, stateMsg)
-                                                    .subscribeOn(Schedulers.io())
-                                                    .observeOn(AndroidSchedulers.mainThread())
-                                                    .timeout(5, TimeUnit.SECONDS)
-                                                    .subscribe(
-                                                            answer2 -> {
-                                                                if (answer2 instanceof Result) {
-                                                                    Log.d(TAG, "updated lao name2");
-                                                                } else {
-                                                                    Log.d(TAG, "failed to update lao name");
-                                                                }
-                                                            },
-                                                            throwable -> Log.d(TAG, "timed out waiting for result on update lao name", throwable)
-                                                    );
+                                            sendStateLao("lao name", updateLao, lao, sender, signer, channel, publicKey, msg);
                                         } else {
                                             Log.d(TAG, "failed to update lao name");
                                         }
@@ -901,6 +893,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         }
     }
 
+
+    /**
+     * Method to update the list of witnesses of a Lao by sending an updateLao msg and a stateLao msg to the backend
+     */
     public void updateLaoWitnesses() {
         Log.d(TAG, "Updating lao witnesses ");
 
@@ -932,21 +928,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                             Log.d(TAG, "updated lao witnesses");
                                             StateLao stateLao = new StateLao(updateLao.getId(), updateLao.getName(), lao.getCreation(), updateLao.getLastModified(), publicKey, msg.getMessageId(), updateLao.getWitnesses(), new ArrayList<>());
                                             MessageGeneral stateMsg = new MessageGeneral(sender, stateLao, signer, mGson);
-                                            mLAORepository
-                                                    .sendPublish(channel, stateMsg)
-                                                    .subscribeOn(Schedulers.io())
-                                                    .observeOn(AndroidSchedulers.mainThread())
-                                                    .timeout(5, TimeUnit.SECONDS)
-                                                    .subscribe(
-                                                            answer2 -> {
-                                                                if (answer2 instanceof Result) {
-                                                                    Log.d(TAG, "updated lao state with new witnesses");
-                                                                } else {
-                                                                    Log.d(TAG, "failed to update lao state with new witnesses");
-                                                                }
-                                                            },
-                                                            throwable -> Log.d(TAG, "timed out waiting for result on update lao witnesses", throwable)
-                                                    );
+                                            sendStateLao("lao state with new witnesses", updateLao, lao, sender, signer, channel, publicKey, msg);
                                         } else {
                                             Log.d(TAG, "failed to update lao witnesses");
                                         }
@@ -957,6 +939,31 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         } catch (GeneralSecurityException | IOException e) {
             Log.d(TAG, PK_FAILURE_MESSAGE, e);
         }
+    }
+
+
+    /**
+     * Helper method for updateLaoWitnesses and updateLaoName to send a stateLao message
+     */
+    private void sendStateLao(String s, UpdateLao updateLao, Lao lao, byte[] sender, PublicKeySign signer, String channel, String publicKey, MessageGeneral msg) {
+        StateLao stateLao = new StateLao(updateLao.getId(), updateLao.getName(), lao.getCreation(), updateLao.getLastModified(), publicKey, msg.getMessageId(), lao.getWitnesses(), new ArrayList<>());
+        MessageGeneral stateMsg = new MessageGeneral(sender, stateLao, signer, mGson);
+        mLAORepository
+                .sendPublish(channel, stateMsg)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .timeout(5, TimeUnit.SECONDS)
+                .subscribe(
+                        answer2 -> {
+                            if (answer2 instanceof Result) {
+                                Log.d(TAG, "updated " + s);
+                            } else {
+                                Log.d(TAG, "failed to update " + s);
+                            }
+                        },
+                        throwable -> Log.d(TAG, "timed out waiting for result on update " + s, throwable)
+
+                );
     }
 
     public void cancelEdit() {
@@ -997,16 +1004,15 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     }
 
     public void openCameraPermission() {
-        if(scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
+        if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
             mOpenRollCallEvent.setValue(new Event<>(HomeViewModel.REQUEST_CAMERA_PERMISSION));
-        }
-        else {
+        } else if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
             mOpenAddWitness.setValue(new Event<>(HomeViewModel.REQUEST_CAMERA_PERMISSION));
         }
     }
 
     public void enterRollCall(String id) {
-        if(!Wallet.getInstance().isSetUp()){
+        if (!Wallet.getInstance().isSetUp()) {
             mWalletMessageEvent.setValue(new Event<>(true));
             return;
         }
@@ -1024,14 +1030,13 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         if (ContextCompat.checkSelfPermission(
                 getApplication().getApplicationContext(), Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
-            if ((scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE)) {
+            if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
                 openQrCodeScanningRollCall();
-            } else {
-                if(scanningAction == ScanningAction.ADD_WITNESS)
+            } else if (scanningAction == ScanningAction.ADD_WITNESS) {
                 openAddWitness();
             }
-        }
-        else {
+
+        } else {
             openCameraPermission();
         }
     }
@@ -1040,7 +1045,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         mOpenLaoWalletEvent.postValue(new Event<>(true));
     }
 
-    public void openRollCallToken(String rollCallId){
+    public void openRollCallToken(String rollCallId) {
         mOpenRollCallTokenEvent.postValue(new Event<>(rollCallId));
     }
 
@@ -1048,16 +1053,15 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         mOpenAttendeesListEvent.postValue(new Event<>(rollCallId));
     }
 
-    public void logoutWallet(){
+    public void logoutWallet() {
         Wallet.getInstance().logout();
     }
 
     @Override
     public void onPermissionGranted() {
-        if(scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
+        if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
             openQrCodeScanningRollCall();
-        }
-        else if(scanningAction == ScanningAction.ADD_WITNESS) {
+        } else if (scanningAction == ScanningAction.ADD_WITNESS) {
             openAddWitness();
         }
     }
