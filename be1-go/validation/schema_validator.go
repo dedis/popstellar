@@ -4,6 +4,7 @@ import (
 	"embed"
 	"fmt"
 	"io/fs"
+	"net/http"
 	"path/filepath"
 	"strings"
 	"student20_pop/message"
@@ -23,6 +24,8 @@ const (
 	GenericMessage SchemaType = 0
 	Data           SchemaType = 1
 )
+
+const baseUrl = "https://raw.githubusercontent.com/dedis/student_21_pop/master/"
 
 //go:embed protocol
 var protocolFS embed.FS
@@ -83,10 +86,10 @@ func NewSchemaValidator() (*SchemaValidator, error) {
 		}
 
 		if d.IsDir() {
-			return nil
+			return fs.SkipDir
 		}
 
-		if filepath.Ext(path) != "json" {
+		if filepath.Ext(path) != ".json" {
 			return nil
 		}
 
@@ -96,12 +99,15 @@ func NewSchemaValidator() (*SchemaValidator, error) {
 		}
 		defer file.Close()
 
+		// gojsonschema computes relative urls in "$ref" using the "$id" field.
+		// We pre-populate the loader with files from the local filesystem
+		// instead.
 		jsonLoader, _ := gojsonschema.NewReaderLoader(file)
-
+		url := baseUrl + path
 		if strings.HasPrefix(path, "protocol/query/method/message/data") {
-			dataLoader.AddSchema(path, jsonLoader)
+			dataLoader.AddSchema(url, jsonLoader)
 		} else {
-			gmLoader.AddSchema(path, jsonLoader)
+			gmLoader.AddSchema(url, jsonLoader)
 		}
 
 		return nil
@@ -112,24 +118,14 @@ func NewSchemaValidator() (*SchemaValidator, error) {
 	}
 
 	// read genericMessage.json
-	gmBuf, err := protocolFS.ReadFile("protocol/genericMessage.json")
-	if err != nil {
-		return nil, xerrors.Errorf("failed to read root schema: %v", err)
-	}
-
-	gmSchemaLoader := gojsonschema.NewBytesLoader(gmBuf)
+	gmSchemaLoader := gojsonschema.NewReferenceLoaderFileSystem("file:///protocol/genericMessage.json", http.FS(protocolFS))
 	gmSchema, err := gmLoader.Compile(gmSchemaLoader)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to compile validator: %v", err)
 	}
 
 	// read data.json
-	dataBuf, err := protocolFS.ReadFile("protocol/query/method/message/data/data.json")
-	if err != nil {
-		return nil, xerrors.Errorf("failed to read root schema: %v", err)
-	}
-
-	dataSchemaLoader := gojsonschema.NewBytesLoader(dataBuf)
+	dataSchemaLoader := gojsonschema.NewReferenceLoaderFileSystem("file:///protocol/query/method/message/data/data.json", http.FS(protocolFS))
 	dataSchema, err := dataLoader.Compile(dataSchemaLoader)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to compile validator: %v", err)
