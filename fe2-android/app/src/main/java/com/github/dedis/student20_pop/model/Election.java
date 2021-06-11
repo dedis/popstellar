@@ -51,6 +51,7 @@ public class Election extends Event {
     }
 
     public void setId(String id) {
+        if (id == null) throw new IllegalArgumentException("election id shouldn't be null");
         this.id = id;
     }
 
@@ -59,6 +60,7 @@ public class Election extends Event {
     }
 
     public void setName(String name) {
+        if (name == null) throw new IllegalArgumentException("election name shouldn't be null");
         this.name = name;
     }
 
