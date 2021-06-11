@@ -45,11 +45,11 @@ public final class Lao {
   }
 
   public void updateElection(String prevId, Election election) {
-    if (elections.containsKey(prevId)) {
-      elections.remove(prevId);
-    }
-    String newId = election.getId();
-    elections.put(newId, election);
+    elections.put(prevId, election);
+  }
+
+  public void putElection(Election election) {
+    elections.put(election.getId(), election);
   }
 
   public Optional<RollCall> getRollCall(String id) {
