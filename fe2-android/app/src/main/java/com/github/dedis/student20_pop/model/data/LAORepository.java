@@ -172,15 +172,17 @@ public class LAORepository {
         String channel = subscribeRequests.get(id);
         subscribeRequests.remove(id);
 
-        Lao lao = new Lao(channel);
-        laoById.put(channel, new LAOState(lao));
-        allLaoSubject.onNext(
-            laoById.entrySet().stream()
-                .map(x -> x.getValue().getLao())
-                .collect(Collectors.toList()));
+        if (isLaoChannel(channel)) {
+          Lao lao = new Lao(channel);
+          laoById.put(channel, new LAOState(lao));
+          allLaoSubject.onNext(
+                  laoById.entrySet().stream()
+                          .map(x -> x.getValue().getLao())
+                          .collect(Collectors.toList()));
 
-        Log.d(TAG, "posted allLaos to `allLaoSubject`");
-        sendCatchup(channel);
+          Log.d(TAG, "posted allLaos to `allLaoSubject`");
+          sendCatchup(channel);
+        }
       } else if (catchupRequests.containsKey(id)) {
         String channel = catchupRequests.get(id);
         catchupRequests.remove(id);
@@ -449,23 +451,7 @@ public class LAORepository {
       election.setEnd(electionSetup.getEndTime());
 
       //Once the election is created, we subscribe to the election channel
-      sendSubscribe(election.getChannel())
-              .observeOn(AndroidSchedulers.mainThread())
-              .timeout(3, TimeUnit.SECONDS)
-              .subscribe(
-                      answer -> {
-                        if (answer instanceof Result) {
-                          Log.d(TAG, "got success result for subscribe to election");
-                        } else {
-                          Log.d(
-                                  TAG,
-                                  "got failure result for subscribe to election: "
-                                          + ((Error) answer).getError().getDescription());
-                        }
-                      },
-                      throwable -> {
-                        Log.d(TAG, "timed out waiting for a response for subscribe to election", throwable);
-                      });
+      sendSubscribe(election.getChannel());
       Log.d(TAG, "election id being put is " + election.getId());
       lao.putElection(election);
     }
