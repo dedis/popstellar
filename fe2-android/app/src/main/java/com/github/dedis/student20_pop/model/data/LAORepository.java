@@ -56,6 +56,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -324,13 +325,16 @@ public class LAORepository {
     Lao lao = getLaoByChannel(channel);
     Election election = getElectionByChannel(channel);
 
+    Boolean isEnded = election.isEnded().getValue();
+    if (isEnded == null) isEnded = false;
+
     //We ignore the vote iff the election is ended and the cast vote message was created after the end timestamp
-    if (election.getEndTimestamp() >= data.getCreation() || !election.isEnded()) {
+    if (election.getEndTimestamp() >= data.getCreation() || !isEnded) {
       /* We retrieve previous cast vote message stored for the given sender, and consider the new vote iff its creation
       is after (hence preventing reordering attacks) */
       Optional<String> previousMessageIdOption = election.getMessageMap().entrySet().stream()
               .filter(entry -> senderPk.equals(entry.getValue())).map(Map.Entry::getKey).findFirst();
-      //If there is no previous message, or that this message is the youngest of all received messages, then we consider the votes
+      //If there is no previous message, or that this message is the last of all received messages, then we consider the votes
       if (!previousMessageIdOption.isPresent() ||
               ((CastVote) messageById.get(previousMessageIdOption.get()).getData()).getCreation() <= data.getCreation()) {
         election.putVotesBySender(senderPk, data.getVotes());

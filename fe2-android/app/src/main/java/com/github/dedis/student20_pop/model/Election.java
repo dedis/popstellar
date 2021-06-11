@@ -28,15 +28,14 @@ public class Election extends Event {
     private long end;
     private List<ElectionQuestion> electionQuestions;
 
-    //boolean to verify if the election is ended
-    private boolean isEnded = false;
+    private MutableLiveData<Boolean> isEnded = new MutableLiveData<>(false);
+    private final MutableLiveData<Boolean> areResultsReady = new MutableLiveData<>(false);
 
     //Map that associates each sender pk to their votes
     private Map<String, List<ElectionVote>> voteMap;
     //Map that associates each messageId to its sender
     private Map<String, String> messageMap;
 
-    private final MutableLiveData<com.github.dedis.student20_pop.Event<Boolean>> areResultsReady = new MutableLiveData<>(new com.github.dedis.student20_pop.Event<>(false));
 
     //Results of an election
     private List<QuestionResult> results;
@@ -48,15 +47,15 @@ public class Election extends Event {
         this.messageMap = new TreeMap<>();
     }
 
-    public void setResultsReady(boolean areResultsReady) {this.areResultsReady.postValue(new com.github.dedis.student20_pop.Event<>(areResultsReady));}
+    public void setResultsReady(boolean areResultsReady) {this.areResultsReady.postValue(areResultsReady);}
 
-    public MutableLiveData<com.github.dedis.student20_pop.Event<Boolean>> getResultsReady() {return areResultsReady;}
+    public MutableLiveData<Boolean> areResultsReady() {return areResultsReady;}
 
     public void setEnded(boolean isEnded) {
-        this.isEnded = isEnded;
+        this.isEnded.postValue(isEnded);
     }
 
-    public boolean isEnded() {
+    public MutableLiveData<Boolean> isEnded() {
         return isEnded;
     }
 

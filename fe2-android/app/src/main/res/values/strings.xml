@@ -156,7 +156,7 @@
     <string name="edit_election_start_time">Edit Election Start Time</string>
     <string name="edit_election_end_time">Edit Election End Time</string>
     <string name="results">Results</string>
-
+    <string name="election_ended">Waiting for results</string>
 
     <!-- Wallet -->
     <string name="button_own_seed">I own a seed</string>
