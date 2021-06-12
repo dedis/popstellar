@@ -39,6 +39,7 @@ public final class QRCodeScanningFragment extends Fragment {
   private CameraPreview mPreview;
   private BarcodeDetector barcodeDetector;
   private Integer nbAttendees = 0;
+  private boolean isCloseDialogBusy = false;
 
   /** Fragment constructor */
   public QRCodeScanningFragment(CameraSource camera, BarcodeDetector detector) {
@@ -152,23 +153,31 @@ public final class QRCodeScanningFragment extends Fragment {
 
   private void setupCloseRollCallButton() {
     mQrCodeFragBinding.addAttendeeConfirm.setOnClickListener(
-            clicked -> setupClickCloseListener(R.id.fragment_lao_detail)
+            clicked -> {
+                setupClickCloseListener(R.id.fragment_lao_detail);
+            }
     );
   }
 
   private void setupClickCloseListener(int nextFragment){
-    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-    builder.setTitle("Close Roll Call");
-    builder.setMessage("You have scanned "+nbAttendees+" attendees.");
-    builder.setOnDismissListener(dialog -> startCamera());
-    builder.setPositiveButton(R.string.confirm, (dialog, which) ->
-              ((LaoDetailViewModel)mQRCodeScanningViewModel).closeRollCall(nextFragment)
-    );
-    builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
-    AlertDialog alert = builder.create();
-    alert.setCanceledOnTouchOutside(true);
-    mPreview.stop();
-    alert.show();
+    if(!isCloseDialogBusy) {
+      AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+      builder.setTitle("Close Roll Call");
+      builder.setMessage("You have scanned " + nbAttendees + " attendees.");
+      builder.setOnDismissListener(dialog -> {
+        isCloseDialogBusy = false;
+        startCamera();
+      });
+      builder.setPositiveButton(R.string.confirm, (dialog, which) ->
+              ((LaoDetailViewModel) mQRCodeScanningViewModel).closeRollCall(nextFragment)
+      );
+      builder.setNegativeButton(R.string.cancel, (dialog, which) ->
+          dialog.dismiss()
+      );
+      mPreview.stop();
+      builder.show();
+      isCloseDialogBusy = true;
+    }
   }
 
   private void setupSuccessPopup(String msg){
@@ -177,7 +186,6 @@ public final class QRCodeScanningFragment extends Fragment {
     builder.setMessage(msg);
     builder.setOnDismissListener(dialog -> startCamera());
     AlertDialog alert = builder.create();
-    alert.setCanceledOnTouchOutside(true);
     mPreview.stop();
     alert.show();
     new Handler().postDelayed(new Runnable() {
@@ -200,9 +208,7 @@ public final class QRCodeScanningFragment extends Fragment {
         dialog.dismiss();
       }
     });
-    AlertDialog alert = builder.create();
-    alert.setCanceledOnTouchOutside(true);
     mPreview.stop();
-    alert.show();
+    builder.show();
   }
 }
