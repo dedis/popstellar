@@ -31,6 +31,7 @@ public class ContentWalletFragment extends Fragment {
   private FragmentContentWalletBinding mContentWalletBinding;
   private HomeViewModel mHomeViewModel;
   private LAOListAdapter mListAdapter;
+  private AlertDialog logoutAlert;
 
   @Nullable
   @Override
@@ -58,6 +59,9 @@ public class ContentWalletFragment extends Fragment {
     if(Wallet.getInstance().isSetUp()){
       mContentWalletBinding.logoutButton.setVisibility(View.VISIBLE);
       mContentWalletBinding.logoutButton.setOnClickListener(clicked -> {
+        if(logoutAlert!=null && logoutAlert.isShowing()) {
+          logoutAlert.dismiss();
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.logout_title);
         builder.setMessage(R.string.logout_message);
@@ -65,7 +69,8 @@ public class ContentWalletFragment extends Fragment {
           mHomeViewModel.logoutWallet()
         );
         builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
-        builder.show();
+        logoutAlert = builder.create();
+        logoutAlert.show();
       });
     }
   }

@@ -26,6 +26,7 @@ public class SeedWalletFragment extends Fragment {
   public static SeedWalletFragment newInstance() {
     return new SeedWalletFragment();
   }
+  private AlertDialog seedAlert;
 
   @Nullable
   @Override
@@ -81,6 +82,9 @@ public class SeedWalletFragment extends Fragment {
 
   private void setupConfirmSeedButton() {
     mSeedWalletFragBinding.buttonConfirmSeed.setOnClickListener(v -> {
+      if(seedAlert!=null && seedAlert.isShowing()) {
+        seedAlert.dismiss();
+      }
       AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
       builder.setTitle("You are sure you have saved the words somewhere?");
       builder.setPositiveButton("Yes", (dialog, which)-> {
@@ -92,7 +96,8 @@ public class SeedWalletFragment extends Fragment {
         }
       );
       builder.setNegativeButton("Cancel",(dialog, which)-> dialog.cancel());
-      builder.show();
+      seedAlert = builder.create();
+      seedAlert.show();
     });
   }
 
