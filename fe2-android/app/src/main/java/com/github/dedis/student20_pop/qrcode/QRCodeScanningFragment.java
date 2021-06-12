@@ -153,9 +153,7 @@ public final class QRCodeScanningFragment extends Fragment {
 
   private void setupCloseRollCallButton() {
     mQrCodeFragBinding.addAttendeeConfirm.setOnClickListener(
-            clicked -> {
-                setupClickCloseListener(R.id.fragment_lao_detail);
-            }
+            clicked -> setupClickCloseListener(R.id.fragment_lao_detail)
     );
   }
 
