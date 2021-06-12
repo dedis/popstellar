@@ -39,7 +39,6 @@ public final class QRCodeScanningFragment extends Fragment {
   private CameraPreview mPreview;
   private BarcodeDetector barcodeDetector;
   private Integer nbAttendees = 0;
-  private boolean isCloseDialogBusy = false;
   private AlertDialog closeRollCallAlert;
 
   /** Fragment constructor */
