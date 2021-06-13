@@ -31,7 +31,7 @@ public class WalletFragment extends Fragment {
   public static WalletFragment newInstance() {
     return new WalletFragment();
   }
-
+  private AlertDialog seedAlert;
 
   @Nullable
   @Override
@@ -72,6 +72,9 @@ public class WalletFragment extends Fragment {
   private void setupOwnSeedButton() {
     String defaultSeed = "elbow six card empty next sight turn quality capital please vocal indoor";
     mWalletFragBinding.buttonOwnSeed.setOnClickListener(v ->{
+      if(seedAlert!=null && seedAlert.isShowing()) {
+        seedAlert.dismiss();
+      }
       AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
       builder.setTitle("Type the 12 word seed:");
 
@@ -99,8 +102,9 @@ public class WalletFragment extends Fragment {
         }
       );
       builder.setNegativeButton("Cancel",  (dialog,which) -> dialog.cancel());
-      builder.show();
-    } );
+      seedAlert = builder.create();
+      seedAlert.show();
+    });
   }
 
   private void setupNewWalletButton() {

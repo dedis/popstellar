@@ -4,12 +4,14 @@ import android.Manifest;
 import android.app.Application;
 import android.content.pm.PackageManager;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
+
 import com.github.dedis.student20_pop.Event;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.home.HomeViewModel;
@@ -22,10 +24,10 @@ import com.github.dedis.student20_pop.model.event.EventState;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.model.network.answer.Error;
 import com.github.dedis.student20_pop.model.network.answer.Result;
-import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.CastVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CloseRollCall;
@@ -39,10 +41,7 @@ import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
@@ -55,6 +54,13 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
+
 
 public class LaoDetailViewModel extends AndroidViewModel implements CameraPermissionViewModel,
         QRCodeScanningViewModel {
@@ -101,6 +107,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
     private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
     private final MutableLiveData<String> mLaoName = new MutableLiveData<>("");
+    private final MutableLiveData<List<List<Integer>>> mCurrentElectionVotes = new MutableLiveData<>();
     private final LiveData<List<String>> mWitnesses =
             Transformations.map(
                     mCurrentLao,
@@ -615,6 +622,23 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         mCurrentElection.setValue(e);
     }
 
+    public MutableLiveData<List<List<Integer>>> getCurrentElectionVotes() {
+        return mCurrentElectionVotes;
+    }
+
+    public void setCurrentElectionVotes(List<List<Integer>> currentElectionVotes) {
+        if(currentElectionVotes == null)
+            throw new IllegalArgumentException();
+        mCurrentElectionVotes.setValue(currentElectionVotes);
+    }
+
+    public void setCurrentElectionQuestionVotes(List<Integer> votes, int position){
+        if(votes == null || position < 0 || position >= mCurrentElectionVotes.getValue().size())
+            throw new IllegalArgumentException();
+
+        mCurrentElectionVotes.getValue().set(position, votes);
+    }
+
     /*
      * Methods that modify the state or post an Event to update the UI.
      */
@@ -836,10 +860,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
     public void openAttendeesList(String rollCallId){
       mOpenAttendeesListEvent.postValue(new Event<>(rollCallId));
-    }
-
-    public void logoutWallet(){
-        Wallet.getInstance().logout();
     }
 
     @Override
