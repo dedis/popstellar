@@ -37,33 +37,17 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   const [showPublicKey, setShowPublicKey] = useState(false);
   const [showQRPublicKey, setShowQRPublicKey] = useState(false);
 
-  WalletStore.get().then((encryptedSeed) => HDWallet
-    .fromState(encryptedSeed)
-    .then((wallet) => {
-      /*
-       * TODO: recover the keys. For this the following map has to be passed to the
-       *  recoverAllKeys function of the wallet (at the moment an EMPTY map is passed)
-       *  [LAO ID 1, ROLL CALL ID 1] => [publicKey1, publicKey2, ... , publicKeyN]
-       *  [LAO ID 1, ROLL CALL ID 2] => [publicKey1, publicKey2, ... , publicKeyN]
-       *  .....
-       *  [LAO ID N, ROLL CALL ID N] => [publicKey1, publicKey2, ... , publicKeyN]
-       */
-
-      /* =================================== REMOVE =================================== */
-      // garbage effort river orphan negative kind outside quit hat camera approve first
-      const laoId1: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
-      const laoId2: Hash = new Hash('SyJ3d9TdH8Ycb4hPSGQdArTRIdP9Moywi1Ux/Kzav4o=');
-      const rollCallId1: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
-      const rollCallId2: Hash = new Hash('SyJ3d9TdH8Ycb4hPSGQdArTRIdP9Moywi1Ux/Kzav4o=');
-      const testMap: Map<[Hash, Hash], string[]> = new Map();
-      testMap.set([laoId1, rollCallId1], ['7147759d146897111bcf74f60a1948b1d3a22c9199a6b88c236eb7326adc2efc', '']);
-      testMap.set([laoId2, rollCallId2], ['fffffffffffffff', '', 'ffdddddddffffffff', '2c23cfe90936a65839fb64dfb961690c3d8a5a1262f0156cf059b0c45a2eabff']);
-      /* =================================== REMOVE =================================== */
-
-      wallet.recoverAllKeys(testMap).then((cachedTokens) => {
-        cachedKeyPairs = cachedTokens;
-      });
-    }));
+  WalletStore.get().then((encryptedSeed) => {
+    if (encryptedSeed !== undefined) {
+      HDWallet.fromState(encryptedSeed)
+        .then((wallet) => {
+          // TODO: instead of passing empty map, construct correct map from Redux state
+          wallet.recoverAllKeys(new Map()).then((cachedTokens) => {
+            cachedKeyPairs = cachedTokens;
+          });
+        });
+    }
+  });
 
   function showTokens() {
     const tokens: string[] = [];
@@ -177,8 +161,11 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
         {!showQRPublicKey && showQRButton()}
         {showQRPublicKey && hideQRButton()}
         <WideButtonView
-          title={STRINGS.back_to_wallet_home}
-          onPress={() => navigation.navigate(STRINGS.navigation_home_tab_wallet)}
+          title={STRINGS.logout_from_wallet}
+          onPress={() => {
+            HDWallet.logoutFromWallet();
+            navigation.navigate(STRINGS.navigation_home_tab_wallet);
+          }}
         />
         <View style={styles.largePadding} />
       </ScrollView>

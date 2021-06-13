@@ -158,6 +158,7 @@ const STRINGS = {
   wallet_synced_info: 'Your digital wallet is synced !',
   setup_wallet: 'SETUP WALLET',
   back_to_wallet_home: 'BACK TO WALLET HOME',
+  logout_from_wallet: 'LOGOUT',
   show_tokens_title: 'SHOW POP TOKENS',
   show_public_keys: 'SHOW PUBLIC KEYS',
   hide_public_keys: 'HIDE PUBLIC KEYS',

@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
 });
 
 /**
- * wallet home screen
+ * wallet synchronization error screen
  * @constructor
  */
 const WalletError = ({ navigation }: IPropTypes) => {
