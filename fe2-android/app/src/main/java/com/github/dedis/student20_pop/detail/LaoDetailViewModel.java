@@ -89,7 +89,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     private final MutableLiveData<Event<Boolean>> mOpenManageElectionEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mElectionCreatedEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mOpenCastVotesEvent = new MutableLiveData<>();
-    private final MutableLiveData<Event<Boolean>> mEndElectionEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<Boolean>> mEndElectionEvent = new MutableLiveData<>(new Event<>(false));
 
     private final MutableLiveData<Event<Integer>> mNbAttendeesEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Integer>> mAskCloseRollCallEvent = new MutableLiveData<>();

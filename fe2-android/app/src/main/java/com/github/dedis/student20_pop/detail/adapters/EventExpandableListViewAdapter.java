@@ -2,6 +2,7 @@ package com.github.dedis.student20_pop.detail.adapters;
 
 import android.app.AlertDialog.Builder;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.BaseExpandableListAdapter;
 
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
+
 
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.LayoutElectionDisplayBinding;
@@ -37,6 +39,7 @@ import java.util.Locale;
 import static com.github.dedis.student20_pop.model.event.EventCategory.FUTURE;
 import static com.github.dedis.student20_pop.model.event.EventCategory.PAST;
 import static com.github.dedis.student20_pop.model.event.EventCategory.PRESENT;
+import static com.github.dedis.student20_pop.model.event.EventState.CLOSED;
 
 
 public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
@@ -326,16 +329,28 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         String dateEnd = DATE_FORMAT.format(dEnd);
         electionBinding.electionEndDate.setText("End Date : " + dateEnd);
         viewModel.setCurrentElection(election);
+        viewModel.getEndElectionEvent().observe(lifecycleOwner, booleanEvent -> {
+            electionBinding.electionActionButton.setText("Waiting for results");
+            electionBinding.electionActionButton.setEnabled(false);
+        });
         if (category == PRESENT) {
+            electionBinding.electionActionButton.setText("Cast Vote");
             electionBinding.electionActionButton.setOnClickListener(
                     clicked -> {
                         viewModel.openCastVotes();
                     });
         } else if (category == PAST) {
+            if (!viewModel.isOrganizer().getValue()) electionBinding.electionActionButton.setEnabled(false);
+            else electionBinding.electionActionButton.setEnabled(true);
+
+            Log.d("eventExp", "PAST category");
+            if (election.getState() == CLOSED) {
+                Log.d("eventExp", "election CLOSED");
+                electionBinding.electionActionButton.setText("Waiting for results");
+                electionBinding.electionActionButton.setEnabled(false);
+            } else electionBinding.electionActionButton.setText("Tally up votes");
             electionBinding.electionActionButton.setOnClickListener(
                     clicked -> viewModel.endElection(election));
-            viewModel.getEndElectionEvent().observe(lifecycleOwner, booleanEvent -> {
-                electionBinding.electionActionButton.setText("Waiting for results");});
         }
         electionBinding.electionEditButton.setOnClickListener(clicked -> viewModel.openManageElection(true));
         electionBinding.setEventCategory(category);
@@ -369,13 +384,13 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
         if (isOrganizer && rollCall.getState() == EventState.CREATED) {
             binding.rollcallOpenButton.setVisibility(View.VISIBLE);
-        } else if (isOrganizer && rollCall.getState() == EventState.CLOSED) {
+        } else if (isOrganizer && rollCall.getState() == CLOSED) {
             binding.rollcallReopenButton.setVisibility(View.VISIBLE);
         } else if (!isOrganizer && rollCall.getState() == EventState.CREATED) {
             binding.rollcallScheduledButton.setVisibility(View.VISIBLE);
         } else if (!isOrganizer && rollCall.getState() == EventState.OPENED) {
             binding.rollcallEnterButton.setVisibility(View.VISIBLE);
-        } else if (!isOrganizer && rollCall.getState() == EventState.CLOSED) {
+        } else if (!isOrganizer && rollCall.getState() == CLOSED) {
             binding.rollcallClosedButton.setVisibility(View.VISIBLE);
         }
 
