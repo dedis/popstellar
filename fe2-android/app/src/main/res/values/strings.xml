@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Student 20 PoP</string>
+    <string name="app_name">Student 21 PoP</string>
 
     <!-- Top Tabs -->
     <string name="tab_home">Home</string>
@@ -119,6 +119,10 @@
     <!-- Properties -->
     <string name="test_organization_name">Test Organization Name</string>
     <string name="edit_lao_name">Edit Lao Name</string>
+
+
+    <string name="button_text">Cast Vote</string>
+
     <string name="total">Total:</string>
     <string name="election_name">Election Name</string>
     <string name="lao_name">LAO name</string>
