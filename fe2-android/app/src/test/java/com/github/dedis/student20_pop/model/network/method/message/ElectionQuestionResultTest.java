@@ -1,14 +1,13 @@
 package com.github.dedis.student20_pop.model.network.method.message;
 
-import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionResult;
+import com.github.dedis.student20_pop.model.network.method.message.data.ElectionResultQuestion;
+import com.github.dedis.student20_pop.model.network.method.message.data.QuestionResult;
 
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

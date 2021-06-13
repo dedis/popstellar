@@ -334,6 +334,8 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         } else if (category == PAST) {
             electionBinding.electionActionButton.setOnClickListener(
                     clicked -> viewModel.endElection(election));
+            viewModel.getEndElectionEvent().observe(lifecycleOwner, booleanEvent -> {
+                electionBinding.electionActionButton.setText("Waiting for results");});
         }
         electionBinding.electionEditButton.setOnClickListener(clicked -> viewModel.openManageElection(true));
         electionBinding.setEventCategory(category);

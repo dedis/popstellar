@@ -5,7 +5,7 @@ import android.util.ArraySet;
 import com.github.dedis.student20_pop.model.event.EventState;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
-import com.github.dedis.student20_pop.model.network.method.message.ElectionVote;
+import com.github.dedis.student20_pop.model.network.method.message.data.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.meeting.CreateMeeting;

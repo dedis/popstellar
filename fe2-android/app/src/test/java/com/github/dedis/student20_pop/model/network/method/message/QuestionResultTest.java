@@ -1,5 +1,7 @@
 package com.github.dedis.student20_pop.model.network.method.message;
 
+import com.github.dedis.student20_pop.model.network.method.message.data.QuestionResult;
+
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

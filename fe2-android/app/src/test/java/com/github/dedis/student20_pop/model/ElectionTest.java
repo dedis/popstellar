@@ -1,9 +1,9 @@
 package com.github.dedis.student20_pop.model;
 
 
-import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
-import com.github.dedis.student20_pop.model.network.method.message.ElectionVote;
-import com.github.dedis.student20_pop.model.network.method.message.QuestionResult;
+import com.github.dedis.student20_pop.model.network.method.message.data.ElectionQuestion;
+import com.github.dedis.student20_pop.model.network.method.message.data.ElectionVote;
+import com.github.dedis.student20_pop.model.network.method.message.data.QuestionResult;
 import com.github.dedis.student20_pop.utility.security.Hash;
 
 import org.junit.Test;

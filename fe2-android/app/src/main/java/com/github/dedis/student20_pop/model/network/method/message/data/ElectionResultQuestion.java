@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.model.network.method.message;
+package com.github.dedis.student20_pop.model.network.method.message.data;
 
 import java.util.List;
 

@@ -27,7 +27,7 @@ import com.github.dedis.student20_pop.model.network.answer.Result;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.CastVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionEnd;
-import com.github.dedis.student20_pop.model.network.method.message.ElectionVote;
+import com.github.dedis.student20_pop.model.network.method.message.data.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;

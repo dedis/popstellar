@@ -18,7 +18,7 @@ import com.github.dedis.student20_pop.model.network.method.Catchup;
 import com.github.dedis.student20_pop.model.network.method.Publish;
 import com.github.dedis.student20_pop.model.network.method.Subscribe;
 import com.github.dedis.student20_pop.model.network.method.Unsubscribe;
-import com.github.dedis.student20_pop.model.network.method.message.ElectionResultQuestion;
+import com.github.dedis.student20_pop.model.network.method.message.data.ElectionResultQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
@@ -63,12 +63,6 @@ import java.util.stream.Collectors;
 
 import static com.github.dedis.student20_pop.model.event.EventState.CLOSED;
 import static com.github.dedis.student20_pop.model.event.EventState.OPENED;
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.BehaviorSubject;
-import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subjects.Subject;
 
 
 public class LAORepository {
