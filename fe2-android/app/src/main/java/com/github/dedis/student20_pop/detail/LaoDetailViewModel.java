@@ -1072,10 +1072,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         mOpenAttendeesListEvent.postValue(new Event<>(rollCallId));
     }
 
-    public void logoutWallet() {
-        Wallet.getInstance().logout();
-    }
-
     @Override
     public void onPermissionGranted() {
         if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {

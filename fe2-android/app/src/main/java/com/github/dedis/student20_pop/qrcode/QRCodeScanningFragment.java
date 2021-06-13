@@ -34,14 +34,15 @@ import java.io.IOException;
  * Fragment handling the QR code scanning
  */
 public final class QRCodeScanningFragment extends Fragment {
-    public static final String TAG = QRCodeScanningFragment.class.getSimpleName();
-    private static final int HANDLE_GMS = 9001;
-    private FragmentQrcodeBinding mQrCodeFragBinding;
-    private QRCodeScanningViewModel mQRCodeScanningViewModel;
-    private CameraSource camera;
-    private CameraPreview mPreview;
-    private BarcodeDetector barcodeDetector;
-    private Integer nbAttendees = 0;
+  public static final String TAG = QRCodeScanningFragment.class.getSimpleName();
+  private static final int HANDLE_GMS = 9001;
+  private FragmentQrcodeBinding mQrCodeFragBinding;
+  private QRCodeScanningViewModel mQRCodeScanningViewModel;
+  private CameraSource camera;
+  private CameraPreview mPreview;
+  private BarcodeDetector barcodeDetector;
+  private Integer nbAttendees = 0;
+  private AlertDialog closeRollCallAlert;
 
     /**
      * Fragment constructor
@@ -162,61 +163,64 @@ public final class QRCodeScanningFragment extends Fragment {
         }
     }
 
-    private void setupCloseRollCallButton() {
-        mQrCodeFragBinding.addAttendeeConfirm.setOnClickListener(
-                clicked -> setupClickCloseListener(R.id.fragment_lao_detail));
-    }
+  private void setupCloseRollCallButton() {
+    mQrCodeFragBinding.addAttendeeConfirm.setOnClickListener(
+            clicked -> setupClickCloseListener(R.id.fragment_lao_detail)
+    );
+  }
 
-    private void setupClickCloseListener(int nextFragment) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Close Roll Call");
-        builder.setMessage("You have scanned " + nbAttendees + " attendees.");
-        builder.setOnDismissListener(dialog -> startCamera());
-        builder.setPositiveButton(R.string.confirm, (dialog, which) ->
-                ((LaoDetailViewModel) mQRCodeScanningViewModel).closeRollCall(nextFragment)
-        );
-        builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
-        AlertDialog alert = builder.create();
-        alert.setCanceledOnTouchOutside(true);
-        mPreview.stop();
-        alert.show();
+  private void setupClickCloseListener(int nextFragment){
+    if(closeRollCallAlert!=null && closeRollCallAlert.isShowing()) {
+      closeRollCallAlert.dismiss();
     }
+    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+    builder.setTitle("Close Roll Call");
+    builder.setMessage("You have scanned " + nbAttendees + " attendees.");
+    builder.setOnDismissListener(dialog ->
+      startCamera()
+    );
+    builder.setPositiveButton(R.string.confirm, (dialog, which) ->
+            ((LaoDetailViewModel) mQRCodeScanningViewModel).closeRollCall(nextFragment)
+    );
+    builder.setNegativeButton(R.string.cancel, (dialog, which) ->
+            dialog.dismiss()
+    );
+    mPreview.stop();
+    closeRollCallAlert = builder.create();
+    closeRollCallAlert.show();
+  }
 
-    private void setupSuccessPopup(String msg) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Success");
-        builder.setMessage(msg);
-        builder.setOnDismissListener(dialog -> startCamera());
-        AlertDialog alert = builder.create();
-        alert.setCanceledOnTouchOutside(true);
-        mPreview.stop();
-        alert.show();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (alert.isShowing()) {
-                    alert.dismiss();
-                }
-            }
-        }, 2000);
-    }
+  private void setupSuccessPopup(String msg){
+    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+    builder.setTitle("Success");
+    builder.setMessage(msg);
+    builder.setOnDismissListener(dialog -> startCamera());
+    AlertDialog alert = builder.create();
+    mPreview.stop();
+    alert.show();
+    new Handler().postDelayed(new Runnable() {
+      @Override
+      public void run() {
+        if (alert.isShowing()){
+          alert.dismiss();
+        }
+      }
+    }, 2000);
+  }
 
-    private void setupWarningPopup(String msg) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Warning");
-        builder.setMessage(msg);
-        builder.setOnDismissListener(dialog -> startCamera());
-        builder.setPositiveButton("Ok", (dialog, which) -> {
-            if (dialog != null) {
-                dialog.dismiss();
-            }
-        });
-        AlertDialog alert = builder.create();
-        alert.setCanceledOnTouchOutside(true);
-        mPreview.stop();
-        alert.show();
-    }
-
+  private void setupWarningPopup(String msg){
+    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+    builder.setTitle("Warning");
+    builder.setMessage(msg);
+    builder.setOnDismissListener(dialog -> startCamera());
+    builder.setPositiveButton("Ok", (dialog, which) -> {
+      if(dialog!=null){
+        dialog.dismiss();
+      }
+    });
+    mPreview.stop();
+    builder.show();
+  }
     void observeWarningEvent() {
         ((LaoDetailViewModel) mQRCodeScanningViewModel)
                 .getScanWarningEvent()
@@ -293,4 +297,5 @@ public final class QRCodeScanningFragment extends Fragment {
             adb.setPositiveButton("Ok", null);
             adb.show();
     }
+
 }

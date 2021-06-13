@@ -64,7 +64,7 @@ public class RollCallTokenFragment extends Fragment {
         String pk = "";
         Log.d(TAG, "rollcall: "+rollCallId);
         try {
-            Pair<byte[], byte[]> token = Wallet.getInstance().findKeyPair(firstLaoId, rollCallId);
+            Pair<byte[], byte[]> token = Wallet.getInstance().findKeyPair(firstLaoId, rollCall.getPersistentId());
             sk = Base64.getUrlEncoder().encodeToString(token.first);
             pk = Base64.getUrlEncoder().encodeToString(token.second);
         } catch (GeneralSecurityException e) {
