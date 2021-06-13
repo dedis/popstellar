@@ -12,6 +12,7 @@ import android.widget.BaseExpandableListAdapter;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
 
+import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.LayoutElectionDisplayBinding;
 import com.github.dedis.student20_pop.databinding.LayoutEventBinding;
 import com.github.dedis.student20_pop.databinding.LayoutEventCategoryBinding;
@@ -328,11 +329,11 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         electionBinding.electionEndDate.setText("End Date : " + dateEnd);
         viewModel.setCurrentElection(election);
         viewModel.getEndElectionEvent().observe(lifecycleOwner, booleanEvent -> {
-            electionBinding.electionActionButton.setText("Waiting for results");
+            electionBinding.electionActionButton.setText("");
             electionBinding.electionActionButton.setEnabled(false);
         });
         if (category == PRESENT) {
-            electionBinding.electionActionButton.setText("Cast Vote");
+            electionBinding.electionActionButton.setText(R.string.cast_vote);
             electionBinding.electionActionButton.setOnClickListener(
                     clicked -> viewModel.openCastVotes());
         } else if (category == PAST) {
@@ -342,9 +343,9 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
             Log.d("eventExp", "PAST category");
             if (election.getState() == CLOSED) {
                 Log.d("eventExp", "election CLOSED");
-                electionBinding.electionActionButton.setText("Waiting for results");
+                electionBinding.electionActionButton.setText(R.string.election_ended);
                 electionBinding.electionActionButton.setEnabled(false);
-            } else electionBinding.electionActionButton.setText("Tally up votes");
+            } else electionBinding.electionActionButton.setText(R.string.tally_votes);
             electionBinding.electionActionButton.setOnClickListener(
                     clicked -> viewModel.endElection(election));
         }
