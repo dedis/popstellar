@@ -12,8 +12,6 @@ import android.widget.BaseExpandableListAdapter;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
 
-
-import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.LayoutElectionDisplayBinding;
 import com.github.dedis.student20_pop.databinding.LayoutEventBinding;
 import com.github.dedis.student20_pop.databinding.LayoutEventCategoryBinding;
@@ -336,9 +334,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         if (category == PRESENT) {
             electionBinding.electionActionButton.setText("Cast Vote");
             electionBinding.electionActionButton.setOnClickListener(
-                    clicked -> {
-                        viewModel.openCastVotes();
-                    });
+                    clicked -> viewModel.openCastVotes());
         } else if (category == PAST) {
             if (!viewModel.isOrganizer().getValue()) electionBinding.electionActionButton.setEnabled(false);
             else electionBinding.electionActionButton.setEnabled(true);

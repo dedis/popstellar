@@ -7,6 +7,7 @@ import com.github.dedis.student20_pop.utility.network.IdGenerator;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /** Data sent to update the lao specifications */
