@@ -4,6 +4,8 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 
+import { getNavigator } from 'utils/Navigator';
+
 const copyIcon = require('res/img/copy.svg');
 
 /**
@@ -18,16 +20,16 @@ const styles = StyleSheet.create({
   } as ImageStyle,
 });
 
-function CopyButton({ action }: IPropTypes) {
+function CopyButton({ data }: IPropTypes) {
   return (
-    <Pressable onPress={action}>
+    <Pressable onPress={() => getNavigator().clipboard.writeText(data)}>
       <Image style={styles.icon} source={copyIcon} />
     </Pressable>
   );
 }
 
 const propTypes = {
-  action: PropTypes.func.isRequired,
+  data: PropTypes.string.isRequired,
 };
 CopyButton.prototype = propTypes;
 

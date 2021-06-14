@@ -40,8 +40,8 @@ export default function WalletNavigation() {
         component={WalletSyncedSeed}
       />
       <Stack.Screen
-         name={STRINGS.navigation_wallet_error}
-         component={WalletError}
+        name={STRINGS.navigation_wallet_error}
+        component={WalletError}
       />
     </Stack.Navigator>
   );

@@ -8,8 +8,8 @@ import TextBlock from './TextBlock';
 import { Views } from '../styles';
 
 /**
- * TextInput component which is removable by clicking the trashcan
- * It is used by the TextInputList.tsx component
+ * This is a TextBlock component which data is copiable
+ * to clipboard by clicking the copy button.
  */
 
 const styles = StyleSheet.create({
@@ -27,7 +27,7 @@ const CopiableTextBlock = (props: IPropTypes) => {
 
   return (
     <View style={styles.view}>
-      <CopyButton action={() => navigator.clipboard.writeText(text)} />
+      <CopyButton data={text} />
       <TextBlock text={text} key={id} visibility={visibility} />
     </View>
   );

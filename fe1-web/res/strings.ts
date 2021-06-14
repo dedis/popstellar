@@ -42,7 +42,6 @@ const STRINGS = {
   navigation_show_seed_wallet: 'New Wallet',
   navigation_synced_wallet: 'Your Wallet',
   navigation_wallet_error: 'Error',
-  navigation_wallet_new_token: 'Generate PoP Token',
 
   /* --- Home Strings --- */
   home_welcome: 'Welcome to Personhood.Online!',
@@ -92,9 +91,6 @@ const STRINGS = {
   identity_email_placeholder: 'Email',
   identity_phone_placeholder: 'Phone number',
   identity_qrcode_description: 'ID (Public Key):',
-  identity_generate_token_button_title: 'Generate PoP Token for this LAO',
-  identity_insert_lao_id_for_token: 'insert here the LAO ID',
-  identity_insert_roll_call_id_for_token: 'insert here the Roll Call ID',
 
   /* --- Witness Strings --- */
   witness_description: 'Witness screen',
@@ -169,16 +165,17 @@ const STRINGS = {
   wallet_synced_info: 'Your digital wallet is synced !',
   setup_wallet: 'SETUP WALLET',
   back_to_wallet_home: 'BACK TO WALLET HOME',
+  logout_from_wallet: 'LOGOUT',
   show_tokens_title: 'SHOW POP TOKENS',
   show_public_keys: 'SHOW PUBLIC KEYS',
   hide_public_keys: 'HIDE PUBLIC KEYS',
   show_qr_public_keys: 'SHOW QR KEYS',
   hide_qr_public_keys: 'HIDE QR KEYS',
-  generate_new_token: 'NEW POP TOKEN',
-  cancel_generate_new_token: 'BACK',
   your_tokens_title: 'Your PoP Tokens',
   wallet_error: 'A synchronization error with your wallet occurred',
   no_tokens_in_wallet: 'No token is yet associated with your wallet seed, once you participate in a roll call event your PoP tokens will be shows here',
+  lao_id: 'LAO ID',
+  roll_call_id: 'Roll Call ID',
 
   /* --- General creation Strings --- */
   create_description: 'Choose the type of event you want to create',
