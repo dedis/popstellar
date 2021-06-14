@@ -338,5 +338,28 @@ func TestOrganizer_RollCallWrongInstructions(t *testing.T) {
 		require.NoError(t, err)
 
 	}
+}
 
+func TestOrganizer_RollCallProposedStartEnd(t *testing.T) {
+	_, laoChannel, err := createLao(oHub, organizerKeyPair, "lao roll call proposed start")
+	require.NoError(t, err)
+
+	creation := timestamp()
+
+	// create CreatRollCall data with ProposedStart > ProposedEnd
+	dataCreate := &message.CreateRollCallData{
+		GenericData: &message.GenericData{
+			Action: message.DataAction(message.CreateRollCallAction),
+			Object: message.RollCallObject,
+		},
+		ID:            []byte{1},
+		Name:          "my roll call",
+		Creation:      creation,
+		ProposedStart: creation + 10,
+		ProposedEnd:   creation,
+		Location:      "EPFL",
+	}
+	msg := createMessage(dataCreate, organizerKeyPair.publicBuf)
+	err = laoChannel.processRollCallObject(msg)
+	require.Error(t, err)
 }
