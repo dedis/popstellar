@@ -30,7 +30,6 @@ public class IdentityFragment extends Fragment {
   public static final String TAG = IdentityFragment.class.getSimpleName();
 
   public static final String PUBLIC_KEY = "public key";
-  private LaoDetailViewModel mLaoDetailViewModel;
   private EditText identityNameEditText;
   private EditText identityTitleEditText;
   private EditText identityOrganizationEditText;
@@ -54,7 +53,6 @@ public class IdentityFragment extends Fragment {
           @Nullable ViewGroup container,
           @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_identity, container, false);
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
     // TODO :   The QR code does not appear at all unless the Name field is non-empty
     //  and not all whitespace.
     CheckBox anonymousCheckBox = view.findViewById(R.id.checkbox_anonymous);
