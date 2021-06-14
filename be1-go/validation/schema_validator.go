@@ -9,7 +9,6 @@ import (
 	"io/fs"
 	"log"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"student20_pop/message"
 
@@ -126,11 +125,6 @@ func NewSchemaValidator() (*SchemaValidator, error) {
 
 func loadFileURL(s string) (io.ReadCloser, error) {
 	path := strings.TrimPrefix(s, "file://")
-
-	if runtime.GOOS == "windows" {
-		path = strings.TrimPrefix(path, "/")
-		path = filepath.FromSlash(path)
-	}
 
 	return protocolFS.Open(path)
 }
