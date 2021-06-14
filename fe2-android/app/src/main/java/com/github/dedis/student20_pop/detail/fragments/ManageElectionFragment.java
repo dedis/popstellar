@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,11 +30,10 @@ import java.util.Locale;
 public class ManageElectionFragment extends Fragment {
 
     public static final String TAG = ManageElectionFragment.class.getSimpleName();
-    protected static final SimpleDateFormat DATE_FORMAT =
+    protected final SimpleDateFormat DATE_FORMAT =
             new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
     private static final int EDIT_NAME_CODE = 0; // Used to identify the request
     private static final int EDIT_QUESTION_CODE = 1;
-    private static final int EDIT_BALLOT_CODE = 2;
     private static final int START_TIME_CODE = 3;
     private static final int END_TIME_CODE = 4;
     private static final int START_DATE_CODE = 5;
@@ -50,17 +50,9 @@ public class ManageElectionFragment extends Fragment {
     private int requestCode;
     private String newName;
     private String newQuestion;
-    private FragmentManageElectionBinding mManageElectionFragBinding;
-    private TextView laoName;
-    private TextView electionName;
     private Button terminate;
-    private TextView currentTime;
-    private TextView startTime;
-    private TextView endTime;
-    private TextView question;
     private Button editName;
     private Button editQuestion;
-    private Button editBallotOptions;
     private Button editStartTimeButton;
     private Button editEndTimeButton;
     private Button editStartDateButton;
@@ -78,7 +70,7 @@ public class ManageElectionFragment extends Fragment {
             @NonNull LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-        mManageElectionFragBinding =
+        FragmentManageElectionBinding mManageElectionFragBinding =
                 FragmentManageElectionBinding.inflate(inflater, container, false);
 
         laoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
@@ -87,15 +79,14 @@ public class ManageElectionFragment extends Fragment {
         editEndTimeButton = mManageElectionFragBinding.editEndTime;
         editName = mManageElectionFragBinding.editName;
         editQuestion = mManageElectionFragBinding.editQuestion;
-        editBallotOptions = mManageElectionFragBinding.editBallotOptions;
-        currentTime = mManageElectionFragBinding.displayedCurrentTime;
-        startTime = mManageElectionFragBinding.displayedStartTime;
-        endTime = mManageElectionFragBinding.displayedEndTime;
+        TextView currentTime = mManageElectionFragBinding.displayedCurrentTime;
+        TextView startTime = mManageElectionFragBinding.displayedStartTime;
+        TextView endTime = mManageElectionFragBinding.displayedEndTime;
         editStartDateButton = mManageElectionFragBinding.editStartDate;
         editEndDateButton = mManageElectionFragBinding.editEndDate;
-        question = mManageElectionFragBinding.electionQuestion;
-        laoName = mManageElectionFragBinding.manageElectionLaoName;
-        electionName = mManageElectionFragBinding.manageElectionTitle;
+        TextView question = mManageElectionFragBinding.electionQuestion;
+        TextView laoName = mManageElectionFragBinding.manageElectionLaoName;
+        TextView electionName = mManageElectionFragBinding.manageElectionTitle;
         Date dCurrent = new java.util.Date(System.currentTimeMillis()); // Get's the date based on the unix time stamp
         Date dStart = new java.util.Date(laoDetailViewModel.getCurrentElection().getStartTimestamp() * 1000);// *1000 because it needs to be in milisecond
         Date dEnd = new java.util.Date(laoDetailViewModel.getCurrentElection().getEndTimestamp() * 1000);
@@ -104,7 +95,7 @@ public class ManageElectionFragment extends Fragment {
         endTime.setText(DATE_FORMAT.format(dEnd));
         laoName.setText(laoDetailViewModel.getCurrentLaoName().getValue());
         electionName.setText(laoDetailViewModel.getCurrentElection().getName());
-        question.setText("Election Question : " + laoDetailViewModel.getCurrentElection().getElectionQuestions().get(0).getQuestion());
+        question.setText(String.format("Election Question : %s", laoDetailViewModel.getCurrentElection().getElectionQuestions().get(0).getQuestion()));
         mManageElectionFragBinding.setLifecycleOwner(getActivity());
         return mManageElectionFragBinding.getRoot();
 
@@ -113,7 +104,7 @@ public class ManageElectionFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Button back = (Button) getActivity().findViewById(R.id.tab_back);
+        Button back = getActivity().findViewById(R.id.tab_back);
         back.setOnClickListener(v -> laoDetailViewModel.openLaoDetail());
 
 
@@ -129,20 +120,21 @@ public class ManageElectionFragment extends Fragment {
                         }
 
 
+                        //TODO : Implement the case for edit ballot options
+                        // TODO : In the future send a UpdateElection message with the corresponding modified attribute
                         case START_TIME_CODE: {
                             Calendar startTimeCalendar = Calendar.getInstance();
-                            startTimeCalendar.setTimeInMillis(laoDetailViewModel.getCurrentElection().getStartTimestamp());
+                            startTimeCalendar.setTimeInMillis(laoDetailViewModel.getCurrentElection().getStartTimestamp()*1000); // *1000 because it needs to be in milisecond
                             startTimeCalendar.set(Calendar.HOUR_OF_DAY, newHour);
                             startTimeCalendar.set(Calendar.MINUTE, newMinute);
 
                             newStart = startTimeCalendar.getTimeInMillis();
 
-                            // TODO : In the future send a UpdateElection message with a modified start time : newStart
                             break;
                         }
                         case START_DATE_CODE: {
                             Calendar startTimeCalendar = Calendar.getInstance();
-                            startTimeCalendar.setTimeInMillis(laoDetailViewModel.getCurrentElection().getStartTimestamp());
+                            startTimeCalendar.setTimeInMillis(laoDetailViewModel.getCurrentElection().getStartTimestamp()*1000); //*1000 because it needs to be in milisecond
                             startTimeCalendar.set(Calendar.YEAR, newYear);
                             startTimeCalendar.set(Calendar.MONTH, newMonth);
                             startTimeCalendar.set(Calendar.DAY_OF_MONTH, newDay);
@@ -152,18 +144,17 @@ public class ManageElectionFragment extends Fragment {
                         }
                         case END_TIME_CODE: {
                             Calendar endTimeCalendar = Calendar.getInstance();
-                            endTimeCalendar.setTimeInMillis(laoDetailViewModel.getCurrentElection().getEndTimestamp());
+                            endTimeCalendar.setTimeInMillis(laoDetailViewModel.getCurrentElection().getEndTimestamp()*1000);
                             endTimeCalendar.set(Calendar.HOUR_OF_DAY, newHour);
                             endTimeCalendar.set(Calendar.MINUTE, newMinute);
 
                             newEnd = endTimeCalendar.getTimeInMillis();
 
-                            // TODO : In the future send a UpdateElection message with a modified start time : newStart
                             break;
                         }
                         case END_DATE_CODE: {
                             Calendar endTimeCalendar = Calendar.getInstance();
-                            endTimeCalendar.setTimeInMillis(laoDetailViewModel.getCurrentElection().getEndTimestamp());
+                            endTimeCalendar.setTimeInMillis(laoDetailViewModel.getCurrentElection().getEndTimestamp()*1000);
                             endTimeCalendar.set(Calendar.YEAR, newYear);
                             endTimeCalendar.set(Calendar.MONTH, newMonth);
                             endTimeCalendar.set(Calendar.DAY_OF_MONTH, newDay);
@@ -172,22 +163,19 @@ public class ManageElectionFragment extends Fragment {
                             break;
                         }
 
-                        case EDIT_NAME_CODE: {
-                            // TODO : In the future send a UpdateElection message with a modified name : newName
+
+                        case EDIT_NAME_CODE:
+                        case EDIT_QUESTION_CODE:
                             break;
-                        }
-
-                        case EDIT_QUESTION_CODE: {
-                            // TODO : In the future send a UpdateElection message with a modified name : newQuestion
-
-                        }
                         default: {
-
+                            Log.d(TAG,"There was an error with the request code");
+                            break;
                         }
 
 
                     }
                 }
+                break;
 
                 case DialogInterface.BUTTON_NEGATIVE:
                     //No button clicked
@@ -209,7 +197,7 @@ public class ManageElectionFragment extends Fragment {
                     builder.show();
                 }
                 , calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
-        timePickerDialog.setButton(TimePickerDialog.BUTTON_POSITIVE, "Modify Time", timePickerDialog);
+        timePickerDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Modify Time", timePickerDialog);
 
         // create the DatePickerDialog
         DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
@@ -221,7 +209,7 @@ public class ManageElectionFragment extends Fragment {
 
                 }
                 , calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-        datePickerDialog.setButton(DatePickerDialog.BUTTON_POSITIVE, "Modify Date", timePickerDialog);
+        datePickerDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Modify Date", timePickerDialog);
 
         // create the Alert Dialog to edit name
         AlertDialog.Builder editNameBuilder = new AlertDialog.Builder(getContext());
@@ -236,7 +224,7 @@ public class ManageElectionFragment extends Fragment {
 // Set up the buttons
         editNameBuilder.setPositiveButton("SUBMIT", (dialog, which) -> {
             newName = inputName.getText().toString();
-            requestCode = EDIT_NAME_CODE;
+            setupRequestCode(EDIT_NAME_CODE);
             builder.show();
         });
         editNameBuilder.setNegativeButton("CANCEL", (dialog, which) -> {
@@ -258,7 +246,7 @@ public class ManageElectionFragment extends Fragment {
 // Set up the buttons
         editQuestionBuilder.setPositiveButton("SUBMIT", (dialog, which) -> {
             newQuestion = inputQuestion.getText().toString();
-            requestCode = EDIT_QUESTION_CODE;
+            setupRequestCode(EDIT_QUESTION_CODE);
             builder.show();
         });
         editQuestionBuilder.setNegativeButton("CANCEL", (dialog, which) -> {
@@ -294,7 +282,7 @@ public class ManageElectionFragment extends Fragment {
         editStartTimeButton.setOnClickListener(
                 v -> {
                     // we set the request code
-                    requestCode = START_TIME_CODE;
+                    setupRequestCode(START_TIME_CODE);
                     // show the timePicker
                     timePickerDialog.show();
                 });
@@ -303,7 +291,7 @@ public class ManageElectionFragment extends Fragment {
         editEndTimeButton.setOnClickListener(
                 v -> {
                     // we set the request code
-                    requestCode = END_TIME_CODE;
+                    setupRequestCode(END_TIME_CODE);
                     // show the timePicker
                     timePickerDialog.show();
                 });
@@ -312,7 +300,7 @@ public class ManageElectionFragment extends Fragment {
         editStartDateButton.setOnClickListener(
                 v -> {
                     // we set the request code
-                    requestCode = START_DATE_CODE;
+                    setupRequestCode(START_DATE_CODE);
                     // show the timePicker
                     datePickerDialog.show();
                 });
@@ -321,7 +309,7 @@ public class ManageElectionFragment extends Fragment {
         editEndDateButton.setOnClickListener(
                 v -> {
                     // we set the request code
-                    requestCode = END_DATE_CODE;
+                    setupRequestCode(END_DATE_CODE);
                     // show the timePicker
                     datePickerDialog.show();
                 });
@@ -329,12 +317,16 @@ public class ManageElectionFragment extends Fragment {
         //On click, cancel button  current Election
         terminate.setOnClickListener(
                 v -> {
-                    requestCode = CANCEL_CODE;
+                    setupRequestCode( CANCEL_CODE);
                     builder.show();
 
                 });
 
 
+    }
+
+   void setupRequestCode(int requestCode) {
+        this.requestCode = requestCode;
     }
 
 
