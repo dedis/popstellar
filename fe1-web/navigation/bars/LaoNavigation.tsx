@@ -12,7 +12,6 @@ import STRINGS from 'res/strings';
 import Home from 'parts/Home';
 import Identity from 'parts/lao/Identity';
 import Attendee from 'parts/lao/attendee/Attendee';
-import GenerateToken from 'parts/lao/GenerateToken';
 import OrganizerNavigation from './organizer/OrganizerNavigation';
 import WitnessNavigation from './witness/WitnessNavigation';
 
@@ -103,11 +102,6 @@ function LaoNavigation() {
       <OrganizationTopTabNavigator.Screen
         name={STRINGS.organization_navigation_tab_identity}
         component={Identity}
-      />
-
-      <OrganizationTopTabNavigator.Screen
-        name={STRINGS.navigation_wallet_new_token}
-        component={GenerateToken}
       />
 
       <OrganizationTopTabNavigator.Screen
