@@ -14,9 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.detail.LaoDetailActivity;
-import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
-
 import net.glxn.qrgen.android.QRCode;
 
 /**
