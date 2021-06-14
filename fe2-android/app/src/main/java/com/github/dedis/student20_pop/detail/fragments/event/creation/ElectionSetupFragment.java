@@ -1,17 +1,21 @@
 package com.github.dedis.student20_pop.detail.fragments.event.creation;
 
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.lifecycle.Observer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.github.dedis.student20_pop.databinding.FragmentSetupElectionEventBinding;
@@ -54,11 +58,9 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
 
                 @Override
                 public void afterTextChanged(Editable s) {
-                    boolean areFieldsFilled =
-                            !electionNameText.getText().toString().trim().isEmpty() && !getStartDate().isEmpty() && !getStartTime().isEmpty() && !getEndDate().isEmpty() && !getEndTime().isEmpty()
-                                    && viewPagerAdapter.isAnInputValid() ;
-                    submitButton.setEnabled(areFieldsFilled);}
+                    submitButton.setEnabled(isElectionLevelInputValid() && viewPagerAdapter.isAnInputValid().getValue());}
             };
+
 
     public static ElectionSetupFragment newInstance() {
         return new ElectionSetupFragment();
@@ -104,11 +106,19 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
 
         viewPager2.setAdapter(viewPagerAdapter);
 
+        viewPagerAdapter.isAnInputValid().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                submitButton.setEnabled(aBoolean && isElectionLevelInputValid());
+            }
+        });
+
         FloatingActionButton addQuestion = mSetupElectionFragBinding.addQuestion;
         addQuestion.setOnClickListener(v -> viewPagerAdapter.addQuestion());
 
         mSetupElectionFragBinding.setLifecycleOwner(getActivity());
 
+        hideButtonsOnKeyboardOpen();
         return mSetupElectionFragBinding.getRoot();
 
     }
@@ -160,5 +170,30 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
     private void setupElectionCancelButton() {
         Button cancelButton = mSetupElectionFragBinding.electionCancelButton;
         cancelButton.setOnClickListener(v -> mLaoDetailViewModel.openLaoDetail());
+    }
+
+    /**
+     * Adapted from https://blog.mindorks.com/how-to-check-the-visibility-of-software-keyboard-in-android
+     */
+    private void hideButtonsOnKeyboardOpen() {
+        ConstraintLayout constraintLayout = mSetupElectionFragBinding.fragmentSetupElectionEvent;
+        constraintLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                Rect rect = new Rect();
+                constraintLayout.getWindowVisibleDisplayFrame(rect);
+                int screenHeight = constraintLayout.getRootView().getHeight();
+                int keypadHeight = screenHeight - rect.bottom;
+                if (keypadHeight > screenHeight * 0.15) {
+                    mSetupElectionFragBinding.electionSetupSubmitCancelLl.setVisibility(View.INVISIBLE);
+                } else {
+                    mSetupElectionFragBinding.electionSetupSubmitCancelLl.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+    }
+
+    private boolean isElectionLevelInputValid(){
+        return !electionNameText.getText().toString().trim().isEmpty() && !getStartDate().isEmpty() && !getStartTime().isEmpty() && !getEndDate().isEmpty() && !getEndTime().isEmpty();
     }
 }

@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.student20_pop.R;
@@ -24,7 +25,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ElectionSetupViewPagerAdapter
         extends RecyclerView.Adapter<ElectionSetupViewPagerAdapter.ViewHolder>
@@ -38,8 +41,9 @@ public class ElectionSetupViewPagerAdapter
     private List<String> questions;
     private int numberOfQuestions;
     private Context context;
-    private List<Integer> listOfValidQuestions;
-    private List<Integer> listOfValidBallots;
+    private Set<Integer> listOfValidQuestions;
+    private Set<Integer> listOfValidBallots;
+    private MutableLiveData<Boolean> isAnInputValid;
     //Enum of all voting methods, associated to a string desc for protocol and spinner display
     public enum VotingMethods { PLURALITY("Plurality");
         private String desc;
@@ -64,8 +68,9 @@ public class ElectionSetupViewPagerAdapter
         ballotOptions = new ArrayList<>();
         numberBallotOptions = new ArrayList<>();
         questions = new ArrayList<>();
-        listOfValidBallots = new ArrayList<>();
-        listOfValidQuestions = new ArrayList<>();
+        listOfValidBallots = new HashSet<>();
+        listOfValidQuestions = new HashSet<>();
+        isAnInputValid = new MutableLiveData<>(Boolean.valueOf(false));
 
     }
 
@@ -105,6 +110,7 @@ public class ElectionSetupViewPagerAdapter
                 }
                 else
                     listOfValidQuestions.remove((Integer) position);
+                checkIfAnInputIsValid();
 
 
             }
@@ -150,12 +156,19 @@ public class ElectionSetupViewPagerAdapter
         return numberOfQuestions;
     }
 
-    public boolean isAnInputValid(){
+    public MutableLiveData<Boolean> isAnInputValid(){
+        return isAnInputValid;
+    }
+
+    public void checkIfAnInputIsValid(){
         for(Integer i : listOfValidQuestions){
-            if (listOfValidBallots.contains(i))
-                return true;
+            if (listOfValidBallots.contains(i)) {
+                isAnInputValid.setValue(true);
+                return;
+            }
+
         }
-        return false;
+        isAnInputValid.setValue(false);
     }
 
     public List<Integer> getValidInputs(){
@@ -179,6 +192,7 @@ public class ElectionSetupViewPagerAdapter
         //Gets the index associated to the ballot option's view
         int ballotIndex = linearLayout.indexOfChild(ballotOptionView);
         List<String> questionBallotOption = ballotOptions.get(position);
+        ballotOptions.get(position).add("");
         ballotOptionText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {/* no check to make before text is changed */}
@@ -196,31 +210,22 @@ public class ElectionSetupViewPagerAdapter
                     numberBallotOptions.set(position, numberBallotOptions.get(position) - 1);
                 //Keeps the list of string updated when the user changes the text
                 ballotOptions.get(position).set(ballotIndex, editable.toString());
-            }
-        });
-        TextWatcher submitTextWatcher = new TextWatcher() {
-            //Text watcher that checks if mandatory fields are filled for submitting each time the user changes a field (with at least two valid ballot options)
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {/* no check to make before text is changed */}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {/* no check to make during the text is being changes */}
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                Log.d(TAG, "ballot options is" + ballotOptions.toString());
+                Log.d(TAG, "Number of ballots is " + numberBallotOptions.get(position));
+                Log.d(TAG, "Postion is " + position +" ballot options are" + ballotOptions.toString());
                 boolean areFieldsFilled =
                         numberBallotOptions.get(position) >= 2;
                 if (areFieldsFilled)
+
                     listOfValidBallots.add((Integer) position);
                 else
                     listOfValidBallots.remove((Integer) position);
-            }
-        };
-        ballotOptionText.addTextChangedListener(submitTextWatcher);
+                Log.d(TAG, "List of valid is " + listOfValidBallots);
+                checkIfAnInputIsValid();
 
-        ballotOptions.get(position).add(ballotOptionText.getText().toString());
+            }
+
+        });
+
     }
 
 
