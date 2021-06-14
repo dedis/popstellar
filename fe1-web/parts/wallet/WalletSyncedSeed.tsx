@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-let cachedKeyPairs: Map<[Hash, Hash], string>;
+let cachedKeyPairs: Map<[Hash, string], string>;
 
 /**
  * wallet UI once the wallet is synced
@@ -42,7 +42,7 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
       HDWallet.fromState(encryptedSeed)
         .then((wallet) => {
           // TODO: instead of passing empty map, construct correct map from Redux state
-          wallet.recoverAllKeys(new Map()).then((cachedTokens) => {
+          wallet.recoverWalletPoPTokens().then((cachedTokens) => {
             cachedKeyPairs = cachedTokens;
           });
         });
@@ -129,21 +129,16 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
       return (
         <View>
           { laoId.map((value, key) => (
-            <View key={value + 1} style={styleContainer.centered}>
+            <View style={styleContainer.centered}>
               <View style={styles.smallPadding} />
-              <TextBlock key={value + 2} bold text={STRINGS.lao_id} />
-              <CopiableTextBlock key={value + 3} id={key} text={value} visibility />
-              <TextBlock key={value + 4} bold text={STRINGS.roll_call_id} />
-              <CopiableTextBlock key={value + 5} id={key} text={rollCallId[key]} visibility />
+              <TextBlock bold text={STRINGS.lao_id} />
+              <CopiableTextBlock id={key} text={value} visibility />
+              <TextBlock bold text={STRINGS.roll_call_id} />
+              <CopiableTextBlock id={key} text={rollCallId[key]} visibility />
               <View style={styles.smallPadding} />
-              <CopiableTextBlock
-                key={value + 6}
-                id={key}
-                text={tokens[key]}
-                visibility={showPublicKey}
-              />
+              <CopiableTextBlock id={key} text={tokens[key]} visibility={showPublicKey} />
               <View style={styles.smallPadding} />
-              <QRCode key={value + 7} value={tokens[key]} visibility={showQRPublicKey} />
+              <QRCode value={tokens[key]} visibility={showQRPublicKey} />
             </View>
           ))}
         </View>

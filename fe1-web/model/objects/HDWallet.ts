@@ -7,6 +7,7 @@ import { Hash } from './Hash';
 import { KeyPair } from './KeyPair';
 import { PublicKey } from './PublicKey';
 import { PrivateKey } from './PrivateKey';
+import { getStore } from '../../store';
 
 /**
  * bip39 library used for seed generation and verification
@@ -172,6 +173,11 @@ export class HDWallet {
     return bufView.buffer;
   }
 
+  public async recoverWalletPoPTokens(): Promise<Map<[Hash, string], string>> {
+    const recoverMaps = HDWallet.buildLaoAndRollCallIdMapFromState();
+    return this.recoverAllKeys(recoverMaps[0], recoverMaps[1]);
+  }
+
   /**
    * This is the main function for the wallet to find all the tokens associated with it, by checking
    * through all known Roll Calls of the Laos that the user joined weather or not the token
@@ -181,31 +187,37 @@ export class HDWallet {
    * @param allKnownLaoRollCalls This is the map the wallet needs for token backup. This should map
    * all known roll call ids of the LAOs the user joined, to a list of public keys which where
    * present during that roll call.
+   * @param allKnownRollCallsNames This map has as keys the LAO and roll call ids and as value the
+   * roll call name, it is used for the user interface to display the roll call name.
    */
-  public async recoverAllKeys(allKnownLaoRollCalls: Map<[Hash, Hash], string[]>):
-  Promise<Map<[Hash, Hash], string>> {
+  public async recoverAllKeys(allKnownLaoRollCalls: Map<[Hash, Hash], string[]>,
+    allKnownRollCallsNames: Map<[Hash, Hash], string>):
+    Promise<Map<[Hash, string], string>> {
     if (allKnownLaoRollCalls === undefined) {
       throw Error('Error while recovering keys from wallet: undefined parameter');
     }
 
-    const cachedKeyPairs: Map<[Hash, Hash], string> = new Map();
+    const cachedKeyPairs: Map<[Hash, string], string> = new Map();
 
     allKnownLaoRollCalls.forEach((attendees: string[], laoAndRollCallId: [Hash, Hash]) => {
       const laoId: Hash = laoAndRollCallId[0];
       const rollCallId: Hash = laoAndRollCallId[1];
-      this.recoverKey(laoId, rollCallId, attendees, cachedKeyPairs);
+
+      const rollCallName = allKnownRollCallsNames.get([laoId, rollCallId]);
+      console.log(rollCallName);
+      this.recoverKey(laoId, rollCallId, attendees, cachedKeyPairs, rollCallId.toString());
     });
 
     return cachedKeyPairs;
   }
 
   private async recoverKey(laoId: Hash, rollCallId: Hash, attendees: string[],
-    cachedKeyPairs: Map<[Hash, Hash], string>) {
+    cachedKeyPairs: Map<[Hash, string], string>, rollCallName: string) {
     this.generateKeyPair(laoId, rollCallId).then((keyPair) => {
       const publicKey: string = keyPair.publicKey.toString();
 
       if (attendees.indexOf(publicKey) !== -1) {
-        cachedKeyPairs.set([laoId, rollCallId], publicKey);
+        cachedKeyPairs.set([laoId, rollCallName], publicKey);
       }
     });
   }
@@ -277,5 +289,37 @@ export class HDWallet {
         .concat(HDWallet.HARDENED_SYMBOL);
     }
     return idToPath;
+  }
+
+  private static buildLaoAndRollCallIdMapFromState():
+  [Map<[Hash, Hash], string[]>, Map<[Hash, Hash], string>] {
+    const allKnownLaoRollCallsIds: Map<[Hash, Hash], string[]> = new Map();
+    const allKnownRollCallsNamesByIds: Map<[Hash, Hash], string> = new Map();
+
+    const listOfLaos = getStore().getState().events.byLaoId;
+
+    for (const lao in listOfLaos) {
+      const listOfRollCallsPerLao = getStore().getState().events.byLaoId[lao].byId;
+
+      for (const rc in listOfRollCallsPerLao) {
+        if (lao.toString() !== 'myLaoId') {
+          const rcEvent = getStore().getState().events.byLaoId[lao].byId[rc];
+          if (rcEvent.eventType === 'ROLL_CALL') {
+            /* TODO: change to const */
+            let rcAttendees = (rcEvent.attendees === undefined) ? [] : rcEvent.attendees;
+
+            // TODO: =============================== REMOVE ===============================
+            rcAttendees = ['EWYr1KJMQayII4WOJZZvcK5FHPpDMsRRMTsFINXUw98', '53-uoeqbD5gRhs3G8rkt0J1V3UbKc7UqYHpAlR0rkjo'];
+            // TODO: =============================== REMOVE ===============================
+
+            allKnownLaoRollCallsIds.set([new Hash(lao), new Hash(rcEvent.id)],
+              rcAttendees);
+            allKnownRollCallsNamesByIds.set([new Hash(lao), new Hash(rcEvent.id)],
+              rcEvent.name);
+          }
+        }
+      }
+    }
+    return [allKnownLaoRollCallsIds, allKnownRollCallsNamesByIds];
   }
 }
