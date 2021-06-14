@@ -191,7 +191,7 @@ export class HDWallet {
    * roll call name, it is used for the user interface to display the roll call name.
    */
   public async recoverAllKeys(allKnownLaoRollCalls: Map<[Hash, Hash], string[]>,
-    allKnownRollCallsNames: Map<[Hash, Hash], string>):
+    allKnownRollCallsNames: Array<string>):
     Promise<Map<[Hash, string], string>> {
     if (allKnownLaoRollCalls === undefined) {
       throw Error('Error while recovering keys from wallet: undefined parameter');
@@ -199,13 +199,14 @@ export class HDWallet {
 
     const cachedKeyPairs: Map<[Hash, string], string> = new Map();
 
+    let nameIdx = 0;
     allKnownLaoRollCalls.forEach((attendees: string[], laoAndRollCallId: [Hash, Hash]) => {
       const laoId: Hash = laoAndRollCallId[0];
       const rollCallId: Hash = laoAndRollCallId[1];
 
-      const rollCallName = allKnownRollCallsNames.get([laoId, rollCallId]);
-      console.log(rollCallName);
-      this.recoverKey(laoId, rollCallId, attendees, cachedKeyPairs, rollCallId.toString());
+      const rollCallName = allKnownRollCallsNames[nameIdx];
+      this.recoverKey(laoId, rollCallId, attendees, cachedKeyPairs, rollCallName);
+      nameIdx += 1;
     });
 
     return cachedKeyPairs;
@@ -292,9 +293,9 @@ export class HDWallet {
   }
 
   private static buildLaoAndRollCallIdMapFromState():
-  [Map<[Hash, Hash], string[]>, Map<[Hash, Hash], string>] {
+  [Map<[Hash, Hash], string[]>, Array<string>] {
     const allKnownLaoRollCallsIds: Map<[Hash, Hash], string[]> = new Map();
-    const allKnownRollCallsNamesByIds: Map<[Hash, Hash], string> = new Map();
+    const allKnownRollCallsNamesByIds: Array<string> = [];
 
     const listOfLaos = getStore().getState().events.byLaoId;
 
@@ -314,8 +315,7 @@ export class HDWallet {
 
             allKnownLaoRollCallsIds.set([new Hash(lao), new Hash(rcEvent.id)],
               rcAttendees);
-            allKnownRollCallsNamesByIds.set([new Hash(lao), new Hash(rcEvent.id)],
-              rcEvent.name);
+            allKnownRollCallsNamesByIds.push(rcEvent.name);
           }
         }
       }

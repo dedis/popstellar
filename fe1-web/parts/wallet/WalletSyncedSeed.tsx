@@ -41,7 +41,6 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
     if (encryptedSeed !== undefined) {
       HDWallet.fromState(encryptedSeed)
         .then((wallet) => {
-          // TODO: instead of passing empty map, construct correct map from Redux state
           wallet.recoverWalletPoPTokens().then((cachedTokens) => {
             cachedKeyPairs = cachedTokens;
           });
@@ -52,7 +51,7 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   function showTokens() {
     const tokens: string[] = [];
     const laoId: string[] = [];
-    const rollCallId: string[] = [];
+    const rollCallNames: string[] = [];
 
     if (cachedKeyPairs.size === 0) {
       return (
@@ -74,7 +73,7 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
       // eslint-disable-next-line prefer-destructuring
       laoId[i] = ids[0];
       // eslint-disable-next-line prefer-destructuring
-      rollCallId[i] = ids[1];
+      rollCallNames[i] = ids[1];
       tokens[i] = value;
       i += 1;
     });
@@ -124,7 +123,10 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
       );
     }
 
-    /* this functions displays the LAOId the RollCallId and the public key generated from the two */
+    /**
+     * this functions displays the LAOId, the RollCall name
+     * and the public key generated from the two
+     */
     function displayTokens() {
       return (
         <View>
@@ -133,8 +135,8 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
               <View style={styles.smallPadding} />
               <TextBlock bold text={STRINGS.lao_id} />
               <CopiableTextBlock id={key} text={value} visibility />
-              <TextBlock bold text={STRINGS.roll_call_id} />
-              <CopiableTextBlock id={key} text={rollCallId[key]} visibility />
+              <TextBlock bold text={STRINGS.roll_call_name} />
+              <TextBlock text={rollCallNames[key]} visibility />
               <View style={styles.smallPadding} />
               <CopiableTextBlock id={key} text={tokens[key]} visibility={showPublicKey} />
               <View style={styles.smallPadding} />
