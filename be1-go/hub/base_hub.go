@@ -1,6 +1,7 @@
 package hub
 
 import (
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -59,13 +60,18 @@ func (h *baseHub) Recv(msg IncomingMessage) {
 	h.messageChan <- msg
 }
 
-func (h *baseHub) Start(done chan struct{}) {
+func (h *baseHub) Start(ctx context.Context, wg *sync.WaitGroup) {
+	wg.Add(1)
+	defer wg.Done()
+
 	log.Printf("started hub...")
+
 	for {
 		select {
 		case incomingMessage := <-h.messageChan:
 			h.handleIncomingMessage(&incomingMessage)
-		case <-done:
+		case <-ctx.Done():
+			log.Println("closing the hub...")
 			return
 		}
 	}
@@ -289,8 +295,7 @@ func (h *baseHub) createLao(publish message.Publish) error {
 		baseChannel: createBaseChannel(h, laoChannelID),
 	}
 
-	messageID := base64.URLEncoding.EncodeToString(publish.Params.Message.MessageID)
-	laoCh.inbox[messageID] = *publish.Params.Message
+	laoCh.inbox.storeMessage(*publish.Params.Message)
 
 	h.channelByID[encodedID] = &laoCh
 
