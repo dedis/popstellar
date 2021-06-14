@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -21,7 +22,6 @@ import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.LayoutBallotOptionBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.ElectionSetupFragment;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -134,7 +134,7 @@ public class ElectionSetupViewPagerAdapter
         };
         setupElectionSpinner(spinner, spinnerListener);
 
-        FloatingActionButton addBallotOptionButton = holder.addOptionButton;
+        Button addBallotOptionButton = holder.addOptionButton;
 
         LinearLayout linearLayout = holder.linearLayout;
         if(linearLayout == null)
@@ -256,7 +256,7 @@ public class ElectionSetupViewPagerAdapter
            public static class ViewHolder extends RecyclerView.ViewHolder {
         private EditText electionQuestionText;
         private Spinner spinner;
-        private FloatingActionButton addOptionButton;
+        private Button addOptionButton;
         private LinearLayout linearLayout;
 
         public ViewHolder(@NonNull View itemView) {

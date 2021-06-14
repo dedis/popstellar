@@ -71,7 +71,7 @@
     <dimen name="cast_vote_scrollbar_size">6dp</dimen>
     <dimen name="guideline_tab">60dp</dimen>
     <dimen name="guideline_titles">140dp</dimen>
-    <dimen name="swipe_indicator_height">25dp</dimen>
+    <dimen name="swipe_indicator_height">40dp</dimen>
 
     <!-- Wallet dimensions -->
     <dimen name="wallet_divider_height">1dp</dimen>

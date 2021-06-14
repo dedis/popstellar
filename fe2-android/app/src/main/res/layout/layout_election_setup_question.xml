@@ -56,23 +56,10 @@
         app:layout_constraintTop_toBottomOf="@id/election_setup_spinner"
         tools:ignore="UseSwitchCompatOrMaterialXml" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/add_ballot_option"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:elevation="0dp"
-        android:text="@string/add_ballot_options_button_text"
-        app:elevation="0dp"
-        app:fabSize="mini"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-       />
 
     <ScrollView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toStartOf="@+id/add_ballot_option"
         app:layout_constraintStart_toEndOf="@+id/election_setup_spinner"
         app:layout_constraintTop_toBottomOf="@+id/add_ballot_option">
 
@@ -82,5 +69,13 @@
             android:layout_height="match_parent"
             android:orientation="vertical" />
     </ScrollView>
+
+    <Button
+        android:id="@+id/add_ballot_option"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/add_ballot_options_button_text"
+        app:layout_constraintBottom_toBottomOf="@+id/write_in"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

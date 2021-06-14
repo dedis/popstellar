@@ -43,6 +43,14 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/election_setup_name" />
 
+        <Button
+            android:id="@+id/add_question"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_question_button_text"
+            app:layout_constraintBottom_toBottomOf="@+id/election_setup_time"
+            app:layout_constraintEnd_toEndOf="parent" />
+
         <include
             android:id="@+id/election_setup_time"
             layout="@layout/layout_enter_time"
@@ -52,18 +60,6 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/election_setup_date" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/add_question"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:elevation="0dp"
-            android:text="@string/add_question_button_text"
-            app:elevation="0dp"
-            app:fabSize="mini"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/election_setup_date"/>
 
         <EditText
             android:id="@+id/election_setup_name"
@@ -80,35 +76,43 @@
             android:id="@+id/election_setup_view_pager2"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/election_setup_submit_cancel_ll"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/election_setup_time" />
+            app:layout_constraintTop_toBottomOf="@+id/election_setup_time">
 
-        <LinearLayout
-            android:id="@+id/election_setup_submit_cancel_ll"
+        </androidx.viewpager2.widget.ViewPager2>
+
+        <me.relex.circleindicator.CircleIndicator3
+            android:id="@+id/election_setup_swipe_indicator"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/swipe_indicator_height"
+            android:background="@color/colorPrimaryDark"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/election_cancel_button"/>
+
+        <Button
+            android:id="@+id/election_cancel_button"
+            style="@style/Theme.AppCompat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:clickable="true"
+            android:text="@string/cancel"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent">
+            app:layout_constraintEnd_toStartOf="@id/election_submit_button"
+            />
 
-            <Button
-                android:id="@+id/election_cancel_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:text="@string/cancel"
-                style="@style/Theme.AppCompat"/>
-
-            <Button
-                android:id="@+id/election_submit_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:enabled="false"
-                android:text="@string/submit"
-                style="@style/Theme.AppCompat"/>
-        </LinearLayout>
+        <Button
+            android:id="@+id/election_submit_button"
+            style="@style/Theme.AppCompat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:enabled="false"
+            android:text="@string/submit"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:layout_editor_absoluteX="323dp"
+            tools:layout_editor_absoluteY="683dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -23,10 +23,11 @@ import com.github.dedis.student20_pop.databinding.FragmentSetupElectionEventBind
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.adapters.ElectionSetupViewPagerAdapter;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import me.relex.circleindicator.CircleIndicator3;
 
 public class ElectionSetupFragment extends AbstractEventCreationFragment{
 
@@ -35,7 +36,9 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
     private FragmentSetupElectionEventBinding mSetupElectionFragBinding;
 
     //mandatory fields for submitting
+    private CircleIndicator3 circleIndicator;
     private EditText electionNameText;
+    private Button cancelButton;
     private Button submitButton;
     private ElectionSetupViewPagerAdapter viewPagerAdapter;
     private LaoDetailViewModel mLaoDetailViewModel;
@@ -90,7 +93,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
         addEndDateAndTimeListener(submitTextWatcher);
         addStartDateAndTimeListener(submitTextWatcher);
 
-
+        cancelButton = mSetupElectionFragBinding.electionCancelButton;
         submitButton = mSetupElectionFragBinding.electionSubmitButton;
         electionNameText = mSetupElectionFragBinding.electionSetupName;
 
@@ -110,6 +113,9 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
 
         viewPager2.setAdapter(viewPagerAdapter);
 
+        circleIndicator = mSetupElectionFragBinding.electionSetupSwipeIndicator;
+        circleIndicator.setViewPager(viewPager2);
+
         viewPagerAdapter.isAnInputValid().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
@@ -117,8 +123,11 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
             }
         });
 
-        FloatingActionButton addQuestion = mSetupElectionFragBinding.addQuestion;
-        addQuestion.setOnClickListener(v -> viewPagerAdapter.addQuestion());
+        Button addQuestion = mSetupElectionFragBinding.addQuestion;
+        addQuestion.setOnClickListener(v -> {
+            viewPagerAdapter.addQuestion();
+            circleIndicator.setViewPager(viewPager2);
+        });
 
         mSetupElectionFragBinding.setLifecycleOwner(getActivity());
 
@@ -213,9 +222,14 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
                 int screenHeight = constraintLayout.getRootView().getHeight();
                 int keypadHeight = screenHeight - rect.bottom;
                 if (keypadHeight > screenHeight * 0.15) {
-                    mSetupElectionFragBinding.electionSetupSubmitCancelLl.setVisibility(View.INVISIBLE);
+                    cancelButton.setVisibility(View.INVISIBLE);
+                    submitButton.setVisibility(View.INVISIBLE);
+                    circleIndicator.setVisibility(View.INVISIBLE);
+
                 } else {
-                    mSetupElectionFragBinding.electionSetupSubmitCancelLl.setVisibility(View.VISIBLE);
+                    cancelButton.setVisibility(View.VISIBLE);
+                    submitButton.setVisibility(View.VISIBLE);
+                    circleIndicator.setVisibility(View.VISIBLE);
                 }
             }
         });
