@@ -38,8 +38,9 @@ func (idValidator *IdValidatior) VerifyID(data message.Data) error {
 		err = idValidator.verifyLaoID(data)
 	case message.DataObject(message.MeetingObject):
 		err = idValidator.verifyMeetingID(data)
+
+	// No ID to check for MessageObject
 	case message.DataObject(message.MessageObject):
-		err = idValidator.verifyMessageID(data)
 	case message.DataObject(message.RollCallObject):
 		err = idValidator.verifyRollCallID(data)
 	case message.DataObject(message.ElectionObject):
@@ -59,22 +60,62 @@ func (idValidator *IdValidatior) VerifyID(data message.Data) error {
 func (idValidator *IdValidatior) verifyLaoID(data message.Data) error {
 	switch message.LaoDataAction(data.GetAction()) {
 	case message.CreateLaoAction:
+		laoData, ok := data.(*message.CreateLAOData)
+		if !ok {
+			return xerrors.Errorf("failed to cast data to CreateLAOData")
+		}
+		ok = idValidator.checkLaoID(laoData.Organizer, laoData.Creation, message.Stringer(laoData.Name), laoData.ID)
+		if !ok {
+			return xerrors.Errorf("The id of the create lao data does not correspond to SHA256(organizer||creation||name)")
+		}
+
+	// No ID to verify for UpdateLaoData
 	case message.UpdateLaoAction:
 	case message.StateLaoAction:
+		laoData, ok := data.(*message.StateLAOData)
+		if !ok {
+			return xerrors.Errorf("failed to cast data to StateLAOData")
+		}
+		ok = idValidator.checkLaoID(laoData.Organizer, laoData.Creation, message.Stringer(laoData.Name), laoData.ID)
+		if !ok {
+			return xerrors.Errorf("The id of the state lao data does not correspond to SHA256(organizer||creation||name)")
+		}
 	}
+
 	return nil
+}
+
+func (idValidator *IdValidatior) checkLaoID(str1, str2, str3 fmt.Stringer, id []byte) bool {
+	return idValidator.checkID(id, str1, str2, str3)
 }
 
 func (idValidator *IdValidatior) verifyMeetingID(data message.Data) error {
 	switch message.MeetingDataAction(data.GetAction()) {
 	case message.CreateMeetingAction:
+		meetingData, ok := data.(*message.CreateMeetingData)
+		if !ok {
+			return xerrors.Errorf("failed to cast data to CreateMeetingData")
+		}
+		ok = idValidator.checkMeetingID(meetingData.Creation, message.Stringer(meetingData.Name), meetingData.ID)
+		if !ok {
+			return xerrors.Errorf("The id of the create meeting data does not correspond to SHA256(lao_id||creation||name)")
+		}
+
 	case message.StateMeetingAction:
+		meetingData, ok := data.(*message.StateMeetingData)
+		if !ok {
+			return xerrors.Errorf("failed to cast data to StateMeetingData")
+		}
+		ok = idValidator.checkMeetingID(meetingData.Creation, message.Stringer(meetingData.Name), meetingData.ID)
+		if !ok {
+			return xerrors.Errorf("The id of the state meeting data does not correspond to SHA256(lao_id||creation||name)")
+		}
 	}
 	return nil
 }
 
-func (idValidator *IdValidatior) verifyMessageID(data message.Data) error {
-	return nil
+func (idValidator *IdValidatior) checkMeetingID(str1, str2 fmt.Stringer, id []byte) bool {
+	return idValidator.checkID(id, message.Stringer(idValidator.channelID), str1, str2)
 }
 
 func (idValidator *IdValidatior) verifyRollCallID(data message.Data) error {
@@ -105,7 +146,9 @@ func (idValidator *IdValidatior) verifyRollCallID(data message.Data) error {
 		}
 		closes := base64.URLEncoding.EncodeToString(rollCallData.Closes)
 		ok = idValidator.checkRollCallID(message.Stringer(closes), rollCallData.ClosedAt, rollCallData.UpdateID)
-		return xerrors.Errorf("The id of the roll call does not correspond to SHA256(‘R’||lao_id||closes||closed_at)")
+		if !ok {
+			return xerrors.Errorf("The id of the roll call does not correspond to SHA256(‘R’||lao_id||closes||closed_at)")
+		}
 	}
 
 	return nil
@@ -118,45 +161,56 @@ func (idValidator *IdValidatior) checkRollCallID(str1, str2 fmt.Stringer, id []b
 func (idValidator *IdValidatior) verifyElectionID(data message.Data) error {
 	switch message.ElectionAction(data.GetAction()) {
 	case message.ElectionSetupAction:
-		electionData, ok := data.(*message.ElectionSetupData)
-		if !ok {
-			return xerrors.Errorf("failed to cast data to SetupElectionData")
-		}
-
-		// Check the id of the setup election message
-		ok = idValidator.checkID(electionData.ID, message.Stringer("Election"), message.Stringer(idValidator.channelID), electionData.CreatedAt, message.Stringer(electionData.Name))
-		if !ok {
-			return xerrors.Errorf("The id of the setup election data does not correspond to SHA256('Election'||lao_id||created_at||name)")
-		}
-
-		// Check the id of each question
-		for _, question := range electionData.Questions {
-			ok = idValidator.checkID(question.ID, message.Stringer("Question"), message.Stringer(idValidator.channelID), message.Stringer(question.QuestionAsked))
-			if !ok {
-				return xerrors.Errorf("The id of question %s does not correspond to SHA256('Question'||election_id||question)", question.QuestionAsked)
-			}
-		}
-
+		return idValidator.verifyElectionSetupID(data)
 	case message.CastVoteAction:
-		electionData, ok := data.(*message.CastVoteData)
+		return idValidator.verifyCastVoteID(data)
+	}
+
+	return nil
+}
+
+func (idValidator *IdValidatior) verifyElectionSetupID(data message.Data) error {
+	electionData, ok := data.(*message.ElectionSetupData)
+	if !ok {
+		return xerrors.Errorf("failed to cast data to SetupElectionData")
+	}
+
+	// Check the id of the setup election message
+	ok = idValidator.checkID(electionData.ID, message.Stringer("Election"), message.Stringer(idValidator.channelID), electionData.CreatedAt, message.Stringer(electionData.Name))
+	if !ok {
+		return xerrors.Errorf("The id of the setup election data does not correspond to SHA256('Election'||lao_id||created_at||name)")
+	}
+
+	// Check the id of each question
+	for _, question := range electionData.Questions {
+		ok = idValidator.checkID(question.ID, message.Stringer("Question"), message.Stringer(idValidator.channelID), message.Stringer(question.QuestionAsked))
 		if !ok {
-			return xerrors.Errorf("failed to cast data to CastVoteData")
+			return xerrors.Errorf("The id of question %s does not correspond to SHA256('Question'||election_id||question)", question.QuestionAsked)
+		}
+	}
+
+	return nil
+}
+
+func (idValidator *IdValidatior) verifyCastVoteID(data message.Data) error {
+	electionData, ok := data.(*message.CastVoteData)
+	if !ok {
+		return xerrors.Errorf("failed to cast data to CastVoteData")
+	}
+
+	// Check the id of each vote
+	for _, vote := range electionData.Votes {
+		questionID := base64.URLEncoding.EncodeToString(vote.QuestionID)
+		stringers := []fmt.Stringer{message.Stringer("Vote"), message.Stringer(idValidator.channelID), message.Stringer(questionID)}
+
+		// Add the indexes of each vote to stringers
+		for _, index := range vote.VoteIndexes {
+			stringers = append(stringers, message.Stringer(fmt.Sprintf("%v", index)))
 		}
 
-		// Check the id of each vote
-		for _, vote := range electionData.Votes {
-			questionID := base64.URLEncoding.EncodeToString(vote.QuestionID)
-			stringers := []fmt.Stringer{message.Stringer("Vote"), message.Stringer(idValidator.channelID), message.Stringer(questionID)}
-
-			// Add the indexes of each vote to stringers
-			for _, index := range vote.VoteIndexes {
-				stringers = append(stringers, message.Stringer(fmt.Sprintf("%v", index)))
-			}
-
-			ok = idValidator.checkID(vote.ID, stringers...)
-			if !ok {
-				return xerrors.Errorf("The id of the vote does not correspond to SHA256('Vote'||election_id||question_id||(vote_index(es)|write_in)")
-			}
+		ok = idValidator.checkID(vote.ID, stringers...)
+		if !ok {
+			return xerrors.Errorf("The id of the vote does not correspond to SHA256('Vote'||election_id||question_id||(vote_index(es)|write_in)")
 		}
 	}
 
