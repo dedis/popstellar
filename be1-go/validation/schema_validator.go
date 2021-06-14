@@ -1,21 +1,25 @@
 package validation
 
 import (
+	"bytes"
 	"embed"
+	"encoding/base64"
 	"fmt"
+	"io"
 	"io/fs"
-	"net/http"
+	"log"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"student20_pop/message"
 
-	"github.com/xeipuuv/gojsonschema"
+	"github.com/santhosh-tekuri/jsonschema/v3"
 	"golang.org/x/xerrors"
 )
 
 type SchemaValidator struct {
-	genericMessageSchema *gojsonschema.Schema
-	dataSchema           *gojsonschema.Schema
+	genericMessageSchema *jsonschema.Schema
+	dataSchema           *jsonschema.Schema
 }
 
 type SchemaType int
@@ -30,11 +34,18 @@ const baseUrl = "https://raw.githubusercontent.com/dedis/student_21_pop/master/"
 //go:embed protocol
 var protocolFS embed.FS
 
+func init() {
+	// Override the defaults for loading files and decoding base64 encoded
+	// data
+	jsonschema.Loaders["file"] = loadFileURL
+	jsonschema.Decoders["base64"] = base64.URLEncoding.DecodeString
+}
+
 // VerifyJson verifies that the `msg` follow the schema protocol of name 'schemaName',
 // it returns an error if it is not the case.
 func (s *SchemaValidator) VerifyJson(msg []byte, st SchemaType) error {
-	messageLoader := gojsonschema.NewBytesLoader(msg)
-	var schema *gojsonschema.Schema
+	reader := bytes.NewBuffer(msg[:])
+	var schema *jsonschema.Schema
 
 	switch st {
 	case GenericMessage:
@@ -48,26 +59,12 @@ func (s *SchemaValidator) VerifyJson(msg []byte, st SchemaType) error {
 		}
 	}
 
-	result, err := schema.Validate(messageLoader)
+	err := schema.Validate(reader)
 	if err != nil {
+		log.Printf("failed to validate schema: %v", err)
 		return &message.Error{
 			Code:        -4,
-			Description: fmt.Sprintf("failed to validate schema: %s", err.Error()),
-		}
-	}
-
-	errorsList := result.Errors()
-	descriptionErrors := ""
-
-	// Concatenate all error descriptions
-	for index, e := range errorsList {
-		descriptionErrors += fmt.Sprintf(" (%d) %s", index+1, e.Description())
-	}
-
-	if len(errorsList) > 0 {
-		return &message.Error{
-			Code:        -4,
-			Description: descriptionErrors,
+			Description: "failed to validate schema",
 		}
 	}
 
@@ -76,17 +73,13 @@ func (s *SchemaValidator) VerifyJson(msg []byte, st SchemaType) error {
 
 // NewSchemaValidator returns a Schema Validator
 func NewSchemaValidator() (*SchemaValidator, error) {
-	gmLoader := gojsonschema.NewSchemaLoader()
-	dataLoader := gojsonschema.NewSchemaLoader()
+	gmCompiler := jsonschema.NewCompiler()
+	dataCompiler := jsonschema.NewCompiler()
 
 	// recurse over the protocol directory and load all the files
 	err := fs.WalkDir(protocolFS, "protocol", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
-		}
-
-		if d.IsDir() {
-			return fs.SkipDir
 		}
 
 		if filepath.Ext(path) != ".json" {
@@ -99,15 +92,11 @@ func NewSchemaValidator() (*SchemaValidator, error) {
 		}
 		defer file.Close()
 
-		// gojsonschema computes relative urls in "$ref" using the "$id" field.
-		// We pre-populate the loader with files from the local filesystem
-		// instead.
-		jsonLoader, _ := gojsonschema.NewReaderLoader(file)
 		url := baseUrl + path
 		if strings.HasPrefix(path, "protocol/query/method/message/data") {
-			dataLoader.AddSchema(url, jsonLoader)
+			dataCompiler.AddResource(url, file)
 		} else {
-			gmLoader.AddSchema(url, jsonLoader)
+			gmCompiler.AddResource(url, file)
 		}
 
 		return nil
@@ -118,15 +107,13 @@ func NewSchemaValidator() (*SchemaValidator, error) {
 	}
 
 	// read genericMessage.json
-	gmSchemaLoader := gojsonschema.NewReferenceLoaderFileSystem("file:///protocol/genericMessage.json", http.FS(protocolFS))
-	gmSchema, err := gmLoader.Compile(gmSchemaLoader)
+	gmSchema, err := gmCompiler.Compile("file://protocol/genericMessage.json")
 	if err != nil {
 		return nil, xerrors.Errorf("failed to compile validator: %v", err)
 	}
 
 	// read data.json
-	dataSchemaLoader := gojsonschema.NewReferenceLoaderFileSystem("file:///protocol/query/method/message/data/data.json", http.FS(protocolFS))
-	dataSchema, err := dataLoader.Compile(dataSchemaLoader)
+	dataSchema, err := dataCompiler.Compile("file://protocol/query/method/message/data/data.json")
 	if err != nil {
 		return nil, xerrors.Errorf("failed to compile validator: %v", err)
 	}
@@ -135,4 +122,15 @@ func NewSchemaValidator() (*SchemaValidator, error) {
 		genericMessageSchema: gmSchema,
 		dataSchema:           dataSchema,
 	}, nil
+}
+
+func loadFileURL(s string) (io.ReadCloser, error) {
+	path := strings.TrimPrefix(s, "file://")
+
+	if runtime.GOOS == "windows" {
+		path = strings.TrimPrefix(path, "/")
+		path = filepath.FromSlash(path)
+	}
+
+	return protocolFS.Open(path)
 }
