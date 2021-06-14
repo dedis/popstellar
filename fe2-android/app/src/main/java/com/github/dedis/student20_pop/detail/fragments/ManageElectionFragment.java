@@ -109,9 +109,8 @@ public class ManageElectionFragment extends Fragment {
 
 
         DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
-            switch (which) {
-                case DialogInterface.BUTTON_POSITIVE: {
-                    //Yes button clicked
+            //Yes button clicked
+           if(which == DialogInterface.BUTTON_POSITIVE ) {
                     switch (requestCode) {
                         case CANCEL_CODE: {
                             // TODO : In the future send a UpdateElection message with a modified end time as the current time
@@ -175,13 +174,7 @@ public class ManageElectionFragment extends Fragment {
 
                     }
                 }
-                break;
-
-                case DialogInterface.BUTTON_NEGATIVE:
-                    //No button clicked
-                    break;
-            }
-        };
+            };
 
 
         // Alert Dialog
@@ -227,9 +220,7 @@ public class ManageElectionFragment extends Fragment {
             setupRequestCode(EDIT_NAME_CODE);
             builder.show();
         });
-        editNameBuilder.setNegativeButton("CANCEL", (dialog, which) -> {
-            dialog.cancel();
-        });
+        editNameBuilder.setNegativeButton("CANCEL", (dialog, which) -> dialog.cancel());
 
         editNameBuilder.create();
 
@@ -249,9 +240,7 @@ public class ManageElectionFragment extends Fragment {
             setupRequestCode(EDIT_QUESTION_CODE);
             builder.show();
         });
-        editQuestionBuilder.setNegativeButton("CANCEL", (dialog, which) -> {
-            dialog.cancel();
-        });
+        editQuestionBuilder.setNegativeButton("CANCEL", (dialog, which) -> dialog.cancel());
 
         editQuestionBuilder.create();
 
