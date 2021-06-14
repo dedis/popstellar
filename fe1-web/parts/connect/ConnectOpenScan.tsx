@@ -48,7 +48,7 @@ const ConnectOpenScan = ({ navigation }: IPropTypes) => {
           title={STRINGS.general_button_cancel}
           onPress={() => {
             setQrWasScanned(true);
-            navigation.navigate(STRINGS.navigation_tab_connect);
+            navigation.navigate(STRINGS.connect_unapproved_title);
           }}
         />
       </View>

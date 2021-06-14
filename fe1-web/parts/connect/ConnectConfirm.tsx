@@ -64,12 +64,11 @@ function validateLaoId(laoId: string): Channel | undefined {
 }
 
 const ConnectConfirm = ({ navigation, route }: IPropTypes) => {
-  const [serverUrl, setServerUrl] = useState('wss://popdemo.dedis.ch/52af0cf9'); // https://127.0.0.1:8080
-  // eslint-disable-next-line prefer-const
-  let [laoId, setLaoId] = useState('');
+  const [serverUrl, setServerUrl] = useState('wss://127.0.0.1:9000'); // wss://popdemo.dedis.ch/52af0cf9
+  const [laoId, setLaoId] = useState('');
 
-  if (route.params) {
-    laoId = route.params.laoIdIn;
+  if (route.params && laoId === '') {
+    setLaoId(route.params.laoIdIn);
     console.log(laoId);
   }
 
@@ -125,7 +124,7 @@ const ConnectConfirm = ({ navigation, route }: IPropTypes) => {
       />
       <WideButtonView
         title={STRINGS.general_button_cancel}
-        onPress={() => navigation.navigate(STRINGS.connect_scanning_title)}
+        onPress={() => navigation.navigate(STRINGS.connect_unapproved_title)}
       />
     </View>
   );
