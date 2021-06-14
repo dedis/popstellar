@@ -30,6 +30,7 @@ import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
@@ -127,7 +128,7 @@ public class ElectionSetupTest {
                         withParent(withParent(withId(R.id.fragment_launch))),
                         isDisplayed()));
 
-        // We check that the appCompatEditText name is " new lao test "
+        // We check that the edit text contains " new lao test "
         editText.check(matches(withText("new lao test")));
 
         appCompatEditText.perform(pressImeActionButton());
@@ -163,7 +164,13 @@ public class ElectionSetupTest {
                 .atPosition(0);
         constraintLayout.perform(click());
 
-        ViewInteraction appCompatButton9 = onView(
+
+        // We check that we opened the launch fragment
+        onView(withId(R.id.fragment_lao_detail)).check(matches(isDisplayed()));
+
+        // click on show/hide properties
+
+        ViewInteraction appCompatButton8 = onView(
                 allOf(withId(R.id.tab_properties), withText("Show/Hide Properties"),
                         childAtPosition(
                                 allOf(withId(R.id.tab_back),
@@ -172,18 +179,11 @@ public class ElectionSetupTest {
                                                 0)),
                                 2),
                         isDisplayed()));
-        appCompatButton9.perform(click());
+        appCompatButton8.perform(click());
 
-        ViewInteraction appCompatImageButton = onView(
-                allOf(withId(R.id.edit_button), withContentDescription("Edit Lao Name"),
-                        childAtPosition(
-                                allOf(withId(R.id.properties_linear_layout),
-                                        childAtPosition(
-                                                withId(R.id.lao_detail_linear_layout),
-                                                0)),
-                                1),
-                        isDisplayed()));
-        appCompatImageButton.perform(click());
+
+
+        // click on add witness button
 
         ViewInteraction appCompatImageButton2 = onView(
                 allOf(withId(R.id.add_witness_button),
@@ -196,16 +196,6 @@ public class ElectionSetupTest {
                         isDisplayed()));
         appCompatImageButton2.perform(click());
 
-        ViewInteraction appCompatImageButton3 = onView(
-                allOf(withId(R.id.add_witness_button),
-                        childAtPosition(
-                                allOf(withId(R.id.edit_properties_linear_layout),
-                                        childAtPosition(
-                                                withId(R.id.properties_linear_layout),
-                                                4)),
-                                1),
-                        isDisplayed()));
-        appCompatImageButton3.perform(click());
 
         ViewInteraction appCompatButton10 = onView(
                 allOf(withId(R.id.properties_edit_cancel), withText("Cancel"),
@@ -218,15 +208,17 @@ public class ElectionSetupTest {
                         isDisplayed()));
         appCompatButton10.perform(click());
 
-        ViewInteraction appCompatImageButton4 = onView(
+        // we click on add future events
+        ViewInteraction appCompatImageButton3 = onView(
                 allOf(withId(R.id.add_future_event_button),
                         childAtPosition(
                                 allOf(withId(R.id.linearLayout),
                                         withParent(withId(R.id.exp_list_view))),
                                 1),
                         isDisplayed()));
-        appCompatImageButton4.perform(click());
+        appCompatImageButton3.perform(click());
 
+        // we click to open an election
         DataInteraction appCompatCheckedTextView = onData(anything())
                 .inAdapterView(allOf(withClassName(is("com.android.internal.app.AlertController$RecycleListView")),
                         childAtPosition(
@@ -234,6 +226,9 @@ public class ElectionSetupTest {
                                 0)))
                 .atPosition(1);
         appCompatCheckedTextView.perform(click());
+
+        // We check that we opened the election setup fragment
+        onView(withId(R.id.fragment_setup_election_event)).check(matches(isDisplayed()));
 
         ViewInteraction appCompatEditText3 = onView(
                 allOf(withId(R.id.election_setup_name),
@@ -245,6 +240,7 @@ public class ElectionSetupTest {
                                 2)));
         appCompatEditText3.perform(scrollTo(), replaceText("new election test"), closeSoftKeyboard());
 
+        // we set the start date
         ViewInteraction appCompatEditText4 = onView(
                 allOf(withId(R.id.start_date_edit_text),
                         childAtPosition(
@@ -264,19 +260,6 @@ public class ElectionSetupTest {
                                 3)));
         appCompatButton11.perform(scrollTo(), click());
 
-        ViewInteraction editText2 = onView(
-                allOf(withId(R.id.election_setup_name), withText("new election test"),
-                        withParent(allOf(withId(R.id.election_setup_fields_ll),
-                                withParent(withId(R.id.election_setup_scrollview)))),
-                        isDisplayed()));
-        editText2.check(matches(withText("new election test")));
-
-        ViewInteraction editText3 = onView(
-                allOf(withId(R.id.start_date_edit_text), withText("13/06/2021"),
-                        withParent(allOf(withId(R.id.election_setup_date),
-                                withParent(withId(R.id.election_setup_fields_ll)))),
-                        isDisplayed()));
-        editText3.check(matches(withText("13/06/2021")));
 
         ViewInteraction appCompatEditText5 = onView(
                 allOf(withId(R.id.end_date_edit_text),
@@ -297,12 +280,6 @@ public class ElectionSetupTest {
                                 3)));
         appCompatButton12.perform(scrollTo(), click());
 
-        ViewInteraction editText4 = onView(
-                allOf(withId(R.id.end_date_edit_text), withText("14/06/2021"),
-                        withParent(allOf(withId(R.id.election_setup_date),
-                                withParent(withId(R.id.election_setup_fields_ll)))),
-                        isDisplayed()));
-        editText4.check(matches(withText("14/06/2021")));
 
         ViewInteraction appCompatEditText6 = onView(
                 allOf(withId(R.id.start_time_edit_text),
@@ -372,8 +349,36 @@ public class ElectionSetupTest {
                                 0)));
         appCompatEditText10.perform(scrollTo(), replaceText("new ballot test 2"), closeSoftKeyboard());
 
+
+        // We do the corresponding checks for the attributes we have fill in here
+        ViewInteraction editText2 = onView(
+                allOf(withId(R.id.election_setup_name),
+                        withParent(allOf(withId(R.id.election_setup_fields_ll),
+                                withParent(withId(R.id.election_setup_scrollview)))),
+                        isDisplayed()));
+
+        // we check the election name is right
+        editText2.check(matches(withText("new election test")));
+
+        ViewInteraction editText3 = onView(
+                allOf(withId(R.id.start_date_edit_text),
+                        withParent(allOf(withId(R.id.election_setup_date),
+                                withParent(withId(R.id.election_setup_fields_ll)))),
+                        isDisplayed()));
+        // we check the start date is right
+        editText3.check(matches(withText("13/06/2021")));
+
+        // we check the end date is right
+        ViewInteraction editText4 = onView(
+                allOf(withId(R.id.end_date_edit_text),
+                        withParent(allOf(withId(R.id.election_setup_date),
+                                withParent(withId(R.id.election_setup_fields_ll)))),
+                        isDisplayed()));
+        editText4.check(matches(withText("14/06/2021")));
+
+        //we check the election question is right
         ViewInteraction editText5 = onView(
-                allOf(withId(R.id.election_question), withText("election question test"),
+                allOf(withId(R.id.election_question),
                         withParent(allOf(withId(R.id.election_setup_question_ll),
                                 withParent(withId(R.id.election_setup_fields_ll)))),
                         isDisplayed()));
@@ -384,6 +389,8 @@ public class ElectionSetupTest {
                         withParent(allOf(withId(R.id.new_ballot_option_ll),
                                 withParent(withId(R.id.election_setup_ballot_options_ll)))),
                         isDisplayed()));
+
+        //we check the ballot option 1
         editText6.check(matches(withText("new ballot test 1")));
 
         ViewInteraction editText7 = onView(
@@ -391,6 +398,7 @@ public class ElectionSetupTest {
                         withParent(allOf(withId(R.id.new_ballot_option_ll),
                                 withParent(withId(R.id.election_setup_ballot_options_ll)))),
                         isDisplayed()));
+        //we check the ballot option 2
         editText7.check(matches(withText("new ballot test 2")));
 
         ViewInteraction button2 = onView(
@@ -399,6 +407,7 @@ public class ElectionSetupTest {
                                 withParent(withId(R.id.fragment_setup_election_event)))),
                         isDisplayed()));
         button2.check(matches(isDisplayed()));
+        button2.check(matches(isClickable()));
 
         ViewInteraction button3 = onView(
                 allOf(withId(R.id.election_cancel_button), withText("Cancel"),
@@ -406,6 +415,7 @@ public class ElectionSetupTest {
                                 withParent(withId(R.id.fragment_setup_election_event)))),
                         isDisplayed()));
         button3.check(matches(isDisplayed()));
+        button3.check(matches(isClickable()));
 
         ViewInteraction button4 = onView(
                 allOf(withId(R.id.tab_home), withText("HOME"),
@@ -413,6 +423,7 @@ public class ElectionSetupTest {
                                 withParent(withId(R.id.fragment_container_lao_detail)))),
                         isDisplayed()));
         button4.check(matches(isDisplayed()));
+        button4.check(matches(isClickable()));
 
         ViewInteraction button5 = onView(
                 allOf(withId(R.id.tab_identity), withText("IDENTITY"),
@@ -420,6 +431,7 @@ public class ElectionSetupTest {
                                 withParent(withId(R.id.fragment_container_lao_detail)))),
                         isDisplayed()));
         button5.check(matches(isDisplayed()));
+        button5.check(matches(isClickable()));
 
         ViewInteraction appCompatButton15 = onView(
                 allOf(withId(R.id.election_submit_button), withText("Submit"),
@@ -432,13 +444,7 @@ public class ElectionSetupTest {
                         isDisplayed()));
         appCompatButton15.perform(click());
 
-        ViewInteraction linearLayout = onView(
-                allOf(withId(R.id.election_layout),
-                        withParent(allOf(withId(R.id.include_layout_election),
-                                withParent(withId(R.id.event_layout)))),
-                        isDisplayed()));
-        linearLayout.check(matches(isDisplayed()));
-
+        // we check the election created has the right display text
         ViewInteraction textView2 = onView(
                 allOf(withId(R.id.election_title), withText("Election : new election test"),
                         withParent(allOf(withId(R.id.election_layout),
@@ -466,6 +472,7 @@ public class ElectionSetupTest {
                                 withParent(withId(R.id.event_layout)))),
                         isDisplayed()));
         button6.check(matches(isDisplayed()));
+        button6.check(matches(isClickable()));
 
     }
 
