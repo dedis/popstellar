@@ -5,7 +5,23 @@ import (
 )
 
 func (c *laoChannel) processCreateRollCall(data message.Data) error {
+
 	rollCallData := data.(*message.CreateRollCallData)
+
+	// Check that the ProposedEnd is greater than the ProposedStart
+	if rollCallData.ProposedStart > rollCallData.ProposedEnd {
+		return &message.Error{
+			Code:        -4,
+			Description: "The field `proposed_start` is greater than the field `proposed_end`",
+		}
+	}
+
+	if !c.checkRollCallID(rollCallData.Creation, message.Stringer(rollCallData.Name), rollCallData.ID) {
+		return &message.Error{
+			Code:        -4,
+			Description: "The id of the roll call does not correspond to SHA256(‘R’||lao_id||creation||name)",
+		}
+	}
 
 	c.rollCall.id = string(rollCallData.ID)
 	c.rollCall.state = Created

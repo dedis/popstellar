@@ -1,7 +1,7 @@
-package com.github.dedis.student20_pop.model.network.method.message;
+package com.github.dedis.student20_pop.model.network.method.message.data.election;
 
 
-import com.github.dedis.student20_pop.utility.security.Hash;
+import com.github.dedis.student20_pop.utility.network.IdGenerator;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Collections;
@@ -32,7 +32,7 @@ public class  ElectionQuestion {
         this.ballotOptions = ballotOptions;
         this.writeIn = writeIn;
         this.votingMethod = votingMethod;
-        this.id = Hash.hash("Question", electionId, question);
+        this.id = IdGenerator.generateElectionQuestionId(electionId, question);
     }
 
 
