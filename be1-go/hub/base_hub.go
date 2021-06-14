@@ -131,9 +131,9 @@ func (h *baseHub) handleRootChannelMesssage(id int, client *ClientSocket, query 
 
 	status := 0
 	result := message.Result{General: &status}
+
 	log.Printf("sending result: %+v", result)
 	client.SendResult(id, result)
-	return
 }
 
 func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
