@@ -35,20 +35,26 @@ public class ElectionSetup extends Data {
             String name,
             long start,
             long end,
-            String votingMethod,
-            boolean writeIn,
-            List<String> ballotOptions,
-            String question,
+            List<String> votingMethod,
+            List<Boolean> writeIn,
+            List<List<String>> ballotOptions,
+            List<String> questionList,
             String laoId) {
+        if(questionList.size() != votingMethod.size() || questionList.size() !=writeIn.size()
+                || questionList.size() !=ballotOptions.size())
+            throw new IllegalArgumentException("Lists are not of the same size");
         this.name = name;
-        this.createdAt = Instant.now().toEpochMilli();
+        this.createdAt = Instant.now().getEpochSecond();
         this.startTime = start;
         this.endTime = end;
         this.lao = laoId;
         this.version = "1.0.0";
         this.id = IdGenerator.generateElectionSetupId(laoId, createdAt, name);
         this.questions = new ArrayList<>();
-        this.questions.add(new ElectionQuestion(question, votingMethod, writeIn, ballotOptions, this.id));
+        for (int i = 0; i < questionList.size(); i++){
+            this.questions.add(new ElectionQuestion(questionList.get(i), votingMethod.get(i), writeIn.get(i), ballotOptions.get(i), this.id));
+        }
+
     }
 
 

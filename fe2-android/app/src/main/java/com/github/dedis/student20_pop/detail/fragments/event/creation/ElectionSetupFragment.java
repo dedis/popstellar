@@ -4,6 +4,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,9 @@ import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.adapters.ElectionSetupViewPagerAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ElectionSetupFragment extends AbstractEventCreationFragment{
 
@@ -150,19 +154,43 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
     private void setupElectionSubmitButton() {
         submitButton.setOnClickListener(
                 v -> {
-//                    //We "deactivate" the button on click, to prevent the user from creating multiple elections at once
-//                    submitButton.setEnabled(false);
-//                    //When submitting, we compute the timestamps for the selected start and end time
-//                    computeTimesInSeconds();
-//                    //Filter the list of ballot options to keep only non-empty fields
-//                    List<String> filteredBallotOptions = new ArrayList<>();
-//                    for (String ballotOption: ballotOptions) {
-//                        if (!ballotOption.equals("")) filteredBallotOptions.add(ballotOption);
-//                    }
-//                    mLaoDetailViewModel.createNewElection(electionNameText.getText().toString(), startTimeInSeconds, endTimeInSeconds, votingMethod, mSetupElectionFragBinding.writeIn.isChecked(),
-//                            filteredBallotOptions, electionQuestionText.getText().toString());
+                    //We "deactivate" the button on click, to prevent the user from creating multiple elections at once
+                    submitButton.setEnabled(false);
+                    //When submitting, we compute the timestamps for the selected start and end time
+                    computeTimesInSeconds();
+                    //Filter the list of ballot options to keep only non-empty fields
+                    final List<Integer> validPositions = viewPagerAdapter.getValidInputs();
+
+                    List<String> votingMethod = viewPagerAdapter.getVotingMethod();
+                    List<String> questions = viewPagerAdapter.getQuestions();
+                    List<List<String>> ballotsOptions = viewPagerAdapter.getBallotOptions();
+                    List<String> votingMethodFiltered = new ArrayList<>();
+                    List<String> questionsFiltered = new ArrayList<>();
+                    List<List<String>> ballotsOptionsFiltered = new ArrayList<>();
+
+                    //////////////////////////While write in not implemented///////////////////////////////////////////////
+                    List<Boolean> writeIns = new ArrayList<>();
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////
+                    Log.d(TAG, "Trying to submit with " + validPositions.size() + " questions");
+                    for(Integer i : validPositions) {
+                            writeIns.add(false); //While write in is not implemented
+                            questionsFiltered.add(questions.get(i));
+                            votingMethodFiltered.add(votingMethod.get(i));
+                            List<String> questionBallotOptions = ballotsOptions.get(i);
+                            List<String> filteredQuestionBallotOptions = new ArrayList<>();
+                            for (String ballotOption : questionBallotOptions) {
+                                if (!ballotOption.equals(""))
+                                    filteredQuestionBallotOptions.add(ballotOption);
+                            }
+                            ballotsOptionsFiltered.add(filteredQuestionBallotOptions);
+                        }
+                    mLaoDetailViewModel.createNewElection(electionNameText.getText().toString(), startTimeInSeconds, endTimeInSeconds, votingMethodFiltered, writeIns,
+                       ballotsOptionsFiltered, questionsFiltered);
+                    Log.d(TAG, "Submit sent");
+
                 });
     }
+
 
     /**
      * Setups the cancel button, that brings back to LAO detail page

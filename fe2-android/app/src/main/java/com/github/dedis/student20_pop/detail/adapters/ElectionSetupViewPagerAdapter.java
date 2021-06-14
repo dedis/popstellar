@@ -241,12 +241,19 @@ public class ElectionSetupViewPagerAdapter
         spinner.setOnItemSelectedListener(listener);
     }
 
+           public List<String> getVotingMethod() {
+               return votingMethod;
+           }
 
+           public List<List<String>> getBallotOptions() {
+               return ballotOptions;
+           }
 
+           public List<String> getQuestions() {
+               return questions;
+           }
 
-
-
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+           public static class ViewHolder extends RecyclerView.ViewHolder {
         private EditText electionQuestionText;
         private Spinner spinner;
         private FloatingActionButton addOptionButton;

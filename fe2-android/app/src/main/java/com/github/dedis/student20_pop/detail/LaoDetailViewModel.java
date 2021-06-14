@@ -60,6 +60,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+
 public class LaoDetailViewModel extends AndroidViewModel implements CameraPermissionViewModel,
         QRCodeScanningViewModel {
     public static final String TAG = LaoDetailViewModel.class.getSimpleName();
@@ -79,6 +80,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     private final MutableLiveData<Event<EventType>> mNewLaoEventCreationEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mOpenNewRollCallEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<String>> mOpenRollCallEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<String>> mOpenRollCallTokenEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<String>> mOpenAttendeesListEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mOpenLaoWalletEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mOpenElectionResultsEvent = new MutableLiveData<>();
@@ -87,10 +89,12 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     private final MutableLiveData<Event<Boolean>> mOpenCastVotesEvent = new MutableLiveData<>();
 
     private final MutableLiveData<Event<Integer>> mNbAttendeesEvent = new MutableLiveData<>();
-    private final MutableLiveData<Event<Boolean>> mCloseRollCallEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<Integer>> mAskCloseRollCallEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<Integer>> mCloseRollCallEvent = new MutableLiveData<>();
 
     private final MutableLiveData<Event<Boolean>> mCreatedRollCallEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<String>> mPkRollCallEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<Boolean>> mWalletMessageEvent = new MutableLiveData<>();
 
     private final MutableLiveData<Event<String>> mAttendeeScanConfirmEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<String>> mScanWarningEvent = new MutableLiveData<>();
@@ -102,6 +106,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
     private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
     private final MutableLiveData<String> mLaoName = new MutableLiveData<>("");
+    private final MutableLiveData<List<List<Integer>>> mCurrentElectionVotes = new MutableLiveData<>();
     private final LiveData<List<String>> mWitnesses =
             Transformations.map(
                     mCurrentLao,
@@ -239,7 +244,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
      * @param question      the question associated to the election
      * @return the id of the newly created election event, null if fails to create the event
      */
-    public String createNewElection(String name, long start, long end, String votingMethod, boolean writeIn, List<String> ballotOptions, String question) {
+    public String createNewElection(String name, long start, long end, List<String> votingMethod,
+                                    List<Boolean> writeIn, List<List<String>> ballotOptions, List<String> question) {
         Log.d(TAG, "creating a new election with name " + name);
 
         Lao lao = getCurrentLaoValue();
@@ -415,7 +421,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
      *
      * <p>Publish a GeneralMessage containing CloseRollCall data.
      */
-    public void closeRollCall() {
+    public void closeRollCall(int nextFragment) {
         Log.d(TAG, "call closeRollCall");
         Lao lao = getCurrentLaoValue();
         if (lao == null) {
@@ -444,7 +450,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                             Log.d(TAG, "closed the roll call");
                                             mCurrentRollCallId = "";
                                             attendees.clear();
-                                            openLaoDetail();
+                                            mCloseRollCallEvent.setValue(new Event<>(nextFragment));
                                         } else {
                                             Log.d(TAG, "failed to close the roll call");
                                         }
@@ -564,6 +570,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         return mOpenRollCallEvent;
     }
 
+    public LiveData<Event<String>> getOpenRollCallTokenEvent() {
+        return mOpenRollCallTokenEvent;
+    }
+
     public LiveData<Event<String>> getOpenAttendeesListEvent() {
       return mOpenAttendeesListEvent;
     }
@@ -576,7 +586,11 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         return mNbAttendeesEvent;
     }
 
-    public LiveData<Event<Boolean>> getCloseRollCallEvent() {
+    public LiveData<Event<Integer>> getAskCloseRollCallEvent() {
+        return mAskCloseRollCallEvent;
+    }
+
+    public LiveData<Event<Integer>> getCloseRollCallEvent() {
         return mCloseRollCallEvent;
     }
 
@@ -596,6 +610,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         return mPkRollCallEvent;
     }
 
+    public LiveData<Event<Boolean>> getWalletMessageEvent() {
+        return mWalletMessageEvent;
+    }
+
     public Election getCurrentElection() {
         return mCurrentElection.getValue();
     }
@@ -604,11 +622,32 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         mCurrentElection.setValue(e);
     }
 
+    public MutableLiveData<List<List<Integer>>> getCurrentElectionVotes() {
+        return mCurrentElectionVotes;
+    }
+
+    public void setCurrentElectionVotes(List<List<Integer>> currentElectionVotes) {
+        if(currentElectionVotes == null)
+            throw new IllegalArgumentException();
+        mCurrentElectionVotes.setValue(currentElectionVotes);
+    }
+
+    public void setCurrentElectionQuestionVotes(List<Integer> votes, int position){
+        if(votes == null || position < 0 || position >= mCurrentElectionVotes.getValue().size())
+            throw new IllegalArgumentException();
+
+        mCurrentElectionVotes.getValue().set(position, votes);
+    }
+
     /*
      * Methods that modify the state or post an Event to update the UI.
      */
     public void openHome() {
-        mOpenHomeEvent.setValue(new Event<>(true));
+        if(mCurrentRollCallId.equals("")){
+            mOpenHomeEvent.setValue(new Event<>(true));
+        }else{
+            mAskCloseRollCallEvent.setValue(new Event<>(R.id.fragment_home));
+        }
     }
 
     public void electionCreated() {
@@ -624,7 +663,11 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     }
 
     public void openIdentity() {
-        mOpenIdentityEvent.setValue(new Event<>(true));
+        if(mCurrentRollCallId.equals("")){
+            mOpenIdentityEvent.setValue(new Event<>(true));
+        }else{
+            mAskCloseRollCallEvent.setValue(new Event<>(R.id.fragment_identity));
+        }
     }
 
     public void toggleShowHideProperties() {
@@ -783,6 +826,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     }
 
     public void enterRollCall(String id) {
+        if(!Wallet.getInstance().isSetUp()){
+            mWalletMessageEvent.setValue(new Event<>(true));
+            return;
+        }
         String firstLaoId = getCurrentLaoValue().getChannel().substring(6); // use the laoId set at creation + need to remove /root/ prefix
         String errorMessage = "failed to retrieve public key from wallet";
         try {
@@ -805,6 +852,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
     public void openLaoWallet(){
       mOpenLaoWalletEvent.postValue(new Event<>(true));
+    }
+
+    public void openRollCallToken(String rollCallId){
+        mOpenRollCallTokenEvent.postValue(new Event<>(rollCallId));
     }
 
     public void openAttendeesList(String rollCallId){
