@@ -16,13 +16,6 @@ func (c *laoChannel) processCreateRollCall(data message.Data) error {
 		}
 	}
 
-	if !c.checkRollCallID(rollCallData.Creation, message.Stringer(rollCallData.Name), rollCallData.ID) {
-		return &message.Error{
-			Code:        -4,
-			Description: "The id of the roll call does not correspond to SHA256(‘R’||lao_id||creation||name)",
-		}
-	}
-
 	c.rollCall.id = string(rollCallData.ID)
 	c.rollCall.state = Created
 	return nil

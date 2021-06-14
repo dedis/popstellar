@@ -40,7 +40,7 @@ func createBaseChannel(h *organizerHub, channelID string) *baseChannel {
 		channelID:   channelID,
 		idValidator: validation.NewIdValidator(channelID),
 		clients:     make(map[*ClientSocket]struct{}),
-		inbox:     createInbox(),
+		inbox:       createInbox(),
 	}
 }
 
@@ -141,7 +141,7 @@ func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 	}
 
 	// Verify all the IDs in the data are correct
-	err = c.idValidator.VerifyID(msg.Data)
+	err = c.idValidator.VerifyIDs(msg)
 	if err != nil {
 		return message.NewError("failed to verify the ID of the provided data", err)
 	}

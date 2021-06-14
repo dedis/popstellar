@@ -29,7 +29,36 @@ func (idValidator *IdValidatior) checkID(id []byte, strs ...fmt.Stringer) bool {
 	return bytes.Equal(hash, id)
 }
 
-func (idValidator *IdValidatior) VerifyID(data message.Data) error {
+func (idValidator *IdValidatior) VerifyIDs(msg *message.Message) error {
+	err := idValidator.verifyMessageID(msg)
+	if err != nil {
+		return message.NewError("failed to validate the ID of the message", err)
+	}
+
+	err = idValidator.verifyDataID(msg.Data)
+	if err != nil {
+		return message.NewError("failed to validate an ID of the data", err)
+	}
+
+	return nil
+}
+
+func (idValidator *IdValidatior) verifyMessageID(msg *message.Message) error {
+	data := base64.URLEncoding.EncodeToString(msg.RawData)
+	signature := base64.URLEncoding.EncodeToString(msg.Signature)
+
+	ok := idValidator.checkID(msg.MessageID, message.Stringer(data), message.Stringer(signature))
+	if !ok {
+		return &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("The the field message_id of the message does not correspond to Hash(data||signature)"),
+		}
+	}
+
+	return nil
+}
+
+func (idValidator *IdValidatior) verifyDataID(data message.Data) error {
 
 	var err error
 
