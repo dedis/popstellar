@@ -77,10 +77,70 @@ func (h *baseHub) Start(ctx context.Context, wg *sync.WaitGroup) {
 	}
 }
 
+func (h *baseHub) handleRootChannelMesssage(id int, client *ClientSocket, query *message.Query) {
+	if query.Publish == nil {
+		err := &message.Error{
+			Code:        -4,
+			Description: "only publish is allowed on /root",
+		}
+
+		client.SendError(&id, err)
+		return
+	}
+
+	// Check if the structure of the message is correct
+	msg := query.Publish.Params.Message
+
+	// Verify the data
+	err := h.schemaValidator.VerifyJson(msg.RawData, validation.Data)
+	if err != nil {
+		err = message.NewError("failed to validate the data", err)
+		client.SendError(&id, err)
+		return
+	}
+
+	// Unmarshal the data
+	err = query.Publish.Params.Message.VerifyAndUnmarshalData()
+	if err != nil {
+		// Return a error of type "-4 request data is invalid" for all the verifications and unmarshalling problems of the data
+		err = &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("failed to verify and unmarshal data: %v", err),
+		}
+		client.SendError(&id, err)
+		return
+	}
+
+	if query.Publish.Params.Message.Data.GetAction() == message.DataAction(message.CreateLaoAction) &&
+		query.Publish.Params.Message.Data.GetObject() == message.DataObject(message.LaoObject) {
+		err := h.createLao(*query.Publish)
+		if err != nil {
+			err = message.NewError("failed to create lao", err)
+
+			client.SendError(&id, err)
+			return
+		}
+	} else {
+		log.Printf("invalid method: %s", query.GetMethod())
+		client.SendError(&id, &message.Error{
+			Code:        -1,
+			Description: "you may only invoke lao/create on /root",
+		})
+		return
+	}
+
+	status := 0
+	result := message.Result{General: &status}
+	log.Printf("sending result: %+v", result)
+	client.SendResult(id, result)
+	return
+}
+
 func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 	client := ClientSocket{
 		incomingMessage.Socket,
 	}
+
 	byteMessage := incomingMessage.Message
 
 	// Check if the GenericMessage has a field "id"
@@ -126,62 +186,7 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 	log.Printf("channel: %s", channelID)
 
 	if channelID == "/root" {
-		if query.Publish == nil {
-			err = &message.Error{
-				Code:        -4,
-				Description: "only publish is allowed on /root",
-			}
-
-			client.SendError(&id, err)
-			return
-		}
-
-		// Check if the structure of the message is correct
-		msg := query.Publish.Params.Message
-
-		// Verify the data
-		err := h.schemaValidator.VerifyJson(msg.RawData, validation.Data)
-		if err != nil {
-			err = message.NewError("failed to validate the data", err)
-			client.SendError(&id, err)
-			return
-		}
-
-		// Unmarshal the data
-		err = query.Publish.Params.Message.VerifyAndUnmarshalData()
-		if err != nil {
-			// Return a error of type "-4 request data is invalid" for all the verifications and unmarshalling problems of the data
-			err = &message.Error{
-				Code:        -4,
-				Description: fmt.Sprintf("failed to verify and unmarshal data: %v", err),
-			}
-			client.SendError(&id, err)
-			return
-		}
-
-		if query.Publish.Params.Message.Data.GetAction() == message.DataAction(message.CreateLaoAction) &&
-			query.Publish.Params.Message.Data.GetObject() == message.DataObject(message.LaoObject) {
-			err := h.createLao(*query.Publish)
-			if err != nil {
-				err = message.NewError("failed to create lao", err)
-
-				client.SendError(&id, err)
-				return
-			}
-		} else {
-			log.Printf("invalid method: %s", query.GetMethod())
-			client.SendError(&id, &message.Error{
-				Code:        -1,
-				Description: "you may only invoke lao/create on /root",
-			})
-			return
-		}
-
-		status := 0
-		result := message.Result{General: &status}
-		log.Printf("sending result: %+v", result)
-		client.SendResult(id, result)
-		return
+		h.handleRootChannelMesssage(id, &client, query)
 	}
 
 	if channelID[:6] != rootPrefix {
