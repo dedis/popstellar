@@ -101,7 +101,7 @@ public class WitnessListViewAdapter extends BaseAdapter {
       binding = DataBindingUtil.getBinding(convertView);
     }
 
-    binding.setWitness(witnesses.get(position));
+    binding.setWitness("Witness" + position + "ID : " + witnesses.get(position));
     binding.setLifecycleOwner(lifecycleOwner);
     binding.setViewModel(viewModel);
 

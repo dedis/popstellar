@@ -14,6 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.student20_pop.R;
+import com.github.dedis.student20_pop.detail.LaoDetailActivity;
+import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 
 import net.glxn.qrgen.android.QRCode;
 
@@ -27,6 +29,8 @@ public class IdentityFragment extends Fragment {
 
   public static final String TAG = IdentityFragment.class.getSimpleName();
 
+  public static final String PUBLIC_KEY = "public key";
+  private LaoDetailViewModel mLaoDetailViewModel;
   private EditText identityNameEditText;
   private EditText identityTitleEditText;
   private EditText identityOrganizationEditText;
@@ -34,8 +38,13 @@ public class IdentityFragment extends Fragment {
   private EditText identityPhoneEditText;
   private ImageView qrCode;
 
-  public static IdentityFragment newInstance() {
-    return new IdentityFragment();
+  public static IdentityFragment newInstance(String publicKey) {
+
+    IdentityFragment identityFragment = new IdentityFragment();
+    Bundle bundle = new Bundle(1);
+    bundle.putString(PUBLIC_KEY, publicKey);
+    identityFragment.setArguments(bundle);
+    return identityFragment;
   }
 
   @Nullable
@@ -45,7 +54,7 @@ public class IdentityFragment extends Fragment {
           @Nullable ViewGroup container,
           @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_identity, container, false);
-
+    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
     // TODO :   The QR code does not appear at all unless the Name field is non-empty
     //  and not all whitespace.
     CheckBox anonymousCheckBox = view.findViewById(R.id.checkbox_anonymous);
@@ -72,22 +81,12 @@ public class IdentityFragment extends Fragment {
               }
             });
 
-    // NOTE : I was not sure which unique id to use to generate the QR code
-    // User identity is composed of :
-    // User's public key
-    // Organization's ID
-    // TODO: verify from view model if user is organizer, if not show uid (get from view model), if
-    // yes then show organizer_id and lao_id (get from view model)
+// for now we use the user's public key to generate the QR code
+    // TODO: In the future use Wallet with user's token
+    String pk = this.getArguments().getString(PUBLIC_KEY);
+    identityNameEditText.setText(pk);
 
-    /*
-    final PoPApplication app = ((PoPApplication) this.getActivity().getApplication());
-    String key = app.getPerson().getAuthentication();
-    String laoId = app.getCurrentLaoUnsafe().getId();
-    String uniqueIdentity = key + laoId;*/
-
-    identityNameEditText.setText("USERNAME");
-
-    Bitmap myBitmap = QRCode.from("UNIQUE IDENTITY").bitmap();
+    Bitmap myBitmap = QRCode.from(pk).bitmap();
     qrCode.setImageBitmap(myBitmap);
 
     return view;

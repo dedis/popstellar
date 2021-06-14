@@ -77,7 +77,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
      * LiveData objects for capturing events like button clicks
      */
     private final MutableLiveData<Event<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
-    private final MutableLiveData<Event<Boolean>> mOpenIdentityEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<String>> mOpenIdentityEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mOpenWitnessMessageEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mShowPropertiesEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mEditPropertiesEvent = new MutableLiveData<>();
@@ -584,7 +584,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         return mOpenHomeEvent;
     }
 
-    public LiveData<Event<Boolean>> getOpenIdentityEvent() {
+    public LiveData<Event<String>> getOpenIdentityEvent() {
         return mOpenIdentityEvent;
     }
 
@@ -792,7 +792,16 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
     public void openIdentity() {
         if (mCurrentRollCallId.equals("")) {
-            mOpenIdentityEvent.setValue(new Event<>(true));
+            String publicKey = null;
+            try {
+                KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+                 publicKey = Keys.getEncodedKey(publicKeysetHandle);
+            }
+                catch (GeneralSecurityException | IOException e) {
+                    Log.d(TAG, PK_FAILURE_MESSAGE, e);
+                }
+
+            mOpenIdentityEvent.setValue(new Event<>(publicKey));
         } else {
             mAskCloseRollCallEvent.setValue(new Event<>(R.id.fragment_identity));
         }
@@ -965,7 +974,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
      * Helper method for updateLaoWitnesses and updateLaoName to send a stateLao message
      */
     private void sendStateLao(String s, UpdateLao updateLao, Lao lao, byte[] sender, PublicKeySign signer, String channel, String publicKey, MessageGeneral msg) {
-        StateLao stateLao = new StateLao(updateLao.getId(), updateLao.getName(), lao.getCreation(), updateLao.getLastModified(), publicKey, msg.getMessageId(), lao.getWitnesses(), new ArrayList<>());
+        StateLao stateLao = new StateLao(updateLao.getId(), updateLao.getName(), lao.getCreation(), updateLao.getLastModified(), publicKey, msg.getMessageId(), updateLao.getWitnesses(), new ArrayList<>());
         MessageGeneral stateMsg = new MessageGeneral(sender, stateLao, signer, mGson);
         mLAORepository
                 .sendPublish(channel, stateMsg)

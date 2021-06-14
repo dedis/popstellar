@@ -300,6 +300,7 @@ public class LAORepository {
         lao.setLastModified(createLao.getCreation());
         lao.setOrganizer(createLao.getOrganizer());
         lao.setId(createLao.getId());
+        lao.setWitnesses( new HashSet<>( createLao.getWitnesses()));
 
         Log.d(
                 TAG,
@@ -326,7 +327,16 @@ public class LAORepository {
         // begins with zero witnesses. As a result, we should update the LAO immediately if the current
         // state has no witnesses and not wait for witness messages
         WitnessMessage message = new WitnessMessage(messageId);
-        message.setTitle("Update Lao ");
+        if(!updateLao.getName().equals(lao.getName())) {
+            message.setTitle("Update Lao Name ");
+        }
+        else if(!updateLao.getWitnesses().equals(lao.getWitnesses())) {
+            message.setTitle("Update Lao Witnesses  ");
+
+        }
+        else {
+            Log.d(TAG," Problem to set the witness message title for update lao");
+        }
         message.setDescription(" Lao Name : " + lao.getName() + "\n" + MESSAGE_ID + messageId);
 
         lao.updateWitnessMessage(message.getMessageId(), message);

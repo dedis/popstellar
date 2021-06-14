@@ -248,13 +248,13 @@ public class LaoDetailActivity extends AppCompatActivity {
                 .getOpenIdentityEvent()
                 .observe(
                         this,
-                        booleanEvent -> {
-                            Boolean event = booleanEvent.getContentIfNotHandled();
-                            if (event != null) {
+                        stringEvent -> {
+                            String publicKey = stringEvent.getContentIfNotHandled();
+                            if (publicKey != null) {
                                 IdentityFragment identityFragment =
                                         (IdentityFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_identity);
                                 if (identityFragment == null) {
-                                    identityFragment = IdentityFragment.newInstance();
+                                    identityFragment = IdentityFragment.newInstance(publicKey);
                                     ActivityUtils.replaceFragmentInActivity(
                                             getSupportFragmentManager(), identityFragment, R.id.fragment_container_lao_detail);
                                 }
