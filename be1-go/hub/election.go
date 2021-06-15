@@ -348,7 +348,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 
 	resultData := message.ElectionResultData{
 		GenericData:       &genericMsg,
-		Questions:         nil,
+		Questions:         make([]message.QuestionResult,len(c.questions)),
 		WitnessSignatures: msg.WitnessSignatures,
 	}
 
