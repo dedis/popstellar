@@ -86,7 +86,6 @@ public final class MessageGeneral {
   private void generateId() {
     this.messageId =
             Hash.hash(Base64.getUrlEncoder().encodeToString(this.dataBuf), Base64.getUrlEncoder().encodeToString(this.signature)).getBytes();
-
   }
 
   public String getMessageId() {
