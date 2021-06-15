@@ -371,7 +371,6 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 			})
 		}
 	}
-	msg.Data = resultData
 	msgId := computeMessageId(resultData,msg.Signature)
 
 	id,ok  := base64.URLEncoding.DecodeString(msgId)
@@ -400,7 +399,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 		RawData:           raw,
 	}
 
-	ms3,ok := message.NewMessage(msg.Sender,msg.Signature,msg.WitnessSignatures,resultData)
+	//ms3,ok := message.NewMessage(msg.Sender,msg.Signature,msg.WitnessSignatures,resultData)
 
 	if ok != nil {
 		return &message.Error{
@@ -409,11 +408,11 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 		}
 	}
 
-	c.broadcastToAllClients(*ms3)
+	//c.broadcastToAllClients(*ms3)
 	c.broadcastToAllClients(ms2)
-	messageID := base64.URLEncoding.EncodeToString(ms3.MessageID)
+	messageID := base64.URLEncoding.EncodeToString(ms2.MessageID)
 	c.inboxMu.Lock()
-	c.inbox[messageID] = *ms3
+	c.inbox[messageID] = ms2
 	c.inboxMu.Unlock()
 
 	return nil
