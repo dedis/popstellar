@@ -2,6 +2,9 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/fragment_setup_election_event"
         android:layout_width="match_parent"
@@ -10,9 +13,9 @@
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/election_setup_guideline_horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
+            app:layout_constraintGuide_begin="@dimen/guideline_tab" />
 
         <TextView
             android:id="@+id/election_setup_lao_name"
@@ -48,8 +51,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/add_question_button_text"
-            app:layout_constraintBottom_toBottomOf="@+id/election_setup_time"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/election_setup_date" />
 
         <include
             android:id="@+id/election_setup_time"
@@ -75,10 +78,10 @@
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/election_setup_view_pager2"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             app:layout_constraintBottom_toTopOf="@+id/election_cancel_button"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/election_setup_time">
+            app:layout_constraintTop_toBottomOf="@+id/election_setup_swipe_indicator">
 
         </androidx.viewpager2.widget.ViewPager2>
 
@@ -86,10 +89,12 @@
             android:id="@+id/election_setup_swipe_indicator"
             android:layout_width="0dp"
             android:layout_height="@dimen/swipe_indicator_height"
+            android:layout_marginTop="10dp"
+
             android:background="@color/colorPrimaryDark"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/election_cancel_button"/>
+            app:layout_constraintTop_toBottomOf="@+id/election_setup_time" />
 
         <Button
             android:id="@+id/election_cancel_button"
@@ -99,8 +104,7 @@
             android:clickable="true"
             android:text="@string/cancel"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/election_submit_button"
-            />
+            app:layout_constraintEnd_toStartOf="@id/election_submit_button" />
 
         <Button
             android:id="@+id/election_submit_button"
@@ -116,4 +120,5 @@
             tools:layout_editor_absoluteY="683dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </layout>

@@ -138,7 +138,7 @@
     <string name="add_question_button_text">Add question</string>
     <string name="election_setup_name_hint">Election name</string>
     <string name="election_question_hint">Question :</string>
-    <string name="voting_method_spinner_text">Select a voting method</string>
+    <string name="voting_method_spinner_text">Voting method</string>
     <string name="write_in_switch_text">Allow write in</string>
     <string name="new_ballot_option_hint">ballot option</string>
 
