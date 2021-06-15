@@ -165,11 +165,8 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
         {!showQRPublicKey && showQRButton()}
         {showQRPublicKey && hideQRButton()}
         <WideButtonView
-          title={STRINGS.logout_from_wallet}
-          onPress={() => {
-            HDWallet.logoutFromWallet();
-            navigation.navigate(STRINGS.navigation_home_tab_wallet);
-          }}
+          title={STRINGS.back_to_wallet_home}
+          onPress={() => setTokensRecovered(false)}
         />
         <View style={styles.largePadding} />
       </ScrollView>
@@ -185,6 +182,13 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
           title={STRINGS.show_tokens_title}
           onPress={() => {
             setTokensRecovered(true);
+          }}
+        />
+        <WideButtonView
+          title={STRINGS.logout_from_wallet}
+          onPress={() => {
+            HDWallet.logoutFromWallet();
+            navigation.navigate(STRINGS.navigation_home_tab_wallet);
           }}
         />
       </View>
