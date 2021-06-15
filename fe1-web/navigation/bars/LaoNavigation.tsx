@@ -14,6 +14,7 @@ import Identity from 'parts/lao/Identity';
 import Attendee from 'parts/lao/attendee/Attendee';
 import OrganizerNavigation from './organizer/OrganizerNavigation';
 import WitnessNavigation from './witness/WitnessNavigation';
+import WalletSyncedSeed from "../../parts/wallet/WalletSyncedSeed";
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
 
@@ -100,8 +101,8 @@ function LaoNavigation() {
       { buildTabComponent(isOrganizer, isWitness) }
 
       <OrganizationTopTabNavigator.Screen
-        name={STRINGS.organization_navigation_tab_identity}
-        component={Identity}
+        name={STRINGS.navigation_synced_wallet}
+        component={WalletSyncedSeed}
       />
 
       <OrganizationTopTabNavigator.Screen
