@@ -22,7 +22,11 @@ func CreateWitnessHub() Hub {
 	if err != nil {
 		return nil
 	}
-	return NewWitnessHub(point)
+	h, err := NewWitnessHub(point)
+	if err != nil {
+		return nil
+	}
+	return h
 }
 
 // to complete

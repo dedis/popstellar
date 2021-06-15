@@ -15,7 +15,10 @@ func TestCreateAndServeWS(t *testing.T) {
 	ctx := context.Background()
 	wg := &sync.WaitGroup{}
 
-	h := hub.NewWitnessHub(student20_pop.Suite.Point())
+	h, err := hub.NewWitnessHub(student20_pop.Suite.Point())
+	if (err != nil) {
+		t.Errorf("could not create witness hub")
+	}
 
 	buffer := bytes.Buffer{}
 	log.SetOutput(&buffer)

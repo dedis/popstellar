@@ -14,7 +14,10 @@ import (
 func TestShutdownServers(t *testing.T) {
 	ctx := context.Background()
 	wg := &sync.WaitGroup{}
-	h := hub.NewWitnessHub(student20_pop.Suite.Point())
+	h, err := hub.NewWitnessHub(student20_pop.Suite.Point())
+	if (err != nil) {
+		t.Errorf("could not create witness hub")
+	}
 
 	witnessSrv := CreateAndServeWS(ctx, hub.WitnessHubType, hub.WitnessSocketType, h, 9000, wg)
 	clientSrv := CreateAndServeWS(ctx, hub.WitnessHubType, hub.ClientSocketType, h, 9000, wg)
