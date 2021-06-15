@@ -23,6 +23,7 @@ import com.github.dedis.student20_pop.databinding.FragmentSetupElectionEventBind
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.adapters.ElectionSetupViewPagerAdapter;
+import com.github.dedis.student20_pop.detail.transformers.ZoomOutTransformer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,6 +112,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
 
         viewPager2 = mSetupElectionFragBinding.electionSetupViewPager2;
         viewPager2.setAdapter(viewPagerAdapter);
+        viewPager2.setPageTransformer(new ZoomOutTransformer());
 
         circleIndicator = mSetupElectionFragBinding.electionSetupSwipeIndicator;
         circleIndicator.setViewPager(viewPager2);
@@ -131,7 +133,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
             //TODO delete this and find a way to keep data on left swipe
             viewPager2.setOffscreenPageLimit(viewPagerAdapter.getNumberOfQuestions());
 
-
+            viewPager2.setCurrentItem(viewPager2.getCurrentItem() + 1);
             circleIndicator.setViewPager(viewPager2);
             addQuestion.setEnabled(true);
         });

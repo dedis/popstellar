@@ -14,6 +14,7 @@ import com.github.dedis.student20_pop.databinding.FragmentCastVoteBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.adapters.QuestionViewPagerAdapter;
+import com.github.dedis.student20_pop.detail.transformers.ZoomOutTransformer;
 import com.github.dedis.student20_pop.model.Election;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionVote;
@@ -93,7 +94,7 @@ public class CastVoteFragment extends Fragment {
         ViewPager2 viewPager2 = mCastVoteFragBinding.castVotePager;
         QuestionViewPagerAdapter adapter = new QuestionViewPagerAdapter(mLaoDetailViewModel, mCastVoteFragBinding);
         viewPager2.setAdapter(adapter);
-
+        viewPager2.setPageTransformer(new ZoomOutTransformer());
         //Setting the indicator for horizontal swipe
         CircleIndicator3 circleIndicator = mCastVoteFragBinding.swipeIndicator;
         circleIndicator.setViewPager(viewPager2);
