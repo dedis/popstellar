@@ -131,7 +131,7 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 			err = c.castVoteHelper(publish)
 		case message.ElectionEndAction:
 			err = c.endElectionHelper(publish)
-			//err = c.electionResultHelper(publish)
+			err = c.electionResultHelper(publish)
 			if err != nil{
 				log.Printf("End and Result broadcasted")
 				//return nil
@@ -279,6 +279,8 @@ func (c *electionChannel) endElectionHelper(publish message.Publish) error {
 	//	endElectionData.RegisteredVotes = hashed
 	//}
 	msg := publish.Params.Message
+	c.broadcastToAllClients(*msg)
+
 	messageID := base64.URLEncoding.EncodeToString(msg.MessageID)
 	c.inboxMu.Lock()
 	c.inbox[messageID] = *msg
@@ -368,38 +370,44 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 		}
 	}
 	msg.Data = resultData
-	computeMessageId(resultData,msg.Signature)
-	//ms2 := message.Message{
-	//	MessageID:         nil,
-	//	Data:              resultData,
-	//	Sender:            msg.Sender,
-	//	Signature:         msg.Signature,
-	//	WitnessSignatures: msg.WitnessSignatures,
-	//	RawData:           nil,
-	//}
-	//for client := range c.clients{
-	//	//client.Send()
-	//}
+	msgId := computeMessageId(resultData,msg.Signature)
 
-	c.broadcastToAllClients(*msg)
-	messageID := base64.URLEncoding.EncodeToString(msg.MessageID)
+	id,ok  := base64.URLEncoding.DecodeString(msgId)
+	if ok != nil {
+		return &message.Error{
+			Code:        -4,
+			Description: "Hash of the message id is not computed correctly",
+		}
+	}
+	ms2 := message.Message{
+		MessageID:         id,
+		Data:              resultData,
+		Sender:            msg.Sender,
+		Signature:         msg.Signature,
+		WitnessSignatures: msg.WitnessSignatures,
+		RawData:           nil,
+	}
+
+	c.broadcastToAllClients(ms2)
+	messageID := base64.URLEncoding.EncodeToString(ms2.MessageID)
 	c.inboxMu.Lock()
-	c.inbox[messageID] = *msg
+	c.inbox[messageID] = ms2
 	c.inboxMu.Unlock()
 
 	return nil
 }
 
-func (c* electionChannel) publishResults(m message.Message){
-	m.Data = message.ElectionResultData{
-
+func computeMessageId(data message.ElectionResultData, signature message.Signature)string  {
+	type messageId struct {
+		data message.ElectionResultData
+		sig  message.Signature
 	}
-}
 
-func hashDataSender(data message.ElectionResultData, signature message.Signature){
-	//data.GenericData.
-}
+	id := messageId{data: data, sig: signature}
 
-func computeMessageId(data message.ElectionResultData, signature message.Signature)error  {
-	
+	h := sha256.New()
+	h.Write([]byte(fmt.Sprintf("%v", id)))
+
+	return fmt.Sprintf("%x", h.Sum(nil))
+
 }
