@@ -330,6 +330,11 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         electionBinding.electionEndDate.setText("End Date : " + dateEnd);
         viewModel.setCurrentElection(election);
 
+        viewModel.getEndElectionEvent().observe(lifecycleOwner, end -> {
+            electionBinding.electionActionButton.setText(R.string.election_ended);
+            electionBinding.electionActionButton.setEnabled(false);
+        });
+
         if (category == PRESENT) {
             electionBinding.electionActionButton.setText(R.string.cast_vote);
             electionBinding.electionActionButton.setEnabled(true);

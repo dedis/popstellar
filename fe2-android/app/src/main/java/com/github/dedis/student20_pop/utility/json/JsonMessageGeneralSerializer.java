@@ -63,7 +63,9 @@ public class JsonMessageGeneralSerializer
     JsonElement dataElement = JsonParser.parseString(new String(dataBuf));
     Log.d("deserializer", "after data parsing");
     Data data = context.deserialize(dataElement, Data.class);
-    Log.d("deserializer", "after data");
+    Log.d("deserializer", "data action is " + data.getAction());
+    Log.d("deserializer", "data object is " + data.getObject());
+    Log.d("deserializer", "data is " + data.getClass());
 
     return new MessageGeneral(sender, dataBuf, data, signature, messageId, witnessSignatures);
   }
