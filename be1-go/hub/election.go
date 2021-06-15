@@ -268,18 +268,24 @@ func (c *electionChannel) endElectionHelper(publish message.Publish) error {
 			Description: "Can't send end election message before the end of the election",
 		}
 	}
-	// TODO: check if the hashing is done correctly
-	// since we eliminated (in cast vote) the duplicate votes we are sure that the voter casted one vote for one question
-	//for _,question := range c.questions{
-	//	hashed,err := sortHashVotes(question.validVotes)
-	//	if err != nil {
-	//		return &message.Error{
-	//			Code:        -4,
-	//			Description: "Error while hashing",
-	//		}
-	//	}
-	//	endElectionData.RegisteredVotes = hashed
-	//}
+	if len(endElectionData.RegisteredVotes) == 0 {
+
+	}else{
+		// TODO: check if the hashing is done correctly
+		// since we eliminated (in cast vote) the duplicate votes we are sure that the voter casted one vote for one question
+		//for _,question := range c.questions{
+		//	hashed,err := sortHashVotes(question.validVotes)
+		//	if err != nil {
+		//		return &message.Error{
+		//			Code:        -4,
+		//			Description: "Error while hashing",
+		//		}
+		//	}
+		//	endElectionData.RegisteredVotes = hashed
+		//}
+	}
+
+	log.Printf("Broadcasting election end message")
 	msg := publish.Params.Message
 	c.broadcastToAllClients(*msg)
 
@@ -324,7 +330,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 	//	}
 	//}
 	msg := publish.Params.Message
-	c.broadcastToAllClients(*msg)
+	//c.broadcastToAllClients(*msg)
 
 	resultData := message.ElectionResultData{
 		GenericData:       nil,
@@ -332,6 +338,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 		WitnessSignatures: msg.WitnessSignatures,
 	}
 
+	log.Printf("Getting the count per ballot opetion for election results")
 	//questions := resultData.Questions
 	for id := range c.questions{
 		// q.iD is the public key of the question, we convert it to string
@@ -364,6 +371,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 					Count: numberOfVotesPerBallotOption[i],
 				})
 			}
+			log.Printf("Appending a question id:%s with the count and result",id)
 			resultData.Questions = append(resultData.Questions,message.QuestionResult{
 				ID : id,
 				//Result: questionResults,
@@ -371,6 +379,8 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 			})
 		}
 	}
+
+	log.Printf("computing message id for election result message")
 	msgId := computeMessageId(resultData,msg.Signature)
 
 	id,ok  := base64.URLEncoding.DecodeString(msgId)
@@ -390,6 +400,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 		}
 	}
 
+	log.Printf("creating the election result message")
 	ms2 := message.Message{
 		MessageID:         id,
 		Data:              resultData,
@@ -408,6 +419,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 		}
 	}
 
+	log.Printf("broadcasting election resutl message")
 	//c.broadcastToAllClients(*ms3)
 	c.broadcastToAllClients(ms2)
 	messageID := base64.URLEncoding.EncodeToString(ms2.MessageID)
