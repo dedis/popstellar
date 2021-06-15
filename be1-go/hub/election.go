@@ -383,7 +383,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 	log.Printf("computing message id for election result message")
 	msgId := computeMessageId(resultData,msg.Signature)
 
-	id,ok  := base64.URLEncoding.DecodeString(msgId)
+	_,ok  := base64.URLEncoding.DecodeString(msgId)
 	if ok != nil {
 		return &message.Error{
 			Code:        -4,
@@ -391,7 +391,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 		}
 	}
 
-	raw,ok := json.Marshal(resultData)
+	_ ,ok = json.Marshal(resultData)
 
 	if ok != nil {
 		return &message.Error{
@@ -401,16 +401,16 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 	}
 
 	log.Printf("creating the election result message")
-	ms2 := message.Message{
-		MessageID:         id,
-		Data:              resultData,
-		Sender:            msg.Sender,
-		Signature:         msg.Signature,
-		WitnessSignatures: msg.WitnessSignatures,
-		RawData:           raw,
-	}
+	//ms2 := message.Message{
+	//	MessageID:         id,
+	//	Data:              resultData,
+	//	Sender:            msg.Sender,
+	//	Signature:         msg.Signature,
+	//	WitnessSignatures: msg.WitnessSignatures,
+	//	RawData:           raw,
+	//}
 
-	//ms3,ok := message.NewMessage(msg.Sender,msg.Signature,msg.WitnessSignatures,resultData)
+	ms3,ok := message.NewMessage(msg.Sender,msg.Signature,msg.WitnessSignatures,resultData)
 
 	if ok != nil {
 		return &message.Error{
@@ -420,11 +420,11 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 	}
 
 	log.Printf("broadcasting election resutl message")
-	//c.broadcastToAllClients(*ms3)
-	c.broadcastToAllClients(ms2)
-	messageID := base64.URLEncoding.EncodeToString(ms2.MessageID)
+	c.broadcastToAllClients(*ms3)
+	//c.broadcastToAllClients(ms2)
+	messageID := base64.URLEncoding.EncodeToString(ms3.MessageID)
 	c.inboxMu.Lock()
-	c.inbox[messageID] = ms2
+	c.inbox[messageID] = *ms3
 	c.inboxMu.Unlock()
 
 	return nil
