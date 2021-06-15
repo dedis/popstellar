@@ -137,7 +137,8 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 				result := message.Result{}
 				general := 0
 				result.General = &general
-				client.SendResult(9,result)
+				log.Printf("Senfind the result for election end")
+				client.SendResult(51,result)
 			}
 			err = c.electionResultHelper(publish)
 			if err != nil{
