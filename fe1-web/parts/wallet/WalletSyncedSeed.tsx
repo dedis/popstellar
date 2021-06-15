@@ -62,6 +62,13 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
             title={STRINGS.back_to_wallet_home}
             onPress={() => navigation.navigate(STRINGS.navigation_home_tab_wallet)}
           />
+          <WideButtonView
+            title={STRINGS.logout_from_wallet}
+            onPress={() => {
+              HDWallet.logoutFromWallet();
+              navigation.navigate(STRINGS.navigation_home_tab_wallet);
+            }}
+          />
         </View>
       );
     }
