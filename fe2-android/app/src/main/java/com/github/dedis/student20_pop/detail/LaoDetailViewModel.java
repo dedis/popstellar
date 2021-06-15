@@ -90,6 +90,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     private final MutableLiveData<Event<Boolean>> mElectionCreatedEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mOpenCastVotesEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mEndElectionEvent = new MutableLiveData<>(new Event<>(false));
+    private final MutableLiveData<Event<Boolean>> mReceivedElectionResultsEvent = new MutableLiveData<>(new Event<>(false));
 
     private final MutableLiveData<Event<Integer>> mNbAttendeesEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Integer>> mAskCloseRollCallEvent = new MutableLiveData<>();
@@ -541,6 +542,9 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     public LiveData<Event<Boolean>> getOpenElectionResultsEvent() {
         return mOpenElectionResultsEvent;
     }
+    public LiveData<Event<Boolean>> getReceivedElectionResultsEvent() {
+        return mReceivedElectionResultsEvent;
+    }
 
     public LiveData<Event<Boolean>> getElectionCreated() {
         return mElectionCreatedEvent;
@@ -727,6 +731,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
     public void endElectionEvent() {
         mEndElectionEvent.postValue(new Event<>(true));
+    }
+
+    public void receiveElectionResultsEvent() {
+        mReceivedElectionResultsEvent.postValue(new Event<>(true));
     }
 
     public void toggleShowHideProperties() {

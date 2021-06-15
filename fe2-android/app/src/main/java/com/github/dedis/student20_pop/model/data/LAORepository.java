@@ -63,6 +63,7 @@ import java.util.stream.Collectors;
 
 import static com.github.dedis.student20_pop.model.event.EventState.CLOSED;
 import static com.github.dedis.student20_pop.model.event.EventState.OPENED;
+import static com.github.dedis.student20_pop.model.event.EventState.RESULTS_READY;
 
 
 public class LAORepository {
@@ -351,8 +352,10 @@ public class LAORepository {
     Lao lao = getLaoByChannel(channel);
     Election election = getElectionByChannel(channel);
 
-    List<ElectionResultQuestion> questions = data.getElectionQuestionResults();
-    if (questions.isEmpty()) throw new IllegalArgumentException("the questions results shouldn't be empty");
+    List<ElectionResultQuestion> resultsQuestions = data.getElectionQuestionResults();
+    if (resultsQuestions.isEmpty()) throw new IllegalArgumentException("the questions results shouldn't be empty");
+    election.setResults(resultsQuestions);
+    election.setEventState(RESULTS_READY);
     lao.updateElection(election.getId(), election);
     return false;
   }

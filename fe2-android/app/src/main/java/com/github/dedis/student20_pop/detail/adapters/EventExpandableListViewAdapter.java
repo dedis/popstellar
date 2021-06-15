@@ -39,6 +39,7 @@ import static com.github.dedis.student20_pop.model.event.EventCategory.FUTURE;
 import static com.github.dedis.student20_pop.model.event.EventCategory.PAST;
 import static com.github.dedis.student20_pop.model.event.EventCategory.PRESENT;
 import static com.github.dedis.student20_pop.model.event.EventState.CLOSED;
+import static com.github.dedis.student20_pop.model.event.EventState.RESULTS_READY;
 
 
 public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
@@ -328,10 +329,12 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         String dateEnd = DATE_FORMAT.format(dEnd);
         electionBinding.electionEndDate.setText("End Date : " + dateEnd);
         viewModel.setCurrentElection(election);
+
         viewModel.getEndElectionEvent().observe(lifecycleOwner, booleanEvent -> {
             electionBinding.electionActionButton.setText("");
             electionBinding.electionActionButton.setEnabled(false);
         });
+
         if (category == PRESENT) {
             electionBinding.electionActionButton.setText(R.string.cast_vote);
             electionBinding.electionActionButton.setOnClickListener(
@@ -343,10 +346,18 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
             if (election.getState() == CLOSED) {
                 electionBinding.electionActionButton.setText(R.string.election_ended);
                 electionBinding.electionActionButton.setEnabled(false);
-            } else electionBinding.electionActionButton.setText(R.string.tally_votes);
-            electionBinding.electionActionButton.setOnClickListener(
-                    clicked -> viewModel.endElection(election));
+            } else if (election.getState() == RESULTS_READY) {
+                electionBinding.electionActionButton.setText(R.string.show_results);
+                electionBinding.electionActionButton.setEnabled(true);
+                electionBinding.electionActionButton.setOnClickListener(clicked -> Log.d("EventExp", "open results"));
+            } else {
+                electionBinding.electionActionButton.setText(R.string.tally_votes);
+                electionBinding.electionActionButton.setOnClickListener(clicked -> viewModel.endElection(election));
+            }
+
         }
+
+
         electionBinding.electionEditButton.setOnClickListener(clicked -> viewModel.openManageElection(true));
         electionBinding.setEventCategory(category);
         electionBinding.setViewModel(viewModel);

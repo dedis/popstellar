@@ -4,6 +4,7 @@ package com.github.dedis.student20_pop.model;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventState;
 import com.github.dedis.student20_pop.model.network.method.message.data.ElectionQuestion;
+import com.github.dedis.student20_pop.model.network.method.message.data.ElectionResultQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.data.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.QuestionResult;
 import com.github.dedis.student20_pop.model.event.EventType;
@@ -34,11 +35,11 @@ public class Election extends Event {
 
     private EventState state;
 
-    //Results of an election
-    private List<QuestionResult> results;
+    //Results of an election (associated to a question id)
+    private Map<String, List<QuestionResult>> results;
 
     public Election() {
-        this.results = new ArrayList<>();
+        this.results = new HashMap<>();
         this.electionQuestions = new ArrayList<>();
         this.voteMap = new HashMap<>();
         this.messageMap = new TreeMap<>();
@@ -146,15 +147,18 @@ public class Election extends Event {
         else return Hash.hash(listOfVoteIds.toArray(new String[0]));
     }
 
-
-    public void setResults(List<QuestionResult> results) {
-        if (results == null) throw new IllegalArgumentException("the list of winners should not be null");
-        results.sort((r1, r2) -> r2.getCount().compareTo(r1.getCount()));
-        this.results = results;
+    public void setResults(List<ElectionResultQuestion> resultsQuestions) {
+        if (resultsQuestions == null) throw new IllegalArgumentException("the list of winners should not be null");
+        for (ElectionResultQuestion resultQuestion : resultsQuestions) {
+            List<QuestionResult> results = resultQuestion.getResults();
+            String id = resultQuestion.getId();
+            results.sort((r1, r2) -> r2.getCount().compareTo(r1.getCount()));
+            this.results.put(id, results);
+        }
     }
 
-    public List<QuestionResult> getResults() {
-        return results;
+    public List<QuestionResult> getResultsForQuestionId(String id) {
+        return results.get(id);
     }
 
     @Override
