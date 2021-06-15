@@ -373,6 +373,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 			for i, option := range question.ballotOptions {
 				//questionResults = append(questionResults,message.BallotOption("ballot_option:") + option +
 				//	message.BallotOption("count:" + string(numberOfVotesPerBallotOption[i])))
+				log.Printf("For question of id %s we get an option of %v with count %v",question.id,option,numberOfVotesPerBallotOption[i])
 				questionResults2 = append(questionResults2, message.BallotOptionCount{
 					Option: option,
 					Count: numberOfVotesPerBallotOption[i],
@@ -386,6 +387,8 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 			})
 		}
 	}
+	log.Printf("The result data field of the election result message " +
+		"is the following %v",resultData)
 
 	log.Printf("computing message id for election result message")
 	msgId := computeMessageId(resultData,msg.Signature)
