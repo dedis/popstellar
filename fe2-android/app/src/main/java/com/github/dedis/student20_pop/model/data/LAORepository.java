@@ -466,9 +466,7 @@ public class LAORepository {
     Lao lao = laoById.get(channel).getLao();
     Log.d(TAG, "handleCreateRollCall: " + channel + " name " + createRollCall.getName());
 
-    RollCall rollCall = new RollCall();
-    rollCall.setId(createRollCall.getId());
-    rollCall.setPersistentId(createRollCall.getId());
+    RollCall rollCall = new RollCall(createRollCall.getId());
     rollCall.setCreation(createRollCall.getCreation());
     rollCall.setState(EventState.CREATED);
     rollCall.setStart(createRollCall.getProposedStart());
