@@ -336,6 +336,8 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 	//		Description: "failed to cast data to ElectionResultData",
 	//	}
 	//}
+	log.Printf("Computing election results on channel %v",c)
+
 	msg := publish.Params.Message
 	//c.broadcastToAllClients(*msg)
 
