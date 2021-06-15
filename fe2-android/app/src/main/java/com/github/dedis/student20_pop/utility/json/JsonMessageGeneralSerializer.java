@@ -40,6 +40,7 @@ public class JsonMessageGeneralSerializer
     byte[] sender = Base64.getUrlDecoder().decode(root.get("sender").getAsString());
     byte[] signature = Base64.getUrlDecoder().decode(root.get(SIG).getAsString());
 
+    Log.d("deserializer", "before veryfying");
     PublicKeyVerify verifier = new Ed25519Verify(sender);
     try {
       verifier.verify(signature, dataBuf);
@@ -47,6 +48,7 @@ public class JsonMessageGeneralSerializer
       throw new JsonParseException("failed to verify signature on data", e);
     }
 
+    Log.d("deserializer", "before witness");
     List<PublicKeySignaturePair> witnessSignatures = new ArrayList<>();
     JsonArray arr = root.get("witness_signatures").getAsJsonArray();
     Iterator<JsonElement> it = arr.iterator();
@@ -56,9 +58,11 @@ public class JsonMessageGeneralSerializer
       String sig = element.getAsJsonObject().get(SIG).getAsString();
       witnessSignatures.add(new PublicKeySignaturePair(Base64.getUrlDecoder().decode(witness), Base64.getUrlDecoder().decode(sig)));
     }
-
+    Log.d("deserializer", "before data parsing");
     JsonElement dataElement = JsonParser.parseString(new String(dataBuf));
+    Log.d("deserializer", "after data parsing");
     Data data = context.deserialize(dataElement, Data.class);
+    Log.d("deserializer", "after data");
 
     return new MessageGeneral(sender, dataBuf, data, signature, messageId, witnessSignatures);
   }
