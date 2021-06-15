@@ -342,8 +342,8 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 	//c.broadcastToAllClients(*msg)
 
 	genericMsg := message.GenericData{
-		Action: "election",
-		Object: "result",
+		Action: "result",
+		Object: "election",
 	}
 
 	resultData := message.ElectionResultData{
