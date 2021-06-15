@@ -109,6 +109,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     private final MutableLiveData<Lao> mCurrentLao = new MutableLiveData<>();
     private final MutableLiveData<Election> mCurrentElection = new MutableLiveData<>(); // Represents the current election being managed/opened in a fragment
     private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> mIsAttendee = new MutableLiveData<>();
     private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
     private final MutableLiveData<String> mLaoName = new MutableLiveData<>("");
     private final MutableLiveData<List<List<Integer>>> mCurrentElectionVotes = new MutableLiveData<>();
@@ -250,10 +251,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         String electionChannel = election.getChannel();
 
         try {
-            // Retrieve identity of who is sending the votes
-            KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-            String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-            byte[] sender = Base64.getUrlDecoder().decode(publicKey);
+            // Retrieve pop token
+            byte[] sender = Wallet.getInstance().findKeyPair(laoId, mCurrentRollCallId).second;
 
             PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
             MessageGeneral msg = new MessageGeneral(sender, castVote, signer, mGson);
@@ -282,7 +281,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                         Log.d(TAG, "timed out waiting for result on cast_vote", throwable));
 
             disposables.add(disposable);
-        } catch (GeneralSecurityException | IOException e) {
+        } catch (GeneralSecurityException e) {
             Log.d(TAG, PK_FAILURE_MESSAGE, e);
         }
     }
@@ -619,6 +618,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
     public LiveData<Boolean> isOrganizer() {
         return mIsOrganizer;
+    }
+
+    public LiveData<Boolean> isAttendee() {
+        return mIsAttendee;
     }
 
     public LiveData<Boolean> getShowProperties() {
@@ -959,6 +962,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         attendees.add(barcode.rawValue);
         mAttendeeScanConfirmEvent.postValue(new Event<>("Attendee has been added."));
         mNbAttendeesEvent.postValue(new Event<>(attendees.size()));
+        mIsAttendee.postValue(true);
     }
 
 }
