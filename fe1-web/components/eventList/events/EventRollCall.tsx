@@ -45,6 +45,15 @@ const EventRollCall = (props: IPropTypes) => {
 
   // const popToken = WalletStore.get().then((e) => HDWallet.fromState(e).then(wallet => wallet.generateToken(laoId, RCId).then(keyPair => keyPair.publicKey)));
 
+  // const getRollCallDisplay = (status: RollCallStatus) => {
+  //   switch (status){
+  //     case RollCallStatus.FUTURE:
+  //       return (
+  //         <Text>Future</Text>
+  //       )
+  //   }
+  // }
+
   return (
     <>
       <ParagraphBlock text={getStatus()} />

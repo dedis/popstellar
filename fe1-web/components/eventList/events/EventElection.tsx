@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Election, ElectionStatus, EventTags, Hash, QuestionResult, RegisteredVote, Timestamp, Vote,
+  Election,
+  ElectionStatus,
+  EventTags,
+  Hash,
+  QuestionResult,
+  RegisteredVote,
+  Timestamp,
+  Vote,
 } from 'model/objects';
 import {
   SectionList, StyleSheet, Text, TextStyle,
@@ -13,9 +20,10 @@ import WideButtonView from 'components/WideButtonView';
 import TimeDisplay from 'components/TimeDisplay';
 import STRINGS from 'res/strings';
 import { Badge } from 'react-native-elements';
-import { dispatch, updateEvent } from 'store';
+import { dispatch, getStore, updateEvent } from 'store';
 import { useSelector } from 'react-redux';
 import BarChartDisplay from 'components/BarChartDisplay';
+import { getEventFromId } from 'ingestion/handlers/Utils';
 
 /**
  * Component used to display a Election event in the LAO event list
@@ -115,12 +123,18 @@ const EventElection = (props: IPropTypes) => {
       });
   };
 
+  const updateElection = (status: ElectionStatus) => {
+    const storeState = getStore().getState();
+    const oldElec = getEventFromId(storeState, election.id) as Election;
+    const newElec = new Election({ ...oldElec, electionStatus: status });
+    dispatch(updateEvent(election.lao, newElec.toState()));
+  };
+
   // This makes sure the screen gets updated when the event starts
   useEffect(() => {
     if (untilStart >= 0) {
       const startTimer = setTimeout(() => {
-        election.electionStatus = ElectionStatus.RUNNING;
-        dispatch(updateEvent(election.lao, election.toState()));
+        updateElection(ElectionStatus.RUNNING);
         // setStatus(ElectionStatus.RUNNING);
       }, untilStart);
       return () => clearTimeout(startTimer);
@@ -132,9 +146,7 @@ const EventElection = (props: IPropTypes) => {
   useEffect(() => {
     if (untilEnd >= 0) {
       const endTimer = setTimeout(() => {
-        election.electionStatus = ElectionStatus.FINISHED;
-        dispatch(updateEvent(election.lao, election.toState()));
-        // setStatus(ElectionStatus.FINISHED);
+        updateElection(ElectionStatus.FINISHED);
       }, untilEnd);
       return () => clearTimeout(endTimer);
     }
