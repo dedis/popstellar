@@ -258,6 +258,8 @@ public class ElectionSetupViewPagerAdapter
                return questions;
            }
 
+           public int getNumberOfQuestions(){return numberOfQuestions;}
+
            public static class ViewHolder extends RecyclerView.ViewHolder {
         private EditText electionQuestionText;
         private Spinner spinner;

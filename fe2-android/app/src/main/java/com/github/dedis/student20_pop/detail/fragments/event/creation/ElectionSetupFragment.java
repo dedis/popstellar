@@ -126,6 +126,12 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
         addQuestion.setOnClickListener(v -> {
             addQuestion.setEnabled(false);
             viewPagerAdapter.addQuestion();
+
+            //This scales for a few dozens of questions but this is dangerous and  greedy in resources
+            //TODO delete this and find a way to keep data on left swipe
+            viewPager2.setOffscreenPageLimit(viewPagerAdapter.getNumberOfQuestions());
+
+
             circleIndicator.setViewPager(viewPager2);
             addQuestion.setEnabled(true);
         });
