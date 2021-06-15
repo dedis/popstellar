@@ -391,14 +391,14 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 		}
 	}
 
-	ms2 := message.Message{
-		MessageID:         id,
-		Data:              resultData,
-		Sender:            msg.Sender,
-		Signature:         msg.Signature,
-		WitnessSignatures: msg.WitnessSignatures,
-		RawData:           raw,
-	}
+	//ms2 := message.Message{
+	//	MessageID:         id,
+	//	Data:              resultData,
+	//	Sender:            msg.Sender,
+	//	Signature:         msg.Signature,
+	//	WitnessSignatures: msg.WitnessSignatures,
+	//	RawData:           raw,
+	//}
 
 	ms3,ok := message.NewMessage(msg.Sender,msg.Signature,msg.WitnessSignatures,resultData)
 
