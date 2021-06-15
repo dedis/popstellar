@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.model.network.method.message;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import android.util.Log;
 
@@ -89,7 +90,7 @@ public final class MessageGeneral {
   }
 
   public String getMessageId() {
-    return Base64.getUrlEncoder().encodeToString(messageId);
+    return new String(this.messageId, StandardCharsets.UTF_8);
   }
 
   public String getSender() {
