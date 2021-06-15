@@ -141,7 +141,7 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 				client.SendResult(51,result)
 			}
 			err = c.electionResultHelper(publish)
-			if err != nil{
+			if err == nil{
 				log.Printf("End and Result broadcasted")
 				return nil
 			}
