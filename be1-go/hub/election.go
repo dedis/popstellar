@@ -136,7 +136,7 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 			err = c.electionResultHelper(publish)
 			if err != nil{
 				log.Printf("End and Result broadcasted")
-				//return nil
+				return nil
 			}
 		case message.ElectionResultAction:
 			err = c.electionResultHelper(publish)
@@ -391,23 +391,28 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 		}
 	}
 
-	//ms2 := message.Message{
-	//	MessageID:         id,
-	//	Data:              resultData,
-	//	Sender:            msg.Sender,
-	//	Signature:         msg.Signature,
-	//	WitnessSignatures: msg.WitnessSignatures,
-	//	RawData:           raw,
-	//}
+	ms2 := message.Message{
+		MessageID:         id,
+		Data:              resultData,
+		Sender:            msg.Sender,
+		Signature:         msg.Signature,
+		WitnessSignatures: msg.WitnessSignatures,
+		RawData:           raw,
+	}
 
-	msg.Data = resultData
-	msg.MessageID = id
-	msg.RawData = raw
+	ms3,ok := message.NewMessage(msg.Sender,msg.Signature,msg.WitnessSignatures,resultData)
 
-	c.broadcastToAllClients(*msg)
-	messageID := base64.URLEncoding.EncodeToString(id)
+	if ok != nil {
+		return &message.Error{
+			Code:        -4,
+			Description: "failed to create an election result",
+		}
+	}
+
+	c.broadcastToAllClients(*ms3)
+	messageID := base64.URLEncoding.EncodeToString(ms3.MessageID)
 	c.inboxMu.Lock()
-	c.inbox[messageID] = *msg
+	c.inbox[messageID] = *ms3
 	c.inboxMu.Unlock()
 
 	return nil
