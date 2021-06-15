@@ -355,6 +355,7 @@ public class LAORepository {
 
     List<ElectionResultQuestion> resultsQuestions = data.getElectionQuestionResults();
     if (resultsQuestions.isEmpty()) throw new IllegalArgumentException("the questions results shouldn't be empty");
+    Log.d(TAG, "size of resultsQuestions is " + resultsQuestions.size());
     election.setResults(resultsQuestions);
     election.setEventState(RESULTS_READY);
     lao.updateElection(election.getId(), election);
