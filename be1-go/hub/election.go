@@ -341,8 +341,13 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 	msg := publish.Params.Message
 	//c.broadcastToAllClients(*msg)
 
+	genericMsg := message.GenericData{
+		Action: "election",
+		Object: "result",
+	}
+
 	resultData := message.ElectionResultData{
-		GenericData:       nil,
+		GenericData:       &genericMsg,
 		Questions:         nil,
 		WitnessSignatures: msg.WitnessSignatures,
 	}
