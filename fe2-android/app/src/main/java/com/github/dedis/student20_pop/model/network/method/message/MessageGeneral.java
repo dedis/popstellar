@@ -1,6 +1,5 @@
 package com.github.dedis.student20_pop.model.network.method.message;
 
-import java.util.Base64;
 import android.util.Log;
 
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
@@ -11,8 +10,10 @@ import com.google.crypto.tink.PublicKeyVerify;
 import com.google.crypto.tink.subtle.Ed25519Verify;
 import com.google.gson.Gson;
 
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 /**
@@ -84,12 +85,12 @@ public final class MessageGeneral {
   }
 
   private void generateId() {
-    this.messageId =
-            Hash.hash(Base64.getUrlEncoder().encodeToString(this.dataBuf), Base64.getUrlEncoder().encodeToString(this.signature)).getBytes();
+    this.messageId = Hash.hash(Base64.getUrlEncoder().encodeToString(this.dataBuf), Base64.getUrlEncoder().encodeToString(this.signature)).getBytes(StandardCharsets.UTF_8);
   }
 
   public String getMessageId() {
-    return Base64.getUrlEncoder().encodeToString(messageId);
+    Log.d(TAG, "Message ID: " + new String(this.messageId, StandardCharsets.UTF_8));
+    return new String(this.messageId, StandardCharsets.UTF_8);
   }
 
   public String getSender() {
