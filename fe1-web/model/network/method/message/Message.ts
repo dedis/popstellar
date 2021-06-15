@@ -55,20 +55,22 @@ export class Message {
     if (!msg.data) {
       throw new ProtocolError("Undefined 'data' parameter encountered during 'Message' creation");
     }
+    this.data = msg.data;
     if (!msg.sender) {
       throw new ProtocolError("Undefined 'sender' parameter encountered during 'Message' creation");
     }
     if (!msg.signature) {
       throw new ProtocolError("Undefined 'signature' parameter encountered during 'Message' creation");
     }
-    if (!msg.signature.verify(msg.sender, msg.data)) {
+
+    if (!msg.signature.verify(msg.sender, msg.data) && !this.isElectionResultMessage()) {
       throw new ProtocolError("Invalid 'signature' parameter encountered during 'Message' creation");
     }
     if (!msg.message_id) {
       throw new ProtocolError("Undefined 'message_id' parameter encountered during 'Message' creation");
     }
     const expectedHash = Hash.fromStringArray(msg.data.toString(), msg.signature.toString());
-    if (!expectedHash.equals(msg.message_id)) {
+    if (!expectedHash.equals(msg.message_id) && !this.isElectionResultMessage()) {
       console.log('Expected Hash was: ', expectedHash);
 
       throw new ProtocolError(`Invalid 'message_id' parameter encountered during 'Message' creation: unexpected id value \n
@@ -88,7 +90,6 @@ export class Message {
       this.channel = msg.channel;
     }
 
-    this.data = msg.data;
     this.sender = msg.sender;
     this.signature = msg.signature;
     this.message_id = msg.message_id;
@@ -96,6 +97,7 @@ export class Message {
 
     const jsonData = msg.data.decode();
     const dataObj = JSON.parse(jsonData);
+    console.log('dataObj is: ', dataObj);
     this.#messageData = buildMessageData(dataObj as MessageData);
   }
 
@@ -136,5 +138,17 @@ export class Message {
       message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
       witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
     });
+  }
+
+  // This function disables the checks of signature and messageID for eleciton result messages
+  // Because the message comes from the back-end and it can't sign the messages since it hasn't
+  // access to the private key
+  // This method is only a temporary solution for the demo and should be removed once a better
+  // solution is found
+  private isElectionResultMessage():boolean {
+    if (this.data.decode().includes('"result":')) {
+      return true;
+    }
+    return false;
   }
 }
