@@ -44,7 +44,11 @@ public class ElectionSetup extends Data {
         if (name == null || start < 0 || end < 0 || end < start || votingMethod == null || ballotOptions == null || question == null || laoId == null) throw new IllegalArgumentException();
         this.name = name;
         this.createdAt = Instant.now().getEpochSecond();
-        this.startTime = start;
+        if(start <= createdAt){
+            this.startTime = createdAt;
+        }else{
+            this.startTime = start;
+        }
         this.endTime = end;
         this.lao = laoId;
         this.version = "1.0.0";
