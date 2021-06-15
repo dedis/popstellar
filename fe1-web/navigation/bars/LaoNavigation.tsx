@@ -101,10 +101,14 @@ function LaoNavigation() {
       { buildTabComponent(isOrganizer, isWitness) }
 
       <OrganizationTopTabNavigator.Screen
+        name={STRINGS.organization_navigation_tab_identity}
+        component={Identity}
+      />
+
+      <OrganizationTopTabNavigator.Screen
         name={STRINGS.navigation_synced_wallet}
         component={WalletSyncedSeed}
       />
-
       <OrganizationTopTabNavigator.Screen
         name={laoName}
         component={DummyComponent}
