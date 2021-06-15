@@ -85,14 +85,13 @@ public final class MessageGeneral {
   }
 
   private void generateId() {
-    this.messageId = Base64.getUrlEncoder().encode(
-            Hash.hash(Base64.getUrlEncoder().encodeToString(this.dataBuf), Base64.getUrlEncoder().encodeToString(this.signature)).getBytes()
-    )
-    ;
+    this.messageId =
+            Hash.hash(Base64.getUrlEncoder().encodeToString(this.dataBuf), Base64.getUrlEncoder().encodeToString(this.signature)).getBytes();
+
   }
 
   public String getMessageId() {
-    return new String(this.messageId, StandardCharsets.UTF_8);
+    return Base64.getUrlEncoder().encodeToString(messageId);
   }
 
   public String getSender() {
