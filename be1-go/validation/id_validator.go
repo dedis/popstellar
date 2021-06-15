@@ -51,7 +51,7 @@ func (idValidator *IdValidatior) verifyMessageID(msg *message.Message) error {
 	if !ok {
 		return &message.Error{
 			Code:        -4,
-			Description: fmt.Sprintf("The the field message_id of the message does not correspond to Hash(data||signature)"),
+			Description: "The the field message_id of the message does not correspond to Hash(data||signature)",
 		}
 	}
 
