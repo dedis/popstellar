@@ -9,30 +9,15 @@ import (
 )
 
 type witnessHub struct {
-	messageChan chan IncomingMessage
-
-	sync.RWMutex
-	channelByID map[string]Channel
-
-	public kyber.Point
+	*baseHub
 }
 
 // NewWitnessHub returns a Witness Hub.
-func NewWitnessHub(public kyber.Point) Hub {
+func NewWitnessHub(public kyber.Point) (Hub, error) {
+	baseHub, err := NewBaseHub(public)
 	return &witnessHub{
-		messageChan: make(chan IncomingMessage),
-		channelByID: make(map[string]Channel),
-		public:      public,
-	}
-}
-
-func (w *witnessHub) RemoveClientSocket(client *ClientSocket) {
-	//TODO
-}
-
-func (w *witnessHub) Recv(msg IncomingMessage) {
-	log.Printf("witnessHub::Recv")
-	w.messageChan <- msg
+		baseHub,
+	}, err
 }
 
 func (w *witnessHub) handleMessageFromOrganizer(incomingMessage *IncomingMessage) {
