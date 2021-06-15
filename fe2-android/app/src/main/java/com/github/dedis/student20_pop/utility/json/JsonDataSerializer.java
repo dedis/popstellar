@@ -25,7 +25,7 @@ public class JsonDataSerializer implements JsonSerializer<Data>, JsonDeserialize
   @Override
   public Data deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
-    Log.d("JsonDataSerializer", "deseriliazing data");
+    Log.d("deserializer", "deseriliazing data");
     JsonObject obj = json.getAsJsonObject();
     Objects object = Objects.find(obj.get(OBJECT).getAsString());
     Action action = Action.find(obj.get(ACTION).getAsString());
