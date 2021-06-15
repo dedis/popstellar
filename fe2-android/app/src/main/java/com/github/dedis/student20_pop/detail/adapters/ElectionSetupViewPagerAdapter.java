@@ -51,19 +51,11 @@ public class ElectionSetupViewPagerAdapter
         public String getDesc() { return desc; }
     }
 
-    private void expandAllLists(int position){
-        if (ballotOptions.size() <= position){
-            votingMethod.add("");
-            questions.add("");
-            ballotOptions.add(new ArrayList<>());
-            numberBallotOptions.add(0);
-        }
-    }
+
 
     public ElectionSetupViewPagerAdapter(LaoDetailViewModel mLaoDetailViewModel) {
         super();
         this.mLaoDetailViewModel = mLaoDetailViewModel;
-        numberOfQuestions = 1;
         votingMethod = new ArrayList<>();
         ballotOptions = new ArrayList<>();
         numberBallotOptions = new ArrayList<>();
@@ -71,24 +63,36 @@ public class ElectionSetupViewPagerAdapter
         listOfValidBallots = new HashSet<>();
         listOfValidQuestions = new HashSet<>();
         isAnInputValid = new MutableLiveData<>(Boolean.valueOf(false));
+        addQuestion();
 
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        Log.d(TAG, "On create view holder");
         context = parent.getContext();
         return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.layout_election_setup_question, parent, false));
     }
 
-    @Override
+   @Override
+   public int getItemViewType(int position) {
+       return position;
+   }
+
+           @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        //This is bad practice and should be removed in the future
+       //The problem for now is that reused view messes up the data intake
+        holder.setIsRecyclable(false);
+
+
         Log.d(TAG, "Size of ballots is " + ballotOptions.size());
 
-        expandAllLists(position);
         EditText electionQuestionText = holder.electionQuestionText;
 
         Log.d(TAG, "Size of ballots is afterwards " + ballotOptions.size());
+        Log.d(TAG, "Position onBindViewHolder " + position);
         ballotOptions.set(position, new ArrayList<>());
         electionQuestionText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -119,7 +123,6 @@ public class ElectionSetupViewPagerAdapter
         AdapterView.OnItemSelectedListener spinnerListener = new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int i, long id) {
-                System.out.println("VotingMethod size is " + votingMethod.size() + "Other is " + parent.getCount() + " i is " + i);
                 String elementToAdd = parent.getItemAtPosition(i).toString();
                 if(votingMethod.size() <= position){
                     votingMethod.add(elementToAdd);
@@ -147,8 +150,11 @@ public class ElectionSetupViewPagerAdapter
 
     public void addQuestion(){
         numberOfQuestions++;
-        expandAllLists(numberOfQuestions - 1);
-        notifyItemChanged(numberOfQuestions-1);
+        votingMethod.add("");
+        questions.add("");
+        ballotOptions.add(new ArrayList<>());
+        numberBallotOptions.add(0);
+        notifyItemInserted(numberOfQuestions -1);
     }
 
     @Override
@@ -184,6 +190,7 @@ public class ElectionSetupViewPagerAdapter
      * Adds a view of ballot option to the layout when user clicks the button
      */
     private void addBallotOption(LinearLayout linearLayout, int position) {
+        Log.d(TAG, "Position in addBallot " + position);
         //Adds the view for a new ballot option, from the corresponding layout
         View ballotOptionView = LayoutBallotOptionBinding.inflate(LayoutInflater.from(context)).newBallotOptionLl;
         EditText ballotOptionText = ballotOptionView.findViewById(R.id.new_ballot_option_text);
@@ -210,7 +217,6 @@ public class ElectionSetupViewPagerAdapter
                     numberBallotOptions.set(position, numberBallotOptions.get(position) - 1);
                 //Keeps the list of string updated when the user changes the text
                 ballotOptions.get(position).set(ballotIndex, editable.toString());
-                Log.d(TAG, "Number of ballots is " + numberBallotOptions.get(position));
                 Log.d(TAG, "Postion is " + position +" ballot options are" + ballotOptions.toString());
                 boolean areFieldsFilled =
                         numberBallotOptions.get(position) >= 2;
@@ -219,7 +225,6 @@ public class ElectionSetupViewPagerAdapter
                     listOfValidBallots.add((Integer) position);
                 else
                     listOfValidBallots.remove((Integer) position);
-                Log.d(TAG, "List of valid is " + listOfValidBallots);
                 checkIfAnInputIsValid();
 
             }

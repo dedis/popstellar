@@ -42,7 +42,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
     private Button submitButton;
     private ElectionSetupViewPagerAdapter viewPagerAdapter;
     private LaoDetailViewModel mLaoDetailViewModel;
-
+    private ViewPager2 viewPager2;
     //Enum of all voting methods, associated to a string desc for protocol and spinner display
     public enum VotingMethods { PLURALITY("Plurality");
         private String desc;
@@ -109,8 +109,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
         //Set viewPager adapter
         viewPagerAdapter = new ElectionSetupViewPagerAdapter(mLaoDetailViewModel);
 
-        ViewPager2 viewPager2 = mSetupElectionFragBinding.electionSetupViewPager2;
-
+        viewPager2 = mSetupElectionFragBinding.electionSetupViewPager2;
         viewPager2.setAdapter(viewPagerAdapter);
 
         circleIndicator = mSetupElectionFragBinding.electionSetupSwipeIndicator;
@@ -125,8 +124,10 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
 
         Button addQuestion = mSetupElectionFragBinding.addQuestion;
         addQuestion.setOnClickListener(v -> {
+            addQuestion.setEnabled(false);
             viewPagerAdapter.addQuestion();
             circleIndicator.setViewPager(viewPager2);
+            addQuestion.setEnabled(true);
         });
 
         mSetupElectionFragBinding.setLifecycleOwner(getActivity());
@@ -180,7 +181,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
                     //////////////////////////While write in not implemented///////////////////////////////////////////////
                     List<Boolean> writeIns = new ArrayList<>();
                     //////////////////////////////////////////////////////////////////////////////////////////////////////
-                    Log.d(TAG, "Trying to submit with " + validPositions.size() + " questions");
                     for(Integer i : validPositions) {
                             writeIns.add(false); //While write in is not implemented
                             questionsFiltered.add(questions.get(i));
@@ -193,10 +193,11 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
                             }
                             ballotsOptionsFiltered.add(filteredQuestionBallotOptions);
                         }
-                    mLaoDetailViewModel.createNewElection(electionNameText.getText().toString(), startTimeInSeconds, endTimeInSeconds, votingMethodFiltered, writeIns,
+                    String electionName = electionNameText.getText().toString();
+                    Log.d(TAG, "Creating election with name " + electionName + ", start time " + startTimeInSeconds + ", end time " + endTimeInSeconds + ", voting methods "
+                    + votingMethodFiltered + ", writesIn " + writeIns + ", questions " + questionsFiltered + ", ballotsOptions " +ballotsOptionsFiltered);
+                    mLaoDetailViewModel.createNewElection(electionName, startTimeInSeconds, endTimeInSeconds, votingMethodFiltered, writeIns,
                        ballotsOptionsFiltered, questionsFiltered);
-                    Log.d(TAG, "Submit sent");
-
                 });
     }
 
@@ -236,6 +237,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
     }
 
     private boolean isElectionLevelInputValid(){
-        return !electionNameText.getText().toString().trim().isEmpty() && !getStartDate().isEmpty() && !getStartTime().isEmpty() && !getEndDate().isEmpty() && !getEndTime().isEmpty();
+        return !electionNameText.getText().toString().trim().isEmpty() && !getStartDate().isEmpty()
+                && !getStartTime().isEmpty() && !getEndDate().isEmpty() && !getEndTime().isEmpty();
     }
 }
