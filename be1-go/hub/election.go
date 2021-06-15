@@ -385,7 +385,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 		Sender:            msg.Sender,
 		Signature:         msg.Signature,
 		WitnessSignatures: msg.WitnessSignatures,
-		RawData:           nil,
+		RawData:           message.Base64URLBytes{10},
 	}
 
 	c.broadcastToAllClients(ms2)
