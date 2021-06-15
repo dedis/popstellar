@@ -391,14 +391,14 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 		}
 	}
 
-	//ms2 := message.Message{
-	//	MessageID:         id,
-	//	Data:              resultData,
-	//	Sender:            msg.Sender,
-	//	Signature:         msg.Signature,
-	//	WitnessSignatures: msg.WitnessSignatures,
-	//	RawData:           raw,
-	//}
+	ms2 := message.Message{
+		MessageID:         id,
+		Data:              resultData,
+		Sender:            msg.Sender,
+		Signature:         msg.Signature,
+		WitnessSignatures: msg.WitnessSignatures,
+		RawData:           raw,
+	}
 
 	ms3,ok := message.NewMessage(msg.Sender,msg.Signature,msg.WitnessSignatures,resultData)
 
@@ -410,6 +410,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 	}
 
 	c.broadcastToAllClients(*ms3)
+	c.broadcastToAllClients(ms2)
 	messageID := base64.URLEncoding.EncodeToString(ms3.MessageID)
 	c.inboxMu.Lock()
 	c.inbox[messageID] = *ms3
