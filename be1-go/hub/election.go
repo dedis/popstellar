@@ -368,6 +368,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 		}
 	}
 	msg.Data = resultData
+	computeMessageId(resultData,msg.Signature)
 	//ms2 := message.Message{
 	//	MessageID:         nil,
 	//	Data:              resultData,
@@ -397,4 +398,8 @@ func (c* electionChannel) publishResults(m message.Message){
 
 func hashDataSender(data message.ElectionResultData, signature message.Signature){
 	//data.GenericData.
+}
+
+func computeMessageId(data message.ElectionResultData, signature message.Signature)error  {
+	
 }
