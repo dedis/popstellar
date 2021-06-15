@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Application;
 import android.content.pm.PackageManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -269,9 +270,12 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                         if (answer instanceof Result) {
                                             Log.d(TAG, "sent a vote successfully");
                                             // Toast ? + send back to election screen or details screen ?
+                                            Toast.makeText(getApplication(), "vote successfully sent !", Toast.LENGTH_LONG).show();
                                             openLaoDetail();
                                         } else {
                                             Log.d(TAG, "failed to send the vote");
+                                            Toast.makeText(getApplication(), "vote was sent too late !", Toast.LENGTH_LONG).show();
+                                            openLaoDetail();
                                         }
                                     },
                                     throwable ->
