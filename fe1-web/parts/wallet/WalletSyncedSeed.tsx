@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-let cachedKeyPairs: Map<[Hash, Hash], string>;
+let cachedKeyPairs: Map<[Hash, string], string>;
 
 /**
  * wallet UI once the wallet is synced
@@ -41,8 +41,7 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
     if (encryptedSeed !== undefined) {
       HDWallet.fromState(encryptedSeed)
         .then((wallet) => {
-          // TODO: instead of passing empty map, construct correct map from Redux state
-          wallet.recoverAllKeys(new Map()).then((cachedTokens) => {
+          wallet.recoverWalletPoPTokens().then((cachedTokens) => {
             cachedKeyPairs = cachedTokens;
           });
         });
@@ -52,7 +51,7 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   function showTokens() {
     const tokens: string[] = [];
     const laoId: string[] = [];
-    const rollCallId: string[] = [];
+    const rollCallNames: string[] = [];
 
     if (cachedKeyPairs.size === 0) {
       return (
@@ -62,6 +61,13 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
           <WideButtonView
             title={STRINGS.back_to_wallet_home}
             onPress={() => navigation.navigate(STRINGS.navigation_home_tab_wallet)}
+          />
+          <WideButtonView
+            title={STRINGS.logout_from_wallet}
+            onPress={() => {
+              HDWallet.logoutFromWallet();
+              navigation.navigate(STRINGS.navigation_home_tab_wallet);
+            }}
           />
         </View>
       );
@@ -74,7 +80,7 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
       // eslint-disable-next-line prefer-destructuring
       laoId[i] = ids[0];
       // eslint-disable-next-line prefer-destructuring
-      rollCallId[i] = ids[1];
+      rollCallNames[i] = ids[1];
       tokens[i] = value;
       i += 1;
     });
@@ -124,26 +130,24 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
       );
     }
 
-    /* this functions displays the LAOId the RollCallId and the public key generated from the two */
+    /**
+     * this functions displays the LAOId, the RollCall name
+     * and the public key generated from the two
+     */
     function displayTokens() {
       return (
         <View>
           { laoId.map((value, key) => (
-            <View key={value + 1} style={styleContainer.centered}>
+            <View style={styleContainer.centered}>
               <View style={styles.smallPadding} />
-              <TextBlock key={value + 2} bold text={STRINGS.lao_id} />
-              <CopiableTextBlock key={value + 3} id={key} text={value} visibility />
-              <TextBlock key={value + 4} bold text={STRINGS.roll_call_id} />
-              <CopiableTextBlock key={value + 5} id={key} text={rollCallId[key]} visibility />
+              <TextBlock bold text={STRINGS.lao_id} />
+              <CopiableTextBlock id={key} text={value} visibility />
+              <TextBlock bold text={STRINGS.roll_call_name} />
+              <TextBlock text={rollCallNames[key]} visibility />
               <View style={styles.smallPadding} />
-              <CopiableTextBlock
-                key={value + 6}
-                id={key}
-                text={tokens[key]}
-                visibility={showPublicKey}
-              />
+              <CopiableTextBlock id={key} text={tokens[key]} visibility={showPublicKey} />
               <View style={styles.smallPadding} />
-              <QRCode key={value + 7} value={tokens[key]} visibility={showQRPublicKey} />
+              <QRCode value={tokens[key]} visibility={showQRPublicKey} />
             </View>
           ))}
         </View>

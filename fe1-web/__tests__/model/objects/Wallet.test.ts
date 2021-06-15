@@ -79,10 +79,9 @@ describe('=== Hierarchical Deterministic Wallet Test ===', () => {
       const javaFrontEndPopTokenInHex: string = '7147759d146897111bcf74f60a1948b1d3a22c9199a6b88c236eb7326adc2efc';
       testMap.set([laoId, rollCallId], [javaFrontEndPopTokenInHex, '', '', '']);
 
-      wallet.recoverAllKeys(testMap)
+      wallet.recoverAllKeys(testMap, [])
         .then((laoAndRcIdsToTokenMap) => {
-          laoAndRcIdsToTokenMap.forEach((value, key) => {
-            expect(key.toString()).toBe(`${laoId},${rollCallId}`);
+          laoAndRcIdsToTokenMap.forEach((value) => {
             expect(value).toBe(javaFrontEndPopTokenInHex);
           });
         });
