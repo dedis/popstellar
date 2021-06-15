@@ -19,7 +19,7 @@ import {
 } from 'store';
 import { Question, Vote } from 'model/objects/Election';
 import { publish } from './JsonRpcApi';
-import {EndElection} from "../model/network/method/message/data/election/EndElection";
+import { EndElection } from '../model/network/method/message/data/election/EndElection';
 
 /** Send a server query asking for the creation of a LAO with a given name (String) */
 export function requestCreateLao(laoName: string): Promise<Channel> {

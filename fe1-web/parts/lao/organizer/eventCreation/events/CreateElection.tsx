@@ -98,13 +98,7 @@ const CreateElection = ({ route }: any) => {
       getQuestionObjects(),
     )
       .then(() => {
-        // Subscribe to the election channel, to receive all the casted votes
-        const electionChannel = channelFromIds(currentLao.id, electionId);
-        subscribeToChannel(electionChannel).then(() => {
-          navigation.navigate(STRINGS.organizer_navigation_tab_home);
-        }).catch((err) => {
-          console.error('Could not subscribe to Election channel, error:', err);
-        });
+        navigation.navigate(STRINGS.organizer_navigation_tab_home);
       })
       .catch((err) => {
         console.error('Could not create Election, error:', err);
@@ -122,7 +116,7 @@ const CreateElection = ({ route }: any) => {
       { /* see archive branches for date picker used for native apps */ }
       { Platform.OS === 'web' && buildDatePickerWeb() }
       { questions.map((value, idx) => (
-        <View>
+        <View key={idx.toString()}>
           <TextInput
             style={styles.textInput}
             placeholder={STRINGS.election_create_question}

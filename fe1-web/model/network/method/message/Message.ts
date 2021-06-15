@@ -1,5 +1,5 @@
 import {
-  Base64UrlData, Hash, PublicKey, Signature, WitnessSignature, WitnessSignatureState,
+  Base64UrlData, Hash, PublicKey, Signature, WitnessSignature, WitnessSignatureState, Channel,
 } from 'model/objects';
 import { KeyPairStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
@@ -21,6 +21,8 @@ export interface MessageState {
   message_id: string;
 
   witness_signatures: WitnessSignatureState[];
+
+  channel?: Channel;
 }
 
 /**
@@ -45,25 +47,35 @@ export class Message {
     return this.#messageData;
   }
 
+  // The channel field gets assigned for all incoming messages in JsonRpcWithMessage.ts
+  // In order to use it when handling the messages, such as the election result msg
+  public channel?: Channel;
+
   constructor(msg: Partial<Message>) {
     if (!msg.data) {
       throw new ProtocolError("Undefined 'data' parameter encountered during 'Message' creation");
     }
+    this.data = msg.data;
     if (!msg.sender) {
       throw new ProtocolError("Undefined 'sender' parameter encountered during 'Message' creation");
     }
     if (!msg.signature) {
       throw new ProtocolError("Undefined 'signature' parameter encountered during 'Message' creation");
     }
-    if (!msg.signature.verify(msg.sender, msg.data)) {
-      throw new ProtocolError("Invalid 'signature' parameter encountered during 'Message' creation: unexpected message_id value");
+
+    if (!msg.signature.verify(msg.sender, msg.data) && !this.isElectionResultMessage()) {
+      throw new ProtocolError("Invalid 'signature' parameter encountered during 'Message' creation");
     }
     if (!msg.message_id) {
       throw new ProtocolError("Undefined 'message_id' parameter encountered during 'Message' creation");
     }
     const expectedHash = Hash.fromStringArray(msg.data.toString(), msg.signature.toString());
-    if (!expectedHash.equals(msg.message_id)) {
-      throw new ProtocolError("Invalid 'message_id' parameter encountered during 'Message' creation: unexpected id value");
+    if (!expectedHash.equals(msg.message_id) && !this.isElectionResultMessage()) {
+      console.log('Expected Hash was: ', expectedHash);
+
+      throw new ProtocolError(`Invalid 'message_id' parameter encountered during 'Message' creation: unexpected id value \n
+      received message_id was: ${msg.message_id}\n
+      Expected message_id is: ${expectedHash}`);
     }
     if (!msg.witness_signatures) {
       throw new ProtocolError("Undefined 'witness_signatures' parameter encountered during 'Message' creation");
@@ -74,7 +86,10 @@ export class Message {
       }
     });
 
-    this.data = msg.data;
+    if (msg.channel) {
+      this.channel = msg.channel;
+    }
+
     this.sender = msg.sender;
     this.signature = msg.signature;
     this.message_id = msg.message_id;
@@ -82,6 +97,7 @@ export class Message {
 
     const jsonData = msg.data.decode();
     const dataObj = JSON.parse(jsonData);
+    console.log('dataObj is: ', dataObj);
     this.#messageData = buildMessageData(dataObj as MessageData);
   }
 
@@ -94,11 +110,13 @@ export class Message {
       witness_signatures: obj.witness_signatures.map(
         (ws: WitnessSignatureState) => WitnessSignature.fromJson(ws),
       ),
+      channel: obj.channel,
     });
   }
 
   /**
    * Creates a Message object from a given MessageData and signatures
+   * We don't add the channel property here as we don't want to send that over the network
    *
    * @param data The MessageData to be signed and hashed
    * @param witnessSignatures The signatures of the witnesses
@@ -108,6 +126,10 @@ export class Message {
   public static fromData(data: MessageData, witnessSignatures?: WitnessSignature[]): Message {
     const encodedDataJson: Base64UrlData = encodeMessageData(data);
     const signature: Signature = KeyPairStore.getPrivateKey().sign(encodedDataJson);
+    // Get current Lao - pass the channel from the Publish method down and then extract lao id
+    // Get current RC - After RC is closed - Loop through all events in that lao
+    //
+    // WalletStore.get().then((e) => HDWallet.fromState(e).then(wallet => wallet.generateToken(laoId, RCId).then(keyPair => keyPair.privateKey)).sign(encodedDataJson));
 
     return new Message({
       data: encodedDataJson,
@@ -116,5 +138,17 @@ export class Message {
       message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
       witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
     });
+  }
+
+  // This function disables the checks of signature and messageID for eleciton result messages
+  // Because the message comes from the back-end and it can't sign the messages since it hasn't
+  // access to the private key
+  // This method is only a temporary solution for the demo and should be removed once a better
+  // solution is found
+  private isElectionResultMessage():boolean {
+    if (this.data.decode().includes('"result":')) {
+      return true;
+    }
+    return false;
   }
 }

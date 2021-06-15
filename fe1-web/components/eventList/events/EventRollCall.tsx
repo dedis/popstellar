@@ -1,10 +1,13 @@
 import React from 'react';
-import { FlatList, StyleSheet } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 
 import { Spacing } from 'styles';
-import PROPS_TYPE from 'res/Props';
 import PropTypes from 'prop-types';
-import ParagraphBlock from 'components/ParagraphBlock';
+import { RollCall, RollCallStatus } from 'model/objects';
+import { useSelector } from 'react-redux';
+import { getStore, makeCurrentLao } from 'store';
+import QRCode from 'components/QRCode';
+import WideButtonView from '../../WideButtonView';
 
 /**
  * Component used to display a RollCall event in the LAO event list
@@ -17,55 +20,78 @@ const styles = StyleSheet.create({
   },
 });
 
-enum RollCallStatus {
-  FUTURE = 'Future',
-  CLOSE = 'Close',
-  OPEN = 'Open',
-}
-
 const EventRollCall = (props: IPropTypes) => {
   const { event } = props;
-  const { childrenVisibility } = props;
-  const { renderItemFn } = props;
+  const { isOrganizer } = props;
+  const storeState = getStore().getState();
+  const getCurrentLao = makeCurrentLao();
+  const lao = getCurrentLao(storeState);
+  if (!lao) {
+    console.warn('no LAO is currently active');
+    return null;
+  }
 
-  const getStatus = () => {
-    let status;
-    if (event.scheduled) {
-      status = RollCallStatus.FUTURE;
-    } else if (event.id) {
-      status = RollCallStatus.CLOSE;
-    } else {
-      status = RollCallStatus.OPEN;
+  const rollCallFromStore = useSelector((state) => (
+    // @ts-ignore
+    state.events.byLaoId[lao.id].byId[event.id]));
+  if (!rollCallFromStore) {
+    console.debug('Error in Roll Call display: Roll Call doesnt exist in store');
+    return null;
+  }
+
+  const onOpenRollCall = () => {
+    console.log('opening Roll Call not yet implemented');
+  };
+
+  // const popToken = WalletStore.get().then((e) => HDWallet.fromState(e).then(wallet => wallet.generateToken(laoId, RCId).then(keyPair => keyPair.publicKey)));
+
+  const getRollCallDisplay = (status: RollCallStatus) => {
+    switch (status) {
+      case RollCallStatus.CREATED:
+        return (
+          <>
+            <Text>Not Open yet</Text>
+            {isOrganizer && (
+              <WideButtonView title="Open Roll Call" onPress={onOpenRollCall} />
+            )}
+          </>
+        );
+      case RollCallStatus.OPENED:
+        return (
+          <>
+            <Text>Open - Let the organizer scan your Pop Token</Text>
+            <QRCode visibility />
+          </>
+        );
+      case RollCallStatus.CLOSED:
+        return (
+          <>
+            <Text>Closed</Text>
+          </>
+        );
+      case RollCallStatus.REOPENED:
+        return (
+          <>
+            <Text>Re-Opened</Text>
+          </>
+        );
+      default:
+        console.warn('Roll Call Status was undefined in EventRollCall');
+        return null;
     }
-
-    return `Status: ${status}`;
   };
 
   return (
     <>
-      <ParagraphBlock text={getStatus()} />
-      <ParagraphBlock text="Participants #" />
-
-      { getStatus() === RollCallStatus.OPEN && (
-        <ParagraphBlock text="QR Code" />
-      )}
-      { childrenVisibility && (
-        <FlatList
-          data={event.children}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderItemFn}
-          listKey={`RollCallEvent-${event.id.toString()}`}
-          style={styles.flatList}
-        />
-      )}
+      <Text>Roll Call</Text>
+      {getRollCallDisplay(rollCallFromStore.status)}
     </>
   );
 };
 
 const propTypes = {
-  event: PROPS_TYPE.roll_call.isRequired,
-  childrenVisibility: PropTypes.bool.isRequired,
-  renderItemFn: PropTypes.func.isRequired,
+  event: PropTypes.instanceOf(RollCall).isRequired,
+  isOrganizer: PropTypes.bool.isRequired,
 };
 EventRollCall.propTypes = propTypes;
 

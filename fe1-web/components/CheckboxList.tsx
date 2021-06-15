@@ -34,38 +34,43 @@ const CheckboxList = (props: IPropTypes) => {
   const { disabled } = props;
   const [checked, setChecked] = useState(new Array(values.length).fill(false));
 
+  // This function determines whether the user can check or uncheck a given checkbox
+  const onCheckBoxPress = (idx: number): void => {
+    if (checked[idx] === true || !(clickableOptions === checked.filter(Boolean).length)) {
+      // A user can always uncheck || a user can check a box if he hasn't reached the max number of
+      // selectable options yet
+      setChecked((prev) => prev.map((item, id) => (idx === id ? !item : item)));
+      onChange(values.map((val, id) => {
+        if (checked[id] === true && id !== idx) {
+          return idx;
+        }
+        if (id === idx && checked[id] === false) {
+          return idx;
+        }
+        return -1;
+      }).filter((prev) => prev !== -1));
+    } else if (clickableOptions === 1) {
+      // if only 1 selectable option the buttons should behave like radio buttons
+      // (User doesn't have to deselect his option to select a new option)
+      setChecked((prev) => prev.map((item, id) => (idx === id)));
+      onChange(values.map((val, id) => ((id === idx) ? id : -1))
+        .filter((prev) => prev !== -1));
+    }
+  };
+
   return (
     <View style={styles.view}>
       <Text style={styles.text}>{title}</Text>
       <View style={{ ...styles.view, flexDirection: 'row' }}>
         {values.map((value, idx) => (
           <CheckBox
-            key={value + idx.toString()}
+            key={value}
             disabled={disabled}
             title={value}
             checked={checked[idx]}
             checkedIcon="dot-circle-o"
             uncheckedIcon="circle-o"
-            onPress={() => {
-              if (checked[idx] === true || !(clickableOptions === checked.filter(Boolean).length)) {
-                setChecked((prev) => prev.map((item, id) => (idx === id ? !item : item)));
-                onChange(values.map((val, id) => {
-                  if (checked[id] === true && id !== idx) {
-                    return idx;
-                  }
-                  if (id === idx && checked[id] === false) {
-                    return idx;
-                  }
-                  return -1;
-                }).filter((prev) => prev !== -1));
-              } else if (clickableOptions === 1) {
-                // if only 1 selectable option the buttons should behave like radio buttons
-                // (User doesn't have to deselect his option to select a new option)
-                setChecked((prev) => prev.map((item, id) => (idx === id)));
-                onChange(values.map((val, id) => ((id === idx) ? id : -1))
-                  .filter((prev) => prev !== -1));
-              }
-            }}
+            onPress={() => onCheckBoxPress(idx)}
           />
         ))}
       </View>
