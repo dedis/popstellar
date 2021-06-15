@@ -1,19 +1,9 @@
 import {
-  Hash,
+  Hash, QuestionResult,
 } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
-
-export interface MajorityResult {
-  ballot_option: string,
-  count: number,
-}
-
-export interface QuestionResult {
-  id: Hash,
-  result: MajorityResult[],
-}
 
 export class ElectionResult implements MessageData {
   public readonly object: ObjectType = ObjectType.ELECTION;

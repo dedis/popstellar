@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Election, ElectionStatus, EventTags, Hash, RegisteredVote, Timestamp, Vote,
+  Election, ElectionStatus, EventTags, Hash, QuestionResult, RegisteredVote, Timestamp, Vote,
 } from 'model/objects';
 import {
   SectionList, StyleSheet, Text, TextStyle,
@@ -15,6 +15,7 @@ import STRINGS from 'res/strings';
 import { Badge } from 'react-native-elements';
 import { dispatch, updateEvent } from 'store';
 import { useSelector } from 'react-redux';
+import BarChartDisplay from 'components/BarChartDisplay';
 
 /**
  * Component used to display a Election event in the LAO event list
@@ -198,6 +199,10 @@ const EventElection = (props: IPropTypes) => {
         return (
           <>
             <Text style={styles.text}>Election Result</Text>
+            {electionFromStore.questionResult.map((question: QuestionResult) => (
+              <BarChartDisplay data={question.result} />
+            ))}
+            <Text>{electionFromStore.questionResult}</Text>
           </>
         );
       default:

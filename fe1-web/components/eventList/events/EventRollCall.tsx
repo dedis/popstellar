@@ -5,6 +5,8 @@ import { Spacing } from 'styles';
 import PROPS_TYPE from 'res/Props';
 import PropTypes from 'prop-types';
 import ParagraphBlock from 'components/ParagraphBlock';
+import {HDWallet} from "../../../model/objects";
+import {WalletStore} from "../../../store/stores/WalletStore";
 
 /**
  * Component used to display a RollCall event in the LAO event list
@@ -40,6 +42,8 @@ const EventRollCall = (props: IPropTypes) => {
 
     return `Status: ${status}`;
   };
+
+  // const popToken = WalletStore.get().then((e) => HDWallet.fromState(e).then(wallet => wallet.generateToken(laoId, RCId).then(keyPair => keyPair.publicKey)));
 
   return (
     <>

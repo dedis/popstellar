@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { KeyPairStore, makeLaosList } from 'store';
 import {
   Base64UrlData,
-  KeyPair, Lao, PrivateKey, PublicKey,
+  KeyPair, Lao, MajorityResult, PrivateKey, PublicKey,
 } from 'model/objects';
 
 import { Spacing } from 'styles';
@@ -18,6 +18,7 @@ import TextBlock from 'components/TextBlock';
 import { sign } from 'tweetnacl';
 import { encodeBase64 } from 'tweetnacl-util';
 import WideButtonView from 'components/WideButtonView';
+import BarChartDisplay from 'components/BarChartDisplay';
 
 /**
  * Manage the Home screen component: if the user is not connected to any LAO, a welcome message
@@ -66,9 +67,14 @@ const setOrganizerKeyPair = () => {
   KeyPairStore.store(keyPair);
 };
 
+// const testElectionResult: MajorityResult[] = [{ ballot_option: 'B1', count: 1 },
+//   { ballot_option: 'B2', count: 4 },
+//   { ballot_option: 'B3', count: 2 }];
+
 function getWelcomeMessageDisplay() {
   return (
     <View style={styleContainer.centered}>
+      {/*<BarChartDisplay data={testElectionResult} />*/}
       <WideButtonView onPress={storeKeyPair} title="Set Random Keypair" />
       <WideButtonView onPress={setOrganizerKeyPair} title="Set Organizer Keypair" />
       <TextBlock bold text={STRINGS.home_welcome} />

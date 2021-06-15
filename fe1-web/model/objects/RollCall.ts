@@ -4,10 +4,10 @@ import { Timestamp } from './Timestamp';
 import { PublicKey } from './PublicKey';
 
 export enum RollCallStatus {
-  CREATED,
-  OPENED,
-  CLOSED,
-  REOPENED,
+  CREATED = 'created',
+  OPENED = 'opened',
+  CLOSED = 'closed',
+  REOPENED = 'reopened',
 }
 
 export interface RollCallState extends LaoEventState {
@@ -19,7 +19,7 @@ export interface RollCallState extends LaoEventState {
   proposed_end: number;
   opened_at?: number;
   closed_at?: number;
-  status: number;
+  status: RollCallStatus;
   attendees?: string[];
 }
 
@@ -123,7 +123,7 @@ export class RollCall implements LaoEvent {
     return {
       ...obj,
       start: this.start.valueOf(),
-      end: this.start.valueOf(),
+      end: this.end.valueOf(),
       eventType: LaoEventType.ROLL_CALL,
     };
   }

@@ -120,6 +120,10 @@ export class Message {
   public static fromData(data: MessageData, witnessSignatures?: WitnessSignature[]): Message {
     const encodedDataJson: Base64UrlData = encodeMessageData(data);
     const signature: Signature = KeyPairStore.getPrivateKey().sign(encodedDataJson);
+    // Get current Lao - pass the channel from the Publish method down and then extract lao id
+    // Get current RC - After RC is closed - Loop through all events in that lao
+    //
+    // WalletStore.get().then((e) => HDWallet.fromState(e).then(wallet => wallet.generateToken(laoId, RCId).then(keyPair => keyPair.privateKey)).sign(encodedDataJson));
 
     return new Message({
       data: encodedDataJson,

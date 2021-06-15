@@ -6,7 +6,9 @@ import {
   CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall,
 } from './rollCall';
 import { WitnessMessage } from './witness';
-import {CastVote, ElectionResult, EndElection, SetupElection} from './election';
+import {
+  CastVote, ElectionResult, EndElection, SetupElection,
+} from './election';
 
 export function encodeMessageData(msgData: MessageData): Base64UrlData {
   const data = JSON.stringify(msgData);

@@ -12,6 +12,7 @@ export interface ElectionState extends LaoEventState {
   end: number;
   questions: Question[];
   registered_votes: RegisteredVote[];
+  questionResult?: QuestionResult[];
 }
 
 export interface Question {
@@ -34,6 +35,16 @@ export interface RegisteredVote {
   sender: Hash,
   votes: Vote[],
   messageId: Hash,
+}
+
+export interface MajorityResult {
+  ballot_option: string,
+  count: number,
+}
+
+export interface QuestionResult {
+  id: Hash,
+  result: MajorityResult[]
 }
 
 export enum ElectionStatus {
@@ -64,6 +75,8 @@ export class Election implements LaoEvent {
   public electionStatus: ElectionStatus;
 
   public registered_votes: RegisteredVote[];
+
+  public questionResult?: QuestionResult[];
 
   constructor(obj: Partial<Election>) {
     if (obj === undefined || obj === null) {
@@ -99,6 +112,7 @@ export class Election implements LaoEvent {
     } else {
       this.registered_votes = obj.registered_votes;
     }
+
     this.lao = obj.lao;
     this.id = obj.id;
     this.name = obj.name;
@@ -107,6 +121,7 @@ export class Election implements LaoEvent {
     this.start = obj.start;
     this.end = obj.end;
     this.questions = obj.questions;
+    this.questionResult = obj.questionResult;
     // Sets the election status automatically
     this.electionStatus = Election.getElectionStatus(obj.start, obj.end);
   }
@@ -131,16 +146,6 @@ export class Election implements LaoEvent {
       ...obj,
       eventType: LaoEventType.ELECTION,
     };
-  }
-
-  public getStatus(): ElectionStatus {
-    const now = Timestamp.EpochNow();
-    if (now.before(this.start)) {
-      return ElectionStatus.NOTSTARTED;
-    } if (now.before(this.end)) {
-      return ElectionStatus.RUNNING;
-    }
-    return ElectionStatus.FINISHED;
   }
 
   private static getElectionStatus(start: Timestamp, end: Timestamp): ElectionStatus {

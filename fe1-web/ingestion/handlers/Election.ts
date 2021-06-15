@@ -8,7 +8,7 @@ import {
   SetupElection,
 } from 'model/network/method/message/data';
 import {
-  channelFromIds, Election, ElectionStatus, RegisteredVote, Channel, getLastChannel,
+  channelFromIds, Election, ElectionStatus, RegisteredVote, getLastChannel,
 } from 'model/objects';
 import {
   addEvent, dispatch, getStore, KeyPairStore, makeCurrentLao, updateEvent,
@@ -127,7 +127,8 @@ function handleElectionEndMessage(msg: Message) {
     console.warn(makeErr('No active election to end'));
     return false;
   }
-  console.log('In election end, channel is:', msg.channel);
+
+  // Change election status here such that it will change the election display in the event list
   election.electionStatus = ElectionStatus.TERMINATED;
   dispatch(updateEvent(lao.id, election.toState()));
   return true;
@@ -147,7 +148,7 @@ function handleElectionResultMessage(msg: Message) {
     return false;
   }
   if (!msg.channel) {
-    console.warn(makeErr('No channel found is message'));
+    console.warn(makeErr('No channel found in message'));
     return false;
   }
   const electionId = getLastChannel(msg.channel);
@@ -157,6 +158,8 @@ function handleElectionResultMessage(msg: Message) {
     console.warn(makeErr('No active election for the result'));
     return false;
   }
+
+  election.questionResult = ElectionResultMsg.questions;
   election.electionStatus = ElectionStatus.RESULT;
   dispatch(updateEvent(lao.id, election.toState()));
   console.log('received election Result message: ', ElectionResultMsg);
