@@ -12,9 +12,9 @@ import STRINGS from 'res/strings';
 import Home from 'parts/Home';
 import Identity from 'parts/lao/Identity';
 import Attendee from 'parts/lao/attendee/Attendee';
+import WalletSyncedSeed from 'parts/wallet/WalletSyncedSeed';
 import OrganizerNavigation from './organizer/OrganizerNavigation';
 import WitnessNavigation from './witness/WitnessNavigation';
-import WalletSyncedSeed from "../../parts/wallet/WalletSyncedSeed";
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
 
