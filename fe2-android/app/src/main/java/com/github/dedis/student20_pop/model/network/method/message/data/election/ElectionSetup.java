@@ -41,7 +41,7 @@ public class ElectionSetup extends Data {
             String question,
             String laoId) {
         this.name = name;
-        this.createdAt = Instant.now().toEpochMilli();
+        this.createdAt = Instant.now().getEpochSecond();
         this.startTime = start;
         this.endTime = end;
         this.lao = laoId;

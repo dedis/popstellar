@@ -335,4 +335,10 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   public void setIsWalletSetUp(Boolean isSetUp) { this.mIsWalletSetUp.setValue(isSetUp); }
+
+  public void logoutWallet(){
+    Wallet.getInstance().logout();
+    setIsWalletSetUp(false);
+    openWallet();
+  }
 }

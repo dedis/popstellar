@@ -3,365 +3,26 @@ package hub
 import (
 	"bytes"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"log"
-	"path/filepath"
-	"strings"
 	"student20_pop"
-	"sync"
 
 	"student20_pop/message"
 
-	"github.com/xeipuuv/gojsonschema"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"golang.org/x/xerrors"
 )
 
 type organizerHub struct {
-	messageChan chan IncomingMessage
-
-	sync.RWMutex
-	channelByID map[string]Channel
-
-	public kyber.Point
-
-	schemas map[string]*gojsonschema.Schema
+	*baseHub
 }
-
-const (
-	GenericMsgSchema string = "genericMsgSchema"
-	DataSchema       string = "dataSchema"
-)
-
-const rootPrefix = "/root/"
 
 // NewOrganizerHub returns a Organizer Hub.
 func NewOrganizerHub(public kyber.Point) (Hub, error) {
-	// Import the Json schemas defined in the protocol section
-	protocolPath, err := filepath.Abs("../protocol")
-	if err != nil {
-		return nil, xerrors.Errorf("failed to load the path for the json schemas: %v", err)
-	}
-
-	// Replace the '\\' from windows path with '/'
-	protocolPath = strings.ReplaceAll(protocolPath, "\\", "/")
-
-	protocolPath = "file://" + protocolPath
-
-	schemas := make(map[string]*gojsonschema.Schema)
-
-	// Import the schema for generic messages
-	genericMsgLoader := gojsonschema.NewReferenceLoader(protocolPath + "/genericMessage.json")
-	genericMsgSchema, err := gojsonschema.NewSchema(genericMsgLoader)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to load the json schema for generic messages: %v", err)
-	}
-	schemas[GenericMsgSchema] = genericMsgSchema
-
-	// Impot the schema for data
-	dataSchemaLoader := gojsonschema.NewReferenceLoader(protocolPath + "/query/method/message/data/data.json")
-	dataSchema, err := gojsonschema.NewSchema(dataSchemaLoader)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to load the json schema for data: %v", err)
-	}
-	schemas[DataSchema] = dataSchema
-
-	// Create the organizer hub
+	baseHub, err := NewBaseHub(public)
 	return &organizerHub{
-		messageChan: make(chan IncomingMessage),
-		channelByID: make(map[string]Channel),
-		public:      public,
-		schemas:     schemas,
-	}, nil
-}
-
-// RemoveClient removes the client from this hub.
-func (o *organizerHub) RemoveClientSocket(client *ClientSocket) {
-	o.RLock()
-	defer o.RUnlock()
-
-	for _, channel := range o.channelByID {
-		channel.Unsubscribe(client, message.Unsubscribe{})
-	}
-}
-
-// Recv accepts a message and enques it for processing in the hub.
-func (o *organizerHub) Recv(msg IncomingMessage) {
-	log.Printf("organizerHub::Recv")
-	o.messageChan <- msg
-}
-
-func (o *organizerHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
-	client := ClientSocket{
-		incomingMessage.Socket,
-	}
-	byteMessage := incomingMessage.Message
-
-	// Check if the GenericMessage has a field "id"
-	genericMsg := &message.GenericMessage{}
-	id, ok := genericMsg.UnmarshalID(byteMessage)
-	if !ok {
-		err := &message.Error{
-			Code:        -4,
-			Description: "The message does not have a valid `id` field",
-		}
-		client.SendError(nil, err)
-		return
-	}
-
-	// Verify the message
-	err := o.verifyJson(byteMessage, GenericMsgSchema)
-	if err != nil {
-		err = message.NewError("failed to verify incoming message", err)
-		client.SendError(&id, err)
-		return
-	}
-
-	// Unmarshal the message
-	err = json.Unmarshal(byteMessage, genericMsg)
-	if err != nil {
-		// Return a error of type "-4 request data is invalid" for all the unmarshalling problems of the incoming message
-		err = &message.Error{
-			Code:        -4,
-			Description: fmt.Sprintf("failed to unmarshal incoming message: %v", err),
-		}
-
-		client.SendError(&id, err)
-		return
-	}
-
-	query := genericMsg.Query
-
-	if query == nil {
-		return
-	}
-
-	channelID := query.GetChannel()
-	log.Printf("channel: %s", channelID)
-
-	if channelID == "/root" {
-		if query.Publish == nil {
-			err = &message.Error{
-				Code:        -4,
-				Description: "only publish is allowed on /root",
-			}
-
-			client.SendError(&id, err)
-			return
-		}
-
-		// Check if the structure of the message is correct
-		msg := query.Publish.Params.Message
-
-		// Verify the data
-		err := o.verifyJson(msg.RawData, DataSchema)
-		if err != nil {
-			err = message.NewError("failed to validate the data", err)
-			client.SendError(&id, err)
-			return
-		}
-
-		// Unmarshal the data
-		err = query.Publish.Params.Message.VerifyAndUnmarshalData()
-		if err != nil {
-			// Return a error of type "-4 request data is invalid" for all the verifications and unmarshalling problems of the data
-			err = &message.Error{
-				Code:        -4,
-				Description: fmt.Sprintf("failed to verify and unmarshal data: %v", err),
-			}
-			client.SendError(&id, err)
-			return
-		}
-
-		if query.Publish.Params.Message.Data.GetAction() == message.DataAction(message.CreateLaoAction) &&
-			query.Publish.Params.Message.Data.GetObject() == message.DataObject(message.LaoObject) {
-			err := o.createLao(*query.Publish)
-			if err != nil {
-				err = message.NewError("failed to create lao", err)
-
-				client.SendError(&id, err)
-				return
-			}
-		} else {
-			log.Printf("invalid method: %s", query.GetMethod())
-			client.SendError(&id, &message.Error{
-				Code:        -1,
-				Description: "you may only invoke lao/create on /root",
-			})
-			return
-		}
-
-		status := 0
-		result := message.Result{General: &status}
-		log.Printf("sending result: %+v", result)
-		client.SendResult(id, result)
-		return
-	}
-
-	if channelID[:6] != rootPrefix {
-		log.Printf("channel id must begin with /root/")
-		client.SendError(&id, &message.Error{
-			Code:        -2,
-			Description: "channel id must begin with /root/",
-		})
-		return
-	}
-
-	channelID = channelID[6:]
-	o.RLock()
-	channel, ok := o.channelByID[channelID]
-	if !ok {
-		log.Printf("invalid channel id: %s", channelID)
-		client.SendError(&id, &message.Error{
-			Code:        -2,
-			Description: fmt.Sprintf("channel with id %s does not exist", channelID),
-		})
-		o.RUnlock()
-		return
-	}
-	o.RUnlock()
-
-	method := query.GetMethod()
-	log.Printf("method: %s", method)
-
-	msg := []message.Message{}
-
-	// TODO: use constants
-	switch method {
-	case "subscribe":
-		err = channel.Subscribe(&client, *query.Subscribe)
-	case "unsubscribe":
-		err = channel.Unsubscribe(&client, *query.Unsubscribe)
-	case "publish":
-		err = channel.Publish(*query.Publish)
-	case "message":
-		log.Printf("cannot handle broadcasts right now")
-	case "catchup":
-		msg = channel.Catchup(*query.Catchup)
-		// TODO send catchup response to client
-	}
-
-	if err != nil {
-		err = message.NewError("failed to process query", err)
-		client.SendError(&id, err)
-		return
-	}
-
-	result := message.Result{}
-
-	if method == "catchup" {
-		result.Catchup = msg
-	} else {
-		general := 0
-		result.General = &general
-	}
-
-	client.SendResult(id, result)
-}
-
-func (o *organizerHub) handleMessageFromWitness(incomingMessage *IncomingMessage) {
-	//TODO
-
-}
-
-func (o *organizerHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
-	log.Printf("organizerHub::handleMessageFromClient: %s", incomingMessage.Message)
-
-	switch incomingMessage.Socket.socketType {
-	case ClientSocketType:
-		o.handleMessageFromClient(incomingMessage)
-		return
-	case WitnessSocketType:
-		o.handleMessageFromWitness(incomingMessage)
-		return
-	default:
-		log.Printf("error: invalid socket type")
-		return
-	}
-
-}
-
-func (o *organizerHub) Start(done chan struct{}) {
-	log.Printf("started organizer hub...")
-
-	for {
-		select {
-		case incomingMessage := <-o.messageChan:
-			o.handleIncomingMessage(&incomingMessage)
-		case <-done:
-			return
-		}
-	}
-}
-
-func (o *organizerHub) verifyJson(byteMessage []byte, schemaName string) error {
-	// Validate the Json "byteMessage" with a schema
-	messageLoader := gojsonschema.NewBytesLoader(byteMessage)
-	resultErrors, err := o.schemas[schemaName].Validate(messageLoader)
-	if err != nil {
-		return &message.Error{
-			Code:        -4,
-			Description: err.Error(),
-		}
-	}
-	errorsList := resultErrors.Errors()
-	descriptionErrors := ""
-	// Concatenate all error descriptions
-	for index, e := range errorsList {
-		descriptionErrors += fmt.Sprintf(" (%d) %s", index+1, e.Description())
-	}
-
-	if len(errorsList) > 0 {
-		return &message.Error{
-			Code:        -4,
-			Description: descriptionErrors,
-		}
-	}
-
-	return nil
-}
-
-func (o *organizerHub) createLao(publish message.Publish) error {
-	o.Lock()
-	defer o.Unlock()
-
-	data, ok := publish.Params.Message.Data.(*message.CreateLAOData)
-	if !ok {
-		return &message.Error{
-			Code:        -4,
-			Description: "failed to cast data to CreateLAOData",
-		}
-	}
-
-	encodedID := base64.URLEncoding.EncodeToString(data.ID)
-	if _, ok := o.channelByID[encodedID]; ok {
-		return &message.Error{
-			Code:        -3,
-			Description: "failed to create lao: another one with the same ID exists",
-		}
-	}
-
-	if _, ok := o.channelByID[encodedID]; ok {
-		return &message.Error{
-			Code:        -3,
-			Description: "failed to create lao: another one with the same ID exists",
-		}
-	}
-	laoChannelID := rootPrefix + encodedID
-
-	laoCh := laoChannel{
-		rollCall:    rollCall{},
-		attendees:   make(map[string]struct{}),
-		baseChannel: createBaseChannel(o, laoChannelID),
-	}
-	messageID := base64.URLEncoding.EncodeToString(publish.Params.Message.MessageID)
-	laoCh.inbox[messageID] = *publish.Params.Message
-
-	o.channelByID[encodedID] = &laoCh
-
-	return nil
+		baseHub,
+	}, err
 }
 
 type laoChannel struct {
@@ -399,7 +60,7 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 	case message.LaoObject:
 		err = c.processLaoObject(*msg)
 	case message.MeetingObject:
-		err = c.processMeetingObject(data,*msg)
+		err = c.processMeetingObject(data, *msg)
 	case message.MessageObject:
 		err = c.processMessageObject(msg.Sender, data)
 	case message.RollCallObject:
@@ -419,7 +80,6 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 
 func (c *laoChannel) processLaoObject(msg message.Message) error {
 	action := message.LaoDataAction(msg.Data.GetAction())
-	msgIDEncoded := base64.URLEncoding.EncodeToString(msg.MessageID)
 
 	switch action {
 	case message.UpdateLaoAction:
@@ -432,20 +92,16 @@ func (c *laoChannel) processLaoObject(msg message.Message) error {
 		return message.NewInvalidActionError(message.DataAction(action))
 	}
 
-	c.inboxMu.Lock()
-	c.inbox[msgIDEncoded] = msg
-	c.inboxMu.Unlock()
+	c.inbox.storeMessage(msg)
 
 	return nil
 }
 
 func (c *laoChannel) processLaoState(data *message.StateLAOData) error {
 	// Check if we have the update message
-	updateMsgIDEncoded := base64.URLEncoding.EncodeToString(data.ModificationID)
+	msg, ok := c.inbox.getMessage(data.ModificationID)
 
-	c.inboxMu.RLock()
-	updateMsg, ok := c.inbox[updateMsgIDEncoded]
-	c.inboxMu.RUnlock()
+	updateMsgIDEncoded := base64.URLEncoding.EncodeToString(data.ModificationID)
 
 	if !ok {
 		return &message.Error{
@@ -492,7 +148,7 @@ func (c *laoChannel) processLaoState(data *message.StateLAOData) error {
 	}
 
 	// Check if the updates are consistent with the update message
-	updateMsgData, ok := updateMsg.Data.(*message.UpdateLAOData)
+	updateMsgData, ok := msg.Data.(*message.UpdateLAOData)
 	if !ok {
 		return &message.Error{
 			Code:        -4,
@@ -561,7 +217,7 @@ func compareLaoUpdateAndState(update *message.UpdateLAOData, state *message.Stat
 	return nil
 }
 
-func (c *laoChannel) processMeetingObject(data message.Data,msg message.Message) error {
+func (c *laoChannel) processMeetingObject(data message.Data, msg message.Message) error {
 	action := message.MeetingDataAction(data.GetAction())
 
 	switch action {
@@ -570,10 +226,7 @@ func (c *laoChannel) processMeetingObject(data message.Data,msg message.Message)
 	case message.StateMeetingAction:
 	}
 
-	msgIDEncoded := base64.URLEncoding.EncodeToString(msg.MessageID)
-	c.inboxMu.Lock()
-	c.inbox[msgIDEncoded] = msg
-	c.inboxMu.Unlock()
+	c.inbox.storeMessage(msg)
 
 	return nil
 }
@@ -585,8 +238,6 @@ func (c *laoChannel) processMessageObject(public message.PublicKey, data message
 	case message.WitnessAction:
 		witnessData := data.(*message.WitnessMessageData)
 
-		msgEncoded := base64.URLEncoding.EncodeToString(witnessData.MessageID)
-
 		err := schnorr.VerifyWithChecks(student20_pop.Suite, public, witnessData.MessageID, witnessData.Signature)
 		if err != nil {
 			return &message.Error{
@@ -595,21 +246,10 @@ func (c *laoChannel) processMessageObject(public message.PublicKey, data message
 			}
 		}
 
-		c.inboxMu.Lock()
-		msg, ok := c.inbox[msgEncoded]
-		if !ok {
-			// TODO: We received a witness signature before the message itself.
-			// We ignore it for now but it might be worth keeping it until we
-			// actually receive the message
-			log.Printf("failed to find message_id %s for witness message", msgEncoded)
-			c.inboxMu.Unlock()
-			return nil
+		err = c.inbox.addWitnessSignature(witnessData.MessageID, public, witnessData.Signature)
+		if err != nil {
+			return message.NewError("Failed to add a witness signature", err)
 		}
-		msg.WitnessSignatures = append(msg.WitnessSignatures, message.PublicKeySignaturePair{
-			Witness:   public,
-			Signature: witnessData.Signature,
-		})
-		c.inboxMu.Unlock()
 	default:
 		return message.NewInvalidActionError(message.DataAction(action))
 	}
@@ -656,10 +296,7 @@ func (c *laoChannel) processRollCallObject(msg message.Message) error {
 		return message.NewError(errorDescription, err)
 	}
 
-	msgIDEncoded := base64.URLEncoding.EncodeToString(msg.MessageID)
-	c.inboxMu.Lock()
-	c.inbox[msgIDEncoded] = msg
-	c.inboxMu.Unlock()
+	c.inbox.storeMessage(msg)
 
 	return nil
 }
@@ -676,7 +313,7 @@ func (c *laoChannel) processElectionObject(msg message.Message) error {
 
 	err := c.createElection(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to setup the election %v", err)
+		return message.NewError("failed to setup the election", err)
 	}
 
 	log.Printf("Election has created with success")
