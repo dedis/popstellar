@@ -1,5 +1,7 @@
 package com.github.dedis.student20_pop.model.network.method.message.data;
 
+import android.util.Log;
+
 import com.github.dedis.student20_pop.model.network.method.message.data.election.CastVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionResult;
@@ -96,6 +98,7 @@ public abstract class Data {
    * @return the class assigned to the pair of empty if none are defined
    */
   public static Optional<Class<? extends Data>> getType(Objects obj, Action action) {
+    Log.d("data", "getting data type");
     return Optional.ofNullable(messages.get(pair(obj, action)));
   }
 
