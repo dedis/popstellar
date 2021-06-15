@@ -1,6 +1,5 @@
 package com.github.dedis.student20_pop.model.network.method.message;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import android.util.Log;
 
