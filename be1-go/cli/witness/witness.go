@@ -4,15 +4,16 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"github.com/gorilla/websocket"
-	"github.com/urfave/cli/v2"
-	"golang.org/x/xerrors"
 	"log"
 	"net/url"
 	"student20_pop"
 	"student20_pop/hub"
 	"student20_pop/network"
 	"sync"
+
+	"github.com/gorilla/websocket"
+	"github.com/urfave/cli/v2"
+	"golang.org/x/xerrors"
 )
 
 // Serve parses the CLI arguments and spawns a hub and a websocket server.
@@ -41,8 +42,11 @@ func Serve(cliCtx *cli.Context) error {
 		return xerrors.Errorf("failed to unmarshal public key: %v", err)
 	}
 
-	// create organizer hub
-	h := hub.NewWitnessHub(point)
+	// create witness hub
+	h, err := hub.NewWitnessHub(point)
+	if err != nil {
+		return xerrors.Errorf("failed create the witness hub: %v", err)
+	}
 
 	// make context release resources associated with it when all operations are done
 	ctx, cancel := context.WithCancel(cliCtx.Context)
