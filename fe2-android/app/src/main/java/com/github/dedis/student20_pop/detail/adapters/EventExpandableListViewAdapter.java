@@ -331,12 +331,13 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         viewModel.setCurrentElection(election);
 
         viewModel.getEndElectionEvent().observe(lifecycleOwner, booleanEvent -> {
-            electionBinding.electionActionButton.setText("");
+            electionBinding.electionActionButton.setText(R.string.election_ended);
             electionBinding.electionActionButton.setEnabled(false);
         });
 
         if (category == PRESENT) {
             electionBinding.electionActionButton.setText(R.string.cast_vote);
+            electionBinding.electionActionButton.setEnabled(true);
             electionBinding.electionActionButton.setOnClickListener(
                     clicked -> viewModel.openCastVotes());
         } else if (category == PAST) {
