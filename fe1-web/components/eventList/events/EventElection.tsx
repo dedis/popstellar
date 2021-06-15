@@ -58,7 +58,7 @@ const EventElection = (props: IPropTypes) => {
     state.events.byLaoId[election.lao].byId[election.id]));
   if (!electionFromStore) {
     console.debug('Error in Election display: Election doesnt exist in store');
-    return undefined;
+    return null;
   }
 
   const updateSelectedBallots = (values: number[], idx: number) => {
@@ -219,7 +219,7 @@ const EventElection = (props: IPropTypes) => {
         );
       default:
         console.warn('Election Status was undefined in Election display', electionFromStore);
-        return undefined;
+        return null;
     }
   };
 

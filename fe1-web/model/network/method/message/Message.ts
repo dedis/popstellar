@@ -62,14 +62,18 @@ export class Message {
       throw new ProtocolError("Undefined 'signature' parameter encountered during 'Message' creation");
     }
     if (!msg.signature.verify(msg.sender, msg.data)) {
-      throw new ProtocolError("Invalid 'signature' parameter encountered during 'Message' creation: unexpected message_id value");
+      throw new ProtocolError("Invalid 'signature' parameter encountered during 'Message' creation");
     }
     if (!msg.message_id) {
       throw new ProtocolError("Undefined 'message_id' parameter encountered during 'Message' creation");
     }
     const expectedHash = Hash.fromStringArray(msg.data.toString(), msg.signature.toString());
     if (!expectedHash.equals(msg.message_id)) {
-      throw new ProtocolError("Invalid 'message_id' parameter encountered during 'CreateLao': unexpected id value");
+      console.log('Expected Hash was: ', expectedHash);
+
+      throw new ProtocolError(`Invalid 'message_id' parameter encountered during 'Message' creation: unexpected id value \n
+      received message_id was: ${msg.message_id}\n
+      Expected message_id is: ${expectedHash}`);
     }
     if (!msg.witness_signatures) {
       throw new ProtocolError("Undefined 'witness_signatures' parameter encountered during 'Message' creation");

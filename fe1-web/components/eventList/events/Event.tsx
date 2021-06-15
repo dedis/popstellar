@@ -57,8 +57,7 @@ const Event = (props: IPropTypes) => {
       return (
         <EventRollCall
           event={event}
-          childrenVisibility={toggleChildrenVisible}
-          renderItemFn={renderItemFn}
+          isOrganizer={isOrganizer}
         />
       );
     }
