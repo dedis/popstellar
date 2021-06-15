@@ -1,11 +1,13 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { StyleSheet, Text } from 'react-native';
 
 import { Spacing } from 'styles';
 import PropTypes from 'prop-types';
-import { RollCall, RollCallStatus } from 'model/objects';
+import {
+  RollCall, RollCallStatus, HDWallet, PublicKey,
+} from 'model/objects';
 import { useSelector } from 'react-redux';
-import { getStore, makeCurrentLao } from 'store';
+import { getStore, makeCurrentLao, WalletStore } from 'store';
 import QRCode from 'components/QRCode';
 import WideButtonView from '../../WideButtonView';
 
@@ -30,6 +32,7 @@ const EventRollCall = (props: IPropTypes) => {
     console.warn('no LAO is currently active');
     return null;
   }
+  const [popToken, setPopToken] = useState('');
 
   const rollCallFromStore = useSelector((state) => (
     // @ts-ignore
@@ -42,8 +45,37 @@ const EventRollCall = (props: IPropTypes) => {
   const onOpenRollCall = () => {
     console.log('opening Roll Call not yet implemented');
   };
+  // Here we get the pop-token to display in the QR code
+  // let popToken: PublicKey;
+  // WalletStore.get().then((e) => (
+  //   HDWallet.fromState(e)).then((wallet) => (
+  //   wallet.generateToken(lao.id, event.id)).then((keyPair) => {
+  //   popToken = keyPair.publicKey;
+  // })));
+  //
+  // let other_token: PublicKey;
 
-  // const popToken = WalletStore.get().then((e) => HDWallet.fromState(e).then(wallet => wallet.generateToken(laoId, RCId).then(keyPair => keyPair.publicKey)));
+  WalletStore.get().then((encryptedSeed) => {
+    if (encryptedSeed !== undefined) {
+      HDWallet.fromState(encryptedSeed)
+        .then((wallet) => {
+          wallet.generateToken(lao.id, event.id)
+            .then((token) => {
+              setPopToken(token.publicKey.valueOf());
+              // other_token = token.publicKey;
+            });
+        });
+    }
+  });
+
+  // const ptoken: PublicKey = WalletStore.get().then((e) => (
+  //   HDWallet.fromState(e)).then((wallet) => (
+  //   wallet.generateToken(lao.id, event.id)).then((keyPair) => (
+  //   keyPair.publicKey))));
+  //
+  // console.log('pop token is: ');
+  // console.log(other_token.valueOf());
+  // console.log(other_token.toString());
 
   const getRollCallDisplay = (status: RollCallStatus) => {
     switch (status) {
@@ -60,7 +92,7 @@ const EventRollCall = (props: IPropTypes) => {
         return (
           <>
             <Text>Open - Let the organizer scan your Pop Token</Text>
-            <QRCode visibility />
+            <QRCode visibility value={popToken} />
           </>
         );
       case RollCallStatus.CLOSED:
