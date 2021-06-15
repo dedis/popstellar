@@ -4,18 +4,24 @@ package com.github.dedis.student20_pop.detail.fragments.event.creation;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.DatePicker;
+import android.widget.TimePicker;
 
 import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.ViewInteraction;
+import androidx.test.espresso.contrib.PickerActions;
+import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.filters.LargeTest;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.home.HomeActivity;
+import com.github.dedis.student20_pop.model.Lao;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.Rule;
@@ -33,20 +39,50 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
-import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class ElectionSetupTest {
 
+    private static Matcher<Lao> laoHasName(
+            final String name) {
+        return new TypeSafeMatcher<Lao>() {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("select LAO with name "+name);
+            }
+            @Override
+            public boolean matchesSafely(Lao lao) {
+                return lao.getName().equals(name);
+            }
+        };
+    }
+
+    public static Matcher<View> matchesDate( final int day, final int month,final int year) {
+        return new BoundedMatcher<View, DatePicker>(DatePicker.class) {
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("matches date:");
+            }
+
+            @Override
+            protected boolean matchesSafely(DatePicker item) {
+                return (year == item.getYear() && month == item.getMonth() && day == item.getDayOfMonth());
+            }
+        };
+    }
+
     @Rule
     public ActivityTestRule<HomeActivity> mActivityTestRule = new ActivityTestRule<>(HomeActivity.class);
+
 
     @Test
     public void electionSetupTest() {
@@ -156,19 +192,23 @@ public class ElectionSetupTest {
                         isDisplayed()));
         textView.check(matches(withText("new lao test")));
 
-        DataInteraction constraintLayout = onData(anything())
+        DataInteraction appCompatButton16 = onData(
+                allOf(is(instanceOf(Lao.class)), laoHasName("new lao test"))).inAdapterView(withId(R.id.lao_list));
+        appCompatButton16.perform(click());
+
+        /*DataInteraction constraintLayout = onData(anything())
                 .inAdapterView(allOf(withId(R.id.lao_list),
                         childAtPosition(
                                 withId(R.id.swipe_refresh),
                                 0)))
                 .atPosition(0);
-        constraintLayout.perform(click());
+        constraintLayout.perform(click());*/
 
 
         // We check that we opened the launch fragment
         onView(withId(R.id.fragment_lao_detail)).check(matches(isDisplayed()));
 
-        // click on show/hide properties
+       /* // click on show/hide properties
 
         ViewInteraction appCompatButton8 = onView(
                 allOf(withId(R.id.tab_properties), withText("Show/Hide Properties"),
@@ -194,19 +234,8 @@ public class ElectionSetupTest {
                                                 4)),
                                 1),
                         isDisplayed()));
-        appCompatImageButton2.perform(click());
+        appCompatImageButton2.perform(click());*/
 
-
-        ViewInteraction appCompatButton10 = onView(
-                allOf(withId(R.id.properties_edit_cancel), withText("Cancel"),
-                        childAtPosition(
-                                allOf(withId(R.id.edit_properties_linear_layout),
-                                        childAtPosition(
-                                                withId(R.id.properties_linear_layout),
-                                                4)),
-                                3),
-                        isDisplayed()));
-        appCompatButton10.perform(click());
 
         // we click on add future events
         ViewInteraction appCompatImageButton3 = onView(
@@ -250,6 +279,7 @@ public class ElectionSetupTest {
                                                 3)),
                                 0)));
         appCompatEditText4.perform(scrollTo(), click());
+        onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(2021, 6,15 ));
 
         ViewInteraction appCompatButton11 = onView(
                 allOf(withId(android.R.id.button1), withText("OK"),
@@ -270,6 +300,7 @@ public class ElectionSetupTest {
                                                 3)),
                                 1)));
         appCompatEditText5.perform(scrollTo(), click());
+        onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(2021, 7, 10));
 
         ViewInteraction appCompatButton12 = onView(
                 allOf(withId(android.R.id.button1), withText("OK"),
@@ -281,6 +312,7 @@ public class ElectionSetupTest {
         appCompatButton12.perform(scrollTo(), click());
 
 
+        // we set the start time
         ViewInteraction appCompatEditText6 = onView(
                 allOf(withId(R.id.start_time_edit_text),
                         childAtPosition(
@@ -290,6 +322,7 @@ public class ElectionSetupTest {
                                                 4)),
                                 0)));
         appCompatEditText6.perform(scrollTo(), click());
+        onView(withClassName(Matchers.equalTo(TimePicker.class.getName()))).perform(PickerActions.setTime(17,30 ));
 
         ViewInteraction appCompatButton13 = onView(
                 allOf(withId(android.R.id.button1), withText("OK"),
@@ -300,6 +333,7 @@ public class ElectionSetupTest {
                                 3)));
         appCompatButton13.perform(scrollTo(), click());
 
+        // set the end time
         ViewInteraction appCompatEditText7 = onView(
                 allOf(withId(R.id.end_time_edit_text),
                         childAtPosition(
@@ -309,6 +343,7 @@ public class ElectionSetupTest {
                                                 4)),
                                 1)));
         appCompatEditText7.perform(scrollTo(), click());
+        onView(withClassName(Matchers.equalTo(TimePicker.class.getName()))).perform(PickerActions.setTime(10,30 ));
 
         ViewInteraction appCompatButton14 = onView(
                 allOf(withId(android.R.id.button1), withText("OK"),
@@ -361,20 +396,36 @@ public class ElectionSetupTest {
         editText2.check(matches(withText("new election test")));
 
         ViewInteraction editText3 = onView(
-                allOf(withId(R.id.start_date_edit_text),
+                allOf(withId(R.id.start_date_edit_text),withText("15/06/2021"),
                         withParent(allOf(withId(R.id.election_setup_date),
                                 withParent(withId(R.id.election_setup_fields_ll)))),
                         isDisplayed()));
         // we check the start date is right
-        editText3.check(matches(withText("13/06/2021")));
+        editText3.check(matches(withText("15/06/2021")));
 
         // we check the end date is right
         ViewInteraction editText4 = onView(
-                allOf(withId(R.id.end_date_edit_text),
+                allOf(withId(R.id.end_date_edit_text),withText("10/07/2021"),
                         withParent(allOf(withId(R.id.election_setup_date),
                                 withParent(withId(R.id.election_setup_fields_ll)))),
                         isDisplayed()));
-        editText4.check(matches(withText("14/06/2021")));
+        editText4.check(matches(withText("10/07/2021")));
+
+        // we check the start time is right
+        ViewInteraction editText8 = onView(
+                allOf(withId(R.id.start_time_edit_text),withText("17:30"),
+                        withParent(allOf(withId(R.id.election_setup_time),
+                                withParent(withId(R.id.election_setup_fields_ll)))),
+                        isDisplayed()));
+        editText8.check(matches(withText("17:30")));
+
+        // we check the end time is right
+        ViewInteraction editText9 = onView(
+                allOf(withId(R.id.end_time_edit_text),withText("10:30"),
+                        withParent(allOf(withId(R.id.election_setup_time),
+                                withParent(withId(R.id.election_setup_fields_ll)))),
+                        isDisplayed()));
+        editText9.check(matches(withText("10:30")));
 
         //we check the election question is right
         ViewInteraction editText5 = onView(
@@ -453,18 +504,18 @@ public class ElectionSetupTest {
         textView2.check(matches(withText("Election : new election test")));
 
         ViewInteraction textView3 = onView(
-                allOf(withId(R.id.election_start_date), withText("Start date : 13/06/2021 20:21 "),
+                allOf(withId(R.id.election_start_date), withText("Start date : 15/06/2021 17:30 "),
                         withParent(allOf(withId(R.id.election_layout),
                                 withParent(withId(R.id.include_layout_election)))),
                         isDisplayed()));
-        textView3.check(matches(withText("Start date : 13/06/2021 20:21 ")));
+        textView3.check(matches(withText("Start date : 15/06/2021 17:30 ")));
 
         ViewInteraction textView4 = onView(
-                allOf(withId(R.id.election_end_date), withText("End Date : 14/06/2021 00:21 "),
+                allOf(withId(R.id.election_end_date), withText("End Date : 10/07/2021 10:30 "),
                         withParent(allOf(withId(R.id.election_layout),
                                 withParent(withId(R.id.include_layout_election)))),
                         isDisplayed()));
-        textView4.check(matches(withText("End Date : 14/06/2021 00:21 ")));
+        textView4.check(matches(withText("End Date : 10/07/2021 10:30 ")));
 
         ViewInteraction button6 = onView(
                 allOf(withId(R.id.election_action_button), withText("CAST VOTE "),
@@ -492,6 +543,7 @@ public class ElectionSetupTest {
                 return parent instanceof ViewGroup && parentMatcher.matches(parent)
                         && view.equals(((ViewGroup) parent).getChildAt(position));
             }
+
         };
     }
 }

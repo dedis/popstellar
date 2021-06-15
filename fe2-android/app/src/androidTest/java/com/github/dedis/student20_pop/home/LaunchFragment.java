@@ -12,6 +12,7 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.github.dedis.student20_pop.R;
+import com.github.dedis.student20_pop.model.Lao;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -34,17 +35,32 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class LaunchFragment2 {
+public class LaunchFragment {
+
+    private static Matcher<Lao> laoHasName(
+            final String name) {
+        return new TypeSafeMatcher<Lao>() {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("select LAO with name "+name);
+            }
+            @Override
+            public boolean matchesSafely(Lao lao) {
+                return lao.getName().equals(name);
+            }
+        };
+    }
 
     @Rule
     public ActivityTestRule<HomeActivity> mActivityTestRule = new ActivityTestRule<>(HomeActivity.class);
 
     @Test
-    public void launchFragment2() {
+    public void launchFragment() {
         ViewInteraction appCompatButton = onView(
                 allOf(withId(R.id.tab_launch), withText("Launch"),
                         childAtPosition(
@@ -135,13 +151,9 @@ public class LaunchFragment2 {
                         isDisplayed()));
         appCompatButton7.perform(click());
 
-        DataInteraction constraintLayout = onData(anything())
-                .inAdapterView(allOf(withId(R.id.lao_list),
-                        childAtPosition(
-                                withId(R.id.swipe_refresh),
-                                0)))
-                .atPosition(0);
-        constraintLayout.perform(click());
+        DataInteraction appCompatButton8 = onData(
+                allOf(is(instanceOf(Lao.class)), laoHasName("new launch test"))).inAdapterView(withId(R.id.lao_list));
+        appCompatButton8.perform(click());
 
         // We check that we opened the launch fragment
         onView(withId(R.id.fragment_lao_detail)).check(matches(isDisplayed()));

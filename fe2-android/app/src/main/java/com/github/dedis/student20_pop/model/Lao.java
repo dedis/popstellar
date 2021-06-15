@@ -45,8 +45,9 @@ public final class Lao {
     else if(name.isEmpty()) {
       throw new IllegalArgumentException(" The name of the Lao is empty");
     }
-    else
-    this.name = name;
+    else {
+      this.name = name;
+    }
   }
 
   public void updateRollCall(String prevId, RollCall rollCall) {
