@@ -3,6 +3,8 @@ package hub
 import (
 	"crypto/sha256"
 	"encoding/base64"
+	"encoding/json"
+
 	//"encoding/json"
 	"fmt"
 	"golang.org/x/xerrors"
@@ -379,19 +381,33 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 			Description: "Hash of the message id is not computed correctly",
 		}
 	}
-	ms2 := message.Message{
-		MessageID:         id,
-		Data:              resultData,
-		Sender:            msg.Sender,
-		Signature:         msg.Signature,
-		WitnessSignatures: msg.WitnessSignatures,
-		RawData:           message.Base64URLBytes{10},
+
+	raw,ok := json.Marshal(resultData)
+
+	if ok != nil {
+		return &message.Error{
+			Code:        -4,
+			Description: "failed to marshal election result data",
+		}
 	}
 
-	c.broadcastToAllClients(ms2)
-	messageID := base64.URLEncoding.EncodeToString(ms2.MessageID)
+	//ms2 := message.Message{
+	//	MessageID:         id,
+	//	Data:              resultData,
+	//	Sender:            msg.Sender,
+	//	Signature:         msg.Signature,
+	//	WitnessSignatures: msg.WitnessSignatures,
+	//	RawData:           raw,
+	//}
+
+	msg.Data = resultData
+	msg.MessageID = id
+	msg.RawData = raw
+
+	c.broadcastToAllClients(*msg)
+	messageID := base64.URLEncoding.EncodeToString(id)
 	c.inboxMu.Lock()
-	c.inbox[messageID] = ms2
+	c.inbox[messageID] = *msg
 	c.inboxMu.Unlock()
 
 	return nil
