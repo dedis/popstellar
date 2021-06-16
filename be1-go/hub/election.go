@@ -405,7 +405,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 		}
 	}
 	log.Printf("The result data field of the election result message " +
-		"is the following %v",resultData)
+		"is the following %v and has len of %v",resultData.Questions,len(resultData.Questions))
 
 	log.Printf("computing message id for election result message")
 	msgId := computeMessageId(resultData,msg.Signature)
