@@ -579,6 +579,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     }
 
     public LiveData<List<com.github.dedis.student20_pop.model.RollCall>> getLaoAttendedRollCalls() {
+        if (mLaoAttendedRollCalls.getValue() == null) return new MutableLiveData<>(new ArrayList<>());
         return mLaoAttendedRollCalls;
     }
 
