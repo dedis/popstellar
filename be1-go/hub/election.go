@@ -352,7 +352,6 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 		WitnessSignatures: msg.WitnessSignatures,
 	}
 
-	questionResults := make([]message.QuestionResult,len(c.questions))
 
 	log.Printf("Getting the count per ballot opetion for election results")
 	//questions := resultData.Questions
@@ -374,7 +373,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 
 		votes  := question.validVotes
 		if question.method == message.PluralityMethod {
-
+			questionResults := make([]message.QuestionResult,len(c.questions))
 			numberOfVotesPerBallotOption := make([]int, len(question.ballotOptions))
 			for _, vote := range votes {
 				for ballotIndex := range vote.indexes {
@@ -404,10 +403,11 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 				//Result: questionResults,
 				Result2: questionResults2,
 			})
+			resultData.Questions = questionResults
 		}
 	}
 	log.Printf("The result data field of the election result message " +
-		"is the following %v and has len of %v, first question is %v, and second question is %v",resultData.Questions,len(resultData.Questions),resultData.Questions[0],resultData.Questions[1])
+		"is the following %v and has len of %v, first question is %v",resultData.Questions,len(resultData.Questions),resultData.Questions[0])
 
 	log.Printf("computing message id for election result message")
 	msgId := computeMessageId(resultData,msg.Signature)
@@ -453,7 +453,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 	}
 
 	log.Printf("The result data field of the election result message " +
-		"is the following %v and has len of %v, first question is %v, and second question is %v",resultData.Questions,len(resultData.Questions),resultData.Questions[0],resultData.Questions[1])
+		"is the following %v and has len of %v, first question is %v",resultData.Questions,len(resultData.Questions),resultData.Questions[0])
 
 	ms3,ok := message.NewMessage(msg.Sender,msg.Signature,msg.WitnessSignatures,resultData)
 
