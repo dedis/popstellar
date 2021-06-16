@@ -210,6 +210,7 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 			qs.validVotes[msg.Sender.String()] =
 				validVote{voteData.CreatedAt,
 					q.VoteIndexes}
+			log.Printf("Sender votes for the following indexes %v",q.VoteIndexes)
 		} else {
 			changeVote(&qs, earlierVote, msg.Sender.String(), voteData.CreatedAt, q.VoteIndexes)
 		}
@@ -250,6 +251,7 @@ func changeVote(qs *question, earlierVote validVote, sender string, created mess
 func getAllQuestionsForElectionChannel(questions []message.Question) map[string]question {
 	qs := make(map[string]question)
 	for _, q := range questions {
+		log.Printf("The ballot options setup in election setup are %v",q.BallotOptions)
 		qs[base64.URLEncoding.EncodeToString(q.ID)] = question{
 			id:            q.ID,
 			ballotOptions: q.BallotOptions,
