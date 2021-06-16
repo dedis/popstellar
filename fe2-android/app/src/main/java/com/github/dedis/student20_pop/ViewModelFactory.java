@@ -63,17 +63,23 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
                   gson),
               keysetManager);
     } else if (modelClass.isAssignableFrom(LaoDetailViewModel.class)) {
-      return (T)
-          new LaoDetailViewModel(
-              application,
-              Injection.provideLAORepository(
-                  application,
-                  Injection.provideLAOService(
-                      Injection.provideScarlet(application, Injection.provideOkHttpClient(), gson)),
-                  keysetManager,
-                  gson),
-              gson,
-              keysetManager);
+      try {
+        return (T)
+            new LaoDetailViewModel(
+                application,
+                Injection.provideLAORepository(
+                    application,
+                    Injection.provideLAOService(
+                        Injection.provideScarlet(application, Injection.provideOkHttpClient(), gson)),
+                    keysetManager,
+                    gson),
+                gson,
+                keysetManager);
+      } catch (IOException e) {
+        e.printStackTrace();
+      } catch (GeneralSecurityException e) {
+        e.printStackTrace();
+      }
     }
 
     throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());

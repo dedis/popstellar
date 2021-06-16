@@ -161,12 +161,16 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             @NonNull Application application,
             LAORepository laoRepository,
             Gson gson,
-            AndroidKeysetManager keysetManager) {
+            AndroidKeysetManager keysetManager) throws IOException, GeneralSecurityException {
         super(application);
         mLAORepository = laoRepository;
         mKeysetManager = keysetManager;
         mGson = gson;
         disposables = new CompositeDisposable();
+
+        KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+        String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+        Toast.makeText(getApplication(), publicKey, Toast.LENGTH_LONG).show();
 
     }
 
