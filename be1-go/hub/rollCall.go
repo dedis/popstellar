@@ -100,9 +100,9 @@ func (c *laoChannel) processCloseRollCall(data message.Data) error {
 
 	c.rollCall.id = string(rollCallData.UpdateID)
 	c.rollCall.state = Closed
-	c.attendees = map[string]struct{}{}
-	for i := 0; i < len(rollCallData.Attendees); i += 1 {
-		c.attendees[string(rollCallData.Attendees[i])] = struct{}{}
+
+	for _, attendee := range rollCallData.Attendees {
+		c.attendees.Add(attendee.String())
 	}
 
 	return nil
