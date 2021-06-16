@@ -1,6 +1,5 @@
 package com.github.dedis.student20_pop.model.data;
 
-import android.app.Activity;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
