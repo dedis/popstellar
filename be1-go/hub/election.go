@@ -366,6 +366,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 		}
 
 		if len(question.id) == 0 {
+			log.Printf("ignoring a question")
 			break
 		}
 
@@ -384,6 +385,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 			questionResults2 := make([] message.BallotOptionCount, len(question.ballotOptions))
 			for i, option := range question.ballotOptions {
 				if len(option) == 0{
+					log.Printf("ignoring a ballot option")
 					break
 				}
 				//questionResults = append(questionResults,message.BallotOption("ballot_option:") + option +
@@ -435,6 +437,19 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 	//	RawData:           raw,
 	//}
 
+	for i, q := range resultData.Questions{
+		if len(q.ID) == 0{
+			log.Printf("removing a question")
+			resultData.Questions = append(resultData.Questions[:i], resultData.Questions[i+1:]...)
+		}
+		for j, ballot := range q.Result2{
+			if len(ballot.Option) < 1 {
+				log.Printf("removing a ballot option")
+				q.Result2 = append(q.Result2[:j],q.Result2[j+1:]...)
+			}
+		}
+	}
+
 	ms3,ok := message.NewMessage(msg.Sender,msg.Signature,msg.WitnessSignatures,resultData)
 
 	if ok != nil {
@@ -445,6 +460,8 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 	}
 
 	log.Printf("broadcasting election resutl message")
+
+
 	c.broadcastToAllClients(*ms3)
 	//c.broadcastToAllClients(ms2)
 	messageID := base64.URLEncoding.EncodeToString(ms3.MessageID)
