@@ -43,6 +43,8 @@ export class HDWallet {
   /* local copy of encrypted seed */
   private encryptedSeed!: ArrayBuffer;
 
+  private lastGeneratedPoPToken: KeyPair | undefined;
+
   /**
    * a wallet can be created empty and then initialized or
    * directly with a seed recovered from redux state
@@ -178,6 +180,10 @@ export class HDWallet {
     return this.recoverAllKeys(recoverMaps[0], recoverMaps[1]);
   }
 
+  public async recoverLastGeneratedPoPToken(): Promise<KeyPair | undefined> {
+    return this.lastGeneratedPoPToken;
+  }
+
   /**
    * This is the main function for the wallet to find all the tokens associated with it, by checking
    * through all known Roll Calls of the Laos that the user joined weather or not the token
@@ -259,10 +265,13 @@ export class HDWallet {
         const { key } = derivePath(path, hexSeed);
         const pubKey = getPublicKey(key, false);
 
-        return new KeyPair({
+        const token = new KeyPair({
           publicKey: new PublicKey(base64url.encode(pubKey)),
           privateKey: new PrivateKey(base64url.encode(key)),
         });
+
+        this.lastGeneratedPoPToken = token;
+        return token;
       });
   }
 
