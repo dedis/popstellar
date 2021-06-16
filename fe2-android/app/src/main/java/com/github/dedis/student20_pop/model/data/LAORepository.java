@@ -63,6 +63,7 @@ public class LAORepository {
 
     private static final String TAG = LAORepository.class.getSimpleName();
     private static final String MESSAGE_ID = "Message ID : ";
+    private static final String NAME = "Name : ";
     private static volatile LAORepository INSTANCE = null;
 
     private final LAODataSource.Remote mRemoteDataSource;
@@ -417,7 +418,7 @@ public class LAORepository {
         WitnessMessage message = new WitnessMessage(messageId);
         message.setTitle("New Election Setup ");
         // TODO : In the future display for multiple questions
-        message.setDescription("Name : " + election.getName() + "\n" + "Election ID : " + election.getId() +"\n"+ "Question : " + election.getElectionQuestions().get(0).getQuestion() + "\n" + MESSAGE_ID + messageId);
+        message.setDescription(NAME + election.getName() + "\n" + "Election ID : " + election.getId() +"\n"+ "Question : " + election.getElectionQuestions().get(0).getQuestion() + "\n" + MESSAGE_ID + messageId);
 
         lao.updateWitnessMessage(messageId, message);
         return false;
@@ -443,7 +444,7 @@ public class LAORepository {
 
         WitnessMessage message = new WitnessMessage(messageId);
         message.setTitle("New Roll Call Creation ");
-        message.setDescription("Name : " + rollCall.getName() + "\n" + "Roll Call ID : " + rollCall.getId() +"\n"+ "Location : " + rollCall.getLocation() + "\n" + MESSAGE_ID + messageId);
+        message.setDescription(NAME + rollCall.getName() + "\n" + "Roll Call ID : " + rollCall.getId() +"\n"+ "Location : " + rollCall.getLocation() + "\n" + MESSAGE_ID + messageId);
 
         lao.updateWitnessMessage(messageId, message);
 
@@ -501,7 +502,7 @@ public class LAORepository {
 
         WitnessMessage message = new WitnessMessage(messageId);
         message.setTitle("A Roll Call was closed ");
-        message.setDescription("Name : " + rollCall.getName() + "\n" + "Updated ID : " + rollCall.getId() + "\n" + MESSAGE_ID + messageId);
+        message.setDescription("Roll Call Name : " + rollCall.getName() + "\n" + "Updated ID : " + rollCall.getId() + "\n" + MESSAGE_ID + messageId);
         lao.updateWitnessMessage(messageId, message);
         return false;
     }
