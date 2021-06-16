@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Platform, StyleSheet,
 } from 'react-native';
@@ -12,9 +12,10 @@ import STRINGS from 'res/strings';
 import Home from 'parts/Home';
 import Identity from 'parts/lao/Identity';
 import Attendee from 'parts/lao/attendee/Attendee';
+import WalletSyncedSeed from 'parts/wallet/WalletSyncedSeed';
 import OrganizerNavigation from './organizer/OrganizerNavigation';
 import WitnessNavigation from './witness/WitnessNavigation';
-import WalletSyncedSeed from "../../parts/wallet/WalletSyncedSeed";
+import { WalletStore } from '../../store/stores/WalletStore';
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
 
@@ -70,6 +71,15 @@ function buildTabComponent(isOrganizer: boolean, isWitness: boolean) {
   );
 }
 
+function displaySyncedWallet() {
+  return (
+    <OrganizationTopTabNavigator.Screen
+      name={STRINGS.navigation_synced_wallet}
+      component={WalletSyncedSeed}
+    />
+  );
+}
+
 // Cannot omit the "component" attribute in Screen
 // Moreover, cannot use a lambda in "component"
 const DummyComponent = () => null;
@@ -80,6 +90,9 @@ function LaoNavigation() {
 
   const publicKeyRaw = getKeyPairState(getStore().getState()).keyPair?.publicKey;
   const publicKey = publicKeyRaw ? new PublicKey(publicKeyRaw) : undefined;
+
+  const [walletIsInitialized, setWalletIsInitialized] = useState(false);
+  WalletStore.get().then((encryptedSeed) => setWalletIsInitialized(encryptedSeed !== undefined));
 
   const isOrganizer = !!(lao && publicKey && (publicKey.equals(lao.organizer)));
   const isWitness = !!(lao && publicKey && lao.witnesses.some((w) => publicKey.equals(w)));
@@ -105,10 +118,8 @@ function LaoNavigation() {
         component={Identity}
       />
 
-      <OrganizationTopTabNavigator.Screen
-        name={STRINGS.navigation_synced_wallet}
-        component={WalletSyncedSeed}
-      />
+      { walletIsInitialized && displaySyncedWallet() }
+
       <OrganizationTopTabNavigator.Screen
         name={laoName}
         component={DummyComponent}
