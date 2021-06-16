@@ -42,9 +42,6 @@ import com.google.android.gms.vision.barcode.Barcode;
 import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
-import com.google.crypto.tink.proto.Ed25519;
-import com.google.crypto.tink.subtle.Ed25519Sign;
-import com.google.crypto.tink.subtle.Ed25519Verify;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -256,7 +253,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             // Retrieve pop token to sign (if organizer, or no pop token, simply use pk)
             byte[] sender;
             List<RollCall> rollCalls = mLaoAttendedRollCalls.getValue();
-            if (isOrganizer().getValue() || rollCalls.size() == 0) {
+            if (isOrganizer().getValue() || rollCalls.isEmpty()) {
                 KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
                 String publicKey = Keys.getEncodedKey(publicKeysetHandle);
                 sender = Base64.getUrlDecoder().decode(publicKey);

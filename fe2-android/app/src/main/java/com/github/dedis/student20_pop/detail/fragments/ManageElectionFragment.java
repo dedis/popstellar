@@ -21,7 +21,6 @@ import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentManageElectionBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
-import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.model.network.method.message.data.ElectionQuestion;
 
 import java.text.SimpleDateFormat;

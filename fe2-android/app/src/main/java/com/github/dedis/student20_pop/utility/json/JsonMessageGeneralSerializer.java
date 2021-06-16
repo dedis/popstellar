@@ -6,8 +6,6 @@ import android.util.Log;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
-import com.google.crypto.tink.PublicKeyVerify;
-import com.google.crypto.tink.subtle.Ed25519Verify;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -20,7 +18,6 @@ import com.google.gson.JsonSerializer;
 
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Iterator;
@@ -41,7 +38,6 @@ public class JsonMessageGeneralSerializer
     byte[] sender = Base64.getUrlDecoder().decode(root.get("sender").getAsString());
     byte[] signature = Base64.getUrlDecoder().decode(root.get(SIG).getAsString());
 
-    Log.d("deserializer", "signature is " + signature.toString());
     //TODO: not working with results from backend, temporarly deactivated
     /*PublicKeyVerify verifier = new Ed25519Verify(sender);
     try {
@@ -50,7 +46,6 @@ public class JsonMessageGeneralSerializer
       throw new JsonParseException("failed to verify signature on data", e);
     } */
 
-    Log.d("deserializer", "before witness");
     List<PublicKeySignaturePair> witnessSignatures = new ArrayList<>();
     JsonArray arr = root.get("witness_signatures").getAsJsonArray();
     Iterator<JsonElement> it = arr.iterator();
@@ -60,13 +55,8 @@ public class JsonMessageGeneralSerializer
       String sig = element.getAsJsonObject().get(SIG).getAsString();
       witnessSignatures.add(new PublicKeySignaturePair(Base64.getUrlDecoder().decode(witness), Base64.getUrlDecoder().decode(sig)));
     }
-    Log.d("deserializer", "before data parsing");
     JsonElement dataElement = JsonParser.parseString(new String(dataBuf));
-    Log.d("deserializer", "after data parsing");
     Data data = context.deserialize(dataElement, Data.class);
-    Log.d("deserializer", "data action is " + data.getAction());
-    Log.d("deserializer", "data object is " + data.getObject());
-    Log.d("deserializer", "data is " + data.getClass());
 
     return new MessageGeneral(sender, dataBuf, data, signature, messageId, witnessSignatures);
   }

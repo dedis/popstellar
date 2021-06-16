@@ -149,20 +149,17 @@ public class Election extends Event {
         else return Hash.hash(listOfVoteIds.toArray(new String[0]));
     }
 
-    public void setResults(List<ElectionResultQuestion> resultsQuestions) {
-        if (resultsQuestions == null) throw new IllegalArgumentException("the list of winners should not be null");
-        int i = 0;
-        for (ElectionResultQuestion resultQuestion : resultsQuestions) {
-            List<QuestionResult> results = resultQuestion.getResults();
+    public void setResults(List<ElectionResultQuestion> electionResultsQuestions) {
+        if (electionResultsQuestions == null) throw new IllegalArgumentException("the list of winners should not be null");
+        for (ElectionResultQuestion resultQuestion : electionResultsQuestions) {
+            List<QuestionResult> questionResults = resultQuestion.getResults();
             String id = resultQuestion.getId();
             if (results == null) {
-                Log.d("Election", "results are null for question number " + i);
                 this.results.put(id, new ArrayList<>());
             } else {
-                results.sort((r1, r2) -> r2.getCount().compareTo(r1.getCount()));
-                this.results.put(id, results);
+                questionResults.sort((r1, r2) -> r2.getCount().compareTo(r1.getCount()));
+                this.results.put(id, questionResults);
             }
-            i++;
         }
     }
 

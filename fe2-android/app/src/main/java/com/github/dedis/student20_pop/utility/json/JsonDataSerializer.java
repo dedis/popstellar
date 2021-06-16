@@ -25,7 +25,6 @@ public class JsonDataSerializer implements JsonSerializer<Data>, JsonDeserialize
   @Override
   public Data deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
-    Log.d("deserializer", "deseriliazing data");
     JsonObject obj = json.getAsJsonObject();
     Objects object = Objects.find(obj.get(OBJECT).getAsString());
     Action action = Action.find(obj.get(ACTION).getAsString());
@@ -35,7 +34,6 @@ public class JsonDataSerializer implements JsonSerializer<Data>, JsonDeserialize
     if (action == null)
       throw new JsonParseException("Unknown action type : " + obj.get(ACTION).getAsString());
 
-    Log.d("deserializer", "successfully deserialized object and action");
 
     Optional<Class<? extends Data>> clazz = Data.getType(object, action);
     if (!clazz.isPresent())
@@ -46,7 +44,6 @@ public class JsonDataSerializer implements JsonSerializer<Data>, JsonDeserialize
               + action.getAction()
               + ") does not exists in the protocol");
 
-    Log.d("deserializer", "successfully deserialized data");
     return context.deserialize(json, clazz.get());
   }
 
