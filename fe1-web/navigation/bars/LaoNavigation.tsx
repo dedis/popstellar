@@ -13,9 +13,10 @@ import Home from 'parts/Home';
 import Identity from 'parts/lao/Identity';
 import Attendee from 'parts/lao/attendee/Attendee';
 import WalletSyncedSeed from 'parts/wallet/WalletSyncedSeed';
+import { WalletStore } from 'store/stores/WalletStore';
 import OrganizerNavigation from './organizer/OrganizerNavigation';
 import WitnessNavigation from './witness/WitnessNavigation';
-import { WalletStore } from '../../store/stores/WalletStore';
+import WalletNavigation from './wallet/WalletNavigation';
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
 
@@ -27,7 +28,7 @@ const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
  *  - Lao tab (corresponding to user role)
  *  - Identity
  *  - name of the connected lao (fake link)
-*/
+ */
 const styles = StyleSheet.create({
   navigator: {
     ...Platform.select({
@@ -80,6 +81,15 @@ function displaySyncedWallet() {
   );
 }
 
+function displayHomeWallet() {
+  return (
+    <OrganizationTopTabNavigator.Screen
+      name={STRINGS.navigation_home_tab_wallet}
+      component={WalletNavigation}
+    />
+  );
+}
+
 // Cannot omit the "component" attribute in Screen
 // Moreover, cannot use a lambda in "component"
 const DummyComponent = () => null;
@@ -118,6 +128,7 @@ function LaoNavigation() {
         component={Identity}
       />
 
+      { !walletIsInitialized && displayHomeWallet() }
       { walletIsInitialized && displaySyncedWallet() }
 
       <OrganizationTopTabNavigator.Screen
