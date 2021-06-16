@@ -10,6 +10,7 @@ import (
 	"student20_pop/network"
 	"sync"
 	"testing"
+	"time"
 )
 
 func TestConnectToSocket(t *testing.T) {
@@ -25,6 +26,8 @@ func TestConnectToSocket(t *testing.T) {
 	}
 
 	witnessSrv := network.CreateAndServeWS(ctx, hub.WitnessHubType, hub.WitnessSocketType, h, 9000, wg)
+
+	time.Sleep(time.Second)
 
 	err = connectToSocket(ctx, hub.WitnessSocketType, "localhost:9000", h, wg)
 	if err != nil {
