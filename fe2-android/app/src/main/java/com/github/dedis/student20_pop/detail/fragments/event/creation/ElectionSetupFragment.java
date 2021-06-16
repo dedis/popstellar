@@ -33,7 +33,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
     private FragmentSetupElectionEventBinding mSetupElectionFragBinding;
 
     //mandatory fields for submitting
-    private CircleIndicator3 circleIndicator;
     private EditText electionNameText;
     private Button cancelButton;
     private Button submitButton;
@@ -112,7 +111,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
         viewPager2.setPageTransformer(new ZoomOutTransformer());
 
         //This sets the indicator of which page we are on
-        circleIndicator = mSetupElectionFragBinding.electionSetupSwipeIndicator;
+        CircleIndicator3 circleIndicator = mSetupElectionFragBinding.electionSetupSwipeIndicator;
         circleIndicator.setViewPager(viewPager2);
 
         //This observes if at least one of the question has the minimal information
