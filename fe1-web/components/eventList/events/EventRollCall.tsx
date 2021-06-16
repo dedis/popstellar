@@ -82,6 +82,7 @@ const EventRollCall = (props: IPropTypes) => {
         return (
           <>
             <Text>Not Open yet</Text>
+            <Text>Be sure to have set up your Wallet</Text>
             {isOrganizer && (
               <WideButtonView title="Open Roll Call" onPress={onOpenRollCall} />
             )}
