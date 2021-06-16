@@ -4,9 +4,49 @@ import (
 	"encoding/base64"
 	"fmt"
 	"log"
+	"student20_pop"
 	"student20_pop/message"
 	"sync"
 )
+
+type Attendees struct {
+	sync.Mutex
+	store map[string]struct{}
+}
+
+func NewAttendees() *Attendees {
+	return &Attendees{
+		store: make(map[string]struct{}),
+	}
+}
+
+func (a *Attendees) IsPresent(key string) bool {
+	a.Lock()
+	defer a.Unlock()
+
+	_, ok := a.store[key]
+	return ok
+}
+
+func (a *Attendees) Add(key string) {
+	a.Lock()
+	defer a.Unlock()
+
+	a.store[key] = struct{}{}
+}
+
+func (a *Attendees) Copy() *Attendees {
+	a.Lock()
+	defer a.Unlock()
+
+	clone := NewAttendees()
+
+	for key := range a.store {
+		clone.store[key] = struct{}{}
+	}
+
+	return clone
+}
 
 type electionChannel struct {
 	*baseChannel
@@ -23,6 +63,9 @@ type electionChannel struct {
 	// Questions asked to the participants
 	//the key will be the string representation of the id of type byte[]
 	questions map[string]question
+
+	// attendees that took part in the roll call string of their PK
+	attendees *Attendees
 }
 
 type question struct {
@@ -87,11 +130,12 @@ func (c *laoChannel) createElection(msg message.Message) error {
 		data.EndTime,
 		false,
 		getAllQuestionsForElectionChannel(data.Questions),
+		c.attendees,
 	}
 
 	// Saving the election channel creation message on the lao channel
-  c.inbox.storeMessage(msg)
-  
+	c.inbox.storeMessage(msg)
+
 	// Saving on election channel too so it self-contains the entire election history
 	electionCh.inbox.storeMessage(msg)
 
@@ -154,6 +198,28 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 		return &message.Error{
 			Code:        -4,
 			Description: fmt.Sprintf("Vote cast too late, vote casted at %v and election ended at %v", voteData.CreatedAt, c.end),
+		}
+	}
+	senderPK := base64.URLEncoding.EncodeToString(msg.Sender)
+
+	log.Printf("The sender pk is %s",senderPK)
+
+	senderPoint := student20_pop.Suite.Point()
+	err := senderPoint.UnmarshalBinary(msg.Sender)
+	if err != nil {
+		return &message.Error{
+			Code:        -4,
+			Description: "Invalid sender public key",
+		}
+	}
+
+	log.Printf("All the valid pks are %v and %v",c.attendees,senderPoint)
+
+	ok = c.attendees.IsPresent(senderPK) || c.hub.public.Equal(senderPoint)
+	if !ok {
+		return &message.Error{
+			Code:        -4,
+			Description: "Only attendees can cast a vote in an election",
 		}
 	}
 

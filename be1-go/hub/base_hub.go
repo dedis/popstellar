@@ -297,7 +297,7 @@ func (h *baseHub) createLao(publish message.Publish) error {
 
 	laoCh := laoChannel{
 		rollCall:    rollCall{},
-		attendees:   make(map[string]struct{}),
+		attendees:   NewAttendees(),
 		baseChannel: createBaseChannel(h, laoChannelID),
 	}
 
