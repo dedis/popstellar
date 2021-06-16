@@ -360,7 +360,7 @@ type ElectionEndData struct {
 // BallotOptionCount represents the the number of number of received votes for
 // particular Ballot Option
 type BallotOptionCount struct{
-	Option BallotOption `json: "ballot_option"`
+	Option BallotOption `json:"ballot_option"`
 	Count int           `json:"count"`
 }
 
