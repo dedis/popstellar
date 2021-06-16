@@ -5,6 +5,7 @@ import android.view.View;
 import androidx.viewpager2.widget.ViewPager2;
 
 /**
+ * This is a transformer for a ViewPager2, it allows a zoom on swipe animation
  * https://developer.android.com/training/animation/screen-slide-2#zoom-out
  */
 public class ZoomOutTransformer implements ViewPager2.PageTransformer {
