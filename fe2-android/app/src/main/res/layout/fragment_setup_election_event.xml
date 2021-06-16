@@ -21,7 +21,9 @@
             android:id="@+id/election_setup_lao_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/black"
             android:textSize="@dimen/size_title"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/election_setup_guideline_horizontal" />
@@ -33,6 +35,7 @@
             android:text="@string/election_setup"
             android:textSize="@dimen/size_body"
             android:textStyle="italic"
+            android:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/election_setup_lao_name" />
@@ -89,8 +92,7 @@
             android:id="@+id/election_setup_swipe_indicator"
             android:layout_width="0dp"
             android:layout_height="@dimen/swipe_indicator_height"
-            android:layout_marginTop="10dp"
-
+            android:layout_marginTop="@dimen/election_setup_question_margin"
             android:background="@color/colorPrimaryDark"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -116,8 +118,7 @@
             android:text="@string/submit"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            tools:layout_editor_absoluteX="323dp"
-            tools:layout_editor_absoluteY="683dp" />
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

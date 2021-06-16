@@ -27,8 +27,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerVertical="true"
         android:text="@string/voting_method_spinner_text"
-        android:layout_marginLeft="10dp"
-
+        android:layout_marginLeft="@dimen/election_setup_question_margin"
         android:textColor="#7E000000"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/election_question"
@@ -39,7 +38,7 @@
         android:layout_width="@dimen/election_setup_spinner_width"
         android:layout_height="@dimen/election_setup_spinner_height"
         android:background="@android:drawable/btn_dropdown"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="@dimen/election_setup_question_margin"
         android:clickable="true"
         android:spinnerMode="dropdown"
         app:layout_constraintLeft_toLeftOf="parent"

@@ -29,6 +29,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * This is where whe define behaviour of the ViewPager of election setup
+ */
 public class ElectionSetupViewPagerAdapter
         extends RecyclerView.Adapter<ElectionSetupViewPagerAdapter.ViewHolder>
        {
@@ -44,12 +47,7 @@ public class ElectionSetupViewPagerAdapter
     private Set<Integer> listOfValidQuestions;
     private Set<Integer> listOfValidBallots;
     private MutableLiveData<Boolean> isAnInputValid;
-    //Enum of all voting methods, associated to a string desc for protocol and spinner display
-    public enum VotingMethods { PLURALITY("Plurality");
-        private String desc;
-        VotingMethods(String desc) { this.desc=desc; }
-        public String getDesc() { return desc; }
-    }
+
 
 
 
@@ -70,7 +68,6 @@ public class ElectionSetupViewPagerAdapter
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Log.d(TAG, "On create view holder");
         context = parent.getContext();
         return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.layout_election_setup_question, parent, false));
     }
@@ -80,19 +77,17 @@ public class ElectionSetupViewPagerAdapter
        return position;
    }
 
-           @Override
+
+   @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        //The holder represents the view of one page of the pager
+
         //This is bad practice and should be removed in the future
        //The problem for now is that reused view messes up the data intake
         holder.setIsRecyclable(false);
 
-
-        Log.d(TAG, "Size of ballots is " + ballotOptions.size());
-
         EditText electionQuestionText = holder.electionQuestionText;
 
-        Log.d(TAG, "Size of ballots is afterwards " + ballotOptions.size());
-        Log.d(TAG, "Position onBindViewHolder " + position);
         ballotOptions.set(position, new ArrayList<>());
         electionQuestionText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -107,6 +102,8 @@ public class ElectionSetupViewPagerAdapter
 
             @Override
             public void afterTextChanged(Editable s) {
+                //On each text change we edit the list of questions
+                //and we add or remove the question from the list of filled question
                 String questionText = s.toString();
                 if(!electionQuestionText.getText().toString().trim().isEmpty()){
                     questions.set(position, questionText);
@@ -119,6 +116,8 @@ public class ElectionSetupViewPagerAdapter
 
             }
         });
+
+        //Setting the spinner and its listener
         Spinner spinner = holder.spinner;
         AdapterView.OnItemSelectedListener spinnerListener = new AdapterView.OnItemSelectedListener() {
             @Override
@@ -137,17 +136,21 @@ public class ElectionSetupViewPagerAdapter
         };
         setupElectionSpinner(spinner, spinnerListener);
 
+
         Button addBallotOptionButton = holder.addOptionButton;
 
         LinearLayout linearLayout = holder.linearLayout;
-        if(linearLayout == null)
-            System.out.println("Linear layout is null");
         addBallotOptionButton.setOnClickListener(v -> addBallotOption(linearLayout, position));
+
+        //Minimum for each question is two ballots
         addBallotOption(linearLayout, position);
         addBallotOption(linearLayout, position);
 
     }
 
+           /**
+            * On each question we add, we expand the lists appropriately
+            */
     public void addQuestion(){
         numberOfQuestions++;
         votingMethod.add("");
@@ -157,8 +160,10 @@ public class ElectionSetupViewPagerAdapter
         notifyItemInserted(numberOfQuestions -1);
     }
 
+
     @Override
     public int getItemCount() {
+        //This defines the number of page we will have
         return numberOfQuestions;
     }
 
@@ -166,6 +171,10 @@ public class ElectionSetupViewPagerAdapter
         return isAnInputValid;
     }
 
+   /**
+    * Checks if an input is valid by crosschecking the list of election questions where the question
+    * and the ballots are filled
+    */
     public void checkIfAnInputIsValid(){
         for(Integer i : listOfValidQuestions){
             if (listOfValidBallots.contains(i)) {
@@ -177,6 +186,10 @@ public class ElectionSetupViewPagerAdapter
         isAnInputValid.setValue(false);
     }
 
+           /**
+            *
+            * @return the indexes of election question where input is valid
+            */
     public List<Integer> getValidInputs(){
         List<Integer> listOfValidInputs = new ArrayList<>();
         for (Integer i : listOfValidQuestions){

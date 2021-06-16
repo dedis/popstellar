@@ -53,7 +53,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
 
 
 
-    //the number of valid ballot options set by the organizer
 
     //Text watcher that checks if mandatory fields are filled for submitting each time the user changes a field (with at least two valid ballot options)
     private final TextWatcher submitTextWatcher =
@@ -66,6 +65,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
 
                 @Override
                 public void afterTextChanged(Editable s) {
+                    //On each change of election level information, we check that at least one question is complete to know if submit is allowed
                     submitButton.setEnabled(isElectionLevelInputValid() && viewPagerAdapter.isAnInputValid().getValue());}
             };
 
@@ -101,7 +101,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
         //Add text watchers on the fields that need to be filled
         electionNameText.addTextChangedListener(submitTextWatcher);
 
-        // Set up the basic fields for ballot options, with at least two options
 
         // Set the text widget in layout to current LAO name
         TextView laoNameTextView = mSetupElectionFragBinding.electionSetupLaoName;
@@ -110,13 +109,18 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
         //Set viewPager adapter
         viewPagerAdapter = new ElectionSetupViewPagerAdapter(mLaoDetailViewModel);
 
+        //Set ViewPager
         viewPager2 = mSetupElectionFragBinding.electionSetupViewPager2;
         viewPager2.setAdapter(viewPagerAdapter);
+
+        //Sets animation on swipe
         viewPager2.setPageTransformer(new ZoomOutTransformer());
 
+        //This sets the indicator of which page we are on
         circleIndicator = mSetupElectionFragBinding.electionSetupSwipeIndicator;
         circleIndicator.setViewPager(viewPager2);
 
+        //This observes if at least one of the question has the minimal information
         viewPagerAdapter.isAnInputValid().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
@@ -133,7 +137,10 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
             //TODO delete this and find a way to keep data on left swipe
             viewPager2.setOffscreenPageLimit(viewPagerAdapter.getNumberOfQuestions());
 
+            //This swipes automatically to new question
             viewPager2.setCurrentItem(viewPager2.getCurrentItem() + 1);
+
+            //Updates the number of circles in the indicator
             circleIndicator.setViewPager(viewPager2);
             addQuestion.setEnabled(true);
         });
@@ -176,7 +183,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
                     submitButton.setEnabled(false);
                     //When submitting, we compute the timestamps for the selected start and end time
                     computeTimesInSeconds();
-                    //Filter the list of ballot options to keep only non-empty fields
+
                     final List<Integer> validPositions = viewPagerAdapter.getValidInputs();
 
                     List<String> votingMethod = viewPagerAdapter.getVotingMethod();
@@ -190,17 +197,20 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
                     List<Boolean> writeIns = new ArrayList<>();
                     //////////////////////////////////////////////////////////////////////////////////////////////////////
                     for(Integer i : validPositions) {
+                        //We filter to only take the questions for which all data is filled
                             writeIns.add(false); //While write in is not implemented
                             questionsFiltered.add(questions.get(i));
                             votingMethodFiltered.add(votingMethod.get(i));
                             List<String> questionBallotOptions = ballotsOptions.get(i);
                             List<String> filteredQuestionBallotOptions = new ArrayList<>();
                             for (String ballotOption : questionBallotOptions) {
+                                //Filter the list of ballot options to keep only non-empty fields
                                 if (!ballotOption.equals(""))
                                     filteredQuestionBallotOptions.add(ballotOption);
                             }
                             ballotsOptionsFiltered.add(filteredQuestionBallotOptions);
                         }
+
                     String electionName = electionNameText.getText().toString();
                     Log.d(TAG, "Creating election with name " + electionName + ", start time " + startTimeInSeconds + ", end time " + endTimeInSeconds + ", voting methods "
                     + votingMethodFiltered + ", writesIn " + writeIns + ", questions " + questionsFiltered + ", ballotsOptions " +ballotsOptionsFiltered);
@@ -220,6 +230,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
 
     /**
      * Adapted from https://blog.mindorks.com/how-to-check-the-visibility-of-software-keyboard-in-android
+     * Detects if the soft keyboard is open to make the buttons invisible
      */
     private void hideButtonsOnKeyboardOpen() {
         ConstraintLayout constraintLayout = mSetupElectionFragBinding.fragmentSetupElectionEvent;
@@ -244,6 +255,10 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
         });
     }
 
+    /**
+     *
+     * @return true if the election name text, dates and times inputs are valid
+     */
     private boolean isElectionLevelInputValid(){
         return !electionNameText.getText().toString().trim().isEmpty() && !getStartDate().isEmpty()
                 && !getStartTime().isEmpty() && !getEndDate().isEmpty() && !getEndTime().isEmpty();
