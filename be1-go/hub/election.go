@@ -8,6 +8,40 @@ import (
 	"sync"
 )
 
+type Attendees struct {
+	sync.Mutex
+	store map[string]struct{}
+}
+
+func NewAttendees() Attendees {
+	return Attendees{
+		Mutex: sync.Mutex{},
+		store: make(map[string] struct{}),
+	}
+}
+
+func (a Attendees) IsPresent(key string) bool {
+	_ ,ok := a.store[key]
+	return ok
+}
+
+func (a Attendees) Add(key string) {
+	a.store[key] = struct{}{}
+}
+
+func (a Attendees) Copy() Attendees {
+	a.Lock()
+	defer a.Unlock()
+
+	copy := NewAttendees()
+
+	for key := range a.store {
+		copy.store[key] = struct{}{}
+	}
+
+	return copy
+}
+
 type electionChannel struct {
 	*baseChannel
 
@@ -25,7 +59,7 @@ type electionChannel struct {
 	questions map[string]question
 
 	// attendees that took part in the roll call string of their PK
-	attendees map[string]struct{}
+	attendees Attendees
 }
 
 type question struct {
@@ -90,7 +124,7 @@ func (c *laoChannel) createElection(msg message.Message) error {
 		data.EndTime,
 		false,
 		getAllQuestionsForElectionChannel(data.Questions),
-		c.attendees,
+		addAttendees(c.attendees),
 	}
 
 	// Saving the election channel creation message on the lao channel
@@ -165,7 +199,7 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 		}
 	}
 	senderPK := base64.URLEncoding.EncodeToString(msg.Sender)
-	_,ok = c.attendees[senderPK]
+	ok = c.attendees.IsPresent(senderPK)
 	if !ok {
 		return &message.Error{
 			Code:        -4,
@@ -250,5 +284,13 @@ func getAllQuestionsForElectionChannel(questions []message.Question) map[string]
 		}
 	}
 	return qs
+}
+
+func addAttendees(attendees map[string]struct{}) Attendees {
+	atts := NewAttendees()
+	for pk := range attendees{
+		atts.Add(pk)
+	}
+	return atts.Copy()
 }
 
