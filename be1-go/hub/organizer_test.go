@@ -248,8 +248,9 @@ func TestOrganizer_RollCall(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, laoChannel.rollCall.state, Closed)
 	require.Equal(t, laoChannel.rollCall.id, string(dataClose1.UpdateID))
+
 	for _, attendee := range attendees[:8] {
-		_, ok := laoChannel.attendees[string(attendee)]
+		ok := laoChannel.attendees.IsPresent(attendee.String())
 		require.True(t, ok)
 	}
 
@@ -270,8 +271,9 @@ func TestOrganizer_RollCall(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, laoChannel.rollCall.state, Closed)
 	require.Equal(t, laoChannel.rollCall.id, string(dataClose2.UpdateID))
+
 	for _, attendee := range attendees {
-		_, ok := laoChannel.attendees[string(attendee)]
+		ok := laoChannel.attendees.IsPresent(attendee.String())
 		require.True(t, ok)
 	}
 }
