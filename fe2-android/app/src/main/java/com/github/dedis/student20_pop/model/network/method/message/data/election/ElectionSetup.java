@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.model.network.method.message.data.election;
 
+import com.github.dedis.student20_pop.model.network.method.message.data.ElectionQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
@@ -40,12 +41,19 @@ public class ElectionSetup extends Data {
             List<List<String>> ballotOptions,
             List<String> questionList,
             String laoId) {
+
         if(questionList.size() != votingMethod.size() || questionList.size() !=writeIn.size()
                 || questionList.size() !=ballotOptions.size())
             throw new IllegalArgumentException("Lists are not of the same size");
+        if (name == null || votingMethod == null || ballotOptions == null ||  laoId == null) throw new IllegalArgumentException();
+
         this.name = name;
         this.createdAt = Instant.now().getEpochSecond();
-        this.startTime = start;
+        if(start <= createdAt){
+            this.startTime = createdAt;
+        }else{
+            this.startTime = start;
+        }
         this.endTime = end;
         this.lao = laoId;
         this.version = "1.0.0";

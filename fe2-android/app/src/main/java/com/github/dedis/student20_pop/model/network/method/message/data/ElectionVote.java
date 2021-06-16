@@ -1,4 +1,4 @@
-package com.github.dedis.student20_pop.model.network.method.message.data.election;
+package com.github.dedis.student20_pop.model.network.method.message.data;
 
 import com.github.dedis.student20_pop.utility.network.IdGenerator;
 import com.google.gson.annotations.SerializedName;
@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class ElectionVote {
+
 
     private String id;
     /**
@@ -58,7 +59,6 @@ public class ElectionVote {
     public List<Integer> getVotes() {
         return vote;
     }
-
 
     @Override
     public boolean equals(Object o) {

@@ -18,10 +18,13 @@ import com.github.dedis.student20_pop.model.network.method.Catchup;
 import com.github.dedis.student20_pop.model.network.method.Publish;
 import com.github.dedis.student20_pop.model.network.method.Subscribe;
 import com.github.dedis.student20_pop.model.network.method.Unsubscribe;
-import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionQuestion;
+import com.github.dedis.student20_pop.model.network.method.message.data.ElectionResultQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.CastVote;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionEnd;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionResult;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
@@ -37,8 +40,14 @@ import com.google.crypto.tink.PublicKeyVerify;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.crypto.tink.subtle.Ed25519Verify;
 import com.google.gson.Gson;
-import com.tinder.scarlet.WebSocket;
 
+import com.tinder.scarlet.WebSocket;
+import io.reactivex.Observable;
+import io.reactivex.Single;;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -52,12 +61,9 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.BehaviorSubject;
-import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subjects.Subject;
+import static com.github.dedis.student20_pop.model.event.EventState.CLOSED;
+import static com.github.dedis.student20_pop.model.event.EventState.OPENED;
+import static com.github.dedis.student20_pop.model.event.EventState.RESULTS_READY;
 
 
 public class LAORepository {
@@ -69,6 +75,8 @@ public class LAORepository {
   private final LAODataSource.Local mLocalDataSource;
   private final AndroidKeysetManager mKeysetManager;
   private final Gson mGson;
+
+  private static final String ABSENT_ELECTION_ERROR_MESSAGE = "the election should be present when receiving a result";
 
   // A subject that represents unprocessed messages
   private Subject<GenericMessage> unprocessed;
@@ -145,6 +153,7 @@ public class LAORepository {
   }
 
   private void handleGenericMessage(GenericMessage genericMessage) {
+    Log.d(TAG, "handling generic msg");
     if (genericMessage instanceof Error) {
       Error err = (Error) genericMessage;
       int id = err.getId();
@@ -167,15 +176,17 @@ public class LAORepository {
         String channel = subscribeRequests.get(id);
         subscribeRequests.remove(id);
 
-        Lao lao = new Lao(channel);
-        laoById.put(channel, new LAOState(lao));
-        allLaoSubject.onNext(
-            laoById.entrySet().stream()
-                .map(x -> x.getValue().getLao())
-                .collect(Collectors.toList()));
+        if (isLaoChannel(channel)) {
+          Lao lao = new Lao(channel);
+          laoById.put(channel, new LAOState(lao));
+          allLaoSubject.onNext(
+                  laoById.entrySet().stream()
+                          .map(x -> x.getValue().getLao())
+                          .collect(Collectors.toList()));
 
-        Log.d(TAG, "posted allLaos to `allLaoSubject`");
-        sendCatchup(channel);
+          Log.d(TAG, "posted allLaos to `allLaoSubject`");
+          sendCatchup(channel);
+        }
       } else if (catchupRequests.containsKey(id)) {
         String channel = catchupRequests.get(id);
         catchupRequests.remove(id);
@@ -252,13 +263,19 @@ public class LAORepository {
       enqueue = handleCloseRollCall(channel, (CloseRollCall) data);
     } else if (data instanceof WitnessMessage) {
       enqueue = handleWitnessMessage(channel, senderPk, (WitnessMessage) data);
+    } else if (data instanceof ElectionResult) {
+      enqueue = handleElectionResult(channel, (ElectionResult) data);
+    } else if (data instanceof ElectionEnd) {
+      enqueue = handleElectionEnd(channel);
+    } else if (data instanceof  CastVote) {
+      enqueue = handleCastVote(channel, (CastVote) data, senderPk, message.getMessageId());
     } else {
       Log.d(TAG, "cannot handle message with data" + data.getClass());
       enqueue = true;
     }
 
     // Trigger an onNext
-    if (!(data instanceof WitnessMessage)) {
+    if (!(data instanceof WitnessMessage) && isLaoChannel(channel)) {
       LAOState laoState = laoById.get(channel);
       laoState.publish();
       if (data instanceof StateLao || data instanceof CreateLao) {
@@ -270,6 +287,81 @@ public class LAORepository {
     }
     return enqueue;
   }
+
+  /**
+   * Retrieves the Election in a given channel
+   * @param channel the channel on which the election was created
+   * @return the election corresponding to this channel
+   */
+  private Election getElectionByChannel(String channel) {
+    Lao lao = getLaoByChannel(channel);
+    Optional<Election> electionOption = lao.getElection(channel.split("/")[3]);
+    if (!electionOption.isPresent()) throw new IllegalArgumentException("the election should be present when receiving a result");
+    return electionOption.get();
+  }
+
+  /**
+   * Retrieves the Lao in a given channel
+   * @param channel the channel on which the Lao was created
+   * @return the Lao corresponding to this channel
+   */
+  private Lao getLaoByChannel(String channel) {
+    String[] split = channel.split("/");
+    return laoById.get("/root/" + split[2]).getLao();
+  }
+
+  /**
+   * Checks that a given channel corresponds to a LAO channel, i.e /root/laoId
+   * @param channel the channel we want to check
+   * @return true if the channel is a lao channel, false otherwise
+   */
+  private boolean isLaoChannel(String channel) {
+    return channel.split("/").length == 3;
+  }
+
+  private boolean handleElectionEnd(String channel) {
+    Lao lao = getLaoByChannel(channel);
+    Election election = getElectionByChannel(channel);
+    election.setEventState(CLOSED);
+    lao.updateElection(election.getId(), election);
+    return false;
+  }
+
+  private boolean handleCastVote(String channel, CastVote data, String senderPk, String messageId) {
+    Lao lao = getLaoByChannel(channel);
+    Election election = getElectionByChannel(channel);
+
+    //We ignore the vote iff the election is ended and the cast vote message was created after the end timestamp
+    if (election.getEndTimestamp() >= data.getCreation() || election.getState()!= CLOSED) {
+      /* We retrieve previous cast vote message stored for the given sender, and consider the new vote iff its creation
+      is after (hence preventing reordering attacks) */
+      Optional<String> previousMessageIdOption = election.getMessageMap().entrySet().stream()
+              .filter(entry -> senderPk.equals(entry.getValue())).map(Map.Entry::getKey).findFirst();
+      //If there is no previous message, or that this message is the last of all received messages, then we consider the votes
+      if (!previousMessageIdOption.isPresent() ||
+              ((CastVote) messageById.get(previousMessageIdOption.get()).getData()).getCreation() <= data.getCreation()) {
+        election.putVotesBySender(senderPk, data.getVotes());
+        election.putSenderByMessageId(senderPk, messageId);
+        lao.updateElection(election.getId(), election);
+      }
+    }
+    return false;
+  }
+
+  private boolean handleElectionResult(String channel, ElectionResult data) {
+    Log.d(TAG, "handling election result");
+    Lao lao = getLaoByChannel(channel);
+    Election election = getElectionByChannel(channel);
+
+    List<ElectionResultQuestion> resultsQuestions = data.getElectionQuestionResults();
+    if (resultsQuestions.isEmpty()) throw new IllegalArgumentException("the questions results shouldn't be empty");
+    Log.d(TAG, "size of resultsQuestions is " + resultsQuestions.size());
+    election.setResults(resultsQuestions);
+    election.setEventState(RESULTS_READY);
+    lao.updateElection(election.getId(), election);
+    return false;
+  }
+
 
   private boolean handleCreateLao(String channel, CreateLao createLao) {
     Lao lao = laoById.get(channel).getLao();
@@ -346,39 +438,31 @@ public class LAORepository {
   }
 
   private boolean handleElectionSetup(String channel, ElectionSetup electionSetup) {
-    Lao lao = laoById.get(channel).getLao();
-    Log.d(TAG, "handleElectionSetup: " + channel + " name " + electionSetup.getName());
+    //election setup msg should be sent on an LAO channel
+    if (isLaoChannel(channel)) {
+      Lao lao = laoById.get(channel).getLao();
+      Log.d(TAG, "handleElectionSetup: " + channel + " name " + electionSetup.getName());
 
-    // In the case (that shouldn't happen) where there is no question, we add a "default" question
-    // to prevent a crash
-    if (electionSetup.getQuestions().isEmpty()) {
-      Log.d(TAG, "election should have at least one question");
-      electionSetup
-          .getQuestions()
-          .add(
-              new ElectionQuestion(
-                  "default question",
-                  "Plurality",
-                  false,
-                  new ArrayList<>(),
-                  electionSetup.getId()));
+      Election election = new Election();
+      election.setId(electionSetup.getId());
+      election.setName(electionSetup.getName());
+      election.setCreation(electionSetup.getCreation());
+      election.setChannel(channel + "/" + election.getId());
+      election.setElectionQuestions(electionSetup.getQuestions());
+
+      election.setStart(electionSetup.getStartTime());
+      election.setEnd(electionSetup.getEndTime());
+      election.setEventState(OPENED);
+
+      //Once the election is created, we subscribe to the election channel
+      sendSubscribe(election.getChannel());
+      Log.d(TAG, "election id being put is " + election.getId());
+      lao.putElection(election);
     }
-    List<ElectionQuestion> electionQuestions = electionSetup.getQuestions();
-
-    Election election = new Election();
-    election.setId(electionSetup.getId());
-    election.setName(electionSetup.getName());
-    election.setCreation(electionSetup.getCreation());
-    election.setStart(electionSetup.getStartTime());
-    election.setElectionQuestions(electionQuestions);
-    election.setStart(electionSetup.getStartTime());
-    election.setEnd(electionSetup.getEndTime());
-
-    lao.updateElection(election.getId(), election);
     return false;
   }
 
-  private boolean handleCreateRollCall(String channel, CreateRollCall createRollCall) {
+    private boolean handleCreateRollCall(String channel, CreateRollCall createRollCall) {
     Lao lao = laoById.get(channel).getLao();
     Log.d(TAG, "handleCreateRollCall: " + channel + " name " + createRollCall.getName());
 
