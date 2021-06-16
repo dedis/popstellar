@@ -205,6 +205,13 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 	log.Printf("The sender pk is %s",senderPK)
 
 	senderPoint := student20_pop.Suite.Point()
+	err := senderPoint.UnmarshalBinary(msg.Sender)
+	if err != nil {
+		return &message.Error{
+			Code:        -4,
+			Description: "Invalid sender public key",
+		}
+	}
 
 	log.Printf("All the valid pks are %v and %v",c.attendees,senderPoint)
 
