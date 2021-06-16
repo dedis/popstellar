@@ -13,32 +13,32 @@ type Attendees struct {
 	store map[string]struct{}
 }
 
-func NewAttendees() Attendees {
-	return Attendees{
-		store: make(map[string] struct{}),
+func NewAttendees() *Attendees {
+	return &Attendees{
+		store: make(map[string]struct{}),
 	}
 }
 
-func (a Attendees) IsPresent(key string) bool {
-	_ ,ok := a.store[key]
+func (a *Attendees) IsPresent(key string) bool {
+	_, ok := a.store[key]
 	return ok
 }
 
-func (a Attendees) Add(key string) {
+func (a *Attendees) Add(key string) {
 	a.store[key] = struct{}{}
 }
 
-func (a Attendees) Copy() Attendees {
+func (a *Attendees) Copy() *Attendees {
 	a.Lock()
 	defer a.Unlock()
 
-	copy := NewAttendees()
+	clone := NewAttendees()
 
 	for key := range a.store {
-		copy.store[key] = struct{}{}
+		clone.store[key] = struct{}{}
 	}
 
-	return copy
+	return clone
 }
 
 type electionChannel struct {
@@ -58,7 +58,7 @@ type electionChannel struct {
 	questions map[string]question
 
 	// attendees that took part in the roll call string of their PK
-	attendees Attendees
+	attendees *Attendees
 }
 
 type question struct {
@@ -123,12 +123,12 @@ func (c *laoChannel) createElection(msg message.Message) error {
 		data.EndTime,
 		false,
 		getAllQuestionsForElectionChannel(data.Questions),
-		addAttendees(c.attendees),
+		c.attendees,
 	}
 
 	// Saving the election channel creation message on the lao channel
-  c.inbox.storeMessage(msg)
-  
+	c.inbox.storeMessage(msg)
+
 	// Saving on election channel too so it self-contains the entire election history
 	electionCh.inbox.storeMessage(msg)
 
@@ -277,12 +277,3 @@ func getAllQuestionsForElectionChannel(questions []message.Question) map[string]
 	}
 	return qs
 }
-
-func addAttendees(attendees map[string]struct{}) Attendees {
-	atts := NewAttendees()
-	for pk := range attendees{
-		atts.Add(pk)
-	}
-	return atts.Copy()
-}
-
