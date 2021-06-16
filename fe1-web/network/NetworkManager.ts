@@ -41,7 +41,9 @@ class NetworkManager {
     // const address: string = NetworkManager.buildAddress(host, port, path);
     // const address = 'wss://popdemo.dedis.ch/52af0cf9';
     // const address = 'wss://popdemo.dedis.ch/7380087d'; // Karims \ADress to tes tRC
-    const address = 'wss://popdemo.dedis.ch/782a29da'; // For pop party
+    //const address = 'wss://popdemo.dedis.ch/782a29da'; // For pop party
+    const address = 'wss://popdemo.dedis.ch/cde0c872';
+
     const existingConnection = this.getConnectionByAddress(address);
 
     if (existingConnection !== undefined) {
