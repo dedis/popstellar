@@ -109,7 +109,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     private final MutableLiveData<Lao> mCurrentLao = new MutableLiveData<>();
     private final MutableLiveData<Election> mCurrentElection = new MutableLiveData<>(); // Represents the current election being managed/opened in a fragment
     private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> mIsAttendee = new MutableLiveData<>();
     private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
     private final MutableLiveData<String> mLaoName = new MutableLiveData<>("");
     private final MutableLiveData<List<List<Integer>>> mCurrentElectionVotes = new MutableLiveData<>();
@@ -620,10 +619,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         return mIsOrganizer;
     }
 
-    public LiveData<Boolean> isAttendee() {
-        return mIsAttendee;
-    }
-
     public LiveData<Boolean> getShowProperties() {
         return showProperties;
     }
@@ -962,7 +957,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         attendees.add(barcode.rawValue);
         mAttendeeScanConfirmEvent.postValue(new Event<>("Attendee has been added."));
         mNbAttendeesEvent.postValue(new Event<>(attendees.size()));
-        mIsAttendee.postValue(true);
     }
 
 }

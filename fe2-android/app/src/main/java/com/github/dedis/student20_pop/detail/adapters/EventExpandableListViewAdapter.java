@@ -337,7 +337,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
         if (category == PRESENT) {
             electionBinding.electionActionButton.setText(R.string.cast_vote);
-            if (viewModel.isAttendee().getValue()) electionBinding.electionActionButton.setEnabled(true);
+            if (viewModel.getLaoAttendedRollCalls().getValue().size() > 0) electionBinding.electionActionButton.setEnabled(true);
             electionBinding.electionActionButton.setOnClickListener(clicked -> viewModel.openCastVotes());
         } else if (category == PAST) {
             if (!viewModel.isOrganizer().getValue()) electionBinding.electionActionButton.setEnabled(false);
@@ -356,7 +356,6 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
             }
 
         }
-
 
         electionBinding.electionEditButton.setOnClickListener(clicked -> viewModel.openManageElection(true));
         electionBinding.setEventCategory(category);
