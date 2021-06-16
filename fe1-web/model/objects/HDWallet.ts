@@ -1,15 +1,15 @@
 import { WalletStore } from 'store/stores/WalletStore';
+import { LastPopTokenStore } from 'store/stores/LastPoPTokenStore';
 import * as bip39 from 'bip39';
 import { derivePath, getPublicKey } from 'ed25519-hd-key';
-import base64url from 'base64url';
+import { encodeBase64 } from 'tweetnacl-util';
 import { WalletCryptographyHandler } from './WalletCryptographyHandler';
 import { Hash } from './Hash';
 import { KeyPair } from './KeyPair';
 import { PublicKey } from './PublicKey';
 import { PrivateKey } from './PrivateKey';
 import { getStore } from '../../store';
-import {Base64UrlData} from "./Base64Url";
-import {encodeBase64} from "tweetnacl-util";
+import { Base64UrlData } from './Base64Url';
 
 /**
  * bip39 library used for seed generation and verification
@@ -272,7 +272,13 @@ export class HDWallet {
           privateKey: new PrivateKey(Base64UrlData.fromBase64(encodeBase64(key)).valueOf()),
         });
 
-        this.lastGeneratedPoPToken = token;
+        LastPopTokenStore.storePrivateKey(token.privateKey.valueOf());
+        LastPopTokenStore.storePublicKey(token.publicKey.valueOf());
+
+
+       // console.log(LastPopTokenStore.getPrivateKey());
+       // console.log(LastPopTokenStore.getPublicKey());
+
         return token;
       });
   }

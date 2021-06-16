@@ -7,11 +7,12 @@ import {
   WitnessSignatureState,
   Channel, HDWallet,
 } from 'model/objects';
-import { KeyPairStore, WalletStore } from 'store';
+import {KeyPairStore, LastPopTokenStore, WalletStore} from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import {
   MessageData, buildMessageData, encodeMessageData,
 } from './data';
+import LastPoPTokenReducer from "../../../../store/reducers/LastPoPTokenReducer";
 
 /**
  * MessageState is the interface that should match JSON.stringify(Message)
@@ -139,6 +140,11 @@ export class Message {
 
     await WalletStore.get().then((encryptedSeed) => {
       if (encryptedSeed !== undefined) {
+
+        // TODO: this should work Adi
+        console.log(LastPopTokenStore.getPrivateKey());
+        console.log(LastPopTokenStore.getPublicKey());
+
         HDWallet.fromState(encryptedSeed)
           .then((wallet) => {
             const kp = wallet.recoverLastGeneratedPoPToken();
