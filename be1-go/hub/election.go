@@ -378,7 +378,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 			questionResults := make([]message.QuestionResult,0)
 			numberOfVotesPerBallotOption := make([]int, len(question.ballotOptions))
 			for _, vote := range votes {
-				for ballotIndex := range vote.indexes {
+				for _,ballotIndex := range vote.indexes {
 					numberOfVotesPerBallotOption[ballotIndex] += 1
 				}
 			}
