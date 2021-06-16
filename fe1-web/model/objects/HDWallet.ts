@@ -8,8 +8,6 @@ import { KeyPair } from './KeyPair';
 import { PublicKey } from './PublicKey';
 import { PrivateKey } from './PrivateKey';
 import { getStore } from '../../store';
-import {Base64UrlData} from "./Base64Url";
-import {encodeBase64} from "tweetnacl-util";
 
 /**
  * bip39 library used for seed generation and verification
@@ -44,6 +42,8 @@ export class HDWallet {
 
   /* local copy of encrypted seed */
   private encryptedSeed!: ArrayBuffer;
+
+  private lastGeneratedPoPToken: KeyPair | undefined;
 
   /**
    * a wallet can be created empty and then initialized or
@@ -180,6 +180,10 @@ export class HDWallet {
     return this.recoverAllKeys(recoverMaps[0], recoverMaps[1]);
   }
 
+  public async recoverLastGeneratedPoPToken(): Promise<KeyPair | undefined> {
+    return this.lastGeneratedPoPToken;
+  }
+
   /**
    * This is the main function for the wallet to find all the tokens associated with it, by checking
    * through all known Roll Calls of the Laos that the user joined weather or not the token
@@ -261,10 +265,13 @@ export class HDWallet {
         const { key } = derivePath(path, hexSeed);
         const pubKey = getPublicKey(key, false);
 
-        return new KeyPair({
-          publicKey: new PublicKey(Base64UrlData.fromBase64(encodeBase64(pubKey)).valueOf()),
-          privateKey: new PrivateKey(Base64UrlData.fromBase64(encodeBase64(key)).valueOf()),
+        const token = new KeyPair({
+          publicKey: new PublicKey(base64url.encode(pubKey)),
+          privateKey: new PrivateKey(base64url.encode(key)),
         });
+
+        this.lastGeneratedPoPToken = token;
+        return token;
       });
   }
 
