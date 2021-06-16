@@ -1,7 +1,14 @@
 import {
-  Base64UrlData, Hash, PublicKey, Signature, WitnessSignature, WitnessSignatureState, Channel,
+  Base64UrlData,
+  Hash,
+  PublicKey,
+  Signature,
+  WitnessSignature,
+  WitnessSignatureState,
+  Channel,
+  HDWallet,
 } from 'model/objects';
-import { KeyPairStore } from 'store';
+import {KeyPairStore, WalletStore} from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import {
   MessageData, buildMessageData, encodeMessageData,
@@ -130,6 +137,9 @@ export class Message {
     // Get current RC - After RC is closed - Loop through all events in that lao
     //
     // WalletStore.get().then((e) => HDWallet.fromState(e).then(wallet => wallet.generateToken(laoId, RCId).then(keyPair => keyPair.privateKey)).sign(encodedDataJson));
+    // Todo: Use Pop Token here if available
+
+    // let popToken: PublicKey;
 
     return new Message({
       data: encodedDataJson,

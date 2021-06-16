@@ -8,7 +8,7 @@ import {
 } from 'model/objects';
 import { useSelector } from 'react-redux';
 import {
-  getStore, makeCurrentLao, OpenedLaoStore, WalletStore,
+  OpenedLaoStore, WalletStore,
 } from 'store';
 import QRCode from 'components/QRCode';
 import WideButtonView from '../../WideButtonView';
@@ -109,6 +109,12 @@ const EventRollCall = (props: IPropTypes) => {
         return (
           <>
             <Text>Closed</Text>
+            {console.log('attendees are: ', rollCallFromStore.attendees)}
+            <Text>Attendees are:</Text>
+            {rollCallFromStore.attendees.map((attendee: string) => (
+              <Text>{attendee}</Text>
+            ))}
+            <Text>{rollCallFromStore.attendees}</Text>
             {isOrganizer && (
               <WideButtonView title="Re-open Roll Call" onPress={() => onOpenRollCall(true)} />
             )}

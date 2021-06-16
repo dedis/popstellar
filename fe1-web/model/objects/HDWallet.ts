@@ -8,6 +8,8 @@ import { KeyPair } from './KeyPair';
 import { PublicKey } from './PublicKey';
 import { PrivateKey } from './PrivateKey';
 import { getStore } from '../../store';
+import {Base64UrlData} from "./Base64Url";
+import {encodeBase64} from "tweetnacl-util";
 
 /**
  * bip39 library used for seed generation and verification
@@ -260,8 +262,8 @@ export class HDWallet {
         const pubKey = getPublicKey(key, false);
 
         return new KeyPair({
-          publicKey: new PublicKey(base64url.encode(pubKey)),
-          privateKey: new PrivateKey(base64url.encode(key)),
+          publicKey: new PublicKey(Base64UrlData.fromBase64(encodeBase64(pubKey)).valueOf()),
+          privateKey: new PrivateKey(Base64UrlData.fromBase64(encodeBase64(key)).valueOf()),
         });
       });
   }
