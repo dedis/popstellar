@@ -266,9 +266,9 @@ public class LAORepository {
         } else if (data instanceof CreateRollCall) {
             enqueue = handleCreateRollCall(channel, (CreateRollCall) data,message.getMessageId());
         } else if (data instanceof OpenRollCall) {
-            enqueue = handleOpenRollCall(channel, (OpenRollCall) data);
+            enqueue = handleOpenRollCall(channel, (OpenRollCall) data,message.getMessageId());
         } else if (data instanceof CloseRollCall) {
-            enqueue = handleCloseRollCall(channel, (CloseRollCall) data);
+            enqueue = handleCloseRollCall(channel, (CloseRollCall) data,message.getMessageId());
         } else if (data instanceof WitnessMessageSignature) {
             enqueue = handleWitnessMessage(channel, senderPk, (WitnessMessageSignature) data);
         } else {
@@ -341,6 +341,7 @@ public class LAORepository {
 
         lao.updateWitnessMessage(messageId, message);
         if(!lao.getWitnesses().isEmpty()) {
+            // We send a pending update only if there are already some witness that need to sign this UpdateLao
             lao.getPendingUpdates().add(new PendingUpdate(updateLao.getLastModified(), messageId));
         }
         return false;
@@ -415,7 +416,8 @@ public class LAORepository {
 
         WitnessMessage message = new WitnessMessage(messageId);
         message.setTitle("New Election Setup ");
-        message.setDescription("Name : " + election.getName() + "\n" + "Question : " + election.getElectionQuestions().get(0).getQuestion() + "\n" + MESSAGE_ID + messageId);
+        // TODO : In the future display for multiple questions
+        message.setDescription("Name : " + election.getName() + "\n" + "Election ID : " + election.getId() +"\n"+ "Question : " + election.getElectionQuestions().get(0).getQuestion() + "\n" + MESSAGE_ID + messageId);
 
         lao.updateWitnessMessage(messageId, message);
         return false;
@@ -441,14 +443,14 @@ public class LAORepository {
 
         WitnessMessage message = new WitnessMessage(messageId);
         message.setTitle("New Roll Call Creation ");
-        message.setDescription("Name : " + rollCall.getName() + "\n" + "Location : " + rollCall.getLocation() + "\n" + MESSAGE_ID + messageId);
+        message.setDescription("Name : " + rollCall.getName() + "\n" + "Roll Call ID : " + rollCall.getId() +"\n"+ "Location : " + rollCall.getLocation() + "\n" + MESSAGE_ID + messageId);
 
         lao.updateWitnessMessage(messageId, message);
 
         return false;
     }
 
-    private boolean handleOpenRollCall(String channel, OpenRollCall openRollCall) {
+    private boolean handleOpenRollCall(String channel, OpenRollCall openRollCall,String messageId) {
         Lao lao = laoById.get(channel).getLao();
         Log.d(TAG, "handleOpenRollCall: " + channel);
         Log.d(TAG, openRollCall.getOpens());
@@ -469,10 +471,15 @@ public class LAORepository {
         rollCall.setId(updateId);
 
         lao.updateRollCall(opens, rollCall);
+
+        WitnessMessage message = new WitnessMessage(messageId);
+        message.setTitle("A Roll Call was opened");
+        message.setDescription("Roll Call Name : " + rollCall.getName() + "\n" + "Updated ID : " + rollCall.getId() + "\n" + MESSAGE_ID + messageId);
+        lao.updateWitnessMessage(messageId, message);
         return false;
     }
 
-    private boolean handleCloseRollCall(String channel, CloseRollCall closeRollCall) {
+    private boolean handleCloseRollCall(String channel, CloseRollCall closeRollCall,String messageId) {
         Lao lao = laoById.get(channel).getLao();
         Log.d(TAG, "handleCloseRollCall: " + channel);
 
@@ -491,6 +498,11 @@ public class LAORepository {
         rollCall.setState(EventState.CLOSED);
 
         lao.updateRollCall(closes, rollCall);
+
+        WitnessMessage message = new WitnessMessage(messageId);
+        message.setTitle("A Roll Call was closed ");
+        message.setDescription("Name : " + rollCall.getName() + "\n" + "Updated ID : " + rollCall.getId() + "\n" + MESSAGE_ID + messageId);
+        lao.updateWitnessMessage(messageId, message);
         return false;
     }
 
@@ -511,6 +523,7 @@ public class LAORepository {
             // Update the message
             MessageGeneral msg = messageById.get(messageId);
             msg.getWitnessSignatures().add(new PublicKeySignaturePair(senderPkBuf, signatureBuf));
+            Log.d(TAG,"Message General updated with the new Witness Signature");
 
             Lao lao = laoById.get(channel).getLao();
             if (lao == null) {
@@ -521,10 +534,12 @@ public class LAORepository {
             if (!updateWitnessMessage(lao, messageId, senderPk)) {
                 return false;
             }
+            Log.d(TAG,"WitnessMessage successfully updated");
 
             Set<PendingUpdate> pendingUpdates = lao.getPendingUpdates();
             if (pendingUpdates.contains(messageId)) {
                 // We're waiting to collect signatures for this one
+                Log.d(TAG,"There is a pending update for this message");
 
                 // Let's check if we have enough signatures
                 Set<String> signaturesCollectedSoFar =
@@ -532,6 +547,7 @@ public class LAORepository {
                                 .map(ob -> Base64.getUrlEncoder().encodeToString(ob.getWitness()))
                                 .collect(Collectors.toSet());
                 if (lao.getWitnesses().equals(signaturesCollectedSoFar)) {
+                    Log.d(TAG,"We have enough signatures for the UpdateLao so we can send a StateLao");
 
                     // We send a state lao if we are the organizer
                     sendStateLao(lao, msg, messageId, channel);
@@ -561,8 +577,9 @@ public class LAORepository {
         if (optionalWitnessMessage.isPresent()) {
             witnessMessage = optionalWitnessMessage.get();
             witnessMessage.addWitness(senderPk);
+            Log.d(TAG, "We updated the WitnessMessage with a new witness " + messageId);
             lao.updateWitnessMessage(messageId, witnessMessage);
-            Log.d(TAG, "Signed message  with id: " + messageId);
+            Log.d(TAG, "We updated the Lao with the new WitnessMessage " + messageId);
         } else {
             Log.d(TAG, "Failed to retrieve the witness message in the lao with ID " + messageId);
             return false;

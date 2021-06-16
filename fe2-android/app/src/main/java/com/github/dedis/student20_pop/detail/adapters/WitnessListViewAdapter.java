@@ -101,34 +101,30 @@ public class WitnessListViewAdapter extends BaseAdapter {
       binding = DataBindingUtil.getBinding(convertView);
     }
 
-    binding.setWitness("Witness" + position + "ID : " + witnesses.get(position));
     binding.setLifecycleOwner(lifecycleOwner);
     binding.setViewModel(viewModel);
-
+    binding.setPosition(position + 1);
+    binding.setWitness(witnesses.get(position));
     Context context = parent.getContext();
-
     WitnessDeleteListener deleteButtonListener =
-        new WitnessDeleteListener() {
-          @Override
-          public void onDeleteClicked(String witness) {
-            AlertDialog.Builder adb = new AlertDialog.Builder(context);
-            // TODO: Wait on this until we hear a success/failure from the server.
-            adb.setTitle(context.getString(R.string.delete_witness_dialog_title));
-            adb.setMessage(
-                context.getString(R.string.delete_witness_dialog_message, +(position + 1)));
-            adb.setNegativeButton(context.getString(R.string.button_cancel), null);
-            adb.setPositiveButton(
-                context.getString(R.string.button_confirm),
-                (dialog, which) -> {
-                  viewModel.removeWitness(witness);
-                });
-            adb.show();
-          }
-        };
+            witness -> {
+              AlertDialog.Builder adb = new AlertDialog.Builder(context);
+              // TODO: Wait on this until we hear a success/failure from the server.
+              adb.setTitle(context.getString(R.string.delete_witness_dialog_title));
+              adb.setMessage(
+                  context.getString(R.string.delete_witness_dialog_message, +(position + 1)));
+              adb.setNegativeButton(context.getString(R.string.button_cancel), null);
+              adb.setPositiveButton(
+                  context.getString(R.string.button_confirm),
+                  (dialog, which) -> {
+                    viewModel.removeWitness(witness);
+                  });
+              adb.show();
+            };
 
     binding.setListener(deleteButtonListener);
     binding.executePendingBindings();
 
-    return convertView;
+    return binding.getRoot();
   }
 }

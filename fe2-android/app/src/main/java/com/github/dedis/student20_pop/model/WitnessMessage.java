@@ -1,6 +1,6 @@
 package com.github.dedis.student20_pop.model;
 
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -28,7 +28,7 @@ public class WitnessMessage {
      * @param messageId ID of the message to sign
      */
     public WitnessMessage(String messageId) {
-        witnesses = Collections.emptySet();
+        witnesses = new HashSet<>();
         this.messageId = messageId;
     }
 
