@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -16,7 +15,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.lifecycle.Observer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.github.dedis.student20_pop.databinding.FragmentSetupElectionEventBinding;
@@ -43,7 +41,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
     private Button submitButton;
     private ElectionSetupViewPagerAdapter viewPagerAdapter;
     private LaoDetailViewModel mLaoDetailViewModel;
-    private ViewPager2 viewPager2;
     //Enum of all voting methods, associated to a string desc for protocol and spinner display
     public enum VotingMethods { PLURALITY("Plurality");
         private String desc;
@@ -110,7 +107,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
         viewPagerAdapter = new ElectionSetupViewPagerAdapter(mLaoDetailViewModel);
 
         //Set ViewPager
-        viewPager2 = mSetupElectionFragBinding.electionSetupViewPager2;
+        ViewPager2 viewPager2 = mSetupElectionFragBinding.electionSetupViewPager2;
         viewPager2.setAdapter(viewPagerAdapter);
 
         //Sets animation on swipe
@@ -121,12 +118,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
         circleIndicator.setViewPager(viewPager2);
 
         //This observes if at least one of the question has the minimal information
-        viewPagerAdapter.isAnInputValid().observe(this, new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                submitButton.setEnabled(aBoolean && isElectionLevelInputValid());
-            }
-        });
+        viewPagerAdapter.isAnInputValid().observe(this, aBoolean -> submitButton.setEnabled(aBoolean && isElectionLevelInputValid()));
 
         Button addQuestion = mSetupElectionFragBinding.addQuestion;
         addQuestion.setOnClickListener(v -> {
@@ -224,7 +216,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
      * Setups the cancel button, that brings back to LAO detail page
      */
     private void setupElectionCancelButton() {
-        Button cancelButton = mSetupElectionFragBinding.electionCancelButton;
+        cancelButton = mSetupElectionFragBinding.electionCancelButton;
         cancelButton.setOnClickListener(v -> mLaoDetailViewModel.openLaoDetail());
     }
 
@@ -234,23 +226,20 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
      */
     private void hideButtonsOnKeyboardOpen() {
         ConstraintLayout constraintLayout = mSetupElectionFragBinding.fragmentSetupElectionEvent;
-        constraintLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                Rect rect = new Rect();
-                constraintLayout.getWindowVisibleDisplayFrame(rect);
-                int screenHeight = constraintLayout.getRootView().getHeight();
-                int keypadHeight = screenHeight - rect.bottom;
-                if (keypadHeight > screenHeight * 0.15) {
-                    cancelButton.setVisibility(View.INVISIBLE);
-                    submitButton.setVisibility(View.INVISIBLE);
-                    circleIndicator.setVisibility(View.INVISIBLE);
+        constraintLayout.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            Rect rect = new Rect();
+            constraintLayout.getWindowVisibleDisplayFrame(rect);
+            int screenHeight = constraintLayout.getRootView().getHeight();
+            int keypadHeight = screenHeight - rect.bottom;
+            if (keypadHeight > screenHeight * 0.15) {
+                cancelButton.setVisibility(View.INVISIBLE);
+                submitButton.setVisibility(View.INVISIBLE);
+                circleIndicator.setVisibility(View.INVISIBLE);
 
-                } else {
-                    cancelButton.setVisibility(View.VISIBLE);
-                    submitButton.setVisibility(View.VISIBLE);
-                    circleIndicator.setVisibility(View.VISIBLE);
-                }
+            } else {
+                cancelButton.setVisibility(View.VISIBLE);
+                submitButton.setVisibility(View.VISIBLE);
+                circleIndicator.setVisibility(View.VISIBLE);
             }
         });
     }
