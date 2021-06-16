@@ -25,7 +25,7 @@ public class ElectionQuestionResultTest {
 
     @Test
     public void electionQuestionResultGetterReturnsCorrectResults() {
-        assertThat(electionQuestionResult.getResults(), is(results));
+        assertThat(electionQuestionResult.getResult(), is(results));
     }
 
     @Test

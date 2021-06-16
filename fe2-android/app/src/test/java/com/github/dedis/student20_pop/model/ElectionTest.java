@@ -117,19 +117,19 @@ public class ElectionTest {
         List<QuestionResult> sortedResults = election.getResultsForQuestionId("question_id");
 
         QuestionResult firstResult = sortedResults.get(0);
-        assertThat(firstResult.getName(), is("Candidate4"));
+        assertThat(firstResult.getBallot(), is("Candidate4"));
         assertThat(firstResult.getCount(), is(43));
 
         QuestionResult secondResult = sortedResults.get(1);
-        assertThat(secondResult.getName(), is("Candidate1"));
+        assertThat(secondResult.getBallot(), is("Candidate1"));
         assertThat(secondResult.getCount(), is(30));
 
         QuestionResult thirdResult = sortedResults.get(2);
-        assertThat(thirdResult.getName(), is("Candidate2"));
+        assertThat(thirdResult.getBallot(), is("Candidate2"));
         assertThat(thirdResult.getCount(), is(23));
 
         QuestionResult fourthResult = sortedResults.get(3);
-        assertThat(fourthResult.getName(), is("Candidate3"));
+        assertThat(fourthResult.getBallot(), is("Candidate3"));
         assertThat(fourthResult.getCount(), is(16));
 
     }

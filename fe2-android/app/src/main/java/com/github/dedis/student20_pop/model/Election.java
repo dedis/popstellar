@@ -152,7 +152,7 @@ public class Election extends Event {
     public void setResults(List<ElectionResultQuestion> electionResultsQuestions) {
         if (electionResultsQuestions == null) throw new IllegalArgumentException("the list of winners should not be null");
         for (ElectionResultQuestion resultQuestion : electionResultsQuestions) {
-            List<QuestionResult> questionResults = resultQuestion.getResults();
+            List<QuestionResult> questionResults = resultQuestion.getResult();
             String id = resultQuestion.getId();
             if (questionResults == null) {
                  results.put(id, new ArrayList<>());
