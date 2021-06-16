@@ -5,10 +5,9 @@ import {
   Signature,
   WitnessSignature,
   WitnessSignatureState,
-  Channel,
-  HDWallet,
+  Channel, HDWallet,
 } from 'model/objects';
-import {KeyPairStore, WalletStore} from 'store';
+import { KeyPairStore, WalletStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import {
   MessageData, buildMessageData, encodeMessageData,
@@ -124,26 +123,38 @@ export class Message {
   /**
    * Creates a Message object from a given MessageData and signatures
    * We don't add the channel property here as we don't want to send that over the network
+   * It signs the messages with the most recent pop token if it exists. Otherwise it uses the
+   * public key
    *
    * @param data The MessageData to be signed and hashed
    * @param witnessSignatures The signatures of the witnesses
    *
-   * ATTENTION: This may need updating as part of the Digital Wallet project -- 2021-03-03
    */
-  public static fromData(data: MessageData, witnessSignatures?: WitnessSignature[]): Message {
+  public static async fromData(
+    data: MessageData, witnessSignatures?: WitnessSignature[],
+  ): Promise<Message> {
     const encodedDataJson: Base64UrlData = encodeMessageData(data);
-    const signature: Signature = KeyPairStore.getPrivateKey().sign(encodedDataJson);
-    // Get current Lao - pass the channel from the Publish method down and then extract lao id
-    // Get current RC - After RC is closed - Loop through all events in that lao
-    //
-    // WalletStore.get().then((e) => HDWallet.fromState(e).then(wallet => wallet.generateToken(laoId, RCId).then(keyPair => keyPair.privateKey)).sign(encodedDataJson));
-    // Todo: Use Pop Token here if available
+    let popToken: PublicKey | undefined;
+    let signature: Signature = KeyPairStore.getPrivateKey().sign(encodedDataJson);
 
-    // let popToken: PublicKey;
+    await WalletStore.get().then((encryptedSeed) => {
+      if (encryptedSeed !== undefined) {
+        HDWallet.fromState(encryptedSeed)
+          .then((wallet) => {
+            const kp = wallet.recoverLastGeneratedPoPToken();
+            popToken = (kp) ? kp.publicKey : undefined;
+            signature = (kp) ? kp.privateKey.sign(encodedDataJson) : signature;
+          });
+      }
+    }).catch((e) => {
+      console.debug('error when getting last pop token from wallet: ', e);
+    });
+
+    console.log('Pop token in message is: ', popToken);
 
     return new Message({
       data: encodedDataJson,
-      sender: KeyPairStore.getPublicKey(),
+      sender: (popToken) || KeyPairStore.getPublicKey(),
       signature,
       message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
       witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
