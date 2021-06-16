@@ -38,15 +38,15 @@ public class ElectionSetupViewPagerAdapter
 
     public static final String TAG = ElectionSetupViewPagerAdapter.class.getSimpleName();
     LaoDetailViewModel mLaoDetailViewModel;
-    private List<String> votingMethod;
-    private List<List<String>> ballotOptions;
-    private List<Integer> numberBallotOptions;
-    private List<String> questions;
+    private final List<String> votingMethod;
+    private final List<List<String>> ballotOptions;
+    private final List<Integer> numberBallotOptions;
+    private final List<String> questions;
     private int numberOfQuestions;
     private Context context;
-    private Set<Integer> listOfValidQuestions;
-    private Set<Integer> listOfValidBallots;
-    private MutableLiveData<Boolean> isAnInputValid;
+    private final Set<Integer> listOfValidQuestions;
+    private final Set<Integer> listOfValidBallots;
+    private final MutableLiveData<Boolean> isAnInputValid;
 
 
 
@@ -103,10 +103,10 @@ public class ElectionSetupViewPagerAdapter
                 String questionText = s.toString();
                 if(!electionQuestionText.getText().toString().trim().isEmpty()){
                     questions.set(position, questionText);
-                    listOfValidQuestions.add((Integer) position);
+                    listOfValidQuestions.add(position);
                 }
                 else
-                    listOfValidQuestions.remove((Integer) position);
+                    listOfValidQuestions.remove(position);
                 checkIfAnInputIsValid();
 
 
@@ -231,9 +231,9 @@ public class ElectionSetupViewPagerAdapter
                         numberBallotOptions.get(position) >= 2;
                 if (areFieldsFilled)
 
-                    listOfValidBallots.add((Integer) position);
+                    listOfValidBallots.add(position);
                 else
-                    listOfValidBallots.remove((Integer) position);
+                    listOfValidBallots.remove(position);
                 checkIfAnInputIsValid();
 
             }
