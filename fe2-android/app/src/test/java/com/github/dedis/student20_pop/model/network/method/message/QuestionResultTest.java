@@ -17,7 +17,6 @@ public class QuestionResultTest {
     @Test
     public void fieldsCantBeNull() {
         assertThrows(IllegalArgumentException.class, () -> new QuestionResult(null, 30));
-        assertThrows(IllegalArgumentException.class, () -> new QuestionResult("Candidate1", null));
     }
 
     @Test
