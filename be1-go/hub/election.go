@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"log"
+	"student20_pop"
 	"student20_pop/message"
 	"sync"
 )
@@ -194,7 +195,8 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 		}
 	}
 	senderPK := base64.URLEncoding.EncodeToString(msg.Sender)
-	ok = c.attendees.IsPresent(senderPK)
+	senderPoint := student20_pop.Suite.Point()
+	ok = c.attendees.IsPresent(senderPK) || c.hub.public.Equal(senderPoint)
 	if !ok {
 		return &message.Error{
 			Code:        -4,
