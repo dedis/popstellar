@@ -17,7 +17,7 @@ const initialState: LastPoPTokenReducerState = {
 };
 
 /* name of pop token slice in storage */
-const popTokenReducerPath = 'popToken';
+const popTokenReducerPath = 'lastGeneratedPopToken';
 
 /* the store slice in charge of the pop token state */
 const popTokenSlice = createSlice({

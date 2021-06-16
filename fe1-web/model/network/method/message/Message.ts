@@ -7,12 +7,11 @@ import {
   WitnessSignatureState,
   Channel, HDWallet,
 } from 'model/objects';
-import {KeyPairStore, LastPopTokenStore, WalletStore} from 'store';
+import { KeyPairStore, LastPopTokenStore, WalletStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import {
   MessageData, buildMessageData, encodeMessageData,
 } from './data';
-import LastPoPTokenReducer from "../../../../store/reducers/LastPoPTokenReducer";
 
 /**
  * MessageState is the interface that should match JSON.stringify(Message)

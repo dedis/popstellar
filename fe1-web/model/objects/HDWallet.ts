@@ -272,12 +272,8 @@ export class HDWallet {
           privateKey: new PrivateKey(Base64UrlData.fromBase64(encodeBase64(key)).valueOf()),
         });
 
-        LastPopTokenStore.storePrivateKey(token.privateKey.valueOf());
         LastPopTokenStore.storePublicKey(token.publicKey.valueOf());
-
-
-       // console.log(LastPopTokenStore.getPrivateKey());
-       // console.log(LastPopTokenStore.getPublicKey());
+        LastPopTokenStore.storePrivateKey(token.privateKey.valueOf());
 
         return token;
       });
