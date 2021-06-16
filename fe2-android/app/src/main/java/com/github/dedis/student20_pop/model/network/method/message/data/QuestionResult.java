@@ -1,17 +1,20 @@
 package com.github.dedis.student20_pop.model.network.method.message.data;
 
-public class QuestionResult {
-    private String name;
-    private Integer count;
+import com.google.gson.annotations.SerializedName;
 
-    public QuestionResult(String name, Integer count) {
-        if (name == null || count == null) throw new IllegalArgumentException();
-        this.name = name;
+public class QuestionResult {
+    @SerializedName(value = "ballot_option")
+    private String ballotOption;
+    private int count;
+
+    public QuestionResult(String ballotOption, int count) {
+        if (ballotOption == null) throw new IllegalArgumentException();
+        this.ballotOption = ballotOption;
         this.count = count;
     }
 
-    public String getName() {
-        return name;
+    public String getBallot() {
+        return ballotOption;
     }
 
     public Integer getCount() {

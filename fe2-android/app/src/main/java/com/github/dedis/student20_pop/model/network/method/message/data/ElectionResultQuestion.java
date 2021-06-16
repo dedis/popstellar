@@ -5,20 +5,20 @@ import java.util.List;
 public class ElectionResultQuestion {
 
     private String id;
-    private List<QuestionResult> results;
+    private List<QuestionResult> result;
 
-    public ElectionResultQuestion(String id, List<QuestionResult> results) {
-        if (id == null || results == null || results.isEmpty()) throw new IllegalArgumentException();
+    public ElectionResultQuestion(String id, List<QuestionResult> result) {
+        if (id == null || result == null || result.isEmpty()) throw new IllegalArgumentException();
         this.id = id;
-        this.results = results;
+        this.result = result;
     }
 
     public String getId() {
         return id;
     }
 
-    public List<QuestionResult> getResults() {
-        return results;
+    public List<QuestionResult> getResult() {
+        return result;
     }
 }
 
