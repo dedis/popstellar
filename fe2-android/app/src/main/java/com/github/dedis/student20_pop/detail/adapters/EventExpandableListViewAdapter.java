@@ -329,7 +329,6 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         String dateEnd = DATE_FORMAT.format(dEnd);
         electionBinding.electionEndDate.setText("End Date : " + dateEnd);
         viewModel.setCurrentElection(election);
-
         viewModel.getEndElectionEvent().observe(lifecycleOwner, end -> {
             electionBinding.electionActionButton.setText(R.string.election_ended);
             electionBinding.electionActionButton.setEnabled(false);
@@ -338,8 +337,13 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         if (category == PRESENT) {
             electionBinding.electionActionButton.setText(R.string.cast_vote);
             if (viewModel.getLaoAttendedRollCalls().getValue().size() > 0 || viewModel.isOrganizer().getValue()) electionBinding.electionActionButton.setEnabled(true);
-            electionBinding.electionActionButton.setOnClickListener(clicked -> viewModel.openCastVotes());
+            electionBinding.electionActionButton.setOnClickListener(
+                    clicked -> {
+                        viewModel.setCurrentElection(election);
+                        viewModel.openCastVotes();
+                    });
         } else if (category == PAST) {
+            electionBinding.electionActionButton.setOnClickListener(clicked -> viewModel.setCurrentElection(election));
             if (!viewModel.isOrganizer().getValue()) electionBinding.electionActionButton.setEnabled(false);
             else electionBinding.electionActionButton.setEnabled(true);
 
@@ -356,8 +360,11 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
             }
 
         }
-
-        electionBinding.electionEditButton.setOnClickListener(clicked -> viewModel.openManageElection(true));
+        electionBinding.electionEditButton.setOnClickListener(clicked -> {
+            viewModel.setCurrentElection(election);
+            viewModel.openManageElection(true);
+                }
+        );
         electionBinding.setEventCategory(category);
         electionBinding.setViewModel(viewModel);
         electionBinding.setLifecycleOwner(lifecycleOwner);
