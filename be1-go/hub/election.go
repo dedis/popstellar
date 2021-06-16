@@ -352,6 +352,8 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 		WitnessSignatures: msg.WitnessSignatures,
 	}
 
+	questionResults := make([]message.QuestionResult,len(c.questions))
+
 	log.Printf("Getting the count per ballot opetion for election results")
 	//questions := resultData.Questions
 	for id := range c.questions{
@@ -397,7 +399,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 				})
 			}
 			log.Printf("Appending a question id:%s with the count and result",id)
-			resultData.Questions = append(resultData.Questions,message.QuestionResult{
+			questionResults = append(questionResults,message.QuestionResult{
 				ID : id,
 				//Result: questionResults,
 				Result2: questionResults2,
@@ -405,7 +407,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 		}
 	}
 	log.Printf("The result data field of the election result message " +
-		"is the following %v and has len of %v, first question is %v",resultData.Questions,len(resultData.Questions),resultData.Questions[0])
+		"is the following %v and has len of %v, first question is %v, and second question is %v",resultData.Questions,len(resultData.Questions),resultData.Questions[0],resultData.Questions[1])
 
 	log.Printf("computing message id for election result message")
 	msgId := computeMessageId(resultData,msg.Signature)
@@ -449,6 +451,9 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 			}
 		}
 	}
+
+	log.Printf("The result data field of the election result message " +
+		"is the following %v and has len of %v, first question is %v, and second question is %v",resultData.Questions,len(resultData.Questions),resultData.Questions[0],resultData.Questions[1])
 
 	ms3,ok := message.NewMessage(msg.Sender,msg.Signature,msg.WitnessSignatures,resultData)
 
