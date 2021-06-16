@@ -253,21 +253,16 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         String electionChannel = election.getChannel();
 
         try {
-            // Retrieve pop token to sign (if organizer, simply use pk)
+            // Retrieve pop token to sign (if organizer, or no pop token, simply use pk)
             byte[] sender;
-            Ed25519Sign signer;
-            if (isOrganizer().getValue()) {
+            List<RollCall> rollCalls = mLaoAttendedRollCalls.getValue();
+            if (isOrganizer().getValue() || rollCalls.size() == 0) {
                 KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
                 String publicKey = Keys.getEncodedKey(publicKeysetHandle);
                 sender = Base64.getUrlDecoder().decode(publicKey);
-                signer = (Ed25519Sign) mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
-            } else {
-                List<RollCall> rollCalls = mLaoAttendedRollCalls.getValue();
-                if (rollCalls.size() == 0)
-                    throw new IllegalArgumentException("a non-attendee shouldn't be able to vote");
-                sender = Wallet.getInstance().findKeyPair(laoId, rollCalls.get(rollCalls.size() - 1).getPersistentId()).second;
-                signer = new Ed25519Sign(sender);
-            }
+            } else sender = Wallet.getInstance().findKeyPair(laoId, rollCalls.get(rollCalls.size() - 1).getPersistentId()).second;
+
+            PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
             MessageGeneral msg = new MessageGeneral(sender, castVote, signer, mGson);
 
             Log.d(TAG, PUBLISH_MESSAGE);
