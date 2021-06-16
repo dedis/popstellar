@@ -1,6 +1,8 @@
 package com.github.dedis.student20_pop.model;
 
 
+import android.util.Log;
+
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventState;
 import com.github.dedis.student20_pop.model.network.method.message.data.ElectionQuestion;
@@ -149,11 +151,18 @@ public class Election extends Event {
 
     public void setResults(List<ElectionResultQuestion> resultsQuestions) {
         if (resultsQuestions == null) throw new IllegalArgumentException("the list of winners should not be null");
+        int i = 0;
         for (ElectionResultQuestion resultQuestion : resultsQuestions) {
             List<QuestionResult> results = resultQuestion.getResults();
             String id = resultQuestion.getId();
-            //results.sort((r1, r2) -> r2.getCount().compareTo(r1.getCount()));
-            this.results.put(id, results);
+            if (results == null) {
+                Log.d("Election", "results are null for question number " + i);
+                this.results.put(id, new ArrayList<>());
+            } else {
+                results.sort((r1, r2) -> r2.getCount().compareTo(r1.getCount()));
+                this.results.put(id, results);
+            }
+            i++;
         }
     }
 
