@@ -180,7 +180,7 @@ export class HDWallet {
     return this.recoverAllKeys(recoverMaps[0], recoverMaps[1]);
   }
 
-  public async recoverLastGeneratedPoPToken(): Promise<KeyPair | undefined> {
+  public recoverLastGeneratedPoPToken(): KeyPair | undefined {
     return this.lastGeneratedPoPToken;
   }
 
