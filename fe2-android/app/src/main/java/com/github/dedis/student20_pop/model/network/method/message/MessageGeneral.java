@@ -68,8 +68,9 @@ public final class MessageGeneral {
           byte[] signature,
           byte[] messageId,
           List<PublicKeySignaturePair> witnessSignatures) {
+    byte[] decodedMessageId = Base64.getUrlDecoder().decode(messageId);
     Log.d(TAG, "new MessageGeneral with messageId encoded as: " + new String(messageId, StandardCharsets.UTF_8) +
-              " decoded as: " + Hex.bytesToStringUppercase(Base64.getUrlDecoder().decode(messageId)));
+              " decoded as: " + Hex.bytesToStringUppercase(decodedMessageId));
     this.sender = sender;
     this.messageId = messageId;
     this.dataBuf = dataBuf;
