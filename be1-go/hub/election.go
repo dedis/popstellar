@@ -397,13 +397,16 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 					Count: numberOfVotesPerBallotOption[i],
 				})
 			}
-			log.Printf("Appending a question id:%s with the count and result",id)
+			log.Printf("The list of the ballot options and counts shoudl be the following: %v",questionResults)
+
 			questionResults = append(questionResults,message.QuestionResult{
 				ID : id,
 				//Result: questionResults,
 				Result2: questionResults2,
 			})
 			resultData.Questions = questionResults
+
+			log.Printf("Appending a question id:%s with the count and result",id)
 		}
 	}
 	log.Printf("The result data field of the election result message " +
