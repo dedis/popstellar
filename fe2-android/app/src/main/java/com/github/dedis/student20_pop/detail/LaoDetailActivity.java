@@ -15,6 +15,11 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.student20_pop.Injection;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
+
+import com.github.dedis.student20_pop.detail.fragments.ElectionResultFragment;
+import com.github.dedis.student20_pop.detail.fragments.event.creation.ElectionSetupFragment;
+import com.github.dedis.student20_pop.detail.fragments.event.creation.RollCallEventCreationFragment;
+import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.detail.fragments.AttendeesListFragment;
 import com.github.dedis.student20_pop.detail.fragments.CastVoteFragment;
 import com.github.dedis.student20_pop.detail.fragments.IdentityFragment;
@@ -335,6 +340,7 @@ public class LaoDetailActivity extends AppCompatActivity {
     }
   }
 
+
     private void setupLaoWalletFragment() {
         LaoWalletFragment laoWalletFragment =
                 (LaoWalletFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_lao_wallet);
@@ -413,10 +419,24 @@ public class LaoDetailActivity extends AppCompatActivity {
               );
   }
   private void setupElectionResultsFragment() {
-      /*
-      will be implemented in the future
-       */
+      mViewModel
+              .getOpenManageElectionEvent()
+              .observe(
+                      this,
+                      booleanEvent -> {
+                          Boolean event = booleanEvent.getContentIfNotHandled();
+                          if (event != null) {
+                              ElectionResultFragment electionResultFragment =
+                                      (ElectionResultFragment)
+                                              getSupportFragmentManager().findFragmentById(R.id.fragment_election_result);
+                              if (electionResultFragment == null) {
+                                  electionResultFragment = ElectionResultFragment.newInstance();
+                                  ActivityUtils.replaceFragmentInActivity(
+                                          getSupportFragmentManager(), electionResultFragment, R.id.fragment_container_lao_detail);
+                              }
+                          }
+                      }
+              );
   }
-
 
 }
