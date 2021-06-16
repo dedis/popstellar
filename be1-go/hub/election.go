@@ -9,13 +9,13 @@ import (
 )
 
 type Attendees struct {
-	sync.Mutex
+	attendeesMu sync.Mutex
 	store map[string]struct{}
 }
 
 func NewAttendees() Attendees {
 	return Attendees{
-		Mutex: sync.Mutex{},
+		attendeesMu: sync.Mutex{},
 		store: make(map[string] struct{}),
 	}
 }
@@ -30,8 +30,8 @@ func (a Attendees) Add(key string) {
 }
 
 func (a Attendees) Copy() Attendees {
-	a.Lock()
-	defer a.Unlock()
+	a.attendeesMu.Lock()
+	defer a.attendeesMu.Unlock()
 
 	copy := NewAttendees()
 
