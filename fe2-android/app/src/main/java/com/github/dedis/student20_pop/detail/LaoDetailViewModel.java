@@ -1118,8 +1118,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             mAttendeeScanConfirmEvent.postValue(new Event<>("Attendee has been added."));
             mNbAttendeesEvent.postValue(new Event<>(attendees.size()));
         } else if (scanningAction == (ScanningAction.ADD_WITNESS)) {
-            mWitnessScanConfirmEvent.postValue(new Event<>(true));
             witnesses.add(barcode.rawValue);
+            mWitnessScanConfirmEvent.postValue(new Event<>(true));
             updateLaoWitnesses();
         }
     }

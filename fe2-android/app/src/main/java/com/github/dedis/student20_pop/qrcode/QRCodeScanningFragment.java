@@ -198,12 +198,9 @@ public final class QRCodeScanningFragment extends Fragment {
     AlertDialog alert = builder.create();
     mPreview.stop();
     alert.show();
-    new Handler().postDelayed(new Runnable() {
-      @Override
-      public void run() {
-        if (alert.isShowing()){
-          alert.dismiss();
-        }
+    new Handler().postDelayed(() -> {
+      if (alert.isShowing()){
+        alert.dismiss();
       }
     }, 2000);
   }
@@ -257,7 +254,7 @@ public final class QRCodeScanningFragment extends Fragment {
                         booleanEvent -> {
                             Boolean event = booleanEvent.getContentIfNotHandled();
                             if (event != null) {
-                                setUpWitnessSuccessAlert();
+                                setupSuccessPopup("A new witness was added to the the Lao");
                             }
                         });
     }
@@ -289,13 +286,5 @@ public final class QRCodeScanningFragment extends Fragment {
                         });
     }
 
-    void setUpWitnessSuccessAlert() {
-        AlertDialog.Builder adb = new AlertDialog.Builder(getActivity());
-            adb.setTitle("Successful Scan");
-            adb.setMessage("A new witness was added to this Lao");
-            adb.setCancelable(false);
-            adb.setPositiveButton("Ok", null);
-            adb.show();
-    }
 
 }
