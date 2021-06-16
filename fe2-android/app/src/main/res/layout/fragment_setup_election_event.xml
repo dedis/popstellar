@@ -46,6 +46,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constrainedHeight="true"
+            android:layout_marginLeft="@dimen/election_setup_text_field_margin_lateral"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/election_setup_name" />
 
@@ -53,6 +54,7 @@
             android:id="@+id/add_question"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/election_setup_text_field_margin_lateral"
             android:text="@string/add_question_button_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/election_setup_date" />
@@ -62,6 +64,7 @@
             layout="@layout/layout_enter_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/election_setup_text_field_margin_lateral"
             app:layout_constrainedHeight="true"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -72,6 +75,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:autofillHints="false"
+           android:layout_marginLeft="@dimen/election_setup_text_field_margin_lateral"
             android:hint="@string/election_setup_name_hint"
             android:inputType="text"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -116,6 +120,7 @@
             android:clickable="true"
             android:enabled="false"
             android:text="@string/submit"
+            android:layout_marginRight="@dimen/election_setup_text_field_margin_lateral"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             />
