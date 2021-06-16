@@ -5,6 +5,7 @@ import {
   CreateLao,
   CreateMeeting,
   CreateRollCall,
+  OpenRollCall,
   SetupElection,
   StateLao,
   UpdateLao,
@@ -160,21 +161,25 @@ export function requestCreateRollCall(
 
 /** Send a server query asking for the opening of a roll call given its id (Number) and an
  * optional start time (Timestamp). If the start time is not specified, then the current time
- * will be used instead *
-export function requestOpenRollCall(rollCallId: Number, start?: Timestamp): Promise<void> {
-    const rollCall = { creation: 1609455600, name: 'r-cName' }; // FIXME: hardcoded
-    const laoId = get().params.message.data.id;
-    const startTime = (start === undefined) ? Timestamp.EpochNow() : start;
+ * will be used instead
+ */
+export function requestOpenRollCall(
+  prevUpdateId: Hash,
+  laoId: Hash,
+): Promise<void> {
+  const time: Timestamp = Timestamp.EpochNow();
+  // update_id = SHA256('R'||lao_id||opens||opened_at)"
+  // opens = id of roll call creation event
+  const message = new OpenRollCall({
+    update_id: Hash.fromStringArray(
+      EventTags.ROLL_CALL, laoId.valueOf(), prevUpdateId.valueOf(), time.toString(),
+    ),
+    opens: prevUpdateId,
+    opened_at: time,
+  });
 
-    let message = new OpenRollCall({
-      action: ActionType.OPEN,
-      id: Hash.fromStringArray(
-        EventTags.ROLL_CALL, toString64(laoId), rollCall.creation.toString(), rollCall.name
-      ),
-      start: startTime,
-    });
-
-    return publish(channelFromId(laoId), message);
+  const laoCh = channelFromId(laoId);
+  return publish(laoCh, message);
 }
 
 /** Send a server query asking for the reopening of a roll call given its id (Number) and an
