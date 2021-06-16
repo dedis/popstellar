@@ -1,7 +1,5 @@
 package com.github.dedis.student20_pop.model.network.method.message.data;
 
-import android.util.Log;
-
 import com.google.gson.annotations.SerializedName;
 
 public class QuestionResult {
@@ -15,7 +13,7 @@ public class QuestionResult {
         this.count = count;
     }
 
-    public String getName() {
+    public String getBallot() {
         return ballotOption;
     }
 

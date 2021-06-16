@@ -5,11 +5,11 @@ import android.util.Log;
 
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventState;
+import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.model.network.method.message.data.ElectionQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.data.ElectionResultQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.data.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.QuestionResult;
-import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.utility.security.Hash;
 
 import java.util.ArrayList;
@@ -163,6 +163,10 @@ public class Election extends Event {
                 this.results.put(id, questionResults);
             }
         }
+    }
+
+    public Map<String, List<QuestionResult>> getResults(){
+        return results;
     }
 
     public List<QuestionResult> getResultsForQuestionId(String id) {

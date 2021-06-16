@@ -13,20 +13,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.model.Election;
+import com.github.dedis.student20_pop.model.network.method.message.data.ElectionQuestion;
+import com.github.dedis.student20_pop.model.network.method.message.data.QuestionResult;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ElectionResultPagerAdapter  extends RecyclerView.Adapter<ElectionResultPagerAdapter.Pager2ViewHolder> {
     private LaoDetailViewModel mLaoDetailViewModel;
     private ElectionResultListAdapter adapter;
     private final String TAG = ElectionResultPagerAdapter.class.getSimpleName();
-    ///// Setting up static data for testing //////////////////////////////////////////////////////
-    List<String> questions = Arrays.asList("Who for 1st delegate", "Who for 2nd delegate");
-    List<List<String>> ballotsOptions = Arrays.asList(Arrays.asList("A convincing first option", "Another too long proposition"), Arrays.asList("Fooo baar", "D", "E"));
-    List<List<Integer>> voteLists = Arrays.asList(Arrays.asList(21, 6), Arrays.asList(2,7,9));
-
     public ElectionResultPagerAdapter(LaoDetailViewModel mLaoDetailViewModel){
         super();
         this.mLaoDetailViewModel = mLaoDetailViewModel;
@@ -42,17 +40,11 @@ public class ElectionResultPagerAdapter  extends RecyclerView.Adapter<ElectionRe
     @Override
     public void onBindViewHolder(@NonNull Pager2ViewHolder holder, int position) {
         Election election = mLaoDetailViewModel.getCurrentElection();
-        if(election == null){
-            Log.d(TAG, "Election is null");
-        }
-        else
-            Log.d(TAG, election.getQuestions().get(0));
-        if(election == null)
-            election = new Election();
+
 
         //setting the question
-        //String question = election.getQuestions().get(position);
-        String question = questions.get(position);
+        ElectionQuestion electionQuestion = election.getElectionQuestions().get(position);
+        String question = electionQuestion.getQuestion();
         if(holder == null){
             Log.d(TAG, "Holder is null");
         }
@@ -61,11 +53,18 @@ public class ElectionResultPagerAdapter  extends RecyclerView.Adapter<ElectionRe
         }
         holder.questionView.setText(question);
 
-//        List<String> ballotOptions = election.getBallotsOptions().get(position);
-//        List<Integer> votes = election.getVotes().get(position);
 
-        List<String> ballotOptions = ballotsOptions.get(position);
-        List<Integer> votes = voteLists.get(position);
+      List<QuestionResult> questionResults = election.getResultsForQuestionId(electionQuestion.getId());
+        Map<String, List<QuestionResult>>results= election.getResults();
+        Log.d(TAG, "whole "+results);
+        Log.d(TAG, "Keys are "+results.keySet());
+        Log.d(TAG,"Manually "+election.getResultsForQuestionId(electionQuestion.getId()).get(0).getBallot());
+        Log.d(TAG, electionQuestion.getId());
+        List<String> ballotOptions = questionResults.stream().map(QuestionResult::getBallot).collect(Collectors.toList());
+        Log.d(TAG, ""+ballotOptions);
+        List<Integer>votes = questionResults.stream().map(QuestionResult::getCount).collect(Collectors.toList());
+        Log.d(TAG, ""+votes);
+
 
         List<ElectionResultListAdapter.ElectionResult> electionResults = new ArrayList<>();
         for(int i = 0; i< ballotOptions.size(); i++){
@@ -79,7 +78,7 @@ public class ElectionResultPagerAdapter  extends RecyclerView.Adapter<ElectionRe
 
     @Override
     public int getItemCount() {
-        return questions.size();
+        return mLaoDetailViewModel.getCurrentElection().getElectionQuestions().size();
     }
 
     class Pager2ViewHolder extends RecyclerView.ViewHolder{

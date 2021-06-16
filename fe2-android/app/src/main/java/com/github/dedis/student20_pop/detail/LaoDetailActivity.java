@@ -15,13 +15,9 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.student20_pop.Injection;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
-
-import com.github.dedis.student20_pop.detail.fragments.ElectionResultFragment;
-import com.github.dedis.student20_pop.detail.fragments.event.creation.ElectionSetupFragment;
-import com.github.dedis.student20_pop.detail.fragments.event.creation.RollCallEventCreationFragment;
-import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.detail.fragments.AttendeesListFragment;
 import com.github.dedis.student20_pop.detail.fragments.CastVoteFragment;
+import com.github.dedis.student20_pop.detail.fragments.ElectionResultFragment;
 import com.github.dedis.student20_pop.detail.fragments.IdentityFragment;
 import com.github.dedis.student20_pop.detail.fragments.LaoDetailFragment;
 import com.github.dedis.student20_pop.detail.fragments.LaoWalletFragment;
@@ -419,8 +415,9 @@ public class LaoDetailActivity extends AppCompatActivity {
               );
   }
   private void setupElectionResultsFragment() {
+      Log.d(TAG, "Setup observe for open is called");
       mViewModel
-              .getOpenManageElectionEvent()
+              .getOpenElectionResultsEvent()
               .observe(
                       this,
                       booleanEvent -> {

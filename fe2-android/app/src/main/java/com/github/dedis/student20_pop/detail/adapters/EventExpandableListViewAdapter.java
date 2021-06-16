@@ -2,7 +2,6 @@ package com.github.dedis.student20_pop.detail.adapters;
 
 import android.app.AlertDialog.Builder;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -354,7 +353,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
             } else if (election.getState() == RESULTS_READY) {
                 electionBinding.electionActionButton.setText(R.string.show_results);
                 electionBinding.electionActionButton.setEnabled(true);
-                electionBinding.electionActionButton.setOnClickListener(clicked -> Log.d("EventExp", "open results"));
+                electionBinding.electionActionButton.setOnClickListener(clicked -> viewModel.openElectionResults(true));
             } else {
                 electionBinding.electionActionButton.setText(R.string.tally_votes);
                 electionBinding.electionActionButton.setOnClickListener(clicked -> viewModel.endElection(election));
