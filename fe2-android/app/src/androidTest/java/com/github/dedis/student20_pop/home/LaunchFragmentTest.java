@@ -32,6 +32,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
@@ -40,7 +41,7 @@ import static org.hamcrest.Matchers.is;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class LaunchFragment {
+public class LaunchFragmentTest {
 
     private static Matcher<Lao> laoHasName(
             final String name) {
@@ -62,26 +63,17 @@ public class LaunchFragment {
     @Test
     public void launchFragment() {
         ViewInteraction appCompatButton = onView(
-                allOf(withId(R.id.tab_launch), withText("Launch"),
+                allOf(withId(R.id.tab_wallet), withText("Wallet"),
                         childAtPosition(
-                                allOf(withId(R.id.tab_connect_launch),
+                                allOf(withId(R.id.tab_wallet_only),
                                         childAtPosition(
                                                 withId(R.id.fragment_container_home),
-                                                1)),
-                                5),
+                                                2)),
+                                2),
                         isDisplayed()));
         appCompatButton.perform(click());
 
         ViewInteraction appCompatButton2 = onView(
-                allOf(withId(android.R.id.button1), withText("Go to wallet"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.buttonPanel),
-                                        0),
-                                3)));
-        appCompatButton2.perform(scrollTo(), click());
-
-        ViewInteraction appCompatButton3 = onView(
                 allOf(withId(R.id.button_new_wallet), withText("New wallet"),
                         childAtPosition(
                                 childAtPosition(
@@ -89,9 +81,9 @@ public class LaunchFragment {
                                         3),
                                 0),
                         isDisplayed()));
-        appCompatButton3.perform(click());
+        appCompatButton2.perform(click());
 
-        ViewInteraction appCompatButton4 = onView(
+        ViewInteraction appCompatButton3 = onView(
                 allOf(withId(R.id.button_confirm_seed), withText("Confirm"),
                         childAtPosition(
                                 childAtPosition(
@@ -99,18 +91,18 @@ public class LaunchFragment {
                                         2),
                                 0),
                         isDisplayed()));
-        appCompatButton4.perform(click());
+        appCompatButton3.perform(click());
 
-        ViewInteraction appCompatButton5 = onView(
+        ViewInteraction appCompatButton4 = onView(
                 allOf(withId(android.R.id.button1), withText("Yes"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.buttonPanel),
                                         0),
                                 3)));
-        appCompatButton5.perform(scrollTo(), click());
+        appCompatButton4.perform(scrollTo(), click());
 
-        ViewInteraction appCompatButton6 = onView(
+        ViewInteraction appCompatButton5 = onView(
                 allOf(withId(R.id.tab_launch), withText("Launch"),
                         childAtPosition(
                                 allOf(withId(R.id.tab_connect_launch),
@@ -119,7 +111,7 @@ public class LaunchFragment {
                                                 1)),
                                 5),
                         isDisplayed()));
-        appCompatButton6.perform(click());
+        appCompatButton5.perform(click());
 
         ViewInteraction appCompatEditText = onView(
                 allOf(withId(R.id.entry_box_launch),
@@ -129,10 +121,18 @@ public class LaunchFragment {
                                         0),
                                 2),
                         isDisplayed()));
-        appCompatEditText.perform(replaceText("new launch test"), closeSoftKeyboard());
+        appCompatEditText.perform(replaceText("new lao test"), closeSoftKeyboard());
+
+        ViewInteraction editText = onView(
+                allOf(withId(R.id.entry_box_launch), withText("new lao test"),
+                        withParent(withParent(withId(R.id.fragment_launch))),
+                        isDisplayed()));
+
+        //We check that the entry_box_launch contains  " new lao test"
+        editText.check(matches(withText("new lao test")));
 
         ViewInteraction appCompatEditText2 = onView(
-                allOf(withId(R.id.entry_box_launch), withText("new launch test"),
+                allOf(withId(R.id.entry_box_launch), withText("new lao test"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.fragment_launch),
@@ -141,7 +141,7 @@ public class LaunchFragment {
                         isDisplayed()));
         appCompatEditText2.perform(pressImeActionButton());
 
-        ViewInteraction appCompatButton7 = onView(
+        ViewInteraction appCompatButton6 = onView(
                 allOf(withId(R.id.button_launch), withText("Launch"),
                         childAtPosition(
                                 childAtPosition(
@@ -149,11 +149,19 @@ public class LaunchFragment {
                                         3),
                                 1),
                         isDisplayed()));
-        appCompatButton7.perform(click());
+        appCompatButton6.perform(click());
 
-        DataInteraction appCompatButton8 = onData(
-                allOf(is(instanceOf(Lao.class)), laoHasName("new launch test"))).inAdapterView(withId(R.id.lao_list));
-        appCompatButton8.perform(click());
+        ViewInteraction textView = onView(
+                allOf(withId(R.id.lao_name), withText("new lao test"),
+                        withParent(allOf(withId(R.id.layout_lao_home),
+                                withParent(withId(R.id.lao_list)))),
+                        isDisplayed()));
+        //We check that the name of the lao displayed is " new lao test"
+        textView.check(matches(withText("new lao test")));
+
+        DataInteraction appCompatButton16 = onData(
+                allOf(is(instanceOf(Lao.class)), laoHasName("new lao test"))).inAdapterView(withId(R.id.lao_list));
+        appCompatButton16.perform(click());
 
         // We check that we opened the launch fragment
         onView(withId(R.id.fragment_lao_detail)).check(matches(isDisplayed()));

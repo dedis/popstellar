@@ -9,6 +9,8 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
@@ -42,7 +44,7 @@ public class LaoTest {
     public void removeRollCallTest() {
         LAO_1.setRollCalls(new HashMap<>(rollCalls));
         assertTrue(LAO_1.removeRollCall(rollCallId3)); // we want to assert that we can remove rollCallId3 successfully
-        assertTrue(LAO_1.getRollCalls().size() == 2);
+        assertEquals(LAO_1.getRollCalls().size() == 2);
         assertTrue(LAO_1.getRollCalls().containsKey(rollCallId1));
         assertTrue(LAO_1.getRollCalls().containsKey(rollCallId2));
         assertFalse(LAO_1.getRollCalls().containsKey(rollCallId3));
@@ -56,11 +58,14 @@ public class LaoTest {
         assertFalse(LAO_1.removeRollCall(rollCallId2));
     }
 
+    private void assertEquals(boolean b) {
+    }
+
     @Test
     public void removeElectionTest() {
         LAO_1.setElections(new HashMap<>(elections));
         assertTrue(LAO_1.removeElection(electionId3)); // we want to assert that we can remove electionId3 successfully
-        assertTrue(LAO_1.getElections().size() == 2);
+        assertEquals(LAO_1.getElections().size() == 2);
         assertTrue(LAO_1.getElections().containsKey(electionId1));
         assertTrue(LAO_1.getElections().containsKey(electionId2));
         assertFalse(LAO_1.getElections().containsKey(electionId3));
@@ -86,14 +91,14 @@ public class LaoTest {
         assertTrue(LAO_1.getRollCalls().containsKey("New r1 id"));
         assertTrue(LAO_1.getRollCalls().containsKey(rollCallId2));
         assertTrue(LAO_1.getRollCalls().containsKey(rollCallId3));
-        assertTrue(LAO_1.getRollCalls().get("New r1 id") == r1);
+        assertSame(LAO_1.getRollCalls().get("New r1 id") , r1);
 
         // we create a different roll call that has the same Id as the first one
         RollCall r2 = new RollCall(r1.getId());
 
         LAO_1.updateRollCall(r1.getId(), r2);
-        assertTrue(LAO_1.getRollCalls().get(r1.getId()) != r1);
-        assertTrue(LAO_1.getRollCalls().get(r1.getId()) == r2);
+        assertNotSame(LAO_1.getRollCalls().get(r1.getId()) , r1);
+        assertSame(LAO_1.getRollCalls().get(r1.getId()) , r2);
 
 
     }
@@ -114,15 +119,15 @@ public class LaoTest {
         assertTrue(LAO_1.getElections().containsKey("New e1 id"));
         assertTrue(LAO_1.getElections().containsKey(electionId2));
         assertTrue(LAO_1.getElections().containsKey(electionId3));
-        assertTrue(LAO_1.getElections().get("New e1 id") == e1);
+        assertSame(LAO_1.getElections().get("New e1 id") , e1);
 
         // we create a different election that has the same Id as the first one
         Election e2 = new Election();
         e2.setId(e1.getId());
 
         LAO_1.updateElection(e1.getId(), e2);
-        assertTrue(LAO_1.getElections().get(e1.getId()) != e1);
-        assertTrue(LAO_1.getElections().get(e1.getId()) == e2);
+        assertNotSame(LAO_1.getElections().get(e1.getId()) , e1);
+        assertSame(LAO_1.getElections().get(e1.getId()) , e2);
 
     }
 
