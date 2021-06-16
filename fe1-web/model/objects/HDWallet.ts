@@ -45,8 +45,6 @@ export class HDWallet {
   /* local copy of encrypted seed */
   private encryptedSeed!: ArrayBuffer;
 
-  private lastGeneratedPoPToken: KeyPair | undefined;
-
   /**
    * a wallet can be created empty and then initialized or
    * directly with a seed recovered from redux state
@@ -183,7 +181,16 @@ export class HDWallet {
   }
 
   public recoverLastGeneratedPoPToken(): KeyPair | undefined {
-    return this.lastGeneratedPoPToken;
+    const pubKey = LastPopTokenStore.getPublicKey();
+    const privKey = LastPopTokenStore.getPrivateKey();
+
+    if (pubKey !== undefined && privKey !== undefined) {
+      return new KeyPair({
+        publicKey: new PublicKey(pubKey),
+        privateKey: new PrivateKey(privKey),
+      });
+    }
+    return undefined;
   }
 
   /**
