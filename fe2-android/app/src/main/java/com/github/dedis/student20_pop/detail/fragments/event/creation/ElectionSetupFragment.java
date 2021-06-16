@@ -1,6 +1,5 @@
 package com.github.dedis.student20_pop.detail.fragments.event.creation;
 
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,7 +13,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.github.dedis.student20_pop.databinding.FragmentSetupElectionEventBinding;
@@ -139,7 +137,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
 
         mSetupElectionFragBinding.setLifecycleOwner(getActivity());
 
-        hideButtonsOnKeyboardOpen();
         return mSetupElectionFragBinding.getRoot();
 
     }
@@ -190,7 +187,9 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
                     //////////////////////////////////////////////////////////////////////////////////////////////////////
                     for(Integer i : validPositions) {
                         //We filter to only take the questions for which all data is filled
+
                             writeIns.add(false); //While write in is not implemented
+                        
                             questionsFiltered.add(questions.get(i));
                             votingMethodFiltered.add(votingMethod.get(i));
                             List<String> questionBallotOptions = ballotsOptions.get(i);
@@ -218,30 +217,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment{
     private void setupElectionCancelButton() {
         cancelButton = mSetupElectionFragBinding.electionCancelButton;
         cancelButton.setOnClickListener(v -> mLaoDetailViewModel.openLaoDetail());
-    }
-
-    /**
-     * Adapted from https://blog.mindorks.com/how-to-check-the-visibility-of-software-keyboard-in-android
-     * Detects if the soft keyboard is open to make the buttons invisible
-     */
-    private void hideButtonsOnKeyboardOpen() {
-        ConstraintLayout constraintLayout = mSetupElectionFragBinding.fragmentSetupElectionEvent;
-        constraintLayout.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-            Rect rect = new Rect();
-            constraintLayout.getWindowVisibleDisplayFrame(rect);
-            int screenHeight = constraintLayout.getRootView().getHeight();
-            int keypadHeight = screenHeight - rect.bottom;
-            if (keypadHeight > screenHeight * 0.15) {
-                cancelButton.setVisibility(View.INVISIBLE);
-                submitButton.setVisibility(View.INVISIBLE);
-                circleIndicator.setVisibility(View.INVISIBLE);
-
-            } else {
-                cancelButton.setVisibility(View.VISIBLE);
-                submitButton.setVisibility(View.VISIBLE);
-                circleIndicator.setVisibility(View.VISIBLE);
-            }
-        });
     }
 
     /**

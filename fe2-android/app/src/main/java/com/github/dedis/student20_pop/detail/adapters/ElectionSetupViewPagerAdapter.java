@@ -199,7 +199,6 @@ public class ElectionSetupViewPagerAdapter
      * Adds a view of ballot option to the layout when user clicks the button
      */
     private void addBallotOption(LinearLayout linearLayout, int position) {
-        Log.d(TAG, "Position in addBallot " + position);
         //Adds the view for a new ballot option, from the corresponding layout
         View ballotOptionView = LayoutBallotOptionBinding.inflate(LayoutInflater.from(context)).newBallotOptionLl;
         EditText ballotOptionText = ballotOptionView.findViewById(R.id.new_ballot_option_text);
