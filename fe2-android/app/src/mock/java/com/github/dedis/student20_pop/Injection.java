@@ -39,12 +39,41 @@ import okhttp3.OkHttpClient;
 public class Injection {
 
   private Injection() {}
-
+  private static AndroidKeysetManager KEYSET_MANAGER;
 
   @SuppressWarnings("unused")
   public static AndroidKeysetManager provideAndroidKeysetManager(Context applicationContext)
       throws GeneralSecurityException, IOException {
-    return null;
+    if (KEYSET_MANAGER == null) {
+      SharedPreferences.Editor editor =
+              applicationContext
+                      .getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE)
+                      .edit();
+      editor.apply();
+
+      Ed25519PrivateKeyManager.registerPair(true);
+      PublicKeySignWrapper.register();
+
+      // TODO: move to background thread
+      AndroidKeysetManager keysetManager =
+              new AndroidKeysetManager.Builder()
+                      .withSharedPref(applicationContext, KEYSET_NAME, SHARED_PREF_FILE_NAME)
+                      .withKeyTemplate(Ed25519PrivateKeyManager.rawEd25519Template())
+                      .withMasterKeyUri(MASTER_KEY_URI)
+                      .build();
+
+      KeysetHandle publicKeysetHandle = keysetManager.getKeysetHandle().getPublicKeysetHandle();
+
+      try {
+        String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+        Log.d(TAG, "public key = " + publicKey);
+      } catch (IOException e) {
+        Log.e(TAG, "failed to retrieve public key", e);
+      }
+
+      KEYSET_MANAGER = keysetManager;
+    }
+    return KEYSET_MANAGER;
   }
 
   public static Gson provideGson() {
