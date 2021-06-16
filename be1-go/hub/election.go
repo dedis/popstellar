@@ -348,7 +348,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 
 	resultData := message.ElectionResultData{
 		GenericData:       &genericMsg,
-		Questions:         make([]message.QuestionResult,len(c.questions)),
+		Questions:         make([]message.QuestionResult,0),
 		WitnessSignatures: msg.WitnessSignatures,
 	}
 
@@ -373,7 +373,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 
 		votes  := question.validVotes
 		if question.method == message.PluralityMethod {
-			questionResults := make([]message.QuestionResult,len(c.questions))
+			questionResults := make([]message.QuestionResult,0)
 			numberOfVotesPerBallotOption := make([]int, len(question.ballotOptions))
 			for _, vote := range votes {
 				for ballotIndex := range vote.indexes {
@@ -383,7 +383,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 
 			// check if we even need questionResults
 			//questionResults := make([]message.BallotOption,len(question.ballotOptions))
-			questionResults2 := make([] message.BallotOptionCount, len(question.ballotOptions))
+			questionResults2 := make([] message.BallotOptionCount,0)
 			for i, option := range question.ballotOptions {
 				if len(option) == 0{
 					log.Printf("ignoring a ballot option")
@@ -399,18 +399,18 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 			}
 			log.Printf("The list of the ballot options and counts shoudl be the following: %v",questionResults)
 
-			questionResults = append(questionResults,message.QuestionResult{
+			resultData.Questions = append(resultData.Questions,message.QuestionResult{
 				ID : id,
 				//Result: questionResults,
 				Result2: questionResults2,
 			})
-			resultData.Questions = questionResults
+			//resultData.Questions = questionResults
 
 			log.Printf("Appending a question id:%s with the count and result",id)
 		}
 	}
 	log.Printf("The result data field of the election result message " +
-		"is the following %v and has len of %v, first question is %v",resultData.Questions,len(resultData.Questions),resultData.Questions[0])
+		"is the following %+v and has len of %v, first question is %v",resultData.Questions,len(resultData.Questions),resultData.Questions[0])
 
 	log.Printf("computing message id for election result message")
 	msgId := computeMessageId(resultData,msg.Signature)
@@ -442,18 +442,18 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 	//	RawData:           raw,
 	//}
 
-	for i, q := range resultData.Questions{
-		if len(q.ID) == 0{
-			log.Printf("removing a question")
-			resultData.Questions = append(resultData.Questions[:i], resultData.Questions[i+1:]...)
-		}
-		for j, ballot := range q.Result2{
-			if len(ballot.Option) < 1 {
-				log.Printf("removing a ballot option")
-				q.Result2 = append(q.Result2[:j],q.Result2[j+1:]...)
-			}
-		}
-	}
+	//for i, q := range resultData.Questions{
+	//	if len(q.ID) == 0{
+	//		log.Printf("removing a question")
+	//		resultData.Questions = append(resultData.Questions[:i], resultData.Questions[i+1:]...)
+	//	}
+	//	for j, ballot := range q.Result2{
+	//		if len(ballot.Option) < 1 {
+	//			log.Printf("removing a ballot option")
+	//			q.Result2 = append(q.Result2[:j],q.Result2[j+1:]...)
+	//		}
+	//	}
+	//}
 
 	log.Printf("The result data field of the election result message " +
 		"is the following %v and has len of %v, first question is %v",resultData.Questions,len(resultData.Questions),resultData.Questions[0])
