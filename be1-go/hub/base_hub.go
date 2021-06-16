@@ -187,6 +187,7 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 
 	if channelID == "/root" {
 		h.handleRootChannelMesssage(id, &client, query)
+		return
 	}
 
 	if channelID[:6] != rootPrefix {
