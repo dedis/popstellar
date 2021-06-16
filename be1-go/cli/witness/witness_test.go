@@ -20,6 +20,10 @@ func TestConnectToSocket(t *testing.T) {
 	ctx, cancel := context.WithCancel(parent)
 	wg := &sync.WaitGroup{}
 	h, err := hub.NewWitnessHub(student20_pop.Suite.Point())
+	if err != nil {
+		t.Errorf("unable to create witness hub")
+	}
+
 	witnessSrv := network.CreateAndServeWS(ctx, hub.WitnessHubType, hub.WitnessSocketType, h, 9000, wg)
 
 	err = connectToSocket(ctx, hub.WitnessSocketType, "localhost:9000", h, wg)
