@@ -42,6 +42,9 @@ import com.google.android.gms.vision.barcode.Barcode;
 import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
+import com.google.crypto.tink.proto.Ed25519;
+import com.google.crypto.tink.subtle.Ed25519Sign;
+import com.google.crypto.tink.subtle.Ed25519Verify;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -250,10 +253,21 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         String electionChannel = election.getChannel();
 
         try {
-            // Retrieve pop token
-            byte[] sender = Wallet.getInstance().findKeyPair(laoId, mCurrentRollCallId).second;
-
-            PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+            // Retrieve pop token to sign (if organizer, simply use pk)
+            byte[] sender;
+            Ed25519Sign signer;
+            if (isOrganizer().getValue()) {
+                KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+                String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+                sender = Base64.getUrlDecoder().decode(publicKey);
+                signer = (Ed25519Sign) mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+            } else {
+                List<RollCall> rollCalls = mLaoAttendedRollCalls.getValue();
+                if (rollCalls.size() == 0)
+                    throw new IllegalArgumentException("a non-attendee shouldn't be able to vote");
+                sender = Wallet.getInstance().findKeyPair(laoId, rollCalls.get(rollCalls.size() - 1).getPersistentId()).second;
+                signer = new Ed25519Sign(sender);
+            }
             MessageGeneral msg = new MessageGeneral(sender, castVote, signer, mGson);
 
             Log.d(TAG, PUBLISH_MESSAGE);
@@ -280,7 +294,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                         Log.d(TAG, "timed out waiting for result on cast_vote", throwable));
 
             disposables.add(disposable);
-        } catch (GeneralSecurityException e) {
+        } catch (GeneralSecurityException | IOException e) {
             Log.d(TAG, PK_FAILURE_MESSAGE, e);
         }
     }
