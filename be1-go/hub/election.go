@@ -195,7 +195,13 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 		}
 	}
 	senderPK := base64.URLEncoding.EncodeToString(msg.Sender)
+
+	log.Printf("The sender pk is %s",senderPK)
+
 	senderPoint := student20_pop.Suite.Point()
+
+	log.Printf("All the valid pks are %v and %v",c.attendees,senderPoint)
+
 	ok = c.attendees.IsPresent(senderPK) || c.hub.public.Equal(senderPoint)
 	if !ok {
 		return &message.Error{
