@@ -21,11 +21,17 @@ func NewAttendees() *Attendees {
 }
 
 func (a *Attendees) IsPresent(key string) bool {
+	a.Lock()
+	defer a.Unlock()
+
 	_, ok := a.store[key]
 	return ok
 }
 
 func (a *Attendees) Add(key string) {
+	a.Lock()
+	defer a.Unlock()
+
 	a.store[key] = struct{}{}
 }
 
