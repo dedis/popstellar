@@ -365,8 +365,13 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 			}
 		}
 
+		if len(question.id) == 0 {
+			break
+		}
+
 		votes  := question.validVotes
 		if question.method == message.PluralityMethod {
+
 			numberOfVotesPerBallotOption := make([]int, len(question.ballotOptions))
 			for _, vote := range votes {
 				for ballotIndex := range vote.indexes {
@@ -378,6 +383,9 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 			//questionResults := make([]message.BallotOption,len(question.ballotOptions))
 			questionResults2 := make([] message.BallotOptionCount, len(question.ballotOptions))
 			for i, option := range question.ballotOptions {
+				if len(option) == 0{
+					break
+				}
 				//questionResults = append(questionResults,message.BallotOption("ballot_option:") + option +
 				//	message.BallotOption("count:" + string(numberOfVotesPerBallotOption[i])))
 				log.Printf("For question of id %s we get an option of %v with count %v",question.id,option,numberOfVotesPerBallotOption[i])
