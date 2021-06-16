@@ -18,8 +18,6 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Question
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ElectionResultPagerAdapter  extends RecyclerView.Adapter<ElectionResultPagerAdapter.Pager2ViewHolder> {
     private LaoDetailViewModel mLaoDetailViewModel;
@@ -55,20 +53,10 @@ public class ElectionResultPagerAdapter  extends RecyclerView.Adapter<ElectionRe
 
 
       List<QuestionResult> questionResults = election.getResultsForQuestionId(electionQuestion.getId());
-        Map<String, List<QuestionResult>>results= election.getResults();
-        Log.d(TAG, "whole "+results);
-        Log.d(TAG, "Keys are "+results.keySet());
-        Log.d(TAG,"Manually "+election.getResultsForQuestionId(electionQuestion.getId()).get(0).getBallot());
-        Log.d(TAG, electionQuestion.getId());
-        List<String> ballotOptions = questionResults.stream().map(QuestionResult::getBallot).collect(Collectors.toList());
-        Log.d(TAG, ""+ballotOptions);
-        List<Integer>votes = questionResults.stream().map(QuestionResult::getCount).collect(Collectors.toList());
-        Log.d(TAG, ""+votes);
-
 
         List<ElectionResultListAdapter.ElectionResult> electionResults = new ArrayList<>();
-        for(int i = 0; i< ballotOptions.size(); i++){
-            electionResults.add(new ElectionResultListAdapter.ElectionResult(ballotOptions.get(i), votes.get(i)));
+        for(int i = 0; i< questionResults.size(); i++){
+            electionResults.add(new ElectionResultListAdapter.ElectionResult(questionResults.get(i).getBallot(), questionResults.get(i).getCount()));
         }
         adapter.clear();
         adapter.addAll(electionResults);
