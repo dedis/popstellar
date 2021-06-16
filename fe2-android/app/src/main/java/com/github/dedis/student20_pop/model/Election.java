@@ -154,8 +154,8 @@ public class Election extends Event {
         for (ElectionResultQuestion resultQuestion : electionResultsQuestions) {
             List<QuestionResult> questionResults = resultQuestion.getResults();
             String id = resultQuestion.getId();
-            if (results == null) {
-                this.results.put(id, new ArrayList<>());
+            if (questionResults == null) {
+                 results.put(id, new ArrayList<>());
             } else {
                 questionResults.sort((r1, r2) -> r2.getCount().compareTo(r1.getCount()));
                 this.results.put(id, questionResults);
