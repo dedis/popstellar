@@ -2,6 +2,7 @@ package com.github.dedis.student20_pop.model;
 
 
 import com.github.dedis.student20_pop.model.network.method.message.data.ElectionQuestion;
+import com.github.dedis.student20_pop.model.network.method.message.data.ElectionResultQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.data.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.QuestionResult;
 import com.github.dedis.student20_pop.utility.security.Hash;
@@ -111,8 +112,9 @@ public class ElectionTest {
         unsortedResults.add(new QuestionResult("Candidate2", 23));
         unsortedResults.add(new QuestionResult("Candidate3", 16));
         unsortedResults.add(new QuestionResult("Candidate4", 43));
-        election.setResults(unsortedResults);
-        List<QuestionResult> sortedResults = election.getResults();
+        List<ElectionResultQuestion> resultQuestion = Arrays.asList(new ElectionResultQuestion("question_id", unsortedResults));
+        election.setResults(resultQuestion);
+        List<QuestionResult> sortedResults = election.getResultsForQuestionId("question_id");
 
         QuestionResult firstResult = sortedResults.get(0);
         assertThat(firstResult.getName(), is("Candidate4"));

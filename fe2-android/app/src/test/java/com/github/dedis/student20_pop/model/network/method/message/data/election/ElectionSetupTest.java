@@ -30,11 +30,6 @@ public class ElectionSetupTest {
     }
 
     @Test
-    public void electionSetupGetterReturnsCorrectStartTime() {
-        assertThat(electionSetup.getStartTime(), is(start));
-    }
-
-    @Test
     public void electionSetupGetterReturnsCorrectEndTime() {
         assertThat(electionSetup.getEndTime(), is(end));
     }
