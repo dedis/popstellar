@@ -214,7 +214,6 @@ const EventElection = (props: IPropTypes) => {
             {electionFromStore.questionResult.map((question: QuestionResult) => (
               <BarChartDisplay data={question.result} />
             ))}
-            <Text>{electionFromStore.questionResult}</Text>
           </>
         );
       default:

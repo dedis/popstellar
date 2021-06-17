@@ -1,5 +1,5 @@
 import {
-  Hash, QuestionResult,
+  QuestionResult,
 } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
@@ -28,7 +28,6 @@ export class ElectionResult implements MessageData {
 
     return new ElectionResult({
       ...obj,
-      questions: { id: new Hash(obj.id), result: obj.result },
     });
   }
 }

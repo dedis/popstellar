@@ -43,7 +43,7 @@ const EventRollCall = (props: IPropTypes) => {
     return null;
   }
 
-  const onOpenRollCall = (reopen = false) => {
+  const onOpenRollCall = (reopen: boolean) => {
     if (reopen) {
       if (!event.idAlias) {
         console.debug('Unable to send roll call re-open request, the event does not have an idAlias');
@@ -84,7 +84,7 @@ const EventRollCall = (props: IPropTypes) => {
             <Text>Not Open yet</Text>
             <Text>Be sure to have set up your Wallet</Text>
             {isOrganizer && (
-              <WideButtonView title="Open Roll Call" onPress={onOpenRollCall} />
+              <WideButtonView title="Open Roll Call" onPress={() => onOpenRollCall(false)} />
             )}
           </>
         );

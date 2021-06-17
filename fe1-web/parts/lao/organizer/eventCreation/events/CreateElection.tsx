@@ -10,14 +10,13 @@ import DatePicker from 'components/DatePicker';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import {
-  Hash, Lao, Timestamp, Question, EventTags, channelFromIds,
+  Hash, Lao, Timestamp, Question, EventTags,
 } from 'model/objects';
 import TextBlock from 'components/TextBlock';
 import DropdownSelector from 'components/DropdownSelector';
 import TextInputList from 'components/TextInputList';
 import { requestCreateElection } from 'network';
 import { OpenedLaoStore } from 'store';
-import { subscribeToChannel } from 'network/CommunicationApi';
 
 /**
  * UI to create an Election Event
@@ -29,7 +28,7 @@ const CreateElection = ({ route }: any) => {
   const initialStartDate = new Date();
   const initialEndDate = new Date();
   // Sets initial end date to 1 hour later than start date
-  initialEndDate.setHours(initialEndDate.getHours() + 1);
+  initialEndDate.setMinutes(initialEndDate.getMinutes() + 5);
 
   const [startDate, setStartDate] = useState(Timestamp.dateToTimestamp(initialStartDate));
   const [endDate, setEndDate] = useState(Timestamp.dateToTimestamp(initialEndDate));

@@ -1,16 +1,16 @@
 import {
   Base64UrlData,
+  Channel,
   Hash,
   PublicKey,
   Signature,
   WitnessSignature,
   WitnessSignatureState,
-  Channel, HDWallet,
 } from 'model/objects';
-import { KeyPairStore, LastPopTokenStore, WalletStore } from 'store';
+import { KeyPairStore, LastPopTokenStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import {
-  MessageData, buildMessageData, encodeMessageData,
+  ActionType, buildMessageData, encodeMessageData, MessageData, ObjectType,
 } from './data';
 
 /**
@@ -103,7 +103,6 @@ export class Message {
 
     const jsonData = msg.data.decode();
     const dataObj = JSON.parse(jsonData);
-    console.log('dataObj is: ', dataObj);
     this.#messageData = buildMessageData(dataObj as MessageData);
   }
 
@@ -130,36 +129,46 @@ export class Message {
    * @param witnessSignatures The signatures of the witnesses
    *
    */
-  public static async fromData(
+  public static fromData(
     data: MessageData, witnessSignatures?: WitnessSignature[],
-  ): Promise<Message> {
+  ): Message {
     const encodedDataJson: Base64UrlData = encodeMessageData(data);
-    let popToken: PublicKey | undefined;
-    let signature: Signature = KeyPairStore.getPrivateKey().sign(encodedDataJson);
 
-    await WalletStore.get().then((encryptedSeed) => {
-      if (encryptedSeed !== undefined) {
+    // console.log('Pop tokens are:');
+    // console.log(LastPopTokenStore.getPublicKey());
+    // console.log(LastPopTokenStore.getPrivateKey());
 
-        // TODO: this should work Adi
-        console.log(LastPopTokenStore.getPrivateKey());
-        console.log(LastPopTokenStore.getPublicKey());
+    // console.log('Valid Keypairs are');
+    // console.log(KeyPairStore.getPublicKey().valueOf());
+    // console.log(KeyPairStore.getPrivateKey().valueOf());
 
-        HDWallet.fromState(encryptedSeed)
-          .then((wallet) => {
-            const kp = wallet.recoverLastGeneratedPoPToken();
-            popToken = (kp) ? kp.publicKey : undefined;
-            signature = (kp) ? kp.privateKey.sign(encodedDataJson) : signature;
-          });
-      }
-    }).catch((e) => {
-      console.debug('error when getting last pop token from wallet: ', e);
-    });
+    // const popPublicKey: string | undefined = LastPopTokenStore.getPublicKey();
+    // const popPrivateKey: string | undefined = LastPopTokenStore.getPrivateKey();
 
-    console.log('Pop token in message is: ', popToken);
+    const sender: PublicKey = KeyPairStore.getPublicKey();
+    // If it is a cast vote we want to use the last retrieved poptoken as the sender
+    // if (data.object === ObjectType.ELECTION && data.action === ActionType.CAST_VOTE
+    //   && popPublicKey) {
+    //   sender = new PublicKey(popPublicKey);
+    // } else {
+    //   sender = KeyPairStore.getPublicKey();
+    // }
+
+    // let signature: Signature;
+    // let sender: PublicKey;
+    // if (popPrivateKey && popPublicKey) {
+    //   signature = new PrivateKey(popPrivateKey).sign(encodedDataJson);
+    //   sender = new PublicKey(popPublicKey);
+    // } else {
+    //   sender = KeyPairStore.getPublicKey();
+    //   signature = KeyPairStore.getPrivateKey().sign(encodedDataJson);
+    // }
+
+    const signature = KeyPairStore.getPrivateKey().sign(encodedDataJson);
 
     return new Message({
       data: encodedDataJson,
-      sender: (popToken) || KeyPairStore.getPublicKey(),
+      sender: sender,
       signature,
       message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
       witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
