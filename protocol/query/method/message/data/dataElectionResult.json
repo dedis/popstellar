@@ -19,10 +19,10 @@
 						"$comment": "ID of the question"
 					},
 					"result": {
-						"description": "[Array[String]] results",
+						"description": "[Array[object]] results",
 						"type": "array",
 						"items": {
-							"type": "string",
+							"type": "object",
 							"$comment": "result"
 						},
 						"minItems": 1,
