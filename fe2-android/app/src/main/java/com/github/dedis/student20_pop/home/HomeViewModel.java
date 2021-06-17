@@ -23,6 +23,7 @@ import com.github.dedis.student20_pop.model.network.method.message.MessageGenera
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.student20_pop.qrcode.CameraPermissionViewModel;
 import com.github.dedis.student20_pop.qrcode.QRCodeScanningViewModel;
+import com.github.dedis.student20_pop.qrcode.ScanningAction;
 import com.github.dedis.student20_pop.utility.security.Keys;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.crypto.tink.KeysetHandle;
@@ -47,6 +48,7 @@ public class HomeViewModel extends AndroidViewModel
   public static final String TAG = HomeViewModel.class.getSimpleName();
   public static final String SCAN = "SCAN";
   public static final String REQUEST_CAMERA_PERMISSION = "REQUEST_CAMERA_PERMISSION";
+  private static final ScanningAction scanningAction = ScanningAction.ADD_LAO_PARTICIPANT;
 
   /*
    * LiveData objects for capturing events like button clicks
@@ -109,6 +111,11 @@ public class HomeViewModel extends AndroidViewModel
   @Override
   public int getScanDescription() {
     return R.string.qrcode_scanning_connect_lao;
+  }
+
+  @Override
+  public ScanningAction getScanningAction() {
+    return scanningAction;
   }
 
   @Override

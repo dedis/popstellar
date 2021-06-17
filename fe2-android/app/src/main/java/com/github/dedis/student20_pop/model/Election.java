@@ -2,6 +2,8 @@ package com.github.dedis.student20_pop.model;
 
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventType;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionQuestion;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,18 +14,10 @@ public class Election extends Event {
     private long creation;
     private long start;
     private long end;
-    private boolean writeIn;
-    private List<String> questions;
-    private List<List<String>> ballotsOptions;
-    private List<List<Integer>> votes;
 
-    //votes as attribute ?
-
-
+    private List<ElectionQuestion> electionQuestions;
     public Election() {
-        this.ballotsOptions = new ArrayList<>();
-        this.questions = new ArrayList<>();
-        votes = new ArrayList<>();
+      this.electionQuestions = new ArrayList<>();
     }
 
     public String getId() {
@@ -68,42 +62,14 @@ public class Election extends Event {
         this.end = end;
     }
 
-    public List<List<Integer>> getVotes() {
-        return votes;
+
+    public List<ElectionQuestion> getElectionQuestions() {
+        return electionQuestions;
     }
 
-    public void setVotes(List<List<Integer>> votes) {
-        if(votes == null) throw new IllegalArgumentException("votes cannot be null");
-        this.votes = votes;
-    }
-
-    public List<List<String>> getBallotsOptions() {
-        return ballotsOptions;
-    }
-
-    public void setBallotsOptions(List<List<String>> ballotsOptions) {
-        if (ballotsOptions == null)
-            throw new IllegalArgumentException("ballots options can't be null");
-        if (ballotsOptions.isEmpty())
-            throw new IllegalArgumentException();
-        this.ballotsOptions = ballotsOptions;
-    }
-
-    public List<String> getQuestions() {
-        return questions;
-    }
-
-    public void setQuestions(List<String> questions) {
-        if (questions == null) throw new IllegalArgumentException("question can't be null");
-        this.questions = questions;
-    }
-
-    public boolean getWriteIn() {
-        return writeIn;
-    }
-
-    public void setWriteIn(boolean writeIn) {
-        this.writeIn = writeIn;
+    public void setElectionQuestions(List<ElectionQuestion> electionQuestions) {
+        if(electionQuestions == null) throw new IllegalArgumentException();
+        this.electionQuestions = electionQuestions;
     }
 
     @Override
