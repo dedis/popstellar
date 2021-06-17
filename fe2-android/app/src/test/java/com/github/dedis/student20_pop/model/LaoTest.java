@@ -45,7 +45,7 @@ public class LaoTest {
     public void removeRollCallTest() {
         LAO_1.setRollCalls(new HashMap<>(rollCalls));
         assertTrue(LAO_1.removeRollCall(rollCallId3)); // we want to assert that we can remove rollCallId3 successfully
-        assertEquals(LAO_1.getRollCalls().size() , 2);
+        assertEquals(2,LAO_1.getRollCalls().size());
         assertTrue(LAO_1.getRollCalls().containsKey(rollCallId1));
         assertTrue(LAO_1.getRollCalls().containsKey(rollCallId2));
         assertFalse(LAO_1.getRollCalls().containsKey(rollCallId3));
@@ -63,7 +63,7 @@ public class LaoTest {
     public void removeElectionTest() {
         LAO_1.setElections(new HashMap<>(elections));
         assertTrue(LAO_1.removeElection(electionId3)); // we want to assert that we can remove electionId3 successfully
-        assertEquals(LAO_1.getElections().size() ,2);
+        assertEquals(2,LAO_1.getElections().size());
         assertTrue(LAO_1.getElections().containsKey(electionId1));
         assertTrue(LAO_1.getElections().containsKey(electionId2));
         assertFalse(LAO_1.getElections().containsKey(electionId3));
