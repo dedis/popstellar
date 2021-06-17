@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
@@ -44,7 +45,7 @@ public class LaoTest {
     public void removeRollCallTest() {
         LAO_1.setRollCalls(new HashMap<>(rollCalls));
         assertTrue(LAO_1.removeRollCall(rollCallId3)); // we want to assert that we can remove rollCallId3 successfully
-        assertEquals(LAO_1.getRollCalls().size() == 2);
+        assertEquals(LAO_1.getRollCalls().size() , 2);
         assertTrue(LAO_1.getRollCalls().containsKey(rollCallId1));
         assertTrue(LAO_1.getRollCalls().containsKey(rollCallId2));
         assertFalse(LAO_1.getRollCalls().containsKey(rollCallId3));
@@ -58,14 +59,11 @@ public class LaoTest {
         assertFalse(LAO_1.removeRollCall(rollCallId2));
     }
 
-    private void assertEquals(boolean b) {
-    }
-
     @Test
     public void removeElectionTest() {
         LAO_1.setElections(new HashMap<>(elections));
         assertTrue(LAO_1.removeElection(electionId3)); // we want to assert that we can remove electionId3 successfully
-        assertEquals(LAO_1.getElections().size() == 2);
+        assertEquals(LAO_1.getElections().size() ,2);
         assertTrue(LAO_1.getElections().containsKey(electionId1));
         assertTrue(LAO_1.getElections().containsKey(electionId2));
         assertFalse(LAO_1.getElections().containsKey(electionId3));
