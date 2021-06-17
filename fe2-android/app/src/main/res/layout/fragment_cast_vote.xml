@@ -9,6 +9,11 @@
         android:layout_height="match_parent"
         tools:context=".detail.fragments.CastVoteFragment">
 
+        <include
+            android:id="@+id/cast_vote_tab_back"
+            layout="@layout/tab_back"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_tab"
