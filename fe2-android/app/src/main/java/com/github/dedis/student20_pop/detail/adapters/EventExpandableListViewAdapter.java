@@ -342,8 +342,6 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
                         viewModel.openCastVotes();
                     });
         } else if (category == PAST) {
-            electionBinding.electionActionButton.setOnClickListener(clicked -> viewModel.setCurrentElection(election));
-
             electionBinding.electionActionButton.setEnabled(true);
             if (!viewModel.isOrganizer().getValue()) electionBinding.electionActionButton.setEnabled(false);
 
@@ -353,10 +351,16 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
             } else if (election.getState() == RESULTS_READY) {
                 electionBinding.electionActionButton.setText(R.string.show_results);
                 electionBinding.electionActionButton.setEnabled(true);
-                electionBinding.electionActionButton.setOnClickListener(clicked -> viewModel.openElectionResults(true));
+                electionBinding.electionActionButton.setOnClickListener(clicked -> {
+                    viewModel.setCurrentElection(election);
+                    viewModel.openElectionResults(true);
+                });
             } else {
                 electionBinding.electionActionButton.setText(R.string.tally_votes);
-                electionBinding.electionActionButton.setOnClickListener(clicked -> viewModel.endElection(election));
+                electionBinding.electionActionButton.setOnClickListener(clicked -> {
+                    viewModel.setCurrentElection(election);
+                    viewModel.endElection(election);
+                });
             }
 
         }
