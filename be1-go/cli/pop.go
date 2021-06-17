@@ -19,14 +19,8 @@ func main() {
 	organizerAddressFlag := &cli.StringFlag{
 		Name:    "organizer-address",
 		Aliases: []string{"org"},
-		Usage:   "ip address of organizer",
-		Value:   "localhost",
-	}
-	organizerPortFlag := &cli.IntFlag{
-		Name:    "organizer-port",
-		Aliases: []string{"op"},
-		Usage:   "port on which to connect to organizer websocket",
-		Value:   9001,
+		Usage:   "address and port of organizer",
+		Value:   "localhost:9002",
 	}
 	clientPortFlag := &cli.IntFlag{
 		Name:    "client-port",
@@ -80,7 +74,6 @@ func main() {
 						Usage: "start the witness server",
 						Flags: []cli.Flag{
 							organizerAddressFlag,
-							organizerPortFlag,
 							clientPortFlag,
 							witnessPortFlag,
 							otherWitnessFlag,
