@@ -346,7 +346,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
             electionBinding.electionActionButton.setOnClickListener(clicked -> viewModel.setCurrentElection(election));
 
             electionBinding.electionActionButton.setEnabled(true);
-            if (!viewModel.isOrganizer().getValue()) electionBinding.electionActionButton.setEnabled(false);
+            if (!viewModel.isOrganizer().getValue().booleanValue()) electionBinding.electionActionButton.setEnabled(false);
 
             if (election.getState() == CLOSED) {
                 electionBinding.electionActionButton.setText(R.string.election_ended);
