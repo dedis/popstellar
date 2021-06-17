@@ -27,7 +27,7 @@ func NewOrganizerHub(public kyber.Point) (Hub, error) {
 
 type laoChannel struct {
 	rollCall  rollCall
-	attendees map[string]struct{}
+	attendees *Attendees
 	*baseChannel
 }
 
