@@ -115,7 +115,6 @@ const EventRollCall = (props: IPropTypes) => {
             {rollCallFromStore.attendees.map((attendee: string) => (
               <Text>{attendee}</Text>
             ))}
-            <Text>{rollCallFromStore.attendees}</Text>
             {isOrganizer && (
               <WideButtonView title="Re-open Roll Call" onPress={() => onOpenRollCall(true)} />
             )}
