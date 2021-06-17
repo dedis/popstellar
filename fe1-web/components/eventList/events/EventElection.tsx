@@ -212,7 +212,7 @@ const EventElection = (props: IPropTypes) => {
           <>
             <Text style={styles.text}>Election Result</Text>
             {electionFromStore.questionResult.map((question: QuestionResult) => (
-              <BarChartDisplay data={question.result} />
+              <BarChartDisplay data={question.result} key={question.id.valueOf()} />
             ))}
           </>
         );
