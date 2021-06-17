@@ -4,18 +4,19 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentElectionResultBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.adapters.ElectionResultPagerAdapter;
 import com.github.dedis.student20_pop.model.Election;
-
-import java.util.Arrays;
 
 import me.relex.circleindicator.CircleIndicator3;
 
@@ -33,6 +34,12 @@ public class ElectionResultFragment extends Fragment {
 
     public static ElectionResultFragment newInstance() {
         return new ElectionResultFragment();
+    }
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Button back = getActivity().findViewById(R.id.tab_back);
+        back.setOnClickListener(v -> mLaoDetailViewModel.openLaoDetail());
     }
 
     @Override
@@ -53,17 +60,6 @@ public class ElectionResultFragment extends Fragment {
 
         //Getting election
         Election election = mLaoDetailViewModel.getCurrentElection();
-
-        ///// Setting up static data for testing //////////////////////////////////////////////////////
-        if(election == null)
-            election = new Election();
-
-        election.setName("Election 1");
-        election.setQuestions(Arrays.asList("Who for 1st delegate", "Who for 2nd delegate"));
-        election.setBallotsOptions(Arrays.asList(Arrays.asList("A", "B"), Arrays.asList("C", "D", "E")));
-        election.setVotes(Arrays.asList(Arrays.asList(21, 6), Arrays.asList(2,7,9)));
-        /////////////////////////////////////////////////////////////////////////////////////////////////
-
 
         //Setting the Lao Name
         laoNameView.setText(mLaoDetailViewModel.getCurrentLaoName().getValue());
