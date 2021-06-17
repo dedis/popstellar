@@ -271,12 +271,18 @@ export class HDWallet {
         const hexSeed = Buffer.from(seedArray)
           .toString('hex');
 
-        const { key } = derivePath(path, hexSeed);
+        const { key, chainCode } = derivePath(path, hexSeed);
         const pubKey = getPublicKey(key, false);
+
+        const bufferConcatenation = [key, chainCode];
+        const privKey = Buffer.concat(bufferConcatenation);
+
+        console.log(privKey);
+        console.log(pubKey);
 
         const token = new KeyPair({
           publicKey: new PublicKey(Base64UrlData.fromBase64(encodeBase64(pubKey)).valueOf()),
-          privateKey: new PrivateKey(Base64UrlData.fromBase64(encodeBase64(key)).valueOf()),
+          privateKey: new PrivateKey(Base64UrlData.fromBase64(encodeBase64(privKey)).valueOf()),
         });
 
         LastPopTokenStore.storePublicKey(token.publicKey.valueOf());
@@ -327,7 +333,8 @@ export class HDWallet {
           const rcEvent = getStore().getState().events.byLaoId[lao].byId[rc];
           if (rcEvent.eventType === 'ROLL_CALL') {
             /* TODO: change to empty array if undefined [] */
-            const rcAttendees = (rcEvent.attendees !== undefined) ? rcEvent.attendees : ['Bqr1A_KQqGILV6Sp5r7pT6uR_YlSevIfTI4OW02dQcU', 'AVgNqHJ36yH-y110ZZ-RFksZ73Ca7kLU188uiv9hzB4', '-GBRQ_2qc41Zpe_fs-SWub1PoNMZYwp36WyilbrNMfM'];
+            const rcAttendees = (rcEvent.attendees !== undefined) ? rcEvent.attendees
+              : []; // CUh_Su1ZQWIz3q088tr57ytg4Ch9ZLwb5ntbOr54wh8
 
             allKnownLaoRollCallsIds.set([new Hash(lao), new Hash(rcEvent.id)],
               rcAttendees);

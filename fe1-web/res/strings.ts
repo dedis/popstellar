@@ -40,7 +40,7 @@ const STRINGS = {
   navigation_home_tab_wallet: 'Wallet',
   navigation_insert_seed_tab_wallet: 'Wallet Setup',
   navigation_show_seed_wallet: 'New Wallet',
-  navigation_synced_wallet: 'Your Wallet',
+  navigation_synced_wallet: 'My Wallet',
   navigation_wallet_error: 'Error',
 
   /* --- Home Strings --- */

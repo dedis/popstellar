@@ -7,10 +7,10 @@ import {
   WitnessSignature,
   WitnessSignatureState,
 } from 'model/objects';
-import { KeyPairStore, LastPopTokenStore } from 'store';
+import { KeyPairStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import {
-  ActionType, buildMessageData, encodeMessageData, MessageData, ObjectType,
+  buildMessageData, encodeMessageData, MessageData,
 } from './data';
 
 /**
@@ -129,46 +129,15 @@ export class Message {
    * @param witnessSignatures The signatures of the witnesses
    *
    */
-  public static fromData(
+  public static async fromData(
     data: MessageData, witnessSignatures?: WitnessSignature[],
-  ): Message {
+  ): Promise<Message> {
     const encodedDataJson: Base64UrlData = encodeMessageData(data);
-
-    // console.log('Pop tokens are:');
-    // console.log(LastPopTokenStore.getPublicKey());
-    // console.log(LastPopTokenStore.getPrivateKey());
-
-    // console.log('Valid Keypairs are');
-    // console.log(KeyPairStore.getPublicKey().valueOf());
-    // console.log(KeyPairStore.getPrivateKey().valueOf());
-
-    // const popPublicKey: string | undefined = LastPopTokenStore.getPublicKey();
-    // const popPrivateKey: string | undefined = LastPopTokenStore.getPrivateKey();
-
-    const sender: PublicKey = KeyPairStore.getPublicKey();
-    // If it is a cast vote we want to use the last retrieved poptoken as the sender
-    // if (data.object === ObjectType.ELECTION && data.action === ActionType.CAST_VOTE
-    //   && popPublicKey) {
-    //   sender = new PublicKey(popPublicKey);
-    // } else {
-    //   sender = KeyPairStore.getPublicKey();
-    // }
-
-    // let signature: Signature;
-    // let sender: PublicKey;
-    // if (popPrivateKey && popPublicKey) {
-    //   signature = new PrivateKey(popPrivateKey).sign(encodedDataJson);
-    //   sender = new PublicKey(popPublicKey);
-    // } else {
-    //   sender = KeyPairStore.getPublicKey();
-    //   signature = KeyPairStore.getPrivateKey().sign(encodedDataJson);
-    // }
-
-    const signature = KeyPairStore.getPrivateKey().sign(encodedDataJson);
+    const signature: Signature = KeyPairStore.getPrivateKey().sign(encodedDataJson);
 
     return new Message({
       data: encodedDataJson,
-      sender: sender,
+      sender: KeyPairStore.getPublicKey(),
       signature,
       message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
       witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
@@ -187,3 +156,49 @@ export class Message {
     return false;
   }
 }
+
+/*
+public static async fromData(
+    data: MessageData, witnessSignatures?: WitnessSignature[],
+  ): Promise<Message> {
+    const encodedDataJson: Base64UrlData = encodeMessageData(data);
+
+    let signature: Signature = KeyPairStore.getPrivateKey().sign(encodedDataJson);
+    let keyPair: KeyPair | undefined;
+
+    WalletStore.get().then((encryptedSeed) => {
+      if (encryptedSeed !== undefined) {
+        HDWallet.fromState(encryptedSeed)
+          .then((wallet) => {
+            keyPair = wallet.recoverLastGeneratedPoPToken();
+            console.log('Pop token in message is: ', keyPair);
+            signature = (keyPair) ? keyPair?.privateKey.sign(encodedDataJson) : signature;
+          });
+      }
+    }).catch((e) => {
+      console.debug('error when getting last pop token from wallet: ', e);
+    });
+
+    return new Message({
+      data: encodedDataJson,
+      sender: (keyPair) ? keyPair.publicKey : KeyPairStore.getPublicKey(),
+      signature,
+      message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
+      witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
+    });
+  }
+
+  // This function disables the checks of signature and messageID for eleciton result messages
+  // Because the message comes from the back-end and it can't sign the messages since it hasn't
+  // access to the private key
+  // This method is only a temporary solution for the demo and should be removed once a better
+  // solution is found
+  private isElectionResultMessage():boolean {
+    if (this.data.decode().includes('"result":')) {
+      return true;
+    }
+    return false;
+  }
+}
+
+*/
