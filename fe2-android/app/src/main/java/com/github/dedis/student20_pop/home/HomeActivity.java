@@ -250,6 +250,7 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void setupConnectingFragment() {
+
     ConnectingFragment connectingFragment =
         (ConnectingFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_connecting);
     if (connectingFragment == null) {

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,8 +14,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentCameraPermBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
+import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.home.HomeActivity;
 
 /** Fragment handling permission granting for the camera */
@@ -63,8 +66,11 @@ public final class CameraPermissionFragment extends Fragment {
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
+    Button back = (Button) getActivity().findViewById(R.id.tab_back);
+    back.setOnClickListener(c->((LaoDetailViewModel) mCameraPermissionViewModel).openLaoDetail());
     setupCameraPermissionButton();
   }
+
 
   @Override
   public void onRequestPermissionsResult(
