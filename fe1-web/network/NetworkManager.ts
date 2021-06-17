@@ -38,12 +38,12 @@ class NetworkManager {
    * @returns a new connection to the server, or an existing one if it's already established
    */
   public connect(host: string, port: number = 9000, path: string = 'organizer/client/'): NetworkConnection {
-    //const address: string = NetworkManager.buildAddress(host, port, path);
+    const address: string = NetworkManager.buildAddress(host, port, path);
     // const address = 'wss://popdemo.dedis.ch/52af0cf9';
     // const address = 'wss://popdemo.dedis.ch/7380087d'; // Karims \ADress to tes tRC
-    //const address = 'wss://popdemo.dedis.ch/782a29da'; // For pop party
+    // const address = 'wss://popdemo.dedis.ch/782a29da'; // For pop party
     // const address = 'wss://popdemo.dedis.ch/cde0c872';
-    const address = 'wss://popdemo.dedis.ch/demo';
+    // const address = 'wss://127.0.0.1:9000';
 
     const existingConnection = this.getConnectionByAddress(address);
 
