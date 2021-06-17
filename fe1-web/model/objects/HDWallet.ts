@@ -333,7 +333,8 @@ export class HDWallet {
           const rcEvent = getStore().getState().events.byLaoId[lao].byId[rc];
           if (rcEvent.eventType === 'ROLL_CALL') {
             /* TODO: change to empty array if undefined [] */
-            const rcAttendees = (rcEvent.attendees !== undefined) ? rcEvent.attendees : ['CUh_Su1ZQWIz3q088tr57ytg4Ch9ZLwb5ntbOr54wh8='];
+            const rcAttendees = (rcEvent.attendees !== undefined) ? rcEvent.attendees
+              : []; // CUh_Su1ZQWIz3q088tr57ytg4Ch9ZLwb5ntbOr54wh8
 
             allKnownLaoRollCallsIds.set([new Hash(lao), new Hash(rcEvent.id)],
               rcAttendees);

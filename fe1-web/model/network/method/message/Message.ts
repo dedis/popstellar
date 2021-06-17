@@ -1,13 +1,13 @@
 import {
   Base64UrlData,
   Channel,
-  Hash, HDWallet, KeyPair,
+  Hash,
   PublicKey,
   Signature,
   WitnessSignature,
   WitnessSignatureState,
 } from 'model/objects';
-import { KeyPairStore, WalletStore } from 'store';
+import { KeyPairStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import {
   buildMessageData, encodeMessageData, MessageData,
@@ -133,6 +133,35 @@ export class Message {
     data: MessageData, witnessSignatures?: WitnessSignature[],
   ): Promise<Message> {
     const encodedDataJson: Base64UrlData = encodeMessageData(data);
+    const signature: Signature = KeyPairStore.getPrivateKey().sign(encodedDataJson);
+
+    return new Message({
+      data: encodedDataJson,
+      sender: KeyPairStore.getPublicKey(),
+      signature,
+      message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
+      witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
+    });
+  }
+
+  // This function disables the checks of signature and messageID for eleciton result messages
+  // Because the message comes from the back-end and it can't sign the messages since it hasn't
+  // access to the private key
+  // This method is only a temporary solution for the demo and should be removed once a better
+  // solution is found
+  private isElectionResultMessage():boolean {
+    if (this.data.decode().includes('"result":')) {
+      return true;
+    }
+    return false;
+  }
+}
+
+/*
+public static async fromData(
+    data: MessageData, witnessSignatures?: WitnessSignature[],
+  ): Promise<Message> {
+    const encodedDataJson: Base64UrlData = encodeMessageData(data);
 
     let signature: Signature = KeyPairStore.getPrivateKey().sign(encodedDataJson);
     let keyPair: KeyPair | undefined;
@@ -171,3 +200,5 @@ export class Message {
     return false;
   }
 }
+
+*/
