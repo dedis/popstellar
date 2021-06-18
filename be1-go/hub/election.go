@@ -333,12 +333,11 @@ func (c *electionChannel) endElectionHelper(publish message.Publish) error {
 		}
 	}
 	if len(endElectionData.RegisteredVotes) == 0 {
-		log.Printf("We allow empty votes")
+		log.Printf("We allow emtmpy votes")
 	}else {
 		log.Printf("TODO: finish the hashing check")
 		// since we eliminated (in cast vote) the duplicate votes we are sure that the voter casted one vote for one question
-		//for id := range c.questions{
-		//	question,_ := c.questions[id]
+		//for _, question := range c.questions {
 		//	_, err := sortHashVotes(question.validVotes)
 		//	if err != nil {
 		//		return &message.Error{
@@ -346,12 +345,12 @@ func (c *electionChannel) endElectionHelper(publish message.Publish) error {
 		//			Description: "Error while hashing",
 		//		}
 		//	}
-			//if endElectionData.RegisteredVotes != hashed {
-			//	return &message.Error{
-			//		Code:        -4,
-			//		Description: "Received registered votes is not correct",
-			//	}
-			//}
+		//	if endElectionData.RegisteredVotes != hashed {
+		//		return &message.Error{
+		//			Code:        -4,
+		//			Description: "Received registered votes is not correct",
+		//		}
+		//	}
 		//}
 	}
 
@@ -366,14 +365,17 @@ func (c *electionChannel) endElectionHelper(publish message.Publish) error {
 	return nil
 }
 
+//TODO: this function is called in the commented section above for checking the registered vote hash
 //func sortHashVotes(votes2 map[string]validVote)([]byte,error) {
 //	type kv struct {
 //		voteTime message.Timestamp
 //		sender   string
 //	}
-//	votes := make([]kv,0)
+//	votes := make(map[int]kv)
+//	i := 0
 //	for k, v := range votes2 {
-//		votes = append(votes,kv{v.voteTime, k})
+//		votes[i] = kv{v.voteTime, k}
+//		i += 1
 //	}
 //	sort.Slice(votes,
 //		func(i int, j int) bool { return votes[i].voteTime < votes[j].voteTime })
