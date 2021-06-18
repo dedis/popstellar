@@ -447,8 +447,8 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 				}
 				log.Printf("For question of id %s we get an option of %v with count %v",question.id,option,numberOfVotesPerBallotOption[i])
 				questionResults2 = append(questionResults2, message.BallotOptionCount{
-					option,
-					numberOfVotesPerBallotOption[i],
+					Option: option,
+					Count: numberOfVotesPerBallotOption[i],
 				})
 			}
 			log.Printf("The list of the ballot options and counts shoudl be the following: %v",questionResults)
