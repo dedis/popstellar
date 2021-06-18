@@ -183,7 +183,7 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 			if err != nil {
 				return &message.Error{
 					Code:        -4,
-					Description: fmt.Sprintf("Error while processing election end message"),
+					Description: "Error while processing election end message",
 				}
 			}
 			err = c.electionResultHelper(publish)
