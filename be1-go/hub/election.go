@@ -339,7 +339,8 @@ func (c *electionChannel) endElectionHelper(publish message.Publish) error {
 	}else {
 		log.Printf("TODO: finish the hashing check")
 		// since we eliminated (in cast vote) the duplicate votes we are sure that the voter casted one vote for one question
-		for _, question := range c.questions {
+		for id := range c.questions{
+			question,_ := c.questions[id]
 			_, err := sortHashVotes(question.validVotes)
 			if err != nil {
 				return &message.Error{
