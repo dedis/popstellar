@@ -349,7 +349,11 @@ func (c *electionChannel) endElectionHelper(publish message.Publish) error {
 		//			Description: "Error while hashing",
 		//		}
 		//	}
-		//	endElectionData.RegisteredVotes = hashed
+		//	if endElectionData.RegisteredVotes != hashed{
+			//return &message.Error{
+			//			Code:        -4,
+			//			Description: "Received registered votes is not correct",
+			//		}
 		//}
 	}
 
@@ -387,19 +391,9 @@ func sortHashVotes(votes2 map[string]validVote)([]byte,error) {
 }
 
 func (c *electionChannel) electionResultHelper(publish message.Publish) error{
-	//msg := publish.Params.Message
-
-	//resultData, ok := msg.Data.(*message.ElectionResultData)
-	//if !ok {
-	//	return &message.Error{
-	//		Code:        -4,
-	//		Description: "failed to cast data to ElectionResultData",
-	//	}
-	//}
 	log.Printf("Computing election results on channel %v",c)
 
 	msg := publish.Params.Message
-	//c.broadcastToAllClients(*msg)
 
 	genericMsg := message.GenericData{
 		Action: "result",
@@ -414,10 +408,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 
 
 	log.Printf("Getting the count per ballot opetion for election results")
-	//questions := resultData.Questions
 	for id := range c.questions{
-		// q.iD is the public key of the question, we convert it to string
-		// to retrieve the votes for that question in the election channel
 		question,ok := c.questions[id]
 		if !ok{
 			return &message.Error{
@@ -441,16 +432,12 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 				}
 			}
 
-			// check if we even need questionResults
-			//questionResults := make([]message.BallotOption,len(question.ballotOptions))
 			questionResults2 := make([] message.BallotOptionCount,0)
 			for i, option := range question.ballotOptions {
 				if len(option) == 0{
 					log.Printf("ignoring a ballot option")
 					break
 				}
-				//questionResults = append(questionResults,message.BallotOption("ballot_option:") + option +
-				//	message.BallotOption("count:" + string(numberOfVotesPerBallotOption[i])))
 				log.Printf("For question of id %s we get an option of %v with count %v",question.id,option,numberOfVotesPerBallotOption[i])
 				questionResults2 = append(questionResults2, message.BallotOptionCount{
 					option,
@@ -461,18 +448,13 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 
 			resultData.Questions = append(resultData.Questions,message.QuestionResult{
 				ID : id,
-				//Result: questionResults,
 				Result2: questionResults2,
 			})
-			//resultData.Questions = questionResults
 
 			log.Printf("Appending a question id:%s with the count and result",id)
 		}
 	}
-	log.Printf("The result data field of the election result message " +
-		"is the following %+v and has len of %v, first question is %v",resultData.Questions,len(resultData.Questions),resultData.Questions[0])
 
-	log.Printf("computing message id for election result message")
 	msgId := computeMessageId(resultData,msg.Signature)
 
 	_,ok  := base64.URLEncoding.DecodeString(msgId)
@@ -492,32 +474,6 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 		}
 	}
 
-	log.Printf("creating the election result message")
-	//ms2 := message.Message{
-	//	MessageID:         id,
-	//	Data:              resultData,
-	//	Sender:            msg.Sender,
-	//	Signature:         msg.Signature,
-	//	WitnessSignatures: msg.WitnessSignatures,
-	//	RawData:           raw,
-	//}
-
-	//for i, q := range resultData.Questions{
-	//	if len(q.ID) == 0{
-	//		log.Printf("removing a question")
-	//		resultData.Questions = append(resultData.Questions[:i], resultData.Questions[i+1:]...)
-	//	}
-	//	for j, ballot := range q.Result2{
-	//		if len(ballot.Option) < 1 {
-	//			log.Printf("removing a ballot option")
-	//			q.Result2 = append(q.Result2[:j],q.Result2[j+1:]...)
-	//		}
-	//	}
-	//}
-
-	log.Printf("The result data field of the election result message " +
-		"is the following %v and has len of %v, first question is %v",resultData.Questions,len(resultData.Questions),resultData.Questions[0])
-
 	ms3,ok := message.NewMessage(msg.Sender,msg.Signature,msg.WitnessSignatures,resultData)
 
 	if ok != nil {
@@ -531,7 +487,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 
 
 	c.broadcastToAllClients(*ms3)
-	//c.broadcastToAllClients(ms2)
+
 	c.inbox.mutex.Lock()
 	c.inbox.storeMessage(*ms3)
 	c.inbox.mutex.Unlock()
