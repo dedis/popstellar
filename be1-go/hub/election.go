@@ -180,6 +180,12 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 				log.Printf("Senfind the result for election end")
 				client.SendResult(51,result)
 			}
+			if err != nil {
+				return &message.Error{
+					Code:        -4,
+					Description: fmt.Sprintf("Error while processing election end message"),
+				}
+			}
 			err = c.electionResultHelper(publish)
 			if err == nil{
 				log.Printf("End and Result broadcasted")
