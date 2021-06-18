@@ -367,17 +367,14 @@ func (c *electionChannel) endElectionHelper(publish message.Publish) error {
 	return nil
 }
 
-//TODO: this function is called in the commented section above for checking the registered vote hash
 func sortHashVotes(votes2 map[string]validVote)([]byte,error) {
 	type kv struct {
 		voteTime message.Timestamp
 		sender   string
 	}
-	votes := make(map[int]kv)
-	i := 0
+	votes := make([]kv,0)
 	for k, v := range votes2 {
-		votes[i] = kv{v.voteTime, k}
-		i += 1
+		votes = append(votes,kv{v.voteTime, k})
 	}
 	sort.Slice(votes,
 		func(i int, j int) bool { return votes[i].voteTime < votes[j].voteTime })
