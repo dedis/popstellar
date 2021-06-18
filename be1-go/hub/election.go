@@ -365,7 +365,7 @@ func (c *electionChannel) endElectionHelper(publish message.Publish) error {
 	return nil
 }
 
-//TODO: this function is called in the commented section above for checking the registered vote hash
+//TODOs: this function is called in the commented section above for checking the registered vote hash
 //func sortHashVotes(votes2 map[string]validVote)([]byte,error) {
 //	type kv struct {
 //		voteTime message.Timestamp
@@ -414,11 +414,6 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 				Code:        -4,
 				Description: "No question with this questionId was recorded",
 			}
-		}
-
-		if len(question.id) == 0 {
-			log.Printf("ignoring a question")
-			break
 		}
 
 		votes  := question.validVotes
