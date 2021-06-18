@@ -74,6 +74,7 @@ public class CastVote extends Data {
         return java.util.Objects.equals(getLaoId(), that.getLaoId())
                 && createdAt == that.getCreation()
                 && electionId == that.getElectionId()
+                && laoId == that.getLaoId()
                 && java.util.Objects.equals(votes, that.getVotes());
     }
 
@@ -81,6 +82,7 @@ public class CastVote extends Data {
     public int hashCode() {
         return java.util.Objects.hash(
                 getLaoId(),
+                getElectionId(),
                 getCreation(),
                 getVotes());
     }
