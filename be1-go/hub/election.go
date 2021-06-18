@@ -514,7 +514,6 @@ func (c* electionChannel) sendElectionEndClient(){
 func gatherOptionCounts(count []int,options []message.BallotOption) [] message.BallotOptionCount{
 	questionResults2 := make([] message.BallotOptionCount,0)
 	for i, option := range options {
-		log.Printf("For question of id %s we get an option of %v with count %v",question.id,option,numberOfVotesPerBallotOption[i])
 		questionResults2 = append(questionResults2, message.BallotOptionCount{
 			Option: option,
 			Count: count[i],
