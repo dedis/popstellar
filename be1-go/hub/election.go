@@ -5,9 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"golang.org/x/xerrors"
 	"log"
-	"sort"
 	"student20_pop"
 	"student20_pop/message"
 	"sync"
@@ -335,26 +333,26 @@ func (c *electionChannel) endElectionHelper(publish message.Publish) error {
 		}
 	}
 	if len(endElectionData.RegisteredVotes) == 0 {
-		log.Printf("We allow emtmpy votes")
+		log.Printf("We allow empty votes")
 	}else {
 		log.Printf("TODO: finish the hashing check")
 		// since we eliminated (in cast vote) the duplicate votes we are sure that the voter casted one vote for one question
-		for id := range c.questions{
-			question,_ := c.questions[id]
-			_, err := sortHashVotes(question.validVotes)
-			if err != nil {
-				return &message.Error{
-					Code:        -4,
-					Description: "Error while hashing",
-				}
-			}
+		//for id := range c.questions{
+		//	question,_ := c.questions[id]
+		//	_, err := sortHashVotes(question.validVotes)
+		//	if err != nil {
+		//		return &message.Error{
+		//			Code:        -4,
+		//			Description: "Error while hashing",
+		//		}
+		//	}
 			//if endElectionData.RegisteredVotes != hashed {
 			//	return &message.Error{
 			//		Code:        -4,
 			//		Description: "Received registered votes is not correct",
 			//	}
 			//}
-		}
+		//}
 	}
 
 	log.Printf("Broadcasting election end message")
@@ -368,26 +366,26 @@ func (c *electionChannel) endElectionHelper(publish message.Publish) error {
 	return nil
 }
 
-func sortHashVotes(votes2 map[string]validVote)([]byte,error) {
-	type kv struct {
-		voteTime message.Timestamp
-		sender   string
-	}
-	votes := make([]kv,0)
-	for k, v := range votes2 {
-		votes = append(votes,kv{v.voteTime, k})
-	}
-	sort.Slice(votes,
-		func(i int, j int) bool { return votes[i].voteTime < votes[j].voteTime })
-	h := sha256.New()
-	for _, v := range votes {
-		if len(v.sender) == 0 {
-			return nil, xerrors.Errorf("empty string to hash()")
-		}
-		h.Write([]byte(fmt.Sprintf("%d%s", len(v.sender), v.sender)))
-	}
-	return h.Sum(nil), nil
-}
+//func sortHashVotes(votes2 map[string]validVote)([]byte,error) {
+//	type kv struct {
+//		voteTime message.Timestamp
+//		sender   string
+//	}
+//	votes := make([]kv,0)
+//	for k, v := range votes2 {
+//		votes = append(votes,kv{v.voteTime, k})
+//	}
+//	sort.Slice(votes,
+//		func(i int, j int) bool { return votes[i].voteTime < votes[j].voteTime })
+//	h := sha256.New()
+//	for _, v := range votes {
+//		if len(v.sender) == 0 {
+//			return nil, xerrors.Errorf("empty string to hash()")
+//		}
+//		h.Write([]byte(fmt.Sprintf("%d%s", len(v.sender), v.sender)))
+//	}
+//	return h.Sum(nil), nil
+//}
 
 func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 	log.Printf("Computing election results on channel %v",c)
