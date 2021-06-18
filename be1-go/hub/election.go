@@ -177,6 +177,7 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 					Description: "Error while processing election end message",
 				}
 			}
+			c.sendElectionEndClient()
 			err = c.electionResultHelper(publish)
 			if err == nil{
 				log.Printf("End and Result broadcasted")
@@ -507,7 +508,7 @@ func computeMessageId(data message.ElectionResultData, signature message.Signatu
 
 }
 
-func (c* electionChannel) sendElectionEndResult(){
+func (c* electionChannel) sendElectionEndClient(){
 	for client := range c.clients{
 		result := message.Result{}
 		general := 0
