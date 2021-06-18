@@ -7,9 +7,7 @@ import (
 
 	//"encoding/json"
 	"fmt"
-	"golang.org/x/xerrors"
 	"log"
-	"sort"
 	"student20_pop"
 	"student20_pop/message"
 	"sync"
@@ -343,8 +341,9 @@ func (c *electionChannel) endElectionHelper(publish message.Publish) error {
 		}
 	}
 	if len(endElectionData.RegisteredVotes) == 0 {
-
+		log.Printf("We allow emtmpy votes")
 	}else{
+		log.Printf("TODO: finish the hashing check")
 		// TODO: check if the hashing is done correctly
 		// since we eliminated (in cast vote) the duplicate votes we are sure that the voter casted one vote for one question
 		//for _,question := range c.questions{
@@ -373,28 +372,30 @@ func (c *electionChannel) endElectionHelper(publish message.Publish) error {
 
 	return nil
 }
-func sortHashVotes(votes2 map[string]validVote)([]byte,error) {
-	type kv struct {
-		voteTime message.Timestamp
-		sender   string
-	}
-	votes := make(map[int]kv)
-	i := 0
-	for k, v := range votes2 {
-		votes[i] = kv{v.voteTime, k}
-		i += 1
-	}
-	sort.Slice(votes,
-		func(i int, j int) bool { return votes[i].voteTime < votes[j].voteTime })
-	h := sha256.New()
-	for _, v := range votes {
-		if len(v.sender) == 0 {
-			return nil, xerrors.Errorf("empty string to hash()")
-		}
-		h.Write([]byte(fmt.Sprintf("%d%s", len(v.sender), v.sender)))
-	}
-	return h.Sum(nil), nil
-}
+
+//TODO: this function is called in the commented section above for checking the registered vote hash
+//func sortHashVotes(votes2 map[string]validVote)([]byte,error) {
+//	type kv struct {
+//		voteTime message.Timestamp
+//		sender   string
+//	}
+//	votes := make(map[int]kv)
+//	i := 0
+//	for k, v := range votes2 {
+//		votes[i] = kv{v.voteTime, k}
+//		i += 1
+//	}
+//	sort.Slice(votes,
+//		func(i int, j int) bool { return votes[i].voteTime < votes[j].voteTime })
+//	h := sha256.New()
+//	for _, v := range votes {
+//		if len(v.sender) == 0 {
+//			return nil, xerrors.Errorf("empty string to hash()")
+//		}
+//		h.Write([]byte(fmt.Sprintf("%d%s", len(v.sender), v.sender)))
+//	}
+//	return h.Sum(nil), nil
+//}
 
 func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 	log.Printf("Computing election results on channel %v",c)
