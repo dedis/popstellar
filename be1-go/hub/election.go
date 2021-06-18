@@ -431,14 +431,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 				}
 			}
 
-			questionResults2 := make([] message.BallotOptionCount,0)
-			for i, option := range question.ballotOptions {
-				log.Printf("For question of id %s we get an option of %v with count %v",question.id,option,numberOfVotesPerBallotOption[i])
-				questionResults2 = append(questionResults2, message.BallotOptionCount{
-					Option: option,
-					Count: numberOfVotesPerBallotOption[i],
-				})
-			}
+			questionResults2 := gatherOptionCounts(numberOfVotesPerBallotOption,question.ballotOptions)
 			log.Printf("The list of the ballot options and counts shoudl be the following: %v",questionResults)
 
 			resultData.Questions = append(resultData.Questions,message.QuestionResult{
@@ -516,5 +509,17 @@ func (c* electionChannel) sendElectionEndClient(){
 		// that's why we send a result with an arbitrary id to all clients since we don't know which one requested it
 		client.SendResult(51,result)
 	}
+}
+
+func gatherOptionCounts(count []int,options []message.BallotOption) [] message.BallotOptionCount{
+	questionResults2 := make([] message.BallotOptionCount,0)
+	for i, option := range options {
+		log.Printf("For question of id %s we get an option of %v with count %v",question.id,option,numberOfVotesPerBallotOption[i])
+		questionResults2 = append(questionResults2, message.BallotOptionCount{
+			Option: option,
+			Count: count[i],
+		})
+	}
+	return questionResults2
 }
 
