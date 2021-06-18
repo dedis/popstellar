@@ -4,10 +4,10 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
-
-	//"encoding/json"
 	"fmt"
+	"golang.org/x/xerrors"
 	"log"
+	"sort"
 	"student20_pop"
 	"student20_pop/message"
 	"sync"
@@ -171,13 +171,6 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 			err = c.castVoteHelper(publish)
 		case message.ElectionEndAction:
 			err = c.endElectionHelper(publish)
-			for client := range c.clients{
-				result := message.Result{}
-				general := 0
-				result.General = &general
-				log.Printf("Senfind the result for election end")
-				client.SendResult(51,result)
-			}
 			if err != nil {
 				return &message.Error{
 					Code:        -4,
@@ -342,24 +335,24 @@ func (c *electionChannel) endElectionHelper(publish message.Publish) error {
 	}
 	if len(endElectionData.RegisteredVotes) == 0 {
 		log.Printf("We allow emtmpy votes")
-	}else{
+	}else {
 		log.Printf("TODO: finish the hashing check")
-		// TODO: check if the hashing is done correctly
 		// since we eliminated (in cast vote) the duplicate votes we are sure that the voter casted one vote for one question
-		//for _,question := range c.questions{
-		//	hashed,err := sortHashVotes(question.validVotes)
-		//	if err != nil {
-		//		return &message.Error{
-		//			Code:        -4,
-		//			Description: "Error while hashing",
-		//		}
-		//	}
-		//	if endElectionData.RegisteredVotes != hashed{
-			//return &message.Error{
-			//			Code:        -4,
-			//			Description: "Received registered votes is not correct",
-			//		}
-		//}
+		for _, question := range c.questions {
+			_, err := sortHashVotes(question.validVotes)
+			if err != nil {
+				return &message.Error{
+					Code:        -4,
+					Description: "Error while hashing",
+				}
+			}
+			//if endElectionData.RegisteredVotes != hashed {
+			//	return &message.Error{
+			//		Code:        -4,
+			//		Description: "Received registered votes is not correct",
+			//	}
+			//}
+		}
 	}
 
 	log.Printf("Broadcasting election end message")
@@ -374,28 +367,28 @@ func (c *electionChannel) endElectionHelper(publish message.Publish) error {
 }
 
 //TODO: this function is called in the commented section above for checking the registered vote hash
-//func sortHashVotes(votes2 map[string]validVote)([]byte,error) {
-//	type kv struct {
-//		voteTime message.Timestamp
-//		sender   string
-//	}
-//	votes := make(map[int]kv)
-//	i := 0
-//	for k, v := range votes2 {
-//		votes[i] = kv{v.voteTime, k}
-//		i += 1
-//	}
-//	sort.Slice(votes,
-//		func(i int, j int) bool { return votes[i].voteTime < votes[j].voteTime })
-//	h := sha256.New()
-//	for _, v := range votes {
-//		if len(v.sender) == 0 {
-//			return nil, xerrors.Errorf("empty string to hash()")
-//		}
-//		h.Write([]byte(fmt.Sprintf("%d%s", len(v.sender), v.sender)))
-//	}
-//	return h.Sum(nil), nil
-//}
+func sortHashVotes(votes2 map[string]validVote)([]byte,error) {
+	type kv struct {
+		voteTime message.Timestamp
+		sender   string
+	}
+	votes := make(map[int]kv)
+	i := 0
+	for k, v := range votes2 {
+		votes[i] = kv{v.voteTime, k}
+		i += 1
+	}
+	sort.Slice(votes,
+		func(i int, j int) bool { return votes[i].voteTime < votes[j].voteTime })
+	h := sha256.New()
+	for _, v := range votes {
+		if len(v.sender) == 0 {
+			return nil, xerrors.Errorf("empty string to hash()")
+		}
+		h.Write([]byte(fmt.Sprintf("%d%s", len(v.sender), v.sender)))
+	}
+	return h.Sum(nil), nil
+}
 
 func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 	log.Printf("Computing election results on channel %v",c)
@@ -441,10 +434,6 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 
 			questionResults2 := make([] message.BallotOptionCount,0)
 			for i, option := range question.ballotOptions {
-				if len(option) == 0{
-					log.Printf("ignoring a ballot option")
-					break
-				}
 				log.Printf("For question of id %s we get an option of %v with count %v",question.id,option,numberOfVotesPerBallotOption[i])
 				questionResults2 = append(questionResults2, message.BallotOptionCount{
 					Option: option,
@@ -464,6 +453,7 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 
 	msgId := computeMessageId(resultData,msg.Signature)
 
+
 	_,ok  := base64.URLEncoding.DecodeString(msgId)
 	if ok != nil {
 		return &message.Error{
@@ -481,12 +471,12 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 		}
 	}
 
-	ms3,ok := message.NewMessage(msg.Sender,msg.Signature,msg.WitnessSignatures,resultData)
+	ms3,ok2 := message.NewMessage(msg.Sender,msg.Signature,msg.WitnessSignatures,resultData)
 
-	if ok != nil {
+	if ok2 != nil {
 		return &message.Error{
 			Code:        -4,
-			Description: "failed to create an election result",
+			Description: "failed to create an election result message",
 		}
 	}
 
@@ -516,3 +506,16 @@ func computeMessageId(data message.ElectionResultData, signature message.Signatu
 	return fmt.Sprintf("%x", h.Sum(nil))
 
 }
+
+func (c* electionChannel) sendElectionEndResult(){
+	for client := range c.clients{
+		result := message.Result{}
+		general := 0
+		result.General = &general
+		// Sending a result before creating an election result message
+		// this is to help the front end identify when to listen for election result
+		// that's why we send a result with an arbitrary id to all clients since we don't know which one requested it
+		client.SendResult(51,result)
+	}
+}
+
