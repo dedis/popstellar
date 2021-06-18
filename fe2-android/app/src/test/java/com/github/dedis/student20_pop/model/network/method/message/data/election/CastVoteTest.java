@@ -1,5 +1,7 @@
 package com.github.dedis.student20_pop.model.network.method.message.data.election;
 
+import com.github.dedis.student20_pop.model.network.method.message.data.ElectionVote;
+
 import org.junit.Test;
 
 import java.util.ArrayList;

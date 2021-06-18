@@ -23,7 +23,6 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Election
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
-import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.CastVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionResult;
