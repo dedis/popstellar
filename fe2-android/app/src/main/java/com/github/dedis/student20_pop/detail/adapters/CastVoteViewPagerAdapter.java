@@ -22,7 +22,7 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Election
 import java.util.ArrayList;
 import java.util.List;
 
-public class QuestionViewPagerAdapter extends RecyclerView.Adapter<QuestionViewPagerAdapter.Pager2ViewHolder>{
+public class CastVoteViewPagerAdapter extends RecyclerView.Adapter<CastVoteViewPagerAdapter.Pager2ViewHolder>{
 
 
 
@@ -30,7 +30,7 @@ public class QuestionViewPagerAdapter extends RecyclerView.Adapter<QuestionViewP
     private LaoDetailViewModel mLaoDetailViewModel;
     private FragmentCastVoteBinding castVoteBinding;
     private Button voteButton;
-    public QuestionViewPagerAdapter (LaoDetailViewModel mLaoDetailViewModel, FragmentCastVoteBinding castVoteBinding){
+    public CastVoteViewPagerAdapter(LaoDetailViewModel mLaoDetailViewModel, FragmentCastVoteBinding castVoteBinding){
         super();
         this.mLaoDetailViewModel = mLaoDetailViewModel;
         this.castVoteBinding = castVoteBinding;

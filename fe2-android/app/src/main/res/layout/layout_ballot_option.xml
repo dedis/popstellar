@@ -14,7 +14,6 @@
             android:id="@+id/new_ballot_option_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/election_setup_margin_text"
             android:hint="@string/new_ballot_option_hint" />
     </LinearLayout>
 </layout>
