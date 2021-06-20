@@ -41,6 +41,10 @@ public class ElectionSetup extends Data {
             List<List<String>> ballotOptions,
             List<String> questionList,
             String laoId) {
+        if(name == null || votingMethod == null || writeIn == null || ballotOptions == null || questionList == null || laoId == null)
+            throw new IllegalArgumentException();
+        if(end < 0  || start < 0 || end < start)
+            throw new IllegalArgumentException("Timestamp cannot be negative");
         if(questionList.size() != votingMethod.size() || questionList.size() !=writeIn.size()
                 || questionList.size() !=ballotOptions.size())
             throw new IllegalArgumentException("Lists are not of the same size");
