@@ -12,7 +12,7 @@ import { KeyPairStore } from 'store/stores';
  * Manage the Identity screen. A user may decide to participate anonymously to a
  * LAO or share personal information
  *
-*/
+ */
 
 const placeholderBasic: string[] = [
   STRINGS.identity_name_placeholder,

@@ -40,7 +40,7 @@ const STRINGS = {
   navigation_home_tab_wallet: 'Wallet',
   navigation_insert_seed_tab_wallet: 'Wallet Setup',
   navigation_show_seed_wallet: 'New Wallet',
-  navigation_synced_wallet: 'Your Wallet',
+  navigation_synced_wallet: 'My Wallet',
   navigation_wallet_error: 'Error',
 
   /* --- Home Strings --- */
@@ -82,9 +82,9 @@ const STRINGS = {
   identity_description: 'Identity screen',
   identity_check_box_anonymous: 'Anonymous',
   identity_check_box_anonymous_description: 'You can participate in organizations and meetings anonymously by leaving '
-        + 'this box checked. If you wish to reveal your identity to other participants in the organization, you may '
-        + 'un-check this box and enter the information you wish to reaveal below. You must enter identity information in '
-        + 'order to play an Organizer or Witness role in an organization.',
+    + 'this box checked. If you wish to reveal your identity to other participants in the organization, you may '
+    + 'un-check this box and enter the information you wish to reaveal below. You must enter identity information in '
+    + 'order to play an Organizer or Witness role in an organization.',
   identity_name_placeholder: 'Name',
   identity_title_placeholder: 'Title',
   identity_organization_placeholder: 'Organization',
@@ -116,6 +116,9 @@ const STRINGS = {
   election_method_Approval: 'Approval',
   election_version_identifier: '1.0.0',
 
+  /* --- Cast Vote Strings --- */
+  cast_vote: 'Cast Vote',
+
   /* --- Roll-call creation Strings --- */
   roll_call_create_proposed_start: 'Proposed Start:',
   roll_call_create_proposed_end: 'Proposed End:',
@@ -140,6 +143,10 @@ const STRINGS = {
   meeting_create_start_time: 'Start time: ',
   meeting_create_finish_time: 'End time: ',
   meeting_create_location: 'Location',
+
+  /* --- Time Display Strings --- */
+  time_display_start: 'Start: ',
+  time_display_end: 'End: ',
 
   /* --- Wallet Strings --- */
   wallet_private_key_id: 'Private Decryption Key',
@@ -175,34 +182,34 @@ const STRINGS = {
   add_option: 'Add option',
 
   lorem_ipsum: "Scrollable box containing the critical informations!\nLAO's, organizers' and witnesses' names "
-        + 'and hex fingerprint\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse vitae egestas '
-        + 'ex, et rhoncus nibh. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos '
-        + 'himenaeos. Aliquam iaculis elit libero, id lacinia quam vestibulum vitae. Integer tristique non est ac '
-        + 'feugiat. Phasellus ac sapien eu ante sodales auctor et id ex. Etiam fringilla pulvinar dui ullamcorper '
-        + 'fermentum. Sed luctus lacus vel hendrerit tempus. Vivamus vitae posuere nibh, eleifend semper risus. Mauris '
-        + 'sit amet nunc nec risus volutpat semper et a tortor. Donec arcu nisi, pellentesque nec arcu vitae, '
-        + 'efficitur molestie tellus. In in felis bibendum orci consectetur sagittis. Phasellus nec faucibus sem. Ut '
-        + 'sagittis lorem non tellus luctus, ac lacinia lectus pretium.\nInteger vitae aliquet lorem. Etiam non erat '
-        + 'venenatis, venenatis ante et, efficitur ligula. Etiam et pellentesque erat, at fringilla elit. Aliquam '
-        + 'facilisis tortor eget metus rhoncus mattis. Sed luctus velit quis enim scelerisque, quis elementum purus '
-        + 'cursus. Proin venenatis commodo mi ac sodales. Cras in pretium tellus.\nDuis sollicitudin, urna a tempor '
-        + 'dapibus, dui nisl rhoncus dolor, et pretium quam dolor id velit. Donec vitae augue sollicitudin neque '
-        + 'ultrices ultrices aliquam vel turpis. Sed quis risus luctus, volutpat libero vel, placerat neque. Nunc '
-        + 'luctus malesuada eros, at accumsan lacus vehicula at. Duis laoreet placerat vehicula. Phasellus pulvinar '
-        + 'eget orci eget ultrices. Cras in tincidunt libero, eget vulputate mi. Pellentesque hendrerit nibh massa, ac '
-        + 'tincidunt lorem interdum a. Etiam a sodales justo. Ut ut ipsum eget lacus finibus tristique quis sit amet '
-        + 'turpis. Nulla suscipit, nunc ut accumsan laoreet, felis tellus venenatis magna, a malesuada tortor risus et '
-        + 'odio. Nulla vehicula libero ut elit lacinia pretium.\nNunc consectetur pharetra tortor, ut elementum quam '
-        + 'dapibus a. Vestibulum vel tincidunt felis. Duis dapibus elit eu suscipit sles. Integer nec ultricies orci, '
-        + 'at porta odio. Etiam sed sem condimentum, feugiat ex nec, bibendum nulla. Donec venenatis magna vel odio '
-        + 'molestie porttitor. Donec maximus placerat auctor. Fusce scelerisque condimentum molestie. Duis a lorem '
-        + 'pretium, imperdiet massa a, iaculis dolor. Nullam a nisl elementum sapien facilisis scelerisque quis in '
-        + 'sapien. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.\nInteger sit '
-        + 'amet quam vel turpis ultricies tristique ac at mauris. Vestibulum efficitur fringilla lacus non fringilla. '
-        + 'Quisque venenatis dui tempor, aliquam nisi ut, cursus ante. Vestibulum ante ipsum primis in faucibus orci '
-        + 'luctus et ultrices posuere cubilia curae; Vestibulum facilisis sem congue sem semper consectetur. Nunc a '
-        + 'scelerisque diam, vulputate lobortis erat. Aenean posuere faucibus consectetur. Praesent feugiat nulla '
-        + 'porta orci auctor, a vulputate felis suscipit. Aenean vulputate ligula ac commodo ornare.',
+    + 'and hex fingerprint\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse vitae egestas '
+    + 'ex, et rhoncus nibh. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos '
+    + 'himenaeos. Aliquam iaculis elit libero, id lacinia quam vestibulum vitae. Integer tristique non est ac '
+    + 'feugiat. Phasellus ac sapien eu ante sodales auctor et id ex. Etiam fringilla pulvinar dui ullamcorper '
+    + 'fermentum. Sed luctus lacus vel hendrerit tempus. Vivamus vitae posuere nibh, eleifend semper risus. Mauris '
+    + 'sit amet nunc nec risus volutpat semper et a tortor. Donec arcu nisi, pellentesque nec arcu vitae, '
+    + 'efficitur molestie tellus. In in felis bibendum orci consectetur sagittis. Phasellus nec faucibus sem. Ut '
+    + 'sagittis lorem non tellus luctus, ac lacinia lectus pretium.\nInteger vitae aliquet lorem. Etiam non erat '
+    + 'venenatis, venenatis ante et, efficitur ligula. Etiam et pellentesque erat, at fringilla elit. Aliquam '
+    + 'facilisis tortor eget metus rhoncus mattis. Sed luctus velit quis enim scelerisque, quis elementum purus '
+    + 'cursus. Proin venenatis commodo mi ac sodales. Cras in pretium tellus.\nDuis sollicitudin, urna a tempor '
+    + 'dapibus, dui nisl rhoncus dolor, et pretium quam dolor id velit. Donec vitae augue sollicitudin neque '
+    + 'ultrices ultrices aliquam vel turpis. Sed quis risus luctus, volutpat libero vel, placerat neque. Nunc '
+    + 'luctus malesuada eros, at accumsan lacus vehicula at. Duis laoreet placerat vehicula. Phasellus pulvinar '
+    + 'eget orci eget ultrices. Cras in tincidunt libero, eget vulputate mi. Pellentesque hendrerit nibh massa, ac '
+    + 'tincidunt lorem interdum a. Etiam a sodales justo. Ut ut ipsum eget lacus finibus tristique quis sit amet '
+    + 'turpis. Nulla suscipit, nunc ut accumsan laoreet, felis tellus venenatis magna, a malesuada tortor risus et '
+    + 'odio. Nulla vehicula libero ut elit lacinia pretium.\nNunc consectetur pharetra tortor, ut elementum quam '
+    + 'dapibus a. Vestibulum vel tincidunt felis. Duis dapibus elit eu suscipit sles. Integer nec ultricies orci, '
+    + 'at porta odio. Etiam sed sem condimentum, feugiat ex nec, bibendum nulla. Donec venenatis magna vel odio '
+    + 'molestie porttitor. Donec maximus placerat auctor. Fusce scelerisque condimentum molestie. Duis a lorem '
+    + 'pretium, imperdiet massa a, iaculis dolor. Nullam a nisl elementum sapien facilisis scelerisque quis in '
+    + 'sapien. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.\nInteger sit '
+    + 'amet quam vel turpis ultricies tristique ac at mauris. Vestibulum efficitur fringilla lacus non fringilla. '
+    + 'Quisque venenatis dui tempor, aliquam nisi ut, cursus ante. Vestibulum ante ipsum primis in faucibus orci '
+    + 'luctus et ultrices posuere cubilia curae; Vestibulum facilisis sem congue sem semper consectetur. Nunc a '
+    + 'scelerisque diam, vulputate lobortis erat. Aenean posuere faucibus consectetur. Praesent feugiat nulla '
+    + 'porta orci auctor, a vulputate felis suscipit. Aenean vulputate ligula ac commodo ornare.',
 
   unused: 'unused',
 };

@@ -10,6 +10,7 @@ import keyPairReducer from './KeyPairReducer';
 import eventsReducer from './EventsReducer';
 import messageReducer from './MessageReducer';
 import walletReducer from './WalletReducer';
+import LastPoPTokenReducer from './LastPoPTokenReducer';
 
 import { wrapWithClearStorageReducer } from './ClearStorageReducer';
 
@@ -24,6 +25,7 @@ const appReducer = persistCombineReducers(persistConfig, {
   ...eventsReducer,
   ...messageReducer,
   ...walletReducer,
+  ...LastPoPTokenReducer,
   openedRollCallId: openRollCallIDReducer,
 });
 
