@@ -1,7 +1,6 @@
 package com.github.dedis.student20_pop.detail.fragments.event.creation;
 
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -17,7 +16,6 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.model.Lao;
 
@@ -25,7 +23,6 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
-import org.hamcrest.core.IsInstanceOf;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,8 +51,8 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertSame;
 
+// TODO : Mock the server with LAOService interface to return a PublishSubject object that you control whenever observeMessage is called
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class ElectionSetupTest {

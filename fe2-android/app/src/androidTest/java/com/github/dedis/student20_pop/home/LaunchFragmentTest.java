@@ -39,6 +39,7 @@ import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
+// TODO : Mock the server with LAOService interface to return a PublishSubject object that you control whenever observeMessage is called
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class LaunchFragmentTest {
@@ -153,8 +154,6 @@ public class LaunchFragmentTest {
 
         ViewInteraction textView = onView(
                 allOf(withId(R.id.lao_name), withText("new lao test"),
-                        withParent(allOf(withId(R.id.layout_lao_home),
-                                withParent(withId(R.id.lao_list)))),
                         isDisplayed()));
         //We check that the name of the lao displayed is " new lao test"
         textView.check(matches(withText("new lao test")));
