@@ -159,7 +159,11 @@
     <string name="edit_election_ballot_options">Edit Election Ballot Options</string>
     <string name="edit_election_start_time">Edit Election Start Time</string>
     <string name="edit_election_end_time">Edit Election End Time</string>
-
+    <string name="results">Results</string>
+    <string name="election_ended">Waiting for results</string>
+    <string name="tally_votes">Tally up votes</string>
+    <string name="cast_vote">Cast votes</string>
+    <string name="show_results">Show results</string>
 
     <!-- Wallet -->
     <string name="button_own_seed">I own a seed</string>

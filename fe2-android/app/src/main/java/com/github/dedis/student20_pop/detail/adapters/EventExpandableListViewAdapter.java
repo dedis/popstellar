@@ -2,6 +2,7 @@ package com.github.dedis.student20_pop.detail.adapters;
 
 import android.app.AlertDialog.Builder;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.BaseExpandableListAdapter;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
 
+import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.LayoutElectionDisplayBinding;
 import com.github.dedis.student20_pop.databinding.LayoutEventBinding;
 import com.github.dedis.student20_pop.databinding.LayoutEventCategoryBinding;
@@ -36,6 +38,8 @@ import java.util.Locale;
 import static com.github.dedis.student20_pop.model.event.EventCategory.FUTURE;
 import static com.github.dedis.student20_pop.model.event.EventCategory.PAST;
 import static com.github.dedis.student20_pop.model.event.EventCategory.PRESENT;
+import static com.github.dedis.student20_pop.model.event.EventState.CLOSED;
+import static com.github.dedis.student20_pop.model.event.EventState.RESULTS_READY;
 
 
 public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
@@ -325,21 +329,38 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         String dateEnd = DATE_FORMAT.format(dEnd);
         electionBinding.electionEndDate.setText("End Date : " + dateEnd);
         viewModel.setCurrentElection(election);
+        viewModel.getEndElectionEvent().observe(lifecycleOwner, end -> {
+            electionBinding.electionActionButton.setText(R.string.election_ended);
+            electionBinding.electionActionButton.setEnabled(false);
+        });
+
         if (category == PRESENT) {
+            electionBinding.electionActionButton.setText(R.string.cast_vote);
+            electionBinding.electionActionButton.setEnabled(true);
             electionBinding.electionActionButton.setOnClickListener(
                     clicked -> {
                         viewModel.setCurrentElection(election);
                         viewModel.openCastVotes();
                     });
         } else if (category == PAST) {
-            electionBinding.electionActionButton.setOnClickListener(
-                    clicked -> {
-                        viewModel.setCurrentElection(election);
-                        viewModel.openElectionResults(true);
-                    });
+            electionBinding.electionActionButton.setOnClickListener(clicked -> viewModel.setCurrentElection(election));
+
+            electionBinding.electionActionButton.setEnabled(true);
+            if (!viewModel.isOrganizer().getValue().booleanValue()) electionBinding.electionActionButton.setEnabled(false);
+
+            if (election.getState() == CLOSED) {
+                electionBinding.electionActionButton.setText(R.string.election_ended);
+                electionBinding.electionActionButton.setEnabled(false);
+            } else if (election.getState() == RESULTS_READY) {
+                electionBinding.electionActionButton.setText(R.string.show_results);
+                electionBinding.electionActionButton.setEnabled(true);
+                electionBinding.electionActionButton.setOnClickListener(clicked -> Log.d("EventExp", "open results"));
+            } else {
+                electionBinding.electionActionButton.setText(R.string.tally_votes);
+                electionBinding.electionActionButton.setOnClickListener(clicked -> viewModel.endElection(election));
+            }
 
         }
-
         electionBinding.electionEditButton.setOnClickListener(clicked -> {
             viewModel.setCurrentElection(election);
             viewModel.openManageElection(true);
@@ -376,13 +397,13 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
         if (isOrganizer && rollCall.getState() == EventState.CREATED) {
             binding.rollcallOpenButton.setVisibility(View.VISIBLE);
-        } else if (isOrganizer && rollCall.getState() == EventState.CLOSED) {
+        } else if (isOrganizer && rollCall.getState() == CLOSED) {
             binding.rollcallReopenButton.setVisibility(View.VISIBLE);
         } else if (!isOrganizer && rollCall.getState() == EventState.CREATED) {
             binding.rollcallScheduledButton.setVisibility(View.VISIBLE);
         } else if (!isOrganizer && rollCall.getState() == EventState.OPENED) {
             binding.rollcallEnterButton.setVisibility(View.VISIBLE);
-        } else if (!isOrganizer && rollCall.getState() == EventState.CLOSED) {
+        } else if (!isOrganizer && rollCall.getState() == CLOSED) {
             binding.rollcallClosedButton.setVisibility(View.VISIBLE);
         }
 

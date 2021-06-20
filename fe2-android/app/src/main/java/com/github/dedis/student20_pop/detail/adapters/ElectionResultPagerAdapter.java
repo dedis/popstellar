@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.model.Election;
-import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionQuestion;
+import com.github.dedis.student20_pop.model.network.method.message.data.ElectionQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.data.QuestionResult;
 
 import java.util.ArrayList;

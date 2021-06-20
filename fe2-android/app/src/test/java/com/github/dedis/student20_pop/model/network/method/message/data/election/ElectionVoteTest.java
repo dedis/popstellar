@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.model.network.method.message.data.election;
 
+import com.github.dedis.student20_pop.model.network.method.message.data.ElectionVote;
 import com.github.dedis.student20_pop.utility.network.IdGenerator;
 
 import org.junit.Test;
