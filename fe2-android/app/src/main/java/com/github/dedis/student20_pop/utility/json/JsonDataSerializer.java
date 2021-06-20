@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.utility.json;
 
+
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
@@ -31,6 +32,7 @@ public class JsonDataSerializer implements JsonSerializer<Data>, JsonDeserialize
       throw new JsonParseException("Unknown object type : " + obj.get(OBJECT).getAsString());
     if (action == null)
       throw new JsonParseException("Unknown action type : " + obj.get(ACTION).getAsString());
+
 
     Optional<Class<? extends Data>> clazz = Data.getType(object, action);
     if (!clazz.isPresent())

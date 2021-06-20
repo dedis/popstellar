@@ -66,7 +66,6 @@ public final class Lao {
   }
 
   public void updateElection(String prevId, Election election) {
-
     if(election == null) {
       throw new IllegalArgumentException(" The election is null");
     }

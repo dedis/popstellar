@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.model.network.method.message.data.election;
 
+import com.github.dedis.student20_pop.model.network.method.message.data.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
@@ -19,9 +20,7 @@ public class CastVote extends Data {
     private String electionId; // Id of the election
     private List<ElectionVote> votes;
 
-    /**
-     * Constructor for a data Cast Vote Election Event
-     *
+     /**
      * @param votes      list of the Election Vote where an ElectionVote Object represents the corresponding votes for one question
      * @param electionId Id of the election for which to votee
      * @param laoId      id of the LAO
@@ -52,7 +51,6 @@ public class CastVote extends Data {
     public List<ElectionVote> getVotes() {
         return Collections.unmodifiableList(votes);
     }
-
 
     @Override
     public String getObject() {
@@ -103,12 +101,17 @@ public class CastVote extends Data {
                 + createdAt
                 + '\''
                 + ", election='"
+                + '\''
+                + ", votes = { '"
+                + builder
+                + '\''
+                + '}'
+                + '\''
                 + electionId
                 + '\''
                 + ", votes = { '"
                 + builder.toString()
                 + '}';
-
     }
 
 }
