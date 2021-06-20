@@ -21,7 +21,6 @@ import java.util.List;
 public class ElectionResultPagerAdapter  extends RecyclerView.Adapter<ElectionResultPagerAdapter.Pager2ViewHolder> {
     private LaoDetailViewModel mLaoDetailViewModel;
     private ElectionResultListAdapter adapter;
-    private final String TAG = ElectionResultPagerAdapter.class.getSimpleName();
     public ElectionResultPagerAdapter(LaoDetailViewModel mLaoDetailViewModel){
         super();
         this.mLaoDetailViewModel = mLaoDetailViewModel;

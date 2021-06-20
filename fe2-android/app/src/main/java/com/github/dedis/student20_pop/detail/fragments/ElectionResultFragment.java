@@ -22,9 +22,6 @@ import me.relex.circleindicator.CircleIndicator3;
 
 public class ElectionResultFragment extends Fragment {
 
-    private TextView laoNameView;
-    private TextView electionNameView;
-    private FragmentElectionResultBinding mElectionResultFragBinding;
     private LaoDetailViewModel mLaoDetailViewModel;
 
     public ElectionResultFragment() {
@@ -42,30 +39,26 @@ public class ElectionResultFragment extends Fragment {
         back.setOnClickListener(v -> mLaoDetailViewModel.openLaoDetail());
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         //Inflate the layout for this fragment
-        mElectionResultFragBinding =
+        FragmentElectionResultBinding mElectionResultFragBinding =
                 FragmentElectionResultBinding.inflate(inflater, container, false);
         mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 
-        laoNameView = mElectionResultFragBinding.electionResultLaoName;
-        electionNameView = mElectionResultFragBinding.electionResultPresentationTitle;
+        TextView laoNameView = mElectionResultFragBinding.electionResultLaoName;
+        TextView electionNameView = mElectionResultFragBinding.electionResultPresentationTitle;
 
         //Getting election
         Election election = mLaoDetailViewModel.getCurrentElection();
 
         //Setting the Lao Name
         laoNameView.setText(mLaoDetailViewModel.getCurrentLaoName().getValue());
-       // laoNameView.setText("Some Title");
+
         //Setting election name
-          electionNameView.setText(election.getName());
+        electionNameView.setText(election.getName());
 
         ElectionResultPagerAdapter adapter = new ElectionResultPagerAdapter(mLaoDetailViewModel);
         ViewPager2 viewPager2 = mElectionResultFragBinding.electionResultPager;

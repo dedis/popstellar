@@ -9,13 +9,13 @@ import android.widget.TextView;
 
 import com.github.dedis.student20_pop.R;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class ElectionResultListAdapter extends ArrayAdapter<ElectionResultListAdapter.ElectionResult> {
 
     private Context mContext;
     private int mResource;
-    public ElectionResultListAdapter(Context context, int resource, ArrayList<ElectionResult> objects){
+    public ElectionResultListAdapter(Context context, int resource, List<ElectionResult> objects){
         super(context, resource, objects);
         this.mContext = context;
         this.mResource = resource;
