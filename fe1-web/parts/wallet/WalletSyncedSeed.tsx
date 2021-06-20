@@ -60,7 +60,7 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
           <View style={styles.largePadding} />
           <WideButtonView
             title={STRINGS.back_to_wallet_home}
-            onPress={() => navigation.navigate(STRINGS.navigation_home_tab_wallet)}
+            onPress={() => setTokensRecovered(false)}
           />
           <WideButtonView
             title={STRINGS.logout_from_wallet}
