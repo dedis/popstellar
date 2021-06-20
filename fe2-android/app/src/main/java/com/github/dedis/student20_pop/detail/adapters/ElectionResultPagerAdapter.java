@@ -1,6 +1,5 @@
 package com.github.dedis.student20_pop.detail.adapters;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,12 +42,7 @@ public class ElectionResultPagerAdapter  extends RecyclerView.Adapter<ElectionRe
         //setting the question
         ElectionQuestion electionQuestion = election.getElectionQuestions().get(position);
         String question = electionQuestion.getQuestion();
-        if(holder == null){
-            Log.d(TAG, "Holder is null");
-        }
-        if(holder.questionView == null){
-            Log.d(TAG, "questionView is null");
-        }
+
         holder.questionView.setText(question);
 
 
@@ -76,9 +70,6 @@ public class ElectionResultPagerAdapter  extends RecyclerView.Adapter<ElectionRe
             super(itemView);
             resultListView = (ListView) itemView.findViewById(R.id.election_result_listView);
             questionView = (TextView) itemView.findViewById(R.id.election_result_question);
-            if(questionView == null){
-                Log.d(TAG, "questionView is null in viewHolder");
-            }
         }
     }
 

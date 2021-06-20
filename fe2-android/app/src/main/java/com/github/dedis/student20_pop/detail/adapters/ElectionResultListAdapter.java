@@ -27,14 +27,14 @@ public class ElectionResultListAdapter extends ArrayAdapter<ElectionResultListAd
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(mContext);
-        convertView = inflater.inflate(mResource, parent, false);
+        View view = inflater.inflate(mResource, parent, false);
         String ballotOption = getItem(position).getBallotOption();
-        TextView ballotView = (TextView) convertView.findViewById(R.id.election_result_ballot_option);
+        TextView ballotView = (TextView) view.findViewById(R.id.election_result_ballot_option);
         ballotView.setText(ballotOption);
-        TextView votesView = (TextView) convertView.findViewById(R.id.election_result_vote_number);
+        TextView votesView = (TextView) view.findViewById(R.id.election_result_vote_number);
         String numberOfVotes = String.valueOf(getItem(position).getVotes());
         votesView.setText(numberOfVotes);
-        return convertView;
+        return view;
     }
 
     public static class ElectionResult {
