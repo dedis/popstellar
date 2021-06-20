@@ -315,7 +315,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
      * @param question      the question associated to the election
      * @return the id of the newly created election event, null if fails to create the event
      */
-    public String createNewElection(String name, long start, long end, String votingMethod, boolean writeIn, List<String> ballotOptions, String question) {
+    public String createNewElection(String name, long start, long end, List<String> votingMethod, List<Boolean> writeIn, List<List<String>> ballotOptions, List<String> question) {
         Log.d(TAG, "creating a new election with name " + name);
 
         Lao lao = getCurrentLaoValue();

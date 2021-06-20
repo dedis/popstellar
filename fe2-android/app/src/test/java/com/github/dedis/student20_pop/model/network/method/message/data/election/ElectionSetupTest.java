@@ -17,10 +17,10 @@ public class ElectionSetupTest {
     private String electionSetupName = "new election setup";
     private long start = 0;
     private long end = 1;
-    private String votingMethod = "Plurality";
-    private boolean writeIn = false;
-    private List<String> ballotOptions = Arrays.asList("candidate1", "candidate2");
-    private String question = "which is the best ?";
+    private List<String> votingMethod = Arrays.asList("Plurality", "Plurality");
+    private  List<Boolean> writeIn = Arrays.asList(false, false);
+    private List<List<String>> ballotOptions = Arrays.asList(Arrays.asList("candidate1", "candidate2"), Arrays.asList("Option a", "Option b"));
+    private List<String> question = Arrays.asList("which is the best ?", "who is best ?");
     private String laoId = "my lao id";
     private ElectionSetup electionSetup = new ElectionSetup(electionSetupName, start, end, votingMethod, writeIn, ballotOptions, question, laoId);
 
@@ -41,7 +41,7 @@ public class ElectionSetupTest {
 
     @Test
     public void electionSetupOnlyOneQuestion() {
-        assertThat(electionSetup.getQuestions().size(), is(1));
+        assertThat(electionSetup.getQuestions().size(), is(2));
     }
 
     @Test
