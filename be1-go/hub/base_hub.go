@@ -187,6 +187,7 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 
 	if channelID == "/root" {
 		h.handleRootChannelMesssage(id, &client, query)
+		return
 	}
 
 	if channelID[:6] != rootPrefix {
@@ -296,7 +297,7 @@ func (h *baseHub) createLao(publish message.Publish) error {
 
 	laoCh := laoChannel{
 		rollCall:    rollCall{},
-		attendees:   make(map[string]struct{}),
+		attendees:   NewAttendees(),
 		baseChannel: createBaseChannel(h, laoChannelID),
 	}
 

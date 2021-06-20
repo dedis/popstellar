@@ -17,6 +17,7 @@ public final class Lao {
   private String organizer;
   private String modificationId;
   private Set<String> witnesses;
+  private Map<String,WitnessMessage> witnessMessages; /** map between a messages ID and the corresponding object WitnessMessage that has to be signed by witnesses */
 
   private Set<PendingUpdate> pendingUpdates;
 
@@ -33,6 +34,7 @@ public final class Lao {
     this.id = id;
     this.rollCalls = new HashMap<>();
     this.elections = new HashMap<>();
+    this.witnessMessages = new HashMap<>();
     this.witnesses = new HashSet<>();
     this.pendingUpdates = new HashSet<>();
   }
@@ -75,6 +77,23 @@ public final class Lao {
     elections.put(newId, election);
   }
 
+
+  /**
+   * Update the list of messages that have to be signed by witnesses.
+   * If the list of messages contain the message with  Id prevId , it will
+   * remove this message from the list. Then it will add the new message to the list with the corresponding newId
+   *
+   * @param prevId  the previous id of a message that needs to be signed
+   * @param witnessMessage  the object representing the message needing to be signed
+   */
+  public void updateWitnessMessage(String prevId, WitnessMessage witnessMessage) {
+    if (witnessMessages.containsKey(prevId)) {
+      witnessMessages.remove(prevId);
+    }
+    String newId = witnessMessage.getMessageId();
+    witnessMessages.put(newId, witnessMessage);
+  }
+
   public Optional<RollCall> getRollCall(String id) {
     return Optional.ofNullable(rollCalls.get(id));
   }
@@ -82,6 +101,11 @@ public final class Lao {
   public Optional<Election> getElection(String id) {
     return Optional.ofNullable(elections.get(id));
   }
+
+  public Optional<WitnessMessage> getWitnessMessage(String id) {
+    return Optional.ofNullable(witnessMessages.get(id));
+  }
+
 
   /**
    * Removes an election from the list of elections.
@@ -204,6 +228,8 @@ public final class Lao {
   public Map<String, RollCall> getRollCalls() {
     return rollCalls;
   }
+
+  public Map<String,WitnessMessage> getWitnessMessages() {return witnessMessages;}
 
   public void setRollCalls(Map<String, RollCall> rollCalls) {
     this.rollCalls = rollCalls;
