@@ -1,15 +1,15 @@
 import { WalletStore } from 'store/stores/WalletStore';
-import { LastPopTokenStore } from 'store/stores/LastPoPTokenStore';
 import * as bip39 from 'bip39';
 import { derivePath, getPublicKey } from 'ed25519-hd-key';
-import { encodeBase64 } from 'tweetnacl-util';
+import base64url from 'base64url';
 import { WalletCryptographyHandler } from './WalletCryptographyHandler';
 import { Hash } from './Hash';
 import { KeyPair } from './KeyPair';
 import { PublicKey } from './PublicKey';
 import { PrivateKey } from './PrivateKey';
 import { getStore } from '../../store';
-import { Base64UrlData } from './Base64Url';
+import {Base64UrlData} from "./Base64Url";
+import {encodeBase64} from "tweetnacl-util";
 
 /**
  * bip39 library used for seed generation and verification
@@ -44,6 +44,8 @@ export class HDWallet {
 
   /* local copy of encrypted seed */
   private encryptedSeed!: ArrayBuffer;
+
+  private lastGeneratedPoPToken: KeyPair | undefined;
 
   /**
    * a wallet can be created empty and then initialized or
@@ -180,17 +182,8 @@ export class HDWallet {
     return this.recoverAllKeys(recoverMaps[0], recoverMaps[1]);
   }
 
-  public recoverLastGeneratedPoPToken(): KeyPair | undefined {
-    const pubKey = LastPopTokenStore.getPublicKey();
-    const privKey = LastPopTokenStore.getPrivateKey();
-
-    if (pubKey !== undefined && privKey !== undefined) {
-      return new KeyPair({
-        publicKey: new PublicKey(pubKey),
-        privateKey: new PrivateKey(privKey),
-      });
-    }
-    return undefined;
+  public async recoverLastGeneratedPoPToken(): Promise<KeyPair | undefined> {
+    return this.lastGeneratedPoPToken;
   }
 
   /**
@@ -271,23 +264,15 @@ export class HDWallet {
         const hexSeed = Buffer.from(seedArray)
           .toString('hex');
 
-        const { key, chainCode } = derivePath(path, hexSeed);
+        const { key } = derivePath(path, hexSeed);
         const pubKey = getPublicKey(key, false);
-
-        const bufferConcatenation = [key, chainCode];
-        const privKey = Buffer.concat(bufferConcatenation);
-
-        // console.log(privKey);
-        // console.log(pubKey);
 
         const token = new KeyPair({
           publicKey: new PublicKey(Base64UrlData.fromBase64(encodeBase64(pubKey)).valueOf()),
-          privateKey: new PrivateKey(Base64UrlData.fromBase64(encodeBase64(privKey)).valueOf()),
+          privateKey: new PrivateKey(Base64UrlData.fromBase64(encodeBase64(key)).valueOf()),
         });
 
-        LastPopTokenStore.storePublicKey(token.publicKey.valueOf());
-        LastPopTokenStore.storePrivateKey(token.privateKey.valueOf());
-
+        this.lastGeneratedPoPToken = token;
         return token;
       });
   }
@@ -333,8 +318,7 @@ export class HDWallet {
           const rcEvent = getStore().getState().events.byLaoId[lao].byId[rc];
           if (rcEvent.eventType === 'ROLL_CALL') {
             /* TODO: change to empty array if undefined [] */
-            const rcAttendees = (rcEvent.attendees !== undefined) ? rcEvent.attendees
-              : []; // CUh_Su1ZQWIz3q088tr57ytg4Ch9ZLwb5ntbOr54wh8
+            const rcAttendees = (rcEvent.attendees !== undefined) ? rcEvent.attendees : ['Bqr1A_KQqGILV6Sp5r7pT6uR_YlSevIfTI4OW02dQcU', 'AVgNqHJ36yH-y110ZZ-RFksZ73Ca7kLU188uiv9hzB4', '-GBRQ_2qc41Zpe_fs-SWub1PoNMZYwp36WyilbrNMfM'];
 
             allKnownLaoRollCallsIds.set([new Hash(lao), new Hash(rcEvent.id)],
               rcAttendees);

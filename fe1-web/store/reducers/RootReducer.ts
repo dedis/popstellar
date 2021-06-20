@@ -12,7 +12,6 @@ import messageReducer from './MessageReducer';
 import walletReducer from './WalletReducer';
 
 import { wrapWithClearStorageReducer } from './ClearStorageReducer';
-import LastPoPTokenReducer from "./LastPoPTokenReducer";
 
 const persistConfig = {
   key: 'root',
@@ -25,7 +24,6 @@ const appReducer = persistCombineReducers(persistConfig, {
   ...eventsReducer,
   ...messageReducer,
   ...walletReducer,
-  ...LastPoPTokenReducer,
   openedRollCallId: openRollCallIDReducer,
 });
 

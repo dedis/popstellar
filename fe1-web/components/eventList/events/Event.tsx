@@ -22,8 +22,8 @@ import ListCollapsibleIcon from '../ListCollapsibleIcon';
 */
 const Event = (props: IPropTypes) => {
   const { event } = props;
-  const { isOrganizer } = props;
   const { renderItemFn } = props;
+  const isOrganizer = false; // TODO get isOrganizer directly
 
   const [toggleChildrenVisible, setToggleChildrenVisible] = useState(false);
 
@@ -50,22 +50,22 @@ const Event = (props: IPropTypes) => {
       );
     }
     if (event instanceof RollCall) {
-      // if (isOrganizer) {
-      //   console.log('is organizer => returning null in Event');
-      //   return null;
-      // }
+      if (isOrganizer) {
+        console.log('is organizer => returning null in Event');
+        return null;
+      }
       return (
         <EventRollCall
           event={event}
-          isOrganizer={isOrganizer}
+          childrenVisibility={toggleChildrenVisible}
+          renderItemFn={renderItemFn}
         />
       );
     }
     if (event instanceof Election) {
       return (
         <EventElection
-          election={event}
-          isOrganizer={isOrganizer}
+          event={event}
         />
       );
     }
@@ -88,7 +88,6 @@ const propTypes = {
     end: PropTypes.instanceOf(Timestamp),
   }).isRequired,
   renderItemFn: PropTypes.func.isRequired,
-  isOrganizer: PropTypes.bool.isRequired,
 };
 Event.propTypes = propTypes;
 

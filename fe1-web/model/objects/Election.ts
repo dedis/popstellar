@@ -1,7 +1,6 @@
-import {
-  Hash, Timestamp,
-} from 'model/objects';
 import { LaoEvent, LaoEventState, LaoEventType } from './LaoEvent';
+import { Hash } from './Hash';
+import { Timestamp } from './Timestamp';
 
 export interface ElectionState extends LaoEventState {
   lao: string;
@@ -11,8 +10,6 @@ export interface ElectionState extends LaoEventState {
   start: number;
   end: number;
   questions: Question[];
-  registered_votes: RegisteredVote[];
-  questionResult?: QuestionResult[];
 }
 
 export interface Question {
@@ -21,38 +18,6 @@ export interface Question {
   voting_method: string,
   ballot_options: string[],
   write_in: boolean,
-}
-
-export interface Vote {
-  id: Hash,
-  question: Hash,
-  vote?: number[],
-  write_in?: string,
-}
-
-export interface RegisteredVote {
-  createdAt: Timestamp;
-  sender: Hash,
-  votes: Vote[],
-  messageId: Hash,
-}
-
-export interface MajorityResult {
-  ballot_option: string,
-  count: number,
-}
-
-export interface QuestionResult {
-  id: Hash,
-  result: MajorityResult[]
-}
-
-export enum ElectionStatus {
-  NOTSTARTED = 'not started',
-  RUNNING = 'running',
-  FINISHED = 'finished', // When the time is over
-  TERMINATED = 'terminated', // When manually terminated by organizer
-  RESULT = 'result', // When result is available
 }
 
 export class Election implements LaoEvent {
@@ -72,47 +37,35 @@ export class Election implements LaoEvent {
 
   public readonly questions: Question[];
 
-  public electionStatus: ElectionStatus;
-
-  public registered_votes: RegisteredVote[];
-
-  public questionResult?: QuestionResult[];
-
   constructor(obj: Partial<Election>) {
     if (obj === undefined || obj === null) {
-      throw new Error('Error encountered while creating a Election object: '
+      throw new Error('Error encountered while creating a RollCall object: '
         + 'undefined/null parameters');
     }
     if (obj.lao === undefined) {
-      throw new Error("Undefined 'lao' when creating 'Election'");
+      throw new Error("Undefined 'lao' when creating 'RollCall'");
     }
     if (obj.id === undefined) {
-      throw new Error("Undefined 'id' when creating 'Election'");
+      throw new Error("Undefined 'id' when creating 'RollCall'");
     }
     if (obj.name === undefined) {
-      throw new Error("Undefined 'name' when creating 'Election'");
+      throw new Error("Undefined 'name' when creating 'RollCall'");
     }
     if (obj.version === undefined) {
-      throw new Error("Undefined 'version' when creating 'Election'");
+      throw new Error("Undefined 'version' when creating 'RollCall'");
     }
     if (obj.created_at === undefined) {
-      throw new Error("Undefined 'creation' when creating 'Election'");
+      throw new Error("Undefined 'creation' when creating 'RollCall'");
     }
     if (obj.start === undefined) {
-      throw new Error("Undefined 'start' when creating 'Election'");
+      throw new Error("Undefined 'start' when creating 'RollCall'");
     }
     if (obj.end === undefined) {
-      throw new Error("Undefined 'end' when creating 'Election'");
+      throw new Error("Undefined 'end' when creating 'RollCall'");
     }
     if (obj.questions === undefined) {
-      throw new Error("Undefined 'questions' when creating 'Election'");
+      throw new Error("Undefined 'questions' when creating 'RollCall'");
     }
-    if (obj.registered_votes === undefined) {
-      this.registered_votes = [];
-    } else {
-      this.registered_votes = obj.registered_votes;
-    }
-
     this.lao = obj.lao;
     this.id = obj.id;
     this.name = obj.name;
@@ -121,9 +74,6 @@ export class Election implements LaoEvent {
     this.start = obj.start;
     this.end = obj.end;
     this.questions = obj.questions;
-    this.questionResult = obj.questionResult;
-    // Sets the election status automatically
-    this.electionStatus = Election.getElectionStatus(obj.start, obj.end);
   }
 
   public static fromState(e: ElectionState): Election {
@@ -136,7 +86,6 @@ export class Election implements LaoEvent {
       start: new Timestamp(e.start),
       end: new Timestamp(e.end),
       questions: e.questions,
-      registered_votes: e.registered_votes,
     });
   }
 
@@ -146,15 +95,5 @@ export class Election implements LaoEvent {
       ...obj,
       eventType: LaoEventType.ELECTION,
     };
-  }
-
-  private static getElectionStatus(start: Timestamp, end: Timestamp): ElectionStatus {
-    const now = Timestamp.EpochNow();
-    if (now.before(start)) {
-      return ElectionStatus.NOTSTARTED;
-    } if (now.before(end)) {
-      return ElectionStatus.RUNNING;
-    }
-    return ElectionStatus.FINISHED;
   }
 }

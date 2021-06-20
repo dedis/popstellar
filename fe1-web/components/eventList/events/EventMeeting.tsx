@@ -3,12 +3,13 @@ import { FlatList } from 'react-native';
 
 import PROPS_TYPE from 'res/Props';
 import ParagraphBlock from 'components/ParagraphBlock';
-import TimeDisplay from 'components/TimeDisplay';
 import PropTypes from 'prop-types';
 
 /**
  * Component used to display a Meeting event in the LAO event list
  */
+
+const dateToString = (timestamp: number) => ((new Date(timestamp * 1000)).toLocaleString());
 
 const EventMeeting = (props: IPropTypes) => {
   const { event } = props;
@@ -17,8 +18,9 @@ const EventMeeting = (props: IPropTypes) => {
 
   return (
     <>
-      <TimeDisplay start={event.start.valueOf()} />
-      { event.end && <TimeDisplay end={event.end.valueOf()} /> }
+      <ParagraphBlock text={`Starts at ${dateToString(event.start)}`} />
+
+      { event.end && <ParagraphBlock text={`Ends  at ${dateToString(event.end)}`} /> }
       { event.location && <ParagraphBlock text={event.location} /> }
       { childrenVisibility && (
         <FlatList

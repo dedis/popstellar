@@ -41,16 +41,16 @@ const Witness = () => {
 
   const DATA_EXAMPLE = [
     {
-      title: 'Future',
-      data: futureEvents,
+      title: 'Past',
+      data: pastEvents,
     },
     {
       title: 'Present',
       data: currentEvents,
     },
     {
-      title: 'Past',
-      data: pastEvents,
+      title: 'Future',
+      data: futureEvents,
     },
   ];
 

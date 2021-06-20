@@ -1,4 +1,4 @@
-const webSocketsServerPort = 9000;
+const webSocketsServerPort = 8080;
 const WebSocketServer = require('websocket').server;
 const http = require('http');
 

@@ -1,6 +1,7 @@
 import {
-  Hash, Timestamp, EventTags,
+  Hash, Timestamp, Lao, EventTags,
 } from 'model/objects';
+import { OpenedLaoStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
 import { Question } from 'model/objects/Election';
@@ -76,13 +77,10 @@ export class SetupElection implements MessageData {
     SetupElection.validateQuestions(msg.questions);
     this.questions = msg.questions;
 
-    if (!msg.lao) {
-      throw new ProtocolError('Undefined \'lao\' parameter encountered during \'SetupElection\'');
-    }
-    this.lao = msg.lao;
+    const lao: Lao = OpenedLaoStore.get();
 
     const expectedHash = Hash.fromStringArray(
-      EventTags.ELECTION, msg.lao.toString(), msg.created_at.toString(), msg.name,
+      EventTags.ELECTION, lao.id.toString(), lao.creation.toString(), msg.name,
     );
     if (!expectedHash.equals(msg.id)) {
       throw new ProtocolError("Invalid 'id' parameter encountered during 'SetupElection':"
