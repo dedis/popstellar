@@ -59,7 +59,6 @@
             android:id="@+id/election_action_button"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/event_buttons_height"
-            android:text="@{eventCategory == EventCategory.PRESENT ? `Cast Vote ` : `Tally up Votes `}"
             android:visibility="@{eventCategory == EventCategory.FUTURE ? View.GONE : View.VISIBLE}" />
 
 

@@ -8,5 +8,6 @@ package com.github.dedis.student20_pop.model.event;
 public enum EventState {
     CREATED,
     OPENED,
-    CLOSED
+    CLOSED,
+    RESULTS_READY
 }

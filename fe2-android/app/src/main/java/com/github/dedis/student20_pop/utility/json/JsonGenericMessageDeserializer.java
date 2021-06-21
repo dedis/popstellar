@@ -1,5 +1,7 @@
 package com.github.dedis.student20_pop.utility.json;
 
+import android.util.Log;
+
 import com.github.dedis.student20_pop.model.network.GenericMessage;
 import com.github.dedis.student20_pop.model.network.answer.Answer;
 import com.github.dedis.student20_pop.model.network.method.Message;
@@ -19,6 +21,7 @@ public class JsonGenericMessageDeserializer implements JsonDeserializer<GenericM
   public GenericMessage deserialize(
       JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
+    Log.d("deserializer", "deserializing generic message");
     if (json.getAsJsonObject().has(METHOD)) return context.deserialize(json, Message.class);
     else return context.deserialize(json, Answer.class);
   }

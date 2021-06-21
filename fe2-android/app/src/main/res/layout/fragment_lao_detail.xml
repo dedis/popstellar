@@ -15,6 +15,7 @@
     android:layout_height="match_parent">
 
     <include layout="@layout/tab_properties" />
+    <include layout ="@layout/tab_witness" />
 
     <androidx.constraintlayout.widget.Guideline
       android:id="@+id/guideline_horizontal_tab"
