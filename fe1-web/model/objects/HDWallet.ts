@@ -272,9 +272,6 @@ export class HDWallet {
         const bufferConcatenation = [key, chainCode];
         const privKey = Buffer.concat(bufferConcatenation);
 
-        // console.log(privKey);
-        // console.log(pubKey);
-
         const token = new KeyPair({
           publicKey: new PublicKey(Base64UrlData.fromBase64(encodeBase64(pubKey)).valueOf()),
           privateKey: new PrivateKey(Base64UrlData.fromBase64(encodeBase64(privKey)).valueOf()),

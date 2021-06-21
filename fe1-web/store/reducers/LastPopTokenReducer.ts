@@ -32,7 +32,7 @@ const popTokenSlice = createSlice({
       }
 
       state.popTokenPrivateKey = action.payload;
-      console.log('Pop token private key storage was updated with new state');
+      // console.log('Pop token private key storage was updated with new state');
     },
 
     /* set global pop token public key state */
@@ -57,5 +57,5 @@ export default {
   [popTokenReducerPath]: popTokenSlice.reducer,
 };
 
-export const getLastPopTokenState = (state: any):
-  LastPoPTokenReducerState => state[popTokenReducerPath];
+export const getLastPopTokenState = (state: any): LastPoPTokenReducerState =>
+  state[popTokenReducerPath];
