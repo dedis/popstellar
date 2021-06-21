@@ -6,5 +6,5 @@ export * from './EventsReducer';
 export * from './LaoReducer';
 export * from './KeyPairReducer';
 export * from './MessageReducer';
+export * from './LastPopTokenReducer';
 export * from './WalletReducer';
-export * from './LastPoPTokenReducer';
