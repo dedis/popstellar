@@ -1,5 +1,5 @@
 import { dispatch, getStore } from '../Storage';
-import { getLastPopTokenState, setPopTokenPrivateKey, setPopTokenPublicKey } from '../reducers';
+import { getTokenState, setPopTokenPrivateKey, setPopTokenPublicKey } from '../reducers';
 
 /**
  * This file represents the storage slice for the pop token state.
@@ -18,7 +18,7 @@ export namespace LastPopTokenStore {
    * returns the pop token' private key state
    */
   export function getPrivateKey(): string | undefined {
-    const { popTokenPrivateKey } = getLastPopTokenState(getStore().getState());
+    const { popTokenPrivateKey } = getTokenState(getStore().getState());
     if (!popTokenPrivateKey) {
       console.log('No pop token was cached yet');
     }
@@ -30,7 +30,7 @@ export namespace LastPopTokenStore {
    * returns the pop token' public key state
    */
   export function getPublicKey(): string | undefined {
-    const { popTokenPublicKey } = getLastPopTokenState(getStore().getState());
+    const { popTokenPublicKey } = getTokenState(getStore().getState());
     if (!popTokenPublicKey) {
       console.log('No pop token was cached yet');
     }

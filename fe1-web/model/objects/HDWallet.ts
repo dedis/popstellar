@@ -317,16 +317,16 @@ export class HDWallet {
 
     const listOfLaos = getStore().getState().events.byLaoId;
 
+    // eslint-disable-next-line guard-for-in,no-restricted-syntax
     for (const lao in listOfLaos) {
       const listOfRollCallsPerLao = getStore().getState().events.byLaoId[lao].byId;
 
+      // eslint-disable-next-line guard-for-in,no-restricted-syntax
       for (const rc in listOfRollCallsPerLao) {
         if (lao.toString() !== 'myLaoId') {
           const rcEvent = getStore().getState().events.byLaoId[lao].byId[rc];
           if (rcEvent.eventType === 'ROLL_CALL') {
-            /* TODO: change to empty array if undefined [] */
-            const rcAttendees = (rcEvent.attendees !== undefined) ? rcEvent.attendees
-              : [];
+            const rcAttendees = (rcEvent.attendees !== undefined) ? rcEvent.attendees : [];
 
             allKnownLaoRollCallsIds.set([new Hash(lao), new Hash(rcEvent.id)],
               rcAttendees);

@@ -57,5 +57,4 @@ export default {
   [popTokenReducerPath]: popTokenSlice.reducer,
 };
 
-export const getLastPopTokenState = (state: any): LastPoPTokenReducerState =>
-  state[popTokenReducerPath];
+export const getTokenState = (state: any): LastPoPTokenReducerState => state[popTokenReducerPath];
