@@ -180,6 +180,7 @@ export class HDWallet {
     return this.recoverAllKeys(recoverMaps[0], recoverMaps[1]);
   }
 
+  // eslint-disable-next-line class-methods-use-this
   public recoverLastGeneratedPoPToken(): KeyPair | undefined {
     const pubKey = LastPopTokenStore.getPublicKey();
     const privKey = LastPopTokenStore.getPrivateKey();
@@ -245,12 +246,6 @@ export class HDWallet {
    */
   public async generateToken(laoId: Hash, rollCallId:Hash): Promise<KeyPair> {
     return this.generateKeyPair(laoId, rollCallId);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars,class-methods-use-this
-  public tokenIsInRollCall(laoId: Hash, rollCallId: Hash): boolean {
-    // TODO
-    return true;
   }
 
   private async generateKeyPair(laoId: Hash, rollCallId:Hash): Promise<KeyPair> {
@@ -334,7 +329,7 @@ export class HDWallet {
           if (rcEvent.eventType === 'ROLL_CALL') {
             /* TODO: change to empty array if undefined [] */
             const rcAttendees = (rcEvent.attendees !== undefined) ? rcEvent.attendees
-              : []; // CUh_Su1ZQWIz3q088tr57ytg4Ch9ZLwb5ntbOr54wh8
+              : [];
 
             allKnownLaoRollCallsIds.set([new Hash(lao), new Hash(rcEvent.id)],
               rcAttendees);
