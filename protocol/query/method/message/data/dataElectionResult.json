@@ -30,7 +30,8 @@
 								},
 								"count": {
 									"type": "integer",
-									"$comment": "vote-count of the corresponding option"
+									"$comment": "vote-count of the corresponding option",
+									"minimum": 0,
 								}
 							},
 							"required": ["ballot_option", "count"],
