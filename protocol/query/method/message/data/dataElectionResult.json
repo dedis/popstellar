@@ -15,15 +15,26 @@
 				"properties": {
 					"id": {
 						"type": "string",
-						"contentEncoding": "base64",
 						"$comment": "ID of the question"
 					},
 					"result": {
-						"description": "[Array[object]] results",
+						"description": "[Array[object{'ballot_options':string, 'count':integer}]] results",
 						"type": "array",
 						"items": {
 							"type": "object",
-							"$comment": "result"
+							"$comment": "result of Plurality Voting",
+							"properties": {
+								"ballot_option": {
+									"type": "string",
+									"$comment": "string containing ballot option of the question"
+								},
+								"count": {
+									"type": "integer",
+									"$comment": "vote-count of the corresponding option"
+								}
+							},
+							"required": ["ballot_option", "count"],
+							"additionalProperties": false,
 						},
 						"minItems": 1,
 						"uniqueItems": true
