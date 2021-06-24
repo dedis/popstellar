@@ -11,7 +11,8 @@ import {
   OpenedLaoStore, WalletStore,
 } from 'store';
 import QRCode from 'components/QRCode';
-import WideButtonView from '../../WideButtonView';
+import WideButtonView from 'components/WideButtonView';
+import { requestOpenRollCall } from 'network';
 import { requestOpenRollCall } from '../../../network';
 
 /**

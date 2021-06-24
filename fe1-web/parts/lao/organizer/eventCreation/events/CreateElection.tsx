@@ -28,7 +28,7 @@ const CreateElection = ({ route }: any) => {
   const initialStartDate = new Date();
   const initialEndDate = new Date();
   // Sets initial end date to 1 hour later than start date
-  initialEndDate.setMinutes(initialEndDate.getMinutes() + 5);
+  initialEndDate.setMinutes(initialEndDate.getMinutes() + 15);
 
   const [startDate, setStartDate] = useState(Timestamp.dateToTimestamp(initialStartDate));
   const [endDate, setEndDate] = useState(Timestamp.dateToTimestamp(initialEndDate));
