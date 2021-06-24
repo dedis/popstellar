@@ -1,7 +1,4 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
-
-import { Spacing } from 'styles';
 import PropTypes from 'prop-types';
 import {
   RollCall, RollCallStatus, HDWallet,
@@ -13,18 +10,12 @@ import {
 import QRCode from 'components/QRCode';
 import WideButtonView from 'components/WideButtonView';
 import { requestOpenRollCall } from 'network';
-import { requestOpenRollCall } from '../../../network';
+import { Text } from 'react-native';
 
 /**
  * Component used to display a RollCall event in the LAO event list
  *
- * TODO implement the QR code
  */
-const styles = StyleSheet.create({
-  flatList: {
-    marginTop: Spacing.xs,
-  },
-});
 
 const EventRollCall = (props: IPropTypes) => {
   const { event } = props;
