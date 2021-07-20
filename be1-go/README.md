@@ -3,7 +3,8 @@ Proof-of-personhood, Spring 2021. Go back-end version.
 
 ## Overview
 
-You may build the `pop` CLI to interact with the server by executing `go build -o pop ./cli/`.
+You may build the `pop` CLI to interact with the server by executing
+`make build` on Linux/OSX or `make.bat build` in Windows.
 
 ```bash
 ./pop organizer -h
