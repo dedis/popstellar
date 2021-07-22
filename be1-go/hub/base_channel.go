@@ -42,6 +42,7 @@ func createBaseChannel(h *baseHub, channelID string) *baseChannel {
 	}
 }
 
+// Subscribe is used to handle a subscribe message from the client.
 func (c *baseChannel) Subscribe(client *ClientSocket, msg message.Subscribe) error {
 	log.Printf("received a subscribe with id: %d", msg.ID)
 	c.clientsMu.Lock()
@@ -52,6 +53,7 @@ func (c *baseChannel) Subscribe(client *ClientSocket, msg message.Subscribe) err
 	return nil
 }
 
+// Unsubscribe is used to handle an unsubscribe message.
 func (c *baseChannel) Unsubscribe(client *ClientSocket, msg message.Unsubscribe) error {
 	log.Printf("received an unsubscribe with id: %d", msg.ID)
 
@@ -69,6 +71,7 @@ func (c *baseChannel) Unsubscribe(client *ClientSocket, msg message.Unsubscribe)
 	return nil
 }
 
+// Catchup is used to handle a catchup message.
 func (c *baseChannel) Catchup(catchup message.Catchup) []message.Message {
 	log.Printf("received a catchup with id: %d", catchup.ID)
 
@@ -97,6 +100,8 @@ func (c *baseChannel) Catchup(catchup message.Catchup) []message.Message {
 	return result
 }
 
+// broadcastToAllClients is a helper message to broadcast a message to all
+// subscribers.
 func (c *baseChannel) broadcastToAllClients(msg message.Message) {
 	c.clientsMu.RLock()
 	defer c.clientsMu.RUnlock()
@@ -115,7 +120,7 @@ func (c *baseChannel) broadcastToAllClients(msg message.Message) {
 	}
 }
 
-// Verify the if a Publish message is valid
+// VerifyPublishMessage checks if a Publish message is valid
 func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 	log.Printf("received a publish with id: %d", publish.ID)
 

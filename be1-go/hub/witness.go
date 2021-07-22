@@ -8,6 +8,7 @@ import (
 	"go.dedis.ch/kyber/v3"
 )
 
+// witnessHub represents a Witness and implements the Hub interface.
 type witnessHub struct {
 	*baseHub
 }

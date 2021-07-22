@@ -15,8 +15,10 @@ import (
 	"golang.org/x/xerrors"
 )
 
+// rootPrefix denotes the prefix for the root channel
 const rootPrefix = "/root/"
 
+// baseHub implements hub.Hub interface
 type baseHub struct {
 	messageChan chan IncomingMessage
 
@@ -77,6 +79,7 @@ func (h *baseHub) Start(ctx context.Context, wg *sync.WaitGroup) {
 	}
 }
 
+// handleRootChannelMesssage handles an incoming message on the root channel.
 func (h *baseHub) handleRootChannelMesssage(id int, client *ClientSocket, query *message.Query) {
 	if query.Publish == nil {
 		err := &message.Error{
@@ -136,6 +139,7 @@ func (h *baseHub) handleRootChannelMesssage(id int, client *ClientSocket, query 
 	client.SendResult(id, result)
 }
 
+// handleMessageFromClient handles an incoming message from an end user.
 func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 	client := ClientSocket{
 		incomingMessage.Socket,
@@ -251,11 +255,13 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 	client.SendResult(id, result)
 }
 
+// handleMessageFromWitness handles an incoming message from a witness server.
 func (h *baseHub) handleMessageFromWitness(incomingMessage *IncomingMessage) {
 	//TODO
-
 }
 
+// handleIncomingMessage handles an incoming message based on the socket it
+// originates from.
 func (h *baseHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	log.Printf("Hub::handleMessageFromClient: %s", incomingMessage.Message)
 
@@ -273,6 +279,7 @@ func (h *baseHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 
 }
 
+// createLao creates a new LAO using the data in the publish parameter.
 func (h *baseHub) createLao(publish message.Publish) error {
 	h.Lock()
 	defer h.Unlock()

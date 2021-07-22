@@ -13,6 +13,7 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 )
 
+// organizerHub implements the Hub interface.
 type organizerHub struct {
 	*baseHub
 }
@@ -25,25 +26,35 @@ func NewOrganizerHub(public kyber.Point) (Hub, error) {
 	}, err
 }
 
+// laoChannel implements a channel. It is used to handle messages
+// on the LAO root channel.
 type laoChannel struct {
 	rollCall  rollCall
 	attendees *Attendees
 	*baseChannel
 }
 
+// rollCallState denotes the state of the roll call.
 type rollCallState string
 
 const (
-	Open    rollCallState = "open"
-	Closed  rollCallState = "closed"
+	// Open represents the open roll call state.
+	Open rollCallState = "open"
+
+	// Closed represents the closed roll call state.
+	Closed rollCallState = "closed"
+
+	// Created represents the created roll call state.
 	Created rollCallState = "created"
 )
 
+// rollCall represents a roll call.
 type rollCall struct {
 	state rollCallState
 	id    string
 }
 
+// Publish handles publish messages for the LAO channel.
 func (c *laoChannel) Publish(publish message.Publish) error {
 	err := c.baseChannel.VerifyPublishMessage(publish)
 	if err != nil {
@@ -78,6 +89,7 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 	return nil
 }
 
+// processLaoObject processes a LAO object.
 func (c *laoChannel) processLaoObject(msg message.Message) error {
 	action := message.LaoDataAction(msg.Data.GetAction())
 
@@ -97,6 +109,7 @@ func (c *laoChannel) processLaoObject(msg message.Message) error {
 	return nil
 }
 
+// processLaoState processes a lao state action.
 func (c *laoChannel) processLaoState(data *message.StateLAOData) error {
 	// Check if we have the update message
 	msg, ok := c.inbox.getMessage(data.ModificationID)
@@ -217,6 +230,7 @@ func compareLaoUpdateAndState(update *message.UpdateLAOData, state *message.Stat
 	return nil
 }
 
+// processMeetingObject handles a meeting object.
 func (c *laoChannel) processMeetingObject(data message.Data, msg message.Message) error {
 	action := message.MeetingDataAction(data.GetAction())
 
@@ -231,6 +245,7 @@ func (c *laoChannel) processMeetingObject(data message.Data, msg message.Message
 	return nil
 }
 
+// processMessageObject handles a message object.
 func (c *laoChannel) processMessageObject(public message.PublicKey, data message.Data) error {
 	action := message.MessageDataAction(data.GetAction())
 
@@ -257,6 +272,7 @@ func (c *laoChannel) processMessageObject(public message.PublicKey, data message
 	return nil
 }
 
+// processRollCallObject handles a roll call object.
 func (c *laoChannel) processRollCallObject(msg message.Message) error {
 	sender := msg.Sender
 	data := msg.Data
@@ -301,6 +317,7 @@ func (c *laoChannel) processRollCallObject(msg message.Message) error {
 	return nil
 }
 
+// processElectionObject handles an election object.
 func (c *laoChannel) processElectionObject(msg message.Message) error {
 	action := message.ElectionAction(msg.Data.GetAction())
 

@@ -14,21 +14,41 @@ import (
 
 const (
 	// maxMessageSize denotes a meximum possible message size in bytes
-	maxMessageSize = 256 * 1024
+	maxMessageSize = 256 * 1024 // 256K
 
+	// writeWait denotes the timeout for writing.
 	writeWait = 10 * time.Second
 
+	// pongWait is the timeout for reading a pong.
 	pongWait = 60 * time.Second
 
+	// pingPeriod is the interval to send ping messages in.
 	pingPeriod = (pongWait * 9) / 10
 )
 
+// Socket is an interface which allows reading/writing messages to
+// another client
 type Socket interface {
+	// Type denotes the type of socket.
 	Type() string
+
+	// ReadPump is a lower level method for reading messages from the socket.
+	// TODO: this probably shouldn't be a part of the interface
 	ReadPump()
+
+	// WritePump is a lower level method for writing messages to the socket.
+	// TODO: this probably shouldn't be a part of the interface
 	WritePump()
+
+	// Send is used to send a message to the client.
 	Send(msg []byte)
+
+	// SendError is used to send an error to the client.
+	// Please refer to the Protocol Specification document for information
+	// on the error codes.
 	SendError(id int, err error)
+
+	// SendResult is used to send a result message to the client.
 	SendResult(id int, res message.Result)
 }
 
@@ -143,7 +163,6 @@ func (s *baseSocket) Send(msg []byte) {
 }
 
 // SendError is a utility method that allows sending an `error` as a `message.Error`
-
 // message to the socket.
 func (s *baseSocket) SendError(id *int, err error) {
 	log.Printf("Error: %v", err)

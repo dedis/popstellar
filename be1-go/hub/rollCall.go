@@ -7,6 +7,7 @@ import (
 	"student20_pop/message"
 )
 
+// processCreateRollCall processes a roll call creation object.
 func (c *laoChannel) processCreateRollCall(data message.Data) error {
 
 	rollCallData := data.(*message.CreateRollCallData)
@@ -31,6 +32,7 @@ func (c *laoChannel) processCreateRollCall(data message.Data) error {
 	return nil
 }
 
+// processOpenRollCall processes an open roll call object.
 func (c *laoChannel) processOpenRollCall(data message.Data, action message.RollCallAction) error {
 	if action == message.RollCallAction(message.OpenRollCallAction) {
 		// If the action is an OpenRollCallAction,
@@ -74,6 +76,7 @@ func (c *laoChannel) processOpenRollCall(data message.Data, action message.RollC
 	return nil
 }
 
+// processCloseRollCall processes a close roll call message.
 func (c *laoChannel) processCloseRollCall(data message.Data) error {
 	if c.rollCall.state != Open {
 		return &message.Error{
@@ -108,14 +111,14 @@ func (c *laoChannel) processCloseRollCall(data message.Data) error {
 	return nil
 }
 
-// Helper functions
-
+// checkPrevID is a helper method which checks if prevID is equal to r.id
 func (r *rollCall) checkPrevID(prevID []byte) bool {
 	return string(prevID) == r.id
 }
 
-// Check if the id of the roll call corresponds to the hash of the correct parameters
-// Return true if the hash corresponds to the id and false otherwise
+// checkPrevID checks if the id of the roll call corresponds to the hash
+// of the correct parameters. Returns true if the hash corresponds to the
+// id and false otherwise.
 func (c *laoChannel) checkRollCallID(str1, str2 fmt.Stringer, id []byte) bool {
 	laoID := c.channelID[6:]
 	hash, err := message.Hash(message.Stringer('R'), message.Stringer(laoID), str1, str2)
