@@ -71,7 +71,9 @@ logic in the hub module.
 The PoP Go backend expects actors to establish long lived websocket connections
 with it and send messages back and forth over websockets.
 
-![Communication Stack](images/comm_stack.jpeg)
+<div align="center">
+  <img alt="Communication Stack" src="images/comm_stack.jpeg" width="600" />
+</div>
 
 The `Socket` interface (refer `hub/socket.go`) describes the methods used for
 reading or sending data/error messages from/to the end user.
@@ -100,7 +102,11 @@ message originates from.
 
 The flowchart below describes the flow of data and how messages are processed
 
-![Flowchart](images/flowchart.png)
+<div align="center">
+  <img src="images/flowchart.png" alt="Flowchart"/>
+</div>
+
+<p align="center"><i>Credits to the be1-go Spring 2021 team for the flowchart</i></p>
 
 The hubs themselves contain multiple `Channels` with the `Root` channel being
 the default one, representing the LAO itself. Another example of a channel would
