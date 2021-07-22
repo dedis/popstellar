@@ -71,7 +71,7 @@ logic in the hub module.
 The PoP Go backend expects actors to establish long lived websocket connections
 with it and send messages back and forth over websockets.
 
-// TODO: Add data flow image
+![Communication Stack](images/comm_stack.jpeg)
 
 The `Socket` interface (refer `hub/socket.go`) describes the methods used for
 reading or sending data/error messages from/to the end user.
@@ -100,7 +100,7 @@ message originates from.
 
 The flowchart below describes the flow of data and how messages are processed
 
-// TODO: Add flowchart image
+![Flowchart](images/flowchart.png)
 
 The hubs themselves contain multiple `Channels` with the `Root` channel being
 the default one, representing the LAO itself. Another example of a channel would
