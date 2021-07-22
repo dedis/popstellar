@@ -16,20 +16,31 @@ import (
 	"golang.org/x/xerrors"
 )
 
+// SchemaValidator is used to validate JSON-RPC schemas.
 type SchemaValidator struct {
 	genericMessageSchema *jsonschema.Schema
 	dataSchema           *jsonschema.Schema
 }
 
+// SchemaType denotes the type of schema.
 type SchemaType int
 
 const (
+	// GenericMessage denotes the Generic Message schema.
 	GenericMessage SchemaType = 0
-	Data           SchemaType = 1
+
+	// Data denotes the Data schema.
+	Data SchemaType = 1
 )
 
+// baseUrl is the baseUrl for all schemas.
 const baseUrl = "https://raw.githubusercontent.com/dedis/student_21_pop/master/"
 
+// protocolFS is an embedded file system which allows us to bake the schemas
+// into the binary during compilation. Since Go doesn't allow embedded files
+// outside the module we copy the schemas over right before invoking the build
+// or test commands in the Makefile. As a result, users may safely ignore the
+// warnings on this line.
 //go:embed protocol
 var protocolFS embed.FS
 
@@ -41,7 +52,7 @@ func init() {
 }
 
 // VerifyJson verifies that the `msg` follow the schema protocol of name 'schemaName',
-// it returns an error if it is not the case.
+// it returns an error otherwise.
 func (s *SchemaValidator) VerifyJson(msg []byte, st SchemaType) error {
 	reader := bytes.NewBuffer(msg[:])
 	var schema *jsonschema.Schema

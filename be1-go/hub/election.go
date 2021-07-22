@@ -15,6 +15,7 @@ type Attendees struct {
 	store map[string]struct{}
 }
 
+// NewAttendees returns a new instance of Attendees.
 func NewAttendees() *Attendees {
 	return &Attendees{
 		store: make(map[string]struct{}),
