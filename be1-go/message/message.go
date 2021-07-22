@@ -10,6 +10,7 @@ import (
 	"golang.org/x/xerrors"
 )
 
+// Base64URLBytes denotes a Base64URL encoding
 type Base64URLBytes []byte
 
 type internalMessage struct {

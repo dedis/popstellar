@@ -8,8 +8,10 @@ import (
 	"golang.org/x/xerrors"
 )
 
+// Stringer reprents a string type
 type Stringer string
 
+// String returns a string representation of this Stringer.
 func (s Stringer) String() string {
 	return string(s)
 }
@@ -391,6 +393,8 @@ func NewCreateLAOData(name string, creation Timestamp, organizer PublicKey, witn
 	return create, nil
 }
 
+// Hash is a helper method to return SHA-256 hash, with the inputs passed to
+// the hash function following the PoP encoding scheme scheme.
 func Hash(strs ...fmt.Stringer) ([]byte, error) {
 	h := sha256.New()
 	for i, str := range strs {
