@@ -40,27 +40,25 @@ Use the -org flag to specify an alternative address and port for the organizer.
 Using the `-ow` flag as many times as necessary, you can specify you can specify the `address:port` of each of the other witnesses.
 The full path to connect to the organizer as a client is `ws://host:clientport/organizer/client/` and as a witness `ws://host:witnessport/organizer/witness/`.
 
-## Packages
-
-- `cli`: Entrypoint for starting the PoP server
-- `message`: Contains structs that are used to marshal/unmarshal websocket payload
-- `hub`: Defined an interface for the actions supported by the server. Refer to the interfaces in `hub/hub.go` for more information.
-
-
-## Dependencies
-Currently, the project works with the following libraries:
-* [dedis/kyber](https://github.com/dedis/kyber) which adds support for cryptographic operations like signature verification.
-* [gorilla/websocket](https://github.com/gorilla/websocket) is a websocket package for golang. We chose to use this
-  package because it offers a good API, and it is more complete than the websocket package offered by the standard library.
-
-
-### Sample Data
-
-Sample test data for different websocket payloads is available at `test/json_test_strings.txt`.
-
 ## Unit-tests
-Some unit-tests exist directly in their corresponding packages, as per Go specification. They can be run with `go test -v ./...` (recursive from the top-level folder) or simply `go test` for the current package.
+Some unit-tests exist directly in their corresponding packages,
+as per Go specification. They can be run with `make check`
+(recursive from the top-level folder) or simply `go test` for
+the current package (except the `validation`).
 
+## Documentation
+
+Detailed information about the architecture and dataflow is available in
+the [docs](docs/README.md) directory.
+
+You may also make use of package level documentation by using `godoc`
+
+```bash
+$ godoc -http=:6060
+```
+
+The above command would make this module's documentation available at
+[http://localhost:6060/pkg/student20_pop](http://localhost:6060/pkg/student20_pop).
 
 ## Potential improvements
 

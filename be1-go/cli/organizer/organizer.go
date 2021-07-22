@@ -1,3 +1,5 @@
+// Package organizer contains the entry point for starting the organizer
+// server.
 package organizer
 
 import (
@@ -11,7 +13,8 @@ import (
 	"sync"
 )
 
-// Serve parses the CLI arguments and spawns a hub and a websocket server.
+// Serve parses the CLI arguments and spawns a hub and a websocket server
+// for the organizer.
 func Serve(cliCtx *cli.Context) error {
 
 	// get command line args which specify public key, port to use for clients and witnesses
