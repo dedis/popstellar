@@ -15,6 +15,7 @@
     <dimen name="size_title">24sp</dimen>
     <dimen name="size_body">18sp</dimen>
     <dimen name="size_small">12sp</dimen>
+    <dimen name = "tab_lao_detail">13sp</dimen>
     <dimen name="lao_name">36sp</dimen>
     <dimen name="event_displayed_name">15sp</dimen>
     <dimen name="date_text_event">15sp</dimen>
@@ -59,6 +60,8 @@
     <dimen name="election_setup_margin_text">16dp</dimen>
     <dimen name="election_setup_scrollview_layout_margin_top">40dp</dimen>
     <dimen name="election_setup_margin_top">16dp</dimen>
+    <dimen name="election_setup_question_margin">20dp</dimen>
+    <dimen name="election_setup_text_field_margin_lateral">10dp</dimen>
     <dimen name="election_setup_titles_margin_start">140dp</dimen>
     <dimen name="election_setup_titles_margin_top">16dp</dimen>
     <dimen name="election_setup_spinner_width">150dp</dimen>

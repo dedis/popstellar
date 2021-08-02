@@ -1,13 +1,17 @@
 package com.github.dedis.student20_pop.model.network.method.message.data;
 
+import android.util.Log;
+
 import com.github.dedis.student20_pop.model.network.method.message.data.election.CastVote;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionEnd;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionResult;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.meeting.CreateMeeting;
 import com.github.dedis.student20_pop.model.network.method.message.data.meeting.StateMeeting;
-import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessage;
+import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessageSignature;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
@@ -20,8 +24,10 @@ import java.util.Optional;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.CAST_VOTE;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.CLOSE;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.CREATE;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Action.END;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.OPEN;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.REOPEN;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Action.RESULT;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.SETUP;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.STATE;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.UPDATE;
@@ -67,7 +73,7 @@ public abstract class Data {
     messagesMap.put(pair(MEETING, STATE), StateMeeting.class);
 
     // Message
-    messagesMap.put(pair(MESSAGE, WITNESS), WitnessMessage.class);
+    messagesMap.put(pair(MESSAGE, WITNESS), WitnessMessageSignature.class);
 
     // Roll Call
     messagesMap.put(pair(ROLL_CALL, CREATE), CreateRollCall.class);
@@ -78,7 +84,8 @@ public abstract class Data {
     // Election
     messagesMap.put(pair(ELECTION,SETUP), ElectionSetup.class);
     messagesMap.put(pair(ELECTION,CAST_VOTE), CastVote.class);
-
+    messagesMap.put(pair(ELECTION, END), ElectionEnd.class);
+    messagesMap.put(pair(ELECTION, RESULT), ElectionResult.class);
 
     return Collections.unmodifiableMap(messagesMap);
   }
@@ -91,6 +98,7 @@ public abstract class Data {
    * @return the class assigned to the pair of empty if none are defined
    */
   public static Optional<Class<? extends Data>> getType(Objects obj, Action action) {
+    Log.d("data", "getting data type");
     return Optional.ofNullable(messages.get(pair(obj, action)));
   }
 
