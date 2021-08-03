@@ -116,7 +116,7 @@ func (r *rollCall) checkPrevID(prevID []byte) bool {
 	return string(prevID) == r.id
 }
 
-// checkPrevID checks if the id of the roll call corresponds to the hash
+// checkRollCallID checks if the id of the roll call corresponds to the hash
 // of the correct parameters. Returns true if the hash corresponds to the
 // id and false otherwise.
 func (c *laoChannel) checkRollCallID(str1, str2 fmt.Stringer, id []byte) bool {
