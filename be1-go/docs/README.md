@@ -86,7 +86,7 @@ Depending on the type of end user, a `Socket` has three concrete implementations
 
 The `ReadPump` and `WritePump` are low-level methods which allow
 reading/writing data over the wire. Most users would instead use the `Send(msg []byte)`,
-`SendError(id int, err error)` and `SendResult(id int, res message.Result)` APIs
+`SendError(id int, err error)` and `SendResult(id int, res message.Result)` APIs.
 
 Each incoming message read by `ReadPump` is passed to the `Hub interface`'s
 (refer hub/hub.go) `Recv` method for processing
