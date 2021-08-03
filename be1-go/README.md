@@ -1,7 +1,22 @@
 # student_21_pop
-Proof-of-personhood, Spring 2021. Go back-end version.
+Proof-of-personhood, Fall 2021. Go back-end version.
 
 ## Overview
+
+### Requirements
+
+Please ensure you have Go >= 1.16 installed on your machine. Instructions for
+doing so are available [here](https://golang.org/doc/install).
+
+Linux/OSX users also need to install GNU Make. OSX users may install it
+using homebrew. Linux users may do so using their package manager:
+
+```bash
+brew install make # OSX
+sudo apt-get install build-essential # Ubuntu/Debian
+```
+
+### Execution
 
 You may build the `pop` CLI to interact with the server by executing
 `make build` on Linux/OSX or `make.bat build` in Windows.

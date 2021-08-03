@@ -6,7 +6,7 @@ import (
 	"encoding/base64"
 	"log"
 	"strings"
-	"student20_pop"
+	"student20_pop/crypto"
 	"sync"
 	"testing"
 )
@@ -17,7 +17,7 @@ func CreateWitnessHub() Hub {
 	if err != nil {
 		return nil
 	}
-	point := student20_pop.Suite.Point()
+	point := crypto.Suite.Point()
 	err = point.UnmarshalBinary(pkBuf)
 	if err != nil {
 		return nil
@@ -41,7 +41,7 @@ func TestNewWitnessHub(t *testing.T) {
 	if err != nil {
 		t.Errorf("could not decode public key")
 	}
-	point := student20_pop.Suite.Point()
+	point := crypto.Suite.Point()
 	err = point.UnmarshalBinary(pkBuf)
 	if err != nil {
 		t.Errorf("could not unmarshal public key")

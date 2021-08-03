@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"os"
-	"student20_pop"
+	"student20_pop/crypto"
 	"student20_pop/message"
 	"testing"
 	"time"
@@ -23,7 +23,7 @@ type keypair struct {
 
 var organizerKeyPair keypair
 
-var suite = student20_pop.Suite
+var suite = crypto.Suite
 
 var oHub *organizerHub
 

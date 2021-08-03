@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"log"
 	"net/url"
-	"student20_pop"
+	"student20_pop/crypto"
 	"student20_pop/hub"
 	"student20_pop/network"
 	"sync"
@@ -39,7 +39,7 @@ func Serve(cliCtx *cli.Context) error {
 		return xerrors.Errorf("failed to base64url decode public key: %v", err)
 	}
 
-	point := student20_pop.Suite.Point()
+	point := crypto.Suite.Point()
 	err = point.UnmarshalBinary(pkBuf)
 	if err != nil {
 		return xerrors.Errorf("failed to unmarshal public key: %v", err)

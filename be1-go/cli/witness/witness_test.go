@@ -5,7 +5,7 @@ import (
 	"context"
 	"log"
 	"strings"
-	"student20_pop"
+	"student20_pop/crypto"
 	"student20_pop/hub"
 	"student20_pop/network"
 	"sync"
@@ -19,7 +19,7 @@ func TestConnectToSocket(t *testing.T) {
 	parent := context.Background()
 	ctx, cancel := context.WithCancel(parent)
 	wg := &sync.WaitGroup{}
-	h, err := hub.NewWitnessHub(student20_pop.Suite.Point())
+	h, err := hub.NewWitnessHub(crypto.Suite.Point())
 	if err != nil {
 		t.Errorf("unable to create witness hub")
 	}

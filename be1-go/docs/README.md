@@ -4,24 +4,9 @@ This repository contains the server side implementation of the PoP project.
 
 #### Getting Started
 
-We assume that you're familiar with the PoP project. A few resources to get an
-idea about the overall design of the project are:
-
-* [Architecture Specifications](https://docs.google.com/document/d/19r3rP6o8TO-xeZBM0GQzkHYQFSJtWy7UhjLhzzZVry4)
-* [Protocol Specification Documentation](https://docs.google.com/document/d/1fyNWSPzLhM6W9V0VTFf2waMLiJGcscy7wa4bQlLkySM)
-
-##### Requirements
-
-Please ensure you have Go >= 1.16 installed on your machine. Instructions for
-doing so are available [here](https://golang.org/doc/install).
-
-Linux/OSX users also need to install GNU Make. OSX users may install it
-using homebrew. Linux users may do so using their package manager:
-
-```bash
-brew install make # OSX
-sudo apt-get install build-essential # Ubuntu/Debian
-```
+We assume that you're familiar with the PoP project. Please read the
+[Architecture Specifications](https://docs.google.com/document/d/19r3rP6o8TO-xeZBM0GQzkHYQFSJtWy7UhjLhzzZVry4)
+to get an idea about all the actors and components in the system.
 
 ##### Resources
 
@@ -68,12 +53,34 @@ logic in the hub module.
 
 #### Architecture
 
-The PoP Go backend expects actors to establish long lived websocket connections
-with it and send messages back and forth over websockets.
+The PoP Go backend expects actors (depending on the context these
+may be attendees/witnesses/organizer server) to establish long lived
+websocket connections with it and send messages back and forth over websockets
+using a publish/subscribe pattern.
 
 <div align="center">
   <img alt="Communication Stack" src="images/comm_stack.jpeg" width="600" />
 </div>
+
+On a higher level of abstraction, a client may publish messages or subscribe
+for messages on a *channel*. You may think of a channel as a topic which
+stores events that occur over time. For instance, every LAO is denoted by a unique
+channel (also called the root channel) and contains messages about all events
+that occur within it, for example, the creation of an election, a roll call.
+A channel may have sub channels associated with it. For instance, a
+LAO may have a sub-channel for the elections where all messages associated
+with that election are published. Please refer to
+[Data pipeline architecture](https://docs.google.com/document/d/19r3rP6o8TO-xeZBM0GQzkHYQFSJtWy7UhjLhzzZVry4/edit#heading=h.1h71fzpdznrh)
+for more information.
+
+All the messages are encoded using JSON and are validated using JSON-RPC
+[schemas](https://github.com/dedis/student_21_pop/tree/master/protocol).
+[Protocol Specifications](https://docs.google.com/document/d/1fyNWSPzLhM6W9V0VTFf2waMLiJGcscy7wa4bQlLkySM)
+also gives an introduction to the different message formats. However, note that
+the [schemas](https://github.com/dedis/student_21_pop/tree/master/protocol) in this
+repository are **always** the source of truth and are more up to date than the Google Doc.
+
+##### Getting messages over the wire
 
 The `Socket` interface (refer `hub/socket.go`) describes the methods used for
 reading or sending data/error messages from/to the end user.
@@ -90,6 +97,15 @@ reading/writing data over the wire. Most users would instead use the `Send(msg [
 
 Each incoming message read by `ReadPump` is passed to the `Hub interface`'s
 (refer hub/hub.go) `Recv` method for processing.
+
+We use [github.com/gorilla/websocket](github.com/gorilla/websocket) to manage websocket
+connections.
+
+##### Processing messages in the application layer
+
+The incoming messages received by the `ReadPump` are propagated up the stack to
+the `Hub` which is responsible for processing it and sending a `Result`, `Error`
+or a `Broadcast`.
 
 The `Hub` interface has two concrete implementations - one for the organizer
 and another for the witness. Since both share common implementations they embed
@@ -112,7 +128,7 @@ The hubs themselves contain multiple `Channels` with the `Root` channel being
 the default one, representing the LAO itself. Another example of a channel would
 be one for an `Election`.
 
-At the moment, the backend does *not* persist any data on disk and maintains
+At the moment, the backend **does not** persist any data on disk and maintains
 in-memory data structures for storing messages. This means all messages sent to
 the server will be lost after the process exists. The `db` package does implement
 a persistance layer which allows storing messages using SQLite but it remains

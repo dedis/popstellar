@@ -111,7 +111,7 @@ func (c *laoChannel) processCloseRollCall(data message.Data) error {
 	return nil
 }
 
-// checkPrevID is a helper method which checks if prevID is equal to r.id
+// checkPrevID is a helper method which validates the roll call ID.
 func (r *rollCall) checkPrevID(prevID []byte) bool {
 	return string(prevID) == r.id
 }

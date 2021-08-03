@@ -5,7 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"log"
-	"student20_pop"
+	"student20_pop/crypto"
 
 	"student20_pop/message"
 
@@ -150,7 +150,7 @@ func (c *laoChannel) processLaoState(data *message.StateLAOData) error {
 
 	// Check if the signatures match
 	for _, pair := range data.ModificationSignatures {
-		err := schnorr.VerifyWithChecks(student20_pop.Suite, pair.Witness, data.ModificationID, pair.Signature)
+		err := schnorr.VerifyWithChecks(crypto.Suite, pair.Witness, data.ModificationID, pair.Signature)
 		if err != nil {
 			pk := base64.URLEncoding.EncodeToString(pair.Witness)
 			return &message.Error{
@@ -253,7 +253,7 @@ func (c *laoChannel) processMessageObject(public message.PublicKey, data message
 	case message.WitnessAction:
 		witnessData := data.(*message.WitnessMessageData)
 
-		err := schnorr.VerifyWithChecks(student20_pop.Suite, public, witnessData.MessageID, witnessData.Signature)
+		err := schnorr.VerifyWithChecks(crypto.Suite, public, witnessData.MessageID, witnessData.Signature)
 		if err != nil {
 			return &message.Error{
 				Code:        -4,
@@ -278,7 +278,7 @@ func (c *laoChannel) processRollCallObject(msg message.Message) error {
 	data := msg.Data
 
 	// Check if the sender of the roll call message is the organizer
-	senderPoint := student20_pop.Suite.Point()
+	senderPoint := crypto.Suite.Point()
 	err := senderPoint.UnmarshalBinary(sender)
 	if err != nil {
 		return &message.Error{
