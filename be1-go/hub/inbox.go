@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// inbox represnts an in-memory data store to record incoming messages.
+// inbox represents an in-memory data store to record incoming messages.
 type inbox struct {
 	mutex sync.RWMutex
 	msgs  map[string]*messageInfo
