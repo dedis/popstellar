@@ -96,7 +96,7 @@ and another for the witness. Since both share common implementations they embed
 the `baseHub` implementation with a few methods "overriden" where custom
 implementation is needed.
 
-The `baseHub` on receiving a message, processed it by invoking the
+The `baseHub` on receiving a message, processes it by invoking the
 `handleIncomingMessage` method where its handled depending on which `Socket` the
 message originates from.
 
