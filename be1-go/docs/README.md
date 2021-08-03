@@ -89,7 +89,7 @@ reading/writing data over the wire. Most users would instead use the `Send(msg [
 `SendError(id int, err error)` and `SendResult(id int, res message.Result)` APIs.
 
 Each incoming message read by `ReadPump` is passed to the `Hub interface`'s
-(refer hub/hub.go) `Recv` method for processing
+(refer hub/hub.go) `Recv` method for processing.
 
 The `Hub` interface has two concrete implementations - one for the organizer
 and another for the witness. Since both share common implementations they embed
