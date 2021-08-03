@@ -9,6 +9,8 @@ import (
 	"student20_pop/hub"
 	"sync"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestCreateAndServeWS(t *testing.T) {
@@ -16,9 +18,7 @@ func TestCreateAndServeWS(t *testing.T) {
 	wg := &sync.WaitGroup{}
 
 	h, err := hub.NewWitnessHub(student20_pop.Suite.Point())
-	if (err != nil) {
-		t.Errorf("could not create witness hub")
-	}
+	require.NoErrorf(t, err, "could not create witness hub")
 
 	buffer := bytes.Buffer{}
 	log.SetOutput(&buffer)
@@ -26,16 +26,12 @@ func TestCreateAndServeWS(t *testing.T) {
 	srv := CreateAndServeWS(ctx, "testhub", "testsocket", h, 9000, wg)
 	str := buffer.String()
 	condition := strings.Contains(str, "Starting the testhub WS server (for testsocket) at 9000")
-	if !condition {
-		t.Errorf("server not starting")
-	}
+	require.Truef(t, condition, "server not starting: %s", str)
 
 	srv.Shutdown(ctx)
 	wg.Wait()
 
 	str = buffer.String()
 	condition = strings.Contains(str, "stopped the server...")
-	if !condition {
-		t.Errorf("servers not stopping")
-	}
+	require.Truef(t, condition, "failed to stop the server: %s", str)
 }

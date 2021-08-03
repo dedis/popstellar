@@ -9,15 +9,16 @@ import (
 	"student20_pop/hub"
 	"sync"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestShutdownServers(t *testing.T) {
 	ctx := context.Background()
 	wg := &sync.WaitGroup{}
+
 	h, err := hub.NewWitnessHub(student20_pop.Suite.Point())
-	if (err != nil) {
-		t.Errorf("could not create witness hub")
-	}
+	require.NoError(t, err)
 
 	witnessSrv := CreateAndServeWS(ctx, hub.WitnessHubType, hub.WitnessSocketType, h, 9000, wg)
 	clientSrv := CreateAndServeWS(ctx, hub.WitnessHubType, hub.ClientSocketType, h, 9000, wg)
@@ -31,7 +32,5 @@ func TestShutdownServers(t *testing.T) {
 
 	str := buffer.String()
 	condition := strings.Contains(str, "shutdown both servers") && !strings.Contains(str, "failed")
-	if !condition {
-		t.Errorf("failed to correctly shutdown both servers")
-	}
+	require.Truef(t, condition, "failed to correctly shutdown both servers: %s", str)
 }
