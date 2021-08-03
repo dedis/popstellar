@@ -64,4 +64,4 @@ The above command would make this module's documentation available at
 
 ### WebSockets
 Maybe we should consider using websocket secure (websocket over TLS) instead of "standards" websocket (over TCP). It
-would prevent from MitM attacks, as we currently don't offer data privacy.
+would protect from MitM attacks, as we currently don't offer data privacy.
