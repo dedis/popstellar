@@ -65,7 +65,7 @@ using a publish/subscribe pattern.
 On a higher level of abstraction, a client may publish messages or subscribe
 for messages on a *channel*. You may think of a channel as a topic which
 stores events that occur over time. For instance, every LAO is denoted by a unique
-channel (also called the root channel) and contains messages about all events
+channel (also called the LAO channel) and contains messages about all events
 that occur within it, for example, the creation of an election, a roll call.
 A channel may have sub channels associated with it. For instance, a
 LAO may have a sub-channel for the elections where all messages associated
@@ -125,8 +125,9 @@ The flowchart below describes the flow of data and how messages are processed
 <p align="center"><i>Credits to the be1-go Spring 2021 team for the flowchart</i></p>
 
 The hubs themselves contain multiple `Channels` with the `Root` channel being
-the default one, representing the LAO itself. Another example of a channel would
-be one for an `Election`.
+the default one, where messages for creation of new LAOs may be published for instance.
+Another example of a channel would be one for an `Election` which would be a sub-channel
+within the LAO channel.
 
 At the moment, the backend **does not** persist any data on disk and maintains
 in-memory data structures for storing messages. This means all messages sent to
