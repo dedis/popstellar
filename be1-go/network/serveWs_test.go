@@ -5,7 +5,7 @@ import (
 	"context"
 	"log"
 	"strings"
-	"student20_pop"
+	"student20_pop/crypto"
 	"student20_pop/hub"
 	"sync"
 	"testing"
@@ -17,7 +17,7 @@ func TestCreateAndServeWS(t *testing.T) {
 	ctx := context.Background()
 	wg := &sync.WaitGroup{}
 
-	h, err := hub.NewWitnessHub(student20_pop.Suite.Point())
+	h, err := hub.NewWitnessHub(crypto.Suite.Point())
 	require.NoErrorf(t, err, "could not create witness hub")
 
 	buffer := bytes.Buffer{}

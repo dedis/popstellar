@@ -9,11 +9,13 @@ import (
 	"time"
 )
 
+// inbox represents an in-memory data store to record incoming messages.
 type inbox struct {
 	mutex sync.RWMutex
 	msgs  map[string]*messageInfo
 }
 
+// createInbox creates an instance of inbox.
 func createInbox() *inbox {
 	return &inbox{
 		mutex: sync.RWMutex{},

@@ -16,6 +16,9 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
+// CreateAndServeWS creates a new http.Server which handles requests on
+// /<hubType>/<socketType> endpoint. It spawns a new go routine which
+// listens for connections.
 func CreateAndServeWS(ctx context.Context, hubType hub.HubType, socketType hub.SocketType, h hub.Hub, port int, wg *sync.WaitGroup) *http.Server {
 	wg.Add(1)
 	srv := &http.Server{Addr: fmt.Sprintf(":%d", port)}
@@ -40,6 +43,7 @@ func CreateAndServeWS(ctx context.Context, hubType hub.HubType, socketType hub.S
 	return srv
 }
 
+// serveWs handles a websocket connection based on the socket type.
 func serveWs(ctx context.Context, socketType hub.SocketType, h hub.Hub, w http.ResponseWriter, r *http.Request, wg *sync.WaitGroup) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {

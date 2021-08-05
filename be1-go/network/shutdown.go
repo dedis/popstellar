@@ -9,6 +9,8 @@ import (
 	"syscall"
 )
 
+// ShutdownServers blocks until the user passes a SIGINT or SIGTERM and then
+// shuts down the http servers.
 func ShutdownServers(ctx context.Context, witnessSrv *http.Server, clientSrv *http.Server) {
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)
@@ -18,6 +20,7 @@ func ShutdownServers(ctx context.Context, witnessSrv *http.Server, clientSrv *ht
 	shutdownServers(ctx, witnessSrv, clientSrv)
 }
 
+// shutdownServers shuts down witnessSrv and clientSrv.
 func shutdownServers(ctx context.Context, witnessSrv *http.Server, clientSrv *http.Server) {
 	err := clientSrv.Shutdown(ctx)
 	if err != nil {

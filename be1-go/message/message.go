@@ -4,12 +4,13 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
-	"student20_pop"
+	"student20_pop/crypto"
 
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 )
 
+// Base64URLBytes denotes a Base64URL encoding
 type Base64URLBytes []byte
 
 type internalMessage struct {
@@ -176,7 +177,7 @@ func (p *PublicKey) UnmarshalJSON(data []byte) error {
 // error in case of failure. If the verification suceeds it tries to unmarshal
 // the RawData field into one of the implementations of `Data`.
 func (m *Message) VerifyAndUnmarshalData() error {
-	err := schnorr.VerifyWithChecks(student20_pop.Suite, m.Sender, m.RawData, m.Signature)
+	err := schnorr.VerifyWithChecks(crypto.Suite, m.Sender, m.RawData, m.Signature)
 	if err != nil {
 		return xerrors.Errorf("error verifying signature: %v", err)
 	}

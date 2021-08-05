@@ -1,3 +1,5 @@
+// Package organizer contains the entry point for starting the organizer
+// server.
 package organizer
 
 import (
@@ -5,13 +7,14 @@ import (
 	"encoding/base64"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
-	"student20_pop"
+	"student20_pop/crypto"
 	"student20_pop/hub"
 	"student20_pop/network"
 	"sync"
 )
 
-// Serve parses the CLI arguments and spawns a hub and a websocket server.
+// Serve parses the CLI arguments and spawns a hub and a websocket server
+// for the organizer.
 func Serve(cliCtx *cli.Context) error {
 
 	// get command line args which specify public key, port to use for clients and witnesses
@@ -31,7 +34,7 @@ func Serve(cliCtx *cli.Context) error {
 	if err != nil {
 		return xerrors.Errorf("failed to base64url decode public key: %v", err)
 	}
-	point := student20_pop.Suite.Point()
+	point := crypto.Suite.Point()
 	err = point.UnmarshalBinary(pkBuf)
 	if err != nil {
 		return xerrors.Errorf("failed to unmarshal public key: %v", err)

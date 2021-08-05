@@ -1,3 +1,5 @@
+// Package witness contains the entry point for starting the witness
+// server.
 package witness
 
 import (
@@ -6,7 +8,7 @@ import (
 	"fmt"
 	"log"
 	"net/url"
-	"student20_pop"
+	"student20_pop/crypto"
 	"student20_pop/hub"
 	"student20_pop/network"
 	"sync"
@@ -16,7 +18,8 @@ import (
 	"golang.org/x/xerrors"
 )
 
-// Serve parses the CLI arguments and spawns a hub and a websocket server.
+// Serve parses the CLI arguments and spawns a hub and a websocket server
+// for the witness.
 func Serve(cliCtx *cli.Context) error {
 
 	// get command line args which specify public key, organizer address, port for organizer,
@@ -36,7 +39,7 @@ func Serve(cliCtx *cli.Context) error {
 		return xerrors.Errorf("failed to base64url decode public key: %v", err)
 	}
 
-	point := student20_pop.Suite.Point()
+	point := crypto.Suite.Point()
 	err = point.UnmarshalBinary(pkBuf)
 	if err != nil {
 		return xerrors.Errorf("failed to unmarshal public key: %v", err)
@@ -55,7 +58,7 @@ func Serve(cliCtx *cli.Context) error {
 	// create wait group which waits for goroutines to finish
 	wg := &sync.WaitGroup{}
 
-	// increment wait group and connect to organizer's witness server
+	// increment wait group and connect to organizer's witness endpoint
 	err = connectToSocket(ctx, hub.OrganizerSocketType, organizerAddress, h, wg)
 	if err != nil {
 		return xerrors.Errorf("failed to connect to organizer: %v", err)
@@ -88,6 +91,8 @@ func Serve(cliCtx *cli.Context) error {
 	return nil
 }
 
+// connectToSocket establishes a connection to another server's witness
+// endpoint.
 func connectToSocket(ctx context.Context, socketType hub.SocketType, address string, h hub.Hub, wg *sync.WaitGroup) error {
 	urlString := fmt.Sprintf("ws://%s/%s/witness/", address, socketType)
 	u, err := url.Parse(urlString)

@@ -6,11 +6,15 @@ import (
 	"sync"
 )
 
+// HubType denotes the type of the hub.
 type HubType string
 
 const (
+	// OrganizerHubType represents the Organizer Hub.
 	OrganizerHubType HubType = "organizer"
-	WitnessHubType   HubType = "witness"
+
+	// WitnessHubType represnets the Witness Hub.
+	WitnessHubType HubType = "witness"
 )
 
 // Hub defines the methods a PoP server must implement to receive messages
@@ -32,11 +36,15 @@ type IncomingMessage struct {
 
 // Channel represents a PoP channel - like a LAO.
 type Channel interface {
+	// Subscribe is used to handle a subscribe message.
 	Subscribe(client *ClientSocket, msg message.Subscribe) error
 
+	// Unsubscribe is used to handle an unsubscribe message.
 	Unsubscribe(client *ClientSocket, msg message.Unsubscribe) error
 
+	// Publish is used to handle a publish message.
 	Publish(msg message.Publish) error
 
+	// Catchup is used to handle a catchup message.
 	Catchup(msg message.Catchup) []message.Message
 }
