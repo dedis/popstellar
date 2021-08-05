@@ -14,10 +14,10 @@ type witnessHub struct {
 }
 
 // NewWitnessHub returns a Witness Hub.
-func NewWitnessHub(public kyber.Point) (Hub, error) {
-	baseHub, err := NewBaseHub(public)
+func NewWitnessHub(public kyber.Point, wg *sync.WaitGroup) (*witnessHub, error) {
+	baseHub, err := NewBaseHub(public, wg)
 	return &witnessHub{
-		baseHub,
+		baseHub: baseHub,
 	}, err
 }
 
@@ -36,7 +36,7 @@ func (w *witnessHub) handleMessageFromWitness(incomingMessage *IncomingMessage) 
 func (w *witnessHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	log.Printf("organizerHub::handleIncomingMessage: %s", incomingMessage.Message)
 
-	switch incomingMessage.Socket.socketType {
+	switch incomingMessage.Socket.Type() {
 	case OrganizerSocketType:
 		w.handleMessageFromOrganizer(incomingMessage)
 		return
@@ -47,13 +47,13 @@ func (w *witnessHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 		w.handleMessageFromWitness(incomingMessage)
 		return
 	}
-
 }
 
-func (w *witnessHub) Start(ctx context.Context, wg *sync.WaitGroup) {
-	wg.Add(1)
-	defer wg.Done()
+func (w *witnessHub) Type() HubType {
+	return WitnessHubType
+}
 
+func (w *witnessHub) Start(ctx context.Context) {
 	log.Printf("started witness...")
 
 	for {

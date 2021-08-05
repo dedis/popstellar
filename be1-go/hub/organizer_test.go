@@ -6,6 +6,7 @@ import (
 	"os"
 	"student20_pop/crypto"
 	"student20_pop/message"
+	"sync"
 	"testing"
 	"time"
 
@@ -190,7 +191,7 @@ func createMessage(data message.Data, publicKey message.PublicKey) message.Messa
 func TestMain(m *testing.M) {
 	organizerKeyPair, _ = generateKeyPair()
 
-	baseHub, err := NewBaseHub(organizerKeyPair.public)
+	baseHub, err := NewBaseHub(organizerKeyPair.public, &sync.WaitGroup{})
 	if err != nil {
 		panic(err)
 	}

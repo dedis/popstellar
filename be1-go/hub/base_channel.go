@@ -15,8 +15,8 @@ import (
 type baseChannel struct {
 	hub *baseHub
 
-	clientsMu sync.RWMutex
-	clients   map[*ClientSocket]struct{}
+	socketsMu sync.RWMutex
+	sockets   map[string]Socket
 
 	inbox *inbox
 
@@ -37,37 +37,37 @@ func createBaseChannel(h *baseHub, channelID string) *baseChannel {
 	return &baseChannel{
 		hub:       h,
 		channelID: channelID,
-		clients:   make(map[*ClientSocket]struct{}),
+		sockets:   make(map[string]Socket),
 		inbox:     createInbox(),
 	}
 }
 
 // Subscribe is used to handle a subscribe message from the client.
-func (c *baseChannel) Subscribe(client *ClientSocket, msg message.Subscribe) error {
+func (c *baseChannel) Subscribe(socket Socket, msg message.Subscribe) error {
 	log.Printf("received a subscribe with id: %d", msg.ID)
-	c.clientsMu.Lock()
-	defer c.clientsMu.Unlock()
+	c.socketsMu.Lock()
+	defer c.socketsMu.Unlock()
 
-	c.clients[client] = struct{}{}
+	c.sockets[socket.ID()] = socket
 
 	return nil
 }
 
 // Unsubscribe is used to handle an unsubscribe message.
-func (c *baseChannel) Unsubscribe(client *ClientSocket, msg message.Unsubscribe) error {
+func (c *baseChannel) Unsubscribe(socketID string, msg message.Unsubscribe) error {
 	log.Printf("received an unsubscribe with id: %d", msg.ID)
 
-	c.clientsMu.Lock()
-	defer c.clientsMu.Unlock()
+	c.socketsMu.Lock()
+	defer c.socketsMu.Unlock()
 
-	if _, ok := c.clients[client]; !ok {
+	if _, ok := c.sockets[socketID]; !ok {
 		return &message.Error{
 			Code:        -2,
 			Description: "client is not subscribed to this channel",
 		}
 	}
 
-	delete(c.clients, client)
+	delete(c.sockets, socketID)
 	return nil
 }
 
@@ -103,8 +103,8 @@ func (c *baseChannel) Catchup(catchup message.Catchup) []message.Message {
 // broadcastToAllClients is a helper message to broadcast a message to all
 // subscribers.
 func (c *baseChannel) broadcastToAllClients(msg message.Message) {
-	c.clientsMu.RLock()
-	defer c.clientsMu.RUnlock()
+	c.socketsMu.RLock()
+	defer c.socketsMu.RUnlock()
 
 	query := message.Query{
 		Broadcast: message.NewBroadcast(c.channelID, &msg),
@@ -115,8 +115,8 @@ func (c *baseChannel) broadcastToAllClients(msg message.Message) {
 		log.Fatalf("failed to marshal broadcast query: %v", err)
 	}
 
-	for client := range c.clients {
-		client.Send(buf)
+	for _, socket := range c.sockets {
+		socket.Send(buf)
 	}
 }
 

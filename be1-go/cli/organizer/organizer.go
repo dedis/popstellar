@@ -54,14 +54,11 @@ func Serve(cliCtx *cli.Context) error {
 	wg := &sync.WaitGroup{}
 
 	// increment wait group and create and serve servers for witnesses and clients
-	clientSrv := network.CreateAndServeWS(ctx, hub.OrganizerHubType, hub.ClientSocketType, h, clientPort, wg)
-	witnessSrv := network.CreateAndServeWS(ctx, hub.OrganizerHubType, hub.WitnessSocketType, h, witnessPort, wg)
+	clientSrv := network.NewServer(ctx, h, hub.ClientSocketType, clientPort, wg)
+	witnessSrv := network.NewServer(ctx, h, hub.WitnessSocketType, witnessPort, wg)
 
 	// increment wait group and launch organizer hub
 	go h.Start(ctx, wg)
-
-	// shut down client server and witness server when ctrl+c received
-	network.ShutdownServers(ctx, witnessSrv, clientSrv)
 
 	// cancel the context
 	cancel()

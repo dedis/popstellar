@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"student20_pop/crypto"
+	"sync"
 
 	"student20_pop/message"
 
@@ -19,11 +20,15 @@ type organizerHub struct {
 }
 
 // NewOrganizerHub returns a Organizer Hub.
-func NewOrganizerHub(public kyber.Point) (Hub, error) {
-	baseHub, err := NewBaseHub(public)
+func NewOrganizerHub(public kyber.Point, wg *sync.WaitGroup) (*organizerHub, error) {
+	baseHub, err := NewBaseHub(public, wg)
 	return &organizerHub{
-		baseHub,
+		baseHub: baseHub,
 	}, err
+}
+
+func (o *organizerHub) Type() HubType {
+	return OrganizerHubType
 }
 
 // laoChannel implements a channel. It is used to handle messages

@@ -29,24 +29,29 @@ const (
 // Socket is an interface which allows reading/writing messages to
 // another client
 type Socket interface {
+	// ID denotes a unique ID of the socket. This allows us to store
+	// sockets in maps
+	ID() string
+
 	// Type denotes the type of socket.
-	Type() string
+	Type() SocketType
 
 	// ReadPump is a lower level method for reading messages from the socket.
 	// TODO: this probably shouldn't be a part of the interface
-	ReadPump()
+	ReadPump(context.Context)
 
 	// WritePump is a lower level method for writing messages to the socket.
 	// TODO: this probably shouldn't be a part of the interface
-	WritePump()
+	WritePump(context.Context)
 
 	// Send is used to send a message to the client.
 	Send(msg []byte)
 
-	// SendError is used to send an error to the client.
-	// Please refer to the Protocol Specification document for information
-	// on the error codes.
-	SendError(id int, err error)
+	// SendError is used to send an error to the client.  Please refer to
+	// the Protocol Specification document for information on the error
+	// codes. id is a pointer type because an error might be for a
+	// message which does not have an ID.
+	SendError(id *int, err error)
 
 	// SendResult is used to send a result message to the client.
 	SendResult(id int, res message.Result)
@@ -54,15 +59,24 @@ type Socket interface {
 
 // baseSocket represents a socket connected to the server.
 type baseSocket struct {
+	id string
+
 	socketType SocketType
 
-	hub Hub
+	receiver chan<- IncomingMessage
+
+	// Used to remove sockets which close unexpectedly.
+	closedSockets chan<- string
 
 	conn *websocket.Conn
 
 	send chan []byte
 
 	Wait *sync.WaitGroup
+}
+
+func (s *baseSocket) ID() string {
+	return s.id
 }
 
 func (s *baseSocket) Type() SocketType {
@@ -73,6 +87,7 @@ func (s *baseSocket) Type() SocketType {
 func (s *baseSocket) ReadPump(ctx context.Context) {
 	defer func() {
 		s.conn.Close()
+		s.closedSockets <- s.ID()
 		s.Wait.Done()
 	}()
 
@@ -83,6 +98,7 @@ func (s *baseSocket) ReadPump(ctx context.Context) {
 	s.conn.SetReadLimit(maxMessageSize)
 	s.conn.SetReadDeadline(time.Now().Add(pongWait))
 	s.conn.SetPongHandler(func(string) error { s.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+
 	for {
 		_, message, err := s.conn.ReadMessage()
 		if err != nil {
@@ -94,15 +110,12 @@ func (s *baseSocket) ReadPump(ctx context.Context) {
 			break
 		}
 
-		// TODO: validate message using JSON schema and unmarshal it to generic
-		// message at this stage
-
 		msg := IncomingMessage{
 			Socket:  s,
 			Message: message,
 		}
 
-		s.hub.Recv(msg)
+		s.receiver <- msg
 
 		if ctx.Err() != nil {
 			log.Println("closing the read pump")
@@ -117,6 +130,7 @@ func (s *baseSocket) WritePump(ctx context.Context) {
 	defer func() {
 		ticker.Stop()
 		s.conn.Close()
+		s.closedSockets <- s.ID()
 		s.Wait.Done()
 	}()
 

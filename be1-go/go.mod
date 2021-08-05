@@ -5,6 +5,7 @@ go 1.16
 require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/mattn/go-sqlite3 v1.14.6
+	github.com/rs/xid v1.3.0
 	github.com/santhosh-tekuri/jsonschema/v3 v3.0.1
 	github.com/stretchr/testify v1.7.0
 	github.com/urfave/cli/v2 v2.3.0

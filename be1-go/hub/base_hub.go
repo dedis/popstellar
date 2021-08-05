@@ -25,13 +25,17 @@ type baseHub struct {
 	sync.RWMutex
 	channelByID map[string]Channel
 
+	closedSockets chan string
+
 	public kyber.Point
 
 	schemaValidator *validation.SchemaValidator
+
+	wg *sync.WaitGroup
 }
 
 // NewBaseHub returns a Base Hub.
-func NewBaseHub(public kyber.Point) (*baseHub, error) {
+func NewBaseHub(public kyber.Point, wg *sync.WaitGroup) (*baseHub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
@@ -41,37 +45,29 @@ func NewBaseHub(public kyber.Point) (*baseHub, error) {
 	return &baseHub{
 		messageChan:     make(chan IncomingMessage),
 		channelByID:     make(map[string]Channel),
+		closedSockets:   make(chan string),
 		public:          public,
 		schemaValidator: schemaValidator,
+		wg:              wg,
 	}, nil
 }
 
-// RemoveClient removes the client from this hub.
-func (h *baseHub) RemoveClientSocket(client *ClientSocket) {
-	h.RLock()
-	defer h.RUnlock()
-
-	for _, channel := range h.channelByID {
-		channel.Unsubscribe(client, message.Unsubscribe{})
-	}
-}
-
-// Recv accepts a message and enques it for processing in the hub.
-func (h *baseHub) Recv(msg IncomingMessage) {
-	log.Printf("Hub::Recv")
-	h.messageChan <- msg
-}
-
-func (h *baseHub) Start(ctx context.Context, wg *sync.WaitGroup) {
-	wg.Add(1)
-	defer wg.Done()
+func (h *baseHub) Start(ctx context.Context) {
+	h.wg.Add(1)
+	defer h.wg.Done()
 
 	log.Printf("started hub...")
-
 	for {
 		select {
 		case incomingMessage := <-h.messageChan:
 			h.handleIncomingMessage(&incomingMessage)
+		case id := <-h.closedSockets:
+			h.RLock()
+			for _, channel := range h.channelByID {
+				// dummy Unsubscribe message because it's only used for logging...
+				channel.Unsubscribe(id, message.Unsubscribe{})
+			}
+			h.RUnlock()
 		case <-ctx.Done():
 			log.Println("closing the hub...")
 			return
@@ -79,15 +75,23 @@ func (h *baseHub) Start(ctx context.Context, wg *sync.WaitGroup) {
 	}
 }
 
+func (h *baseHub) Receiver() chan<- IncomingMessage {
+	return h.messageChan
+}
+
+func (h *baseHub) OnSocketClose() chan<- string {
+	return h.closedSockets
+}
+
 // handleRootChannelMesssage handles an incoming message on the root channel.
-func (h *baseHub) handleRootChannelMesssage(id int, client *ClientSocket, query *message.Query) {
+func (h *baseHub) handleRootChannelMesssage(id int, socket Socket, query *message.Query) {
 	if query.Publish == nil {
 		err := &message.Error{
 			Code:        -4,
 			Description: "only publish is allowed on /root",
 		}
 
-		client.SendError(&id, err)
+		socket.SendError(&id, err)
 		return
 	}
 
@@ -98,7 +102,7 @@ func (h *baseHub) handleRootChannelMesssage(id int, client *ClientSocket, query 
 	err := h.schemaValidator.VerifyJson(msg.RawData, validation.Data)
 	if err != nil {
 		err = message.NewError("failed to validate the data", err)
-		client.SendError(&id, err)
+		socket.SendError(&id, err)
 		return
 	}
 
@@ -110,7 +114,7 @@ func (h *baseHub) handleRootChannelMesssage(id int, client *ClientSocket, query 
 			Code:        -4,
 			Description: fmt.Sprintf("failed to verify and unmarshal data: %v", err),
 		}
-		client.SendError(&id, err)
+		socket.SendError(&id, err)
 		return
 	}
 
@@ -120,12 +124,12 @@ func (h *baseHub) handleRootChannelMesssage(id int, client *ClientSocket, query 
 		if err != nil {
 			err = message.NewError("failed to create lao", err)
 
-			client.SendError(&id, err)
+			socket.SendError(&id, err)
 			return
 		}
 	} else {
 		log.Printf("invalid method: %s", query.GetMethod())
-		client.SendError(&id, &message.Error{
+		socket.SendError(&id, &message.Error{
 			Code:        -1,
 			Description: "you may only invoke lao/create on /root",
 		})
@@ -136,15 +140,12 @@ func (h *baseHub) handleRootChannelMesssage(id int, client *ClientSocket, query 
 	result := message.Result{General: &status}
 
 	log.Printf("sending result: %+v", result)
-	client.SendResult(id, result)
+	socket.SendResult(id, result)
 }
 
 // handleMessageFromClient handles an incoming message from an end user.
 func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
-	client := ClientSocket{
-		incomingMessage.Socket,
-	}
-
+	socket := incomingMessage.Socket
 	byteMessage := incomingMessage.Message
 
 	// Check if the GenericMessage has a field "id"
@@ -155,7 +156,7 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 			Code:        -4,
 			Description: "The message does not have a valid `id` field",
 		}
-		client.SendError(nil, err)
+		socket.SendError(nil, err)
 		return
 	}
 
@@ -163,7 +164,7 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 	err := h.schemaValidator.VerifyJson(byteMessage, validation.GenericMessage)
 	if err != nil {
 		err = message.NewError("failed to verify incoming message", err)
-		client.SendError(&id, err)
+		socket.SendError(&id, err)
 		return
 	}
 
@@ -176,7 +177,7 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 			Description: fmt.Sprintf("failed to unmarshal incoming message: %v", err),
 		}
 
-		client.SendError(&id, err)
+		socket.SendError(&id, err)
 		return
 	}
 
@@ -190,13 +191,13 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 	log.Printf("channel: %s", channelID)
 
 	if channelID == "/root" {
-		h.handleRootChannelMesssage(id, &client, query)
+		h.handleRootChannelMesssage(id, socket, query)
 		return
 	}
 
 	if channelID[:6] != rootPrefix {
 		log.Printf("channel id must begin with /root/")
-		client.SendError(&id, &message.Error{
+		socket.SendError(&id, &message.Error{
 			Code:        -2,
 			Description: "channel id must begin with /root/",
 		})
@@ -208,7 +209,7 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 	channel, ok := h.channelByID[channelID]
 	if !ok {
 		log.Printf("invalid channel id: %s", channelID)
-		client.SendError(&id, &message.Error{
+		socket.SendError(&id, &message.Error{
 			Code:        -2,
 			Description: fmt.Sprintf("channel with id %s does not exist", channelID),
 		})
@@ -225,9 +226,9 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 	// TODO: use constants
 	switch method {
 	case "subscribe":
-		err = channel.Subscribe(&client, *query.Subscribe)
+		err = channel.Subscribe(socket, *query.Subscribe)
 	case "unsubscribe":
-		err = channel.Unsubscribe(&client, *query.Unsubscribe)
+		err = channel.Unsubscribe(socket.ID(), *query.Unsubscribe)
 	case "publish":
 		err = channel.Publish(*query.Publish)
 	case "message":
@@ -239,7 +240,7 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 
 	if err != nil {
 		err = message.NewError("failed to process query", err)
-		client.SendError(&id, err)
+		socket.SendError(&id, err)
 		return
 	}
 
@@ -252,7 +253,7 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 		result.General = &general
 	}
 
-	client.SendResult(id, result)
+	socket.SendResult(id, result)
 }
 
 // handleMessageFromWitness handles an incoming message from a witness server.
@@ -265,16 +266,13 @@ func (h *baseHub) handleMessageFromWitness(incomingMessage *IncomingMessage) {
 func (h *baseHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	log.Printf("Hub::handleMessageFromClient: %s", incomingMessage.Message)
 
-	switch incomingMessage.Socket.socketType {
+	switch incomingMessage.Socket.Type() {
 	case ClientSocketType:
 		h.handleMessageFromClient(incomingMessage)
-		return
 	case WitnessSocketType:
 		h.handleMessageFromWitness(incomingMessage)
-		return
 	default:
 		log.Printf("error: invalid socket type")
-		return
 	}
 
 }
