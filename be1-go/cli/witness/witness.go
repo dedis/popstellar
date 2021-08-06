@@ -45,42 +45,44 @@ func Serve(cliCtx *cli.Context) error {
 		return xerrors.Errorf("failed to unmarshal public key: %v", err)
 	}
 
+	// create wait group which waits for goroutines to finish
+	wg := &sync.WaitGroup{}
+
 	// create witness hub
-	h, err := hub.NewWitnessHub(point)
+	h, err := hub.NewWitnessHub(point, wg)
 	if err != nil {
 		return xerrors.Errorf("failed create the witness hub: %v", err)
 	}
-
 	// make context release resources associated with it when all operations are done
 	ctx, cancel := context.WithCancel(cliCtx.Context)
 	defer cancel()
 
-	// create wait group which waits for goroutines to finish
-	wg := &sync.WaitGroup{}
-
 	// increment wait group and connect to organizer's witness endpoint
-	err = connectToSocket(ctx, hub.OrganizerSocketType, organizerAddress, h, wg)
+	err = connectToWitnessSocket(ctx, hub.OrganizerHubType, organizerAddress, h, wg)
 	if err != nil {
 		return xerrors.Errorf("failed to connect to organizer: %v", err)
 	}
 
 	// increment wait group and connect to other witnesses
-	for _, otherWit := range otherWitness {
-		err = connectToSocket(ctx, hub.WitnessSocketType, otherWit, h, wg)
+	for _, witness := range otherWitness {
+		err = connectToWitnessSocket(ctx, hub.WitnessHubType, witness, h, wg)
 		if err != nil {
 			return xerrors.Errorf("failed to connect to witness: %v", err)
 		}
 	}
 
 	// increment wait group and create and serve servers for witnesses and clients
-	clientSrv := network.CreateAndServeWS(ctx, hub.WitnessHubType, hub.ClientSocketType, h, clientPort, wg)
-	witnessSrv := network.CreateAndServeWS(ctx, hub.WitnessHubType, hub.WitnessSocketType, h, witnessPort, wg)
+	clientSrv := network.NewServer(ctx, h, clientPort, hub.ClientSocketType, wg)
+	clientSrv.Start()
+
+	witnessSrv := network.NewServer(ctx, h, witnessPort, hub.WitnessSocketType, wg)
+	witnessSrv.Start()
 
 	// increment wait group and launch organizer hub
-	go h.Start(ctx, wg)
+	go h.Start(ctx)
 
 	// shut down client server and witness server when ctrl+c received
-	network.ShutdownServers(ctx, clientSrv, witnessSrv)
+	network.WaitAndShutdownServers(clientSrv, witnessSrv)
 
 	// cancel the context
 	cancel()
@@ -93,8 +95,8 @@ func Serve(cliCtx *cli.Context) error {
 
 // connectToSocket establishes a connection to another server's witness
 // endpoint.
-func connectToSocket(ctx context.Context, socketType hub.SocketType, address string, h hub.Hub, wg *sync.WaitGroup) error {
-	urlString := fmt.Sprintf("ws://%s/%s/witness/", address, socketType)
+func connectToWitnessSocket(ctx context.Context, otherHubType hub.HubType, address string, h hub.Hub, wg *sync.WaitGroup) error {
+	urlString := fmt.Sprintf("ws://%s/%s/witness/", address, otherHubType)
 	u, err := url.Parse(urlString)
 	if err != nil {
 		return xerrors.Errorf("failed to parse connection url %s %v", urlString, err)
@@ -102,18 +104,18 @@ func connectToSocket(ctx context.Context, socketType hub.SocketType, address str
 
 	ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
-		return xerrors.Errorf("failed to dial %v", err)
+		return xerrors.Errorf("failed to dial: %v", err)
 	}
 
-	log.Printf("connected to %s at %s", socketType, urlString)
+	log.Printf("connected to %s at %s", otherHubType, urlString)
 
-	switch socketType {
-	case hub.OrganizerSocketType:
-		organizerSocket := hub.NewOrganizerSocket(h, ws, wg)
+	switch otherHubType {
+	case hub.OrganizerHubType:
+		organizerSocket := hub.NewOrganizerSocket(h.Receiver(), h.OnSocketClose(), ws, wg)
 		go organizerSocket.WritePump(ctx)
 		go organizerSocket.ReadPump(ctx)
-	case hub.WitnessSocketType:
-		witnessSocket := hub.NewWitnessSocket(h, ws, wg)
+	case hub.WitnessHubType:
+		witnessSocket := hub.NewWitnessSocket(h.Receiver(), h.OnSocketClose(), ws, wg)
 		go witnessSocket.WritePump(ctx)
 		go witnessSocket.ReadPump(ctx)
 	}

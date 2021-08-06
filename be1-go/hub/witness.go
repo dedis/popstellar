@@ -3,6 +3,7 @@ package hub
 import (
 	"context"
 	"log"
+	"student20_pop/message"
 	"sync"
 
 	"go.dedis.ch/kyber/v3"
@@ -55,11 +56,20 @@ func (w *witnessHub) Type() HubType {
 
 func (w *witnessHub) Start(ctx context.Context) {
 	log.Printf("started witness...")
+	w.wg.Add(1)
+	defer w.wg.Done()
 
 	for {
 		select {
 		case incomingMessage := <-w.messageChan:
 			w.handleIncomingMessage(&incomingMessage)
+		case id := <-w.closedSockets:
+			w.RLock()
+			for _, channel := range w.channelByID {
+				// dummy Unsubscribe message because it's only used for logging...
+				channel.Unsubscribe(id, message.Unsubscribe{})
+			}
+			w.RUnlock()
 		case <-ctx.Done():
 			log.Println("closing the hub...")
 			return

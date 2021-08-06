@@ -1,10 +1,7 @@
 package network
 
 import (
-	"bytes"
 	"context"
-	"log"
-	"strings"
 	"student20_pop/crypto"
 	"student20_pop/hub"
 	"sync"
@@ -17,20 +14,24 @@ func TestShutdownServers(t *testing.T) {
 	ctx := context.Background()
 	wg := &sync.WaitGroup{}
 
-	h, err := hub.NewWitnessHub(crypto.Suite.Point())
+	h, err := hub.NewWitnessHub(crypto.Suite.Point(), wg)
 	require.NoError(t, err)
 
-	witnessSrv := CreateAndServeWS(ctx, hub.WitnessHubType, hub.WitnessSocketType, h, 9000, wg)
-	clientSrv := CreateAndServeWS(ctx, hub.WitnessHubType, hub.ClientSocketType, h, 9000, wg)
+	// Start the servers up
+	witnessSrv := NewServer(ctx, h, 9000, hub.WitnessSocketType, wg)
+	witnessSrv.Start()
+	<-witnessSrv.Started
 
-	buffer := bytes.Buffer{}
-	log.SetOutput(&buffer)
+	clientSrv := NewServer(ctx, h, 9001, hub.ClientSocketType, wg)
+	clientSrv.Start()
+	<-clientSrv.Started
 
-	shutdownServers(ctx, witnessSrv, clientSrv)
+	// Shut them down
+	witnessSrv.Shutdown()
+	<-witnessSrv.Stopped
+
+	clientSrv.Shutdown()
+	<-clientSrv.Stopped
 
 	wg.Wait()
-
-	str := buffer.String()
-	condition := strings.Contains(str, "shutdown both servers") && !strings.Contains(str, "failed")
-	require.Truef(t, condition, "failed to correctly shutdown both servers: %s", str)
 }

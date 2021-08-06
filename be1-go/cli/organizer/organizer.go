@@ -40,8 +40,11 @@ func Serve(cliCtx *cli.Context) error {
 		return xerrors.Errorf("failed to unmarshal public key: %v", err)
 	}
 
+	// create wait group which waits for goroutines to finish
+	wg := &sync.WaitGroup{}
+
 	// create organizer hub
-	h, err := hub.NewOrganizerHub(point)
+	h, err := hub.NewOrganizerHub(point, wg)
 	if err != nil {
 		return xerrors.Errorf("failed create the organizer hub: %v", err)
 	}
@@ -50,15 +53,17 @@ func Serve(cliCtx *cli.Context) error {
 	ctx, cancel := context.WithCancel(cliCtx.Context)
 	defer cancel()
 
-	// create wait group which waits for goroutines to finish
-	wg := &sync.WaitGroup{}
-
 	// increment wait group and create and serve servers for witnesses and clients
-	clientSrv := network.NewServer(ctx, h, hub.ClientSocketType, clientPort, wg)
-	witnessSrv := network.NewServer(ctx, h, hub.WitnessSocketType, witnessPort, wg)
+	clientSrv := network.NewServer(ctx, h, clientPort, hub.ClientSocketType, wg)
+	clientSrv.Start()
 
-	// increment wait group and launch organizer hub
-	go h.Start(ctx, wg)
+	witnessSrv := network.NewServer(ctx, h, witnessPort, hub.WitnessSocketType, wg)
+	witnessSrv.Start()
+
+	// start the processing loop
+	go h.Start(ctx)
+
+	network.WaitAndShutdownServers(clientSrv, witnessSrv)
 
 	// cancel the context
 	cancel()

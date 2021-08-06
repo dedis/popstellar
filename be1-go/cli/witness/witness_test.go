@@ -1,45 +1,45 @@
 package witness
 
 import (
-	"bytes"
 	"context"
-	"log"
-	"strings"
 	"student20_pop/crypto"
 	"student20_pop/hub"
 	"student20_pop/network"
 	"sync"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
-func TestConnectToSocket(t *testing.T) {
-	buffer := bytes.Buffer{}
-	log.SetOutput(&buffer)
-
+func TestConnectToWitnessSocket(t *testing.T) {
 	parent := context.Background()
 	ctx, cancel := context.WithCancel(parent)
 	wg := &sync.WaitGroup{}
-	h, err := hub.NewWitnessHub(crypto.Suite.Point())
-	if err != nil {
-		t.Errorf("unable to create witness hub")
-	}
 
-	witnessSrv := network.CreateAndServeWS(ctx, hub.WitnessHubType, hub.WitnessSocketType, h, 9000, wg)
+	oh, err := hub.NewOrganizerHub(crypto.Suite.Point(), wg)
+	require.NoError(t, err)
+	go oh.Start(ctx)
 
-	err = connectToSocket(ctx, hub.WitnessSocketType, "localhost:9000", h, wg)
-	if err != nil {
-		t.Errorf("unable to connect to server")
-	}
+	witnessSrv := network.NewServer(ctx, oh, 9000, hub.WitnessSocketType, wg)
+	witnessSrv.Start()
+	<-witnessSrv.Started
 
-	witnessSrv.Shutdown(ctx)
+	wg2 := &sync.WaitGroup{}
+	whCtx, whCancel := context.WithCancel(parent)
+	wh, err := hub.NewWitnessHub(crypto.Suite.Point(), wg2)
+	require.NoError(t, err)
+	go wh.Start(whCtx)
+
+	err = connectToWitnessSocket(ctx, hub.OrganizerHubType, "localhost:9000", wh, wg2)
+	require.NoError(t, err)
+
+	witnessSrv.Shutdown()
+	<-witnessSrv.Stopped
 
 	cancel()
 	wg.Wait()
 
-	str := buffer.String()
-	condition := strings.Contains(str, "connected to witness at ws://localhost:9000/witness/witness/")
-	condition = condition && strings.Contains(str, "listening for messages from witness")
-	if !condition {
-		t.Errorf("unable to connect")
-	}
+	whCancel()
+	wg2.Wait()
+
 }

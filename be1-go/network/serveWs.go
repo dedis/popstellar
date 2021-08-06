@@ -25,6 +25,10 @@ type Server struct {
 	st  hub.SocketType
 	srv *http.Server
 
+	// used in tests
+	Started chan struct{}
+	Stopped chan struct{}
+
 	wg *sync.WaitGroup
 }
 
@@ -33,13 +37,15 @@ type Server struct {
 // start listening for connections.
 func NewServer(ctx context.Context, h hub.Hub, port int, st hub.SocketType, wg *sync.WaitGroup) *Server {
 	server := &Server{
-		ctx: ctx,
-		h:   h,
-		st:  st,
-		wg:  wg,
+		ctx:     ctx,
+		h:       h,
+		st:      st,
+		wg:      wg,
+		Started: make(chan struct{}, 1),
+		Stopped: make(chan struct{}, 1),
 	}
 
-	path := fmt.Sprintf("/%s/%s", h.Type(), st)
+	path := fmt.Sprintf("/%s/%s/", h.Type(), st)
 	mux := http.NewServeMux()
 	mux.Handle(path, server)
 
@@ -58,11 +64,14 @@ func (s *Server) Start() {
 	go func() {
 		defer s.wg.Done()
 
+		log.Printf("starting to listen at: %s", s.srv.Addr)
+		s.Started <- struct{}{}
 		err := s.srv.ListenAndServe()
 		if err != nil && err != http.ErrServerClosed {
 			log.Fatalf("failed to start the server: %v", err)
 		}
 
+		s.Stopped <- struct{}{}
 		log.Println("stopped the server...")
 	}()
 }
@@ -87,4 +96,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		go witness.ReadPump(s.ctx)
 		go witness.WritePump(s.ctx)
 	}
+}
+
+func (s *Server) Shutdown() error {
+	return s.srv.Shutdown(s.ctx)
 }

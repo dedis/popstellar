@@ -87,8 +87,13 @@ func (s *baseSocket) Type() SocketType {
 func (s *baseSocket) ReadPump(ctx context.Context) {
 	defer func() {
 		s.conn.Close()
-		s.closedSockets <- s.ID()
 		s.Wait.Done()
+
+		// it's safe to send a message on s.closedSockets after calling s.Wait.Done()
+		// If the hub is still open, i.e. the context has not been cancelled, then
+		// it will be processed an the client will be unsubscribed. Otherwise, since
+		// the hub is being shut down, this won't block because the process will exit.
+		s.closedSockets <- s.ID()
 	}()
 
 	s.Wait.Add(1)
@@ -130,8 +135,13 @@ func (s *baseSocket) WritePump(ctx context.Context) {
 	defer func() {
 		ticker.Stop()
 		s.conn.Close()
-		s.closedSockets <- s.ID()
 		s.Wait.Done()
+
+		// it's safe to send a message on s.closedSockets after calling s.Wait.Done()
+		// If the hub is still open, i.e. the context has not been cancelled, then
+		// it will be processed an the client will be unsubscribed. Otherwise, since
+		// the hub is being shut down, this won't block because the process will exit.
+		s.closedSockets <- s.ID()
 	}()
 
 	s.Wait.Add(1)
