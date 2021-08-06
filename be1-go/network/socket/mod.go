@@ -37,11 +37,9 @@ type Socket interface {
 	Type() SocketType
 
 	// ReadPump is a lower level method for reading messages from the socket.
-	// TODO: this probably shouldn't be a part of the interface
 	ReadPump(context.Context)
 
 	// WritePump is a lower level method for writing messages to the socket.
-	// TODO: this probably shouldn't be a part of the interface
 	WritePump(context.Context)
 
 	// Send is used to send a message to the client.
