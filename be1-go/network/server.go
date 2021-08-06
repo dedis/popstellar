@@ -3,11 +3,13 @@ package network
 import (
 	"context"
 	"fmt"
-	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
 	"student20_pop/hub"
+	"student20_pop/network/socket"
 	"sync"
+
+	"github.com/gorilla/websocket"
 )
 
 var upgrader = websocket.Upgrader{
@@ -22,7 +24,7 @@ type Server struct {
 	ctx context.Context
 
 	h   hub.Hub
-	st  hub.SocketType
+	st  socket.SocketType
 	srv *http.Server
 
 	// used in tests
@@ -35,7 +37,7 @@ type Server struct {
 // NewServer creates a new Server which is used to handle requests for
 // /<hubType>/<socketType> endpoint. Please use the Start() method to
 // start listening for connections.
-func NewServer(ctx context.Context, h hub.Hub, port int, st hub.SocketType, wg *sync.WaitGroup) *Server {
+func NewServer(ctx context.Context, h hub.Hub, port int, st socket.SocketType, wg *sync.WaitGroup) *Server {
 	server := &Server{
 		ctx:     ctx,
 		h:       h,
@@ -85,13 +87,13 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	switch s.st {
-	case hub.ClientSocketType:
-		client := hub.NewClientSocket(s.h.Receiver(), s.h.OnSocketClose(), conn, s.wg)
+	case socket.ClientSocketType:
+		client := socket.NewClientSocket(s.h.Receiver(), s.h.OnSocketClose(), conn, s.wg)
 
 		go client.ReadPump(s.ctx)
 		go client.WritePump(s.ctx)
-	case hub.WitnessSocketType:
-		witness := hub.NewWitnessSocket(s.h.Receiver(), s.h.OnSocketClose(), conn, s.wg)
+	case socket.WitnessSocketType:
+		witness := socket.NewWitnessSocket(s.h.Receiver(), s.h.OnSocketClose(), conn, s.wg)
 
 		go witness.ReadPump(s.ctx)
 		go witness.WritePump(s.ctx)

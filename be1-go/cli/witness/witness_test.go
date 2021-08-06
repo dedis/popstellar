@@ -5,6 +5,7 @@ import (
 	"student20_pop/crypto"
 	"student20_pop/hub"
 	"student20_pop/network"
+	"student20_pop/network/socket"
 	"sync"
 	"testing"
 
@@ -20,7 +21,7 @@ func TestConnectToWitnessSocket(t *testing.T) {
 	require.NoError(t, err)
 	go oh.Start(ctx)
 
-	witnessSrv := network.NewServer(ctx, oh, 9000, hub.WitnessSocketType, wg)
+	witnessSrv := network.NewServer(ctx, oh, 9000, socket.WitnessSocketType, wg)
 	witnessSrv.Start()
 	<-witnessSrv.Started
 

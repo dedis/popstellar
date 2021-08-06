@@ -5,12 +5,14 @@ package organizer
 import (
 	"context"
 	"encoding/base64"
-	"github.com/urfave/cli/v2"
-	"golang.org/x/xerrors"
 	"student20_pop/crypto"
 	"student20_pop/hub"
 	"student20_pop/network"
+	"student20_pop/network/socket"
 	"sync"
+
+	"github.com/urfave/cli/v2"
+	"golang.org/x/xerrors"
 )
 
 // Serve parses the CLI arguments and spawns a hub and a websocket server
@@ -54,10 +56,10 @@ func Serve(cliCtx *cli.Context) error {
 	defer cancel()
 
 	// increment wait group and create and serve servers for witnesses and clients
-	clientSrv := network.NewServer(ctx, h, clientPort, hub.ClientSocketType, wg)
+	clientSrv := network.NewServer(ctx, h, clientPort, socket.ClientSocketType, wg)
 	clientSrv.Start()
 
-	witnessSrv := network.NewServer(ctx, h, witnessPort, hub.WitnessSocketType, wg)
+	witnessSrv := network.NewServer(ctx, h, witnessPort, socket.WitnessSocketType, wg)
 	witnessSrv.Start()
 
 	// start the processing loop

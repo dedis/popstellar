@@ -6,6 +6,7 @@ import (
 	"log"
 	"sort"
 	"student20_pop/message"
+	"student20_pop/network/socket"
 	"student20_pop/validation"
 	"sync"
 )
@@ -16,7 +17,7 @@ type baseChannel struct {
 	hub *baseHub
 
 	socketsMu sync.RWMutex
-	sockets   map[string]Socket
+	sockets   map[string]socket.Socket
 
 	inbox *inbox
 
@@ -37,13 +38,13 @@ func createBaseChannel(h *baseHub, channelID string) *baseChannel {
 	return &baseChannel{
 		hub:       h,
 		channelID: channelID,
-		sockets:   make(map[string]Socket),
+		sockets:   make(map[string]socket.Socket),
 		inbox:     createInbox(),
 	}
 }
 
 // Subscribe is used to handle a subscribe message from the client.
-func (c *baseChannel) Subscribe(socket Socket, msg message.Subscribe) error {
+func (c *baseChannel) Subscribe(socket socket.Socket, msg message.Subscribe) error {
 	log.Printf("received a subscribe with id: %d", msg.ID)
 	c.socketsMu.Lock()
 	defer c.socketsMu.Unlock()

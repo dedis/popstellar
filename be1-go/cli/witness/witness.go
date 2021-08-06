@@ -11,6 +11,7 @@ import (
 	"student20_pop/crypto"
 	"student20_pop/hub"
 	"student20_pop/network"
+	"student20_pop/network/socket"
 	"sync"
 
 	"github.com/gorilla/websocket"
@@ -72,10 +73,10 @@ func Serve(cliCtx *cli.Context) error {
 	}
 
 	// increment wait group and create and serve servers for witnesses and clients
-	clientSrv := network.NewServer(ctx, h, clientPort, hub.ClientSocketType, wg)
+	clientSrv := network.NewServer(ctx, h, clientPort, socket.ClientSocketType, wg)
 	clientSrv.Start()
 
-	witnessSrv := network.NewServer(ctx, h, witnessPort, hub.WitnessSocketType, wg)
+	witnessSrv := network.NewServer(ctx, h, witnessPort, socket.WitnessSocketType, wg)
 	witnessSrv.Start()
 
 	// increment wait group and launch organizer hub
@@ -111,11 +112,11 @@ func connectToWitnessSocket(ctx context.Context, otherHubType hub.HubType, addre
 
 	switch otherHubType {
 	case hub.OrganizerHubType:
-		organizerSocket := hub.NewOrganizerSocket(h.Receiver(), h.OnSocketClose(), ws, wg)
+		organizerSocket := socket.NewOrganizerSocket(h.Receiver(), h.OnSocketClose(), ws, wg)
 		go organizerSocket.WritePump(ctx)
 		go organizerSocket.ReadPump(ctx)
 	case hub.WitnessHubType:
-		witnessSocket := hub.NewWitnessSocket(h.Receiver(), h.OnSocketClose(), ws, wg)
+		witnessSocket := socket.NewWitnessSocket(h.Receiver(), h.OnSocketClose(), ws, wg)
 		go witnessSocket.WritePump(ctx)
 		go witnessSocket.ReadPump(ctx)
 	}

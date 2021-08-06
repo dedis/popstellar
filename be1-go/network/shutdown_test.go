@@ -4,6 +4,7 @@ import (
 	"context"
 	"student20_pop/crypto"
 	"student20_pop/hub"
+	"student20_pop/network/socket"
 	"sync"
 	"testing"
 
@@ -18,11 +19,11 @@ func TestShutdownServers(t *testing.T) {
 	require.NoError(t, err)
 
 	// Start the servers up
-	witnessSrv := NewServer(ctx, h, 9000, hub.WitnessSocketType, wg)
+	witnessSrv := NewServer(ctx, h, 9000, socket.WitnessSocketType, wg)
 	witnessSrv.Start()
 	<-witnessSrv.Started
 
-	clientSrv := NewServer(ctx, h, 9001, hub.ClientSocketType, wg)
+	clientSrv := NewServer(ctx, h, 9001, socket.ClientSocketType, wg)
 	clientSrv.Start()
 	<-clientSrv.Started
 

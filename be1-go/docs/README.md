@@ -43,6 +43,7 @@ The project is organized into different modules as follows
 ├── hub                 # logic for organizer/witness
 ├── message             # message types and marshaling/unmarshaling logic
 ├── network             # module to set up Websocket connections
+│   └── socket          # module to send/receive data over the wire
 ├── test                # sample test data
 └── validation          # module to validate incoming/outgoing messages
 ```
@@ -82,7 +83,7 @@ repository are **always** the source of truth and are more up to date than the G
 
 ##### Getting messages over the wire
 
-The `Socket` interface (refer `hub/socket.go`) describes the methods used for
+The `Socket` interface (refer `network/socket/mod.go`) describes the methods used for
 reading or sending data/error messages from/to the end user.
 
 Depending on the type of end user, a `Socket` has three concrete implementations:
@@ -95,8 +96,8 @@ The `ReadPump` and `WritePump` are low-level methods which allow
 reading/writing data over the wire. Most users would instead use the `Send(msg []byte)`,
 `SendError(id int, err error)` and `SendResult(id int, res message.Result)` APIs.
 
-Each incoming message read by `ReadPump` is passed to the `Hub interface`'s
-(refer hub/hub.go) `Recv` method for processing.
+Each incoming message read by `ReadPump` is passed to the Hub for processing. Refer to
+the channel returned by `Receiver()` in the `Hub` interface.
 
 We use [github.com/gorilla/websocket](github.com/gorilla/websocket) to manage websocket
 connections.

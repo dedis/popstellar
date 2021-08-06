@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"student20_pop/message"
+	"student20_pop/network/socket"
 	"sync"
 
 	"go.dedis.ch/kyber/v3"
@@ -22,29 +23,29 @@ func NewWitnessHub(public kyber.Point, wg *sync.WaitGroup) (*witnessHub, error) 
 	}, err
 }
 
-func (w *witnessHub) handleMessageFromOrganizer(incomingMessage *IncomingMessage) {
+func (w *witnessHub) handleMessageFromOrganizer(incomingMessage *socket.IncomingMessage) {
 	//TODO
 }
 
-func (w *witnessHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
+func (w *witnessHub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) {
 	//TODO
 }
 
-func (w *witnessHub) handleMessageFromWitness(incomingMessage *IncomingMessage) {
+func (w *witnessHub) handleMessageFromWitness(incomingMessage *socket.IncomingMessage) {
 	//TODO
 }
 
-func (w *witnessHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
+func (w *witnessHub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) {
 	log.Printf("organizerHub::handleIncomingMessage: %s", incomingMessage.Message)
 
 	switch incomingMessage.Socket.Type() {
-	case OrganizerSocketType:
+	case socket.OrganizerSocketType:
 		w.handleMessageFromOrganizer(incomingMessage)
 		return
-	case ClientSocketType:
+	case socket.ClientSocketType:
 		w.handleMessageFromClient(incomingMessage)
 		return
-	case WitnessSocketType:
+	case socket.WitnessSocketType:
 		w.handleMessageFromWitness(incomingMessage)
 		return
 	}

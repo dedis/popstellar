@@ -1,4 +1,4 @@
-package hub
+package socket
 
 import (
 	"context"
@@ -9,53 +9,23 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/rs/xid"
 	"golang.org/x/xerrors"
 )
 
+// SocketType represents different socket types
+type SocketType string
+
 const (
-	// maxMessageSize denotes a meximum possible message size in bytes
-	maxMessageSize = 256 * 1024 // 256K
+	// ClientSocketType denotes a client.
+	ClientSocketType SocketType = "client"
 
-	// writeWait denotes the timeout for writing.
-	writeWait = 10 * time.Second
+	//OrganizerSocketType denotes an organizer.
+	OrganizerSocketType SocketType = "organizer"
 
-	// pongWait is the timeout for reading a pong.
-	pongWait = 60 * time.Second
-
-	// pingPeriod is the interval to send ping messages in.
-	pingPeriod = (pongWait * 9) / 10
+	// WitnessSocketType denotes a witness.
+	WitnessSocketType SocketType = "witness"
 )
-
-// Socket is an interface which allows reading/writing messages to
-// another client
-type Socket interface {
-	// ID denotes a unique ID of the socket. This allows us to store
-	// sockets in maps
-	ID() string
-
-	// Type denotes the type of socket.
-	Type() SocketType
-
-	// ReadPump is a lower level method for reading messages from the socket.
-	// TODO: this probably shouldn't be a part of the interface
-	ReadPump(context.Context)
-
-	// WritePump is a lower level method for writing messages to the socket.
-	// TODO: this probably shouldn't be a part of the interface
-	WritePump(context.Context)
-
-	// Send is used to send a message to the client.
-	Send(msg []byte)
-
-	// SendError is used to send an error to the client.  Please refer to
-	// the Protocol Specification document for information on the error
-	// codes. id is a pointer type because an error might be for a
-	// message which does not have an ID.
-	SendError(id *int, err error)
-
-	// SendResult is used to send a result message to the client.
-	SendResult(id int, res message.Result)
-}
 
 // baseSocket represents a socket connected to the server.
 type baseSocket struct {
@@ -221,4 +191,52 @@ func (s *baseSocket) SendResult(id int, res message.Result) {
 
 	log.Printf("answerBuf: %s, received id: %d", answerBuf, id)
 	s.send <- answerBuf
+}
+
+func newBaseSocket(socketType SocketType, receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup) *baseSocket {
+	return &baseSocket{
+		id:            xid.New().String(),
+		socketType:    socketType,
+		receiver:      receiver,
+		closedSockets: closedSockets,
+		conn:          conn,
+		send:          make(chan []byte, 256),
+		Wait:          wg,
+	}
+}
+
+// ClientSocket denotes a client socket and implements the Socket interface.
+type ClientSocket struct {
+	*baseSocket
+}
+
+// NewClient returns an instance of a baseSocket.
+func NewClientSocket(receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup) *ClientSocket {
+	return &ClientSocket{
+		baseSocket: newBaseSocket(ClientSocketType, receiver, closedSockets, conn, wg),
+	}
+}
+
+// OrganizerSocket denotes an organizer socket and implements the Socket interface.
+type OrganizerSocket struct {
+	*baseSocket
+}
+
+// NewOrganizerSocket returns a new OrganizerSocket.
+func NewOrganizerSocket(receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup) *OrganizerSocket {
+	return &OrganizerSocket{
+		baseSocket: newBaseSocket(OrganizerSocketType, receiver, closedSockets, conn, wg),
+	}
+}
+
+// WitnessSocket denotes a witness socket and implements the Socket interface.
+type WitnessSocket struct {
+	*baseSocket
+}
+
+// NewWitnessSocket returns a new WitnessSocket.
+func NewWitnessSocket(receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup) *WitnessSocket {
+	return &WitnessSocket{
+		baseSocket: newBaseSocket(WitnessSocketType, receiver, closedSockets, conn, wg),
+	}
 }

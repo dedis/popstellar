@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"student20_pop/message"
+	"student20_pop/network/socket"
 	"student20_pop/validation"
 
 	"go.dedis.ch/kyber/v3"
@@ -20,7 +21,7 @@ const rootPrefix = "/root/"
 
 // baseHub implements hub.Hub interface
 type baseHub struct {
-	messageChan chan IncomingMessage
+	messageChan chan socket.IncomingMessage
 
 	sync.RWMutex
 	channelByID map[string]Channel
@@ -43,7 +44,7 @@ func NewBaseHub(public kyber.Point, wg *sync.WaitGroup) (*baseHub, error) {
 	}
 
 	return &baseHub{
-		messageChan:     make(chan IncomingMessage),
+		messageChan:     make(chan socket.IncomingMessage),
 		channelByID:     make(map[string]Channel),
 		closedSockets:   make(chan string),
 		public:          public,
@@ -75,7 +76,7 @@ func (h *baseHub) Start(ctx context.Context) {
 	}
 }
 
-func (h *baseHub) Receiver() chan<- IncomingMessage {
+func (h *baseHub) Receiver() chan<- socket.IncomingMessage {
 	return h.messageChan
 }
 
@@ -84,7 +85,7 @@ func (h *baseHub) OnSocketClose() chan<- string {
 }
 
 // handleRootChannelMesssage handles an incoming message on the root channel.
-func (h *baseHub) handleRootChannelMesssage(id int, socket Socket, query *message.Query) {
+func (h *baseHub) handleRootChannelMesssage(id int, socket socket.Socket, query *message.Query) {
 	if query.Publish == nil {
 		err := &message.Error{
 			Code:        -4,
@@ -144,7 +145,7 @@ func (h *baseHub) handleRootChannelMesssage(id int, socket Socket, query *messag
 }
 
 // handleMessageFromClient handles an incoming message from an end user.
-func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
+func (h *baseHub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) {
 	socket := incomingMessage.Socket
 	byteMessage := incomingMessage.Message
 
@@ -257,19 +258,19 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 }
 
 // handleMessageFromWitness handles an incoming message from a witness server.
-func (h *baseHub) handleMessageFromWitness(incomingMessage *IncomingMessage) {
+func (h *baseHub) handleMessageFromWitness(incomingMessage *socket.IncomingMessage) {
 	//TODO
 }
 
 // handleIncomingMessage handles an incoming message based on the socket it
 // originates from.
-func (h *baseHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
+func (h *baseHub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) {
 	log.Printf("Hub::handleMessageFromClient: %s", incomingMessage.Message)
 
 	switch incomingMessage.Socket.Type() {
-	case ClientSocketType:
+	case socket.ClientSocketType:
 		h.handleMessageFromClient(incomingMessage)
-	case WitnessSocketType:
+	case socket.WitnessSocketType:
 		h.handleMessageFromWitness(incomingMessage)
 	default:
 		log.Printf("error: invalid socket type")
