@@ -21,7 +21,8 @@ func TestServerStartAndShutdown(t *testing.T) {
 	srv.Start()
 	<-srv.Started
 
-	srv.Shutdown()
+	err = srv.Shutdown()
+	require.NoError(t, err)
 	<-srv.Stopped
 
 	wg.Wait()
