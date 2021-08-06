@@ -105,7 +105,7 @@ func connectToWitnessSocket(ctx context.Context, otherHubType hub.HubType, addre
 
 	ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
-		return xerrors.Errorf("failed to dial: %v", err)
+		return xerrors.Errorf("failed to dial to %s: %v", u.String(), err)
 	}
 
 	log.Printf("connected to %s at %s", otherHubType, urlString)
