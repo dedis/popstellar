@@ -3,7 +3,7 @@ Proof-of-personhood, Fall 2021: Android native front-end
 
 ## Table of contents
 * [Overview](#overview)
-* [Documentation](documentation)
+* [Documentation](#documentation)
 
 ## Overview
 
@@ -36,4 +36,4 @@ It is also possible to run the tests from the command line using the following c
 
 ## Documentation
 
-TBD: docs directory
+Detailed information about the implementation is available in the [docs](docs/README.md) directory.
