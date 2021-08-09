@@ -13,9 +13,20 @@ We assume that you're familiar with the PoP project and the [User Interface Spec
 
 ##### Design
 
-The application follows the Model-View-ViewModel pattern and uses this [guide to app architecture](https://developer.android.com/jetpack/guide). 
+The application follows the Model-View-ViewModel (MVVM) pattern and uses this [guide to app architecture](https://developer.android.com/jetpack/guide). 
 
-- The View consists of all the activities and fragments of the application. On this project there are only two activities respectively representing the detail and home view. The fragments represent a part of the UI within one of those activities. On this project the packages are separated by view, for example the fragment for launching a LAO is on the home package. 
+- The **View** consists of all the activities and fragments of the application. In this project there are only two activities respectively representing the detail and home view. The fragments represent a part of the UI within one of those activities. The packages are separated by views, for example the fragment for launching a LAO is in the home package. 
+
+- The **ViewModel** implements the UI logic and prepares and manages the data used by the activities and fragments. We use [LiveData](https://developer.android.com/topic/libraries/architecture/livedata), an observable data holder, to keep the UI data updated. In this project each activity has its own view model.
+- The **Model** consists of the local and remote data source, the model classes and the repository. The repository eases the data retrieval for the rest of the application. It is a mediator between the view model and the different data sources. In this application there are two data sources, the database and the PoP backend. The [Room](https://developer.android.com/reference/androidx/room/package-summary) persistence library is used to define the application's database, the entities and Data Access Object. 
+
+Below is the diagram from the [guide to app architecture](https://developer.android.com/jetpack/guide) written to fit this project.
+
+<div align="center">
+  <img src="images/mvvm.png" alt="MVVM"/>
+</div>
+
+##### Communication
 
 #### Coding Standards
 
