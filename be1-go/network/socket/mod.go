@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	// maxMessageSize denotes a meximum possible message size in bytes
+	// maxMessageSize denotes a maximum possible message size in bytes
 	maxMessageSize = 256 * 1024 // 256K
 
 	// writeWait denotes the timeout for writing.
