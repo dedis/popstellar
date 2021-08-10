@@ -78,7 +78,7 @@ func (s *Server) Start() {
 	}()
 }
 
-// serveWs handles a websocket connection based on the socket type.
+// ServeHTTP handles a websocket connection based on the socket type.
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
