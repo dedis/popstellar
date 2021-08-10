@@ -49,7 +49,7 @@ func NewServer(ctx context.Context, h hub.Hub, port int, st socket.SocketType, w
 
 	path := fmt.Sprintf("/%s/%s/", h.Type(), st)
 	mux := http.NewServeMux()
-	mux.Handle(path, server)
+	mux.HandleFunc(path, server.ServeHTTP)
 
 	httpServer := &http.Server{
 		Addr:    fmt.Sprintf(":%d", port),

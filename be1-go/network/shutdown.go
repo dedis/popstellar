@@ -1,9 +1,11 @@
 package network
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"golang.org/x/xerrors"
@@ -17,11 +19,16 @@ func WaitAndShutdownServers(servers ...*Server) error {
 	<-done
 	log.Println("received ctrl+c")
 
-	for _, server := range servers {
+	errors := []string{}
+	for i, server := range servers {
 		err := server.Shutdown()
 		if err != nil {
-			return xerrors.Errorf("failed to shutdown server: %s", err)
+			errors = append(errors, fmt.Sprintf("%d: %s", i, err))
 		}
+	}
+
+	if len(errors) > 0 {
+		return xerrors.Errorf("failed to shutdown one or more servers: %s", strings.Join(errors, ";"))
 	}
 
 	return nil
