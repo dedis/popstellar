@@ -130,11 +130,11 @@ func (c *laoChannel) createElection(msg message.Message) error {
 
 	// Compute the new election channel id
 	encodedElectionID := base64.URLEncoding.EncodeToString(data.ID)
-	encodedID := encodedLaoID + "/" + encodedElectionID
+	channelPath := rootPrefix + encodedLaoID + "/" + encodedElectionID
 
 	// Create the new election channel
 	electionCh := electionChannel{
-		createBaseChannel(organizerHub, rootPrefix+encodedID),
+		createBaseChannel(organizerHub, channelPath),
 		data.StartTime,
 		data.EndTime,
 		false,
@@ -149,7 +149,7 @@ func (c *laoChannel) createElection(msg message.Message) error {
 	electionCh.inbox.storeMessage(msg)
 
 	// Add the new election channel to the organizerHub
-	organizerHub.channelByID[encodedID] = &electionCh
+	organizerHub.channelByID[channelPath] = &electionCh
 
 	return nil
 }

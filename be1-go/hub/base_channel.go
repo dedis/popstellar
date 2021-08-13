@@ -39,7 +39,7 @@ func createBaseChannel(h *baseHub, channelID string) *baseChannel {
 		hub:       h,
 		channelID: channelID,
 		sockets:   make(map[string]socket.Socket),
-		inbox:     createInbox(),
+		inbox:     createInbox(channelID),
 	}
 }
 
