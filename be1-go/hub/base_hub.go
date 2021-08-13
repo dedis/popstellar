@@ -70,14 +70,6 @@ func NewBaseHub(public kyber.Point, wg *sync.WaitGroup) (*baseHub, error) {
 	return &baseHub, nil
 }
 
-func (h *baseHub) Load(id string) {
-
-}
-
-func (h *baseHub) Store(id string) {
-
-}
-
 func (h *baseHub) Start(ctx context.Context) {
 	h.wg.Add(1)
 	defer h.wg.Done()
