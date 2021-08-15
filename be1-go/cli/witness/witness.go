@@ -3,11 +3,11 @@
 package witness
 
 import (
-	"context"
 	"encoding/base64"
 	"fmt"
 	"log"
 	"net/url"
+	"student20_pop/concurrent"
 	"student20_pop/crypto"
 	"student20_pop/hub"
 	"student20_pop/network"
@@ -46,49 +46,50 @@ func Serve(cliCtx *cli.Context) error {
 		return xerrors.Errorf("failed to unmarshal public key: %v", err)
 	}
 
-	// create wait group which waits for goroutines to finish
-	wg := &sync.WaitGroup{}
-
 	// create witness hub
-	h, err := hub.NewWitnessHub(point, wg)
+	h, err := hub.NewWitnessHub(point)
 	if err != nil {
 		return xerrors.Errorf("failed create the witness hub: %v", err)
 	}
-	// make context release resources associated with it when all operations are done
-	ctx, cancel := context.WithCancel(cliCtx.Context)
-	defer cancel()
 
-	// increment wait group and connect to organizer's witness endpoint
-	err = connectToWitnessSocket(ctx, hub.OrganizerHubType, organizerAddress, h, wg)
+	// launch witness hub
+	done := h.Start()
+
+	// create wait group which waits for goroutines to finish
+	wg := &sync.WaitGroup{}
+
+	// connect to organizer's witness endpoint
+	err = connectToWitnessSocket(hub.OrganizerHubType, organizerAddress, h, wg, done)
 	if err != nil {
 		return xerrors.Errorf("failed to connect to organizer: %v", err)
 	}
 
-	// increment wait group and connect to other witnesses
+	// connect to other witnesses
 	for _, witness := range otherWitness {
-		err = connectToWitnessSocket(ctx, hub.WitnessHubType, witness, h, wg)
+		err = connectToWitnessSocket(hub.WitnessHubType, witness, h, wg, done)
 		if err != nil {
 			return xerrors.Errorf("failed to connect to witness: %v", err)
 		}
 	}
 
-	// increment wait group and create and serve servers for witnesses and clients
-	clientSrv := network.NewServer(ctx, h, clientPort, socket.ClientSocketType, wg)
+	// create and serve servers for witnesses and clients
+	clientSrv := network.NewServer(h, clientPort, socket.ClientSocketType)
 	clientSrv.Start()
 
-	witnessSrv := network.NewServer(ctx, h, witnessPort, socket.WitnessSocketType, wg)
+	witnessSrv := network.NewServer(h, witnessPort, socket.WitnessSocketType)
 	witnessSrv.Start()
 
-	// increment wait group and launch organizer hub
-	go h.Start(ctx)
-
 	// shut down client server and witness server when ctrl+c received
-	network.WaitAndShutdownServers(clientSrv, witnessSrv)
+	err = network.WaitAndShutdownServers(clientSrv, witnessSrv)
+	if err != nil {
+		return err
+	}
+	<-witnessSrv.Stopped
+	<-clientSrv.Stopped
 
-	// cancel the context
-	cancel()
+	// stop the hub
+	close(done)
 
-	// wait for all goroutines to finish
 	wg.Wait()
 
 	return nil
@@ -96,7 +97,7 @@ func Serve(cliCtx *cli.Context) error {
 
 // connectToSocket establishes a connection to another server's witness
 // endpoint.
-func connectToWitnessSocket(ctx context.Context, otherHubType hub.HubType, address string, h hub.Hub, wg *sync.WaitGroup) error {
+func connectToWitnessSocket(otherHubType hub.HubType, address string, h hub.Hub, wg concurrent.WaitGroup, done chan struct{}) error {
 	urlString := fmt.Sprintf("ws://%s/%s/witness/", address, otherHubType)
 	u, err := url.Parse(urlString)
 	if err != nil {
@@ -112,13 +113,19 @@ func connectToWitnessSocket(ctx context.Context, otherHubType hub.HubType, addre
 
 	switch otherHubType {
 	case hub.OrganizerHubType:
-		organizerSocket := socket.NewOrganizerSocket(h.Receiver(), h.OnSocketClose(), ws, wg)
-		go organizerSocket.WritePump(ctx)
-		go organizerSocket.ReadPump(ctx)
+		organizerSocket := socket.NewOrganizerSocket(h.Receiver(), h.OnSocketClose(), ws, wg, done)
+		wg.Add(2)
+
+		go organizerSocket.WritePump()
+		go organizerSocket.ReadPump()
 	case hub.WitnessHubType:
-		witnessSocket := socket.NewWitnessSocket(h.Receiver(), h.OnSocketClose(), ws, wg)
-		go witnessSocket.WritePump(ctx)
-		go witnessSocket.ReadPump(ctx)
+		witnessSocket := socket.NewWitnessSocket(h.Receiver(), h.OnSocketClose(), ws, wg, done)
+		wg.Add(2)
+
+		go witnessSocket.WritePump()
+		go witnessSocket.ReadPump()
+	default:
+		return xerrors.Errorf("invalid other hub type: %v", otherHubType)
 	}
 
 	return nil

@@ -1,11 +1,9 @@
 package hub
 
 import (
-	"context"
 	"log"
 	"student20_pop/message"
 	"student20_pop/network/socket"
-	"sync"
 
 	"go.dedis.ch/kyber/v3"
 )
@@ -16,8 +14,8 @@ type witnessHub struct {
 }
 
 // NewWitnessHub returns a Witness Hub.
-func NewWitnessHub(public kyber.Point, wg *sync.WaitGroup) (*witnessHub, error) {
-	baseHub, err := NewBaseHub(public, wg)
+func NewWitnessHub(public kyber.Point) (*witnessHub, error) {
+	baseHub, err := NewBaseHub(public)
 	return &witnessHub{
 		baseHub: baseHub,
 	}, err
@@ -55,25 +53,28 @@ func (w *witnessHub) Type() HubType {
 	return WitnessHubType
 }
 
-func (w *witnessHub) Start(ctx context.Context) {
+func (w *witnessHub) Start() chan struct{} {
 	log.Printf("started witness...")
-	w.wg.Add(1)
-	defer w.wg.Done()
+	done := make(chan struct{})
 
-	for {
-		select {
-		case incomingMessage := <-w.messageChan:
-			w.handleIncomingMessage(&incomingMessage)
-		case id := <-w.closedSockets:
-			w.RLock()
-			for _, channel := range w.channelByID {
-				// dummy Unsubscribe message because it's only used for logging...
-				channel.Unsubscribe(id, message.Unsubscribe{})
+	go func() {
+		for {
+			select {
+			case incomingMessage := <-w.messageChan:
+				w.handleIncomingMessage(&incomingMessage)
+			case id := <-w.closedSockets:
+				w.RLock()
+				for _, channel := range w.channelByID {
+					// dummy Unsubscribe message because it's only used for logging...
+					channel.Unsubscribe(id, message.Unsubscribe{})
+				}
+				w.RUnlock()
+			case <-done:
+				log.Println("closing the hub...")
+				return
 			}
-			w.RUnlock()
-		case <-ctx.Done():
-			log.Println("closing the hub...")
-			return
 		}
-	}
+	}()
+
+	return done
 }

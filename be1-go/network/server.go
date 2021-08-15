@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"student20_pop/concurrent"
 	"student20_pop/hub"
 	"student20_pop/network/socket"
-	"sync"
 
 	"github.com/gorilla/websocket"
+	"golang.org/x/xerrors"
 )
 
 var upgrader = websocket.Upgrader{
@@ -21,8 +22,6 @@ var upgrader = websocket.Upgrader{
 // Server represents a Websocket Server for an organizer or a witness
 // and it may listen to requests from organizer, witness or an attendee.
 type Server struct {
-	ctx context.Context
-
 	h   hub.Hub
 	st  socket.SocketType
 	srv *http.Server
@@ -31,20 +30,21 @@ type Server struct {
 	Started chan struct{}
 	Stopped chan struct{}
 
-	wg *sync.WaitGroup
+	wg   concurrent.WaitGroup
+	done chan struct{}
 }
 
 // NewServer creates a new Server which is used to handle requests for
 // /<hubType>/<socketType> endpoint. Please use the Start() method to
 // start listening for connections.
-func NewServer(ctx context.Context, h hub.Hub, port int, st socket.SocketType, wg *sync.WaitGroup) *Server {
+func NewServer(h hub.Hub, port int, st socket.SocketType) *Server {
 	server := &Server{
-		ctx:     ctx,
 		h:       h,
 		st:      st,
-		wg:      wg,
 		Started: make(chan struct{}, 1),
 		Stopped: make(chan struct{}, 1),
+		wg:      concurrent.NewRendezvous(),
+		done:    make(chan struct{}),
 	}
 
 	path := fmt.Sprintf("/%s/%s/", h.Type(), st)
@@ -62,10 +62,7 @@ func NewServer(ctx context.Context, h hub.Hub, port int, st socket.SocketType, w
 
 // Start spawns a new go-routine which invokes ListenAndServe on the http.Server
 func (s *Server) Start() {
-	s.wg.Add(1)
 	go func() {
-		defer s.wg.Done()
-
 		log.Printf("starting to listen at: %s", s.srv.Addr)
 		s.Started <- struct{}{}
 		err := s.srv.ListenAndServe()
@@ -88,18 +85,31 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	switch s.st {
 	case socket.ClientSocketType:
-		client := socket.NewClientSocket(s.h.Receiver(), s.h.OnSocketClose(), conn, s.wg)
+		client := socket.NewClientSocket(s.h.Receiver(), s.h.OnSocketClose(), conn, s.wg, s.done)
+		s.wg.Add(2)
 
-		go client.ReadPump(s.ctx)
-		go client.WritePump(s.ctx)
+		go client.ReadPump()
+		go client.WritePump()
 	case socket.WitnessSocketType:
-		witness := socket.NewWitnessSocket(s.h.Receiver(), s.h.OnSocketClose(), conn, s.wg)
+		witness := socket.NewWitnessSocket(s.h.Receiver(), s.h.OnSocketClose(), conn, s.wg, s.done)
+		fmt.Println("Adding to wait group")
+		s.wg.Add(2)
 
-		go witness.ReadPump(s.ctx)
-		go witness.WritePump(s.ctx)
+		go witness.ReadPump()
+		go witness.WritePump()
 	}
 }
 
+// Shutdown shuts the HTTP server, signals the read and write pumps to
+// close and waits for them to finish.
 func (s *Server) Shutdown() error {
-	return s.srv.Shutdown(s.ctx)
+	err := s.srv.Shutdown(context.Background())
+	if err != nil {
+		return xerrors.Errorf("failed to shutdown server: %v", err)
+	}
+
+	close(s.done)
+
+	s.wg.Wait()
+	return nil
 }
