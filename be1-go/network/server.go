@@ -26,7 +26,6 @@ type Server struct {
 	st  socket.SocketType
 	srv *http.Server
 
-	// used in tests
 	Started chan struct{}
 	Stopped chan struct{}
 
@@ -92,7 +91,6 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		go client.WritePump()
 	case socket.WitnessSocketType:
 		witness := socket.NewWitnessSocket(s.h.Receiver(), s.h.OnSocketClose(), conn, s.wg, s.done)
-		fmt.Println("Adding to wait group")
 		s.wg.Add(2)
 
 		go witness.ReadPump()
