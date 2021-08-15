@@ -11,13 +11,41 @@ import (
 	"sync"
 )
 
+type sockets struct {
+	sync.RWMutex
+	store map[string]socket.Socket
+}
+
+// Upsert upserts a socket into the sockets store.
+func (s *sockets) Upsert(socket socket.Socket) {
+	s.Lock()
+	defer s.Unlock()
+
+	s.store[socket.ID()] = socket
+}
+
+// Delete deletes a socket from the store. Returns false
+// if the socket is not present in the store and true
+// on success.
+func (s *sockets) Delete(ID string) bool {
+	s.Lock()
+	defer s.Unlock()
+
+	_, ok := s.store[ID]
+	if !ok {
+		return false
+	}
+
+	delete(s.store, ID)
+	return true
+}
+
 // baseChannel represent a generic channel and contains all the fields that are
 // used in all channels
 type baseChannel struct {
 	hub *baseHub
 
-	socketsMu sync.RWMutex
-	sockets   map[string]socket.Socket
+	sockets sockets
 
 	inbox *inbox
 
@@ -38,7 +66,7 @@ func createBaseChannel(h *baseHub, channelID string) *baseChannel {
 	return &baseChannel{
 		hub:       h,
 		channelID: channelID,
-		sockets:   make(map[string]socket.Socket),
+		sockets:   sockets{},
 		inbox:     createInbox(),
 	}
 }
@@ -46,10 +74,7 @@ func createBaseChannel(h *baseHub, channelID string) *baseChannel {
 // Subscribe is used to handle a subscribe message from the client.
 func (c *baseChannel) Subscribe(socket socket.Socket, msg message.Subscribe) error {
 	log.Printf("received a subscribe with id: %d", msg.ID)
-	c.socketsMu.Lock()
-	defer c.socketsMu.Unlock()
-
-	c.sockets[socket.ID()] = socket
+	c.sockets.Upsert(socket)
 
 	return nil
 }
@@ -58,17 +83,15 @@ func (c *baseChannel) Subscribe(socket socket.Socket, msg message.Subscribe) err
 func (c *baseChannel) Unsubscribe(socketID string, msg message.Unsubscribe) error {
 	log.Printf("received an unsubscribe with id: %d", msg.ID)
 
-	c.socketsMu.Lock()
-	defer c.socketsMu.Unlock()
+	ok := c.sockets.Delete(socketID)
 
-	if _, ok := c.sockets[socketID]; !ok {
+	if !ok {
 		return &message.Error{
 			Code:        -2,
 			Description: "client is not subscribed to this channel",
 		}
 	}
 
-	delete(c.sockets, socketID)
 	return nil
 }
 
@@ -104,9 +127,6 @@ func (c *baseChannel) Catchup(catchup message.Catchup) []message.Message {
 // broadcastToAllClients is a helper message to broadcast a message to all
 // subscribers.
 func (c *baseChannel) broadcastToAllClients(msg message.Message) {
-	c.socketsMu.RLock()
-	defer c.socketsMu.RUnlock()
-
 	query := message.Query{
 		Broadcast: message.NewBroadcast(c.channelID, &msg),
 	}
@@ -116,7 +136,9 @@ func (c *baseChannel) broadcastToAllClients(msg message.Message) {
 		log.Fatalf("failed to marshal broadcast query: %v", err)
 	}
 
-	for _, socket := range c.sockets {
+	c.sockets.RLock()
+	defer c.sockets.RUnlock()
+	for _, socket := range c.sockets.store {
 		socket.Send(buf)
 	}
 }
