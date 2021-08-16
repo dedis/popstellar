@@ -39,8 +39,7 @@ type baseHub struct {
 
 	stop chan struct{}
 
-	workers   *semaphore.Weighted
-	workersWg *sync.WaitGroup
+	workers *semaphore.Weighted
 }
 
 // NewBaseHub returns a Base Hub.
@@ -59,7 +58,6 @@ func NewBaseHub(public kyber.Point) (*baseHub, error) {
 		schemaValidator: schemaValidator,
 		stop:            make(chan struct{}),
 		workers:         semaphore.NewWeighted(numWorkers),
-		workersWg:       &sync.WaitGroup{},
 	}, nil
 }
 
@@ -74,7 +72,6 @@ func (h *baseHub) Start() {
 					h.workers.Acquire(context.Background(), 1)
 				}
 
-				h.workersWg.Add(1)
 				go h.handleIncomingMessage(&incomingMessage)
 			case id := <-h.closedSockets:
 				h.RLock()
@@ -94,7 +91,7 @@ func (h *baseHub) Start() {
 func (h *baseHub) Stop() {
 	close(h.stop)
 	log.Println("Waiting for existing workers to finish...")
-	h.workersWg.Wait()
+	h.workers.Acquire(context.Background(), numWorkers)
 }
 
 func (h *baseHub) Receiver() chan<- socket.IncomingMessage {
@@ -286,7 +283,6 @@ func (h *baseHub) handleMessageFromWitness(incomingMessage *socket.IncomingMessa
 // handleIncomingMessage handles an incoming message based on the socket it
 // originates from.
 func (h *baseHub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) {
-	defer h.workersWg.Done()
 	defer h.workers.Release(1)
 
 	log.Printf("Hub::handleMessageFromClient: %s", incomingMessage.Message)

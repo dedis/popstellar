@@ -35,7 +35,6 @@ func (w *witnessHub) handleMessageFromWitness(incomingMessage *socket.IncomingMe
 }
 
 func (w *witnessHub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) {
-	defer w.workersWg.Done()
 	defer w.workers.Release(1)
 
 	log.Printf("organizerHub::handleIncomingMessage: %s", incomingMessage.Message)
@@ -70,7 +69,6 @@ func (w *witnessHub) Start() {
 					w.workers.Acquire(context.Background(), 1)
 				}
 
-				w.workersWg.Add(1)
 				w.handleIncomingMessage(&incomingMessage)
 			case id := <-w.closedSockets:
 				w.RLock()
@@ -90,5 +88,5 @@ func (w *witnessHub) Start() {
 func (w *witnessHub) Stop() {
 	close(w.stop)
 	log.Println("Waiting for existing workers to finish...")
-	w.workersWg.Wait()
+	w.workers.Acquire(context.Background(), numWorkers)
 }
