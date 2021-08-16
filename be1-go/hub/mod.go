@@ -27,7 +27,7 @@ const (
 // and handle clients.
 type Hub interface {
 	// Start invokes the processing loop for the hub.
-	Start(done chan struct{})
+	Start()
 
 	// Stop closes the processing loop for the hub.
 	Stop()

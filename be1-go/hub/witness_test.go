@@ -51,7 +51,6 @@ func TestWitnessHub_Start(t *testing.T) {
 	witnessHub, err := createWitnessHub()
 	require.NoError(t, err)
 
-	done := make(chan struct{})
-	witnessHub.Start(done)
+	witnessHub.Start()
 	witnessHub.Stop()
 }

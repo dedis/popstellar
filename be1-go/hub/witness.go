@@ -53,9 +53,8 @@ func (w *witnessHub) Type() HubType {
 	return WitnessHubType
 }
 
-func (w *witnessHub) Start(done chan struct{}) {
+func (w *witnessHub) Start() {
 	log.Printf("started witness...")
-	w.stop = done
 
 	go func() {
 		for {
@@ -69,7 +68,7 @@ func (w *witnessHub) Start(done chan struct{}) {
 					channel.Unsubscribe(id, message.Unsubscribe{})
 				}
 				w.RUnlock()
-			case <-done:
+			case <-w.stop:
 				log.Println("closing the hub...")
 				return
 			}

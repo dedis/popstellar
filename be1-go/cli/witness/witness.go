@@ -53,11 +53,11 @@ func Serve(cliCtx *cli.Context) error {
 	}
 
 	// launch witness hub
-	done := make(chan struct{})
-	h.Start(done)
+	h.Start()
 
 	// create wait group which waits for goroutines to finish
 	wg := &sync.WaitGroup{}
+	done := make(chan struct{})
 
 	// connect to organizer's witness endpoint
 	err = connectToWitnessSocket(hub.OrganizerHubType, organizerAddress, h, wg, done)
@@ -90,7 +90,7 @@ func Serve(cliCtx *cli.Context) error {
 
 	// stop the hub
 	h.Stop()
-
+	close(done)
 	wg.Wait()
 
 	return nil
