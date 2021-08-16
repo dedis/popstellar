@@ -1,6 +1,7 @@
 package hub
 
 import (
+	"context"
 	"log"
 	"student20_pop/message"
 	"student20_pop/network/socket"
@@ -34,6 +35,9 @@ func (w *witnessHub) handleMessageFromWitness(incomingMessage *socket.IncomingMe
 }
 
 func (w *witnessHub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) {
+	defer w.workersWg.Done()
+	defer w.workers.Release(1)
+
 	log.Printf("organizerHub::handleIncomingMessage: %s", incomingMessage.Message)
 
 	switch incomingMessage.Socket.Type() {
@@ -60,6 +64,8 @@ func (w *witnessHub) Start() {
 		for {
 			select {
 			case incomingMessage := <-w.messageChan:
+				w.workers.Acquire(context.Background(), 1)
+				w.workersWg.Add(1)
 				w.handleIncomingMessage(&incomingMessage)
 			case id := <-w.closedSockets:
 				w.RLock()

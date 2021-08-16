@@ -1,6 +1,7 @@
 package hub
 
 import (
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -12,11 +13,16 @@ import (
 	"student20_pop/validation"
 
 	"go.dedis.ch/kyber/v3"
+	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 )
 
 // rootPrefix denotes the prefix for the root channel
 const rootPrefix = "/root/"
+
+// numWorkers denote the number of worker go-routines
+// allowed to process requests concurrently.
+const numWorkers = 10
 
 // baseHub implements hub.Hub interface
 type baseHub struct {
@@ -32,6 +38,9 @@ type baseHub struct {
 	schemaValidator *validation.SchemaValidator
 
 	stop chan struct{}
+
+	workers   *semaphore.Weighted
+	workersWg *sync.WaitGroup
 }
 
 // NewBaseHub returns a Base Hub.
@@ -49,6 +58,8 @@ func NewBaseHub(public kyber.Point) (*baseHub, error) {
 		public:          public,
 		schemaValidator: schemaValidator,
 		stop:            make(chan struct{}),
+		workers:         semaphore.NewWeighted(numWorkers),
+		workersWg:       &sync.WaitGroup{},
 	}, nil
 }
 
@@ -57,7 +68,9 @@ func (h *baseHub) Start() {
 		for {
 			select {
 			case incomingMessage := <-h.messageChan:
-				h.handleIncomingMessage(&incomingMessage)
+				h.workers.Acquire(context.Background(), 1)
+				h.workersWg.Add(1)
+				go h.handleIncomingMessage(&incomingMessage)
 			case id := <-h.closedSockets:
 				h.RLock()
 				for _, channel := range h.channelByID {
@@ -75,6 +88,8 @@ func (h *baseHub) Start() {
 
 func (h *baseHub) Stop() {
 	close(h.stop)
+	log.Println("Waiting for existing workers to finish...")
+	h.workersWg.Wait()
 }
 
 func (h *baseHub) Receiver() chan<- socket.IncomingMessage {
@@ -266,6 +281,9 @@ func (h *baseHub) handleMessageFromWitness(incomingMessage *socket.IncomingMessa
 // handleIncomingMessage handles an incoming message based on the socket it
 // originates from.
 func (h *baseHub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) {
+	defer h.workersWg.Done()
+	defer h.workers.Release(1)
+
 	log.Printf("Hub::handleMessageFromClient: %s", incomingMessage.Message)
 
 	switch incomingMessage.Socket.Type() {
