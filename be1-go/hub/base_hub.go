@@ -434,6 +434,11 @@ func getChannelsFromDB(h *baseHub) (map[string]Channel, error) {
 		result[id] = &channel
 	}
 
+	err = rows.Err()
+	if err != nil {
+		return nil, xerrors.Errorf("error in row iteration: %v", err)
+	}
+
 	return result, nil
 }
 
@@ -473,6 +478,11 @@ func getAttendeesChannelFromDB(db *sql.DB, channelID string) ([]string, error) {
 		result = append(result, attendeeKey)
 	}
 
+	err = rows.Err()
+	if err != nil {
+		return nil, xerrors.Errorf("error in row iteration: %v", err)
+	}
+
 	return result, nil
 }
 
@@ -510,6 +520,11 @@ func getWitnessChannelFromDB(db *sql.DB, channelID string) ([]message.PublicKey,
 		}
 
 		result = append(result, message.PublicKey([]byte(pubKey)))
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, xerrors.Errorf("error in row iteration: %v", err)
 	}
 
 	return result, nil
@@ -577,6 +592,11 @@ func getMessagesChannelFromDB(db *sql.DB, channelID string) ([]messageInfo, erro
 		result = append(result, messageInfo)
 	}
 
+	err = rows.Err()
+	if err != nil {
+		return nil, xerrors.Errorf("error in row iteration: %v", err)
+	}
+
 	return result, nil
 }
 
@@ -619,6 +639,11 @@ func getWitnessesMessageFromDB(db *sql.DB, messageID string) ([]message.PublicKe
 			Witness:   message.PublicKey(pubKey),
 			Signature: message.Signature(signature),
 		})
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, xerrors.Errorf("error in row iteration: %v", err)
 	}
 
 	return result, nil
