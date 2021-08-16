@@ -22,6 +22,13 @@ import (
 // rootPrefix denotes the prefix for the root channel
 const rootPrefix = "/root/"
 
+const (
+	dbPrepareErr  = "failed to prepare query: %v"
+	dbParseRowErr = "failed to parse row: %v"
+	dbRowIterErr  = "error in row iteration: %v"
+	dbQueryRowErr = "failed to query rows: %v"
+)
+
 // baseHub implements hub.Hub interface
 type baseHub struct {
 	messageChan chan socket.IncomingMessage
@@ -347,9 +354,15 @@ func saveChannel(channelID string) error {
 
 	defer db.Close()
 
-	stmt, err := db.Prepare("insert into lao_channel(lao_channel_id) values(?)")
+	query := `
+	INSERT INTO
+		lao_channel(
+			lao_channel_id)
+	VALUES(?)`
+
+	stmt, err := db.Prepare(query)
 	if err != nil {
-		return xerrors.Errorf("failed to prepare query: %v", err)
+		return xerrors.Errorf(dbPrepareErr, err)
 	}
 
 	defer stmt.Close()
@@ -392,54 +405,63 @@ func getChannelsFromDB(h *baseHub) (map[string]Channel, error) {
 
 		err = rows.Scan(&id)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to parse row: %v", err)
+			return nil, xerrors.Errorf(dbParseRowErr, err)
 		}
 
-		channel := laoChannel{
-			rollCall:    rollCall{},
-			attendees:   NewAttendees(),
-			baseChannel: createBaseChannel(h, id),
-		}
-
-		attendees, err := getAttendeesChannelFromDB(db, id)
+		channel, err := createChannelFromDB(db, h, id)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to get attendees: %v", err)
+			return nil, xerrors.Errorf("failed to create channel from db: %v", err)
 		}
 
-		for _, attendee := range attendees {
-			channel.attendees.Add(attendee)
-		}
-
-		witnesses, err := getWitnessChannelFromDB(db, id)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to get witnesses: %v", err)
-		}
-
-		channel.witnesses = witnesses
-
-		messages, err := getMessagesChannelFromDB(db, id)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to get messages: %v", err)
-		}
-
-		channel.inbox = createInbox(id)
-
-		for i := range messages {
-			msgID := messages[i].message.MessageID
-			msgIDEncoded := base64.URLEncoding.EncodeToString(msgID)
-
-			channel.inbox.msgs[msgIDEncoded] = &messages[i]
-		}
-
-		result[id] = &channel
+		result[id] = channel
 	}
 
 	err = rows.Err()
 	if err != nil {
-		return nil, xerrors.Errorf("error in row iteration: %v", err)
+		return nil, xerrors.Errorf(dbRowIterErr, err)
 	}
 
 	return result, nil
+}
+
+func createChannelFromDB(db *sql.DB, h *baseHub, channelID string) (Channel, error) {
+	channel := laoChannel{
+		rollCall:    rollCall{},
+		attendees:   NewAttendees(),
+		baseChannel: createBaseChannel(h, channelID),
+	}
+
+	attendees, err := getAttendeesChannelFromDB(db, channelID)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to get attendees: %v", err)
+	}
+
+	for _, attendee := range attendees {
+		channel.attendees.Add(attendee)
+	}
+
+	witnesses, err := getWitnessChannelFromDB(db, channelID)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to get witnesses: %v", err)
+	}
+
+	channel.witnesses = witnesses
+
+	messages, err := getMessagesChannelFromDB(db, channelID)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to get messages: %v", err)
+	}
+
+	channel.inbox = createInbox(channelID)
+
+	for i := range messages {
+		msgID := messages[i].message.MessageID
+		msgIDEncoded := base64.URLEncoding.EncodeToString(msgID)
+
+		channel.inbox.msgs[msgIDEncoded] = &messages[i]
+	}
+
+	return &channel, nil
 }
 
 func getAttendeesChannelFromDB(db *sql.DB, channelID string) ([]string, error) {
@@ -453,14 +475,14 @@ func getAttendeesChannelFromDB(db *sql.DB, channelID string) ([]string, error) {
 
 	stmt, err := db.Prepare(query)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to prepare query: %v", err)
+		return nil, xerrors.Errorf(dbPrepareErr, err)
 	}
 
 	defer stmt.Close()
 
 	rows, err := stmt.Query(channelID)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to query rows: %v", err)
+		return nil, xerrors.Errorf(dbQueryRowErr, err)
 	}
 
 	defer rows.Close()
@@ -472,7 +494,7 @@ func getAttendeesChannelFromDB(db *sql.DB, channelID string) ([]string, error) {
 
 		err = rows.Scan(&attendeeKey)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to parse row: %v", err)
+			return nil, xerrors.Errorf(dbParseRowErr, err)
 		}
 
 		result = append(result, attendeeKey)
@@ -480,7 +502,7 @@ func getAttendeesChannelFromDB(db *sql.DB, channelID string) ([]string, error) {
 
 	err = rows.Err()
 	if err != nil {
-		return nil, xerrors.Errorf("error in row iteration: %v", err)
+		return nil, xerrors.Errorf(dbRowIterErr, err)
 	}
 
 	return result, nil
@@ -497,14 +519,14 @@ func getWitnessChannelFromDB(db *sql.DB, channelID string) ([]message.PublicKey,
 
 	stmt, err := db.Prepare(query)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to prepare query: %v", err)
+		return nil, xerrors.Errorf(dbPrepareErr, err)
 	}
 
 	defer stmt.Close()
 
 	rows, err := stmt.Query(channelID)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to query rows: %v", err)
+		return nil, xerrors.Errorf(dbQueryRowErr, err)
 	}
 
 	defer rows.Close()
@@ -516,7 +538,7 @@ func getWitnessChannelFromDB(db *sql.DB, channelID string) ([]message.PublicKey,
 
 		err = rows.Scan(&pubKey)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to parse row: %v", err)
+			return nil, xerrors.Errorf(dbParseRowErr, err)
 		}
 
 		result = append(result, message.PublicKey([]byte(pubKey)))
@@ -524,7 +546,7 @@ func getWitnessChannelFromDB(db *sql.DB, channelID string) ([]message.PublicKey,
 
 	err = rows.Err()
 	if err != nil {
-		return nil, xerrors.Errorf("error in row iteration: %v", err)
+		return nil, xerrors.Errorf(dbRowIterErr, err)
 	}
 
 	return result, nil
@@ -545,14 +567,14 @@ func getMessagesChannelFromDB(db *sql.DB, channelID string) ([]messageInfo, erro
 
 	stmt, err := db.Prepare(query)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to prepare query: %v", err)
+		return nil, xerrors.Errorf(dbPrepareErr, err)
 	}
 
 	defer stmt.Close()
 
 	rows, err := stmt.Query(channelID)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to query rows: %v", err)
+		return nil, xerrors.Errorf(dbQueryRowErr, err)
 	}
 
 	defer rows.Close()
@@ -568,7 +590,7 @@ func getMessagesChannelFromDB(db *sql.DB, channelID string) ([]messageInfo, erro
 
 		err = rows.Scan(&messageID, &sender, &messageSignature, &rawData, &timestamp)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to parse row: %v", err)
+			return nil, xerrors.Errorf(dbParseRowErr, err)
 		}
 
 		witnesses, err := getWitnessesMessageFromDB(db, messageID)
@@ -594,7 +616,7 @@ func getMessagesChannelFromDB(db *sql.DB, channelID string) ([]messageInfo, erro
 
 	err = rows.Err()
 	if err != nil {
-		return nil, xerrors.Errorf("error in row iteration: %v", err)
+		return nil, xerrors.Errorf(dbRowIterErr, err)
 	}
 
 	return result, nil
@@ -612,14 +634,14 @@ func getWitnessesMessageFromDB(db *sql.DB, messageID string) ([]message.PublicKe
 
 	stmt, err := db.Prepare(query)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to prepare query: %v", err)
+		return nil, xerrors.Errorf(dbPrepareErr, err)
 	}
 
 	defer stmt.Close()
 
 	rows, err := stmt.Query(messageID)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to query rows: %v", err)
+		return nil, xerrors.Errorf(dbQueryRowErr, err)
 	}
 
 	defer rows.Close()
@@ -632,7 +654,7 @@ func getWitnessesMessageFromDB(db *sql.DB, messageID string) ([]message.PublicKe
 
 		err = rows.Scan(&pubKey, &signature)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to parse row: %v", err)
+			return nil, xerrors.Errorf(dbParseRowErr, err)
 		}
 
 		result = append(result, message.PublicKeySignaturePair{
@@ -643,7 +665,7 @@ func getWitnessesMessageFromDB(db *sql.DB, messageID string) ([]message.PublicKe
 
 	err = rows.Err()
 	if err != nil {
-		return nil, xerrors.Errorf("error in row iteration: %v", err)
+		return nil, xerrors.Errorf(dbRowIterErr, err)
 	}
 
 	return result, nil
