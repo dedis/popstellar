@@ -2,9 +2,15 @@ package hub
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/base64"
 	"fmt"
+	"log"
+	"os"
 	"student20_pop/message"
+
+	_ "github.com/mattn/go-sqlite3"
+	"golang.org/x/xerrors"
 )
 
 // processCreateRollCall processes a roll call creation object.
@@ -104,8 +110,45 @@ func (c *laoChannel) processCloseRollCall(data message.Data) error {
 	c.rollCall.id = string(rollCallData.UpdateID)
 	c.rollCall.state = Closed
 
+	var db *sql.DB
+
+	if os.Getenv("HUB_DB") != "" {
+		db, err := sql.Open("sqlite3", os.Getenv("HUB_DB"))
+		if err != nil {
+			log.Printf("error: failed to connect to db: %v", err)
+			db = nil
+		} else {
+			defer db.Close()
+		}
+	}
+
 	for _, attendee := range rollCallData.Attendees {
 		c.attendees.Add(attendee.String())
+
+		if db != nil {
+			log.Printf("inserting attendee into db")
+
+			err := insertAttendee(db, attendee.String(), c.channelID)
+			if err != nil {
+				log.Printf("error: failed to insert attendee into db: %v", err)
+			}
+		}
+	}
+
+	return nil
+}
+
+func insertAttendee(db *sql.DB, key string, channelID string) error {
+	stmt, err := db.Prepare("insert into lao_attendee(attendee_key, lao_channel_id) values(?, ?)")
+	if err != nil {
+		return xerrors.Errorf("failed to prepare query: %v", err)
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(key, channelID)
+	if err != nil {
+		return xerrors.Errorf("failed to exec query: %v", err)
 	}
 
 	return nil
