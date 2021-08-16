@@ -39,7 +39,7 @@ func main() {
 	organizerAddressFlag := &cli.StringFlag{
 		Name:    "organizer-address",
 		Aliases: []string{"org"},
-		Usage:   "address and port of organizer",
+		Usage:   "address and witness port of organizer",
 		Value:   "localhost:9002",
 	}
 	clientPortFlag := &cli.IntFlag{

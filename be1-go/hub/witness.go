@@ -1,9 +1,9 @@
 package hub
 
 import (
-	"context"
 	"log"
-	"sync"
+	"student20_pop/message"
+	"student20_pop/network/socket"
 
 	"go.dedis.ch/kyber/v3"
 )
@@ -14,55 +14,68 @@ type witnessHub struct {
 }
 
 // NewWitnessHub returns a Witness Hub.
-func NewWitnessHub(public kyber.Point) (Hub, error) {
+func NewWitnessHub(public kyber.Point) (*witnessHub, error) {
 	baseHub, err := NewBaseHub(public)
 	return &witnessHub{
-		baseHub,
+		baseHub: baseHub,
 	}, err
 }
 
-func (w *witnessHub) handleMessageFromOrganizer(incomingMessage *IncomingMessage) {
+func (w *witnessHub) handleMessageFromOrganizer(incomingMessage *socket.IncomingMessage) {
 	//TODO
 }
 
-func (w *witnessHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
+func (w *witnessHub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) {
 	//TODO
 }
 
-func (w *witnessHub) handleMessageFromWitness(incomingMessage *IncomingMessage) {
+func (w *witnessHub) handleMessageFromWitness(incomingMessage *socket.IncomingMessage) {
 	//TODO
 }
 
-func (w *witnessHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
+func (w *witnessHub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) {
 	log.Printf("organizerHub::handleIncomingMessage: %s", incomingMessage.Message)
 
-	switch incomingMessage.Socket.socketType {
-	case OrganizerSocketType:
+	switch incomingMessage.Socket.Type() {
+	case socket.OrganizerSocketType:
 		w.handleMessageFromOrganizer(incomingMessage)
 		return
-	case ClientSocketType:
+	case socket.ClientSocketType:
 		w.handleMessageFromClient(incomingMessage)
 		return
-	case WitnessSocketType:
+	case socket.WitnessSocketType:
 		w.handleMessageFromWitness(incomingMessage)
 		return
 	}
-
 }
 
-func (w *witnessHub) Start(ctx context.Context, wg *sync.WaitGroup) {
-	wg.Add(1)
-	defer wg.Done()
+func (w *witnessHub) Type() HubType {
+	return WitnessHubType
+}
 
+func (w *witnessHub) Start() {
 	log.Printf("started witness...")
 
-	for {
-		select {
-		case incomingMessage := <-w.messageChan:
-			w.handleIncomingMessage(&incomingMessage)
-		case <-ctx.Done():
-			log.Println("closing the hub...")
-			return
+	go func() {
+		for {
+			select {
+			case incomingMessage := <-w.messageChan:
+				w.handleIncomingMessage(&incomingMessage)
+			case id := <-w.closedSockets:
+				w.RLock()
+				for _, channel := range w.channelByID {
+					// dummy Unsubscribe message because it's only used for logging...
+					channel.Unsubscribe(id, message.Unsubscribe{})
+				}
+				w.RUnlock()
+			case <-w.stop:
+				log.Println("closing the hub...")
+				return
+			}
 		}
-	}
+	}()
+}
+
+func (w *witnessHub) Stop() {
+	close(w.stop)
 }

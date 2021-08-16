@@ -19,11 +19,15 @@ type organizerHub struct {
 }
 
 // NewOrganizerHub returns a Organizer Hub.
-func NewOrganizerHub(public kyber.Point) (Hub, error) {
+func NewOrganizerHub(public kyber.Point) (*organizerHub, error) {
 	baseHub, err := NewBaseHub(public)
 	return &organizerHub{
-		baseHub,
+		baseHub: baseHub,
 	}, err
+}
+
+func (o *organizerHub) Type() HubType {
+	return OrganizerHubType
 }
 
 // laoChannel implements a channel. It is used to handle messages
