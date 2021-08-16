@@ -3,8 +3,8 @@ package socket
 import (
 	"encoding/json"
 	"log"
-	"student20_pop/concurrent"
 	"student20_pop/message"
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -41,7 +41,7 @@ type baseSocket struct {
 
 	send chan []byte
 
-	wg concurrent.WaitGroup
+	wg *sync.WaitGroup
 
 	done chan struct{}
 }
@@ -191,7 +191,7 @@ func (s *baseSocket) SendResult(id int, res message.Result) {
 	s.send <- answerBuf
 }
 
-func newBaseSocket(socketType SocketType, receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg concurrent.WaitGroup, done chan struct{}) *baseSocket {
+func newBaseSocket(socketType SocketType, receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup, done chan struct{}) *baseSocket {
 	return &baseSocket{
 		id:            xid.New().String(),
 		socketType:    socketType,
@@ -210,7 +210,7 @@ type ClientSocket struct {
 }
 
 // NewClient returns an instance of a baseSocket.
-func NewClientSocket(receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg concurrent.WaitGroup, done chan struct{}) *ClientSocket {
+func NewClientSocket(receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup, done chan struct{}) *ClientSocket {
 	return &ClientSocket{
 		baseSocket: newBaseSocket(ClientSocketType, receiver, closedSockets, conn, wg, done),
 	}
@@ -222,7 +222,7 @@ type OrganizerSocket struct {
 }
 
 // NewOrganizerSocket returns a new OrganizerSocket.
-func NewOrganizerSocket(receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg concurrent.WaitGroup, done chan struct{}) *OrganizerSocket {
+func NewOrganizerSocket(receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup, done chan struct{}) *OrganizerSocket {
 	return &OrganizerSocket{
 		baseSocket: newBaseSocket(OrganizerSocketType, receiver, closedSockets, conn, wg, done),
 	}
@@ -234,7 +234,7 @@ type WitnessSocket struct {
 }
 
 // NewWitnessSocket returns a new WitnessSocket.
-func NewWitnessSocket(receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg concurrent.WaitGroup, done chan struct{}) *WitnessSocket {
+func NewWitnessSocket(receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup, done chan struct{}) *WitnessSocket {
 	return &WitnessSocket{
 		baseSocket: newBaseSocket(WitnessSocketType, receiver, closedSockets, conn, wg, done),
 	}

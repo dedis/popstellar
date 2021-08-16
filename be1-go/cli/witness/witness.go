@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 	"net/url"
-	"student20_pop/concurrent"
 	"student20_pop/crypto"
 	"student20_pop/hub"
 	"student20_pop/network"
@@ -98,7 +97,7 @@ func Serve(cliCtx *cli.Context) error {
 
 // connectToSocket establishes a connection to another server's witness
 // endpoint.
-func connectToWitnessSocket(otherHubType hub.HubType, address string, h hub.Hub, wg concurrent.WaitGroup, done chan struct{}) error {
+func connectToWitnessSocket(otherHubType hub.HubType, address string, h hub.Hub, wg *sync.WaitGroup, done chan struct{}) error {
 	urlString := fmt.Sprintf("ws://%s/%s/witness/", address, otherHubType)
 	u, err := url.Parse(urlString)
 	if err != nil {
