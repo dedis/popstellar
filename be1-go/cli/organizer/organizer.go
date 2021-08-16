@@ -3,13 +3,11 @@
 package organizer
 
 import (
-	"context"
 	"encoding/base64"
 	"student20_pop/crypto"
 	"student20_pop/hub"
 	"student20_pop/network"
 	"student20_pop/network/socket"
-	"sync"
 
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
@@ -42,36 +40,32 @@ func Serve(cliCtx *cli.Context) error {
 		return xerrors.Errorf("failed to unmarshal public key: %v", err)
 	}
 
-	// create wait group which waits for goroutines to finish
-	wg := &sync.WaitGroup{}
-
 	// create organizer hub
-	h, err := hub.NewOrganizerHub(point, wg)
+	h, err := hub.NewOrganizerHub(point)
 	if err != nil {
 		return xerrors.Errorf("failed create the organizer hub: %v", err)
 	}
 
-	// make context release resources associated with it when all operations are done
-	ctx, cancel := context.WithCancel(cliCtx.Context)
-	defer cancel()
-
-	// increment wait group and create and serve servers for witnesses and clients
-	clientSrv := network.NewServer(ctx, h, clientPort, socket.ClientSocketType, wg)
+	// Start a client websocket server
+	clientSrv := network.NewServer(h, clientPort, socket.ClientSocketType)
 	clientSrv.Start()
 
-	witnessSrv := network.NewServer(ctx, h, witnessPort, socket.WitnessSocketType, wg)
+	// Start a witness websocket server
+	witnessSrv := network.NewServer(h, witnessPort, socket.WitnessSocketType)
 	witnessSrv.Start()
 
 	// start the processing loop
-	go h.Start(ctx)
+	h.Start()
 
-	network.WaitAndShutdownServers(clientSrv, witnessSrv)
+	// Wait for a Ctrl-C
+	err = network.WaitAndShutdownServers(clientSrv, witnessSrv)
+	if err != nil {
+		return err
+	}
 
-	// cancel the context
-	cancel()
-
-	// wait for all goroutines to finish
-	wg.Wait()
+	h.Stop()
+	<-clientSrv.Stopped
+	<-witnessSrv.Stopped
 
 	return nil
 }

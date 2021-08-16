@@ -1,7 +1,6 @@
 package socket
 
 import (
-	"context"
 	"encoding/json"
 	"log"
 	"student20_pop/message"
@@ -42,7 +41,9 @@ type baseSocket struct {
 
 	send chan []byte
 
-	Wait *sync.WaitGroup
+	wg *sync.WaitGroup
+
+	done chan struct{}
 }
 
 func (s *baseSocket) ID() string {
@@ -54,19 +55,16 @@ func (s *baseSocket) Type() SocketType {
 }
 
 // ReadPump starts the reader loop for the socket.
-func (s *baseSocket) ReadPump(ctx context.Context) {
+func (s *baseSocket) ReadPump() {
 	defer func() {
 		s.conn.Close()
-		s.Wait.Done()
-
-		// it's safe to send a message on s.closedSockets after calling s.Wait.Done()
-		// If the hub is still open, i.e. the context has not been cancelled, then
-		// it will be processed an the client will be unsubscribed. Otherwise, since
-		// the hub is being shut down, this won't block because the process will exit.
+		s.wg.Done()
+		// it's safe to send a message on s.closedSockets after calling s.wg.Done()
+		// If the hub is still open then it will be processed an the client will be
+		// unsubscribed. Otherwise, since the hub is being shut down, this won't
+		// block because the process will exit.
 		s.closedSockets <- s.ID()
 	}()
-
-	s.Wait.Add(1)
 
 	log.Printf("listening for messages from %s", s.socketType)
 
@@ -92,29 +90,28 @@ func (s *baseSocket) ReadPump(ctx context.Context) {
 
 		s.receiver <- msg
 
-		if ctx.Err() != nil {
-			log.Println("closing the read pump")
+		// return if we're done
+		select {
+		case <-s.done:
 			return
+		default:
 		}
 	}
 }
 
 // WritePump starts the writer loop for the socket.
-func (s *baseSocket) WritePump(ctx context.Context) {
+func (s *baseSocket) WritePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
 		s.conn.Close()
-		s.Wait.Done()
-
-		// it's safe to send a message on s.closedSockets after calling s.Wait.Done()
-		// If the hub is still open, i.e. the context has not been cancelled, then
-		// it will be processed an the client will be unsubscribed. Otherwise, since
-		// the hub is being shut down, this won't block because the process will exit.
+		s.wg.Done()
+		// it's safe to send a message on s.closedSockets after calling s.wg.Done()
+		// If the hub is still open then it will be processed an the client will be
+		// unsubscribed. Otherwise, since the hub is being shut down, this won't
+		// block because the process will exit.
 		s.closedSockets <- s.ID()
 	}()
-
-	s.Wait.Add(1)
 
 	for {
 		select {
@@ -143,8 +140,9 @@ func (s *baseSocket) WritePump(ctx context.Context) {
 				log.Printf("failed to send ping: %v", err)
 				return
 			}
-		case <-ctx.Done():
+		case <-s.done:
 			log.Println("closing the write pump")
+			s.conn.WriteMessage(websocket.CloseGoingAway, []byte{})
 			return
 		}
 	}
@@ -193,7 +191,7 @@ func (s *baseSocket) SendResult(id int, res message.Result) {
 	s.send <- answerBuf
 }
 
-func newBaseSocket(socketType SocketType, receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup) *baseSocket {
+func newBaseSocket(socketType SocketType, receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup, done chan struct{}) *baseSocket {
 	return &baseSocket{
 		id:            xid.New().String(),
 		socketType:    socketType,
@@ -201,7 +199,8 @@ func newBaseSocket(socketType SocketType, receiver chan<- IncomingMessage, close
 		closedSockets: closedSockets,
 		conn:          conn,
 		send:          make(chan []byte, 256),
-		Wait:          wg,
+		wg:            wg,
+		done:          done,
 	}
 }
 
@@ -211,9 +210,9 @@ type ClientSocket struct {
 }
 
 // NewClient returns an instance of a baseSocket.
-func NewClientSocket(receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup) *ClientSocket {
+func NewClientSocket(receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup, done chan struct{}) *ClientSocket {
 	return &ClientSocket{
-		baseSocket: newBaseSocket(ClientSocketType, receiver, closedSockets, conn, wg),
+		baseSocket: newBaseSocket(ClientSocketType, receiver, closedSockets, conn, wg, done),
 	}
 }
 
@@ -223,9 +222,9 @@ type OrganizerSocket struct {
 }
 
 // NewOrganizerSocket returns a new OrganizerSocket.
-func NewOrganizerSocket(receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup) *OrganizerSocket {
+func NewOrganizerSocket(receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup, done chan struct{}) *OrganizerSocket {
 	return &OrganizerSocket{
-		baseSocket: newBaseSocket(OrganizerSocketType, receiver, closedSockets, conn, wg),
+		baseSocket: newBaseSocket(OrganizerSocketType, receiver, closedSockets, conn, wg, done),
 	}
 }
 
@@ -235,8 +234,8 @@ type WitnessSocket struct {
 }
 
 // NewWitnessSocket returns a new WitnessSocket.
-func NewWitnessSocket(receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup) *WitnessSocket {
+func NewWitnessSocket(receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup, done chan struct{}) *WitnessSocket {
 	return &WitnessSocket{
-		baseSocket: newBaseSocket(WitnessSocketType, receiver, closedSockets, conn, wg),
+		baseSocket: newBaseSocket(WitnessSocketType, receiver, closedSockets, conn, wg, done),
 	}
 }

@@ -1,7 +1,6 @@
 package hub
 
 import (
-	"context"
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
@@ -36,11 +35,11 @@ type baseHub struct {
 
 	schemaValidator *validation.SchemaValidator
 
-	wg *sync.WaitGroup
+	stop chan struct{}
 }
 
 // NewBaseHub returns a Base Hub.
-func NewBaseHub(public kyber.Point, wg *sync.WaitGroup) (*baseHub, error) {
+func NewBaseHub(public kyber.Point) (*baseHub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
@@ -53,7 +52,7 @@ func NewBaseHub(public kyber.Point, wg *sync.WaitGroup) (*baseHub, error) {
 		closedSockets:   make(chan string),
 		public:          public,
 		schemaValidator: schemaValidator,
-		wg:              wg,
+		stop:            make(chan struct{}),
 	}
 
 	if os.Getenv("HUB_DB") != "" {
@@ -70,28 +69,29 @@ func NewBaseHub(public kyber.Point, wg *sync.WaitGroup) (*baseHub, error) {
 	return &baseHub, nil
 }
 
-func (h *baseHub) Start(ctx context.Context) {
-	h.wg.Add(1)
-	defer h.wg.Done()
-
-	log.Printf("started hub...")
-	for {
-		select {
-		case incomingMessage := <-h.messageChan:
-			h.handleIncomingMessage(&incomingMessage)
-		case id := <-h.closedSockets:
-			h.RLock()
-			for _, channel := range h.channelByID {
-				// dummy Unsubscribe message because it's only used for
-				// logging...
-				channel.Unsubscribe(id, message.Unsubscribe{})
+func (h *baseHub) Start() {
+	go func() {
+		for {
+			select {
+			case incomingMessage := <-h.messageChan:
+				h.handleIncomingMessage(&incomingMessage)
+			case id := <-h.closedSockets:
+				h.RLock()
+				for _, channel := range h.channelByID {
+					// dummy Unsubscribe message because it's only used for logging...
+					channel.Unsubscribe(id, message.Unsubscribe{})
+				}
+				h.RUnlock()
+			case <-h.stop:
+				log.Println("Stopping the hub")
+				return
 			}
-			h.RUnlock()
-		case <-ctx.Done():
-			log.Println("closing the hub...")
-			return
 		}
-	}
+	}()
+}
+
+func (h *baseHub) Stop() {
+	close(h.stop)
 }
 
 func (h *baseHub) Receiver() chan<- socket.IncomingMessage {

@@ -7,7 +7,6 @@
 package socket
 
 import (
-	"context"
 	"student20_pop/message"
 	"time"
 )
@@ -37,10 +36,10 @@ type Socket interface {
 	Type() SocketType
 
 	// ReadPump is a lower level method for reading messages from the socket.
-	ReadPump(context.Context)
+	ReadPump()
 
 	// WritePump is a lower level method for writing messages to the socket.
-	WritePump(context.Context)
+	WritePump()
 
 	// Send is used to send a message to the client.
 	Send(msg []byte)

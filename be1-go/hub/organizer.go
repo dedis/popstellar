@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"student20_pop/crypto"
-	"sync"
 
 	"student20_pop/message"
 
@@ -20,8 +19,8 @@ type organizerHub struct {
 }
 
 // NewOrganizerHub returns a Organizer Hub.
-func NewOrganizerHub(public kyber.Point, wg *sync.WaitGroup) (*organizerHub, error) {
-	baseHub, err := NewBaseHub(public, wg)
+func NewOrganizerHub(public kyber.Point) (*organizerHub, error) {
+	baseHub, err := NewBaseHub(public)
 	return &organizerHub{
 		baseHub: baseHub,
 	}, err

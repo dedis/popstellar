@@ -1,29 +1,22 @@
 package network
 
 import (
-	"context"
 	"student20_pop/crypto"
 	"student20_pop/hub"
-	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
 func TestServerStartAndShutdown(t *testing.T) {
-	ctx := context.Background()
-	wg := &sync.WaitGroup{}
-
-	h, err := hub.NewWitnessHub(crypto.Suite.Point(), wg)
+	h, err := hub.NewWitnessHub(crypto.Suite.Point())
 	require.NoErrorf(t, err, "could not create witness hub")
 
-	srv := NewServer(ctx, h, 9000, "testsocket", wg)
+	srv := NewServer(h, 9000, "testsocket")
 	srv.Start()
 	<-srv.Started
 
 	err = srv.Shutdown()
 	require.NoError(t, err)
 	<-srv.Stopped
-
-	wg.Wait()
 }

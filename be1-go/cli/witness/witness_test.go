@@ -1,7 +1,6 @@
 package witness
 
 import (
-	"context"
 	"student20_pop/crypto"
 	"student20_pop/hub"
 	"student20_pop/network"
@@ -14,36 +13,31 @@ import (
 )
 
 func TestConnectToWitnessSocket(t *testing.T) {
-	parent := context.Background()
-	ctx, cancel := context.WithCancel(parent)
-	wg := &sync.WaitGroup{}
-
-	oh, err := hub.NewOrganizerHub(crypto.Suite.Point(), wg)
+	oh, err := hub.NewOrganizerHub(crypto.Suite.Point())
 	require.NoError(t, err)
-	go oh.Start(ctx)
+	oh.Start()
 
-	witnessSrv := network.NewServer(ctx, oh, 9001, socket.WitnessSocketType, wg)
+	witnessSrv := network.NewServer(oh, 9001, socket.WitnessSocketType)
 	witnessSrv.Start()
 	<-witnessSrv.Started
 
 	time.Sleep(1 * time.Second)
 
-	wg2 := &sync.WaitGroup{}
-	whCtx, whCancel := context.WithCancel(parent)
-	wh, err := hub.NewWitnessHub(crypto.Suite.Point(), wg2)
+	wh, err := hub.NewWitnessHub(crypto.Suite.Point())
 	require.NoError(t, err)
-	go wh.Start(whCtx)
+	wDone := make(chan struct{})
+	wh.Start()
 
-	err = connectToWitnessSocket(ctx, hub.OrganizerHubType, "localhost:9001", wh, wg2)
+	wg := &sync.WaitGroup{}
+	err = connectToWitnessSocket(hub.OrganizerHubType, "localhost:9001", wh, wg, wDone)
 	require.NoError(t, err)
 
 	err = witnessSrv.Shutdown()
 	require.NoError(t, err)
 	<-witnessSrv.Stopped
 
-	cancel()
+	oh.Stop()
+	wh.Stop()
+	close(wDone)
 	wg.Wait()
-
-	whCancel()
-	wg2.Wait()
 }
