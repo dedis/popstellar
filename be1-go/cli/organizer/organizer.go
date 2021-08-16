@@ -3,14 +3,14 @@
 package organizer
 
 import (
-	"context"
 	"encoding/base64"
-	"github.com/urfave/cli/v2"
-	"golang.org/x/xerrors"
 	"student20_pop/crypto"
 	"student20_pop/hub"
 	"student20_pop/network"
-	"sync"
+	"student20_pop/network/socket"
+
+	"github.com/urfave/cli/v2"
+	"golang.org/x/xerrors"
 )
 
 // Serve parses the CLI arguments and spawns a hub and a websocket server
@@ -46,28 +46,26 @@ func Serve(cliCtx *cli.Context) error {
 		return xerrors.Errorf("failed create the organizer hub: %v", err)
 	}
 
-	// make context release resources associated with it when all operations are done
-	ctx, cancel := context.WithCancel(cliCtx.Context)
-	defer cancel()
+	// Start a client websocket server
+	clientSrv := network.NewServer(h, clientPort, socket.ClientSocketType)
+	clientSrv.Start()
 
-	// create wait group which waits for goroutines to finish
-	wg := &sync.WaitGroup{}
+	// Start a witness websocket server
+	witnessSrv := network.NewServer(h, witnessPort, socket.WitnessSocketType)
+	witnessSrv.Start()
 
-	// increment wait group and create and serve servers for witnesses and clients
-	clientSrv := network.CreateAndServeWS(ctx, hub.OrganizerHubType, hub.ClientSocketType, h, clientPort, wg)
-	witnessSrv := network.CreateAndServeWS(ctx, hub.OrganizerHubType, hub.WitnessSocketType, h, witnessPort, wg)
+	// start the processing loop
+	h.Start()
 
-	// increment wait group and launch organizer hub
-	go h.Start(ctx, wg)
+	// Wait for a Ctrl-C
+	err = network.WaitAndShutdownServers(clientSrv, witnessSrv)
+	if err != nil {
+		return err
+	}
 
-	// shut down client server and witness server when ctrl+c received
-	network.ShutdownServers(ctx, witnessSrv, clientSrv)
-
-	// cancel the context
-	cancel()
-
-	// wait for all goroutines to finish
-	wg.Wait()
+	h.Stop()
+	<-clientSrv.Stopped
+	<-witnessSrv.Stopped
 
 	return nil
 }
