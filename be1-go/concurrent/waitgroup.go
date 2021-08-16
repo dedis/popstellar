@@ -50,12 +50,10 @@ func (r *Rendezvous) Wait() {
 }
 
 // Done decrements the WaitGroup count by one.
-// We assume there's only one go-routine blocking on
-// Wait().
 func (r *Rendezvous) Done() {
 	r.cond.L.Lock()
 	r.count--
 	r.cond.L.Unlock()
 
-	r.cond.Signal()
+	r.cond.Broadcast()
 }

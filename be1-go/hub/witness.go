@@ -53,9 +53,9 @@ func (w *witnessHub) Type() HubType {
 	return WitnessHubType
 }
 
-func (w *witnessHub) Start() chan struct{} {
+func (w *witnessHub) Start(done chan struct{}) {
 	log.Printf("started witness...")
-	done := make(chan struct{})
+	w.stop = done
 
 	go func() {
 		for {
@@ -75,6 +75,8 @@ func (w *witnessHub) Start() chan struct{} {
 			}
 		}
 	}()
+}
 
-	return done
+func (w *witnessHub) Stop() {
+	close(w.stop)
 }

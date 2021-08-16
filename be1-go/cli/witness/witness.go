@@ -53,7 +53,8 @@ func Serve(cliCtx *cli.Context) error {
 	}
 
 	// launch witness hub
-	done := h.Start()
+	done := make(chan struct{})
+	h.Start(done)
 
 	// create wait group which waits for goroutines to finish
 	wg := &sync.WaitGroup{}
@@ -88,7 +89,7 @@ func Serve(cliCtx *cli.Context) error {
 	<-clientSrv.Stopped
 
 	// stop the hub
-	close(done)
+	h.Stop()
 
 	wg.Wait()
 

@@ -55,7 +55,8 @@ func Serve(cliCtx *cli.Context) error {
 	witnessSrv.Start()
 
 	// start the processing loop
-	done := h.Start()
+	done := make(chan struct{})
+	h.Start(done)
 
 	// Wait for a Ctrl-C
 	err = network.WaitAndShutdownServers(clientSrv, witnessSrv)
@@ -63,9 +64,7 @@ func Serve(cliCtx *cli.Context) error {
 		return err
 	}
 
-	// Stop the Hub
-	close(done)
-
+	h.Stop()
 	<-clientSrv.Stopped
 	<-witnessSrv.Stopped
 

@@ -15,7 +15,8 @@ import (
 func TestConnectToWitnessSocket(t *testing.T) {
 	oh, err := hub.NewOrganizerHub(crypto.Suite.Point())
 	require.NoError(t, err)
-	oDone := oh.Start()
+	oDone := make(chan struct{})
+	oh.Start(oDone)
 
 	witnessSrv := network.NewServer(oh, 9001, socket.WitnessSocketType)
 	witnessSrv.Start()
@@ -25,7 +26,8 @@ func TestConnectToWitnessSocket(t *testing.T) {
 
 	wh, err := hub.NewWitnessHub(crypto.Suite.Point())
 	require.NoError(t, err)
-	wDone := wh.Start()
+	wDone := make(chan struct{})
+	wh.Start(wDone)
 
 	wg := &sync.WaitGroup{}
 	err = connectToWitnessSocket(hub.OrganizerHubType, "localhost:9001", wh, wg, wDone)
@@ -35,8 +37,7 @@ func TestConnectToWitnessSocket(t *testing.T) {
 	require.NoError(t, err)
 	<-witnessSrv.Stopped
 
-	close(wDone)
-	close(oDone)
-
+	oh.Stop()
+	wh.Stop()
 	wg.Wait()
 }

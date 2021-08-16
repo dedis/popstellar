@@ -52,8 +52,8 @@ func NewBaseHub(public kyber.Point) (*baseHub, error) {
 	}, nil
 }
 
-func (h *baseHub) Start() chan struct{} {
-	done := make(chan struct{})
+func (h *baseHub) Start(done chan struct{}) {
+	h.stop = done
 
 	go func() {
 		for {
@@ -67,14 +67,16 @@ func (h *baseHub) Start() chan struct{} {
 					channel.Unsubscribe(id, message.Unsubscribe{})
 				}
 				h.RUnlock()
-			case <-h.stop:
+			case <-done:
 				log.Println("Stopping the hub")
 				return
 			}
 		}
 	}()
+}
 
-	return done
+func (h *baseHub) Stop() {
+	close(h.stop)
 }
 
 func (h *baseHub) Receiver() chan<- socket.IncomingMessage {

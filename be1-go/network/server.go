@@ -42,8 +42,11 @@ func NewServer(h hub.Hub, port int, st socket.SocketType) *Server {
 		st:      st,
 		Started: make(chan struct{}, 1),
 		Stopped: make(chan struct{}, 1),
-		wg:      concurrent.NewRendezvous(),
-		done:    make(chan struct{}),
+		// The use of a `sync.WaitGroup` will cause a data race on Add and Wait
+		// since ServeHTTP and Shutdown may be concurrent. Refer to
+		// `TestConnectToWitnessSocket`.
+		wg:   concurrent.NewRendezvous(),
+		done: make(chan struct{}),
 	}
 
 	path := fmt.Sprintf("/%s/%s/", h.Type(), st)
