@@ -68,7 +68,12 @@ func (h *baseHub) Start() {
 		for {
 			select {
 			case incomingMessage := <-h.messageChan:
-				h.workers.Acquire(context.Background(), 1)
+				ok := h.workers.TryAcquire(1)
+				if !ok {
+					log.Print("warn: worker pool full, waiting...")
+					h.workers.Acquire(context.Background(), 1)
+				}
+
 				h.workersWg.Add(1)
 				go h.handleIncomingMessage(&incomingMessage)
 			case id := <-h.closedSockets:

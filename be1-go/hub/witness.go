@@ -64,7 +64,12 @@ func (w *witnessHub) Start() {
 		for {
 			select {
 			case incomingMessage := <-w.messageChan:
-				w.workers.Acquire(context.Background(), 1)
+				ok := w.workers.TryAcquire(1)
+				if !ok {
+					log.Print("warn: worker pool full, waiting...")
+					w.workers.Acquire(context.Background(), 1)
+				}
+
 				w.workersWg.Add(1)
 				w.handleIncomingMessage(&incomingMessage)
 			case id := <-w.closedSockets:
