@@ -84,4 +84,6 @@ func (w *witnessHub) Start() {
 
 func (w *witnessHub) Stop() {
 	close(w.stop)
+	log.Println("Waiting for existing workers to finish...")
+	w.workersWg.Wait()
 }
