@@ -92,7 +92,7 @@ func NewSchemaValidator() (*SchemaValidator, error) {
 			return err
 		}
 
-		if filepath.Ext(path) != ".json" {
+		if d.IsDir() || filepath.Ext(path) != ".json" {
 			return nil
 		}
 

@@ -91,7 +91,7 @@ func createLao(o *organizerHub, oKeypair keypair, name string) (string, *laoChan
 	o.createLao(publish)
 	id := base64.URLEncoding.EncodeToString(laoID)
 
-	channel, ok := oHub.channelByID[id]
+	channel, ok := oHub.channelByID[rootPrefix+id]
 	if !ok {
 		return "", nil, xerrors.Errorf("Could not extract the channel of the lao")
 	}
