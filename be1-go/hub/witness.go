@@ -1,6 +1,7 @@
 package hub
 
 import (
+	"context"
 	"log"
 	"student20_pop/message"
 	"student20_pop/network/socket"
@@ -34,6 +35,8 @@ func (w *witnessHub) handleMessageFromWitness(incomingMessage *socket.IncomingMe
 }
 
 func (w *witnessHub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) {
+	defer w.workers.Release(1)
+
 	log.Printf("organizerHub::handleIncomingMessage: %s", incomingMessage.Message)
 
 	switch incomingMessage.Socket.Type() {
@@ -60,6 +63,12 @@ func (w *witnessHub) Start() {
 		for {
 			select {
 			case incomingMessage := <-w.messageChan:
+				ok := w.workers.TryAcquire(1)
+				if !ok {
+					log.Print("warn: worker pool full, waiting...")
+					w.workers.Acquire(context.Background(), 1)
+				}
+
 				w.handleIncomingMessage(&incomingMessage)
 			case id := <-w.closedSockets:
 				w.RLock()
@@ -78,4 +87,6 @@ func (w *witnessHub) Start() {
 
 func (w *witnessHub) Stop() {
 	close(w.stop)
+	log.Println("Waiting for existing workers to finish...")
+	w.workers.Acquire(context.Background(), numWorkers)
 }

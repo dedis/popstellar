@@ -1,6 +1,7 @@
 package hub
 
 import (
+	"context"
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
@@ -14,6 +15,7 @@ import (
 	"student20_pop/validation"
 
 	"go.dedis.ch/kyber/v3"
+	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -23,6 +25,10 @@ import (
 const rootPrefix = "/root/"
 
 const (
+	// numWorkers denote the number of worker go-routines
+	// allowed to process requests concurrently.
+	numWorkers = 10
+
 	dbPrepareErr  = "failed to prepare query: %v"
 	dbParseRowErr = "failed to parse row: %v"
 	dbRowIterErr  = "error in row iteration: %v"
@@ -43,6 +49,8 @@ type baseHub struct {
 	schemaValidator *validation.SchemaValidator
 
 	stop chan struct{}
+
+	workers *semaphore.Weighted
 }
 
 // NewBaseHub returns a Base Hub.
@@ -60,6 +68,7 @@ func NewBaseHub(public kyber.Point) (*baseHub, error) {
 		public:          public,
 		schemaValidator: schemaValidator,
 		stop:            make(chan struct{}),
+		workers:         semaphore.NewWeighted(numWorkers),
 	}
 
 	if os.Getenv("HUB_DB") != "" {
@@ -81,7 +90,13 @@ func (h *baseHub) Start() {
 		for {
 			select {
 			case incomingMessage := <-h.messageChan:
-				h.handleIncomingMessage(&incomingMessage)
+				ok := h.workers.TryAcquire(1)
+				if !ok {
+					log.Print("warn: worker pool full, waiting...")
+					h.workers.Acquire(context.Background(), 1)
+				}
+
+				go h.handleIncomingMessage(&incomingMessage)
 			case id := <-h.closedSockets:
 				h.RLock()
 				for _, channel := range h.channelByID {
@@ -99,6 +114,8 @@ func (h *baseHub) Start() {
 
 func (h *baseHub) Stop() {
 	close(h.stop)
+	log.Println("Waiting for existing workers to finish...")
+	h.workers.Acquire(context.Background(), numWorkers)
 }
 
 func (h *baseHub) Receiver() chan<- socket.IncomingMessage {
@@ -291,6 +308,8 @@ func (h *baseHub) handleMessageFromWitness(incomingMessage *socket.IncomingMessa
 // handleIncomingMessage handles an incoming message based on the socket it
 // originates from.
 func (h *baseHub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) {
+	defer h.workers.Release(1)
+
 	log.Printf("Hub::handleMessageFromClient: %s", incomingMessage.Message)
 
 	switch incomingMessage.Socket.Type() {
