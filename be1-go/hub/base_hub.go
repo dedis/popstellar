@@ -1,7 +1,7 @@
 package hub
 
 import (
-  "context"
+	"context"
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
@@ -24,11 +24,10 @@ import (
 // rootPrefix denotes the prefix for the root channel
 const rootPrefix = "/root/"
 
-
 const (
-  // numWorkers denote the number of worker go-routines
-  // allowed to process requests concurrently.
-  const numWorkers = 10
+	// numWorkers denote the number of worker go-routines
+	// allowed to process requests concurrently.
+	numWorkers = 10
 
 	dbPrepareErr  = "failed to prepare query: %v"
 	dbParseRowErr = "failed to parse row: %v"
