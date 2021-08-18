@@ -53,6 +53,7 @@ export function catchup(channel: Channel): Promise<Message[]> {
         throw new Error('FIXME number in result. Should it be here?');
       }
 
+      // FIXME: massive bug here. cannot `fromJson`
       return (r.result as any[]).map((m) => Message.fromJson(m));
     },
   );

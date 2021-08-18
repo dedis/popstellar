@@ -3,6 +3,8 @@ import { NetworkConnection } from './NetworkConnection';
 import { NetworkError } from './NetworkError';
 import { defaultRpcHandler, JsonRpcHandler } from './RpcHandler';
 
+const defPort = 9000;
+
 let NETWORK_MANAGER_INSTANCE: NetworkManager;
 
 class NetworkManager {
@@ -37,7 +39,7 @@ class NetworkManager {
    *
    * @returns a new connection to the server, or an existing one if it's already established
    */
-  public connect(host: string, port: number = 9000, path: string = 'organizer/client/'): NetworkConnection {
+  public connect(host: string, port: number = defPort, path: string = 'organizer/client/'): NetworkConnection {
     const address: string = NetworkManager.buildAddress(host, port, path);
     const existingConnection = this.getConnectionByAddress(address);
 
@@ -58,7 +60,7 @@ class NetworkManager {
     }
   }
 
-  public disconnectFrom(host: string, port: number = 8080, path: string = ''): void {
+  public disconnectFrom(host: string, port: number = defPort, path: string = ''): void {
     const address = NetworkManager.buildAddress(host, port, path);
     const connection = this.getConnectionByAddress(address);
     if (connection !== undefined) {
