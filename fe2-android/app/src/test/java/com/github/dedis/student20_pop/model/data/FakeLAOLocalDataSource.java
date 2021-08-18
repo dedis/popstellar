@@ -6,19 +6,16 @@ import com.github.dedis.student20_pop.model.entities.Meeting;
 import com.github.dedis.student20_pop.model.entities.ModificationSignature;
 import com.github.dedis.student20_pop.model.entities.Person;
 import com.github.dedis.student20_pop.model.entities.RollCall;
-import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Fake test double of LAOLocalDataSource
+ */
 public class FakeLAOLocalDataSource implements LAODataSource.Local {
-
-  private List<LAO> laoList;
-  private List<LAOEntity> laoEntityList;
 
   private static FakeLAOLocalDataSource INSTANCE;
 
   private FakeLAOLocalDataSource() {
-    laoList = new ArrayList<>();
-    laoEntityList = new ArrayList<>();
   }
 
   public static FakeLAOLocalDataSource getInstance() {
@@ -30,23 +27,17 @@ public class FakeLAOLocalDataSource implements LAODataSource.Local {
 
   @Override
   public List<LAO> getAll() {
-    return laoList;
+    return null;
   }
 
   @Override
   public LAOEntity getLAO(String channel) {
-    return laoEntityList.stream()
-        .filter(l -> l.lao.channel.equals(channel))
-        .findFirst()
-        .orElse(new LAOEntity());
+    return null;
   }
 
   @Override
   public void addLao(LAO lao) {
-    laoList.add(lao);
-    LAOEntity laoEntity = new LAOEntity();
-    laoEntity.lao = lao;
-    laoEntityList.add(laoEntity);
+
   }
 
   @Override
