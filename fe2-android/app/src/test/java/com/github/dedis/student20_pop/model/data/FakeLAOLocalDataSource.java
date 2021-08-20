@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.model.data;
 
+import com.github.dedis.student20_pop.model.data.LAODataSource.Local;
 import com.github.dedis.student20_pop.model.entities.LAO;
 import com.github.dedis.student20_pop.model.entities.LAOEntity;
 import com.github.dedis.student20_pop.model.entities.Meeting;
@@ -11,18 +12,9 @@ import java.util.List;
 /**
  * Fake test double of LAOLocalDataSource
  */
-public class FakeLAOLocalDataSource implements LAODataSource.Local {
+public class FakeLAOLocalDataSource implements Local {
 
-  private static FakeLAOLocalDataSource INSTANCE;
-
-  private FakeLAOLocalDataSource() {
-  }
-
-  public static FakeLAOLocalDataSource getInstance() {
-    if (INSTANCE == null) {
-      INSTANCE = new FakeLAOLocalDataSource();
-    }
-    return INSTANCE;
+  public FakeLAOLocalDataSource() {
   }
 
   @Override

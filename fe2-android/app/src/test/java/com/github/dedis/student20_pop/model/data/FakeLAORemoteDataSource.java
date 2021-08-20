@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.model.data;
 
+import com.github.dedis.student20_pop.model.data.LAODataSource.Remote;
 import com.github.dedis.student20_pop.model.network.GenericMessage;
 import com.github.dedis.student20_pop.model.network.method.Message;
 import com.tinder.scarlet.WebSocket.Event;
@@ -9,32 +10,25 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Fake test double of LAORemoteDataSource
  */
-public class FakeLAORemoteDataSource implements LAODataSource.Remote {
+public class FakeLAORemoteDataSource implements Remote {
 
   // TODO: create variables for generic messages: this will be the upstream in the LaoRepository.
   //  This upstream represents the answers that the frontend received from the backend.
   //  Test idea: add answer of a Publish, call sendPublish and verify the answer comes is the expected one
   private AtomicInteger requestId;
+  private Observable<GenericMessage> upstream;
 
-  private static FakeLAORemoteDataSource INSTANCE;
-
-  private FakeLAORemoteDataSource() {
+  public FakeLAORemoteDataSource(Observable<GenericMessage> upstream) {
     // TODO: initialize the generic messages with examples of catchup and publish,
     //  need a GenericMessage for each (create using json file, follow protocol specs?)
     requestId = new AtomicInteger();
-  }
-
-  public static FakeLAORemoteDataSource getInstance() {
-    if (INSTANCE == null) {
-      INSTANCE = new FakeLAORemoteDataSource();
-    }
-    return INSTANCE;
+    this.upstream = upstream;
   }
 
   @Override
   public Observable<GenericMessage> observeMessage() {
     // TODO: return the fake list of catchup, publish, etc.
-    return Observable.fromArray();
+    return upstream;
   }
 
   @Override
