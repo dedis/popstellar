@@ -7,28 +7,26 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.viewpager2.widget.ViewPager2;
 
-import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentSetupElectionEventBinding;
-import com.github.dedis.student20_pop.databinding.LayoutBallotOptionBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.github.dedis.student20_pop.detail.adapters.ElectionSetupViewPagerAdapter;
+import com.github.dedis.student20_pop.detail.transformers.ZoomOutTransformer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class ElectionSetupFragment extends AbstractEventCreationFragment implements AdapterView.OnItemSelectedListener {
+import me.relex.circleindicator.CircleIndicator3;
+
+public class ElectionSetupFragment extends AbstractEventCreationFragment{
 
     public static final String TAG = ElectionSetupFragment.class.getSimpleName();
 
@@ -36,11 +34,10 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
 
     //mandatory fields for submitting
     private EditText electionNameText;
-    private EditText electionQuestionText;
+    private Button cancelButton;
     private Button submitButton;
-
+    private ElectionSetupViewPagerAdapter viewPagerAdapter;
     private LaoDetailViewModel mLaoDetailViewModel;
-
     //Enum of all voting methods, associated to a string desc for protocol and spinner display
     public enum VotingMethods { PLURALITY("Plurality");
         private String desc;
@@ -48,12 +45,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
         public String getDesc() { return desc; }
     }
 
-    private String votingMethod;
 
-    private List<String> ballotOptions;
 
-    //the number of valid ballot options set by the organizer
-    private int numberBallotOptions = 0;
 
     //Text watcher that checks if mandatory fields are filled for submitting each time the user changes a field (with at least two valid ballot options)
     private final TextWatcher submitTextWatcher =
@@ -66,12 +59,10 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
 
                 @Override
                 public void afterTextChanged(Editable s) {
-                    Log.d(TAG, "ballot options is" + ballotOptions.toString());
-                    boolean areFieldsFilled =
-                            !electionNameText.getText().toString().trim().isEmpty() && !getStartDate().isEmpty() && !getStartTime().isEmpty() && !getEndDate().isEmpty() && !getEndTime().isEmpty() &&
-                                    !electionQuestionText.getText().toString().trim().isEmpty() && numberBallotOptions >= 2;
-                    submitButton.setEnabled(areFieldsFilled);}
+                    //On each change of election level information, we check that at least one question is complete to know if submit is allowed
+                    submitButton.setEnabled(isElectionLevelInputValid() && viewPagerAdapter.isAnInputValid().getValue());}
             };
+
 
     public static ElectionSetupFragment newInstance() {
         return new ElectionSetupFragment();
@@ -89,28 +80,59 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
 
         mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 
+
+
         //Set the view for the date and time
         setDateAndTimeView(mSetupElectionFragBinding.getRoot(), this, getFragmentManager());
         //Make the textWatcher listen to changes in the start and end date/time
         addEndDateAndTimeListener(submitTextWatcher);
         addStartDateAndTimeListener(submitTextWatcher);
 
-        ballotOptions = new ArrayList<>();
-
+        cancelButton = mSetupElectionFragBinding.electionCancelButton;
         submitButton = mSetupElectionFragBinding.electionSubmitButton;
         electionNameText = mSetupElectionFragBinding.electionSetupName;
-        electionQuestionText = mSetupElectionFragBinding.electionQuestion;
 
         //Add text watchers on the fields that need to be filled
-        electionQuestionText.addTextChangedListener(submitTextWatcher);
         electionNameText.addTextChangedListener(submitTextWatcher);
 
-        // Set up the basic fields for ballot options, with at least two options
-        initNewBallotOptionsField();
 
         // Set the text widget in layout to current LAO name
         TextView laoNameTextView = mSetupElectionFragBinding.electionSetupLaoName;
         laoNameTextView.setText(mLaoDetailViewModel.getCurrentLaoName().getValue());
+
+        //Set viewPager adapter
+        viewPagerAdapter = new ElectionSetupViewPagerAdapter(mLaoDetailViewModel);
+
+        //Set ViewPager
+        ViewPager2 viewPager2 = mSetupElectionFragBinding.electionSetupViewPager2;
+        viewPager2.setAdapter(viewPagerAdapter);
+
+        //Sets animation on swipe
+        viewPager2.setPageTransformer(new ZoomOutTransformer());
+
+        //This sets the indicator of which page we are on
+        CircleIndicator3 circleIndicator = mSetupElectionFragBinding.electionSetupSwipeIndicator;
+        circleIndicator.setViewPager(viewPager2);
+
+        //This observes if at least one of the question has the minimal information
+        viewPagerAdapter.isAnInputValid().observe(this, aBoolean -> submitButton.setEnabled(aBoolean && isElectionLevelInputValid()));
+
+        Button addQuestion = mSetupElectionFragBinding.addQuestion;
+        addQuestion.setOnClickListener(v -> {
+            addQuestion.setEnabled(false);
+            viewPagerAdapter.addQuestion();
+
+            //This scales for a few dozens of questions but this is dangerous and  greedy in resources
+            //TODO delete this and find a way to keep data on left swipe
+            viewPager2.setOffscreenPageLimit(viewPagerAdapter.getNumberOfQuestions());
+
+            //This swipes automatically to new question
+            viewPager2.setCurrentItem(viewPager2.getCurrentItem() + 1);
+
+            //Updates the number of circles in the indicator
+            circleIndicator.setViewPager(viewPager2);
+            addQuestion.setEnabled(true);
+        });
 
         mSetupElectionFragBinding.setLifecycleOwner(getActivity());
 
@@ -122,9 +144,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        setupAddBallotOptionsButton();
         setupElectionCancelButton();
-        setupElectionSpinner();
         setupElectionSubmitButton();
 
         // subscribe to the election create event
@@ -142,56 +162,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
 
 
     /**
-     * Adds a view of ballot option to the layout when user clicks the button
-     */
-    private void addBallotOption() {
-        //Adds the view for a new ballot option, from the corresponding layout
-        View ballotOptionView = LayoutBallotOptionBinding.inflate(getLayoutInflater()).newBallotOptionLl;
-        EditText ballotOptionText = ballotOptionView.findViewById(R.id.new_ballot_option_text);
-        mSetupElectionFragBinding.electionSetupBallotOptionsLl.addView(ballotOptionView);
-
-        //Gets the index associated to the ballot option's view
-        int ballotIndex = mSetupElectionFragBinding.electionSetupBallotOptionsLl.indexOfChild(ballotOptionView);
-        ballotOptionText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {/* no check to make before text is changed */}
-            @Override
-            public void onTextChanged(CharSequence charSequence, int start, int before, int count) { /*no check to make during the text is being changed */}
-            @Override
-            public void afterTextChanged(Editable editable) {
-                String text = editable.toString();
-                //Prevents the user from creating two different ballot options with the same name
-                if (!text.isEmpty() && ballotOptions.contains(text)) ballotOptionText.setError("Two different ballot options can't have the same name");
-                //Counts the number of non-empty ballot options, to know when the user can create the election (at least 2 non-empty)
-                if (ballotOptions.isEmpty() || (ballotOptions.get(ballotIndex).isEmpty() && !text.isEmpty())) numberBallotOptions++;
-                else if (!ballotOptions.get(ballotIndex).isEmpty() && text.isEmpty())  numberBallotOptions--;
-                //Keeps the list of string updated when the user changes the text
-                ballotOptions.set(ballotIndex, editable.toString());
-            }
-        });
-        ballotOptionText.addTextChangedListener(submitTextWatcher);
-        ballotOptions.add(ballotOptionText.getText().toString());
-    }
-
-
-    /**
-     * Initializes the layout with two ballot options (minimum number of ballot options)
-     */
-    private void initNewBallotOptionsField() {
-        addBallotOption();
-        addBallotOption();
-    }
-
-
-    /**
-     * Setups the button that adds a new ballot option on click
-     */
-    private void setupAddBallotOptionsButton() {
-        FloatingActionButton addBallotOptionButton = mSetupElectionFragBinding.addBallotOption;
-        addBallotOptionButton.setOnClickListener(v -> addBallotOption());
-    }
-
-    /**
      * Setups the submit button that creates the new election
      */
     private void setupElectionSubmitButton() {
@@ -201,46 +171,59 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
                     submitButton.setEnabled(false);
                     //When submitting, we compute the timestamps for the selected start and end time
                     computeTimesInSeconds();
-                    //Filter the list of ballot options to keep only non-empty fields
-                    List<String> filteredBallotOptions = new ArrayList<>();
-                    for (String ballotOption: ballotOptions) {
-                        if (!ballotOption.equals("")) filteredBallotOptions.add(ballotOption);
-                    }
-                    mLaoDetailViewModel.createNewElection(electionNameText.getText().toString(), startTimeInSeconds, endTimeInSeconds, votingMethod, mSetupElectionFragBinding.writeIn.isChecked(),
-                            filteredBallotOptions, electionQuestionText.getText().toString());
+
+                    final List<Integer> validPositions = viewPagerAdapter.getValidInputs();
+
+                    List<String> votingMethod = viewPagerAdapter.getVotingMethod();
+                    List<String> questions = viewPagerAdapter.getQuestions();
+                    List<List<String>> ballotsOptions = viewPagerAdapter.getBallotOptions();
+                    List<String> votingMethodFiltered = new ArrayList<>();
+                    List<String> questionsFiltered = new ArrayList<>();
+                    List<List<String>> ballotsOptionsFiltered = new ArrayList<>();
+
+                    //////////////////////////While write in not implemented///////////////////////////////////////////////
+                    List<Boolean> writeIns = new ArrayList<>();
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////
+                    for(Integer i : validPositions) {
+                        //We filter to only take the questions for which all data is filled
+
+                            writeIns.add(false); //While write in is not implemented
+                        
+                            questionsFiltered.add(questions.get(i));
+                            votingMethodFiltered.add(votingMethod.get(i));
+                            List<String> questionBallotOptions = ballotsOptions.get(i);
+                            List<String> filteredQuestionBallotOptions = new ArrayList<>();
+                            for (String ballotOption : questionBallotOptions) {
+                                //Filter the list of ballot options to keep only non-empty fields
+                                if (!ballotOption.equals(""))
+                                    filteredQuestionBallotOptions.add(ballotOption);
+                            }
+                            ballotsOptionsFiltered.add(filteredQuestionBallotOptions);
+                        }
+
+                    String electionName = electionNameText.getText().toString();
+                    Log.d(TAG, "Creating election with name " + electionName + ", start time " + startTimeInSeconds + ", end time " + endTimeInSeconds + ", voting methods "
+                    + votingMethodFiltered + ", writesIn " + writeIns + ", questions " + questionsFiltered + ", ballotsOptions " +ballotsOptionsFiltered);
+                    mLaoDetailViewModel.createNewElection(electionName, startTimeInSeconds, endTimeInSeconds, votingMethodFiltered, writeIns,
+                       ballotsOptionsFiltered, questionsFiltered);
                 });
     }
+
 
     /**
      * Setups the cancel button, that brings back to LAO detail page
      */
     private void setupElectionCancelButton() {
-        Button cancelButton = mSetupElectionFragBinding.electionCancelButton;
+        cancelButton = mSetupElectionFragBinding.electionCancelButton;
         cancelButton.setOnClickListener(v -> mLaoDetailViewModel.openLaoDetail());
     }
 
     /**
-     * Setups the spinner displaying the voting methods, and that selects the corresponding item on click
+     *
+     * @return true if the election name text, dates and times inputs are valid
      */
-    private void setupElectionSpinner() {
-        Spinner spinner = mSetupElectionFragBinding.electionSetupSpinner;
-        String[] items = Arrays.stream(VotingMethods.values()).map(VotingMethods::getDesc).toArray(String[]::new);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
-                android.R.layout.simple_spinner_item, items);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(this);
+    private boolean isElectionLevelInputValid(){
+        return !electionNameText.getText().toString().trim().isEmpty() && !getStartDate().isEmpty()
+                && !getStartTime().isEmpty() && !getEndDate().isEmpty() && !getEndTime().isEmpty();
     }
-
-    // Spinner methods
-    @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        votingMethod = adapterView.getItemAtPosition(i).toString();
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {
-        votingMethod = "Plurality";
-    }
-
 }

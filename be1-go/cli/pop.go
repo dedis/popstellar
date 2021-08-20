@@ -1,3 +1,23 @@
+// Package main is the entry point for the pop application
+//
+// The pop binary may be compiled by executing `make build` in the be1-go
+// directory. More information about the subcommands is available by
+// executing the binary with a -h flag
+//
+//  ./pop -h
+//  NAME:
+//    pop - backend for the PoP project
+//
+//  USAGE:
+//    pop [global options] command [command options] [arguments...]
+//
+//  COMMANDS:
+//     organizer  manage the organizer
+//     witness    manage the witness
+//     help, h    Shows a list of commands or help for one command
+//
+//  GLOBAL OPTIONS:
+//     --help, -h  show help (default: false)
 package main
 
 import (
@@ -19,14 +39,8 @@ func main() {
 	organizerAddressFlag := &cli.StringFlag{
 		Name:    "organizer-address",
 		Aliases: []string{"org"},
-		Usage:   "ip address of organizer",
-		Value:   "localhost",
-	}
-	organizerPortFlag := &cli.IntFlag{
-		Name:    "organizer-port",
-		Aliases: []string{"op"},
-		Usage:   "port on which to connect to organizer websocket",
-		Value:   9001,
+		Usage:   "address and witness port of organizer",
+		Value:   "localhost:9002",
 	}
 	clientPortFlag := &cli.IntFlag{
 		Name:    "client-port",
@@ -80,7 +94,6 @@ func main() {
 						Usage: "start the witness server",
 						Flags: []cli.Flag{
 							organizerAddressFlag,
-							organizerPortFlag,
 							clientPortFlag,
 							witnessPortFlag,
 							otherWitnessFlag,

@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"os"
-	"student20_pop"
+	"student20_pop/crypto"
 	"student20_pop/message"
 	"testing"
 	"time"
@@ -23,7 +23,7 @@ type keypair struct {
 
 var organizerKeyPair keypair
 
-var suite = student20_pop.Suite
+var suite = crypto.Suite
 
 var oHub *organizerHub
 
@@ -91,7 +91,7 @@ func createLao(o *organizerHub, oKeypair keypair, name string) (string, *laoChan
 	o.createLao(publish)
 	id := base64.URLEncoding.EncodeToString(laoID)
 
-	channel, ok := oHub.channelByID[id]
+	channel, ok := oHub.channelByID[rootPrefix+id]
 	if !ok {
 		return "", nil, xerrors.Errorf("Could not extract the channel of the lao")
 	}
@@ -248,8 +248,9 @@ func TestOrganizer_RollCall(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, laoChannel.rollCall.state, Closed)
 	require.Equal(t, laoChannel.rollCall.id, string(dataClose1.UpdateID))
+
 	for _, attendee := range attendees[:8] {
-		_, ok := laoChannel.attendees[string(attendee)]
+		ok := laoChannel.attendees.IsPresent(attendee.String())
 		require.True(t, ok)
 	}
 
@@ -270,8 +271,9 @@ func TestOrganizer_RollCall(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, laoChannel.rollCall.state, Closed)
 	require.Equal(t, laoChannel.rollCall.id, string(dataClose2.UpdateID))
+
 	for _, attendee := range attendees {
-		_, ok := laoChannel.attendees[string(attendee)]
+		ok := laoChannel.attendees.IsPresent(attendee.String())
 		require.True(t, ok)
 	}
 }

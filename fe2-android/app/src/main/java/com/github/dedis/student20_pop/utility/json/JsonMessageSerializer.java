@@ -1,5 +1,7 @@
 package com.github.dedis.student20_pop.utility.json;
 
+import android.util.Log;
+
 import com.github.dedis.student20_pop.model.network.method.Message;
 import com.github.dedis.student20_pop.model.network.method.Method;
 import com.github.dedis.student20_pop.model.network.method.Query;
@@ -19,6 +21,7 @@ public class JsonMessageSerializer implements JsonSerializer<Message>, JsonDeser
   @Override
   public Message deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
+    Log.d("deserializer", "deserializing message");
     JSONRPCRequest container = context.deserialize(json, JSONRPCRequest.class);
     JsonUtils.testRPCVersion(container.getJsonrpc());
 

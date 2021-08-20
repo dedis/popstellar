@@ -23,7 +23,10 @@
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
-    <activity android:name=".detail.LaoDetailActivity"></activity>
+    <activity
+        android:name=".detail.LaoDetailActivity"
+        android:windowSoftInputMode="adjustPan">
+    </activity>
 
     <uses-library
       android:name="android.test.runner"

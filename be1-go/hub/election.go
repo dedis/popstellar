@@ -4,10 +4,57 @@ import (
 	"encoding/base64"
 	"fmt"
 	"log"
+	"student20_pop/crypto"
 	"student20_pop/message"
 	"sync"
 )
 
+// Attendees represents the attendees in an election.
+type Attendees struct {
+	sync.Mutex
+	store map[string]struct{}
+}
+
+// NewAttendees returns a new instance of Attendees.
+func NewAttendees() *Attendees {
+	return &Attendees{
+		store: make(map[string]struct{}),
+	}
+}
+
+// IsPresent checks if a key representing a user is present in
+// the list of attendees.
+func (a *Attendees) IsPresent(key string) bool {
+	a.Lock()
+	defer a.Unlock()
+
+	_, ok := a.store[key]
+	return ok
+}
+
+// Add adds an attendee to the election.
+func (a *Attendees) Add(key string) {
+	a.Lock()
+	defer a.Unlock()
+
+	a.store[key] = struct{}{}
+}
+
+// Copy deep copies the Attendees struct.
+func (a *Attendees) Copy() *Attendees {
+	a.Lock()
+	defer a.Unlock()
+
+	clone := NewAttendees()
+
+	for key := range a.store {
+		clone.store[key] = struct{}{}
+	}
+
+	return clone
+}
+
+// electionChannel is used to handle election messages.
 type electionChannel struct {
 	*baseChannel
 
@@ -23,34 +70,39 @@ type electionChannel struct {
 	// Questions asked to the participants
 	//the key will be the string representation of the id of type byte[]
 	questions map[string]question
+
+	// attendees that took part in the roll call string of their PK
+	attendees *Attendees
 }
 
+// question represents a question in an election.
 type question struct {
-	// ID of th question
+	// ID represents the id of the question.
 	id []byte
 
-	// Different options
+	// ballotOptions represents different ballot options.
 	ballotOptions []message.BallotOption
 
-	//valid vote mutex
+	//valid vote mutex.
 	validVotesMu sync.RWMutex
 
-	// list of all valid votes
-	// the key represents the public key of the person casting the vote
+	// validVotes represents the list of all valid votes. The key represents
+	// the public key of the person casting the vote.
 	validVotes map[string]validVote
 
-	// Voting method of the election
+	// method represents the voting method of the election.
 	method message.VotingMethod
 }
 
 type validVote struct {
-	// time of the creation of the vote
+	// voteTime represents the time of the creation of the vote.
 	voteTime message.Timestamp
 
-	// indexes of the ballot options
+	// indexes represents the indexes of the ballot options
 	indexes []int
 }
 
+// createElection creates an election in the LAO.
 func (c *laoChannel) createElection(msg message.Message) error {
 	organizerHub := c.hub
 
@@ -78,29 +130,31 @@ func (c *laoChannel) createElection(msg message.Message) error {
 
 	// Compute the new election channel id
 	encodedElectionID := base64.URLEncoding.EncodeToString(data.ID)
-	encodedID := encodedLaoID + "/" + encodedElectionID
+	channelPath := rootPrefix + encodedLaoID + "/" + encodedElectionID
 
 	// Create the new election channel
 	electionCh := electionChannel{
-		createBaseChannel(organizerHub, rootPrefix+encodedID),
+		createBaseChannel(organizerHub, channelPath),
 		data.StartTime,
 		data.EndTime,
 		false,
 		getAllQuestionsForElectionChannel(data.Questions),
+		c.attendees,
 	}
 
 	// Saving the election channel creation message on the lao channel
-  c.inbox.storeMessage(msg)
-  
+	c.inbox.storeMessage(msg)
+
 	// Saving on election channel too so it self-contains the entire election history
 	electionCh.inbox.storeMessage(msg)
 
 	// Add the new election channel to the organizerHub
-	organizerHub.channelByID[encodedID] = &electionCh
+	organizerHub.channelByID[channelPath] = &electionCh
 
 	return nil
 }
 
+// Publish is used to handle publish messages in the election channel.
 func (c *electionChannel) Publish(publish message.Publish) error {
 	err := c.baseChannel.VerifyPublishMessage(publish)
 	if err != nil {
@@ -156,6 +210,28 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 			Description: fmt.Sprintf("Vote cast too late, vote casted at %v and election ended at %v", voteData.CreatedAt, c.end),
 		}
 	}
+	senderPK := base64.URLEncoding.EncodeToString(msg.Sender)
+
+	log.Printf("The sender pk is %s", senderPK)
+
+	senderPoint := crypto.Suite.Point()
+	err := senderPoint.UnmarshalBinary(msg.Sender)
+	if err != nil {
+		return &message.Error{
+			Code:        -4,
+			Description: "Invalid sender public key",
+		}
+	}
+
+	log.Printf("All the valid pks are %v and %v", c.attendees, senderPoint)
+
+	ok = c.attendees.IsPresent(senderPK) || c.hub.public.Equal(senderPoint)
+	if !ok {
+		return &message.Error{
+			Code:        -4,
+			Description: "Only attendees can cast a vote in an election",
+		}
+	}
 
 	//This should update any previously set vote if the message ids are the same
 	c.inbox.storeMessage(*msg)
@@ -170,14 +246,16 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 				Description: "No Question with this ID exists",
 			}
 		}
-		//this is to handle the case when the organizer must handle multiple votes being cast at the same time
+
+		// this is to handle the case when the organizer must handle multiple votes being cast at the same time
 		qs.validVotesMu.Lock()
 		earlierVote, ok := qs.validVotes[msg.Sender.String()]
-		// if the sender didn't previously cast a vote or if the vote is no longer valid update it
 
+		// if the sender didn't previously cast a vote or if the vote is no longer valid update it
 		if err := checkMethodProperties(qs.method, len(q.VoteIndexes)); err != nil {
 			return err
 		}
+
 		if !ok {
 			qs.validVotes[msg.Sender.String()] =
 				validVote{voteData.CreatedAt,
@@ -185,6 +263,7 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 		} else {
 			changeVote(&qs, earlierVote, msg.Sender.String(), voteData.CreatedAt, q.VoteIndexes)
 		}
+
 		//other votes can now change the list of valid votes
 		qs.validVotesMu.Unlock()
 	}
@@ -192,6 +271,7 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 	log.Printf("Vote casted with success")
 	return nil
 }
+
 func checkMethodProperties(method message.VotingMethod, length int) error {
 
 	if method == "Plurality" && length < 1 {

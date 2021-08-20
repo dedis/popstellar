@@ -17,8 +17,8 @@ type sqlite struct {
 	conn *sql.DB
 }
 
-var (
-	DDL = `
+// DDL denotes the SQL statements to setup tables and indexes.
+var DDL = `
 	CREATE TABLE messages (
 		channel_id text, message_id text, timestamp integer, message text,
 		PRIMARY KEY (channel_id, message_id)
@@ -31,8 +31,8 @@ var (
 	);
 	INSERT INTO migrations (id, date, description) VALUES (0, datetime('now', 'unixepoch'), 'base schema');
 	`
-)
 
+// TxFunc is a wrapper to execute statements within a SQL transactions.
 type TxFunc func(tx *sql.Tx) error
 
 // NewSQLiteRepository instantiates an sqlite repository.
@@ -80,6 +80,8 @@ func (s *sqlite) GetMessages(channelID string) ([]message.Message, error) {
 	return s.GetMessagesInRange(channelID, 0, math.MaxInt64)
 }
 
+// WithTransaction executes the statements within fn inside a transaction.
+// The transaction is rolled back in case of an error or panic within fn.
 func (s *sqlite) WithTransaction(fn TxFunc) (err error) {
 	tx, err := s.conn.Begin()
 	if err != nil {
@@ -213,6 +215,7 @@ func (s *sqlite) AddMessage(channelID string, msg message.Message, timestamp mes
 	return nil
 }
 
+// Close closes the connection to the database.
 func (s *sqlite) Close() error {
 	err := s.conn.Close()
 	if err != nil {
