@@ -157,7 +157,8 @@ func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 	}
 
 	// Unmarshal the data
-	err = msg.VerifyAndUnmarshalData()
+	laoID := c.channelID[6:]
+	err = msg.VerifyAndUnmarshalData(laoID)
 	if err != nil {
 		// Return a error of type "-4 request data is invalid" for all the verifications and unmarshalling problems of the data
 		return &message.Error{
