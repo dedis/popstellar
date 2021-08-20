@@ -10,7 +10,8 @@ to get an idea about all the actors and components in the system.
 
 ##### Resources
 
-If this is your first time working with Go, please follow the following tutorials:
+If this is your first time working with Go, please follow the following
+tutorials:
 
 * [Getting Started](https://golang.org/doc/tutorial/getting-started)
 * [Creating Modules](https://golang.org/doc/tutorial/create-module)
@@ -19,14 +20,14 @@ If this is your first time working with Go, please follow the following tutorial
  
 ##### IDE/Editors
 
-Go is supported well across multiple text editors and IDE. The team at DEDIS
-has members using [GoLand (IntelliJ)](https://www.jetbrains.com/go/), [VSCode](https://code.visualstudio.com/)
-and neovim/vim.
+Go is supported well across multiple text editors and IDE. The team at DEDIS has
+members using [GoLand (IntelliJ)](https://www.jetbrains.com/go/),
+[VSCode](https://code.visualstudio.com/) and neovim/vim.
 
 VSCode/Neovim/vim require some custom configuration for adding Go support. We'd
 suggest using GoLand if you do not have a strict preference/experience with the
-other text editors since it works out of the box and EPFL/ETHZ students may avail
-a [free education license](https://www.jetbrains.com/community/education/#students)
+other text editors since it works out of the box and EPFL/ETHZ students may
+avail a [free education license](https://www.jetbrains.com/community/education/#students)
 for their use.
 
 #### Project Structure
@@ -39,6 +40,7 @@ The project is organized into different modules as follows
 │   ├── organizer       # cli for the organizer
 │   └── witness         # cli for the witness
 ├── db                  # persistance module
+│   ├── sqlite          # sqlite implementation of persistance 
 ├── docs
 ├── hub                 # logic for organizer/witness
 ├── message             # message types and marshaling/unmarshaling logic
@@ -48,59 +50,63 @@ The project is organized into different modules as follows
 └── validation          # module to validate incoming/outgoing messages
 ```
 
-Depending on which component you're working on, the entry point would
-either be cli/organizer or cli/witness, with bulk of the implementation
-logic in the hub module.
+Depending on which component you're working on, the entry point would either be
+cli/organizer or cli/witness, with bulk of the implementation logic in the hub
+module.
 
 #### Architecture
 
-The PoP Go backend expects actors (depending on the context these
-may be attendees/witnesses/organizer server) to establish long lived
-websocket connections with it and send messages back and forth over websockets
-using a publish/subscribe pattern.
+The PoP Go backend expects actors (depending on the context these may be
+attendees/witnesses/organizer server) to establish long lived websocket
+connections with it and send messages back and forth over websockets using a
+publish/subscribe pattern.
 
 <div align="center">
   <img alt="Communication Stack" src="images/comm_stack.jpeg" width="600" />
 </div>
 
-On a higher level of abstraction, a client may publish messages or subscribe
-for messages on a *channel*. You may think of a channel as a topic which
-stores events that occur over time. For instance, every LAO is denoted by a unique
+On a higher level of abstraction, a client may publish messages or subscribe for
+messages on a *channel*. You may think of a channel as a topic which stores
+events that occur over time. For instance, every LAO is denoted by a unique
 channel (also called the LAO channel) and contains messages about all events
-that occur within it, for example, the creation of an election, a roll call.
-A channel may have sub channels associated with it. For instance, a
-LAO may have a sub-channel for the elections where all messages associated
-with that election are published. Please refer to
-[Data pipeline architecture](https://docs.google.com/document/d/19r3rP6o8TO-xeZBM0GQzkHYQFSJtWy7UhjLhzzZVry4/edit#heading=h.1h71fzpdznrh)
+that occur within it, for example, the creation of an election, a roll call. A
+channel may have sub channels associated with it. For instance, a LAO may have a
+sub-channel for the elections where all messages associated with that election
+are published. Please refer to [Data pipeline
+architecture](https://docs.google.com/document/d/19r3rP6o8TO-xeZBM0GQzkHYQFSJtWy7UhjLhzzZVry4/edit#heading=h.1h71fzpdznrh)
 for more information.
 
 All the messages are encoded using JSON and are validated using JSON-RPC
 [schemas](https://github.com/dedis/student_21_pop/tree/master/protocol).
 [Protocol Specifications](https://docs.google.com/document/d/1fyNWSPzLhM6W9V0VTFf2waMLiJGcscy7wa4bQlLkySM)
 also gives an introduction to the different message formats. However, note that
-the [schemas](https://github.com/dedis/student_21_pop/tree/master/protocol) in this
-repository are **always** the source of truth and are more up to date than the Google Doc.
+the [schemas](https://github.com/dedis/student_21_pop/tree/master/protocol) in
+this repository are **always** the source of truth and are more up to date than
+the Google Doc.
 
 ##### Getting messages over the wire
 
-The `Socket` interface (refer `network/socket/mod.go`) describes the methods used for
-reading or sending data/error messages from/to the end user.
+The `Socket` interface (refer `network/socket/mod.go`) describes the methods
+used for reading or sending data/error messages from/to the end user.
 
-Depending on the type of end user, a `Socket` has three concrete implementations:
+Depending on the type of end user, a `Socket` has three concrete
+implementations:
 
-* `ClientSocket`: Used to denote a connection to a user participating in a PoP Party
+* `ClientSocket`: Used to denote a connection to a user participating in a PoP
+  Party
 * `WitnessSocket`: Used to represent a connection to a witness server.
 * `OrganizerSocket`: Used to represent a connection to the organizer server.
 
-The `ReadPump` and `WritePump` are low-level methods which allow
-reading/writing data over the wire. Most users would instead use the `Send(msg []byte)`,
-`SendError(id int, err error)` and `SendResult(id int, res message.Result)` APIs.
+The `ReadPump` and `WritePump` are low-level methods which allow reading/writing
+data over the wire. Most users would instead use the `Send(msg []byte)`,
+`SendError(id int, err error)` and `SendResult(id int, res message.Result)`
+APIs.
 
-Each incoming message read by `ReadPump` is passed to the Hub for processing. Refer to
-the channel returned by `Receiver()` in the `Hub` interface.
+Each incoming message read by `ReadPump` is passed to the Hub for processing.
+Refer to the channel returned by `Receiver()` in the `Hub` interface.
 
-We use [github.com/gorilla/websocket](github.com/gorilla/websocket) to manage websocket
-connections.
+We use [github.com/gorilla/websocket](github.com/gorilla/websocket) to manage
+websocket connections.
 
 ##### Processing messages in the application layer
 
@@ -108,33 +114,35 @@ The incoming messages received by the `ReadPump` are propagated up the stack to
 the `Hub` which is responsible for processing it and sending a `Result`, `Error`
 or a `Broadcast`.
 
-The `Hub` interface has two concrete implementations - one for the organizer
-and another for the witness. Since both share common implementations they embed
-the `baseHub` implementation with a few methods "overriden" where custom
+The `Hub` interface has two concrete implementations - one for the organizer and
+another for the witness. Since both share common implementations they embed the
+`baseHub` implementation with a few methods "overridden" where custom
 implementation is needed.
 
 The `baseHub` on receiving a message, processes it by invoking the
 `handleIncomingMessage` method where its handled depending on which `Socket` the
 message originates from.
 
-The flowchart below describes the flow of data and how messages are processed
+The flowchart below describes the flow of data and how messages are processed.
 
 <div align="center">
   <img src="images/flowchart.png" alt="Flowchart"/>
 </div>
 
-<p align="center"><i>Credits to the be1-go Spring 2021 team for the flowchart</i></p>
+<p align="center"><i>
+  Credits to the be1-go Spring 2021 team for the flowchart
+</i></p>
 
 The hubs themselves contain multiple `Channels` with the `Root` channel being
-the default one, where messages for creation of new LAOs may be published for instance.
-Another example of a channel would be one for an `Election` which would be a sub-channel
-within the LAO channel.
+the default one, where messages for creation of new LAOs may be published for
+instance. Another example of a channel would be one for an `Election` which
+would be a sub-channel within the LAO channel.
 
-At the moment, the backend **does not** persist any data on disk and maintains
-in-memory data structures for storing messages. This means all messages sent to
-the server will be lost after the process exists. The `db` package does implement
-a persistance layer which allows storing messages using SQLite but it remains
-to be integrated.
+The backend is able to persist any data on disk and maintains in-memory data
+structures for storing messages. To make use of this functionality set the
+`HUB_DB` environment variable to point to an initialized sqlite database when
+you launch the server. Package `db/sqlite/cli` implements a CLI to initialize
+such db. See the README in `be1-go/README.md` for instructions.
 
 ##### Message definitions
 
@@ -143,21 +151,22 @@ marshaling and unmarshaling them. Please note that the JSON-RPC definitions in
 the root of the repository are to be considered a source of truth since the
 validation library checks the messages against it.
 
-Please refer to existing message types, `MarshalJSON` and `UnmarshalJSON` methods
-to get an idea about how to implement a new type.
+Please refer to existing message types, `MarshalJSON` and `UnmarshalJSON`
+methods to get an idea about how to implement a new type.
 
 ##### Validation
 
 All the incoming messages are validated using the `validation` package. The
-`make build` and `make test` commands automatically copy over the JSON-RPC specifications
-and bundle it up during compilation.
+`make build` and `make test` commands automatically copy over the JSON-RPC
+specifications and bundle it up during compilation.
 
 #### Debugging Tips
 
 * Be generous with the use of log statements while developing a new feature.
 It's useful to get feedback about which steps executed and how far the message
 reached in the processing pipeline rather than getting an opaque error.
-* Ensure your error messages are descriptive.
+* Ensure your error messages are descriptive and ALWAYS wrap errors with a small
+  description, for example `xerrors.Errorf("failed to parse message: %v", err)`
 * If you're stuck, using a debugger can be of great help. GoLand has good
 support for it.
 
@@ -166,16 +175,17 @@ support for it.
 Please reach out to the DEDIS Engineering team members to deploy a build to an
 internet accessible host.
 
-Alternatively, if you wish to test things, **strongly** consider using [ngrok](https://ngrok.com/)
-to get an internet accessible URL which proxies requests to your local machine
-directly. This is a great option when testing against mobile devices in a group
-and if you need a quick turnaround time.
+Alternatively, if you wish to test things, **strongly** consider using
+[ngrok](https://ngrok.com/) to get an internet accessible URL which proxies
+requests to your local machine directly. This is a great option when testing
+against mobile devices in a group and if you need a quick turnaround time.
 
 #### Coding Style
 
 Go is opinionated about coding style and guidelines. As a rule of thumb, please
 please run `make check` before submitting any Pull Request and ensure there are
-no errors.
+no errors. DEDIS has a complementary coding guideline that you can find
+[here](https://dedis.github.io/dela/#/guideline).
 
 The CI also executes static analysis using SonarCloud which is good for giving
 early feedback against common problems. Please ensure all the code smells and
