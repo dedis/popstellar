@@ -335,7 +335,7 @@ func (c *laoChannel) processElectionObject(msg message.Message) error {
 	sender := msg.Sender
 
 	// Check if the sender of election creation message is the organizer
-	senderPoint := student20_pop.Suite.Point()
+	senderPoint := crypto.Suite.Point()
 	err := senderPoint.UnmarshalBinary(sender)
 	if err != nil {
 		return &message.Error{
