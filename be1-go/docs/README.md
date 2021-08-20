@@ -140,8 +140,9 @@ would be a sub-channel within the LAO channel.
 
 The backend is able to persist any data on disk and maintains in-memory data
 structures for storing messages. To make use of this functionality set the
-`HUB_DB` to point to an initialized sqlite database. Package `db/sqlite/cli`
-implements a CLI to initialize such db.
+`HUB_DB` environment variable to point to an initialized sqlite database when
+you launch the server. Package `db/sqlite/cli` implements a CLI to initialize
+such db. See the README in `be1-go/README.md` for instructions.
 
 ##### Message definitions
 
