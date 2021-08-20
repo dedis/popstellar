@@ -150,7 +150,7 @@ func (h *baseHub) handleRootChannelMesssage(id int, socket socket.Socket, query 
 	}
 
 	// Unmarshal the data
-	err = query.Publish.Params.Message.VerifyAndUnmarshalData()
+	err = query.Publish.Params.Message.VerifyAndUnmarshalData(rootPrefix)
 	if err != nil {
 		// Return a error of type "-4 request data is invalid" for all the
 		// verifications and unmarshaling problems of the data
