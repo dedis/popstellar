@@ -22,6 +22,7 @@ import com.github.dedis.student20_pop.utility.json.JsonGenericMessageDeserialize
 import com.github.dedis.student20_pop.utility.json.JsonMessageGeneralSerializer;
 import com.github.dedis.student20_pop.utility.json.JsonMessageSerializer;
 import com.github.dedis.student20_pop.utility.json.JsonResultSerializer;
+import com.github.dedis.student20_pop.utility.scheduler.ProdSchedulerProvider;
 import com.github.dedis.student20_pop.utility.security.Keys;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
@@ -52,7 +53,8 @@ public class Injection {
 
   private static AndroidKeysetManager KEYSET_MANAGER;
 
-  private Injection() {}
+  private Injection() {
+  }
 
 
   @SuppressWarnings("unused")
@@ -128,40 +130,43 @@ public class Injection {
 
   @SuppressWarnings("unused")
   public static LAORepository provideLAORepository(
-      Application application, LAOService service, AndroidKeysetManager keysetManager, Gson gson){
+      Application application, LAOService service, AndroidKeysetManager keysetManager, Gson gson) {
     LAODatabase db = LAODatabase.getDatabase(application);
     return LAORepository.getInstance(
         LAORemoteDataSource.getInstance(getMockService()),
         LAOLocalDataSource.getInstance(db),
         keysetManager,
-        gson);
+        gson,
+        new ProdSchedulerProvider());
   }
 
-  private static LAOService getMockService(){
-   return new LAOService() {
-     @Override
-     public void sendMessage(Message msg) {
-       //"mock" method
-     }
-     @Override
-     public Observable<GenericMessage> observeMessage() {
-       return new Observable<GenericMessage>() {
-         @Override
-         protected void subscribeActual(Observer<? super GenericMessage> observer) {
-           //"mock" method
-         }
-       };
-     }
-     @Override
-     public Observable<WebSocket.Event> observeWebsocket() {
-       return new Observable<WebSocket.Event>() {
-         @Override
-         protected void subscribeActual(Observer<? super WebSocket.Event> observer) {
-           //"mock" method
-         }
-       };
-     }
-   };
+  private static LAOService getMockService() {
+    return new LAOService() {
+      @Override
+      public void sendMessage(Message msg) {
+        //"mock" method
+      }
+
+      @Override
+      public Observable<GenericMessage> observeMessage() {
+        return new Observable<GenericMessage>() {
+          @Override
+          protected void subscribeActual(Observer<? super GenericMessage> observer) {
+            //"mock" method
+          }
+        };
+      }
+
+      @Override
+      public Observable<WebSocket.Event> observeWebsocket() {
+        return new Observable<WebSocket.Event>() {
+          @Override
+          protected void subscribeActual(Observer<? super WebSocket.Event> observer) {
+            //"mock" method
+          }
+        };
+      }
+    };
   }
 
 }
