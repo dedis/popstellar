@@ -75,7 +75,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
             },
             jsonObject.getFields(PARAM_EXTRA) match {
               case _ => None // FIXME todo extra
-              case _ => None
+              //case _ => None
             }
           )
         case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a CreateMeeting object")
@@ -131,7 +131,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
             },
             jsonObject.getFields(PARAM_EXTRA) match {
               case _ => None // FIXME todo extra
-              case _ => None
+              //case _ => None
             },
             modId.convertTo[Hash],
             modSig.map(_.convertTo[WitnessSignaturePair]).toList
