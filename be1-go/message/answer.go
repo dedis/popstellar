@@ -91,20 +91,24 @@ func (e *Error) Error() string {
 	return e.Description
 }
 
-// NewError returns an error with an updated description
-func NewError(description string, parent error) error {
-	msgError := &Error{}
-
-	if xerrors.As(parent, &msgError) {
-		msgError.Description = fmt.Sprintf("%s: %s", description, msgError.Description)
-		return msgError
+// NewError returns a *message.Error
+func NewError(code int, description string) *Error {
+	return &Error{
+		Code:        code,
+		Description: description,
 	}
+}
 
-	return xerrors.Errorf("%s: %v", description, parent)
+// NewErrorf returns a formatted *message.Error
+func NewErrorf(code int, format string, values ...interface{}) *Error {
+	return &Error{
+		Code:        code,
+		Description: fmt.Sprintf(format, values...),
+	}
 }
 
 // NewInvalidActionError an error with the code -1 for an invalid action.
-func NewInvalidActionError(action DataAction) error {
+func NewInvalidActionError(action DataAction) *Error {
 	return &Error{
 		Code:        -1,
 		Description: fmt.Sprintf("invalid action: %s", action),

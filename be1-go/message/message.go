@@ -229,7 +229,7 @@ func (m *Message) VerifyAndUnmarshalData(laoID string) error {
 
 	ok := m.validateID(laoID)
 	if !ok {
-		return xerrors.New("failed to validate ID")
+		return xerrors.Errorf("failed to validate ID: %q", laoID)
 	}
 
 	return nil

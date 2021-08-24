@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 	"sync"
@@ -129,11 +128,7 @@ func (h *baseHub) OnSocketClose() chan<- string {
 // handleRootChannelMesssage handles an incoming message on the root channel.
 func (h *baseHub) handleRootChannelMesssage(id int, socket socket.Socket, query *message.Query) {
 	if query.Publish == nil {
-		err := &message.Error{
-			Code:        -4,
-			Description: "only publish is allowed on /root",
-		}
-
+		err := message.NewError(-4, "only publish is allowed on /root")
 		socket.SendError(&id, err)
 		return
 	}
@@ -144,7 +139,6 @@ func (h *baseHub) handleRootChannelMesssage(id int, socket socket.Socket, query 
 	// Verify the data
 	err := h.schemaValidator.VerifyJson(msg.RawData, validation.Data)
 	if err != nil {
-		err = message.NewError("failed to validate the data", err)
 		socket.SendError(&id, err)
 		return
 	}
@@ -154,10 +148,7 @@ func (h *baseHub) handleRootChannelMesssage(id int, socket socket.Socket, query 
 	if err != nil {
 		// Return a error of type "-4 request data is invalid" for all the
 		// verifications and unmarshaling problems of the data
-		err = &message.Error{
-			Code:        -4,
-			Description: fmt.Sprintf("failed to verify and unmarshal data: %v", err),
-		}
+		err := message.NewErrorf(-4, "failed to verify and unmarshal data: %v", err)
 		socket.SendError(&id, err)
 		return
 	}
@@ -166,17 +157,13 @@ func (h *baseHub) handleRootChannelMesssage(id int, socket socket.Socket, query 
 		query.Publish.Params.Message.Data.GetObject() == message.DataObject(message.LaoObject) {
 		err := h.createLao(*query.Publish)
 		if err != nil {
-			err = message.NewError("failed to create lao", err)
-
 			socket.SendError(&id, err)
 			return
 		}
 	} else {
 		log.Printf("invalid method: %s", query.GetMethod())
-		socket.SendError(&id, &message.Error{
-			Code:        -1,
-			Description: "you may only invoke lao/create on /root",
-		})
+		err := message.NewError(-1, "failed to invoke lao/create: operation only allowed on /root")
+		socket.SendError(&id, err)
 		return
 	}
 
@@ -196,10 +183,7 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *socket.IncomingMessag
 	genericMsg := &message.GenericMessage{}
 	id, ok := genericMsg.UnmarshalID(byteMessage)
 	if !ok {
-		err := &message.Error{
-			Code:        -4,
-			Description: "The message does not have a valid `id` field",
-		}
+		err := message.NewError(-4, "The message does not have a valid `id` field")
 		socket.SendError(nil, err)
 		return
 	}
@@ -207,7 +191,6 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *socket.IncomingMessag
 	// Verify the message
 	err := h.schemaValidator.VerifyJson(byteMessage, validation.GenericMessage)
 	if err != nil {
-		err = message.NewError("failed to verify incoming message", err)
 		socket.SendError(&id, err)
 		return
 	}
@@ -217,11 +200,7 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *socket.IncomingMessag
 	if err != nil {
 		// Return a error of type "-4 request data is invalid" for all the
 		// unmarshaling problems of the incoming message
-		err = &message.Error{
-			Code:        -4,
-			Description: fmt.Sprintf("failed to unmarshal incoming message: %v", err),
-		}
-
+		err := message.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
 		socket.SendError(&id, err)
 		return
 	}
@@ -242,10 +221,8 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *socket.IncomingMessag
 
 	if channelPath[:6] != rootPrefix {
 		log.Printf("channel id must begin with /root/")
-		socket.SendError(&id, &message.Error{
-			Code:        -2,
-			Description: "channel id must begin with /root/",
-		})
+		err := message.NewErrorf(-2, "channel id must begin with \"/root/\", got: %q", channelPath[:6])
+		socket.SendError(&id, err)
 		return
 	}
 
@@ -253,10 +230,8 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *socket.IncomingMessag
 	channel, ok := h.channelByID[channelPath]
 	if !ok {
 		log.Printf("invalid channel: %s", channelPath)
-		socket.SendError(&id, &message.Error{
-			Code:        -2,
-			Description: fmt.Sprintf("channel %s does not exist", channelPath),
-		})
+		err := message.NewErrorf(-2, "channel %s does not exist", channelPath)
+		socket.SendError(&id, err)
 		h.RUnlock()
 		return
 	}
@@ -283,7 +258,6 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *socket.IncomingMessag
 	}
 
 	if err != nil {
-		err = message.NewError("failed to process query", err)
 		socket.SendError(&id, err)
 		return
 	}
@@ -324,26 +298,20 @@ func (h *baseHub) handleIncomingMessage(incomingMessage *socket.IncomingMessage)
 }
 
 // createLao creates a new LAO using the data in the publish parameter.
-func (h *baseHub) createLao(publish message.Publish) error {
+func (h *baseHub) createLao(publish message.Publish) *message.Error {
 	h.Lock()
 	defer h.Unlock()
 
 	data, ok := publish.Params.Message.Data.(*message.CreateLAOData)
 	if !ok {
-		return &message.Error{
-			Code:        -4,
-			Description: "failed to cast data to CreateLAOData",
-		}
+		return message.NewError(-4, "failed to cast data to CreateLAOData")
 	}
 
 	encodedID := base64.URLEncoding.EncodeToString(data.ID)
 	laoChannelPath := rootPrefix + encodedID
 
 	if _, ok := h.channelByID[laoChannelPath]; ok {
-		return &message.Error{
-			Code:        -3,
-			Description: "failed to create lao: another one with the same ID exists",
-		}
+		return message.NewErrorf(-3, "failed to create lao: duplicate lao path: %q", laoChannelPath)
 	}
 
 	laoCh := laoChannel{
