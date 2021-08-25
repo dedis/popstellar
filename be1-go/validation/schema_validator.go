@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"embed"
 	"encoding/base64"
-	"fmt"
 	"io"
 	"io/fs"
 	"log"
@@ -63,19 +62,13 @@ func (s *SchemaValidator) VerifyJson(msg []byte, st SchemaType) error {
 	case Data:
 		schema = s.dataSchema
 	default:
-		return &message.Error{
-			Code:        -6,
-			Description: fmt.Sprintf("unsupported schema type: %v", st),
-		}
+		return message.NewErrorf(-6, "unsupported schema type: %v", st)
 	}
 
 	err := schema.Validate(reader)
 	if err != nil {
 		log.Printf("failed to validate schema: %v", err)
-		return &message.Error{
-			Code:        -4,
-			Description: "failed to validate schema",
-		}
+		return message.NewErrorf(-4, "failed to validate schema: %v", err)
 	}
 
 	return nil

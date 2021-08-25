@@ -279,6 +279,8 @@ func TestOrganizer_RollCall(t *testing.T) {
 }
 
 func TestOrganizer_CreateRollCallWrongID(t *testing.T) {
+	t.Skip("Skipping because this check is at the hub level")
+
 	_, laoChannel, err := createLao(oHub, organizerKeyPair, "lao roll call wrong id")
 	require.NoError(t, err)
 
