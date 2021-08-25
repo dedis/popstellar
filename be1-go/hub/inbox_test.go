@@ -11,7 +11,7 @@ import (
 const messageID = "oJYBapM5ZuVrnggAwzQMa3oBLrFSjEQY-hv_JQRgs1U="
 
 func TestInbox_AddWitnessSignature(t *testing.T) {
-	inbox := createInbox()
+	inbox := createInbox("")
 
 	msg, err := message.NewMessage(message.PublicKey{1, 2, 3}, message.Signature{1, 2, 3}, nil, nil)
 	require.NoError(t, err)
@@ -36,7 +36,7 @@ func TestInbox_AddWitnessSignature(t *testing.T) {
 }
 
 func TestInbox_AddSigWrongMessages(t *testing.T) {
-	inbox := createInbox()
+	inbox := createInbox("")
 
 	buf, err := base64.URLEncoding.DecodeString(messageID)
 	require.NoError(t, err)
@@ -53,7 +53,7 @@ func TestInbox_AddSigWrongMessages(t *testing.T) {
 }
 
 func TestInbox_AddWitnessSignatures(t *testing.T) {
-	inbox := createInbox()
+	inbox := createInbox("")
 
 	msg, err := message.NewMessage(message.PublicKey{1, 2, 3}, message.Signature{1, 2, 3}, nil, nil)
 	require.NoError(t, err)

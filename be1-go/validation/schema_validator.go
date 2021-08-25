@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"embed"
 	"encoding/base64"
-	"fmt"
 	"io"
 	"io/fs"
 	"log"
@@ -16,20 +15,31 @@ import (
 	"golang.org/x/xerrors"
 )
 
+// SchemaValidator is used to validate JSON-RPC schemas.
 type SchemaValidator struct {
 	genericMessageSchema *jsonschema.Schema
 	dataSchema           *jsonschema.Schema
 }
 
+// SchemaType denotes the type of schema.
 type SchemaType int
 
 const (
+	// GenericMessage denotes the Generic Message schema.
 	GenericMessage SchemaType = 0
-	Data           SchemaType = 1
+
+	// Data denotes the Data schema.
+	Data SchemaType = 1
 )
 
+// baseUrl is the baseUrl for all schemas.
 const baseUrl = "https://raw.githubusercontent.com/dedis/student_21_pop/master/"
 
+// protocolFS is an embedded file system which allows us to bake the schemas
+// into the binary during compilation. Since Go doesn't allow embedded files
+// outside the module we copy the schemas over right before invoking the build
+// or test commands in the Makefile. As a result, users may safely ignore the
+// warnings on this line.
 //go:embed protocol
 var protocolFS embed.FS
 
@@ -41,7 +51,7 @@ func init() {
 }
 
 // VerifyJson verifies that the `msg` follow the schema protocol of name 'schemaName',
-// it returns an error if it is not the case.
+// it returns an error otherwise.
 func (s *SchemaValidator) VerifyJson(msg []byte, st SchemaType) error {
 	reader := bytes.NewBuffer(msg[:])
 	var schema *jsonschema.Schema
@@ -52,19 +62,13 @@ func (s *SchemaValidator) VerifyJson(msg []byte, st SchemaType) error {
 	case Data:
 		schema = s.dataSchema
 	default:
-		return &message.Error{
-			Code:        -6,
-			Description: fmt.Sprintf("unsupported schema type: %v", st),
-		}
+		return message.NewErrorf(-6, "unsupported schema type: %v", st)
 	}
 
 	err := schema.Validate(reader)
 	if err != nil {
 		log.Printf("failed to validate schema: %v", err)
-		return &message.Error{
-			Code:        -4,
-			Description: "failed to validate schema",
-		}
+		return message.NewErrorf(-4, "failed to validate schema: %v", err)
 	}
 
 	return nil
@@ -81,7 +85,7 @@ func NewSchemaValidator() (*SchemaValidator, error) {
 			return err
 		}
 
-		if filepath.Ext(path) != ".json" {
+		if d.IsDir() || filepath.Ext(path) != ".json" {
 			return nil
 		}
 

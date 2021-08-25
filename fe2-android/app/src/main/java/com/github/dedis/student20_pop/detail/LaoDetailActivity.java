@@ -1,3 +1,4 @@
+
 package com.github.dedis.student20_pop.detail;
 
 import android.content.Context;
@@ -17,6 +18,7 @@ import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
 import com.github.dedis.student20_pop.detail.fragments.AttendeesListFragment;
 import com.github.dedis.student20_pop.detail.fragments.CastVoteFragment;
+import com.github.dedis.student20_pop.detail.fragments.ElectionResultFragment;
 import com.github.dedis.student20_pop.detail.fragments.IdentityFragment;
 import com.github.dedis.student20_pop.detail.fragments.LaoDetailFragment;
 import com.github.dedis.student20_pop.detail.fragments.LaoWalletFragment;
@@ -463,7 +465,7 @@ public class LaoDetailActivity extends AppCompatActivity {
                                 }
                             }
                         });
-}
+    }
 
 
     public void setUpWalletMessage() {
@@ -474,7 +476,8 @@ public class LaoDetailActivity extends AppCompatActivity {
     }
 
 
-    private void setupCastVotesFragment() {
+
+  private void setupCastVotesFragment() {
       mViewModel
               .getOpenCastVotes()
               .observe(
@@ -492,13 +495,26 @@ public class LaoDetailActivity extends AppCompatActivity {
                           }
                       }
               );
-    }
-
-    private void setupElectionResultsFragment() {
-      /*
-      will be implemented in the future
-       */
-    }
-
+  }
+  private void setupElectionResultsFragment() {
+      mViewModel
+              .getOpenElectionResultsEvent()
+              .observe(
+                      this,
+                      booleanEvent -> {
+                          Boolean event = booleanEvent.getContentIfNotHandled();
+                          if (event != null) {
+                              ElectionResultFragment electionResultFragment =
+                                      (ElectionResultFragment)
+                                              getSupportFragmentManager().findFragmentById(R.id.fragment_election_result);
+                              if (electionResultFragment == null) {
+                                  electionResultFragment = ElectionResultFragment.newInstance();
+                                  ActivityUtils.replaceFragmentInActivity(
+                                          getSupportFragmentManager(), electionResultFragment, R.id.fragment_container_lao_detail);
+                              }
+                          }
+                      }
+              );
+  }
 
 }

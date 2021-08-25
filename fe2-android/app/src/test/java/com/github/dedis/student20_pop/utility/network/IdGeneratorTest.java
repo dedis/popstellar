@@ -5,7 +5,7 @@ import android.util.ArraySet;
 import com.github.dedis.student20_pop.model.event.EventState;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
-import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionVote;
+import com.github.dedis.student20_pop.model.network.method.message.data.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.meeting.CreateMeeting;
@@ -19,6 +19,7 @@ import org.junit.Test;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,6 +36,9 @@ public class IdGeneratorTest {
     private final String question = "Question";
     private final String writeIn = "Write In";
     private final String location = "Location";
+    private final List<String> allMethods = Arrays.asList("Plurality", "Plurality");
+    private final List<String> allQuestions =Arrays.asList("Question", "Question2") ;
+    private final List<Boolean> allWriteIns = Arrays.asList(false, false);
 
     @Test
     public void generateCreateLaoIdTest() {
@@ -86,7 +90,7 @@ public class IdGeneratorTest {
 
     @Test
     public void generateElectionSetupIdTest() {
-        ElectionSetup electionSetup = new ElectionSetup(name, time, time, votingMethod, true, new ArrayList<>(), question, laoId);
+        ElectionSetup electionSetup = new ElectionSetup(name, time, time, allMethods, allWriteIns, Arrays.asList(new ArrayList<>(), new ArrayList<>()), allQuestions, laoId);
         // Hash('Election'||lao_id||created_at||name)
         String expectedId = Hash.hash(EventType.ELECTION.getSuffix(), electionSetup.getLao(), Long.toString(electionSetup.getCreation()), electionSetup.getName());
         assertThat(electionSetup.getId(), is(expectedId));
@@ -94,7 +98,7 @@ public class IdGeneratorTest {
 
     @Test
     public void generateElectionQuestionIdTest() {
-        ElectionSetup electionSetup = new ElectionSetup(name, time, time, votingMethod, true, new ArrayList<>(), question, laoId);
+        ElectionSetup electionSetup = new ElectionSetup(name, time, time, allMethods,allWriteIns , Arrays.asList(new ArrayList<>(), new ArrayList<>()), allQuestions, laoId);
         // Hash(“Question”||election_id||question)
         String expectedId = Hash.hash(IdGenerator.SUFFIX_ELECTION_QUESTION, electionSetup.getId(), question);
         assertThat(electionSetup.getQuestions().get(0).getId(), is(expectedId));

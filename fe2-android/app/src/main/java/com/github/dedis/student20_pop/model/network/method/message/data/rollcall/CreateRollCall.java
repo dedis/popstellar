@@ -49,7 +49,11 @@ public class CreateRollCall extends Data {
     }else{
       this.proposedStart = proposedStart;
     }
-    this.proposedEnd = proposedEnd;
+    if(proposedEnd == 0){
+      this.proposedEnd = proposedStart + 3600;
+    }else{
+      this.proposedEnd = proposedEnd;
+    }
     this.location = location;
     this.description = description;
     this.id = IdGenerator.generateCreateRollCallId(laoId, creation, name);

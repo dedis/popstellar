@@ -93,7 +93,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
                         eventTypeEvent -> {
                             EventType eventType = eventTypeEvent.getContentIfNotHandled();
                             if (eventType == EventType.ROLL_CALL) {
-                                createRollCall();
+                                createRollCall(false);
                             }
                         });
 
@@ -105,7 +105,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
                         booleanEvent -> {
                             Boolean action = booleanEvent.getContentIfNotHandled();
                             if (action != null) {
-                                createAndOpenRollCall();
+                                createRollCall(true);
                             }
                         });
 
@@ -134,19 +134,11 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
         mFragBinding.rollCallCancel.setOnClickListener(v -> mLaoDetailViewModel.openLaoDetail());
     }
 
-    private void createRollCall() {
+    private void createRollCall(boolean open) {
         computeTimesInSeconds();
 
         String title = mFragBinding.rollCallTitleText.getText().toString();
         String description = mFragBinding.rollCallEventDescriptionText.getText().toString();
-        mLaoDetailViewModel.createNewRollCall(title, description, startTimeInSeconds, endTimeInSeconds, false);
-    }
-
-    private void createAndOpenRollCall() {
-        computeTimesInSeconds();
-
-        String title = mFragBinding.rollCallTitleText.getText().toString();
-        String description = mFragBinding.rollCallEventDescriptionText.getText().toString();
-        mLaoDetailViewModel.createNewRollCall(title, description, startTimeInSeconds, endTimeInSeconds, true);
+        mLaoDetailViewModel.createNewRollCall(title, description, startTimeInSeconds, endTimeInSeconds, open);
     }
 }

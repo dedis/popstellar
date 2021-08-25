@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Application;
 import android.content.pm.PackageManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -27,8 +28,9 @@ import com.github.dedis.student20_pop.model.network.answer.Error;
 import com.github.dedis.student20_pop.model.network.answer.Result;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.CastVote;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionEnd;
+import com.github.dedis.student20_pop.model.network.method.message.data.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
-import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessageSignature;
@@ -94,6 +96,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     private final MutableLiveData<Event<Boolean>> mElectionCreatedEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> mOpenCastVotesEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<String>> mOpenAddWitness = new MutableLiveData<>();
+    private final MutableLiveData<Event<Boolean>> mEndElectionEvent = new MutableLiveData<>(new Event<>(false));
+    private final MutableLiveData<Event<Boolean>> mReceivedElectionResultsEvent = new MutableLiveData<>(new Event<>(false));
 
     private final MutableLiveData<Event<Integer>> mNbAttendeesEvent = new MutableLiveData<>();
     private final MutableLiveData<Event<Integer>> mAskCloseRollCallEvent = new MutableLiveData<>();
@@ -188,6 +192,52 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         disposables.dispose();
     }
 
+
+    public void endElection(Election election) {
+        Log.d(TAG, "ending election with name : " + election.getName());
+        Lao lao = getCurrentLaoValue();
+        if (lao == null) {
+            Log.d(TAG, LAO_FAILURE_MESSAGE);
+            return;
+        }
+
+        String channel = election.getChannel();
+        String laoId = lao.getChannel().substring(6); // removing /root/ prefix
+        ElectionEnd electionEnd = new ElectionEnd(election.getId(), laoId, election.computerRegisteredVotes());
+
+        try {
+            KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+            String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+            byte[] sender = Base64.getUrlDecoder().decode(publicKey);
+
+            PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+            MessageGeneral msg = new MessageGeneral(sender, electionEnd, signer, mGson);
+
+            Log.d(TAG, PUBLISH_MESSAGE);
+            Disposable disposable =
+                    mLAORepository
+                            .sendPublish(channel, msg)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .timeout(5, TimeUnit.SECONDS)
+                            .subscribe(
+                                    answer -> {
+                                        if (answer instanceof Result) {
+                                            Log.d(TAG, "ended election successfully");
+                                            endElectionEvent();
+                                        } else {
+                                            Log.d(TAG, "failed to end the election");
+                                        }
+                                    },
+                                    throwable -> Log.d(TAG, "timed out waiting for result on election/end", throwable));
+
+            disposables.add(disposable);
+        } catch (GeneralSecurityException | IOException e) {
+            Log.d(TAG, PK_FAILURE_MESSAGE, e);
+        }
+    }
+
+
     /**
      * Sends a ElectionCastVotes message .
      *
@@ -207,15 +257,14 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
             Log.d(TAG, LAO_FAILURE_MESSAGE);
             return;
         }
+
         String laoChannel = lao.getChannel();
         String laoId = laoChannel.substring(6);
         CastVote castVote = new CastVote(votes, election.getId(), laoId);
-
-        //TODO change this to election.getChannel() when method is implemented in Victor's PR
-        String electionChannel = laoChannel + "/" + election.getId();
+        //Is channel set ?
+        String electionChannel = election.getChannel();
 
         try {
-            // Retrieve identity of who is sending the votes
             KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
             String publicKey = Keys.getEncodedKey(publicKeysetHandle);
             byte[] sender = Base64.getUrlDecoder().decode(publicKey);
@@ -234,18 +283,24 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                     answer -> {
                                         if (answer instanceof Result) {
                                             Log.d(TAG, "sent a vote successfully");
+                                            // Toast ? + send back to election screen or details screen ?
+                                            Toast.makeText(getApplication(), "vote successfully sent !", Toast.LENGTH_LONG).show();
                                             openLaoDetail();
                                         } else {
                                             Log.d(TAG, "failed to send the vote");
+                                            Toast.makeText(getApplication(), "vote was sent too late !", Toast.LENGTH_LONG).show();
+                                            openLaoDetail();
                                         }
                                     },
-                                    throwable -> Log.d(TAG, "timed out waiting for result on cast_vote", throwable));
+                                    throwable ->
+                                        Log.d(TAG, "timed out waiting for result on cast_vote", throwable));
 
             disposables.add(disposable);
         } catch (GeneralSecurityException | IOException e) {
             Log.d(TAG, PK_FAILURE_MESSAGE, e);
         }
     }
+
 
     /**
      * Creates new Election event.
@@ -260,7 +315,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
      * @param question      the question associated to the election
      * @return the id of the newly created election event, null if fails to create the event
      */
-    public String createNewElection(String name, long start, long end, String votingMethod, boolean writeIn, List<String> ballotOptions, String question) {
+    public String createNewElection(String name, long start, long end, List<String> votingMethod, List<Boolean> writeIn, List<List<String>> ballotOptions, List<String> question) {
         Log.d(TAG, "creating a new election with name " + name);
 
         Lao lao = getCurrentLaoValue();
@@ -548,8 +603,15 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         return mOpenLaoDetailEvent;
     }
 
+    public LiveData<Event<Boolean>> getEndElectionEvent() {
+        return mEndElectionEvent;
+    }
+
     public LiveData<Event<Boolean>> getOpenElectionResultsEvent() {
         return mOpenElectionResultsEvent;
+    }
+    public LiveData<Event<Boolean>> getReceivedElectionResultsEvent() {
+        return mReceivedElectionResultsEvent;
     }
 
     public LiveData<Event<Boolean>> getElectionCreated() {
@@ -805,6 +867,14 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         } else {
             mAskCloseRollCallEvent.setValue(new Event<>(R.id.fragment_identity));
         }
+    }
+
+    public void endElectionEvent() {
+        mEndElectionEvent.postValue(new Event<>(true));
+    }
+
+    public void receiveElectionResultsEvent() {
+        mReceivedElectionResultsEvent.postValue(new Event<>(true));
     }
 
     public void openWitnessMessage() {

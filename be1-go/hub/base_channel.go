@@ -2,21 +2,51 @@ package hub
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"sort"
 	"student20_pop/message"
+	"student20_pop/network/socket"
 	"student20_pop/validation"
 	"sync"
+
+	"golang.org/x/xerrors"
 )
+
+type sockets struct {
+	sync.RWMutex
+	store map[string]socket.Socket
+}
+
+// Upsert upserts a socket into the sockets store.
+func (s *sockets) Upsert(socket socket.Socket) {
+	s.Lock()
+	defer s.Unlock()
+
+	s.store[socket.ID()] = socket
+}
+
+// Delete deletes a socket from the store. Returns false
+// if the socket is not present in the store and true
+// on success.
+func (s *sockets) Delete(ID string) bool {
+	s.Lock()
+	defer s.Unlock()
+
+	_, ok := s.store[ID]
+	if !ok {
+		return false
+	}
+
+	delete(s.store, ID)
+	return true
+}
 
 // baseChannel represent a generic channel and contains all the fields that are
 // used in all channels
 type baseChannel struct {
 	hub *baseHub
 
-	clientsMu sync.RWMutex
-	clients   map[*ClientSocket]struct{}
+	sockets sockets
 
 	inbox *inbox
 
@@ -37,38 +67,33 @@ func createBaseChannel(h *baseHub, channelID string) *baseChannel {
 	return &baseChannel{
 		hub:       h,
 		channelID: channelID,
-		clients:   make(map[*ClientSocket]struct{}),
-		inbox:     createInbox(),
+		sockets:   sockets{},
+		inbox:     createInbox(channelID),
 	}
 }
 
-func (c *baseChannel) Subscribe(client *ClientSocket, msg message.Subscribe) error {
+// Subscribe is used to handle a subscribe message from the client.
+func (c *baseChannel) Subscribe(socket socket.Socket, msg message.Subscribe) error {
 	log.Printf("received a subscribe with id: %d", msg.ID)
-	c.clientsMu.Lock()
-	defer c.clientsMu.Unlock()
-
-	c.clients[client] = struct{}{}
+	c.sockets.Upsert(socket)
 
 	return nil
 }
 
-func (c *baseChannel) Unsubscribe(client *ClientSocket, msg message.Unsubscribe) error {
+// Unsubscribe is used to handle an unsubscribe message.
+func (c *baseChannel) Unsubscribe(socketID string, msg message.Unsubscribe) error {
 	log.Printf("received an unsubscribe with id: %d", msg.ID)
 
-	c.clientsMu.Lock()
-	defer c.clientsMu.Unlock()
+	ok := c.sockets.Delete(socketID)
 
-	if _, ok := c.clients[client]; !ok {
-		return &message.Error{
-			Code:        -2,
-			Description: "client is not subscribed to this channel",
-		}
+	if !ok {
+		return message.NewError(-2, "client is not subscribed to this channel")
 	}
 
-	delete(c.clients, client)
 	return nil
 }
 
+// Catchup is used to handle a catchup message.
 func (c *baseChannel) Catchup(catchup message.Catchup) []message.Message {
 	log.Printf("received a catchup with id: %d", catchup.ID)
 
@@ -97,25 +122,26 @@ func (c *baseChannel) Catchup(catchup message.Catchup) []message.Message {
 	return result
 }
 
+// broadcastToAllClients is a helper message to broadcast a message to all
+// subscribers.
 func (c *baseChannel) broadcastToAllClients(msg message.Message) {
-	c.clientsMu.RLock()
-	defer c.clientsMu.RUnlock()
-
 	query := message.Query{
 		Broadcast: message.NewBroadcast(c.channelID, &msg),
 	}
 
 	buf, err := json.Marshal(query)
 	if err != nil {
-		log.Fatalf("failed to marshal broadcast query: %v", err)
+		log.Printf("failed to marshal broadcast query: %v", err)
 	}
 
-	for client := range c.clients {
-		client.Send(buf)
+	c.sockets.RLock()
+	defer c.sockets.RUnlock()
+	for _, socket := range c.sockets.store {
+		socket.Send(buf)
 	}
 }
 
-// Verify the if a Publish message is valid
+// VerifyPublishMessage checks if a Publish message is valid
 func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 	log.Printf("received a publish with id: %d", publish.ID)
 
@@ -125,25 +151,20 @@ func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 	// Verify the data
 	err := c.hub.schemaValidator.VerifyJson(msg.RawData, validation.Data)
 	if err != nil {
-		return message.NewError("failed to validate the data", err)
+		return xerrors.Errorf("failed to verify json schema: %w", err)
 	}
 
 	// Unmarshal the data
-	err = msg.VerifyAndUnmarshalData()
+	laoID := c.channelID[6:]
+	err = msg.VerifyAndUnmarshalData(laoID)
 	if err != nil {
 		// Return a error of type "-4 request data is invalid" for all the verifications and unmarshalling problems of the data
-		return &message.Error{
-			Code:        -4,
-			Description: fmt.Sprintf("failed to verify and unmarshal data: %v", err),
-		}
+		return message.NewErrorf(-4, "failed to verify and unmarshal data: %v", err)
 	}
 
 	// Check if the message already exists
 	if _, ok := c.inbox.getMessage(msg.MessageID); ok {
-		return &message.Error{
-			Code:        -3,
-			Description: "message already exists",
-		}
+		return message.NewError(-3, "message already exists")
 	}
 
 	return nil

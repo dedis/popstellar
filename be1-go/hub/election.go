@@ -6,22 +6,28 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"student20_pop"
+	"student20_pop/crypto"
 	"student20_pop/message"
 	"sync"
+
+	"golang.org/x/xerrors"
 )
 
+// Attendees represents the attendees in an election.
 type Attendees struct {
 	sync.Mutex
 	store map[string]struct{}
 }
 
+// NewAttendees returns a new instance of Attendees.
 func NewAttendees() *Attendees {
 	return &Attendees{
 		store: make(map[string]struct{}),
 	}
 }
 
+// IsPresent checks if a key representing a user is present in
+// the list of attendees.
 func (a *Attendees) IsPresent(key string) bool {
 	a.Lock()
 	defer a.Unlock()
@@ -30,6 +36,7 @@ func (a *Attendees) IsPresent(key string) bool {
 	return ok
 }
 
+// Add adds an attendee to the election.
 func (a *Attendees) Add(key string) {
 	a.Lock()
 	defer a.Unlock()
@@ -37,6 +44,7 @@ func (a *Attendees) Add(key string) {
 	a.store[key] = struct{}{}
 }
 
+// Copy deep copies the Attendees struct.
 func (a *Attendees) Copy() *Attendees {
 	a.Lock()
 	defer a.Unlock()
@@ -50,6 +58,7 @@ func (a *Attendees) Copy() *Attendees {
 	return clone
 }
 
+// electionChannel is used to handle election messages.
 type electionChannel struct {
 	*baseChannel
 
@@ -70,32 +79,34 @@ type electionChannel struct {
 	attendees *Attendees
 }
 
+// question represents a question in an election.
 type question struct {
-	// ID of th question
+	// ID represents the id of the question.
 	id []byte
 
-	// Different options
+	// ballotOptions represents different ballot options.
 	ballotOptions []message.BallotOption
 
-	//valid vote mutex
+	//valid vote mutex.
 	validVotesMu sync.RWMutex
 
-	// list of all valid votes
-	// the key represents the public key of the person casting the vote
+	// validVotes represents the list of all valid votes. The key represents
+	// the public key of the person casting the vote.
 	validVotes map[string]validVote
 
-	// Voting method of the election
+	// method represents the voting method of the election.
 	method message.VotingMethod
 }
 
 type validVote struct {
-	// time of the creation of the vote
+	// voteTime represents the time of the creation of the vote.
 	voteTime message.Timestamp
 
-	// indexes of the ballot options
+	// indexes represents the indexes of the ballot options
 	indexes []int
 }
 
+// createElection creates an election in the LAO.
 func (c *laoChannel) createElection(msg message.Message) error {
 	organizerHub := c.hub
 
@@ -105,29 +116,23 @@ func (c *laoChannel) createElection(msg message.Message) error {
 	// Check the data
 	data, ok := msg.Data.(*message.ElectionSetupData)
 	if !ok {
-		return &message.Error{
-			Code:        -4,
-			Description: "failed to cast data to SetupElectionData",
-		}
+		return message.NewError(-4, "failed to cast data to SetupElectionData")
 	}
 
 	// Check if the Lao ID of the message corresponds to the channel ID
 	encodedLaoID := base64.URLEncoding.EncodeToString(data.LaoID)
 	channelID := c.channelID[6:]
 	if channelID != encodedLaoID {
-		return &message.Error{
-			Code:        -4,
-			Description: fmt.Sprintf("Lao ID of the message (Lao: %s) is different from the channelID (channel: %s)", encodedLaoID, channelID),
-		}
+		return message.NewErrorf(-4, "Lao ID of the message (Lao: %s) is different from the channelID (channel: %s)", encodedLaoID, channelID)
 	}
 
 	// Compute the new election channel id
 	encodedElectionID := base64.URLEncoding.EncodeToString(data.ID)
-	encodedID := encodedLaoID + "/" + encodedElectionID
+	channelPath := rootPrefix + encodedLaoID + "/" + encodedElectionID
 
 	// Create the new election channel
 	electionCh := electionChannel{
-		createBaseChannel(organizerHub, rootPrefix+encodedID),
+		createBaseChannel(organizerHub, channelPath),
 		data.StartTime,
 		data.EndTime,
 		false,
@@ -142,15 +147,16 @@ func (c *laoChannel) createElection(msg message.Message) error {
 	electionCh.inbox.storeMessage(msg)
 
 	// Add the new election channel to the organizerHub
-	organizerHub.channelByID[encodedID] = &electionCh
+	organizerHub.channelByID[channelPath] = &electionCh
 
 	return nil
 }
 
+// Publish is used to handle publish messages in the election channel.
 func (c *electionChannel) Publish(publish message.Publish) error {
 	err := c.baseChannel.VerifyPublishMessage(publish)
 	if err != nil {
-		return message.NewError("failed to verify publish message on an election channel", err)
+		return xerrors.Errorf("failed to verify publish message on an election channel: %w", err)
 	}
 
 	msg := publish.Params.Message
@@ -189,9 +195,7 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 	}
 
 	if err != nil {
-		action := message.ElectionAction(data.GetAction())
-		errorDescription := fmt.Sprintf("failed to process %s action", action)
-		return message.NewError(errorDescription, err)
+		return xerrors.Errorf("failed to process %q action: %w", data.GetAction(), err)
 	}
 
 	log.Printf("Broadcasting to all clients on election channel")
@@ -205,39 +209,28 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 
 	voteData, ok := msg.Data.(*message.CastVoteData)
 	if !ok {
-		return &message.Error{
-			Code:        -4,
-			Description: "failed to cast data to CastVoteData",
-		}
+		return message.NewError(-4, "failed to cast data to CastVoteData")
 	}
 
 	if voteData.CreatedAt > c.end {
-		return &message.Error{
-			Code:        -4,
-			Description: fmt.Sprintf("Vote cast too late, vote casted at %v and election ended at %v", voteData.CreatedAt, c.end),
-		}
+		return message.NewErrorf(-4, "Vote cast too late, vote casted at %v and election ended at %v", voteData.CreatedAt, c.end)
 	}
+
 	senderPK := base64.URLEncoding.EncodeToString(msg.Sender)
 
-	log.Printf("The sender pk is %s",senderPK)
+	log.Printf("The sender pk is %s", senderPK)
 
-	senderPoint := student20_pop.Suite.Point()
+	senderPoint := crypto.Suite.Point()
 	err := senderPoint.UnmarshalBinary(msg.Sender)
 	if err != nil {
-		return &message.Error{
-			Code:        -4,
-			Description: "Invalid sender public key",
-		}
+		return message.NewError(-4, "Invalid sender public key")
 	}
 
-	log.Printf("All the valid pks are %v and %v",c.attendees,senderPoint)
+	log.Printf("All the valid pks are %v and %v", c.attendees, senderPoint)
 
 	ok = c.attendees.IsPresent(senderPK) || c.hub.public.Equal(senderPoint)
 	if !ok {
-		return &message.Error{
-			Code:        -4,
-			Description: "Only attendees can cast a vote in an election",
-		}
+		return message.NewError(-4, "Only attendees can cast a vote in an election")
 	}
 
 	//This should update any previously set vote if the message ids are the same
@@ -248,19 +241,18 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 		qs, ok := c.questions[QuestionID]
 
 		if !ok {
-			return &message.Error{
-				Code:        -4,
-				Description: "No Question with this ID exists",
-			}
+			return message.NewErrorf(-4, "No Question with ID %q exists", QuestionID)
 		}
-		//this is to handle the case when the organizer must handle multiple votes being cast at the same time
+
+		// this is to handle the case when the organizer must handle multiple votes being cast at the same time
 		qs.validVotesMu.Lock()
 		earlierVote, ok := qs.validVotes[msg.Sender.String()]
-		// if the sender didn't previously cast a vote or if the vote is no longer valid update it
 
+		// if the sender didn't previously cast a vote or if the vote is no longer valid update it
 		if err := checkMethodProperties(qs.method, len(q.VoteIndexes)); err != nil {
-			return err
+			return xerrors.Errorf("failed to validate voting method props: %w", err)
 		}
+
 		if !ok {
 			qs.validVotes[msg.Sender.String()] =
 				validVote{voteData.CreatedAt,
@@ -269,6 +261,7 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 		} else {
 			changeVote(&qs, earlierVote, msg.Sender.String(), voteData.CreatedAt, q.VoteIndexes)
 		}
+
 		//other votes can now change the list of valid votes
 		qs.validVotesMu.Unlock()
 	}
@@ -276,19 +269,13 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 	log.Printf("Vote casted with success")
 	return nil
 }
-func checkMethodProperties(method message.VotingMethod, length int) error {
 
+func checkMethodProperties(method message.VotingMethod, length int) error {
 	if method == "Plurality" && length < 1 {
-		return &message.Error{
-			Code:        -4,
-			Description: "No ballot option was chosen for plurality voting method",
-		}
+		return message.NewError(-4, "No ballot option was chosen for plurality voting method")
 	}
 	if method == "Approval" && length != 1 {
-		return &message.Error{
-			Code:        -4,
-			Description: "Cannot choose multiple ballot options on Approval voting method",
-		}
+		return message.NewError(-4, "Cannot choose multiple ballot options on approval voting method")
 	}
 	return nil
 }

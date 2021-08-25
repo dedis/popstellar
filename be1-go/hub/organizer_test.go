@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"os"
-	"student20_pop"
+	"student20_pop/crypto"
 	"student20_pop/message"
 	"testing"
 	"time"
@@ -23,7 +23,7 @@ type keypair struct {
 
 var organizerKeyPair keypair
 
-var suite = student20_pop.Suite
+var suite = crypto.Suite
 
 var oHub *organizerHub
 
@@ -91,7 +91,7 @@ func createLao(o *organizerHub, oKeypair keypair, name string) (string, *laoChan
 	o.createLao(publish)
 	id := base64.URLEncoding.EncodeToString(laoID)
 
-	channel, ok := oHub.channelByID[id]
+	channel, ok := oHub.channelByID[rootPrefix+id]
 	if !ok {
 		return "", nil, xerrors.Errorf("Could not extract the channel of the lao")
 	}
@@ -279,6 +279,8 @@ func TestOrganizer_RollCall(t *testing.T) {
 }
 
 func TestOrganizer_CreateRollCallWrongID(t *testing.T) {
+	t.Skip("Skipping because this check is at the hub level")
+
 	_, laoChannel, err := createLao(oHub, organizerKeyPair, "lao roll call wrong id")
 	require.NoError(t, err)
 
