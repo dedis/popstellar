@@ -1,14 +1,14 @@
-## PoP Web Frontend
+# PoP Web Frontend
 
 This repository contains the client side implementation of the PoP project.
 
-### Getting Started
+## Getting Started
 
 We assume that you're familiar with the PoP project. Please read the
 [Architecture Specifications](https://docs.google.com/document/d/19r3rP6o8TO-xeZBM0GQzkHYQFSJtWy7UhjLhzzZVry4)
 to get an idea about all the actors and components in the system.
 
-#### Resources
+### Resources
 
 If this is your first time working with TypeScript, React and/or Redux,
 please follow the following tutorials:
@@ -17,7 +17,7 @@ please follow the following tutorials:
 * [Introduction to React](https://reactjs.org/tutorial/tutorial.html)
 * [Redux Essentials](https://redux.js.org/tutorials/essentials/part-1-overview-concepts)
 
-#### IDE/Editors
+### IDE/Editors
 
 TypeScript is supported well across multiple text editors and IDE.
 The team at DEDIS has members using
@@ -31,7 +31,7 @@ with the other text editors since it works out of the box and EPFL/ETHZ students
 [free education license](https://www.jetbrains.com/community/education/#students)
 for their use.
 
-### Project Structure
+## Project Structure
 
 The project is organized into different modules as follows
 
@@ -67,7 +67,7 @@ The project is organized into different modules as follows
      └── __mocks__             # mocks of those libraries, to be used in tests
 ```
 
-### Architecture
+## Architecture
 
 The PoP TypeScript frontend provides an interface to allow the users to
 interact as part of a Local Autonomous Organization (LAO),
@@ -97,7 +97,7 @@ also gives an introduction to the different message formats. However, note that
 the [schemas](https://github.com/dedis/student_21_pop/tree/master/protocol) in this
 repository are **always** the source of truth and are more up to date than the Google Doc.
 
-#### Managing the application state
+### Managing the application state
 
 In order for the application to perform as a user would expect, it needs to manage
 its own internal state robustly. Its internal state is made up of local data,
@@ -120,7 +120,7 @@ As such, let's take the example of a user who wants to publish or modify LAO-wid
 In our example, the user wants to cast a vote in an election and does the necessary UI operations.
 In turn, the application will send a message to the backend (which the backend should acknowledge),
 which will then validate it and propagate it in the system.
-Eventually, the the vote is sent back to the application (through the publish/subscribe channel),
+Eventually, the vote is sent back to the application (through the publish/subscribe channel),
 and upon receiving it the application would update its state.
 By doing so, the store would contain new information that would automatically be reflected in the UI.
 
@@ -136,7 +136,40 @@ For more information on managing the application state, please refer to the
 [store module](https://github.com/dedis/student_21_pop/tree/master/fe1-web/store)
 and make sure you have a solid understanding of Redux and its concepts.
 
-#### Sending messages over the wire
+#### Managing & storing secrets
+
+A particular sub-problem of storing the application data is the management of secret data.
+While any secret could be encrypted, this just shifts the problem to securely storing
+cryptographic material and making sure that it is not leaked by the device running the application.
+
+As the Web front-end is built on React and designed to also support a React Native deployment on
+iOS and Android mobile phones, secret management must be conceived in a multi-platform way,
+taking into account and abstracting the differences between these platforms.
+Both mobile devices and the browsers offer APIs to manage cryptographic material securely,
+but their support is limited to specific cryptographic primitives,
+which unfortunately do not include those used in the PoP protocol specification.
+Notably, most APIs do not support the Ed25519 keys.
+
+As such, the general approach is to use platform-specific secure key management solutions,
+such as the [Android KeyStore](https://developer.android.com/training/articles/keystore),
+to safely store keys that will then be used to encrypt and decrypt the application secrets,
+including the Ed25519 cryptographic material.
+This ensures that all application secrets are encrypted-at-rest,
+that the encryption and decryption keys are stored securely,
+and that the application is free to use any convenient cryptographic primitive.
+
+On the browser, which offers an intrinsically challenging security environment,
+this translates to the use of the
+[Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API)
+to generate non-extractable key material, and the
+[IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
+to store it reasonably securely.
+This is implemented in [WalletCryptographyHandler](TBD).
+
+Support for mobile devices is planned and the architecture allows it,
+but secret management is not yet implemented.
+
+### Sending messages over the wire
 
 The communication stack within the PoP project is made of
 [multiple layers](https://docs.google.com/document/d/1AeV7JX_SJ30mu9PIwmz24UkIi3jCo6NSYA0sPxdbscU)
@@ -164,7 +197,7 @@ of [JSON-RPC](https://www.jsonrpc.org/specification),
 the [Protocol Specifications](https://docs.google.com/document/d/1fyNWSPzLhM6W9V0VTFf2waMLiJGcscy7wa4bQlLkySM)
 and their actual implementation in the [protocol schemas](https://github.com/dedis/student_21_pop/tree/master/protocol)
 
-#### Getting messages over the wire
+### Getting messages over the wire
 
 Once it is clear how to send messages over the wire,
 it is important to turn one's attention to receiving them.
@@ -194,7 +227,7 @@ the [ingestion module](https://github.com/dedis/student_21_pop/tree/master/fe1-w
 and make sure you have a solid understanding of [Redux](https://redux.js.org/)
 and the PoP communication protocol.
 
-#### Message definitions
+### Message definitions
 
 All objects referred to in the protocol specification (and the logic for parsing them)
 are defined in `model/network` package, closely mirroring the JSON-Schema folder structure.
@@ -205,12 +238,12 @@ a source of truth since the validation library checks the messages against it.
 When you need to create a new object, please refer to existing message types and in particular
 their `fromJSON` method to get an idea about how to implement a new type.
 
-#### UI elements
+### UI elements
 
 ... TBD ...
 Will mention difference between `components` (UI component library) and `parts` (unique screens).
 
-#### Validation
+### Validation
 
 All the incoming messages are validated using the `network\validation` package,
 which ensures that all constraints defined within the JSON Schema are respected.
@@ -218,7 +251,7 @@ which ensures that all constraints defined within the JSON Schema are respected.
 Furthermore, each object has specific constraints defined within its constructor.
 For an example, see `model/network/method/message/data/rollCall/CreateRollCall.ts`.
 
-### Debugging Tips
+## Debugging Tips
 
 * Make abundant use of the Chrome Development Tools, they offer full visibility in
   the network activity (HTTP requests, WebSocket messages, etc.), they enable you
@@ -231,14 +264,14 @@ For an example, see `model/network/method/message/data/rollCall/CreateRollCall.t
   reached in the processing pipeline rather than getting an opaque error.
 * Ensure your error messages are descriptive.
 
-### Deployments
+## Deployments
 
 Please reach out to the DEDIS Engineering team members to deploy a build to an
 internet accessible host.
 
 ...TBD...
 
-### Coding Style
+## Coding Style
 
 TypeScript leaves a lot of freedom to the developer, so it takes extra effort to maintain
 a consistent coding style. The codebase was developed based on the TypeScript variant of
@@ -251,7 +284,7 @@ The CI also executes static analysis using SonarCloud which is good for giving
 early feedback against common problems. Please ensure all the bugs, code smells
 and warnings raised by SonarCloud are resolved before requesting reviews.
 
-#### Common pitfalls
+### Common pitfalls
 
 It can be very tempting to make ESLint errors "go away" by simply disabling a check
 on a troublesome line of code. This is also generally the wrong solution.
