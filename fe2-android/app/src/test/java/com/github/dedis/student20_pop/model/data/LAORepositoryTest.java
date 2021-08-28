@@ -1,9 +1,11 @@
 package com.github.dedis.student20_pop.model.data;
 
 import com.github.dedis.student20_pop.Injection;
+import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.network.GenericMessage;
 import com.github.dedis.student20_pop.model.network.answer.Answer;
 import com.github.dedis.student20_pop.model.network.answer.Result;
+import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.utility.scheduler.SchedulerProvider;
 import com.github.dedis.student20_pop.utility.scheduler.TestSchedulerProvider;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
@@ -11,8 +13,11 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.TestScheduler;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -32,11 +37,16 @@ public class LAORepositoryTest extends TestCase {
   @Mock
   AndroidKeysetManager androidKeysetManager;
 
-  // Uses RemoteDataSource
-  @Test
-  public void testSendCatchup() throws Exception {
+  @Mock
+  MessageGeneral messageGeneral;
+
+  private TestScheduler testScheduler;
+  private LAORepository repository;
+
+  @Before
+  public void setup() {
     SchedulerProvider testSchedulerProvider = new TestSchedulerProvider();
-    TestScheduler testScheduler = (TestScheduler) testSchedulerProvider.io();
+    testScheduler = (TestScheduler) testSchedulerProvider.io();
 
     // Simulate a network response from the server after 1 second
     Observable<GenericMessage> upstream = Observable.just((GenericMessage) new Result(42))
@@ -45,39 +55,102 @@ public class LAORepositoryTest extends TestCase {
     Mockito.when(remoteDataSource.observeMessage()).thenReturn(upstream);
     Mockito.when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
     Mockito.when(remoteDataSource.incrementAndGetRequestId()).thenReturn(42);
-    LAORepository repository = LAORepository
+    repository = LAORepository
         .getInstance(remoteDataSource, localDataSource, androidKeysetManager,
             Injection.provideGson(), testSchedulerProvider);
+  }
 
-    Single<Answer> answer = repository.sendCatchup("/root/");
+  @After
+  public void destroy() {
+    LAORepository.destroyInstance();
+  }
+
+  @Test
+  public void testSendCatchup() {
+    Single<Answer> answerCatchup = repository.sendCatchup("/root/");
     Mockito.verify(remoteDataSource, Mockito.times(1)).sendMessage(Mockito.any());
 
-    TestObserver<Answer> testObserver = TestObserver.create();
-    answer.subscribe(testObserver);
+    TestObserver<Answer> testObserverCatchup = TestObserver.create();
+
+    answerCatchup.subscribe(testObserverCatchup);
 
     testScheduler.advanceTimeBy(950, TimeUnit.MILLISECONDS);
-    testObserver.assertNotComplete();
+    testObserverCatchup.assertNotComplete();
 
     testScheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
-    testObserver.assertComplete().assertNoErrors()
+    testObserverCatchup.assertComplete().assertNoErrors()
         .assertValue(r -> r.getId() == 42);
   }
 
-  // Uses RemoteDataSource
+  @Test
   public void testSendPublish() {
+    Single<Answer> answerPublish = repository.sendPublish("/root/", messageGeneral);
+    Mockito.verify(remoteDataSource, Mockito.times(1)).sendMessage(Mockito.any());
+
+    TestObserver<Answer> testObserverPublish = TestObserver.create();
+
+    answerPublish.subscribe(testObserverPublish);
+
+    testScheduler.advanceTimeBy(950, TimeUnit.MILLISECONDS);
+    testObserverPublish.assertNotComplete();
+
+    testScheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+    testObserverPublish.assertComplete().assertNoErrors()
+        .assertValue(r -> r.getId() == 42);
   }
 
-  // Uses RemoteDataSource
+  @Test
   public void testSendSubscribe() {
+    Single<Answer> answerSubscribe = repository.sendSubscribe("/root/");
+    Mockito.verify(remoteDataSource, Mockito.times(1)).sendMessage(Mockito.any());
+
+    TestObserver<Answer> testObserverSubscribe = TestObserver.create();
+
+    answerSubscribe.subscribe(testObserverSubscribe);
+
+    testScheduler.advanceTimeBy(950, TimeUnit.MILLISECONDS);
+    testObserverSubscribe.assertNotComplete();
+
+    testScheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+    testObserverSubscribe.assertComplete().assertNoErrors()
+        .assertValue(r -> r.getId() == 42);
   }
 
-  // Uses RemoteDataSource
+  @Test
   public void testSendUnsubscribe() {
+    Single<Answer> answerUnsubscribe = repository.sendUnsubscribe("/root/");
+    Mockito.verify(remoteDataSource, Mockito.times(1)).sendMessage(Mockito.any());
+
+    TestObserver<Answer> testObserverUnsubscribe = TestObserver.create();
+
+    answerUnsubscribe.subscribe(testObserverUnsubscribe);
+
+    testScheduler.advanceTimeBy(950, TimeUnit.MILLISECONDS);
+    testObserverUnsubscribe.assertNotComplete();
+
+    testScheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+    testObserverUnsubscribe.assertComplete().assertNoErrors()
+        .assertValue(r -> r.getId() == 42);
   }
 
-  public void testGetAllLaos() {
-  }
+  // Test the get methods: getLaoObservable and getAllLaos
+  @Test
+  public void testGetLaos() {
+    // Does not use LAOLocalDataSource
 
-  public void testGetLaoObservable() {
+    // Send subscribe to fill laoById and allLaoSubject in LAORepository
+    repository.sendSubscribe("/root/123");
+    TestObserver<Lao> testObserverLao = TestObserver.create();
+    TestObserver<List<Lao>> testObserverListLao = TestObserver.create();
+
+    testScheduler.advanceTimeBy(1500, TimeUnit.MILLISECONDS);
+
+    repository.getLaoObservable("/root/123").subscribe(testObserverLao);
+    repository.getAllLaos().subscribe(testObserverListLao);
+
+    testScheduler.advanceTimeBy(1500, TimeUnit.MILLISECONDS);
+
+    testObserverLao.assertNoErrors().assertValueCount(1);
+    testObserverListLao.assertNoErrors().assertValueCount(1);
   }
 }

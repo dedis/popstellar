@@ -754,15 +754,6 @@ public class LAORepository {
       CreateLao data = (CreateLao) message.getData();
       createLaoRequests.put(id, "/root/" + data.getId());
     }
-    // Uncomment to test display without message from Backend
-
-    /*
-    else {
-      if(message.getData() instanceof ElectionSetup) {
-        handleElectionSetup(channel,(ElectionSetup) message.getData());
-      }
-    }
-    */
 
     mRemoteDataSource.sendMessage(publish);
     return answer;
