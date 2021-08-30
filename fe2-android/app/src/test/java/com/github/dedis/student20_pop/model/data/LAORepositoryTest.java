@@ -40,6 +40,7 @@ public class LAORepositoryTest extends TestCase {
   @Mock
   MessageGeneral messageGeneral;
 
+  private static final int RESPONSE_DELAY = 1000;
   private TestScheduler testScheduler;
   private LAORepository repository;
 
@@ -50,7 +51,7 @@ public class LAORepositoryTest extends TestCase {
 
     // Simulate a network response from the server after 1 second
     Observable<GenericMessage> upstream = Observable.just((GenericMessage) new Result(42))
-        .delay(1, TimeUnit.SECONDS, testScheduler);
+        .delay(RESPONSE_DELAY, TimeUnit.MILLISECONDS, testScheduler);
 
     Mockito.when(remoteDataSource.observeMessage()).thenReturn(upstream);
     Mockito.when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
@@ -74,10 +75,10 @@ public class LAORepositoryTest extends TestCase {
 
     answerCatchup.subscribe(testObserverCatchup);
 
-    testScheduler.advanceTimeBy(950, TimeUnit.MILLISECONDS);
+    testScheduler.advanceTimeTo(RESPONSE_DELAY - 1, TimeUnit.MILLISECONDS);
     testObserverCatchup.assertNotComplete();
 
-    testScheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+    testScheduler.advanceTimeTo(RESPONSE_DELAY, TimeUnit.MILLISECONDS);
     testObserverCatchup.assertComplete().assertNoErrors()
         .assertValue(r -> r.getId() == 42);
   }

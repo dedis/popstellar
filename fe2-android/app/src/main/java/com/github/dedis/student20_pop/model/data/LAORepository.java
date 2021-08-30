@@ -62,22 +62,18 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-;
-
 public class LAORepository {
 
   private static final String TAG = LAORepository.class.getSimpleName();
   private static final String MESSAGE_ID = "Message ID : ";
   private static final String NAME = "Name : ";
-  private static volatile LAORepository INSTANCE = null;
+  private static LAORepository INSTANCE = null;
 
   private final LAODataSource.Remote mRemoteDataSource;
   private final LAODataSource.Local mLocalDataSource;
   private final AndroidKeysetManager mKeysetManager;
   private final Gson mGson;
   private final SchedulerProvider schedulerProvider;
-
-  private static final String ABSENT_ELECTION_ERROR_MESSAGE = "the election should be present when receiving a result";
 
   // A subject that represents unprocessed messages
   private Subject<GenericMessage> unprocessed;
@@ -176,6 +172,7 @@ public class LAORepository {
         .subscribe(this::handleGenericMessage);
   }
 
+  // TODO: Create utility class to handle messages
   private void handleGenericMessage(GenericMessage genericMessage) {
     Log.d(TAG, "handling generic msg");
     if (genericMessage instanceof Error) {
@@ -645,7 +642,8 @@ public class LAORepository {
       Log.d(TAG, "WitnessMessage successfully updated");
 
       Set<PendingUpdate> pendingUpdates = lao.getPendingUpdates();
-      if (pendingUpdates.contains(messageId)) {
+      // Check if any pending update contains messageId
+      if (pendingUpdates.stream().anyMatch(ob -> ob.getMessageId().equals(messageId))) {
         // We're waiting to collect signatures for this one
         Log.d(TAG, "There is a pending update for this message");
 
@@ -787,25 +785,19 @@ public class LAORepository {
   }
 
   private Single<Answer> createSingle(int id) {
-    Single<Answer> res =
-        upstream
-            .filter(
-                genericMessage -> {
-                  if (genericMessage instanceof Answer) {
-                    Log.d(TAG, "request id: " + ((Answer) genericMessage).getId());
-                  }
-                  return genericMessage instanceof Answer
-                      && ((Answer) genericMessage).getId() == id;
-                })
-            .map(
-                genericMessage -> {
-                  return (Answer) genericMessage;
-                })
-            .firstOrError()
-            .subscribeOn(schedulerProvider.io())
-            .cache();
-
-    return res;
+    return upstream
+        .filter(
+            genericMessage -> {
+              if (genericMessage instanceof Answer) {
+                Log.d(TAG, "request id: " + ((Answer) genericMessage).getId());
+              }
+              return genericMessage instanceof Answer
+                  && ((Answer) genericMessage).getId() == id;
+            })
+        .map(genericMessage -> (Answer) genericMessage)
+        .firstOrError()
+        .subscribeOn(schedulerProvider.io())
+        .cache();
   }
 
   public Observable<List<Lao>> getAllLaos() {

@@ -14,6 +14,10 @@ public class PendingUpdate implements Comparable<PendingUpdate> {
     return modificationTime;
   }
 
+  public String getMessageId() {
+    return messageId;
+  }
+
   @Override
   public int compareTo(PendingUpdate o) {
     return Long.compare(modificationTime, o.modificationTime);
