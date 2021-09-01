@@ -98,6 +98,58 @@ a source of truth since the validation library checks the messages against it.
 their `buildFromJson` method to get an idea about how to implement a new type. In order to tell the encoder/decoder how to encode/decode the new message (e.g. `buildFromJson`), its "receipe" must be added directly in the `json/MessageDataProtocol.scala` file.
 
 
+### Spray-json Conversion
+
+Whenever a new JSON-rpc message is added in the protocol, its encoding/decoding recipe should be added in this package. If the new message is a case class, spray-json is able to handle message conversion using `jsonFormatX`, where `X` corresponds to the number of parameters the case class has. For example,
+
+```scala
+case class A(i: Int, s: String)
+
+implicit val format: RootJsonFormat[A] = jsonFormat2(A)
+```
+
+or
+
+```scala
+case class B(price: Double)
+case class A(name: String, b: B)
+
+implicit val formatB: RootJsonFormat[B] = jsonFormat1(B) // (1)
+implicit val formatA: RootJsonFormat[A] = jsonFormat2(A) // (2)
+```
+
+Note that order matters! In order to convert `A`, (2) gets called. It first handles the `name` parameter (`String`) and then converts `b` (`B`). Thus the conversion for `B` (here (1)) has to be defined *above*.
+
+:warning: Spray-json is *not* able to automatically convert "complex" types such as `Option[T]`, `Either[A, B]`, ... Examples of such cases are provided in the codebase.
+
+
+
+On the other hand, if the new message is anything but a case class, you will need to specify the entire conversion by hand with the help of two methods: `read` (from JSON to internal representation) and `write` (from internal representation to JSON). Note that, once again, order matters. For example,
+
+```scala
+class Point(var x: Int, var y: Int) {}
+
+implicit object Format extends RootJsonFormat[Point] {
+	override def read(json: JsValue): Point = {
+		json.asJsObject.getFields("x", "y") match {
+			case Seq(JsNumber(x), JsNumber(y)) => Point(x.toInt, y.toInt)
+			case _ => throw ...
+		}
+	}
+
+	override def write(obj: Point): JsValue = JsObject(
+		"x" -> obj.x,
+		"y" -> obj.y
+	)
+}
+
+```
+
+Once again, a lot of examples of such cases are present within the codebase
+
+:information_source: *tips*: always try to prioritize case classes whenever possible :)
+
+
 ### Validation
 
 All the incoming messages are validated in a two-steps process using the `pubsub/graph/validators` package:
@@ -107,19 +159,12 @@ All the incoming messages are validated in a two-steps process using the `pubsub
 Each additional message constraint (e.g. in this particular case, "start_time" should always equal "end_time") is checked in the corresponding validator (e.g. `LaoValidator`) before the case class instance representing the message is created.
 
 
----
-
-
-
-
-
-
-
-
-
 ## Debugging Tips
 
-??? hoppscotch + debugger
+The best way to "intercept" a `GraphMessage` being processed in the graph is to launch the server in debug mode, and then sending an isolated message to the server triggering the bug.
+
+:information_source: [Hoppscotch](https://hoppscotch.io/realtime/) (Realtime => WebSocket => `ws://localhost:8000/`) is a useful tool to achieve this result
+
 
 ## Coding Styles
 
