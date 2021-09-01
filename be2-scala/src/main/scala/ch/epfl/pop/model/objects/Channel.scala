@@ -28,6 +28,8 @@ final case class Channel(channel: String) {
     case that: Channel => channel == that.channel
     case _ => false
   }
+
+  override def toString: String = channel
 }
 
 object Channel {

@@ -11,6 +11,8 @@ case class Base64Data(data: String) {
   def getBytes: Array[Byte] = data.getBytes(StandardCharsets.UTF_8)
 
   def equals(that: Base64Data): Boolean = data == that.data
+
+  override def toString: String = data.toString
 }
 
 object Base64Data {
