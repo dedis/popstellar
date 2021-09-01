@@ -28,13 +28,17 @@ case object WitnessHandler extends MessageHandler {
   def handleWitnessMessage(rpcMessage: JsonRpcRequest): GraphMessage = {
     val decodedData: WitnessMessage = rpcMessage.getDecodedData.get.asInstanceOf[WitnessMessage]
     val messageId: Hash = decodedData.message_id
-    val ask = dbActor.ask(ref => DbActor.Read(rpcMessage.getParamsChannel, messageId, ref)).map {
+
+    // val ask = dbActor.ask(ref => DbActor.Read(rpcMessage.getParamsChannel, modificationId, ref)).map {
+    val ask = dbActor.ask("TODO").map {
       case Some(message: Message) =>
+        /*
         val askWrite = dbActor.ask(ref => DbActor.Write(
           rpcMessage.getParamsChannel,
           message.addWitnessSignature(WitnessSignaturePair(rpcMessage.getParamsMessage.get.sender, decodedData.signature)),
           ref
-        )).map {
+        )).map { */
+        val askWrite = dbActor.ask("m").map {
           case true =>
             // FIXME propagate
             Left(rpcMessage)

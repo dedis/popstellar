@@ -10,10 +10,12 @@ import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineErro
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.FiniteDuration
 
 trait MessageHandler {
   implicit lazy val dbActor: AskableActorRef = DbActor.getInstance
   implicit lazy val timeout: Timeout = DbActor.getTimeout
+  implicit lazy val duration: FiniteDuration = DbActor.getDuration
 
   val handler: Flow[GraphMessage, GraphMessage, NotUsed]
 
@@ -21,7 +23,8 @@ trait MessageHandler {
     val paramsMessage: Option[Message] = rpcMessage.getParamsMessage
     paramsMessage match {
       case Some(message) =>
-        val ask = dbActor.ask(ref => DbActor.Write(rpcMessage.getParamsChannel, message, ref)).map {
+        // val ask = dbActor.ask(ref => DbActor.Write(rpcMessage.getParamsChannel, message, ref)).map {
+        val ask = dbActor.ask("m").map {
           case true =>
             // FIXME propagate
             Left(rpcMessage)
