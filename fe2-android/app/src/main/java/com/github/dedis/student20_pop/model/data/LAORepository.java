@@ -136,18 +136,13 @@ public class LAORepository {
     subscribeToWebsocketEvents();
   }
 
-  public static LAORepository getInstance(
+  public static synchronized LAORepository getInstance(
       LAODataSource.Remote laoRemoteDataSource,
       LAODataSource.Local localDataSource,
       AndroidKeysetManager keysetManager,
       Gson gson, SchedulerProvider schedulerProvider) {
     if (INSTANCE == null) {
-      synchronized (LAORepository.class) {
-        if (INSTANCE == null) {
-          INSTANCE = new LAORepository(laoRemoteDataSource, localDataSource, keysetManager, gson,
-              schedulerProvider);
-        }
-      }
+      INSTANCE = new LAORepository(laoRemoteDataSource, localDataSource, keysetManager, gson, schedulerProvider);
     }
     return INSTANCE;
   }
@@ -794,7 +789,7 @@ public class LAORepository {
               return genericMessage instanceof Answer
                   && ((Answer) genericMessage).getId() == id;
             })
-        .map(genericMessage -> (Answer) genericMessage)
+        .map(Answer.class::cast)
         .firstOrError()
         .subscribeOn(schedulerProvider.io())
         .cache();

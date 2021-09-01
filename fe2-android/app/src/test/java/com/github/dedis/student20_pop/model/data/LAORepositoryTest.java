@@ -13,6 +13,8 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.TestScheduler;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import junit.framework.TestCase;
@@ -40,118 +42,136 @@ public class LAORepositoryTest extends TestCase {
   @Mock
   MessageGeneral messageGeneral;
 
+  private static final int REQUEST_ID = 42;
   private static final int RESPONSE_DELAY = 1000;
-  private TestScheduler testScheduler;
+  private static final String CHANNEL = "/root/";
+  private static final String LAO_CHANNEL = "/root/123";
+
   private LAORepository repository;
+  private TestScheduler testScheduler;
+  private TestObserver<Answer> testObserver;
 
   @Before
   public void setup() {
     SchedulerProvider testSchedulerProvider = new TestSchedulerProvider();
     testScheduler = (TestScheduler) testSchedulerProvider.io();
 
-    // Simulate a network response from the server after 1 second
-    Observable<GenericMessage> upstream = Observable.just((GenericMessage) new Result(42))
+    // Simulate a network response from the server after the response delay
+    Observable<GenericMessage> upstream = Observable.just((GenericMessage) new Result(REQUEST_ID))
         .delay(RESPONSE_DELAY, TimeUnit.MILLISECONDS, testScheduler);
 
     Mockito.when(remoteDataSource.observeMessage()).thenReturn(upstream);
+    Mockito.when(remoteDataSource.incrementAndGetRequestId()).thenReturn(REQUEST_ID);
     Mockito.when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
-    Mockito.when(remoteDataSource.incrementAndGetRequestId()).thenReturn(42);
+
     repository = LAORepository
         .getInstance(remoteDataSource, localDataSource, androidKeysetManager,
             Injection.provideGson(), testSchedulerProvider);
+
+    // Create the observer that will simulate the network answer
+    testObserver = TestObserver.create();
   }
 
   @After
   public void destroy() {
+    // Ensure every test has a new LAORepository instance with a different TestSchedulerProvider
     LAORepository.destroyInstance();
   }
 
   @Test
   public void testSendCatchup() {
-    Single<Answer> answerCatchup = repository.sendCatchup("/root/");
+    // Send a catchup request and subscribe to the answer
+    Single<Answer> answerCatchup = repository.sendCatchup(CHANNEL);
+    answerCatchup.subscribe(testObserver);
+
+    // Check the correct DataSource is being used
     Mockito.verify(remoteDataSource, Mockito.times(1)).sendMessage(Mockito.any());
 
-    TestObserver<Answer> testObserverCatchup = TestObserver.create();
-
-    answerCatchup.subscribe(testObserverCatchup);
-
+    // Check there is no answer before the response delay time
     testScheduler.advanceTimeTo(RESPONSE_DELAY - 1, TimeUnit.MILLISECONDS);
-    testObserverCatchup.assertNotComplete();
+    testObserver.assertNotComplete();
 
+    // Check the catchup result is ready at response delay time
+    // and verify the id of the result corresponds to the expected id
     testScheduler.advanceTimeTo(RESPONSE_DELAY, TimeUnit.MILLISECONDS);
-    testObserverCatchup.assertComplete().assertNoErrors()
-        .assertValue(r -> r.getId() == 42);
+    testObserver.assertComplete().assertNoErrors()
+        .assertValue(r -> r.getId() == REQUEST_ID);
   }
 
   @Test
   public void testSendPublish() {
-    Single<Answer> answerPublish = repository.sendPublish("/root/", messageGeneral);
+    // Publish a message and subscribe to the answer
+    Single<Answer> answerPublish = repository.sendPublish(CHANNEL, messageGeneral);
+    answerPublish.subscribe(testObserver);
+
+    // Check the correct DataSource is being used
     Mockito.verify(remoteDataSource, Mockito.times(1)).sendMessage(Mockito.any());
 
-    TestObserver<Answer> testObserverPublish = TestObserver.create();
+    // Check there is no answer before the response delay time
+    testScheduler.advanceTimeTo(RESPONSE_DELAY - 1, TimeUnit.MILLISECONDS);
+    testObserver.assertNotComplete();
 
-    answerPublish.subscribe(testObserverPublish);
-
-    testScheduler.advanceTimeBy(950, TimeUnit.MILLISECONDS);
-    testObserverPublish.assertNotComplete();
-
-    testScheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
-    testObserverPublish.assertComplete().assertNoErrors()
-        .assertValue(r -> r.getId() == 42);
+    // Check the publish result is ready at response delay time
+    // and verify the id of the result corresponds to the expected id
+    testScheduler.advanceTimeTo(RESPONSE_DELAY, TimeUnit.MILLISECONDS);
+    testObserver.assertComplete().assertNoErrors()
+        .assertValue(r -> r.getId() == REQUEST_ID);
   }
 
   @Test
   public void testSendSubscribe() {
-    Single<Answer> answerSubscribe = repository.sendSubscribe("/root/");
+    // Send a subscribe request and subscribe to the answer
+    Single<Answer> answerSubscribe = repository.sendSubscribe(CHANNEL);
+    answerSubscribe.subscribe(testObserver);
+
+    // Check the correct DataSource is being used
     Mockito.verify(remoteDataSource, Mockito.times(1)).sendMessage(Mockito.any());
 
-    TestObserver<Answer> testObserverSubscribe = TestObserver.create();
+    // Check there is no answer before the response delay time
+    testScheduler.advanceTimeTo(RESPONSE_DELAY - 1, TimeUnit.MILLISECONDS);
+    testObserver.assertNotComplete();
 
-    answerSubscribe.subscribe(testObserverSubscribe);
-
-    testScheduler.advanceTimeBy(950, TimeUnit.MILLISECONDS);
-    testObserverSubscribe.assertNotComplete();
-
-    testScheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
-    testObserverSubscribe.assertComplete().assertNoErrors()
-        .assertValue(r -> r.getId() == 42);
+    // Check the subscribe result is ready at response delay time
+    // and verify the id of the result corresponds to the expected id
+    testScheduler.advanceTimeTo(RESPONSE_DELAY, TimeUnit.MILLISECONDS);
+    testObserver.assertComplete().assertNoErrors()
+        .assertValue(r -> r.getId() == REQUEST_ID);
   }
 
   @Test
   public void testSendUnsubscribe() {
-    Single<Answer> answerUnsubscribe = repository.sendUnsubscribe("/root/");
+    // Send an unsubscribe request and subscribe to the answer
+    Single<Answer> answerUnsubscribe = repository.sendUnsubscribe(CHANNEL);
+    answerUnsubscribe.subscribe(testObserver);
+
+    // Check the correct DataSource is being used
     Mockito.verify(remoteDataSource, Mockito.times(1)).sendMessage(Mockito.any());
 
-    TestObserver<Answer> testObserverUnsubscribe = TestObserver.create();
+    // Check there is no answer before the response delay time
+    testScheduler.advanceTimeTo(RESPONSE_DELAY - 1, TimeUnit.MILLISECONDS);
+    testObserver.assertNotComplete();
 
-    answerUnsubscribe.subscribe(testObserverUnsubscribe);
-
-    testScheduler.advanceTimeBy(950, TimeUnit.MILLISECONDS);
-    testObserverUnsubscribe.assertNotComplete();
-
-    testScheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
-    testObserverUnsubscribe.assertComplete().assertNoErrors()
-        .assertValue(r -> r.getId() == 42);
+    // Check the unsubscribe result is ready at response delay time
+    // and verify the id of the result corresponds to the expected id
+    testScheduler.advanceTimeTo(RESPONSE_DELAY, TimeUnit.MILLISECONDS);
+    testObserver.assertComplete().assertNoErrors()
+        .assertValue(r -> r.getId() == REQUEST_ID);
   }
 
-  // Test the get methods: getLaoObservable and getAllLaos
   @Test
   public void testGetLaos() {
     // Does not use LAOLocalDataSource
 
-    // Send subscribe to fill laoById and allLaoSubject in LAORepository
-    repository.sendSubscribe("/root/123");
-    TestObserver<Lao> testObserverLao = TestObserver.create();
-    TestObserver<List<Lao>> testObserverListLao = TestObserver.create();
+    // Create the LAO and the LAO list to test from
+    Lao lao = new Lao(LAO_CHANNEL);
+    List<Lao> laos = new ArrayList<>(Collections.singleton(lao));
 
-    testScheduler.advanceTimeBy(1500, TimeUnit.MILLISECONDS);
+    // Subscribe to a LAO and wait for the request to finish
+    repository.sendSubscribe(LAO_CHANNEL);
+    testScheduler.advanceTimeBy(RESPONSE_DELAY, TimeUnit.MILLISECONDS);
 
-    repository.getLaoObservable("/root/123").subscribe(testObserverLao);
-    repository.getAllLaos().subscribe(testObserverListLao);
-
-    testScheduler.advanceTimeBy(1500, TimeUnit.MILLISECONDS);
-
-    testObserverLao.assertNoErrors().assertValueCount(1);
-    testObserverListLao.assertNoErrors().assertValueCount(1);
+    // Check the LAO is present in both LAO lists of LAORepository
+    repository.getLaoObservable(LAO_CHANNEL).test().onSuccess(lao);
+    repository.getAllLaos().test().onSuccess(laos);
   }
 }
