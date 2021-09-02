@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strings"
 
 	"golang.org/x/xerrors"
 )
@@ -418,14 +419,29 @@ type CastVoteData struct {
 	Votes      []Vote         `json:"votes"`
 }
 
-func (c *CastVoteData) ValidateID(laoID string) bool {
+func (c *CastVoteData) ValidateID(channelPath string) bool {
+	// channelPath is of form `laoID/electionID`
+
+	elements := strings.Split(channelPath, "/")
+	if len(elements) != 2 {
+		log.Printf("castVoteData: unexpected channelPath: %v", elements)
+		return false
+	}
+
 	encodedLaoID := c.LaoID.Encode()
-	if encodedLaoID != laoID {
-		log.Println("ElectionSetupData: message received on a different LAO than one in message")
+	if encodedLaoID != elements[0] {
+		log.Printf("castVoteData: message received on a different LAO than "+
+			"one in message. Expected %s, go %s", encodedLaoID, elements[0])
 		return false
 	}
 
 	encodedElectionID := c.ElectionID.Encode()
+	if encodedElectionID != elements[1] {
+		log.Printf("castVoteData: message received on a different electionID "+
+			"than one in message. Expected %s, got %s", encodedElectionID, elements[1])
+		return false
+	}
+
 	for _, vote := range c.Votes {
 		encodedQuestionID := vote.QuestionID.Encode()
 		inputs := []fmt.Stringer{Stringer("Vote"), Stringer(encodedElectionID), Stringer(encodedQuestionID)}
