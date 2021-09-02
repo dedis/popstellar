@@ -6,6 +6,7 @@ import com.github.dedis.student20_pop.model.network.GenericMessage;
 import com.github.dedis.student20_pop.model.network.answer.Answer;
 import com.github.dedis.student20_pop.model.network.answer.Result;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
+import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.student20_pop.utility.scheduler.SchedulerProvider;
 import com.github.dedis.student20_pop.utility.scheduler.TestSchedulerProvider;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
@@ -14,7 +15,6 @@ import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.TestScheduler;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import junit.framework.TestCase;
@@ -164,14 +164,19 @@ public class LAORepositoryTest extends TestCase {
 
     // Create the LAO and the LAO list to test from
     Lao lao = new Lao(LAO_CHANNEL);
-    List<Lao> laos = new ArrayList<>(Collections.singleton(lao));
 
     // Subscribe to a LAO and wait for the request to finish
     repository.sendSubscribe(LAO_CHANNEL);
     testScheduler.advanceTimeBy(RESPONSE_DELAY, TimeUnit.MILLISECONDS);
 
+    // TODO: Use TestSubscriber
     // Check the LAO is present in both LAO lists of LAORepository
-    repository.getLaoObservable(LAO_CHANNEL).test().onSuccess(lao);
-    repository.getAllLaos().test().onSuccess(laos);
+  }
+
+  @Test
+  public void testBroadcast() {
+
+    CreateLao createLao = new CreateLao(Mockito.any(), Mockito.any());
+
   }
 }
