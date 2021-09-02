@@ -34,7 +34,7 @@ export function requestCreateLao(laoName: string): Promise<Channel> {
 
   return publish(ROOT_CHANNEL, message)
     .then(() => {
-      console.info(`LAO was created with ID: ${message.id}`);
+      // console.info(`LAO was created with ID: ${message.id}`);
       return channelFromId(message.id);
     });
 }
