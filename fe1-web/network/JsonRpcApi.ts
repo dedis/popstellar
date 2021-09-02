@@ -38,7 +38,13 @@ export function subscribe(channel: Channel): Promise<void> {
   // propagate the catch() with the full error message, as it needs to be handled on a higher level
 }
 
-export function catchup(channel: Channel): Promise<Message[]> {
+function* messageGenerator(msgs: any[]) {
+  for (const m of msgs) {
+    yield Message.fromJson(m);
+  }
+}
+
+export function catchup(channel: Channel): Promise<Generator<Message, void, undefined>> {
   const request = new JsonRpcRequest({
     method: JsonRpcMethod.CATCHUP,
     params: new Subscribe({
@@ -47,14 +53,15 @@ export function catchup(channel: Channel): Promise<Message[]> {
     id: AUTO_ASSIGN_ID,
   });
 
-  return getNetworkManager().sendPayload(request).then(
-    (r: JsonRpcResponse) => {
+  return getNetworkManager()
+    .sendPayload(request)
+    .then((r: JsonRpcResponse) => {
       if (typeof r.result === 'number') {
         throw new Error('FIXME number in result. Should it be here?');
       }
 
-      return (r.result as any[]).map((m) => Message.fromJson(m));
-    },
-  );
+      const msgs = (r.result as any[]);
+      return messageGenerator(msgs);
+    });
   // propagate the catch() with the full error message, as it needs to be handled on a higher level
 }

@@ -12,7 +12,11 @@ export function subscribeToChannel(channel: Channel): Promise<void> {
   // Subscribe to LAO main channel
   return subscribe(channel)
     // Retrieve all previous LAO messages
-    .then(() => catchup(channel).then((messages: Message[]) => storeMessages(...messages)))
+    .then(() => catchup(channel).then((msgs: Generator<Message, void, undefined>) => {
+      for (const msg of msgs) {
+        storeMessages(msg);
+      }
+    }))
     // handle any error
     .catch((err) => {
       console.error('Something went wrong when subscribing to channel', err);
