@@ -67,8 +67,10 @@ func createBaseChannel(h *baseHub, channelID string) *baseChannel {
 	return &baseChannel{
 		hub:       h,
 		channelID: channelID,
-		sockets:   sockets{},
-		inbox:     createInbox(channelID),
+		sockets: sockets{
+			store: make(map[string]socket.Socket),
+		},
+		inbox: createInbox(channelID),
 	}
 }
 
