@@ -1,9 +1,5 @@
 package com.github.dedis.student20_pop.model.data;
 
-import static com.fasterxml.jackson.databind.util.LinkedNode.contains;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import com.github.dedis.student20_pop.Injection;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.network.GenericMessage;
@@ -18,10 +14,9 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.TestScheduler;
-import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import junit.framework.TestCase;
-import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -163,22 +158,41 @@ public class LAORepositoryTest extends TestCase {
   }
 
   @Test
-  public void testGetLaos() {
+  public void testGetAllLaos() {
     // Does not use LAOLocalDataSource
 
-    // Create the LAO and the LAO list to test from
+    // Create the LAO and the subscriber to test from
     Lao lao = new Lao(LAO_CHANNEL);
+    TestObserver<List<Lao>> subscriber = TestObserver.create();
 
+    // Subscribe to a LAO and wait for the request to finish
+    repository.sendSubscribe(LAO_CHANNEL);
+    testScheduler.advanceTimeBy(RESPONSE_DELAY, TimeUnit.MILLISECONDS);
+
+    repository.getAllLaos().subscribe(subscriber);
+
+    // Check the LAO is present in the laoById map of LAORepository
+    List<Lao> repositoryLaoList = (List<Lao>) subscriber.getEvents().get(0).get(0);
+    assertEquals(repositoryLaoList.get(0).getChannel(), lao.getChannel());
+  }
+
+  @Test
+  public void testGetLaoObservable() {
+    // Does not use LAOLocalDataSource
+
+    // Create the LAO and the subscriber to test from
+    Lao lao = new Lao(LAO_CHANNEL);
     TestObserver<Lao> subscriber = TestObserver.create();
 
     // Subscribe to a LAO and wait for the request to finish
     repository.sendSubscribe(LAO_CHANNEL);
     testScheduler.advanceTimeBy(RESPONSE_DELAY, TimeUnit.MILLISECONDS);
 
-    // Check the LAO is present in both LAO lists of LAORepository
-    repository.getLaoObservable(CHANNEL).subscribe(subscriber);
+    repository.getLaoObservable(LAO_CHANNEL).subscribe(subscriber);
 
-    assertThat(subscriber.getEvents(), contains(Arrays.<Matcher<? super Lao>> asList(equalTo(lao))));
+    // Check the LAO is present in the allLaoSubject list of LAORepository
+    Lao repositoryLao = (Lao) subscriber.getEvents().get(0).get(0);
+    assertEquals(repositoryLao.getChannel(), lao.getChannel());
   }
 
   @Test
