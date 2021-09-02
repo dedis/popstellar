@@ -1,5 +1,9 @@
 package com.github.dedis.student20_pop.model.data;
 
+import static com.fasterxml.jackson.databind.util.LinkedNode.contains;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import com.github.dedis.student20_pop.Injection;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.network.GenericMessage;
@@ -14,10 +18,10 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.TestScheduler;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import junit.framework.TestCase;
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -165,12 +169,16 @@ public class LAORepositoryTest extends TestCase {
     // Create the LAO and the LAO list to test from
     Lao lao = new Lao(LAO_CHANNEL);
 
+    TestObserver<Lao> subscriber = TestObserver.create();
+
     // Subscribe to a LAO and wait for the request to finish
     repository.sendSubscribe(LAO_CHANNEL);
     testScheduler.advanceTimeBy(RESPONSE_DELAY, TimeUnit.MILLISECONDS);
 
-    // TODO: Use TestSubscriber
     // Check the LAO is present in both LAO lists of LAORepository
+    repository.getLaoObservable(CHANNEL).subscribe(subscriber);
+
+    assertThat(subscriber.getEvents(), contains(Arrays.<Matcher<? super Lao>> asList(equalTo(lao))));
   }
 
   @Test
