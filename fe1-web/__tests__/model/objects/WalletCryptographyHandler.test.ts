@@ -6,6 +6,7 @@ import { sign } from 'tweetnacl';
 import 'fake-indexeddb/auto';
 
 jest.mock('utils/Crypto');
+jest.mock('utils/PlatformStorage');
 
 /**
  * This test uses a MOCK version of the crypto.subtle API.
