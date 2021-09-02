@@ -2,13 +2,14 @@ package hub
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"sort"
 	"student20_pop/message"
 	"student20_pop/network/socket"
 	"student20_pop/validation"
 	"sync"
+
+	"golang.org/x/xerrors"
 )
 
 type sockets struct {
@@ -86,10 +87,7 @@ func (c *baseChannel) Unsubscribe(socketID string, msg message.Unsubscribe) erro
 	ok := c.sockets.Delete(socketID)
 
 	if !ok {
-		return &message.Error{
-			Code:        -2,
-			Description: "client is not subscribed to this channel",
-		}
+		return message.NewError(-2, "client is not subscribed to this channel")
 	}
 
 	return nil
@@ -133,7 +131,7 @@ func (c *baseChannel) broadcastToAllClients(msg message.Message) {
 
 	buf, err := json.Marshal(query)
 	if err != nil {
-		log.Fatalf("failed to marshal broadcast query: %v", err)
+		log.Printf("failed to marshal broadcast query: %v", err)
 	}
 
 	c.sockets.RLock()
@@ -153,25 +151,20 @@ func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 	// Verify the data
 	err := c.hub.schemaValidator.VerifyJson(msg.RawData, validation.Data)
 	if err != nil {
-		return message.NewError("failed to validate the data", err)
+		return xerrors.Errorf("failed to verify json schema: %w", err)
 	}
 
 	// Unmarshal the data
-	err = msg.VerifyAndUnmarshalData()
+	laoID := c.channelID[6:]
+	err = msg.VerifyAndUnmarshalData(laoID)
 	if err != nil {
 		// Return a error of type "-4 request data is invalid" for all the verifications and unmarshalling problems of the data
-		return &message.Error{
-			Code:        -4,
-			Description: fmt.Sprintf("failed to verify and unmarshal data: %v", err),
-		}
+		return message.NewErrorf(-4, "failed to verify and unmarshal data: %v", err)
 	}
 
 	// Check if the message already exists
 	if _, ok := c.inbox.getMessage(msg.MessageID); ok {
-		return &message.Error{
-			Code:        -3,
-			Description: "message already exists",
-		}
+		return message.NewError(-3, "message already exists")
 	}
 
 	return nil

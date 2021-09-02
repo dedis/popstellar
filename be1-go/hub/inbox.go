@@ -3,7 +3,6 @@ package hub
 import (
 	"database/sql"
 	"encoding/base64"
-	"fmt"
 	"log"
 	"os"
 	"student20_pop/message"
@@ -42,10 +41,7 @@ func (i *inbox) addWitnessSignature(messageID []byte, public message.PublicKey, 
 		// actually receive the message
 		msgIDEncoded := base64.URLEncoding.EncodeToString(messageID)
 		log.Printf("failed to find message_id %s for witness message", msgIDEncoded)
-		return &message.Error{
-			Code:        -4,
-			Description: fmt.Sprintf("failed to find message_id %s for witness message", msgIDEncoded),
-		}
+		return message.NewErrorf(-4, "failed to find message_id %q for witness message", msgIDEncoded)
 	}
 
 	i.mutex.Lock()
