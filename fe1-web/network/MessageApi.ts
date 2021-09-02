@@ -33,10 +33,7 @@ export function requestCreateLao(laoName: string): Promise<Channel> {
   });
 
   return publish(ROOT_CHANNEL, message)
-    .then(() => {
-      // console.info(`LAO was created with ID: ${message.id}`);
-      return channelFromId(message.id);
-    });
+    .then(() => channelFromId(message.id));
 }
 
 /** Send a server query asking for a LAO update providing a new name (String) */

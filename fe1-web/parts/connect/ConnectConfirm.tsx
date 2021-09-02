@@ -44,7 +44,7 @@ function connectTo(serverUrl: string): boolean {
     const { origin, pathname } = new URL(serverUrl);
 
     const path = pathname.replace(/^\/+/g, '');
-    getNetworkManager().connect(origin,path || undefined);
+    getNetworkManager().connect(origin, path || undefined);
   } catch (err) {
     console.error(`Cannot connect to '${serverUrl}' as it is an invalid URL`, err);
     return false;

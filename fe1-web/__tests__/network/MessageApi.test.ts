@@ -444,7 +444,6 @@ describe('=== WebsocketApi tests ===', () => {
       await msApi.requestCreateMeeting(mockEventName, mockStartTime, mockLocation, mockEndTime);
     });
 
-
     it('should create the correct request for requestCreateMeeting 4', async () => {
       setMockCheck(checkDataCreateMeeting);
       const mockExtra = { numberParticipants: 12, minAge: 18 };
@@ -460,7 +459,6 @@ describe('=== WebsocketApi tests ===', () => {
 
     it('should create the correct request for requestCreateRollCall', async () => {
       setMockCheck(checkDataCreateRollCall);
-      const mockDescription = 'random description';
       await msApi.requestCreateRollCall(mockEventName, mockLocation, mockStartTime, mockEndTime);
     });
 

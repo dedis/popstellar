@@ -1,7 +1,7 @@
 import {
   get as kvGet,
   set as kvSet,
-  update as kvUpdate
+  update as kvUpdate,
 } from 'idb-keyval';
 
 type Key = string | number;
