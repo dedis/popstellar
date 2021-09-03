@@ -6,19 +6,18 @@
 	"type": "object",
 	"allOf": [
 		{
-			"maxProperties": 4,
+			"maxProperties": 3,
 			"$comment": "Note: can't use \"additionalProperties: false\" due to \"allOf\""
 		},
 		{
 			"properties": {
-				"jsonrpc": {
-					"description": "[String] JsonRpc version",
-					"const": "2.0",
-					"$comment": "should always be \"2.0\""
+				"queryID": {
+					"type": "integer",
+					"description": "RequestID will be used to match the request to an answer"
 				}
 			},
 			"required": [
-				"jsonrpc"
+				"queryID"
 			]
 		},
 		{
