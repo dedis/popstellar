@@ -4,27 +4,40 @@
 	"title": "Match a custom JsonRpc 2.0 query message",
 	"description": "Match a client query",
 	"type": "object",
-
 	"allOf": [
 		{
-			"maxProperties": 4, 
+			"maxProperties": 4,
 			"$comment": "Note: can't use \"additionalProperties: false\" due to \"allOf\""
-		}, {
-			"properties": { 
-				"jsonrpc": { 
-					"description": "[String] JsonRpc version", 
-					"const": "2.0", 
-					"$comment": "should always be \"2.0\"" 
-				} 
+		},
+		{
+			"properties": {
+				"jsonrpc": {
+					"description": "[String] JsonRpc version",
+					"const": "2.0",
+					"$comment": "should always be \"2.0\""
+				}
 			},
-			"required": ["jsonrpc"]
-		}, {
+			"required": [
+				"jsonrpc"
+			]
+		},
+		{
 			"oneOf": [
-				{ "$ref": "method/subscribe.json" },
-				{ "$ref": "method/unsubscribe.json" },
-				{ "$ref": "method/catchup.json" },
-				{ "$ref": "method/broadcast.json" },
-				{ "$ref": "method/publish.json" }
+				{
+					"$ref": "method/subscribe.json"
+				},
+				{
+					"$ref": "method/unsubscribe.json"
+				},
+				{
+					"$ref": "method/catchup.json"
+				},
+				{
+					"$ref": "method/broadcast.json"
+				},
+				{
+					"$ref": "method/publish.json"
+				}
 			]
 		}
 	]

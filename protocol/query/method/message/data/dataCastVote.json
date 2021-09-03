@@ -3,10 +3,13 @@
 	"$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataCastVote.json",
 	"description": "Match a cast vote query",
 	"type": "object",
-
 	"properties": {
-		"object": { "const": "election" },
-		"action": { "const": "cast_vote" },
+		"object": {
+			"const": "election"
+		},
+		"action": {
+			"const": "cast_vote"
+		},
 		"lao": {
 			"type": "string",
 			"contentEncoding": "base64",
@@ -41,7 +44,10 @@
 								"$comment": "ID of the question"
 							}
 						},
-						"required": ["id", "question"]
+						"required": [
+							"id",
+							"question"
+						]
 					},
 					{
 						"oneOf": [
@@ -58,7 +64,9 @@
 										"uniqueItems": true
 									}
 								},
-								"required": ["vote"]
+								"required": [
+									"vote"
+								]
 							},
 							{
 								"properties": {
@@ -66,7 +74,9 @@
 										"type": "string"
 									}
 								},
-								"required": ["write_in"]
+								"required": [
+									"write_in"
+								]
 							}
 						]
 					}
@@ -77,5 +87,12 @@
 		}
 	},
 	"additionalProperties": false,
-	"required": ["object", "action", "lao", "election", "created_at", "votes"]
+	"required": [
+		"object",
+		"action",
+		"lao",
+		"election",
+		"created_at",
+		"votes"
+	]
 }

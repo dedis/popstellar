@@ -3,15 +3,18 @@
 	"$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataEndElection.json",
 	"description": "Match an ElectionEnd query",
 	"type": "object",
-
 	"properties": {
-		"object": { "const": "election" },
-		"action": { "const": "end" },
-        "lao": { 
+		"object": {
+			"const": "election"
+		},
+		"action": {
+			"const": "end"
+		},
+		"lao": {
 			"type": "string",
-            "contentEncoding": "base64",
-            "$comment": "ID of the LAO"
-        },
+			"contentEncoding": "base64",
+			"$comment": "ID of the LAO"
+		},
 		"election": {
 			"type": "string",
 			"contentEncoding": "base64",
@@ -22,12 +25,19 @@
 			"type": "integer",
 			"minimum": 0
 		},
-        "registered_votes": {
+		"registered_votes": {
 			"type": "string",
 			"contentEncoding": "base64",
 			"$comment": "Hash : SHA256(<vote_id>, <vote_id>, ...)"
 		}
 	},
 	"additionalProperties": false,
-	"required": ["object", "action", "lao", "election", "created_at", "registered_votes"]
+	"required": [
+		"object",
+		"action",
+		"lao",
+		"election",
+		"created_at",
+		"registered_votes"
+	]
 }

@@ -4,7 +4,6 @@
 	"title": "This represents a message someone would want to publish on a specific channel",
 	"description": "Match a message used in a \"witness a message query\"",
 	"type": "object",
-
 	"properties": {
 		"data": {
 			"description": "[Base64String] data contained in the message",
@@ -38,5 +37,11 @@
 		}
 	},
 	"additionalProperties": false,
-	"required": ["data", "sender", "signature", "message_id", "witness_signatures"]
+	"required": [
+		"data",
+		"sender",
+		"signature",
+		"message_id",
+		"witness_signatures"
+	]
 }

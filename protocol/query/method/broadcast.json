@@ -3,29 +3,41 @@
 	"$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/broadcast.json",
 	"description": "Match propagation/broadcast of a message on a channel query",
 	"type": "object",
-
 	"properties": {
-		"method": { 
+		"method": {
 			"description": "[String] operation to be performed by the query",
-			"const": "broadcast" 
+			"const": "broadcast"
 		},
 		"params": {
 			"type": "object",
 			"properties": {
-				"channel": { "description": "[String] name of the channel", "$ref": "channel/subChannel.json" },
-				"message": { 
-					"description": "[Message] message to be published", 
+				"channel": {
+					"description": "[String] name of the channel",
+					"$ref": "channel/subChannel.json"
+				},
+				"message": {
+					"description": "[Message] message to be published",
 					"anyOf": [
-						{ "$ref": "message/messageGeneral.json" },
-						{ "$ref": "message/messageWitnessMessage.json" }
+						{
+							"$ref": "message/messageGeneral.json"
+						},
+						{
+							"$ref": "message/messageWitnessMessage.json"
+						}
 					]
 				}
 			},
 			"additionalProperties": false,
-			"required": ["channel", "message"]
+			"required": [
+				"channel",
+				"message"
+			]
 		}
 	},
 	"maxProperties": 3,
-	"required": ["method", "params"],
+	"required": [
+		"method",
+		"params"
+	],
 	"$comment": "Note: only 3 properties on this query!"
 }
