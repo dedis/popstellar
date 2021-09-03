@@ -7,14 +7,18 @@ import com.github.dedis.student20_pop.model.network.answer.Answer;
 import com.github.dedis.student20_pop.model.network.answer.Result;
 import com.github.dedis.student20_pop.model.network.method.Broadcast;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
+import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.student20_pop.utility.scheduler.SchedulerProvider;
 import com.github.dedis.student20_pop.utility.scheduler.TestSchedulerProvider;
+import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.TestScheduler;
+import java.security.GeneralSecurityException;
+import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import junit.framework.TestCase;
@@ -40,13 +44,18 @@ public class LAORepositoryTest extends TestCase {
   AndroidKeysetManager androidKeysetManager;
 
   @Mock
+  PublicKeySign signer;
+
+  @Mock
   MessageGeneral messageGeneral;
 
   private static final int REQUEST_ID = 42;
   private static final int RESPONSE_DELAY = 1000;
   private static final String ORGANIZER = "Z3DYtBxooGs6KxOAqCWD3ihR8M6ZPBjAmWp_w5VBaws=";
-  private static final String CHANNEL = "/root/" + ORGANIZER;
   private static final String LAO_NAME = "Lao";
+  private static final CreateLao CREATE_LAO = new CreateLao(LAO_NAME, ORGANIZER);
+  private static final String CHANNEL = "/root";
+  private static final String LAO_CHANNEL = CHANNEL + "/" + CREATE_LAO.getId();
 
   private LAORepository repository;
   private TestScheduler testScheduler;
@@ -59,9 +68,10 @@ public class LAORepositoryTest extends TestCase {
     testScheduler = (TestScheduler) testSchedulerProvider.io();
 
     // Simulate a network response from the server after the response delay
-    Observable<GenericMessage> upstream = Observable.just((GenericMessage) new Result(REQUEST_ID))
+    Observable<GenericMessage> upstream = Observable.fromArray((GenericMessage) new Result(REQUEST_ID))
         .delay(RESPONSE_DELAY, TimeUnit.MILLISECONDS, testScheduler);
 
+    // Mock the remote data source to always return the same request id and to receive a response
     Mockito.when(remoteDataSource.observeMessage()).thenReturn(upstream);
     Mockito.when(remoteDataSource.incrementAndGetRequestId()).thenReturn(REQUEST_ID);
     Mockito.when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
@@ -165,11 +175,11 @@ public class LAORepositoryTest extends TestCase {
     // Does not use LAOLocalDataSource
 
     // Create the LAO and the subscriber to test from
-    Lao lao = new Lao(CHANNEL);
+    Lao lao = new Lao(LAO_CHANNEL);
     TestObserver<List<Lao>> subscriber = TestObserver.create();
 
     // Subscribe to a LAO and wait for the request to finish
-    repository.sendSubscribe(CHANNEL);
+    repository.sendSubscribe(LAO_CHANNEL);
     testScheduler.advanceTimeBy(RESPONSE_DELAY, TimeUnit.MILLISECONDS);
 
     repository.getAllLaos().subscribe(subscriber);
@@ -183,37 +193,51 @@ public class LAORepositoryTest extends TestCase {
   public void testGetLaoObservable() {
     // Does not use LAOLocalDataSource
 
-    // Create the LAO and the subscriber to test from
-    Lao lao = new Lao(CHANNEL);
-    TestObserver<Lao> subscriber = TestObserver.create();
-
     // Subscribe to a LAO and wait for the request to finish
-    repository.sendSubscribe(CHANNEL);
+    repository.sendSubscribe(LAO_CHANNEL);
     testScheduler.advanceTimeBy(RESPONSE_DELAY, TimeUnit.MILLISECONDS);
 
-    repository.getLaoObservable(CHANNEL).subscribe(subscriber);
+    // Set subscriber of the LAO list to test from
+    TestObserver<Lao> subscriber = TestObserver.create();
+    repository.getLaoObservable(LAO_CHANNEL).subscribe(subscriber);
 
     // Check the LAO is present in the allLaoSubject list of LAORepository
     Lao repositoryLao = (Lao) subscriber.getEvents().get(0).get(0);
-    assertEquals(repositoryLao.getChannel(), lao.getChannel());
+    assertEquals(repositoryLao.getChannel(), LAO_CHANNEL);
   }
 
   @Test
-  public void testBroadcast() {
-    // Create data to broadcast
-    CreateLao createLao = new CreateLao(LAO_NAME, ORGANIZER);
-    MessageGeneral message = new MessageGeneral(Mockito.any(), createLao, Mockito.any(), Injection.provideGson());
-    
-    // Simulate a broadcast from the server after the response delay
-    Observable<GenericMessage> upstream = Observable.just((GenericMessage) new Broadcast(CHANNEL, message))
+  public void testBroadcast() throws GeneralSecurityException {
+    // Destroy the instance from the setup
+    LAORepository.destroyInstance();
+
+    // Create message to broadcast
+    byte[] dataBuf = Injection.provideGson().toJson(CREATE_LAO, Data.class).getBytes();
+    Mockito.when(signer.sign(dataBuf)).thenReturn(dataBuf);
+    MessageGeneral message = new MessageGeneral(Base64.getUrlDecoder().decode(ORGANIZER), CREATE_LAO, signer, Injection.provideGson());
+
+    // Simulate a network response and then a broadcast from the server after the response delay
+    Observable<GenericMessage> upstream = Observable.fromArray((GenericMessage) new Result(REQUEST_ID), (GenericMessage) new Broadcast(LAO_CHANNEL, message))
         .delay(RESPONSE_DELAY, TimeUnit.MILLISECONDS, testScheduler);
 
+    // Mock the remote data source to receive a response and then a broadcast
     Mockito.when(remoteDataSource.observeMessage()).thenReturn(upstream);
-    Mockito.when(remoteDataSource.incrementAndGetRequestId()).thenReturn(REQUEST_ID);
-    Mockito.when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
 
     repository = LAORepository
         .getInstance(remoteDataSource, localDataSource, androidKeysetManager,
             Injection.provideGson(), testSchedulerProvider);
+
+    // Subscribe to a LAO and wait for the request to finish
+    repository.sendSubscribe(LAO_CHANNEL);
+    testScheduler.advanceTimeBy(RESPONSE_DELAY, TimeUnit.MILLISECONDS);
+
+    // Set subscriber of the LAO list to test from
+    TestObserver<Lao> subscriber = TestObserver.create();
+    repository.getLaoObservable(LAO_CHANNEL).subscribe(subscriber);
+
+    // Check the LAO information is present after the broadcast
+    Lao repositoryLao = (Lao) subscriber.getEvents().get(0).get(0);
+    assertEquals(repositoryLao.getLastModified(), (Long) CREATE_LAO.getCreation());
+    assertNotNull(repositoryLao.getWitnesses());
   }
 }
