@@ -7,14 +7,14 @@ import {
 type Key = string | number;
 type Updater<T> = (oldValue: T | undefined) => T;
 
-export function get(key: Key): any {
+export function get(key: Key): Promise<any> {
   return kvGet(key);
 }
 
-export function set(key: Key, value: any) {
-  kvSet(key, value);
+export async function set(key: Key, value: any): Promise<void> {
+  await kvSet(key, value);
 }
 
-export function update<T>(key: Key, updater: Updater<T>) {
-  kvUpdate(key, updater);
+export async function update<T>(key: Key, updater: Updater<T>): Promise<void> {
+  await kvUpdate(key, updater);
 }
