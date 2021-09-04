@@ -238,18 +238,84 @@ a source of truth since the validation library checks the messages against it.
 When you need to create a new object, please refer to existing message types and in particular
 their `fromJSON` method to get an idea about how to implement a new type.
 
-### UI elements
+### User Interface
 
-... TBD ...
-Will mention difference between `components` (UI component library) and `parts` (unique screens).
+The development of an application providing a good user interface, enabling a good user experience,
+requires the user interaction patterns to be predictable, coherent and homogenous across the app.
+To achieve this, applications typically resort to the definition and implementation of a library of
+reusable components - building bricks - that are reused throughout the application and assembled
+to create the different "views" (or "screens") of the application.
+
+As you design a given screen, you will break it down into sub-components, sub-sub-components, etc.
+You can refer to the [React documentation](https://reactjs.org/docs/thinking-in-react.html#step-1-break-the-ui-into-a-component-hierarchy)
+to have guidance on the thinking process going into this component break-down.
+
+In general, the top-level components (the "views" or "screens") will be full of
+application-specific logic, as they'll encompass the full behavior of that screen.
+As you go down into sub- and sub-sub-components, you'll come across more generic logic,
+which is only dealing with the UI itself.
+
+As part of the PoP Web front-end, you'll find the low-level reusable UI components in the
+`/components` package, while the main views and screens of the application are found in `/parts`.
+
+In concrete terms, the `/components` package provides elements such as a
+[Date Picker](https://github.com/dedis/student_21_pop/tree/master/fe1-web/components/DatePicker.tsx),
+a [QR Code displayer](https://github.com/dedis/student_21_pop/tree/master/fe1-web/components/QRCode.tsx),
+or a component managing
+[a list of Text Inputs](https://github.com/dedis/student_21_pop/tree/master/fe1-web/components/TextInputList.tsx).
+
+The `/parts` package, on the other hand, contains screens such as the
+[Wallet setup](https://github.com/dedis/student_21_pop/tree/master/fe1-web/parts/wallet/WalletSetSeed.tsx)
+and the
+[Wallet home](https://github.com/dedis/student_21_pop/tree/master/fe1-web/parts/wallet/WalletHome.tsx).
+
+This is the current organization, but as this project evolves you should feel free to reorganize the
+code layout (in agreement with your project teammates and the TAs) in any way that is convenient.
+
+For more information on developing the user interface, please make sure you have a solid
+understanding of [React](https://reactjs.org/).
+
+#### Linking User Interface and Application State
+
+For more information on linking up together the user interface with the application state,
+please make sure you have a solid understanding of [React Redux](https://react-redux.js.org/)
+and look at existing components.
+
+#### Navigation
+
+The navigation is handled in the `navigation` package.
+
+For more information on managing the navigation in the user interface,
+please make sure you have a solid understanding of [React Navigation](https://reactnavigation.org/).
 
 ### Validation
 
-All the incoming messages are validated using the `network\validation` package,
+All the incoming messages are validated using the `network/validation` package,
 which ensures that all constraints defined within the JSON Schema are respected.
 
 Furthermore, each object has specific constraints defined within its constructor.
 For an example, see `model/network/method/message/data/rollCall/CreateRollCall.ts`.
+
+## Testing
+
+Software testing is a vast topic, requiring lots of application-specific adaptations.
+We will not detail here aspects of software strategy, lest you would be reading a book
+instead of a README, but you will find below some resources that you could find useful
+in ensuring the code you write conforms to the specifications and your expectations:
+
+- [Testing React applications with Jest](https://jestjs.io/docs/tutorial-react)
+- [Understanding Mocking in Jest](https://medium.com/@rickhanlonii/understanding-jest-mocks-f0046c68e53c)
+- [Testing application state management with Redux](https://redux.js.org/usage/writing-tests)
+
+These resources mostly relate to unit and integration testing, but End-to-End (E2E) testing
+has its own dedicated set of tools:
+
+- [Selenium](https://www.selenium.dev/) is the most famous one, but it has a low-level API
+- [NightWatch.js](https://nightwatchjs.org/) offers a wrapper around Selenium and alternatives,
+making it straightforward to write E2E tests for an application.
+
+If you write E2E tests, please be mindful of making them maintainable through the use of the
+[Page Object Model](https://martinfowler.com/bliki/PageObject.html).
 
 ## Debugging Tips
 
@@ -269,7 +335,7 @@ For an example, see `model/network/method/message/data/rollCall/CreateRollCall.t
 Please reach out to the DEDIS Engineering team members to deploy a build to an
 internet accessible host.
 
-...TBD...
+Further information will be made available at a later date. -- @pierluca, 04.09.2021
 
 ## Coding Style
 
