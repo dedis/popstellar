@@ -41,10 +41,8 @@ const styles = StyleSheet.create({
 
 function connectTo(serverUrl: string): boolean {
   try {
-    const { origin, pathname } = new URL(serverUrl);
-
-    const path = pathname.replace(/^\/+/g, '');
-    getNetworkManager().connect(origin, path || undefined);
+    const { href } = new URL(serverUrl); // validate
+    getNetworkManager().connect(href);
   } catch (err) {
     console.error(`Cannot connect to '${serverUrl}' as it is an invalid URL`, err);
     return false;

@@ -14,12 +14,6 @@ class NetworkManager {
     this.connections = [];
   }
 
-  private static buildAddress(base: string, path: string): string {
-    return (path === '')
-      ? base
-      : `${base}/${path}`;
-  }
-
   private getConnectionByAddress(address: string): NetworkConnection | undefined {
     return this.connections.find((nc: NetworkConnection) => nc.address === address);
   }
@@ -30,13 +24,16 @@ class NetworkManager {
    * The full path to connect to the backend is:
    * as organizer ws://host:clientport/organizer/client/
    * as a witness: ws://host:witnessport/organizer/witness/
-   * @param base the server's protocol + host + port (e.g. ws://host:clientport)
-   * @param path the path at which the websocket can be established
+   *
+   * @param address the server's full address (URI)
    *
    * @returns a new connection to the server, or an existing one if it's already established
    */
-  public connect(base: string, path: string = 'organizer/client/'): NetworkConnection {
-    const address: string = NetworkManager.buildAddress(base, path);
+  public connect(address: string): NetworkConnection {
+    if (!address) {
+      throw new Error('No address provided in connect');
+    }
+
     const existingConnection = this.getConnectionByAddress(address);
 
     if (existingConnection !== undefined) {
@@ -56,8 +53,10 @@ class NetworkManager {
     }
   }
 
-  public disconnectFrom(base: string, path: string = ''): void {
-    const address = NetworkManager.buildAddress(base, path);
+  public disconnectFrom(address: string): void {
+    if (!address) {
+      throw new Error('No address provided in disconnectFrom');
+    }
     const connection = this.getConnectionByAddress(address);
     if (connection !== undefined) {
       this.disconnect(connection);
