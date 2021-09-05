@@ -24,8 +24,16 @@ export class Base64UrlData extends String {
     return base64url.toBuffer(this.valueOf());
   }
 
+  /**
+   * Create Base64Url data from Base64 data
+   * @param b64 the base64-encoded data
+   */
   public static fromBase64(b64: string): Base64UrlData {
     return new Base64UrlData(this.addPadding(base64url.fromBase64(b64)));
+  }
+
+  public static fromBuffer(buf: Buffer): Base64UrlData {
+    return new Base64UrlData(base64url.encode(buf));
   }
 
   private static addPadding(str: string): string {
