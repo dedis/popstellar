@@ -11,12 +11,12 @@
  * "shaping" it as needed for use by the application.
  */
 
-
 /**
  * Reducers can be combined in a "tree"-like way.
  * The RootReducer sits at the top, combining all the reducers.
  */
 import { rootReducer } from './RootReducer';
+
 export default rootReducer;
 
 export * from './EventsReducer';

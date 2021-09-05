@@ -3,8 +3,6 @@ import { NetworkConnection } from './NetworkConnection';
 import { NetworkError } from './NetworkError';
 import { defaultRpcHandler, JsonRpcHandler } from './RpcHandler';
 
-const defPort = 9000;
-
 let NETWORK_MANAGER_INSTANCE: NetworkManager;
 
 class NetworkManager {

@@ -46,7 +46,7 @@
   ],
   "typedocOptions": {
     "entryPoints": ["App.tsx"],
-    "out": "docs"
-  }
+    "out": "tsdocs"
+  },
   "extends": "expo/tsconfig.base"
 }
