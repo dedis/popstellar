@@ -1,4 +1,4 @@
-import asyncMock from '@react-native-community/async-storage/jest/async-storage-mock';
+import asyncMock from '@react-native-async-storage/async-storage/jest/async-storage-mock';
 
 const { setItem } = asyncMock;
 
