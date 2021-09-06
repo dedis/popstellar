@@ -3,10 +3,13 @@
 	"$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataCloseRollCall.json",
 	"description": "Match a close roll-call query",
 	"type": "object",
-
 	"properties": {
-		"object": { "const": "roll_call" },
-		"action": { "const": "close" },
+		"object": {
+			"const": "roll_call"
+		},
+		"action": {
+			"const": "close"
+		},
 		"update_id": {
 			"type": "string",
 			"contentEncoding": "base64",
@@ -17,16 +20,30 @@
 			"contentEncoding": "base64",
 			"$comment": "The 'update_id' of the latest roll call open"
 		},
-		"closed_at": { "description": "[Timestamp] end time", "type": "integer", "minimum": 0 },
+		"closed_at": {
+			"description": "[Timestamp] end time",
+			"type": "integer",
+			"minimum": 0
+		},
 		"attendees": {
 			"description": "[Array[Base64String]] list of public keys of attendees",
 			"type": "array",
 			"uniqueItems": true,
-			"items": { "type": "string", "contentEncoding": "base64" }
+			"items": {
+				"type": "string",
+				"contentEncoding": "base64"
+			}
 		}
 	},
 	"additionalProperties": false,
-	"required": ["object", "action", "update_id", "closes", "closed_at", "attendees"],
+	"required": [
+		"object",
+		"action",
+		"update_id",
+		"closes",
+		"closed_at",
+		"attendees"
+	],
 	"note": [
 		"When the organizer scanned all the public keys of the attendees, it closes the event",
 		"and broadcast attendees public keys. A roll_call/close message attested by witnesses",
@@ -34,6 +51,5 @@
 		"In some special case, the event may be reopened (e.g. the organizer forgot to scan the key",
 		"of an attendee, so we reopen 2 minutes later). In this case, we can close the event a",
 		"second (or more) time. Please see `dataOpenRollCall.json` for more information."
-
 	]
 }

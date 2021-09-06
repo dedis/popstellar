@@ -3,25 +3,28 @@
 	"$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataSetupElection.json",
 	"description": "Match an ElectionSetup query",
 	"type": "object",
-
 	"properties": {
-		"object": { "const": "election" },
-		"action": { "const": "setup" },
+		"object": {
+			"const": "election"
+		},
+		"action": {
+			"const": "setup"
+		},
 		"id": {
 			"type": "string",
 			"contentEncoding": "base64",
 			"$comment": "Hash : SHA256('Election'||lao_id||created_at||name)"
 		},
-		"lao": { 
+		"lao": {
 			"type": "string",
 			"contentEncoding": "base64",
 			"$comment": "ID of the LAO"
-			},
-		"name": { 
+		},
+		"name": {
 			"type": "string",
 			"$comment": "name of the election"
 		},
-		"version": { 
+		"version": {
 			"type": "string",
 			"$comment": "features/implementation identifier"
 		},
@@ -57,7 +60,10 @@
 					},
 					"voting_method": {
 						"type": "string",
-						"enum": ["Plurality", "Approval"],
+						"enum": [
+							"Plurality",
+							"Approval"
+						],
 						"$comment": "supported voting method"
 					},
 					"ballot_options": {
@@ -76,12 +82,29 @@
 					}
 				},
 				"additionalProperties": false,
-				"required": ["id", "question", "voting_method", "ballot_options", "write_in"]
+				"required": [
+					"id",
+					"question",
+					"voting_method",
+					"ballot_options",
+					"write_in"
+				]
 			},
 			"minItems": 1,
 			"uniqueItems": true
 		}
 	},
 	"additionalProperties": false,
-	"required": ["object", "action", "id", "lao", "name", "version", "created_at", "start_time", "end_time", "questions"]
+	"required": [
+		"object",
+		"action",
+		"id",
+		"lao",
+		"name",
+		"version",
+		"created_at",
+		"start_time",
+		"end_time",
+		"questions"
+	]
 }

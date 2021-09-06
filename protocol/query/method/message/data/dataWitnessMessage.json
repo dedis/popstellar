@@ -3,14 +3,18 @@
 	"$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataWitnessMessage.json",
 	"description": "Match a witness a message query",
 	"type": "object",
-
 	"properties": {
-		"object": { "const": "message" },
-		"action": { "const": "witness" },
+		"object": {
+			"const": "message"
+		},
+		"action": {
+			"const": "witness"
+		},
 		"message_id": {
 			"type": "string",
 			"contentEncoding": "base64",
-			"note": "message_id of the message to witness"},
+			"note": "message_id of the message to witness"
+		},
 		"signature": {
 			"description": "[Base64String] signature by the witness over the \"message_id\" field of the message",
 			"type": "string",
@@ -18,7 +22,12 @@
 		}
 	},
 	"additionalProperties": false,
-	"required": ["object", "action", "message_id", "signature"],
+	"required": [
+		"object",
+		"action",
+		"message_id",
+		"signature"
+	],
 	"note": [
 		"By sending the message/witness message to the LAO’s main channel (LAO's id), a witness can attest to the ",
 		"message. Upon reception, the server and the witnesses add this signature to the existing message’s ",

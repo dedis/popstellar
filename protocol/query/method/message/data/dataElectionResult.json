@@ -3,10 +3,13 @@
 	"$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataElectionResult.json",
 	"description": "Match an ElectionResult query",
 	"type": "object",
-
 	"properties": {
-		"object": { "const": "election" },
-		"action": { "const": "result" },
+		"object": {
+			"const": "election"
+		},
+		"action": {
+			"const": "result"
+		},
 		"questions": {
 			"description": "Array of questions with their result",
 			"type": "array",
@@ -34,7 +37,10 @@
 									"minimum": 0
 								}
 							},
-							"required": ["ballot_option", "count"],
+							"required": [
+								"ballot_option",
+								"count"
+							],
 							"additionalProperties": false
 						},
 						"minItems": 1,
@@ -42,7 +48,10 @@
 					}
 				},
 				"additionalProperties": false,
-				"required": ["id", "result"]
+				"required": [
+					"id",
+					"result"
+				]
 			},
 			"minItems": 1,
 			"uniqueItems": true
@@ -53,5 +62,9 @@
 		}
 	},
 	"additionalProperties": false,
-	"required": ["object", "action", "questions"]
+	"required": [
+		"object",
+		"action",
+		"questions"
+	]
 }
