@@ -4,6 +4,8 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"log"
+	"strings"
 
 	"golang.org/x/xerrors"
 )
@@ -55,6 +57,8 @@ type Data interface {
 
 	GetObject() DataObject
 
+	ValidateID(string) bool
+
 	//GetTimestamp() Timestamp
 }
 
@@ -73,6 +77,11 @@ func (g *GenericData) GetAction() DataAction {
 // GetObject returns the DataObject.
 func (g *GenericData) GetObject() DataObject {
 	return g.Object
+}
+
+func (g *GenericData) ValidateID(string) bool {
+	log.Println("using default id validation")
+	return true
 }
 
 // LaoDataAction represents actions associated with a "lao" data message.
@@ -106,13 +115,17 @@ func (c *CreateLAOData) GetTimestamp() Timestamp {
 }
 
 func (c *CreateLAOData) setID() error {
-	id, err := Hash(Stringer("L"), c.Organizer, c.Creation, Stringer(c.Name))
+	id, err := Hash(c.Organizer, c.Creation, Stringer(c.Name))
 	if err != nil {
 		return xerrors.Errorf("error creating hash: %v", err)
 	}
 
 	c.ID = id
 	return nil
+}
+
+func (c *CreateLAOData) ValidateID(string) bool {
+	return checkID(c.ID, c.Organizer, c.Creation, Stringer(c.Name))
 }
 
 // UpdateLAOData represents the message data used for updating a LAO.
@@ -149,6 +162,10 @@ func (s *StateLAOData) GetTimestamp() Timestamp {
 	return s.LastModified
 }
 
+func (s *StateLAOData) ValidateID(string) bool {
+	return checkID(s.ID, s.Organizer, s.Creation, Stringer(s.Name))
+}
+
 // MeetingDataAction represents actions associated with a "meeting" data message.
 type MeetingDataAction DataAction
 
@@ -183,6 +200,10 @@ func (c *CreateMeetingData) GetTimestamp() Timestamp {
 	return c.Creation
 }
 
+func (c *CreateMeetingData) ValidateID(laoID string) bool {
+	return checkID(c.ID, Stringer("M"), Stringer(laoID), c.Creation, Stringer(c.Name))
+}
+
 // StateMeetingData represents the message data used for propagating a meeting state.
 type StateMeetingData struct {
 	*GenericData
@@ -204,6 +225,10 @@ type StateMeetingData struct {
 // GetTimestamp returns the creation timestamp.
 func (s *StateMeetingData) GetTimestamp() Timestamp {
 	return s.Creation
+}
+
+func (s *StateMeetingData) ValidateID(laoID string) bool {
+	return checkID(s.ID, Stringer("M"), Stringer(laoID), s.Creation, Stringer(s.Name))
 }
 
 // RollCallAction represents the actions associated with a "roll call" data message.
@@ -230,6 +255,10 @@ type CreateRollCallData struct {
 	Description   string         `json:"description,omitempty"`
 }
 
+func (c *CreateRollCallData) ValidateID(laoID string) bool {
+	return checkID(c.ID, Stringer("R"), Stringer(laoID), c.Creation, Stringer(c.Name))
+}
+
 // OpenRollCallActionType represents the actions associated with opening or
 // reopening a roll call.
 type OpenRollCallActionType RollCallAction
@@ -251,6 +280,11 @@ type OpenRollCallData struct {
 	OpenedAt Timestamp      `json:"opened_at"`
 }
 
+func (o *OpenRollCallData) ValidateID(laoID string) bool {
+	encodedOpens := o.Opens.Encode()
+	return checkID(o.UpdateID, Stringer("R"), Stringer(laoID), Stringer(encodedOpens), o.OpenedAt)
+}
+
 // CloseRollCallData represents the message data used for closing a roll call.
 type CloseRollCallData struct {
 	*GenericData
@@ -259,6 +293,11 @@ type CloseRollCallData struct {
 	Closes    Base64URLBytes `json:"closes"`
 	ClosedAt  Timestamp      `json:"closed_at"`
 	Attendees []PublicKey    `json:"attendees"`
+}
+
+func (c *CloseRollCallData) ValidateID(laoID string) bool {
+	encodedCloses := c.Closes.Encode()
+	return checkID(c.UpdateID, Stringer("R"), Stringer(laoID), Stringer(encodedCloses), c.ClosedAt)
 }
 
 // MessageDataAction represents the actions associated with a "message" data message.
@@ -312,11 +351,15 @@ type BallotOption string
 
 // Question represents a question that is asked during an election.
 type Question struct {
-	ID            PublicKey      `json:"id"`
+	ID            Base64URLBytes `json:"id"`
 	QuestionAsked string         `json:"question"`
 	VotingMethod  VotingMethod   `json:"voting_method"`
 	BallotOptions []BallotOption `json:"ballot_options"`
 	WriteIn       bool           `json:"write_in"`
+}
+
+func (q *Question) validateID(electionID string) bool {
+	return checkID(q.ID, Stringer("Question"), Stringer(electionID), Stringer(q.QuestionAsked))
 }
 
 // ElectionSetupData represents the message data used for setting up an election.
@@ -333,9 +376,35 @@ type ElectionSetupData struct {
 	Questions []Question     `json:"questions"`
 }
 
+func (e *ElectionSetupData) ValidateID(laoID string) bool {
+	encodedLaoID := e.LaoID.Encode()
+	if encodedLaoID != laoID {
+		log.Println("ElectionSetupData: message received on a different LAO than one in message")
+		return false
+	}
+
+	ok := checkID(e.ID, Stringer("Election"), Stringer(laoID), e.CreatedAt, Stringer(e.Name))
+	if !ok {
+		log.Println("ElectionSetupData: invalid election setup ID")
+		return false
+	}
+
+	encodedID := e.ID.Encode()
+	for _, q := range e.Questions {
+		ok := q.validateID(encodedID)
+		if !ok {
+			encodedQuestionID := q.ID.Encode()
+			log.Printf("ElectionSetupData: invalid question id %s", encodedQuestionID)
+			return false
+		}
+	}
+
+	return true
+}
+
 // Vote represents a vote in an election.
 type Vote struct {
-	ID          PublicKey      `json:"id"`
+	ID          Base64URLBytes `json:"id"`
 	QuestionID  Base64URLBytes `json:"question"`
 	VoteIndexes []int          `json:"vote"`
 	WriteIn     string         `json:"write_in"`
@@ -348,6 +417,47 @@ type CastVoteData struct {
 	ElectionID Base64URLBytes `json:"election"`
 	CreatedAt  Timestamp      `json:"created_at"`
 	Votes      []Vote         `json:"votes"`
+}
+
+func (c *CastVoteData) ValidateID(channelPath string) bool {
+	// channelPath is of form `laoID/electionID`
+
+	elements := strings.Split(channelPath, "/")
+	if len(elements) != 2 {
+		log.Printf("castVoteData: unexpected channelPath: %v", elements)
+		return false
+	}
+
+	encodedLaoID := c.LaoID.Encode()
+	if encodedLaoID != elements[0] {
+		log.Printf("castVoteData: message received on a different LAO than "+
+			"one in message. Expected %s, go %s", encodedLaoID, elements[0])
+		return false
+	}
+
+	encodedElectionID := c.ElectionID.Encode()
+	if encodedElectionID != elements[1] {
+		log.Printf("castVoteData: message received on a different electionID "+
+			"than one in message. Expected %s, got %s", encodedElectionID, elements[1])
+		return false
+	}
+
+	for _, vote := range c.Votes {
+		encodedQuestionID := vote.QuestionID.Encode()
+		inputs := []fmt.Stringer{Stringer("Vote"), Stringer(encodedElectionID), Stringer(encodedQuestionID)}
+		for _, vi := range vote.VoteIndexes {
+			inputs = append(inputs, Stringer(fmt.Sprintf("%d", vi)))
+		}
+
+		ok := checkID(vote.ID, inputs...)
+		if !ok {
+			encodedVoteID := vote.ID.Encode()
+			log.Printf("CastVoteData: invalid id for vote: %s", encodedVoteID)
+			return false
+		}
+	}
+
+	return true
 }
 
 // ElectionEndData represents the message data used for ending an election.

@@ -1,6 +1,6 @@
 import { sign } from 'tweetnacl';
-import { get } from 'idb-keyval';
 import STRINGS from 'res/strings';
+import { get } from 'utils/PlatformStorage';
 
 /**
  * building the MOCK crypto library
