@@ -429,21 +429,29 @@ describe('=== WebsocketApi tests ===', () => {
       await msApi.requestStateLao();
     });
 
-    it('should create the correct request for requestCreateMeeting', async () => {
+    it('should create the correct request for requestCreateMeeting 1', async () => {
+      setMockCheck(checkDataCreateMeeting);
+      await msApi.requestCreateMeeting(mockEventName, mockStartTime);
+    });
+
+    it('should create the correct request for requestCreateMeeting 2', async () => {
+      setMockCheck(checkDataCreateMeeting);
+      await msApi.requestCreateMeeting(mockEventName, mockStartTime, mockLocation);
+    });
+
+    it('should create the correct request for requestCreateMeeting 3', async () => {
+      setMockCheck(checkDataCreateMeeting);
+      await msApi.requestCreateMeeting(mockEventName, mockStartTime, mockLocation, mockEndTime);
+    });
+
+    it('should create the correct request for requestCreateMeeting 4', async () => {
       setMockCheck(checkDataCreateMeeting);
       const mockExtra = { numberParticipants: 12, minAge: 18 };
-      await msApi.requestCreateMeeting(mockEventName, mockStartTime);
-      await msApi.requestCreateMeeting(mockEventName, mockStartTime, mockLocation);
-      await msApi.requestCreateMeeting(mockEventName, mockStartTime, mockLocation, mockEndTime);
       await msApi.requestCreateMeeting(
         mockEventName, mockStartTime, mockLocation, mockEndTime, mockExtra,
       );
     });
-    /*
-    it('should create the correct request for requestStateMeeting', function () {
-      await msApi.requestStateMeeting(mockStartTime);
-    });
-*/
+
     it('should create the correct request for requestWitnessMessage', async () => {
       setMockCheck(checkDataWitnessMessage);
       await msApi.requestWitnessMessage('/root', Base64UrlData.encode('randomMessageId'));
@@ -451,8 +459,12 @@ describe('=== WebsocketApi tests ===', () => {
 
     it('should create the correct request for requestCreateRollCall', async () => {
       setMockCheck(checkDataCreateRollCall);
-      const mockDescription = 'random description';
       await msApi.requestCreateRollCall(mockEventName, mockLocation, mockStartTime, mockEndTime);
+    });
+
+    it('should create the correct request for requestCreateRollCall 2', async () => {
+      setMockCheck(checkDataCreateRollCall);
+      const mockDescription = 'random description';
       await msApi.requestCreateRollCall(
         mockEventName, mockLocation, mockStartTime, mockEndTime, mockDescription,
       );
