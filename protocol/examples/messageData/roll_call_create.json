@@ -1,0 +1,11 @@
+{
+    "object": "roll_call",
+    "action": "create",
+    "id": "XXX",
+    "name": "XXX",
+    "creation": 123,
+    "proposed_start": 123,
+    "proposed_end": 123,
+    "location": "XXX",
+    "description": "XXX"
+}

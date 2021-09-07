@@ -1,0 +1,17 @@
+{
+    "object": "lao",
+    "action": "state",
+    "id": "XXX",
+    "name": "XXX",
+    "creation": 123,
+    "last_modified": 123,
+    "organizer": "XXX",
+    "witnesses": ["XXX"],
+    "modification_id": "XXX",
+    "modification_signatures": [
+        {
+            "witness": "XXX",
+            "signature": "XXX"
+        }
+    ]
+}

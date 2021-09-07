@@ -1,0 +1,8 @@
+{
+    "object": "roll_call",
+    "action": "close",
+    "update_id": "XXX",
+    "closes": "XXX",
+    "closed_at": 123,
+    "attendees": ["XXX"]
+}

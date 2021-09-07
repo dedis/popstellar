@@ -1,8 +1,0 @@
-{
-    "jsonrpc": "2.0",
-    "id": "xxx",
-    "payload": {
-        "name": "some_random_message",
-        "message": {}
-    }
-}
