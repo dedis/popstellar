@@ -1,87 +1,42 @@
 {
-	"$schema": "http://json-schema.org/draft-07/schema#",
-	"$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/publish.json",
-	"description": "Match publish query",
-	"type": "object",
-	"properties": {
-		"method": {
-			"description": "[String] operation to be performed by the query",
-			"const": "publish"
-		},
-		"params": {
-			"type": "object",
-			"properties": {
-				"channel": {
-					"description": "[String] name of the channel",
-					"type": "string",
-					"pattern": "^\/root(\/[^\/]+)*$",
-					"$comment": "Note: the regex matches a \"/root\" or a \"/root/<channel>\""
-				},
-				"message": {
-					"description": "[String] message to be published",
-					"type": "object",
-					"$comment": "Note: general property declaration to fulfill the additionalProperties requirements"
-				}
-			},
-			"allOf": [
-				{
-					"if": {
-						"properties": {
-							"channel": {
-								"$ref": "channel/rootChannel.json"
-							}
-						}
-					},
-					"then": {
-						"properties": {
-							"message": {
-								"description": "[Message] message to be published",
-								"$ref": "message/messageGeneral.json"
-							}
-						},
-						"$comment": "Note: match a publish query destined for the root channel"
-					}
-				},
-				{
-					"if": {
-						"properties": {
-							"channel": {
-								"$ref": "channel/subChannel.json"
-							}
-						}
-					},
-					"then": {
-						"properties": {
-							"message": {
-								"description": "[Message] message to be published",
-								"anyOf": [
-									{
-										"$ref": "message/messageGeneral.json"
-									},
-									{
-										"$ref": "message/messageWitnessMessage.json"
-									}
-								]
-							}
-						},
-						"$comment": "Note: match a publish query destined for a sub-channel"
-					}
-				}
-			],
-			"additionalProperties": false,
-			"required": [
-				"channel",
-				"message"
-			]
-		},
-		"id": {
-			"type": "integer"
-		}
-	},
-	"required": [
-		"method",
-		"params",
-		"id"
-	],
-	"$comment": "Note: multiple queries have the \"publish\" method"
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/publish.json",
+    "description": "Match publish query",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "method": {
+            "description": "[String] operation to be performed by the query",
+            "const": "publish"
+        },
+
+        "params": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "channel": {
+                    "description": "[String] name of the channel",
+                    "type": "string",
+                    "pattern": "^/root(/[^/]+)*$",
+                    "$comment": "Note: the regex matches a \"/root\" or a \"/root/<channel>\""
+                },
+                "message": {
+                    "description": "[Message] message to be published",
+                    "$ref": "message/message.json"
+                }
+            },
+
+            "required": ["channel", "message"]
+        },
+
+        "jsonrpc": {
+            "$comment": "Defined by the parent, but needed here for the validation"
+        },
+
+        "id": {
+            "$comment": "Defined by the parent, but needed here for the validation"
+        }
+    },
+
+    "required": ["method", "params"]
 }
