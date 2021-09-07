@@ -20,13 +20,13 @@
             "$ref": "dataCreateRollCall.json"
         },
         {
-            "$ref": "dataElectionEnd.json"
+            "$ref": "dataEndElection.json"
         },
         {
-            "$ref": "dataElectionResult.json"
+            "$ref": "dataResultElection.json"
         },
         {
-            "$ref": "dataElectionSetup.json"
+            "$ref": "dataSetupElection.json"
         },
         {
             "$ref": "dataOpenRollCall.json"
