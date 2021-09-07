@@ -11,3 +11,15 @@ See `./test` to run tests on the examples.
 **Note**: There might a way to avoid repeating all the wrapping information by
 using refs, but for now, it may be safer to just repeat it so that every json
 file is guaranteed to be complete.
+
+# Format
+
+We use [prettier](https://prettier.io/) as the source of truth for the
+formatting of JSON files. 
+
+Install and format with:
+
+```sh
+npm install --save-dev --save-exact prettier
+prettier --write *.json
+```
