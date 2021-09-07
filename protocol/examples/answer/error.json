@@ -1,17 +1,8 @@
 {
     "jsonrpc": "2.0",
-    "id": "xxx",
-    "payload": {
-        "name": "answer",
-        "message": {
-            "requestID": 1234,
-            "payload": {
-                "name": "error",
-                "message": {
-                    "code": -1,
-                    "description": "This is an error"
-                }
-            }
-        }
+    "id": 999,
+    "error": {
+        "code": -1,
+        "description": "This is an error"
     }
 }
