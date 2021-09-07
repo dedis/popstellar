@@ -1,33 +1,27 @@
 {
-	"$schema": "http://json-schema.org/draft-07/schema#",
-	"$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/catchup.json",
-	"description": "Match catchup on past message on a channel query",
-	"type": "object",
-	"properties": {
-		"method": {
-			"description": "[String] operation to be performed by the query",
-			"const": "catchup"
-		},
-		"params": {
-			"type": "object",
-			"properties": {
-				"channel": {
-					"description": "[String] name of the channel",
-					"$ref": "channel/subChannel.json"
-				}
-			},
-			"additionalProperties": false,
-			"required": [
-				"channel"
-			]
-		},
-		"id": {
-			"type": "integer"
-		}
-	},
-	"required": [
-		"method",
-		"params",
-		"id"
-	]
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/catchup.json",
+    "description": "Match catchup on past message on a channel query",
+    "type": "object",
+    "properties": {
+        "method": {
+            "description": "[String] operation to be performed by the query",
+            "const": "catchup"
+        },
+        "params": {
+            "type": "object",
+            "properties": {
+                "channel": {
+                    "description": "[String] name of the channel",
+                    "$ref": "channel/subChannel.json"
+                }
+            },
+            "additionalProperties": false,
+            "required": ["channel"]
+        },
+        "id": {
+            "type": "integer"
+        }
+    },
+    "required": ["method", "params", "id"]
 }
