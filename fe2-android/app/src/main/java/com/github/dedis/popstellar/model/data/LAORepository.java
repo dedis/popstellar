@@ -1,17 +1,10 @@
 package com.github.dedis.popstellar.model.data;
 
-import static com.github.dedis.popstellar.model.event.EventState.CLOSED;
-import static com.github.dedis.popstellar.model.event.EventState.OPENED;
-import static com.github.dedis.popstellar.model.event.EventState.RESULTS_READY;
-
 import android.util.Log;
 import androidx.annotation.NonNull;
 import com.github.dedis.popstellar.model.Election;
 import com.github.dedis.popstellar.model.Lao;
-import com.github.dedis.popstellar.model.PendingUpdate;
-import com.github.dedis.popstellar.model.RollCall;
-import com.github.dedis.popstellar.model.WitnessMessage;
-import com.github.dedis.popstellar.model.event.EventState;
+import com.github.dedis.popstellar.model.data.handler.GeneralHandler;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Answer;
 import com.github.dedis.popstellar.model.network.answer.Error;
@@ -22,23 +15,11 @@ import com.github.dedis.popstellar.model.network.method.Publish;
 import com.github.dedis.popstellar.model.network.method.Subscribe;
 import com.github.dedis.popstellar.model.network.method.Unsubscribe;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
-import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
-import com.github.dedis.popstellar.model.network.method.message.data.Data;
-import com.github.dedis.popstellar.model.network.method.message.data.ElectionResultQuestion;
-import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
-import com.github.dedis.popstellar.model.network.method.message.data.message.WitnessMessageSignature;
-import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
-import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
-import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.security.Keys;
-import com.github.dedis.popstellar.utility.security.Signature;
 import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
@@ -65,8 +46,6 @@ import java.util.stream.Collectors;
 public class LAORepository {
 
   private static final String TAG = LAORepository.class.getSimpleName();
-  private static final String MESSAGE_ID = "Message ID : ";
-  private static final String NAME = "Name : ";
   private static LAORepository INSTANCE = null;
 
   private final LAODataSource.Remote mRemoteDataSource;
@@ -212,7 +191,7 @@ public class LAORepository {
         List<MessageGeneral> messages = result.getMessages().orElse(new ArrayList<>());
         Log.d(TAG, "messages length: " + messages.size());
         for (MessageGeneral msg : messages) {
-          boolean enqueue = handleMessage(channel, msg);
+          boolean enqueue = GeneralHandler.handleMessage(this, channel, msg);
           if (enqueue) {
             unprocessed.onNext(genericMessage);
           }
@@ -244,74 +223,19 @@ public class LAORepository {
 
     Log.d(TAG, "Broadcast channel: " + channel + " message " + message.getMessageId());
 
-    boolean enqueue = handleMessage(channel, message);
+    boolean enqueue = GeneralHandler.handleMessage(this, channel, message);
     if (enqueue) {
       unprocessed.onNext(genericMessage);
     }
   }
 
   /**
-   * @param channel the channel on which the message was received
-   * @param message the message that was received
-   * @return true if the message cannot be processed and false otherwise
-   */
-  private boolean handleMessage(String channel, MessageGeneral message) {
-    // Put the message in the state
-    messageById.put(message.getMessageId(), message);
-
-    String senderPk = message.getSender();
-
-    Data data = message.getData();
-    Log.d(TAG, "data with class: " + data.getClass());
-    boolean enqueue = false;
-    if (data instanceof CreateLao) {
-      enqueue = handleCreateLao(channel, (CreateLao) data);
-    } else if (data instanceof UpdateLao) {
-      enqueue = handleUpdateLao(channel, message.getMessageId(), (UpdateLao) data);
-    } else if (data instanceof ElectionSetup) {
-      enqueue = handleElectionSetup(channel, (ElectionSetup) data, message.getMessageId());
-    } else if (data instanceof StateLao) {
-      enqueue = handleStateLao(channel, (StateLao) data);
-    } else if (data instanceof CreateRollCall) {
-      enqueue = handleCreateRollCall(channel, (CreateRollCall) data, message.getMessageId());
-    } else if (data instanceof OpenRollCall) {
-      enqueue = handleOpenRollCall(channel, (OpenRollCall) data, message.getMessageId());
-    } else if (data instanceof CloseRollCall) {
-      enqueue = handleCloseRollCall(channel, (CloseRollCall) data, message.getMessageId());
-    } else if (data instanceof WitnessMessageSignature) {
-      enqueue = handleWitnessMessage(channel, senderPk, (WitnessMessageSignature) data);
-    } else if (data instanceof ElectionResult) {
-      enqueue = handleElectionResult(channel, (ElectionResult) data);
-    } else if (data instanceof ElectionEnd) {
-      enqueue = handleElectionEnd(channel);
-    } else if (data instanceof CastVote) {
-      enqueue = handleCastVote(channel, (CastVote) data, senderPk, message.getMessageId());
-    } else {
-      Log.d(TAG, "cannot handle message with data" + data.getClass());
-      enqueue = true;
-    }
-
-    // Trigger an onNext
-    if (!(data instanceof WitnessMessageSignature) && isLaoChannel(channel)) {
-      LAOState laoState = laoById.get(channel);
-      laoState.publish();
-      if (data instanceof StateLao || data instanceof CreateLao) {
-        allLaoSubject.onNext(
-            laoById.entrySet().stream()
-                .map(x -> x.getValue().getLao())
-                .collect(Collectors.toList()));
-      }
-    }
-    return enqueue;
-  }
-
-  /**
-   * Retrieves the Election in a given channel
+   * // TODO: refactor Retrieves the Election in a given channel
    *
    * @param channel the channel on which the election was created
    * @return the election corresponding to this channel
    */
-  private Election getElectionByChannel(String channel) {
+  public Election getElectionByChannel(String channel) {
     Lao lao = getLaoByChannel(channel);
     Optional<Election> electionOption = lao.getElection(channel.split("/")[3]);
     if (!electionOption.isPresent()) {
@@ -321,383 +245,52 @@ public class LAORepository {
   }
 
   /**
-   * Retrieves the Lao in a given channel
+   * TODO: refactor Retrieves the Lao in a given channel
    *
    * @param channel the channel on which the Lao was created
    * @return the Lao corresponding to this channel
    */
-  private Lao getLaoByChannel(String channel) {
+  public Lao getLaoByChannel(String channel) {
     String[] split = channel.split("/");
     return laoById.get("/root/" + split[2]).getLao();
   }
 
+  // TODO: new getters for witness message handler
+  public BehaviorSubject<List<Lao>> getAllLaoSubject() {
+    return allLaoSubject;
+  }
+
+  public Map<String, LAOState> getLaoById() {
+    return laoById;
+  }
+
   /**
-   * Checks that a given channel corresponds to a LAO channel, i.e /root/laoId
+   * TODO: refactor
+   */
+  public Map<String, MessageGeneral> getMessageById() {
+    return messageById;
+  }
+
+  /**
+   * TODO: add to utility lao or message general handler Checks that a given channel corresponds to
+   * a LAO channel, i.e /root/laoId
    *
    * @param channel the channel we want to check
    * @return true if the channel is a lao channel, false otherwise
    */
-  private boolean isLaoChannel(String channel) {
+  public boolean isLaoChannel(String channel) {
     return channel.split("/").length == 3;
   }
 
-  private boolean handleElectionEnd(String channel) {
-    Lao lao = getLaoByChannel(channel);
-    Election election = getElectionByChannel(channel);
-    election.setEventState(CLOSED);
-    lao.updateElection(election.getId(), election);
-    return false;
-  }
-
-  private boolean handleCastVote(String channel, CastVote data, String senderPk, String messageId) {
-    Lao lao = getLaoByChannel(channel);
-    Election election = getElectionByChannel(channel);
-
-    //We ignore the vote iff the election is ended and the cast vote message was created after the end timestamp
-    if (election.getEndTimestamp() >= data.getCreation() || election.getState() != CLOSED) {
-      /* We retrieve previous cast vote message stored for the given sender, and consider the new vote iff its creation
-      is after (hence preventing reordering attacks) */
-      Optional<String> previousMessageIdOption = election.getMessageMap().entrySet().stream()
-          .filter(entry -> senderPk.equals(entry.getValue())).map(Map.Entry::getKey).findFirst();
-      //If there is no previous message, or that this message is the last of all received messages, then we consider the votes
-      if (!previousMessageIdOption.isPresent() ||
-          ((CastVote) messageById.get(previousMessageIdOption.get()).getData()).getCreation()
-              <= data.getCreation()) {
-        election.putVotesBySender(senderPk, data.getVotes());
-        election.putSenderByMessageId(senderPk, messageId);
-        lao.updateElection(election.getId(), election);
-      }
-    }
-    return false;
-  }
-
-  private boolean handleElectionResult(String channel, ElectionResult data) {
-    Log.d(TAG, "handling election result");
-    Lao lao = getLaoByChannel(channel);
-    Election election = getElectionByChannel(channel);
-
-    List<ElectionResultQuestion> resultsQuestions = data.getElectionQuestionResults();
-    if (resultsQuestions.isEmpty()) {
-      throw new IllegalArgumentException("the questions results shouldn't be empty");
-    }
-    Log.d(TAG, "size of resultsQuestions is " + resultsQuestions.size());
-    election.setResults(resultsQuestions);
-    election.setEventState(RESULTS_READY);
-    lao.updateElection(election.getId(), election);
-    return false;
-  }
-
-
-  private boolean handleCreateLao(String channel, CreateLao createLao) {
-    Lao lao = laoById.get(channel).getLao();
-
-    lao.setName(createLao.getName());
-    lao.setCreation(createLao.getCreation());
-    lao.setLastModified(createLao.getCreation());
-    lao.setOrganizer(createLao.getOrganizer());
-    lao.setId(createLao.getId());
-    lao.setWitnesses(new HashSet<>(createLao.getWitnesses()));
-
-    Log.d(
-        TAG,
-        "Setting name as "
-            + createLao.getName()
-            + " creation time as "
-            + createLao.getCreation()
-            + " lao channel is "
-            + channel);
-
-    return false;
-  }
-
-  private boolean handleUpdateLao(String channel, String messageId, UpdateLao updateLao) {
-    Log.d(TAG, " Receive Update Lao Broadcast");
-    Lao lao = laoById.get(channel).getLao();
-
-    if (lao.getLastModified() > updateLao.getLastModified()) {
-      // the current state we have is more up to date
-      return false;
-    }
-
-    WitnessMessage message = new WitnessMessage(messageId);
-    if (!updateLao.getName().equals(lao.getName())) {
-      message.setTitle("Update Lao Name ");
-      message.setDescription(
-          " Old Name : " + lao.getName() + "\n" + " New Name : " + updateLao.getName() +
-              "\n" + MESSAGE_ID + messageId);
-    } else if (!updateLao.getWitnesses().equals(lao.getWitnesses())) {
-      List<String> tempList = new ArrayList<>(updateLao.getWitnesses());
-      message.setTitle("Update Lao Witnesses  ");
-      message.setDescription(" Lao Name : " + lao.getName() + "\n" + MESSAGE_ID + messageId + "\n"
-          + " New Witness ID : " + tempList.get(tempList.size() - 1)
-      );
-
-    } else {
-      Log.d(TAG, " Problem to set the witness message title for update lao");
-    }
-
-    lao.updateWitnessMessage(messageId, message);
-    if (!lao.getWitnesses().isEmpty()) {
-      // We send a pending update only if there are already some witness that need to sign this UpdateLao
-      lao.getPendingUpdates().add(new PendingUpdate(updateLao.getLastModified(), messageId));
-    }
-    return false;
-  }
-
-  private boolean handleStateLao(String channel, StateLao stateLao) {
-    Lao lao = laoById.get(channel).getLao();
-
-    Log.d(TAG, "Receive State Lao Broadcast " + stateLao.getName());
-    if (!messageById.containsKey(stateLao.getModificationId())) {
-      Log.d(TAG, "Can't find modification id : " + stateLao.getModificationId());
-      // queue it if we haven't received the update message yet
-      return true;
-    }
-
-    Log.d(TAG, "Verifying signatures");
-    // Verify signatures
-    for (PublicKeySignaturePair pair : stateLao.getModificationSignatures()) {
-      if (!Signature
-          .verifySignature(stateLao.getModificationId(), pair.getWitness(), pair.getSignature())) {
-        return false;
-      }
-    }
-    Log.d(TAG, "Success to verify state lao signatures");
-
-    // TODO: verify if lao/state_lao is consistent with the lao/update message
-
-    lao.setId(stateLao.getId());
-    lao.setWitnesses(stateLao.getWitnesses());
-    lao.setName(stateLao.getName());
-    lao.setLastModified(stateLao.getLastModified());
-    lao.setModificationId(stateLao.getModificationId());
-
-    // Now we're going to remove all pending updates which came prior to this state lao
-    long targetTime = stateLao.getLastModified();
-    lao.getPendingUpdates()
-        .removeIf(pendingUpdate -> pendingUpdate.getModificationTime() <= targetTime);
-
-    return false;
-  }
-
-  private boolean handleElectionSetup(String channel, ElectionSetup electionSetup,
-      String messageId) {
-    //election setup msg should be sent on an LAO channel
-    if (isLaoChannel(channel)) {
-      Lao lao = laoById.get(channel).getLao();
-      Log.d(TAG, "handleElectionSetup: " + channel + " name " + electionSetup.getName());
-
-      Election election = new Election();
-      election.setId(electionSetup.getId());
-      election.setName(electionSetup.getName());
-      election.setCreation(electionSetup.getCreation());
-      election.setChannel(channel + "/" + election.getId());
-      election.setElectionQuestions(electionSetup.getQuestions());
-
-      election.setStart(electionSetup.getStartTime());
-      election.setEnd(electionSetup.getEndTime());
-      election.setEventState(OPENED);
-
-      //Once the election is created, we subscribe to the election channel
-      sendSubscribe(election.getChannel());
-      Log.d(TAG, "election id being put is " + election.getId());
-      lao.updateElection(election.getId(), election);
-
-      WitnessMessage message = new WitnessMessage(messageId);
-      message.setTitle("New Election Setup ");
-      // TODO : In the future display for multiple questions
-      message.setDescription(
-          NAME + election.getName() + "\n" + "Election ID : " + election.getId() + "\n"
-              + "Question : " + election.getElectionQuestions().get(0).getQuestion() + "\n"
-              + MESSAGE_ID + messageId);
-
-      lao.updateWitnessMessage(messageId, message);
-    }
-    return false;
-  }
-
-  private boolean handleCreateRollCall(String channel, CreateRollCall createRollCall,
-      String messageId) {
-    Lao lao = laoById.get(channel).getLao();
-    Log.d(TAG, "handleCreateRollCall: " + channel + " name " + createRollCall.getName());
-
-    RollCall rollCall = new RollCall(createRollCall.getId());
-    rollCall.setCreation(createRollCall.getCreation());
-    rollCall.setState(EventState.CREATED);
-    rollCall.setStart(createRollCall.getProposedStart());
-    rollCall.setEnd(createRollCall.getProposedEnd());
-    rollCall.setName(createRollCall.getName());
-    rollCall.setLocation(createRollCall.getLocation());
-
-    rollCall.setLocation(createRollCall.getLocation());
-    rollCall.setDescription(createRollCall.getDescription().orElse(""));
-
-    lao.updateRollCall(rollCall.getId(), rollCall);
-
-    WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle("New Roll Call Creation ");
-    message.setDescription(
-        NAME + rollCall.getName() + "\n" + "Roll Call ID : " + rollCall.getId() + "\n"
-            + "Location : " + rollCall.getLocation() + "\n" + MESSAGE_ID + messageId);
-
-    lao.updateWitnessMessage(messageId, message);
-
-    return false;
-  }
-
-  private boolean handleOpenRollCall(String channel, OpenRollCall openRollCall, String messageId) {
-    Lao lao = laoById.get(channel).getLao();
-    Log.d(TAG, "handleOpenRollCall: " + channel);
-    Log.d(TAG, openRollCall.getOpens());
-
-    String updateId = openRollCall.getUpdateId();
-    String opens = openRollCall.getOpens();
-
-    Optional<RollCall> rollCallOptional = lao.getRollCall(opens);
-    if (!rollCallOptional.isPresent()) {
-      return true;
-    }
-
-    RollCall rollCall = rollCallOptional.get();
-    rollCall.setStart(openRollCall.getOpenedAt());
-    rollCall.setState(EventState.OPENED);
-    // We might be opening a closed one
-    rollCall.setEnd(0);
-    rollCall.setId(updateId);
-
-    lao.updateRollCall(opens, rollCall);
-
-    WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle("A Roll Call was opened");
-    message.setDescription(
-        "Roll Call Name : " + rollCall.getName() + "\n" + "Updated ID : " + rollCall.getId() + "\n"
-            + MESSAGE_ID + messageId);
-    lao.updateWitnessMessage(messageId, message);
-    return false;
-  }
-
-  private boolean handleCloseRollCall(String channel, CloseRollCall closeRollCall,
-      String messageId) {
-    Lao lao = laoById.get(channel).getLao();
-    Log.d(TAG, "handleCloseRollCall: " + channel);
-
-    String updateId = closeRollCall.getUpdateId();
-    String closes = closeRollCall.getCloses();
-
-    Optional<RollCall> rollCallOptional = lao.getRollCall(closes);
-    if (!rollCallOptional.isPresent()) {
-      return true;
-    }
-
-    RollCall rollCall = rollCallOptional.get();
-    rollCall.setEnd(closeRollCall.getClosedAt());
-    rollCall.setId(updateId);
-    rollCall.getAttendees().addAll(closeRollCall.getAttendees());
-    rollCall.setState(EventState.CLOSED);
-
-    lao.updateRollCall(closes, rollCall);
-
-    WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle("A Roll Call was closed ");
-    message.setDescription(
-        "Roll Call Name : " + rollCall.getName() + "\n" + "Updated ID : " + rollCall.getId() + "\n"
-            + MESSAGE_ID + messageId);
-    lao.updateWitnessMessage(messageId, message);
-    return false;
-  }
-
-  private boolean handleWitnessMessage(String channel, String senderPk,
-      WitnessMessageSignature message) {
-    Log.d(TAG, "Received Witness Message Signature Broadcast");
-    String messageId = message.getMessageId();
-    String signature = message.getSignature();
-
-    byte[] senderPkBuf = Base64.getUrlDecoder().decode(senderPk);
-    byte[] signatureBuf = Base64.getUrlDecoder().decode(signature);
-
-    // Verify signature
-    if (!Signature.verifySignature(messageId, senderPkBuf, signatureBuf)) {
-      return false;
-    }
-
-    if (messageById.containsKey(messageId)) {
-      // Update the message
-      MessageGeneral msg = messageById.get(messageId);
-      msg.getWitnessSignatures().add(new PublicKeySignaturePair(senderPkBuf, signatureBuf));
-      Log.d(TAG, "Message General updated with the new Witness Signature");
-
-      Lao lao = laoById.get(channel).getLao();
-      if (lao == null) {
-        Log.d(TAG, "failed to retrieve the lao with channel " + channel);
-        return false;
-      }
-      // Update WitnessMessage of the corresponding lao
-      if (!updateWitnessMessage(lao, messageId, senderPk)) {
-        return false;
-      }
-      Log.d(TAG, "WitnessMessage successfully updated");
-
-      Set<PendingUpdate> pendingUpdates = lao.getPendingUpdates();
-      // Check if any pending update contains messageId
-      if (pendingUpdates.stream().anyMatch(ob -> ob.getMessageId().equals(messageId))) {
-        // We're waiting to collect signatures for this one
-        Log.d(TAG, "There is a pending update for this message");
-
-        // Let's check if we have enough signatures
-        Set<String> signaturesCollectedSoFar =
-            msg.getWitnessSignatures().stream()
-                .map(ob -> Base64.getUrlEncoder().encodeToString(ob.getWitness()))
-                .collect(Collectors.toSet());
-        if (lao.getWitnesses().equals(signaturesCollectedSoFar)) {
-          Log.d(TAG, "We have enough signatures for the UpdateLao so we can send a StateLao");
-
-          // We send a state lao if we are the organizer
-          sendStateLao(lao, msg, messageId, channel);
-
-        }
-      }
-
-      return false;
-    }
-
-    return true;
-  }
-
-
   /**
-   * Helper method to update the WitnessMessage of the lao with the new witness signing
-   *
-   * @param messageId Base 64 URL encoded Id of the message to sign
-   * @param senderPk  Base 64 URL encoded public key of the signer
-   * @return false if there was a problem updating WitnessMessage
-   */
-  private boolean updateWitnessMessage(Lao lao, String messageId, String senderPk) {
-
-    Optional<WitnessMessage> optionalWitnessMessage = lao.getWitnessMessage(messageId);
-    WitnessMessage witnessMessage;
-    // We update the corresponding  witness message of the lao with a new witness that signed it.
-    if (optionalWitnessMessage.isPresent()) {
-      witnessMessage = optionalWitnessMessage.get();
-      witnessMessage.addWitness(senderPk);
-      Log.d(TAG, "We updated the WitnessMessage with a new witness " + messageId);
-      lao.updateWitnessMessage(messageId, witnessMessage);
-      Log.d(TAG, "We updated the Lao with the new WitnessMessage " + messageId);
-    } else {
-      Log.d(TAG, "Failed to retrieve the witness message in the lao with ID " + messageId);
-      return false;
-    }
-    return true;
-  }
-
-  /**
-   * Helper method that sends a StateLao message if we are the organizer
+   * TODO: make private? Helper method that sends a StateLao message if we are the organizer
    *
    * @param lao       Lao of the message being signed
    * @param msg       Object of type MessageGeneral representing the current message being signed
    * @param messageId Base 64 URL encoded Id of the message to sign
    * @param channel   Represents the channel on which to send the stateLao message
    */
-  private void sendStateLao(Lao lao, MessageGeneral msg, String messageId, String channel) {
+  public void sendStateLao(Lao lao, MessageGeneral msg, String messageId, String channel) {
 
     try {
       KeysetHandle handle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
