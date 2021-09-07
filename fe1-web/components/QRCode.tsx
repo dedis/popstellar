@@ -7,7 +7,6 @@ import styleContainer from 'styles/stylesheets/container';
 /**
  * Creates and displays a QR code with the public key of the current user
  */
-
 const QRCode = (props: IPropTypes) => {
   const { value } = props;
   const { visibility } = props;
