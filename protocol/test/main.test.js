@@ -4,7 +4,7 @@ const fs = require("fs");
 
 const ajv = require("./main");
 
-const rootSchema = "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/genericMessage.json"
+const rootSchema = "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/jsonRPC.json"
 const messageDataSchema = "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/data.json"
 
 // custom validator to display better error message.

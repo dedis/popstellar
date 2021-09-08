@@ -109,8 +109,8 @@ func NewSchemaValidator() (*SchemaValidator, error) {
 		return nil, xerrors.Errorf("failed to load schema: %v", err)
 	}
 
-	// read genericMessage.json
-	gmSchema, err := gmCompiler.Compile("file://protocol/genericMessage.json")
+	// read jsonRPC.json
+	gmSchema, err := gmCompiler.Compile("file://protocol/jsonRPC.json")
 	if err != nil {
 		return nil, xerrors.Errorf("failed to compile validator: %v", err)
 	}
