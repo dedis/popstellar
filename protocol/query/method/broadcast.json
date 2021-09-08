@@ -31,12 +31,8 @@
 
         "jsonrpc": {
             "$comment": "Defined by the parent, but needed here for the validation"
-        },
-
-        "id": {
-            "$comment": "Defined by the parent, but needed here for the validation"
         }
     },
 
-    "required": ["method", "params"]
+    "required": ["method", "params", "jsonrpc"]
 }

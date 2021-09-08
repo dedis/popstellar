@@ -11,15 +11,16 @@
             "oneOf": [
                 {
                     "type": "integer",
-                    "const": 0
+                    "const": 0,
+                    "$comment": "Default return value indicating a success"
                 },
                 {
                     "type": "array",
                     "items": {
                         "$ref": "../query/method/message/message.json"
                     },
-                    "minItems": 1,
-                    "$comment": "if there are no items, then `0` must be returned"
+                    "minItems": 0,
+                    "$comment": "Return value for a `catchup` request"
                 }
             ],
             "$comment": "Note: this field is absent if there is an error"
@@ -33,10 +34,12 @@
         "id": {
             "oneOf": [
                 {
-                    "type": "integer"
+                    "type": "integer",
+                    "$comment": "The id matching the request id."
                 },
                 {
-                    "type": "null"
+                    "type": "null",
+                    "$comment": "If there was an error in detecting the request id, it must be null."
                 }
             ],
             "$comment": "The id matches the request id. If there was an error in detecting the id, it must be null"
@@ -49,10 +52,10 @@
 
     "oneOf": [
         {
-            "required": ["result"]
+            "required": ["result", "id", "jsonrpc"]
         },
         {
-            "required": ["error"]
+            "required": ["error", "id", "jsonrpc"]
         }
     ],
     "$comment": "Can contain either a `result` or an `error`. The result can be either a list of messages or `0`."

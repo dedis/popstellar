@@ -17,11 +17,24 @@ jobs:
         with:
           node-version: 12.x
 
-      - name: install prettier
-        run: npm install -g --save-exact prettier
+      - name: install prettier@2.3.2
+        run: npm install -g --save-exact prettier@2.3.2
 
       - name: prettier
         run: npx prettier --write protocol/**/*.json
+
+      - name: embedme
+        run: |
+          cd docs
+          ./embedme.sh < protocol.md > protocol2.md && mv protocol2.md protocol.md
+          ./embedme.sh < messageData.md > messageData2.md && mv messageData2.md messageData.md
+
+      # TODO: debug why doctoc doesn't produce the expected output
+      # - name: doctoc
+      #   run: |
+      #     cd docs
+      #     ./doctoc.sh protocol.md
+      #     ./doctoc.sh messageData.md
 
       - name: Check for modified files
         id: git-check

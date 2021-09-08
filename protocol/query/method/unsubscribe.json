@@ -28,7 +28,9 @@
         },
 
         "id": {
-            "$comment": "Defined by the parent, but needed here for the validation"
+            "type": "integer"
         }
-    }
+    },
+
+    "required": ["method", "params", "id", "jsonrpc"]
 }
