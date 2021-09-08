@@ -1,0 +1,61 @@
+# https://github.com/peter-evans/create-pull-request/blob/master/docs/examples.md#autopep8
+
+name: auto-protocol-format
+on: pull_request
+jobs:
+  auto-protocol-format:
+    # Check if the PR is not raised by this workflow and is not from a fork
+    if: startsWith(github.head_ref, 'autopep8-patches') == false && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Setup node 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - name: install prettier
+        run: npm install -g --save-exact prettier
+
+      - name: prettier
+        run: npx prettier --write protocol/**/*.json
+
+      - name: Check for modified files
+        id: git-check
+        run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
+
+      - name: Set auto-protocol-format branch name
+        id: vars
+        run: echo ::set-output name=branch-name::"auto-protocol-format-patches/${{ github.head_ref }}"
+
+      - name: Create Pull Request
+        id: cpr
+        if: steps.git-check.outputs.modified == 'true'
+        uses: peter-evans/create-pull-request@v3
+        with:
+          commit-message: auto-protocol-format action fixes
+          title: Fixes by auto-protocol-format action
+          body: This is an auto-generated PR with fixes by auto-protocol-format for PR \#${{github.event.number}}.
+          labels: auto-protocol-format, automated pr
+          branch: ${{ steps.vars.outputs.branch-name }}
+          assignees: ${{ github.event.pull_request.user.login }}
+
+      - name: Add comment if auto-protocol-format made changes
+        if: steps.git-check.outputs.modified == 'true'
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🟠 There seems to be some formatting issues that must be applied from PR ${{ steps.cpr.outputs.pull-request-url }} first.'
+            })
+
+      - name: Fail if auto-protocol-format made changes
+        if: steps.git-check.outputs.modified == 'true'
+        run: exit 1
