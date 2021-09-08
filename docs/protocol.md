@@ -4,21 +4,21 @@
 <!-- DO NOT EDIT THIS SECTION, INSTEAD RE-RUN doctoc.sh TO UPDATE -->
 **:book: Table of Contents**
 
-- [Protocol specification](#protocol-specification)
-- [Introduction](#introduction)
-  - [Validation and Disambiguation](#validation-and-disambiguation)
-  - [Representation of complex data types in the protocol](#representation-of-complex-data-types-in-the-protocol)
-  - [Concatenation for hashing](#concatenation-for-hashing)
-- [JSON RPC (low-level)](#json-rpc-low-level)
-  - [Query](#query)
-    - [Subscribe](#subscribe)
-    - [Unsubscribe](#unsubscribe)
-    - [Publish](#publish)
-      - [Mid-level (publish message) communication](#mid-level-publish-message-communication)
-    - [Propagating a message on a channel](#propagating-a-message-on-a-channel)
-    - [Catching up on past messages on a channel](#catching-up-on-past-messages-on-a-channel)
-  - [Answer](#answer)
-    - [RPC answer error](#rpc-answer-error)
+- [Protocol specification](#)
+- [Introduction](#)
+  - [Validation and Disambiguation](#)
+  - [Representation of complex data types in the protocol](#)
+  - [Concatenation for hashing](#)
+- [JSON RPC (low-level)](#)
+  - [Query](#)
+    - [Subscribe](#)
+    - [Unsubscribe](#)
+    - [Publish](#)
+      - [Mid-level (publish message) communication](#)
+    - [Propagating a message on a channel](#)
+    - [Catching up on past messages on a channel](#)
+  - [Answer](#)
+    - [RPC answer error](#)
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 

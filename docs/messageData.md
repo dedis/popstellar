@@ -4,19 +4,19 @@
 <!-- DO NOT EDIT THIS SECTION, INSTEAD RE-RUN doctoc.sh TO UPDATE -->
 **:book: Table of Contents**
 
-- [High-level ("Message data") messages](#high-level-message-data-messages)
-- [Introduction](#introduction)
-  - [Creating a LAO (lao#create)](#creating-a-lao-laocreate)
-  - [Update LAO properties (lao#update_properties)](#update-lao-properties-laoupdate_properties)
-  - [LAO state broadcast (lao#state)](#lao-state-broadcast-laostate)
-  - [Witness a message (message#witness)](#witness-a-message-messagewitness)
-  - [Creating a Meeting (meeting#create)](#creating-a-meeting-meetingcreate)
-  - [Meeting state broadcast (meeting#state)](#meeting-state-broadcast-meetingstate)
-  - [Roll Calls (introduction)](#roll-calls-introduction)
-  - [Creating a Roll-Call (roll_call#create)](#creating-a-roll-call-roll_callcreate)
-  - [Opening a Roll-Call (roll_call#open)](#opening-a-roll-call-roll_callopen)
-  - [Closing a Roll-Call (roll_call#close)](#closing-a-roll-call-roll_callclose)
-  - [Reopening a Roll-Call (roll_call#reopen)](#reopening-a-roll-call-roll_callreopen)
+- [High-level ("Message data") messages](#)
+- [Introduction](#)
+  - [Creating a LAO (lao#create)](#)
+  - [Update LAO properties (lao#update_properties)](#)
+  - [LAO state broadcast (lao#state)](#)
+  - [Witness a message (message#witness)](#)
+  - [Creating a Meeting (meeting#create)](#)
+  - [Meeting state broadcast (meeting#state)](#)
+  - [Roll Calls (introduction)](#)
+  - [Creating a Roll-Call (roll_call#create)](#)
+  - [Opening a Roll-Call (roll_call#open)](#)
+  - [Closing a Roll-Call (roll_call#close)](#)
+  - [Reopening a Roll-Call (roll_call#reopen)](#)
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
