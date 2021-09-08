@@ -3,25 +3,33 @@
     "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/catchup.json",
     "description": "Match catchup on past message on a channel query",
     "type": "object",
+    "additionalProperties": false,
     "properties": {
         "method": {
             "description": "[String] operation to be performed by the query",
             "const": "catchup"
         },
+
         "params": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "channel": {
                     "description": "[String] name of the channel",
-                    "$ref": "channel/subChannel.json"
+                    "type": "string",
+                    "pattern": "^/root(/[^/]+)+$"
                 }
             },
-            "additionalProperties": false,
+
             "required": ["channel"]
         },
+
+        "jsonrpc": {
+            "$comment": "Defined by the parent, but needed here for the validation"
+        },
+
         "id": {
-            "type": "integer"
+            "$comment": "Defined by the parent, but needed here for the validation"
         }
-    },
-    "required": ["method", "params", "id"]
+    }
 }

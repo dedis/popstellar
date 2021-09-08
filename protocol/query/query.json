@@ -35,6 +35,9 @@
         },
         {
             "$ref": "method/publish.json"
+        },
+        {
+            "$ref": "method/catchup.json"
         }
     ],
     "required": ["method", "params"]

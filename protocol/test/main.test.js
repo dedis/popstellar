@@ -41,7 +41,8 @@ describe("Check files", () => {
         "query/broadcast",
         "query/subscribe",
         "query/unsubscribe",
-        "query/publish"
+        "query/publish",
+        "query/catchup"
     ];
 
     directories.forEach((directory) => {

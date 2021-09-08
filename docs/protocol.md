@@ -179,6 +179,9 @@ defines the name of the function to call (the `method`) and its arguments.
         },
         {
             "$ref": "method/publish.json"
+        },
+        {
+            "$ref": "method/catchup.json"
         }
     ],
     "required": ["method", "params"]
@@ -206,6 +209,27 @@ communication simple, it is assumed that channel “/root” always exists, and 
 the server is allowed to subscribe to it. Clients can then publish on channel
 "/root" to create and bootstrap their Local Autonomous Organizer (LAO) (cf
 High-level communication).
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/query/subscribe/subscribe.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 999,
+    "method": "subscribe",
+    "params": {
+        "channel": "/root/XXX"
+    }
+}
+
+```
+
+</details>
 
 ```json5
 // ../protocol/query/method/subscribe.json
@@ -255,6 +279,27 @@ High-level communication).
 By executing an unsubscribe action, a client stops receiving messages from that
 channel.
 
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/query/unsubscribe/unsubscribe.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 999,
+    "method": "unsubscribe",
+    "params": {
+        "channel": "/root/XXX"
+    }
+}
+
+```
+
+</details>
+
 ```json5
 // ../protocol/query/method/unsubscribe.json
 
@@ -301,6 +346,34 @@ channel.
 
 By executing a publish action, an attendee communicates its intention to publish
 a specific message on a channel.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/query/publish/publish.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 999,
+    "method": "publish",
+    "params": {
+        "channel": "/root/XXX",
+        "message": {
+            "data": "XXX",
+            "sender": "XXX",
+            "signature": "XXX",
+            "message_id": "XXX",
+            "witness_signatures": []
+        }
+    }
+}
+
+```
+
+</details>
 
 ```json5
 // ../protocol/query/method/publish.json
@@ -487,6 +560,34 @@ To broadcast a message that was published on a given channel, the server sends
 out a JSON-RPC 2.0 notification as defined below. Do notice the absence of an id
 field and of a response, in compliance with the JSON-RPC 2.0 specification.
 
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/query/broadcast/broadcast.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 999,
+    "method": "broadcast",
+    "params": {
+        "channel": "/root/XXX",
+        "message": {
+            "data": "XXX",
+            "sender": "XXX",
+            "signature": "XXX",
+            "message_id": "XXX",
+            "witness_signatures": []
+        }
+    }
+}
+
+```
+
+</details>
+
 ```json5
 // ../protocol/query/method/broadcast.json
 
@@ -542,6 +643,27 @@ field and of a response, in compliance with the JSON-RPC 2.0 specification.
 By executing a catchup action, a client can ask the server to receive all past
 messages on a specific channel.
 
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/query/catchup/catchup.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 999,
+    "method": "catchup",
+    "params": {
+        "channel": "/root/XXX"
+    }
+}
+
+```
+
+</details>
+
 ```json5
 // ../protocol/query/method/catchup.json
 
@@ -550,27 +672,35 @@ messages on a specific channel.
     "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/catchup.json",
     "description": "Match catchup on past message on a channel query",
     "type": "object",
+    "additionalProperties": false,
     "properties": {
         "method": {
             "description": "[String] operation to be performed by the query",
             "const": "catchup"
         },
+
         "params": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "channel": {
                     "description": "[String] name of the channel",
-                    "$ref": "channel/subChannel.json"
+                    "type": "string",
+                    "pattern": "^/root(/[^/]+)+$"
                 }
             },
-            "additionalProperties": false,
+
             "required": ["channel"]
         },
+
+        "jsonrpc": {
+            "$comment": "Defined by the parent, but needed here for the validation"
+        },
+
         "id": {
-            "type": "integer"
+            "$comment": "Defined by the parent, but needed here for the validation"
         }
-    },
-    "required": ["method", "params", "id"]
+    }
 }
 
 ```
