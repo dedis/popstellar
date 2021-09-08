@@ -9,10 +9,6 @@
             "type": "string",
             "const": "2.0",
             "description": "JSON RPC version"
-        },
-
-        "id": {
-            "$comment": "defined by the children"
         }
     },
     "oneOf": [
@@ -23,5 +19,5 @@
             "$ref": "query/query.json"
         }
     ],
-    "required": ["jsonrpc", "id"]
+    "required": ["jsonrpc"]
 }

@@ -24,7 +24,7 @@
 
 **Note**: do not edit JSON messages directly. Those are automatically embedded
 from `../protocol`. Use [embedme](https://github.com/zakhenry/embedme) to make
-an update.
+an update. 
 
 # Introduction
 
@@ -90,10 +90,6 @@ JSON RPC is the basic and lowest definition of an RPC message.
             "type": "string",
             "const": "2.0",
             "description": "JSON RPC version"
-        },
-
-        "id": {
-            "$comment": "defined by the children"
         }
     },
     "oneOf": [
@@ -104,7 +100,7 @@ JSON RPC is the basic and lowest definition of an RPC message.
             "$ref": "query/query.json"
         }
     ],
-    "required": ["jsonrpc", "id"]
+    "required": ["jsonarpc"]
 }
 
 ```
@@ -148,13 +144,7 @@ defines the name of the function to call (the `method`) and its arguments.
     "title": "Match a custom JsonRpc 2.0 query message",
     "description": "Match a client query",
     "type": "object",
-    "additionalProperties": false,
     "properties": {
-        "id": {
-            "type": "integer",
-            "description": "Uniq identifier of the RPC message"
-        },
-
         "jsonrpc": {
             "$comment": "Defined by the parent, but needed here for the validation"
         },
@@ -184,7 +174,10 @@ defines the name of the function to call (the `method`) and its arguments.
             "$ref": "method/catchup.json"
         }
     ],
-    "required": ["method", "params"]
+
+    "required": ["method", "params", "jsonrpc"],
+
+    "$comment": "can have an additional property `id` if not a broadcast"
 }
 
 ```
@@ -265,9 +258,11 @@ High-level communication).
         },
 
         "id": {
-            "$comment": "Defined by the parent, but needed here for the validation"
+            "type": "integer"
         }
-    }
+    },
+
+    "required": ["method", "params", "id", "jsonrpc"]
 }
 
 ```
@@ -333,9 +328,11 @@ channel.
         },
 
         "id": {
-            "$comment": "Defined by the parent, but needed here for the validation"
+            "type": "integer"
         }
-    }
+    },
+
+    "required": ["method", "params", "id", "jsonrpc"]
 }
 
 ```
@@ -414,11 +411,11 @@ a specific message on a channel.
         },
 
         "id": {
-            "$comment": "Defined by the parent, but needed here for the validation"
+            "type": "integer"
         }
     },
 
-    "required": ["method", "params"]
+    "required": ["method", "params", "id", "jsonrpc"]
 }
 
 ```
@@ -570,7 +567,6 @@ field and of a response, in compliance with the JSON-RPC 2.0 specification.
 
 {
     "jsonrpc": "2.0",
-    "id": 999,
     "method": "broadcast",
     "params": {
         "channel": "/root/XXX",
@@ -624,14 +620,10 @@ field and of a response, in compliance with the JSON-RPC 2.0 specification.
 
         "jsonrpc": {
             "$comment": "Defined by the parent, but needed here for the validation"
-        },
-
-        "id": {
-            "$comment": "Defined by the parent, but needed here for the validation"
         }
     },
 
-    "required": ["method", "params"]
+    "required": ["method", "params", "jsonrpc"]
 }
 
 ```
@@ -698,9 +690,11 @@ messages on a specific channel.
         },
 
         "id": {
-            "$comment": "Defined by the parent, but needed here for the validation"
+            "type": "integer"
         }
-    }
+    },
+
+    "required": ["method", "params", "id", "jsonrpc"]
 }
 
 ```
@@ -776,15 +770,16 @@ messages on a specific channel.
             "oneOf": [
                 {
                     "type": "integer",
-                    "const": 0
+                    "const": 0,
+                    "$comment": "Default return value indicating a success"
                 },
                 {
                     "type": "array",
                     "items": {
                         "$ref": "../query/method/message/message.json"
                     },
-                    "minItems": 1,
-                    "$comment": "if there are no items, then `0` must be returned"
+                    "minItems": 0,
+                    "$comment": "Return value for a `catchup` request"
                 }
             ],
             "$comment": "Note: this field is absent if there is an error"
@@ -798,10 +793,12 @@ messages on a specific channel.
         "id": {
             "oneOf": [
                 {
-                    "type": "integer"
+                    "type": "integer",
+                    "$comment": "The id matching the request id."
                 },
                 {
-                    "type": "null"
+                    "type": "null",
+                    "$comment": "If there was an error in detecting the request id, it must be null."
                 }
             ],
             "$comment": "The id matches the request id. If there was an error in detecting the id, it must be null"
@@ -814,10 +811,10 @@ messages on a specific channel.
 
     "oneOf": [
         {
-            "required": ["result"]
+            "required": ["result", "id", "jsonrpc"]
         },
         {
-            "required": ["error"]
+            "required": ["error", "id", "jsonrpc"]
         }
     ],
     "$comment": "Can contain either a `result` or an `error`. The result can be either a list of messages or `0`."
@@ -856,7 +853,7 @@ messages on a specific channel.
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/answer/error.json",
-    "title": "If an error occurred, the \"result\" field is absent and the error object must adhere to the following (extensible) format",
+    "title": "If an error occurred, the returned error object must adhere to the following format",
     "description": "In case of negative answer, error generated by the client query",
     "type": "object",
     "properties": {
@@ -872,7 +869,8 @@ messages on a specific channel.
                 "-2 invalid resource (e.g. channel does not exist, channel was not subscribed to, etc.)",
                 "-3 resource already exists (e.g. lao already exists, channel already exists, etc.)",
                 "-4 request data is invalid (e.g. message is invalid), use the data field object to provide extra information",
-                "-5 access denied (e.g. subscribing to a “restricted” channel)"
+                "-5 access denied (e.g. subscribing to a “restricted” channel)",
+                "-6 internal server error (e.g. the server crashed while processing, its database is unavailable, its memory is exhausted, etc.)"
             ]
         },
         "description": {
@@ -885,4 +883,3 @@ messages on a specific channel.
     "$comment": "Note: this error object is absent if the answer is positive"
 }
 
-```

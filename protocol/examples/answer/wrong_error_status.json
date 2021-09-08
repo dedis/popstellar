@@ -1,6 +1,6 @@
 {
     "jsonrpc": "2.0",
-    "id": "xxx",
+    "id": 999,
     "error": {
         "code": -10,
         "description": "This is an error"

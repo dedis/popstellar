@@ -4,13 +4,7 @@
     "title": "Match a custom JsonRpc 2.0 query message",
     "description": "Match a client query",
     "type": "object",
-    "additionalProperties": false,
     "properties": {
-        "id": {
-            "type": "integer",
-            "description": "Uniq identifier of the RPC message"
-        },
-
         "jsonrpc": {
             "$comment": "Defined by the parent, but needed here for the validation"
         },
@@ -40,5 +34,8 @@
             "$ref": "method/catchup.json"
         }
     ],
-    "required": ["method", "params"]
+
+    "required": ["method", "params", "jsonrpc"],
+
+    "$comment": "can have an additional property `id` if not a broadcast"
 }
