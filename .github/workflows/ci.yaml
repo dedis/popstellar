@@ -256,10 +256,6 @@ jobs:
 
     defaults:
       run:
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
         working-directory: ./protocol/test
 
     steps:
