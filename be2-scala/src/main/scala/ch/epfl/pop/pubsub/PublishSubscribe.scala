@@ -1,8 +1,9 @@
 package ch.epfl.pop.pubsub
 
 import akka.NotUsed
-import akka.actor.{ActorRef, ActorSystem}
+import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.http.scaladsl.model.ws.{Message, TextMessage}
+import akka.pattern.AskableActorRef
 import akka.stream.FlowShape
 import akka.stream.scaladsl.{Flow, GraphDSL, Merge, Partition}
 import ch.epfl.pop.model.network.JsonRpcRequest
@@ -10,14 +11,18 @@ import ch.epfl.pop.pubsub.graph.handlers.{ParamsHandler, ParamsWithMessageHandle
 import ch.epfl.pop.pubsub.graph._
 
 
-// FIXME rename when old PublishSubscribe file is deleted
 object PublishSubscribe extends App {
+
+  var dbActorRef: AskableActorRef = _
+
+  def getDbActorRef: AskableActorRef = dbActorRef
 
   def buildGraph(mediatorActorRef: ActorRef)(implicit system: ActorSystem): Flow[Message, Message, NotUsed] = Flow.fromGraph(GraphDSL.create() {
     implicit builder: GraphDSL.Builder[NotUsed] => {
       import GraphDSL.Implicits._
 
       val clientActorRef: ActorRef = system.actorOf(ClientActor.props(mediatorActorRef))
+      dbActorRef = system.actorOf(Props(DbActor()), "DbActor")
 
       /* partitioner port numbers */
       val portPipelineError = 0

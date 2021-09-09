@@ -3,7 +3,11 @@ package ch.epfl.pop.model.objects
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 
-case class Hash(base64Data: Base64Data)
+case class Hash(base64Data: Base64Data) {
+  def getBytes: Array[Byte] = base64Data.getBytes
+
+  override def toString: String = base64Data.toString
+}
 
 object Hash {
 

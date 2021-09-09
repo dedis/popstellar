@@ -12,5 +12,8 @@ target
 .idea
 out
 
+# Database
+database
+
 # Test
 database_test

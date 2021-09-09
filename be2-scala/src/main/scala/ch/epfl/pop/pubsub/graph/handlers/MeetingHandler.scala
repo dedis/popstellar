@@ -37,7 +37,8 @@ case object MeetingHandler extends MessageHandler {
 
   def handleStateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
     val modificationId: Hash = rpcMessage.getDecodedData.asInstanceOf[StateMeeting].modification_id
-    val ask = dbActor.ask(ref => DbActor.Read(rpcMessage.getParamsChannel, modificationId, ref)).map {
+    // val ask = dbActor.ask(ref => DbActor.Read(rpcMessage.getParamsChannel, modificationId, ref)).map {
+    val ask = dbActor.ask("TODO").map {
       case Some(_) => dbAskWritePropagate(rpcMessage)
       // TODO careful about asynchrony and the fact that the network may reorder some messages
       case _ => Right(PipelineError(

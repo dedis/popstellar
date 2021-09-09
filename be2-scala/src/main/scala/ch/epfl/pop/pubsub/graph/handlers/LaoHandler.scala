@@ -7,9 +7,10 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao}
 import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
 import ch.epfl.pop.model.objects.{Channel, Hash}
+import ch.epfl.pop.pubsub.graph.DbActor.{DbActorNAck, DbActorWriteAck}
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 case object LaoHandler extends MessageHandler {
@@ -31,23 +32,16 @@ case object LaoHandler extends MessageHandler {
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val data: CreateLao = message.decodedData.get.asInstanceOf[CreateLao]
-        val channel: Channel = Channel(s"${Channel.rootChannelPrefix}${data.id}")
+        val channel: Channel = Channel(s"${Channel.rootChannelPrefix}${data.id.toString}")
 
-        Left(rpcMessage)
-        /*
-        val subActor: AskableActorRef = ??? // FIXME temporary for the project to compile. Should be modified when subscribe/unsubscribe implemented
-        val ask = subActor.ask(ref => CreateMessage(channel.channel, ref)).map {
-          case true =>
-            // Publish on the LAO main channel
-            val ask = dbActor.ask(ref => DbActorNew.Write(channel, rpcMessage.getParamsMessage.get, ref)).map {
-              case true => Left(rpcMessage)
-              case _ => Right(PipelineError(-10, "")) // FIXME add DbActor "answers" with error description if failed
-            }
-            Await.result(ask, DbActorNew.getDuration)
-          case _ => Right(PipelineError(ErrorCodes.ALREADY_EXISTS.id, s"Unable to create lao: channel '$channel' already exists"))
+        val f: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map {
+          case DbActorWriteAck => Left(rpcMessage)
+          case DbActorNAck(code, description) => Right(PipelineError(code, description))
+          case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer"))
         }
-        Await.result(ask, Duration(1, TimeUnit.SECONDS))
-       */
+
+        Await.result(f, duration)
+
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
         s"Unable to handle lao message $rpcMessage. Not a Publish/Broadcast message"
@@ -57,7 +51,8 @@ case object LaoHandler extends MessageHandler {
 
   def handleStateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
     val modificationId: Hash = rpcMessage.getDecodedData.asInstanceOf[StateLao].modification_id
-    val ask = dbActor.ask(ref => DbActor.Read(rpcMessage.getParamsChannel, modificationId, ref)).map {
+    // val ask = dbActor.ask(ref => DbActor.Read(rpcMessage.getParamsChannel, modificationId, ref)).map {
+    val ask = dbActor.ask("TODO").map {
       case Some(_) => dbAskWritePropagate(rpcMessage)
       // TODO careful about asynchrony and the fact that the network may reorder some messages
       case _ => Right(PipelineError(
