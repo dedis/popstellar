@@ -378,6 +378,9 @@ channel.
 By executing a publish action, an attendee communicates its intention to publish
 a specific message on a channel.
 
+The format and content of the `message` parameter is further detailed as part of
+the [Mid-level (message) communication](#mid-level-message-communication) section.
+
 ##### RPC 
 
 ```json5
@@ -476,6 +479,9 @@ a specific message on a channel.
 To broadcast a message that was published on a given channel, the server sends
 out a JSON-RPC 2.0 *notification* as defined below. Do notice the absence of an id
 field and of a response, in compliance with the JSON-RPC 2.0 specification.
+
+The format and content of the `message` parameter is further detailed as part of
+the [Mid-level (message) communication](#mid-level-message-communication) section.
 
 ##### Notification 
 
