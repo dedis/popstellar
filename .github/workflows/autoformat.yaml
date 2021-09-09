@@ -1,9 +1,9 @@
 # https://github.com/peter-evans/create-pull-request/blob/master/docs/examples.md#autopep8
 
-name: auto-protocol-format
+name: auto-format
 on: pull_request
 jobs:
-  auto-protocol-format:
+  auto-format:
     # Check if the PR is not raised by this workflow and is not from a fork
     if: startsWith(github.head_ref, 'autopep8-patches') == false && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
@@ -38,25 +38,29 @@ jobs:
 
       - name: Check for modified files
         id: git-check
-        run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
+        run: |
+          echo $(git diff-index HEAD)
+          echo $(git status --porcelain)
+          echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
 
-      - name: Set auto-protocol-format branch name
+      - name: Set auto-format branch name
         id: vars
-        run: echo ::set-output name=branch-name::"auto-protocol-format-patches/${{ github.head_ref }}"
+        run: echo ::set-output name=branch-name::"auto-format-patches/${{ github.head_ref }}"
 
       - name: Create Pull Request
         id: cpr
         if: steps.git-check.outputs.modified == 'true'
         uses: peter-evans/create-pull-request@v3
         with:
-          commit-message: auto-protocol-format action fixes
-          title: Fixes by auto-protocol-format action
-          body: This is an auto-generated PR with fixes by auto-protocol-format for PR \#${{github.event.number}}.
-          labels: auto-protocol-format, automated pr
+          commit-message: auto-format action fixes
+          title: Fixes by auto-format action
+          body: This is an auto-generated PR with fixes by auto-format for PR \#${{github.event.number}}.
+          labels: auto-format, automated pr
           branch: ${{ steps.vars.outputs.branch-name }}
           reviewers: ${{ github.event.pull_request.user.login }}
+          delete-branch: true
 
-      - name: Add comment if auto-protocol-format made changes
+      - name: Add comment if auto-format made changes
         if: steps.git-check.outputs.modified == 'true'
         uses: actions/github-script@v3
         with:
@@ -69,6 +73,6 @@ jobs:
               body: '🟠 There seems to be some formatting issues that must be applied from PR ${{ steps.cpr.outputs.pull-request-url }} first.'
             })
 
-      - name: Fail if auto-protocol-format made changes
+      - name: Fail if auto-format made changes
         if: steps.git-check.outputs.modified == 'true'
         run: exit 1

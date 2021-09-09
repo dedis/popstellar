@@ -100,7 +100,7 @@ JSON RPC is the basic and lowest definition of an RPC message.
             "$ref": "query/query.json"
         }
     ],
-    "required": ["jsonarpc"]
+    "required": ["jsonrpc"]
 }
 
 ```
