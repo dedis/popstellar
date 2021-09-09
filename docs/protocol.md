@@ -54,7 +54,7 @@ in a dedicated branch of the project’s Github repository.
 - base64: string containing base64url-encoded data
 - Public Key: base64
 - Signature: base64
-- Hash: base64url
+- Hash: base64
 - Timestamp: uint64 representation of the Unix timestamp (seconds since January
   1st, 1970)  
 
