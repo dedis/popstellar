@@ -41,11 +41,8 @@ const styles = StyleSheet.create({
 
 function connectTo(serverUrl: string): boolean {
   try {
-    const { hostname, port, pathname } = new URL(serverUrl);
-
-    const portNum = port ? parseInt(port, 10) : undefined;
-    const path = pathname.replace(/^\/+/g, '');
-    getNetworkManager().connect(hostname, portNum, path || undefined);
+    const { href } = new URL(serverUrl); // validate
+    getNetworkManager().connect(href);
   } catch (err) {
     console.error(`Cannot connect to '${serverUrl}' as it is an invalid URL`, err);
     return false;
@@ -73,16 +70,6 @@ const ConnectConfirm = ({ navigation, route }: IPropTypes) => {
   }
 
   const onButtonConfirm = () => {
-    const parentNavigation = navigation.dangerouslyGetParent();
-    if (parentNavigation === undefined) {
-      return;
-    }
-
-    const parentNavigation2 = parentNavigation.dangerouslyGetParent();
-    if (parentNavigation2 === undefined) {
-      return;
-    }
-
     if (!connectTo(serverUrl)) {
       return;
     }
@@ -94,7 +81,7 @@ const ConnectConfirm = ({ navigation, route }: IPropTypes) => {
 
     subscribeToChannel(channel)
       .then(() => {
-        parentNavigation.navigate(STRINGS.app_navigation_tab_organizer, {
+        navigation.navigate(STRINGS.app_navigation_tab_organizer, {
           screen: 'Attendee',
         });
       })

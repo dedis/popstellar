@@ -8,13 +8,12 @@ import PropTypes from 'prop-types';
 /**
  * Component used to display a Meeting event in the LAO event list
  */
-
-const dateToString = (timestamp: number) => ((new Date(timestamp * 1000)).toLocaleString());
-
 const EventMeeting = (props: IPropTypes) => {
   const { event } = props;
   const { childrenVisibility } = props;
   const { renderItemFn } = props;
+
+  const dateToString = (timestamp: number) => (new Date(timestamp * 1000)).toLocaleString();
 
   return (
     <>

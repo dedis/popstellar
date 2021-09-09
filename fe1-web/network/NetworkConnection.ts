@@ -20,7 +20,7 @@ interface PendingResponse {
   promise: Promise<JsonRpcResponse>,
   resolvePromise: (value: JsonRpcResponse) => void,
   rejectPromise: (error: OperationError) => void,
-  timeoutId: number,
+  timeoutId: ReturnType<typeof setTimeout>,
 }
 
 export class NetworkConnection {

@@ -1,7 +1,6 @@
 import Ajv from 'ajv';
-import genericMessage from 'protocol/genericMessage.json';
+import jsonRPC from 'protocol/jsonRPC.json';
 import querySchema from './QuerySchema';
-import channelSchema from './ChannelSchema';
 import messageSchema from './MessageSchema';
 import dataSchema from './DataSchema';
 import answerSchema from './AnswerSchema';
@@ -38,9 +37,8 @@ export enum ActionType {
 const ajv = new Ajv();
 ajv.opts.strict = false;
 ajv.addSchema([
-  genericMessage,
+  jsonRPC,
   ...answerSchema,
-  ...channelSchema,
   ...dataSchema,
   ...messageSchema,
   ...querySchema,

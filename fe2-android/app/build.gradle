@@ -35,6 +35,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            getIsDefault().set(true)  // sets this build type as default
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -52,6 +55,7 @@ android {
             dimension "default"
         }
         prod {
+            getIsDefault().set(true)  // sets this flavor as default
             dimension "default"
         }
     }
@@ -120,5 +124,5 @@ dependencies {
     androidTestImplementation 'org.glassfish.tyrus:tyrus-server:1.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-contrib:3.0.2'
 
-    androidTestUtil 'androidx.test:orchestrator:1.4.0'
+    androidTestUtil 'androidx.test:orchestrator:1.3.0'
 }
