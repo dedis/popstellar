@@ -18,7 +18,7 @@
     - [Catching up on past messages on a channel](#catching-up-on-past-messages-on-a-channel)
   - [Answer](#answer)
     - [RPC answer error](#rpc-answer-error)
-- [Mid-level (publish message) communication](#mid-level-publish-message-communication)
+- [Mid-level (message) communication](#mid-level-message-communication)
       
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
@@ -854,7 +854,7 @@ Please take notice of the error codes that have been defined as part of the spec
 ```
 
 
-# Mid-level communication
+# Mid-level (message) communication
 
 🧭 **RPC Message** > **Query** > **Publish** or **Broadcast** > **Message**
 
