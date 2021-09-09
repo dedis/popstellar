@@ -4,7 +4,18 @@ Proof-of-personhood, Spring 2021: Protocol specifications
 
 See `/docs/protocol.md` for documentation about the protocol.
 
-**Note**: There might a way to avoid repeating all the wrapping information by
-using refs, but for now, it may be safer to just repeat it so that every json
-file is guaranteed to be complete.
+See `./examples` to see some examples.
 
+See `./test` to run tests on the examples.
+
+# Format
+
+We use [prettier](https://prettier.io/) as the source of truth for the
+formatting of JSON files. 
+
+Install and format with:
+
+```sh
+npm install --save-dev --save-exact prettier
+prettier --write *.json
+```

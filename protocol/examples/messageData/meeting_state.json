@@ -1,0 +1,21 @@
+{
+    "object": "meeting",
+    "action": "state",
+    "id": "XXX",
+    "name": "XXX",
+    "creation": 123,
+    "last_modified": 123,
+    "location": "XXX",
+    "start": 123,
+    "end": 123,
+    "extra": {
+        "anything": "XXX"
+    },
+    "modification_id": "XXX",
+    "modification_signatures": [
+        {
+            "witness": "XXX",
+            "signature": "XXX"
+        }
+    ]
+}
