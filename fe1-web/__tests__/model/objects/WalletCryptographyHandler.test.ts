@@ -6,6 +6,7 @@ import { sign } from 'tweetnacl';
 import 'fake-indexeddb/auto';
 
 jest.mock('utils/Crypto');
+jest.mock('utils/PlatformStorage');
 
 /**
  * This test uses a MOCK version of the crypto.subtle API.
@@ -18,7 +19,7 @@ describe('=== Wallet Cryptography Handler tests ===', () => {
     it('should correctly encrypt and decrypt the generated seed', async () => {
       /* this is the MOCK crypto manager, it uses the mock SubtleCrypto library */
 
-      let mockCryptoManager : WalletCryptographyHandler | null = new WalletCryptographyHandler();
+      let mockCryptoManager: WalletCryptographyHandler | null = new WalletCryptographyHandler();
 
       /* seed to encrypt */
       const seed = sign.keyPair().secretKey;

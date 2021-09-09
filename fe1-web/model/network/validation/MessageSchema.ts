@@ -1,9 +1,7 @@
-import message from 'protocol/query/method/message/messageGeneral.json';
-import witnessMessage from 'protocol/query/method/message/messageWitnessMessage.json';
+import message from 'protocol/query/method/message/message.json';
 
 const messageSchemas = [
   message,
-  witnessMessage,
 ];
 
 export default messageSchemas;

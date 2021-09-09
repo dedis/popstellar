@@ -1,31 +1,38 @@
 {
-	"$schema": "http://json-schema.org/draft-07/schema#",
-	"$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/broadcast.json",
-	"description": "Match propagation/broadcast of a message on a channel query",
-	"type": "object",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/broadcast.json",
+    "description": "Match propagation/broadcast of a message on a channel query",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "method": {
+            "description": "[String] operation to be performed by the query",
+            "const": "broadcast"
+        },
 
-	"properties": {
-		"method": { 
-			"description": "[String] operation to be performed by the query",
-			"const": "broadcast" 
-		},
-		"params": {
-			"type": "object",
-			"properties": {
-				"channel": { "description": "[String] name of the channel", "$ref": "channel/subChannel.json" },
-				"message": { 
-					"description": "[Message] message to be published", 
-					"anyOf": [
-						{ "$ref": "message/messageGeneral.json" },
-						{ "$ref": "message/messageWitnessMessage.json" }
-					]
-				}
-			},
-			"additionalProperties": false,
-			"required": ["channel", "message"]
-		}
-	},
-	"maxProperties": 3,
-	"required": ["method", "params"],
-	"$comment": "Note: only 3 properties on this query!"
+        "params": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "channel": {
+                    "description": "[String] name of the channel",
+                    "type": "string",
+                    "pattern": "^/root(/[^/]+)+$"
+                },
+
+                "message": {
+                    "description": "[Message] message to be published",
+                    "$ref": "message/message.json"
+                }
+            },
+
+            "required": ["channel", "message"]
+        },
+
+        "jsonrpc": {
+            "$comment": "Defined by the parent, but needed here for the validation"
+        }
+    },
+
+    "required": ["method", "params", "jsonrpc"]
 }

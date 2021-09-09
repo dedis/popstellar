@@ -38,7 +38,7 @@ public class TestJson {
   //          factoryBuilder.uriFactory(new ForceLocalFilesURI(EXTERNAL_ROOT, LOCAL_ROOT), "https");
   //
   //    factory = factoryBuilder.build();
-  //    lowSchema = getSchema("genericMessage.json");
+  //    lowSchema = getSchema("jsonRPC.json");
   //  }
   //
   //  private void testMessage(Message msg) throws JsonProcessingException {

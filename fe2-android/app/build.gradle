@@ -35,6 +35,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            getIsDefault().set(true)  // sets this build type as default
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -52,6 +55,7 @@ android {
             dimension "default"
         }
         prod {
+            getIsDefault().set(true)  // sets this flavor as default
             dimension "default"
         }
     }
@@ -88,6 +92,9 @@ dependencies {
     implementation 'com.tinder.scarlet:lifecycle-android:0.1.11'
     implementation "androidx.lifecycle:lifecycle-reactivestreams:2.2.0"
     implementation 'com.squareup.okhttp3:logging-interceptor:4.9.1'
+    implementation 'me.relex:circleindicator:2.1.6'
+    implementation "androidx.viewpager2:viewpager2:1.0.0"
+
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
 

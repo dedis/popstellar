@@ -92,7 +92,10 @@ jobs:
 
   be1-go:
     name: Be1-Go
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, windows-latest]
+    runs-on: ${{matrix.platform}}
 
     defaults:
       run:
@@ -102,7 +105,7 @@ jobs:
     - name: Setup Go 1.x
       uses: actions/setup-go@v2
       with:
-        go-version: ^1.15
+        go-version: ^1.16
 
     - name: Setup repo
       uses: actions/checkout@v2
@@ -125,37 +128,21 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-go-
 
-    - name: Setup dependencies
+    - name: Run check target
       run: |
-        go mod download
-        go get -v honnef.co/go/tools/cmd/staticcheck
+        make check
 
     - name: Run go vet
       run: |
-        go vet ./...
-
-    - name: Run staticcheck
-      if: ${{ always() }}  # execute even if previous steps failed
-      run: |
-        staticcheck ./...
+        make vet
 
     - name: Build
       if: ${{ always() }}  # execute even if previous steps failed
       run: |
-        go build -v ./...
-
-    - name: Test
-      if: ${{ always() }}  # execute even if previous steps failed
-      run: |
-        go test -v ./...
-
-    - name: Test with race detector
-      if: ${{ always() }}  # execute even if previous steps failed
-      run: |
-        go test -race -v ./...
+        make build
 
     - name: Run code analysis
-      if: ${{ always() }}  # execute even if previous steps failed
+      if: ${{ matrix.platform == 'ubuntu-latest' }}  # execute even if previous steps failed
       uses: SonarSource/sonarcloud-github-action@master
       with:
         projectBaseDir: be1-go
@@ -262,3 +249,51 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BE2 }}
         run: sbt sonarScan
+  
+  protocol:
+    name: protocol examples test
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./protocol/test
+
+    steps:
+    - name: Setup repo
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of Sonar analysis
+
+    - name: Setup node 12.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+
+    - name: Setup node cache
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-node-modules
+      with:
+        # npm cache files are stored in `~/.npm` on Linux/macOS
+        path: ~/.npm
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
+
+    - name: Setup npm dependencies
+      run: |
+        npm install
+
+    - name: Check npm security issues
+      run: |
+        npm audit fix
+
+    - name: Run test
+      run: |
+        npm run test

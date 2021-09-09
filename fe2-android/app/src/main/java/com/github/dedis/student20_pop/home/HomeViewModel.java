@@ -3,7 +3,6 @@ package com.github.dedis.student20_pop.home;
 import android.Manifest;
 import android.app.Application;
 import android.content.pm.PackageManager;
-import java.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -24,6 +23,7 @@ import com.github.dedis.student20_pop.model.network.method.message.MessageGenera
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.student20_pop.qrcode.CameraPermissionViewModel;
 import com.github.dedis.student20_pop.qrcode.QRCodeScanningViewModel;
+import com.github.dedis.student20_pop.qrcode.ScanningAction;
 import com.github.dedis.student20_pop.utility.security.Keys;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.crypto.tink.KeysetHandle;
@@ -33,6 +33,7 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -47,6 +48,7 @@ public class HomeViewModel extends AndroidViewModel
   public static final String TAG = HomeViewModel.class.getSimpleName();
   public static final String SCAN = "SCAN";
   public static final String REQUEST_CAMERA_PERMISSION = "REQUEST_CAMERA_PERMISSION";
+  private static final ScanningAction scanningAction = ScanningAction.ADD_LAO_PARTICIPANT;
 
   /*
    * LiveData objects for capturing events like button clicks
@@ -112,9 +114,14 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   @Override
+  public ScanningAction getScanningAction() {
+    return scanningAction;
+  }
+
+  @Override
   public void onQRCodeDetected(Barcode barcode) {
     Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
-    String channel = barcode.rawValue;
+    String channel = "/root/"+barcode.rawValue;
     mLAORepository
           .sendSubscribe(channel)
           .observeOn(AndroidSchedulers.mainThread())
@@ -203,7 +210,7 @@ public class HomeViewModel extends AndroidViewModel
         openWallet();
         return true;
       }
-    } catch (IllegalArgumentException e) {
+    } catch (Exception e) {
       return false;
     }
   }
@@ -335,4 +342,10 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   public void setIsWalletSetUp(Boolean isSetUp) { this.mIsWalletSetUp.setValue(isSetUp); }
+
+  public void logoutWallet(){
+    Wallet.getInstance().logout();
+    setIsWalletSetUp(false);
+    openWallet();
+  }
 }

@@ -1,0 +1,8 @@
+{
+    "object": "lao",
+    "action": "update_properties",
+    "id": "XXX",
+    "name": "XXX",
+    "last_modified": 123,
+    "witnesses": ["XXX"]
+}

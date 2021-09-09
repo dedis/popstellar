@@ -7,13 +7,16 @@ import java.util.List;
 /** Enumerates all possible messages actions */
 public enum Action {
   CREATE("create"),
+  END("end"),
+  RESULT("result"),
   SETUP("setup"),
   UPDATE("update_properties"),
   STATE("state"),
   WITNESS("witness"),
   OPEN("open"),
   REOPEN("reopen"),
-  CLOSE("close");
+  CLOSE("close"),
+  CAST_VOTE("cast_vote");
 
   private static final List<Action> ALL = Collections.unmodifiableList(Arrays.asList(values()));
   private final String action;

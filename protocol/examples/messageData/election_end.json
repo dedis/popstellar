@@ -1,0 +1,8 @@
+{
+    "object": "election",
+    "action": "end",
+    "lao": "XXX",
+    "election": "XXX",
+    "created_at": 123,
+    "registered_votes": "XXX"
+}

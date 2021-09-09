@@ -1,11 +1,13 @@
 package com.github.dedis.student20_pop.model.network.method.message;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import android.util.Log;
 
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
-import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessage;
+import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessageSignature;
 import com.github.dedis.student20_pop.utility.security.Hash;
+import com.google.android.gms.common.util.Hex;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.PublicKeyVerify;
 import com.google.crypto.tink.subtle.Ed25519Verify;
@@ -66,6 +68,9 @@ public final class MessageGeneral {
           byte[] signature,
           byte[] messageId,
           List<PublicKeySignaturePair> witnessSignatures) {
+    byte[] decodedMessageId = Base64.getUrlDecoder().decode(messageId);
+    Log.d(TAG, "new MessageGeneral with messageId encoded as: " + new String(messageId, StandardCharsets.UTF_8) +
+              " decoded as: " + Hex.bytesToStringUppercase(decodedMessageId));
     this.sender = sender;
     this.messageId = messageId;
     this.dataBuf = dataBuf;
@@ -84,11 +89,11 @@ public final class MessageGeneral {
   }
 
   private void generateId() {
-    this.messageId = Hash.hash(Base64.getUrlEncoder().encodeToString(this.dataBuf), Base64.getUrlEncoder().encodeToString(this.signature)).getBytes();
+    this.messageId = Hash.hash(Base64.getUrlEncoder().encodeToString(this.dataBuf), Base64.getUrlEncoder().encodeToString(this.signature)).getBytes(StandardCharsets.UTF_8);
   }
 
   public String getMessageId() {
-    return Base64.getUrlEncoder().encodeToString(this.messageId);
+    return new String(this.messageId, StandardCharsets.UTF_8);
   }
 
   public String getSender() {
@@ -115,11 +120,11 @@ public final class MessageGeneral {
     try {
       verifier.verify(signature, dataBuf);
 
-      if (data instanceof WitnessMessage) {
-        WitnessMessage witnessMessage = (WitnessMessage) data;
+      if (data instanceof WitnessMessageSignature) {
+        WitnessMessageSignature witness = (WitnessMessageSignature) data;
 
-        byte[] signatureBuf = Base64.getUrlDecoder().decode(witnessMessage.getSignature());
-        byte[] messageIdBuf = Base64.getUrlDecoder().decode(witnessMessage.getMessageId());
+        byte[] signatureBuf = Base64.getUrlDecoder().decode(witness.getSignature());
+        byte[] messageIdBuf = Base64.getUrlDecoder().decode(witness.getMessageId());
 
         verifier.verify(signatureBuf, messageIdBuf);
       }
