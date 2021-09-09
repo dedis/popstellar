@@ -21,5 +21,5 @@ prettier --write *.json
 ```
 
 In any case, prettier will be run by the continuous integration pipeline
-hen you open a pull request and any necessary changes will be suggested
+when you open a pull request and any necessary changes will be suggested
 to you for inclusion.
