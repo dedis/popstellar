@@ -11,11 +11,11 @@
   - [Concatenation for hashing](#concatenation-for-hashing)
 - [JSON RPC (low-level)](#json-rpc-low-level)
   - [Query](#query)
-    - [Subscribe](#subscribe)
-    - [Unsubscribe](#unsubscribe)
-    - [Publish](#publish)
-    - [Propagating a message on a channel](#propagating-a-message-on-a-channel)
-    - [Catching up on past messages on a channel](#catching-up-on-past-messages-on-a-channel)
+    - [Subscribe](#subscribing-to-a-channel)
+    - [Unsubscribe](#unsubscribing-from-a-channel)
+    - [Publish](#publishing-a-message-on-a-channel)
+    - [Broadcast](#propagating-a-message-on-a-channel)
+    - [Catchup](#catching-up-on-past-messages-on-a-channel)
   - [Answer](#answer)
     - [RPC answer error](#rpc-answer-error)
 - [Mid-level (message) communication](#mid-level-message-communication)
@@ -205,7 +205,7 @@ the server is allowed to subscribe to it. Clients can then publish on channel
 "/root" to create and bootstrap their Local Autonomous Organizer (LAO) (cf
 High-level communication).
 
-##### RPC 
+RPC 
 
 ```json5
 // ../protocol/examples/query/subscribe/subscribe.json
@@ -221,7 +221,7 @@ High-level communication).
 
 ```
 
-##### Response (in case of success)
+Response (in case of success)
 
 ```json5
 // ../protocol/examples/answer/general_empty.json
@@ -292,7 +292,7 @@ High-level communication).
 By executing an unsubscribe action, a client stops receiving messages from that
 channel.
 
-##### RPC 
+RPC 
 
 ```json5
 // ../protocol/examples/query/unsubscribe/unsubscribe.json
@@ -308,7 +308,7 @@ channel.
 
 ```
 
-##### Response (in case of success)
+Response (in case of success)
 
 ```json5
 // ../protocol/examples/answer/general_empty.json
@@ -381,7 +381,7 @@ a specific message on a channel.
 The format and content of the `message` parameter is further detailed as part of
 the [Mid-level (message) communication](#mid-level-message-communication) section.
 
-##### RPC 
+RPC 
 
 ```json5
 // ../protocol/examples/query/publish/publish.json
@@ -404,7 +404,7 @@ the [Mid-level (message) communication](#mid-level-message-communication) sectio
 
 ```
 
-##### Response (in case of success)
+Response (in case of success)
 
 ```json5
 // ../protocol/examples/answer/general_empty.json
@@ -483,7 +483,7 @@ field and of a response, in compliance with the JSON-RPC 2.0 specification.
 The format and content of the `message` parameter is further detailed as part of
 the [Mid-level (message) communication](#mid-level-message-communication) section.
 
-##### Notification 
+Notification 
 
 ```json5
 // ../protocol/examples/query/broadcast/broadcast.json
@@ -566,7 +566,7 @@ This could be optimized to include some form of pagination, but the system
 hasn't yet been scaled to the extent of needing such features.
 
 
-##### RPC 
+RPC 
 
 ```json5
 // ../protocol/examples/query/catchup/catchup.json
@@ -582,7 +582,7 @@ hasn't yet been scaled to the extent of needing such features.
 
 ```
 
-##### Response (in case of success)
+Response (in case of success)
 
 
 ```json5
