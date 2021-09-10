@@ -9,12 +9,15 @@ import com.github.dedis.popstellar.model.Election;
 import com.github.dedis.popstellar.model.Lao;
 import com.github.dedis.popstellar.model.WitnessMessage;
 import com.github.dedis.popstellar.model.data.LAORepository;
+import com.github.dedis.popstellar.model.network.method.message.data.Action;
+import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -30,12 +33,45 @@ public class ElectionHandler {
   public static final String ELECTION_QUESTION = "Question : ";
   public static final String ELECTION_SETUP = "New Election Setup ";
 
+  private ElectionHandler() {
+    throw new IllegalStateException("Utility class");
+  }
+
   /**
-   * Process a ElectionSetup message.
+   * Process an Election message.
+   *
+   * @param laoRepository the repository to access the LAO of the channel
+   * @param channel       the channel on which the message was received
+   * @param data          the data of the message that was received
+   * @param messageId     the ID of the message that was received
+   * @return true if the message cannot be processed and false otherwise
+   */
+  public static boolean handleElectionMessage(LAORepository laoRepository, String channel,
+      Data data,
+      String messageId, String senderPk) {
+    Log.d(TAG, "handle Election message");
+
+    switch (Objects.requireNonNull(Action.find(data.getAction()))) {
+      case SETUP:
+        return handleElectionSetup(laoRepository, channel, (ElectionSetup) data, messageId);
+      case RESULT:
+        return handleElectionResult(laoRepository, channel, (ElectionResult) data);
+      case END:
+        return handleElectionEnd(laoRepository, channel);
+      case CAST_VOTE:
+        return handleCastVote(laoRepository, channel, (CastVote) data, senderPk, messageId);
+      default:
+        return true;
+    }
+  }
+
+  /**
+   * Process an ElectionSetup message.
    *
    * @param laoRepository the repository to access the LAO of the channel
    * @param channel       the channel on which the message was received
    * @param electionSetup the message that was received
+   * @param messageId     the ID of message that was received
    * @return true if the message cannot be processed and false otherwise
    */
   public static boolean handleElectionSetup(LAORepository laoRepository, String channel,
@@ -45,7 +81,8 @@ public class ElectionHandler {
       Lao lao = laoRepository.getLaoByChannel(channel);
       Log.d(TAG, "handleElectionSetup: channel " + channel + " name " + electionSetup.getName());
 
-      Election election = new Election(lao.getId(), electionSetup.getCreation(), electionSetup.getName());
+      Election election = new Election(lao.getId(), electionSetup.getCreation(),
+          electionSetup.getName());
       election.setChannel(channel + "/" + election.getId());
       election.setElectionQuestions(electionSetup.getQuestions());
 
@@ -71,7 +108,7 @@ public class ElectionHandler {
   }
 
   /**
-   * Process a ElectionResult message.
+   * Process an ElectionResult message.
    *
    * @param laoRepository  the repository to access the election and LAO of the channel
    * @param channel        the channel on which the message was received
@@ -96,7 +133,7 @@ public class ElectionHandler {
   }
 
   /**
-   * Process a ElectionEnd message.
+   * Process an ElectionEnd message.
    *
    * @param laoRepository the repository to access the LAO of the channel
    * @param channel       the channel on which the message was received
@@ -112,7 +149,7 @@ public class ElectionHandler {
   }
 
   /**
-   * Process a CreateRollCall message.
+   * Process a CastVote message.
    *
    * @param laoRepository the repository to access the messages, election and LAO of the channel
    * @param channel       the channel on which the message was received

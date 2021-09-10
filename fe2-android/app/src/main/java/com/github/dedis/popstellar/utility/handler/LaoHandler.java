@@ -6,6 +6,8 @@ import com.github.dedis.popstellar.model.PendingUpdate;
 import com.github.dedis.popstellar.model.WitnessMessage;
 import com.github.dedis.popstellar.model.data.LAORepository;
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
+import com.github.dedis.popstellar.model.network.method.message.data.Action;
+import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
@@ -13,6 +15,7 @@ import com.github.dedis.popstellar.utility.security.Signature;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Lao messages handler class
@@ -21,6 +24,10 @@ public class LaoHandler {
 
   public static final String TAG = LaoHandler.class.getSimpleName();
 
+  private LaoHandler() {
+    throw new IllegalStateException("Utility class");
+  }
+
   public static final String LAO_NAME = " Lao Name : ";
   public static final String OLD_NAME = " Old Name : ";
   public static final String NEW_NAME = " New Name : ";
@@ -28,6 +35,31 @@ public class LaoHandler {
   public static final String UPDATE_LAO = "Update Lao Name ";
   public static final String WITNESS_ID = " New Witness ID : ";
   public static final String UPDATE_WITNESS = "Update Lao Witnesses  ";
+
+  /**
+   * Process a LAO message.
+   *
+   * @param laoRepository the repository to access the LAO of the channel
+   * @param channel       the channel on which the message was received
+   * @param data          the data of the message received
+   * @param messageId     the ID of the message received
+   * @return true if the message cannot be processed and false otherwise
+   */
+  public static boolean handleLaoMessage(LAORepository laoRepository, String channel, Data data,
+      String messageId) {
+    Log.d(TAG, "handle LAO message");
+
+    switch (Objects.requireNonNull(Action.find(data.getAction()))) {
+      case CREATE:
+        return handleCreateLao(laoRepository, channel, (CreateLao) data);
+      case UPDATE:
+        return handleUpdateLao(laoRepository, channel, messageId, (UpdateLao) data);
+      case STATE:
+        return handleStateLao(laoRepository, channel, (StateLao) data);
+      default:
+        return true;
+    }
+  }
 
   /**
    * Process a CreateLao message.
@@ -95,6 +127,7 @@ public class LaoHandler {
 
     } else {
       Log.d(TAG, " Problem to set the witness message title for update lao");
+      return true;
     }
 
     lao.updateWitnessMessage(messageId, message);

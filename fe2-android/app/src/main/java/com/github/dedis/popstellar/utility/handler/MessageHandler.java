@@ -5,24 +5,21 @@ import com.github.dedis.popstellar.model.data.LAORepository;
 import com.github.dedis.popstellar.model.data.LAOState;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
-import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
+import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
-import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.message.WitnessMessageSignature;
-import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
-import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
-import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
 
 /**
  * General message handler class
  */
 public class MessageHandler {
 
-  private static final String TAG = MessageHandler.class.getSimpleName();
+  public static final String TAG = MessageHandler.class.getSimpleName();
+
+  private MessageHandler() {
+    throw new IllegalStateException("Utility class");
+  }
 
   /**
    * Send messages to the corresponding handler.
@@ -44,37 +41,15 @@ public class MessageHandler {
     Data data = message.getData();
     Log.d(TAG, "data with class: " + data.getClass());
     boolean enqueue = false;
-    if (data instanceof CreateLao) {
-      enqueue = LaoHandler.handleCreateLao(laoRepository, channel, (CreateLao) data);
-    } else if (data instanceof UpdateLao) {
-      enqueue = LaoHandler
-          .handleUpdateLao(laoRepository, channel, message.getMessageId(), (UpdateLao) data);
-    } else if (data instanceof StateLao) {
-      enqueue = LaoHandler.handleStateLao(laoRepository, channel, (StateLao) data);
-    } else if (data instanceof CreateRollCall) {
+    if (data.getObject().equals(Objects.LAO.getObject())) {
+      enqueue = LaoHandler.handleLaoMessage(laoRepository, channel, data, message.getMessageId());
+    } else if (data.getObject().equals(Objects.ROLL_CALL.getObject())) {
       enqueue = RollCallHandler
-          .handleCreateRollCall(laoRepository, channel, (CreateRollCall) data,
-              message.getMessageId());
-    } else if (data instanceof OpenRollCall) {
-      enqueue = RollCallHandler
-          .handleOpenRollCall(laoRepository, channel, (OpenRollCall) data, message.getMessageId());
-    } else if (data instanceof CloseRollCall) {
-      enqueue = RollCallHandler
-          .handleCloseRollCall(laoRepository, channel, (CloseRollCall) data,
-              message.getMessageId());
-    } else if (data instanceof ElectionSetup) {
+          .handleRollCallMessage(laoRepository, channel, data, message.getMessageId());
+    } else if (data.getObject().equals(Objects.ELECTION.getObject())) {
       enqueue = ElectionHandler
-          .handleElectionSetup(laoRepository, channel, (ElectionSetup) data,
-              message.getMessageId());
-    } else if (data instanceof ElectionResult) {
-      enqueue = ElectionHandler.handleElectionResult(laoRepository, channel, (ElectionResult) data);
-    } else if (data instanceof ElectionEnd) {
-      enqueue = ElectionHandler.handleElectionEnd(laoRepository, channel);
-    } else if (data instanceof CastVote) {
-      enqueue = ElectionHandler
-          .handleCastVote(laoRepository, channel, (CastVote) data, senderPk,
-              message.getMessageId());
-    } else if (data instanceof WitnessMessageSignature) {
+          .handleElectionMessage(laoRepository, channel, data, message.getMessageId(), senderPk);
+    } else if (data.getObject().equals(Objects.MESSAGE.getObject())) {
       enqueue = WitnessMessageHandler
           .handleWitnessMessage(laoRepository, channel, senderPk, (WitnessMessageSignature) data);
     } else {

@@ -21,7 +21,11 @@ import java.util.Map;
  */
 public class GenericHandler {
 
-  private final static String TAG = GenericHandler.class.getSimpleName();
+  public static final String TAG = GenericHandler.class.getSimpleName();
+
+  private GenericHandler() {
+    throw new IllegalStateException("Utility class");
+  }
 
   /**
    * Delete the pending requests with the id of the error

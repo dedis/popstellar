@@ -21,6 +21,10 @@ public class WitnessMessageHandler {
 
   private static final String TAG = WitnessMessage.class.getSimpleName();
 
+  private WitnessMessageHandler() {
+    throw new IllegalStateException("Utility class");
+  }
+
   /**
    * Process a WitnessMessageSignature message
    *

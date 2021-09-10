@@ -6,9 +6,12 @@ import com.github.dedis.popstellar.model.RollCall;
 import com.github.dedis.popstellar.model.WitnessMessage;
 import com.github.dedis.popstellar.model.data.LAORepository;
 import com.github.dedis.popstellar.model.event.EventState;
+import com.github.dedis.popstellar.model.network.method.message.data.Action;
+import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -26,6 +29,37 @@ public class RollCallHandler {
   public static final String ROLL_CALL_CREATION = "New Roll Call was created ";
   public static final String ROLL_CALL_OPENING = "A Roll Call was opened ";
   public static final String ROLL_CALL_DELETION = "A Roll Call was closed ";
+
+  private RollCallHandler() {
+    throw new IllegalStateException("Utility class");
+  }
+
+  /**
+   * Process a Roll Call message.
+   *
+   * @param laoRepository the repository to access the LAO of the channel
+   * @param channel       the channel on which the message was received
+   * @param data          the data of the message received
+   * @param messageId     the ID of the message received
+   * @return true if the message cannot be processed and false otherwise
+   */
+  public static boolean handleRollCallMessage(LAORepository laoRepository, String channel,
+      Data data,
+      String messageId) {
+    Log.d(TAG, "handle Roll Call message");
+
+    switch (Objects.requireNonNull(Action.find(data.getAction()))) {
+      case CREATE:
+        return handleCreateRollCall(laoRepository, channel, (CreateRollCall) data, messageId);
+      case OPEN:
+      case REOPEN:
+        return handleOpenRollCall(laoRepository, channel, (OpenRollCall) data, messageId);
+      case CLOSE:
+        return handleCloseRollCall(laoRepository, channel, (CloseRollCall) data, messageId);
+      default:
+        return true;
+    }
+  }
 
   /**
    * Process a CreateRollCall message.
