@@ -2,10 +2,10 @@ package messagedata
 
 // RollCallClose ...
 type RollCallClose struct {
-	Object    string
-	Action    string
-	UpdateID  string `json:"update_id"`
-	Closes    string
-	ClosedAt  int `json:"closed_at"`
-	Attendees []string
+	Object    string   `json:"object"`
+	Action    string   `json:"action"`
+	UpdateID  string   `json:"update_id"`
+	Closes    string   `json:"closes"`
+	ClosedAt  int      `json:"closed_at"`
+	Attendees []string `json:"attendees"`
 }

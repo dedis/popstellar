@@ -2,13 +2,13 @@ package messagedata
 
 // RollCallCreate ...
 type RollCallCreate struct {
-	Object        string
-	Action        string
-	ID            string
-	Name          string
-	Creation      int
-	ProposedStart int `json:"proposed_start"`
-	ProposedEnd   int `json:"proposed_end"`
-	Location      string
-	Description   string
+	Object        string `json:"object"`
+	Action        string `json:"action"`
+	ID            string `json:"id"`
+	Name          string `json:"name"`
+	Creation      int64  `json:"creation"`
+	ProposedStart int64  `json:"proposed_start"`
+	ProposedEnd   int64  `json:"proposed_end"`
+	Location      string `json:"location"`
+	Description   string `json:"description"`
 }

@@ -2,9 +2,9 @@ package messagedata
 
 // RollCallOpen ...
 type RollCallOpen struct {
-	Object   string
-	Action   string
+	Object   string `json:"object"`
+	Action   string `json:"action"`
 	UpdateID string `json:"update_id"`
-	Opens    string
-	OpenedAt int `json:"opened_at"`
+	Opens    string `json:"opens"`
+	OpenedAt int64  `json:"opened_at"`
 }

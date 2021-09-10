@@ -2,17 +2,17 @@ package messagedata
 
 // VoteCastVote ...
 type VoteCastVote struct {
-	Object    string
-	Action    string
-	Lao       string
-	Election  string
-	CreatedAt int `json:"created_at"`
-	Votes     []Vote
+	Object    string `json:"object"`
+	Action    string `json:"action"`
+	Lao       string `json:"lao"`
+	Election  string `json:"election"`
+	CreatedAt int    `json:"created_at"`
+	Votes     []Vote `json:"votes"`
 }
 
 // Vote ...
 type Vote struct {
-	ID       string
-	Question string
-	Vote     []int
+	ID       string `json:"id"`
+	Question string `json:"question"`
+	Vote     []int  `json:"vote"`
 }

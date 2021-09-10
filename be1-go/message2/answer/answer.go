@@ -8,9 +8,9 @@ import (
 
 // Answer defines the JSON RPC answer message
 type Answer struct {
-	ID     int
-	Result *Result
-	Error  *Error
+	ID     int     `json:"id"`
+	Result *Result `json:"result"`
+	Error  *Error  `json:"error"`
 }
 
 // Result can be either a 0 int or a slice of messages

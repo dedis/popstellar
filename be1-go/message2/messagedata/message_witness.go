@@ -2,8 +2,8 @@ package messagedata
 
 // MessageWitness ...
 type MessageWitness struct {
-	Object    string
-	Action    string
+	Object    string `json:"object"`
+	Action    string `json:"action"`
 	MessageID string `json:"message_id"`
-	Signature string
+	Signature string `json:"signature"`
 }

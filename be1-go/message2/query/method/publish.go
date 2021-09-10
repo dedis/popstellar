@@ -4,10 +4,10 @@ import "student20_pop/message2/query/method/message"
 
 // Publish ...
 type Publish struct {
-	ID int
+	ID int `json:"id"`
 
 	Params struct {
-		Channel string
-		Message message.Message
+		Channel string          `json:"channel"`
+		Message message.Message `json:"message"`
 	}
 }

@@ -24,7 +24,7 @@ type RPCType int
 
 // JSONRPC ...
 type JSONRPC struct {
-	JSONRPC string
+	JSONRPC string `json:"jsonrpc"`
 
 	query.Query
 	answer.Answer
