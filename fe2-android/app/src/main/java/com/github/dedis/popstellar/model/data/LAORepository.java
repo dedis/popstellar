@@ -1,15 +1,19 @@
 package com.github.dedis.popstellar.model.data;
 
+import static com.github.dedis.popstellar.utility.handler.MessageHandler.handleBroadcast;
+import static com.github.dedis.popstellar.utility.handler.MessageHandler.handleCatchup;
+import static com.github.dedis.popstellar.utility.handler.MessageHandler.handleCreateLao;
+import static com.github.dedis.popstellar.utility.handler.MessageHandler.handleError;
+import static com.github.dedis.popstellar.utility.handler.MessageHandler.handleSubscribe;
+
 import android.util.Log;
 import androidx.annotation.NonNull;
 import com.github.dedis.popstellar.model.Election;
 import com.github.dedis.popstellar.model.Lao;
-import com.github.dedis.popstellar.model.data.handler.GeneralHandler;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Answer;
 import com.github.dedis.popstellar.model.network.answer.Error;
 import com.github.dedis.popstellar.model.network.answer.Result;
-import com.github.dedis.popstellar.model.network.method.Broadcast;
 import com.github.dedis.popstellar.model.network.method.Catchup;
 import com.github.dedis.popstellar.model.network.method.Publish;
 import com.github.dedis.popstellar.model.network.method.Subscribe;
@@ -32,7 +36,6 @@ import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,6 +49,7 @@ import java.util.stream.Collectors;
 public class LAORepository {
 
   private static final String TAG = LAORepository.class.getSimpleName();
+  private static final String ROOT = "/root/";
   private static LAORepository INSTANCE = null;
 
   private final LAODataSource.Remote mRemoteDataSource;
@@ -147,143 +151,35 @@ public class LAORepository {
         .subscribe(this::handleGenericMessage);
   }
 
-  // TODO: Create utility class to handle messages
   private void handleGenericMessage(GenericMessage genericMessage) {
     Log.d(TAG, "handling generic msg");
     if (genericMessage instanceof Error) {
-      Error err = (Error) genericMessage;
-      int id = err.getId();
-      if (subscribeRequests.containsKey(id)) {
-        subscribeRequests.remove(id);
-      } else if (catchupRequests.containsKey(id)) {
-        catchupRequests.remove(id);
-      } else if (createLaoRequests.containsKey(id)) {
-        createLaoRequests.remove(id);
-      }
+      handleError(genericMessage, subscribeRequests, catchupRequests, createLaoRequests);
       return;
     }
 
     if (genericMessage instanceof Result) {
       Result result = (Result) genericMessage;
-
       int id = result.getId();
-      Log.d(TAG, "handleGenericMessage: request id " + id);
+      Log.d(TAG, "request id " + id);
       if (subscribeRequests.containsKey(id)) {
-        String channel = subscribeRequests.get(id);
-        subscribeRequests.remove(id);
-
-        if (isLaoChannel(channel)) {
-          Lao lao = new Lao(channel);
-          laoById.put(channel, new LAOState(lao));
-          allLaoSubject.onNext(
-              laoById.entrySet().stream()
-                  .map(x -> x.getValue().getLao())
-                  .collect(Collectors.toList()));
-
-          Log.d(TAG, "posted allLaos to `allLaoSubject`");
-          sendCatchup(channel);
-        }
+        handleSubscribe(this, id, subscribeRequests);
       } else if (catchupRequests.containsKey(id)) {
-        String channel = catchupRequests.get(id);
-        catchupRequests.remove(id);
-
-        Log.d(TAG, "got a catchup request in response to request id " + id);
-        List<MessageGeneral> messages = result.getMessages().orElse(new ArrayList<>());
-        Log.d(TAG, "messages length: " + messages.size());
-        for (MessageGeneral msg : messages) {
-          boolean enqueue = GeneralHandler.handleMessage(this, channel, msg);
-          if (enqueue) {
-            unprocessed.onNext(genericMessage);
-          }
-        }
+        handleCatchup(this, id, genericMessage, catchupRequests, unprocessed);
       } else if (createLaoRequests.containsKey(id)) {
-        String channel = createLaoRequests.get(id);
-        createLaoRequests.remove(id);
-
-        Lao lao = new Lao(channel);
-        laoById.put(channel, new LAOState(lao));
-        allLaoSubject.onNext(
-            laoById.entrySet().stream()
-                .map(x -> x.getValue().getLao())
-                .collect(Collectors.toList()));
-        Log.d(TAG, "createLaoRequest contains this id. posted allLaos to `allLaoSubject`");
-        sendSubscribe(channel);
-        sendCatchup(channel);
+        handleCreateLao(this, id, createLaoRequests);
       }
-
       return;
     }
 
-    Log.d(TAG, "Got a broadcast");
+    Log.d(TAG, "handleGenericMessage: got a broadcast");
 
     // We've a Broadcast
-    Broadcast broadcast = (Broadcast) genericMessage;
-    MessageGeneral message = broadcast.getMessage();
-    String channel = broadcast.getChannel();
-
-    Log.d(TAG, "Broadcast channel: " + channel + " message " + message.getMessageId());
-
-    boolean enqueue = GeneralHandler.handleMessage(this, channel, message);
-    if (enqueue) {
-      unprocessed.onNext(genericMessage);
-    }
+    handleBroadcast(this, genericMessage, unprocessed);
   }
 
   /**
-   * // TODO: refactor Retrieves the Election in a given channel
-   *
-   * @param channel the channel on which the election was created
-   * @return the election corresponding to this channel
-   */
-  public Election getElectionByChannel(String channel) {
-    Lao lao = getLaoByChannel(channel);
-    Optional<Election> electionOption = lao.getElection(channel.split("/")[3]);
-    if (!electionOption.isPresent()) {
-      throw new IllegalArgumentException("the election should be present when receiving a result");
-    }
-    return electionOption.get();
-  }
-
-  /**
-   * TODO: refactor Retrieves the Lao in a given channel
-   *
-   * @param channel the channel on which the Lao was created
-   * @return the Lao corresponding to this channel
-   */
-  public Lao getLaoByChannel(String channel) {
-    String[] split = channel.split("/");
-    return laoById.get("/root/" + split[2]).getLao();
-  }
-
-  // TODO: new getters for witness message handler
-  public BehaviorSubject<List<Lao>> getAllLaoSubject() {
-    return allLaoSubject;
-  }
-
-  public Map<String, LAOState> getLaoById() {
-    return laoById;
-  }
-
-  /**
-   * TODO: refactor
-   */
-  public Map<String, MessageGeneral> getMessageById() {
-    return messageById;
-  }
-
-  /**
-   * TODO: add to utility lao or message general handler Checks that a given channel corresponds to
-   * a LAO channel, i.e /root/laoId
-   *
-   * @param channel the channel we want to check
-   * @return true if the channel is a lao channel, false otherwise
-   */
-  public boolean isLaoChannel(String channel) {
-    return channel.split("/").length == 3;
-  }
-
-  /**
-   * TODO: make private? Helper method that sends a StateLao message if we are the organizer
+   * Helper method that sends a StateLao message if we are the organizer
    *
    * @param lao       Lao of the message being signed
    * @param msg       Object of type MessageGeneral representing the current message being signed
@@ -291,7 +187,6 @@ public class LAORepository {
    * @param channel   Represents the channel on which to send the stateLao message
    */
   public void sendStateLao(Lao lao, MessageGeneral msg, String messageId, String channel) {
-
     try {
       KeysetHandle handle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
       String ourKey = Keys.getEncodedKey(handle);
@@ -323,6 +218,7 @@ public class LAORepository {
   }
 
   public Single<Answer> sendCatchup(String channel) {
+    Log.d(TAG, "sending a catchup to the channel " + channel);
     int id = mRemoteDataSource.incrementAndGetRequestId();
     Catchup catchup = new Catchup(channel, id);
 
@@ -333,13 +229,14 @@ public class LAORepository {
   }
 
   public Single<Answer> sendPublish(String channel, MessageGeneral message) {
+    Log.d(TAG, "sending a publish " + message.getData().getClass() + " to the channel " + channel);
     int id = mRemoteDataSource.incrementAndGetRequestId();
     Single<Answer> answer = createSingle(id);
 
     Publish publish = new Publish(channel, id, message);
     if (message.getData() instanceof CreateLao) {
       CreateLao data = (CreateLao) message.getData();
-      createLaoRequests.put(id, "/root/" + data.getId());
+      createLaoRequests.put(id, ROOT + data.getId());
     }
 
     mRemoteDataSource.sendMessage(publish);
@@ -347,9 +244,8 @@ public class LAORepository {
   }
 
   public Single<Answer> sendSubscribe(String channel) {
-
+    Log.d(TAG, "sending a subscribe to the channel " + channel);
     int id = mRemoteDataSource.incrementAndGetRequestId();
-
     Subscribe subscribe = new Subscribe(channel, id);
 
     subscribeRequests.put(id, channel);
@@ -364,6 +260,7 @@ public class LAORepository {
   }
 
   public Single<Answer> sendUnsubscribe(String channel) {
+    Log.d(TAG, "sending an unsubscribe to the channel " + channel);
     int id = mRemoteDataSource.incrementAndGetRequestId();
 
     Unsubscribe unsubscribe = new Unsubscribe(channel, id);
@@ -373,6 +270,12 @@ public class LAORepository {
     return answer;
   }
 
+  /**
+   * Helper method that looks for the Answer of the given id and creates a Single
+   *
+   * @param id of the answer
+   * @return a single answer
+   */
   private Single<Answer> createSingle(int id) {
     return upstream
         .filter(
@@ -389,6 +292,53 @@ public class LAORepository {
         .cache();
   }
 
+  /**
+   * Checks that a given channel corresponds to a LAO channel, i.e /root/laoId
+   *
+   * @param channel the channel we want to check
+   * @return true if the channel is a lao channel, false otherwise
+   */
+  public boolean isLaoChannel(String channel) {
+    return channel.split("/").length == 3;
+  }
+
+  /**
+   * Set allLaoSubject to contain all LAOs
+   */
+  public void setAllLaoSubject() {
+    Log.d(TAG, "posted allLaos to allLaoSubject");
+    allLaoSubject.onNext(
+        laoById.entrySet().stream()
+            .map(x -> x.getValue().getLao())
+            .collect(Collectors.toList()));
+  }
+
+  /**
+   * Retrieves the Election in a given channel
+   *
+   * @param channel the channel on which the election was created
+   * @return the election corresponding to this channel
+   */
+  public Election getElectionByChannel(String channel) {
+    Lao lao = getLaoByChannel(channel);
+    Optional<Election> electionOption = lao.getElection(channel.split("/")[3]);
+    if (!electionOption.isPresent()) {
+      throw new IllegalArgumentException("the election should be present when receiving a result");
+    }
+    return electionOption.get();
+  }
+
+  /**
+   * Retrieves the Lao in a given channel
+   *
+   * @param channel the channel on which the Lao was created
+   * @return the Lao corresponding to this channel
+   */
+  public Lao getLaoByChannel(String channel) {
+    String[] split = channel.split("/");
+    return laoById.get(ROOT + split[2]).getLao();
+  }
+
   public Observable<List<Lao>> getAllLaos() {
     return allLaoSubject;
   }
@@ -396,5 +346,13 @@ public class LAORepository {
   public Observable<Lao> getLaoObservable(String channel) {
     Log.d(TAG, "LaoIds we have are: " + laoById.keySet());
     return laoById.get(channel).getObservable();
+  }
+
+  public Map<String, LAOState> getLaoById() {
+    return laoById;
+  }
+
+  public Map<String, MessageGeneral> getMessageById() {
+    return messageById;
   }
 }

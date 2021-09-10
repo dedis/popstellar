@@ -1,16 +1,4 @@
-package com.github.dedis.popstellar.model.data.handler;
-
-import static com.github.dedis.popstellar.model.data.handler.ElectionHandler.handleCastVote;
-import static com.github.dedis.popstellar.model.data.handler.ElectionHandler.handleElectionEnd;
-import static com.github.dedis.popstellar.model.data.handler.ElectionHandler.handleElectionResult;
-import static com.github.dedis.popstellar.model.data.handler.ElectionHandler.handleElectionSetup;
-import static com.github.dedis.popstellar.model.data.handler.LaoHandler.handleCreateLao;
-import static com.github.dedis.popstellar.model.data.handler.LaoHandler.handleStateLao;
-import static com.github.dedis.popstellar.model.data.handler.LaoHandler.handleUpdateLao;
-import static com.github.dedis.popstellar.model.data.handler.RollCallHandler.handleCloseRollCall;
-import static com.github.dedis.popstellar.model.data.handler.RollCallHandler.handleCreateRollCall;
-import static com.github.dedis.popstellar.model.data.handler.RollCallHandler.handleOpenRollCall;
-import static com.github.dedis.popstellar.model.data.handler.WitnessMessageHandler.handleWitnessMessage;
+package com.github.dedis.popstellar.utility.handler;
 
 import android.util.Log;
 import com.github.dedis.popstellar.model.data.LAORepository;
@@ -28,14 +16,13 @@ import com.github.dedis.popstellar.model.network.method.message.data.message.Wit
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
-import java.util.stream.Collectors;
 
 /**
  * General message handler class
  */
 public class GeneralHandler {
 
-  public static final String TAG = GeneralHandler.class.getSimpleName();
+  private static final String TAG = GeneralHandler.class.getSimpleName();
 
   /**
    * Send messages to the corresponding handler.
@@ -47,7 +34,8 @@ public class GeneralHandler {
    */
   public static boolean handleMessage(LAORepository laoRepository, String channel,
       MessageGeneral message) {
-    // TODO: move to default, do and then call handle message
+    Log.d(TAG, "handle incoming message");
+
     // Put the message in the state
     laoRepository.getMessageById().put(message.getMessageId(), message);
 
@@ -57,48 +45,49 @@ public class GeneralHandler {
     Log.d(TAG, "data with class: " + data.getClass());
     boolean enqueue = false;
     if (data instanceof CreateLao) {
-      enqueue = handleCreateLao(laoRepository, channel, (CreateLao) data);
+      enqueue = LaoHandler.handleCreateLao(laoRepository, channel, (CreateLao) data);
     } else if (data instanceof UpdateLao) {
-      enqueue = handleUpdateLao(laoRepository, channel, message.getMessageId(), (UpdateLao) data);
+      enqueue = LaoHandler
+          .handleUpdateLao(laoRepository, channel, message.getMessageId(), (UpdateLao) data);
     } else if (data instanceof StateLao) {
-      enqueue = handleStateLao(laoRepository, channel, (StateLao) data);
+      enqueue = LaoHandler.handleStateLao(laoRepository, channel, (StateLao) data);
     } else if (data instanceof CreateRollCall) {
-      enqueue = handleCreateRollCall(laoRepository, channel, (CreateRollCall) data,
-          message.getMessageId());
+      enqueue = RollCallHandler
+          .handleCreateRollCall(laoRepository, channel, (CreateRollCall) data,
+              message.getMessageId());
     } else if (data instanceof OpenRollCall) {
-      enqueue = handleOpenRollCall(laoRepository, channel, (OpenRollCall) data,
-          message.getMessageId());
+      enqueue = RollCallHandler
+          .handleOpenRollCall(laoRepository, channel, (OpenRollCall) data, message.getMessageId());
     } else if (data instanceof CloseRollCall) {
-      enqueue = handleCloseRollCall(laoRepository, channel, (CloseRollCall) data,
-          message.getMessageId());
+      enqueue = RollCallHandler
+          .handleCloseRollCall(laoRepository, channel, (CloseRollCall) data,
+              message.getMessageId());
     } else if (data instanceof ElectionSetup) {
-      enqueue = handleElectionSetup(laoRepository, channel, (ElectionSetup) data,
-          message.getMessageId());
+      enqueue = ElectionHandler
+          .handleElectionSetup(laoRepository, channel, (ElectionSetup) data,
+              message.getMessageId());
     } else if (data instanceof ElectionResult) {
-      enqueue = handleElectionResult(laoRepository, channel, (ElectionResult) data);
+      enqueue = ElectionHandler.handleElectionResult(laoRepository, channel, (ElectionResult) data);
     } else if (data instanceof ElectionEnd) {
-      enqueue = handleElectionEnd(laoRepository, channel);
+      enqueue = ElectionHandler.handleElectionEnd(laoRepository, channel);
     } else if (data instanceof CastVote) {
-      enqueue = handleCastVote(laoRepository, channel, (CastVote) data, senderPk,
-          message.getMessageId());
+      enqueue = ElectionHandler
+          .handleCastVote(laoRepository, channel, (CastVote) data, senderPk,
+              message.getMessageId());
     } else if (data instanceof WitnessMessageSignature) {
-      enqueue = handleWitnessMessage(laoRepository, channel, senderPk,
-          (WitnessMessageSignature) data);
+      enqueue = WitnessMessageHandler
+          .handleWitnessMessage(laoRepository, channel, senderPk, (WitnessMessageSignature) data);
     } else {
       Log.d(TAG, "cannot handle message with data" + data.getClass());
       enqueue = true;
     }
 
-    // TODO: move to a first Handler class.
     // Trigger an onNext
     if (!(data instanceof WitnessMessageSignature) && laoRepository.isLaoChannel(channel)) {
       LAOState laoState = laoRepository.getLaoById().get(channel);
       laoState.publish();
       if (data instanceof StateLao || data instanceof CreateLao) {
-        laoRepository.getAllLaoSubject().onNext(
-            laoRepository.getLaoById().entrySet().stream()
-                .map(x -> x.getValue().getLao())
-                .collect(Collectors.toList()));
+        laoRepository.setAllLaoSubject();
       }
     }
     return enqueue;

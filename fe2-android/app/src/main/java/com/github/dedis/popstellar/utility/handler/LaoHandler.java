@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.model.data.handler;
+package com.github.dedis.popstellar.utility.handler;
 
 import android.util.Log;
 import com.github.dedis.popstellar.model.Lao;
@@ -19,7 +19,15 @@ import java.util.List;
  */
 public class LaoHandler {
 
-  public static final String TAG = LaoHandler.class.getSimpleName();
+  private static final String TAG = LaoHandler.class.getSimpleName();
+
+  private static final String LAO_NAME = " Lao Name : ";
+  private static final String OLD_NAME = " Old Name : ";
+  private static final String NEW_NAME = " New Name : ";
+  private static final String MESSAGE_ID = "Message ID : ";
+  private static final String UPDATE_LAO = "Update Lao Name ";
+  private static final String WITNESS_ID = " New Witness ID : ";
+  private static final String UPDATE_WITNESS = "Update Lao Witnesses  ";
 
   /**
    * Process a CreateLao message.
@@ -31,7 +39,7 @@ public class LaoHandler {
    */
   public static boolean handleCreateLao(LAORepository laoRepository, String channel,
       CreateLao createLao) {
-    // TODO: void method in LAORepository to modify the laoById map
+    Log.d(TAG, "handleCreateLao: channel " + channel + "LAO name " + createLao.getName());
     Lao lao = laoRepository.getLaoByChannel(channel);
 
     lao.setName(createLao.getName());
@@ -74,17 +82,16 @@ public class LaoHandler {
 
     WitnessMessage message = new WitnessMessage(messageId);
     if (!updateLao.getName().equals(lao.getName())) {
-      message.setTitle("Update Lao Name ");
+      message.setTitle(UPDATE_LAO);
       message.setDescription(
-          " Old Name : " + lao.getName() + "\n" + " New Name : " + updateLao.getName() +
-              "\n" + "Message ID : " + messageId);
+          OLD_NAME + lao.getName() + "\n" + NEW_NAME + updateLao.getName() +
+              "\n" + MESSAGE_ID + messageId);
     } else if (!updateLao.getWitnesses().equals(lao.getWitnesses())) {
       List<String> tempList = new ArrayList<>(updateLao.getWitnesses());
-      message.setTitle("Update Lao Witnesses  ");
-      message
-          .setDescription(" Lao Name : " + lao.getName() + "\n" + "Message ID : " + messageId + "\n"
-              + " New Witness ID : " + tempList.get(tempList.size() - 1)
-          );
+      message.setTitle(UPDATE_WITNESS);
+      message.setDescription(LAO_NAME + lao.getName() + "\n" + MESSAGE_ID + messageId + "\n"
+          + WITNESS_ID + tempList.get(tempList.size() - 1)
+      );
 
     } else {
       Log.d(TAG, " Problem to set the witness message title for update lao");

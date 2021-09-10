@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.model.data.handler;
+package com.github.dedis.popstellar.utility.handler;
 
 import android.util.Log;
 import com.github.dedis.popstellar.model.Lao;
@@ -16,7 +16,16 @@ import java.util.Optional;
  */
 public class RollCallHandler {
 
-  public static final String TAG = RollCallHandler.class.getSimpleName();
+  private static final String TAG = RollCallHandler.class.getSimpleName();
+
+  private static final String MESSAGE_ID = "Message ID : ";
+  private static final String ROLL_CALL_ID = "Roll Call ID : ";
+  private static final String ROLL_CALL_NAME = "Roll Call Name : ";
+  private static final String ROLL_CALL_LOCATION = "Location : ";
+  private static final String ROLL_CALL_UPDATED_ID = "Updated ID : ";
+  private static final String ROLL_CALL_CREATION = "New Roll Call was created ";
+  private static final String ROLL_CALL_OPENING = "A Roll Call was opened ";
+  private static final String ROLL_CALL_DELETION = "A Roll Call was closed ";
 
   /**
    * Process a CreateRollCall message.
@@ -46,10 +55,10 @@ public class RollCallHandler {
     lao.updateRollCall(rollCall.getId(), rollCall);
 
     WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle("New Roll Call Creation ");
+    message.setTitle(ROLL_CALL_CREATION);
     message.setDescription(
-        "Name : " + rollCall.getName() + "\n" + "Roll Call ID : " + rollCall.getId() + "\n"
-            + "Location : " + rollCall.getLocation() + "\n" + "Message ID : " + messageId);
+        ROLL_CALL_NAME + rollCall.getName() + "\n" + ROLL_CALL_ID + rollCall.getId() + "\n"
+            + ROLL_CALL_LOCATION + rollCall.getLocation() + "\n" + MESSAGE_ID + messageId);
 
     lao.updateWitnessMessage(messageId, message);
 
@@ -88,10 +97,10 @@ public class RollCallHandler {
     lao.updateRollCall(opens, rollCall);
 
     WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle("A Roll Call was opened");
+    message.setTitle(ROLL_CALL_OPENING);
     message.setDescription(
-        "Roll Call Name : " + rollCall.getName() + "\n" + "Updated ID : " + rollCall.getId() + "\n"
-            + "Message ID : " + messageId);
+        ROLL_CALL_NAME + rollCall.getName() + "\n" + ROLL_CALL_UPDATED_ID + rollCall.getId() + "\n"
+            + MESSAGE_ID + messageId);
     lao.updateWitnessMessage(messageId, message);
     return false;
   }
@@ -127,10 +136,10 @@ public class RollCallHandler {
     lao.updateRollCall(closes, rollCall);
 
     WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle("A Roll Call was closed ");
+    message.setTitle(ROLL_CALL_DELETION);
     message.setDescription(
-        "Roll Call Name : " + rollCall.getName() + "\n" + "Updated ID : " + rollCall.getId() + "\n"
-            + "Message ID : " + messageId);
+        ROLL_CALL_NAME + rollCall.getName() + "\n" + ROLL_CALL_UPDATED_ID + rollCall.getId() + "\n"
+            + MESSAGE_ID + messageId);
     lao.updateWitnessMessage(messageId, message);
     return false;
   }

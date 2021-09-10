@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.model.data.handler;
+package com.github.dedis.popstellar.utility.handler;
 
 import static com.github.dedis.popstellar.model.event.EventState.CLOSED;
 import static com.github.dedis.popstellar.model.event.EventState.OPENED;
@@ -22,7 +22,13 @@ import java.util.Optional;
  */
 public class ElectionHandler {
 
-  public static final String TAG = ElectionHandler.class.getSimpleName();
+  private static final String TAG = ElectionHandler.class.getSimpleName();
+
+  private static final String ELECTION_NAME = "Name : ";
+  private static final String MESSAGE_ID = "Message ID : ";
+  private static final String ELECTION_ID = "Election ID : ";
+  private static final String ELECTION_QUESTION = "Question : ";
+  private static final String ELECTION_SETUP = "New Election Setup ";
 
   /**
    * Process a ElectionSetup message.
@@ -35,10 +41,9 @@ public class ElectionHandler {
   public static boolean handleElectionSetup(LAORepository laoRepository, String channel,
       ElectionSetup electionSetup,
       String messageId) {
-    //election setup msg should be sent on an LAO channel
     if (laoRepository.isLaoChannel(channel)) {
       Lao lao = laoRepository.getLaoByChannel(channel);
-      Log.d(TAG, "handleElectionSetup: " + channel + " name " + electionSetup.getName());
+      Log.d(TAG, "handleElectionSetup: channel " + channel + " name " + electionSetup.getName());
 
       Election election = new Election();
       election.setId(electionSetup.getId());
@@ -52,18 +57,16 @@ public class ElectionHandler {
       election.setEventState(OPENED);
 
       //Once the election is created, we subscribe to the election channel
-      // TODO: subscribe somewhere else.
       laoRepository.sendSubscribe(election.getChannel());
-      Log.d(TAG, "election id being put is " + election.getId());
+      Log.d(TAG, "election id " + election.getId());
       lao.updateElection(election.getId(), election);
 
       WitnessMessage message = new WitnessMessage(messageId);
-      message.setTitle("New Election Setup ");
-      // TODO : In the future display for multiple questions
+      message.setTitle(ELECTION_SETUP);
       message.setDescription(
-          "Name : " + election.getName() + "\n" + "Election ID : " + election.getId() + "\n"
-              + "Question : " + election.getElectionQuestions().get(0).getQuestion() + "\n"
-              + "Message ID : " + messageId);
+          ELECTION_NAME + election.getName() + "\n" + ELECTION_ID + election.getId() + "\n"
+              + ELECTION_QUESTION + election.getElectionQuestions().get(0).getQuestion() + "\n"
+              + MESSAGE_ID + messageId);
 
       lao.updateWitnessMessage(messageId, message);
     }
@@ -103,6 +106,7 @@ public class ElectionHandler {
    * @return true if the message cannot be processed and false otherwise
    */
   public static boolean handleElectionEnd(LAORepository laoRepository, String channel) {
+    Log.d(TAG, "handleElectionEnd: channel " + channel);
     Lao lao = laoRepository.getLaoByChannel(channel);
     Election election = laoRepository.getElectionByChannel(channel);
     election.setEventState(CLOSED);
@@ -115,26 +119,30 @@ public class ElectionHandler {
    *
    * @param laoRepository the repository to access the messages, election and LAO of the channel
    * @param channel       the channel on which the message was received
-   * @param data          TODO: change params to only take message, channel and laoRep.
+   * @param castVote      the message that was received
+   * @param senderPk      the public key of the sender
+   * @param messageId     the ID of the message
    * @return true if the message cannot be processed and false otherwise
    */
-  public static boolean handleCastVote(LAORepository laoRepository, String channel, CastVote data,
-      String senderPk, String messageId) {
+  public static boolean handleCastVote(LAORepository laoRepository, String channel,
+      CastVote castVote, String senderPk, String messageId) {
+    Log.d(TAG, "handleCastVote: channel " + channel);
     Lao lao = laoRepository.getLaoByChannel(channel);
     Election election = laoRepository.getElectionByChannel(channel);
 
-    //We ignore the vote iff the election is ended and the cast vote message was created after the end timestamp
-    if (election.getEndTimestamp() >= data.getCreation() || election.getState() != CLOSED) {
-      /* We retrieve previous cast vote message stored for the given sender, and consider the new vote iff its creation
-      is after (hence preventing reordering attacks) */
+    // Verify the vote was created before the end of the election or the election is not closed yet
+    if (election.getEndTimestamp() >= castVote.getCreation() || election.getState() != CLOSED) {
+      // Retrieve previous cast vote message stored for the given sender
       Optional<String> previousMessageIdOption = election.getMessageMap().entrySet().stream()
           .filter(entry -> senderPk.equals(entry.getValue())).map(Map.Entry::getKey).findFirst();
-      //If there is no previous message, or that this message is the last of all received messages, then we consider the votes
-      if (!previousMessageIdOption.isPresent() ||
-          ((CastVote) laoRepository.getMessageById().get(previousMessageIdOption.get()).getData())
-              .getCreation()
-              <= data.getCreation()) {
-        election.putVotesBySender(senderPk, data.getVotes());
+      // Retrieve the creation time of the previous cast vote, if doesn't exist replace with min value
+      long previousMessageCreation = previousMessageIdOption
+          .map(s -> ((CastVote) laoRepository.getMessageById().get(s).getData()).getCreation())
+          .orElse(Long.MIN_VALUE);
+
+      // Verify the current cast vote message is the last one received
+      if (previousMessageCreation <= castVote.getCreation()) {
+        election.putVotesBySender(senderPk, castVote.getVotes());
         election.putSenderByMessageId(senderPk, messageId);
         lao.updateElection(election.getId(), election);
       }
