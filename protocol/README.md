@@ -19,3 +19,7 @@ Install and format with:
 npm install --save-dev --save-exact prettier
 prettier --write *.json
 ```
+
+In any case, prettier will be run by the continuous integration pipeline
+when you open a pull request and any necessary changes will be suggested
+to you for inclusion.

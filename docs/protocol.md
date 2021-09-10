@@ -11,15 +11,15 @@
   - [Concatenation for hashing](#concatenation-for-hashing)
 - [JSON RPC (low-level)](#json-rpc-low-level)
   - [Query](#query)
-    - [Subscribe](#subscribe)
-    - [Unsubscribe](#unsubscribe)
-    - [Publish](#publish)
-      - [Mid-level (publish message) communication](#mid-level-publish-message-communication)
-    - [Propagating a message on a channel](#propagating-a-message-on-a-channel)
-    - [Catching up on past messages on a channel](#catching-up-on-past-messages-on-a-channel)
+    - [Subscribe](#subscribing-to-a-channel)
+    - [Unsubscribe](#unsubscribing-from-a-channel)
+    - [Publish](#publishing-a-message-on-a-channel)
+    - [Broadcast](#propagating-a-message-on-a-channel)
+    - [Catchup](#catching-up-on-past-messages-on-a-channel)
   - [Answer](#answer)
     - [RPC answer error](#rpc-answer-error)
-
+- [Mid-level (message) communication](#mid-level-message-communication)
+      
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
 **Note**: do not edit JSON messages directly. Those are automatically embedded
@@ -42,18 +42,19 @@ over websocket:
 
 ## Validation and Disambiguation
 To make sure that the protocol is understood by everyone equally and to ensure
-that it is implemented correctly, all messages will be described using the JSON
-Schema (proposed IETF standard). This will enable the teams to validate their
-inputs and outputs with the schema files as part of their testing strategy. The
-JSON Schema description is not part of this document and will be provided in a
-dedicated branch of the project’s Github repository.
+that it is implemented correctly, all messages will be described using the
+JSON Schema (proposed IETF standard, version: draft-07). 
+This will enable the teams to validate their inputs and outputs with the schema
+files as part of their testing strategy. 
+The JSON Schema description is not part of this document and will be provided
+in a dedicated branch of the project’s Github repository.
 
 ## Representation of complex data types in the protocol
 
-- base64: base64 in string format  
-- Public Key: base64  
-- Signature: base64  
-- Hash: base64  
+- base64: string containing base64url-encoded data
+- Public Key: base64
+- Signature: base64
+- Hash: base64
 - Timestamp: uint64 representation of the Unix timestamp (seconds since January
   1st, 1970)  
 
@@ -132,8 +133,9 @@ connection.
 
 🧭 **RPC Message** > **Query**
 
-A query denotes an RPC, with corresponds to a function invocation. Therefore, it
-defines the name of the function to call (the `method`) and its arguments.
+A query denotes an RPC, with corresponds to a function invocation.
+Therefore, it defines the name of the function to call (the `method`)
+and its arguments (`params`).
 
 ```json5
 // ../protocol/query/query.json
@@ -182,7 +184,7 @@ defines the name of the function to call (the `method`) and its arguments.
 
 ```
 
-Here are the different king of "methods" that can be called:
+Here are the different methods that can be called:
 
 * Subscribe
 * Unsubscribe
@@ -190,7 +192,7 @@ Here are the different king of "methods" that can be called:
 * Broadcast
 * Publish
 
-### Subscribe
+### Subscribing to a channel
 
 🧭 **RPC Message** > **Query** > **Subscribe**
 
@@ -203,10 +205,7 @@ the server is allowed to subscribe to it. Clients can then publish on channel
 "/root" to create and bootstrap their Local Autonomous Organizer (LAO) (cf
 High-level communication).
 
-<details>
-<summary>
-💡 See an example
-</summary>
+RPC 
 
 ```json5
 // ../protocol/examples/query/subscribe/subscribe.json
@@ -222,7 +221,24 @@ High-level communication).
 
 ```
 
-</details>
+Response (in case of success)
+
+```json5
+// ../protocol/examples/answer/general_empty.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 999,
+    "result": 0
+}
+
+```
+
+
+<details>
+<summary>
+💡 See the full specification
+</summary>
 
 ```json5
 // ../protocol/query/method/subscribe.json
@@ -267,17 +283,16 @@ High-level communication).
 
 ```
 
-### Unsubscribe
+</details>
+
+### Unsubscribing from a channel
 
 🧭 **RPC Message** > **Query** > **Unsubscribe**
 
 By executing an unsubscribe action, a client stops receiving messages from that
 channel.
 
-<details>
-<summary>
-💡 See an example
-</summary>
+RPC 
 
 ```json5
 // ../protocol/examples/query/unsubscribe/unsubscribe.json
@@ -293,8 +308,25 @@ channel.
 
 ```
 
-</details>
+Response (in case of success)
 
+```json5
+// ../protocol/examples/answer/general_empty.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 999,
+    "result": 0
+}
+
+```
+
+
+<details>
+<summary>
+💡 See the full specification
+</summary>
+  
 ```json5
 // ../protocol/query/method/unsubscribe.json
 
@@ -336,18 +368,20 @@ channel.
 }
 
 ```
-
-### Publish
+  
+</details>
+  
+### Publishing a message on a channel
 
 🧭 **RPC Message** > **Query** > **Publish**
 
 By executing a publish action, an attendee communicates its intention to publish
 a specific message on a channel.
 
-<details>
-<summary>
-💡 See an example
-</summary>
+The format and content of the `message` parameter is further detailed as part of
+the [Mid-level (message) communication](#mid-level-message-communication) section.
+
+RPC 
 
 ```json5
 // ../protocol/examples/query/publish/publish.json
@@ -370,7 +404,23 @@ a specific message on a channel.
 
 ```
 
-</details>
+Response (in case of success)
+
+```json5
+// ../protocol/examples/answer/general_empty.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 999,
+    "result": 0
+}
+
+```
+
+<details>
+<summary>
+💡 See the full specification
+</summary>
 
 ```json5
 // ../protocol/query/method/publish.json
@@ -420,9 +470,399 @@ a specific message on a channel.
 
 ```
 
-#### Mid-level (publish message) communication
+</details>
 
-🧭 **RPC Message** > **Query** > **Publish** > **Message**
+### Propagating a message on a channel
+
+🧭 **RPC Message** > **Query** > **Broadcast**
+
+To broadcast a message that was published on a given channel, the server sends
+out a JSON-RPC 2.0 *notification* as defined below. Do notice the absence of an id
+field and of a response, in compliance with the JSON-RPC 2.0 specification.
+
+The format and content of the `message` parameter is further detailed as part of
+the [Mid-level (message) communication](#mid-level-message-communication) section.
+
+Notification 
+
+```json5
+// ../protocol/examples/query/broadcast/broadcast.json
+
+{
+    "jsonrpc": "2.0",
+    "method": "broadcast",
+    "params": {
+        "channel": "/root/XXX",
+        "message": {
+            "data": "XXX",
+            "sender": "XXX",
+            "signature": "XXX",
+            "message_id": "XXX",
+            "witness_signatures": []
+        }
+    }
+}
+
+```
+
+<details>
+<summary>
+💡 See the full specification
+</summary>
+  
+```json5
+// ../protocol/query/method/broadcast.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/broadcast.json",
+    "description": "Match propagation/broadcast of a message on a channel query",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "method": {
+            "description": "[String] operation to be performed by the query",
+            "const": "broadcast"
+        },
+
+        "params": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "channel": {
+                    "description": "[String] name of the channel",
+                    "type": "string",
+                    "pattern": "^/root(/[^/]+)+$"
+                },
+
+                "message": {
+                    "description": "[Message] message to be published",
+                    "$ref": "message/message.json"
+                }
+            },
+
+            "required": ["channel", "message"]
+        },
+
+        "jsonrpc": {
+            "$comment": "Defined by the parent, but needed here for the validation"
+        }
+    },
+
+    "required": ["method", "params", "jsonrpc"]
+}
+
+```
+
+</details>
+
+### Catching up on past messages on a channel
+
+🧭 **RPC Message** > **Query** > **Catchup**
+
+By executing a catchup action, a client can ask the server to receive *all*
+past messages on a specific channel.
+This could be optimized to include some form of pagination, but the system
+hasn't yet been scaled to the extent of needing such features.
+
+
+RPC 
+
+```json5
+// ../protocol/examples/query/catchup/catchup.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 999,
+    "method": "catchup",
+    "params": {
+        "channel": "/root/XXX"
+    }
+}
+
+```
+
+Response (in case of success)
+
+
+```json5
+// ../protocol/examples/answer/general_message.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 999,
+    "result": [
+        {
+            "data": "XXX",
+            "sender": "XXX",
+            "signature": "XXX",
+            "message_id": "XXX",
+            "witness_signatures": []
+        },
+        {
+            "data": "XXX",
+            "sender": "XXX",
+            "signature": "XXX",
+            "message_id": "XXX",
+            "witness_signatures": []
+        }
+    ]
+}
+
+```
+  
+<details>
+<summary>
+💡 See the full specification
+</summary>
+  
+```json5
+// ../protocol/query/method/catchup.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/catchup.json",
+    "description": "Match catchup on past message on a channel query",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "method": {
+            "description": "[String] operation to be performed by the query",
+            "const": "catchup"
+        },
+
+        "params": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "channel": {
+                    "description": "[String] name of the channel",
+                    "type": "string",
+                    "pattern": "^/root(/[^/]+)+$"
+                }
+            },
+
+            "required": ["channel"]
+        },
+
+        "jsonrpc": {
+            "$comment": "Defined by the parent, but needed here for the validation"
+        },
+
+        "id": {
+            "type": "integer"
+        }
+    },
+
+    "required": ["method", "params", "id", "jsonrpc"]
+}
+
+```
+
+</details>
+  
+## Answer
+
+🧭 **RPC Message** > **Answer**
+
+The JSON-RPC 2.0 answer is best documented in the JSON-RPC specification.
+In the Proof-of-Personhood system, there are however only three types of
+valid messages: 
+
+* `0`-valued answers (i.e., no error, no return value)
+* catchup answers, which contain a list of messages
+* error-valued answers, further detailed in the next section.
+  
+<details>
+<summary>
+💡 See an example of `0`-valued answer
+</summary>
+
+```json5
+// ../protocol/examples/answer/general_empty.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 999,
+    "result": 0
+}
+
+```
+
+</details>
+
+<details>
+<summary>
+💡 See an example of catchup answer
+</summary>
+
+```json5
+// ../protocol/examples/answer/general_message.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 999,
+    "result": [
+        {
+            "data": "XXX",
+            "sender": "XXX",
+            "signature": "XXX",
+            "message_id": "XXX",
+            "witness_signatures": []
+        },
+        {
+            "data": "XXX",
+            "sender": "XXX",
+            "signature": "XXX",
+            "message_id": "XXX",
+            "witness_signatures": []
+        }
+    ]
+}
+
+```
+
+</details>
+
+<details>
+<summary>
+See the full specification
+</summary>
+  
+```json5
+// ../protocol/answer/answer.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/answer/answer.json",
+    "title": "Match a custom JsonRpc 2.0 message answer",
+    "description": "Match a positive or negative server answer",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "result": {
+            "description": "In case of positive answer, result of the client query",
+            "oneOf": [
+                {
+                    "type": "integer",
+                    "const": 0,
+                    "$comment": "Default return value indicating a success"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "$ref": "../query/method/message/message.json"
+                    },
+                    "minItems": 0,
+                    "$comment": "Return value for a `catchup` request"
+                }
+            ],
+            "$comment": "Note: this field is absent if there is an error"
+        },
+
+        "error": {
+            "description": "In case of negative answer, error generated by the client query",
+            "$ref": "error.json"
+        },
+
+        "id": {
+            "oneOf": [
+                {
+                    "type": "integer",
+                    "$comment": "The id matching the request id."
+                },
+                {
+                    "type": "null",
+                    "$comment": "If there was an error in detecting the request id, it must be null."
+                }
+            ],
+            "$comment": "The id matches the request id. If there was an error in detecting the id, it must be null"
+        },
+
+        "jsonrpc": {
+            "$comment": "Defined by the parent, but needed here for the validation"
+        }
+    },
+
+    "oneOf": [
+        {
+            "required": ["result", "id", "jsonrpc"]
+        },
+        {
+            "required": ["error", "id", "jsonrpc"]
+        }
+    ],
+    "$comment": "Can contain either a `result` or an `error`. The result can be either a list of messages or `0`."
+}
+
+```
+  
+</details>
+
+### RPC answer error
+
+🧭 **RPC Message** > **Answer** > **Error**
+
+If an error occurred, the `result` field must be absent and the `error` field must adhere to the following format:
+
+
+```json5
+// ../protocol/examples/answer/error.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 999,
+    "error": {
+        "code": -1,
+        "description": "This is an error"
+    }
+}
+
+```
+
+Please take notice of the error codes that have been defined as part of the specification:
+
+```json5
+// ../protocol/answer/error.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/answer/error.json",
+    "title": "If an error occurred, the returned error object must adhere to the following format",
+    "description": "In case of negative answer, error generated by the client query",
+    "type": "object",
+    "properties": {
+        "code": {
+            "description": "[Int] error code",
+            "type": "integer",
+            "minimum": -5,
+            "maximum": -1,
+            "$comment": "Note: should be in { -5, -4, ..., -1 }",
+            "note": [
+                "0  operation was successful (should never be used)",
+                "-1 invalid action",
+                "-2 invalid resource (e.g. channel does not exist, channel was not subscribed to, etc.)",
+                "-3 resource already exists (e.g. lao already exists, channel already exists, etc.)",
+                "-4 request data is invalid (e.g. message is invalid), use the data field object to provide extra information",
+                "-5 access denied (e.g. subscribing to a “restricted” channel)",
+                "-6 internal server error (e.g. the server crashed while processing, its database is unavailable, its memory is exhausted, etc.)"
+            ]
+        },
+        "description": {
+            "description": "[String] error description",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": ["code", "description"],
+    "$comment": "Note: this error object is absent if the answer is positive"
+}
+```
+
+
+# Mid-level (message) communication
+
+🧭 **RPC Message** > **Query** > **Publish** or **Broadcast** > **Message**
 
 Building upon the low-level communication protocol, any communication is
 expressed as a message object being sent or received on a channel (cf.
@@ -546,340 +986,4 @@ it and process it at the application level.
 
 Messages serialized and stored in the `data` fields are called "Message data".
 See the [messageData.md](messageData.md) file for the documentation about those
-messages..
-
-
-### Propagating a message on a channel
-
-🧭 **RPC Message** > **Query** > **Broadcast**
-
-To broadcast a message that was published on a given channel, the server sends
-out a JSON-RPC 2.0 notification as defined below. Do notice the absence of an id
-field and of a response, in compliance with the JSON-RPC 2.0 specification.
-
-<details>
-<summary>
-💡 See an example
-</summary>
-
-```json5
-// ../protocol/examples/query/broadcast/broadcast.json
-
-{
-    "jsonrpc": "2.0",
-    "method": "broadcast",
-    "params": {
-        "channel": "/root/XXX",
-        "message": {
-            "data": "XXX",
-            "sender": "XXX",
-            "signature": "XXX",
-            "message_id": "XXX",
-            "witness_signatures": []
-        }
-    }
-}
-
-```
-
-</details>
-
-```json5
-// ../protocol/query/method/broadcast.json
-
-{
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/broadcast.json",
-    "description": "Match propagation/broadcast of a message on a channel query",
-    "type": "object",
-    "additionalProperties": false,
-    "properties": {
-        "method": {
-            "description": "[String] operation to be performed by the query",
-            "const": "broadcast"
-        },
-
-        "params": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "channel": {
-                    "description": "[String] name of the channel",
-                    "type": "string",
-                    "pattern": "^/root(/[^/]+)+$"
-                },
-
-                "message": {
-                    "description": "[Message] message to be published",
-                    "$ref": "message/message.json"
-                }
-            },
-
-            "required": ["channel", "message"]
-        },
-
-        "jsonrpc": {
-            "$comment": "Defined by the parent, but needed here for the validation"
-        }
-    },
-
-    "required": ["method", "params", "jsonrpc"]
-}
-
-```
-
-### Catching up on past messages on a channel
-
-🧭 **RPC Message** > **Query** > **Catchup**
-
-By executing a catchup action, a client can ask the server to receive all past
-messages on a specific channel.
-
-<details>
-<summary>
-💡 See an example
-</summary>
-
-```json5
-// ../protocol/examples/query/catchup/catchup.json
-
-{
-    "jsonrpc": "2.0",
-    "id": 999,
-    "method": "catchup",
-    "params": {
-        "channel": "/root/XXX"
-    }
-}
-
-```
-
-</details>
-
-```json5
-// ../protocol/query/method/catchup.json
-
-{
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/catchup.json",
-    "description": "Match catchup on past message on a channel query",
-    "type": "object",
-    "additionalProperties": false,
-    "properties": {
-        "method": {
-            "description": "[String] operation to be performed by the query",
-            "const": "catchup"
-        },
-
-        "params": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "channel": {
-                    "description": "[String] name of the channel",
-                    "type": "string",
-                    "pattern": "^/root(/[^/]+)+$"
-                }
-            },
-
-            "required": ["channel"]
-        },
-
-        "jsonrpc": {
-            "$comment": "Defined by the parent, but needed here for the validation"
-        },
-
-        "id": {
-            "type": "integer"
-        }
-    },
-
-    "required": ["method", "params", "id", "jsonrpc"]
-}
-
-```
-
-## Answer
-
-🧭 **RPC Message** > **Answer**
-
-<details>
-<summary>
-💡 See an example (no error, empty return)
-</summary>
-
-```json5
-// ../protocol/examples/answer/general_empty.json
-
-{
-    "jsonrpc": "2.0",
-    "id": 999,
-    "result": 0
-}
-
-```
-
-</details>
-
-<details>
-<summary>
-💡 See an example (no error, message in return)
-</summary>
-
-```json5
-// ../protocol/examples/answer/general_message.json
-
-{
-    "jsonrpc": "2.0",
-    "id": 999,
-    "result": [
-        {
-            "data": "XXX",
-            "sender": "XXX",
-            "signature": "XXX",
-            "message_id": "XXX",
-            "witness_signatures": []
-        },
-        {
-            "data": "XXX",
-            "sender": "XXX",
-            "signature": "XXX",
-            "message_id": "XXX",
-            "witness_signatures": []
-        }
-    ]
-}
-
-```
-
-</details>
-
-```json5
-// ../protocol/answer/answer.json
-
-{
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/answer/answer.json",
-    "title": "Match a custom JsonRpc 2.0 message answer",
-    "description": "Match a positive or negative server answer",
-    "type": "object",
-    "additionalProperties": false,
-    "properties": {
-        "result": {
-            "description": "In case of positive answer, result of the client query",
-            "oneOf": [
-                {
-                    "type": "integer",
-                    "const": 0,
-                    "$comment": "Default return value indicating a success"
-                },
-                {
-                    "type": "array",
-                    "items": {
-                        "$ref": "../query/method/message/message.json"
-                    },
-                    "minItems": 0,
-                    "$comment": "Return value for a `catchup` request"
-                }
-            ],
-            "$comment": "Note: this field is absent if there is an error"
-        },
-
-        "error": {
-            "description": "In case of negative answer, error generated by the client query",
-            "$ref": "error.json"
-        },
-
-        "id": {
-            "oneOf": [
-                {
-                    "type": "integer",
-                    "$comment": "The id matching the request id."
-                },
-                {
-                    "type": "null",
-                    "$comment": "If there was an error in detecting the request id, it must be null."
-                }
-            ],
-            "$comment": "The id matches the request id. If there was an error in detecting the id, it must be null"
-        },
-
-        "jsonrpc": {
-            "$comment": "Defined by the parent, but needed here for the validation"
-        }
-    },
-
-    "oneOf": [
-        {
-            "required": ["result", "id", "jsonrpc"]
-        },
-        {
-            "required": ["error", "id", "jsonrpc"]
-        }
-    ],
-    "$comment": "Can contain either a `result` or an `error`. The result can be either a list of messages or `0`."
-}
-
-```
-
-### RPC answer error
-
-🧭 **RPC Message** > **Answer** > **Error**
-
-<details>
-<summary>
-💡 See an example
-</summary>
-
-```json5
-// ../protocol/examples/answer/error.json
-
-{
-    "jsonrpc": "2.0",
-    "id": 999,
-    "error": {
-        "code": -1,
-        "description": "This is an error"
-    }
-}
-
-```
-
-</details>
-
-```json5
-// ../protocol/answer/error.json
-
-{
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/answer/error.json",
-    "title": "If an error occurred, the returned error object must adhere to the following format",
-    "description": "In case of negative answer, error generated by the client query",
-    "type": "object",
-    "properties": {
-        "code": {
-            "description": "[Int] error code",
-            "type": "integer",
-            "minimum": -5,
-            "maximum": -1,
-            "$comment": "Note: should be in { -5, -4, ..., -1 }",
-            "note": [
-                "0  operation was successful (should never be used)",
-                "-1 invalid action",
-                "-2 invalid resource (e.g. channel does not exist, channel was not subscribed to, etc.)",
-                "-3 resource already exists (e.g. lao already exists, channel already exists, etc.)",
-                "-4 request data is invalid (e.g. message is invalid), use the data field object to provide extra information",
-                "-5 access denied (e.g. subscribing to a “restricted” channel)",
-                "-6 internal server error (e.g. the server crashed while processing, its database is unavailable, its memory is exhausted, etc.)"
-            ]
-        },
-        "description": {
-            "description": "[String] error description",
-            "type": "string"
-        }
-    },
-    "additionalProperties": false,
-    "required": ["code", "description"],
-    "$comment": "Note: this error object is absent if the answer is positive"
-}
-
+messages.
