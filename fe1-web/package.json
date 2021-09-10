@@ -9,7 +9,8 @@
     "startServer": "node __tests__/utils/LocalMockServer.js",
     "startMonitorServer": "nodemon __tests__/utils/LocalMockServer.js",
     "test": "jest",
-    "eslint": "node_modules/.bin/eslint ."
+    "eslint": "node_modules/.bin/eslint .",
+    "docs": "typedoc"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.15.7",
@@ -58,6 +59,7 @@
     "redux-thunk": "^2.3.0",
     "tweetnacl": "^1.0.3",
     "tweetnacl-util": "^0.15.1",
+    "typedoc": "^0.21.5",
     "websocket": "^1.0.32"
   },
   "devDependencies": {

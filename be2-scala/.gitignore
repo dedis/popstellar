@@ -1,0 +1,19 @@
+# scala
+target
+*.class
+
+# sbt
+
+
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea
+out
+
+# Database
+database
+
+# Test
+database_test

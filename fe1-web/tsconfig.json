@@ -44,5 +44,9 @@
     "metro.config.js",
     "jest.config.js"
   ],
+  "typedocOptions": {
+    "entryPoints": ["App.tsx"],
+    "out": "tsdocs"
+  },
   "extends": "expo/tsconfig.base"
 }
