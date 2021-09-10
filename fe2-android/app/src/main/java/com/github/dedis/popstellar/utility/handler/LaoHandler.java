@@ -19,15 +19,15 @@ import java.util.List;
  */
 public class LaoHandler {
 
-  private static final String TAG = LaoHandler.class.getSimpleName();
+  public static final String TAG = LaoHandler.class.getSimpleName();
 
-  private static final String LAO_NAME = " Lao Name : ";
-  private static final String OLD_NAME = " Old Name : ";
-  private static final String NEW_NAME = " New Name : ";
-  private static final String MESSAGE_ID = "Message ID : ";
-  private static final String UPDATE_LAO = "Update Lao Name ";
-  private static final String WITNESS_ID = " New Witness ID : ";
-  private static final String UPDATE_WITNESS = "Update Lao Witnesses  ";
+  public static final String LAO_NAME = " Lao Name : ";
+  public static final String OLD_NAME = " Old Name : ";
+  public static final String NEW_NAME = " New Name : ";
+  public static final String MESSAGE_ID = "Message ID : ";
+  public static final String UPDATE_LAO = "Update Lao Name ";
+  public static final String WITNESS_ID = " New Witness ID : ";
+  public static final String UPDATE_WITNESS = "Update Lao Witnesses  ";
 
   /**
    * Process a CreateLao message.

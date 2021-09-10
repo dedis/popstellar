@@ -1,153 +1,95 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import static com.github.dedis.popstellar.utility.handler.GeneralHandler.handleMessage;
-
 import android.util.Log;
-import com.github.dedis.popstellar.model.Lao;
 import com.github.dedis.popstellar.model.data.LAORepository;
 import com.github.dedis.popstellar.model.data.LAOState;
-import com.github.dedis.popstellar.model.network.GenericMessage;
-import com.github.dedis.popstellar.model.network.answer.Error;
-import com.github.dedis.popstellar.model.network.answer.Result;
-import com.github.dedis.popstellar.model.network.method.Broadcast;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
-import io.reactivex.subjects.Subject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.github.dedis.popstellar.model.network.method.message.data.Data;
+import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
+import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
+import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
+import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
+import com.github.dedis.popstellar.model.network.method.message.data.message.WitnessMessageSignature;
+import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
+import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
+import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
 
 /**
- * Subscribe, catchup, create LAO and broadcast handler class
+ * General message handler class
  */
 public class MessageHandler {
 
-  private final static String TAG = MessageHandler.class.getSimpleName();
+  private static final String TAG = MessageHandler.class.getSimpleName();
 
   /**
-   * Delete the pending requests with the id of the error
+   * Send messages to the corresponding handler.
    *
-   * @param genericMessage    the message received
-   * @param subscribeRequests the pending subscribe requests
-   * @param catchupRequests   the pending catchup requests
-   * @param createLaoRequests the pending create lao requests
+   * @param laoRepository the repository to access the messages and LAOs
+   * @param channel       the channel on which the message was received
+   * @param message       the message that was received
+   * @return true if the message cannot be processed and false otherwise
    */
-  public static void handleError(
-      GenericMessage genericMessage,
-      Map<Integer, String> subscribeRequests,
-      Map<Integer, String> catchupRequests,
-      Map<Integer, String> createLaoRequests) {
-    Error err = (Error) genericMessage;
-    int id = err.getId();
-    Log.d(TAG, "got an error answer with id " + id);
-    if (subscribeRequests.containsKey(id)) {
-      subscribeRequests.remove(id);
-    } else if (catchupRequests.containsKey(id)) {
-      catchupRequests.remove(id);
-    } else if (createLaoRequests.containsKey(id)) {
-      createLaoRequests.remove(id);
+  public static boolean handleMessage(LAORepository laoRepository, String channel,
+      MessageGeneral message) {
+    Log.d(TAG, "handle incoming message");
+
+    // Put the message in the state
+    laoRepository.getMessageById().put(message.getMessageId(), message);
+
+    String senderPk = message.getSender();
+
+    Data data = message.getData();
+    Log.d(TAG, "data with class: " + data.getClass());
+    boolean enqueue = false;
+    if (data instanceof CreateLao) {
+      enqueue = LaoHandler.handleCreateLao(laoRepository, channel, (CreateLao) data);
+    } else if (data instanceof UpdateLao) {
+      enqueue = LaoHandler
+          .handleUpdateLao(laoRepository, channel, message.getMessageId(), (UpdateLao) data);
+    } else if (data instanceof StateLao) {
+      enqueue = LaoHandler.handleStateLao(laoRepository, channel, (StateLao) data);
+    } else if (data instanceof CreateRollCall) {
+      enqueue = RollCallHandler
+          .handleCreateRollCall(laoRepository, channel, (CreateRollCall) data,
+              message.getMessageId());
+    } else if (data instanceof OpenRollCall) {
+      enqueue = RollCallHandler
+          .handleOpenRollCall(laoRepository, channel, (OpenRollCall) data, message.getMessageId());
+    } else if (data instanceof CloseRollCall) {
+      enqueue = RollCallHandler
+          .handleCloseRollCall(laoRepository, channel, (CloseRollCall) data,
+              message.getMessageId());
+    } else if (data instanceof ElectionSetup) {
+      enqueue = ElectionHandler
+          .handleElectionSetup(laoRepository, channel, (ElectionSetup) data,
+              message.getMessageId());
+    } else if (data instanceof ElectionResult) {
+      enqueue = ElectionHandler.handleElectionResult(laoRepository, channel, (ElectionResult) data);
+    } else if (data instanceof ElectionEnd) {
+      enqueue = ElectionHandler.handleElectionEnd(laoRepository, channel);
+    } else if (data instanceof CastVote) {
+      enqueue = ElectionHandler
+          .handleCastVote(laoRepository, channel, (CastVote) data, senderPk,
+              message.getMessageId());
+    } else if (data instanceof WitnessMessageSignature) {
+      enqueue = WitnessMessageHandler
+          .handleWitnessMessage(laoRepository, channel, senderPk, (WitnessMessageSignature) data);
+    } else {
+      Log.d(TAG, "cannot handle message with data" + data.getClass());
+      enqueue = true;
     }
-  }
 
-  /**
-   * Handle a subscribe request. When subscribing to a LAO create the LAO and send a catchup
-   *
-   * @param laoRepository     the repository to access the LAOs
-   * @param id                the id of the subscribe request
-   * @param subscribeRequests the pending subscribe requests
-   */
-  public static void handleSubscribe(
-      LAORepository laoRepository, int id,
-      Map<Integer, String> subscribeRequests) {
-    String channel = subscribeRequests.get(id);
-    subscribeRequests.remove(id);
-
-    if (laoRepository.isLaoChannel(channel)) {
-      Log.d(TAG, "subscribing to LAO with id " + channel);
-
-      // Create the new LAO and add it to the LAORepository LAO lists
-      Lao lao = new Lao(channel);
-      laoRepository.getLaoById().put(channel, new LAOState(lao));
-      laoRepository.setAllLaoSubject();
-
-      // Send catchup after subscribing to a LAO
-      laoRepository.sendCatchup(channel);
-    }
-  }
-
-  /**
-   * Handle a catchup request by handling all received messages
-   *
-   * @param laoRepository   the repository to access the LAOs
-   * @param id              the id of the catchup request
-   * @param genericMessage  the generic message received
-   * @param catchupRequests the pending catchup requests
-   * @param unprocessed     the unprocessed messages
-   */
-  public static void handleCatchup(
-      LAORepository laoRepository, int id,
-      GenericMessage genericMessage,
-      Map<Integer, String> catchupRequests,
-      Subject<GenericMessage> unprocessed) {
-    Log.d(TAG, "got a catchup request in response to request id " + id);
-    String channel = catchupRequests.get(id);
-    catchupRequests.remove(id);
-
-    List<MessageGeneral> messages = ((Result) genericMessage).getMessages()
-        .orElse(new ArrayList<>());
-    Log.d(TAG, "messages length: " + messages.size());
-    // Handle all received messages from the catchup
-    for (MessageGeneral msg : messages) {
-      boolean enqueue = handleMessage(laoRepository, channel, msg);
-      if (enqueue) {
-        unprocessed.onNext(genericMessage);
+    // Trigger an onNext
+    if (!(data instanceof WitnessMessageSignature) && laoRepository.isLaoChannel(channel)) {
+      LAOState laoState = laoRepository.getLaoById().get(channel);
+      laoState.publish();
+      if (data instanceof StateLao || data instanceof CreateLao) {
+        laoRepository.setAllLaoSubject();
       }
     }
-  }
-
-  /**
-   * Handle a create LAO request. First create the LAO then subscribe to the LAO channel and finally
-   * send a catchup request
-   *
-   * @param laoRepository     the repository to access the LAOs
-   * @param id                the id of the create LAO request
-   * @param createLaoRequests the pending create LAO requests
-   */
-  public static void handleCreateLao(
-      LAORepository laoRepository, int id,
-      Map<Integer, String> createLaoRequests) {
-    Log.d(TAG, "createLaoRequest contains this id");
-    String channel = createLaoRequests.get(id);
-    createLaoRequests.remove(id);
-
-    // Create new LAO and add it to the LAORepository LAO lists
-    Lao lao = new Lao(channel);
-    laoRepository.getLaoById().put(channel, new LAOState(lao));
-    laoRepository.setAllLaoSubject();
-
-    // Send subscribe and catchup after creating a LAO
-    laoRepository.sendSubscribe(channel);
-    laoRepository.sendCatchup(channel);
-  }
-
-  /**
-   * Send the broadcast messages to the message handler
-   *
-   * @param genericMessage the generic message received
-   * @param unprocessed    the unprocessed messages
-   */
-  public static void handleBroadcast(
-      LAORepository laoRepository,
-      GenericMessage genericMessage,
-      Subject<GenericMessage> unprocessed) {
-    Broadcast broadcast = (Broadcast) genericMessage;
-    MessageGeneral message = broadcast.getMessage();
-    String channel = broadcast.getChannel();
-
-    Log.d(TAG, "broadcast channel: " + channel + " message " + message.getMessageId());
-
-    boolean enqueue = handleMessage(laoRepository, channel, message);
-    if (enqueue) {
-      unprocessed.onNext(genericMessage);
-    }
+    return enqueue;
   }
 }

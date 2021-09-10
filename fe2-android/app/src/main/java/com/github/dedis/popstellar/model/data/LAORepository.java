@@ -1,10 +1,10 @@
 package com.github.dedis.popstellar.model.data;
 
-import static com.github.dedis.popstellar.utility.handler.MessageHandler.handleBroadcast;
-import static com.github.dedis.popstellar.utility.handler.MessageHandler.handleCatchup;
-import static com.github.dedis.popstellar.utility.handler.MessageHandler.handleCreateLao;
-import static com.github.dedis.popstellar.utility.handler.MessageHandler.handleError;
-import static com.github.dedis.popstellar.utility.handler.MessageHandler.handleSubscribe;
+import static com.github.dedis.popstellar.utility.handler.GenericHandler.handleBroadcast;
+import static com.github.dedis.popstellar.utility.handler.GenericHandler.handleCatchup;
+import static com.github.dedis.popstellar.utility.handler.GenericHandler.handleCreateLao;
+import static com.github.dedis.popstellar.utility.handler.GenericHandler.handleError;
+import static com.github.dedis.popstellar.utility.handler.GenericHandler.handleSubscribe;
 
 import android.util.Log;
 import androidx.annotation.NonNull;

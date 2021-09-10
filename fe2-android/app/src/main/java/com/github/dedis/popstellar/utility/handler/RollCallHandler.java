@@ -16,16 +16,16 @@ import java.util.Optional;
  */
 public class RollCallHandler {
 
-  private static final String TAG = RollCallHandler.class.getSimpleName();
+  public static final String TAG = RollCallHandler.class.getSimpleName();
 
-  private static final String MESSAGE_ID = "Message ID : ";
-  private static final String ROLL_CALL_ID = "Roll Call ID : ";
-  private static final String ROLL_CALL_NAME = "Roll Call Name : ";
-  private static final String ROLL_CALL_LOCATION = "Location : ";
-  private static final String ROLL_CALL_UPDATED_ID = "Updated ID : ";
-  private static final String ROLL_CALL_CREATION = "New Roll Call was created ";
-  private static final String ROLL_CALL_OPENING = "A Roll Call was opened ";
-  private static final String ROLL_CALL_DELETION = "A Roll Call was closed ";
+  public static final String MESSAGE_ID = "Message ID : ";
+  public static final String ROLL_CALL_ID = "Roll Call ID : ";
+  public static final String ROLL_CALL_NAME = "Roll Call Name : ";
+  public static final String ROLL_CALL_LOCATION = "Location : ";
+  public static final String ROLL_CALL_UPDATED_ID = "Updated ID : ";
+  public static final String ROLL_CALL_CREATION = "New Roll Call was created ";
+  public static final String ROLL_CALL_OPENING = "A Roll Call was opened ";
+  public static final String ROLL_CALL_DELETION = "A Roll Call was closed ";
 
   /**
    * Process a CreateRollCall message.
