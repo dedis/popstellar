@@ -24,8 +24,8 @@ public class LaoTest {
   private static final String rollCallId1 = "rollCallId1";
   private static final String rollCallId2 = "rollCallId2";
   private static final String rollCallId3 = "rollCallId3";
-  private static final String electionId1 = "electionId3";
-  private static final String electionId2 = "electionId3";
+  private static final String electionId1 = "electionId1";
+  private static final String electionId2 = "electionId2";
   private static final String electionId3 = "electionId3";
   private static final Set<String> WITNESSES = new HashSet<>(Arrays.asList("0x3434", "0x4747"));
   private static final Set<String> WITNESSES_WITH_NULL = new HashSet<>(

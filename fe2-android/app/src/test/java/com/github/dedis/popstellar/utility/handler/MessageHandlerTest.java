@@ -110,9 +110,7 @@ public class MessageHandlerTest extends TestCase {
 
     // Create one Roll Call and add it to the LAO
     rollCall = new RollCall(lao.getId(), Instant.now().getEpochSecond(), "roll call 1");
-    HashMap<String, RollCall> rollCalls = new HashMap<>();
-    rollCalls.put(rollCall.getId(), rollCall);
-    lao.setRollCalls(rollCalls);
+    lao.setRollCalls(new HashMap<String, RollCall>() {{ put(rollCall.getId(), rollCall); }});
 
     // Create one Election and add it to the LAO
     election = new Election(lao.getId(), Instant.now().getEpochSecond(), "election 1");
@@ -122,9 +120,7 @@ public class MessageHandlerTest extends TestCase {
     electionQuestion = new ElectionQuestion("question", "voting method", false,
         Collections.singletonList("a"), election.getId());
     election.setElectionQuestions(Collections.singletonList(electionQuestion));
-    HashMap<String, Election> elections = new HashMap<>();
-    elections.put(election.getId(), election);
-    lao.setElections(elections);
+    lao.setElections(new HashMap<String, Election>() {{ put(election.getId(), election); }});
 
     // Add the LAO to the LAORepository
     laoRepository.getLaoById().put(LAO_CHANNEL, new LAOState(lao));
