@@ -8,7 +8,8 @@
 package hub
 
 import (
-	"student20_pop/message"
+	"student20_pop/message2/query/method"
+	messageX "student20_pop/message2/query/method/message"
 	"student20_pop/network/socket"
 )
 
@@ -49,14 +50,14 @@ type Hub interface {
 // Channel represents a PoP channel - like a LAO.
 type Channel interface {
 	// Subscribe is used to handle a subscribe message.
-	Subscribe(socket socket.Socket, msg message.Subscribe) error
+	Subscribe(socket socket.Socket, msg method.Subscribe) error
 
 	// Unsubscribe is used to handle an unsubscribe message.
-	Unsubscribe(socketID string, msg message.Unsubscribe) error
+	Unsubscribe(socketID string, msg method.Unsubscribe) error
 
 	// Publish is used to handle a publish message.
-	Publish(msg message.Publish) error
+	Publish(msg method.Publish) error
 
 	// Catchup is used to handle a catchup message.
-	Catchup(msg message.Catchup) []message.Message
+	Catchup(msg method.Catchup) []messageX.Message
 }

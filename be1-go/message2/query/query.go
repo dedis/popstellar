@@ -9,7 +9,7 @@ import (
 
 // Query ...
 type Query struct {
-	Method string
+	Method string `json:"method"`
 
 	method.Subscribe
 	method.Broadcast

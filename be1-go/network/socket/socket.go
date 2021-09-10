@@ -7,6 +7,8 @@ import (
 	"sync"
 	"time"
 
+	messageX "student20_pop/message2/query/method/message"
+
 	"github.com/gorilla/websocket"
 	"github.com/rs/xid"
 	"golang.org/x/xerrors"
@@ -176,13 +178,33 @@ func (s *baseSocket) SendError(id *int, err error) {
 }
 
 // SendResult is a utility method that allows sending a `message.Result` to the socket.
-func (s *baseSocket) SendResult(id int, res message.Result) {
-	answer := message.Answer{
-		ID:     &id,
-		Result: &res,
+func (s *baseSocket) SendResult(id int, res []messageX.Message) {
+	var answer interface{}
+
+	if res == nil {
+		answer = struct {
+			JSONRPC string `json:"jsonrpc"`
+			ID      int    `json:"id"`
+			Result  int    `json:"result"`
+		}{
+			"2.0", id, 0,
+		}
+	} else {
+		for _, r := range res {
+			if r.WitnessSignatures == nil {
+				r.WitnessSignatures = []messageX.WitnessSignature{}
+			}
+		}
+		answer = struct {
+			JSONRPC string             `json:"jsonrpc"`
+			ID      int                `json:"id"`
+			Result  []messageX.Message `json:"result"`
+		}{
+			"2.0", id, res,
+		}
 	}
 
-	answerBuf, err := json.Marshal(answer)
+	answerBuf, err := json.Marshal(&answer)
 	if err != nil {
 		log.Printf("failed to marshal answer: %v", err)
 	}

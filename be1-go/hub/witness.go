@@ -3,7 +3,7 @@ package hub
 import (
 	"context"
 	"log"
-	"student20_pop/message"
+	"student20_pop/message2/query/method"
 	"student20_pop/network/socket"
 
 	"go.dedis.ch/kyber/v3"
@@ -74,7 +74,7 @@ func (w *witnessHub) Start() {
 				w.RLock()
 				for _, channel := range w.channelByID {
 					// dummy Unsubscribe message because it's only used for logging...
-					channel.Unsubscribe(id, message.Unsubscribe{})
+					channel.Unsubscribe(id, method.Unsubscribe{})
 				}
 				w.RUnlock()
 			case <-w.stop:

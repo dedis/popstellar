@@ -67,7 +67,7 @@ func (s *SchemaValidator) VerifyJson(msg []byte, st SchemaType) error {
 
 	err := schema.Validate(reader)
 	if err != nil {
-		log.Printf("failed to validate schema: %v", err)
+		log.Printf("failed to validate schema: %s %v", msg, err)
 		return message.NewErrorf(-4, "failed to validate schema: %v", err)
 	}
 

@@ -5,29 +5,28 @@ import (
 	"log"
 	"os"
 	"student20_pop/message"
+	"student20_pop/message2/messagedata"
+	messageX "student20_pop/message2/query/method/message"
 
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/xerrors"
 )
 
 // processCreateRollCall processes a roll call creation object.
-func (c *laoChannel) processCreateRollCall(data message.Data) error {
-
-	rollCallData := data.(*message.CreateRollCallData)
-
+func (c *laoChannel) processCreateRollCall(msg messagedata.RollCallCreate) error {
 	// Check that the ProposedEnd is greater than the ProposedStart
-	if rollCallData.ProposedStart > rollCallData.ProposedEnd {
-		return message.NewErrorf(-4, "The field `proposed_start` is greater than the field `proposed_end`: %d > %d", rollCallData.ProposedStart, rollCallData.ProposedEnd)
+	if msg.ProposedStart > msg.ProposedEnd {
+		return message.NewErrorf(-4, "The field `proposed_start` is greater than the field `proposed_end`: %d > %d", msg.ProposedStart, msg.ProposedEnd)
 	}
 
-	c.rollCall.id = string(rollCallData.ID)
+	c.rollCall.id = string(msg.ID)
 	c.rollCall.state = Created
 	return nil
 }
 
 // processOpenRollCall processes an open roll call object.
-func (c *laoChannel) processOpenRollCall(data message.Data, action message.RollCallAction) error {
-	if action == message.RollCallAction(message.OpenRollCallAction) {
+func (c *laoChannel) processOpenRollCall(msg messageX.Message, action string) error {
+	if action == "open" {
 		// If the action is an OpenRollCallAction,
 		// the previous roll call action should be a CreateRollCallAction
 		if c.rollCall.state != Created {
@@ -41,29 +40,35 @@ func (c *laoChannel) processOpenRollCall(data message.Data, action message.RollC
 		}
 	}
 
-	rollCallData := data.(*message.OpenRollCallData)
+	// Why not messagedata.RollCallReopen ? Maybe we should assume that Reopen
+	// message is useless.
+	var rollCallOpen messagedata.RollCallOpen
 
-	if !c.rollCall.checkPrevID(rollCallData.Opens) {
+	err := msg.UnmarshalData(&rollCallOpen)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal roll call open: %v", err)
+	}
+
+	if !c.rollCall.checkPrevID([]byte(rollCallOpen.Opens)) {
 		return message.NewError(-1, "The field `opens` does not correspond to the id of the previous roll call message")
 	}
 
-	c.rollCall.id = string(rollCallData.UpdateID)
+	c.rollCall.id = string(rollCallOpen.UpdateID)
 	c.rollCall.state = Open
 	return nil
 }
 
 // processCloseRollCall processes a close roll call message.
-func (c *laoChannel) processCloseRollCall(data message.Data) error {
+func (c *laoChannel) processCloseRollCall(msg messagedata.RollCallClose) error {
 	if c.rollCall.state != Open {
 		return message.NewError(-1, "The roll call cannot be closed since it's not open")
 	}
 
-	rollCallData := data.(*message.CloseRollCallData)
-	if !c.rollCall.checkPrevID(rollCallData.Closes) {
+	if !c.rollCall.checkPrevID([]byte(msg.Closes)) {
 		return message.NewError(-4, "The field `closes` does not correspond to the id of the previous roll call message")
 	}
 
-	c.rollCall.id = string(rollCallData.UpdateID)
+	c.rollCall.id = msg.UpdateID
 	c.rollCall.state = Closed
 
 	var db *sql.DB
@@ -78,13 +83,13 @@ func (c *laoChannel) processCloseRollCall(data message.Data) error {
 		}
 	}
 
-	for _, attendee := range rollCallData.Attendees {
-		c.attendees.Add(attendee.String())
+	for _, attendee := range msg.Attendees {
+		c.attendees.Add(attendee)
 
 		if db != nil {
 			log.Printf("inserting attendee into db")
 
-			err := insertAttendee(db, attendee.String(), c.channelID)
+			err := insertAttendee(db, attendee, c.channelID)
 			if err != nil {
 				log.Printf("error: failed to insert attendee into db: %v", err)
 			}

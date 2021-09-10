@@ -2,7 +2,6 @@ package hub
 
 import (
 	"database/sql"
-	"encoding/base64"
 	"log"
 	"os"
 	"student20_pop/message"
@@ -12,6 +11,8 @@ import (
 	"golang.org/x/xerrors"
 
 	_ "github.com/mattn/go-sqlite3"
+
+	messageX "student20_pop/message2/query/method/message"
 )
 
 // inbox represents an in-memory data store to record incoming messages.
@@ -33,21 +34,20 @@ func createInbox(channelID string) *inbox {
 // addWitnessSignature adds a signature of witness to a message of ID `messageID`.
 // if the signature was correctly added return true
 // otherwise returns false
-func (i *inbox) addWitnessSignature(messageID []byte, public message.PublicKey, signature message.Signature) error {
+func (i *inbox) addWitnessSignature(messageID string, public string, signature string) error {
 	msg, ok := i.getMessage(messageID)
 	if !ok {
 		// TODO: We received a witness signature before the message itself.
 		// We ignore it for now but it might be worth keeping it until we
 		// actually receive the message
-		msgIDEncoded := base64.URLEncoding.EncodeToString(messageID)
-		log.Printf("failed to find message_id %s for witness message", msgIDEncoded)
-		return message.NewErrorf(-4, "failed to find message_id %q for witness message", msgIDEncoded)
+		log.Printf("failed to find message_id %s for witness message", messageID)
+		return message.NewErrorf(-4, "failed to find message_id %q for witness message", messageID)
 	}
 
 	i.mutex.Lock()
 	defer i.mutex.Unlock()
 
-	msg.WitnessSignatures = append(msg.WitnessSignatures, message.PublicKeySignaturePair{
+	msg.WitnessSignatures = append(msg.WitnessSignatures, messageX.WitnessSignature{
 		Witness:   public,
 		Signature: signature,
 	})
@@ -55,15 +55,13 @@ func (i *inbox) addWitnessSignature(messageID []byte, public message.PublicKey, 
 	if os.Getenv("HUB_DB") != "" {
 		log.Println("adding witness into db")
 
-		msgIDEncoded := base64.URLEncoding.EncodeToString(messageID)
-
 		db, err := sql.Open("sqlite3", os.Getenv("HUB_DB"))
 		if err != nil {
 			log.Printf("error: failed to open connection: %v", err)
 		} else {
 			defer db.Close()
 
-			err := addWitnessInDB(db, msgIDEncoded, public, signature)
+			err := addWitnessInDB(db, messageID, public, signature)
 			if err != nil {
 				log.Printf("error: failed to store witness into db: %v", err)
 			}
@@ -74,19 +72,18 @@ func (i *inbox) addWitnessSignature(messageID []byte, public message.PublicKey, 
 }
 
 // storeMessage stores a message inside the inbox
-func (i *inbox) storeMessage(msg message.Message) {
+func (i *inbox) storeMessage(msg messageX.Message) {
 	i.mutex.Lock()
 	defer i.mutex.Unlock()
 
-	msgIDEncoded := base64.URLEncoding.EncodeToString(msg.MessageID)
 	storedTime := message.Timestamp(time.Now().UnixNano())
 
 	messageInfo := &messageInfo{
-		message:    &msg,
+		message:    msg,
 		storedTime: storedTime,
 	}
 
-	i.msgs[msgIDEncoded] = messageInfo
+	i.msgs[msg.MessageID] = messageInfo
 
 	if os.Getenv("HUB_DB") != "" {
 		log.Println("storing message into db")
@@ -99,14 +96,12 @@ func (i *inbox) storeMessage(msg message.Message) {
 }
 
 // getMessage returns the message of messageID if it exists.
-func (i *inbox) getMessage(messageID []byte) (*message.Message, bool) {
-	msgIDEncoded := base64.URLEncoding.EncodeToString(messageID)
-
+func (i *inbox) getMessage(messageID string) (messageX.Message, bool) {
 	i.mutex.Lock()
 	defer i.mutex.Unlock()
-	msgInfo, ok := i.msgs[msgIDEncoded]
+	msgInfo, ok := i.msgs[messageID]
 	if !ok {
-		return nil, false
+		return messageX.Message{}, false
 	}
 	return msgInfo.message, true
 }
@@ -139,7 +134,7 @@ func (i *inbox) storeMessageInDB(messageInfo *messageInfo) error {
 
 	msg := messageInfo.message
 
-	_, err = stmt.Exec(msg.MessageID, msg.Sender, msg.Signature, msg.RawData, messageInfo.storedTime, i.channelID)
+	_, err = stmt.Exec(msg.MessageID, msg.Sender, msg.Signature, msg.Data, messageInfo.storedTime, i.channelID)
 	if err != nil {
 		return xerrors.Errorf("failed to exec query: %v", err)
 	}
@@ -155,8 +150,7 @@ func (i *inbox) storeMessageInDB(messageInfo *messageInfo) error {
 	return nil
 }
 
-func addWitnessInDB(db *sql.DB, messageID string, pubKey message.PublicKey,
-	signature message.Signature) error {
+func addWitnessInDB(db *sql.DB, messageID string, pubKey string, signature string) error {
 
 	query := `
 		INSERT INTO
