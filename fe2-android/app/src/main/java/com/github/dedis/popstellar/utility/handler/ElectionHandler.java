@@ -22,13 +22,13 @@ import java.util.Optional;
  */
 public class ElectionHandler {
 
-  private static final String TAG = ElectionHandler.class.getSimpleName();
+  public static final String TAG = ElectionHandler.class.getSimpleName();
 
-  private static final String ELECTION_NAME = "Name : ";
-  private static final String MESSAGE_ID = "Message ID : ";
-  private static final String ELECTION_ID = "Election ID : ";
-  private static final String ELECTION_QUESTION = "Question : ";
-  private static final String ELECTION_SETUP = "New Election Setup ";
+  public static final String ELECTION_NAME = "Name : ";
+  public static final String MESSAGE_ID = "Message ID : ";
+  public static final String ELECTION_ID = "Election ID : ";
+  public static final String ELECTION_QUESTION = "Question : ";
+  public static final String ELECTION_SETUP = "New Election Setup ";
 
   /**
    * Process a ElectionSetup message.
@@ -45,10 +45,7 @@ public class ElectionHandler {
       Lao lao = laoRepository.getLaoByChannel(channel);
       Log.d(TAG, "handleElectionSetup: channel " + channel + " name " + electionSetup.getName());
 
-      Election election = new Election();
-      election.setId(electionSetup.getId());
-      election.setName(electionSetup.getName());
-      election.setCreation(electionSetup.getCreation());
+      Election election = new Election(lao.getId(), electionSetup.getCreation(), electionSetup.getName());
       election.setChannel(channel + "/" + election.getId());
       election.setElectionQuestions(electionSetup.getQuestions());
 

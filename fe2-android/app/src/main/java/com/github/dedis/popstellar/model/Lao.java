@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.model;
 
+import com.github.dedis.popstellar.utility.network.IdGenerator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -45,15 +46,17 @@ public final class Lao {
     this.pendingUpdates = new HashSet<>();
   }
 
-  public Lao(String id, String name) {
-    this(id);
+  public Lao(String name, String organizer, long creation) {
+    this(IdGenerator.generateLaoId(organizer, creation, name));
     if (name == null) {
       throw new IllegalArgumentException(" The name of the Lao is null");
-    } else if (name.isEmpty()) {
-      throw new IllegalArgumentException(" The name of the Lao is empty");
-    } else {
-      this.name = name;
     }
+    if (name.isEmpty()) {
+      throw new IllegalArgumentException(" The name of the Lao is empty");
+    }
+    this.name = name;
+    this.organizer = organizer;
+    this.creation = creation;
   }
 
   public void updateRollCall(String prevId, RollCall rollCall) {

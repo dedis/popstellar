@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model;
 import com.github.dedis.popstellar.model.event.Event;
 import com.github.dedis.popstellar.model.event.EventState;
 import com.github.dedis.popstellar.model.event.EventType;
+import com.github.dedis.popstellar.utility.network.IdGenerator;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,6 +25,15 @@ public class RollCall extends Event {
     this.id = id;
     this.persistentId = id;
     this.attendees = new HashSet<>();
+  }
+
+  public RollCall(String laoId, long creation, String name) {
+    this(IdGenerator.generateCreateRollCallId(laoId, creation, name));
+    if (name == null) {
+      throw new IllegalArgumentException(" The name of the RollCall is null");
+    }
+    this.name = name;
+    this.creation = creation;
   }
 
   public String getId() {

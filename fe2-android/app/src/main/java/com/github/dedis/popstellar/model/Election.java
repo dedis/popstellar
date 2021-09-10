@@ -8,6 +8,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.ElectionQue
 import com.github.dedis.popstellar.model.network.method.message.data.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.ElectionVote;
 import com.github.dedis.popstellar.model.network.method.message.data.QuestionResult;
+import com.github.dedis.popstellar.utility.network.IdGenerator;
 import com.github.dedis.popstellar.utility.security.Hash;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +38,10 @@ public class Election extends Event {
   //Results of an election (associated to a question id)
   private Map<String, List<QuestionResult>> results;
 
-  public Election() {
+  public Election(String laoId, long creation, String name) {
+    this.id = IdGenerator.generateElectionSetupId(laoId, creation, name);
+    this.name = name;
+    this.creation = creation;
     this.results = new HashMap<>();
     this.electionQuestions = new ArrayList<>();
     this.voteMap = new HashMap<>();
