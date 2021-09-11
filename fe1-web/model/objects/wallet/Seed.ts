@@ -17,12 +17,12 @@ export function generateMnemonicSeed() {
  */
 export async function importMnemonic(mnemonic: string): Promise<void> {
   if (mnemonic === undefined) {
-    throw Error('Error while initializing the wallet seed: seed is undefined');
+    throw new Error('Error while initializing the wallet seed: seed is undefined');
   }
 
   const seedIsValid: boolean = bip39.validateMnemonic(mnemonic.toLowerCase());
   if (!seedIsValid) {
-    throw Error('Error while initializing the wallet seed: seed is invalid');
+    throw new Error('Error while initializing the wallet seed: seed is invalid');
   }
 
   const seed: Uint8Array = await bip39.mnemonicToSeed(mnemonic.toLowerCase());

@@ -22,7 +22,7 @@ export const encryptMock = jest.fn(
 
     // Verify key
     if (publicKey !== mockPublicKey) {
-      throw Error('Expected to use public key when encrypting');
+      throw new Error('Expected to use public key when encrypting');
     }
 
     // Store ciphertext and plaintext association
@@ -39,13 +39,13 @@ export const decryptMock = jest.fn(
 
     // Verify key
     if (privateKey !== mockPrivateKey) {
-      throw Error('Expected to use private key when decrypting');
+      throw new Error('Expected to use private key when decrypting');
     }
 
     // Verify plaintext was encrypted
     const mapKey = ciphertext.toString();
     if (!cipherMap.has(mapKey)) {
-      throw Error('Decrypting something that was not encrypted with this key');
+      throw new Error('Decrypting something that was not encrypted with this key');
     }
 
     const plaintext = cipherMap.get(mapKey) as ArrayBuffer;

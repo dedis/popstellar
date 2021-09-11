@@ -1,6 +1,8 @@
 import { WalletStore } from 'store';
 import * as Wallet from '../wallet';
+import * as Bip39Path from '../wallet/Bip39Path';
 import { Hash } from '../Hash';
+import { Base64UrlData } from '../Base64Url';
 
 jest.mock('platform/Storage');
 jest.mock('platform/crypto/browser');
@@ -17,15 +19,50 @@ test('Known mnemonic produces known seed', async () => {
   expect(seedHex).toBe(expected);
 });
 
+test('Known inputs should produce same path', async () => {
+
+  const laoId: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
+  const rollCallId: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
+
+  const expected = [
+    "m",
+    "888'",
+    "0'",
+    "7920043'/38174203'/71210134'/14078251'/2278823'/50163231'/203204108'/4625150'/6448'/23105'/238184'",
+    "7920043'/38174203'/71210134'/14078251'/2278823'/50163231'/203204108'/4625150'/6448'/23105'/238184'"
+  ].join('/');
+
+  expect(Bip39Path.fromLaoRollCall(laoId, rollCallId))
+    .toEqual(expected);
+});
+
+test('Known path should produce same token', async () => {
+  const expected = Base64UrlData.fromBuffer(Buffer.from(
+    '7147759d146897111bcf74f60a1948b1d3a22c9199a6b88c236eb7326adc2efc', 'hex'));
+
+  const path = [
+    "m",
+    "888'",
+    "0'",
+    "7920043'/38174203'/71210134'/14078251'/2278823'/50163231'/203204108'/4625150'/6448'/23105'/238184'",
+    "7920043'/38174203'/71210134'/14078251'/2278823'/50163231'/203204108'/4625150'/6448'/23105'/238184'"
+  ].join('/');
+
+  await Wallet.importMnemonic(mnemonic);
+
+  const token = await Wallet.generateTokenFromPath(path);
+  expect(token.publicKey.valueOf()).toEqual(expected.valueOf());
+})
+
 test('Known inputs should produce same token', async () => {
-  const expected: string = '7147759d146897111bcf74f60a1948b1d3a22c9199a6b88c236eb7326adc2efc';
+  const expected = Base64UrlData.fromBuffer(Buffer.from(
+    '7147759d146897111bcf74f60a1948b1d3a22c9199a6b88c236eb7326adc2efc', 'hex'));
 
   await Wallet.importMnemonic(mnemonic);
 
   const laoId: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
   const rollCallId: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
   const token = await Wallet.generateToken(laoId, rollCallId);
-  const tokenHex = Buffer.from(token.privateKey.valueOf()).toString('hex');
 
-  expect(tokenHex).toBe(expected);
+  expect(token.publicKey.valueOf()).toEqual(expected.valueOf());
 })

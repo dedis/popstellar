@@ -25,7 +25,7 @@ async function createKeyPair(): Promise<CryptoKeyPair> {
     ) as CryptoKeyPair;
 
   if (!keyPair) {
-    throw Error('KeyPair generation failed');
+    throw new Error('KeyPair generation failed');
   }
 
   return keyPair;

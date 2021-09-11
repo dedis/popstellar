@@ -53,7 +53,7 @@ export namespace WalletStore {
   export async function getMnemonic(): Promise<string> {
     const cipher = getWalletState(getStore().getState()).mnemonic;
     if (!cipher) {
-      throw Error('No wallet in redux storage, insert 12-word mnemonic to backup your wallet.');
+      throw new Error('No wallet in redux storage, insert 12-word mnemonic to backup your wallet.');
     }
 
     const binaryMnemonic: Uint8Array = await decrypt(cipher);
@@ -68,7 +68,7 @@ export namespace WalletStore {
   export async function getSeed(): Promise<Uint8Array> {
     const cipher = getWalletState(getStore().getState()).seed;
     if (!cipher) {
-      throw Error('No wallet in redux storage, insert 12-word mnemonic to backup your wallet.');
+      throw new Error('No wallet in redux storage, insert 12-word mnemonic to backup your wallet.');
     }
 
     return decrypt(cipher);

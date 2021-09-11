@@ -1,3 +1,6 @@
 export * from './Wallet';
-export * from './Management';
-export * from './Token';
+export * from './Seed';
+export {
+  generateToken,
+  getCurrentPopToken,
+} from './Token';

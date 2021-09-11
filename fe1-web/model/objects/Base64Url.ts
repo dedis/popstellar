@@ -33,7 +33,7 @@ export class Base64UrlData extends String {
   }
 
   public static fromBuffer(buf: Buffer): Base64UrlData {
-    return new Base64UrlData(base64url.encode(buf));
+    return new Base64UrlData(this.addPadding(base64url.encode(buf)));
   }
 
   private static addPadding(str: string): string {
