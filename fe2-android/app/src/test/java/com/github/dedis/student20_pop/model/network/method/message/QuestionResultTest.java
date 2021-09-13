@@ -1,12 +1,11 @@
 package com.github.dedis.student20_pop.model.network.method.message;
 
-import com.github.dedis.student20_pop.model.network.method.message.data.QuestionResult;
-
-import org.junit.Test;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
+
+import com.github.dedis.student20_pop.model.network.method.message.data.QuestionResult;
+import org.junit.Test;
 
 public class QuestionResultTest {
 

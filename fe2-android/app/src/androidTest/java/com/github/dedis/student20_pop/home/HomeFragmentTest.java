@@ -1,15 +1,5 @@
 package com.github.dedis.student20_pop.home;
 
-import androidx.test.espresso.matcher.BoundedMatcher;
-
-import com.github.dedis.student20_pop.R;
-import com.github.dedis.student20_pop.model.Lao;
-
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.junit.Ignore;
-import org.junit.Test;
-
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -19,6 +9,14 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+
+import androidx.test.espresso.matcher.BoundedMatcher;
+import com.github.dedis.student20_pop.R;
+import com.github.dedis.student20_pop.model.Lao;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.junit.Ignore;
+import org.junit.Test;
 
 // TODO: Update tests when the data between activities will be passed
 

@@ -1,6 +1,8 @@
 package com.github.dedis.student20_pop.qrcode;
 
-/** Class handling camera permission fragment tests */
+/**
+ * Class handling camera permission fragment tests
+ */
 public class CameraPermissionFragmentTest {
 
   //  @Rule

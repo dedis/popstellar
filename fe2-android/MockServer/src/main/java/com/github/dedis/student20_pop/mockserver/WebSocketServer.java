@@ -16,7 +16,9 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import org.glassfish.tyrus.server.Server;
 
-/** Simple WebSocket server used to debug */
+/**
+ * Simple WebSocket server used to debug
+ */
 public class WebSocketServer {
 
   public static final String LOCALHOST = "localhost";

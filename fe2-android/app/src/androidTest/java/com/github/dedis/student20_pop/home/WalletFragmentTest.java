@@ -37,7 +37,8 @@ import org.junit.runner.RunWith;
 public class WalletFragmentTest {
 
   @Rule
-  public ActivityScenarioRule<HomeActivity> mActivityTestRule = new ActivityScenarioRule<>(HomeActivity.class);
+  public ActivityScenarioRule<HomeActivity> mActivityTestRule = new ActivityScenarioRule<>(
+      HomeActivity.class);
 
   @Test
   public void HomeWalletUITest() {
@@ -156,7 +157,6 @@ public class WalletFragmentTest {
             withParent(withParent(withId(R.id.fragment_seed_wallet))),
             isDisplayed()));
     textView3.check(matches(isDisplayed()));
-
 
     ViewInteraction button2 = onView(
         allOf(withId(R.id.button_confirm_seed), withText("Confirm"),
@@ -485,7 +485,6 @@ public class WalletFragmentTest {
             withParent(withParent(withId(R.id.buttonPanel))),
             isDisplayed()));
     button2.check(matches(isDisplayed()));
-
 
     ViewInteraction appCompatButton5 = onView(
         allOf(withId(android.R.id.button1), withText("Confirm"),

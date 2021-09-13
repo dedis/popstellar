@@ -31,14 +31,16 @@ public class WalletTest {
 
     String[] exp_str = hdw1.exportSeed();
     StringJoiner joiner = new StringJoiner(" ");
-    for(String i: exp_str) joiner.add(i);
+    for (String i : exp_str) {
+      joiner.add(i);
+    }
 
-    Pair<byte[], byte[]> res1 =  hdw1.findKeyPair(Lao_ID,Roll_Call_ID);
+    Pair<byte[], byte[]> res1 = hdw1.findKeyPair(Lao_ID, Roll_Call_ID);
 
     Wallet hdw2 = new Wallet();
     hdw2.initKeysManager(context);
     hdw2.importSeed(joiner.toString(), new HashMap<>());
-    Pair<byte[], byte[]> res2 =  hdw2.findKeyPair(Lao_ID,Roll_Call_ID);
+    Pair<byte[], byte[]> res2 = hdw2.findKeyPair(Lao_ID, Roll_Call_ID);
 
     assertArrayEquals(res1.first, res2.first);
     assertArrayEquals(res1.second, res2.second);
@@ -53,10 +55,14 @@ public class WalletTest {
 
     Wallet hdw = new Wallet();
     hdw.initKeysManager(context);
-    hdw.importSeed("garbage effort river orphan negative kind outside quit hat camera approve first", new HashMap<>());
-    Pair<byte[], byte[]> res =  hdw.findKeyPair(Lao_ID,Roll_Call_ID);
-    assertEquals("9e8ca414e088b2276d140bb69302269ccede242197e1f1751c45ec40b01678a0", Utils.bytesToHex(res.first));
-    assertEquals("7147759d146897111bcf74f60a1948b1d3a22c9199a6b88c236eb7326adc2efc", Utils.bytesToHex(res.second));
+    hdw.importSeed(
+        "garbage effort river orphan negative kind outside quit hat camera approve first",
+        new HashMap<>());
+    Pair<byte[], byte[]> res = hdw.findKeyPair(Lao_ID, Roll_Call_ID);
+    assertEquals("9e8ca414e088b2276d140bb69302269ccede242197e1f1751c45ec40b01678a0",
+        Utils.bytesToHex(res.first));
+    assertEquals("7147759d146897111bcf74f60a1948b1d3a22c9199a6b88c236eb7326adc2efc",
+        Utils.bytesToHex(res.second));
 
   }
 
