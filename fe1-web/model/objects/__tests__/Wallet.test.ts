@@ -20,16 +20,15 @@ test('Known mnemonic produces known seed', async () => {
 });
 
 test('Known inputs should produce same path', async () => {
-
   const laoId: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
   const rollCallId: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
 
   const expected = [
-    "m",
+    'm',
     "888'",
     "0'",
     "7920043'/38174203'/71210134'/14078251'/2278823'/50163231'/203204108'/4625150'/6448'/23105'/238184'",
-    "7920043'/38174203'/71210134'/14078251'/2278823'/50163231'/203204108'/4625150'/6448'/23105'/238184'"
+    "7920043'/38174203'/71210134'/14078251'/2278823'/50163231'/203204108'/4625150'/6448'/23105'/238184'",
   ].join('/');
 
   expect(Bip39Path.fromLaoRollCall(laoId, rollCallId))
@@ -38,25 +37,27 @@ test('Known inputs should produce same path', async () => {
 
 test('Known path should produce same token', async () => {
   const expected = Base64UrlData.fromBuffer(Buffer.from(
-    '7147759d146897111bcf74f60a1948b1d3a22c9199a6b88c236eb7326adc2efc', 'hex'));
+    '7147759d146897111bcf74f60a1948b1d3a22c9199a6b88c236eb7326adc2efc', 'hex',
+  ));
 
   const path = [
-    "m",
+    'm',
     "888'",
     "0'",
     "7920043'/38174203'/71210134'/14078251'/2278823'/50163231'/203204108'/4625150'/6448'/23105'/238184'",
-    "7920043'/38174203'/71210134'/14078251'/2278823'/50163231'/203204108'/4625150'/6448'/23105'/238184'"
+    "7920043'/38174203'/71210134'/14078251'/2278823'/50163231'/203204108'/4625150'/6448'/23105'/238184'",
   ].join('/');
 
   await Wallet.importMnemonic(mnemonic);
 
   const token = await Wallet.generateTokenFromPath(path);
   expect(token.publicKey.valueOf()).toEqual(expected.valueOf());
-})
+});
 
 test('Known inputs should produce same token', async () => {
   const expected = Base64UrlData.fromBuffer(Buffer.from(
-    '7147759d146897111bcf74f60a1948b1d3a22c9199a6b88c236eb7326adc2efc', 'hex'));
+    '7147759d146897111bcf74f60a1948b1d3a22c9199a6b88c236eb7326adc2efc', 'hex',
+  ));
 
   await Wallet.importMnemonic(mnemonic);
 
@@ -65,4 +66,4 @@ test('Known inputs should produce same token', async () => {
   const token = await Wallet.generateToken(laoId, rollCallId);
 
   expect(token.publicKey.valueOf()).toEqual(expected.valueOf());
-})
+});
