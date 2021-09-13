@@ -915,7 +915,7 @@ the organizer after scanning all attendees’ public key.
         "closes": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "The 'update_id' of the latest roll call open"
+            "$comment": "The 'update_id' of the latest roll call open/reopen"
         },
         "closed_at": {
             "description": "[Timestamp] end time",
