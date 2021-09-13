@@ -21,15 +21,6 @@ public class RollCallHandler {
 
   public static final String TAG = RollCallHandler.class.getSimpleName();
 
-  public static final String MESSAGE_ID = "Message ID : ";
-  public static final String ROLL_CALL_ID = "Roll Call ID : ";
-  public static final String ROLL_CALL_NAME = "Roll Call Name : ";
-  public static final String ROLL_CALL_LOCATION = "Location : ";
-  public static final String ROLL_CALL_UPDATED_ID = "Updated ID : ";
-  public static final String ROLL_CALL_CREATION = "New Roll Call was created ";
-  public static final String ROLL_CALL_OPENING = "A Roll Call was opened ";
-  public static final String ROLL_CALL_DELETION = "A Roll Call was closed ";
-
   private RollCallHandler() {
     throw new IllegalStateException("Utility class");
   }
@@ -88,13 +79,7 @@ public class RollCallHandler {
 
     lao.updateRollCall(rollCall.getId(), rollCall);
 
-    WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle(ROLL_CALL_CREATION);
-    message.setDescription(
-        ROLL_CALL_NAME + rollCall.getName() + "\n" + ROLL_CALL_ID + rollCall.getId() + "\n"
-            + ROLL_CALL_LOCATION + rollCall.getLocation() + "\n" + MESSAGE_ID + messageId);
-
-    lao.updateWitnessMessage(messageId, message);
+    lao.updateWitnessMessage(messageId, createRollCallWitnessMessage(messageId, rollCall));
 
     return false;
   }
@@ -130,12 +115,7 @@ public class RollCallHandler {
 
     lao.updateRollCall(opens, rollCall);
 
-    WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle(ROLL_CALL_OPENING);
-    message.setDescription(
-        ROLL_CALL_NAME + rollCall.getName() + "\n" + ROLL_CALL_UPDATED_ID + rollCall.getId() + "\n"
-            + MESSAGE_ID + messageId);
-    lao.updateWitnessMessage(messageId, message);
+    lao.updateWitnessMessage(messageId, openRollCallWitnessMessage(messageId, rollCall));
     return false;
   }
 
@@ -169,12 +149,41 @@ public class RollCallHandler {
 
     lao.updateRollCall(closes, rollCall);
 
-    WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle(ROLL_CALL_DELETION);
-    message.setDescription(
-        ROLL_CALL_NAME + rollCall.getName() + "\n" + ROLL_CALL_UPDATED_ID + rollCall.getId() + "\n"
-            + MESSAGE_ID + messageId);
-    lao.updateWitnessMessage(messageId, message);
+    lao.updateWitnessMessage(messageId, closeRollCallWitnessMessage(messageId, rollCall));
     return false;
+  }
+
+  public static WitnessMessage createRollCallWitnessMessage(String messageId, RollCall rollCall) {
+    WitnessMessage message = new WitnessMessage(messageId);
+    message.setTitle("New Roll Call was created");
+    message.setDescription(
+        "Roll Call Name : " + rollCall.getName() + "\n" +
+            "Roll Call ID : " + rollCall.getId() + "\n" +
+            "Location : " + rollCall.getLocation() + "\n" +
+            "Message ID : " + messageId);
+
+    return message;
+  }
+
+  public static WitnessMessage openRollCallWitnessMessage(String messageId, RollCall rollCall) {
+    WitnessMessage message = new WitnessMessage(messageId);
+    message.setTitle("A Roll Call was opened");
+    message.setDescription(
+        "Roll Call Name : " + rollCall.getName() + "\n" +
+            "Updated ID : " + rollCall.getId() + "\n" +
+            "Message ID : " + messageId);
+
+    return message;
+  }
+
+  public static WitnessMessage closeRollCallWitnessMessage(String messageId, RollCall rollCall) {
+    WitnessMessage message = new WitnessMessage(messageId);
+    message.setTitle("A Roll Call was closed");
+    message.setDescription(
+        "Roll Call Name : " + rollCall.getName() + "\n" +
+            "Updated ID : " + rollCall.getId() + "\n" +
+            "Message ID : " + messageId);
+
+    return message;
   }
 }

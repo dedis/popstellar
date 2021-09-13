@@ -57,14 +57,30 @@ public class MessageHandler {
       enqueue = true;
     }
 
-    // Trigger an onNext
+    notifyLaoUpdate(laoRepository, data, channel);
+    return enqueue;
+  }
+
+  /**
+   * Keep the UI up to date by notifying all observers the updated LAO state.
+   *
+   * The LAO is updated if the channel of the message is a LAO channel
+   * and the message is not a WitnessSignatureMessage.
+   *
+   * If a LAO has been created or modified then the LAO lists in the
+   * LAORepository are updated.
+   *
+   * @param laoRepository the repository to access the LAO lists
+   * @param data the data received
+   * @param channel the channel of the message received
+   */
+  private static void notifyLaoUpdate(LAORepository laoRepository, Data data, String channel) {
     if (!(data instanceof WitnessMessageSignature) && laoRepository.isLaoChannel(channel)) {
       LAOState laoState = laoRepository.getLaoById().get(channel);
-      laoState.publish();
+      laoState.publish(); // Trigger an onNext
       if (data instanceof StateLao || data instanceof CreateLao) {
         laoRepository.setAllLaoSubject();
       }
     }
-    return enqueue;
   }
 }

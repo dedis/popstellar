@@ -1,6 +1,11 @@
 package com.github.dedis.popstellar.utility.handler;
 
+import static com.github.dedis.popstellar.utility.handler.ElectionHandler.electionSetupWitnessMessage;
+import static com.github.dedis.popstellar.utility.handler.LaoHandler.updateLaoNameWitnessMessage;
 import static com.github.dedis.popstellar.utility.handler.MessageHandler.handleMessage;
+import static com.github.dedis.popstellar.utility.handler.RollCallHandler.closeRollCallWitnessMessage;
+import static com.github.dedis.popstellar.utility.handler.RollCallHandler.createRollCallWitnessMessage;
+import static com.github.dedis.popstellar.utility.handler.RollCallHandler.openRollCallWitnessMessage;
 
 import com.github.dedis.popstellar.Injection;
 import com.github.dedis.popstellar.model.Election;
@@ -110,7 +115,9 @@ public class MessageHandlerTest extends TestCase {
 
     // Create one Roll Call and add it to the LAO
     rollCall = new RollCall(lao.getId(), Instant.now().getEpochSecond(), "roll call 1");
-    lao.setRollCalls(new HashMap<String, RollCall>() {{ put(rollCall.getId(), rollCall); }});
+    lao.setRollCalls(new HashMap<String, RollCall>() {{
+      put(rollCall.getId(), rollCall);
+    }});
 
     // Create one Election and add it to the LAO
     election = new Election(lao.getId(), Instant.now().getEpochSecond(), "election 1");
@@ -120,7 +127,9 @@ public class MessageHandlerTest extends TestCase {
     electionQuestion = new ElectionQuestion("question", "voting method", false,
         Collections.singletonList("a"), election.getId());
     election.setElectionQuestions(Collections.singletonList(electionQuestion));
-    lao.setElections(new HashMap<String, Election>() {{ put(election.getId(), election); }});
+    lao.setElections(new HashMap<String, Election>() {{
+      put(election.getId(), election);
+    }});
 
     // Add the LAO to the LAORepository
     laoRepository.getLaoById().put(LAO_CHANNEL, new LAOState(lao));
@@ -145,6 +154,10 @@ public class MessageHandlerTest extends TestCase {
         Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), updateLao, signer,
         Injection.provideGson());
 
+    // Create the expected WitnessMessage
+    WitnessMessage expectedMessage = updateLaoNameWitnessMessage(message.getMessageId(), updateLao,
+        lao);
+
     // Call the message handler
     assertFalse(handleMessage(laoRepository, LAO_CHANNEL, message));
 
@@ -152,11 +165,8 @@ public class MessageHandlerTest extends TestCase {
     Optional<WitnessMessage> witnessMessage = laoRepository.getLaoByChannel(LAO_CHANNEL)
         .getWitnessMessage(message.getMessageId());
     assertTrue(witnessMessage.isPresent());
-    assertEquals(LaoHandler.UPDATE_LAO, witnessMessage.get().getTitle());
-    assertEquals(LaoHandler.OLD_NAME + CREATE_LAO.getName() + "\n" + LaoHandler.NEW_NAME + updateLao
-            .getName() +
-            "\n" + LaoHandler.MESSAGE_ID + message.getMessageId(),
-        witnessMessage.get().getDescription());
+    assertEquals(expectedMessage.getTitle(), witnessMessage.get().getTitle());
+    assertEquals(expectedMessage.getDescription(), witnessMessage.get().getDescription());
   }
 
   @Test
@@ -188,6 +198,9 @@ public class MessageHandlerTest extends TestCase {
         Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), createRollCall, signer,
         Injection.provideGson());
 
+    // Create the expected WitnessMessage
+    WitnessMessage expectedMessage = createRollCallWitnessMessage(message.getMessageId(), rollCall);
+
     // Call the message handler
     assertFalse(handleMessage(laoRepository, LAO_CHANNEL, message));
 
@@ -202,12 +215,8 @@ public class MessageHandlerTest extends TestCase {
     Optional<WitnessMessage> witnessMessage = laoRepository.getLaoByChannel(LAO_CHANNEL)
         .getWitnessMessage(message.getMessageId());
     assertTrue(witnessMessage.isPresent());
-    assertEquals(RollCallHandler.ROLL_CALL_CREATION, witnessMessage.get().getTitle());
-    assertEquals(RollCallHandler.ROLL_CALL_NAME + createRollCall.getName() + "\n"
-            + RollCallHandler.ROLL_CALL_ID + createRollCall.getId() + "\n"
-            + RollCallHandler.ROLL_CALL_LOCATION + createRollCall.getLocation() + "\n"
-            + RollCallHandler.MESSAGE_ID + message.getMessageId(),
-        witnessMessage.get().getDescription());
+    assertEquals(expectedMessage.getTitle(), witnessMessage.get().getTitle());
+    assertEquals(expectedMessage.getDescription(), witnessMessage.get().getDescription());
   }
 
   @Test
@@ -218,6 +227,9 @@ public class MessageHandlerTest extends TestCase {
     MessageGeneral message = new MessageGeneral(
         Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), openRollCall, signer,
         Injection.provideGson());
+
+    // Create the expected WitnessMessage
+    WitnessMessage expectedMessage = openRollCallWitnessMessage(message.getMessageId(), rollCall);
 
     // Call the message handler
     assertFalse(handleMessage(laoRepository, LAO_CHANNEL, message));
@@ -233,11 +245,8 @@ public class MessageHandlerTest extends TestCase {
     Optional<WitnessMessage> witnessMessage = laoRepository.getLaoByChannel(LAO_CHANNEL)
         .getWitnessMessage(message.getMessageId());
     assertTrue(witnessMessage.isPresent());
-    assertEquals(RollCallHandler.ROLL_CALL_OPENING, witnessMessage.get().getTitle());
-    assertEquals(RollCallHandler.ROLL_CALL_NAME + rollCall.getName() + "\n"
-            + RollCallHandler.ROLL_CALL_UPDATED_ID + openRollCall.getUpdateId() + "\n"
-            + RollCallHandler.MESSAGE_ID + message.getMessageId(),
-        witnessMessage.get().getDescription());
+    assertEquals(expectedMessage.getTitle(), witnessMessage.get().getTitle());
+    assertEquals(expectedMessage.getDescription(), witnessMessage.get().getDescription());
   }
 
   @Test
@@ -248,6 +257,9 @@ public class MessageHandlerTest extends TestCase {
     MessageGeneral message = new MessageGeneral(
         Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), closeRollCall, signer,
         Injection.provideGson());
+
+    // Create the expected WitnessMessage
+    WitnessMessage expectedMessage = closeRollCallWitnessMessage(message.getMessageId(), rollCall);
 
     // Call the message handler
     assertFalse(handleMessage(laoRepository, LAO_CHANNEL, message));
@@ -263,11 +275,8 @@ public class MessageHandlerTest extends TestCase {
     Optional<WitnessMessage> witnessMessage = laoRepository.getLaoByChannel(LAO_CHANNEL)
         .getWitnessMessage(message.getMessageId());
     assertTrue(witnessMessage.isPresent());
-    assertEquals(RollCallHandler.ROLL_CALL_DELETION, witnessMessage.get().getTitle());
-    assertEquals(RollCallHandler.ROLL_CALL_NAME + rollCall.getName() + "\n"
-            + RollCallHandler.ROLL_CALL_UPDATED_ID + closeRollCall.getUpdateId() + "\n"
-            + RollCallHandler.MESSAGE_ID + message.getMessageId(),
-        witnessMessage.get().getDescription());
+    assertEquals(expectedMessage.getTitle(), witnessMessage.get().getTitle());
+    assertEquals(expectedMessage.getDescription(), witnessMessage.get().getDescription());
   }
 
   @Test
@@ -281,6 +290,9 @@ public class MessageHandlerTest extends TestCase {
     MessageGeneral message = new MessageGeneral(
         Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), electionSetup, signer,
         Injection.provideGson());
+
+    // Create the expected WitnessMessage
+    WitnessMessage expectedMessage = electionSetupWitnessMessage(message.getMessageId(), election);
 
     // Call the message handler
     assertFalse(handleMessage(laoRepository, LAO_CHANNEL, message));
@@ -296,12 +308,8 @@ public class MessageHandlerTest extends TestCase {
     Optional<WitnessMessage> witnessMessage = laoRepository.getLaoByChannel(LAO_CHANNEL)
         .getWitnessMessage(message.getMessageId());
     assertTrue(witnessMessage.isPresent());
-    assertEquals(ElectionHandler.ELECTION_SETUP, witnessMessage.get().getTitle());
-    assertEquals(ElectionHandler.ELECTION_NAME + electionSetup.getName() + "\n"
-            + ElectionHandler.ELECTION_ID + electionSetup.getId() + "\n"
-            + ElectionHandler.ELECTION_QUESTION + electionQuestion.getQuestion()
-            + "\n" + ElectionHandler.MESSAGE_ID + message.getMessageId(),
-        witnessMessage.get().getDescription());
+    assertEquals(expectedMessage.getTitle(), witnessMessage.get().getTitle());
+    assertEquals(expectedMessage.getDescription(), witnessMessage.get().getDescription());
   }
 
   @Test

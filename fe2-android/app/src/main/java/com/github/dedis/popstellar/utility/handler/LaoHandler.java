@@ -28,14 +28,6 @@ public class LaoHandler {
     throw new IllegalStateException("Utility class");
   }
 
-  public static final String LAO_NAME = " Lao Name : ";
-  public static final String OLD_NAME = " Old Name : ";
-  public static final String NEW_NAME = " New Name : ";
-  public static final String MESSAGE_ID = "Message ID : ";
-  public static final String UPDATE_LAO = "Update Lao Name ";
-  public static final String WITNESS_ID = " New Witness ID : ";
-  public static final String UPDATE_WITNESS = "Update Lao Witnesses  ";
-
   /**
    * Process a LAO message.
    *
@@ -94,7 +86,7 @@ public class LaoHandler {
   }
 
   /**
-   * Process a UpdateLao message.
+   * Process an UpdateLao message.
    *
    * @param laoRepository the repository to access the LAO of the channel
    * @param channel       the channel on which the message was received
@@ -112,19 +104,11 @@ public class LaoHandler {
       return false;
     }
 
-    WitnessMessage message = new WitnessMessage(messageId);
+    WitnessMessage message;
     if (!updateLao.getName().equals(lao.getName())) {
-      message.setTitle(UPDATE_LAO);
-      message.setDescription(
-          OLD_NAME + lao.getName() + "\n" + NEW_NAME + updateLao.getName() +
-              "\n" + MESSAGE_ID + messageId);
+      message = updateLaoNameWitnessMessage(messageId, updateLao, lao);
     } else if (!updateLao.getWitnesses().equals(lao.getWitnesses())) {
-      List<String> tempList = new ArrayList<>(updateLao.getWitnesses());
-      message.setTitle(UPDATE_WITNESS);
-      message.setDescription(LAO_NAME + lao.getName() + "\n" + MESSAGE_ID + messageId + "\n"
-          + WITNESS_ID + tempList.get(tempList.size() - 1)
-      );
-
+      message = updateLaoWitnessesWitnessMessage(messageId, updateLao, lao);
     } else {
       Log.d(TAG, " Problem to set the witness message title for update lao");
       return true;
@@ -181,5 +165,27 @@ public class LaoHandler {
         .removeIf(pendingUpdate -> pendingUpdate.getModificationTime() <= targetTime);
 
     return false;
+  }
+
+  public static WitnessMessage updateLaoNameWitnessMessage(String messageId, UpdateLao updateLao, Lao lao) {
+    WitnessMessage message = new WitnessMessage(messageId);
+    message.setTitle("Update Lao Name ");
+    message.setDescription(
+        "Old Name : " + lao.getName() + "\n" +
+            "New Name : " + updateLao.getName() + "\n" +
+            "Message ID : " + messageId);
+    return message;
+  }
+
+  public static WitnessMessage updateLaoWitnessesWitnessMessage(String messageId, UpdateLao updateLao, Lao lao) {
+    WitnessMessage message = new WitnessMessage(messageId);
+    List<String> tempList = new ArrayList<>(updateLao.getWitnesses());
+    message.setTitle("Update Lao Witnesses");
+    message.setDescription(
+        "Lao Name : " + lao.getName() + "\n" +
+            "Message ID : " + messageId + "\n" +
+            "New Witness ID : " + tempList.get(tempList.size() - 1)
+    );
+    return message;
   }
 }

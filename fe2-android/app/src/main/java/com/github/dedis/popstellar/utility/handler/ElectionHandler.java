@@ -27,12 +27,6 @@ public class ElectionHandler {
 
   public static final String TAG = ElectionHandler.class.getSimpleName();
 
-  public static final String ELECTION_NAME = "Name : ";
-  public static final String MESSAGE_ID = "Message ID : ";
-  public static final String ELECTION_ID = "Election ID : ";
-  public static final String ELECTION_QUESTION = "Question : ";
-  public static final String ELECTION_SETUP = "New Election Setup ";
-
   private ElectionHandler() {
     throw new IllegalStateException("Utility class");
   }
@@ -95,14 +89,7 @@ public class ElectionHandler {
       Log.d(TAG, "election id " + election.getId());
       lao.updateElection(election.getId(), election);
 
-      WitnessMessage message = new WitnessMessage(messageId);
-      message.setTitle(ELECTION_SETUP);
-      message.setDescription(
-          ELECTION_NAME + election.getName() + "\n" + ELECTION_ID + election.getId() + "\n"
-              + ELECTION_QUESTION + election.getElectionQuestions().get(0).getQuestion() + "\n"
-              + MESSAGE_ID + messageId);
-
-      lao.updateWitnessMessage(messageId, message);
+      lao.updateWitnessMessage(messageId, electionSetupWitnessMessage(messageId, election));
     }
     return false;
   }
@@ -182,5 +169,16 @@ public class ElectionHandler {
       }
     }
     return false;
+  }
+
+  public static WitnessMessage electionSetupWitnessMessage(String messageId, Election election) {
+    WitnessMessage message = new WitnessMessage(messageId);
+    message.setTitle("New Election Setup");
+    message.setDescription(
+        "Name : " + election.getName() + "\n" +
+            "Election ID : " + election.getId() + "\n" +
+            "Question : " + election.getElectionQuestions().get(0).getQuestion() + "\n" +
+            "Message ID : " + messageId);
+    return message;
   }
 }
