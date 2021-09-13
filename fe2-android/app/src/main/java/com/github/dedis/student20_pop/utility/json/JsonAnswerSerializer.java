@@ -10,10 +10,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-
 import java.lang.reflect.Type;
 
-/** Json serializer and deserializer for the answer */
+/**
+ * Json serializer and deserializer for the answer
+ */
 public class JsonAnswerSerializer implements JsonSerializer<Answer>, JsonDeserializer<Answer> {
 
   private static final String RESULT = "result";
@@ -25,9 +26,13 @@ public class JsonAnswerSerializer implements JsonSerializer<Answer>, JsonDeseria
     JsonObject obj = json.getAsJsonObject();
     JsonUtils.testRPCVersion(obj);
 
-    if (obj.has(RESULT)) return context.deserialize(json, Result.class);
-    else if (obj.has(ERROR)) return context.deserialize(json, Error.class);
-    else throw new JsonParseException("A result must contain one of the field result or error");
+    if (obj.has(RESULT)) {
+      return context.deserialize(json, Result.class);
+    } else if (obj.has(ERROR)) {
+      return context.deserialize(json, Error.class);
+    } else {
+      throw new JsonParseException("A result must contain one of the field result or error");
+    }
   }
 
   @Override

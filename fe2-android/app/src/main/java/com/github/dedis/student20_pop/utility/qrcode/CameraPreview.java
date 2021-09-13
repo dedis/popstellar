@@ -22,14 +22,11 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresPermission;
-
 import com.github.dedis.student20_pop.R;
 import com.google.android.gms.common.images.Size;
 import com.google.android.gms.vision.CameraSource;
-
 import java.io.IOException;
 
 /**
@@ -38,6 +35,7 @@ import java.io.IOException;
  * <p>It uses com.google.android.gms.vision.CameraSource to get the camera's image
  */
 public class CameraPreview extends ViewGroup {
+
   private static final String TAG = "CameraPreview";
 
   private final SurfaceView mSurfaceView;
@@ -130,6 +128,7 @@ public class CameraPreview extends ViewGroup {
   }
 
   private class SurfaceCallback implements SurfaceHolder.Callback {
+
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder surface) {
       mSurfaceAvailable = true;
@@ -148,6 +147,7 @@ public class CameraPreview extends ViewGroup {
     }
 
     @Override
-    public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {}
+    public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
+    }
   }
 }

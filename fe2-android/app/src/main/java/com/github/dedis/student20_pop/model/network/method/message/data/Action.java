@@ -4,7 +4,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/** Enumerates all possible messages actions */
+/**
+ * Enumerates all possible messages actions
+ */
 public enum Action {
   CREATE("create"),
   END("end"),
@@ -30,7 +32,9 @@ public enum Action {
     this.action = action;
   }
 
-  /** Returns the name of the Action. */
+  /**
+   * Returns the name of the Action.
+   */
   public String getAction() {
     return action;
   }
@@ -42,7 +46,11 @@ public enum Action {
    * @return the corresponding enum action
    */
   public static Action find(String searched) {
-    for (Action action : ALL) if (action.getAction().equals(searched)) return action;
+    for (Action action : ALL) {
+      if (action.getAction().equals(searched)) {
+        return action;
+      }
+    }
 
     return null;
   }

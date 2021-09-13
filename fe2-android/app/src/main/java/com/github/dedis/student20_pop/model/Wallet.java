@@ -34,8 +34,8 @@ import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 public class Wallet {
 
   private static final String TAG = Wallet.class.getSimpleName();
-  private static final int PURPOSE =  888;
-  private static final int ACCOUNT =  0;
+  private static final int PURPOSE = 888;
+  private static final int ACCOUNT = 0;
   private byte[] seed;
   private Aead aead;
   private boolean isSetup = false;
@@ -58,7 +58,7 @@ public class Wallet {
    *
    * @param seed
    */
-  public void initialize(String seed){
+  public void initialize(String seed) {
     if (seed == null) {
       throw new IllegalArgumentException("Unable to init seed from a null param!");
     }
@@ -66,6 +66,7 @@ public class Wallet {
     isSetup = true;
     Log.d(TAG, "New seed initialized: " + Utils.bytesToHex(this.seed));
   }
+
   /**
    * Method to init the AndroidKeysetManager
    *
@@ -77,7 +78,7 @@ public class Wallet {
     AeadConfig.register();
     AndroidKeysetManager keysetManager =
         new AndroidKeysetManager.Builder()
-            .withSharedPref(applicationContext, "POP_KEYSET_2",  "POP_KEYSET_SP_2")
+            .withSharedPref(applicationContext, "POP_KEYSET_2", "POP_KEYSET_SP_2")
             .withKeyTemplate(AesGcmKeyManager.rawAes256GcmTemplate())
             .withMasterKeyUri("android-keystore://POP_MASTER_KEY_2")
             .build();
@@ -88,7 +89,8 @@ public class Wallet {
    * Method that allow generate a different key for each path that you give.
    *
    * @param path a String path of the form: m/i/j/k/... where i,j,k,.. are 31-bit integer.
-   * @return a Pair<byte[], byte[]> representing the keys pair: first=private_key; second=public_key.
+   * @return a Pair<byte[], byte[]> representing the keys pair: first=private_key;
+   * second=public_key.
    * @throws GeneralSecurityException
    */
   public Pair<byte[], byte[]> generateKeyFromPath(String path)
@@ -109,7 +111,8 @@ public class Wallet {
         .mapToInt(Integer::intValue).toArray();
 
     // derive private and public key
-    byte[] privateKey = SLIP10.deriveEd25519PrivateKey(aead.decrypt(seed, new byte[0]), pathValueInt);
+    byte[] privateKey = SLIP10
+        .deriveEd25519PrivateKey(aead.decrypt(seed, new byte[0]), pathValueInt);
     Ed25519PrivateKeyParameters prK = new Ed25519PrivateKeyParameters(privateKey, 0);
     Ed25519PublicKeyParameters puK = prK.generatePublicKey();
     byte[] publicKey = puK.getEncoded();
@@ -120,7 +123,7 @@ public class Wallet {
   /**
    * Method that allows generate keys from the ID of the LAO and the ID of the RollCall.
    *
-   * @param laoID a String.
+   * @param laoID      a String.
    * @param rollCallID a String.
    * @return a Pair<byte[], byte[]> representing the keys pair.
    * @throws GeneralSecurityException
@@ -150,7 +153,7 @@ public class Wallet {
    each time concatenate them and append to our result string.
    (string of the format: 3-byte/3-byte/... )
    */
-  private String convertStringToPath(String string){
+  private String convertStringToPath(String string) {
     // extract byte form string
     byte[] byteString = Base64.getUrlDecoder().decode(string);
     int remainder = byteString.length % 3;
@@ -160,8 +163,8 @@ public class Wallet {
     int i;
     for (i = 0; i + 3 <= byteString.length; i += 3) {
       String path = Integer.toString(byteString[i] & 0xFF)
-          .concat(Integer.toString(byteString[i+1] & 0xFF))
-          .concat(Integer.toString(byteString[i+2] & 0xFF));
+          .concat(Integer.toString(byteString[i + 1] & 0xFF))
+          .concat(Integer.toString(byteString[i + 2] & 0xFF));
 
       joiner.add(path);
     }
@@ -169,7 +172,7 @@ public class Wallet {
       joiner.add(Integer.toString(byteString[i] & 0xFF));
     } else if (remainder == 2) {
       joiner.add(Integer.toString(byteString[i] & 0xFF)
-          .concat(Integer.toString(byteString[i+1] & 0xFF)));
+          .concat(Integer.toString(byteString[i + 1] & 0xFF)));
     }
     return joiner.toString();
   }
@@ -177,10 +180,10 @@ public class Wallet {
   /**
    * Method that allows recover key pair, if the user has participated in that roll-call event.
    *
-   * @param laoID a String.
-   * @param rollCallID a String.
-   * @param rollCallTokens a List<byte[]> representing the list of public keys present
-   *                         on roll-call’s results.
+   * @param laoID          a String.
+   * @param rollCallID     a String.
+   * @param rollCallTokens a List<byte[]> representing the list of public keys present on
+   *                       roll-call’s results.
    * @return the key pair Pair<byte[], byte[]> (PoP token) if the user as in that roll-call
    * participated else null.
    * @throws GeneralSecurityException
@@ -193,9 +196,9 @@ public class Wallet {
       throw new IllegalArgumentException("Unable to find keys from a null param");
     }
 
-    Pair<byte[], byte[]> keyPairFind = findKeyPair(laoID,rollCallID);
-    for(byte[] public_key : rollCallTokens){
-      if(Arrays.equals(keyPairFind.second, public_key)){
+    Pair<byte[], byte[]> keyPairFind = findKeyPair(laoID, rollCallID);
+    for (byte[] public_key : rollCallTokens) {
+      if (Arrays.equals(keyPairFind.second, public_key)) {
         return keyPairFind;
       }
     }
@@ -206,16 +209,16 @@ public class Wallet {
    * Method that allows recover recover all the key pairs when the master secret is imported
    * initially, by iterating all the historical events of LAO.
    *
-   * @param seed the master secret String
-   * @param knowsLaosRollCalls a Map<Pair<String, String>, List<byte[]>> of keys known Lao_ID
-   *                              and Roll_call_ID and values representing the list of public keys
-   *                              present on roll-call’s results.
-   * @return a Map<Pair<String, String>, Pair<byte[], byte[]>> of the recover key pairs
-   * associated to each Lao and roll-call IDs.
+   * @param seed               the master secret String
+   * @param knowsLaosRollCalls a Map<Pair<String, String>, List<byte[]>> of keys known Lao_ID and
+   *                           Roll_call_ID and values representing the list of public keys present
+   *                           on roll-call’s results.
+   * @return a Map<Pair<String, String>, Pair<byte[], byte[]>> of the recover key pairs associated
+   * to each Lao and roll-call IDs.
    * @throws GeneralSecurityException
    */
   public Map<Pair<String, String>, Pair<byte[], byte[]>> recoverAllKeys(String seed,
-      Map<Pair<String, String>, List<byte[]>>  knowsLaosRollCalls)
+      Map<Pair<String, String>, List<byte[]>> knowsLaosRollCalls)
       throws GeneralSecurityException {
     if (knowsLaosRollCalls == null) {
       throw new IllegalArgumentException("Unable to find recover keys from a null param");
@@ -227,8 +230,8 @@ public class Wallet {
     for (Map.Entry<Pair<String, String>, List<byte[]>> entry : knowsLaosRollCalls.entrySet()) {
       String laoID = entry.getKey().first;
       String rollCallID = entry.getKey().second;
-      Pair<byte[], byte[]> recoverKey = recoverKey(laoID,  rollCallID, entry.getValue());
-      if(recoverKey != null){
+      Pair<byte[], byte[]> recoverKey = recoverKey(laoID, rollCallID, entry.getValue());
+      if (recoverKey != null) {
         result.put(new Pair<>(laoID, rollCallID), recoverKey);
       }
     }
@@ -236,15 +239,15 @@ public class Wallet {
   }
 
   /**
-   * Method that encode the seed into a form that is easier for humans to securely back-up
-   * and retrieve.
+   * Method that encode the seed into a form that is easier for humans to securely back-up and
+   * retrieve.
    *
    * @return an array of words: mnemonic sentence representing the seed for the wallet in case that
    * the key set manager is not init return a empty array.
    * @throws GeneralSecurityException
    */
   public String[] exportSeed() throws GeneralSecurityException {
-    if(aead != null) {
+    if (aead != null) {
       SecureRandom random = new SecureRandom();
       byte[] entropy = random.generateSeed(Words.TWELVE.byteLength());
 
@@ -256,8 +259,9 @@ public class Wallet {
       Log.d(TAG, "the array of word generated:" + Arrays.toString(words));
 
       StringJoiner joiner = new StringJoiner(" ");
-      for (String i : words)
+      for (String i : words) {
         joiner.add(i);
+      }
       seed = aead.encrypt(new SeedCalculator().calculateSeed(joiner.toString(), ""),
           new byte[0]);
       Log.d(TAG, "ExportSeed: new seed initialized: " + Utils.bytesToHex(seed));
@@ -272,19 +276,19 @@ public class Wallet {
   /**
    * Method that allow import mnemonic seed.
    *
-   * @param words a String.
-   * @param knowsLaosRollCalls a Map<Pair<String, String>, List<byte[]>> of keys known Lao_ID
-   *                              and Roll_call_ID and values representing the list of public keys
-   *                              present on roll-call’s results.
-   * @return a Map<Pair<String, String>, Pair<byte[], byte[]>> of the recover key pairs
-   *         associated to each Lao and roll-call IDs or null in case of error.
+   * @param words              a String.
+   * @param knowsLaosRollCalls a Map<Pair<String, String>, List<byte[]>> of keys known Lao_ID and
+   *                           Roll_call_ID and values representing the list of public keys present
+   *                           on roll-call’s results.
+   * @return a Map<Pair<String, String>, Pair<byte[], byte[]>> of the recover key pairs associated
+   * to each Lao and roll-call IDs or null in case of error.
    */
   public Map<Pair<String, String>, Pair<byte[], byte[]>> importSeed(String words,
-      Map<Pair<String, String>, List<byte[]>>  knowsLaosRollCalls){
+      Map<Pair<String, String>, List<byte[]>> knowsLaosRollCalls) {
     if (words == null) {
       throw new IllegalArgumentException("Unable to find recover tokens from a null param");
     }
-    if(aead != null) {
+    if (aead != null) {
       try {
         MnemonicValidator
             .ofWordList(English.INSTANCE)
@@ -304,23 +308,24 @@ public class Wallet {
 
   /**
    * Determine whether wallet has been initialized
+   *
    * @return true if wallet has been set up, false otherwise
    */
-  public boolean isSetUp(){
+  public boolean isSetUp() {
     return isSetup;
   }
 
   /**
    * Logout the wallet by replacing the seed by a random one
    */
-  public void logout(){
+  public void logout() {
     setRandomSeed();
   }
 
   /**
    * Utility function to initialize the wallet with a new random seed.
    */
-  private void setRandomSeed(){
+  private void setRandomSeed() {
     SecureRandom random = new SecureRandom();
     byte[] bytes = random.generateSeed(64);
     seed = bytes;

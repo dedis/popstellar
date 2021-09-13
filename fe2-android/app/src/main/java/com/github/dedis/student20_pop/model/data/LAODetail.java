@@ -2,11 +2,11 @@ package com.github.dedis.student20_pop.model.data;
 
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.event.Event;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class LAODetail {
+
   private Lao mLao;
 
   private List<Event> laoEvents;

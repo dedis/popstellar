@@ -7,15 +7,12 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatDialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.detail.fragments.pickers.DatePickerFragment;
 import com.github.dedis.student20_pop.detail.fragments.pickers.TimePickerFragment;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -121,9 +118,13 @@ public abstract class AbstractEventCreationFragment extends Fragment {
     return startTimeEditText.getText().toString().trim();
   }
 
-  public String getEndDate() { return endDateEditText.getText().toString().trim(); }
+  public String getEndDate() {
+    return endDateEditText.getText().toString().trim();
+  }
 
-  public String getEndTime() { return endTimeEditText.getText().toString().trim(); }
+  public String getEndTime() {
+    return endTimeEditText.getText().toString().trim();
+  }
 
   public void checkDates(int requestCode, int resultCode, Intent data) {
     if (resultCode == Activity.RESULT_OK) {
@@ -140,16 +141,16 @@ public abstract class AbstractEventCreationFragment extends Fragment {
           */
           if (startDate.compareTo(today) < 0) {
             Toast.makeText(
-                    getActivity(), getString(R.string.past_date_not_allowed), Toast.LENGTH_LONG)
+                getActivity(), getString(R.string.past_date_not_allowed), Toast.LENGTH_LONG)
                 .show();
             startDateEditText.setText("");
             startDate = null;
           } else {
             if ((endDate != null) && (startDate.compareTo(endDate) > 0)) {
               Toast.makeText(
-                      getActivity(),
-                      getString(R.string.start_date_after_end_date_not_allowed),
-                      Toast.LENGTH_LONG)
+                  getActivity(),
+                  getString(R.string.start_date_after_end_date_not_allowed),
+                  Toast.LENGTH_LONG)
                   .show();
               startDateEditText.setText("");
               startDate = null;
@@ -168,16 +169,16 @@ public abstract class AbstractEventCreationFragment extends Fragment {
           endDate = selection;
           if (endDate.compareTo(today) < 0) {
             Toast.makeText(
-                    getActivity(), getString(R.string.past_date_not_allowed), Toast.LENGTH_LONG)
+                getActivity(), getString(R.string.past_date_not_allowed), Toast.LENGTH_LONG)
                 .show();
             endDateEditText.setText("");
             endDate = null;
           } else {
             if ((startDate != null) && (endDate.compareTo(startDate) < 0)) {
               Toast.makeText(
-                      getActivity(),
-                      getString(R.string.end_date_after_start_date_not_allowed),
-                      Toast.LENGTH_SHORT)
+                  getActivity(),
+                  getString(R.string.end_date_after_start_date_not_allowed),
+                  Toast.LENGTH_SHORT)
                   .show();
               endDateEditText.setText("");
               endDate = null;
@@ -202,9 +203,9 @@ public abstract class AbstractEventCreationFragment extends Fragment {
                 && (endTime != null)
                 && (startTime.compareTo(endTime) > 0)) {
               Toast.makeText(
-                      getActivity(),
-                      getString(R.string.start_time_after_end_time_not_allowed),
-                      Toast.LENGTH_LONG)
+                  getActivity(),
+                  getString(R.string.start_time_after_end_time_not_allowed),
+                  Toast.LENGTH_LONG)
                   .show();
               startTime = null;
               startTimeEditText.setText("");
@@ -225,9 +226,9 @@ public abstract class AbstractEventCreationFragment extends Fragment {
                 && (startTime != null)
                 && (endTime.compareTo(startTime) < 0)) {
               Toast.makeText(
-                      getActivity(),
-                      getString(R.string.end_time_before_start_time_not_allowed),
-                      Toast.LENGTH_LONG)
+                  getActivity(),
+                  getString(R.string.end_time_before_start_time_not_allowed),
+                  Toast.LENGTH_LONG)
                   .show();
               endTime = null;
               endTimeEditText.setText("");
@@ -279,13 +280,12 @@ public abstract class AbstractEventCreationFragment extends Fragment {
     }
   }
 
-  public void editTextInputChecker(EditText editText, String errorMessage){
-    if(editText != null && errorMessage != null) {
+  public void editTextInputChecker(EditText editText, String errorMessage) {
+    if (editText != null && errorMessage != null) {
       if (editText.getText().toString().trim().isEmpty()) {
         editText.setError(errorMessage);
       }
-    }
-    else{
+    } else {
       throw new IllegalArgumentException();
     }
   }

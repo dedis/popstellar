@@ -7,7 +7,9 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
 import com.github.dedis.student20_pop.utility.network.IdGenerator;
 import com.google.gson.annotations.SerializedName;
 
-/** Data sent to open a roll call */
+/**
+ * Data sent to open a roll call
+ */
 public class OpenRollCall extends Data {
 
   @SerializedName("update_id")
@@ -20,19 +22,19 @@ public class OpenRollCall extends Data {
   /**
    * Constructor of a data Open Roll-Call
    *
-   * @param laoId id of lao
-   * @param opens The 'update_id' of the latest roll call close, or in its absence, the 'id' field
-   *     of the roll call creation
+   * @param laoId    id of lao
+   * @param opens    The 'update_id' of the latest roll call close, or in its absence, the 'id'
+   *                 field of the roll call creation
    * @param openedAt timestamp corresponding to roll call open
-   * @param state the state in which the roll call is when this instance is created
+   * @param state    the state in which the roll call is when this instance is created
    */
   public OpenRollCall(String laoId, String opens, long openedAt, EventState state) {
     this.updateId = IdGenerator.generateOpenRollCallId(laoId, opens, openedAt);
     this.opens = opens;
     this.openedAt = openedAt;
-    if(state==EventState.CLOSED){
+    if (state == EventState.CLOSED) {
       this.action = Action.REOPEN.getAction();
-    }else{
+    } else {
       this.action = Action.OPEN.getAction();
     }
   }

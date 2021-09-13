@@ -6,12 +6,13 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
 import com.github.dedis.student20_pop.utility.network.IdGenerator;
 import com.google.gson.annotations.SerializedName;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/** Data received to track the state of a lao */
+/**
+ * Data received to track the state of a lao
+ */
 public class StateLao extends Data {
 
   private final String id;
@@ -30,12 +31,12 @@ public class StateLao extends Data {
   /**
    * Constructor for a data State LAO
    *
-   * @param id of the LAO state message, Hash(organizer||creation||name)
-   * @param name name of the LAO
-   * @param creation time of creation
+   * @param id           of the LAO state message, Hash(organizer||creation||name)
+   * @param name         name of the LAO
+   * @param creation     time of creation
    * @param lastModified time of last modification
-   * @param organizer id of the LAO's organizer
-   * @param witnesses list of witnesses of the LAO
+   * @param organizer    id of the LAO's organizer
+   * @param witnesses    list of witnesses of the LAO
    * @throws IllegalArgumentException if the id is not valid
    */
   public StateLao(
@@ -47,7 +48,7 @@ public class StateLao extends Data {
       String modificationId,
       Set<String> witnesses,
       List<PublicKeySignaturePair> modificationSignatures) {
-    if(!id.equals(IdGenerator.generateLaoId(organizer, creation, name))) {
+    if (!id.equals(IdGenerator.generateLaoId(organizer, creation, name))) {
       throw new IllegalArgumentException("StateLao id must be Hash(organizer||creation||name)");
     }
     this.id = id;
@@ -96,8 +97,12 @@ public class StateLao extends Data {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     StateLao stateLao = (StateLao) o;
     return getCreation() == stateLao.getCreation()
         && getLastModified() == stateLao.getLastModified()

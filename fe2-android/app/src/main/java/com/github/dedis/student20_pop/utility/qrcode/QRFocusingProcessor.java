@@ -1,7 +1,6 @@
 package com.github.dedis.student20_pop.utility.qrcode;
 
 import android.util.SparseArray;
-
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.FocusingProcessor;
 import com.google.android.gms.vision.Tracker;
@@ -14,33 +13,33 @@ import com.google.android.gms.vision.barcode.Barcode;
  */
 public class QRFocusingProcessor extends FocusingProcessor<Barcode> {
 
-    public QRFocusingProcessor(Detector<Barcode> detector, Tracker<Barcode> tracker) {
-        super(detector, tracker);
+  public QRFocusingProcessor(Detector<Barcode> detector, Tracker<Barcode> tracker) {
+    super(detector, tracker);
+  }
+
+  @Override
+  public int selectFocus(Detector.Detections<Barcode> detections) {
+    // Find most centered qrcode
+    SparseArray<Barcode> barcodes = detections.getDetectedItems();
+    double centerX = detections.getFrameMetadata().getWidth() / 2d;
+    double centerY = detections.getFrameMetadata().getHeight() / 2d;
+    double minSquaredDistance = Double.MAX_VALUE;
+    int id = -1;
+
+    for (int i = 0; i < barcodes.size(); i++) {
+      int key = barcodes.keyAt(i);
+      Barcode curBarcode = barcodes.get(key);
+
+      double dx = centerX - curBarcode.getBoundingBox().centerX();
+      double dy = centerY - curBarcode.getBoundingBox().centerY();
+      double squaredDist = dx * dx + dy * dy;
+
+      if (squaredDist < minSquaredDistance) {
+        minSquaredDistance = squaredDist;
+        id = key;
+      }
     }
 
-    @Override
-    public int selectFocus(Detector.Detections<Barcode> detections) {
-        // Find most centered qrcode
-        SparseArray<Barcode> barcodes = detections.getDetectedItems();
-        double centerX = detections.getFrameMetadata().getWidth() / 2d;
-        double centerY = detections.getFrameMetadata().getHeight() / 2d;
-        double minSquaredDistance = Double.MAX_VALUE;
-        int id = -1;
-
-        for (int i = 0; i < barcodes.size(); i++) {
-            int key = barcodes.keyAt(i);
-            Barcode curBarcode = barcodes.get(key);
-
-            double dx = centerX - curBarcode.getBoundingBox().centerX();
-            double dy = centerY - curBarcode.getBoundingBox().centerY();
-            double squaredDist = dx * dx + dy * dy;
-
-            if (squaredDist < minSquaredDistance) {
-                minSquaredDistance = squaredDist;
-                id = key;
-            }
-        }
-
-        return id;
-    }
+    return id;
+  }
 }

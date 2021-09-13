@@ -5,7 +5,9 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
 import com.github.dedis.student20_pop.utility.network.IdGenerator;
 
-/** Data sent to create a new meeting */
+/**
+ * Data sent to create a new meeting
+ */
 public class CreateMeeting extends Data {
 
   private final String id;
@@ -18,19 +20,20 @@ public class CreateMeeting extends Data {
   /**
    * Constructor for a data Create Meeting Event
    *
-   * @param laoId id of the LAO
-   * @param id of the Meeting creation message, Hash("M"||laoId||creation||name)
-   * @param name name of the Meeting
+   * @param laoId    id of the LAO
+   * @param id       of the Meeting creation message, Hash("M"||laoId||creation||name)
+   * @param name     name of the Meeting
    * @param creation time of creation
    * @param location location of the Meeting
-   * @param start of the Meeting
-   * @param end of the Meeting
+   * @param start    of the Meeting
+   * @param end      of the Meeting
    * @throws IllegalArgumentException if the id is invalid
    */
   public CreateMeeting(
       String laoId, String id, String name, long creation, String location, long start, long end) {
-    if(!id.equals(IdGenerator.generateCreateMeetingId(laoId, creation, name))) {
-      throw new IllegalArgumentException("CreateMeeting id must be Hash(\"M\"||laoId||creation||name)");
+    if (!id.equals(IdGenerator.generateCreateMeetingId(laoId, creation, name))) {
+      throw new IllegalArgumentException(
+          "CreateMeeting id must be Hash(\"M\"||laoId||creation||name)");
     }
     this.id = id;
     this.name = name;
@@ -41,7 +44,7 @@ public class CreateMeeting extends Data {
   }
 
   public CreateMeeting(
-          String laoId, String name, long creation, String location, long start, long end) {
+      String laoId, String name, long creation, String location, long start, long end) {
     this.id = IdGenerator.generateCreateMeetingId(laoId, creation, name);
     this.name = name;
     this.creation = creation;
@@ -86,8 +89,12 @@ public class CreateMeeting extends Data {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     CreateMeeting that = (CreateMeeting) o;
     return getCreation() == that.getCreation()
         && getStart() == that.getStart()

@@ -5,12 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
-
 import com.github.dedis.student20_pop.Injection;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
@@ -26,7 +24,9 @@ import com.github.dedis.student20_pop.qrcode.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.utility.ActivityUtils;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
-/** HomeActivity represents the entry point for the application. */
+/**
+ * HomeActivity represents the entry point for the application.
+ */
 public class HomeActivity extends AppCompatActivity {
 
   private final String TAG = HomeActivity.class.getSimpleName();
@@ -117,7 +117,7 @@ public class HomeActivity extends AppCompatActivity {
     subscribeWalletEvents();
   }
 
-  private void subscribeWalletEvents(){
+  private void subscribeWalletEvents() {
 
     // Subscribe to "open Seed" event
     mViewModel
@@ -139,9 +139,9 @@ public class HomeActivity extends AppCompatActivity {
             booleanEvent -> {
               Boolean isSetUp = booleanEvent.getContentIfNotHandled();
               if (isSetUp != null) {
-                if (isSetUp){
+                if (isSetUp) {
                   setupContentWalletFragment();
-                }else{
+                } else {
                   setupWalletFragment();
                 }
               }
@@ -151,13 +151,13 @@ public class HomeActivity extends AppCompatActivity {
     mViewModel
         .getOpenLaoWalletEvent()
         .observe(
-                this,
-                stringEvent -> {
-                  String laoId = stringEvent.getContentIfNotHandled();
-                  if (laoId != null) {
-                    openContentWallet(laoId);
-                  }
-                });
+            this,
+            stringEvent -> {
+              String laoId = stringEvent.getContentIfNotHandled();
+              if (laoId != null) {
+                openContentWallet(laoId);
+              }
+            });
   }
 
   @Override
@@ -272,7 +272,8 @@ public class HomeActivity extends AppCompatActivity {
 
   private void setupContentWalletFragment() {
     ContentWalletFragment contentWalletFragment =
-        (ContentWalletFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content_wallet);
+        (ContentWalletFragment) getSupportFragmentManager()
+            .findFragmentById(R.id.fragment_content_wallet);
     if (contentWalletFragment == null) {
       contentWalletFragment = ContentWalletFragment.newInstance();
       ActivityUtils.replaceFragmentInActivity(
@@ -282,7 +283,8 @@ public class HomeActivity extends AppCompatActivity {
 
   private void setupSeedWalletFragment() {
     SeedWalletFragment seedWalletFragment =
-        (SeedWalletFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_seed_wallet);
+        (SeedWalletFragment) getSupportFragmentManager()
+            .findFragmentById(R.id.fragment_seed_wallet);
     if (seedWalletFragment == null) {
       seedWalletFragment = SeedWalletFragment.newInstance();
       ActivityUtils.replaceFragmentInActivity(
@@ -302,9 +304,9 @@ public class HomeActivity extends AppCompatActivity {
     Intent intent = new Intent(this, LaoDetailActivity.class);
     Log.d(TAG, "Trying to open lao detail for lao with id " + laoId);
     intent.putExtra("LAO_ID", laoId);
-    if(openLaoDetail) {
+    if (openLaoDetail) {
       intent.putExtra("FRAGMENT_TO_OPEN", "LaoDetail");
-    }else{
+    } else {
       intent.putExtra("FRAGMENT_TO_OPEN", "ContentWallet");
     }
     startActivityForResult(intent, LAO_DETAIL_REQUEST_CODE);

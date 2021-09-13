@@ -8,7 +8,9 @@ import androidx.room.PrimaryKey;
 @Entity
 public class ModificationSignature {
 
-  @PrimaryKey @NonNull public String signature;
+  @PrimaryKey
+  @NonNull
+  public String signature;
 
   public String witnessPublicKey;
 

@@ -38,7 +38,8 @@ import okhttp3.OkHttpClient;
 
 public class Injection {
 
-  private Injection() {}
+  private Injection() {
+  }
 
 
   @SuppressWarnings("unused")
@@ -86,7 +87,7 @@ public class Injection {
 
   @SuppressWarnings("unused")
   public static LAORepository provideLAORepository(
-      Application application, LAOService service, AndroidKeysetManager keysetManager, Gson gson){
+      Application application, LAOService service, AndroidKeysetManager keysetManager, Gson gson) {
     LAODatabase db = LAODatabase.getDatabase(application);
     return LAORepository.getInstance(
         LAORemoteDataSource.getInstance(getMockService()),
@@ -95,31 +96,33 @@ public class Injection {
         gson);
   }
 
-  private static LAOService getMockService(){
-   return new LAOService() {
-     @Override
-     public void sendMessage(Message msg) {
-       //"mock" method
-     }
-     @Override
-     public Observable<GenericMessage> observeMessage() {
-       return new Observable<GenericMessage>() {
-         @Override
-         protected void subscribeActual(Observer<? super GenericMessage> observer) {
-           //"mock" method
-         }
-       };
-     }
-     @Override
-     public Observable<WebSocket.Event> observeWebsocket() {
-       return new Observable<WebSocket.Event>() {
-         @Override
-         protected void subscribeActual(Observer<? super WebSocket.Event> observer) {
-           //"mock" method
-         }
-       };
-     }
-   };
+  private static LAOService getMockService() {
+    return new LAOService() {
+      @Override
+      public void sendMessage(Message msg) {
+        //"mock" method
+      }
+
+      @Override
+      public Observable<GenericMessage> observeMessage() {
+        return new Observable<GenericMessage>() {
+          @Override
+          protected void subscribeActual(Observer<? super GenericMessage> observer) {
+            //"mock" method
+          }
+        };
+      }
+
+      @Override
+      public Observable<WebSocket.Event> observeWebsocket() {
+        return new Observable<WebSocket.Event>() {
+          @Override
+          protected void subscribeActual(Observer<? super WebSocket.Event> observer) {
+            //"mock" method
+          }
+        };
+      }
+    };
   }
 
 }

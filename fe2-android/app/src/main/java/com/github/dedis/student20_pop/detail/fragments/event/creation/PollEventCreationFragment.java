@@ -14,15 +14,12 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
-
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.detail.adapters.ChoicesListViewAdapter;
 import com.github.dedis.student20_pop.detail.listeners.OnEventCreatedListener;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +42,8 @@ public final class PollEventCreationFragment extends AbstractEventCreationFragme
   private final TextWatcher buttonsTextWatcher =
       new TextWatcher() {
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {

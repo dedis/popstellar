@@ -1,10 +1,11 @@
 package com.github.dedis.student20_pop.model.network.method;
 
 import com.github.dedis.student20_pop.model.network.GenericMessage;
-
 import java.util.Objects;
 
-/** An abstract low level message that is sent over a specific channel */
+/**
+ * An abstract low level message that is sent over a specific channel
+ */
 public abstract class Message extends GenericMessage {
 
   private final String channel;
@@ -22,18 +23,26 @@ public abstract class Message extends GenericMessage {
     this.channel = channel;
   }
 
-  /** Return the Message method */
+  /**
+   * Return the Message method
+   */
   public abstract String getMethod();
 
-  /** Returnss the message channel */
+  /**
+   * Returnss the message channel
+   */
   public String getChannel() {
     return channel;
   }
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     Message that = (Message) o;
     return Objects.equals(channel, that.channel);
   }

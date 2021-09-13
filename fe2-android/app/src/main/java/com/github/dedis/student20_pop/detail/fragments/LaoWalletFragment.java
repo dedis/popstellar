@@ -7,89 +7,89 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentLaoWalletBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.adapters.WalletListAdapter;
-
 import java.util.ArrayList;
 
 public class LaoWalletFragment extends Fragment {
-    public static final String TAG = LaoWalletFragment.class.getSimpleName();
 
-    private LaoDetailViewModel mLaoDetailViewModel;
-    private WalletListAdapter mWalletListAdapter;
-    private FragmentLaoWalletBinding mFragmentLaoWalletBinding;
+  public static final String TAG = LaoWalletFragment.class.getSimpleName();
 
-    public static LaoWalletFragment newInstance() {
-        return new LaoWalletFragment();
-    }
+  private LaoDetailViewModel mLaoDetailViewModel;
+  private WalletListAdapter mWalletListAdapter;
+  private FragmentLaoWalletBinding mFragmentLaoWalletBinding;
 
-    @Nullable
-    @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
-        mFragmentLaoWalletBinding = FragmentLaoWalletBinding.inflate(inflater, container, false);
+  public static LaoWalletFragment newInstance() {
+    return new LaoWalletFragment();
+  }
 
-        mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
+  @Nullable
+  @Override
+  public View onCreateView(
+      @NonNull LayoutInflater inflater,
+      @Nullable ViewGroup container,
+      @Nullable Bundle savedInstanceState) {
+    mFragmentLaoWalletBinding = FragmentLaoWalletBinding.inflate(inflater, container, false);
 
-        mFragmentLaoWalletBinding.setViewModel(mLaoDetailViewModel);
-        mFragmentLaoWalletBinding.setLifecycleOwner(getActivity());
+    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 
-        return mFragmentLaoWalletBinding.getRoot();
-    }
+    mFragmentLaoWalletBinding.setViewModel(mLaoDetailViewModel);
+    mFragmentLaoWalletBinding.setLifecycleOwner(getActivity());
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    return mFragmentLaoWalletBinding.getRoot();
+  }
 
-        setupPropertiesButton();
-        setupWalletListAdapter();
-        setupWalletListUpdates();
+  @Override
+  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    super.onActivityCreated(savedInstanceState);
 
-        mLaoDetailViewModel
-                .getLaoAttendedRollCalls()
-                .observe(
-                        getActivity(),
-                        rollCalls -> {
-                            Log.d(TAG, "Got a list update for LAO roll calls");
-                            mWalletListAdapter.replaceList(rollCalls);
-                        });
+    setupPropertiesButton();
+    setupWalletListAdapter();
+    setupWalletListUpdates();
 
-        mFragmentLaoWalletBinding.backButton.setOnClickListener(clicked -> mLaoDetailViewModel.openHome());
-    }
+    mLaoDetailViewModel
+        .getLaoAttendedRollCalls()
+        .observe(
+            getActivity(),
+            rollCalls -> {
+              Log.d(TAG, "Got a list update for LAO roll calls");
+              mWalletListAdapter.replaceList(rollCalls);
+            });
 
-    private void setupPropertiesButton() {
-        Button propertiesButton = (Button) getActivity().findViewById(R.id.tab_properties);
+    mFragmentLaoWalletBinding.backButton
+        .setOnClickListener(clicked -> mLaoDetailViewModel.openHome());
+  }
 
-        propertiesButton.setOnClickListener(clicked -> mLaoDetailViewModel.toggleShowHideProperties());
-    }
+  private void setupPropertiesButton() {
+    Button propertiesButton = (Button) getActivity().findViewById(R.id.tab_properties);
 
-    private void setupWalletListAdapter() {
-        ListView listView = mFragmentLaoWalletBinding.walletList;
+    propertiesButton.setOnClickListener(clicked -> mLaoDetailViewModel.toggleShowHideProperties());
+  }
 
-        mWalletListAdapter = new WalletListAdapter(new ArrayList<>(0), mLaoDetailViewModel, getActivity());
+  private void setupWalletListAdapter() {
+    ListView listView = mFragmentLaoWalletBinding.walletList;
 
-        listView.setAdapter(mWalletListAdapter);
-    }
+    mWalletListAdapter = new WalletListAdapter(new ArrayList<>(0), mLaoDetailViewModel,
+        getActivity());
 
-    private void setupWalletListUpdates() {
-        mLaoDetailViewModel
-                .getLaoAttendedRollCalls()
-                .observe(
-                        getActivity(),
-                        rollCalls -> {
-                            Log.d(TAG, "Got a wallet list update");
-                            mWalletListAdapter.replaceList(rollCalls);
-                        }
-                );
-    }
+    listView.setAdapter(mWalletListAdapter);
+  }
+
+  private void setupWalletListUpdates() {
+    mLaoDetailViewModel
+        .getLaoAttendedRollCalls()
+        .observe(
+            getActivity(),
+            rollCalls -> {
+              Log.d(TAG, "Got a wallet list update");
+              mWalletListAdapter.replaceList(rollCalls);
+            }
+        );
+  }
 }

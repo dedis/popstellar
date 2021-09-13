@@ -1,7 +1,6 @@
 package com.github.dedis.student20_pop.model.network.answer;
 
 import com.github.dedis.student20_pop.model.network.GenericMessage;
-
 import java.util.Objects;
 
 /**
@@ -22,15 +21,21 @@ public abstract class Answer extends GenericMessage {
     this.id = id;
   }
 
-  /** Returns the ID of the answer */
+  /**
+   * Returns the ID of the answer
+   */
   public int getId() {
     return id;
   }
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     Answer answer = (Answer) o;
     return getId() == answer.getId();
   }

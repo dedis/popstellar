@@ -1,11 +1,13 @@
 package com.github.dedis.student20_pop.model.event;
 
-/** Class modeling an Event */
+/**
+ * Class modeling an Event
+ */
 public abstract class Event implements Comparable<Event> {
 
   public abstract long getStartTimestamp();
 
-  public abstract EventType getType() ;
+  public abstract EventType getType();
 
   public abstract long getEndTimestamp();
 

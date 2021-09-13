@@ -1,26 +1,5 @@
 package com.github.dedis.student20_pop.model.network.method.message.data;
 
-import android.util.Log;
-
-import com.github.dedis.student20_pop.model.network.method.message.data.election.CastVote;
-import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionEnd;
-import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionResult;
-import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
-import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
-import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
-import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
-import com.github.dedis.student20_pop.model.network.method.message.data.meeting.CreateMeeting;
-import com.github.dedis.student20_pop.model.network.method.message.data.meeting.StateMeeting;
-import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessageSignature;
-import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CloseRollCall;
-import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
-import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.CAST_VOTE;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.CLOSE;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.CREATE;
@@ -38,16 +17,39 @@ import static com.github.dedis.student20_pop.model.network.method.message.data.O
 import static com.github.dedis.student20_pop.model.network.method.message.data.Objects.MESSAGE;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Objects.ROLL_CALL;
 
-/** An abstract high level message */
+import android.util.Log;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.CastVote;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionEnd;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionResult;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
+import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
+import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
+import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
+import com.github.dedis.student20_pop.model.network.method.message.data.meeting.CreateMeeting;
+import com.github.dedis.student20_pop.model.network.method.message.data.meeting.StateMeeting;
+import com.github.dedis.student20_pop.model.network.method.message.data.message.WitnessMessageSignature;
+import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CloseRollCall;
+import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
+import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+/**
+ * An abstract high level message
+ */
 public abstract class Data {
 
-  /** A mapping of (object, action) -> class */
+  /**
+   * A mapping of (object, action) -> class
+   */
   private static final Map<EntryPair, Class<? extends Data>> messages = buildMessagesMap();
 
   /**
    * Create an entry pair given obj and action
    *
-   * @param obj of the pair
+   * @param obj    of the pair
    * @param action of the pair
    * @return the pair
    */
@@ -82,8 +84,8 @@ public abstract class Data {
     messagesMap.put(pair(ROLL_CALL, CLOSE), CloseRollCall.class);
 
     // Election
-    messagesMap.put(pair(ELECTION,SETUP), ElectionSetup.class);
-    messagesMap.put(pair(ELECTION,CAST_VOTE), CastVote.class);
+    messagesMap.put(pair(ELECTION, SETUP), ElectionSetup.class);
+    messagesMap.put(pair(ELECTION, CAST_VOTE), CastVote.class);
     messagesMap.put(pair(ELECTION, END), ElectionEnd.class);
     messagesMap.put(pair(ELECTION, RESULT), ElectionResult.class);
 
@@ -93,7 +95,7 @@ public abstract class Data {
   /**
    * Return the class assigned to the pair (obj, action)
    *
-   * @param obj of the entry
+   * @param obj    of the entry
    * @param action of the entry
    * @return the class assigned to the pair of empty if none are defined
    */
@@ -102,13 +104,19 @@ public abstract class Data {
     return Optional.ofNullable(messages.get(pair(obj, action)));
   }
 
-  /** Returns the object the message is referring to. */
+  /**
+   * Returns the object the message is referring to.
+   */
   public abstract String getObject();
 
-  /** Returns the action the message is handling. */
+  /**
+   * Returns the action the message is handling.
+   */
   public abstract String getAction();
 
-  /** Entry of the messages map. A pair of (Objects, Action) */
+  /**
+   * Entry of the messages map. A pair of (Objects, Action)
+   */
   private static final class EntryPair {
 
     private final Objects object;
@@ -127,8 +135,12 @@ public abstract class Data {
 
     @Override
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
       EntryPair entryPair = (EntryPair) o;
       return object == entryPair.object && action == entryPair.action;
     }

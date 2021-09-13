@@ -6,12 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
 import com.github.dedis.student20_pop.R;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
@@ -28,19 +26,20 @@ public final class AddAttendeeFragment extends Fragment {
 
   public static final String TAG = AddAttendeeFragment.class.getSimpleName();
   private final String eventId;
-    private CameraSource camera;
-    private BarcodeDetector detector;
+  private CameraSource camera;
+  private BarcodeDetector detector;
 
   public AddAttendeeFragment(String eventId, CameraSource camera, BarcodeDetector detector) {
     super();
     this.eventId = eventId;
-      this.camera = camera;
-      this.detector = detector;
+    this.camera = camera;
+    this.detector = detector;
   }
 
-    public static AddAttendeeFragment newInstance(String eventId, CameraSource camera, BarcodeDetector detector) {
-        return new AddAttendeeFragment(eventId, camera, detector);
-    }
+  public static AddAttendeeFragment newInstance(String eventId, CameraSource camera,
+      BarcodeDetector detector) {
+    return new AddAttendeeFragment(eventId, camera, detector);
+  }
 
   @Nullable
   @Override
@@ -64,7 +63,8 @@ public final class AddAttendeeFragment extends Fragment {
                         .getSupportFragmentManager()
                         .popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                   })
-              .setNegativeButton(getString(R.string.cancel), (dialog, id) -> {});
+              .setNegativeButton(getString(R.string.cancel), (dialog, id) -> {
+              });
 
           AlertDialog alert = builder.create();
           alert.show();

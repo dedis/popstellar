@@ -12,7 +12,8 @@ public class LAOWitnessCrossRef {
     this.publicKey = publicKey;
   }
 
-  @NonNull public String channel;
+  @NonNull
+  public String channel;
 
   @NonNull
   @ColumnInfo(index = true)

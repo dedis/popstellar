@@ -14,23 +14,31 @@ public abstract class Query extends Message {
    * Constructor for a Query
    *
    * @param channel name of the channel
-   * @param id request ID of the query
+   * @param id      request ID of the query
    */
   protected Query(String channel, int id) {
     super(channel);
     this.id = id;
   }
 
-  /** Returns the request ID. */
+  /**
+   * Returns the request ID.
+   */
   public int getRequestId() {
     return id;
   }
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    if (!super.equals(o)) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
     Query query = (Query) o;
     return id == query.id;
   }

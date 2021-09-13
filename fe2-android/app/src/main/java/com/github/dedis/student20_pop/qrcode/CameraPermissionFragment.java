@@ -7,20 +7,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentCameraPermBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.home.HomeActivity;
 
-/** Fragment handling permission granting for the camera */
+/**
+ * Fragment handling permission granting for the camera
+ */
 public final class CameraPermissionFragment extends Fragment {
 
   public static final String TAG = CameraPermissionFragment.class.getSimpleName();
@@ -52,10 +52,8 @@ public final class CameraPermissionFragment extends Fragment {
     } else if (activity instanceof LaoDetailActivity) {
       mCameraPermissionViewModel = LaoDetailActivity.obtainViewModel(activity);
     } else {
-      throw new IllegalArgumentException("cannot obtain view model for "+ TAG);
+      throw new IllegalArgumentException("cannot obtain view model for " + TAG);
     }
-
-
 
     mCameraPermFragBinding.setLifecycleOwner(activity);
 
@@ -67,7 +65,7 @@ public final class CameraPermissionFragment extends Fragment {
     super.onActivityCreated(savedInstanceState);
 
     Button back = (Button) getActivity().findViewById(R.id.tab_back);
-    back.setOnClickListener(c->((LaoDetailViewModel) mCameraPermissionViewModel).openLaoDetail());
+    back.setOnClickListener(c -> ((LaoDetailViewModel) mCameraPermissionViewModel).openLaoDetail());
     setupCameraPermissionButton();
   }
 
@@ -87,11 +85,13 @@ public final class CameraPermissionFragment extends Fragment {
     super.onResume();
     // If the permission was granted while the app was paused, switch to QRCodeScanningFragment
     if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
-        == PackageManager.PERMISSION_GRANTED) mCameraPermissionViewModel.onPermissionGranted();
+        == PackageManager.PERMISSION_GRANTED) {
+      mCameraPermissionViewModel.onPermissionGranted();
+    }
   }
 
   private void setupCameraPermissionButton() {
     mCameraPermFragBinding.allowCameraButton.setOnClickListener(
-        v -> requestPermissions(new String[] {Manifest.permission.CAMERA}, HANDLE_CAMERA_PERM));
+        v -> requestPermissions(new String[]{Manifest.permission.CAMERA}, HANDLE_CAMERA_PERM));
   }
 }

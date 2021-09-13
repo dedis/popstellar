@@ -11,11 +11,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-
 import java.lang.reflect.Type;
 import java.util.Optional;
 
-/** Json serializer and deserializer for the data messages */
+/**
+ * Json serializer and deserializer for the data messages
+ */
 public class JsonDataSerializer implements JsonSerializer<Data>, JsonDeserializer<Data> {
 
   private static final String OBJECT = "object";
@@ -28,20 +29,22 @@ public class JsonDataSerializer implements JsonSerializer<Data>, JsonDeserialize
     Objects object = Objects.find(obj.get(OBJECT).getAsString());
     Action action = Action.find(obj.get(ACTION).getAsString());
 
-    if (object == null)
+    if (object == null) {
       throw new JsonParseException("Unknown object type : " + obj.get(OBJECT).getAsString());
-    if (action == null)
+    }
+    if (action == null) {
       throw new JsonParseException("Unknown action type : " + obj.get(ACTION).getAsString());
-
+    }
 
     Optional<Class<? extends Data>> clazz = Data.getType(object, action);
-    if (!clazz.isPresent())
+    if (!clazz.isPresent()) {
       throw new JsonParseException(
           "The pair ("
               + object.getObject()
               + ", "
               + action.getAction()
               + ") does not exists in the protocol");
+    }
 
     return context.deserialize(json, clazz.get());
   }

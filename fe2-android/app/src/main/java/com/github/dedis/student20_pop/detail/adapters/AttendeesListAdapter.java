@@ -5,67 +5,64 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
-
 import com.github.dedis.student20_pop.databinding.LayoutAttendeeBinding;
-
+import java.util.List;
 import net.glxn.qrgen.android.QRCode;
 
-import java.util.List;
-
 public class AttendeesListAdapter extends BaseAdapter {
-    private List<String> attendees;
-    private LifecycleOwner lifecycleOwner;
 
-    public AttendeesListAdapter(List<String> attendees, LifecycleOwner activity) {
-        setList(attendees);
-        lifecycleOwner = activity;
+  private List<String> attendees;
+  private LifecycleOwner lifecycleOwner;
+
+  public AttendeesListAdapter(List<String> attendees, LifecycleOwner activity) {
+    setList(attendees);
+    lifecycleOwner = activity;
+  }
+
+  private void setList(List<String> attendees) {
+    this.attendees = attendees;
+    notifyDataSetChanged();
+  }
+
+  @Override
+  public int getCount() {
+    return attendees != null ? attendees.size() : 0;
+  }
+
+  @Override
+  public Object getItem(int position) {
+    return attendees.get(position);
+  }
+
+  @Override
+  public long getItemId(int position) {
+    return position;
+  }
+
+  @Override
+  public View getView(int position, View view, ViewGroup viewGroup) {
+    LayoutAttendeeBinding binding;
+    if (view == null) {
+      // inflate
+      LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
+
+      binding = LayoutAttendeeBinding.inflate(inflater, viewGroup, false);
+    } else {
+      binding = DataBindingUtil.getBinding(view);
     }
 
-    private void setList(List<String> attendees) {
-        this.attendees = attendees;
-        notifyDataSetChanged();
-    }
+    String attendee = attendees.get(position);
 
-    @Override
-    public int getCount() {
-        return attendees != null ? attendees.size() : 0;
-    }
+    binding.publicKey.setText("Public key:\n" + attendee);
 
-    @Override
-    public Object getItem(int position) {
-        return attendees.get(position);
-    }
+    Bitmap myBitmap = QRCode.from(attendee).bitmap();
+    binding.pkQrCode.setImageBitmap(myBitmap);
 
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
+    binding.setLifecycleOwner(lifecycleOwner);
+    binding.executePendingBindings();
 
-    @Override
-    public View getView(int position, View view, ViewGroup viewGroup) {
-        LayoutAttendeeBinding binding;
-        if (view == null) {
-            // inflate
-            LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-
-            binding = LayoutAttendeeBinding.inflate(inflater, viewGroup, false);
-        } else {
-            binding = DataBindingUtil.getBinding(view);
-        }
-
-        String attendee = attendees.get(position);
-
-        binding.publicKey.setText("Public key:\n"+attendee);
-
-        Bitmap myBitmap = QRCode.from(attendee).bitmap();
-        binding.pkQrCode.setImageBitmap(myBitmap);
-
-        binding.setLifecycleOwner(lifecycleOwner);
-        binding.executePendingBindings();
-
-        return binding.getRoot();
-    }
+    return binding.getRoot();
+  }
 }

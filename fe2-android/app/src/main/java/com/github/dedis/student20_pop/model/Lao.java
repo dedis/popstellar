@@ -6,7 +6,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-/** Class modeling a Local Autonomous Organization (LAO) */
+/**
+ * Class modeling a Local Autonomous Organization (LAO)
+ */
 public final class Lao {
 
   private String channel;
@@ -17,17 +19,21 @@ public final class Lao {
   private String organizer;
   private String modificationId;
   private Set<String> witnesses;
-  private Map<String,WitnessMessage> witnessMessages; /** map between a messages ID and the corresponding object WitnessMessage that has to be signed by witnesses */
+  private Map<String, WitnessMessage> witnessMessages;
+  /**
+   * map between a messages ID and the corresponding object WitnessMessage that has to be signed by
+   * witnesses
+   */
 
   private Set<PendingUpdate> pendingUpdates;
 
   private Map<String, RollCall> rollCalls;
-  private Map<String,Election> elections;
+  private Map<String, Election> elections;
+
   public Lao(String id) {
-    if(id == null) {
+    if (id == null) {
       throw new IllegalArgumentException(" The id is null");
-    }
-    else if(id.isEmpty()) {
+    } else if (id.isEmpty()) {
       throw new IllegalArgumentException(" The id of the Lao is empty");
     }
     this.channel = id;
@@ -41,20 +47,18 @@ public final class Lao {
 
   public Lao(String id, String name) {
     this(id);
-    if(name == null) {
+    if (name == null) {
       throw new IllegalArgumentException(" The name of the Lao is null");
-    }
-    else if(name.isEmpty()) {
+    } else if (name.isEmpty()) {
       throw new IllegalArgumentException(" The name of the Lao is empty");
-    }
-    else {
+    } else {
       this.name = name;
     }
   }
 
   public void updateRollCall(String prevId, RollCall rollCall) {
 
-    if(rollCall == null) {
+    if (rollCall == null) {
       throw new IllegalArgumentException(" The roll call is null");
     }
 
@@ -66,7 +70,7 @@ public final class Lao {
   }
 
   public void updateElection(String prevId, Election election) {
-    if(election == null) {
+    if (election == null) {
       throw new IllegalArgumentException(" The election is null");
     }
     if (elections.containsKey(prevId)) {
@@ -78,12 +82,12 @@ public final class Lao {
 
 
   /**
-   * Update the list of messages that have to be signed by witnesses.
-   * If the list of messages contain the message with  Id prevId , it will
-   * remove this message from the list. Then it will add the new message to the list with the corresponding newId
+   * Update the list of messages that have to be signed by witnesses. If the list of messages
+   * contain the message with  Id prevId , it will remove this message from the list. Then it will
+   * add the new message to the list with the corresponding newId
    *
-   * @param prevId  the previous id of a message that needs to be signed
-   * @param witnessMessage  the object representing the message needing to be signed
+   * @param prevId         the previous id of a message that needs to be signed
+   * @param witnessMessage the object representing the message needing to be signed
    */
   public void updateWitnessMessage(String prevId, WitnessMessage witnessMessage) {
     if (witnessMessages.containsKey(prevId)) {
@@ -109,22 +113,22 @@ public final class Lao {
   /**
    * Removes an election from the list of elections.
    *
-   * @param id       the id of the Election
+   * @param id the id of the Election
    * @return true if the election was deleted
    */
   public boolean removeElection(String id) {
-    return (elections.remove(id) != null ) ;
+    return (elections.remove(id) != null);
 
   }
 
   /**
    * Removes a roll call from the list of roll calls.
    *
-   * @param id       the id of the Roll Call
+   * @param id the id of the Roll Call
    * @return true if the roll call was deleted
    */
   public boolean removeRollCall(String id) {
-    return (rollCalls.remove(id) != null ) ;
+    return (rollCalls.remove(id) != null);
 
   }
 
@@ -157,10 +161,9 @@ public final class Lao {
   }
 
   public void setId(String id) {
-    if(id == null) {
+    if (id == null) {
       throw new IllegalArgumentException(" The Id of the Lao is null");
-    }
-    else if(id.isEmpty()) {
+    } else if (id.isEmpty()) {
       throw new IllegalArgumentException(" The id of the Lao is empty");
     }
 
@@ -173,10 +176,9 @@ public final class Lao {
 
   public void setName(String name) {
 
-    if(name == null) {
+    if (name == null) {
       throw new IllegalArgumentException(" The name of the Lao is null");
-    }
-    else if(name.isEmpty()) {
+    } else if (name.isEmpty()) {
       throw new IllegalArgumentException(" The name of the Lao is empty");
     }
 
@@ -209,11 +211,13 @@ public final class Lao {
 
   public void setWitnesses(Set<String> witnesses) {
 
-    if(witnesses == null) {
+    if (witnesses == null) {
       throw new IllegalArgumentException(" The witnesses set is null");
     }
     for (String witness : witnesses) {
-      if (witness == null) throw new IllegalArgumentException("One of the witnesses in the set is null");
+      if (witness == null) {
+        throw new IllegalArgumentException("One of the witnesses in the set is null");
+      }
     }
     this.witnesses = witnesses;
   }
@@ -222,13 +226,17 @@ public final class Lao {
     this.pendingUpdates = pendingUpdates;
   }
 
-  public Map<String, Election> getElections() {return elections;}
+  public Map<String, Election> getElections() {
+    return elections;
+  }
 
   public Map<String, RollCall> getRollCalls() {
     return rollCalls;
   }
 
-  public Map<String,WitnessMessage> getWitnessMessages() {return witnessMessages;}
+  public Map<String, WitnessMessage> getWitnessMessages() {
+    return witnessMessages;
+  }
 
   public void setRollCalls(Map<String, RollCall> rollCalls) {
     this.rollCalls = rollCalls;

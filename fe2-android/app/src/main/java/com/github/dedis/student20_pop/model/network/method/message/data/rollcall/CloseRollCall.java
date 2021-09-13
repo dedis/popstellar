@@ -5,10 +5,11 @@ import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
 import com.github.dedis.student20_pop.utility.network.IdGenerator;
 import com.google.gson.annotations.SerializedName;
-
 import java.util.List;
 
-/** Data sent to close a Roll-Call */
+/**
+ * Data sent to close a Roll-Call
+ */
 public class CloseRollCall extends Data {
 
   @SerializedName("update_id")
@@ -21,10 +22,10 @@ public class CloseRollCall extends Data {
   /**
    * Constructor for a data Close Roll-Call Event
    *
-   * @param laoId id of the LAO
-   * @param closes The 'update_id' of the latest roll call open, or in its absence, the 'id' field
-   *     of the roll call creation
-   * @param closedAt timestamp of the roll call close
+   * @param laoId     id of the LAO
+   * @param closes    The 'update_id' of the latest roll call open, or in its absence, the 'id'
+   *                  field of the roll call creation
+   * @param closedAt  timestamp of the roll call close
    * @param attendees list of attendees of the Roll-Call
    */
   public CloseRollCall(String laoId, String closes, long closedAt, List<String> attendees) {

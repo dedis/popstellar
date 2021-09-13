@@ -3,7 +3,6 @@ package com.github.dedis.student20_pop.model;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventState;
 import com.github.dedis.student20_pop.model.event.EventType;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -76,7 +75,7 @@ public class RollCall extends Event {
   }
 
   public void setState(EventState state) {
-    this.state= state;
+    this.state = state;
   }
 
   public Set<String> getAttendees() {

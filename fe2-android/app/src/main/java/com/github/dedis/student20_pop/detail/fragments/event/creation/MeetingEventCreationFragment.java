@@ -9,11 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
-
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.detail.listeners.OnEventCreatedListener;
 
@@ -34,7 +32,8 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
   private final TextWatcher confirmTextWatcher =
       new TextWatcher() {
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -45,7 +44,8 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
         }
 
         @Override
-        public void afterTextChanged(Editable s) {}
+        public void afterTextChanged(Editable s) {
+        }
       };
 
   private Button cancelButton;

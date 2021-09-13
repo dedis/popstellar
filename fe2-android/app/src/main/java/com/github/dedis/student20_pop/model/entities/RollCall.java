@@ -7,7 +7,9 @@ import androidx.room.PrimaryKey;
 @Entity
 public class RollCall {
 
-  @PrimaryKey @NonNull public String id;
+  @PrimaryKey
+  @NonNull
+  public String id;
 
   public String laoChannel;
 

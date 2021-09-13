@@ -1,51 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:id="@+id/poll_choices_layout"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:id="@+id/poll_choices_layout"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-        <TextView
-                android:id="@+id/choice_number"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_button"
-                android:textSize="@dimen/size_body"
-                app:layout_constraintEnd_toStartOf="@+id/choice_edit_text"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+    <TextView
+      android:id="@+id/choice_number"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/margin_button"
+      android:textSize="@dimen/size_body"
+      app:layout_constraintEnd_toStartOf="@+id/choice_edit_text"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-                android:id="@+id/choice_edit_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="41dp"
-                android:ems="10"
-                android:hint="@string/choice_edit_text_hint"
-                android:inputType="text"
-                android:textSize="@dimen/size_body"
-                app:layout_constraintEnd_toStartOf="@+id/delete_choice_button"
-                app:layout_constraintStart_toEndOf="@+id/choice_number"
-                app:layout_constraintTop_toTopOf="parent"
-                android:autofillHints="true"/>
+    <EditText
+      android:id="@+id/choice_edit_text"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="41dp"
+      android:ems="10"
+      android:hint="@string/choice_edit_text_hint"
+      android:inputType="text"
+      android:textSize="@dimen/size_body"
+      app:layout_constraintEnd_toStartOf="@+id/delete_choice_button"
+      app:layout_constraintStart_toEndOf="@+id/choice_number"
+      app:layout_constraintTop_toTopOf="parent"
+      android:autofillHints="true" />
 
-        <Button
-                android:id="@+id/delete_choice_button"
-                android:layout_width="@dimen/margin_text"
-                android:layout_height="@dimen/margin_text"
-                android:gravity="center_vertical"
-                android:text="@string/delete_choice_button"
-                android:textColor="@color/red"
-                android:visibility="visible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/choice_edit_text"
-                app:layout_constraintTop_toTopOf="parent"/>
+    <Button
+      android:id="@+id/delete_choice_button"
+      android:layout_width="@dimen/margin_text"
+      android:layout_height="@dimen/margin_text"
+      android:gravity="center_vertical"
+      android:text="@string/delete_choice_button"
+      android:textColor="@color/red"
+      android:visibility="visible"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toEndOf="@+id/choice_edit_text"
+      app:layout_constraintTop_toTopOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+  </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

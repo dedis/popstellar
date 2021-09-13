@@ -6,18 +6,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
-
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.LayoutWitnessesListViewBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.listeners.WitnessDeleteListener;
-
 import java.util.List;
 
-/** Adapter to show witnesses of an Event */
+/**
+ * Adapter to show witnesses of an Event
+ */
 public class WitnessListViewAdapter extends BaseAdapter {
 
   private final LaoDetailViewModel viewModel;
@@ -81,14 +80,15 @@ public class WitnessListViewAdapter extends BaseAdapter {
    * LayoutInflater#inflate(int, ViewGroup, boolean)} to specify a root view and to prevent
    * attachment to the root.
    *
-   * @param position The position of the item within the adapter's data set of the item whose view
-   *     we want.
+   * @param position    The position of the item within the adapter's data set of the item whose
+   *                    view we want.
    * @param convertView The old view to reuse, if possible. Note: You should check that this view is
-   *     non-null and of an appropriate type before using. If it is not possible to convert this
-   *     view to display the correct data, this method can create a new view. Heterogeneous lists
-   *     can specify their number of view types, so that this View is always of the right type (see
-   *     {@link #getViewTypeCount()} and {@link #getItemViewType(int)}).
-   * @param parent The parent that this view will eventually be attached to
+   *                    non-null and of an appropriate type before using. If it is not possible to
+   *                    convert this view to display the correct data, this method can create a new
+   *                    view. Heterogeneous lists can specify their number of view types, so that
+   *                    this View is always of the right type (see {@link #getViewTypeCount()} and
+   *                    {@link #getItemViewType(int)}).
+   * @param parent      The parent that this view will eventually be attached to
    * @return A View corresponding to the data at the specified position.
    */
   @Override
@@ -107,20 +107,20 @@ public class WitnessListViewAdapter extends BaseAdapter {
     binding.setWitness(witnesses.get(position));
     Context context = parent.getContext();
     WitnessDeleteListener deleteButtonListener =
-            witness -> {
-              AlertDialog.Builder adb = new AlertDialog.Builder(context);
-              // TODO: Wait on this until we hear a success/failure from the server.
-              adb.setTitle(context.getString(R.string.delete_witness_dialog_title));
-              adb.setMessage(
-                  context.getString(R.string.delete_witness_dialog_message, +(position + 1)));
-              adb.setNegativeButton(context.getString(R.string.button_cancel), null);
-              adb.setPositiveButton(
-                  context.getString(R.string.button_confirm),
-                  (dialog, which) -> {
-                    viewModel.removeWitness(witness);
-                  });
-              adb.show();
-            };
+        witness -> {
+          AlertDialog.Builder adb = new AlertDialog.Builder(context);
+          // TODO: Wait on this until we hear a success/failure from the server.
+          adb.setTitle(context.getString(R.string.delete_witness_dialog_title));
+          adb.setMessage(
+              context.getString(R.string.delete_witness_dialog_message, +(position + 1)));
+          adb.setNegativeButton(context.getString(R.string.button_cancel), null);
+          adb.setPositiveButton(
+              context.getString(R.string.button_confirm),
+              (dialog, which) -> {
+                viewModel.removeWitness(witness);
+              });
+          adb.show();
+        };
 
     binding.setListener(deleteButtonListener);
     binding.executePendingBindings();

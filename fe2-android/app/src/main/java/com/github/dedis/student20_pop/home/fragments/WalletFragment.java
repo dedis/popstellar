@@ -8,13 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-
 import com.github.dedis.student20_pop.databinding.FragmentWalletBinding;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.home.HomeViewModel;
@@ -22,15 +20,20 @@ import com.github.dedis.student20_pop.model.Wallet;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
-/** Fragment used to display the wallet UI */
+/**
+ * Fragment used to display the wallet UI
+ */
 public class WalletFragment extends Fragment {
+
   public static final String TAG = WalletFragment.class.getSimpleName();
 
   private FragmentWalletBinding mWalletFragBinding;
   private HomeViewModel mHomeViewModel;
+
   public static WalletFragment newInstance() {
     return new WalletFragment();
   }
+
   private AlertDialog seedAlert;
 
   @Nullable
@@ -71,8 +74,8 @@ public class WalletFragment extends Fragment {
 
   private void setupOwnSeedButton() {
     String defaultSeed = "elbow six card empty next sight turn quality capital please vocal indoor";
-    mWalletFragBinding.buttonOwnSeed.setOnClickListener(v ->{
-      if(seedAlert!=null && seedAlert.isShowing()) {
+    mWalletFragBinding.buttonOwnSeed.setOnClickListener(v -> {
+      if (seedAlert != null && seedAlert.isShowing()) {
         seedAlert.dismiss();
       }
       AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -80,28 +83,31 @@ public class WalletFragment extends Fragment {
 
       final EditText input = new EditText(getActivity());
       input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-      input.setText(defaultSeed); //for facilitate test we set a default seed for login in the Wallet
+      input
+          .setText(defaultSeed); //for facilitate test we set a default seed for login in the Wallet
       builder.setView(input);
 
-      final boolean[] checked = new boolean[] {false};
-      builder.setMultiChoiceItems(new String[]{"show password"}, checked, (dialogInterface, i, b)-> {
-        checked[i] = b;
-        if(b) {
-          input.setInputType(InputType.TYPE_CLASS_TEXT);
-        }else{
-          input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        }
-      });
+      final boolean[] checked = new boolean[]{false};
+      builder
+          .setMultiChoiceItems(new String[]{"show password"}, checked, (dialogInterface, i, b) -> {
+            checked[i] = b;
+            if (b) {
+              input.setInputType(InputType.TYPE_CLASS_TEXT);
+            } else {
+              input
+                  .setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            }
+          });
 
-      builder.setPositiveButton("Set up wallet", (dialog,which) -> {
-          if(!mHomeViewModel.importSeed(input.getText().toString())){
-            Toast.makeText(getContext().getApplicationContext(),
-                "Error import key, try again",
-                Toast.LENGTH_LONG).show();
+      builder.setPositiveButton("Set up wallet", (dialog, which) -> {
+            if (!mHomeViewModel.importSeed(input.getText().toString())) {
+              Toast.makeText(getContext().getApplicationContext(),
+                  "Error import key, try again",
+                  Toast.LENGTH_LONG).show();
+            }
           }
-        }
       );
-      builder.setNegativeButton("Cancel",  (dialog,which) -> dialog.cancel());
+      builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
       seedAlert = builder.create();
       seedAlert.show();
     });

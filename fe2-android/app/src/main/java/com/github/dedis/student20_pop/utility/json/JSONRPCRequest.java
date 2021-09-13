@@ -3,6 +3,7 @@ package com.github.dedis.student20_pop.utility.json;
 import com.google.gson.JsonObject;
 
 public class JSONRPCRequest {
+
   private String jsonrpc;
 
   private String method;

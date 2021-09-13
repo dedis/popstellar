@@ -8,11 +8,9 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.github.dedis.student20_pop.R;
 import net.glxn.qrgen.android.QRCode;
 
@@ -46,9 +44,9 @@ public class IdentityFragment extends Fragment {
   @Nullable
   @Override
   public View onCreateView(
-          @NonNull LayoutInflater inflater,
-          @Nullable ViewGroup container,
-          @Nullable Bundle savedInstanceState) {
+      @NonNull LayoutInflater inflater,
+      @Nullable ViewGroup container,
+      @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_identity, container, false);
     // TODO :   The QR code does not appear at all unless the Name field is non-empty
     //  and not all whitespace.
@@ -63,18 +61,18 @@ public class IdentityFragment extends Fragment {
     hideIdentityInformation();
 
     anonymousCheckBox.setOnCheckedChangeListener(
-            (buttonView, isChecked) -> {
-              if (isChecked) {
-                hideIdentityInformation();
-              } else {
-                qrCode.setVisibility(View.VISIBLE);
-                identityEmailEditText.setVisibility(View.VISIBLE);
-                identityNameEditText.setVisibility(View.VISIBLE);
-                identityOrganizationEditText.setVisibility(View.VISIBLE);
-                identityPhoneEditText.setVisibility(View.VISIBLE);
-                identityTitleEditText.setVisibility(View.VISIBLE);
-              }
-            });
+        (buttonView, isChecked) -> {
+          if (isChecked) {
+            hideIdentityInformation();
+          } else {
+            qrCode.setVisibility(View.VISIBLE);
+            identityEmailEditText.setVisibility(View.VISIBLE);
+            identityNameEditText.setVisibility(View.VISIBLE);
+            identityOrganizationEditText.setVisibility(View.VISIBLE);
+            identityPhoneEditText.setVisibility(View.VISIBLE);
+            identityTitleEditText.setVisibility(View.VISIBLE);
+          }
+        });
 
 // for now we use the user's public key to generate the QR code
     // TODO: In the future use Wallet with user's token
@@ -87,7 +85,9 @@ public class IdentityFragment extends Fragment {
     return view;
   }
 
-  /** Hide fields when user wants to be anonymous */
+  /**
+   * Hide fields when user wants to be anonymous
+   */
   private void hideIdentityInformation() {
     qrCode.setVisibility(View.GONE);
     identityEmailEditText.setVisibility(View.GONE);

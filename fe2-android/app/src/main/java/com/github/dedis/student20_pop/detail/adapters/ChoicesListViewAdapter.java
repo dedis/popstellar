@@ -11,13 +11,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.github.dedis.student20_pop.R;
-
 import java.util.LinkedList;
 import java.util.List;
 
 public class ChoicesListViewAdapter extends BaseAdapter {
+
   private final Context context;
   private final List<String> choices;
   private final TextWatcher choicesTextWatcher;

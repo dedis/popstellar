@@ -1,6 +1,8 @@
 package com.github.dedis.student20_pop.model.network.method;
 
-/** Unsubscribe from a channel */
+/**
+ * Unsubscribe from a channel
+ */
 public final class Unsubscribe extends Query {
 
   public Unsubscribe(String channel, int id) {

@@ -4,7 +4,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/** Enumerate the different low level messages' method */
+/**
+ * Enumerate the different low level messages' method
+ */
 public enum Method {
   SUBSCRIBE("subscribe", Subscribe.class, true),
   UNSUBSCRIBE("unsubscribe", Unsubscribe.class, true),
@@ -21,8 +23,8 @@ public enum Method {
   /**
    * Constructor for the Method
    *
-   * @param method the name of the method
-   * @param dataClass the data class (publish/broadcast/catchup/subscribe/unsubscribe)
+   * @param method       the name of the method
+   * @param dataClass    the data class (publish/broadcast/catchup/subscribe/unsubscribe)
    * @param expectResult the expect result as a boolean
    */
   Method(String method, Class<? extends Message> dataClass, boolean expectResult) {
@@ -31,17 +33,23 @@ public enum Method {
     this.expectResult = expectResult;
   }
 
-  /** Returns the name of the Method. */
+  /**
+   * Returns the name of the Method.
+   */
   public String getMethod() {
     return method;
   }
 
-  /** Returns the data class of the Method. */
+  /**
+   * Returns the data class of the Method.
+   */
   public Class<? extends Message> getDataClass() {
     return dataClass;
   }
 
-  /** Returns the expected result of the Method. */
+  /**
+   * Returns the expected result of the Method.
+   */
   public boolean expectResult() {
     return expectResult;
   }
@@ -53,7 +61,11 @@ public enum Method {
    * @return the corresponding enum method
    */
   public static Method find(String searched) {
-    for (Method method : ALL) if (method.method.equals(searched)) return method;
+    for (Method method : ALL) {
+      if (method.method.equals(searched)) {
+        return method;
+      }
+    }
     return null;
   }
 }

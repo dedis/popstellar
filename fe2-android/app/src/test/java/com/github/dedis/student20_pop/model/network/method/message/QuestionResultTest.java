@@ -10,22 +10,22 @@ import static org.junit.Assert.assertThrows;
 
 public class QuestionResultTest {
 
-    private Integer count = 30;
-    private String name = "Candidate1";
-    private QuestionResult questionResult = new QuestionResult(name, count);
+  private Integer count = 30;
+  private String name = "Candidate1";
+  private QuestionResult questionResult = new QuestionResult(name, count);
 
-    @Test
-    public void fieldsCantBeNull() {
-        assertThrows(IllegalArgumentException.class, () -> new QuestionResult(null, 30));
-    }
+  @Test
+  public void fieldsCantBeNull() {
+    assertThrows(IllegalArgumentException.class, () -> new QuestionResult(null, 30));
+  }
 
-    @Test
-    public void questionResultGetterReturnsCorrectName() {
-        assertThat(questionResult.getBallot(), is(name));
-    }
+  @Test
+  public void questionResultGetterReturnsCorrectName() {
+    assertThat(questionResult.getBallot(), is(name));
+  }
 
-    @Test
-    public void questionResultGetterReturnsCorrectCount() {
-        assertThat(questionResult.getCount(), is(count));
-    }
+  @Test
+  public void questionResultGetterReturnsCorrectCount() {
+    assertThat(questionResult.getCount(), is(count));
+  }
 }

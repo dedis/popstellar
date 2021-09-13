@@ -1,7 +1,6 @@
 package com.github.dedis.student20_pop.model.network.method;
 
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
-
 import java.util.Objects;
 
 /**
@@ -33,16 +32,24 @@ public final class Broadcast extends Message {
     return Method.MESSAGE.getMethod();
   }
 
-  /** Returns the message of the Broadcast. */
+  /**
+   * Returns the message of the Broadcast.
+   */
   public MessageGeneral getMessage() {
     return message;
   }
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    if (!super.equals(o)) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
     Broadcast that = (Broadcast) o;
     return Objects.equals(getMessage(), that.getMessage());
   }

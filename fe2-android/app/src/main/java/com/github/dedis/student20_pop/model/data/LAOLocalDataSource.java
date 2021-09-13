@@ -7,7 +7,6 @@ import com.github.dedis.student20_pop.model.entities.Meeting;
 import com.github.dedis.student20_pop.model.entities.ModificationSignature;
 import com.github.dedis.student20_pop.model.entities.Person;
 import com.github.dedis.student20_pop.model.entities.RollCall;
-
 import java.util.List;
 
 public class LAOLocalDataSource implements LAODataSource.Local {
@@ -43,17 +42,22 @@ public class LAOLocalDataSource implements LAODataSource.Local {
   }
 
   @Override
-  public void updateLAO(LAO lao, List<Person> witnesses, List<ModificationSignature> signatures) {}
+  public void updateLAO(LAO lao, List<Person> witnesses, List<ModificationSignature> signatures) {
+  }
 
   @Override
-  public void addRollCall(LAO lao, RollCall rollCall) {}
+  public void addRollCall(LAO lao, RollCall rollCall) {
+  }
 
   @Override
-  public void updateRollCall(RollCall rollCall) {}
+  public void updateRollCall(RollCall rollCall) {
+  }
 
   @Override
-  public void addMeeting(LAO lao, Meeting meeting) {}
+  public void addMeeting(LAO lao, Meeting meeting) {
+  }
 
   @Override
-  public void updateMeeting(Meeting meeting, List<ModificationSignature> signatures) {}
+  public void updateMeeting(Meeting meeting, List<ModificationSignature> signatures) {
+  }
 }

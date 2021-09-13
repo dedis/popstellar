@@ -9,7 +9,8 @@ public class BarcodeTracker extends Tracker<Barcode> {
 
   private QRCodeListener listener;
 
-  private BarcodeTracker() {}
+  private BarcodeTracker() {
+  }
 
   public static BarcodeTracker getInstance(QRCodeListener listener) {
     if (INSTANCE == null) {
