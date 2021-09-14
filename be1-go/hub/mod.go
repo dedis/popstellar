@@ -8,8 +8,8 @@
 package hub
 
 import (
-	"student20_pop/message2/query/method"
-	messageX "student20_pop/message2/query/method/message"
+	"student20_pop/message/query/method"
+	"student20_pop/message/query/method/message"
 	"student20_pop/network/socket"
 )
 
@@ -59,5 +59,5 @@ type Channel interface {
 	Publish(msg method.Publish) error
 
 	// Catchup is used to handle a catchup message.
-	Catchup(msg method.Catchup) []messageX.Message
+	Catchup(msg method.Catchup) []message.Message
 }

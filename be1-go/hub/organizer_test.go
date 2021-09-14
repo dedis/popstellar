@@ -8,10 +8,10 @@ import (
 	"io"
 	"os"
 	"student20_pop/crypto"
-	"student20_pop/message2/messagedata"
-	"student20_pop/message2/query"
-	"student20_pop/message2/query/method"
-	messageX "student20_pop/message2/query/method/message"
+	"student20_pop/message/messagedata"
+	"student20_pop/message/query"
+	"student20_pop/message/query/method"
+	"student20_pop/message/query/method/message"
 	"testing"
 	"time"
 
@@ -77,7 +77,7 @@ func createLao(o *organizerHub, oKeypair keypair, name string) (string, *laoChan
 		return "", nil, err
 	}
 
-	msg := messageX.Message{
+	msg := message.Message{
 		Data:              string(dataBuf),
 		Sender:            string(oKeypair.publicBuf),
 		Signature:         string(signature),
@@ -92,8 +92,8 @@ func createLao(o *organizerHub, oKeypair keypair, name string) (string, *laoChan
 		ID: 1,
 
 		Params: struct {
-			Channel string           `json:"channel"`
-			Message messageX.Message `json:"message"`
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
 		}{
 			Channel: "/root/" + laoID,
 			Message: msg,
@@ -110,7 +110,7 @@ func createLao(o *organizerHub, oKeypair keypair, name string) (string, *laoChan
 	return laoID, laoChannel, nil
 }
 
-func createMessage(t *testing.T, data interface{}, publicKey []byte) messageX.Message {
+func createMessage(t *testing.T, data interface{}, publicKey []byte) message.Message {
 	jsonbuf, err := json.Marshal(data)
 	require.NoError(t, err)
 
@@ -125,12 +125,12 @@ func createMessage(t *testing.T, data interface{}, publicKey []byte) messageX.Me
 
 	encodedSender := base64.URLEncoding.EncodeToString(publicKey)
 
-	return messageX.Message{
+	return message.Message{
 		MessageID:         messageID,
 		Data:              base64.URLEncoding.EncodeToString(jsonbuf),
 		Sender:            encodedSender,
 		Signature:         signature,
-		WitnessSignatures: []messageX.WitnessSignature{},
+		WitnessSignatures: []message.WitnessSignature{},
 	}
 }
 

@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"log"
 	"os"
-	"student20_pop/message2/answer"
-	"student20_pop/message2/messagedata"
-	messageX "student20_pop/message2/query/method/message"
+	"student20_pop/message/answer"
+	"student20_pop/message/messagedata"
+	"student20_pop/message/query/method/message"
 
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/xerrors"
@@ -25,7 +25,7 @@ func (c *laoChannel) processCreateRollCall(msg messagedata.RollCallCreate) error
 }
 
 // processOpenRollCall processes an open roll call object.
-func (c *laoChannel) processOpenRollCall(msg messageX.Message, action string) error {
+func (c *laoChannel) processOpenRollCall(msg message.Message, action string) error {
 	if action == "open" {
 		// If the action is an OpenRollCallAction,
 		// the previous roll call action should be a CreateRollCallAction

@@ -3,7 +3,7 @@ package hub
 import (
 	"context"
 	"log"
-	"student20_pop/message2/query/method"
+	"student20_pop/message/query/method"
 	"student20_pop/network/socket"
 
 	"github.com/rs/zerolog"

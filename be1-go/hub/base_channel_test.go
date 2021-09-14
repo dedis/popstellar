@@ -2,8 +2,8 @@ package hub
 
 import (
 	"fmt"
-	"student20_pop/message2/query/method"
-	messageX "student20_pop/message2/query/method/message"
+	"student20_pop/message/query/method"
+	"student20_pop/message/query/method/message"
 	"testing"
 	"time"
 
@@ -16,10 +16,10 @@ func TestBaseChannel_RollCallOrder(t *testing.T) {
 
 	// Create the messages
 	messageNumber := 10
-	messages := make([]messageX.Message, 0, messageNumber)
+	messages := make([]message.Message, 0, messageNumber)
 	for i := 0; i < messageNumber; i++ {
 		// Create a new message containing only an id
-		message := messageX.Message{MessageID: fmt.Sprintf("%d", i)}
+		message := message.Message{MessageID: fmt.Sprintf("%d", i)}
 		messages = append(messages, message)
 
 		// Store the message in the inbox

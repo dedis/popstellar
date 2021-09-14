@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"log"
 	"sort"
-	"student20_pop/message2"
-	"student20_pop/message2/answer"
-	"student20_pop/message2/query"
-	"student20_pop/message2/query/method"
-	messageX "student20_pop/message2/query/method/message"
+	jsonrpc "student20_pop/message"
+	"student20_pop/message/answer"
+	"student20_pop/message/query"
+	"student20_pop/message/query/method"
+	"student20_pop/message/query/method/message"
 	"student20_pop/network/socket"
 	"student20_pop/validation"
 	"sync"
@@ -63,7 +63,7 @@ type baseChannel struct {
 }
 
 type messageInfo struct {
-	message    messageX.Message
+	message    message.Message
 	storedTime int64
 }
 
@@ -101,7 +101,7 @@ func (c *baseChannel) Unsubscribe(socketID string, msg method.Unsubscribe) error
 }
 
 // Catchup is used to handle a catchup message.
-func (c *baseChannel) Catchup(catchup method.Catchup) []messageX.Message {
+func (c *baseChannel) Catchup(catchup method.Catchup) []message.Message {
 	log.Printf("received a catchup with id: %d", catchup.ID)
 
 	c.inbox.mutex.RLock()
@@ -118,7 +118,7 @@ func (c *baseChannel) Catchup(catchup method.Catchup) []messageX.Message {
 		return messages[i].storedTime < messages[j].storedTime
 	})
 
-	result := make([]messageX.Message, 0, len(c.inbox.msgs))
+	result := make([]message.Message, 0, len(c.inbox.msgs))
 
 	// iterate and extract the messages[i].message field and
 	// append it to the result slice
@@ -131,17 +131,17 @@ func (c *baseChannel) Catchup(catchup method.Catchup) []messageX.Message {
 
 // broadcastToAllClients is a helper message to broadcast a message to all
 // subscribers.
-func (c *baseChannel) broadcastToAllClients(msg messageX.Message) {
+func (c *baseChannel) broadcastToAllClients(msg message.Message) {
 	rpcMessage := method.Broadcast{
 		Base: query.Base{
-			JSONRPCBase: message2.JSONRPCBase{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 			Method: "broadcast",
 		},
 		Params: struct {
-			Channel string           `json:"channel"`
-			Message messageX.Message `json:"message"`
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
 		}{
 			c.channelID,
 			msg,

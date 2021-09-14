@@ -11,8 +11,8 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 
-	"student20_pop/message2/answer"
-	messageX "student20_pop/message2/query/method/message"
+	"student20_pop/message/answer"
+	"student20_pop/message/query/method/message"
 )
 
 // inbox represents an in-memory data store to record incoming messages.
@@ -47,7 +47,7 @@ func (i *inbox) addWitnessSignature(messageID string, public string, signature s
 	i.mutex.Lock()
 	defer i.mutex.Unlock()
 
-	msg.WitnessSignatures = append(msg.WitnessSignatures, messageX.WitnessSignature{
+	msg.WitnessSignatures = append(msg.WitnessSignatures, message.WitnessSignature{
 		Witness:   public,
 		Signature: signature,
 	})
@@ -72,7 +72,7 @@ func (i *inbox) addWitnessSignature(messageID string, public string, signature s
 }
 
 // storeMessage stores a message inside the inbox
-func (i *inbox) storeMessage(msg messageX.Message) {
+func (i *inbox) storeMessage(msg message.Message) {
 	i.mutex.Lock()
 	defer i.mutex.Unlock()
 
@@ -97,7 +97,7 @@ func (i *inbox) storeMessage(msg messageX.Message) {
 
 // getMessage returns the message of messageID if it exists. We need a pointer
 // on message to add witness signatures.
-func (i *inbox) getMessage(messageID string) (*messageX.Message, bool) {
+func (i *inbox) getMessage(messageID string) (*message.Message, bool) {
 	i.mutex.Lock()
 	defer i.mutex.Unlock()
 	msgInfo, ok := i.msgs[messageID]

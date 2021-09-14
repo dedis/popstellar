@@ -4,7 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
-	messageX "student20_pop/message2/query/method/message"
+	"student20_pop/message/query/method/message"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -74,8 +74,8 @@ func TestInbox_AddWitnessSignatures(t *testing.T) {
 	require.Equal(t, signaturesNumber, len(storedMsg.WitnessSignatures))
 }
 
-func newMessage(t *testing.T, sender string, signature string, witnessSignatures []messageX.WitnessSignature, data string) messageX.Message {
-	msg := messageX.Message{
+func newMessage(t *testing.T, sender string, signature string, witnessSignatures []message.WitnessSignature, data string) message.Message {
+	msg := message.Message{
 		Data:              data,
 		Sender:            sender,
 		Signature:         signature,

@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"log"
 	"student20_pop/crypto"
-	"student20_pop/message2/answer"
-	"student20_pop/message2/messagedata"
-	"student20_pop/message2/query/method"
-	messageX "student20_pop/message2/query/method/message"
+	"student20_pop/message/answer"
+	"student20_pop/message/messagedata"
+	"student20_pop/message/query/method"
+	"student20_pop/message/query/method/message"
 
 	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
@@ -101,7 +101,7 @@ func (c *laoChannel) Publish(publish method.Publish) error {
 }
 
 // processLaoObject processes a LAO object.
-func (c *laoChannel) processLaoObject(action string, msg messageX.Message) error {
+func (c *laoChannel) processLaoObject(action string, msg message.Message) error {
 	switch action {
 	case "update_properties":
 	case "state":
@@ -217,7 +217,7 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 }
 
 // processMeetingObject handles a meeting object.
-func (c *laoChannel) processMeetingObject(action string, msg messageX.Message) error {
+func (c *laoChannel) processMeetingObject(action string, msg message.Message) error {
 
 	// Nothing to do ...🤷‍♂️
 	switch action {
@@ -232,7 +232,7 @@ func (c *laoChannel) processMeetingObject(action string, msg messageX.Message) e
 }
 
 // processMessageObject handles a message object.
-func (c *laoChannel) processMessageObject(action string, msg messageX.Message) error {
+func (c *laoChannel) processMessageObject(action string, msg message.Message) error {
 
 	switch action {
 	case "witness":
@@ -260,7 +260,7 @@ func (c *laoChannel) processMessageObject(action string, msg messageX.Message) e
 }
 
 // processRollCallObject handles a roll call object.
-func (c *laoChannel) processRollCallObject(action string, msg messageX.Message) error {
+func (c *laoChannel) processRollCallObject(action string, msg message.Message) error {
 	sender := msg.Sender
 
 	senderBuf, err := base64.URLEncoding.DecodeString(sender)
@@ -327,7 +327,7 @@ func (c *laoChannel) processRollCallObject(action string, msg messageX.Message) 
 }
 
 // processElectionObject handles an election object.
-func (c *laoChannel) processElectionObject(action string, msg messageX.Message) error {
+func (c *laoChannel) processElectionObject(action string, msg message.Message) error {
 	if action != "setup" {
 		return answer.NewErrorf(-4, "invalid action: %s", action)
 	}

@@ -9,12 +9,12 @@ import (
 	"os"
 	"sync"
 
-	"student20_pop/message2"
-	"student20_pop/message2/answer"
-	"student20_pop/message2/messagedata"
-	"student20_pop/message2/query"
-	"student20_pop/message2/query/method"
-	messageX "student20_pop/message2/query/method/message"
+	jsonrpc "student20_pop/message"
+	"student20_pop/message/answer"
+	"student20_pop/message/messagedata"
+	"student20_pop/message/query"
+	"student20_pop/message/query/method"
+	"student20_pop/message/query/method/message"
 	"student20_pop/network/socket"
 	"student20_pop/validation"
 
@@ -199,7 +199,7 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *socket.IncomingMessag
 		return
 	}
 
-	rpctype, err := message2.GetType(byteMessage)
+	rpctype, err := jsonrpc.GetType(byteMessage)
 	if err != nil {
 		h.log.Err(err).Msg("failed to get rpc type")
 		socket.SendError(nil, err)
@@ -207,7 +207,7 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *socket.IncomingMessag
 	}
 
 	// check type (answer or query), we expect a query
-	if rpctype != message2.RPCTypeQuery {
+	if rpctype != jsonrpc.RPCTypeQuery {
 		h.log.Error().Msgf("jsonRPC message is not of type query")
 		socket.SendError(nil, xerrors.New("jsonRPC message is not of type query"))
 		return
@@ -225,7 +225,7 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *socket.IncomingMessag
 
 	var id int
 
-	msg := []messageX.Message{}
+	msg := []message.Message{}
 
 	// nkcr: there is room for improvement here with this switch
 
@@ -690,7 +690,7 @@ func getMessagesChannelFromDB(db *sql.DB, channelID string) ([]messageInfo, erro
 		}
 
 		messageInfo := messageInfo{
-			message: messageX.Message{
+			message: message.Message{
 				MessageID:         messageID,
 				Sender:            sender,
 				Signature:         messageSignature,
@@ -713,7 +713,7 @@ func getMessagesChannelFromDB(db *sql.DB, channelID string) ([]messageInfo, erro
 	return result, nil
 }
 
-func getWitnessesMessageFromDB(db *sql.DB, messageID string) ([]messageX.WitnessSignature, error) {
+func getWitnessesMessageFromDB(db *sql.DB, messageID string) ([]message.WitnessSignature, error) {
 	query := `
 		SELECT
 			pub_key,
@@ -737,7 +737,7 @@ func getWitnessesMessageFromDB(db *sql.DB, messageID string) ([]messageX.Witness
 
 	defer rows.Close()
 
-	result := make([]messageX.WitnessSignature, 0)
+	result := make([]message.WitnessSignature, 0)
 
 	for rows.Next() {
 		var pubKey string
@@ -748,7 +748,7 @@ func getWitnessesMessageFromDB(db *sql.DB, messageID string) ([]messageX.Witness
 			return nil, xerrors.Errorf(dbParseRowErr, err)
 		}
 
-		result = append(result, messageX.WitnessSignature{
+		result = append(result, message.WitnessSignature{
 			Witness:   pubKey,
 			Signature: signature,
 		})

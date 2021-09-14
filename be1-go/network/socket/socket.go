@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"student20_pop/message2/answer"
-	messageX "student20_pop/message2/query/method/message"
+	"student20_pop/message/answer"
+	"student20_pop/message/query/method/message"
 
 	"github.com/gorilla/websocket"
 	"github.com/rs/xid"
@@ -190,7 +190,7 @@ func (s *baseSocket) SendError(id *int, err error) {
 }
 
 // SendResult is a utility method that allows sending a `message.Result` to the socket.
-func (s *baseSocket) SendResult(id int, res []messageX.Message) {
+func (s *baseSocket) SendResult(id int, res []message.Message) {
 	var answer interface{}
 
 	if res == nil {
@@ -204,13 +204,13 @@ func (s *baseSocket) SendResult(id int, res []messageX.Message) {
 	} else {
 		for _, r := range res {
 			if r.WitnessSignatures == nil {
-				r.WitnessSignatures = []messageX.WitnessSignature{}
+				r.WitnessSignatures = []message.WitnessSignature{}
 			}
 		}
 		answer = struct {
-			JSONRPC string             `json:"jsonrpc"`
-			ID      int                `json:"id"`
-			Result  []messageX.Message `json:"result"`
+			JSONRPC string            `json:"jsonrpc"`
+			ID      int               `json:"id"`
+			Result  []message.Message `json:"result"`
 		}{
 			"2.0", id, res,
 		}

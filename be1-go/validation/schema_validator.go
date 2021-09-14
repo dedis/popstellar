@@ -9,7 +9,7 @@ import (
 	"log"
 	"path/filepath"
 	"strings"
-	"student20_pop/message2/answer"
+	"student20_pop/message/answer"
 
 	"github.com/santhosh-tekuri/jsonschema/v3"
 	"golang.org/x/xerrors"

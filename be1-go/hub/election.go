@@ -4,10 +4,10 @@ import (
 	"encoding/base64"
 	"log"
 	"student20_pop/crypto"
-	"student20_pop/message2/answer"
-	"student20_pop/message2/messagedata"
-	"student20_pop/message2/query/method"
-	messageX "student20_pop/message2/query/method/message"
+	"student20_pop/message/answer"
+	"student20_pop/message/messagedata"
+	"student20_pop/message/query/method"
+	"student20_pop/message/query/method/message"
 	"sync"
 
 	"golang.org/x/xerrors"
@@ -108,7 +108,7 @@ type validVote struct {
 }
 
 // createElection creates an election in the LAO.
-func (c *laoChannel) createElection(msg messageX.Message, setupMsg messagedata.ElectionSetup) error {
+func (c *laoChannel) createElection(msg message.Message, setupMsg messagedata.ElectionSetup) error {
 	organizerHub := c.hub
 
 	organizerHub.Lock()
@@ -196,7 +196,7 @@ func (c *electionChannel) Publish(publish method.Publish) error {
 	return nil
 }
 
-func (c *electionChannel) castVoteHelper(msg messageX.Message, voteMsg messagedata.VoteCastVote) error {
+func (c *electionChannel) castVoteHelper(msg message.Message, voteMsg messagedata.VoteCastVote) error {
 
 	if voteMsg.CreatedAt > c.end {
 		return answer.NewErrorf(-4, "Vote cast too late, vote casted at %v and election ended at %v", voteMsg.CreatedAt, c.end)

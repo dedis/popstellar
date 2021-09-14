@@ -7,7 +7,7 @@
 package socket
 
 import (
-	messageX "student20_pop/message2/query/method/message"
+	"student20_pop/message/query/method/message"
 	"time"
 )
 
@@ -52,7 +52,7 @@ type Socket interface {
 
 	// SendResult is used to send a result message to the client. Res can be
 	// nil, empty, or filled. In case it is nil it sends the "0" return value.
-	SendResult(id int, res []messageX.Message)
+	SendResult(id int, res []message.Message)
 }
 
 // IncomingMessage wraps the raw message from the websocket connection and pairs
