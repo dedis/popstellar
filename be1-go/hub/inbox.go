@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"log"
 	"os"
-	"student20_pop/message"
 	"sync"
 	"time"
 
@@ -12,6 +11,7 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 
+	"student20_pop/message2/answer"
 	messageX "student20_pop/message2/query/method/message"
 )
 
@@ -31,17 +31,17 @@ func createInbox(channelID string) *inbox {
 	}
 }
 
-// addWitnessSignature adds a signature of witness to a message of ID `messageID`.
-// if the signature was correctly added return true
-// otherwise returns false
+// addWitnessSignature adds a signature of witness to a message of ID
+// `messageID`. if the signature was correctly added return true otherwise
+// returns false
 func (i *inbox) addWitnessSignature(messageID string, public string, signature string) error {
 	msg, ok := i.getMessage(messageID)
 	if !ok {
-		// TODO: We received a witness signature before the message itself.
-		// We ignore it for now but it might be worth keeping it until we
-		// actually receive the message
+		// TODO: We received a witness signature before the message itself. We
+		// ignore it for now but it might be worth keeping it until we actually
+		// receive the message
 		log.Printf("failed to find message_id %s for witness message", messageID)
-		return message.NewErrorf(-4, "failed to find message_id %q for witness message", messageID)
+		return answer.NewErrorf(-4, "failed to find message_id %q for witness message", messageID)
 	}
 
 	i.mutex.Lock()
@@ -76,7 +76,7 @@ func (i *inbox) storeMessage(msg messageX.Message) {
 	i.mutex.Lock()
 	defer i.mutex.Unlock()
 
-	storedTime := message.Timestamp(time.Now().UnixNano())
+	storedTime := time.Now().UnixNano()
 
 	messageInfo := &messageInfo{
 		message:    msg,
@@ -95,15 +95,16 @@ func (i *inbox) storeMessage(msg messageX.Message) {
 	}
 }
 
-// getMessage returns the message of messageID if it exists.
-func (i *inbox) getMessage(messageID string) (messageX.Message, bool) {
+// getMessage returns the message of messageID if it exists. We need a pointer
+// on message to add witness signatures.
+func (i *inbox) getMessage(messageID string) (*messageX.Message, bool) {
 	i.mutex.Lock()
 	defer i.mutex.Unlock()
 	msgInfo, ok := i.msgs[messageID]
 	if !ok {
-		return messageX.Message{}, false
+		return nil, false
 	}
-	return msgInfo.message, true
+	return &msgInfo.message, true
 }
 
 func (i *inbox) storeMessageInDB(messageInfo *messageInfo) error {

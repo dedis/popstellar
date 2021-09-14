@@ -1,17 +1,16 @@
 package hub
 
 import (
-	"bytes"
 	"encoding/base64"
 	"fmt"
 	"log"
 	"student20_pop/crypto"
+	"student20_pop/message2/answer"
 	"student20_pop/message2/messagedata"
 	"student20_pop/message2/query/method"
 	messageX "student20_pop/message2/query/method/message"
 
-	"student20_pop/message"
-
+	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
@@ -23,8 +22,8 @@ type organizerHub struct {
 }
 
 // NewOrganizerHub returns a Organizer Hub.
-func NewOrganizerHub(public kyber.Point) (*organizerHub, error) {
-	baseHub, err := NewBaseHub(public)
+func NewOrganizerHub(public kyber.Point, log zerolog.Logger) (*organizerHub, error) {
+	baseHub, err := NewBaseHub(public, log)
 	return &organizerHub{
 		baseHub: baseHub,
 	}, err
@@ -115,10 +114,10 @@ func (c *laoChannel) processLaoObject(action string, msg messageX.Message) error
 
 		err = c.processLaoState(laoState)
 		if err != nil {
-			return xerrors.Errorf("failed to process %q action: %w", message.StateLaoAction, err)
+			return xerrors.Errorf("failed to process state action: %w", err)
 		}
 	default:
-		return message.NewInvalidActionError(message.DataAction(action))
+		return answer.NewInvalidActionError(action)
 	}
 
 	c.inbox.storeMessage(msg)
@@ -132,7 +131,7 @@ func (c *laoChannel) processLaoState(data messagedata.LaoState) error {
 	msg, ok := c.inbox.getMessage(data.ModificationID)
 
 	if !ok {
-		return message.NewErrorf(-4, "cannot find lao/update_properties with ID: %s", data.ModificationID)
+		return answer.NewErrorf(-4, "cannot find lao/update_properties with ID: %s", data.ModificationID)
 	}
 
 	// Check if the signatures are from witnesses we need. We maintain
@@ -145,7 +144,7 @@ func (c *laoChannel) processLaoState(data messagedata.LaoState) error {
 	// TODO: O(N^2), O(N) possible
 	for i := 0; i < expected; i++ {
 		for j := 0; j < len(data.ModificationSignatures); j++ {
-			if bytes.Equal(c.witnesses[i], []byte(data.ModificationSignatures[j].Witness)) {
+			if c.witnesses[i] == data.ModificationSignatures[j].Witness {
 				match++
 				break
 			}
@@ -154,15 +153,14 @@ func (c *laoChannel) processLaoState(data messagedata.LaoState) error {
 	c.witnessMu.Unlock()
 
 	if match != expected {
-		return message.NewErrorf(-4, "not enough witness signatures provided. Needed %d got %d", expected, match)
+		return answer.NewErrorf(-4, "not enough witness signatures provided. Needed %d got %d", expected, match)
 	}
 
 	// Check if the signatures match
 	for _, pair := range data.ModificationSignatures {
 		err := schnorr.VerifyWithChecks(crypto.Suite, []byte(pair.Witness), []byte(data.ModificationID), []byte(pair.Signature))
 		if err != nil {
-			pk := base64.URLEncoding.EncodeToString([]byte(pair.Witness))
-			return message.NewErrorf(-4, "signature verfication failed for witness: %s", pk)
+			return answer.NewErrorf(-4, "signature verfication failed for witness: %s", pair.Witness)
 		}
 	}
 
@@ -170,7 +168,7 @@ func (c *laoChannel) processLaoState(data messagedata.LaoState) error {
 
 	err := msg.UnmarshalData(&updateMsgData)
 	if err != nil {
-		return &message.Error{
+		return &answer.Error{
 			Code:        -4,
 			Description: fmt.Sprintf("failed to unmarshal message from the inbox: %v", err),
 		}
@@ -186,18 +184,18 @@ func (c *laoChannel) processLaoState(data messagedata.LaoState) error {
 
 func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.LaoState) error {
 	if update.LastModified != state.LastModified {
-		return message.NewErrorf(-4, "mismatch between last modified: expected %d got %d", update.LastModified, state.LastModified)
+		return answer.NewErrorf(-4, "mismatch between last modified: expected %d got %d", update.LastModified, state.LastModified)
 	}
 
 	if update.Name != state.Name {
-		return message.NewErrorf(-4, "mismatch between name: expected %s got %s", update.Name, state.Name)
+		return answer.NewErrorf(-4, "mismatch between name: expected %s got %s", update.Name, state.Name)
 	}
 
 	M := len(update.Witnesses)
 	N := len(state.Witnesses)
 
 	if M != N {
-		return message.NewErrorf(-4, "mismatch between witness count: expected %d got %d", M, N)
+		return answer.NewErrorf(-4, "mismatch between witness count: expected %d got %d", M, N)
 	}
 
 	match := 0
@@ -212,7 +210,7 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 	}
 
 	if match != M {
-		return message.NewErrorf(-4, "mismatch between witness keys: expected %d keys to match but %d matched", M, match)
+		return answer.NewErrorf(-4, "mismatch between witness keys: expected %d keys to match but %d matched", M, match)
 	}
 
 	return nil
@@ -247,7 +245,7 @@ func (c *laoChannel) processMessageObject(action string, msg messageX.Message) e
 
 		err = schnorr.VerifyWithChecks(crypto.Suite, []byte(msg.Sender), []byte(witnessData.MessageID), []byte(witnessData.Signature))
 		if err != nil {
-			return message.NewError(-4, "invalid witness signature")
+			return answer.NewError(-4, "invalid witness signature")
 		}
 
 		err = c.inbox.addWitnessSignature(witnessData.MessageID, msg.Sender, witnessData.Signature)
@@ -255,7 +253,7 @@ func (c *laoChannel) processMessageObject(action string, msg messageX.Message) e
 			return xerrors.Errorf("failed to add witness signature: %w", err)
 		}
 	default:
-		return message.NewInvalidActionError(message.DataAction(action))
+		return answer.NewInvalidActionError(action)
 	}
 
 	return nil
@@ -274,11 +272,11 @@ func (c *laoChannel) processRollCallObject(action string, msg messageX.Message) 
 	senderPoint := crypto.Suite.Point()
 	err = senderPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
-		return message.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
+		return answer.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
 	}
 
 	if !c.hub.public.Equal(senderPoint) {
-		return message.NewErrorf(-5, "sender's public key %q does not match the organizer's", msg.Sender)
+		return answer.NewErrorf(-5, "sender's public key %q does not match the organizer's", msg.Sender)
 	}
 
 	switch action {
@@ -289,6 +287,8 @@ func (c *laoChannel) processRollCallObject(action string, msg messageX.Message) 
 		if err != nil {
 			return xerrors.Errorf("failed to unmarshal roll call create: %v", err)
 		}
+
+		c.hub.log.Info().Msgf("processing a roll_call create: %v", rollCallCreate)
 
 		err = c.processCreateRollCall(rollCallCreate)
 		if err != nil {
@@ -310,8 +310,11 @@ func (c *laoChannel) processRollCallObject(action string, msg messageX.Message) 
 		}
 
 		err = c.processCloseRollCall(rollCallClose)
+		if err != nil {
+			return xerrors.Errorf("failed to process close roll call: %v", err)
+		}
 	default:
-		return message.NewInvalidActionError(message.DataAction(action))
+		return answer.NewInvalidActionError(action)
 	}
 
 	if err != nil {
@@ -326,7 +329,7 @@ func (c *laoChannel) processRollCallObject(action string, msg messageX.Message) 
 // processElectionObject handles an election object.
 func (c *laoChannel) processElectionObject(action string, msg messageX.Message) error {
 	if action != "setup" {
-		return message.NewErrorf(-4, "invalid action: %s", action)
+		return answer.NewErrorf(-4, "invalid action: %s", action)
 	}
 
 	sender := msg.Sender
@@ -340,11 +343,11 @@ func (c *laoChannel) processElectionObject(action string, msg messageX.Message) 
 	senderPoint := crypto.Suite.Point()
 	err = senderPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
-		return message.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
+		return answer.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
 	}
 
 	if !c.hub.public.Equal(senderPoint) {
-		return message.NewError(-5, "The sender of the election setup message has a different public key from the organizer")
+		return answer.NewError(-5, "The sender of the election setup message has a different public key from the organizer")
 	}
 
 	var electionSetup messagedata.ElectionSetup

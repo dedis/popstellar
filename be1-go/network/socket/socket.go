@@ -3,10 +3,10 @@ package socket
 import (
 	"encoding/json"
 	"log"
-	"student20_pop/message"
 	"sync"
 	"time"
 
+	"student20_pop/message2/answer"
 	messageX "student20_pop/message2/query/method/message"
 
 	"github.com/gorilla/websocket"
@@ -166,11 +166,11 @@ func (s *baseSocket) Send(msg []byte) {
 // message to the socket.
 func (s *baseSocket) SendError(id *int, err error) {
 	log.Printf("Error: %v", err)
-	msgError := &message.Error{}
+	msgError := &answer.Error{}
 
 	if xerrors.As(err, &msgError) {
-		answer := message.Answer{
-			ID:    id,
+		answer := answer.Answer{
+			ID:    *id,
 			Error: msgError,
 		}
 

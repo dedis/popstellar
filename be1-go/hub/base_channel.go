@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"log"
 	"sort"
-	"student20_pop/message"
 	"student20_pop/message2"
+	"student20_pop/message2/answer"
 	"student20_pop/message2/query"
 	"student20_pop/message2/query/method"
 	messageX "student20_pop/message2/query/method/message"
@@ -59,12 +59,12 @@ type baseChannel struct {
 	channelID string
 
 	witnessMu sync.Mutex
-	witnesses []message.PublicKey
+	witnesses []string
 }
 
 type messageInfo struct {
 	message    messageX.Message
-	storedTime message.Timestamp
+	storedTime int64
 }
 
 // CreateBaseChannel return an instance of a `baseChannel`
@@ -94,7 +94,7 @@ func (c *baseChannel) Unsubscribe(socketID string, msg method.Unsubscribe) error
 	ok := c.sockets.Delete(socketID)
 
 	if !ok {
-		return message.NewError(-2, "client is not subscribed to this channel")
+		return answer.NewError(-2, "client is not subscribed to this channel")
 	}
 
 	return nil
@@ -132,23 +132,19 @@ func (c *baseChannel) Catchup(catchup method.Catchup) []messageX.Message {
 // broadcastToAllClients is a helper message to broadcast a message to all
 // subscribers.
 func (c *baseChannel) broadcastToAllClients(msg messageX.Message) {
-	// query := message.Query{
-	// 	Broadcast: message.NewBroadcast(c.channelID, msg),
-	// }
-
-	rpcMessage := message2.JSONRPC{
-		JSONRPC: "2.0",
-		Query: query.Query{
-			Method: "broadcast",
-			Broadcast: method.Broadcast{
-				Params: struct {
-					Channel string           `json:"channel"`
-					Message messageX.Message `json:"message"`
-				}{
-					Channel: c.channelID,
-					Message: msg,
-				},
+	rpcMessage := method.Broadcast{
+		Base: query.Base{
+			JSONRPCBase: message2.JSONRPCBase{
+				JSONRPC: "2.0",
 			},
+			Method: "broadcast",
+		},
+		Params: struct {
+			Channel string           `json:"channel"`
+			Message messageX.Message `json:"message"`
+		}{
+			c.channelID,
+			msg,
 		},
 	}
 
@@ -182,17 +178,9 @@ func (c *baseChannel) VerifyPublishMessage(publish method.Publish) error {
 		return xerrors.Errorf("failed to verify json schema: %w", err)
 	}
 
-	// Unmarshal the data
-	// laoID := c.channelID[6:]
-	// err = msg.VerifyAndUnmarshalData(laoID)
-	// if err != nil {
-	// 	// Return a error of type "-4 request data is invalid" for all the verifications and unmarshalling problems of the data
-	// 	return message.NewErrorf(-4, "failed to verify and unmarshal data: %v", err)
-	// }
-
 	// Check if the message already exists
 	if _, ok := c.inbox.getMessage(msg.MessageID); ok {
-		return message.NewError(-3, "message already exists")
+		return answer.NewError(-3, "message already exists")
 	}
 
 	return nil
