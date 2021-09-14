@@ -10,7 +10,7 @@ export function generateMnemonicSeed() {
 }
 
 /**
- * Initialize the wallet with the given mnemonic
+ * Initialize the wallet with the given BIP-39 mnemonic
  * @param mnemonic the 12-word representation of the wallet seed
  * @return a Promise that completes when the wallet seed has been stored
  * @throws an Error if the mnemonic is invalid

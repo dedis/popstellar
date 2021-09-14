@@ -7,6 +7,8 @@ import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness } from '../Checker';
 import { OpenedLaoStore } from '../../../../../../store';
 
+const paramError = (o: OpenRollCall) => `parameter encountered during roll call ${o.action}`;
+
 export class OpenRollCall implements MessageData {
   public readonly object: ObjectType = ObjectType.ROLL_CALL;
 
@@ -20,25 +22,25 @@ export class OpenRollCall implements MessageData {
 
   constructor(msg: Partial<OpenRollCall>) {
     if (!msg.opened_at) {
-      throw new ProtocolError("Undefined 'opened_at' parameter encountered during 'OpenRollCall'");
+      throw new ProtocolError(`Undefined 'opened_at' ${paramError(this)}`);
     }
     checkTimestampStaleness(msg.opened_at);
     this.opened_at = msg.opened_at;
 
     if (!msg.opens) {
-      throw new ProtocolError("Undefined 'opens' parameter encountered during 'OpenRollCall'");
+      throw new ProtocolError(`Undefined 'opens' ${paramError(this)}`);
     }
     this.opens = msg.opens;
 
     if (!msg.update_id) {
-      throw new ProtocolError("Undefined 'update_id' parameter encountered during 'OpenRollCall'");
+      throw new ProtocolError(`Undefined 'update_id' ${paramError(this)}`);
     }
     const lao: Lao = OpenedLaoStore.get();
     const expectedHash = Hash.fromStringArray(
       EventTags.ROLL_CALL, lao.id.toString(), this.opens.toString(), this.opened_at.toString(),
     );
     if (!expectedHash.equals(msg.update_id)) {
-      throw new ProtocolError("Invalid 'update_id' parameter encountered during 'OpenRollCall':"
+      throw new ProtocolError(`Invalid 'update_id' ${paramError(this)}:`
         + ' re-computing the value yields a different result');
     }
     this.update_id = msg.update_id;

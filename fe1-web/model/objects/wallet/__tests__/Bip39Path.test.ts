@@ -1,4 +1,4 @@
-import * as Bip39Path from '../Bip39Path';
+import * as Bip39Path from '../Bip32Path';
 import { Hash } from '../../Hash';
 
 test('Bip39Path produces the known outputs - test vector 0', async () => {

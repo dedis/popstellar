@@ -9,7 +9,7 @@ import WideButtonView from 'components/WideButtonView';
 import { Spacing, Typography } from 'styles';
 import PROPS_TYPE from 'res/Props';
 import PropTypes from 'prop-types';
-import { Wallet } from '../../model/objects/wallet/Wallet';
+import { Wallet } from 'model/objects';
 
 const styles = StyleSheet.create({
   textInput: {

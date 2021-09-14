@@ -29,7 +29,7 @@ export function makeMessageStoreWatcher(store: Store) {
     }
 
     const msgs = currentValue.map((id: string) => ExtendedMessage.fromState(msgState.byId[id]));
-    console.log(msgs);
+    console.table(msgs);
 
     msgs.forEach((msg) => {
       try {

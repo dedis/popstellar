@@ -6,7 +6,7 @@ import { PopToken } from '../PopToken';
 import { Base64UrlData } from '../Base64Url';
 import { PublicKey } from '../PublicKey';
 import { PrivateKey } from '../PrivateKey';
-import * as bip39path from './Bip39Path';
+import * as bip39path from './Bip32Path';
 import { RollCall } from '../RollCall';
 
 /**

@@ -8,7 +8,7 @@ import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
 import PROPS_TYPE from 'res/Props';
 import PropTypes from 'prop-types';
-import { Wallet } from '../../model/objects/wallet/Wallet';
+import { Wallet } from 'model/objects';
 
 const styles = StyleSheet.create({
   smallPadding: {

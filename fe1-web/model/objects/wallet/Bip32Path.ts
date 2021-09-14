@@ -9,7 +9,7 @@ const PATH_SEPARATOR: string = '/';
 const HARDENED_SYMBOL: string = "'";
 
 /**
- * Transforms a Hash into BIP-39 derivation path/segments.
+ * Transforms a Hash into BIP-32 derivation path/segments.
  * @param hash to be used for derivation
  *
  * @remarks
@@ -22,14 +22,14 @@ function segmentsFromHash(hash: Hash): string {
 
   let segments: string[] = [];
   for (let i = 0; i < buffer.length; i += 3) {
-    const seg = buffer.slice(i, i + 3).join('');
+    const seg = buffer.slice(i, i + 3).join('') + HARDENED_SYMBOL;
     segments = segments.concat(seg);
   }
-  return segments.join(HARDENED_SYMBOL + PATH_SEPARATOR) + HARDENED_SYMBOL;
+  return segments.join(PATH_SEPARATOR);
 }
 
 /**
- * Transform a LAO id and RollCall id into a BIP-39 derivation path.
+ * Transform a LAO id and RollCall id into a BIP-32 derivation path.
  * @param laoId the id of the LAO
  * @param rollCallId the id of the Roll Call
  */
