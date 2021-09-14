@@ -224,152 +224,132 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *socket.IncomingMessag
 	}
 
 	var id int
-
-	msg := []message.Message{}
-
-	// nkcr: there is room for improvement here with this switch
+	var msgs []message.Message
+	var handlerErr error
 
 	switch query.Method {
 	case "publish":
-		var publish method.Publish
-
-		err = json.Unmarshal(byteMessage, &publish)
-		if err != nil {
-			err := answer.NewErrorf(-4, "failed to unmarshal publish message: %v", err)
-			h.log.Err(err)
-			socket.SendError(nil, err)
-			return
-		}
-
-		if publish.Params.Channel == "/root" {
-			h.handleRootChannelMesssage(socket, publish)
-
-			return
-		}
-
-		channel, err := h.getChan(publish.Params.Channel)
-		if err != nil {
-			err := answer.NewErrorf(-4, "failed to get channel: %v", err)
-			h.log.Err(err)
-			socket.SendError(nil, err)
-			return
-		}
-
-		err = channel.Publish(publish)
-		if err != nil {
-			err := answer.NewErrorf(-4, "failed to publish: %v", err)
-			h.log.Err(err)
-			socket.SendError(nil, err)
-			return
-		}
-
-		id = publish.ID
-
+		id, handlerErr = h.handlePublish(socket, byteMessage)
 	case "subscribe":
-		var subscribe method.Subscribe
-
-		err = json.Unmarshal(byteMessage, &subscribe)
-		if err != nil {
-			err := answer.NewErrorf(-4, "failed to unmarshal subscribe message: %v", err)
-			h.log.Err(err)
-			socket.SendError(nil, err)
-			return
-		}
-
-		channel, err := h.getChan(subscribe.Params.Channel)
-		if err != nil {
-			err := answer.NewErrorf(-4, "failed to get channel: %v", err)
-			h.log.Err(err)
-			socket.SendError(nil, err)
-			return
-		}
-
-		err = channel.Subscribe(socket, subscribe)
-		if err != nil {
-			err := answer.NewErrorf(-4, "failed to publish: %v", err)
-			h.log.Err(err)
-			socket.SendError(nil, err)
-			return
-		}
-
-		id = subscribe.ID
-
+		id, handlerErr = h.handleSubscribe(socket, byteMessage)
 	case "unsubscribe":
-		var unsubscribe method.Unsubscribe
-
-		err = json.Unmarshal(byteMessage, &unsubscribe)
-		if err != nil {
-			err := answer.NewErrorf(-4, "failed to unmarshal unsubscribe message: %v", err)
-			h.log.Err(err)
-			socket.SendError(nil, err)
-			return
-		}
-
-		channel, err := h.getChan(unsubscribe.Params.Channel)
-		if err != nil {
-			err := answer.NewErrorf(-4, "failed to get channel: %v", err)
-			h.log.Err(err)
-			socket.SendError(nil, err)
-			return
-		}
-
-		err = channel.Unsubscribe(socket.ID(), unsubscribe)
-		if err != nil {
-			err := answer.NewErrorf(-4, "failed to unsubscribe: %v", err)
-			h.log.Err(err)
-			socket.SendError(nil, err)
-			return
-		}
-
-		id = unsubscribe.ID
-
+		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
 	case "catchup":
-		var catchup method.Catchup
-
-		err = json.Unmarshal(byteMessage, &catchup)
-		if err != nil {
-			err := answer.NewErrorf(-4, "failed to unmarshal catchup message: %v", err)
-			h.log.Err(err)
-			socket.SendError(nil, err)
-			return
-		}
-
-		channel, err := h.getChan(catchup.Params.Channel)
-		if err != nil {
-			err := answer.NewErrorf(-4, "failed to get channel: %v", err)
-			h.log.Err(err)
-			socket.SendError(nil, err)
-			return
-		}
-
-		msg = channel.Catchup(catchup)
-		if err != nil {
-			err := answer.NewErrorf(-4, "failed to unsubscribe: %v", err)
-			h.log.Err(err)
-			socket.SendError(nil, err)
-			return
-		}
-
-		id = catchup.ID
-
+		msgs, id, handlerErr = h.handleCatchup(byteMessage)
 	default:
-		err := answer.NewErrorf(-2, "unexpected method: '%s'", query.Method)
+		err = answer.NewErrorf(-2, "unexpected method: '%s'", query.Method)
+		h.log.Err(err)
+		socket.SendError(nil, err)
+		return
+	}
+
+	if handlerErr != nil {
+		err := answer.NewErrorf(-4, "failed to handle method: %v", err)
 		h.log.Err(err)
 		socket.SendError(nil, err)
 		return
 	}
 
 	if query.Method == "catchup" {
-		socket.SendResult(id, msg)
+		socket.SendResult(id, msgs)
 		return
 	}
 
 	socket.SendResult(id, nil)
 }
 
+func (h *baseHub) handlePublish(socket socket.Socket, byteMessage []byte) (int, error) {
+	var publish method.Publish
+
+	err := json.Unmarshal(byteMessage, &publish)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to unmarshal publish message: %v", err)
+	}
+
+	if publish.Params.Channel == "/root" {
+		h.handleRootChannelMesssage(socket, publish)
+		return -1, nil
+	}
+
+	channel, err := h.getChan(publish.Params.Channel)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to get channel: %v", err)
+	}
+
+	err = channel.Publish(publish)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to publish: %v", err)
+	}
+
+	return publish.ID, nil
+}
+
+func (h *baseHub) handleSubscribe(socket socket.Socket, byteMessage []byte) (int, error) {
+	var subscribe method.Subscribe
+
+	err := json.Unmarshal(byteMessage, &subscribe)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to unmarshal subscribe message: %v", err)
+	}
+
+	channel, err := h.getChan(subscribe.Params.Channel)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to get subscribe channel: %v", err)
+	}
+
+	err = channel.Subscribe(socket, subscribe)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to publish: %v", err)
+	}
+
+	return subscribe.ID, nil
+}
+
+func (h *baseHub) handleUnsubscribe(socket socket.Socket, byteMessage []byte) (int, error) {
+	var unsubscribe method.Unsubscribe
+
+	err := json.Unmarshal(byteMessage, &unsubscribe)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to unmarshal unsubscribe message: %v", err)
+	}
+
+	channel, err := h.getChan(unsubscribe.Params.Channel)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to get unsubscribe channel: %v", err)
+	}
+
+	err = channel.Unsubscribe(socket.ID(), unsubscribe)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to unsubscribe: %v", err)
+	}
+
+	return unsubscribe.ID, nil
+}
+
+func (h *baseHub) handleCatchup(byteMessage []byte) ([]message.Message, int, error) {
+	var catchup method.Catchup
+
+	err := json.Unmarshal(byteMessage, &catchup)
+	if err != nil {
+		return nil, -1, xerrors.Errorf("failed to unmarshal catchup message: %v", err)
+	}
+
+	channel, err := h.getChan(catchup.Params.Channel)
+	if err != nil {
+		return nil, -1, xerrors.Errorf("failed to get catchup channel: %v", err)
+	}
+
+	msg := channel.Catchup(catchup)
+	if err != nil {
+		return nil, -1, xerrors.Errorf("failed to catchup: %v", err)
+	}
+
+	return msg, catchup.ID, nil
+}
+
 func (h *baseHub) getChan(channelPath string) (Channel, error) {
 	if channelPath[:6] != rootPrefix {
-		return nil, answer.NewErrorf(-2, "channel id must begin with \"/root/\", got: %q", channelPath[:6])
+		return nil, xerrors.Errorf("channel id must begin with \"/root/\", got: %q", channelPath[:6])
 	}
 
 	h.RLock()
@@ -377,7 +357,7 @@ func (h *baseHub) getChan(channelPath string) (Channel, error) {
 
 	channel, ok := h.channelByID[channelPath]
 	if !ok {
-		return nil, answer.NewErrorf(-2, "channel %s does not exist", channelPath)
+		return nil, xerrors.Errorf("channel %s does not exist", channelPath)
 	}
 
 	return channel, nil
