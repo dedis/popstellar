@@ -6,7 +6,9 @@ import java.util.Base64
 case class Base64Data(data: String) {
   val DECODER: Base64.Decoder = Base64.getUrlDecoder
 
-  def decode(): String = DECODER.decode(this.getBytes).map(_.toChar).mkString
+  def decodeToString(): String = new String(this.decode(), StandardCharsets.UTF_8)
+
+  def decode(): Array[Byte] = DECODER.decode(this.getBytes)
 
   def getBytes: Array[Byte] = data.getBytes(StandardCharsets.UTF_8)
 
@@ -18,5 +20,7 @@ case class Base64Data(data: String) {
 object Base64Data {
   val ENCODER: Base64.Encoder = Base64.getUrlEncoder
 
-  def encode(data: String): Base64Data = Base64Data(ENCODER.encode(data.getBytes(StandardCharsets.UTF_8)).map(_.toChar).mkString)
+  def encode(data: String): Base64Data = Base64Data(ENCODER.encodeToString(data.getBytes(StandardCharsets.UTF_8)))
+
+  def encode(data: Array[Byte]): Base64Data = Base64Data(ENCODER.encodeToString(data))
 }

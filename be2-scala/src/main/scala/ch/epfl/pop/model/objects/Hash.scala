@@ -28,6 +28,6 @@ object Hash {
    * @return resulting hash
    */
   def fromString(data: String): Hash = Hash(Base64Data.encode(
-    messageDigest.digest(data.getBytes(StandardCharsets.UTF_8)).map(_.toChar).mkString
+    messageDigest.digest(data.getBytes(StandardCharsets.UTF_8))
   ))
 }

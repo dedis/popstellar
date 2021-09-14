@@ -18,16 +18,14 @@ case object LaoValidator extends MessageDataContentValidator {
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val data: CreateLao = message.decodedData.get.asInstanceOf[CreateLao]
-        val expectedHash: Hash = Hash.fromStrings(data.organizer.base64Data.decode(), data.creation.toString, data.name)
+        val expectedHash: Hash = Hash.fromStrings(data.organizer.base64Data.toString, data.creation.toString, data.name)
 
         if (!validateTimestampStaleness(data.creation)) {
           Right(validationError(s"stale 'creation' timestamp (${data.creation})"))
         } else if (!validateWitnesses(data.witnesses)) {
           Right(validationError("duplicate witnesses keys"))
-        /* FIXME hash issues
         } else if (expectedHash != data.id) {
           Right(validationError("unexpected id"))
-        */
         } else if (data.organizer != message.sender) {
           Right(validationError("unexpected organizer public key"))
         } else {
