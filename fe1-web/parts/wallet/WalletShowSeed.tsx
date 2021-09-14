@@ -6,9 +6,9 @@ import styleContainer from 'styles/stylesheets/container';
 import STRINGS from 'res/strings';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
-import { HDWallet } from 'model/objects/HDWallet';
 import PROPS_TYPE from 'res/Props';
 import PropTypes from 'prop-types';
+import { Wallet } from '../../model/objects/wallet/Wallet';
 
 const styles = StyleSheet.create({
   smallPadding: {
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
  */
 const WalletShowSeed = ({ navigation }: IPropTypes) => {
   /* used to set the mnemonic seed inserted by the user */
-  const seed: string = HDWallet.getNewGeneratedMnemonicSeed();
+  const seed: string = Wallet.generateMnemonicSeed();
   console.log(seed);
 
   function getShowSeedWalletDisplay() {

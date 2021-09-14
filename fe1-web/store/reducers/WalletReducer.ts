@@ -1,17 +1,20 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+  createSlice, PayloadAction,
+} from '@reduxjs/toolkit';
 
 /**
  * This file represents the reducer for the wallet.
  * Its job is to store the wallet state.
  * The wallet state is represented by the wallet's encrypted seed.
  */
-
 interface WalletReducerState {
-  walletState?: string;
+  seed?: string;
+  mnemonic?: string;
 }
 
 const initialState: WalletReducerState = {
-  walletState: undefined,
+  seed: undefined,
+  mnemonic: undefined,
 };
 
 /* name of wallet slice in storage */
@@ -22,28 +25,33 @@ const walletSlice = createSlice({
   name: walletReducerPath,
   initialState,
   reducers: {
-    /* set global wallet state */
-    setWalletState: (state, action: PayloadAction<string>) => {
-      if (!action.payload) {
-        console.log('Wallet storage was set to: null');
-        state.walletState = undefined;
+    setWallet: (state, action: PayloadAction<WalletReducerState>) => {
+      if (!action.payload || !action.payload.seed) {
+        console.debug('Wallet storage was set to: null');
+        state.seed = undefined;
+        state.mnemonic = undefined;
+        return;
       }
 
-      state.walletState = action.payload;
-      console.log('Wallet storage was updated with new state');
+      state.seed = action.payload.seed;
+      state.mnemonic = action.payload.mnemonic;
+      console.debug('Wallet storage was updated with new seed');
     },
 
-    clearWalletState: (state) => {
-      state.walletState = undefined;
-      console.log('Wallet storage was cleared');
+    clearWallet: (state) => {
+      state.seed = undefined;
+      state.mnemonic = undefined;
+      console.debug('Wallet storage was cleared');
     },
   },
 });
 
 export const {
-  setWalletState,
-  clearWalletState,
+  setWallet,
+  clearWallet,
 } = walletSlice.actions;
+
+export const { reducer } = walletSlice;
 
 export default {
   [walletReducerPath]: walletSlice.reducer,

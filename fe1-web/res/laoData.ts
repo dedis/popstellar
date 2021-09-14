@@ -1,6 +1,7 @@
 // fake LAOs to show how the app works
+
 import {
-  Hash, Lao, PublicKey, Timestamp
+  Hash, Lao, PublicKey, Timestamp,
 } from 'model/objects';
 
 const data: Lao[] = [
@@ -11,15 +12,6 @@ const data: Lao[] = [
     last_modified: new Timestamp(1607616483),
     organizer: new PublicKey('DEADBEEF'),
     witnesses: [new PublicKey('DEADC0DE'), new PublicKey('DEADBEA7')],
-    /* modification_id: Hash.fromString('a modification id'),
-    modification_signatures: [
-      {
-        witness: new PublicKey('DEADC0DE'),
-        signature: 'witness signature 1',
-      }, {
-        witness: new PublicKey('DEADBEA7'),
-        signature: 'witness signature 2',
-      }], */
   }),
   new Lao({
     id: Hash.fromString('32'),
@@ -28,15 +20,6 @@ const data: Lao[] = [
     last_modified: new Timestamp(1607616483),
     organizer: new PublicKey('i7NMjdW2tkBj4uMCM15rlckmQCdR0anffOTD+MQg3XQ='),
     witnesses: [new PublicKey('DEADC0DE'), new PublicKey('DEADBEA7')],
-    /* modification_id: Hash.fromString('a modification id'),
-    modification_signatures: [
-      {
-        witness: new PublicKey('DEADC0DE'),
-        signature: 'witness signature 1',
-      }, {
-        witness: new PublicKey('DEADBEA7'),
-        signature: 'witness signature 2',
-      }], */
   }),
   new Lao({
     id: Hash.fromString('33'),
@@ -46,15 +29,6 @@ const data: Lao[] = [
     organizer: new PublicKey('DEADBEEF'),
     witnesses: [new PublicKey('i7NMjdW2tkBj4uMCM15rlckmQCdR0anffOTD+MQg3XQ='),
       new PublicKey('DEADBEA7')],
-    /* modification_id: Hash.fromString('a modification id'),
-    modification_signatures: [
-      {
-        witness: new PublicKey('DEADC0DE'),
-        signature: 'witness signature 1',
-      }, {
-        witness: new PublicKey('DEADBEA7'),
-        signature: 'witness signature 2',
-      }], */
   }),
   new Lao({
     id: Hash.fromString('34'),
@@ -63,15 +37,6 @@ const data: Lao[] = [
     last_modified: new Timestamp(1607616483),
     organizer: new PublicKey('DEADBEEF'),
     witnesses: [new PublicKey('DEADC0DE'), new PublicKey('DEADBEA7')],
-    /* modification_id: Hash.fromString('a modification id'),
-    modification_signatures: [
-      {
-        witness: new PublicKey('DEADC0DE'),
-        signature: 'witness signature 1',
-      }, {
-        witness: new PublicKey('DEADBEA7'),
-        signature: 'witness signature 2',
-      }], */
   }),
   new Lao({
     id: Hash.fromString('35'),
@@ -80,15 +45,6 @@ const data: Lao[] = [
     last_modified: new Timestamp(1607616483),
     organizer: new PublicKey('DEADBEEF'),
     witnesses: [new PublicKey('DEADC0DE'), new PublicKey('DEADBEA7')],
-    /* modification_id: Hash.fromString('a modification id'),
-    modification_signatures: [
-      {
-        witness: new PublicKey('DEADC0DE'),
-        signature: 'witness signature 1',
-      }, {
-        witness: new PublicKey('DEADBEA7'),
-        signature: 'witness signature 2',
-      }], */
   }),
   new Lao({
     id: Hash.fromString('36'),
@@ -97,15 +53,6 @@ const data: Lao[] = [
     last_modified: new Timestamp(1607616483),
     organizer: new PublicKey('DEADBEEF'),
     witnesses: [new PublicKey('DEADC0DE'), new PublicKey('DEADBEA7')],
-    /* modification_id: Hash.fromString('a modification id'),
-    modification_signatures: [
-      {
-        witness: new PublicKey('DEADC0DE'),
-        signature: 'witness signature 1',
-      }, {
-        witness: new PublicKey('DEADBEA7'),
-        signature: 'witness signature 2',
-      }], */
   }),
   new Lao({
     id: Hash.fromString('37'),
@@ -114,15 +61,6 @@ const data: Lao[] = [
     last_modified: new Timestamp(1607616483),
     organizer: new PublicKey('DEADBEEF'),
     witnesses: [new PublicKey('DEADC0DE'), new PublicKey('DEADBEA7')],
-    /* modification_id: Hash.fromString('a modification id'),
-    modification_signatures: [
-      {
-        witness: new PublicKey('DEADC0DE'),
-        signature: 'witness signature 1',
-      }, {
-        witness: new PublicKey('DEADBEA7'),
-        signature: 'witness signature 2',
-      }], */
   }),
   new Lao({
     id: Hash.fromString('38'),
@@ -131,15 +69,6 @@ const data: Lao[] = [
     last_modified: new Timestamp(1607616483),
     organizer: new PublicKey('DEADBEEF'),
     witnesses: [new PublicKey('DEADC0DE'), new PublicKey('DEADBEA7')],
-    /* modification_id: Hash.fromString('a modification id'),
-    modification_signatures: [
-      {
-        witness: new PublicKey('DEADC0DE'),
-        signature: 'witness signature 1',
-      }, {
-        witness: new PublicKey('DEADBEA7'),
-        signature: 'witness signature 2',
-      }], */
   }),
   new Lao({
     id: Hash.fromString('39'),
@@ -148,15 +77,6 @@ const data: Lao[] = [
     last_modified: new Timestamp(1607616483),
     organizer: new PublicKey('DEADBEEF'),
     witnesses: [new PublicKey('DEADC0DE'), new PublicKey('DEADBEA7')],
-    /* modification_id: Hash.fromString('a modification id'),
-    modification_signatures: [
-      {
-        witness: new PublicKey('DEADC0DE'),
-        signature: 'witness signature 1',
-      }, {
-        witness: new PublicKey('DEADBEA7'),
-        signature: 'witness signature 2',
-      }], */
   }),
   new Lao({
     id: Hash.fromString('310'),
@@ -165,15 +85,6 @@ const data: Lao[] = [
     last_modified: new Timestamp(1607616483),
     organizer: new PublicKey('DEADBEEF'),
     witnesses: [new PublicKey('DEADC0DE'), new PublicKey('DEADBEA7')],
-    /* modification_id: Hash.fromString('a modification id'),
-    modification_signatures: [
-      {
-        witness: new PublicKey('DEADC0DE'),
-        signature: 'witness signature 1',
-      }, {
-        witness: new PublicKey('DEADBEA7'),
-        signature: 'witness signature 2',
-      }], */
   }),
   new Lao({
     id: Hash.fromString('311'),
@@ -182,15 +93,6 @@ const data: Lao[] = [
     last_modified: new Timestamp(1607616483),
     organizer: new PublicKey('DEADBEEF'),
     witnesses: [new PublicKey('DEADC0DE'), new PublicKey('DEADBEA7')],
-    /* modification_id: Hash.fromString('a modification id'),
-    modification_signatures: [
-      {
-        witness: new PublicKey('DEADC0DE'),
-        signature: 'witness signature 1',
-      }, {
-        witness: new PublicKey('DEADBEA7'),
-        signature: 'witness signature 2',
-      }], */
   }),
   new Lao({
     id: Hash.fromString('312'),
@@ -199,15 +101,6 @@ const data: Lao[] = [
     last_modified: new Timestamp(1607616483),
     organizer: new PublicKey('DEADBEEF'),
     witnesses: [new PublicKey('DEADC0DE'), new PublicKey('DEADBEA7')],
-    /* modification_id: Hash.fromString('a modification id'),
-    modification_signatures: [
-      {
-        witness: new PublicKey('DEADC0DE'),
-        signature: 'witness signature 1',
-      }, {
-        witness: new PublicKey('DEADBEA7'),
-        signature: 'witness signature 2',
-      }], */
   }),
   new Lao({
     id: Hash.fromString('313'),
@@ -216,15 +109,6 @@ const data: Lao[] = [
     last_modified: new Timestamp(1607616483),
     organizer: new PublicKey('DEADBEEF'),
     witnesses: [new PublicKey('DEADC0DE'), new PublicKey('DEADBEA7')],
-    /* modification_id: Hash.fromString('a modification id'),
-    modification_signatures: [
-      {
-        witness: new PublicKey('DEADC0DE'),
-        signature: 'witness signature 1',
-      }, {
-        witness: new PublicKey('DEADBEA7'),
-        signature: 'witness signature 2',
-      }], */
   }),
   new Lao({
     id: Hash.fromString('314'),
@@ -233,15 +117,6 @@ const data: Lao[] = [
     last_modified: new Timestamp(1607616483),
     organizer: new PublicKey('DEADBEEF'),
     witnesses: [new PublicKey('DEADC0DE'), new PublicKey('DEADBEA7')],
-    /* modification_id: Hash.fromString('a modification id'),
-    modification_signatures: [
-      {
-        witness: new PublicKey('DEADC0DE'),
-        signature: 'witness signature 1',
-      }, {
-        witness: new PublicKey('DEADBEA7'),
-        signature: 'witness signature 2',
-      }], */
   }),
   new Lao({
     id: Hash.fromString('315'),
@@ -250,15 +125,6 @@ const data: Lao[] = [
     last_modified: new Timestamp(1607616483),
     organizer: new PublicKey('DEADBEEF'),
     witnesses: [new PublicKey('DEADC0DE'), new PublicKey('DEADBEA7')],
-    /* modification_id: Hash.fromString('a modification id'),
-    modification_signatures: [
-      {
-        witness: new PublicKey('DEADC0DE'),
-        signature: 'witness signature 1',
-      }, {
-        witness: new PublicKey('DEADBEA7'),
-        signature: 'witness signature 2',
-      }], */
   }),
   new Lao({
     id: Hash.fromString('316'),
@@ -267,15 +133,6 @@ const data: Lao[] = [
     last_modified: new Timestamp(1607616483),
     organizer: new PublicKey('DEADBEEF'),
     witnesses: [new PublicKey('DEADC0DE'), new PublicKey('DEADBEA7')],
-    /* modification_id: Hash.fromString('a modification id'),
-    modification_signatures: [
-      {
-        witness: new PublicKey('DEADC0DE'),
-        signature: 'witness signature 1',
-      }, {
-        witness: new PublicKey('DEADBEA7'),
-        signature: 'witness signature 2',
-      }], */
   }),
   new Lao({
     id: Hash.fromString('317'),
@@ -284,15 +141,6 @@ const data: Lao[] = [
     last_modified: new Timestamp(1607616483),
     organizer: new PublicKey('DEADBEEF'),
     witnesses: [new PublicKey('DEADC0DE'), new PublicKey('DEADBEA7')],
-    /* modification_id: Hash.fromString('a modification id'),
-    modification_signatures: [
-      {
-        witness: new PublicKey('DEADC0DE'),
-        signature: 'witness signature 1',
-      }, {
-        witness: new PublicKey('DEADBEA7'),
-        signature: 'witness signature 2',
-      }], */
   }),
   new Lao({
     id: Hash.fromString('318'),
@@ -301,15 +149,6 @@ const data: Lao[] = [
     last_modified: new Timestamp(1607616483),
     organizer: new PublicKey('DEADBEEF'),
     witnesses: [new PublicKey('DEADC0DE'), new PublicKey('DEADBEA7')],
-    /* modification_id: Hash.fromString('a modification id'),
-    modification_signatures: [
-      {
-        witness: new PublicKey('DEADC0DE'),
-        signature: 'witness signature 1',
-      }, {
-        witness: new PublicKey('DEADBEA7'),
-        signature: 'witness signature 2',
-      }], */
   }),
   new Lao({
     id: Hash.fromString('319'),
@@ -318,15 +157,6 @@ const data: Lao[] = [
     last_modified: new Timestamp(1607616483),
     organizer: new PublicKey('DEADBEEF'),
     witnesses: [new PublicKey('DEADC0DE'), new PublicKey('DEADBEA7')],
-    /* modification_id: Hash.fromString('a modification id'),
-    modification_signatures: [
-      {
-        witness: new PublicKey('DEADC0DE'),
-        signature: 'witness signature 1',
-      }, {
-        witness: new PublicKey('DEADBEA7'),
-        signature: 'witness signature 2',
-      }], */
   }),
   new Lao({
     id: Hash.fromString('320'),
@@ -335,15 +165,6 @@ const data: Lao[] = [
     last_modified: new Timestamp(1607616483),
     organizer: new PublicKey('DEADBEEF'),
     witnesses: [new PublicKey('DEADC0DE'), new PublicKey('DEADBEA7')],
-    /* modification_id: Hash.fromString('a modification id'),
-    modification_signatures: [
-      {
-        witness: new PublicKey('DEADC0DE'),
-        signature: 'witness signature 1',
-      }, {
-        witness: new PublicKey('DEADBEA7'),
-        signature: 'witness signature 2',
-      }], */
   }),
 ];
 

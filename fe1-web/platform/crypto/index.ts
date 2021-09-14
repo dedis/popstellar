@@ -1,5 +1,5 @@
-import {get, set} from '../storage';
-import {getSubtleCrypto} from './browser';
+import { get, set } from '../Storage';
+import { getSubtleCrypto } from './browser';
 
 const algorithm: RsaHashedKeyAlgorithm = {
   name: 'RSA-OAEP',
@@ -12,6 +12,38 @@ const keyUsages: KeyUsage[] = ['encrypt', 'decrypt'];
 
 // Identifier in IndexedDB for the KeyPair storage
 const keysDbId: string = 'SecureKeyPair';
+
+/**
+ * Generates the key pair
+ * @returns the CryptoKeyPair
+ * @private
+ */
+async function createKeyPair(): Promise<CryptoKeyPair> {
+  const keyPair: CryptoKeyPair = await getSubtleCrypto()
+    .generateKey(
+      algorithm, false, keyUsages,
+    ) as CryptoKeyPair;
+
+  if (!keyPair) {
+    throw Error('KeyPair generation failed');
+  }
+
+  return keyPair;
+}
+
+/**
+ * Retrieves the key pair from IndexedDB, creates and stores it as needed
+ * @returns the CryptoKeyPair
+ * @private
+ */
+async function getOrCreateKeyPair(): Promise<CryptoKeyPair> {
+  let keys: CryptoKeyPair = await get(keysDbId);
+  if (keys === undefined) {
+    keys = await createKeyPair();
+    await set(keysDbId, keys);
+  }
+  return keys;
+}
 
 /**
  * Encrypts the given data with a platform-specific, secure encryption mechanism.
@@ -59,33 +91,3 @@ export default {
   encrypt,
   decrypt,
 };
-
-/**
- * Retrieves the key pair from IndexedDB, creates and stores it as needed
- * @returns the CryptoKeyPair
- */
-async function getOrCreateKeyPair(): Promise<CryptoKeyPair> {
-  let keys: CryptoKeyPair = await get(keysDbId);
-  if (keys === undefined) {
-    keys = await createKeyPair();
-    await set(keysDbId, keys);
-  }
-  return keys;
-}
-
-/**
- * Generates the key pair
- * @returns the CryptoKeyPair
- */
-async function createKeyPair(): Promise<CryptoKeyPair> {
-  const keyPair: CryptoKeyPair = await getSubtleCrypto()
-    .generateKey(
-      algorithm, false, keyUsages,
-    ) as CryptoKeyPair;
-
-  if (!keyPair) {
-    throw Error('KeyPair generation failed');
-  }
-
-  return keyPair;
-}

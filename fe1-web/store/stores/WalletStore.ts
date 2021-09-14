@@ -1,36 +1,92 @@
-import { dispatch, getStore } from '../Storage';
-import { getWalletState, setWalletState, clearWalletState } from '../reducers';
+import base64url from 'base64url';
+import platformCrypto from 'platform/crypto';
+import { AsyncDispatch, getStore } from '../Storage';
+import { getWalletState, setWallet, clearWallet } from '../reducers/WalletReducer';
 
 /**
- * This file represents the storage slice for the wallet state.
- * The wallet state is represented by the encrypted wallet seed.
+ * Encrypt Uint8Array plaintext into a ciphertext (string)
+ * @param plaintext
+ * @private
  */
+async function encrypt(plaintext: Uint8Array): Promise<string> {
+  const encrypted = await platformCrypto.encrypt(plaintext);
+  const encoded = base64url.encode(Buffer.from(encrypted));
+  return encoded;
+}
+
+/**
+ * Decrypt ciphertext (string) into a Uint8Array plaintext
+ * @param cipher
+ * @private
+ */
+async function decrypt(cipher: string): Promise<Uint8Array> {
+  const decoded = base64url.toBuffer(cipher);
+  const plaintext = await platformCrypto.decrypt(decoded);
+  return new Uint8Array(plaintext);
+}
+
 export namespace WalletStore {
   /**
-   * This function dispatches action to store wallet state.
-   * @param walletSeed the RSA-encrypted seed for this wallet
+   * Stores wallet seed & associated mnemonic
+   * @param mnemonic the 12-word mnemonic to be saved
+   * @param seed the unencrypted seed
+   * @returns a promise which completes after storage
    */
-  export function store(walletSeed: string): void {
-    dispatch(setWalletState(walletSeed));
+  export async function store(mnemonic: string, seed: Uint8Array) {
+    const binaryMnemonic: Uint8Array = new TextEncoder().encode(mnemonic);
+
+    await getStore().dispatch(async (dispatch: AsyncDispatch): Promise<void> => {
+      const encryptedSeed = await encrypt(seed);
+      const encryptedMnemonic = await encrypt(binaryMnemonic);
+      await dispatch(setWallet({
+        seed: encryptedSeed,
+        mnemonic: encryptedMnemonic,
+      }));
+    });
   }
 
   /**
-   * This function dispatches action to clear the wallet state.
+   * Retrieve the wallet seed mnemonic from the store
+   * @returns the mnemonic
+   * @throws an error if the seed was never initialized
    */
-  export function clear(): void {
-    dispatch(clearWalletState());
-  }
-
-  /**
-   * returns the wallet state: the encrypted wallet seed or throws
-   * an error if the state was never initialized.
-   */
-  export async function get(): Promise<string | undefined> {
-    const { walletState } = getWalletState(getStore().getState());
-    if (!walletState) {
-      console.log('No wallet in redux storage, insert 12-word mneonic to backup your wallet.');
+  export async function getMnemonic(): Promise<string> {
+    const cipher = getWalletState(getStore().getState()).mnemonic;
+    if (!cipher) {
+      throw Error('No wallet in redux storage, insert 12-word mnemonic to backup your wallet.');
     }
 
-    return walletState;
+    const binaryMnemonic: Uint8Array = await decrypt(cipher);
+    return new TextDecoder('utf-8').decode(binaryMnemonic);
+  }
+
+  /**
+   * Retrieve the wallet seed from the store
+   * @returns the wallet seed
+   * @throws an error if the seed was never initialized
+   */
+  export async function getSeed(): Promise<Uint8Array> {
+    const cipher = getWalletState(getStore().getState()).seed;
+    if (!cipher) {
+      throw Error('No wallet in redux storage, insert 12-word mnemonic to backup your wallet.');
+    }
+
+    return decrypt(cipher);
+  }
+
+  /**
+   * Indicates whether a seed is present in the store
+   * @returns true if a seed exists, false otherwise
+   */
+  export function hasSeed(): boolean {
+    const { seed } = getWalletState(getStore().getState());
+    return seed !== undefined;
+  }
+
+  /**
+   * Clears the wallet.
+   */
+  export function clear(): void {
+    getStore().dispatch(clearWallet());
   }
 }

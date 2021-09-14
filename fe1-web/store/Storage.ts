@@ -1,36 +1,34 @@
-import { persistStore } from 'redux-persist';
+// Core storage module for the React app
 import {
-  AnyAction, createStore, Store, applyMiddleware,
+  AnyAction, createStore, Store, applyMiddleware, Action,
 } from 'redux';
+import { persistStore, Persistor } from 'redux-persist';
 import thunkMiddleware from 'redux-thunk';
+import { ThunkAction, ThunkDispatch } from '@reduxjs/toolkit';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import { Persistor } from 'redux-persist/es/types';
 
+// Import all the reducers, defining how storage is organized and accessed
 import rootReducer from './reducers';
 
-interface PersistStoreConfig {
-  store: Store,
-  persist: Persistor,
+// Extend redux dispatch definition to support ThunkActions
+// as per https://stackoverflow.com/a/67634381
+declare module 'redux' {
+  interface Dispatch<A extends Action = AnyAction> {
+    <S, E, R>(asyncAction: ThunkAction<R, S, E, A>): R;
+  }
 }
 
-let store: Store;
-let persist: Persistor;
+// Initialize the store and expose its configuration
+const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
+export const store: Store = createStore(rootReducer, composedEnhancer);
+export const persist: Persistor = persistStore(store);
 
-export function storeInit(): PersistStoreConfig {
-  const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
+// Expose the access functions
+export const getStore = (): Store => store;
+export const { dispatch } = store;
 
-  // Initiates (opens) the persistent storage
-  store = createStore(rootReducer, composedEnhancer);
-
-  persist = persistStore(store);
-
-  return { store, persist };
-}
-
-export function getStore(): Store {
-  return store;
-}
-
-export function dispatch(action: AnyAction): AnyAction {
-  return store.dispatch(action);
-}
+// Expose the types needed elsewhere
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, RootState, unknown, AnyAction>;
+export type AsyncDispatch = ThunkDispatch<RootState, void, Action>;

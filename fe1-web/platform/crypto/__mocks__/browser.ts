@@ -12,11 +12,12 @@ export const generateKeyMock = jest.fn(
       publicKey: mockPublicKey,
       privateKey: mockPrivateKey,
     } as CryptoKeyPair);
-  });
+  },
+);
 
 export const encryptMock = jest.fn(
   (s: Algorithm, publicKey: CryptoKey,
-   plaintext: Uint8Array | ArrayBuffer): Promise<ArrayBuffer> => {
+    plaintext: Uint8Array | ArrayBuffer): Promise<ArrayBuffer> => {
     // TODO: verify algorithm
 
     // Verify key
@@ -25,14 +26,15 @@ export const encryptMock = jest.fn(
     }
 
     // Store ciphertext and plaintext association
-    let h = base64url.encode(Buffer.from(plaintext));
+    const h = base64url.encode(Buffer.from(plaintext));
     cipherMap.set(h, plaintext);
     return Promise.resolve(Buffer.from(h));
-  });
+  },
+);
 
 export const decryptMock = jest.fn(
   (s: Algorithm, privateKey: CryptoKey,
-   ciphertext: Uint8Array | ArrayBuffer): Promise<ArrayBuffer> => {
+    ciphertext: Uint8Array | ArrayBuffer): Promise<ArrayBuffer> => {
     // TODO: verify algorithm
 
     // Verify key
@@ -41,14 +43,15 @@ export const decryptMock = jest.fn(
     }
 
     // Verify plaintext was encrypted
-    let mapKey = ciphertext.toString();
+    const mapKey = ciphertext.toString();
     if (!cipherMap.has(mapKey)) {
       throw Error('Decrypting something that was not encrypted with this key');
     }
 
-    let plaintext = cipherMap.get(mapKey) as ArrayBuffer;
+    const plaintext = cipherMap.get(mapKey) as ArrayBuffer;
     return Promise.resolve(plaintext);
-  });
+  },
+);
 
 export function getSubtleCrypto(): SubtleCrypto {
   return {
