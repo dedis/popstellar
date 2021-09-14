@@ -40,13 +40,6 @@ const (
 	dbQueryRowErr = "failed to query rows: %v"
 )
 
-const defaultLevel = zerolog.InfoLevel
-
-var logout = zerolog.ConsoleWriter{
-	Out:        os.Stdout,
-	TimeFormat: time.RFC3339,
-}
-
 // baseHub implements hub.Hub interface
 type baseHub struct {
 	messageChan chan socket.IncomingMessage
@@ -64,20 +57,18 @@ type baseHub struct {
 
 	workers *semaphore.Weighted
 
-	log *zerolog.Logger
+	log zerolog.Logger
 }
 
 // NewBaseHub returns a Base Hub.
-func NewBaseHub(public kyber.Point) (*baseHub, error) {
+func NewBaseHub(public kyber.Point, log zerolog.Logger) (*baseHub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create the schema validator: %v", err)
 	}
 
-	log := zerolog.New(logout).Level(defaultLevel).
-		With().Timestamp().Logger().
-		With().Caller().Logger()
+	log = log.With().Str("role", "base hub").Logger()
 
 	baseHub := baseHub{
 		messageChan:     make(chan socket.IncomingMessage),
@@ -87,7 +78,7 @@ func NewBaseHub(public kyber.Point) (*baseHub, error) {
 		schemaValidator: schemaValidator,
 		stop:            make(chan struct{}),
 		workers:         semaphore.NewWeighted(numWorkers),
-		log:             &log,
+		log:             log,
 	}
 
 	if os.Getenv("HUB_DB") != "" {

@@ -6,6 +6,7 @@ import (
 	"student20_pop/message2/query/method"
 	"student20_pop/network/socket"
 
+	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
 )
 
@@ -15,8 +16,8 @@ type witnessHub struct {
 }
 
 // NewWitnessHub returns a Witness Hub.
-func NewWitnessHub(public kyber.Point) (*witnessHub, error) {
-	baseHub, err := NewBaseHub(public)
+func NewWitnessHub(public kyber.Point, log zerolog.Logger) (*witnessHub, error) {
+	baseHub, err := NewBaseHub(public, log)
 	return &witnessHub{
 		baseHub: baseHub,
 	}, err

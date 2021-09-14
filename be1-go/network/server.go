@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	"github.com/gorilla/websocket"
+	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
 )
 
@@ -33,12 +34,15 @@ type Server struct {
 	isClosed bool
 	wg       *sync.WaitGroup
 	done     chan struct{}
+
+	log zerolog.Logger
 }
 
 // NewServer creates a new Server which is used to handle requests for
 // /<hubType>/<socketType> endpoint. Please use the Start() method to
 // start listening for connections.
-func NewServer(h hub.Hub, port int, st socket.SocketType) *Server {
+func NewServer(h hub.Hub, port int, st socket.SocketType, log zerolog.Logger) *Server {
+
 	server := &Server{
 		h:       h,
 		st:      st,
@@ -47,6 +51,7 @@ func NewServer(h hub.Hub, port int, st socket.SocketType) *Server {
 		wg:      &sync.WaitGroup{},
 		done:    make(chan struct{}),
 		closing: &sync.Mutex{},
+		log:     log,
 	}
 
 	path := fmt.Sprintf("/%s/%s/", h.Type(), st)
@@ -94,13 +99,13 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	switch s.st {
 	case socket.ClientSocketType:
-		client := socket.NewClientSocket(s.h.Receiver(), s.h.OnSocketClose(), conn, s.wg, s.done)
+		client := socket.NewClientSocket(s.h.Receiver(), s.h.OnSocketClose(), conn, s.wg, s.done, s.log)
 		s.wg.Add(2)
 
 		go client.ReadPump()
 		go client.WritePump()
 	case socket.WitnessSocketType:
-		witness := socket.NewWitnessSocket(s.h.Receiver(), s.h.OnSocketClose(), conn, s.wg, s.done)
+		witness := socket.NewWitnessSocket(s.h.Receiver(), s.h.OnSocketClose(), conn, s.wg, s.done, s.log)
 		s.wg.Add(2)
 
 		go witness.ReadPump()
