@@ -112,6 +112,7 @@ const data: LaoEventState[] = [
   {
     id: Hash.fromString('11').toString(),
     name: 'Event 11',
+    eventType: LaoEventType.MEETING,
     start: 607616483,
     creation: 1607616483,
     last_modified: 1607616483,
@@ -211,6 +212,13 @@ const data: LaoEventState[] = [
 ];
 
 function sortByStartAscending(a: LaoEventState, b: LaoEventState) {
+  if (!a || !a.start) {
+    return 1;
+  }
+  if (!b || !b.start) {
+    return -1;
+  }
+
   if (a.start < b.start) {
     return -1;
   }

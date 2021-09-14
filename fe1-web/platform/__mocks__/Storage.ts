@@ -17,3 +17,7 @@ export async function update<T>(key: Key, updater: Updater<T>): Promise<void> {
   const newValue = updater(value);
   return set(key, newValue);
 }
+
+export function getMockStorage(): Map<any, any> {
+  return storage;
+}

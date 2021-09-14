@@ -69,7 +69,7 @@ const ConnectConfirm = ({ navigation, route }: IPropTypes) => {
     console.log(laoId);
   }
 
-  const onButtonConfirm = () => {
+  const onButtonConfirm = async () => {
     if (!connectTo(serverUrl)) {
       return;
     }
@@ -79,13 +79,14 @@ const ConnectConfirm = ({ navigation, route }: IPropTypes) => {
       return;
     }
 
-    subscribeToChannel(channel)
-      .then(() => {
-        navigation.navigate(STRINGS.app_navigation_tab_organizer, {
-          screen: 'Attendee',
-        });
-      })
-      .catch((reason) => console.error(`Failed to establish lao connection: ${reason}`));
+    try {
+      await subscribeToChannel(channel);
+      navigation.navigate(STRINGS.app_navigation_tab_organizer, {
+        screen: 'Attendee',
+      });
+    } catch (err) {
+      console.error(`Failed to establish lao connection: ${err}`);
+    }
   };
 
   return (

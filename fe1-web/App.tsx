@@ -7,7 +7,7 @@ import { useReduxDevToolsExtension } from '@react-navigation/devtools';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import { Provider } from 'react-redux';
-import { storeInit } from 'store/Storage';
+import { store, persist } from 'store/Storage';
 
 import AppNavigation from 'navigation/AppNavigation';
 import { navigationRef } from 'navigation/RootNavigation';
@@ -24,7 +24,6 @@ import { configureIngestion } from 'ingestion';
 */
 
 export default function App() {
-  const { store, persist } = storeInit();
   configureIngestion();
 
   useReduxDevToolsExtension(navigationRef);

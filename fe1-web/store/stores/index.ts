@@ -12,5 +12,4 @@
 export * from './KeyPairStore';
 export * from './OpenedLaoStore';
 export * from './WalletStore';
-export * from './LastPoPTokenStore';
-// TODO: add missing exports - EventStore
+export * from './EventStore'; // remove?
