@@ -32,6 +32,7 @@ case object LaoHandler extends MessageHandler {
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val data: CreateLao = message.decodedData.get.asInstanceOf[CreateLao]
+        // we are using the lao id instead of the message_id at lao creation
         val channel: Channel = Channel(s"${Channel.rootChannelPrefix}${data.id}")
 
         val f: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map {
