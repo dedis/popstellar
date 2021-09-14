@@ -31,8 +31,8 @@ func Test_Meeting_Create(t *testing.T) {
 	require.Equal(t, "create", msg.Action)
 	require.Equal(t, "XXX", msg.ID)
 	require.Equal(t, "XXX", msg.Name)
-	require.Equal(t, 123, msg.Creation)
+	require.Equal(t, int64(123), msg.Creation)
 	require.Equal(t, "XXX", msg.Location)
-	require.Equal(t, 123, msg.Start)
-	require.Equal(t, 123, msg.End)
+	require.Equal(t, int64(123), msg.Start)
+	require.Equal(t, int64(123), msg.End)
 }

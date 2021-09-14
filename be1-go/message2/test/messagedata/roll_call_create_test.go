@@ -31,9 +31,9 @@ func Test_Roll_Call_Create(t *testing.T) {
 	require.Equal(t, "create", msg.Action)
 	require.Equal(t, "XXX", msg.ID)
 	require.Equal(t, "XXX", msg.Name)
-	require.Equal(t, 123, msg.Creation)
-	require.Equal(t, 123, msg.ProposedStart)
-	require.Equal(t, 123, msg.ProposedEnd)
+	require.Equal(t, int64(123), msg.Creation)
+	require.Equal(t, int64(123), msg.ProposedStart)
+	require.Equal(t, int64(123), msg.ProposedEnd)
 	require.Equal(t, "XXX", msg.Location)
 	require.Equal(t, "XXX", msg.Description)
 }

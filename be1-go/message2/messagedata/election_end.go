@@ -6,6 +6,6 @@ type ElectionEnd struct {
 	Action          string `json:"action"`
 	LAO             string `json:"lao"`
 	Election        string `json:"election"`
-	CreatedAt       int    `json:"created_at"`
+	CreatedAt       int64  `json:"created_at"`
 	RegisteredVotes string `json:"registered_votes"`
 }

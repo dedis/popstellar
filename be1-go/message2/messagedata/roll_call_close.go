@@ -6,6 +6,6 @@ type RollCallClose struct {
 	Action    string   `json:"action"`
 	UpdateID  string   `json:"update_id"`
 	Closes    string   `json:"closes"`
-	ClosedAt  int      `json:"closed_at"`
+	ClosedAt  int64    `json:"closed_at"`
 	Attendees []string `json:"attendees"`
 }

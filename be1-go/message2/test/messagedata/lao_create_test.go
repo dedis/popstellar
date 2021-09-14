@@ -31,7 +31,7 @@ func Test_Lao_Create(t *testing.T) {
 	require.Equal(t, "create", msg.Action)
 	require.Equal(t, "XXX", msg.ID)
 	require.Equal(t, "XXX", msg.Name)
-	require.Equal(t, 123, msg.Creation)
+	require.Equal(t, int64(123), msg.Creation)
 	require.Equal(t, "XXX", msg.Organizer)
 
 	require.Len(t, msg.Witnesses, 1)

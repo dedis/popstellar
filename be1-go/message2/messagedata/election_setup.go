@@ -8,9 +8,9 @@ type ElectionSetup struct {
 	Lao       string                  `json:"lao"`
 	Name      string                  `json:"name"`
 	Version   string                  `json:"version"`
-	CreatedAt int                     `json:"created_at"`
-	StartTime int                     `json:"start_time"`
-	EndTime   int                     `json:"end_time"`
+	CreatedAt int64                   `json:"created_at"`
+	StartTime int64                   `json:"start_time"`
+	EndTime   int64                   `json:"end_time"`
 	Questions []ElectionSetupQuestion `json:"questions"`
 }
 

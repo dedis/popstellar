@@ -31,7 +31,7 @@ func Test_Vote_Cast_Vote(t *testing.T) {
 	require.Equal(t, "cast_vote", msg.Action)
 	require.Equal(t, "XXX", msg.Lao)
 	require.Equal(t, "XXX", msg.Election)
-	require.Equal(t, 123, msg.CreatedAt)
+	require.Equal(t, int64(123), msg.CreatedAt)
 
 	require.Len(t, msg.Votes, 1)
 	require.Equal(t, "XXX", msg.Votes[0].ID)

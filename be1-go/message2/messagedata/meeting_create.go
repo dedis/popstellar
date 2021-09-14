@@ -8,9 +8,9 @@ type MeetingCreate struct {
 	Action   string          `json:"action"`
 	ID       string          `json:"id"`
 	Name     string          `json:"name"`
-	Creation int             `json:"creation"`
+	Creation int64           `json:"creation"`
 	Location string          `json:"location"`
-	Start    int             `json:"start"`
-	End      int             `json:"end"`
+	Start    int64           `json:"start"`
+	End      int64           `json:"end"`
 	Extra    json.RawMessage `json:"extra"`
 }

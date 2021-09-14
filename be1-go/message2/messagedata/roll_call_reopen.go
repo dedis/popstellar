@@ -6,5 +6,5 @@ type RollCallReOpen struct {
 	Action   string `json:"action"`
 	UpdateID string `json:"update_id"`
 	Opens    string `json:"opens"`
-	OpenedAt int    `json:"opened_at"`
+	OpenedAt int64  `json:"opened_at"`
 }

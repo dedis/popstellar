@@ -6,6 +6,6 @@ type LaoUpdate struct {
 	Action       string   `json:"action"`
 	ID           string   `json:"id"`
 	Name         string   `json:"name"`
-	LastModified int      `json:"last_modified"`
+	LastModified int64    `json:"last_modified"`
 	Witnesses    []string `json:"witnesses"`
 }

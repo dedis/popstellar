@@ -31,7 +31,7 @@ func Test_Lao_Update(t *testing.T) {
 	require.Equal(t, "update_properties", msg.Action)
 	require.Equal(t, "XXX", msg.ID)
 	require.Equal(t, "XXX", msg.Name)
-	require.Equal(t, 123, msg.LastModified)
+	require.Equal(t, int64(123), msg.LastModified)
 
 	require.Len(t, msg.Witnesses, 1)
 	require.Equal(t, "XXX", msg.Witnesses[0])

@@ -31,10 +31,10 @@ func Test_Meeting_State(t *testing.T) {
 	require.Equal(t, "state", msg.Action)
 	require.Equal(t, "XXX", msg.ID)
 	require.Equal(t, "XXX", msg.Name)
-	require.Equal(t, 123, msg.Creation)
+	require.Equal(t, int64(123), msg.Creation)
 	require.Equal(t, "XXX", msg.Location)
-	require.Equal(t, 123, msg.Start)
-	require.Equal(t, 123, msg.End)
+	require.Equal(t, int64(123), msg.Start)
+	require.Equal(t, int64(123), msg.End)
 	require.Equal(t, "XXX", msg.ModificationID)
 
 	require.Len(t, msg.ModificationSignatures, 1)

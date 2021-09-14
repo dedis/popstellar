@@ -33,9 +33,9 @@ func Test_Election_Setup(t *testing.T) {
 	require.Equal(t, "XXX", msg.Lao)
 	require.Equal(t, "XXX", msg.Name)
 	require.Equal(t, "XXX", msg.Version)
-	require.Equal(t, 123, msg.CreatedAt)
-	require.Equal(t, 123, msg.StartTime)
-	require.Equal(t, 123, msg.EndTime)
+	require.Equal(t, int64(123), msg.CreatedAt)
+	require.Equal(t, int64(123), msg.StartTime)
+	require.Equal(t, int64(123), msg.EndTime)
 
 	require.Len(t, msg.Questions, 1)
 	require.Equal(t, "XXX", msg.Questions[0].ID)

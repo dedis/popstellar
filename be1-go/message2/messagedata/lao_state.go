@@ -6,8 +6,8 @@ type LaoState struct {
 	Action                 string                  `json:"action"`
 	ID                     string                  `json:"id"`
 	Name                   string                  `json:"name"`
-	Creation               int                     `json:"creation"`
-	LastModified           int                     `json:"last_modified"`
+	Creation               int64                   `json:"creation"`
+	LastModified           int64                   `json:"last_modified"`
 	Organizer              string                  `json:"organizer"`
 	Witnesses              []string                `json:"witnesses"`
 	ModificationID         string                  `json:"modification_id"`

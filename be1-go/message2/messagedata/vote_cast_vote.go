@@ -6,7 +6,7 @@ type VoteCastVote struct {
 	Action    string `json:"action"`
 	Lao       string `json:"lao"`
 	Election  string `json:"election"`
-	CreatedAt int    `json:"created_at"`
+	CreatedAt int64  `json:"created_at"`
 	Votes     []Vote `json:"votes"`
 }
 

@@ -31,6 +31,6 @@ func Test_Election_End(t *testing.T) {
 	require.Equal(t, "end", msg.Action)
 	require.Equal(t, "XXX", msg.LAO)
 	require.Equal(t, "XXX", msg.Election)
-	require.Equal(t, 123, msg.CreatedAt)
+	require.Equal(t, int64(123), msg.CreatedAt)
 	require.Equal(t, "XXX", msg.RegisteredVotes)
 }

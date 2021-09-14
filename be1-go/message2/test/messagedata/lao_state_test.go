@@ -31,8 +31,8 @@ func Test_Lao_State(t *testing.T) {
 	require.Equal(t, "state", msg.Action)
 	require.Equal(t, "XXX", msg.ID)
 	require.Equal(t, "XXX", msg.Name)
-	require.Equal(t, 123, msg.Creation)
-	require.Equal(t, 123, msg.LastModified)
+	require.Equal(t, int64(123), msg.Creation)
+	require.Equal(t, int64(123), msg.LastModified)
 	require.Equal(t, "XXX", msg.Organizer)
 
 	require.Len(t, msg.Witnesses, 1)

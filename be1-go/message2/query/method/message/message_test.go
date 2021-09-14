@@ -34,7 +34,7 @@ func Test_UnmarshalData(t *testing.T) {
 	require.Equal(t, "create", laoCreate.Action)
 	require.Equal(t, "XXX", laoCreate.ID)
 	require.Equal(t, "XXX", laoCreate.Name)
-	require.Equal(t, 123, laoCreate.Creation)
+	require.Equal(t, int64(123), laoCreate.Creation)
 	require.Equal(t, "XXX", laoCreate.Organizer)
 
 	require.Len(t, laoCreate.Witnesses, 1)

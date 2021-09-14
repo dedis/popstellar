@@ -31,5 +31,5 @@ func Test_Roll_Call_Open(t *testing.T) {
 	require.Equal(t, "open", msg.Action)
 	require.Equal(t, "XXX", msg.UpdateID)
 	require.Equal(t, "XXX", msg.Opens)
-	require.Equal(t, 123, msg.OpenedAt)
+	require.Equal(t, int64(123), msg.OpenedAt)
 }
