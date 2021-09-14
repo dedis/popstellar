@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"student20_pop/message2"
+	"student20_pop/message2/query/method"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -16,14 +17,23 @@ func Test_Broadcast(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var msg message2.JSONRPC
+	var msg message2.JSONRPCBase
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
 
-	// > should be of type "query"
-	require.Equal(t, message2.RPCTypeQuery, msg.Type())
+	require.Equal(t, "2.0", msg.JSONRPC)
 
-	require.Equal(t, "broadcast", msg.Method)
-	require.Equal(t, "/root/XXX", msg.Broadcast.Params.Channel)
+	rpctype, err := message2.GetType(buf)
+	require.NoError(t, err)
+
+	require.Equal(t, message2.RPCTypeQuery, rpctype)
+
+	var broadcast method.Broadcast
+
+	err = json.Unmarshal(buf, &broadcast)
+	require.NoError(t, err)
+
+	require.Equal(t, "broadcast", broadcast.Method)
+	require.Equal(t, "/root/XXX", broadcast.Params.Channel)
 }

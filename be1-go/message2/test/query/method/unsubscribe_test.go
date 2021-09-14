@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"student20_pop/message2"
+	"student20_pop/message2/query/method"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -16,15 +17,24 @@ func Test_Unsubscribe(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var msg message2.JSONRPC
+	var msg message2.JSONRPCBase
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
 
-	// > should be of type "query"
-	require.Equal(t, message2.RPCTypeQuery, msg.Type())
+	require.Equal(t, "2.0", msg.JSONRPC)
 
-	require.Equal(t, "unsubscribe", msg.Method)
-	require.Equal(t, "/root/XXX", msg.Unsubscribe.Params.Channel)
-	require.Equal(t, 999, msg.Unsubscribe.ID)
+	rpctype, err := message2.GetType(buf)
+	require.NoError(t, err)
+
+	require.Equal(t, message2.RPCTypeQuery, rpctype)
+
+	var unsubscribe method.Unsubscribe
+
+	err = json.Unmarshal(buf, &unsubscribe)
+	require.NoError(t, err)
+
+	require.Equal(t, "unsubscribe", unsubscribe.Method)
+	require.Equal(t, "/root/XXX", unsubscribe.Params.Channel)
+	require.Equal(t, 999, unsubscribe.ID)
 }

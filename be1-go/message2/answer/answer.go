@@ -2,12 +2,15 @@ package answer
 
 import (
 	"encoding/json"
+	"student20_pop/message2"
 
 	"golang.org/x/xerrors"
 )
 
 // Answer defines the JSON RPC answer message
 type Answer struct {
+	message2.JSONRPCBase
+
 	ID     int     `json:"id"`
 	Result *Result `json:"result"`
 	Error  *Error  `json:"error"`

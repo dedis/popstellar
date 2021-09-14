@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"student20_pop/message2"
+	"student20_pop/message2/query/method"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -16,20 +17,29 @@ func Test_Publish(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var msg message2.JSONRPC
+	var msg message2.JSONRPCBase
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
 
-	// > should be of type "query"
-	require.Equal(t, message2.RPCTypeQuery, msg.Type())
+	require.Equal(t, "2.0", msg.JSONRPC)
 
-	require.Equal(t, "publish", msg.Method)
-	require.Equal(t, "/root/XXX", msg.Publish.Params.Channel)
-	require.Equal(t, 999, msg.Publish.ID)
-	require.Equal(t, "XXX", msg.Publish.Params.Message.Data)
-	require.Equal(t, "XXX", msg.Publish.Params.Message.Sender)
-	require.Equal(t, "XXX", msg.Publish.Params.Message.Signature)
-	require.Equal(t, "XXX", msg.Publish.Params.Message.MessageID)
-	require.Len(t, msg.Publish.Params.Message.WitnessSignatures, 0)
+	rpctype, err := message2.GetType(buf)
+	require.NoError(t, err)
+
+	require.Equal(t, message2.RPCTypeQuery, rpctype)
+
+	var publish method.Publish
+
+	err = json.Unmarshal(buf, &publish)
+	require.NoError(t, err)
+
+	require.Equal(t, "publish", publish.Method)
+	require.Equal(t, "/root/XXX", publish.Params.Channel)
+	require.Equal(t, 999, publish.ID)
+	require.Equal(t, "XXX", publish.Params.Message.Data)
+	require.Equal(t, "XXX", publish.Params.Message.Sender)
+	require.Equal(t, "XXX", publish.Params.Message.Signature)
+	require.Equal(t, "XXX", publish.Params.Message.MessageID)
+	require.Len(t, publish.Params.Message.WitnessSignatures, 0)
 }
