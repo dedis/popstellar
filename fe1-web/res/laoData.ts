@@ -1,8 +1,8 @@
 // fake LAOs to show how the app works
-
-import {
-  Hash, Lao, PublicKey, Timestamp,
-} from 'model/objects';
+import { Hash } from 'model/objects/Hash';
+import { Lao } from 'model/objects/Lao';
+import { PublicKey } from 'model/objects/PublicKey';
+import { Timestamp } from 'model/objects/Timestamp';
 
 const data: Lao[] = [
   new Lao({

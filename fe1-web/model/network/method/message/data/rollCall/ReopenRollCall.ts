@@ -1,4 +1,6 @@
-import { Hash, Lao, Timestamp } from 'model/objects';
+import {
+  EventTags, Hash, Lao, Timestamp,
+} from 'model/objects';
 import { OpenedLaoStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
@@ -27,24 +29,23 @@ export class ReopenRollCall implements MessageData {
       throw new ProtocolError("Undefined 'update_id' parameter encountered during 'ReopenRollCall'");
     }
 
-    // FIXME: implementation not finished, get event from storage,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const lao: Lao = OpenedLaoStore.get();
-    /*
-    const expectedHash = Hash.fromStringArray(
-      EventTags.ROLL_CALL, lao.id.toString(), lao.creation.toString(), ROLLCALLNAME
-    );
-    if (!expectedHash.equals(msg.id))
-      throw new ProtocolError(
-        'Invalid \'id\' parameter encountered during \'CreateLao\': unexpected id value'
-      );
-    */
-    this.update_id = new Hash(msg.update_id.toString());
-
     if (!msg.opens) {
-      throw new ProtocolError("Undefined 'opens' parameter encountered during 'OpenRollCall'");
+      throw new ProtocolError("Undefined 'opens' parameter encountered during 'ReopenRollCall'");
     }
     this.opens = msg.opens;
+
+    if (!msg.update_id) {
+      throw new ProtocolError("Undefined 'update_id' parameter encountered during 'ReopenRollCall'");
+    }
+    const lao: Lao = OpenedLaoStore.get();
+    const expectedHash = Hash.fromStringArray(
+      EventTags.ROLL_CALL, lao.id.toString(), this.opens.toString(), this.opened_at.toString(),
+    );
+    if (!expectedHash.equals(msg.update_id)) {
+      throw new ProtocolError("Invalid 'update_id' parameter encountered during 'ReopenRollCall':"
+        + ' re-computing the value yields a different result');
+    }
+    this.update_id = msg.update_id;
   }
 
   public static fromJson(obj: any): ReopenRollCall {

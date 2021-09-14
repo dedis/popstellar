@@ -4,7 +4,7 @@ import {
 import { REHYDRATE } from 'redux-persist';
 
 import { Hash, Lao, LaoState } from 'model/objects';
-import laosData from 'res/laoData';
+// import laosData from 'res/laoData';
 
 /**
  * Reducer & associated function implementation to store all known LAOs
@@ -18,11 +18,8 @@ interface LaoReducerState {
 }
 
 const initialState: LaoReducerState = {
-  byId: Object.assign({},
-    ...laosData.map((lao: Lao) => ({
-      [lao.id.toString()]: lao.toState(),
-    }))),
-  allIds: laosData.map((lao) => lao.id.valueOf()),
+  byId: {},
+  allIds: [],
 };
 
 const addLaoReducer = (state: Draft<LaoReducerState>, action: PayloadAction<LaoState>) => {

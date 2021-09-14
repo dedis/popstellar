@@ -2,7 +2,7 @@ import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit';
 import {
   Hash, LaoEvent, LaoEventState, eventFromState,
 } from 'model/objects';
-import eventsData from 'res/EventData';
+// import eventsData from 'res/EventData';
 import { getLaosState } from './LaoReducer';
 
 /**
@@ -45,11 +45,8 @@ interface EventLaoReducerState {
 const initialState: EventLaoReducerState = {
   byLaoId: {
     myLaoId: {
-      byId: Object.assign({},
-        ...eventsData.map((evt: LaoEventState) => ({
-          [evt.id]: evt,
-        }))),
-      allIds: eventsData.map((evt) => evt.id),
+      byId: {},
+      allIds: [],
       idAlias: {},
     },
   },

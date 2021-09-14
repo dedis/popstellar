@@ -1,5 +1,7 @@
+// this file should be heavily refactored to improve clarity and maintainability
+
 import 'jest-extended';
-import '../../utils/matchers';
+import '__tests__/utils/matchers';
 
 import keyPair from 'test_data/keypair.json';
 
@@ -17,17 +19,15 @@ import {
   StateMeeting,
   UpdateLao,
   WitnessMessage,
-} from 'model/network/method/message/data';
-import { storeInit } from 'store/Storage';
-import { ProtocolError } from 'model/network';
+} from 'model/network/method/message/data/index';
+import 'store/Storage';
+import { ProtocolError } from 'model/network/index';
 import {
-  Base64UrlData, EventTags, Hash, Lao, PrivateKey, PublicKey, Timestamp, Question,
+  Base64UrlData, EventTags, Hash, Lao, PrivateKey, PublicKey, Timestamp, Question, KeyPair,
 } from 'model/objects';
 import { sign } from 'tweetnacl';
-import { encodeBase64 } from 'tweetnacl-util';
 import { OpenedLaoStore } from 'store';
 import STRINGS from 'res/strings';
-import base64url from 'base64url';
 
 const STALE_TIMESTAMP = new Timestamp(1514761200); // 1st january 2018
 const STANDARD_TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
@@ -39,16 +39,19 @@ export const mockSecretKey = new PrivateKey(keyPair.privateKey);
 
 const generateKeyPair = () => {
   const pair = sign.keyPair();
-  const keys = {
-    pubKey: base64url.fromBase64(encodeBase64(pair.publicKey)),
-    secKey: base64url.fromBase64(encodeBase64(pair.secretKey)),
-  };
-  return { pubKey: new PublicKey(keys.pubKey), secKey: new PrivateKey(keys.secKey) };
+  return new KeyPair({
+    publicKey: new PublicKey(
+      Base64UrlData.fromBuffer(Buffer.from(pair.publicKey)).valueOf(),
+    ),
+    privateKey: new PrivateKey(
+      Base64UrlData.fromBuffer(Buffer.from(pair.secretKey)).valueOf(),
+    ),
+  });
 };
 
 describe('=== fromJsonData checks ===', () => {
-  const sampleKey1: PublicKey = generateKeyPair().pubKey;
-  const sampleKey2: PublicKey = generateKeyPair().pubKey;
+  const sampleKey1: PublicKey = generateKeyPair().publicKey;
+  const sampleKey2: PublicKey = generateKeyPair().publicKey;
 
   const mockMessageId = Base64UrlData.encode('message_id');
 
@@ -121,7 +124,8 @@ describe('=== fromJsonData checks ===', () => {
     modification_signatures: [],
   };
 
-  const rollCallId: Hash = Hash.fromStringArray('R', mockLaoId.toString(), time.toString(), name.toString());
+  const rollCallId = Hash.fromStringArray('R', mockLaoId.toString(), time.toString(), name.toString());
+
   const sampleCreateRollCall: Partial<CreateRollCall> = {
     object: ObjectType.ROLL_CALL,
     action: ActionType.CREATE,
@@ -134,26 +138,29 @@ describe('=== fromJsonData checks ===', () => {
     description: 'Roll Call description',
   };
 
+  const rollCallUpdateId = Hash.fromStringArray('R', mockLaoId.toString(), rollCallId.toString(), time.toString());
+
   const sampleOpenRollCall: Partial<OpenRollCall> = {
     object: ObjectType.ROLL_CALL,
     action: ActionType.OPEN,
-    update_id: rollCallId,
+    update_id: rollCallUpdateId,
     opens: rollCallId,
     opened_at: time,
   };
 
-  const sampleReopenRollCall: Partial<OpenRollCall> = {
+  const sampleReopenRollCall: Partial<ReopenRollCall> = {
     object: ObjectType.ROLL_CALL,
     action: ActionType.REOPEN,
-    update_id: rollCallId,
+    update_id: rollCallUpdateId,
     opens: rollCallId,
     opened_at: time,
   };
 
+  const rollCallCloseId = Hash.fromStringArray('R', mockLaoId.toString(), rollCallId.toString(), CLOSE_TIMESTAMP.toString());
   const sampleCloseRollCall: Partial<CloseRollCall> = {
     object: ObjectType.ROLL_CALL,
     action: ActionType.CLOSE,
-    update_id: rollCallId,
+    update_id: rollCallCloseId,
     closes: rollCallId,
     closed_at: CLOSE_TIMESTAMP,
     attendees: [],
@@ -238,13 +245,13 @@ describe('=== fromJsonData checks ===', () => {
     "proposed_start":${time},"proposed_end":${CLOSE_TIMESTAMP},"location":"${location}","description":"Roll Call description"`);
   const dataOpenRollCall: string = dataRollCall
     .replace('F_ACTION', ActionType.OPEN)
-    .replace('FF_MODIFICATION', `"update_id":"${rollCallId.toString()}","opens":"${rollCallId.toString()}","opened_at":${time}`);
+    .replace('FF_MODIFICATION', `"update_id":"${rollCallUpdateId.toString()}","opens":"${rollCallId.toString()}","opened_at":${time}`);
   const dataReopenRollCall: string = dataRollCall
     .replace('F_ACTION', ActionType.REOPEN)
-    .replace('FF_MODIFICATION', `"update_id":"${rollCallId.toString()}","opens":"${rollCallId.toString()}","opened_at":${time}`);
+    .replace('FF_MODIFICATION', `"update_id":"${rollCallUpdateId.toString()}","opens":"${rollCallId.toString()}","opened_at":${time}`);
   const dataCloseRollCall: string = dataRollCall
     .replace('F_ACTION', ActionType.CLOSE)
-    .replace('FF_MODIFICATION', `"update_id":"${rollCallId.toString()}","closes":"${rollCallId.toString()}","closed_at":${CLOSE_TIMESTAMP},"attendees":[]`);
+    .replace('FF_MODIFICATION', `"update_id":"${rollCallCloseId.toString()}","closes":"${rollCallId.toString()}","closed_at":${CLOSE_TIMESTAMP},"attendees":[]`);
 
   const dataSetupElection: string = dataElection
     .replace('F_ACTION', ActionType.SETUP)
@@ -253,11 +260,9 @@ describe('=== fromJsonData checks ===', () => {
     "start_time":${time},"end_time":${CLOSE_TIMESTAMP},"questions":${JSON.stringify(mockQuestions)}`);
 
   beforeAll(() => {
-    storeInit();
-
     const sampleLao: Lao = new Lao({
       name,
-      id: Hash.fromStringArray(org.toString(), time.toString(), name),
+      id: mockLaoId,
       creation: time,
       last_modified: time,
       organizer: org,
@@ -424,9 +429,9 @@ describe('=== fromJsonData checks ===', () => {
         temp = {
           object: ObjectType.ROLL_CALL,
           action: ActionType.CLOSE,
-          update_id: rollCallId,
+          update_id: rollCallCloseId,
           closes: rollCallId,
-          closed_at: FUTURE_TIMESTAMP,
+          closed_at: CLOSE_TIMESTAMP,
           attendees: [sampleKey1, sampleKey2],
         };
         expect(new CloseRollCall(temp)).toBeJsonEqual(temp);
@@ -720,7 +725,7 @@ describe('=== fromJsonData checks ===', () => {
           object: ObjectType.MESSAGE,
           action: ActionType.WITNESS,
           message_id: mockMessageId.valueOf(),
-          signature: generateKeyPair().secKey.sign(mockMessageId).valueOf(),
+          signature: generateKeyPair().privateKey.sign(mockMessageId).valueOf(),
         });
       }).toThrow(ProtocolError);
     });

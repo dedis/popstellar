@@ -8,7 +8,7 @@ const mnemonic: string = 'garbage effort river orphan negative kind outside quit
 
 beforeEach(() => {
   WalletStore.clear();
-})
+});
 
 test('Mnemonic produces known seed - test vector 0', async () => {
   const expected: string = '010ac98c615c31a20a6a9fcb71c94642abdd4f662d148f81d61479c8f125854bac9c0228f6705cbdd96e27ffb2d4e806d152c875a5484113434d1d561e42a94d';

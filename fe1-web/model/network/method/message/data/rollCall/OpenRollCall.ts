@@ -1,8 +1,11 @@
-import { Hash, Timestamp } from 'model/objects';
+import {
+  EventTags, Hash, Lao, Timestamp,
+} from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness } from '../Checker';
+import { OpenedLaoStore } from '../../../../../../store';
 
 export class OpenRollCall implements MessageData {
   public readonly object: ObjectType = ObjectType.ROLL_CALL;
@@ -22,15 +25,23 @@ export class OpenRollCall implements MessageData {
     checkTimestampStaleness(msg.opened_at);
     this.opened_at = msg.opened_at;
 
-    if (!msg.update_id) {
-      throw new ProtocolError("Undefined 'update_Id' parameter encountered during 'OpenRollCall'");
-    }
-    this.update_id = msg.update_id;
-
     if (!msg.opens) {
       throw new ProtocolError("Undefined 'opens' parameter encountered during 'OpenRollCall'");
     }
     this.opens = msg.opens;
+
+    if (!msg.update_id) {
+      throw new ProtocolError("Undefined 'update_id' parameter encountered during 'OpenRollCall'");
+    }
+    const lao: Lao = OpenedLaoStore.get();
+    const expectedHash = Hash.fromStringArray(
+      EventTags.ROLL_CALL, lao.id.toString(), this.opens.toString(), this.opened_at.toString(),
+    );
+    if (!expectedHash.equals(msg.update_id)) {
+      throw new ProtocolError("Invalid 'update_id' parameter encountered during 'OpenRollCall':"
+        + ' re-computing the value yields a different result');
+    }
+    this.update_id = msg.update_id;
   }
 
   public static fromJson(obj: any): OpenRollCall {
