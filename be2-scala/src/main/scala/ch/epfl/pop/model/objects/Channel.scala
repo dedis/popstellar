@@ -20,7 +20,7 @@ final case class Channel(channel: String) {
     case _ => None
   }
 
-  def isRootChannel: Boolean = channel == Channel.rootChannel
+  def isRootChannel: Boolean = channel == Channel.rootChannel.channel
 
   def isSubChannel: Boolean = channel.startsWith(Channel.rootChannelPrefix)
 
@@ -33,6 +33,6 @@ final case class Channel(channel: String) {
 }
 
 object Channel {
-  val rootChannel: String = "/root"
+  val rootChannel: Channel = Channel("/root")
   val rootChannelPrefix: String = "/root/"
 }
