@@ -1,13 +1,21 @@
-package hub
+package election
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"log"
+	"sort"
+	"student20_pop/channel"
+	"student20_pop/channel/inbox"
 	"student20_pop/crypto"
+	jsonrpc "student20_pop/message"
 	"student20_pop/message/answer"
 	"student20_pop/message/messagedata"
+	"student20_pop/message/query"
 	"student20_pop/message/query/method"
 	"student20_pop/message/query/method/message"
+	"student20_pop/network/socket"
+	"student20_pop/validation"
 	"sync"
 
 	"golang.org/x/xerrors"
@@ -58,9 +66,40 @@ func (a *Attendees) Copy() *Attendees {
 	return clone
 }
 
-// electionChannel is used to handle election messages.
-type electionChannel struct {
-	*baseChannel
+// NewElectionChannel ...
+func NewElectionChannel(channelPath string, start, end int64, terminated bool,
+	questions []messagedata.ElectionSetupQuestion, attendees map[string]struct{},
+	msg message.Message, hub channel.HubThingTheChannelNeeds) ElectionChannel {
+
+	// Saving on election channel too so it self-contains the entire election history
+	// electionCh.inbox.storeMessage(msg)
+	return ElectionChannel{
+		sockets:   channel.NewSockets(),
+		inbox:     inbox.CreateInbox(channelPath),
+		channelID: channelPath,
+
+		start:      start,
+		end:        end,
+		terminated: terminated,
+		questions:  getAllQuestionsForElectionChannel(questions),
+
+		attendees: &Attendees{
+			store: attendees,
+		},
+
+		hub: hub,
+	}
+}
+
+// ElectionChannel is used to handle election messages.
+type ElectionChannel struct {
+	sockets   channel.Sockets
+	inbox     *inbox.Inbox
+	channelID string
+	witnessMu sync.Mutex
+	witnesses []string
+
+	// *baseChannel
 
 	// Starting time of the election
 	start int64
@@ -77,6 +116,8 @@ type electionChannel struct {
 
 	// attendees that took part in the roll call string of their PK
 	attendees *Attendees
+
+	hub channel.HubThingTheChannelNeeds
 }
 
 // question represents a question in an election.
@@ -107,47 +148,9 @@ type validVote struct {
 	indexes []int
 }
 
-// createElection creates an election in the LAO.
-func (c *laoChannel) createElection(msg message.Message, setupMsg messagedata.ElectionSetup) error {
-	organizerHub := c.hub
-
-	organizerHub.Lock()
-	defer organizerHub.Unlock()
-
-	// Check if the Lao ID of the message corresponds to the channel ID
-	channelID := c.channelID[6:]
-	if channelID != setupMsg.Lao {
-		return answer.NewErrorf(-4, "Lao ID of the message (Lao: %s) is different from the channelID (channel: %s)", setupMsg.Lao, channelID)
-	}
-
-	// Compute the new election channel id
-	channelPath := rootPrefix + setupMsg.Lao + "/" + setupMsg.ID
-
-	// Create the new election channel
-	electionCh := electionChannel{
-		createBaseChannel(organizerHub, channelPath),
-		setupMsg.StartTime,
-		setupMsg.EndTime,
-		false,
-		getAllQuestionsForElectionChannel(setupMsg.Questions),
-		c.attendees,
-	}
-
-	// Saving the election channel creation message on the lao channel
-	c.inbox.storeMessage(msg)
-
-	// Saving on election channel too so it self-contains the entire election history
-	electionCh.inbox.storeMessage(msg)
-
-	// Add the new election channel to the organizerHub
-	organizerHub.channelByID[channelPath] = &electionCh
-
-	return nil
-}
-
 // Publish is used to handle publish messages in the election channel.
-func (c *electionChannel) Publish(publish method.Publish) error {
-	err := c.baseChannel.VerifyPublishMessage(publish)
+func (c *ElectionChannel) Publish(publish method.Publish) error {
+	err := c.VerifyPublishMessage(publish)
 	if err != nil {
 		return xerrors.Errorf("failed to verify publish message on an election channel: %w", err)
 	}
@@ -196,7 +199,103 @@ func (c *electionChannel) Publish(publish method.Publish) error {
 	return nil
 }
 
-func (c *electionChannel) castVoteHelper(msg message.Message, voteMsg messagedata.VoteCastVote) error {
+// Subscribe is used to handle a subscribe message from the client.
+func (c *ElectionChannel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
+	log.Printf("received a subscribe with id: %d", msg.ID)
+	c.sockets.Upsert(socket)
+
+	return nil
+}
+
+// Unsubscribe is used to handle an unsubscribe message.
+func (c *ElectionChannel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
+	log.Printf("received an unsubscribe with id: %d", msg.ID)
+
+	ok := c.sockets.Delete(socketID)
+
+	if !ok {
+		return answer.NewError(-2, "client is not subscribed to this channel")
+	}
+
+	return nil
+}
+
+// Catchup is used to handle a catchup message.
+func (c *ElectionChannel) Catchup(catchup method.Catchup) []message.Message {
+	log.Printf("received a catchup with id: %d", catchup.ID)
+
+	messages := c.inbox.GetMessages()
+
+	// sort.Slice on messages based on the timestamp
+	sort.Slice(messages, func(i, j int) bool {
+		return messages[i].StoredTime < messages[j].StoredTime
+	})
+
+	result := make([]message.Message, 0, len(messages))
+
+	// iterate and extract the messages[i].message field and
+	// append it to the result slice
+	for _, msgInfo := range messages {
+		result = append(result, msgInfo.Message)
+	}
+
+	return result
+}
+
+// broadcastToAllClients is a helper message to broadcast a message to all
+// subscribers.
+func (c *ElectionChannel) broadcastToAllClients(msg message.Message) {
+	rpcMessage := method.Broadcast{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "broadcast",
+		},
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			c.channelID,
+			msg,
+		},
+	}
+
+	buf, err := json.Marshal(&rpcMessage)
+	if err != nil {
+		log.Printf("failed to marshal broadcast query: %v", err)
+	}
+
+	c.sockets.SendToAll(buf)
+}
+
+// VerifyPublishMessage checks if a Publish message is valid
+func (c *ElectionChannel) VerifyPublishMessage(publish method.Publish) error {
+	log.Printf("received a publish with id: %d", publish.ID)
+
+	// Check if the structure of the message is correct
+	msg := publish.Params.Message
+
+	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
+	if err != nil {
+		return xerrors.Errorf("failed to decode message data: %v", err)
+	}
+
+	// Verify the data
+	err = c.hub.GetSchemaValidator().VerifyJSON(jsonData, validation.Data)
+	if err != nil {
+		return xerrors.Errorf("failed to verify json schema: %w", err)
+	}
+
+	// Check if the message already exists
+	if _, ok := c.inbox.GetMessage(msg.MessageID); ok {
+		return answer.NewError(-3, "message already exists")
+	}
+
+	return nil
+}
+
+func (c *ElectionChannel) castVoteHelper(msg message.Message, voteMsg messagedata.VoteCastVote) error {
 
 	if voteMsg.CreatedAt > c.end {
 		return answer.NewErrorf(-4, "Vote cast too late, vote casted at %v and election ended at %v", voteMsg.CreatedAt, c.end)
@@ -212,13 +311,13 @@ func (c *electionChannel) castVoteHelper(msg message.Message, voteMsg messagedat
 
 	log.Printf("All the valid pks are %v and %v", c.attendees, senderPoint)
 
-	ok := c.attendees.IsPresent(msg.Sender) || c.hub.public.Equal(senderPoint)
+	ok := c.attendees.IsPresent(msg.Sender) || c.hub.GetPubkey().Equal(senderPoint)
 	if !ok {
 		return answer.NewError(-4, "Only attendees can cast a vote in an election")
 	}
 
 	//This should update any previously set vote if the message ids are the same
-	c.inbox.storeMessage(msg)
+	c.inbox.StoreMessage(msg)
 	for _, q := range voteMsg.Votes {
 
 		qs, ok := c.questions[q.ID]

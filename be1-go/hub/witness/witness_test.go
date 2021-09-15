@@ -1,16 +1,17 @@
-package hub
+package witness
 
 import (
 	"encoding/base64"
 	"io"
 	"student20_pop/crypto"
+	"student20_pop/hub"
 	"testing"
 
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 )
 
-func createWitnessHub() (Hub, error) {
+func createWitnessHub() (hub.Hub, error) {
 	log := zerolog.New(io.Discard)
 
 	pk := "OgFFZz2TVilTSICEdJbAO3otWGfh17SmPo6i5as7XAg="
@@ -25,7 +26,7 @@ func createWitnessHub() (Hub, error) {
 		return nil, err
 	}
 
-	h, err := NewWitnessHub(point, log)
+	h, err := NewHub(point, log)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +50,7 @@ func TestNewWitnessHub(t *testing.T) {
 	err = point.UnmarshalBinary(pkBuf)
 	require.NoError(t, err)
 
-	_, err = NewWitnessHub(point, log)
+	_, err = NewHub(point, log)
 	require.NoError(t, err)
 }
 

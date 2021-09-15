@@ -33,7 +33,7 @@ const (
 )
 
 // baseUrl is the baseUrl for all schemas.
-const baseUrl = "https://raw.githubusercontent.com/dedis/student_21_pop/master/"
+const baseURL = "https://raw.githubusercontent.com/dedis/student_21_pop/master/"
 
 // protocolFS is an embedded file system which allows us to bake the schemas
 // into the binary during compilation. Since Go doesn't allow embedded files
@@ -50,9 +50,9 @@ func init() {
 	jsonschema.Decoders["base64"] = base64.URLEncoding.DecodeString
 }
 
-// VerifyJson verifies that the `msg` follow the schema protocol of name 'schemaName',
-// it returns an error otherwise.
-func (s *SchemaValidator) VerifyJson(msg []byte, st SchemaType) error {
+// VerifyJSON verifies that the `msg` follow the schema protocol of name
+// 'schemaName', it returns an error otherwise.
+func (s SchemaValidator) VerifyJSON(msg []byte, st SchemaType) error {
 	reader := bytes.NewBuffer(msg[:])
 	var schema *jsonschema.Schema
 
@@ -95,7 +95,7 @@ func NewSchemaValidator() (*SchemaValidator, error) {
 		}
 		defer file.Close()
 
-		url := baseUrl + path
+		url := baseURL + path
 		if strings.HasPrefix(path, "protocol/query/method/message/data") {
 			dataCompiler.AddResource(url, file)
 		} else {

@@ -1,4 +1,4 @@
-package hub
+package organizer
 
 import (
 	"crypto/sha256"

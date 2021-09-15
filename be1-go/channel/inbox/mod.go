@@ -1,4 +1,4 @@
-package hub
+package inbox
 
 import (
 	"database/sql"
@@ -11,31 +11,32 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 
+	"student20_pop/channel"
 	"student20_pop/message/answer"
 	"student20_pop/message/query/method/message"
 )
 
-// inbox represents an in-memory data store to record incoming messages.
-type inbox struct {
+// Inbox represents an in-memory data store to record incoming messages.
+type Inbox struct {
 	mutex     sync.RWMutex
-	msgs      map[string]*messageInfo
+	msgs      map[string]*channel.MessageInfo
 	channelID string
 }
 
-// createInbox creates an instance of inbox.
-func createInbox(channelID string) *inbox {
-	return &inbox{
+// CreateInbox creates an instance of inbox.
+func CreateInbox(channelID string) *Inbox {
+	return &Inbox{
 		mutex:     sync.RWMutex{},
-		msgs:      make(map[string]*messageInfo),
+		msgs:      make(map[string]*channel.MessageInfo),
 		channelID: channelID,
 	}
 }
 
-// addWitnessSignature adds a signature of witness to a message of ID
+// AddWitnessSignature adds a signature of witness to a message of ID
 // `messageID`. if the signature was correctly added return true otherwise
 // returns false
-func (i *inbox) addWitnessSignature(messageID string, public string, signature string) error {
-	msg, ok := i.getMessage(messageID)
+func (i *Inbox) AddWitnessSignature(messageID string, public string, signature string) error {
+	msg, ok := i.GetMessage(messageID)
 	if !ok {
 		// TODO: We received a witness signature before the message itself. We
 		// ignore it for now but it might be worth keeping it until we actually
@@ -71,16 +72,16 @@ func (i *inbox) addWitnessSignature(messageID string, public string, signature s
 	return nil
 }
 
-// storeMessage stores a message inside the inbox
-func (i *inbox) storeMessage(msg message.Message) {
+// StoreMessage stores a message inside the inbox
+func (i *Inbox) StoreMessage(msg message.Message) {
 	i.mutex.Lock()
 	defer i.mutex.Unlock()
 
 	storedTime := time.Now().UnixNano()
 
-	messageInfo := &messageInfo{
-		message:    msg,
-		storedTime: storedTime,
+	messageInfo := &channel.MessageInfo{
+		Message:    msg,
+		StoredTime: storedTime,
 	}
 
 	i.msgs[msg.MessageID] = messageInfo
@@ -95,19 +96,34 @@ func (i *inbox) storeMessage(msg message.Message) {
 	}
 }
 
-// getMessage returns the message of messageID if it exists. We need a pointer
+// GetMessages ...
+func (i *Inbox) GetMessages() []channel.MessageInfo {
+	i.mutex.RLock()
+	defer i.mutex.RUnlock()
+
+	messages := make([]channel.MessageInfo, 0, len(i.msgs))
+	// iterate over map and collect all the values (messageInfo instances)
+	for _, msgInfo := range i.msgs {
+		messages = append(messages, *msgInfo)
+	}
+
+	return messages
+}
+
+// GetMessage returns the message of messageID if it exists. We need a pointer
 // on message to add witness signatures.
-func (i *inbox) getMessage(messageID string) (*message.Message, bool) {
+func (i *Inbox) GetMessage(messageID string) (*message.Message, bool) {
 	i.mutex.Lock()
 	defer i.mutex.Unlock()
+
 	msgInfo, ok := i.msgs[messageID]
 	if !ok {
 		return nil, false
 	}
-	return &msgInfo.message, true
+	return &msgInfo.Message, true
 }
 
-func (i *inbox) storeMessageInDB(messageInfo *messageInfo) error {
+func (i *Inbox) storeMessageInDB(messageInfo *channel.MessageInfo) error {
 	db, err := sql.Open("sqlite3", os.Getenv("HUB_DB"))
 	if err != nil {
 		return xerrors.Errorf("failed to open connection: %v", err)
@@ -133,15 +149,15 @@ func (i *inbox) storeMessageInDB(messageInfo *messageInfo) error {
 
 	defer stmt.Close()
 
-	msg := messageInfo.message
+	msg := messageInfo.Message
 
-	_, err = stmt.Exec(msg.MessageID, msg.Sender, msg.Signature, msg.Data, messageInfo.storedTime, i.channelID)
+	_, err = stmt.Exec(msg.MessageID, msg.Sender, msg.Signature, msg.Data, messageInfo.StoredTime, i.channelID)
 	if err != nil {
 		return xerrors.Errorf("failed to exec query: %v", err)
 	}
 
-	for _, pubKeySigPair := range messageInfo.message.WitnessSignatures {
-		err = addWitnessInDB(db, string(messageInfo.message.MessageID),
+	for _, pubKeySigPair := range messageInfo.Message.WitnessSignatures {
+		err = addWitnessInDB(db, string(messageInfo.Message.MessageID),
 			pubKeySigPair.Witness, pubKeySigPair.Signature)
 		if err != nil {
 			return xerrors.Errorf("failed to store witness: %v", err)

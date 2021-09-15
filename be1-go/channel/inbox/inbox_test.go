@@ -1,4 +1,4 @@
-package hub
+package inbox
 
 import (
 	"crypto/sha256"

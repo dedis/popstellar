@@ -6,7 +6,7 @@ import (
 	"encoding/base64"
 	"os"
 	"student20_pop/crypto"
-	"student20_pop/hub"
+	"student20_pop/hub/organizer"
 	"student20_pop/network"
 	"student20_pop/network/socket"
 	"time"
@@ -54,7 +54,7 @@ func Serve(cliCtx *cli.Context) error {
 	}
 
 	// create organizer hub
-	h, err := hub.NewOrganizerHub(point, log.With().Str("role", "organizer").Logger())
+	h, err := organizer.NewOrganizerHub(point, log.With().Str("role", "organizer").Logger())
 	if err != nil {
 		return xerrors.Errorf("failed create the organizer hub: %v", err)
 	}
