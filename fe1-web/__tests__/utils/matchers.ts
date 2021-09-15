@@ -5,7 +5,7 @@ declare global {
   namespace jest {
     // this interface is wrong, but necessary for TypeScript to be happy
     // received fields should be 'R', for accuracy
-    // we put R in the last one should be instead, to prevent complaints from TypeScript
+    // we put R in the last argument instead, to prevent complaints from TypeScript
 
     interface Matchers<R> {
       toBeBase64Url(received: R)

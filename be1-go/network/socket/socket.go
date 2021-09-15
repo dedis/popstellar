@@ -3,12 +3,15 @@ package socket
 import (
 	"encoding/json"
 	"log"
-	"student20_pop/message"
 	"sync"
 	"time"
 
+	"student20_pop/message/answer"
+	"student20_pop/message/query/method/message"
+
 	"github.com/gorilla/websocket"
 	"github.com/rs/xid"
+	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
 )
 
@@ -44,6 +47,8 @@ type baseSocket struct {
 	wg *sync.WaitGroup
 
 	done chan struct{}
+
+	log zerolog.Logger
 }
 
 func (s *baseSocket) ID() string {
@@ -150,7 +155,10 @@ func (s *baseSocket) WritePump() {
 
 // Send allows sending a serialised message to the socket.
 func (s *baseSocket) Send(msg []byte) {
-	log.Printf("sending message to %s", s.conn.RemoteAddr())
+	s.log.Info().
+		Str("to", s.conn.RemoteAddr().String()).
+		Str("msg", string(msg)).
+		Msg("send generic msg")
 	s.send <- msg
 }
 
@@ -158,40 +166,70 @@ func (s *baseSocket) Send(msg []byte) {
 // message to the socket.
 func (s *baseSocket) SendError(id *int, err error) {
 	log.Printf("Error: %v", err)
-	msgError := &message.Error{}
+	msgError := &answer.Error{}
 
 	if xerrors.As(err, &msgError) {
-		answer := message.Answer{
-			ID:    id,
+		answer := answer.Answer{
+			ID:    *id,
 			Error: msgError,
 		}
 
 		answerBuf, err := json.Marshal(answer)
 		if err != nil {
-			log.Printf("failed to marshal answer: %v", err)
+			s.log.Err(err).Msg("failed to marshal answer")
+			return
 		}
+
+		s.log.Info().
+			Str("to", s.conn.RemoteAddr().String()).
+			Str("msg", string(answerBuf)).
+			Msg("send error")
 
 		s.send <- answerBuf
 	}
 }
 
 // SendResult is a utility method that allows sending a `message.Result` to the socket.
-func (s *baseSocket) SendResult(id int, res message.Result) {
-	answer := message.Answer{
-		ID:     &id,
-		Result: &res,
+func (s *baseSocket) SendResult(id int, res []message.Message) {
+	var answer interface{}
+
+	if res == nil {
+		answer = struct {
+			JSONRPC string `json:"jsonrpc"`
+			ID      int    `json:"id"`
+			Result  int    `json:"result"`
+		}{
+			"2.0", id, 0,
+		}
+	} else {
+		for _, r := range res {
+			if r.WitnessSignatures == nil {
+				r.WitnessSignatures = []message.WitnessSignature{}
+			}
+		}
+		answer = struct {
+			JSONRPC string            `json:"jsonrpc"`
+			ID      int               `json:"id"`
+			Result  []message.Message `json:"result"`
+		}{
+			"2.0", id, res,
+		}
 	}
 
-	answerBuf, err := json.Marshal(answer)
+	answerBuf, err := json.Marshal(&answer)
 	if err != nil {
-		log.Printf("failed to marshal answer: %v", err)
+		s.log.Err(err).Msg("failed to marshal answer")
+		return
 	}
 
-	log.Printf("answerBuf: %s, received id: %d", answerBuf, id)
+	s.log.Info().
+		Str("to", s.conn.RemoteAddr().String()).
+		Str("msg", string(answerBuf)).
+		Msg("send result")
 	s.send <- answerBuf
 }
 
-func newBaseSocket(socketType SocketType, receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup, done chan struct{}) *baseSocket {
+func newBaseSocket(socketType SocketType, receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup, done chan struct{}, log zerolog.Logger) *baseSocket {
 	return &baseSocket{
 		id:            xid.New().String(),
 		socketType:    socketType,
@@ -201,6 +239,7 @@ func newBaseSocket(socketType SocketType, receiver chan<- IncomingMessage, close
 		send:          make(chan []byte, 256),
 		wg:            wg,
 		done:          done,
+		log:           log,
 	}
 }
 
@@ -210,9 +249,11 @@ type ClientSocket struct {
 }
 
 // NewClient returns an instance of a baseSocket.
-func NewClientSocket(receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup, done chan struct{}) *ClientSocket {
+func NewClientSocket(receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup, done chan struct{}, log zerolog.Logger) *ClientSocket {
+	log = log.With().Str("role", "client socket").Logger()
+
 	return &ClientSocket{
-		baseSocket: newBaseSocket(ClientSocketType, receiver, closedSockets, conn, wg, done),
+		baseSocket: newBaseSocket(ClientSocketType, receiver, closedSockets, conn, wg, done, log),
 	}
 }
 
@@ -222,9 +263,11 @@ type OrganizerSocket struct {
 }
 
 // NewOrganizerSocket returns a new OrganizerSocket.
-func NewOrganizerSocket(receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup, done chan struct{}) *OrganizerSocket {
+func NewOrganizerSocket(receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup, done chan struct{}, log zerolog.Logger) *OrganizerSocket {
+	log = log.With().Str("role", "organizer socket").Logger()
+
 	return &OrganizerSocket{
-		baseSocket: newBaseSocket(OrganizerSocketType, receiver, closedSockets, conn, wg, done),
+		baseSocket: newBaseSocket(OrganizerSocketType, receiver, closedSockets, conn, wg, done, log),
 	}
 }
 
@@ -234,8 +277,10 @@ type WitnessSocket struct {
 }
 
 // NewWitnessSocket returns a new WitnessSocket.
-func NewWitnessSocket(receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup, done chan struct{}) *WitnessSocket {
+func NewWitnessSocket(receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup, done chan struct{}, log zerolog.Logger) *WitnessSocket {
+	log = log.With().Str("role", "witness socket").Logger()
+
 	return &WitnessSocket{
-		baseSocket: newBaseSocket(WitnessSocketType, receiver, closedSockets, conn, wg, done),
+		baseSocket: newBaseSocket(WitnessSocketType, receiver, closedSockets, conn, wg, done, log),
 	}
 }

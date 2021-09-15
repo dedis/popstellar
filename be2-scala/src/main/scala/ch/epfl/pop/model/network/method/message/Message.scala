@@ -16,6 +16,11 @@ case class Message(
                   ) {
   def addWitnessSignature(ws: WitnessSignaturePair): Message =
     Message(data, sender, signature, message_id, ws :: witness_signatures, decodedData)
+
+  def toJsonString: String = {
+    val that: Message = this // tricks the compiler into inferring the right type
+    that.toJson.toString
+  }
 }
 
 object Message extends Parsable {

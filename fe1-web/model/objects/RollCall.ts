@@ -2,6 +2,7 @@ import { LaoEvent, LaoEventState, LaoEventType } from './LaoEvent';
 import { Hash } from './Hash';
 import { Timestamp } from './Timestamp';
 import { PublicKey } from './PublicKey';
+import { PopToken } from './PopToken';
 
 export enum RollCallStatus {
   CREATED,
@@ -126,5 +127,15 @@ export class RollCall implements LaoEvent {
       end: this.end.valueOf(),
       eventType: LaoEventType.ROLL_CALL,
     };
+  }
+
+  public containsToken(token: PopToken): boolean {
+    if (this.attendees === undefined || token === undefined) {
+      return false;
+    }
+
+    return this.attendees.some(
+      (attendee: PublicKey) => attendee.equals(token.publicKey),
+    );
   }
 }

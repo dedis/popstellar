@@ -5,7 +5,10 @@ import (
 	"encoding/json"
 	"log"
 	"student20_pop/crypto"
-	"student20_pop/message"
+	"student20_pop/message/answer"
+	"student20_pop/message/messagedata"
+	"student20_pop/message/query/method"
+	"student20_pop/message/query/method/message"
 	"sync"
 
 	"golang.org/x/xerrors"
@@ -61,10 +64,10 @@ type electionChannel struct {
 	*baseChannel
 
 	// Starting time of the election
-	start message.Timestamp
+	start int64
 
 	// Ending time of the election
-	end message.Timestamp
+	end int64
 
 	// True if the election is over and false otherwise
 	terminated bool
@@ -83,7 +86,7 @@ type question struct {
 	id []byte
 
 	// ballotOptions represents different ballot options.
-	ballotOptions []message.BallotOption
+	ballotOptions []string
 
 	//valid vote mutex.
 	validVotesMu sync.RWMutex
@@ -92,33 +95,27 @@ type question struct {
 	// the public key of the person casting the vote.
 	validVotes map[string]validVote
 
-	// method represents the voting method of the election.
-	method message.VotingMethod
+	// method represents the voting method of the election. Either "Plurality"
+	// or "Approval".
+	method string
 }
 
 type validVote struct {
 	// voteTime represents the time of the creation of the vote.
-	voteTime message.Timestamp
+	voteTime int64
 
 	// indexes represents the indexes of the ballot options
 	indexes []int
 }
 
 // createElection creates an election in the LAO.
-func (c *laoChannel) createElection(msg message.Message) error {
+func (c *laoChannel) createElection(msg message.Message, setupMsg messagedata.ElectionSetup) error {
 	organizerHub := c.hub
 
 	organizerHub.Lock()
 	defer organizerHub.Unlock()
 
-	// Check the data
-	data, ok := msg.Data.(*message.ElectionSetupData)
-	if !ok {
-		return message.NewError(-4, "failed to cast data to SetupElectionData")
-	}
-
 	// Check if the Lao ID of the message corresponds to the channel ID
-	encodedLaoID := base64.URLEncoding.EncodeToString(data.LaoID)
 	channelID := c.channelID[6:]
 	if channelID != setupMsg.Lao {
 		return answer.NewErrorf(-4, "Lao ID of the message (Lao: %s) is "+
@@ -126,8 +123,7 @@ func (c *laoChannel) createElection(msg message.Message) error {
 	}
 
 	// Compute the new election channel id
-	encodedElectionID := base64.URLEncoding.EncodeToString(data.ID)
-	channelPath := rootPrefix + encodedLaoID + "/" + encodedElectionID
+	channelPath := rootPrefix + setupMsg.Lao + "/" + setupMsg.ID
 
 	// Create the new election channel
 	electionCh := electionChannel{
@@ -135,7 +131,7 @@ func (c *laoChannel) createElection(msg message.Message) error {
 		setupMsg.StartTime,
 		setupMsg.EndTime,
 		false,
-		getAllQuestionsForElectionChannel(data.Questions),
+		getAllQuestionsForElectionChannel(setupMsg.Questions),
 		c.attendees,
 	}
 
@@ -153,7 +149,7 @@ func (c *laoChannel) createElection(msg message.Message) error {
 }
 
 // Publish is used to handle publish messages in the election channel.
-func (c *electionChannel) Publish(publish message.Publish) error {
+func (c *electionChannel) Publish(publish method.Publish) error {
 	err := c.baseChannel.VerifyPublishMessage(publish)
 	if err != nil {
 		return xerrors.Errorf("failed to verify publish message on an "+
@@ -164,11 +160,15 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 
 	data := msg.Data
 
-	object := data.GetObject()
+	jsonData, err := base64.URLEncoding.DecodeString(data)
+	if err != nil {
+		return xerrors.Errorf("failed to decode message data: %v", err)
+	}
 
-	if object == message.ElectionObject {
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
 
-		action := message.ElectionAction(data.GetAction())
+	if object == "election" {
+
 		switch action {
 		case "cast_vote":
 			var castVote messagedata.VoteCastVote
@@ -200,21 +200,20 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 				return xerrors.Errorf("failed to end election: %v", err)
 			}
 		default:
-			return message.NewInvalidActionError(message.DataAction(action))
+			return answer.NewInvalidActionError(action)
 		}
 	}
 
 	if err != nil {
-		return xerrors.Errorf("failed to process %q action: %w", data.GetAction(), err)
+		return xerrors.Errorf("failed to process %q action: %w", action, err)
 	}
 
-	c.broadcastToAllClients(*msg)
+	c.broadcastToAllClients(msg)
 
 	return nil
 }
 
-func (c *electionChannel) castVoteHelper(publish message.Publish) error {
-	msg := publish.Params.Message
+func (c *electionChannel) castVoteHelper(msg message.Message, voteMsg messagedata.VoteCastVote) error {
 
 	if voteMsg.CreatedAt > c.end {
 		return answer.NewErrorf(-4, "vote cast too late, vote casted at %v "+
@@ -224,24 +223,23 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 	c.log.Info().Msgf("the sender pk is %s", msg.Sender)
 
 	senderPoint := crypto.Suite.Point()
-	err := senderPoint.UnmarshalBinary(msg.Sender)
+	err := senderPoint.UnmarshalBinary([]byte(msg.Sender))
 	if err != nil {
 		return answer.NewError(-4, "invalid sender public key")
 	}
 
 	c.log.Info().Msgf("all the valid pks are %v and %v", c.attendees, senderPoint)
 
-	ok = c.attendees.IsPresent(senderPK) || c.hub.public.Equal(senderPoint)
+	ok := c.attendees.IsPresent(msg.Sender) || c.hub.public.Equal(senderPoint)
 	if !ok {
 		return answer.NewError(-4, "only attendees can cast a vote in an election")
 	}
 
 	//This should update any previously set vote if the message ids are the same
-	c.inbox.storeMessage(*msg)
-	for _, q := range voteData.Votes {
+	c.inbox.storeMessage(msg)
+	for _, q := range voteMsg.Votes {
 
-		QuestionID := base64.URLEncoding.EncodeToString(q.QuestionID)
-		qs, ok := c.questions[QuestionID]
+		qs, ok := c.questions[q.ID]
 
 		if !ok {
 			return answer.NewErrorf(-4, "no question with ID %q exists", q.ID)
@@ -250,7 +248,7 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 		// this is to handle the case when the organizer must handle multiple
 		// votes being cast at the same time
 		qs.validVotesMu.Lock()
-		earlierVote, ok := qs.validVotes[msg.Sender.String()]
+		earlierVote, ok := qs.validVotes[msg.Sender]
 
 		// if the sender didn't previously cast a vote or if the vote is no
 		// longer valid update it
@@ -259,11 +257,12 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 		}
 
 		if !ok {
-			qs.validVotes[msg.Sender.String()] =
-				validVote{voteData.CreatedAt,
-					q.VoteIndexes}
+			qs.validVotes[msg.Sender] = validVote{
+				voteMsg.CreatedAt,
+				q.Vote,
+			}
 		} else {
-			changeVote(&qs, earlierVote, msg.Sender.String(), voteData.CreatedAt, q.VoteIndexes)
+			changeVote(&qs, earlierVote, msg.Sender, voteMsg.CreatedAt, q.Vote)
 		}
 
 		// other votes can now change the list of valid votes
@@ -389,15 +388,15 @@ func gatherOptionCounts(count []int, options []string) []messagedata.ElectionRes
 
 func checkMethodProperties(method string, length int) error {
 	if method == "Plurality" && length < 1 {
-		return message.NewError(-4, "No ballot option was chosen for plurality voting method")
+		return answer.NewError(-4, "No ballot option was chosen for plurality voting method")
 	}
 	if method == "Approval" && length != 1 {
-		return message.NewError(-4, "Cannot choose multiple ballot options on approval voting method")
+		return answer.NewError(-4, "Cannot choose multiple ballot options on approval voting method")
 	}
 	return nil
 }
 
-func changeVote(qs *question, earlierVote validVote, sender string, created message.Timestamp, indexes []int) {
+func changeVote(qs *question, earlierVote validVote, sender string, created int64, indexes []int) {
 	if earlierVote.voteTime > created {
 		qs.validVotes[sender] = validVote{
 			voteTime: created,
@@ -406,12 +405,18 @@ func changeVote(qs *question, earlierVote validVote, sender string, created mess
 	}
 }
 
-func getAllQuestionsForElectionChannel(questions []message.Question) map[string]question {
+func getAllQuestionsForElectionChannel(questions []messagedata.ElectionSetupQuestion) map[string]question {
+
 	qs := make(map[string]question)
 	for _, q := range questions {
-		qs[base64.URLEncoding.EncodeToString(q.ID)] = question{
-			id:            q.ID,
-			ballotOptions: q.BallotOptions,
+		ballotOpts := make([]string, len(q.BallotOptions))
+		for i, b := range q.BallotOptions {
+			ballotOpts[i] = b
+		}
+
+		qs[q.ID] = question{
+			id:            []byte(q.ID),
+			ballotOptions: ballotOpts,
 			validVotesMu:  sync.RWMutex{},
 			validVotes:    make(map[string]validVote),
 			method:        q.VotingMethod,

@@ -5,7 +5,7 @@ import {
   ProtocolError,
   UNDEFINED_ID,
 } from 'model/network';
-import { OperationError } from './OperationError';
+import { RpcOperationError } from './RpcOperationError';
 import { NetworkError } from './NetworkError';
 import { defaultRpcHandler, JsonRpcHandler } from './RpcHandler';
 
@@ -19,7 +19,7 @@ const JSON_RPC_ID_WRAP_AROUND = 10000;
 interface PendingResponse {
   promise: Promise<JsonRpcResponse>,
   resolvePromise: (value: JsonRpcResponse) => void,
-  rejectPromise: (error: OperationError) => void,
+  rejectPromise: (error: RpcOperationError) => void,
   timeoutId: ReturnType<typeof setTimeout>,
 }
 
@@ -127,13 +127,15 @@ export class NetworkConnection {
       this.payloadPending.delete(parsedMessage.id);
 
       // use promise resolve/reject to communicate RPC outcome
-      if (parsedMessage.isPositiveResponse()) {
+      if (parsedMessage.error === undefined) {
         pendingResponse.resolvePromise(parsedMessage);
       } else {
-        // Note : impossible to have an undefined error from now on due to isPositiveResponse()
         pendingResponse.rejectPromise(
-          // @ts-ignore
-          new OperationError(parsedMessage.error.description, parsedMessage.error.code),
+          new RpcOperationError(
+            parsedMessage.error.description,
+            parsedMessage.error.code,
+            parsedMessage.error.data,
+          ),
         );
       }
     }
