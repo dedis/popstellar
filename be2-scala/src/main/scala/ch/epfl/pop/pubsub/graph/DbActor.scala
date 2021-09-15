@@ -95,7 +95,7 @@ object DbActor {
   /**
    * Creates a new [[DbActor]] which is aware of channels already stored in the db
    *
-   * @return the new [[DbActor]]
+   * @return the newly created [[DbActor]]
    */
   def apply(): DbActor = {
     val laoFolder = new File(s"$DATABASE_FOLDER${Channel.rootChannelPrefix}").toPath
@@ -126,7 +126,6 @@ object DbActor {
 
     override def preStart(): Unit = {
       log.info(s"Actor $self (db) was initialised with a total of ${initialChannelsMap.size} recovered channels")
-      println(channelsMap.keys)
       super.preStart()
     }
 
