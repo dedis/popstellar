@@ -2,14 +2,17 @@ package ch.epfl.pop.pubsub
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.event.LoggingReceive
+import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.ClientActor._
 import ch.epfl.pop.pubsub.PubSubMediator._
-import ch.epfl.pop.pubsub.graph.GraphMessage
+import ch.epfl.pop.pubsub.graph.{DbActor, GraphMessage}
 
 import scala.collection.mutable
 import scala.util.Failure
 
+import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging {
 
@@ -29,7 +32,24 @@ case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging {
         log.info(s"Connecting wsHandle $wsClient to actor ${this.self}")
         wsHandle = Some(wsClient)
       case DisconnectWsHandle => subscribedChannels.foreach(channel => mediator ! UnsubscribeFrom(channel))
-      case SubscribeTo(channel) => mediator ! SubscribeTo(channel)
+      case SubscribeTo(channel) =>
+        //mediator ! SubscribeTo(channel)
+        val m: AskableActorRef = mediator
+
+
+        // this is disgusting! Check next commit for cleaner version
+
+
+        implicit lazy val timeout = DbActor.getTimeout
+        implicit lazy val duration = DbActor.getDuration
+
+        val f: Future[PubSubMediatorMessage] = (m ? SubscribeTo(channel)).map {
+          case m: PubSubMediatorMessage => m
+        }
+
+        val a: PubSubMediatorMessage = Await.result(f, duration)
+        sender ! a
+
       case UnsubscribeFrom(channel) => mediator ! UnsubscribeFrom(channel)
     }
     case message: PubSubMediatorMessage => message match {
