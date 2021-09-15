@@ -7,7 +7,7 @@
 package socket
 
 import (
-	"student20_pop/message"
+	"student20_pop/message/query/method/message"
 	"time"
 )
 
@@ -50,8 +50,9 @@ type Socket interface {
 	// message which does not have an ID.
 	SendError(id *int, err error)
 
-	// SendResult is used to send a result message to the client.
-	SendResult(id int, res message.Result)
+	// SendResult is used to send a result message to the client. Res can be
+	// nil, empty, or filled. In case it is nil it sends the "0" return value.
+	SendResult(id int, res []message.Message)
 }
 
 // IncomingMessage wraps the raw message from the websocket connection and pairs
