@@ -1,17 +1,17 @@
-### PoP Android Frontend
+# PoP Android Frontend
 
 This repository contains the UI side implementation of the PoP project.
 
-#### Table of contents
+## Table of contents
 
 * [Architecture](#architecture) 
 * [Coding Standards](#coding-standards)
 
-#### Architecture
+## Architecture
 
 We assume that you're familiar with the PoP project and the [User Interface Specifications](https://docs.google.com/document/d/1aVsCYj1vrTxh-V6CBrU4tRGANrC2wve47MSIXPliVbU/edit).
 
-##### Design
+### Design
 
 The application follows the Model-View-ViewModel (MVVM) pattern and uses this [guide to app architecture](https://developer.android.com/jetpack/guide). 
 
@@ -26,9 +26,24 @@ Below is the diagram from the [guide to app architecture](https://developer.andr
   <img src="images/mvvm.png" alt="MVVM"/>
 </div>
 
-##### Communication
+### Message definitions
 
-#### Coding Standards
+All objects referred to in the protocol specification are defined in `model/network` package, 
+closely mirroring the JSON-Schema folder structure.
+
+The logic for parsing them is defined in `utility/json` package. 
+
+When you need to create a new object please refer to existing message types. If the attributes name
+of the object differ from the JSON-Schema 
+
+If the name of the attributes
+differ from the JSON-Schema then the `@SerializedName` annotation can be used to specify the field name.
+is used to indicate how to serialize to JSON if the name of the attributes differ from the JSON-Schema.
+
+
+### Communication
+
+## Coding Standards
 
 This project follows the [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html). The [google-java-format](https://github.com/google/google-java-format) plugin allows very easy formatting.
 
@@ -40,7 +55,7 @@ in Android Studio by going to `Preferences` -> `Editor` -> `Code Style` -> `Impo
 
 Finally, you may want to install `Save Actions` plugin and configure it to `Optimise Imports` and `Reformat File` on save.
 
-##### Resource Values
+## Resource Values
 
 The values used for the UI are stored in the corresponding xml
 files (colors, dimens, strings or styles) in the res/values folder.
@@ -49,7 +64,7 @@ The [R class in Android](https://stackoverflow.com/questions/4953077/what-is-the
 
 The strings and dimensions are divided by usage, for example all strings or dimensions used for the home view are grouped together.
 
-##### Github Actions
+## Github Actions
 
 This project uses Github Actions as a CI, for more information go to the [workflows](https://github.com/dedis/student_21_pop/blob/master/.github/workflows/ci.yaml) of this project.
 
