@@ -2,6 +2,7 @@ package hub
 
 import (
 	"fmt"
+	"io"
 	"student20_pop/message/query/method"
 	"student20_pop/message/query/method/message"
 	"testing"
