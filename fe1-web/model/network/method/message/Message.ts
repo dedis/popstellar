@@ -103,7 +103,7 @@ export class Message {
    * @param data The MessageData to be signed and hashed
    * @param witnessSignatures The signatures of the witnesses
    *
-   * ATTENTION: This may need updating as part of the Digital Wallet project -- 2021-03-03
+   * TODO: This may need updating as part of the Digital Wallet project -- 2021-03-03
    */
   public static fromData(data: MessageData, witnessSignatures?: WitnessSignature[]): Message {
     const encodedDataJson: Base64UrlData = encodeMessageData(data);

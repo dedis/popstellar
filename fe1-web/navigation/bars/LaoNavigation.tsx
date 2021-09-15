@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Platform, StyleSheet,
 } from 'react-native';
@@ -101,8 +101,7 @@ function LaoNavigation() {
   const publicKeyRaw = getKeyPairState(getStore().getState()).keyPair?.publicKey;
   const publicKey = publicKeyRaw ? new PublicKey(publicKeyRaw) : undefined;
 
-  const [walletIsInitialized, setWalletIsInitialized] = useState(false);
-  WalletStore.get().then((encryptedSeed) => setWalletIsInitialized(encryptedSeed !== undefined));
+  const walletIsInitialized = WalletStore.hasSeed(); // TODO: replace with selector
 
   const isOrganizer = !!(lao && publicKey && (publicKey.equals(lao.organizer)));
   const isWitness = !!(lao && publicKey && lao.witnesses.some((w) => publicKey.equals(w)));

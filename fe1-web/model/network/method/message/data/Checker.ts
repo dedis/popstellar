@@ -3,9 +3,8 @@ import {
 } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
 
-const TIMESTAMP_BASE_TIME = new Timestamp(1577833200); // 1st january 2020
-
 export function checkTimestampStaleness(timestamp: Timestamp) {
+  const TIMESTAMP_BASE_TIME = new Timestamp(1577833200); // 1st january 2020
   if (timestamp.before(TIMESTAMP_BASE_TIME)) {
     throw new ProtocolError('Invalid timestamp encountered: stale timestamp');
   }

@@ -2,6 +2,11 @@ import { Message } from './message';
 import { ProtocolError } from '../ProtocolError';
 import { JsonRpcParams } from './JsonRpcParams';
 
+/**
+ * JSON-RPC Params containing:
+ * - Channel
+ * - Message
+ */
 export class JsonRpcParamsWithMessage extends JsonRpcParams {
   public readonly message: Message;
 

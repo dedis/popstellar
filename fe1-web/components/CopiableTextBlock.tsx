@@ -21,20 +21,18 @@ const styles = StyleSheet.create({
 });
 
 const CopiableTextBlock = (props: IPropTypes) => {
-  const { id } = props;
   const { text } = props;
   const { visibility } = props;
 
   return (
     <View style={styles.view}>
       <CopyButton data={text} />
-      <TextBlock text={text} key={id} visibility={visibility} />
+      <TextBlock text={text} visibility={visibility} />
     </View>
   );
 };
 
 const propTypes = {
-  id: PropTypes.number.isRequired,
   text: PropTypes.string,
   visibility: PropTypes.bool,
 };
@@ -47,7 +45,6 @@ CopiableTextBlock.defaultProps = {
 };
 
 type IPropTypes = {
-  id: number,
   text: string,
   visibility: boolean,
 };
