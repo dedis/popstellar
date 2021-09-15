@@ -13,8 +13,8 @@ object MessageValidator extends ContentValidator {
    * @param errorCode error code related to the error
    * @return a description of the error and where it occurred
    */
-  override def validationError(reason: String, validator: String, errorCode: ErrorCodes.ErrorCodes = ErrorCodes.INVALID_DATA): PipelineError =
-    super.validationError(reason, validator, errorCode)
+  override def validationError(reason: String, validator: String, rpcId: Option[Int], errorCode: ErrorCodes.ErrorCodes = ErrorCodes.INVALID_DATA): PipelineError =
+    super.validationError(reason, validator, rpcId, errorCode)
 
   def validateMessage(rpcMessage: JsonRpcMessage): GraphMessage = Left(rpcMessage)
   /** TODO: Verifications on the message

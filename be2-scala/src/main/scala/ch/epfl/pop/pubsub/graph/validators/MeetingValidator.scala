@@ -9,7 +9,7 @@ import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
 case object MeetingValidator extends MessageDataContentValidator {
   def validateCreateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
-    def validationError(reason: String): PipelineError = super.validationError(reason, "CreateMeeting")
+    def validationError(reason: String): PipelineError = super.validationError(reason, "CreateMeeting", rpcMessage.id)
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
@@ -27,12 +27,12 @@ case object MeetingValidator extends MessageDataContentValidator {
         } else {
           Left(rpcMessage)
         }
-      case _ => Right(validationErrorNoMessage)
+      case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
   def validateStateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
-    def validationError(reason: String): PipelineError = super.validationError(reason, "StateMeeting")
+    def validationError(reason: String): PipelineError = super.validationError(reason, "StateMeeting", rpcMessage.id)
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
@@ -56,7 +56,7 @@ case object MeetingValidator extends MessageDataContentValidator {
         } else {
           Left(rpcMessage)
         }
-      case _ => Right(validationErrorNoMessage)
+      case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
 }

@@ -6,11 +6,11 @@ import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
 case object WitnessValidator extends MessageDataContentValidator {
   def validateWitnessMessage(rpcMessage: JsonRpcRequest): GraphMessage = {
-    def validationError(reason: String): PipelineError = super.validationError(reason, "WitnessMessage")
+    def validationError(reason: String): PipelineError = super.validationError(reason, "WitnessMessage", rpcMessage.id)
 
     rpcMessage.getParamsMessage match {
       case Some(_) => Left(rpcMessage)
-      case _ => Right(validationErrorNoMessage)
+      case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
 }

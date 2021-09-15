@@ -34,7 +34,8 @@ object MessageDecoder {
         }
       case _ => Right(PipelineError(
         ErrorCodes.INVALID_DATA.id,
-        "MessageDecoder parsing failed : input json is not correctly formatted"
+        "MessageDecoder parsing failed : input json is not correctly formatted (and thus unknown rpcId).",
+        None // no rpcId since we couldn't decrypt the message
       ))
     }
 
@@ -115,16 +116,18 @@ object MessageDecoder {
               typedRequest = typeCastRequest(jsonRpcRequest)
             } match {
               case Success(_) => Left(typedRequest) // everything worked at expected, 'decodedData' field was populated
-              case Failure(exception) => Right(PipelineError(ErrorCodes.INVALID_DATA.id, s"Invalid data: $exception"))
+              case Failure(exception) => Right(PipelineError(ErrorCodes.INVALID_DATA.id, s"Invalid data: $exception", jsonRpcRequest.id))
             }
 
           case Success(_) => Right(PipelineError(
             ErrorCodes.INVALID_DATA.id,
-            "Invalid data: Unable to parse 'data' field: 'object' or 'action' field is missing/wrongly formatted"
+            "Invalid data: Unable to parse 'data' field: 'object' or 'action' field is missing/wrongly formatted",
+            jsonRpcRequest.id
           ))
           case _ => Right(PipelineError(
             ErrorCodes.INVALID_DATA.id,
-            "Invalid data: Unable to parse 'data' field: 'data' is not a valid json string"
+            "Invalid data: Unable to parse 'data' field: 'data' is not a valid json string",
+            jsonRpcRequest.id
           ))
         }
     }
