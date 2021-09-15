@@ -4,6 +4,7 @@ import akka.NotUsed
 import akka.actor.ActorRef
 import akka.stream.FlowShape
 import akka.stream.scaladsl.{Flow, GraphDSL, Merge, Partition}
+import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.{Catchup, Subscribe, Unsubscribe}
 import ch.epfl.pop.pubsub.ClientActor
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
@@ -22,7 +23,7 @@ object ParamsHandler {
 
       /* building blocks */
       val handlerPartitioner = builder.add(Partition[GraphMessage](totalPorts, {
-        case Left(jsonRpcMessage) => jsonRpcMessage match {
+        case Left(jsonRpcMessage: JsonRpcRequest) => jsonRpcMessage.getParams match {
           case _: Subscribe => portSubscribe
           case _: Unsubscribe => portUnsubscribe
           case _: Catchup => portCatchup

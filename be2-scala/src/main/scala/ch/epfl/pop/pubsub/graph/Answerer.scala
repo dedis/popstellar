@@ -6,8 +6,9 @@ import akka.http.scaladsl.model.ws.TextMessage
 import akka.stream.OverflowStrategy
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import ch.epfl.pop.json.HighLevelProtocol._
-import ch.epfl.pop.model.network.JsonRpcResponse
+import ch.epfl.pop.model.network.{ErrorObject, JsonRpcResponse}
 import ch.epfl.pop.pubsub.ClientActor.{ClientAnswer, ConnectWsHandle, DisconnectWsHandle}
+import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import spray.json._
 
 object Answerer {
@@ -21,7 +22,13 @@ object Answerer {
   private def sendAnswer(graphMessage: GraphMessage): TextMessage = graphMessage match {
     // Note: The encoding of the answer is done here as the ClientActor must always receive a GraphMessage
     case Left(rpcAnswer: JsonRpcResponse) => TextMessage.Strict(rpcAnswer.toJson.toString)
-    case _ => println("An unknown error occurred in Answerer.sendAnswer"); ???
+    // FIXME Returns empty id (second None)
+    case Right(pipelineError: PipelineError) => TextMessage.Strict(JsonRpcResponse(
+      RpcValidator.JSON_RPC_VERSION, None, Some(ErrorObject(pipelineError.code, pipelineError.description)), None
+    ).toJson.toString)
+    case _ =>
+      println("An unknown error occurred in Answerer.sendAnswer");
+      ???
   }
 
   def answerer(clientActorRef: ActorRef, mediator: ActorRef)(implicit system: ActorSystem): Flow[GraphMessage, TextMessage, NotUsed] = {
@@ -38,7 +45,7 @@ object Answerer {
     // Integration point between Akka Streams and above actor
     val source: Source[TextMessage, NotUsed] = Source
       // By using .actorRef, the source emits whatever the actor "wsHandle" sends
-      .actorRef(bufferSize = 50, overflowStrategy = OverflowStrategy.dropBuffer) // TODO OverflowStrategy.backpressure is not allowed!
+      .actorRef(bufferSize = 128, overflowStrategy = OverflowStrategy.dropBuffer) // OverflowStrategy.backpressure is not allowed!
       // Send an answer back to the client (the one represented by wsHandle == clientActorRef)
       .map((graphMessage: GraphMessage) => sendAnswer(graphMessage))
       .mapMaterializedValue { wsHandle =>
