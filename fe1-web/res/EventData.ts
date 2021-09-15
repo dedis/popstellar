@@ -1,215 +1,245 @@
 // fake Event to show how the app works
-import { Hash } from 'model/objects';
+import {
+  Hash, LaoEventState, LaoEventType, MeetingState, RollCallState,
+} from 'model/objects';
 
 // @ts-ignore
-const data: LaoEventtate[] = [
+const data: LaoEventState[] = [
   {
     id: Hash.fromString('1').toString(),
-    eventType: 'MEETING',
+    eventType: LaoEventType.MEETING,
     name: 'Event 1',
     creation: 1607616483,
     last_modified: 1607616483,
     location: 'A location, test.com',
     start: 1607616500,
     end: 1607618490,
-  },
+  } as MeetingState,
   {
     id: Hash.fromString('2').toString(),
-    eventType: 'MEETING',
     name: 'Event 2',
+    eventType: LaoEventType.MEETING,
     creation: 1607616483,
     last_modified: 1607616483,
     location: 'A location, test.com',
     start: 1607616483,
     end: 1607618490,
-  },
+  } as MeetingState,
   {
     id: Hash.fromString('3').toString(),
-    eventType: 'MEETING',
     name: 'Event 3',
+    eventType: LaoEventType.MEETING,
     creation: 1607616483,
     last_modified: 1607616483,
     location: 'A location, test.com',
     start: 1607616483,
     end: 1607618490,
-  },
+  } as MeetingState,
   {
     id: Hash.fromString('4').toString(),
-    eventType: 'ROLL_CALL',
     name: 'Event 4',
+    eventType: LaoEventType.ROLL_CALL,
     creation: 1607616483,
     last_modified: 1607616483,
     start: 1607616483,
-    end: 1607618490,
+    proposed_start: 1607616483,
+    proposed_end: 1607618490,
     location: 'EPFL INF',
-  },
+    status: 0,
+  } as RollCallState,
   {
     id: Hash.fromString('5').toString(),
-    eventType: 'ROLL_CALL',
     name: 'Event 5',
+    eventType: LaoEventType.ROLL_CALL,
     creation: 1607616483,
     last_modified: 1607616483,
     start: 1607616483,
-    end: 1607618490,
+    proposed_start: 1607616483,
+    opened_at: 1607617083,
+    proposed_end: 1607618490,
     location: 'EPFL INF',
-  },
+    status: 1,
+  } as RollCallState,
   {
     id: Hash.fromString('6').toString(),
-    eventType: 'MEETING',
     name: 'Event 6',
+    eventType: LaoEventType.MEETING,
     creation: 1607616483,
     last_modified: 1607616483,
     start: 1607616483,
     end: 1607618490,
-  },
+  } as MeetingState,
   {
     id: Hash.fromString('7').toString(),
-    eventType: 'MEETING',
     name: 'Event 7',
+    eventType: LaoEventType.MEETING,
     creation: 1607616483,
     last_modified: 1607616483,
     location: 'A location, test.com',
     start: 1607616483,
     end: 1607618490,
-  },
+  } as MeetingState,
   {
     id: Hash.fromString('8').toString(),
-    eventType: 'MEETING',
     name: 'Event 8',
+    eventType: LaoEventType.MEETING,
     creation: 1607616483,
     last_modified: 1607616483,
     location: 'A location, test.com',
     start: 1607616483,
     end: 1607618490,
-  },
+  } as MeetingState,
   {
     id: Hash.fromString('9').toString(),
-    eventType: 'MEETING',
     name: 'Event 9',
+    eventType: LaoEventType.MEETING,
     creation: 1607616483,
     last_modified: 1607616483,
     location: 'A location, test.com',
     start: 1607616483,
     end: 1607618490,
-  },
+  } as MeetingState,
   {
     id: Hash.fromString('10').toString(),
-    eventType: 'MEETING',
     name: 'Event 10',
+    eventType: LaoEventType.MEETING,
     creation: 1607616483,
     last_modified: 1607616483,
     location: 'A location, test.com',
     start: 1607616483,
     end: 1607618490,
-  },
+  } as MeetingState,
   {
     id: Hash.fromString('11').toString(),
-    eventType: 'ROLL_CALL',
     name: 'Event 11',
-    start: 1607616483,
+    eventType: LaoEventType.MEETING,
+    start: 607616483,
     creation: 1607616483,
     last_modified: 1607616483,
     end: 1607616490,
     location: 'EPFL INF',
-  },
+  } as MeetingState,
   {
     id: Hash.fromString('12').toString(),
-    eventType: 'MEETING',
     name: 'Event 12',
+    eventType: LaoEventType.MEETING,
     creation: 1607616483,
     last_modified: 1607616483,
     location: 'A location, test.com',
     start: 1607616483,
     end: 1607618490,
-  },
+  } as MeetingState,
   {
     id: Hash.fromString('13').toString(),
-    eventType: 'MEETING',
     name: 'Event 13',
+    eventType: LaoEventType.MEETING,
     creation: 1607616483,
     last_modified: 1607616483,
     location: 'A location, test.com',
     start: 1607616483,
     end: 1607618490,
-  },
+  } as MeetingState,
   {
     id: Hash.fromString('14').toString(),
-    eventType: 'MEETING',
     name: 'Event 14',
+    eventType: LaoEventType.MEETING,
     creation: 1607616483,
     last_modified: 1607616483,
     location: 'A location, test.com',
     start: 1607616483,
     end: 1607618490,
-  },
+  } as MeetingState,
   {
     id: Hash.fromString('15').toString(),
-    eventType: 'MEETING',
     name: 'Event 15',
+    eventType: LaoEventType.MEETING,
     creation: 1607616483,
     last_modified: 1607616483,
     location: 'A location, test.com',
     start: 1607616483,
     end: 1607618490,
-  },
+  } as MeetingState,
   {
     id: Hash.fromString('16').toString(),
-    eventType: 'MEETING',
     name: 'Event 16',
+    eventType: LaoEventType.MEETING,
     creation: 1607616483,
     last_modified: 1607616483,
     location: 'A location, test.com',
     start: 1607616483,
     end: 1607618490,
-  },
+  } as MeetingState,
   {
     id: Hash.fromString('17').toString(),
-    eventType: 'MEETING',
     name: 'Event 17',
+    eventType: LaoEventType.MEETING,
     creation: 1607616483,
     last_modified: 1607616483,
     location: 'A location, test.com',
     start: 1607616483,
     end: 1607618490,
-  },
+  } as MeetingState,
   {
     id: Hash.fromString('18').toString(),
-    eventType: 'MEETING',
     name: 'Event 18',
+    eventType: LaoEventType.MEETING,
     creation: 1607616483,
     last_modified: 1607616483,
     location: 'A location, test.com',
     start: 1607616483,
     end: 1607618490,
-  },
+  } as MeetingState,
   {
     id: Hash.fromString('19').toString(),
-    eventType: 'MEETING',
     name: 'Event 19',
+    eventType: LaoEventType.MEETING,
     creation: 1607616483,
     last_modified: 1607616483,
     location: 'A location, test.com',
     start: 1607616483,
     end: 1607618490,
-  },
+  } as MeetingState,
   {
     id: Hash.fromString('20').toString(),
-    eventType: 'MEETING',
     name: 'Event 20',
+    eventType: LaoEventType.MEETING,
     creation: 1607616483,
     last_modified: 1607616483,
     location: 'A location, test.com',
     start: 1607616483,
     end: 1607618490,
-  },
+  } as MeetingState,
 ];
 
-function sortByStartAscending(a: LaoEventtate, b: LaoEventtate) {
+function sortByStartAscending(a: LaoEventState, b: LaoEventState) {
+  if (!a || !a.start) {
+    return 1;
+  }
+  if (!b || !b.start) {
+    return -1;
+  }
+
   if (a.start < b.start) {
     return -1;
   }
 
   if (a.start === b.start) {
+    if (!a.end) {
+      if (!b.end) {
+        return 0;
+      }
+
+      return 1;
+    }
+
+    // a.end is defined at this point
+
+    if (!b.end) {
+      return -1;
+    }
+
+    // b.end is defined at this point
+
     if (a.end < b.end) {
       return -1;
     }

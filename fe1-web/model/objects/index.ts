@@ -1,16 +1,20 @@
+import * as w from './wallet';
+
+export const Wallet = w;
+
 export * from './Base64Url';
+export * from './Channel';
+export * from './Election';
 export * from './Hash';
+export * from './KeyPair';
+export * from './Lao';
+export * from './LaoEvent';
+export * from './LaoEventBuilder';
+export * from './Meeting';
+export * from './PopToken';
 export * from './PrivateKey';
 export * from './PublicKey';
-export * from './KeyPair';
+export * from './RollCall';
 export * from './Signature';
 export * from './Timestamp';
 export * from './WitnessSignature';
-export * from './Channel';
-export * from './Lao';
-export * from './RollCall';
-export * from './Meeting';
-export * from './LaoEvent';
-export * from './LaoEventBuilder';
-export * from './Election';
-export * from './HDWallet';

@@ -1,72 +1,56 @@
 package hub
 
 import (
-	"bytes"
-	"context"
 	"encoding/base64"
-	"log"
-	"strings"
 	"student20_pop/crypto"
-	"sync"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
-func CreateWitnessHub() Hub {
+func createWitnessHub() (Hub, error) {
 	pk := "OgFFZz2TVilTSICEdJbAO3otWGfh17SmPo6i5as7XAg="
 	pkBuf, err := base64.URLEncoding.DecodeString(pk)
 	if err != nil {
-		return nil
+		return nil, err
 	}
+
 	point := crypto.Suite.Point()
 	err = point.UnmarshalBinary(pkBuf)
 	if err != nil {
-		return nil
+		return nil, err
 	}
+
 	h, err := NewWitnessHub(point)
 	if err != nil {
-		return nil
+		return nil, err
 	}
-	return h
+
+	return h, nil
 }
 
 // to complete
 func TestNewWitnessHub(t *testing.T) {
 	pk := "invalid pk"
 	_, err := base64.URLEncoding.DecodeString(pk)
-	if err == nil {
-		t.Errorf("decoded invalid string")
-	}
+	require.Error(t, err)
+
 	pk = "OgFFZz2TVilTSICEdJbAO3otWGfh17SmPo6i5as7XAg="
 	pkBuf, err := base64.URLEncoding.DecodeString(pk)
-	if err != nil {
-		t.Errorf("could not decode public key")
-	}
+	require.NoError(t, err)
+
 	point := crypto.Suite.Point()
 	err = point.UnmarshalBinary(pkBuf)
-	if err != nil {
-		t.Errorf("could not unmarshal public key")
-	}
-	NewWitnessHub(point)
+	require.NoError(t, err)
+
+	_, err = NewWitnessHub(point)
+	require.NoError(t, err)
 }
 
 func TestWitnessHub_Start(t *testing.T) {
-	parent := context.Background()
-	ctx, cancel := context.WithCancel(parent)
-	wg := &sync.WaitGroup{}
-	witnessHub := CreateWitnessHub()
-	if witnessHub == nil {
-		t.Errorf("could not create witness hub")
-	}
+	witnessHub, err := createWitnessHub()
+	require.NoError(t, err)
 
-	var buffer bytes.Buffer
-	log.SetOutput(&buffer)
-
-	cancel()
-	witnessHub.Start(ctx, wg)
-
-	condition := strings.Contains(buffer.String(), "started witness...") && strings.Contains(buffer.String(), "closing the hub...")
-
-	if !condition {
-		t.Errorf("wrong strings logged in witnessHub start")
-	}
+	witnessHub.Start()
+	witnessHub.Stop()
 }

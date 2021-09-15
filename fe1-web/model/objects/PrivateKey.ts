@@ -1,4 +1,3 @@
-import { encodeBase64 } from 'tweetnacl-util';
 import { sign } from 'tweetnacl';
 import { Signature } from './Signature';
 import { Base64UrlData } from './Base64Url';
@@ -14,6 +13,6 @@ export class PrivateKey extends Base64UrlData {
       data.toBuffer(),
       this.toBuffer(),
     );
-    return new Signature(Base64UrlData.fromBase64(encodeBase64(signature)).valueOf());
+    return new Signature(Base64UrlData.fromBuffer(Buffer.from(signature)).valueOf());
   }
 }

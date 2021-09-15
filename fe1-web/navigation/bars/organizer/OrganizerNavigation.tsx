@@ -6,7 +6,6 @@ import STRINGS from 'res/strings';
 import Organizer from 'parts/lao/organizer/Organizer';
 import CreateEvent from 'parts/lao/organizer/eventCreation/CreateEvent';
 import WitnessScanning from 'components/WitnessScanning';
-import RollCallScanning from 'archive-vault/old-components/unused/RollCallScanning';
 import CreateMeeting from 'parts/lao/organizer/eventCreation/events/CreateMeeting';
 import CreateRollCall from 'parts/lao/organizer/eventCreation/events/CreateRollCall';
 import CreateElection from 'parts/lao/organizer/eventCreation/events/CreateElection';
@@ -38,10 +37,6 @@ export default function OrganizerNavigation() {
       <Stack.Screen
         name={STRINGS.organizer_navigation_tab_add_witness}
         component={WitnessScanning}
-      />
-      <Stack.Screen
-        name={STRINGS.organizer_navigation_tab_roll_call}
-        component={RollCallScanning}
       />
       <Stack.Screen
         name={STRINGS.organizer_navigation_creation_meeting}

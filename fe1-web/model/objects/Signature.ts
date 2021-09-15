@@ -11,10 +11,14 @@ export class Signature extends Base64UrlData {
    * @return true iff the signature verification succeeded
    */
   public verify(key: PublicKey, data: Base64UrlData): boolean {
-    return sign.detached.verify(
-      data.toBuffer(),
-      this.toBuffer(),
-      key.toBuffer(),
-    );
+    try {
+      return sign.detached.verify(
+        data.toBuffer(),
+        this.toBuffer(),
+        key.toBuffer(),
+      );
+    } catch {
+      return false;
+    }
   }
 }

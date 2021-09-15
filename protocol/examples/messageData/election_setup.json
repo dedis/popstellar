@@ -1,0 +1,20 @@
+{
+    "object": "election",
+    "action": "setup",
+    "id": "XXX",
+    "lao": "XXX",
+    "name": "XXX",
+    "version": "XXX",
+    "created_at": 123,
+    "start_time": 123,
+    "end_time": 123,
+    "questions": [
+        {
+            "id": "XXX",
+            "question": "XXX",
+            "voting_method": "Plurality",
+            "ballot_options": ["XXX", "YYY"],
+            "write_in": false
+        }
+    ]
+}

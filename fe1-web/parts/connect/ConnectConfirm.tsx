@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import {
   StyleSheet, View, ViewStyle, TextInput, TextStyle,
 } from 'react-native';
+
 import PropTypes from 'prop-types';
 
 import { getNetworkManager } from 'network';
-import { establishLaoConnection } from 'network/CommunicationApi';
+import { subscribeToChannel } from 'network/CommunicationApi';
 import { Channel, channelFromId, Hash } from 'model/objects';
 
 import { Spacing, Typography } from 'styles';
@@ -22,7 +23,7 @@ import WideButtonView from 'components/WideButtonView';
  * The ScrollView shows information for the user to verify the authenticity of the LAO
  *
  * TODO Make the confirm button make the action require in the UI specification
-*/
+ */
 const styles = StyleSheet.create({
   textInput: {
     ...Typography.base,
@@ -40,12 +41,8 @@ const styles = StyleSheet.create({
 
 function connectTo(serverUrl: string): boolean {
   try {
-    const { hostname, port, pathname } = new URL(serverUrl);
-
-    const portNum = port ? parseInt(port, 10) : undefined;
-    const path = pathname.replace(/^\/+/g, '');
-
-    getNetworkManager().connect(hostname, portNum, path || undefined);
+    const { href } = new URL(serverUrl); // validate
+    getNetworkManager().connect(href);
   } catch (err) {
     console.error(`Cannot connect to '${serverUrl}' as it is an invalid URL`, err);
     return false;
@@ -63,21 +60,16 @@ function validateLaoId(laoId: string): Channel | undefined {
   return undefined;
 }
 
-const ConnectConfirm = ({ navigation }: IPropTypes) => {
-  const [serverUrl, setServerUrl] = useState('https://127.0.0.1:8080');
+const ConnectConfirm = ({ navigation, route }: IPropTypes) => {
+  const [serverUrl, setServerUrl] = useState('wss://popdemo.dedis.ch/demo');
   const [laoId, setLaoId] = useState('');
 
-  const onButtonConfirm = () => {
-    const parentNavigation = navigation.dangerouslyGetParent();
-    if (parentNavigation === undefined) {
-      return;
-    }
+  if (route.params && laoId === '') {
+    setLaoId(route.params.laoIdIn);
+    console.log(laoId);
+  }
 
-    const parentNavigation2 = parentNavigation.dangerouslyGetParent();
-    if (parentNavigation2 === undefined) {
-      return;
-    }
-
+  const onButtonConfirm = async () => {
     if (!connectTo(serverUrl)) {
       return;
     }
@@ -87,13 +79,14 @@ const ConnectConfirm = ({ navigation }: IPropTypes) => {
       return;
     }
 
-    establishLaoConnection(channel)
-      .then(() => {
-        parentNavigation.navigate(STRINGS.app_navigation_tab_organizer, {
-          screen: 'Attendee',
-        });
-      })
-      .catch((reason) => console.error(`Failed to establish lao connection: ${reason}`));
+    try {
+      await subscribeToChannel(channel);
+      navigation.navigate(STRINGS.app_navigation_tab_organizer, {
+        screen: 'Attendee',
+      });
+    } catch (err) {
+      console.error(`Failed to establish lao connection: ${err}`);
+    }
   };
 
   return (
@@ -119,7 +112,7 @@ const ConnectConfirm = ({ navigation }: IPropTypes) => {
       />
       <WideButtonView
         title={STRINGS.general_button_cancel}
-        onPress={() => navigation.navigate(STRINGS.connect_scanning_title)}
+        onPress={() => navigation.navigate(STRINGS.connect_unapproved_title)}
       />
     </View>
   );
@@ -128,6 +121,7 @@ const ConnectConfirm = ({ navigation }: IPropTypes) => {
 const propTypes = {
   navigation: PROPS_TYPE.navigation.isRequired,
 };
+
 ConnectConfirm.propTypes = propTypes;
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
