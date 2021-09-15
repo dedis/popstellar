@@ -399,9 +399,10 @@ func (h *baseHub) createLao(publish method.Publish, laoCreate messagedata.LaoCre
 	}
 
 	laoCh := laoChannel{
-		rollCall:    rollCall{},
-		attendees:   NewAttendees(),
-		baseChannel: createBaseChannel(h, laoChannelPath),
+		rollCall:  rollCall{},
+		attendees: NewAttendees(),
+		baseChannel: createBaseChannel(h, laoChannelPath,
+			h.log.With().Str("role", "lao channel").Logger()),
 	}
 
 	laoCh.inbox.storeMessage(publish.Params.Message)
@@ -499,9 +500,10 @@ func getChannelsFromDB(h *baseHub) (map[string]Channel, error) {
 
 func createChannelFromDB(db *sql.DB, h *baseHub, channelID string) (Channel, error) {
 	channel := laoChannel{
-		rollCall:    rollCall{},
-		attendees:   NewAttendees(),
-		baseChannel: createBaseChannel(h, channelID),
+		rollCall:  rollCall{},
+		attendees: NewAttendees(),
+		baseChannel: createBaseChannel(h, channelID,
+			h.log.With().Str("role", "lao channel").Logger()),
 	}
 
 	attendees, err := getAttendeesChannelFromDB(db, channelID)

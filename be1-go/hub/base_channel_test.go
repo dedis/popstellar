@@ -2,17 +2,21 @@ package hub
 
 import (
 	"fmt"
+	"io"
 	"student20_pop/message/query/method"
 	"student20_pop/message/query/method/message"
 	"testing"
 	"time"
 
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 )
 
 func TestBaseChannel_RollCallOrder(t *testing.T) {
+	log := zerolog.New(io.Discard)
+
 	// Create the channel
-	channel := createBaseChannel(nil, "Channel0")
+	channel := createBaseChannel(nil, "Channel0", log)
 
 	// Create the messages
 	messageNumber := 10

@@ -14,6 +14,7 @@ import (
 	"student20_pop/validation"
 	"sync"
 
+	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
 )
 
@@ -59,7 +60,10 @@ type baseChannel struct {
 	channelID string
 
 	witnessMu sync.Mutex
+
 	witnesses []string
+
+	log zerolog.Logger
 }
 
 type messageInfo struct {
@@ -68,7 +72,7 @@ type messageInfo struct {
 }
 
 // CreateBaseChannel return an instance of a `baseChannel`
-func createBaseChannel(h *baseHub, channelID string) *baseChannel {
+func createBaseChannel(h *baseHub, channelID string, log zerolog.Logger) *baseChannel {
 	return &baseChannel{
 		hub:       h,
 		channelID: channelID,
@@ -76,6 +80,7 @@ func createBaseChannel(h *baseHub, channelID string) *baseChannel {
 			store: make(map[string]socket.Socket),
 		},
 		inbox: createInbox(channelID),
+		log:   log,
 	}
 }
 
