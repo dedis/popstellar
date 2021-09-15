@@ -1,9 +1,16 @@
 package ch.epfl.pop.pubsub.graph.validators
 
+import akka.pattern.AskableActorRef
+import akka.util.Timeout
 import ch.epfl.pop.model.objects.{Hash, PublicKey, Timestamp, WitnessSignaturePair}
-import ch.epfl.pop.pubsub.graph.{ErrorCodes, PipelineError}
+import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, PipelineError}
+
+import scala.concurrent.duration.FiniteDuration
 
 trait MessageDataContentValidator extends ContentValidator {
+  implicit lazy val dbActor: AskableActorRef = DbActor.getInstance
+  implicit lazy val timeout: Timeout = DbActor.getTimeout
+  implicit lazy val duration: FiniteDuration = DbActor.getDuration
 
   /**
    * Creates a validation error message for reason <reason> that happened in

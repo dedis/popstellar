@@ -7,6 +7,7 @@ export const UNDEFINED_ID: number = -1;
 interface ErrorObject {
   code: number;
   description: string;
+  data?: any; // part of JSON-RPC specification, unused in PoP for now.
 }
 
 export class JsonRpcResponse {
@@ -38,10 +39,6 @@ export class JsonRpcResponse {
     } else {
       throw new ProtocolError('Unexpected json-rpc answer : both \'error\' and \'result\' are absent');
     }
-  }
-
-  public isPositiveResponse(): boolean {
-    return (this.error === undefined);
   }
 
   public static fromJson(jsonString: string): JsonRpcResponse {

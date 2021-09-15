@@ -2,31 +2,51 @@ import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit';
 import {
   Hash, LaoEvent, LaoEventState, eventFromState,
 } from 'model/objects';
-import eventsData from 'res/EventData';
+// import eventsData from 'res/EventData';
 import { getLaosState } from './LaoReducer';
 
 /**
- * Reducer & associated function implementation to store all known Events
+ * The EventReducerState stores all the Event-related information for a given LAO
  */
-
 interface EventReducerState {
-  byId: Record<string, LaoEventState>,
+  /**
+   * allIds stores the list of all known event IDs
+   */
   allIds: string[],
+
+  /**
+   * idAlias stores the ID aliases.
+   *
+   * @remarks
+   *
+   * If a new message (with a new_id) changes the state of an event (with old_id),
+   * this map associates new_id -> old_id.
+   * This ensures that we can keep only one event in memory, with its up-to-date state,
+   * but future messages can refer to new_id as needed.
+   */
   idAlias: Record<string, string>,
+
+  /**
+   * byId maps an event ID to the event state itself
+   */
+  byId: Record<string, LaoEventState>,
 }
 
+/**
+ * This is the root state for the Events Reducer
+ */
 interface EventLaoReducerState {
+  /**
+   * byLaoId associates a given LAO ID with the full representation of its events
+   */
   byLaoId: Record<string, EventReducerState>,
 }
 
 const initialState: EventLaoReducerState = {
   byLaoId: {
     myLaoId: {
-      byId: Object.assign({},
-        ...eventsData.map((evt: LaoEventState) => ({
-          [evt.id]: evt,
-        }))),
-      allIds: eventsData.map((evt) => evt.id),
+      byId: {},
+      allIds: [],
       idAlias: {},
     },
   },
@@ -173,28 +193,78 @@ export const makeEventsAliasMap = () => createSelector(
   },
 );
 
-export const makeEventsMap = () => createSelector(
+export const makeEventsMap = (laoId: string | undefined = undefined) => createSelector(
   // First input: Get all events across all LAOs
   (state) => getEventsState(state),
   // Second input: get the current LAO id,
-  (state) => getLaosState(state).currentId,
+  (state) => laoId || getLaosState(state).currentId,
   // Selector: returns a map of ids -> LaoEvents
-  (eventMap: EventLaoReducerState, laoId: string | undefined)
+  (eventMap: EventLaoReducerState, id: string | undefined)
   : Record<string, LaoEvent> => {
-    if (!laoId) {
+    if (!id) {
       return {};
     }
 
     const dictObj: Record<string, LaoEvent> = {};
 
-    eventMap.byLaoId[laoId].allIds.forEach((id) => {
-      const e = eventFromState(eventMap.byLaoId[laoId].byId[id]);
+    eventMap.byLaoId[id].allIds.forEach((evtId) => {
+      const e = eventFromState(eventMap.byLaoId[id].byId[evtId]);
       if (e) {
-        dictObj[id] = e;
+        dictObj[evtId] = e;
       }
     });
 
     return dictObj;
+  },
+);
+
+export const makeEventGetter = (laoId: Hash | string, eventId: Hash | string) => {
+  const id = laoId.valueOf();
+  const evtId = eventId.valueOf();
+
+  return createSelector(
+    // First input: Get all events across all LAOs
+    (state) => getEventsState(state),
+    // Selector: returns a map of ids -> LaoEvents
+    (eventMap: EventLaoReducerState)
+    : LaoEvent | undefined => {
+      if (!id || !eventMap.byLaoId[id]) {
+        return undefined;
+      }
+
+      if (!evtId || !eventMap.byLaoId[id].byId[evtId]) {
+        return undefined;
+      }
+
+      return eventFromState(eventMap.byLaoId[id].byId[evtId]);
+    },
+  );
+};
+
+export const makeEventByTypeSelector = <T extends LaoEvent>(eventType: string) => createSelector(
+  // First input: Get all events across all LAOs
+  (state) => getEventsState(state),
+  // Selector: returns a map of ids -> LaoEvents
+  (eventMap: EventLaoReducerState)
+  : Record<string, Record<string, T>> => {
+    const evtByLao: Record<string, Record<string, T>> = {};
+
+    Object.entries(eventMap.byLaoId).forEach(
+      ([laoId, evtList]) => {
+        evtByLao[laoId] = evtList.allIds
+          .map((i) => evtList.byId[i])
+          .filter((e) => e !== undefined && e.eventType === eventType)
+          .map((e) => eventFromState(e))
+          .filter((e) => e !== undefined)
+          .map((e) => e as T)
+          .reduce((acc, e) => {
+            acc[e.id.valueOf()] = e;
+            return acc;
+          }, {} as Record<string, T>);
+      },
+    );
+
+    return evtByLao;
   },
 );
 

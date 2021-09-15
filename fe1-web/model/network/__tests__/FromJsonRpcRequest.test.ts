@@ -1,15 +1,16 @@
+// this file should be heavily refactored to improve clarity and maintainability
+
 import 'jest-extended';
-import '../../utils/matchers';
+import '__tests__/utils/matchers';
 
 import keyPair from 'test_data/keypair.json';
 
 import { OpenedLaoStore } from 'store';
-import { storeInit } from 'store/Storage';
 import {
   Base64UrlData, Hash, Lao, PrivateKey, PublicKey,
 } from 'model/objects';
 import { ROOT_CHANNEL } from 'model/objects/Channel';
-import { JsonRpcMethod, JsonRpcRequest } from 'model/network';
+import { JsonRpcMethod, JsonRpcRequest } from 'model/network/index';
 import { CreateLao } from 'model/network/method/message/data';
 import { JsonRpcParamsWithMessage } from 'model/network/method/JsonRpcParamsWithMessage';
 
@@ -24,7 +25,7 @@ const METHODS = Object.keys(JsonRpcMethod)
 export const mockPublicKey = new PublicKey(keyPair.publicKey);
 export const mockSecretKey = new PrivateKey(keyPair.privateKey);
 
-function checkQueryOuterLayer(obj: any): void {
+function checkRpcQuery(obj: any): void {
   expect(obj).toBeObject();
   expect(Object.keys(obj).length).toBe(QUERY_FIELD_COUNT);
   expect(obj).toContainAllKeys(JSON_RPC_FIELDS);
@@ -34,7 +35,7 @@ function checkQueryOuterLayer(obj: any): void {
   expect(obj.id).toBeNumber();
 }
 
-function checkParams(obj: any, isRoot: boolean = false): void {
+function checkRpcParams(obj: any, isRoot: boolean = false): void {
   expect(obj).toBeObject();
   expect(obj).toContainAllKeys(['channel', 'message']);
   expect(obj.channel).toBeString();
@@ -67,27 +68,26 @@ function checkMessage(obj: any): void {
   expect(obj.witness_signatures).toBeKeySignatureArray('publicKey', 'signature');
 }
 
-describe('=== fromJsonJsonRpcRequest checks ===', () => {
-  const sampleCreateLaoData: CreateLao = CreateLao.fromJson({
-    object: 'lao',
-    action: 'create',
-    name: 'Random Name',
-    creation: 1613495222,
-    organizer: mockPublicKey.toString(),
-    witnesses: [],
-    id: Hash.fromStringArray(mockPublicKey.toString(), '1613495222', 'Random Name').toString(),
-  });
+const sampleCreateLaoData: CreateLao = CreateLao.fromJson({
+  object: 'lao',
+  action: 'create',
+  name: 'Random Name',
+  creation: 1613495222,
+  organizer: mockPublicKey.toString(),
+  witnesses: [],
+  id: Hash.fromStringArray(mockPublicKey.toString(), '1613495222', 'Random Name').toString(),
+});
 
-  const sampleCreateLaoDataString: string = JSON.stringify(sampleCreateLaoData);
+const sampleCreateLaoDataString: string = JSON.stringify(sampleCreateLaoData);
 
-  function embeddedMessage(
-    data: string,
-    method: JsonRpcMethod = JsonRpcMethod.PUBLISH,
-    channel: string = '/root/bGFvX2lk', // note: hardcoded value for testing
-    id: number = 0,
-  ): string {
-    const data64: Base64UrlData = Base64UrlData.encode(data);
-    return `{
+function embeddedMessage(
+  data: string,
+  method: JsonRpcMethod = JsonRpcMethod.PUBLISH,
+  channel: string = '/root/bGFvX2lk', // note: hardcoded value for testing
+  id: number = 0,
+): string {
+  const data64: Base64UrlData = Base64UrlData.encode(data);
+  return `{
         "jsonrpc": "2.0",
         "method": "${method.toString()}",
         "params": {
@@ -104,11 +104,10 @@ describe('=== fromJsonJsonRpcRequest checks ===', () => {
         "id": ${id}
       }
     `;
-  }
+}
 
+describe('=== fromJsonJsonRpcRequest checks ===', () => {
   beforeAll(() => {
-    storeInit();
-
     const sampleLao: Lao = new Lao({
       name: sampleCreateLaoData.name,
       id: Hash.fromStringArray(sampleCreateLaoData.organizer.toString(),
@@ -124,9 +123,9 @@ describe('=== fromJsonJsonRpcRequest checks ===', () => {
 
   describe('should successfully create objects from Json', () => {
     const checkTypicalQuery = (query: any, isRoot: boolean = false) => {
-      checkQueryOuterLayer(query);
+      checkRpcQuery(query);
 
-      checkParams(query.params, isRoot);
+      checkRpcParams(query.params, isRoot);
 
       const msg = (query.params as JsonRpcParamsWithMessage).message;
       checkMessage(msg);
@@ -137,7 +136,14 @@ describe('=== fromJsonJsonRpcRequest checks ===', () => {
 
     it('using a sub-channel', () => {
       const query = JsonRpcRequest.fromJson(embeddedMessage(sampleCreateLaoDataString));
-      checkTypicalQuery(query);
+      checkRpcQuery(query);
+      checkRpcParams(query.params);
+
+      const msg = (query.params as JsonRpcParamsWithMessage).message;
+      checkMessage(msg);
+
+      const msgData = JSON.parse(msg.data.decode());
+      expect(msgData).toBeJsonEqual(msg.messageData);
     });
 
     it(`using '${ROOT_CHANNEL}' channel`, () => {

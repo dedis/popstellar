@@ -13,16 +13,16 @@ import ch.epfl.pop.pubsub.graph._
 
 object PublishSubscribe extends App {
 
-  var dbActorRef: AskableActorRef = _
+  private var dbActorRef: AskableActorRef = _
 
   def getDbActorRef: AskableActorRef = dbActorRef
 
-  def buildGraph(mediatorActorRef: ActorRef)(implicit system: ActorSystem): Flow[Message, Message, NotUsed] = Flow.fromGraph(GraphDSL.create() {
+  def buildGraph(mediatorActorRef: ActorRef, dbActorRefT: AskableActorRef)(implicit system: ActorSystem): Flow[Message, Message, NotUsed] = Flow.fromGraph(GraphDSL.create() {
     implicit builder: GraphDSL.Builder[NotUsed] => {
       import GraphDSL.Implicits._
 
       val clientActorRef: ActorRef = system.actorOf(ClientActor.props(mediatorActorRef))
-      dbActorRef = system.actorOf(Props(DbActor()), "DbActor")
+      dbActorRef = dbActorRefT
 
       /* partitioner port numbers */
       val portPipelineError = 0

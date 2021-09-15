@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 
-import { getNavigator } from 'utils/Navigator';
+import { getNavigator } from '../platform/Navigator';
 
 const copyIcon = require('res/img/copy.svg');
 

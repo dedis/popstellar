@@ -4,7 +4,7 @@ import {
 import { REHYDRATE } from 'redux-persist';
 
 import { Hash, Lao, LaoState } from 'model/objects';
-import laosData from 'res/laoData';
+// import laosData from 'res/laoData';
 
 /**
  * Reducer & associated function implementation to store all known LAOs
@@ -18,11 +18,8 @@ interface LaoReducerState {
 }
 
 const initialState: LaoReducerState = {
-  byId: Object.assign({},
-    ...laosData.map((lao: Lao) => ({
-      [lao.id.toString()]: lao.toState(),
-    }))),
-  allIds: laosData.map((lao) => lao.id.valueOf()),
+  byId: {},
+  allIds: [],
 };
 
 const addLaoReducer = (state: Draft<LaoReducerState>, action: PayloadAction<LaoState>) => {
@@ -86,6 +83,37 @@ const laosSlice = createSlice({
     disconnectFromLao: (state) => {
       state.currentId = undefined;
     },
+
+    // Update the last roll call observed in the LAO and for which we have a token
+    setLaoLastRollCall: {
+      prepare(laoId: Hash | string, rollCallId: Hash | string, hasToken: boolean): any {
+        return {
+          payload: {
+            laoId: laoId.valueOf(),
+            rollCallId: rollCallId.valueOf(),
+            hasToken: hasToken,
+          },
+        };
+      },
+      reducer(state, action: PayloadAction<{
+        laoId: string;
+        rollCallId: string;
+        hasToken: boolean;
+      }>) {
+        const { laoId, rollCallId, hasToken } = action.payload;
+
+        // Lao not initialized, return
+        if (!(laoId in state.byId)) {
+          return;
+        }
+
+        state.byId[laoId].last_roll_call_id = rollCallId;
+        if (hasToken) {
+          state.byId[laoId].last_tokenized_roll_call_id = rollCallId;
+        }
+      },
+    },
+
   },
   extraReducers: (builder) => {
     // this is called by the persistence layer of Redux, upon starting the application
@@ -98,17 +126,17 @@ const laosSlice = createSlice({
 });
 
 export const {
-  addLao, updateLao, removeLao, clearAllLaos, connectToLao, disconnectFromLao,
+  addLao, updateLao, removeLao, clearAllLaos, connectToLao, disconnectFromLao, setLaoLastRollCall,
 } = laosSlice.actions;
 
 export const getLaosState = (state: any): LaoReducerState => state[laoReducerPath];
 
-export function makeCurrentLao() {
+export function makeLao(id: string | undefined = undefined) {
   return createSelector(
     // First input: all LAOs map
     (state) => getLaosState(state).byId,
     // Second input: current LAO id
-    (state) => getLaosState(state).currentId,
+    (state) => id || getLaosState(state).currentId,
     // Selector: returns a LaoState -- should it return a Lao object?
     (laoMap: Record<string, LaoState>, currentId: string | undefined) : Lao | undefined => {
       if (currentId === undefined || !(currentId in laoMap)) {
@@ -120,6 +148,15 @@ export function makeCurrentLao() {
   );
 }
 
+export const makeCurrentLao = () => makeLao();
+
+export const makeLaoIdsList = () => createSelector(
+  // Input: sorted LAO ids list
+  (state) => getLaosState(state).allIds,
+  // Selector: returns an array of LaoIDs
+  (laoIds: string[]) : string[] => laoIds,
+);
+
 export const makeLaosList = () => createSelector(
   // First input: all LAOs map
   (state) => getLaosState(state).byId,
@@ -128,6 +165,19 @@ export const makeLaosList = () => createSelector(
   // Selector: returns an array of LaoStates -- should it return an array of Lao objects?
   (laoMap: Record<string, LaoState>, laoIds: string[]) : Lao[] => laoIds
     .map((id) => Lao.fromState(laoMap[id])),
+);
+
+export const makeLaosMap = () => createSelector(
+  // First input: all LAOs map
+  (state) => getLaosState(state).byId,
+  // Selector: returns an array of LaoStates -- should it return an array of Lao objects?
+  (laoMap: Record<string, LaoState>)
+  : Record<string, Lao> => Object.keys(laoMap).reduce(
+    (acc, id) => {
+      acc[id] = Lao.fromState(laoMap[id]);
+      return acc;
+    }, {} as Record<string, Lao>,
+  ),
 );
 
 export default {

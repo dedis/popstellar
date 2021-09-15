@@ -1,6 +1,10 @@
 import { Channel } from 'model/objects/Channel';
 import { ProtocolError } from '../ProtocolError';
 
+/**
+ * JSON-RPC Params containing:
+ * - Channel
+ */
 export class JsonRpcParams {
   public readonly channel: Channel;
 

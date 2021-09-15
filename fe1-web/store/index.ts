@@ -8,7 +8,6 @@
  * Operations affecting the store can be observed with the Redux DevTools extension.
  */
 
-export * from './Actions';
 export * from './Storage';
 export * from './stores';
 export * from './reducers';

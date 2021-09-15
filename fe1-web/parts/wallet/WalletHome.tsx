@@ -24,37 +24,31 @@ const styles = StyleSheet.create({
  * @constructor
  */
 const WalletHome = ({ navigation }: IPropTypes) => {
-  function getStartWalletDisplay() {
-    return (
-      <View style={styleContainer.centered}>
-        <TextBlock bold text={STRINGS.welcome_to_wallet_display} />
-        <View style={styles.smallPadding} />
-        <TextBlock text={STRINGS.info_to_set_wallet} />
-        <TextBlock text={STRINGS.caution_information_on_seed} />
-        <View style={styles.largePadding} />
-        <WideButtonView
-          title={STRINGS.create_new_wallet_button}
-          onPress={() => {
-            navigation.navigate(STRINGS.navigation_show_seed_wallet);
-          }}
-        />
-        <WideButtonView
-          title={STRINGS.import_seed_button}
-          onPress={() => {
-            WalletStore.get().then((encryptedSeed) => {
-              if (encryptedSeed === undefined) {
-                navigation.navigate(STRINGS.navigation_insert_seed_tab_wallet);
-              } else {
-                navigation.navigate(STRINGS.navigation_synced_wallet);
-              }
-            });
-          }}
-        />
-      </View>
-    );
+  function importSeed() {
+    if (WalletStore.hasSeed()) {
+      navigation.navigate(STRINGS.navigation_synced_wallet);
+    } else {
+      navigation.navigate(STRINGS.navigation_insert_seed_tab_wallet);
+    }
   }
 
-  return getStartWalletDisplay();
+  return (
+    <View style={styleContainer.centered}>
+      <TextBlock bold text={STRINGS.welcome_to_wallet_display} />
+      <View style={styles.smallPadding} />
+      <TextBlock text={STRINGS.info_to_set_wallet} />
+      <TextBlock text={STRINGS.caution_information_on_seed} />
+      <View style={styles.largePadding} />
+      <WideButtonView
+        title={STRINGS.create_new_wallet_button}
+        onPress={() => navigation.navigate(STRINGS.navigation_show_seed_wallet)}
+      />
+      <WideButtonView
+        title={STRINGS.import_seed_button}
+        onPress={() => importSeed()}
+      />
+    </View>
+  );
 };
 
 const propTypes = {
