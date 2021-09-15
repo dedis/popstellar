@@ -1,6 +1,5 @@
 package ch.epfl.pop.pubsub.graph
 
-import java.util.concurrent.TimeUnit
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
@@ -8,22 +7,18 @@ import java.nio.file.Files
 import akka.actor.{Actor, ActorLogging}
 import akka.event.LoggingReceive
 import akka.pattern.AskableActorRef
-import akka.util.Timeout
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects.{Channel, Hash}
-import ch.epfl.pop.pubsub.PublishSubscribe
+import ch.epfl.pop.pubsub.{AskPatternConstants, PublishSubscribe}
 import org.iq80.leveldb.impl.Iq80DBFactory.factory
 import org.iq80.leveldb.{DB, DBIterator, Options}
 
 import scala.collection.mutable
-import scala.concurrent.duration.{Duration, FiniteDuration}
 import scala.util.{Failure, Success, Try}
 
-object DbActor {
+object DbActor extends AskPatternConstants {
 
   final val DATABASE_FOLDER: String = "database"
-  final val DURATION: FiniteDuration = Duration(1, TimeUnit.SECONDS)
-  final val TIMEOUT: Timeout = Timeout(DURATION)
   final lazy val INSTANCE: AskableActorRef = PublishSubscribe.getDbActorRef
 
   // DbActor Events correspond to messages the actor may receive
@@ -87,10 +82,6 @@ object DbActor {
 
 
   def getInstance: AskableActorRef = INSTANCE
-
-  def getTimeout: Timeout = TIMEOUT
-
-  def getDuration: FiniteDuration = DURATION
 
   /**
    * Creates a new [[DbActor]] which is aware of channels already stored in the db

@@ -68,7 +68,7 @@ case object LaoHandler extends MessageHandler {
         rpcMessage.id
       ))
     }
-    Await.result(ask, DbActor.getDuration)
+    Await.result(ask, duration)
   }
 
   def handleUpdateLao(rpcMessage: JsonRpcRequest): GraphMessage = dbAskWritePropagate(rpcMessage)

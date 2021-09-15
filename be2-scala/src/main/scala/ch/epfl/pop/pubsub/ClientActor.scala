@@ -14,10 +14,12 @@ import scala.util.Failure
 import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging {
+case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging with AskPatternConstants {
 
   private var wsHandle: Option[ActorRef] = None
   private val subscribedChannels: mutable.Set[Channel] = mutable.Set.empty
+
+  private val mediatorAskable: AskableActorRef = mediator
 
   // called just after actor creation
   // override def preStart(): Unit = mediator ! Subscribe("topic", self) // FIXME topic
@@ -31,24 +33,14 @@ case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging {
       case ConnectWsHandle(wsClient: ActorRef) =>
         log.info(s"Connecting wsHandle $wsClient to actor ${this.self}")
         wsHandle = Some(wsClient)
+
       case DisconnectWsHandle => subscribedChannels.foreach(channel => mediator ! UnsubscribeFrom(channel))
+
       case SubscribeTo(channel) =>
-        //mediator ! SubscribeTo(channel)
-        val m: AskableActorRef = mediator
-
-
-        // this is disgusting! Check next commit for cleaner version
-
-
-        implicit lazy val timeout = DbActor.getTimeout
-        implicit lazy val duration = DbActor.getDuration
-
-        val f: Future[PubSubMediatorMessage] = (m ? SubscribeTo(channel)).map {
+        val f: Future[PubSubMediatorMessage] = (mediatorAskable ? SubscribeTo(channel)).map {
           case m: PubSubMediatorMessage => m
         }
-
-        val a: PubSubMediatorMessage = Await.result(f, duration)
-        sender ! a
+        sender ! Await.result(f, duration)
 
       case UnsubscribeFrom(channel) => mediator ! UnsubscribeFrom(channel)
     }

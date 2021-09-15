@@ -5,20 +5,16 @@ import akka.actor.ActorRef
 import akka.pattern.AskableActorRef
 import akka.stream.FlowShape
 import akka.stream.scaladsl.{Flow, GraphDSL, Merge, Partition}
-import akka.util.Timeout
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.network.method.{Catchup, Subscribe, Unsubscribe}
 import ch.epfl.pop.model.objects.Channel
-import ch.epfl.pop.pubsub.{ClientActor, PubSubMediator}
-import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.{AskPatternConstants, ClientActor, PubSubMediator}
+import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.FiniteDuration
 
-object ParamsHandler {
-  implicit lazy val timeout: Timeout = DbActor.getTimeout
-  implicit lazy val duration: FiniteDuration = DbActor.getDuration
+object ParamsHandler extends AskPatternConstants {
 
   def graph(clientActorRef: ActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow.fromGraph(GraphDSL.create() {
     implicit builder: GraphDSL.Builder[NotUsed] => {

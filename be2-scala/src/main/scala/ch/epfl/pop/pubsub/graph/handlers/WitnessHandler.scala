@@ -49,9 +49,9 @@ case object WitnessHandler extends MessageHandler {
             Left(rpcMessage)
           case _ => Right(PipelineError(-10, "", rpcMessage.id)) // FIXME add DbActor "answers" with error description if failed
         }
-        Await.result(askWrite, DbActor.getDuration)
+        Await.result(askWrite, duration)
       case None => Right(PipelineError(-10, "", rpcMessage.id)) // FIXME add DbActor "answers" with error description if failed
     }
-    Await.result(ask, DbActor.getDuration)
+    Await.result(ask, duration)
   }
 }

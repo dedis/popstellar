@@ -2,17 +2,17 @@ package ch.epfl.pop.pubsub.graph
 
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
-import akka.util.Timeout
 import ch.epfl.pop.model.network._
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.model.network.ResultObject
 import ch.epfl.pop.model.network.method.{Broadcast, Catchup}
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.pubsub.AskPatternConstants
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object AnswerGenerator {
+object AnswerGenerator extends AskPatternConstants {
 
   def generateAnswer(graphMessage: GraphMessage): GraphMessage = graphMessage match {
     // Note: the output message (if successful) is an answer
@@ -20,8 +20,6 @@ object AnswerGenerator {
 
     case Left(rpcRequest: JsonRpcRequest) => rpcRequest.getParams match {
       case Catchup(channel) =>
-        implicit val timeout: Timeout = DbActor.getTimeout
-
         val f: Future[GraphMessage] = (DbActor.getInstance ? DbActor.Catchup(channel)).map {
           case DbActor.DbActorCatchupAck(list: List[Message]) =>
             val resultObject: ResultObject = new ResultObject(list)
@@ -30,7 +28,7 @@ object AnswerGenerator {
           case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcRequest.id))
         }
 
-        Await.result(f, DbActor.getDuration)
+        Await.result(f, duration)
 
 
       case Broadcast(_, _) => ???
