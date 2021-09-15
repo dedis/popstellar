@@ -83,14 +83,33 @@ object ParamsHandler extends AskPatternConstants {
   }
 
   def unsubscribeHandler(clientActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
-    case Left(jsonRpcMessage: Unsubscribe) =>
-      // clientActorRef ! ClientActor.UnsubscribeFrom(jsonRpcMessage.channel)
-      Right(PipelineError(-100, "", Some(-111))) // FIXME: should use akka ask pattern to create an ActorFlow
+    case Left(jsonRpcMessage: JsonRpcRequest) =>
+      val channel: Channel = jsonRpcMessage.getParams.channel
+      val f: Future[GraphMessage] = (clientActorRef ? ClientActor.UnsubscribeFrom(channel)).map {
+        case PubSubMediator.UnsubscribeFromAck(returnedChannel) if returnedChannel == channel =>
+          Left(jsonRpcMessage)
+        case PubSubMediator.UnsubscribeFromAck(returnedChannel) =>
+          Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"PubSubMediator unsubscribe client from channel '$returnedChannel' instead of '$channel'", jsonRpcMessage.id))
+        case PubSubMediator.UnsubscribeFromNAck(returnedChannel, reason) if returnedChannel == channel =>
+          Right(PipelineError(ErrorCodes.INVALID_ACTION.id, s"Could not unsubscribe client from channel '$returnedChannel': $reason", jsonRpcMessage.id))
+        case PubSubMediator.UnsubscribeFromNAck(returnedChannel, reason) => Right(PipelineError(
+          ErrorCodes.SERVER_ERROR.id,
+          s"PubSubMediator tried to unsubscribe client from channel '$returnedChannel' instead of '$channel' but could not: $reason",
+          jsonRpcMessage.id)
+        )
+        case _ =>
+          Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Client actor returned an unknown answer", jsonRpcMessage.id))
+      }
+
+      Await.result(f, duration)
+
+    case Left(jsonRpcMessage: JsonRpcResponse) =>
+      Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "UnsubscribeHandler received a 'JsonRpcResponse'", jsonRpcMessage.id))
     case graphMessage@_ => graphMessage
   }
 
   def catchupHandler(clientActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     // case Left(jsonRpcMessage: Catchup) => clientActorRef ! ClientActor.CatchupChannel(jsonRpcMessage.channel)
-    case graphMessage@_ => graphMessage // FIXME catchup
+    case graphMessage@_ => graphMessage // FIXME catchup handler
   }
 }
