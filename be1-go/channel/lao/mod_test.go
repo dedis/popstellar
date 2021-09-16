@@ -17,7 +17,7 @@ func TestBaseChannel_RollCallOrder(t *testing.T) {
 
 	messages := make([]message.Message, numMessages)
 
-	messages[0] = message.Message{MessageID: fmt.Sprintf("%d", 0)}
+	messages[0] = message.Message{MessageID: "0"}
 
 	// Create the channel
 	channel := NewChannel("channel0", fakeHubThing{}, messages[0])
@@ -34,7 +34,7 @@ func TestBaseChannel_RollCallOrder(t *testing.T) {
 		laoChannel.inbox.StoreMessage(message)
 
 		// Wait before storing a new message to be able to have an unique timestamp for each message
-		time.Sleep(time.Microsecond)
+		time.Sleep(time.Millisecond)
 	}
 
 	// Compute the catchup method

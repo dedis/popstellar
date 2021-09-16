@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+  xmlns:app="http://schemas.android.com/apk/res-auto">
 
   <data>
     <import type="android.view.View" />
     <variable
       name="view_model"
-      type="com.github.dedis.student20_pop.detail.LaoDetailViewModel" />
+      type="com.github.dedis.popstellar.detail.LaoDetailViewModel" />
   </data>
 
   <androidx.constraintlayout.widget.ConstraintLayout
@@ -15,7 +15,7 @@
     android:layout_height="match_parent">
 
     <include layout="@layout/tab_properties" />
-    <include layout ="@layout/tab_witness" />
+    <include layout="@layout/tab_witness" />
 
     <androidx.constraintlayout.widget.Guideline
       android:id="@+id/guideline_horizontal_tab"
@@ -25,120 +25,120 @@
       app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
 
     <LinearLayout
-        android:id="@+id/lao_detail_linear_layout"
+      android:id="@+id/lao_detail_linear_layout"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:orientation="vertical"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab">
+
+
+      <LinearLayout
+        android:id="@+id/properties_linear_layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:visibility="@{view_model.getShowProperties() ? View.VISIBLE : View.GONE }"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab">
 
+        <ImageView
+          android:id="@+id/channel_qr_code"
+          android:layout_width="@dimen/channel_qr_code_size"
+          android:layout_height="@dimen/channel_qr_code_size"
+          android:layout_gravity="center" />
 
-      <LinearLayout
-          android:id="@+id/properties_linear_layout"
+        <ImageButton
+          android:id="@+id/edit_button"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="end"
+          android:contentDescription="@string/edit_lao_name"
+          android:src="@drawable/ic_baseline_edit_24"
+          android:visibility="@{view_model.isOrganizer() ? View.VISIBLE : View.GONE}"
+          app:layout_constraintRight_toRightOf="parent"
+          app:layout_constraintTop_toTopOf="parent" />
+
+
+        <TextView
+          android:id="@+id/organization_name"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@{view_model.getCurrentLaoName}"
+          android:textSize="@dimen/size_title"
+          app:layout_constraintLeft_toLeftOf="parent"
+          app:layout_constraintTop_toTopOf="parent" />
+
+
+        <ListView
+          android:id="@+id/witness_list"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textSize="@dimen/size_body"
+          app:layout_constraintLeft_toLeftOf="parent"
+          app:layout_constraintTop_toBottomOf="@id/organization_name" />
+
+        <LinearLayout
+          android:id="@+id/edit_properties_linear_layout"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:orientation="vertical"
-          android:visibility="@{view_model.getShowProperties() ? View.VISIBLE : View.GONE }"
+          android:visibility="gone"
           app:layout_constraintBottom_toBottomOf="parent"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab">
 
-        <ImageView
-            android:id="@+id/channel_qr_code"
-            android:layout_width="@dimen/channel_qr_code_size"
-            android:layout_height="@dimen/channel_qr_code_size"
-            android:layout_gravity="center" />
+          <EditText
+            android:id="@+id/edit_organization_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/size_title"
+            android:afterTextChanged="@{(edtitable)->view_model.setCurrentLaoName(edtitable.toString())}"
+            android:autofillHints=""
+            android:hint="@string/text_entry_launch"
+            android:inputType="text"
+            android:text="@{view_model.getCurrentLaoName()}" />
 
-        <ImageButton
-            android:id="@+id/edit_button"
+          <ImageButton
+            android:id="@+id/add_witness_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:contentDescription="@string/edit_lao_name"
-            android:src="@drawable/ic_baseline_edit_24"
-            android:visibility="@{view_model.isOrganizer() ? View.VISIBLE : View.GONE}"
+            android:src="@drawable/ic_baseline_add_24"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@id/organization_name" />
 
-
-        <TextView
-            android:id="@+id/organization_name"
+          <Button
+            android:id="@+id/properties_edit_confirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{view_model.getCurrentLaoName}"
-            android:textSize="@dimen/size_title"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-
-        <ListView
-            android:id="@+id/witness_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/size_body"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/organization_name" />
-
-        <LinearLayout
-            android:id="@+id/edit_properties_linear_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab">
-
-          <EditText
-              android:id="@+id/edit_organization_name"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginHorizontal="@dimen/size_title"
-              android:afterTextChanged="@{(edtitable)->view_model.setCurrentLaoName(edtitable.toString())}"
-              android:autofillHints=""
-              android:hint="@string/text_entry_launch"
-              android:inputType="text"
-              android:text="@{view_model.getCurrentLaoName()}" />
-
-          <ImageButton
-              android:id="@+id/add_witness_button"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_gravity="end"
-              android:src="@drawable/ic_baseline_add_24"
-              app:layout_constraintRight_toRightOf="parent"
-              app:layout_constraintTop_toTopOf="@id/organization_name" />
-
-          <Button
-              android:id="@+id/properties_edit_confirm"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:text="@string/button_confirm"
-              app:layout_constraintRight_toLeftOf="@id/properties_edit_cancel"
-              app:layout_constraintTop_toBottomOf="@id/witness_list" />
+            android:text="@string/button_confirm"
+            app:layout_constraintRight_toLeftOf="@id/properties_edit_cancel"
+            app:layout_constraintTop_toBottomOf="@id/witness_list" />
 
 
           <Button
-              android:id="@+id/properties_edit_cancel"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:text="@string/button_cancel"
-              app:layout_constraintRight_toRightOf="@id/properties_edit_confirm"
-              app:layout_constraintTop_toBottomOf="@id/witness_list" />
+            android:id="@+id/properties_edit_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_cancel"
+            app:layout_constraintRight_toRightOf="@id/properties_edit_confirm"
+            app:layout_constraintTop_toBottomOf="@id/witness_list" />
 
         </LinearLayout>
 
       </LinearLayout>
 
       <ExpandableListView
-          android:id="@+id/exp_list_view"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:layoutDirection="ltr" />
+        android:id="@+id/exp_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layoutDirection="ltr" />
 
     </LinearLayout>
   </androidx.constraintlayout.widget.ConstraintLayout>

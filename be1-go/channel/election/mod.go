@@ -3,7 +3,6 @@ package election
 import (
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"log"
 	"sort"
 	"student20_pop/channel"
@@ -151,7 +150,8 @@ type validVote struct {
 func (c *Channel) Publish(publish method.Publish) error {
 	err := c.VerifyPublishMessage(publish)
 	if err != nil {
-		return xerrors.Errorf("failed to verify publish message on an election channel: %w", err)
+		return xerrors.Errorf("failed to verify publish message on an "+
+			"election channel: %w", err)
 	}
 
 	msg := publish.Params.Message
@@ -181,9 +181,22 @@ func (c *Channel) Publish(publish method.Publish) error {
 				return xerrors.Errorf("failed to cast vote: %v", err)
 			}
 		case "end":
-			log.Fatal("Not implemented election#end")
+			var endElection messagedata.ElectionEnd
+
+			err := msg.UnmarshalData(&endElection)
+			if err != nil {
+				return xerrors.Errorf("failed to unmarshal cast vote: %v", err)
+			}
+
+			err = c.endElectionHelper(msg, endElection)
+			if err != nil {
+				return xerrors.Errorf("failed to end election: %v", err)
+			}
 		case "result":
-			log.Fatal("Not implemented election#result")
+			err = c.resultElectionHelper(msg)
+			if err != nil {
+				return xerrors.Errorf("failed to end election: %v", err)
+			}
 		default:
 			return answer.NewInvalidActionError(action)
 		}
@@ -297,7 +310,8 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 func (c *Channel) castVoteHelper(msg message.Message, voteMsg messagedata.VoteCastVote) error {
 
 	if voteMsg.CreatedAt > c.end {
-		return answer.NewErrorf(-4, "Vote cast too late, vote casted at %v and election ended at %v", voteMsg.CreatedAt, c.end)
+		return answer.NewErrorf(-4, "vote cast too late, vote casted at %v "+
+			"and election ended at %v", voteMsg.CreatedAt, c.end)
 	}
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
@@ -308,14 +322,12 @@ func (c *Channel) castVoteHelper(msg message.Message, voteMsg messagedata.VoteCa
 	senderPoint := crypto.Suite.Point()
 	err = senderPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
-		return answer.NewError(-4, "Invalid sender public key")
+		return answer.NewError(-4, "invalid sender public key")
 	}
-
-	log.Printf("All the valid pks are %v and %v", c.attendees, senderPoint)
 
 	ok := c.attendees.IsPresent(msg.Sender) || c.hub.GetPubkey().Equal(senderPoint)
 	if !ok {
-		return answer.NewError(-4, "Only attendees can cast a vote in an election")
+		return answer.NewError(-4, "only attendees can cast a vote in an election")
 	}
 
 	//This should update any previously set vote if the message ids are the same
@@ -325,18 +337,16 @@ func (c *Channel) castVoteHelper(msg message.Message, voteMsg messagedata.VoteCa
 		qs, ok := c.questions[q.Question]
 
 		if !ok {
-			for k, quest := range c.questions {
-				fmt.Printf("k=%s. v=%v, id=%s\n", k, quest, quest.id)
-			}
-
-			return answer.NewErrorf(-4, "No Question with question ID %s exists", q.Question)
+			return answer.NewErrorf(-4, "no Question with question ID %s exists", q.Question)
 		}
 
-		// this is to handle the case when the organizer must handle multiple votes being cast at the same time
+		// this is to handle the case when the organizer must handle multiple
+		// votes being cast at the same time
 		qs.validVotesMu.Lock()
 		earlierVote, ok := qs.validVotes[msg.Sender]
 
-		// if the sender didn't previously cast a vote or if the vote is no longer valid update it
+		// if the sender didn't previously cast a vote or if the vote is no
+		// longer valid update it
 		if err := checkMethodProperties(qs.method, len(q.Vote)); err != nil {
 			return xerrors.Errorf("failed to validate voting method props: %w", err)
 		}
@@ -350,12 +360,112 @@ func (c *Channel) castVoteHelper(msg message.Message, voteMsg messagedata.VoteCa
 			changeVote(qs, earlierVote, msg.Sender, voteMsg.CreatedAt, q.Vote)
 		}
 
-		//other votes can now change the list of valid votes
+		// other votes can now change the list of valid votes
 		qs.validVotesMu.Unlock()
 	}
 
-	log.Printf("Vote casted with success")
 	return nil
+}
+
+func (c *Channel) endElectionHelper(msg message.Message,
+	endElection messagedata.ElectionEnd) error {
+
+	if endElection.CreatedAt < c.end {
+		return xerrors.Errorf("can't end the election before its "+
+			"end: %d < %d", endElection.CreatedAt, c.end)
+	}
+
+	// TODO:
+	// if len(endElection.RegisteredVotes) == 0 {
+	// 	// we allow empty vote
+	// } else {
+	// 	// TODO: finish the hashing check
+
+	// 	// since we eliminated (in cast vote) the duplicate votes we are sure
+	// 	// that the voter casted one vote for one question
+
+	// 	//for _, question := range c.questions {
+	// 	//  _, err := sortHashVotes(question.validVotes)
+	// 	//  if err != nil {
+	// 	//      return &message.Error{
+	// 	//          Code:        -4,
+	// 	//          Description: "Error while hashing",
+	// 	//      }
+	// 	//  }
+	// 	//  if endElectionData.RegisteredVotes != hashed {
+	// 	//      return &message.Error{
+	// 	//          Code:        -4,
+	// 	//          Description: "Received registered votes is not correct",
+	// 	//      }
+	// 	//  }
+	// 	//}
+	// }
+
+	c.broadcastToAllClients(msg)
+
+	c.inbox.StoreMessage(msg)
+
+	return nil
+}
+
+func (c *Channel) resultElectionHelper(msg message.Message) error {
+	resultElection := messagedata.ElectionResult{
+		Object:    "election",
+		Action:    "result",
+		Questions: []messagedata.ElectionResultQuestion{},
+	}
+
+	for id := range c.questions {
+		question, ok := c.questions[id]
+		if !ok {
+			return xerrors.Errorf("No question with this questionId '%s' was recorded", id)
+		}
+
+		votes := question.validVotes
+		if question.method == "Plurality" {
+			numberOfVotesPerBallotOption := make([]int, len(question.ballotOptions))
+			for _, vote := range votes {
+				for _, ballotIndex := range vote.indexes {
+					numberOfVotesPerBallotOption[ballotIndex]++
+				}
+			}
+
+			res := gatherOptionCounts(numberOfVotesPerBallotOption, question.ballotOptions)
+
+			electResult := messagedata.ElectionResultQuestion{
+				ID:     id,
+				Result: res,
+			}
+
+			resultElection.Questions = append(resultElection.Questions, electResult)
+
+			log.Printf("Appending a question id:%s with the count and result", id)
+		}
+	}
+
+	jsonbuf, err := json.Marshal(&resultElection)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal result election: %v", err)
+	}
+
+	msg.Data = base64.URLEncoding.EncodeToString(jsonbuf)
+
+	c.broadcastToAllClients(msg)
+
+	c.inbox.StoreMessage(msg)
+
+	return nil
+}
+
+func gatherOptionCounts(count []int, options []string) []messagedata.ElectionResultQuestionResult {
+	questionResults := make([]messagedata.ElectionResultQuestionResult, 0)
+	for i, option := range options {
+		questionResults = append(questionResults, messagedata.ElectionResultQuestionResult{
+			BallotOption: option,
+			Count:        count[i],
+		})
+	}
+	return questionResults
 }
 
 func checkMethodProperties(method string, length int) error {
@@ -370,11 +480,10 @@ func checkMethodProperties(method string, length int) error {
 
 func changeVote(qs *question, earlierVote validVote, sender string, created int64, indexes []int) {
 	if earlierVote.voteTime > created {
-		qs.validVotes[sender] =
-			validVote{
-				voteTime: created,
-				indexes:  indexes,
-			}
+		qs.validVotes[sender] = validVote{
+			voteTime: created,
+			indexes:  indexes,
+		}
 	}
 }
 

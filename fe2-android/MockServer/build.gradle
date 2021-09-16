@@ -8,7 +8,7 @@ dependencies {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'com.github.dedis.student20_pop.mockserver.WebSocketServer'
+        attributes 'Main-Class': 'com.github.dedis.popstellar.mockserver.WebSocketServer'
     }
 
     from {

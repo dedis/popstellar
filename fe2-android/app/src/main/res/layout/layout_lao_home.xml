@@ -6,11 +6,11 @@
 
     <variable
       name="lao"
-      type="com.github.dedis.student20_pop.model.Lao" />
+      type="com.github.dedis.popstellar.model.Lao" />
 
     <variable
       name="listener"
-      type="com.github.dedis.student20_pop.home.listeners.LAOItemUserActionsListener" />
+      type="com.github.dedis.popstellar.home.listeners.LAOItemUserActionsListener" />
   </data>
 
   <androidx.constraintlayout.widget.ConstraintLayout
