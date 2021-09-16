@@ -21,6 +21,9 @@ public class RollCallHandler {
 
   public static final String TAG = RollCallHandler.class.getSimpleName();
 
+  private static final String ROLL_CALL_NAME = "Roll Call Name : ";
+  private static final String MESSAGE_ID = "Message ID : ";
+
   private RollCallHandler() {
     throw new IllegalStateException("Utility class");
   }
@@ -157,10 +160,10 @@ public class RollCallHandler {
     WitnessMessage message = new WitnessMessage(messageId);
     message.setTitle("New Roll Call was created");
     message.setDescription(
-        "Roll Call Name : " + rollCall.getName() + "\n" +
+        ROLL_CALL_NAME + rollCall.getName() + "\n" +
             "Roll Call ID : " + rollCall.getId() + "\n" +
             "Location : " + rollCall.getLocation() + "\n" +
-            "Message ID : " + messageId);
+            MESSAGE_ID + messageId);
 
     return message;
   }
@@ -169,9 +172,9 @@ public class RollCallHandler {
     WitnessMessage message = new WitnessMessage(messageId);
     message.setTitle("A Roll Call was opened");
     message.setDescription(
-        "Roll Call Name : " + rollCall.getName() + "\n" +
+        ROLL_CALL_NAME + rollCall.getName() + "\n" +
             "Updated ID : " + rollCall.getId() + "\n" +
-            "Message ID : " + messageId);
+            MESSAGE_ID + messageId);
 
     return message;
   }
@@ -180,9 +183,9 @@ public class RollCallHandler {
     WitnessMessage message = new WitnessMessage(messageId);
     message.setTitle("A Roll Call was closed");
     message.setDescription(
-        "Roll Call Name : " + rollCall.getName() + "\n" +
+        ROLL_CALL_NAME + rollCall.getName() + "\n" +
             "Updated ID : " + rollCall.getId() + "\n" +
-            "Message ID : " + messageId);
+            MESSAGE_ID + messageId);
 
     return message;
   }

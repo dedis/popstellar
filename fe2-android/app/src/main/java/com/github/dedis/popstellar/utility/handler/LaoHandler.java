@@ -167,7 +167,8 @@ public class LaoHandler {
     return false;
   }
 
-  public static WitnessMessage updateLaoNameWitnessMessage(String messageId, UpdateLao updateLao, Lao lao) {
+  public static WitnessMessage updateLaoNameWitnessMessage(String messageId, UpdateLao updateLao,
+      Lao lao) {
     WitnessMessage message = new WitnessMessage(messageId);
     message.setTitle("Update Lao Name ");
     message.setDescription(
@@ -177,7 +178,8 @@ public class LaoHandler {
     return message;
   }
 
-  public static WitnessMessage updateLaoWitnessesWitnessMessage(String messageId, UpdateLao updateLao, Lao lao) {
+  public static WitnessMessage updateLaoWitnessesWitnessMessage(String messageId,
+      UpdateLao updateLao, Lao lao) {
     WitnessMessage message = new WitnessMessage(messageId);
     List<String> tempList = new ArrayList<>(updateLao.getWitnesses());
     message.setTitle("Update Lao Witnesses");
