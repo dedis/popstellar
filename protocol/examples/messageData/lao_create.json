@@ -3,7 +3,7 @@
     "action": "create",
     "id": "XXX",
     "name": "XXX",
-    "creation": 1234,
+    "creation": 123,
     "organizer": "XXX",
     "witnesses": ["XXX"]
 }

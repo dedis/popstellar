@@ -36,6 +36,7 @@ import com.github.dedis.student20_pop.model.network.method.message.data.message.
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.OpenRollCall;
+import com.github.dedis.student20_pop.utility.scheduler.SchedulerProvider;
 import com.github.dedis.student20_pop.utility.security.Keys;
 import com.github.dedis.student20_pop.utility.security.Signature;
 import com.google.crypto.tink.KeysetHandle;
@@ -45,7 +46,6 @@ import com.google.gson.Gson;
 import com.tinder.scarlet.WebSocket;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
@@ -62,21 +62,18 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-;
-
 public class LAORepository {
 
   private static final String TAG = LAORepository.class.getSimpleName();
   private static final String MESSAGE_ID = "Message ID : ";
   private static final String NAME = "Name : ";
-  private static volatile LAORepository INSTANCE = null;
+  private static LAORepository INSTANCE = null;
 
   private final LAODataSource.Remote mRemoteDataSource;
   private final LAODataSource.Local mLocalDataSource;
   private final AndroidKeysetManager mKeysetManager;
   private final Gson mGson;
-
-  private static final String ABSENT_ELECTION_ERROR_MESSAGE = "the election should be present when receiving a result";
+  private final SchedulerProvider schedulerProvider;
 
   // A subject that represents unprocessed messages
   private Subject<GenericMessage> unprocessed;
@@ -110,7 +107,8 @@ public class LAORepository {
       @NonNull LAODataSource.Remote remoteDataSource,
       @NonNull LAODataSource.Local localDataSource,
       @NonNull AndroidKeysetManager keysetManager,
-      @NonNull Gson gson) {
+      @NonNull Gson gson,
+      @NonNull SchedulerProvider schedulerProvider) {
     mRemoteDataSource = remoteDataSource;
     mLocalDataSource = localDataSource;
     mKeysetManager = keysetManager;
@@ -131,23 +129,21 @@ public class LAORepository {
     subscribedChannels = new HashSet<>();
     websocketEvents = mRemoteDataSource.observeWebsocket();
 
+    this.schedulerProvider = schedulerProvider;
+
     // subscribe to incoming messages and the unprocessed message queue
     startSubscription();
-
     subscribeToWebsocketEvents();
   }
 
-  public static LAORepository getInstance(
+  public static synchronized LAORepository getInstance(
       LAODataSource.Remote laoRemoteDataSource,
       LAODataSource.Local localDataSource,
       AndroidKeysetManager keysetManager,
-      Gson gson) {
+      Gson gson, SchedulerProvider schedulerProvider) {
     if (INSTANCE == null) {
-      synchronized (LAORepository.class) {
-        if (INSTANCE == null) {
-          INSTANCE = new LAORepository(laoRemoteDataSource, localDataSource, keysetManager, gson);
-        }
-      }
+      INSTANCE = new LAORepository(laoRemoteDataSource, localDataSource, keysetManager, gson,
+          schedulerProvider);
     }
     return INSTANCE;
   }
@@ -158,7 +154,7 @@ public class LAORepository {
 
   private void subscribeToWebsocketEvents() {
     websocketEvents
-        .subscribeOn(Schedulers.io())
+        .subscribeOn(schedulerProvider.io())
         .filter(event -> event.getClass().equals(WebSocket.Event.OnConnectionOpened.class))
         .subscribe(event -> subscribedChannels.forEach(this::sendSubscribe));
   }
@@ -166,11 +162,13 @@ public class LAORepository {
   private void startSubscription() {
     // We add a delay of 5 seconds to unprocessed messages to allow incoming messages to have a
     // higher priority
-    Observable.merge(upstream, unprocessed.delay(5, TimeUnit.SECONDS))
-        .subscribeOn(Schedulers.newThread())
+    Observable
+        .merge(upstream, unprocessed.delay(5, TimeUnit.SECONDS, schedulerProvider.computation()))
+        .subscribeOn(schedulerProvider.newThread())
         .subscribe(this::handleGenericMessage);
   }
 
+  // TODO: Create utility class to handle messages
   private void handleGenericMessage(GenericMessage genericMessage) {
     Log.d(TAG, "handling generic msg");
     if (genericMessage instanceof Error) {
@@ -640,7 +638,8 @@ public class LAORepository {
       Log.d(TAG, "WitnessMessage successfully updated");
 
       Set<PendingUpdate> pendingUpdates = lao.getPendingUpdates();
-      if (pendingUpdates.contains(messageId)) {
+      // Check if any pending update contains messageId
+      if (pendingUpdates.stream().anyMatch(ob -> ob.getMessageId().equals(messageId))) {
         // We're waiting to collect signatures for this one
         Log.d(TAG, "There is a pending update for this message");
 
@@ -749,15 +748,6 @@ public class LAORepository {
       CreateLao data = (CreateLao) message.getData();
       createLaoRequests.put(id, "/root/" + data.getId());
     }
-    // Uncomment to test display without message from Backend
-
-    /*
-    else {
-      if(message.getData() instanceof ElectionSetup) {
-        handleElectionSetup(channel,(ElectionSetup) message.getData());
-      }
-    }
-    */
 
     mRemoteDataSource.sendMessage(publish);
     return answer;
@@ -791,25 +781,19 @@ public class LAORepository {
   }
 
   private Single<Answer> createSingle(int id) {
-    Single<Answer> res =
-        upstream
-            .filter(
-                genericMessage -> {
-                  if (genericMessage instanceof Answer) {
-                    Log.d(TAG, "request id: " + ((Answer) genericMessage).getId());
-                  }
-                  return genericMessage instanceof Answer
-                      && ((Answer) genericMessage).getId() == id;
-                })
-            .map(
-                genericMessage -> {
-                  return (Answer) genericMessage;
-                })
-            .firstOrError()
-            .subscribeOn(Schedulers.io())
-            .cache();
-
-    return res;
+    return upstream
+        .filter(
+            genericMessage -> {
+              if (genericMessage instanceof Answer) {
+                Log.d(TAG, "request id: " + ((Answer) genericMessage).getId());
+              }
+              return genericMessage instanceof Answer
+                  && ((Answer) genericMessage).getId() == id;
+            })
+        .map(Answer.class::cast)
+        .firstOrError()
+        .subscribeOn(schedulerProvider.io())
+        .cache();
   }
 
   public Observable<List<Lao>> getAllLaos() {

@@ -22,6 +22,7 @@ import com.github.dedis.student20_pop.utility.json.JsonGenericMessageDeserialize
 import com.github.dedis.student20_pop.utility.json.JsonMessageGeneralSerializer;
 import com.github.dedis.student20_pop.utility.json.JsonMessageSerializer;
 import com.github.dedis.student20_pop.utility.json.JsonResultSerializer;
+import com.github.dedis.student20_pop.utility.scheduler.ProdSchedulerProvider;
 import com.github.dedis.student20_pop.utility.security.Keys;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
@@ -163,11 +164,11 @@ public class Injection {
   public static LAORepository provideLAORepository(
       Application application, LAOService service, AndroidKeysetManager keysetManager, Gson gson) {
     LAODatabase db = LAODatabase.getDatabase(application);
-
     return LAORepository.getInstance(
         LAORemoteDataSource.getInstance(service),
         LAOLocalDataSource.getInstance(db),
         keysetManager,
-        gson);
+        gson,
+        new ProdSchedulerProvider());
   }
 }

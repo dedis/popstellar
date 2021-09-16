@@ -3,6 +3,8 @@ package com.github.dedis.student20_pop;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
 import com.github.dedis.student20_pop.model.data.LAODatabase;
 import com.github.dedis.student20_pop.model.data.LAOLocalDataSource;
 import com.github.dedis.student20_pop.model.data.LAORemoteDataSource;
@@ -20,11 +22,16 @@ import com.github.dedis.student20_pop.utility.json.JsonGenericMessageDeserialize
 import com.github.dedis.student20_pop.utility.json.JsonMessageGeneralSerializer;
 import com.github.dedis.student20_pop.utility.json.JsonMessageSerializer;
 import com.github.dedis.student20_pop.utility.json.JsonResultSerializer;
+import com.github.dedis.student20_pop.utility.scheduler.ProdSchedulerProvider;
+import com.github.dedis.student20_pop.utility.security.Keys;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
+import com.google.crypto.tink.signature.Ed25519PrivateKeyManager;
+import com.google.crypto.tink.signature.PublicKeySignWrapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tinder.scarlet.Scarlet;
@@ -38,6 +45,14 @@ import okhttp3.OkHttpClient;
 
 public class Injection {
 
+  private static final String KEYSET_NAME = "POP_KEYSET";
+
+  private static final String SHARED_PREF_FILE_NAME = "POP_KEYSET_SP";
+
+  private static final String MASTER_KEY_URI = "android-keystore://POP_MASTER_KEY";
+
+  private static AndroidKeysetManager KEYSET_MANAGER;
+
   private Injection() {
   }
 
@@ -45,7 +60,35 @@ public class Injection {
   @SuppressWarnings("unused")
   public static AndroidKeysetManager provideAndroidKeysetManager(Context applicationContext)
       throws GeneralSecurityException, IOException {
-    return null;
+    if (KEYSET_MANAGER == null) {
+      SharedPreferences.Editor editor =
+          applicationContext
+              .getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE)
+              .edit();
+      editor.apply();
+
+      Ed25519PrivateKeyManager.registerPair(true);
+      PublicKeySignWrapper.register();
+
+      // TODO: move to background thread
+      AndroidKeysetManager keysetManager =
+          new AndroidKeysetManager.Builder()
+              .withSharedPref(applicationContext, KEYSET_NAME, SHARED_PREF_FILE_NAME)
+              .withKeyTemplate(Ed25519PrivateKeyManager.rawEd25519Template())
+              .withMasterKeyUri(MASTER_KEY_URI)
+              .build();
+
+      KeysetHandle publicKeysetHandle = keysetManager.getKeysetHandle().getPublicKeysetHandle();
+
+      try {
+        String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+      } catch (IOException e) {
+        Log.e("INJECTION", "failed to retrieve public key", e);
+      }
+
+      KEYSET_MANAGER = keysetManager;
+    }
+    return KEYSET_MANAGER;
   }
 
   public static Gson provideGson() {
@@ -93,7 +136,8 @@ public class Injection {
         LAORemoteDataSource.getInstance(getMockService()),
         LAOLocalDataSource.getInstance(db),
         keysetManager,
-        gson);
+        gson,
+        new ProdSchedulerProvider());
   }
 
   private static LAOService getMockService() {

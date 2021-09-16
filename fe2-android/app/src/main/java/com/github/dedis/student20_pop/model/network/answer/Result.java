@@ -20,6 +20,8 @@ public final class Result extends Answer {
    */
   public Result(int id) {
     super(id);
+    this.general = Optional.empty();
+    this.messages = Optional.empty();
   }
 
   public void setGeneral() {

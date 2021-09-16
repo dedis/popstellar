@@ -468,7 +468,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     String laoId = channel.substring(6); // removing /root/ prefix
     Optional<RollCall> optRollCall = lao.getRollCall(id);
     if (!optRollCall.isPresent()) {
-      Log.d(TAG, "failed to retrieve roll call with id " + id);
+      Log.d(TAG, "failed to retrieve roll call with id " + id + "laoID: " + laoId);
       return;
     }
     RollCall rollCall = optRollCall.get();
