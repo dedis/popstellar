@@ -2,10 +2,10 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "af8855922b2f6d3d9aeff68c7c58db43",
+    "identityHash": "ab77ad456cdb11ffb7818ffa0c623ba5",
     "entities": [
       {
-        "tableName": "LAO",
+        "tableName": "LAOEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`channel` TEXT NOT NULL, `id` TEXT, `name` TEXT, `lastModifiedAt` INTEGER, `createdAt` INTEGER, `organizer` TEXT, `modificationId` TEXT, PRIMARY KEY(`channel`))",
         "fields": [
           {
@@ -61,7 +61,7 @@
         "foreignKeys": []
       },
       {
-        "tableName": "Meeting",
+        "tableName": "MeetingEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`originalId` TEXT NOT NULL, `id` TEXT, `laoChannel` TEXT, `name` TEXT, `creation` TEXT, `location` TEXT, `start` INTEGER, `end` INTEGER, `extra` TEXT, `modificationId` TEXT, PRIMARY KEY(`originalId`))",
         "fields": [
           {
@@ -133,26 +133,26 @@
         },
         "indices": [
           {
-            "name": "index_Meeting_id",
+            "name": "index_MeetingEntity_id",
             "unique": false,
             "columnNames": [
               "id"
             ],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_Meeting_id` ON `${TABLE_NAME}` (`id`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_MeetingEntity_id` ON `${TABLE_NAME}` (`id`)"
           },
           {
-            "name": "index_Meeting_laoChannel",
+            "name": "index_MeetingEntity_laoChannel",
             "unique": false,
             "columnNames": [
               "laoChannel"
             ],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_Meeting_laoChannel` ON `${TABLE_NAME}` (`laoChannel`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_MeetingEntity_laoChannel` ON `${TABLE_NAME}` (`laoChannel`)"
           }
         ],
         "foreignKeys": []
       },
       {
-        "tableName": "LAOWitnessCrossRef",
+        "tableName": "LAOWitnessCrossRefEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`channel` TEXT NOT NULL, `publicKey` TEXT NOT NULL, PRIMARY KEY(`channel`, `publicKey`))",
         "fields": [
           {
@@ -177,18 +177,18 @@
         },
         "indices": [
           {
-            "name": "index_LAOWitnessCrossRef_publicKey",
+            "name": "index_LAOWitnessCrossRefEntity_publicKey",
             "unique": false,
             "columnNames": [
               "publicKey"
             ],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_LAOWitnessCrossRef_publicKey` ON `${TABLE_NAME}` (`publicKey`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_LAOWitnessCrossRefEntity_publicKey` ON `${TABLE_NAME}` (`publicKey`)"
           }
         ],
         "foreignKeys": []
       },
       {
-        "tableName": "RollCall",
+        "tableName": "RollCallEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `laoChannel` TEXT, `name` TEXT, `creation` INTEGER, `start` INTEGER, `scheduled` INTEGER, `location` TEXT, `description` TEXT, PRIMARY KEY(`id`))",
         "fields": [
           {
@@ -250,7 +250,7 @@
         "foreignKeys": []
       },
       {
-        "tableName": "Person",
+        "tableName": "PersonEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`publicKey` TEXT NOT NULL, PRIMARY KEY(`publicKey`))",
         "fields": [
           {
@@ -270,7 +270,7 @@
         "foreignKeys": []
       },
       {
-        "tableName": "ModificationSignature",
+        "tableName": "ModificationSignatureEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`signature` TEXT NOT NULL, `witnessPublicKey` TEXT, `identifier` TEXT NOT NULL, PRIMARY KEY(`signature`))",
         "fields": [
           {
@@ -300,12 +300,12 @@
         },
         "indices": [
           {
-            "name": "index_ModificationSignature_identifier",
+            "name": "index_ModificationSignatureEntity_identifier",
             "unique": false,
             "columnNames": [
               "identifier"
             ],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_ModificationSignature_identifier` ON `${TABLE_NAME}` (`identifier`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ModificationSignatureEntity_identifier` ON `${TABLE_NAME}` (`identifier`)"
           }
         ],
         "foreignKeys": []
@@ -314,7 +314,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'af8855922b2f6d3d9aeff68c7c58db43')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ab77ad456cdb11ffb7818ffa0c623ba5')"
     ]
   }
 }

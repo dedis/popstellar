@@ -6,7 +6,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity
-public class Meeting {
+public class MeetingEntity {
 
   @PrimaryKey
   @NonNull

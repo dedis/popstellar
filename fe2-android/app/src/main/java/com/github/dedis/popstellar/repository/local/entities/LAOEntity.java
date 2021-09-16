@@ -1,27 +1,25 @@
 package com.github.dedis.popstellar.repository.local.entities;
 
-import androidx.room.Embedded;
-import androidx.room.Junction;
-import androidx.room.Relation;
-import java.util.List;
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
+@Entity
 public class LAOEntity {
 
-  @Embedded
-  public LAO lao;
+  @PrimaryKey
+  @NonNull
+  public String channel;
 
-  @Relation(
-      parentColumn = "channel",
-      entityColumn = "publicKey",
-      associateBy = @Junction(LAOWitnessCrossRef.class))
-  public List<Person> witness;
+  public String id;
 
-  @Relation(parentColumn = "id", entityColumn = "identifier")
-  public List<ModificationSignature> modificationSignature;
+  public String name;
 
-  @Relation(parentColumn = "channel", entityColumn = "laoChannel", entity = Meeting.class)
-  public List<MeetingAndModification> meetings;
+  public Long lastModifiedAt;
 
-  @Relation(parentColumn = "channel", entityColumn = "laoChannel")
-  public List<RollCall> rollCalls;
+  public Long createdAt;
+
+  public String organizer;
+
+  public String modificationId;
 }

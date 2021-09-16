@@ -5,23 +5,23 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import com.github.dedis.popstellar.repository.local.dao.LAODao;
-import com.github.dedis.popstellar.repository.local.entities.LAO;
-import com.github.dedis.popstellar.repository.local.entities.LAOWitnessCrossRef;
-import com.github.dedis.popstellar.repository.local.entities.Meeting;
-import com.github.dedis.popstellar.repository.local.entities.ModificationSignature;
-import com.github.dedis.popstellar.repository.local.entities.Person;
-import com.github.dedis.popstellar.repository.local.entities.RollCall;
+import com.github.dedis.popstellar.repository.local.entities.LAOEntity;
+import com.github.dedis.popstellar.repository.local.entities.LAOWitnessCrossRefEntity;
+import com.github.dedis.popstellar.repository.local.entities.MeetingEntity;
+import com.github.dedis.popstellar.repository.local.entities.ModificationSignatureEntity;
+import com.github.dedis.popstellar.repository.local.entities.PersonEntity;
+import com.github.dedis.popstellar.repository.local.entities.RollCallEntity;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Database(
     entities = {
-        LAO.class,
-        Meeting.class,
-        LAOWitnessCrossRef.class,
-        RollCall.class,
-        Person.class,
-        ModificationSignature.class
+        LAOEntity.class,
+        MeetingEntity.class,
+        LAOWitnessCrossRefEntity.class,
+        RollCallEntity.class,
+        PersonEntity.class,
+        ModificationSignatureEntity.class
     },
     version = 1,
     exportSchema = true)

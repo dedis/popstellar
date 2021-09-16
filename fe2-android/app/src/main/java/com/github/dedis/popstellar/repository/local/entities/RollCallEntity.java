@@ -5,21 +5,23 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity
-public class LAO {
+public class RollCallEntity {
 
   @PrimaryKey
   @NonNull
-  public String channel;
-
   public String id;
+
+  public String laoChannel;
 
   public String name;
 
-  public Long lastModifiedAt;
+  public Long creation;
 
-  public Long createdAt;
+  public Long start;
 
-  public String organizer;
+  public Long scheduled;
 
-  public String modificationId;
+  public String location;
+
+  public String description;
 }

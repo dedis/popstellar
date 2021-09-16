@@ -1,11 +1,11 @@
 package com.github.dedis.popstellar.repository;
 
-import com.github.dedis.popstellar.repository.local.entities.LAO;
 import com.github.dedis.popstellar.repository.local.entities.LAOEntity;
-import com.github.dedis.popstellar.repository.local.entities.Meeting;
-import com.github.dedis.popstellar.repository.local.entities.ModificationSignature;
-import com.github.dedis.popstellar.repository.local.entities.Person;
-import com.github.dedis.popstellar.repository.local.entities.RollCall;
+import com.github.dedis.popstellar.repository.local.entities.LAOEntityRelation;
+import com.github.dedis.popstellar.repository.local.entities.MeetingEntity;
+import com.github.dedis.popstellar.repository.local.entities.ModificationSignatureEntity;
+import com.github.dedis.popstellar.repository.local.entities.PersonEntity;
+import com.github.dedis.popstellar.repository.local.entities.RollCallEntity;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.method.Message;
 import com.tinder.scarlet.WebSocket;
@@ -29,20 +29,20 @@ public interface LAODataSource {
 
   interface Local {
 
-    List<LAO> getAll();
+    List<LAOEntity> getAll();
 
-    LAOEntity getLAO(String channel);
+    LAOEntityRelation getLAO(String channel);
 
-    void addLao(LAO lao);
+    void addLao(LAOEntity lao);
 
-    void updateLAO(LAO lao, List<Person> witnesses, List<ModificationSignature> signatures);
+    void updateLAO(LAOEntity lao, List<PersonEntity> witnesses, List<ModificationSignatureEntity> signatures);
 
-    void addRollCall(LAO lao, RollCall rollCall);
+    void addRollCall(LAOEntity lao, RollCallEntity rollCall);
 
-    void updateRollCall(RollCall rollCall);
+    void updateRollCall(RollCallEntity rollCall);
 
-    void addMeeting(LAO lao, Meeting meeting);
+    void addMeeting(LAOEntity lao, MeetingEntity meeting);
 
-    void updateMeeting(Meeting meeting, List<ModificationSignature> signatures);
+    void updateMeeting(MeetingEntity meeting, List<ModificationSignatureEntity> signatures);
   }
 }

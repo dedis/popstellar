@@ -2,12 +2,12 @@ package com.github.dedis.popstellar.repository.local;
 
 import com.github.dedis.popstellar.repository.LAODataSource.Local;
 import com.github.dedis.popstellar.repository.local.dao.LAODao;
-import com.github.dedis.popstellar.repository.local.entities.LAO;
 import com.github.dedis.popstellar.repository.local.entities.LAOEntity;
-import com.github.dedis.popstellar.repository.local.entities.Meeting;
-import com.github.dedis.popstellar.repository.local.entities.ModificationSignature;
-import com.github.dedis.popstellar.repository.local.entities.Person;
-import com.github.dedis.popstellar.repository.local.entities.RollCall;
+import com.github.dedis.popstellar.repository.local.entities.LAOEntityRelation;
+import com.github.dedis.popstellar.repository.local.entities.MeetingEntity;
+import com.github.dedis.popstellar.repository.local.entities.ModificationSignatureEntity;
+import com.github.dedis.popstellar.repository.local.entities.PersonEntity;
+import com.github.dedis.popstellar.repository.local.entities.RollCallEntity;
 import java.util.List;
 
 public class LAOLocalDataSource implements Local {
@@ -28,37 +28,37 @@ public class LAOLocalDataSource implements Local {
   }
 
   @Override
-  public List<LAO> getAll() {
+  public List<LAOEntity> getAll() {
     return null;
   }
 
   @Override
-  public LAOEntity getLAO(String channel) {
+  public LAOEntityRelation getLAO(String channel) {
     return laoDao.getLAO(channel);
   }
 
   @Override
-  public void addLao(LAO lao) {
+  public void addLao(LAOEntity lao) {
     laoDao.addLao(lao);
   }
 
   @Override
-  public void updateLAO(LAO lao, List<Person> witnesses, List<ModificationSignature> signatures) {
+  public void updateLAO(LAOEntity lao, List<PersonEntity> witnesses, List<ModificationSignatureEntity> signatures) {
   }
 
   @Override
-  public void addRollCall(LAO lao, RollCall rollCall) {
+  public void addRollCall(LAOEntity lao, RollCallEntity rollCall) {
   }
 
   @Override
-  public void updateRollCall(RollCall rollCall) {
+  public void updateRollCall(RollCallEntity rollCall) {
   }
 
   @Override
-  public void addMeeting(LAO lao, Meeting meeting) {
+  public void addMeeting(LAOEntity lao, MeetingEntity meeting) {
   }
 
   @Override
-  public void updateMeeting(Meeting meeting, List<ModificationSignature> signatures) {
+  public void updateMeeting(MeetingEntity meeting, List<ModificationSignatureEntity> signatures) {
   }
 }

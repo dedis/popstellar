@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey;
 Person represents an actual person in the system who holds a public key.
 */
 @Entity
-public class Person {
+public class PersonEntity {
 
   @PrimaryKey
   @NonNull

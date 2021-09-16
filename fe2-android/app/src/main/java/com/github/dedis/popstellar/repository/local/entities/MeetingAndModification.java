@@ -7,8 +7,8 @@ import java.util.List;
 public class MeetingAndModification {
 
   @Embedded
-  public Meeting meeting;
+  public MeetingEntity meeting;
 
   @Relation(parentColumn = "id", entityColumn = "identifier")
-  public List<ModificationSignature> modificationSignature;
+  public List<ModificationSignatureEntity> modificationSignature;
 }

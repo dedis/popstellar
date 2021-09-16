@@ -10,7 +10,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.LiveDataReactiveStreams;
 import androidx.lifecycle.MutableLiveData;
-import com.github.dedis.popstellar.Event;
+import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.Wallet;
@@ -49,17 +49,17 @@ public class HomeViewModel extends AndroidViewModel
   /*
    * LiveData objects for capturing events like button clicks
    */
-  private final MutableLiveData<Event<String>> mOpenLaoEvent = new MutableLiveData<>();
-  private final MutableLiveData<Event<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
-  private final MutableLiveData<Event<Boolean>> mOpenConnectingEvent = new MutableLiveData<>();
-  private final MutableLiveData<Event<String>> mOpenConnectEvent = new MutableLiveData<>();
-  private final MutableLiveData<Event<Boolean>> mOpenLaunchEvent = new MutableLiveData<>();
-  private final MutableLiveData<Event<Boolean>> mLaunchNewLaoEvent = new MutableLiveData<>();
-  private final MutableLiveData<Event<Boolean>> mCancelNewLaoEvent = new MutableLiveData<>();
-  private final MutableLiveData<Event<Boolean>> mCancelConnectEvent = new MutableLiveData<>();
-  private final MutableLiveData<Event<Boolean>> mOpenWalletEvent = new MutableLiveData<>();
-  private final MutableLiveData<Event<Boolean>> mOpenSeedEvent = new MutableLiveData<>();
-  private final MutableLiveData<Event<String>> mOpenLaoWalletEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<String>> mOpenLaoEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenConnectingEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<String>> mOpenConnectEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenLaunchEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mLaunchNewLaoEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mCancelNewLaoEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mCancelConnectEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenWalletEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenSeedEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<String>> mOpenLaoWalletEvent = new MutableLiveData<>();
 
 
   /*
@@ -220,35 +220,35 @@ public class HomeViewModel extends AndroidViewModel
     return mLAOs;
   }
 
-  public LiveData<Event<String>> getOpenLaoEvent() {
+  public LiveData<SingleEvent<String>> getOpenLaoEvent() {
     return mOpenLaoEvent;
   }
 
-  public LiveData<Event<Boolean>> getOpenHomeEvent() {
+  public LiveData<SingleEvent<Boolean>> getOpenHomeEvent() {
     return mOpenHomeEvent;
   }
 
-  public LiveData<Event<Boolean>> getOpenConnectingEvent() {
+  public LiveData<SingleEvent<Boolean>> getOpenConnectingEvent() {
     return mOpenConnectingEvent;
   }
 
-  public LiveData<Event<String>> getOpenConnectEvent() {
+  public LiveData<SingleEvent<String>> getOpenConnectEvent() {
     return mOpenConnectEvent;
   }
 
-  public LiveData<Event<Boolean>> getOpenLaunchEvent() {
+  public LiveData<SingleEvent<Boolean>> getOpenLaunchEvent() {
     return mOpenLaunchEvent;
   }
 
-  public LiveData<Event<Boolean>> getLaunchNewLaoEvent() {
+  public LiveData<SingleEvent<Boolean>> getLaunchNewLaoEvent() {
     return mLaunchNewLaoEvent;
   }
 
-  public LiveData<Event<Boolean>> getCancelNewLaoEvent() {
+  public LiveData<SingleEvent<Boolean>> getCancelNewLaoEvent() {
     return mCancelNewLaoEvent;
   }
 
-  public LiveData<Event<Boolean>> getCancelConnectEvent() {
+  public LiveData<SingleEvent<Boolean>> getCancelConnectEvent() {
     return mCancelConnectEvent;
   }
 
@@ -264,15 +264,15 @@ public class HomeViewModel extends AndroidViewModel
     return mIsWalletSetUp.getValue();
   }
 
-  public LiveData<Event<Boolean>> getOpenWalletEvent() {
+  public LiveData<SingleEvent<Boolean>> getOpenWalletEvent() {
     return mOpenWalletEvent;
   }
 
-  public LiveData<Event<Boolean>> getOpenSeedEvent() {
+  public LiveData<SingleEvent<Boolean>> getOpenSeedEvent() {
     return mOpenSeedEvent;
   }
 
-  public LiveData<Event<String>> getOpenLaoWalletEvent() {
+  public LiveData<SingleEvent<String>> getOpenLaoWalletEvent() {
     return mOpenLaoWalletEvent;
   }
 
@@ -282,27 +282,27 @@ public class HomeViewModel extends AndroidViewModel
    */
 
   public void openLAO(String laoId) {
-    mOpenLaoEvent.setValue(new Event<>(laoId));
+    mOpenLaoEvent.setValue(new SingleEvent<>(laoId));
   }
 
   public void openHome() {
-    mOpenHomeEvent.postValue(new Event<>(true));
+    mOpenHomeEvent.postValue(new SingleEvent<>(true));
   }
 
   public void openConnecting() {
-    mOpenConnectingEvent.postValue(new Event<>(true));
+    mOpenConnectingEvent.postValue(new SingleEvent<>(true));
   }
 
   public void openWallet() {
-    mOpenWalletEvent.postValue(new Event<>(isWalletSetUp()));
+    mOpenWalletEvent.postValue(new SingleEvent<>(isWalletSetUp()));
   }
 
   public void openSeed() {
-    mOpenSeedEvent.postValue(new Event<>(true));
+    mOpenSeedEvent.postValue(new SingleEvent<>(true));
   }
 
   public void openLaoWallet(String laoId) {
-    mOpenLaoWalletEvent.postValue(new Event<>(laoId));
+    mOpenLaoWalletEvent.postValue(new SingleEvent<>(laoId));
   }
 
   public void openConnect() {
@@ -316,27 +316,27 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   public void openQrCodeScanning() {
-    mOpenConnectEvent.setValue(new Event<>(SCAN));
+    mOpenConnectEvent.setValue(new SingleEvent<>(SCAN));
   }
 
   public void openCameraPermission() {
-    mOpenConnectEvent.setValue(new Event<>(REQUEST_CAMERA_PERMISSION));
+    mOpenConnectEvent.setValue(new SingleEvent<>(REQUEST_CAMERA_PERMISSION));
   }
 
   public void openLaunch() {
-    mOpenLaunchEvent.setValue(new Event<>(true));
+    mOpenLaunchEvent.setValue(new SingleEvent<>(true));
   }
 
   public void launchNewLao() {
-    mLaunchNewLaoEvent.setValue(new Event<>(true));
+    mLaunchNewLaoEvent.setValue(new SingleEvent<>(true));
   }
 
   public void cancelNewLao() {
-    mCancelNewLaoEvent.setValue(new Event<>(true));
+    mCancelNewLaoEvent.setValue(new SingleEvent<>(true));
   }
 
   public void cancelConnect() {
-    mCancelConnectEvent.setValue(new Event<>(true));
+    mCancelConnectEvent.setValue(new SingleEvent<>(true));
   }
 
   public void setConnectingLao(String lao) {

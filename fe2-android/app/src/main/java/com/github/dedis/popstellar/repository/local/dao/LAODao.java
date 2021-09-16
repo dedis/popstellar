@@ -7,31 +7,31 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
-import com.github.dedis.popstellar.repository.local.entities.LAO;
 import com.github.dedis.popstellar.repository.local.entities.LAOEntity;
-import com.github.dedis.popstellar.repository.local.entities.LAOWitnessCrossRef;
-import com.github.dedis.popstellar.repository.local.entities.Meeting;
-import com.github.dedis.popstellar.repository.local.entities.ModificationSignature;
-import com.github.dedis.popstellar.repository.local.entities.Person;
-import com.github.dedis.popstellar.repository.local.entities.RollCall;
+import com.github.dedis.popstellar.repository.local.entities.LAOEntityRelation;
+import com.github.dedis.popstellar.repository.local.entities.LAOWitnessCrossRefEntity;
+import com.github.dedis.popstellar.repository.local.entities.MeetingEntity;
+import com.github.dedis.popstellar.repository.local.entities.ModificationSignatureEntity;
+import com.github.dedis.popstellar.repository.local.entities.PersonEntity;
+import com.github.dedis.popstellar.repository.local.entities.RollCallEntity;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Dao
 public abstract class LAODao {
 
-  @Query("SELECT * from lao")
-  public abstract List<LAO> getAll();
+  @Query("SELECT * from LAOEntity")
+  public abstract List<LAOEntity> getAll();
 
   @Transaction
-  @Query("SELECT * from lao where channel LIKE :channel")
-  public abstract LAOEntity getLAO(String channel);
+  @Query("SELECT * from LAOEntity where channel LIKE :channel")
+  public abstract LAOEntityRelation getLAO(String channel);
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
-  public abstract void addLao(LAO lao);
+  public abstract void addLao(LAOEntity lao);
 
   @Transaction
-  public void updateLAO(LAO lao, List<Person> witnesses, List<ModificationSignature> signatures) {
+  public void updateLAO(LAOEntity lao, List<PersonEntity> witnesses, List<ModificationSignatureEntity> signatures) {
     // update the LAO
     _updateLAO(lao);
 
@@ -39,16 +39,16 @@ public abstract class LAODao {
     _updateWitness(lao, witnesses);
 
     // add modification signatures
-    for (ModificationSignature signature : signatures) {
+    for (ModificationSignatureEntity signature : signatures) {
       signature.identifier = lao.id;
     }
     _addModificationSignature(signatures);
   }
 
   @Update
-  public abstract void _updateLAO(LAO lao);
+  public abstract void _updateLAO(LAOEntity lao);
 
-  public void _updateWitness(LAO lao, List<Person> witness) {
+  public void _updateWitness(LAOEntity lao, List<PersonEntity> witness) {
     // remove old witness references
     _deleteByLAOChannel(lao.channel);
 
@@ -56,42 +56,42 @@ public abstract class LAODao {
     _addWitness(witness);
     _addWitnessCrossRefs(
         witness.stream()
-            .map(w -> new LAOWitnessCrossRef(lao.channel, w.publicKey))
+            .map(w -> new LAOWitnessCrossRefEntity(lao.channel, w.publicKey))
             .collect(Collectors.toList()));
   }
 
-  @Delete(entity = LAOWitnessCrossRef.class)
+  @Delete(entity = LAOWitnessCrossRefEntity.class)
   public abstract void _deleteByLAOChannel(String channel);
 
   @Insert
-  public abstract void _addWitnessCrossRefs(List<LAOWitnessCrossRef> witnessCrossRefs);
+  public abstract void _addWitnessCrossRefs(List<LAOWitnessCrossRefEntity> witnessCrossRefs);
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
-  public abstract void _addWitness(List<Person> witness);
+  public abstract void _addWitness(List<PersonEntity> witness);
 
-  public void addRollCall(LAO lao, RollCall rollCall) {
+  public void addRollCall(LAOEntity lao, RollCallEntity rollCall) {
     rollCall.laoChannel = lao.channel;
     _addRollCall(rollCall);
   }
 
   @Insert
-  abstract void _addRollCall(RollCall rollCall);
+  abstract void _addRollCall(RollCallEntity rollCall);
 
   @Update
-  abstract void updateRollCall(RollCall rollCall);
+  abstract void updateRollCall(RollCallEntity rollCall);
 
-  public void addMeeting(LAO lao, Meeting meeting) {
+  public void addMeeting(LAOEntity lao, MeetingEntity meeting) {
     meeting.laoChannel = lao.channel;
     _addMeeting(meeting);
   }
 
   @Insert
-  abstract void _addMeeting(Meeting meeting);
+  abstract void _addMeeting(MeetingEntity meeting);
 
   @Transaction
-  public void updateMeeting(Meeting meeting, List<ModificationSignature> signatures) {
+  public void updateMeeting(MeetingEntity meeting, List<ModificationSignatureEntity> signatures) {
     // No need to remove the old signatures because the id is different after modification.
-    for (ModificationSignature signature : signatures) {
+    for (ModificationSignatureEntity signature : signatures) {
       signature.identifier = meeting.id;
     }
     _updateMeeting(meeting);
@@ -99,8 +99,8 @@ public abstract class LAODao {
   }
 
   @Update
-  abstract void _updateMeeting(Meeting meeting);
+  abstract void _updateMeeting(MeetingEntity meeting);
 
   @Insert
-  abstract void _addModificationSignature(List<ModificationSignature> signatures);
+  abstract void _addModificationSignature(List<ModificationSignatureEntity> signatures);
 }

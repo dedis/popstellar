@@ -1,12 +1,12 @@
 package com.github.dedis.popstellar;
 
-public class Event<T> {
+public class SingleEvent<T> {
 
   private T mContent;
 
   private boolean hasBeenHandled = false;
 
-  public Event(T content) {
+  public SingleEvent(T content) {
     if (content == null) {
       throw new IllegalArgumentException("null values not allowed in an Event");
     }
