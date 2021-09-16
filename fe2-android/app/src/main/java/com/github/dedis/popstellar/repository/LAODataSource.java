@@ -1,0 +1,48 @@
+package com.github.dedis.popstellar.repository;
+
+import com.github.dedis.popstellar.repository.local.entities.LAO;
+import com.github.dedis.popstellar.repository.local.entities.LAOEntity;
+import com.github.dedis.popstellar.repository.local.entities.Meeting;
+import com.github.dedis.popstellar.repository.local.entities.ModificationSignature;
+import com.github.dedis.popstellar.repository.local.entities.Person;
+import com.github.dedis.popstellar.repository.local.entities.RollCall;
+import com.github.dedis.popstellar.model.network.GenericMessage;
+import com.github.dedis.popstellar.model.network.method.Message;
+import com.tinder.scarlet.WebSocket;
+import io.reactivex.Observable;
+import java.util.List;
+
+public interface LAODataSource {
+
+  interface Remote {
+
+    Observable<GenericMessage> observeMessage();
+
+    Observable<WebSocket.Event> observeWebsocket();
+
+    void sendMessage(Message msg);
+
+    int getRequestId();
+
+    int incrementAndGetRequestId();
+  }
+
+  interface Local {
+
+    List<LAO> getAll();
+
+    LAOEntity getLAO(String channel);
+
+    void addLao(LAO lao);
+
+    void updateLAO(LAO lao, List<Person> witnesses, List<ModificationSignature> signatures);
+
+    void addRollCall(LAO lao, RollCall rollCall);
+
+    void updateRollCall(RollCall rollCall);
+
+    void addMeeting(LAO lao, Meeting meeting);
+
+    void updateMeeting(Meeting meeting, List<ModificationSignature> signatures);
+  }
+}

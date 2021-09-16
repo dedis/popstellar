@@ -3,7 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.lao;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
-import com.github.dedis.popstellar.utility.network.IdGenerator;
+import com.github.dedis.popstellar.model.network.IdGenerator;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;

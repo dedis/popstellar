@@ -7,7 +7,7 @@
     android:id="@+id/fragment_cast_vote"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".detail.fragments.CastVoteFragment">
+    tools:context=".ui.detail.event.election.fragments.CastVoteFragment">
 
 
     <androidx.constraintlayout.widget.Guideline

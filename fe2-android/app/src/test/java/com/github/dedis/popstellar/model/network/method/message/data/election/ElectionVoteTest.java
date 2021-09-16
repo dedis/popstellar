@@ -8,7 +8,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import com.github.dedis.popstellar.model.network.method.message.data.ElectionVote;
-import com.github.dedis.popstellar.utility.network.IdGenerator;
+import com.github.dedis.popstellar.model.network.IdGenerator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

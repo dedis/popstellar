@@ -16,7 +16,7 @@
     android:supportsRtl="true"
     android:networkSecurityConfig="@xml/network_security_config"
     android:theme="@style/AppTheme">
-    <activity android:name="com.github.dedis.popstellar.home.HomeActivity">
+    <activity android:name="com.github.dedis.popstellar.ui.home.HomeActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
 
@@ -24,7 +24,7 @@
       </intent-filter>
     </activity>
     <activity
-      android:name="com.github.dedis.popstellar.detail.LaoDetailActivity"
+      android:name="com.github.dedis.popstellar.ui.detail.LaoDetailActivity"
       android:windowSoftInputMode="adjustPan"></activity>
 
     <uses-library

@@ -2,10 +2,10 @@
 <layout>
   <data>
     <import type="android.view.View" />
-    <import type="com.github.dedis.popstellar.model.event.EventType" />
+    <import type="com.github.dedis.popstellar.model.objects.event.EventType" />
     <variable
       name="event"
-      type="com.github.dedis.popstellar.model.event.Event" />
+      type="com.github.dedis.popstellar.model.objects.event.Event" />
   </data>
 
   <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
