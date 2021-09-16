@@ -2,6 +2,7 @@ package ch.epfl.pop.pubsub.graph
 
 import java.util.concurrent.TimeUnit
 import java.io.File
+import java.nio.charset.StandardCharsets
 
 import akka.actor.{Actor, ActorLogging}
 import akka.event.LoggingReceive
@@ -126,7 +127,7 @@ object DbActor {
           val channelDb: DB = channelsMap(channel)
           Try(channelDb.get(messageId.getBytes)) match {
             case Success(bytes) if bytes != null =>
-              sender ! DbActorReadAck(Some(Message.buildFromJson(bytes.map(_.toChar).mkString)))
+              sender ! DbActorReadAck(Some(Message.buildFromJson(new String(bytes, StandardCharsets.UTF_8))))
             case _ =>
               sender ! DbActorNAck(ErrorCodes.SERVER_ERROR.id, "Unknown read database error")
           }
@@ -140,7 +141,7 @@ object DbActor {
         @scala.annotation.tailrec
         def buildCatchupList(iterator: DBIterator, acc: List[Message]): List[Message] = {
           if (iterator.hasNext) {
-            val value: Message = Message.buildFromJson(iterator.next().getValue.map(_.toChar).mkString)
+            val value: Message = Message.buildFromJson(new String(iterator.next().getValue, StandardCharsets.UTF_8))
             buildCatchupList(iterator, value :: acc)
           } else {
             acc
