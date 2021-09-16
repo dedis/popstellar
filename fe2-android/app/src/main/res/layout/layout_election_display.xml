@@ -2,16 +2,16 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
   <data>
     <import type="android.view.View" />
-    <import type="com.github.dedis.student20_pop.model.event.EventCategory" />
+    <import type="com.github.dedis.popstellar.model.event.EventCategory" />
     <variable
       name="election"
-      type="com.github.dedis.student20_pop.model.Election" />
+      type="com.github.dedis.popstellar.model.Election" />
     <variable
       name="view_model"
-      type="com.github.dedis.student20_pop.detail.LaoDetailViewModel" />
+      type="com.github.dedis.popstellar.detail.LaoDetailViewModel" />
     <variable
       name="eventCategory"
-      type="com.github.dedis.student20_pop.model.event.EventCategory" />
+      type="com.github.dedis.popstellar.model.event.EventCategory" />
   </data>
 
   <LinearLayout

@@ -3,10 +3,10 @@
   xmlns:app="http://schemas.android.com/apk/res-auto">
   <data>
     <import type="android.view.View" />
-    <import type="com.github.dedis.student20_pop.qrcode.ScanningAction" />
+    <import type="com.github.dedis.popstellar.qrcode.ScanningAction" />
     <variable
       name="scanningAction"
-      type="com.github.dedis.student20_pop.qrcode.ScanningAction" />
+      type="com.github.dedis.popstellar.qrcode.ScanningAction" />
   </data>
   <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/fragment_qrcode"
@@ -55,7 +55,7 @@
           app:layout_constraintRight_toRightOf="parent"
           app:layout_constraintTop_toTopOf="parent" />
 
-        <com.github.dedis.student20_pop.utility.qrcode.CameraPreview
+        <com.github.dedis.popstellar.utility.qrcode.CameraPreview
           android:id="@+id/qr_camera_preview"
           android:layout_width="wrap_content"
           android:layout_height="@dimen/zero"

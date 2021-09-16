@@ -5,7 +5,7 @@
     <import type="android.view.View" />
     <variable
       name="view_model"
-      type="com.github.dedis.student20_pop.detail.LaoDetailViewModel" />
+      type="com.github.dedis.popstellar.detail.LaoDetailViewModel" />
   </data>
   <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/fragment_lao_wallet"

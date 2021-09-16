@@ -5,7 +5,7 @@
 
     <variable
       name="view_model"
-      type="com.github.dedis.student20_pop.home.HomeViewModel" />
+      type="com.github.dedis.popstellar.home.HomeViewModel" />
   </data>
   <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/fragment_seed_wallet"
