@@ -8,22 +8,22 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class LAORemoteDataSource implements LAODataSource.Remote {
 
-  private static LAORemoteDataSource INSTANCE;
-
   private LAOService laoService;
 
   private AtomicInteger requestId;
+
+  private static LAORemoteDataSource INSTANCE;
+
+  private LAORemoteDataSource(LAOService service) {
+    this.laoService = service;
+    requestId = new AtomicInteger();
+  }
 
   public static LAORemoteDataSource getInstance(LAOService laoService) {
     if (INSTANCE == null) {
       INSTANCE = new LAORemoteDataSource(laoService);
     }
     return INSTANCE;
-  }
-
-  private LAORemoteDataSource(LAOService service) {
-    this.laoService = service;
-    requestId = new AtomicInteger();
   }
 
   public Observable<GenericMessage> observeMessage() {
