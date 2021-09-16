@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"sort"
 	"student20_pop/channel"
 	"student20_pop/channel/election"
 	"student20_pop/channel/inbox"
@@ -33,7 +32,7 @@ const (
 	dbQueryRowErr = "failed to query rows: %v"
 )
 
-// Channel ...
+// Channel defines a LAO channel
 type Channel struct {
 	sockets channel.Sockets
 
@@ -47,13 +46,13 @@ type Channel struct {
 
 	rollCall rollCall
 
-	hub channel.HubThingTheChannelNeeds
+	hub channel.HubFunctionalities
 
 	attendees map[string]struct{}
 }
 
-// NewChannel ...
-func NewChannel(channelID string, hub channel.HubThingTheChannelNeeds, msg message.Message) channel.Channel {
+// NewChannel returns a new initialized LAO channel
+func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Message) channel.Channel {
 	inbox := inbox.NewInbox(channelID)
 	inbox.StoreMessage(msg)
 
@@ -92,22 +91,7 @@ func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 	log.Printf("received a catchup with id: %d", catchup.ID)
 
-	messages := c.inbox.GetMessages()
-
-	// sort.Slice on messages based on the timestamp
-	sort.Slice(messages, func(i, j int) bool {
-		return messages[i].StoredTime < messages[j].StoredTime
-	})
-
-	result := make([]message.Message, 0, len(messages))
-
-	// iterate and extract the messages[i].message field and
-	// append it to the result slice
-	for _, msgInfo := range messages {
-		result = append(result, msgInfo.Message)
-	}
-
-	return result
+	return c.inbox.GetSortedMessages()
 }
 
 // broadcastToAllClients is a helper message to broadcast a message to all
@@ -629,7 +613,7 @@ func (r *rollCall) checkPrevID(prevID []byte) bool {
 // ---
 
 // CreateChannelFromDB restores a channel from the db
-func CreateChannelFromDB(db *sql.DB, channelID string, hub channel.HubThingTheChannelNeeds) (channel.Channel, error) {
+func CreateChannelFromDB(db *sql.DB, channelID string, hub channel.HubFunctionalities) (channel.Channel, error) {
 	channel := Channel{
 		channelID: channelID,
 		sockets:   channel.NewSockets(),
@@ -655,14 +639,12 @@ func CreateChannelFromDB(db *sql.DB, channelID string, hub channel.HubThingTheCh
 
 	channel.witnesses = witnesses
 
-	messages, err := getMessagesChannelFromDB(db, channelID)
+	inbox, err := inbox.CreateInboxFromBD(db, channelID)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to get messages: %v", err)
+		return nil, xerrors.Errorf("failed to load inbox: %v", err)
 	}
 
-	for i := range messages {
-		channel.inbox.StoreMessage(messages[i].Message)
-	}
+	channel.inbox = inbox
 
 	return &channel, nil
 }
@@ -745,125 +727,6 @@ func getWitnessChannelFromDB(db *sql.DB, channelID string) ([]string, error) {
 		}
 
 		result = append(result, pubKey)
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return nil, xerrors.Errorf(dbRowIterErr, err)
-	}
-
-	return result, nil
-}
-
-func getMessagesChannelFromDB(db *sql.DB, channelID string) ([]channel.MessageInfo, error) {
-	query := `
-		SELECT
-			message_id, 
-			sender, 
-			message_signature, 
-			raw_data, 
-			message_timestamp
-		FROM
-			message_info
-		WHERE
-			lao_channel_id = ?`
-
-	stmt, err := db.Prepare(query)
-	if err != nil {
-		return nil, xerrors.Errorf(dbPrepareErr, err)
-	}
-
-	defer stmt.Close()
-
-	rows, err := stmt.Query(channelID)
-	if err != nil {
-		return nil, xerrors.Errorf(dbQueryRowErr, err)
-	}
-
-	defer rows.Close()
-
-	result := make([]channel.MessageInfo, 0)
-
-	for rows.Next() {
-		var messageID string
-		var sender string
-		var messageSignature string
-		var rawData string
-		var timestamp int64
-
-		err = rows.Scan(&messageID, &sender, &messageSignature, &rawData, &timestamp)
-		if err != nil {
-			return nil, xerrors.Errorf(dbParseRowErr, err)
-		}
-
-		witnesses, err := getWitnessesMessageFromDB(db, messageID)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to get witnesses: %v", err)
-		}
-
-		messageInfo := channel.MessageInfo{
-			Message: message.Message{
-				MessageID:         messageID,
-				Sender:            sender,
-				Signature:         messageSignature,
-				WitnessSignatures: witnesses,
-				Data:              rawData,
-			},
-			StoredTime: timestamp,
-		}
-
-		log.Printf("Msg load: %+v", messageInfo.Message)
-
-		result = append(result, messageInfo)
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return nil, xerrors.Errorf(dbRowIterErr, err)
-	}
-
-	return result, nil
-}
-
-func getWitnessesMessageFromDB(db *sql.DB, messageID string) ([]message.WitnessSignature, error) {
-	query := `
-		SELECT
-			pub_key,
-			witness_signature
-		FROM
-			message_witness
-		WHERE
-			message_id = ?`
-
-	stmt, err := db.Prepare(query)
-	if err != nil {
-		return nil, xerrors.Errorf(dbPrepareErr, err)
-	}
-
-	defer stmt.Close()
-
-	rows, err := stmt.Query(messageID)
-	if err != nil {
-		return nil, xerrors.Errorf(dbQueryRowErr, err)
-	}
-
-	defer rows.Close()
-
-	result := make([]message.WitnessSignature, 0)
-
-	for rows.Next() {
-		var pubKey string
-		var signature string
-
-		err = rows.Scan(&pubKey, &signature)
-		if err != nil {
-			return nil, xerrors.Errorf(dbParseRowErr, err)
-		}
-
-		result = append(result, message.WitnessSignature{
-			Witness:   pubKey,
-			Signature: signature,
-		})
 	}
 
 	err = rows.Err()

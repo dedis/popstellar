@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"log"
-	"sort"
 	"student20_pop/channel"
 	"student20_pop/channel/inbox"
 	"student20_pop/crypto"
@@ -21,22 +20,22 @@ import (
 	"golang.org/x/xerrors"
 )
 
-// Attendees represents the attendees in an election.
-type Attendees struct {
+// attendees represents the attendees in an election.
+type attendees struct {
 	sync.Mutex
 	store map[string]struct{}
 }
 
-// NewAttendees returns a new instance of Attendees.
-func NewAttendees() *Attendees {
-	return &Attendees{
+// newAttendees returns a new instance of Attendees.
+func newAttendees() *attendees {
+	return &attendees{
 		store: make(map[string]struct{}),
 	}
 }
 
 // IsPresent checks if a key representing a user is present in
 // the list of attendees.
-func (a *Attendees) IsPresent(key string) bool {
+func (a *attendees) IsPresent(key string) bool {
 	a.Lock()
 	defer a.Unlock()
 
@@ -45,7 +44,7 @@ func (a *Attendees) IsPresent(key string) bool {
 }
 
 // Add adds an attendee to the election.
-func (a *Attendees) Add(key string) {
+func (a *attendees) Add(key string) {
 	a.Lock()
 	defer a.Unlock()
 
@@ -53,11 +52,11 @@ func (a *Attendees) Add(key string) {
 }
 
 // Copy deep copies the Attendees struct.
-func (a *Attendees) Copy() *Attendees {
+func (a *attendees) Copy() *attendees {
 	a.Lock()
 	defer a.Unlock()
 
-	clone := NewAttendees()
+	clone := newAttendees()
 
 	for key := range a.store {
 		clone.store[key] = struct{}{}
@@ -66,10 +65,10 @@ func (a *Attendees) Copy() *Attendees {
 	return clone
 }
 
-// NewChannel ...
+// NewChannel returns a new initialized election channel
 func NewChannel(channelPath string, start, end int64, terminated bool,
-	questions []messagedata.ElectionSetupQuestion, attendees map[string]struct{},
-	msg message.Message, hub channel.HubThingTheChannelNeeds) Channel {
+	questions []messagedata.ElectionSetupQuestion, attendeesMap map[string]struct{},
+	msg message.Message, hub channel.HubFunctionalities) Channel {
 
 	// Saving on election channel too so it self-contains the entire election history
 	// electionCh.inbox.storeMessage(msg)
@@ -83,8 +82,8 @@ func NewChannel(channelPath string, start, end int64, terminated bool,
 		terminated: terminated,
 		questions:  getAllQuestionsForElectionChannel(questions),
 
-		attendees: &Attendees{
-			store: attendees,
+		attendees: &attendees{
+			store: attendeesMap,
 		},
 
 		hub: hub,
@@ -113,9 +112,9 @@ type Channel struct {
 	questions map[string]*question
 
 	// attendees that took part in the roll call string of their PK
-	attendees *Attendees
+	attendees *attendees
 
-	hub channel.HubThingTheChannelNeeds
+	hub channel.HubFunctionalities
 }
 
 // question represents a question in an election.
@@ -169,26 +168,12 @@ func (c *Channel) Publish(publish method.Publish) error {
 
 		switch action {
 		case "cast_vote":
-			var castVote messagedata.VoteCastVote
-
-			err := msg.UnmarshalData(&castVote)
-			if err != nil {
-				return xerrors.Errorf("failed to unmarshal cast vote: %v", err)
-			}
-
-			err = c.castVoteHelper(msg, castVote)
+			err := c.castVoteHelper(msg)
 			if err != nil {
 				return xerrors.Errorf("failed to cast vote: %v", err)
 			}
 		case "end":
-			var endElection messagedata.ElectionEnd
-
-			err := msg.UnmarshalData(&endElection)
-			if err != nil {
-				return xerrors.Errorf("failed to unmarshal cast vote: %v", err)
-			}
-
-			err = c.endElectionHelper(msg, endElection)
+			err := c.endElectionHelper(msg)
 			if err != nil {
 				return xerrors.Errorf("failed to end election: %v", err)
 			}
@@ -236,22 +221,7 @@ func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 	log.Printf("received a catchup with id: %d", catchup.ID)
 
-	messages := c.inbox.GetMessages()
-
-	// sort.Slice on messages based on the timestamp
-	sort.Slice(messages, func(i, j int) bool {
-		return messages[i].StoredTime < messages[j].StoredTime
-	})
-
-	result := make([]message.Message, 0, len(messages))
-
-	// iterate and extract the messages[i].message field and
-	// append it to the result slice
-	for _, msgInfo := range messages {
-		result = append(result, msgInfo.Message)
-	}
-
-	return result
+	return c.inbox.GetSortedMessages()
 }
 
 // broadcastToAllClients is a helper message to broadcast a message to all
@@ -307,27 +277,10 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 	return nil
 }
 
-func (c *Channel) castVoteHelper(msg message.Message, voteMsg messagedata.VoteCastVote) error {
-
-	if voteMsg.CreatedAt > c.end {
-		return answer.NewErrorf(-4, "vote cast too late, vote casted at %v "+
-			"and election ended at %v", voteMsg.CreatedAt, c.end)
-	}
-
-	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
+func (c *Channel) castVoteHelper(msg message.Message) error {
+	voteMsg, err := c.getAndVerifyCastVoteMessage(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to decode sender key: %v", err)
-	}
-
-	senderPoint := crypto.Suite.Point()
-	err = senderPoint.UnmarshalBinary(senderBuf)
-	if err != nil {
-		return answer.NewError(-4, "invalid sender public key")
-	}
-
-	ok := c.attendees.IsPresent(msg.Sender) || c.hub.GetPubkey().Equal(senderPoint)
-	if !ok {
-		return answer.NewError(-4, "only attendees can cast a vote in an election")
+		return xerrors.Errorf("failed to get and verify vote message: %v", err)
 	}
 
 	//This should update any previously set vote if the message ids are the same
@@ -367,8 +320,46 @@ func (c *Channel) castVoteHelper(msg message.Message, voteMsg messagedata.VoteCa
 	return nil
 }
 
-func (c *Channel) endElectionHelper(msg message.Message,
-	endElection messagedata.ElectionEnd) error {
+func (c *Channel) getAndVerifyCastVoteMessage(msg message.Message) (messagedata.VoteCastVote, error) {
+	var voteMsg messagedata.VoteCastVote
+
+	err := msg.UnmarshalData(&voteMsg)
+	if err != nil {
+		return voteMsg, xerrors.Errorf("failed to unmarshal cast vote: %v", err)
+	}
+
+	if voteMsg.CreatedAt > c.end {
+		return voteMsg, answer.NewErrorf(-4, "vote cast too late, vote casted at %v "+
+			"and election ended at %v", voteMsg.CreatedAt, c.end)
+	}
+
+	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
+	if err != nil {
+		return voteMsg, xerrors.Errorf("failed to decode sender key: %v", err)
+	}
+
+	senderPoint := crypto.Suite.Point()
+	err = senderPoint.UnmarshalBinary(senderBuf)
+	if err != nil {
+		return voteMsg, answer.NewError(-4, "invalid sender public key")
+	}
+
+	ok := c.attendees.IsPresent(msg.Sender) || c.hub.GetPubkey().Equal(senderPoint)
+	if !ok {
+		return voteMsg, answer.NewError(-4, "only attendees can cast a vote in an election")
+	}
+
+	return voteMsg, nil
+}
+
+func (c *Channel) endElectionHelper(msg message.Message) error {
+
+	var endElection messagedata.ElectionEnd
+
+	err := msg.UnmarshalData(&endElection)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal cast vote: %v", err)
+	}
 
 	if endElection.CreatedAt < c.end {
 		return xerrors.Errorf("can't end the election before its "+

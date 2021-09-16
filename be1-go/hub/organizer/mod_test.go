@@ -101,7 +101,7 @@ func TestOrganizer_Create_LAO(t *testing.T) {
 
 	// > we are expecting the lao channel factor be called with the right
 	// arguments.
-	require.Equal(t, "/root/"+data.ID, fakeChannelFac.chanID)
+	require.Equal(t, rootPrefix+data.ID, fakeChannelFac.chanID)
 	require.Equal(t, msg.Data, fakeChannelFac.msg.Data)
 	require.Equal(t, msg.MessageID, fakeChannelFac.msg.MessageID)
 	require.Equal(t, msg.Sender, fakeChannelFac.msg.Sender)
@@ -110,8 +110,8 @@ func TestOrganizer_Create_LAO(t *testing.T) {
 
 	// > the organizer should have saved the channel locally
 
-	require.Contains(t, hub.channelByID, "/root/"+data.ID)
-	require.Equal(t, fakeChannelFac.c, hub.channelByID["/root/"+data.ID])
+	require.Contains(t, hub.channelByID, rootPrefix+data.ID)
+	require.Equal(t, fakeChannelFac.c, hub.channelByID[rootPrefix+data.ID])
 }
 
 // Check that if the organizer receives a publish message, it will call the
@@ -126,7 +126,7 @@ func TestOrganizer_Handle_Publish(t *testing.T) {
 
 	laoID := "XXX"
 
-	hub.channelByID["/root/"+laoID] = c
+	hub.channelByID[rootPrefix+laoID] = c
 
 	msg := message.Message{
 		Data:              base64.URLEncoding.EncodeToString([]byte("XXX")),
@@ -150,7 +150,7 @@ func TestOrganizer_Handle_Publish(t *testing.T) {
 			Channel string          `json:"channel"`
 			Message message.Message `json:"message"`
 		}{
-			Channel: "/root/" + laoID,
+			Channel: rootPrefix + laoID,
 			Message: msg,
 		},
 	}
@@ -185,7 +185,7 @@ func TestOrganizer_Handle_Subscribe(t *testing.T) {
 
 	laoID := "XXX"
 
-	hub.channelByID["/root/"+laoID] = c
+	hub.channelByID[rootPrefix+laoID] = c
 
 	subscribe := method.Subscribe{
 		Base: query.Base{
@@ -201,7 +201,7 @@ func TestOrganizer_Handle_Subscribe(t *testing.T) {
 		Params: struct {
 			Channel string `json:"channel"`
 		}{
-			Channel: "/root/" + laoID,
+			Channel: rootPrefix + laoID,
 		},
 	}
 
@@ -235,7 +235,7 @@ func TestOrganizer_Handle_Unsubscribe(t *testing.T) {
 
 	laoID := "XXX"
 
-	hub.channelByID["/root/"+laoID] = c
+	hub.channelByID[rootPrefix+laoID] = c
 
 	unsubscribe := method.Unsubscribe{
 		Base: query.Base{
@@ -251,7 +251,7 @@ func TestOrganizer_Handle_Unsubscribe(t *testing.T) {
 		Params: struct {
 			Channel string `json:"channel"`
 		}{
-			Channel: "/root/" + laoID,
+			Channel: rootPrefix + laoID,
 		},
 	}
 
@@ -295,7 +295,7 @@ func TestOrganizer_Handle_Catchup(t *testing.T) {
 
 	laoID := "XXX"
 
-	hub.channelByID["/root/"+laoID] = c
+	hub.channelByID[rootPrefix+laoID] = c
 
 	catchup := method.Catchup{
 		Base: query.Base{
@@ -311,7 +311,7 @@ func TestOrganizer_Handle_Catchup(t *testing.T) {
 		Params: struct {
 			Channel string `json:"channel"`
 		}{
-			Channel: "/root/" + laoID,
+			Channel: rootPrefix + laoID,
 		},
 	}
 
@@ -367,7 +367,7 @@ type fakeChannelFac struct {
 
 // newChannel implement the type channel.LaoFactory
 func (c *fakeChannelFac) newChannel(channelID string,
-	hub channel.HubThingTheChannelNeeds, msg message.Message) channel.Channel {
+	hub channel.HubFunctionalities, msg message.Message) channel.Channel {
 
 	c.chanID = channelID
 	c.msg = msg

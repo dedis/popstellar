@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"os"
+	"sort"
 	"sync"
 	"time"
 
@@ -11,15 +12,27 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 
-	"student20_pop/channel"
 	"student20_pop/message/answer"
 	"student20_pop/message/query/method/message"
 )
 
+const (
+	dbPrepareErr  = "failed to prepare query: %v"
+	dbParseRowErr = "failed to parse row: %v"
+	dbRowIterErr  = "error in row iteration: %v"
+	dbQueryRowErr = "failed to query rows: %v"
+)
+
+// messageInfo wraps a message with a stored time for sorting.
+type messageInfo struct {
+	message    message.Message
+	storedTime int64
+}
+
 // Inbox represents an in-memory data store to record incoming messages.
 type Inbox struct {
 	mutex     sync.RWMutex
-	msgs      map[string]*channel.MessageInfo
+	msgs      map[string]*messageInfo
 	channelID string
 }
 
@@ -27,7 +40,7 @@ type Inbox struct {
 func NewInbox(channelID string) *Inbox {
 	return &Inbox{
 		mutex:     sync.RWMutex{},
-		msgs:      make(map[string]*channel.MessageInfo),
+		msgs:      make(map[string]*messageInfo),
 		channelID: channelID,
 	}
 }
@@ -79,9 +92,9 @@ func (i *Inbox) StoreMessage(msg message.Message) {
 
 	storedTime := time.Now().UnixNano()
 
-	messageInfo := &channel.MessageInfo{
-		Message:    msg,
-		StoredTime: storedTime,
+	messageInfo := &messageInfo{
+		message:    msg,
+		storedTime: storedTime,
 	}
 
 	i.msgs[msg.MessageID] = messageInfo
@@ -96,18 +109,31 @@ func (i *Inbox) StoreMessage(msg message.Message) {
 	}
 }
 
-// GetMessages ...
-func (i *Inbox) GetMessages() []channel.MessageInfo {
+// GetSortedMessages returns all messages stored sorted by stored time.
+func (i *Inbox) GetSortedMessages() []message.Message {
 	i.mutex.RLock()
 	defer i.mutex.RUnlock()
 
-	messages := make([]channel.MessageInfo, 0, len(i.msgs))
+	messages := make([]messageInfo, 0, len(i.msgs))
 	// iterate over map and collect all the values (messageInfo instances)
 	for _, msgInfo := range i.msgs {
 		messages = append(messages, *msgInfo)
 	}
 
-	return messages
+	// sort.Slice on messages based on the timestamp
+	sort.Slice(messages, func(i, j int) bool {
+		return messages[i].storedTime < messages[j].storedTime
+	})
+
+	result := make([]message.Message, len(messages))
+
+	// iterate and extract the messages[i].message field and
+	// append it to the result slice
+	for i, msgInfo := range messages {
+		result[i] = msgInfo.message
+	}
+
+	return result
 }
 
 // GetMessage returns the message of messageID if it exists. We need a pointer
@@ -120,10 +146,16 @@ func (i *Inbox) GetMessage(messageID string) (*message.Message, bool) {
 	if !ok {
 		return nil, false
 	}
-	return &msgInfo.Message, true
+	return &msgInfo.message, true
 }
 
-func (i *Inbox) storeMessageInDB(messageInfo *channel.MessageInfo) error {
+// ---
+// DB operations
+// --
+
+// storeMessageInDB stores a message into the db. It should be used in case the
+// `HUB_DB` env variable is set.
+func (i *Inbox) storeMessageInDB(messageInfo *messageInfo) error {
 	db, err := sql.Open("sqlite3", os.Getenv("HUB_DB"))
 	if err != nil {
 		return xerrors.Errorf("failed to open connection: %v", err)
@@ -144,20 +176,20 @@ func (i *Inbox) storeMessageInDB(messageInfo *channel.MessageInfo) error {
 
 	stmt, err := db.Prepare(query)
 	if err != nil {
-		return xerrors.Errorf("failed to prepare query: %v", err)
+		return xerrors.Errorf(dbPrepareErr, err)
 	}
 
 	defer stmt.Close()
 
-	msg := messageInfo.Message
+	msg := messageInfo.message
 
-	_, err = stmt.Exec(msg.MessageID, msg.Sender, msg.Signature, msg.Data, messageInfo.StoredTime, i.channelID)
+	_, err = stmt.Exec(msg.MessageID, msg.Sender, msg.Signature, msg.Data, messageInfo.storedTime, i.channelID)
 	if err != nil {
 		return xerrors.Errorf("failed to exec query: %v", err)
 	}
 
-	for _, pubKeySigPair := range messageInfo.Message.WitnessSignatures {
-		err = addWitnessInDB(db, string(messageInfo.Message.MessageID),
+	for _, pubKeySigPair := range messageInfo.message.WitnessSignatures {
+		err = addWitnessInDB(db, string(messageInfo.message.MessageID),
 			pubKeySigPair.Witness, pubKeySigPair.Signature)
 		if err != nil {
 			return xerrors.Errorf("failed to store witness: %v", err)
@@ -168,7 +200,6 @@ func (i *Inbox) storeMessageInDB(messageInfo *channel.MessageInfo) error {
 }
 
 func addWitnessInDB(db *sql.DB, messageID string, pubKey string, signature string) error {
-
 	query := `
 		INSERT INTO
 			message_witness(
@@ -179,7 +210,7 @@ func addWitnessInDB(db *sql.DB, messageID string, pubKey string, signature strin
 
 	stmt, err := db.Prepare(query)
 	if err != nil {
-		return xerrors.Errorf("failed to prepare query: %v", err)
+		return xerrors.Errorf(dbPrepareErr, err)
 	}
 
 	defer stmt.Close()
@@ -190,4 +221,124 @@ func addWitnessInDB(db *sql.DB, messageID string, pubKey string, signature strin
 	}
 
 	return nil
+}
+
+// CreateInboxFromBD creates an inbox from a database
+func CreateInboxFromBD(db *sql.DB, channelID string) (*Inbox, error) {
+	inbox := NewInbox(channelID)
+
+	query := `
+		SELECT
+			message_id, 
+			sender, 
+			message_signature, 
+			raw_data, 
+			message_timestamp
+		FROM
+			message_info
+		WHERE
+			lao_channel_id = ?`
+
+	stmt, err := db.Prepare(query)
+	if err != nil {
+		return nil, xerrors.Errorf(dbPrepareErr, err)
+	}
+
+	defer stmt.Close()
+
+	rows, err := stmt.Query(channelID)
+	if err != nil {
+		return nil, xerrors.Errorf(dbQueryRowErr, err)
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var messageID string
+		var sender string
+		var messageSignature string
+		var rawData string
+		var timestamp int64
+
+		err = rows.Scan(&messageID, &sender, &messageSignature, &rawData, &timestamp)
+		if err != nil {
+			return nil, xerrors.Errorf(dbParseRowErr, err)
+		}
+
+		witnesses, err := getWitnessesMessageFromDB(db, messageID)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to get witnesses: %v", err)
+		}
+
+		messageInfo := messageInfo{
+			message: message.Message{
+				MessageID:         messageID,
+				Sender:            sender,
+				Signature:         messageSignature,
+				WitnessSignatures: witnesses,
+				Data:              rawData,
+			},
+			storedTime: timestamp,
+		}
+
+		log.Printf("Msg load: %+v", messageInfo.message)
+
+		inbox.msgs[messageID] = &messageInfo
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, xerrors.Errorf(dbRowIterErr, err)
+	}
+
+	return inbox, nil
+}
+
+func getWitnessesMessageFromDB(db *sql.DB, messageID string) ([]message.WitnessSignature, error) {
+	query := `
+		SELECT
+			pub_key,
+			witness_signature
+		FROM
+			message_witness
+		WHERE
+			message_id = ?`
+
+	stmt, err := db.Prepare(query)
+	if err != nil {
+		return nil, xerrors.Errorf(dbPrepareErr, err)
+	}
+
+	defer stmt.Close()
+
+	rows, err := stmt.Query(messageID)
+	if err != nil {
+		return nil, xerrors.Errorf(dbQueryRowErr, err)
+	}
+
+	defer rows.Close()
+
+	result := make([]message.WitnessSignature, 0)
+
+	for rows.Next() {
+		var pubKey string
+		var signature string
+
+		err = rows.Scan(&pubKey, &signature)
+		if err != nil {
+			return nil, xerrors.Errorf(dbParseRowErr, err)
+		}
+
+		result = append(result, message.WitnessSignature{
+			Witness:   pubKey,
+			Signature: signature,
+		})
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, xerrors.Errorf(dbRowIterErr, err)
+	}
+
+	return result, nil
 }

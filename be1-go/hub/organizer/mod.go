@@ -412,13 +412,6 @@ func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate)
 	}
 
 	laoCh := h.laoFac(laoChannelPath, h, publish.Params.Message)
-	// laoCh := laoChannel{
-	// 	rollCall:    rollCall{},
-	// 	attendees:   NewAttendees(),
-	// 	baseChannel: createBaseChannel(h, laoChannelPath),
-	// }
-
-	// laoCh.inbox.storeMessage(publish.Params.Message)
 
 	h.log.Info().Msgf("storing new channel '%s' %v", laoChannelPath, publish.Params.Message)
 

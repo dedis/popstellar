@@ -12,7 +12,7 @@ import (
 
 // LaoFactory is the function passed to the organizer that it must use to
 // create a new lao channel.
-type LaoFactory func(channelID string, hub HubThingTheChannelNeeds, msg message.Message) Channel
+type LaoFactory func(channelID string, hub HubFunctionalities, msg message.Message) Channel
 
 // Channel represents a PoP channel - like a LAO.
 type Channel interface {
@@ -76,14 +76,8 @@ func (s *Sockets) Delete(ID string) bool {
 	return true
 }
 
-// MessageInfo ...
-type MessageInfo struct {
-	Message    message.Message
-	StoredTime int64
-}
-
-// HubThingTheChannelNeeds ...
-type HubThingTheChannelNeeds interface {
+// HubFunctionalities defines the functions needed by a channel from the hub.
+type HubFunctionalities interface {
 	GetPubkey() kyber.Point
 	GetSchemaValidator() validation.SchemaValidator
 	RegisterNewChannel(channelID string, channel Channel)

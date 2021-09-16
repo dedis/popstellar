@@ -66,15 +66,15 @@ func NewHub(public kyber.Point, log zerolog.Logger) (*Hub, error) {
 }
 
 func (h *Hub) handleMessageFromOrganizer(incMsg *socket.IncomingMessage) {
-	panic("not implemented")
+	panic("handleMessageFromOrganizer not implemented")
 }
 
 func (h *Hub) handleMessageFromClient(incMsg *socket.IncomingMessage) {
-	panic("not implemented")
+	panic("handleMessageFromClient not implemented")
 }
 
 func (h *Hub) handleMessageFromWitness(incMsg *socket.IncomingMessage) {
-	panic("not implemented")
+	panic("handleMessageFromWitness not implemented")
 }
 
 func (h *Hub) handleIncomingMessage(incMsg *socket.IncomingMessage) {
