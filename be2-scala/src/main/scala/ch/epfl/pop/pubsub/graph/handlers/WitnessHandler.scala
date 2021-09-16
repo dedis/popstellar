@@ -2,7 +2,7 @@ package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
-import ch.epfl.pop.model.network.JsonRpcRequest
+import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage
 import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
@@ -19,7 +19,12 @@ case object WitnessHandler extends MessageHandler {
       case message@(_: JsonRpcRequestWitnessMessage) => handleWitnessMessage(message)
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
-        "Internal server fault: WitnessHandler was given a message it could not recognize"
+        "Internal server fault: WitnessHandler was given a message it could not recognize",
+        jsonRpcMessage match {
+          case r: JsonRpcRequest => r.id
+          case r: JsonRpcResponse => r.id
+          case _ => None
+        }
       ))
     }
     case graphMessage@_ => graphMessage
@@ -42,10 +47,10 @@ case object WitnessHandler extends MessageHandler {
           case true =>
             // FIXME propagate
             Left(rpcMessage)
-          case _ => Right(PipelineError(-10, "")) // FIXME add DbActor "answers" with error description if failed
+          case _ => Right(PipelineError(-10, "", rpcMessage.id)) // FIXME add DbActor "answers" with error description if failed
         }
         Await.result(askWrite, DbActor.getDuration)
-      case None => Right(PipelineError(-10, "")) // FIXME add DbActor "answers" with error description if failed
+      case None => Right(PipelineError(-10, "", rpcMessage.id)) // FIXME add DbActor "answers" with error description if failed
     }
     Await.result(ask, DbActor.getDuration)
   }

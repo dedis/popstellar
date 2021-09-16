@@ -2,7 +2,7 @@ package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
-import ch.epfl.pop.model.network.JsonRpcRequest
+import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 
@@ -16,7 +16,12 @@ case object RollCallHandler extends MessageHandler {
       case message@(_: JsonRpcRequestCloseRollCall) => handleCloseRollCall(message)
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
-        "Internal server fault: RollCallHandler was given a message it could not recognize"
+        "Internal server fault: RollCallHandler was given a message it could not recognize",
+        jsonRpcMessage match {
+          case r: JsonRpcRequest => r.id
+          case r: JsonRpcResponse => r.id
+          case _ => None
+        }
       ))
     }
     case graphMessage@_ => graphMessage
@@ -27,7 +32,8 @@ case object RollCallHandler extends MessageHandler {
       case Some(_) => dbAskWritePropagate(rpcMessage)
       case _ => Right(PipelineError(
         ErrorCodes.INVALID_DATA.id,
-        s"Unable to create meeting: invalid encoded laoId '${rpcMessage.getParamsChannel}'"
+        s"Unable to create meeting: invalid encoded laoId '${rpcMessage.getParamsChannel}'",
+        rpcMessage.id
       ))
     }
   def handleOpenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = dbAskWritePropagate(rpcMessage)

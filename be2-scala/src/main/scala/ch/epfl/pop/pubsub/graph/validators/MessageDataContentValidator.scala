@@ -21,10 +21,10 @@ trait MessageDataContentValidator extends ContentValidator {
    * @param errorCode error code related to the error
    * @return a description of the error and where it occurred
    */
-  override def validationError(reason: String, validator: String, errorCode: ErrorCodes.ErrorCodes = ErrorCodes.INVALID_DATA): PipelineError =
-    super.validationError(reason, validator, errorCode)
+  override def validationError(reason: String, validator: String, rpcId: Option[Int], errorCode: ErrorCodes.ErrorCodes = ErrorCodes.INVALID_DATA): PipelineError =
+    super.validationError(reason, validator, rpcId, errorCode)
 
-  final val validationErrorNoMessage: PipelineError = PipelineError(ErrorCodes.INVALID_DATA.id, s"RPC-params does not contain any message")
+  def validationErrorNoMessage(rpcId: Option[Int]): PipelineError = PipelineError(ErrorCodes.INVALID_DATA.id, s"RPC-params does not contain any message", rpcId)
 
   // Lower bound for a timestamp to not be stale
   final val TIMESTAMP_BASE_TIME: Timestamp = Timestamp(1577833200L) // 1st january 2020

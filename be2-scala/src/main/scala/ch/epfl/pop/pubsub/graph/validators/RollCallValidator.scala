@@ -10,7 +10,7 @@ import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 case object RollCallValidator extends MessageDataContentValidator {
   // TODO the roll call validator checks with the old roll call specs!
   def validateCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
-    def validationError(reason: String): PipelineError = super.validationError(reason, "CreateRollCall")
+    def validationError(reason: String): PipelineError = super.validationError(reason, "CreateRollCall", rpcMessage.id)
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
@@ -30,13 +30,13 @@ case object RollCallValidator extends MessageDataContentValidator {
         } else {
           Left(rpcMessage)
         }
-      case _ => Right(validationErrorNoMessage)
+      case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
   // TODO check that this is correct (correct validations)
   def validateOpenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
-    def validationError(reason: String): PipelineError = super.validationError(reason, "OpenRollCall")
+    def validationError(reason: String): PipelineError = super.validationError(reason, "OpenRollCall", rpcMessage.id)
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
@@ -47,13 +47,13 @@ case object RollCallValidator extends MessageDataContentValidator {
         } else {
           Left(rpcMessage)
         }
-      case _ => Right(validationErrorNoMessage)
+      case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
   // TODO check that this is correct (correct validations)
   def validateReopenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
-    def validationError(reason: String): PipelineError = super.validationError(reason, "ReopenRollCall")
+    def validationError(reason: String): PipelineError = super.validationError(reason, "ReopenRollCall", rpcMessage.id)
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
@@ -64,13 +64,13 @@ case object RollCallValidator extends MessageDataContentValidator {
         } else {
           Left(rpcMessage)
         }
-      case _ => Right(validationErrorNoMessage)
+      case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
   // TODO check that this is correct (correct validations)
   def validateCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
-    def validationError(reason: String): PipelineError = super.validationError(reason, "CloseRollCall")
+    def validationError(reason: String): PipelineError = super.validationError(reason, "CloseRollCall", rpcMessage.id)
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
@@ -83,7 +83,7 @@ case object RollCallValidator extends MessageDataContentValidator {
         } else {
           Left(rpcMessage)
         }
-      case _ => Right(validationErrorNoMessage)
+      case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
 }
