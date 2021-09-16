@@ -23,8 +23,8 @@ type Inbox struct {
 	channelID string
 }
 
-// CreateInbox creates an instance of inbox.
-func CreateInbox(channelID string) *Inbox {
+// NewInbox returns a new initialized inbox
+func NewInbox(channelID string) *Inbox {
 	return &Inbox{
 		mutex:     sync.RWMutex{},
 		msgs:      make(map[string]*channel.MessageInfo),

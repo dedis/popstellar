@@ -11,7 +11,7 @@ import (
 type Answer struct {
 	message.JSONRPCBase
 
-	ID     int     `json:"id"`
+	ID     *int    `json:"id"`
 	Result *Result `json:"result"`
 	Error  *Error  `json:"error"`
 }

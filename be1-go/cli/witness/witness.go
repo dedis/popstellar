@@ -53,6 +53,7 @@ func Serve(cliCtx *cli.Context) error {
 	}
 
 	point := crypto.Suite.Point()
+
 	err = point.UnmarshalBinary(pkBuf)
 	if err != nil {
 		return xerrors.Errorf("failed to unmarshal public key: %v", err)

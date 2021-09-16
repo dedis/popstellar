@@ -10,6 +10,10 @@ import (
 	"go.dedis.ch/kyber/v3"
 )
 
+// LaoFactory is the function passed to the organizer that it must use to
+// create a new lao channel.
+type LaoFactory func(channelID string, hub HubThingTheChannelNeeds, msg message.Message) Channel
+
 // Channel represents a PoP channel - like a LAO.
 type Channel interface {
 	// Subscribe is used to handle a subscribe message.

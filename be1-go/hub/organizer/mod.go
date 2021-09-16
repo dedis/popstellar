@@ -58,10 +58,12 @@ type Hub struct {
 	workers *semaphore.Weighted
 
 	log zerolog.Logger
+
+	laoFac channel.LaoFactory
 }
 
-// NewOrganizerHub returns a Organizer Hub.
-func NewOrganizerHub(public kyber.Point, log zerolog.Logger) (*Hub, error) {
+// NewHub returns a Organizer Hub.
+func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*Hub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
@@ -79,6 +81,7 @@ func NewOrganizerHub(public kyber.Point, log zerolog.Logger) (*Hub, error) {
 		stop:            make(chan struct{}),
 		workers:         semaphore.NewWeighted(numWorkers),
 		log:             log,
+		laoFac:          laoFac,
 	}
 
 	if os.Getenv("HUB_DB") != "" {
@@ -169,8 +172,9 @@ func (h *Hub) handleRootChannelMesssage(socket socket.Socket, publish method.Pub
 
 	// must be "lao#create"
 	if object != "lao" || action != "create" {
-		log.Printf("invalid method: %s#%s", object, action)
-		err := answer.NewError(-1, "failed to invoke lao/create: operation only allowed on /root")
+		err := answer.NewErrorf(-1, "only lao#create is allowed on root, "+
+			"but found %s#%s", object, action)
+		h.log.Err(err)
 		socket.SendError(&publish.ID, err)
 		return
 	}
@@ -253,7 +257,7 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) {
 	}
 
 	if handlerErr != nil {
-		err := answer.NewErrorf(-4, "failed to handle method: %v", err)
+		err := answer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
 		h.log.Err(err)
 		socket.SendError(nil, err)
 		return
@@ -277,7 +281,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 
 	if publish.Params.Channel == "/root" {
 		h.handleRootChannelMesssage(socket, publish)
-		return -1, nil
+		return publish.ID, nil
 	}
 
 	channel, err := h.getChan(publish.Params.Channel)
@@ -382,7 +386,7 @@ func (h *Hub) handleMessageFromWitness(incomingMessage *socket.IncomingMessage) 
 func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) {
 	defer h.workers.Release(1)
 
-	log.Printf("Hub::handleMessageFromClient: %s", incomingMessage.Message)
+	h.log.Info().Str("msg", string(incomingMessage.Message)).Msg("handle incoming message")
 
 	switch incomingMessage.Socket.Type() {
 	case socket.ClientSocketType:
@@ -390,7 +394,7 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) {
 	case socket.WitnessSocketType:
 		h.handleMessageFromWitness(incomingMessage)
 	default:
-		log.Printf("error: invalid socket type")
+		h.log.Error().Msg("error: invalid socket type")
 	}
 
 }
@@ -407,7 +411,7 @@ func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate)
 		return answer.NewErrorf(-3, "failed to create lao: duplicate lao path: %q", laoChannelPath)
 	}
 
-	laoCh := lao.NewLaoChannel(laoChannelPath, h, publish.Params.Message)
+	laoCh := h.laoFac(laoChannelPath, h, publish.Params.Message)
 	// laoCh := laoChannel{
 	// 	rollCall:    rollCall{},
 	// 	attendees:   NewAttendees(),

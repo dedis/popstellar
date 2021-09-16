@@ -33,8 +33,8 @@ const (
 	dbQueryRowErr = "failed to query rows: %v"
 )
 
-// LaoChannel ...
-type LaoChannel struct {
+// Channel ...
+type Channel struct {
 	sockets channel.Sockets
 
 	inbox *inbox.Inbox
@@ -52,17 +52,12 @@ type LaoChannel struct {
 	attendees map[string]struct{}
 }
 
-type messageInfo struct {
-	message    message.Message
-	storedTime int64
-}
-
-// NewLaoChannel ...
-func NewLaoChannel(channelID string, hub channel.HubThingTheChannelNeeds, msg message.Message) *LaoChannel {
-	inbox := inbox.CreateInbox(channelID)
+// NewChannel ...
+func NewChannel(channelID string, hub channel.HubThingTheChannelNeeds, msg message.Message) channel.Channel {
+	inbox := inbox.NewInbox(channelID)
 	inbox.StoreMessage(msg)
 
-	return &LaoChannel{
+	return &Channel{
 		channelID: channelID,
 		sockets:   channel.NewSockets(),
 		inbox:     inbox,
@@ -73,7 +68,7 @@ func NewLaoChannel(channelID string, hub channel.HubThingTheChannelNeeds, msg me
 }
 
 // Subscribe is used to handle a subscribe message from the client.
-func (c *LaoChannel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
+func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
 	log.Printf("received a subscribe with id: %d", msg.ID)
 	c.sockets.Upsert(socket)
 
@@ -81,7 +76,7 @@ func (c *LaoChannel) Subscribe(socket socket.Socket, msg method.Subscribe) error
 }
 
 // Unsubscribe is used to handle an unsubscribe message.
-func (c *LaoChannel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
+func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 	log.Printf("received an unsubscribe with id: %d", msg.ID)
 
 	ok := c.sockets.Delete(socketID)
@@ -94,7 +89,7 @@ func (c *LaoChannel) Unsubscribe(socketID string, msg method.Unsubscribe) error 
 }
 
 // Catchup is used to handle a catchup message.
-func (c *LaoChannel) Catchup(catchup method.Catchup) []message.Message {
+func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 	log.Printf("received a catchup with id: %d", catchup.ID)
 
 	messages := c.inbox.GetMessages()
@@ -117,7 +112,7 @@ func (c *LaoChannel) Catchup(catchup method.Catchup) []message.Message {
 
 // broadcastToAllClients is a helper message to broadcast a message to all
 // subscribers.
-func (c *LaoChannel) broadcastToAllClients(msg message.Message) {
+func (c *Channel) broadcastToAllClients(msg message.Message) {
 	rpcMessage := method.Broadcast{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
@@ -143,7 +138,7 @@ func (c *LaoChannel) broadcastToAllClients(msg message.Message) {
 }
 
 // VerifyPublishMessage checks if a Publish message is valid
-func (c *LaoChannel) VerifyPublishMessage(publish method.Publish) error {
+func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 	log.Printf("received a publish with id: %d", publish.ID)
 
 	// Check if the structure of the message is correct
@@ -189,7 +184,7 @@ type rollCall struct {
 }
 
 // Publish handles publish messages for the LAO channel.
-func (c *LaoChannel) Publish(publish method.Publish) error {
+func (c *Channel) Publish(publish method.Publish) error {
 	err := c.VerifyPublishMessage(publish)
 	if err != nil {
 		return xerrors.Errorf("failed to verify publish message: %w", err)
@@ -228,7 +223,7 @@ func (c *LaoChannel) Publish(publish method.Publish) error {
 }
 
 // processLaoObject processes a LAO object.
-func (c *LaoChannel) processLaoObject(action string, msg message.Message) error {
+func (c *Channel) processLaoObject(action string, msg message.Message) error {
 	switch action {
 	case "update_properties":
 	case "state":
@@ -253,7 +248,7 @@ func (c *LaoChannel) processLaoObject(action string, msg message.Message) error 
 }
 
 // processLaoState processes a lao state action.
-func (c *LaoChannel) processLaoState(data messagedata.LaoState) error {
+func (c *Channel) processLaoState(data messagedata.LaoState) error {
 	// Check if we have the update message
 	msg, ok := c.inbox.GetMessage(data.ModificationID)
 
@@ -344,7 +339,7 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 }
 
 // processMeetingObject handles a meeting object.
-func (c *LaoChannel) processMeetingObject(action string, msg message.Message) error {
+func (c *Channel) processMeetingObject(action string, msg message.Message) error {
 
 	// Nothing to do ...🤷‍♂️
 	switch action {
@@ -359,7 +354,7 @@ func (c *LaoChannel) processMeetingObject(action string, msg message.Message) er
 }
 
 // processMessageObject handles a message object.
-func (c *LaoChannel) processMessageObject(action string, msg message.Message) error {
+func (c *Channel) processMessageObject(action string, msg message.Message) error {
 
 	switch action {
 	case "witness":
@@ -387,7 +382,7 @@ func (c *LaoChannel) processMessageObject(action string, msg message.Message) er
 }
 
 // processRollCallObject handles a roll call object.
-func (c *LaoChannel) processRollCallObject(action string, msg message.Message) error {
+func (c *Channel) processRollCallObject(action string, msg message.Message) error {
 	sender := msg.Sender
 
 	senderBuf, err := base64.URLEncoding.DecodeString(sender)
@@ -452,14 +447,12 @@ func (c *LaoChannel) processRollCallObject(action string, msg message.Message) e
 }
 
 // processElectionObject handles an election object.
-func (c *LaoChannel) processElectionObject(action string, msg message.Message) error {
+func (c *Channel) processElectionObject(action string, msg message.Message) error {
 	if action != "setup" {
 		return answer.NewErrorf(-4, "invalid action: %s", action)
 	}
 
-	sender := msg.Sender
-
-	senderBuf, err := base64.URLEncoding.DecodeString(sender)
+	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
 		return xerrors.Errorf("failed to decode sender key: %v", err)
 	}
@@ -492,7 +485,7 @@ func (c *LaoChannel) processElectionObject(action string, msg message.Message) e
 }
 
 // createElection creates an election in the LAO.
-func (c *LaoChannel) createElection(msg message.Message, setupMsg messagedata.ElectionSetup) error {
+func (c *Channel) createElection(msg message.Message, setupMsg messagedata.ElectionSetup) error {
 
 	// Check if the Lao ID of the message corresponds to the channel ID
 	channelID := c.channelID[6:]
@@ -504,7 +497,7 @@ func (c *LaoChannel) createElection(msg message.Message, setupMsg messagedata.El
 	channelPath := "/root/" + setupMsg.Lao + "/" + setupMsg.ID
 
 	// Create the new election channel
-	electionCh := election.NewElectionChannel(channelPath, setupMsg.StartTime, setupMsg.EndTime, false, setupMsg.Questions, c.attendees, msg, c.hub)
+	electionCh := election.NewChannel(channelPath, setupMsg.StartTime, setupMsg.EndTime, false, setupMsg.Questions, c.attendees, msg, c.hub)
 	// {
 	// 	createBaseChannel(organizerHub, channelPath),
 	// 	setupMsg.StartTime,
@@ -524,7 +517,7 @@ func (c *LaoChannel) createElection(msg message.Message, setupMsg messagedata.El
 }
 
 // processCreateRollCall processes a roll call creation object.
-func (c *LaoChannel) processCreateRollCall(msg messagedata.RollCallCreate) error {
+func (c *Channel) processCreateRollCall(msg messagedata.RollCallCreate) error {
 	// Check that the ProposedEnd is greater than the ProposedStart
 	if msg.ProposedStart > msg.ProposedEnd {
 		return answer.NewErrorf(-4, "The field `proposed_start` is greater than the field `proposed_end`: %d > %d", msg.ProposedStart, msg.ProposedEnd)
@@ -536,7 +529,7 @@ func (c *LaoChannel) processCreateRollCall(msg messagedata.RollCallCreate) error
 }
 
 // processOpenRollCall processes an open roll call object.
-func (c *LaoChannel) processOpenRollCall(msg message.Message, action string) error {
+func (c *Channel) processOpenRollCall(msg message.Message, action string) error {
 	if action == "open" {
 		// If the action is an OpenRollCallAction,
 		// the previous roll call action should be a CreateRollCallAction
@@ -570,7 +563,7 @@ func (c *LaoChannel) processOpenRollCall(msg message.Message, action string) err
 }
 
 // processCloseRollCall processes a close roll call message.
-func (c *LaoChannel) processCloseRollCall(msg messagedata.RollCallClose) error {
+func (c *Channel) processCloseRollCall(msg messagedata.RollCallClose) error {
 	if c.rollCall.state != Open {
 		return answer.NewError(-1, "The roll call cannot be closed since it's not open")
 	}
@@ -635,18 +628,12 @@ func (r *rollCall) checkPrevID(prevID []byte) bool {
 // DB restore
 // ---
 
-// CreateChannelFromDB ...
+// CreateChannelFromDB restores a channel from the db
 func CreateChannelFromDB(db *sql.DB, channelID string, hub channel.HubThingTheChannelNeeds) (channel.Channel, error) {
-	// channel := laoChannel{
-	// 	rollCall:    rollCall{},
-	// 	attendees:   NewAttendees(),
-	// 	baseChannel: createBaseChannel(h, channelID),
-	// }
-
-	channel := LaoChannel{
+	channel := Channel{
 		channelID: channelID,
 		sockets:   channel.NewSockets(),
-		inbox:     inbox.CreateInbox(channelID),
+		inbox:     inbox.NewInbox(channelID),
 		hub:       hub,
 		rollCall:  rollCall{},
 		attendees: make(map[string]struct{}),
@@ -668,17 +655,14 @@ func CreateChannelFromDB(db *sql.DB, channelID string, hub channel.HubThingTheCh
 
 	channel.witnesses = witnesses
 
-	// messages, err := getMessagesChannelFromDB(db, channelID)
-	// if err != nil {
-	// 	return nil, xerrors.Errorf("failed to get messages: %v", err)
-	// }
+	messages, err := getMessagesChannelFromDB(db, channelID)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to get messages: %v", err)
+	}
 
-	// // channel.inbox = createInbox(channelID)
-
-	// // for i := range messages {
-	// // 	msgID := messages[i].Message.MessageID
-	// // 	channel.inbox.msgs[msgID] = &messages[i]
-	// // }
+	for i := range messages {
+		channel.inbox.StoreMessage(messages[i].Message)
+	}
 
 	return &channel, nil
 }

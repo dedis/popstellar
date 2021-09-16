@@ -3,7 +3,7 @@ package network
 import (
 	"io"
 	"student20_pop/crypto"
-	"student20_pop/hub"
+	"student20_pop/hub/witness"
 	"testing"
 
 	"github.com/rs/zerolog"
@@ -13,10 +13,10 @@ import (
 func TestServerStartAndShutdown(t *testing.T) {
 	log := zerolog.New(io.Discard)
 
-	h, err := hub.NewWitnessHub(crypto.Suite.Point(), log)
+	h, err := witness.NewHub(crypto.Suite.Point(), log)
 	require.NoErrorf(t, err, "could not create witness hub")
 
-	srv := NewServer(h, 9000, "testsocket", log)
+	srv := NewServer(h, 0, "testsocket", log)
 	srv.Start()
 	<-srv.Started
 

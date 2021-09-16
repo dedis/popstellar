@@ -146,5 +146,5 @@ func (h *Hub) OnSocketClose() chan<- string {
 
 // Type implements hub.Hub
 func (h *Hub) Type() hub.HubType {
-	panic("not implemented")
+	return hub.WitnessHubType
 }

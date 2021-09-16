@@ -3,6 +3,7 @@ package election
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"log"
 	"sort"
 	"student20_pop/channel"
@@ -66,16 +67,16 @@ func (a *Attendees) Copy() *Attendees {
 	return clone
 }
 
-// NewElectionChannel ...
-func NewElectionChannel(channelPath string, start, end int64, terminated bool,
+// NewChannel ...
+func NewChannel(channelPath string, start, end int64, terminated bool,
 	questions []messagedata.ElectionSetupQuestion, attendees map[string]struct{},
-	msg message.Message, hub channel.HubThingTheChannelNeeds) ElectionChannel {
+	msg message.Message, hub channel.HubThingTheChannelNeeds) Channel {
 
 	// Saving on election channel too so it self-contains the entire election history
 	// electionCh.inbox.storeMessage(msg)
-	return ElectionChannel{
+	return Channel{
 		sockets:   channel.NewSockets(),
-		inbox:     inbox.CreateInbox(channelPath),
+		inbox:     inbox.NewInbox(channelPath),
 		channelID: channelPath,
 
 		start:      start,
@@ -91,13 +92,11 @@ func NewElectionChannel(channelPath string, start, end int64, terminated bool,
 	}
 }
 
-// ElectionChannel is used to handle election messages.
-type ElectionChannel struct {
+// Channel is used to handle election messages.
+type Channel struct {
 	sockets   channel.Sockets
 	inbox     *inbox.Inbox
 	channelID string
-	witnessMu sync.Mutex
-	witnesses []string
 
 	// *baseChannel
 
@@ -112,7 +111,7 @@ type ElectionChannel struct {
 
 	// Questions asked to the participants
 	//the key will be the string representation of the id of type byte[]
-	questions map[string]question
+	questions map[string]*question
 
 	// attendees that took part in the roll call string of their PK
 	attendees *Attendees
@@ -149,7 +148,7 @@ type validVote struct {
 }
 
 // Publish is used to handle publish messages in the election channel.
-func (c *ElectionChannel) Publish(publish method.Publish) error {
+func (c *Channel) Publish(publish method.Publish) error {
 	err := c.VerifyPublishMessage(publish)
 	if err != nil {
 		return xerrors.Errorf("failed to verify publish message on an election channel: %w", err)
@@ -200,7 +199,7 @@ func (c *ElectionChannel) Publish(publish method.Publish) error {
 }
 
 // Subscribe is used to handle a subscribe message from the client.
-func (c *ElectionChannel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
+func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
 	log.Printf("received a subscribe with id: %d", msg.ID)
 	c.sockets.Upsert(socket)
 
@@ -208,7 +207,7 @@ func (c *ElectionChannel) Subscribe(socket socket.Socket, msg method.Subscribe) 
 }
 
 // Unsubscribe is used to handle an unsubscribe message.
-func (c *ElectionChannel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
+func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 	log.Printf("received an unsubscribe with id: %d", msg.ID)
 
 	ok := c.sockets.Delete(socketID)
@@ -221,7 +220,7 @@ func (c *ElectionChannel) Unsubscribe(socketID string, msg method.Unsubscribe) e
 }
 
 // Catchup is used to handle a catchup message.
-func (c *ElectionChannel) Catchup(catchup method.Catchup) []message.Message {
+func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 	log.Printf("received a catchup with id: %d", catchup.ID)
 
 	messages := c.inbox.GetMessages()
@@ -244,7 +243,7 @@ func (c *ElectionChannel) Catchup(catchup method.Catchup) []message.Message {
 
 // broadcastToAllClients is a helper message to broadcast a message to all
 // subscribers.
-func (c *ElectionChannel) broadcastToAllClients(msg message.Message) {
+func (c *Channel) broadcastToAllClients(msg message.Message) {
 	rpcMessage := method.Broadcast{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
@@ -270,7 +269,7 @@ func (c *ElectionChannel) broadcastToAllClients(msg message.Message) {
 }
 
 // VerifyPublishMessage checks if a Publish message is valid
-func (c *ElectionChannel) VerifyPublishMessage(publish method.Publish) error {
+func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 	log.Printf("received a publish with id: %d", publish.ID)
 
 	// Check if the structure of the message is correct
@@ -295,16 +294,19 @@ func (c *ElectionChannel) VerifyPublishMessage(publish method.Publish) error {
 	return nil
 }
 
-func (c *ElectionChannel) castVoteHelper(msg message.Message, voteMsg messagedata.VoteCastVote) error {
+func (c *Channel) castVoteHelper(msg message.Message, voteMsg messagedata.VoteCastVote) error {
 
 	if voteMsg.CreatedAt > c.end {
 		return answer.NewErrorf(-4, "Vote cast too late, vote casted at %v and election ended at %v", voteMsg.CreatedAt, c.end)
 	}
 
-	log.Printf("The sender pk is %s", msg.Sender)
+	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
+	if err != nil {
+		return xerrors.Errorf("failed to decode sender key: %v", err)
+	}
 
 	senderPoint := crypto.Suite.Point()
-	err := senderPoint.UnmarshalBinary([]byte(msg.Sender))
+	err = senderPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
 		return answer.NewError(-4, "Invalid sender public key")
 	}
@@ -320,10 +322,14 @@ func (c *ElectionChannel) castVoteHelper(msg message.Message, voteMsg messagedat
 	c.inbox.StoreMessage(msg)
 	for _, q := range voteMsg.Votes {
 
-		qs, ok := c.questions[q.ID]
+		qs, ok := c.questions[q.Question]
 
 		if !ok {
-			return answer.NewErrorf(-4, "No Question with ID %q exists", q.ID)
+			for k, quest := range c.questions {
+				fmt.Printf("k=%s. v=%v, id=%s\n", k, quest, quest.id)
+			}
+
+			return answer.NewErrorf(-4, "No Question with question ID %s exists", q.Question)
 		}
 
 		// this is to handle the case when the organizer must handle multiple votes being cast at the same time
@@ -341,7 +347,7 @@ func (c *ElectionChannel) castVoteHelper(msg message.Message, voteMsg messagedat
 				q.Vote,
 			}
 		} else {
-			changeVote(&qs, earlierVote, msg.Sender, voteMsg.CreatedAt, q.Vote)
+			changeVote(qs, earlierVote, msg.Sender, voteMsg.CreatedAt, q.Vote)
 		}
 
 		//other votes can now change the list of valid votes
@@ -372,16 +378,16 @@ func changeVote(qs *question, earlierVote validVote, sender string, created int6
 	}
 }
 
-func getAllQuestionsForElectionChannel(questions []messagedata.ElectionSetupQuestion) map[string]question {
+func getAllQuestionsForElectionChannel(questions []messagedata.ElectionSetupQuestion) map[string]*question {
 
-	qs := make(map[string]question)
+	qs := make(map[string]*question)
 	for _, q := range questions {
 		ballotOpts := make([]string, len(q.BallotOptions))
 		for i, b := range q.BallotOptions {
 			ballotOpts[i] = b
 		}
 
-		qs[q.ID] = question{
+		qs[q.ID] = &question{
 			id:            []byte(q.ID),
 			ballotOptions: ballotOpts,
 			validVotesMu:  sync.RWMutex{},
