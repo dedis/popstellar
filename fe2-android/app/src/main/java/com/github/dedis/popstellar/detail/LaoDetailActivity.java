@@ -24,8 +24,6 @@ import com.github.dedis.popstellar.detail.fragments.RollCallDetailFragment;
 import com.github.dedis.popstellar.detail.fragments.RollCallTokenFragment;
 import com.github.dedis.popstellar.detail.fragments.WitnessMessageFragment;
 import com.github.dedis.popstellar.detail.fragments.event.creation.ElectionSetupFragment;
-import com.github.dedis.popstellar.detail.fragments.event.creation.MeetingEventCreationFragment;
-import com.github.dedis.popstellar.detail.fragments.event.creation.PollEventCreationFragment;
 import com.github.dedis.popstellar.detail.fragments.event.creation.RollCallEventCreationFragment;
 import com.github.dedis.popstellar.home.HomeActivity;
 import com.github.dedis.popstellar.home.HomeViewModel;
@@ -187,14 +185,8 @@ public class LaoDetailActivity extends AppCompatActivity {
               if (eventType != null) {
                 Log.d(TAG, "event type: " + eventType.toString());
                 switch (eventType) {
-                  case MEETING:
-                    setupCreateMeetingFragment();
-                    break;
                   case ROLL_CALL:
                     setupCreateRollCallFragment();
-                    break;
-                  case POLL:
-                    setupCreatePollFragment();
                     break;
                   case ELECTION:
                     setupCreateElectionSetupFragment();
@@ -205,6 +197,9 @@ public class LaoDetailActivity extends AppCompatActivity {
               }
             });
 
+  }
+
+  private void setupCreatePollFragment() {
   }
 
   public void setupHomeButton() {
@@ -286,17 +281,6 @@ public class LaoDetailActivity extends AppCompatActivity {
 
   }
 
-  private void setupCreateMeetingFragment() {
-    MeetingEventCreationFragment meetingCreationFragment =
-        (MeetingEventCreationFragment)
-            getSupportFragmentManager().findFragmentById(R.id.fragment_meeting_event_creation);
-    if (meetingCreationFragment == null) {
-      meetingCreationFragment = MeetingEventCreationFragment.newInstance();
-      ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), meetingCreationFragment, R.id.fragment_container_lao_detail);
-    }
-  }
-
   private void setupCreateRollCallFragment() {
     RollCallEventCreationFragment rollCallCreationFragment =
         (RollCallEventCreationFragment)
@@ -307,17 +291,6 @@ public class LaoDetailActivity extends AppCompatActivity {
           getSupportFragmentManager(),
           rollCallCreationFragment,
           R.id.fragment_container_lao_detail);
-    }
-  }
-
-  private void setupCreatePollFragment() {
-    PollEventCreationFragment pollCreationFragment =
-        (PollEventCreationFragment)
-            getSupportFragmentManager().findFragmentById(R.id.fragment_organizer_poll);
-    if (pollCreationFragment == null) {
-      pollCreationFragment = PollEventCreationFragment.newInstance();
-      ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), pollCreationFragment, R.id.fragment_container_lao_detail);
     }
   }
 
