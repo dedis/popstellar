@@ -8,17 +8,17 @@
       type="String" />
 
     <variable
-        name="position"
-        type= "int" />
+      name="position"
+      type="int" />
 
 
     <variable
       name="viewModel"
-      type="com.github.dedis.student20_pop.detail.LaoDetailViewModel" />
+      type="com.github.dedis.popstellar.detail.LaoDetailViewModel" />
 
     <variable
       name="listener"
-      type="com.github.dedis.student20_pop.detail.listeners.WitnessDeleteListener" />
+      type="com.github.dedis.popstellar.detail.listeners.WitnessDeleteListener" />
 
   </data>
   <androidx.constraintlayout.widget.ConstraintLayout
@@ -35,16 +35,16 @@
       app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/image_button_delete_witness"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="?android:selectableItemBackground"
-        android:contentDescription="@string/delete_a_witness"
-        android:onClick="@{() -> listener.onDeleteClicked(witness) }"
-        android:src="@drawable/ic_baseline_delete_24"
-        android:visibility="@{viewModel.isOrganizer ? View.VISIBLE : View.GONE}"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+      android:id="@+id/image_button_delete_witness"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:background="?android:selectableItemBackground"
+      android:contentDescription="@string/delete_a_witness"
+      android:onClick="@{() -> listener.onDeleteClicked(witness) }"
+      android:src="@drawable/ic_baseline_delete_24"
+      android:visibility="@{viewModel.isOrganizer ? View.VISIBLE : View.GONE}"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
