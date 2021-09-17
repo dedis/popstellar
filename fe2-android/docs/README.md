@@ -7,9 +7,63 @@ This repository contains the UI side implementation of the PoP project.
 * [Architecture](#architecture) 
 * [Coding Standards](#coding-standards)
 
+## Getting Started
+
+We assume that you're familiar with the PoP project. Please read the
+[Architecture Specifications](https://docs.google.com/document/d/19r3rP6o8TO-xeZBM0GQzkHYQFSJtWy7UhjLhzzZVry4)
+to get an idea about all the actors and components in the system.
+
+## Project Structure
+
+The project is organized into different modules as follows
+
+```
+.app/src
+├── main                        # 
+│    ├── java/X                 # 
+│    │    ├── model             # module containing the data model & objects
+│    │    │    ├── network      # ... of the objects sent over the network
+│    │    │    └── objects      # ... of the application's entities
+│    │    │    
+│    │    ├── repository        # module 
+│    │    │    ├── local        # ... of the objects sent over the network
+│    │    │    └── remote       # ... of the objects sent over the network
+│    │    │    
+│    │    ├── ui                # module containing the application's screens
+│    │    │    
+│    │    └── utility           #
+│    │         └── objects      # ... of the application's entities
+│    │    
+│    └── res                    # resources (layouts, strings, dimensions, etc.)
+│
+├── prod                        # 
+│
+├── mock                        # 
+│
+├── androidTest                 # 
+│
+├── test                        # 
+│
+│
+│
+├── network                    # module to network with the backend
+│
+├── parts                      # module containing the application's unique screens
+│
+├── res                        # resources (assets, images, etc.)
+│
+├── store                      # module dealing with application state (Redux-based)
+│    ├── reducers              # module containing the reducers (Redux)
+│    └── stores                # module to access states outside the React environment
+│
+├── styles                     # stylesheets
+└── utils                      # interfaces to system libraries
+     └── __mocks__             # mocks of those libraries, to be used in tests
+```
+
 ## Architecture
 
-We assume that you're familiar with the PoP project and the [User Interface Specifications](https://docs.google.com/document/d/1aVsCYj1vrTxh-V6CBrU4tRGANrC2wve47MSIXPliVbU/edit).
+We assume with the [User Interface Specifications](https://docs.google.com/document/d/1aVsCYj1vrTxh-V6CBrU4tRGANrC2wve47MSIXPliVbU/edit) file.
 
 ### Design
 
