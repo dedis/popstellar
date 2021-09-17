@@ -3,7 +3,7 @@ package ch.epfl.pop.json
 import ch.epfl.pop.json.ObjectProtocol._
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
-import ch.epfl.pop.model.network.method.message.data.election.{ElectionQuestion, EndElection, ResultElection, SetupElection}
+import ch.epfl.pop.model.network.method.message.data.election.{ElectionBallotVotes, ElectionQuestion, ElectionQuestionResult, EndElection, ResultElection, SetupElection}
 import ch.epfl.pop.model.network.method.message.data.lao._
 import ch.epfl.pop.model.network.method.message.data.meeting._
 import ch.epfl.pop.model.network.method.message.data.rollCall._
@@ -39,6 +39,8 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   // ------------------------------- DATA FORMATTERS UTILITY ------------------------------- //
 
   implicit val electionQuestionFormat: JsonFormat[ElectionQuestion] = jsonFormat5(ElectionQuestion.apply)
+  implicit val electionBallotVotesFormat: JsonFormat[ElectionBallotVotes] = jsonFormat2(ElectionBallotVotes.apply)
+  implicit val electionQuestionResultFormat: JsonFormat[ElectionQuestionResult] = jsonFormat2(ElectionQuestionResult.apply)
 
 
   // ----------------------------------- DATA FORMATTERS ----------------------------------- //
@@ -175,6 +177,6 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   implicit val witnessMessageFormat: JsonFormat[WitnessMessage] = jsonFormat[Hash, Signature, WitnessMessage](WitnessMessage.apply, "message_id", "signature")
 
   implicit val setupElectionFormat: JsonFormat[SetupElection] = jsonFormat[Hash, Hash, String, String, Timestamp, Timestamp, Timestamp, List[ElectionQuestion], SetupElection](SetupElection.apply, "id", "lao", "name", "version", "created_at", "start_time", "end_time", "questions")
-  implicit val resultElectionFormat: JsonFormat[ResultElection] = jsonFormat[List[ElectionQuestion], List[Signature], ResultElection](ResultElection.apply, "questions", "witness_signatures")
+  implicit val resultElectionFormat: JsonFormat[ResultElection] = jsonFormat[List[ElectionQuestionResult], List[Signature], ResultElection](ResultElection.apply, "questions", "witness_signatures")
   implicit val endElectionFormat: JsonFormat[EndElection] = jsonFormat[Hash, Hash, Timestamp, Hash, EndElection](EndElection.apply, "lao", "election", "created_at", "registered_votes")
 }
