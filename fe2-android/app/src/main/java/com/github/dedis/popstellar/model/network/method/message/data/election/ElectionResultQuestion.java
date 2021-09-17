@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.model.network.method.message.data;
+package com.github.dedis.popstellar.model.network.method.message.data.election;
 
 import java.util.List;
 

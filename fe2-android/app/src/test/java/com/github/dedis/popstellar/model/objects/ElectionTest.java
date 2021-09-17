@@ -5,10 +5,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 
-import com.github.dedis.popstellar.model.network.method.message.data.ElectionQuestion;
-import com.github.dedis.popstellar.model.network.method.message.data.ElectionResultQuestion;
-import com.github.dedis.popstellar.model.network.method.message.data.ElectionVote;
-import com.github.dedis.popstellar.model.network.method.message.data.QuestionResult;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
+import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
 import com.github.dedis.popstellar.utility.security.Hash;
 import java.time.Instant;
 import java.util.ArrayList;

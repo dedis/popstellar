@@ -9,6 +9,10 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
+import android.util.ArraySet;
+import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
+import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
+import com.github.dedis.popstellar.utility.security.Hash;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -254,5 +258,4 @@ public class LaoTest {
     LAO_1.setId("New Id");
     assertThat(LAO_1.getId(), is("New Id"));
   }
-
 }

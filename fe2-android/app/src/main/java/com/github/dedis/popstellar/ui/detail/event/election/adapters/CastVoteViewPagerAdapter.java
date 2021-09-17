@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.CastVoteFragmentBinding;
-import com.github.dedis.popstellar.model.network.method.message.data.ElectionQuestion;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import java.util.ArrayList;

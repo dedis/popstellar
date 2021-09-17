@@ -10,7 +10,6 @@ public enum EventType {
   POLL("P"),
   DISCUSSION("D");
 
-
   private final String suffix;
 
   /**

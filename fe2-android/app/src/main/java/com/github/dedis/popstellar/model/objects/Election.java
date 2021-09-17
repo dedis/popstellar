@@ -4,11 +4,10 @@ package com.github.dedis.popstellar.model.objects;
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.event.EventType;
-import com.github.dedis.popstellar.model.network.method.message.data.ElectionQuestion;
-import com.github.dedis.popstellar.model.network.method.message.data.ElectionResultQuestion;
-import com.github.dedis.popstellar.model.network.method.message.data.ElectionVote;
-import com.github.dedis.popstellar.model.network.method.message.data.QuestionResult;
-import com.github.dedis.popstellar.model.network.IdGenerator;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
+import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
 import com.github.dedis.popstellar.utility.security.Hash;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,7 +38,7 @@ public class Election extends Event {
   private Map<String, List<QuestionResult>> results;
 
   public Election(String laoId, long creation, String name) {
-    this.id = IdGenerator.generateElectionSetupId(laoId, creation, name);
+    this.id = Election.generateElectionSetupId(laoId, creation, name);
     this.name = name;
     this.creation = creation;
     this.results = new HashMap<>();
@@ -201,5 +200,48 @@ public class Election extends Event {
   @Override
   public EventType getType() {
     return EventType.ELECTION;
+  }
+
+  /**
+   * Generate the id for dataElectionSetup. https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataElectionSetup.json
+   *
+   * @param laoId     ID of the LAO
+   * @param createdAt creation time of the election
+   * @param name      name of the election
+   * @return the ID of ElectionSetup computed as Hash('Election'||lao_id||created_at||name)
+   */
+  public static String generateElectionSetupId(String laoId, long createdAt, String name) {
+    return Hash.hash(EventType.ELECTION.getSuffix(), laoId, Long.toString(createdAt), name);
+  }
+
+  /**
+   * Generate the id for a question of dataElectionSetup and dataElectionResult.
+   * https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataElectionSetup.json
+   * https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataElectionResult.json
+   *
+   * @param electionId ID of the Election
+   * @param question   question of the Election
+   * @return the ID of an election question computed as Hash(“Question”||election_id||question)
+   */
+  public static String generateElectionQuestionId(String electionId, String question) {
+    return Hash.hash("Question", electionId, question);
+  }
+
+  /**
+   * Generate the id for a vote of dataCastVote. https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataCastVote.json
+   *
+   * @param electionId     ID of the Election
+   * @param questionId     ID of the Election question
+   * @param voteIndex      index(es) of the vote
+   * @param writeIn        string representing the write in
+   * @param writeInEnabled boolean representing if write enabled or not
+   * @return the ID of an election question computed as Hash('Vote'||election_id||question_id||(vote_index(es)|write_in))
+   */
+  public static String generateElectionVoteId(String electionId, String questionId,
+      List<Integer> voteIndex, String writeIn, boolean writeInEnabled) {
+    // If write_in is enabled the id is formed with the write_in string
+    // If write_in is not enabled the id is formed with the vote indexes (formatted as [int1, int2, ...])
+    return Hash.hash("Vote", electionId, questionId,
+        writeInEnabled ? writeIn : voteIndex.toString());
   }
 }

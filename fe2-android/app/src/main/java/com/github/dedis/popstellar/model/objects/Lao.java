@@ -1,6 +1,6 @@
 package com.github.dedis.popstellar.model.objects;
 
-import com.github.dedis.popstellar.model.network.IdGenerator;
+import com.github.dedis.popstellar.utility.security.Hash;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -47,12 +47,12 @@ public final class Lao {
   }
 
   public Lao(String name, String organizer, long creation) {
-    this(IdGenerator.generateLaoId(organizer, creation, name));
+    this(generateLaoId(organizer, creation, name));
     if (name == null) {
-      throw new IllegalArgumentException(" The name of the Lao is null");
+      throw new IllegalArgumentException("The name of the Lao is null");
     }
     if (name.isEmpty()) {
-      throw new IllegalArgumentException(" The name of the Lao is empty");
+      throw new IllegalArgumentException("The name of the Lao is empty");
     }
     this.name = name;
     this.organizer = organizer;
@@ -62,7 +62,7 @@ public final class Lao {
   public void updateRollCall(String prevId, RollCall rollCall) {
 
     if (rollCall == null) {
-      throw new IllegalArgumentException(" The roll call is null");
+      throw new IllegalArgumentException("The roll call is null");
     }
 
     if (rollCalls.containsKey(prevId)) {
@@ -74,7 +74,7 @@ public final class Lao {
 
   public void updateElection(String prevId, Election election) {
     if (election == null) {
-      throw new IllegalArgumentException(" The election is null");
+      throw new IllegalArgumentException("The election is null");
     }
     if (elections.containsKey(prevId)) {
       elections.remove(prevId);
@@ -165,9 +165,9 @@ public final class Lao {
 
   public void setId(String id) {
     if (id == null) {
-      throw new IllegalArgumentException(" The Id of the Lao is null");
+      throw new IllegalArgumentException("The Id of the Lao is null");
     } else if (id.isEmpty()) {
-      throw new IllegalArgumentException(" The id of the Lao is empty");
+      throw new IllegalArgumentException("The id of the Lao is empty");
     }
 
     this.id = id;
@@ -215,7 +215,7 @@ public final class Lao {
   public void setWitnesses(Set<String> witnesses) {
 
     if (witnesses == null) {
-      throw new IllegalArgumentException(" The witnesses set is null");
+      throw new IllegalArgumentException("The witnesses set is null");
     }
     for (String witness : witnesses) {
       if (witness == null) {
@@ -249,4 +249,16 @@ public final class Lao {
     this.elections = elections;
   }
 
+  /**
+   * Generate the id for dataCreateLao and dataUpdateLao. https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataCreateLao.json
+   * https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataUpdateLao.json
+   *
+   * @param organizer ID of the organizer
+   * @param creation  creation time of the LAO
+   * @param name      original or updated name of the LAO
+   * @return the ID of CreateLao or UpdateLao computed as Hash(organizer||creation||name)
+   */
+  public static String generateLaoId(String organizer, long creation, String name) {
+    return Hash.hash(organizer, Long.toString(creation), name);
+  }
 }
