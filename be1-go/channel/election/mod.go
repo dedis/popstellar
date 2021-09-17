@@ -164,20 +164,20 @@ func (c *Channel) Publish(publish method.Publish) error {
 
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
 
-	if object == "election" {
+	if object == messagedata.ElectionObject {
 
 		switch action {
-		case "cast_vote":
+		case messagedata.VoteActionCastVote:
 			err := c.publishCastVote(msg)
 			if err != nil {
 				return xerrors.Errorf("failed to cast vote: %v", err)
 			}
-		case "end":
+		case messagedata.ElectionActionEnd:
 			err := c.publishEndElection(msg)
 			if err != nil {
 				return xerrors.Errorf("failed to end election: %v", err)
 			}
-		case "result":
+		case messagedata.ElectionActionResult:
 			err = c.publishResultElection(msg)
 			if err != nil {
 				return xerrors.Errorf("failed to end election: %v", err)
@@ -232,7 +232,7 @@ func (c *Channel) broadcastToAllClients(msg message.Message) {
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-			Method: "broadcast",
+			Method: query.MethodBroadcast,
 		},
 		Params: struct {
 			Channel string          `json:"channel"`
@@ -403,8 +403,8 @@ func (c *Channel) publishEndElection(msg message.Message) error {
 
 func (c *Channel) publishResultElection(msg message.Message) error {
 	resultElection := messagedata.ElectionResult{
-		Object:    "election",
-		Action:    "result",
+		Object:    messagedata.ElectionObject,
+		Action:    messagedata.ElectionActionResult,
 		Questions: []messagedata.ElectionResultQuestion{},
 	}
 

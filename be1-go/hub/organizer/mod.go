@@ -171,7 +171,7 @@ func (h *Hub) handleRootChannelMesssage(socket socket.Socket, publish method.Pub
 	}
 
 	// must be "lao#create"
-	if object != "lao" || action != "create" {
+	if object != messagedata.LAOObject || action != messagedata.LAOActionCreate {
 		err := answer.NewErrorf(-1, "only lao#create is allowed on root, "+
 			"but found %s#%s", object, action)
 		h.log.Err(err)
@@ -226,9 +226,9 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) {
 		return
 	}
 
-	var query query.Base
+	var queryBase query.Base
 
-	err = json.Unmarshal(byteMessage, &query)
+	err = json.Unmarshal(byteMessage, &queryBase)
 	if err != nil {
 		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
 		h.log.Err(err)
@@ -240,17 +240,17 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) {
 	var msgs []message.Message
 	var handlerErr error
 
-	switch query.Method {
-	case "publish":
+	switch queryBase.Method {
+	case query.MethodPublish:
 		id, handlerErr = h.handlePublish(socket, byteMessage)
-	case "subscribe":
+	case query.MethodSubscribe:
 		id, handlerErr = h.handleSubscribe(socket, byteMessage)
-	case "unsubscribe":
+	case query.MethodUnsubscribe:
 		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
-	case "catchup":
+	case query.MethodCatchUp:
 		msgs, id, handlerErr = h.handleCatchup(byteMessage)
 	default:
-		err = answer.NewErrorf(-2, "unexpected method: '%s'", query.Method)
+		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
 		h.log.Err(err)
 		socket.SendError(nil, err)
 		return
@@ -263,7 +263,7 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) {
 		return
 	}
 
-	if query.Method == "catchup" {
+	if queryBase.Method == query.MethodCatchUp {
 		socket.SendResult(id, msgs)
 		return
 	}
