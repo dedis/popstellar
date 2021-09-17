@@ -1,9 +1,8 @@
 import 'jest-extended';
+// @ts-ignore
 import testKeyPair from 'test_data/keypair.json';
 import { KeyPair, KeyPairState } from '../KeyPair';
 import { Base64UrlData } from '../Base64Url';
-
-// @ts-ignore
 
 const kpState: KeyPairState = {
   publicKey: testKeyPair.publicKey,
