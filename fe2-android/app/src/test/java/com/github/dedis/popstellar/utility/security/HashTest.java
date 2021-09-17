@@ -3,9 +3,6 @@ package com.github.dedis.popstellar.utility.security;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import com.github.dedis.popstellar.model.RollCall;
-import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
-import com.github.dedis.popstellar.utility.network.IdGenerator;
 import org.junit.Assert;
 import org.junit.Test;
 
