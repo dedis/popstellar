@@ -28,8 +28,8 @@ public class CreateRollCall extends Data {
 
   /**
    * Constructor for a data Create Roll-Call Event
-   *
-   * @param name          name of the Roll-Call
+   *  @param name         name of the Roll-Call
+   * @param creation      of the Roll-Call
    * @param proposedStart of the Roll-Call
    * @param proposedEnd   of the Roll-Call
    * @param location      location of the Roll-Call
@@ -38,18 +38,15 @@ public class CreateRollCall extends Data {
    */
   public CreateRollCall(
       String name,
+      long creation,
       long proposedStart,
       long proposedEnd,
       String location,
       @Nullable String description,
       String laoId) {
     this.name = name;
-    this.creation = Instant.now().getEpochSecond();
-    if (proposedStart <= this.creation) {
-      this.proposedStart = this.creation;
-    } else {
-      this.proposedStart = proposedStart;
-    }
+    this.creation = creation;
+    this.proposedStart = proposedStart;
     if (proposedEnd == 0) {
       this.proposedEnd = proposedStart + 3600;
     } else {
@@ -57,7 +54,7 @@ public class CreateRollCall extends Data {
     }
     this.location = location;
     this.description = description;
-    this.id = IdGenerator.generateCreateRollCallId(laoId, creation, name);
+    this.id = IdGenerator.generateCreateRollCallId(laoId, this.creation, name);
   }
 
   public CreateRollCall(

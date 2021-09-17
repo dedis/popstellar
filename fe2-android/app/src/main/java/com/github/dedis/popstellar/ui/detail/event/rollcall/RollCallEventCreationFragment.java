@@ -141,6 +141,6 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     String title = mFragBinding.rollCallTitleText.getText().toString();
     String description = mFragBinding.rollCallEventDescriptionText.getText().toString();
     mLaoDetailViewModel
-        .createNewRollCall(title, description, startTimeInSeconds, endTimeInSeconds, open);
+        .createNewRollCall(title, description, creationTimeInSeconds, startTimeInSeconds, endTimeInSeconds, open);
   }
 }

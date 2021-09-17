@@ -26,13 +26,14 @@ public class ElectionSetup extends Data {
 
   /**
    * Constructor for a data setup Election Event
-   *
    * @param name  name of the Election
+   * @param creation of the Election
    * @param start of the Election
    * @param laoId id of the LAO
    */
   public ElectionSetup(
       String name,
+      long creation,
       long start,
       long end,
       List<String> votingMethod,
@@ -44,7 +45,7 @@ public class ElectionSetup extends Data {
         || questionList == null || laoId == null) {
       throw new IllegalArgumentException();
     }
-    if (end < 0 || start < 0 || end < start) {
+    if (end < 0 || start < 0 || end < start || creation > start || creation < 0) {
       throw new IllegalArgumentException("Timestamp cannot be negative");
     }
     if (questionList.size() != votingMethod.size() || questionList.size() != writeIn.size()
@@ -52,7 +53,7 @@ public class ElectionSetup extends Data {
       throw new IllegalArgumentException("Lists are not of the same size");
     }
     this.name = name;
-    this.createdAt = Instant.now().getEpochSecond();
+    this.createdAt = creation;
     this.startTime = start;
     this.endTime = end;
     this.lao = laoId;

@@ -36,6 +36,7 @@ public abstract class AbstractEventCreationFragment extends Fragment {
   public static final String NO_LOCATION = "";
   public final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH);
   public final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm", Locale.FRENCH);
+  public static long creationTimeInSeconds = Instant.now().getEpochSecond();
   public static long startTimeInSeconds;
   public static long endTimeInSeconds;
   private Calendar startDate;

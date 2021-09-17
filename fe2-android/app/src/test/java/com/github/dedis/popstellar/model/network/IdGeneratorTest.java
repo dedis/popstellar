@@ -66,7 +66,7 @@ public class IdGeneratorTest {
 
   @Test
   public void generateCreateRollCallIdTest() {
-    CreateRollCall createRollCall = new CreateRollCall(name, time, time, location, null, laoId);
+    CreateRollCall createRollCall = new CreateRollCall(name, time, time, time, location, null, laoId);
     // Hash('R'||lao_id||creation||name)
     String expectedId = Hash
         .hash(EventType.ROLL_CALL.getSuffix(), laoId, Long.toString(createRollCall.getCreation()),
@@ -94,8 +94,8 @@ public class IdGeneratorTest {
 
   @Test
   public void generateElectionSetupIdTest() {
-    ElectionSetup electionSetup = new ElectionSetup(name, time, time, allMethods, allWriteIns,
-        Arrays.asList(new ArrayList<>(), new ArrayList<>()), allQuestions, laoId);
+    ElectionSetup electionSetup = new ElectionSetup(name, time, time, time, allMethods,
+        allWriteIns, Arrays.asList(new ArrayList<>(), new ArrayList<>()), allQuestions, laoId);
     // Hash('Election'||lao_id||created_at||name)
     String expectedId = Hash.hash(EventType.ELECTION.getSuffix(), electionSetup.getLao(),
         Long.toString(electionSetup.getCreation()), electionSetup.getName());
@@ -104,8 +104,8 @@ public class IdGeneratorTest {
 
   @Test
   public void generateElectionQuestionIdTest() {
-    ElectionSetup electionSetup = new ElectionSetup(name, time, time, allMethods, allWriteIns,
-        Arrays.asList(new ArrayList<>(), new ArrayList<>()), allQuestions, laoId);
+    ElectionSetup electionSetup = new ElectionSetup(name, time, time, time, allMethods,
+        allWriteIns, Arrays.asList(new ArrayList<>(), new ArrayList<>()), allQuestions, laoId);
     // Hash(“Question”||election_id||question)
     String expectedId = Hash
         .hash(IdGenerator.SUFFIX_ELECTION_QUESTION, electionSetup.getId(), question);
