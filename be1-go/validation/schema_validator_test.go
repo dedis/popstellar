@@ -20,7 +20,7 @@ func TestSchemaValidator_ValidateResponse(t *testing.T) {
 	validator, err := NewSchemaValidator()
 	require.NoError(t, err)
 
-	err = validator.VerifyJson([]byte(response), GenericMessage)
+	err = validator.VerifyJSON([]byte(response), GenericMessage)
 	require.NoError(t, err)
 }
 
@@ -32,7 +32,7 @@ func TestSchemaValidator_ValidateDataLAOCreate(t *testing.T) {
 	validator, err := NewSchemaValidator()
 	require.NoError(t, err)
 
-	err = validator.VerifyJson(dataBuf, Data)
+	err = validator.VerifyJSON(dataBuf, Data)
 	require.NoError(t, err)
 }
 
@@ -42,7 +42,7 @@ func TestSchemaValidator_ValidateCatchupRequest(t *testing.T) {
 	validator, err := NewSchemaValidator()
 	require.NoError(t, err)
 
-	err = validator.VerifyJson([]byte(request), GenericMessage)
+	err = validator.VerifyJSON([]byte(request), GenericMessage)
 	require.NoError(t, err)
 }
 
@@ -52,7 +52,7 @@ func TestSchemaValidator_ValidateCatchupRequestBadChannel(t *testing.T) {
 	validator, err := NewSchemaValidator()
 	require.NoError(t, err)
 
-	err = validator.VerifyJson([]byte(request), GenericMessage)
+	err = validator.VerifyJSON([]byte(request), GenericMessage)
 	require.Error(t, err)
 }
 
@@ -62,7 +62,7 @@ func TestSchemaValidator_ValidateAnswer(t *testing.T) {
 	validator, err := NewSchemaValidator()
 	require.NoError(t, err)
 
-	err = validator.VerifyJson([]byte(response), GenericMessage)
+	err = validator.VerifyJSON([]byte(response), GenericMessage)
 	require.NoError(t, err)
 }
 
@@ -72,7 +72,7 @@ func TestSchemaValidator_ValidatePublish(t *testing.T) {
 	validator, err := NewSchemaValidator()
 	require.NoError(t, err)
 
-	err = validator.VerifyJson([]byte(request), GenericMessage)
+	err = validator.VerifyJSON([]byte(request), GenericMessage)
 	require.NoError(t, err)
 }
 
@@ -82,7 +82,7 @@ func TestSchemaValidator_ValidatePublishBadMethod(t *testing.T) {
 	validator, err := NewSchemaValidator()
 	require.NoError(t, err)
 
-	err = validator.VerifyJson([]byte(request), GenericMessage)
+	err = validator.VerifyJSON([]byte(request), GenericMessage)
 	require.Error(t, err)
 }
 
@@ -94,6 +94,6 @@ func TestSchemaValidator_ValidateCastVoteData(t *testing.T) {
 	validator, err := NewSchemaValidator()
 	require.NoError(t, err)
 
-	err = validator.VerifyJson(dataBuf, Data)
+	err = validator.VerifyJSON(dataBuf, Data)
 	require.NoError(t, err)
 }

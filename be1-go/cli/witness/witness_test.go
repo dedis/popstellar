@@ -2,8 +2,11 @@ package witness
 
 import (
 	"io"
+	"student20_pop/channel/lao"
 	"student20_pop/crypto"
 	"student20_pop/hub"
+	"student20_pop/hub/organizer"
+	"student20_pop/hub/witness"
 	"student20_pop/network"
 	"student20_pop/network/socket"
 	"sync"
@@ -17,7 +20,7 @@ import (
 func TestConnectToWitnessSocket(t *testing.T) {
 	log := zerolog.New(io.Discard)
 
-	oh, err := hub.NewOrganizerHub(crypto.Suite.Point(), log)
+	oh, err := organizer.NewHub(crypto.Suite.Point(), log, lao.NewChannel)
 	require.NoError(t, err)
 	oh.Start()
 
@@ -27,7 +30,7 @@ func TestConnectToWitnessSocket(t *testing.T) {
 
 	time.Sleep(1 * time.Second)
 
-	wh, err := hub.NewWitnessHub(crypto.Suite.Point(), log)
+	wh, err := witness.NewHub(crypto.Suite.Point(), log)
 	require.NoError(t, err)
 	wDone := make(chan struct{})
 	wh.Start()

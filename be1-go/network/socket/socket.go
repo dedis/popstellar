@@ -170,7 +170,7 @@ func (s *baseSocket) SendError(id *int, err error) {
 
 	if xerrors.As(err, &msgError) {
 		answer := answer.Answer{
-			ID:    *id,
+			ID:    id,
 			Error: msgError,
 		}
 

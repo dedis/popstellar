@@ -8,8 +8,6 @@
 package hub
 
 import (
-	"student20_pop/message/query/method"
-	"student20_pop/message/query/method/message"
 	"student20_pop/network/socket"
 )
 
@@ -45,19 +43,4 @@ type Hub interface {
 
 	// Type returns the type of Hub.
 	Type() HubType
-}
-
-// Channel represents a PoP channel - like a LAO.
-type Channel interface {
-	// Subscribe is used to handle a subscribe message.
-	Subscribe(socket socket.Socket, msg method.Subscribe) error
-
-	// Unsubscribe is used to handle an unsubscribe message.
-	Unsubscribe(socketID string, msg method.Unsubscribe) error
-
-	// Publish is used to handle a publish message.
-	Publish(msg method.Publish) error
-
-	// Catchup is used to handle a catchup message.
-	Catchup(msg method.Catchup) []message.Message
 }

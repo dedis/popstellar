@@ -75,6 +75,7 @@ other witnesses. The full path to connect to the organizer as a client is
 `ws://host:witnessport/organizer/witness/`.
 
 ## Unit-tests
+
 Some unit-tests exist directly in their corresponding packages, as per Go
 specification. They can be run with `make check` (recursive from the top-level
 folder) or simply `go test` for the current package (except the `validation`).
@@ -96,6 +97,7 @@ The above command would make this module's documentation available at
 ## Potential improvements
 
 ### WebSockets
+
 Maybe we should consider using websocket secure (websocket over TLS) instead of
 "standards" websocket (over TCP). It would protect from MitM attacks, as we
 currently don't offer data privacy.
