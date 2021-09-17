@@ -45,8 +45,4 @@ public class Hash {
       throw new PoPException("failed to retrieve SHA-256 instance", e);
     }
   }
-
-  private static String esc(String input) {
-    return input.replace("\\", "\\\\").replace("\"", "\\\"");
-  }
 }
