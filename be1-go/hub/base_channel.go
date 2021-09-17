@@ -1,24 +1,53 @@
 package hub
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
+	"sort"
 	"student20_pop/message"
+	"student20_pop/network/socket"
+	"student20_pop/validation"
 	"sync"
 )
+
+type sockets struct {
+	sync.RWMutex
+	store map[string]socket.Socket
+}
+
+// Upsert upserts a socket into the sockets store.
+func (s *sockets) Upsert(socket socket.Socket) {
+	s.Lock()
+	defer s.Unlock()
+
+	s.store[socket.ID()] = socket
+}
+
+// Delete deletes a socket from the store. Returns false
+// if the socket is not present in the store and true
+// on success.
+func (s *sockets) Delete(ID string) bool {
+	s.Lock()
+	defer s.Unlock()
+
+	_, ok := s.store[ID]
+	if !ok {
+		return false
+	}
+
+	delete(s.store, ID)
+	return true
+}
 
 // baseChannel represent a generic channel and contains all the fields that are
 // used in all channels
 type baseChannel struct {
-	hub *organizerHub
+	hub *baseHub
 
-	clientsMu sync.RWMutex
-	clients   map[*ClientSocket]struct{}
+	sockets sockets
 
-	inboxMu sync.RWMutex
-	inbox   map[string]message.Message
+	inbox *inbox
 
 	// /root/<ID>
 	channelID string
@@ -27,61 +56,77 @@ type baseChannel struct {
 	witnesses []message.PublicKey
 }
 
+type messageInfo struct {
+	message    *message.Message
+	storedTime message.Timestamp
+}
+
 // CreateBaseChannel return an instance of a `baseChannel`
-func createBaseChannel(h *organizerHub, channelID string) *baseChannel {
+func createBaseChannel(h *baseHub, channelID string) *baseChannel {
 	return &baseChannel{
 		hub:       h,
 		channelID: channelID,
-		clients:   make(map[*ClientSocket]struct{}),
-		inbox:     make(map[string]message.Message),
+		sockets:   sockets{},
+		inbox:     createInbox(channelID),
 	}
 }
 
-func (c *baseChannel) Subscribe(client *ClientSocket, msg message.Subscribe) error {
+// Subscribe is used to handle a subscribe message from the client.
+func (c *baseChannel) Subscribe(socket socket.Socket, msg message.Subscribe) error {
 	log.Printf("received a subscribe with id: %d", msg.ID)
-	c.clientsMu.Lock()
-	defer c.clientsMu.Unlock()
-
-	c.clients[client] = struct{}{}
+	c.sockets.Upsert(socket)
 
 	return nil
 }
 
-func (c *baseChannel) Unsubscribe(client *ClientSocket, msg message.Unsubscribe) error {
+// Unsubscribe is used to handle an unsubscribe message.
+func (c *baseChannel) Unsubscribe(socketID string, msg message.Unsubscribe) error {
 	log.Printf("received an unsubscribe with id: %d", msg.ID)
 
-	c.clientsMu.Lock()
-	defer c.clientsMu.Unlock()
+	ok := c.sockets.Delete(socketID)
 
-	if _, ok := c.clients[client]; !ok {
+	if !ok {
 		return &message.Error{
 			Code:        -2,
 			Description: "client is not subscribed to this channel",
 		}
 	}
 
-	delete(c.clients, client)
 	return nil
 }
 
+// Catchup is used to handle a catchup message.
 func (c *baseChannel) Catchup(catchup message.Catchup) []message.Message {
 	log.Printf("received a catchup with id: %d", catchup.ID)
 
-	c.inboxMu.RLock()
-	defer c.inboxMu.RUnlock()
+	c.inbox.mutex.RLock()
+	defer c.inbox.mutex.RUnlock()
 
-	result := make([]message.Message, 0, len(c.inbox))
-	for _, msg := range c.inbox {
-		result = append(result, msg)
+	messages := make([]messageInfo, 0, len(c.inbox.msgs))
+	// iterate over map and collect all the values (messageInfo instances)
+	for _, msgInfo := range c.inbox.msgs {
+		messages = append(messages, *msgInfo)
+	}
+
+	// sort.Slice on messages based on the timestamp
+	sort.Slice(messages, func(i, j int) bool {
+		return messages[i].storedTime < messages[j].storedTime
+	})
+
+	result := make([]message.Message, 0, len(c.inbox.msgs))
+
+	// iterate and extract the messages[i].message field and
+	// append it to the result slice
+	for _, msgInfo := range messages {
+		result = append(result, *msgInfo.message)
 	}
 
 	return result
 }
 
+// broadcastToAllClients is a helper message to broadcast a message to all
+// subscribers.
 func (c *baseChannel) broadcastToAllClients(msg message.Message) {
-	c.clientsMu.RLock()
-	defer c.clientsMu.RUnlock()
-
 	query := message.Query{
 		Broadcast: message.NewBroadcast(c.channelID, &msg),
 	}
@@ -91,12 +136,14 @@ func (c *baseChannel) broadcastToAllClients(msg message.Message) {
 		log.Fatalf("failed to marshal broadcast query: %v", err)
 	}
 
-	for client := range c.clients {
-		client.Send(buf)
+	c.sockets.RLock()
+	defer c.sockets.RUnlock()
+	for _, socket := range c.sockets.store {
+		socket.Send(buf)
 	}
 }
 
-// Verify the if a Publish message is valid
+// VerifyPublishMessage checks if a Publish message is valid
 func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 	log.Printf("received a publish with id: %d", publish.ID)
 
@@ -104,13 +151,14 @@ func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 	msg := publish.Params.Message
 
 	// Verify the data
-	err := c.hub.verifyJson(msg.RawData, DataSchema)
+	err := c.hub.schemaValidator.VerifyJson(msg.RawData, validation.Data)
 	if err != nil {
 		return message.NewError("failed to validate the data", err)
 	}
 
 	// Unmarshal the data
-	err = msg.VerifyAndUnmarshalData()
+	laoID := c.channelID[6:]
+	err = msg.VerifyAndUnmarshalData(laoID)
 	if err != nil {
 		// Return a error of type "-4 request data is invalid" for all the verifications and unmarshalling problems of the data
 		return &message.Error{
@@ -119,18 +167,13 @@ func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 		}
 	}
 
-	msgIDEncoded := base64.URLEncoding.EncodeToString(msg.MessageID)
-
 	// Check if the message already exists
-	c.inboxMu.RLock()
-	if _, ok := c.inbox[msgIDEncoded]; ok {
-		c.inboxMu.RUnlock()
+	if _, ok := c.inbox.getMessage(msg.MessageID); ok {
 		return &message.Error{
 			Code:        -3,
 			Description: "message already exists",
 		}
 	}
-	c.inboxMu.RUnlock()
 
 	return nil
 }

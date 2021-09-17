@@ -2,13 +2,30 @@ package hub
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/base64"
 	"fmt"
+	"log"
+	"os"
 	"student20_pop/message"
+
+	_ "github.com/mattn/go-sqlite3"
+	"golang.org/x/xerrors"
 )
 
+// processCreateRollCall processes a roll call creation object.
 func (c *laoChannel) processCreateRollCall(data message.Data) error {
+
 	rollCallData := data.(*message.CreateRollCallData)
+
+	// Check that the ProposedEnd is greater than the ProposedStart
+	if rollCallData.ProposedStart > rollCallData.ProposedEnd {
+		return &message.Error{
+			Code:        -4,
+			Description: "The field `proposed_start` is greater than the field `proposed_end`",
+		}
+	}
+
 	if !c.checkRollCallID(rollCallData.Creation, message.Stringer(rollCallData.Name), rollCallData.ID) {
 		return &message.Error{
 			Code:        -4,
@@ -21,6 +38,7 @@ func (c *laoChannel) processCreateRollCall(data message.Data) error {
 	return nil
 }
 
+// processOpenRollCall processes an open roll call object.
 func (c *laoChannel) processOpenRollCall(data message.Data, action message.RollCallAction) error {
 	if action == message.RollCallAction(message.OpenRollCallAction) {
 		// If the action is an OpenRollCallAction,
@@ -64,6 +82,7 @@ func (c *laoChannel) processOpenRollCall(data message.Data, action message.RollC
 	return nil
 }
 
+// processCloseRollCall processes a close roll call message.
 func (c *laoChannel) processCloseRollCall(data message.Data) error {
 	if c.rollCall.state != Open {
 		return &message.Error{
@@ -90,22 +109,59 @@ func (c *laoChannel) processCloseRollCall(data message.Data) error {
 
 	c.rollCall.id = string(rollCallData.UpdateID)
 	c.rollCall.state = Closed
-	c.attendees = map[string]struct{}{}
-	for i := 0; i < len(rollCallData.Attendees); i += 1 {
-		c.attendees[string(rollCallData.Attendees[i])] = struct{}{}
+
+	var db *sql.DB
+
+	if os.Getenv("HUB_DB") != "" {
+		db, err := sql.Open("sqlite3", os.Getenv("HUB_DB"))
+		if err != nil {
+			log.Printf("error: failed to connect to db: %v", err)
+			db = nil
+		} else {
+			defer db.Close()
+		}
+	}
+
+	for _, attendee := range rollCallData.Attendees {
+		c.attendees.Add(attendee.String())
+
+		if db != nil {
+			log.Printf("inserting attendee into db")
+
+			err := insertAttendee(db, attendee.String(), c.channelID)
+			if err != nil {
+				log.Printf("error: failed to insert attendee into db: %v", err)
+			}
+		}
 	}
 
 	return nil
 }
 
-// Helper functions
+func insertAttendee(db *sql.DB, key string, channelID string) error {
+	stmt, err := db.Prepare("insert into lao_attendee(attendee_key, lao_channel_id) values(?, ?)")
+	if err != nil {
+		return xerrors.Errorf("failed to prepare query: %v", err)
+	}
 
+	defer stmt.Close()
+
+	_, err = stmt.Exec(key, channelID)
+	if err != nil {
+		return xerrors.Errorf("failed to exec query: %v", err)
+	}
+
+	return nil
+}
+
+// checkPrevID is a helper method which validates the roll call ID.
 func (r *rollCall) checkPrevID(prevID []byte) bool {
 	return string(prevID) == r.id
 }
 
-// Check if the id of the roll call corresponds to the hash of the correct parameters
-// Return true if the hash corresponds to the id and false otherwise
+// checkRollCallID checks if the id of the roll call corresponds to the hash
+// of the correct parameters. Returns true if the hash corresponds to the
+// id and false otherwise.
 func (c *laoChannel) checkRollCallID(str1, str2 fmt.Stringer, id []byte) bool {
 	laoID := c.channelID[6:]
 	hash, err := message.Hash(message.Stringer('R'), message.Stringer(laoID), str1, str2)

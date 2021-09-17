@@ -63,7 +63,7 @@ export class Message {
     }
     const expectedHash = Hash.fromStringArray(msg.data.toString(), msg.signature.toString());
     if (!expectedHash.equals(msg.message_id)) {
-      throw new ProtocolError("Invalid 'message_id' parameter encountered during 'CreateLao': unexpected id value");
+      throw new ProtocolError("Invalid 'message_id' parameter encountered during 'Message' creation: unexpected id value");
     }
     if (!msg.witness_signatures) {
       throw new ProtocolError("Undefined 'witness_signatures' parameter encountered during 'Message' creation");
@@ -117,4 +117,35 @@ export class Message {
       witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
     });
   }
+
+  /* ============= fromData to sign with PoP token =============
+
+public static async fromData(
+    data: MessageData, witnessSignatures?: WitnessSignature[],
+  ): Promise<Message> {
+    const encodedDataJson: Base64UrlData = encodeMessageData(data);
+    let signature: Signature = KeyPairStore.getPrivateKey().sign(encodedDataJson);
+    let keyPair: KeyPair | undefined;
+    WalletStore.get().then((encryptedSeed) => {
+      if (encryptedSeed !== undefined) {
+        HDWallet.fromState(encryptedSeed)
+          .then((wallet) => {
+            keyPair = wallet.recoverLastGeneratedPoPToken();
+            console.log('Pop token in message is: ', keyPair);
+            signature = (keyPair) ? keyPair?.privateKey.sign(encodedDataJson) : signature;
+          });
+      }
+    }).catch((e) => {
+      console.debug('error when getting last pop token from wallet: ', e);
+    });
+    return new Message({
+      data: encodedDataJson,
+      sender: (keyPair) ? keyPair.publicKey : KeyPairStore.getPublicKey(),
+      signature,
+      message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
+      witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
+    });
+  }
+}
+*/
 }

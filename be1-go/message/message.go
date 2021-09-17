@@ -1,16 +1,24 @@
 package message
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
-	"student20_pop"
+	"fmt"
+	"log"
+	"student20_pop/crypto"
 
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 )
 
+// Base64URLBytes denotes a Base64URL encoding
 type Base64URLBytes []byte
+
+func (b Base64URLBytes) Encode() string {
+	return base64.URLEncoding.EncodeToString(b)
+}
 
 type internalMessage struct {
 	MessageID         Base64URLBytes           `json:"message_id"`
@@ -175,8 +183,8 @@ func (p *PublicKey) UnmarshalJSON(data []byte) error {
 // VerifyAndUnmarshalData verifies the signature in the Message and returns an
 // error in case of failure. If the verification suceeds it tries to unmarshal
 // the RawData field into one of the implementations of `Data`.
-func (m *Message) VerifyAndUnmarshalData() error {
-	err := schnorr.VerifyWithChecks(student20_pop.Suite, m.Sender, m.RawData, m.Signature)
+func (m *Message) VerifyAndUnmarshalData(laoID string) error {
+	err := schnorr.VerifyWithChecks(crypto.Suite, m.Sender, m.RawData, m.Signature)
 	if err != nil {
 		return xerrors.Errorf("error verifying signature: %v", err)
 	}
@@ -219,7 +227,36 @@ func (m *Message) VerifyAndUnmarshalData() error {
 		return xerrors.Errorf("failed to parse data object of type: %s", gd.GetObject())
 	}
 
+	ok := m.validateID(laoID)
+	if !ok {
+		return xerrors.New("failed to validate ID")
+	}
+
 	return nil
+}
+
+func (m *Message) validateID(laoID string) bool {
+	encodedData := m.RawData.Encode()
+	encodedSignature := m.Signature.Encode()
+
+	// validate MessageID
+	ok := checkID(m.MessageID, Stringer(encodedData), Stringer(encodedSignature))
+	if !ok {
+		log.Printf("Message: invalid message ID: %s", m.MessageID.Encode())
+		return false
+	}
+
+	return m.Data.ValidateID(laoID)
+}
+
+func checkID(expected []byte, inputs ...fmt.Stringer) bool {
+	hash, err := Hash(inputs...)
+	if err != nil {
+		log.Printf("error calculating hash: %v", err)
+		return false
+	}
+
+	return bytes.Equal(expected, hash)
 }
 
 func (m *Message) parseRollCallData(action RollCallAction, data Base64URLBytes) error {
@@ -339,7 +376,7 @@ func (m *Message) parseLAOData(action LaoDataAction, data Base64URLBytes) error 
 	}
 
 }
-func (m *Message) parseElectionData(action ElectionAction, data []byte) error {
+func (m *Message) parseElectionData(action ElectionAction, data Base64URLBytes) error {
 	switch action {
 	case ElectionSetupAction:
 		setup := &ElectionSetupData{}

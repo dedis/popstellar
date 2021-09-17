@@ -34,6 +34,10 @@ type PublicKey Base64URLBytes
 // Signature represents a signature.
 type Signature Base64URLBytes
 
+func (s Signature) Encode() string {
+	return base64.URLEncoding.EncodeToString(s)
+}
+
 // String returns the base64 encoded representation of the public key.
 func (p PublicKey) String() string {
 	return base64.URLEncoding.EncodeToString(p)

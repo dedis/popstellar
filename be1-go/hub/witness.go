@@ -1,77 +1,92 @@
 package hub
 
 import (
+	"context"
 	"log"
-	"sync"
+	"student20_pop/message"
+	"student20_pop/network/socket"
 
 	"go.dedis.ch/kyber/v3"
 )
 
+// witnessHub represents a Witness and implements the Hub interface.
 type witnessHub struct {
-	messageChan chan IncomingMessage
-
-	sync.RWMutex
-	channelByID map[string]Channel
-
-	public kyber.Point
+	*baseHub
 }
 
 // NewWitnessHub returns a Witness Hub.
-func NewWitnessHub(public kyber.Point) Hub {
+func NewWitnessHub(public kyber.Point) (*witnessHub, error) {
+	baseHub, err := NewBaseHub(public)
 	return &witnessHub{
-		messageChan: make(chan IncomingMessage),
-		channelByID: make(map[string]Channel),
-		public:      public,
-	}
+		baseHub: baseHub,
+	}, err
 }
 
-func (w *witnessHub) RemoveClientSocket(client *ClientSocket) {
+func (w *witnessHub) handleMessageFromOrganizer(incomingMessage *socket.IncomingMessage) {
 	//TODO
 }
 
-func (w *witnessHub) Recv(msg IncomingMessage) {
-	log.Printf("witnessHub::Recv")
-	w.messageChan <- msg
-}
-
-func (w *witnessHub) handleMessageFromOrganizer(incomingMessage *IncomingMessage) {
+func (w *witnessHub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) {
 	//TODO
 }
 
-func (w *witnessHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
+func (w *witnessHub) handleMessageFromWitness(incomingMessage *socket.IncomingMessage) {
 	//TODO
 }
 
-func (w *witnessHub) handleMessageFromWitness(incomingMessage *IncomingMessage) {
-	//TODO
-}
+func (w *witnessHub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) {
+	defer w.workers.Release(1)
 
-func (w *witnessHub) handleIncomingMessage(incomingMessage *IncomingMessage) {
 	log.Printf("organizerHub::handleIncomingMessage: %s", incomingMessage.Message)
 
-	switch incomingMessage.Socket.socketType {
-	case OrganizerSocketType:
+	switch incomingMessage.Socket.Type() {
+	case socket.OrganizerSocketType:
 		w.handleMessageFromOrganizer(incomingMessage)
 		return
-	case ClientSocketType:
+	case socket.ClientSocketType:
 		w.handleMessageFromClient(incomingMessage)
 		return
-	case WitnessSocketType:
+	case socket.WitnessSocketType:
 		w.handleMessageFromWitness(incomingMessage)
 		return
 	}
-
 }
 
-func (w *witnessHub) Start(done chan struct{}) {
+func (w *witnessHub) Type() HubType {
+	return WitnessHubType
+}
+
+func (w *witnessHub) Start() {
 	log.Printf("started witness...")
 
-	for {
-		select {
-		case incomingMessage := <-w.messageChan:
-			w.handleIncomingMessage(&incomingMessage)
-		case <-done:
-			return
+	go func() {
+		for {
+			select {
+			case incomingMessage := <-w.messageChan:
+				ok := w.workers.TryAcquire(1)
+				if !ok {
+					log.Print("warn: worker pool full, waiting...")
+					w.workers.Acquire(context.Background(), 1)
+				}
+
+				w.handleIncomingMessage(&incomingMessage)
+			case id := <-w.closedSockets:
+				w.RLock()
+				for _, channel := range w.channelByID {
+					// dummy Unsubscribe message because it's only used for logging...
+					channel.Unsubscribe(id, message.Unsubscribe{})
+				}
+				w.RUnlock()
+			case <-w.stop:
+				log.Println("closing the hub...")
+				return
+			}
 		}
-	}
+	}()
+}
+
+func (w *witnessHub) Stop() {
+	close(w.stop)
+	log.Println("Waiting for existing workers to finish...")
+	w.workers.Acquire(context.Background(), numWorkers)
 }
