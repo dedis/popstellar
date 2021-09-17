@@ -3,6 +3,7 @@ package ch.epfl.pop.json
 import ch.epfl.pop.json.ObjectProtocol._
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
+import ch.epfl.pop.model.network.method.message.data.election.{ElectionQuestion, EndElection, ResultElection, SetupElection}
 import ch.epfl.pop.model.network.method.message.data.lao._
 import ch.epfl.pop.model.network.method.message.data.meeting._
 import ch.epfl.pop.model.network.method.message.data.rollCall._
@@ -33,6 +34,11 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
     override def write(obj: ActionType): JsValue = JsString(obj.toString)
   }
+
+
+  // ------------------------------- DATA FORMATTERS UTILITY ------------------------------- //
+
+  implicit val electionQuestionFormat: JsonFormat[ElectionQuestion] = jsonFormat5(ElectionQuestion.apply)
 
 
   // ----------------------------------- DATA FORMATTERS ----------------------------------- //
@@ -167,4 +173,8 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   implicit val reopenRollCallFormat: JsonFormat[ReopenRollCall] = jsonFormat[Hash, Hash, Timestamp, ReopenRollCall](ReopenRollCall.apply, "update_id", "opens", "start")
 
   implicit val witnessMessageFormat: JsonFormat[WitnessMessage] = jsonFormat[Hash, Signature, WitnessMessage](WitnessMessage.apply, "message_id", "signature")
+
+  implicit val setupElectionFormat: JsonFormat[SetupElection] = jsonFormat[Hash, Hash, String, String, Timestamp, Timestamp, Timestamp, List[ElectionQuestion], SetupElection](SetupElection.apply, "id", "lao", "name", "version", "created_at", "start_time", "end_time", "questions")
+  implicit val resultElectionFormat: JsonFormat[ResultElection] = jsonFormat[List[ElectionQuestion], List[Signature], ResultElection](ResultElection.apply, "questions", "witness_signatures")
+  implicit val endElectionFormat: JsonFormat[EndElection] = jsonFormat[Hash, Hash, Timestamp, Hash, EndElection](EndElection.apply, "lao", "election", "created_at", "registered_votes")
 }
