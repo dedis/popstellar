@@ -3,7 +3,7 @@ package ch.epfl.pop.json
 import ch.epfl.pop.json.ObjectProtocol._
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
-import ch.epfl.pop.model.network.method.message.data.election.{ElectionBallotVotes, ElectionQuestion, ElectionQuestionResult, EndElection, ResultElection, SetupElection}
+import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, ElectionBallotVotes, ElectionQuestion, ElectionQuestionResult, EndElection, ResultElection, SetupElection, VoteElection}
 import ch.epfl.pop.model.network.method.message.data.lao._
 import ch.epfl.pop.model.network.method.message.data.meeting._
 import ch.epfl.pop.model.network.method.message.data.rollCall._
@@ -37,6 +37,46 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
 
   // ------------------------------- DATA FORMATTERS UTILITY ------------------------------- //
+
+  implicit object VoteElectionFormat extends RootJsonFormat[VoteElection] {
+    final private val PARAM_ID: String = "id"
+    final private val PARAM_QUESTION: String = "question"
+    final private val PARAM_VOTE: String = "vote"
+    final private val PARAM_WRITE_IN: String = "write_in"
+
+    override def read(json: JsValue): VoteElection = json.asJsObject.getFields(PARAM_ID, PARAM_QUESTION) match {
+      case Seq(id@JsString(_), question@JsString(_)) =>
+        val (voteOpt, writeInOpt): (Option[List[Int]], Option[String]) = json.asJsObject.getFields(PARAM_VOTE) match {
+          case Seq(JsArray(vote)) => (Some(vote.map(_.convertTo[Int]).toList), None)
+          case _ => json.asJsObject.getFields(PARAM_WRITE_IN) match {
+            case Seq(JsString(writeIn)) => (None, Some(writeIn))
+            case _ => throw new IllegalArgumentException(
+              s"Unable to parse vote election $json to a VoteElection object: '$PARAM_VOTE' and '$PARAM_WRITE_IN' fields are missing or wrongly formatted"
+            )
+          }
+        }
+
+        VoteElection(id.convertTo[Hash], question.convertTo[Hash], voteOpt, writeInOpt)
+      case _ => throw new IllegalArgumentException(
+        s"Unable to parse vote election $json to a VoteElection object: '$PARAM_ID' or '$PARAM_QUESTION' field missing or wrongly formatted"
+      )
+    }
+
+    override def write(obj: VoteElection): JsValue = {
+      var jsObjectContent: ListMap[String, JsValue] = ListMap[String, JsValue](
+        PARAM_ID -> obj.id.toJson,
+        PARAM_QUESTION -> obj.question.toJson
+      )
+
+      if (obj.isWriteIn) {
+        jsObjectContent += (PARAM_WRITE_IN -> obj.write_in.get.toJson)
+      } else {
+        jsObjectContent += (PARAM_VOTE -> obj.vote.get.toJson)
+      }
+
+      JsObject(jsObjectContent)
+    }
+  }
 
   implicit val electionQuestionFormat: JsonFormat[ElectionQuestion] = jsonFormat5(ElectionQuestion.apply)
   implicit val electionBallotVotesFormat: JsonFormat[ElectionBallotVotes] = jsonFormat2(ElectionBallotVotes.apply)
@@ -176,6 +216,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
   implicit val witnessMessageFormat: JsonFormat[WitnessMessage] = jsonFormat[Hash, Signature, WitnessMessage](WitnessMessage.apply, "message_id", "signature")
 
+  implicit val castVoteElectionFormat: JsonFormat[CastVoteElection] = jsonFormat4(CastVoteElection.apply)
   implicit val setupElectionFormat: JsonFormat[SetupElection] = jsonFormat[Hash, Hash, String, String, Timestamp, Timestamp, Timestamp, List[ElectionQuestion], SetupElection](SetupElection.apply, "id", "lao", "name", "version", "created_at", "start_time", "end_time", "questions")
   implicit val resultElectionFormat: JsonFormat[ResultElection] = jsonFormat[List[ElectionQuestionResult], List[Signature], ResultElection](ResultElection.apply, "questions", "witness_signatures")
   implicit val endElectionFormat: JsonFormat[EndElection] = jsonFormat[Hash, Hash, Timestamp, Hash, EndElection](EndElection.apply, "lao", "election", "created_at", "registered_votes")

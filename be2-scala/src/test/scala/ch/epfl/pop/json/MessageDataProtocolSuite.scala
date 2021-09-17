@@ -1,6 +1,6 @@
 package ch.epfl.pop.json
 
-import ch.epfl.pop.model.network.method.message.data.election.{ElectionBallotVotes, ElectionQuestion, ElectionQuestionResult, EndElection, ResultElection, SetupElection}
+import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, ElectionBallotVotes, ElectionQuestion, ElectionQuestionResult, EndElection, ResultElection, SetupElection, VoteElection}
 import ch.epfl.pop.model.network.method.message.data.lao.CreateLao
 import ch.epfl.pop.model.objects._
 import org.scalatest.{FunSuite, Matchers}
@@ -61,6 +61,17 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     val expected = EndElection(Hash(Base64Data("XXX")), Hash(Base64Data("XXX")), Timestamp(123L), Hash(Base64Data("XXX")))
 
     messageData shouldBe a [EndElection]
+    messageData should equal (expected)
+  }
+
+  test("Parser correctly encodes/decodes a CastVoteElection write_in message data") {
+    val example: String = getExampleMessage("messageData/vote_cast_write_in.json")
+    val messageData = CastVoteElection.buildFromJson(example)
+
+    val votes = VoteElection(Hash(Base64Data("XXX")), Hash(Base64Data("XXX")), "XXX")
+    val expected = CastVoteElection(Hash(Base64Data("XXX")), Hash(Base64Data("XXX")), Timestamp(123L), votes :: Nil)
+
+    messageData shouldBe a [CastVoteElection]
     messageData should equal (expected)
   }
 }
