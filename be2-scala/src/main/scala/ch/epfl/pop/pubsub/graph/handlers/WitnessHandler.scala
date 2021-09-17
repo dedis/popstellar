@@ -2,7 +2,7 @@ package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
-import ch.epfl.pop.model.network.JsonRpcRequest
+import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage
 import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
@@ -20,7 +20,12 @@ case object WitnessHandler extends MessageHandler {
       case message@(_: JsonRpcRequestWitnessMessage) => handleWitnessMessage(message)
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
-        "Internal server fault: WitnessHandler was given a message it could not recognize"
+        "Internal server fault: WitnessHandler was given a message it could not recognize",
+        jsonRpcMessage match {
+          case r: JsonRpcRequest => r.id
+          case r: JsonRpcResponse => r.id
+          case _ => None
+        }
       ))
     }
     case graphMessage@_ => graphMessage
@@ -41,8 +46,8 @@ case object WitnessHandler extends MessageHandler {
       case DbActorWriteAck =>
         // TODO propagate
         Left(rpcMessage)
-      case DbActorNAck(code, description) => Right(PipelineError(code, description))
-      case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer"))
+      case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
+      case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
     }
 
     Await.result(f, duration)

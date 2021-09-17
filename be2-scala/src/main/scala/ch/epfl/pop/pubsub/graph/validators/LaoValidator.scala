@@ -13,7 +13,7 @@ import scala.concurrent.{Await, Future}
 
 case object LaoValidator extends MessageDataContentValidator {
   def validateCreateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
-    def validationError(reason: String): PipelineError = super.validationError(reason, "CreateLao")
+    def validationError(reason: String): PipelineError = super.validationError(reason, "CreateLao", rpcMessage.id)
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
@@ -31,12 +31,12 @@ case object LaoValidator extends MessageDataContentValidator {
         } else {
           Left(rpcMessage)
         }
-      case _ => Right(validationErrorNoMessage)
+      case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
   def validateStateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
-    def validationError(reason: String): PipelineError = super.validationError(reason, "StateLao")
+    def validationError(reason: String): PipelineError = super.validationError(reason, "StateLao", rpcMessage.id)
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
@@ -66,21 +66,21 @@ case object LaoValidator extends MessageDataContentValidator {
             }
 
           case DbActor.DbActorReadAck(None) =>
-            Right(PipelineError(ErrorCodes.INVALID_RESOURCE.id, "No CreateLao message associated found"))
+            Right(PipelineError(ErrorCodes.INVALID_RESOURCE.id, "No CreateLao message associated found", rpcMessage.id))
           case DbActor.DbActorNAck(code, description) =>
-            Right(PipelineError(code, description))
+            Right(PipelineError(code, description, rpcMessage.id))
           case _ =>
-            Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer"))
+            Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
         }
 
         Await.result(f, duration)
 
-      case _ => Right(validationErrorNoMessage)
+      case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
   def validateUpdateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
-    def validationError(reason: String): PipelineError = super.validationError(reason, "UpdateLao")
+    def validationError(reason: String): PipelineError = super.validationError(reason, "UpdateLao", rpcMessage.id)
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
@@ -106,16 +106,16 @@ case object LaoValidator extends MessageDataContentValidator {
             }
 
           case DbActor.DbActorReadAck(None) =>
-            Right(PipelineError(ErrorCodes.INVALID_RESOURCE.id, "No CreateLao message associated found"))
+            Right(PipelineError(ErrorCodes.INVALID_RESOURCE.id, "No CreateLao message associated found", rpcMessage.id))
           case DbActor.DbActorNAck(code, description) =>
-            Right(PipelineError(code, description))
+            Right(PipelineError(code, description, rpcMessage.id))
           case _ =>
-            Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer"))
+            Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
         }
 
         Await.result(f, duration)
 
-      case _ => Right(validationErrorNoMessage)
+      case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
 }

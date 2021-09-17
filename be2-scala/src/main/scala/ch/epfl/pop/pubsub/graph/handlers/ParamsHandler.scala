@@ -54,14 +54,14 @@ object ParamsHandler {
     case Left(jsonRpcMessage: Subscribe) =>
       // ActorFlow.ask(clientActorRef)(makeMessage = (el, replyTo: ActorRef) => SubscribeTo(channel))
       clientActorRef ! ClientActor.SubscribeTo(jsonRpcMessage.channel)
-      Right(PipelineError(-100, "FIXME: should use akka ask pattern to create an ActorFlow"))
+      Right(PipelineError(-100, "", Some(-111))) // FIXME: should use akka ask pattern to create an ActorFlow
     case graphMessage@_ => graphMessage
   }
 
   def unsubscribeHandler(clientActorRef: ActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Left(jsonRpcMessage: Unsubscribe) =>
       clientActorRef ! ClientActor.UnsubscribeFrom(jsonRpcMessage.channel)
-      Right(PipelineError(-100, "FIXME: should use akka ask pattern to create an ActorFlow"))
+      Right(PipelineError(-100, "", Some(-111))) // FIXME: should use akka ask pattern to create an ActorFlow
     case graphMessage@_ => graphMessage
   }
 

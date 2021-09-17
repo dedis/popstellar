@@ -18,9 +18,10 @@ import ch.epfl.pop.pubsub.graph.validators.WitnessValidator._
 
 object Validator {
 
-  private val VALIDATOR_ERROR: PipelineError = PipelineError(
+  private def validationError(rpcId: Option[Int]): PipelineError = PipelineError(
     ErrorCodes.INVALID_ACTION.id,
-    "Unsupported action: Validator was given a message it could not recognize"
+    "Unsupported action: Validator was given a message it could not recognize",
+    rpcId
   )
 
   // FIXME implement schema
@@ -30,7 +31,7 @@ object Validator {
     case Left(jsonRpcMessage) => jsonRpcMessage match {
       case message@(_: JsonRpcRequest) => validateRpcRequest(message)
       case message@(_: JsonRpcResponse) => validateRpcResponse(message)
-      case _ => Right(VALIDATOR_ERROR)
+      case _ => Right(validationError(None)) // should never happen
     }
     case graphMessage@_ => graphMessage
   }
@@ -42,11 +43,12 @@ object Validator {
       case _: Publish => validatePublish(jsonRpcRequest)
       case _: Subscribe => validateSubscribe(jsonRpcRequest)
       case _: Unsubscribe => validateUnsubscribe(jsonRpcRequest)
-      case _ => Right(VALIDATOR_ERROR)
+      case _ => Right(validationError(jsonRpcRequest.id))
     }
-    case Left(_) => Right(PipelineError(
+    case Left(jsonRpcResponse: JsonRpcResponse) => Right(PipelineError(
       ErrorCodes.SERVER_ERROR.id,
-      "Unsupported action: MethodValidator was given a response message"
+      "Unsupported action: MethodValidator was given a response message",
+      jsonRpcResponse.id
     ))
     case graphMessage@_ => graphMessage
   }
@@ -58,7 +60,7 @@ object Validator {
       case _: Publish => validateMessage(jsonRpcRequest)
       case _: Subscribe => graphMessage
       case _: Unsubscribe => graphMessage
-      case _ => Right(VALIDATOR_ERROR)
+      case _ => Right(validationError(jsonRpcRequest.id))
     }
     case graphMessage@_ => graphMessage
   }
@@ -89,7 +91,11 @@ object Validator {
       case message@(_: JsonRpcRequestReopenRollCall) => validateReopenRollCall(message)
       case message@(_: JsonRpcRequestCloseRollCall) => validateCloseRollCall(message)
       case message@(_: JsonRpcRequestWitnessMessage) => validateWitnessMessage(message)
-      case _ => Right(VALIDATOR_ERROR)
+      case _ => Right(validationError(jsonRpcMessage match {
+        case r: JsonRpcRequest => r.id
+        case r: JsonRpcResponse => r.id
+        case _ => None
+      }))
     }
     case graphMessage@_ => graphMessage
   }

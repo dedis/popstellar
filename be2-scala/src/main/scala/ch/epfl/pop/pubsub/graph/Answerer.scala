@@ -13,6 +13,10 @@ import spray.json._
 
 object Answerer {
 
+  private def errorResponseString(code: Int, reason: String, rpcId: Option[Int]): String = JsonRpcResponse(
+    RpcValidator.JSON_RPC_VERSION, None, Some(ErrorObject(code, reason)), rpcId
+  ).toJson.toString
+
   /**
    * Send an answer back to the client (associated to clientActorRef from the answerer)
    *
@@ -22,13 +26,12 @@ object Answerer {
   private def sendAnswer(graphMessage: GraphMessage): TextMessage = graphMessage match {
     // Note: The encoding of the answer is done here as the ClientActor must always receive a GraphMessage
     case Left(rpcAnswer: JsonRpcResponse) => TextMessage.Strict(rpcAnswer.toJson.toString)
-    // FIXME Returns empty id (second None)
-    case Right(pipelineError: PipelineError) => TextMessage.Strict(JsonRpcResponse(
-      RpcValidator.JSON_RPC_VERSION, None, Some(ErrorObject(pipelineError.code, pipelineError.description)), None
-    ).toJson.toString)
-    case _ =>
-      println("An unknown error occurred in Answerer.sendAnswer");
-      ???
+    case Right(pipelineError: PipelineError) =>
+      // Convert AnswerGenerator's PipelineErrors into negative JsonRpcResponses and send them back to the client
+      TextMessage.Strict(errorResponseString(pipelineError.code, pipelineError.description, pipelineError.rpcId))
+    case m@_ =>
+      println(s"An unknown error occurred in Answerer.sendAnswer, unexpected input: $m")
+      TextMessage.Strict(errorResponseString(ErrorCodes.SERVER_ERROR.id, "Unknown internal server state", None))
   }
 
   def answerer(clientActorRef: ActorRef, mediator: ActorRef)(implicit system: ActorSystem): Flow[GraphMessage, TextMessage, NotUsed] = {
