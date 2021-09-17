@@ -6,11 +6,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"os"
 	"student20_pop/channel"
 	"student20_pop/channel/election"
 	"student20_pop/channel/inbox"
 	"student20_pop/crypto"
+	"student20_pop/db/sqlite"
 	jsonrpc "student20_pop/message"
 	"student20_pop/message/answer"
 	"student20_pop/message/messagedata"
@@ -561,8 +561,8 @@ func (c *Channel) processCloseRollCall(msg messagedata.RollCallClose) error {
 
 	var db *sql.DB
 
-	if os.Getenv("HUB_DB") != "" {
-		db, err := sql.Open("sqlite3", os.Getenv("HUB_DB"))
+	if sqlite.GetDBPath() != "" {
+		db, err := sql.Open("sqlite3", sqlite.GetDBPath())
 		if err != nil {
 			log.Printf("error: failed to connect to db: %v", err)
 			db = nil
@@ -613,17 +613,17 @@ func (r *rollCall) checkPrevID(prevID []byte) bool {
 // ---
 
 // CreateChannelFromDB restores a channel from the db
-func CreateChannelFromDB(db *sql.DB, channelID string, hub channel.HubFunctionalities) (channel.Channel, error) {
+func CreateChannelFromDB(db *sql.DB, channelPath string, hub channel.HubFunctionalities) (channel.Channel, error) {
 	channel := Channel{
-		channelID: channelID,
+		channelID: channelPath,
 		sockets:   channel.NewSockets(),
-		inbox:     inbox.NewInbox(channelID),
+		inbox:     inbox.NewInbox(channelPath),
 		hub:       hub,
 		rollCall:  rollCall{},
 		attendees: make(map[string]struct{}),
 	}
 
-	attendees, err := getAttendeesChannelFromDB(db, channelID)
+	attendees, err := getAttendeesChannelFromDB(db, channelPath)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get attendees: %v", err)
 	}
@@ -632,14 +632,14 @@ func CreateChannelFromDB(db *sql.DB, channelID string, hub channel.HubFunctional
 		channel.attendees[attendee] = struct{}{}
 	}
 
-	witnesses, err := getWitnessChannelFromDB(db, channelID)
+	witnesses, err := getWitnessChannelFromDB(db, channelPath)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get witnesses: %v", err)
 	}
 
 	channel.witnesses = witnesses
 
-	inbox, err := inbox.CreateInboxFromBD(db, channelID)
+	inbox, err := inbox.CreateInboxFromDB(db, channelPath)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to load inbox: %v", err)
 	}
@@ -649,7 +649,7 @@ func CreateChannelFromDB(db *sql.DB, channelID string, hub channel.HubFunctional
 	return &channel, nil
 }
 
-func getAttendeesChannelFromDB(db *sql.DB, channelID string) ([]string, error) {
+func getAttendeesChannelFromDB(db *sql.DB, channelPath string) ([]string, error) {
 	query := `
 		SELECT
 			attendee_key
@@ -665,7 +665,7 @@ func getAttendeesChannelFromDB(db *sql.DB, channelID string) ([]string, error) {
 
 	defer stmt.Close()
 
-	rows, err := stmt.Query(channelID)
+	rows, err := stmt.Query(channelPath)
 	if err != nil {
 		return nil, xerrors.Errorf(dbQueryRowErr, err)
 	}
@@ -693,7 +693,7 @@ func getAttendeesChannelFromDB(db *sql.DB, channelID string) ([]string, error) {
 	return result, nil
 }
 
-func getWitnessChannelFromDB(db *sql.DB, channelID string) ([]string, error) {
+func getWitnessChannelFromDB(db *sql.DB, channelPath string) ([]string, error) {
 	query := `
 		SELECT
 			pub_key
@@ -709,7 +709,7 @@ func getWitnessChannelFromDB(db *sql.DB, channelID string) ([]string, error) {
 
 	defer stmt.Close()
 
-	rows, err := stmt.Query(channelID)
+	rows, err := stmt.Query(channelPath)
 	if err != nil {
 		return nil, xerrors.Errorf(dbQueryRowErr, err)
 	}

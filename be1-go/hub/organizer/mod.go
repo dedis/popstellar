@@ -6,9 +6,9 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"log"
-	"os"
 	"student20_pop/channel"
 	"student20_pop/channel/lao"
+	"student20_pop/db/sqlite"
 	"student20_pop/hub"
 	jsonrpc "student20_pop/message"
 	"student20_pop/message/answer"
@@ -84,8 +84,8 @@ func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (
 		laoFac:          laoFac,
 	}
 
-	if os.Getenv("HUB_DB") != "" {
-		log.Printf("loading channels from db at %s", os.Getenv("HUB_DB"))
+	if sqlite.GetDBPath() != "" {
+		log.Printf("loading channels from db at %s", sqlite.GetDBPath())
 
 		channels, err := getChannelsFromDB(&hub)
 		if err != nil {
@@ -417,7 +417,7 @@ func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate)
 
 	h.channelByID[laoChannelPath] = laoCh
 
-	if os.Getenv("HUB_DB") != "" {
+	if sqlite.GetDBPath() != "" {
 		saveChannel(laoChannelPath)
 	}
 
@@ -441,10 +441,10 @@ func (h *Hub) RegisterNewChannel(channeID string, channel channel.Channel) {
 	h.Unlock()
 }
 
-func saveChannel(channelID string) error {
-	log.Printf("trying to save the channel in db at %s", os.Getenv("HUB_DB"))
+func saveChannel(channelPath string) error {
+	log.Printf("trying to save the channel in db at %s", sqlite.GetDBPath())
 
-	db, err := sql.Open("sqlite3", os.Getenv("HUB_DB"))
+	db, err := sql.Open("sqlite3", sqlite.GetDBPath())
 	if err != nil {
 		return xerrors.Errorf("failed to open connection: %v", err)
 	}
@@ -454,7 +454,7 @@ func saveChannel(channelID string) error {
 	query := `
 	INSERT INTO
 		lao_channel(
-			lao_channel_id)
+			lao_channel_id) 
 	VALUES(?)`
 
 	stmt, err := db.Prepare(query)
@@ -464,7 +464,7 @@ func saveChannel(channelID string) error {
 
 	defer stmt.Close()
 
-	_, err = stmt.Exec(channelID)
+	_, err = stmt.Exec(channelPath)
 	if err != nil {
 		return xerrors.Errorf("failed to insert channel: %v", err)
 	}
@@ -475,7 +475,7 @@ func saveChannel(channelID string) error {
 // DB operations. To be replaced by an abstraction.
 
 func getChannelsFromDB(h *Hub) (map[string]channel.Channel, error) {
-	db, err := sql.Open("sqlite3", os.Getenv("HUB_DB"))
+	db, err := sql.Open("sqlite3", sqlite.GetDBPath())
 	if err != nil {
 		return nil, xerrors.Errorf("failed to open connection: %v", err)
 	}
@@ -498,19 +498,19 @@ func getChannelsFromDB(h *Hub) (map[string]channel.Channel, error) {
 	result := make(map[string]channel.Channel)
 
 	for rows.Next() {
-		var id string
+		var channelPath string
 
-		err = rows.Scan(&id)
+		err = rows.Scan(&channelPath)
 		if err != nil {
 			return nil, xerrors.Errorf(dbParseRowErr, err)
 		}
 
-		channel, err := lao.CreateChannelFromDB(db, id, h)
+		channel, err := lao.CreateChannelFromDB(db, channelPath, h)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to create channel from db: %v", err)
 		}
 
-		result[id] = channel
+		result[channelPath] = channel
 	}
 
 	err = rows.Err()

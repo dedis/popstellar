@@ -3,7 +3,6 @@ package inbox
 import (
 	"database/sql"
 	"log"
-	"os"
 	"sort"
 	"sync"
 	"time"
@@ -12,6 +11,7 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 
+	"student20_pop/db/sqlite"
 	"student20_pop/message/answer"
 	"student20_pop/message/query/method/message"
 )
@@ -66,10 +66,10 @@ func (i *Inbox) AddWitnessSignature(messageID string, public string, signature s
 		Signature: signature,
 	})
 
-	if os.Getenv("HUB_DB") != "" {
+	if sqlite.GetDBPath() != "" {
 		log.Println("adding witness into db")
 
-		db, err := sql.Open("sqlite3", os.Getenv("HUB_DB"))
+		db, err := sql.Open("sqlite3", sqlite.GetDBPath())
 		if err != nil {
 			log.Printf("error: failed to open connection: %v", err)
 		} else {
@@ -99,7 +99,7 @@ func (i *Inbox) StoreMessage(msg message.Message) {
 
 	i.msgs[msg.MessageID] = messageInfo
 
-	if os.Getenv("HUB_DB") != "" {
+	if sqlite.GetDBPath() != "" {
 		log.Println("storing message into db")
 
 		err := i.storeMessageInDB(messageInfo)
@@ -156,7 +156,7 @@ func (i *Inbox) GetMessage(messageID string) (*message.Message, bool) {
 // storeMessageInDB stores a message into the db. It should be used in case the
 // `HUB_DB` env variable is set.
 func (i *Inbox) storeMessageInDB(messageInfo *messageInfo) error {
-	db, err := sql.Open("sqlite3", os.Getenv("HUB_DB"))
+	db, err := sql.Open("sqlite3", sqlite.GetDBPath())
 	if err != nil {
 		return xerrors.Errorf("failed to open connection: %v", err)
 	}
@@ -223,8 +223,8 @@ func addWitnessInDB(db *sql.DB, messageID string, pubKey string, signature strin
 	return nil
 }
 
-// CreateInboxFromBD creates an inbox from a database
-func CreateInboxFromBD(db *sql.DB, channelID string) (*Inbox, error) {
+// CreateInboxFromDB creates an inbox from a database
+func CreateInboxFromDB(db *sql.DB, channelID string) (*Inbox, error) {
 	inbox := NewInbox(channelID)
 
 	query := `

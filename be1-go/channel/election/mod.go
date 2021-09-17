@@ -168,17 +168,17 @@ func (c *Channel) Publish(publish method.Publish) error {
 
 		switch action {
 		case "cast_vote":
-			err := c.castVoteHelper(msg)
+			err := c.publishCastVote(msg)
 			if err != nil {
 				return xerrors.Errorf("failed to cast vote: %v", err)
 			}
 		case "end":
-			err := c.endElectionHelper(msg)
+			err := c.publishEndElection(msg)
 			if err != nil {
 				return xerrors.Errorf("failed to end election: %v", err)
 			}
 		case "result":
-			err = c.resultElectionHelper(msg)
+			err = c.publishResultElection(msg)
 			if err != nil {
 				return xerrors.Errorf("failed to end election: %v", err)
 			}
@@ -277,7 +277,7 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 	return nil
 }
 
-func (c *Channel) castVoteHelper(msg message.Message) error {
+func (c *Channel) publishCastVote(msg message.Message) error {
 	voteMsg, err := c.getAndVerifyCastVoteMessage(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to get and verify vote message: %v", err)
@@ -328,6 +328,8 @@ func (c *Channel) getAndVerifyCastVoteMessage(msg message.Message) (messagedata.
 		return voteMsg, xerrors.Errorf("failed to unmarshal cast vote: %v", err)
 	}
 
+	// note that CreatedAt is provided by the client and can't be fully trusted.
+	// We leave this check as is until we have a better solution.
 	if voteMsg.CreatedAt > c.end {
 		return voteMsg, answer.NewErrorf(-4, "vote cast too late, vote casted at %v "+
 			"and election ended at %v", voteMsg.CreatedAt, c.end)
@@ -352,7 +354,7 @@ func (c *Channel) getAndVerifyCastVoteMessage(msg message.Message) (messagedata.
 	return voteMsg, nil
 }
 
-func (c *Channel) endElectionHelper(msg message.Message) error {
+func (c *Channel) publishEndElection(msg message.Message) error {
 
 	var endElection messagedata.ElectionEnd
 
@@ -399,7 +401,7 @@ func (c *Channel) endElectionHelper(msg message.Message) error {
 	return nil
 }
 
-func (c *Channel) resultElectionHelper(msg message.Message) error {
+func (c *Channel) publishResultElection(msg message.Message) error {
 	resultElection := messagedata.ElectionResult{
 		Object:    "election",
 		Action:    "result",
