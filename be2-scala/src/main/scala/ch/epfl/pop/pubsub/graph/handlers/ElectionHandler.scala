@@ -3,13 +3,11 @@ import akka.NotUsed
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestSetupElection}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
-import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 
 object ElectionHandler extends MessageHandler {
 
   override val handler: Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
-    // FIXME election stuff
     case Left(jsonRpcMessage) => jsonRpcMessage match {
       case message@(_: JsonRpcRequestSetupElection) => handleSetupElection(message)
       case message@(_: JsonRpcRequestResultElection) => handleResultElection(message)
