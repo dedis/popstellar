@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.ui.detail;
+package com.github.dedis.popstellar.ui.wallet;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -11,8 +11,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.databinding.FragmentLaoWalletBinding;
-import com.github.dedis.popstellar.ui.wallet.WalletListAdapter;
+import com.github.dedis.popstellar.databinding.LaoWalletFragmentBinding;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import java.util.ArrayList;
 
 public class LaoWalletFragment extends Fragment {
@@ -21,7 +22,7 @@ public class LaoWalletFragment extends Fragment {
 
   private LaoDetailViewModel mLaoDetailViewModel;
   private WalletListAdapter mWalletListAdapter;
-  private FragmentLaoWalletBinding mFragmentLaoWalletBinding;
+  private LaoWalletFragmentBinding mLaoWalletFragmentBinding;
 
   public static LaoWalletFragment newInstance() {
     return new LaoWalletFragment();
@@ -33,14 +34,14 @@ public class LaoWalletFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    mFragmentLaoWalletBinding = FragmentLaoWalletBinding.inflate(inflater, container, false);
+    mLaoWalletFragmentBinding = LaoWalletFragmentBinding.inflate(inflater, container, false);
 
     mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 
-    mFragmentLaoWalletBinding.setViewModel(mLaoDetailViewModel);
-    mFragmentLaoWalletBinding.setLifecycleOwner(getActivity());
+    mLaoWalletFragmentBinding.setViewModel(mLaoDetailViewModel);
+    mLaoWalletFragmentBinding.setLifecycleOwner(getActivity());
 
-    return mFragmentLaoWalletBinding.getRoot();
+    return mLaoWalletFragmentBinding.getRoot();
   }
 
   @Override
@@ -60,7 +61,7 @@ public class LaoWalletFragment extends Fragment {
               mWalletListAdapter.replaceList(rollCalls);
             });
 
-    mFragmentLaoWalletBinding.backButton
+    mLaoWalletFragmentBinding.backButton
         .setOnClickListener(clicked -> mLaoDetailViewModel.openHome());
   }
 
@@ -71,7 +72,7 @@ public class LaoWalletFragment extends Fragment {
   }
 
   private void setupWalletListAdapter() {
-    ListView listView = mFragmentLaoWalletBinding.walletList;
+    ListView listView = mLaoWalletFragmentBinding.walletList;
 
     mWalletListAdapter = new WalletListAdapter(new ArrayList<>(0), mLaoDetailViewModel,
         getActivity());

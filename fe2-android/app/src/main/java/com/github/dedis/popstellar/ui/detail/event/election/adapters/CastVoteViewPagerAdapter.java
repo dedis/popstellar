@@ -12,10 +12,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.databinding.FragmentCastVoteBinding;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
-import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.databinding.CastVoteFragmentBinding;
 import com.github.dedis.popstellar.model.network.method.message.data.ElectionQuestion;
+import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,11 +25,11 @@ public class CastVoteViewPagerAdapter extends
 
   private ArrayAdapter<String> ballotAdapter;
   private LaoDetailViewModel mLaoDetailViewModel;
-  private FragmentCastVoteBinding castVoteBinding;
+  private CastVoteFragmentBinding castVoteBinding;
   private Button voteButton;
 
   public CastVoteViewPagerAdapter(LaoDetailViewModel mLaoDetailViewModel,
-      FragmentCastVoteBinding castVoteBinding) {
+      CastVoteFragmentBinding castVoteBinding) {
     super();
     this.mLaoDetailViewModel = mLaoDetailViewModel;
     this.castVoteBinding = castVoteBinding;
@@ -42,7 +42,7 @@ public class CastVoteViewPagerAdapter extends
         android.R.layout.simple_list_item_single_choice, new ArrayList<>());
     voteButton = castVoteBinding.castVoteButton;
     return new Pager2ViewHolder(LayoutInflater.from(parent.getContext())
-        .inflate(R.layout.layout_cast_vote_listview, parent, false));
+        .inflate(R.layout.cast_vote_list_view_layout, parent, false));
   }
 
   @Override

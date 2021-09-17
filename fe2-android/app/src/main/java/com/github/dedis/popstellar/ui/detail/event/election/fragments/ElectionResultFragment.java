@@ -10,11 +10,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.databinding.FragmentElectionResultBinding;
+import com.github.dedis.popstellar.databinding.ElectionResultFragmentBinding;
+import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.adapters.ElectionResultPagerAdapter;
-import com.github.dedis.popstellar.model.objects.Election;
 import me.relex.circleindicator.CircleIndicator3;
 
 public class ElectionResultFragment extends Fragment {
@@ -42,8 +42,8 @@ public class ElectionResultFragment extends Fragment {
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
     //Inflate the layout for this fragment
-    FragmentElectionResultBinding mElectionResultFragBinding =
-        FragmentElectionResultBinding.inflate(inflater, container, false);
+    ElectionResultFragmentBinding mElectionResultFragBinding =
+        ElectionResultFragmentBinding.inflate(inflater, container, false);
     mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 
     TextView laoNameView = mElectionResultFragBinding.electionResultLaoName;

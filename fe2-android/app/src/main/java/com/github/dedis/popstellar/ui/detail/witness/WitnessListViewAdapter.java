@@ -9,9 +9,8 @@ import android.widget.BaseAdapter;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.databinding.LayoutWitnessesListViewBinding;
+import com.github.dedis.popstellar.databinding.WitnessesListViewLayoutBinding;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
-import com.github.dedis.popstellar.ui.detail.witness.WitnessDeleteListener;
 import java.util.List;
 
 /**
@@ -93,10 +92,10 @@ public class WitnessListViewAdapter extends BaseAdapter {
    */
   @Override
   public View getView(int position, View convertView, ViewGroup parent) {
-    LayoutWitnessesListViewBinding binding;
+    WitnessesListViewLayoutBinding binding;
     if (convertView == null) {
       LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-      binding = LayoutWitnessesListViewBinding.inflate(inflater, parent, false);
+      binding = WitnessesListViewLayoutBinding.inflate(inflater, parent, false);
     } else {
       binding = DataBindingUtil.getBinding(convertView);
     }

@@ -28,6 +28,7 @@ import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
+import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 import java.util.Objects;
@@ -47,7 +48,7 @@ public class LaoDetailActivity extends AppCompatActivity {
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_lao_detail);
+    setContentView(R.layout.lao_detail_activity);
     mViewModel = obtainViewModel(this);
     mViewModel.subscribeToLao(
         (String) Objects.requireNonNull(getIntent().getExtras()).get("LAO_ID"));

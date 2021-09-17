@@ -11,11 +11,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.databinding.FragmentContentWalletBinding;
+import com.github.dedis.popstellar.databinding.WalletContentFragmentBinding;
+import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.home.LAOListAdapter;
-import com.github.dedis.popstellar.model.objects.Wallet;
 import java.util.ArrayList;
 
 /**
@@ -29,7 +29,7 @@ public class ContentWalletFragment extends Fragment {
     return new ContentWalletFragment();
   }
 
-  private FragmentContentWalletBinding mContentWalletBinding;
+  private WalletContentFragmentBinding mWalletContentBinding;
   private HomeViewModel mHomeViewModel;
   private LAOListAdapter mListAdapter;
   private AlertDialog logoutAlert;
@@ -40,14 +40,14 @@ public class ContentWalletFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    mContentWalletBinding = FragmentContentWalletBinding.inflate(inflater, container, false);
+    mWalletContentBinding = WalletContentFragmentBinding.inflate(inflater, container, false);
 
     mHomeViewModel = HomeActivity.obtainViewModel(getActivity());
 
-    mContentWalletBinding.setViewmodel(mHomeViewModel);
-    mContentWalletBinding.setLifecycleOwner(getActivity());
+    mWalletContentBinding.setViewmodel(mHomeViewModel);
+    mWalletContentBinding.setLifecycleOwner(getActivity());
 
-    return mContentWalletBinding.getRoot();
+    return mWalletContentBinding.getRoot();
   }
 
   @Override
@@ -58,8 +58,8 @@ public class ContentWalletFragment extends Fragment {
     setupListUpdates();
 
     if (Wallet.getInstance().isSetUp()) {
-      mContentWalletBinding.logoutButton.setVisibility(View.VISIBLE);
-      mContentWalletBinding.logoutButton.setOnClickListener(clicked -> {
+      mWalletContentBinding.logoutButton.setVisibility(View.VISIBLE);
+      mWalletContentBinding.logoutButton.setOnClickListener(clicked -> {
         if (logoutAlert != null && logoutAlert.isShowing()) {
           logoutAlert.dismiss();
         }
@@ -87,14 +87,14 @@ public class ContentWalletFragment extends Fragment {
               mListAdapter.replaceList(laos);
 
               if (!laos.isEmpty()) {
-                mContentWalletBinding.welcomeScreen.setVisibility(View.GONE);
-                mContentWalletBinding.listScreen.setVisibility(View.VISIBLE);
+                mWalletContentBinding.welcomeScreen.setVisibility(View.GONE);
+                mWalletContentBinding.listScreen.setVisibility(View.VISIBLE);
               }
             });
   }
 
   private void setupListAdapter() {
-    ListView listView = mContentWalletBinding.laoList;
+    ListView listView = mWalletContentBinding.laoList;
 
     mListAdapter = new LAOListAdapter(new ArrayList<>(0), mHomeViewModel, getActivity(), false);
 

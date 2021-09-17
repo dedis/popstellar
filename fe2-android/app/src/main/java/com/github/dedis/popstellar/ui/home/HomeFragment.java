@@ -9,7 +9,7 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import com.github.dedis.popstellar.databinding.FragmentHomeBinding;
+import com.github.dedis.popstellar.databinding.HomeFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Lao;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public final class HomeFragment extends Fragment {
   public static final SimpleDateFormat DATE_FORMAT =
       new SimpleDateFormat("dd/MM/yy", Locale.ENGLISH);
 
-  private FragmentHomeBinding mHomeFragBinding;
+  private HomeFragmentBinding mHomeFragBinding;
   private HomeViewModel mHomeViewModel;
   private LAOListAdapter mListAdapter;
 
@@ -42,7 +42,7 @@ public final class HomeFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    mHomeFragBinding = FragmentHomeBinding.inflate(inflater, container, false);
+    mHomeFragBinding = HomeFragmentBinding.inflate(inflater, container, false);
 
     mHomeViewModel = HomeActivity.obtainViewModel(getActivity());
 

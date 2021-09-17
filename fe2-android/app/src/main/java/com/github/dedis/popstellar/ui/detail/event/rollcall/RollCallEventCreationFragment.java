@@ -10,10 +10,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.github.dedis.popstellar.databinding.FragmentCreateRollCallEventBinding;
+import com.github.dedis.popstellar.databinding.RollCallCreateFragmentBinding;
+import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
-import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
 
 /**
@@ -23,7 +23,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
 
   public static final String TAG = RollCallEventCreationFragment.class.getSimpleName();
 
-  private FragmentCreateRollCallEventBinding mFragBinding;
+  private RollCallCreateFragmentBinding mFragBinding;
   private LaoDetailViewModel mLaoDetailViewModel;
   private EditText rollCallTitleEditText;
   private Button confirmButton;
@@ -62,7 +62,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
 
-    mFragBinding = FragmentCreateRollCallEventBinding.inflate(inflater, container, false);
+    mFragBinding = RollCallCreateFragmentBinding.inflate(inflater, container, false);
 
     mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 

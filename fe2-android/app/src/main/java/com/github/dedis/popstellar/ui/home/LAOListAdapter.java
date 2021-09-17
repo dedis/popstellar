@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
-import com.github.dedis.popstellar.databinding.LayoutLaoHomeBinding;
+import com.github.dedis.popstellar.databinding.HomeLaoLayoutBinding;
 import com.github.dedis.popstellar.model.objects.Lao;
 import java.util.List;
 
@@ -54,12 +54,12 @@ public class LAOListAdapter extends BaseAdapter {
 
   @Override
   public View getView(int position, View view, ViewGroup viewGroup) {
-    LayoutLaoHomeBinding binding;
+    HomeLaoLayoutBinding binding;
     if (view == null) {
       // inflate
       LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
 
-      binding = LayoutLaoHomeBinding.inflate(inflater, viewGroup, false);
+      binding = HomeLaoLayoutBinding.inflate(inflater, viewGroup, false);
     } else {
       binding = DataBindingUtil.getBinding(view);
     }

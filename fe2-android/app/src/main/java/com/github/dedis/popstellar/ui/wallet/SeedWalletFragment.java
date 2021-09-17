@@ -11,10 +11,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import com.github.dedis.popstellar.databinding.FragmentSeedWalletBinding;
+import com.github.dedis.popstellar.databinding.WalletSeedFragmentBinding;
+import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
-import com.github.dedis.popstellar.model.objects.Wallet;
 import java.util.StringJoiner;
 
 /**
@@ -23,7 +23,7 @@ import java.util.StringJoiner;
 public class SeedWalletFragment extends Fragment {
 
   public static final String TAG = SeedWalletFragment.class.getSimpleName();
-  private FragmentSeedWalletBinding mSeedWalletFragBinding;
+  private WalletSeedFragmentBinding mWalletSeedFragBinding;
   private HomeViewModel mHomeViewModel;
   private Wallet wallet;
 
@@ -41,7 +41,7 @@ public class SeedWalletFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     wallet = Wallet.getInstance();
 
-    mSeedWalletFragBinding = FragmentSeedWalletBinding.inflate(inflater, container, false);
+    mWalletSeedFragBinding = WalletSeedFragmentBinding.inflate(inflater, container, false);
 
     FragmentActivity activity = getActivity();
     if (activity instanceof HomeActivity) {
@@ -50,10 +50,10 @@ public class SeedWalletFragment extends Fragment {
       throw new IllegalArgumentException("Cannot obtain view model for " + TAG);
     }
 
-    mSeedWalletFragBinding.setViewModel(mHomeViewModel);
-    mSeedWalletFragBinding.setLifecycleOwner(activity);
+    mWalletSeedFragBinding.setViewModel(mHomeViewModel);
+    mWalletSeedFragBinding.setLifecycleOwner(activity);
 
-    return mSeedWalletFragBinding.getRoot();
+    return mWalletSeedFragBinding.getRoot();
   }
 
   @Override
@@ -79,7 +79,7 @@ public class SeedWalletFragment extends Fragment {
       for (String i : exportSeed) {
         joiner.add(i);
       }
-      mSeedWalletFragBinding.seedWallet.setText(joiner.toString());
+      mWalletSeedFragBinding.seedWallet.setText(joiner.toString());
     } else {
       Toast.makeText(getContext().getApplicationContext(),
           err,
@@ -88,14 +88,14 @@ public class SeedWalletFragment extends Fragment {
   }
 
   private void setupConfirmSeedButton() {
-    mSeedWalletFragBinding.buttonConfirmSeed.setOnClickListener(v -> {
+    mWalletSeedFragBinding.buttonConfirmSeed.setOnClickListener(v -> {
       if (seedAlert != null && seedAlert.isShowing()) {
         seedAlert.dismiss();
       }
       AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
       builder.setTitle("You are sure you have saved the words somewhere?");
       builder.setPositiveButton("Yes", (dialog, which) -> {
-            if (!mHomeViewModel.importSeed(mSeedWalletFragBinding.seedWallet.getText().toString())) {
+            if (!mHomeViewModel.importSeed(mWalletSeedFragBinding.seedWallet.getText().toString())) {
               Toast.makeText(getContext().getApplicationContext(),
                   "Error import key, try again",
                   Toast.LENGTH_LONG).show();

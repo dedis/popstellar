@@ -6,9 +6,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
-import com.github.dedis.popstellar.databinding.LayoutRollCallEventBinding;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.databinding.RollCallEventLayoutBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -55,12 +55,12 @@ public class WalletListAdapter extends BaseAdapter {
 
   @Override
   public View getView(int position, View view, ViewGroup viewGroup) {
-    LayoutRollCallEventBinding binding;
+    RollCallEventLayoutBinding binding;
     if (view == null) {
       // inflate
       LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
 
-      binding = LayoutRollCallEventBinding.inflate(inflater, viewGroup, false);
+      binding = RollCallEventLayoutBinding.inflate(inflater, viewGroup, false);
     } else {
       binding = DataBindingUtil.getBinding(view);
     }

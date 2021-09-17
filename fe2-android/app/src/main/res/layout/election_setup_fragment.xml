@@ -41,7 +41,7 @@
 
       <include
         android:id="@+id/election_setup_date"
-        layout="@layout/layout_enter_date"
+        layout="@layout/event_enter_date_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constrainedHeight="true"
@@ -60,7 +60,7 @@
 
       <include
         android:id="@+id/election_setup_time"
-        layout="@layout/layout_enter_time"
+        layout="@layout/event_enter_time_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/election_setup_text_field_margin_lateral"

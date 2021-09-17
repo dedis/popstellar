@@ -8,9 +8,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
-import com.github.dedis.popstellar.databinding.LayoutWitnessMessageBinding;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.databinding.WitnessMessageLayoutBinding;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
+import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import java.util.List;
 
 /**
@@ -63,12 +63,12 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
 
   @Override
   public View getView(int position, View convertView, ViewGroup parent) {
-    LayoutWitnessMessageBinding binding;
+    WitnessMessageLayoutBinding binding;
     if (convertView == null) {
       // inflate
       LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
-      binding = LayoutWitnessMessageBinding.inflate(inflater, parent, false);
+      binding = WitnessMessageLayoutBinding.inflate(inflater, parent, false);
     } else {
       binding = DataBindingUtil.getBinding(convertView);
     }

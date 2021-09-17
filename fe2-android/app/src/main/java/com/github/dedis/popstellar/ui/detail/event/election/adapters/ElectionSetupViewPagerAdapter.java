@@ -17,7 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.RecyclerView;
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.databinding.LayoutBallotOptionBinding;
+import com.github.dedis.popstellar.databinding.CastVoteBallotOptionLayoutBinding;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
 import java.util.ArrayList;
@@ -64,7 +64,7 @@ public class ElectionSetupViewPagerAdapter
   public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
     context = parent.getContext();
     return new ViewHolder(LayoutInflater.from(context)
-        .inflate(R.layout.layout_election_setup_question, parent, false));
+        .inflate(R.layout.election_setup_question_layout, parent, false));
   }
 
   @Override
@@ -196,7 +196,7 @@ public class ElectionSetupViewPagerAdapter
    */
   private void addBallotOption(LinearLayout linearLayout, int position) {
     //Adds the view for a new ballot option, from the corresponding layout
-    View ballotOptionView = LayoutBallotOptionBinding
+    View ballotOptionView = CastVoteBallotOptionLayoutBinding
         .inflate(LayoutInflater.from(context)).newBallotOptionLl;
     EditText ballotOptionText = ballotOptionView.findViewById(R.id.new_ballot_option_text);
     linearLayout.addView(ballotOptionView);

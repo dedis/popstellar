@@ -13,10 +13,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import com.github.dedis.popstellar.databinding.FragmentWalletBinding;
+import com.github.dedis.popstellar.databinding.WalletFragmentBinding;
+import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
-import com.github.dedis.popstellar.model.objects.Wallet;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
@@ -27,7 +27,7 @@ public class WalletFragment extends Fragment {
 
   public static final String TAG = WalletFragment.class.getSimpleName();
 
-  private FragmentWalletBinding mWalletFragBinding;
+  private WalletFragmentBinding mWalletFragBinding;
   private HomeViewModel mHomeViewModel;
 
   public static WalletFragment newInstance() {
@@ -42,7 +42,7 @@ public class WalletFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    mWalletFragBinding = FragmentWalletBinding.inflate(inflater, container, false);
+    mWalletFragBinding = WalletFragmentBinding.inflate(inflater, container, false);
 
     FragmentActivity activity = getActivity();
     if (activity instanceof HomeActivity) {

@@ -8,14 +8,14 @@ import android.widget.Button;
 import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
-import com.github.dedis.popstellar.databinding.FragmentCastVoteBinding;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
-import com.github.dedis.popstellar.ui.detail.event.election.adapters.CastVoteViewPagerAdapter;
-import com.github.dedis.popstellar.ui.detail.event.election.ZoomOutTransformer;
-import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.databinding.CastVoteFragmentBinding;
 import com.github.dedis.popstellar.model.network.method.message.data.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.ElectionVote;
+import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.detail.event.election.ZoomOutTransformer;
+import com.github.dedis.popstellar.ui.detail.event.election.adapters.CastVoteViewPagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 import me.relex.circleindicator.CircleIndicator3;
@@ -60,8 +60,8 @@ public class CastVoteFragment extends Fragment {
       Bundle savedInstanceState) {
 
     //Inflate the layout for this fragment
-    FragmentCastVoteBinding mCastVoteFragBinding =
-        FragmentCastVoteBinding.inflate(inflater, container, false);
+    CastVoteFragmentBinding mCastVoteFragBinding =
+        CastVoteFragmentBinding.inflate(inflater, container, false);
     mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 
     TextView laoNameView = mCastVoteFragBinding.castVoteLaoName;

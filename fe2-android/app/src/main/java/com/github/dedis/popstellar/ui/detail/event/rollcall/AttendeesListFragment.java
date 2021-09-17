@@ -9,10 +9,10 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import com.github.dedis.popstellar.databinding.FragmentAttendeesListBinding;
+import com.github.dedis.popstellar.databinding.AttendeesListFragmentBinding;
+import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
-import com.github.dedis.popstellar.model.objects.RollCall;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -23,7 +23,7 @@ public class AttendeesListFragment extends Fragment {
 
   private LaoDetailViewModel mLaoDetailViewModel;
   private AttendeesListAdapter mAttendeesListAdapter;
-  private FragmentAttendeesListBinding mAttendeesListBinding;
+  private AttendeesListFragmentBinding mAttendeesListBinding;
   private RollCall rollCall;
 
   public static AttendeesListFragment newInstance(String id) {
@@ -40,7 +40,7 @@ public class AttendeesListFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    mAttendeesListBinding = FragmentAttendeesListBinding.inflate(inflater, container, false);
+    mAttendeesListBinding = AttendeesListFragmentBinding.inflate(inflater, container, false);
 
     mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 

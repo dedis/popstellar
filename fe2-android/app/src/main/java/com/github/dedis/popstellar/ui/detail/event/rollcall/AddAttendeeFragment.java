@@ -47,7 +47,7 @@ public final class AddAttendeeFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    View view = inflater.inflate(R.layout.fragment_add_attendee, container, false);
+    View view = inflater.inflate(R.layout.add_attendee_fragment, container, false);
 
     Button confirm = view.findViewById(R.id.add_attendee_confirm);
     confirm.setOnClickListener(

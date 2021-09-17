@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.databinding.FragmentQrcodeBinding;
+import com.github.dedis.popstellar.databinding.QrcodeFragmentBinding;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
@@ -31,7 +31,7 @@ public final class QRCodeScanningFragment extends Fragment {
 
   public static final String TAG = QRCodeScanningFragment.class.getSimpleName();
   private static final int HANDLE_GMS = 9001;
-  private FragmentQrcodeBinding mQrCodeFragBinding;
+  private QrcodeFragmentBinding mQrCodeFragBinding;
   private QRCodeScanningViewModel mQRCodeScanningViewModel;
   private CameraSource camera;
   private CameraPreview mPreview;
@@ -62,7 +62,7 @@ public final class QRCodeScanningFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    mQrCodeFragBinding = FragmentQrcodeBinding.inflate(inflater, container, false);
+    mQrCodeFragBinding = QrcodeFragmentBinding.inflate(inflater, container, false);
     FragmentActivity activity = getActivity();
 
     if (activity instanceof HomeActivity) {

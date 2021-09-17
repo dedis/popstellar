@@ -13,12 +13,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.databinding.FragmentLaoDetailBinding;
-import com.github.dedis.popstellar.ui.detail.event.EventExpandableListViewAdapter;
-import com.github.dedis.popstellar.ui.detail.witness.WitnessListViewAdapter;
+import com.github.dedis.popstellar.databinding.LaoDetailFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventType;
+import com.github.dedis.popstellar.ui.detail.event.EventExpandableListViewAdapter;
+import com.github.dedis.popstellar.ui.detail.witness.WitnessListViewAdapter;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import java.util.ArrayList;
 import net.glxn.qrgen.android.QRCode;
@@ -31,7 +31,7 @@ public class LaoDetailFragment extends Fragment {
 
   public static final String TAG = LaoDetailFragment.class.getSimpleName();
 
-  private FragmentLaoDetailBinding mLaoDetailFragBinding;
+  private LaoDetailFragmentBinding mLaoDetailFragBinding;
   private LaoDetailViewModel mLaoDetailViewModel;
   private WitnessListViewAdapter mWitnessListViewAdapter;
   private EventExpandableListViewAdapter mEventListViewEventAdapter;
@@ -46,7 +46,7 @@ public class LaoDetailFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    mLaoDetailFragBinding = FragmentLaoDetailBinding.inflate(inflater, container, false);
+    mLaoDetailFragBinding = LaoDetailFragmentBinding.inflate(inflater, container, false);
 
     mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
     mLaoDetailFragBinding.setViewModel(mLaoDetailViewModel);

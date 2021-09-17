@@ -16,10 +16,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.databinding.FragmentManageElectionBinding;
+import com.github.dedis.popstellar.databinding.ElectionManageFragmentBinding;
+import com.github.dedis.popstellar.model.network.method.message.data.ElectionQuestion;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
-import com.github.dedis.popstellar.model.network.method.message.data.ElectionQuestion;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -69,8 +69,8 @@ public class ManageElectionFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    FragmentManageElectionBinding mManageElectionFragBinding =
-        FragmentManageElectionBinding.inflate(inflater, container, false);
+    ElectionManageFragmentBinding mManageElectionFragBinding =
+        ElectionManageFragmentBinding.inflate(inflater, container, false);
 
     laoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
     terminate = mManageElectionFragBinding.terminateElection;

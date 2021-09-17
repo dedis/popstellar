@@ -47,7 +47,7 @@ public class IdentityFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    View view = inflater.inflate(R.layout.fragment_identity, container, false);
+    View view = inflater.inflate(R.layout.identity_fragment, container, false);
     // TODO :   The QR code does not appear at all unless the Name field is non-empty
     //  and not all whitespace.
     CheckBox anonymousCheckBox = view.findViewById(R.id.checkbox_anonymous);

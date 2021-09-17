@@ -30,9 +30,9 @@ public class ElectionResultPagerAdapter extends
   @Override
   public Pager2ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
     adapter = new ElectionResultListAdapter(parent.getContext(),
-        R.layout.layout_election_result_listview, new ArrayList<>());
+        R.layout.election_result_list_view_layout, new ArrayList<>());
     return new Pager2ViewHolder(LayoutInflater.from(parent.getContext())
-        .inflate(R.layout.layout_election_result_pager, parent, false));
+        .inflate(R.layout.election_result_pager_layout, parent, false));
   }
 
   @Override

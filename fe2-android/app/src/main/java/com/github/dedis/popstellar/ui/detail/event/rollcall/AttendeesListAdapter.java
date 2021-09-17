@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
-import com.github.dedis.popstellar.databinding.LayoutAttendeeBinding;
+import com.github.dedis.popstellar.databinding.AttendeeLayoutBinding;
 import java.util.List;
 import net.glxn.qrgen.android.QRCode;
 
@@ -43,12 +43,12 @@ public class AttendeesListAdapter extends BaseAdapter {
 
   @Override
   public View getView(int position, View view, ViewGroup viewGroup) {
-    LayoutAttendeeBinding binding;
+    AttendeeLayoutBinding binding;
     if (view == null) {
       // inflate
       LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
 
-      binding = LayoutAttendeeBinding.inflate(inflater, viewGroup, false);
+      binding = AttendeeLayoutBinding.inflate(inflater, viewGroup, false);
     } else {
       binding = DataBindingUtil.getBinding(view);
     }

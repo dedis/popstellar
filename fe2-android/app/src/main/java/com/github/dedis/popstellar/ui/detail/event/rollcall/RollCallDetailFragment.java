@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import com.github.dedis.popstellar.databinding.FragmentRollCallBinding;
+import com.github.dedis.popstellar.databinding.RollCallFragmentBinding;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import net.glxn.qrgen.android.QRCode;
@@ -18,7 +18,7 @@ public class RollCallDetailFragment extends Fragment {
   public static final String TAG = RollCallDetailFragment.class.getSimpleName();
   private static final String EXTRA_PK = "pk";
 
-  private FragmentRollCallBinding mRollCallFragBinding;
+  private RollCallFragmentBinding mRollCallFragBinding;
   private LaoDetailViewModel mLaoDetailViewModel;
 
   public static RollCallDetailFragment newInstance(String pk) {
@@ -35,7 +35,7 @@ public class RollCallDetailFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    mRollCallFragBinding = FragmentRollCallBinding.inflate(inflater, container, false);
+    mRollCallFragBinding = RollCallFragmentBinding.inflate(inflater, container, false);
 
     String pk = this.getArguments().getString(EXTRA_PK);
     Bitmap myBitmap = QRCode.from(pk).bitmap();

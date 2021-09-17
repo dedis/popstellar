@@ -17,7 +17,7 @@
     <!-- Display for a Roll Call -->
     <include
       android:id="@+id/include_layout_roll_call"
-      layout="@layout/layout_roll_call_event"
+      layout="@layout/roll_call_event_layout"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:visibility="@{event.getType() == EventType.ROLL_CALL ? View.VISIBLE : View.GONE}" />
@@ -25,7 +25,7 @@
     <!-- Display for an Election -->
     <include
       android:id="@+id/include_layout_election"
-      layout="@layout/layout_election_display"
+      layout="@layout/election_display_layout"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:visibility="@{event.getType() == EventType.ELECTION ? View.VISIBLE : View.GONE}" />

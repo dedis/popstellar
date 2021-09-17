@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import com.github.dedis.popstellar.databinding.FragmentLaunchBinding;
+import com.github.dedis.popstellar.databinding.LaunchFragmentBinding;
 
 /**
  * Fragment used to display the Launch UI
@@ -16,7 +16,7 @@ public final class LaunchFragment extends Fragment {
 
   public static final String TAG = LaunchFragment.class.getSimpleName();
 
-  private FragmentLaunchBinding mLaunchFragBinding;
+  private LaunchFragmentBinding mLaunchFragBinding;
   private HomeViewModel mHomeViewModel;
 
   public static LaunchFragment newInstance() {
@@ -30,7 +30,7 @@ public final class LaunchFragment extends Fragment {
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
 
-    mLaunchFragBinding = FragmentLaunchBinding.inflate(inflater, container, false);
+    mLaunchFragBinding = LaunchFragmentBinding.inflate(inflater, container, false);
 
     mHomeViewModel = HomeActivity.obtainViewModel(getActivity());
 

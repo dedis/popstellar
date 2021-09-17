@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.databinding.FragmentWitnessMessageBinding;
+import com.github.dedis.popstellar.databinding.WitnessMessageFragmentBinding;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import java.util.ArrayList;
@@ -19,15 +19,13 @@ import java.util.ArrayList;
 public class WitnessMessageFragment extends Fragment {
 
   public static final String TAG = WitnessMessageFragment.class.getSimpleName();
-  private FragmentWitnessMessageBinding mWitnessMessageFragBinding;
+  private WitnessMessageFragmentBinding mWitnessMessageFragBinding;
   private LaoDetailViewModel mLaoDetailViewModel;
   private WitnessMessageListViewAdapter mWitnessMessageListViewAdapter;
-
 
   public static WitnessMessageFragment newInstance() {
     return new WitnessMessageFragment();
   }
-
 
   @Nullable
   @Override
@@ -35,7 +33,7 @@ public class WitnessMessageFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    mWitnessMessageFragBinding = FragmentWitnessMessageBinding.inflate(inflater, container, false);
+    mWitnessMessageFragBinding = WitnessMessageFragmentBinding.inflate(inflater, container, false);
 
     mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 

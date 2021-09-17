@@ -13,12 +13,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewpager2.widget.ViewPager2;
-import com.github.dedis.popstellar.databinding.FragmentSetupElectionEventBinding;
+import com.github.dedis.popstellar.databinding.ElectionSetupFragmentBinding;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
-import com.github.dedis.popstellar.ui.detail.event.election.adapters.ElectionSetupViewPagerAdapter;
 import com.github.dedis.popstellar.ui.detail.event.election.ZoomOutTransformer;
+import com.github.dedis.popstellar.ui.detail.event.election.adapters.ElectionSetupViewPagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 import me.relex.circleindicator.CircleIndicator3;
@@ -27,7 +27,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
 
   public static final String TAG = ElectionSetupFragment.class.getSimpleName();
 
-  private FragmentSetupElectionEventBinding mSetupElectionFragBinding;
+  private ElectionSetupFragmentBinding mSetupElectionFragBinding;
 
   //mandatory fields for submitting
   private EditText electionNameText;
@@ -83,7 +83,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
       @Nullable Bundle savedInstanceState) {
 
     mSetupElectionFragBinding =
-        FragmentSetupElectionEventBinding.inflate(inflater, container, false);
+        ElectionSetupFragmentBinding.inflate(inflater, container, false);
 
     mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 

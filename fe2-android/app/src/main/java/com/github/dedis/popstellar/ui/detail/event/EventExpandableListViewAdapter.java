@@ -16,16 +16,16 @@ import android.widget.BaseExpandableListAdapter;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.databinding.LayoutElectionDisplayBinding;
-import com.github.dedis.popstellar.databinding.LayoutEventBinding;
-import com.github.dedis.popstellar.databinding.LayoutEventCategoryBinding;
-import com.github.dedis.popstellar.databinding.LayoutRollCallEventBinding;
+import com.github.dedis.popstellar.databinding.ElectionDisplayLayoutBinding;
+import com.github.dedis.popstellar.databinding.EventCategoryLayoutBinding;
+import com.github.dedis.popstellar.databinding.EventLayoutBinding;
+import com.github.dedis.popstellar.databinding.RollCallEventLayoutBinding;
+import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventCategory;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.event.EventType;
-import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -181,10 +181,10 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
       int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
     EventCategory eventCategory = (EventCategory) getGroup(groupPosition);
 
-    LayoutEventCategoryBinding binding;
+    EventCategoryLayoutBinding binding;
     if (convertView == null) {
       LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-      binding = LayoutEventCategoryBinding.inflate(inflater, parent, false);
+      binding = EventCategoryLayoutBinding.inflate(inflater, parent, false);
     } else {
       binding = DataBindingUtil.getBinding(convertView);
     }
@@ -250,10 +250,10 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
       ViewGroup parent) {
 
     Event event = ((Event) getChild(groupPosition, childPosition));
-    LayoutEventBinding layoutEventBinding;
+    EventLayoutBinding layoutEventBinding;
     if (convertView == null) {
       LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-      layoutEventBinding = LayoutEventBinding.inflate(inflater, parent, false);
+      layoutEventBinding = EventLayoutBinding.inflate(inflater, parent, false);
     } else {
       layoutEventBinding = DataBindingUtil.getBinding(convertView);
     }
@@ -316,8 +316,8 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
    * @return the View corresponding to the child at the specified position
    */
   private View setupElectionElement(Election election, EventCategory category,
-      LayoutEventBinding layoutEventBinding) {
-    LayoutElectionDisplayBinding electionBinding = layoutEventBinding.includeLayoutElection;
+      EventLayoutBinding layoutEventBinding) {
+    ElectionDisplayLayoutBinding electionBinding = layoutEventBinding.includeLayoutElection;
     electionBinding.setElection(election);
     Date dStart = new java.util.Date(Long.valueOf(election.getStartTimestamp())
         * 1000);// *1000 because it needs to be in milisecond
@@ -385,8 +385,8 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
    * @param layoutEventBinding the binding of the generic layoutEvent that we use to display events
    * @return the View corresponding to the child at the specified position
    */
-  private View setupRollCallElement(RollCall rollCall, LayoutEventBinding layoutEventBinding) {
-    LayoutRollCallEventBinding binding = layoutEventBinding.includeLayoutRollCall;
+  private View setupRollCallElement(RollCall rollCall, EventLayoutBinding layoutEventBinding) {
+    RollCallEventLayoutBinding binding = layoutEventBinding.includeLayoutRollCall;
 
     binding.rollcallDate
         .setText("Start: " + DATE_FORMAT.format(new Date(1000 * rollCall.getStart())));

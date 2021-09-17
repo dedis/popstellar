@@ -13,7 +13,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.databinding.FragmentCameraPermBinding;
+import com.github.dedis.popstellar.databinding.QrcodeCameraPermFragmentBinding;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
@@ -27,7 +27,7 @@ public final class CameraPermissionFragment extends Fragment {
 
   private static final int HANDLE_CAMERA_PERM = 2;
 
-  private FragmentCameraPermBinding mCameraPermFragBinding;
+  private QrcodeCameraPermFragmentBinding mCameraPermFragBinding;
   private CameraPermissionViewModel mCameraPermissionViewModel;
 
   public CameraPermissionFragment() {
@@ -44,7 +44,7 @@ public final class CameraPermissionFragment extends Fragment {
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
 
-    mCameraPermFragBinding = FragmentCameraPermBinding.inflate(inflater, container, false);
+    mCameraPermFragBinding = QrcodeCameraPermFragmentBinding.inflate(inflater, container, false);
 
     FragmentActivity activity = getActivity();
     if (activity instanceof HomeActivity) {

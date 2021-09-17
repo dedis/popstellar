@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import com.github.dedis.popstellar.databinding.FragmentConnectingBinding;
+import com.github.dedis.popstellar.databinding.ConnectingFragmentBinding;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link ConnectingFragment#newInstance} factory method
@@ -17,7 +17,7 @@ public final class ConnectingFragment extends Fragment {
 
   public static final String TAG = ConnectingFragment.class.getSimpleName();
 
-  private FragmentConnectingBinding mConnectingFragBinding;
+  private ConnectingFragmentBinding mConnectingFragBinding;
   private HomeViewModel mHomeViewModel;
 
   /**
@@ -31,7 +31,7 @@ public final class ConnectingFragment extends Fragment {
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-    mConnectingFragBinding = FragmentConnectingBinding.inflate(inflater, container, false);
+    mConnectingFragBinding = ConnectingFragmentBinding.inflate(inflater, container, false);
 
     FragmentActivity activity = getActivity();
     if (activity instanceof HomeActivity) {

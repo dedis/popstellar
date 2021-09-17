@@ -10,11 +10,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
-import com.github.dedis.popstellar.databinding.FragmentRollcallTokenBinding;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.databinding.RollCallTokenFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.Wallet;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import java.security.GeneralSecurityException;
 import java.util.Base64;
 import java.util.Optional;
@@ -26,7 +26,7 @@ public class RollCallTokenFragment extends Fragment {
   public static final String EXTRA_ID = "rollcall_id";
 
   private LaoDetailViewModel mLaoDetailViewModel;
-  private FragmentRollcallTokenBinding mFragmentRollcallTokenBinding;
+  private RollCallTokenFragmentBinding mRollCallTokenFragmentBinding;
   private RollCall rollCall;
 
   public static RollCallTokenFragment newInstance(String rollCallId) {
@@ -43,7 +43,7 @@ public class RollCallTokenFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    mFragmentRollcallTokenBinding = FragmentRollcallTokenBinding
+    mRollCallTokenFragmentBinding = RollCallTokenFragmentBinding
         .inflate(inflater, container, false);
 
     mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
@@ -73,23 +73,23 @@ public class RollCallTokenFragment extends Fragment {
       mLaoDetailViewModel.openLaoWallet();
     }
 
-    mFragmentRollcallTokenBinding.rollcallName.setText("Roll Call: " + rollCall.getName());
-    mFragmentRollcallTokenBinding.privateKey.setText("Private key:\n" + sk);
-    mFragmentRollcallTokenBinding.publicKey.setText("Public key:\n" + pk);
+    mRollCallTokenFragmentBinding.rollcallName.setText("Roll Call: " + rollCall.getName());
+    mRollCallTokenFragmentBinding.privateKey.setText("Private key:\n" + sk);
+    mRollCallTokenFragmentBinding.publicKey.setText("Public key:\n" + pk);
 
     Bitmap myBitmap = QRCode.from(pk).bitmap();
-    mFragmentRollcallTokenBinding.pkQrCode.setImageBitmap(myBitmap);
+    mRollCallTokenFragmentBinding.pkQrCode.setImageBitmap(myBitmap);
 
-    mFragmentRollcallTokenBinding.setLifecycleOwner(getActivity());
+    mRollCallTokenFragmentBinding.setLifecycleOwner(getActivity());
 
-    return mFragmentRollcallTokenBinding.getRoot();
+    return mRollCallTokenFragmentBinding.getRoot();
   }
 
   @Override
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
-    mFragmentRollcallTokenBinding.backButton
+    mRollCallTokenFragmentBinding.backButton
         .setOnClickListener(clicked -> mLaoDetailViewModel.openLaoWallet());
   }
 }

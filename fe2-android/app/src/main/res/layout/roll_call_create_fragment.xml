@@ -41,7 +41,7 @@
 
       <include
         android:id="@+id/roll_call_date"
-        layout="@layout/layout_enter_date"
+        layout="@layout/event_enter_date_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constrainedHeight="true"
@@ -50,7 +50,7 @@
 
       <include
         android:id="@+id/roll_call_time"
-        layout="@layout/layout_enter_time"
+        layout="@layout/event_enter_time_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constrainedHeight="true"
