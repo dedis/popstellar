@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
-import com.github.dedis.popstellar.utility.network.IdGenerator;
+import com.github.dedis.popstellar.model.network.IdGenerator;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;

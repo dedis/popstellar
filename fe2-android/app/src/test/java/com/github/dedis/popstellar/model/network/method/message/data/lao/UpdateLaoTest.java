@@ -5,7 +5,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-import com.github.dedis.popstellar.utility.network.IdGenerator;
+import com.github.dedis.popstellar.model.network.IdGenerator;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;

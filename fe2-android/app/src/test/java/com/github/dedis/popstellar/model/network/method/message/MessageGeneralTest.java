@@ -5,7 +5,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
-import com.github.dedis.popstellar.utility.network.IdGenerator;
+import com.github.dedis.popstellar.model.network.IdGenerator;
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.google.android.gms.common.util.Hex;
 import java.nio.charset.StandardCharsets;
