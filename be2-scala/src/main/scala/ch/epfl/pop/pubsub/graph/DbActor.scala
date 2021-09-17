@@ -19,6 +19,7 @@ import scala.util.{Failure, Success, Try}
 object DbActor extends AskPatternConstants {
 
   final val DATABASE_FOLDER: String = "database"
+  final val DATABASE_MAX_CHANNELS: Int = (1 << 10)
   final lazy val INSTANCE: AskableActorRef = PublishSubscribe.getDbActorRef
 
   // DbActor Events correspond to messages the actor may receive
@@ -92,7 +93,7 @@ object DbActor extends AskPatternConstants {
     val laoFolder = new File(s"$DATABASE_FOLDER${Channel.rootChannelPrefix}").toPath
 
     // fetch all channel names (e.g. root/u9n...) stored
-    val initialChannelsMap: Map[Channel, DB] = Try(Files.list(laoFolder).limit(1 << 8)) match {
+    val initialChannelsMap: Map[Channel, DB] = Try(Files.list(laoFolder)) match {
       case Success(stream) =>
         val initialChannelsMap: mutable.Map[Channel, DB] = mutable.Map.empty
         val options: Options = new Options()
@@ -117,6 +118,10 @@ object DbActor extends AskPatternConstants {
 
     override def preStart(): Unit = {
       log.info(s"Actor $self (db) was initialised with a total of ${initialChannelsMap.size} recovered channels")
+      if (initialChannelsMap.size > DATABASE_MAX_CHANNELS) {
+        log.info(s"Actor $self (db) has surpassed a large number of active lao channels (${initialChannelsMap.size} > $DATABASE_MAX_CHANNELS)")
+      }
+
       super.preStart()
     }
 
