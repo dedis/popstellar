@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
+import com.github.dedis.popstellar.repository.local.entities.Channel;
 import com.github.dedis.popstellar.repository.local.entities.LAOEntity;
 import com.github.dedis.popstellar.repository.local.entities.LAOEntityRelation;
 import com.github.dedis.popstellar.repository.local.entities.LAOWitnessCrossRefEntity;
@@ -50,7 +51,7 @@ public abstract class LAODao {
 
   public void _updateWitness(LAOEntity lao, List<PersonEntity> witness) {
     // remove old witness references
-    _deleteByLAOChannel(lao.channel);
+    _deleteByLAOChannel(new Channel(lao.channel));
 
     // add new ones
     _addWitness(witness);
@@ -61,7 +62,7 @@ public abstract class LAODao {
   }
 
   @Delete(entity = LAOWitnessCrossRefEntity.class)
-  public abstract void _deleteByLAOChannel(String channel);
+  public abstract void _deleteByLAOChannel(Channel channel);
 
   @Insert
   public abstract void _addWitnessCrossRefs(List<LAOWitnessCrossRefEntity> witnessCrossRefs);

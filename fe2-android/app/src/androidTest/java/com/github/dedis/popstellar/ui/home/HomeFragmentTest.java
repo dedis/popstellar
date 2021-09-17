@@ -1,14 +1,9 @@
 package com.github.dedis.popstellar.ui.home;
 
-import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
 
 import androidx.test.espresso.matcher.BoundedMatcher;
 import com.github.dedis.popstellar.R;
@@ -17,8 +12,6 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Ignore;
 import org.junit.Test;
-
-// TODO: Update tests when the data between activities will be passed
 
 @Ignore
 public class HomeFragmentTest {
@@ -44,11 +37,6 @@ public class HomeFragmentTest {
     };
   }
 
-  //  @Before
-  //  public void launchActivity() {
-  //    ActivityScenario.launch(MainActivity.class);
-  //  }
-
   @Test
   public void homeFragmentIsDisplayed() {
     onView(withId(R.id.fragment_home)).check(matches(isDisplayed()));
@@ -57,17 +45,5 @@ public class HomeFragmentTest {
   @Test
   public void listOfLaosIsDisplayed() {
     onView(withId(R.id.lao_list)).check(matches(isDisplayed()));
-  }
-
-  @Test
-  public void clickOnLaoWhichOfIAmOrganizerStartsOrganizer() {
-    onData(allOf(is(instanceOf(Lao.class)), titleMatches("LAO I just joined"))).perform(click());
-    onView(withId(R.id.fragment_organizer)).check(matches(isDisplayed()));
-  }
-
-  @Test
-  public void clickOnLaoWhichOfIAmAttendeeStartsAttendee() {
-    onData(allOf(is(instanceOf(Lao.class)), titleMatches("LAO 1"))).perform(click());
-    onView(withId(R.id.fragment_attendee)).check(matches(isDisplayed()));
   }
 }
