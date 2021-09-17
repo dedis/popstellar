@@ -33,9 +33,10 @@ public class Hash {
         if (str == null || str.length() == 0) {
           throw new IllegalArgumentException("cannot hash an empty/null string");
         }
-        String length = Integer.toString(str.length());
+        byte[] buf = str.getBytes(StandardCharsets.UTF_8);
+        String length = Integer.toString(buf.length);
         digest.update(length.getBytes(StandardCharsets.UTF_8));
-        digest.update(str.getBytes(StandardCharsets.UTF_8));
+        digest.update(buf);
       }
       byte[] digestBuf = digest.digest();
       return Base64.getUrlEncoder().encodeToString(digestBuf);
