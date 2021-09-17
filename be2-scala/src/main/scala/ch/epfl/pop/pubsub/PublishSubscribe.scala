@@ -1,7 +1,7 @@
 package ch.epfl.pop.pubsub
 
 import akka.NotUsed
-import akka.actor.{ActorRef, ActorSystem, Props}
+import akka.actor.{ActorRef, ActorSystem}
 import akka.http.scaladsl.model.ws.{Message, TextMessage}
 import akka.pattern.AskableActorRef
 import akka.stream.FlowShape
