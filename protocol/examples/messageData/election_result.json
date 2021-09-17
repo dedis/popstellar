@@ -1,0 +1,16 @@
+{
+    "object": "election",
+    "action": "result",
+    "questions": [
+        {
+            "id": "XXX",
+            "result": [
+                {
+                    "ballot_option": "XXX",
+                    "count": 123
+                }
+            ]
+        }
+    ],
+    "witness_signatures": ["XXX"]
+}

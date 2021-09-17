@@ -138,11 +138,20 @@ the default one, where messages for creation of new LAOs may be published for
 instance. Another example of a channel would be one for an `Election` which
 would be a sub-channel within the LAO channel.
 
+The hubs use `Socket.SendError` to send an `Error` back to the client.
+We suggest using `message.NewError` and `message.NewErrorf` to create
+these error messages and wrap them using `xerrors.Errorf` with the `%w`
+format specifier if required. The rule of thumb is the leaf/last method
+called from the hub should create/return a `message.Error` and intermediate
+methods should propagate it up by wrapping it until it reaches a point
+where `Socket.SendError` is invoked.
+
 The backend is able to persist any data on disk and maintains in-memory data
 structures for storing messages. To make use of this functionality set the
 `HUB_DB` environment variable to point to an initialized sqlite database when
 you launch the server. Package `db/sqlite/cli` implements a CLI to initialize
 such db. See the README in `be1-go/README.md` for instructions.
+
 
 ##### Message definitions
 

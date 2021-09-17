@@ -1,0 +1,11 @@
+{
+    "object": "meeting",
+    "action": "create",
+    "id": "XXX",
+    "name": "XXX",
+    "creation": 123,
+    "location": "XXX",
+    "start": 123,
+    "end": 123,
+    "extra": { "anything": "XXX" }
+}

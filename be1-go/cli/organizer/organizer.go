@@ -4,18 +4,31 @@ package organizer
 
 import (
 	"encoding/base64"
+	"os"
 	"student20_pop/crypto"
 	"student20_pop/hub"
 	"student20_pop/network"
 	"student20_pop/network/socket"
+	"time"
 
+	"github.com/rs/zerolog"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 )
 
+const defaultLevel = zerolog.InfoLevel
+
+var logout = zerolog.ConsoleWriter{
+	Out:        os.Stdout,
+	TimeFormat: time.RFC3339,
+}
+
 // Serve parses the CLI arguments and spawns a hub and a websocket server
 // for the organizer.
 func Serve(cliCtx *cli.Context) error {
+	log := zerolog.New(logout).Level(defaultLevel).
+		With().Timestamp().Logger().
+		With().Caller().Logger()
 
 	// get command line args which specify public key, port to use for clients and witnesses
 	clientPort := cliCtx.Int("client-port")
@@ -41,17 +54,17 @@ func Serve(cliCtx *cli.Context) error {
 	}
 
 	// create organizer hub
-	h, err := hub.NewOrganizerHub(point)
+	h, err := hub.NewOrganizerHub(point, log.With().Str("role", "organizer").Logger())
 	if err != nil {
 		return xerrors.Errorf("failed create the organizer hub: %v", err)
 	}
 
 	// Start a client websocket server
-	clientSrv := network.NewServer(h, clientPort, socket.ClientSocketType)
+	clientSrv := network.NewServer(h, clientPort, socket.ClientSocketType, log.With().Str("role", "client server").Logger())
 	clientSrv.Start()
 
 	// Start a witness websocket server
-	witnessSrv := network.NewServer(h, witnessPort, socket.WitnessSocketType)
+	witnessSrv := network.NewServer(h, witnessPort, socket.WitnessSocketType, log.With().Str("role", "witness server").Logger())
 	witnessSrv.Start()
 
 	// start the processing loop

@@ -7,7 +7,6 @@ import { SectionList, Text } from 'react-native';
 /**
  * Component used to display a Election event in the LAO event list
  */
-
 const EventElection = (props: IPropTypes) => {
   const { event } = props;
   const startsAtString = event.start.before(Timestamp.EpochNow()) ? 'Started at' : 'Starts at';

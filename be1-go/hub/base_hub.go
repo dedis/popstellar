@@ -5,12 +5,16 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 	"sync"
 
-	"student20_pop/message"
+	jsonrpc "student20_pop/message"
+	"student20_pop/message/answer"
+	"student20_pop/message/messagedata"
+	"student20_pop/message/query"
+	"student20_pop/message/query/method"
+	"student20_pop/message/query/method/message"
 	"student20_pop/network/socket"
 	"student20_pop/validation"
 
@@ -19,6 +23,7 @@ import (
 	"golang.org/x/xerrors"
 
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/rs/zerolog"
 )
 
 // rootPrefix denotes the prefix for the root channel
@@ -51,15 +56,19 @@ type baseHub struct {
 	stop chan struct{}
 
 	workers *semaphore.Weighted
+
+	log zerolog.Logger
 }
 
 // NewBaseHub returns a Base Hub.
-func NewBaseHub(public kyber.Point) (*baseHub, error) {
+func NewBaseHub(public kyber.Point, log zerolog.Logger) (*baseHub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create the schema validator: %v", err)
 	}
+
+	log = log.With().Str("role", "base hub").Logger()
 
 	baseHub := baseHub{
 		messageChan:     make(chan socket.IncomingMessage),
@@ -69,6 +78,7 @@ func NewBaseHub(public kyber.Point) (*baseHub, error) {
 		schemaValidator: schemaValidator,
 		stop:            make(chan struct{}),
 		workers:         semaphore.NewWeighted(numWorkers),
+		log:             log,
 	}
 
 	if os.Getenv("HUB_DB") != "" {
@@ -101,7 +111,7 @@ func (h *baseHub) Start() {
 				h.RLock()
 				for _, channel := range h.channelByID {
 					// dummy Unsubscribe message because it's only used for logging...
-					channel.Unsubscribe(id, message.Unsubscribe{})
+					channel.Unsubscribe(id, method.Unsubscribe{})
 				}
 				h.RUnlock()
 			case <-h.stop:
@@ -127,64 +137,53 @@ func (h *baseHub) OnSocketClose() chan<- string {
 }
 
 // handleRootChannelMesssage handles an incoming message on the root channel.
-func (h *baseHub) handleRootChannelMesssage(id int, socket socket.Socket, query *message.Query) {
-	if query.Publish == nil {
-		err := &message.Error{
-			Code:        -4,
-			Description: "only publish is allowed on /root",
-		}
-
-		socket.SendError(&id, err)
-		return
-	}
-
-	// Check if the structure of the message is correct
-	msg := query.Publish.Params.Message
-
-	// Verify the data
-	err := h.schemaValidator.VerifyJson(msg.RawData, validation.Data)
+func (h *baseHub) handleRootChannelMesssage(socket socket.Socket, publish method.Publish) {
+	jsonData, err := base64.URLEncoding.DecodeString(publish.Params.Message.Data)
 	if err != nil {
-		err = message.NewError("failed to validate the data", err)
-		socket.SendError(&id, err)
+		socket.SendError(&publish.ID, xerrors.Errorf("failed to decode message data: %v", err))
 		return
 	}
 
-	// Unmarshal the data
-	err = query.Publish.Params.Message.VerifyAndUnmarshalData(rootPrefix)
+	// validate message data against the json schema
+	err = h.schemaValidator.VerifyJson(jsonData, validation.Data)
 	if err != nil {
-		// Return a error of type "-4 request data is invalid" for all the
-		// verifications and unmarshaling problems of the data
-		err = &message.Error{
-			Code:        -4,
-			Description: fmt.Sprintf("failed to verify and unmarshal data: %v", err),
-		}
-		socket.SendError(&id, err)
+		socket.SendError(&publish.ID, err)
 		return
 	}
 
-	if query.Publish.Params.Message.Data.GetAction() == message.DataAction(message.CreateLaoAction) &&
-		query.Publish.Params.Message.Data.GetObject() == message.DataObject(message.LaoObject) {
-		err := h.createLao(*query.Publish)
-		if err != nil {
-			err = message.NewError("failed to create lao", err)
-
-			socket.SendError(&id, err)
-			return
-		}
-	} else {
-		log.Printf("invalid method: %s", query.GetMethod())
-		socket.SendError(&id, &message.Error{
-			Code:        -1,
-			Description: "you may only invoke lao/create on /root",
-		})
+	// get object#action
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	if err != nil {
+		socket.SendError(&publish.ID, err)
 		return
 	}
 
-	status := 0
-	result := message.Result{General: &status}
+	// must be "lao#create"
+	if object != "lao" || action != "create" {
+		log.Printf("invalid method: %s#%s", object, action)
+		err := answer.NewError(-1, "failed to invoke lao/create: operation only allowed on /root")
+		socket.SendError(&publish.ID, err)
+		return
+	}
 
-	log.Printf("sending result: %+v", result)
-	socket.SendResult(id, result)
+	var laoCreate messagedata.LaoCreate
+
+	err = publish.Params.Message.UnmarshalData(&laoCreate)
+	if err != nil {
+		h.log.Err(err).Msg("failed to unmarshal lao#create")
+		socket.SendError(&publish.ID, err)
+		return
+	}
+
+	err = h.createLao(publish, laoCreate)
+	if err != nil {
+		h.log.Err(err).Msg("failed to create lao")
+		socket.SendError(&publish.ID, err)
+		return
+	}
+
+	log.Printf("sending empty result")
+	socket.SendResult(publish.ID, nil)
 }
 
 // handleMessageFromClient handles an incoming message from an end user.
@@ -192,112 +191,176 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *socket.IncomingMessag
 	socket := incomingMessage.Socket
 	byteMessage := incomingMessage.Message
 
-	// Check if the GenericMessage has a field "id"
-	genericMsg := &message.GenericMessage{}
-	id, ok := genericMsg.UnmarshalID(byteMessage)
-	if !ok {
-		err := &message.Error{
-			Code:        -4,
-			Description: "The message does not have a valid `id` field",
-		}
+	// validate against json schema
+	err := h.schemaValidator.VerifyJson(byteMessage, validation.GenericMessage)
+	if err != nil {
+		h.log.Err(err).Msg("message is not valid against json schema")
+		socket.SendError(nil, xerrors.Errorf("message is not valid against json schema: %v", err))
+		return
+	}
+
+	rpctype, err := jsonrpc.GetType(byteMessage)
+	if err != nil {
+		h.log.Err(err).Msg("failed to get rpc type")
 		socket.SendError(nil, err)
 		return
 	}
 
-	// Verify the message
-	err := h.schemaValidator.VerifyJson(byteMessage, validation.GenericMessage)
+	// check type (answer or query), we expect a query
+	if rpctype != jsonrpc.RPCTypeQuery {
+		h.log.Error().Msgf("jsonRPC message is not of type query")
+		socket.SendError(nil, xerrors.New("jsonRPC message is not of type query"))
+		return
+	}
+
+	var query query.Base
+
+	err = json.Unmarshal(byteMessage, &query)
 	if err != nil {
-		err = message.NewError("failed to verify incoming message", err)
-		socket.SendError(&id, err)
+		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
+		h.log.Err(err)
+		socket.SendError(nil, err)
 		return
 	}
 
-	// Unmarshal the message
-	err = json.Unmarshal(byteMessage, genericMsg)
+	var id int
+	var msgs []message.Message
+	var handlerErr error
+
+	switch query.Method {
+	case "publish":
+		id, handlerErr = h.handlePublish(socket, byteMessage)
+	case "subscribe":
+		id, handlerErr = h.handleSubscribe(socket, byteMessage)
+	case "unsubscribe":
+		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
+	case "catchup":
+		msgs, id, handlerErr = h.handleCatchup(byteMessage)
+	default:
+		err = answer.NewErrorf(-2, "unexpected method: '%s'", query.Method)
+		h.log.Err(err)
+		socket.SendError(nil, err)
+		return
+	}
+
+	if handlerErr != nil {
+		err := answer.NewErrorf(-4, "failed to handle method: %v", err)
+		h.log.Err(err)
+		socket.SendError(nil, err)
+		return
+	}
+
+	if query.Method == "catchup" {
+		socket.SendResult(id, msgs)
+		return
+	}
+
+	socket.SendResult(id, nil)
+}
+
+func (h *baseHub) handlePublish(socket socket.Socket, byteMessage []byte) (int, error) {
+	var publish method.Publish
+
+	err := json.Unmarshal(byteMessage, &publish)
 	if err != nil {
-		// Return a error of type "-4 request data is invalid" for all the
-		// unmarshaling problems of the incoming message
-		err = &message.Error{
-			Code:        -4,
-			Description: fmt.Sprintf("failed to unmarshal incoming message: %v", err),
-		}
-
-		socket.SendError(&id, err)
-		return
+		return -1, xerrors.Errorf("failed to unmarshal publish message: %v", err)
 	}
 
-	query := genericMsg.Query
-
-	if query == nil {
-		return
+	if publish.Params.Channel == "/root" {
+		h.handleRootChannelMesssage(socket, publish)
+		return -1, nil
 	}
 
-	channelPath := query.GetChannel()
-	log.Printf("channel: %s", channelPath)
-
-	if channelPath == "/root" {
-		h.handleRootChannelMesssage(id, socket, query)
-		return
+	channel, err := h.getChan(publish.Params.Channel)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to get channel: %v", err)
 	}
 
+	err = channel.Publish(publish)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to publish: %v", err)
+	}
+
+	return publish.ID, nil
+}
+
+func (h *baseHub) handleSubscribe(socket socket.Socket, byteMessage []byte) (int, error) {
+	var subscribe method.Subscribe
+
+	err := json.Unmarshal(byteMessage, &subscribe)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to unmarshal subscribe message: %v", err)
+	}
+
+	channel, err := h.getChan(subscribe.Params.Channel)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to get subscribe channel: %v", err)
+	}
+
+	err = channel.Subscribe(socket, subscribe)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to publish: %v", err)
+	}
+
+	return subscribe.ID, nil
+}
+
+func (h *baseHub) handleUnsubscribe(socket socket.Socket, byteMessage []byte) (int, error) {
+	var unsubscribe method.Unsubscribe
+
+	err := json.Unmarshal(byteMessage, &unsubscribe)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to unmarshal unsubscribe message: %v", err)
+	}
+
+	channel, err := h.getChan(unsubscribe.Params.Channel)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to get unsubscribe channel: %v", err)
+	}
+
+	err = channel.Unsubscribe(socket.ID(), unsubscribe)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to unsubscribe: %v", err)
+	}
+
+	return unsubscribe.ID, nil
+}
+
+func (h *baseHub) handleCatchup(byteMessage []byte) ([]message.Message, int, error) {
+	var catchup method.Catchup
+
+	err := json.Unmarshal(byteMessage, &catchup)
+	if err != nil {
+		return nil, -1, xerrors.Errorf("failed to unmarshal catchup message: %v", err)
+	}
+
+	channel, err := h.getChan(catchup.Params.Channel)
+	if err != nil {
+		return nil, -1, xerrors.Errorf("failed to get catchup channel: %v", err)
+	}
+
+	msg := channel.Catchup(catchup)
+	if err != nil {
+		return nil, -1, xerrors.Errorf("failed to catchup: %v", err)
+	}
+
+	return msg, catchup.ID, nil
+}
+
+func (h *baseHub) getChan(channelPath string) (Channel, error) {
 	if channelPath[:6] != rootPrefix {
-		log.Printf("channel id must begin with /root/")
-		socket.SendError(&id, &message.Error{
-			Code:        -2,
-			Description: "channel id must begin with /root/",
-		})
-		return
+		return nil, xerrors.Errorf("channel id must begin with \"/root/\", got: %q", channelPath[:6])
 	}
 
 	h.RLock()
+	defer h.RUnlock()
+
 	channel, ok := h.channelByID[channelPath]
 	if !ok {
-		log.Printf("invalid channel: %s", channelPath)
-		socket.SendError(&id, &message.Error{
-			Code:        -2,
-			Description: fmt.Sprintf("channel %s does not exist", channelPath),
-		})
-		h.RUnlock()
-		return
-	}
-	h.RUnlock()
-
-	method := query.GetMethod()
-	log.Printf("method: %s", method)
-
-	msg := []message.Message{}
-
-	// TODO: use constants
-	switch method {
-	case "subscribe":
-		err = channel.Subscribe(socket, *query.Subscribe)
-	case "unsubscribe":
-		err = channel.Unsubscribe(socket.ID(), *query.Unsubscribe)
-	case "publish":
-		err = channel.Publish(*query.Publish)
-	case "message":
-		log.Printf("cannot handle broadcasts right now")
-	case "catchup":
-		msg = channel.Catchup(*query.Catchup)
-		// TODO send catchup response to client
+		return nil, xerrors.Errorf("channel %s does not exist", channelPath)
 	}
 
-	if err != nil {
-		err = message.NewError("failed to process query", err)
-		socket.SendError(&id, err)
-		return
-	}
-
-	result := message.Result{}
-
-	if method == "catchup" {
-		result.Catchup = msg
-	} else {
-		general := 0
-		result.General = &general
-	}
-
-	socket.SendResult(id, result)
+	return channel, nil
 }
 
 // handleMessageFromWitness handles an incoming message from a witness server.
@@ -324,35 +387,27 @@ func (h *baseHub) handleIncomingMessage(incomingMessage *socket.IncomingMessage)
 }
 
 // createLao creates a new LAO using the data in the publish parameter.
-func (h *baseHub) createLao(publish message.Publish) error {
+func (h *baseHub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate) error {
 	h.Lock()
 	defer h.Unlock()
 
-	data, ok := publish.Params.Message.Data.(*message.CreateLAOData)
-	if !ok {
-		return &message.Error{
-			Code:        -4,
-			Description: "failed to cast data to CreateLAOData",
-		}
-	}
-
-	encodedID := base64.URLEncoding.EncodeToString(data.ID)
-	laoChannelPath := rootPrefix + encodedID
+	laoChannelPath := rootPrefix + laoCreate.ID
 
 	if _, ok := h.channelByID[laoChannelPath]; ok {
-		return &message.Error{
-			Code:        -3,
-			Description: "failed to create lao: another one with the same ID exists",
-		}
+		h.log.Error().Msgf("failed to create lao: duplicate lao path: %q", laoChannelPath)
+		return answer.NewErrorf(-3, "failed to create lao: duplicate lao path: %q", laoChannelPath)
 	}
 
 	laoCh := laoChannel{
-		rollCall:    rollCall{},
-		attendees:   NewAttendees(),
-		baseChannel: createBaseChannel(h, laoChannelPath),
+		rollCall:  rollCall{},
+		attendees: NewAttendees(),
+		baseChannel: createBaseChannel(h, laoChannelPath,
+			h.log.With().Str("role", "lao channel").Logger()),
 	}
 
-	laoCh.inbox.storeMessage(*publish.Params.Message)
+	laoCh.inbox.storeMessage(publish.Params.Message)
+
+	h.log.Info().Msgf("storing new channel '%s' %v", laoChannelPath, publish.Params.Message)
 
 	h.channelByID[laoChannelPath] = &laoCh
 
@@ -445,9 +500,10 @@ func getChannelsFromDB(h *baseHub) (map[string]Channel, error) {
 
 func createChannelFromDB(db *sql.DB, h *baseHub, channelID string) (Channel, error) {
 	channel := laoChannel{
-		rollCall:    rollCall{},
-		attendees:   NewAttendees(),
-		baseChannel: createBaseChannel(h, channelID),
+		rollCall:  rollCall{},
+		attendees: NewAttendees(),
+		baseChannel: createBaseChannel(h, channelID,
+			h.log.With().Str("role", "lao channel").Logger()),
 	}
 
 	attendees, err := getAttendeesChannelFromDB(db, channelID)
@@ -475,9 +531,7 @@ func createChannelFromDB(db *sql.DB, h *baseHub, channelID string) (Channel, err
 
 	for i := range messages {
 		msgID := messages[i].message.MessageID
-		msgIDEncoded := base64.URLEncoding.EncodeToString(msgID)
-
-		channel.inbox.msgs[msgIDEncoded] = &messages[i]
+		channel.inbox.msgs[msgID] = &messages[i]
 	}
 
 	return &channel, nil
@@ -527,7 +581,7 @@ func getAttendeesChannelFromDB(db *sql.DB, channelID string) ([]string, error) {
 	return result, nil
 }
 
-func getWitnessChannelFromDB(db *sql.DB, channelID string) ([]message.PublicKey, error) {
+func getWitnessChannelFromDB(db *sql.DB, channelID string) ([]string, error) {
 	query := `
 		SELECT
 			pub_key
@@ -550,7 +604,7 @@ func getWitnessChannelFromDB(db *sql.DB, channelID string) ([]message.PublicKey,
 
 	defer rows.Close()
 
-	result := make([]message.PublicKey, 0)
+	result := make([]string, 0)
 
 	for rows.Next() {
 		var pubKey string
@@ -560,7 +614,7 @@ func getWitnessChannelFromDB(db *sql.DB, channelID string) ([]message.PublicKey,
 			return nil, xerrors.Errorf(dbParseRowErr, err)
 		}
 
-		result = append(result, message.PublicKey([]byte(pubKey)))
+		result = append(result, pubKey)
 	}
 
 	err = rows.Err()
@@ -618,14 +672,14 @@ func getMessagesChannelFromDB(db *sql.DB, channelID string) ([]messageInfo, erro
 		}
 
 		messageInfo := messageInfo{
-			message: &message.Message{
-				MessageID:         message.Base64URLBytes(messageID),
-				Sender:            message.PublicKey(sender),
-				Signature:         message.Signature(messageSignature),
+			message: message.Message{
+				MessageID:         messageID,
+				Sender:            sender,
+				Signature:         messageSignature,
 				WitnessSignatures: witnesses,
-				RawData:           message.Base64URLBytes(rawData),
+				Data:              rawData,
 			},
-			storedTime: message.Timestamp(timestamp),
+			storedTime: timestamp,
 		}
 
 		log.Printf("Msg load: %+v", messageInfo.message)
@@ -641,7 +695,7 @@ func getMessagesChannelFromDB(db *sql.DB, channelID string) ([]messageInfo, erro
 	return result, nil
 }
 
-func getWitnessesMessageFromDB(db *sql.DB, messageID string) ([]message.PublicKeySignaturePair, error) {
+func getWitnessesMessageFromDB(db *sql.DB, messageID string) ([]message.WitnessSignature, error) {
 	query := `
 		SELECT
 			pub_key,
@@ -665,7 +719,7 @@ func getWitnessesMessageFromDB(db *sql.DB, messageID string) ([]message.PublicKe
 
 	defer rows.Close()
 
-	result := make([]message.PublicKeySignaturePair, 0)
+	result := make([]message.WitnessSignature, 0)
 
 	for rows.Next() {
 		var pubKey string
@@ -676,9 +730,9 @@ func getWitnessesMessageFromDB(db *sql.DB, messageID string) ([]message.PublicKe
 			return nil, xerrors.Errorf(dbParseRowErr, err)
 		}
 
-		result = append(result, message.PublicKeySignaturePair{
-			Witness:   message.PublicKey(pubKey),
-			Signature: message.Signature(signature),
+		result = append(result, message.WitnessSignature{
+			Witness:   pubKey,
+			Signature: signature,
 		})
 	}
 

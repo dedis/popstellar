@@ -1,14 +1,21 @@
 package hub
 
 import (
+	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"log"
 	"sort"
-	"student20_pop/message"
+	jsonrpc "student20_pop/message"
+	"student20_pop/message/answer"
+	"student20_pop/message/query"
+	"student20_pop/message/query/method"
+	"student20_pop/message/query/method/message"
 	"student20_pop/network/socket"
 	"student20_pop/validation"
 	"sync"
+
+	"github.com/rs/zerolog"
+	"golang.org/x/xerrors"
 )
 
 type sockets struct {
@@ -53,26 +60,32 @@ type baseChannel struct {
 	channelID string
 
 	witnessMu sync.Mutex
-	witnesses []message.PublicKey
+
+	witnesses []string
+
+	log zerolog.Logger
 }
 
 type messageInfo struct {
-	message    *message.Message
-	storedTime message.Timestamp
+	message    message.Message
+	storedTime int64
 }
 
 // CreateBaseChannel return an instance of a `baseChannel`
-func createBaseChannel(h *baseHub, channelID string) *baseChannel {
+func createBaseChannel(h *baseHub, channelID string, log zerolog.Logger) *baseChannel {
 	return &baseChannel{
 		hub:       h,
 		channelID: channelID,
-		sockets:   sockets{},
-		inbox:     createInbox(channelID),
+		sockets: sockets{
+			store: make(map[string]socket.Socket),
+		},
+		inbox: createInbox(channelID),
+		log:   log,
 	}
 }
 
 // Subscribe is used to handle a subscribe message from the client.
-func (c *baseChannel) Subscribe(socket socket.Socket, msg message.Subscribe) error {
+func (c *baseChannel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
 	log.Printf("received a subscribe with id: %d", msg.ID)
 	c.sockets.Upsert(socket)
 
@@ -80,23 +93,20 @@ func (c *baseChannel) Subscribe(socket socket.Socket, msg message.Subscribe) err
 }
 
 // Unsubscribe is used to handle an unsubscribe message.
-func (c *baseChannel) Unsubscribe(socketID string, msg message.Unsubscribe) error {
+func (c *baseChannel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 	log.Printf("received an unsubscribe with id: %d", msg.ID)
 
 	ok := c.sockets.Delete(socketID)
 
 	if !ok {
-		return &message.Error{
-			Code:        -2,
-			Description: "client is not subscribed to this channel",
-		}
+		return answer.NewError(-2, "client is not subscribed to this channel")
 	}
 
 	return nil
 }
 
 // Catchup is used to handle a catchup message.
-func (c *baseChannel) Catchup(catchup message.Catchup) []message.Message {
+func (c *baseChannel) Catchup(catchup method.Catchup) []message.Message {
 	log.Printf("received a catchup with id: %d", catchup.ID)
 
 	c.inbox.mutex.RLock()
@@ -118,7 +128,7 @@ func (c *baseChannel) Catchup(catchup message.Catchup) []message.Message {
 	// iterate and extract the messages[i].message field and
 	// append it to the result slice
 	for _, msgInfo := range messages {
-		result = append(result, *msgInfo.message)
+		result = append(result, msgInfo.message)
 	}
 
 	return result
@@ -127,13 +137,25 @@ func (c *baseChannel) Catchup(catchup message.Catchup) []message.Message {
 // broadcastToAllClients is a helper message to broadcast a message to all
 // subscribers.
 func (c *baseChannel) broadcastToAllClients(msg message.Message) {
-	query := message.Query{
-		Broadcast: message.NewBroadcast(c.channelID, &msg),
+	rpcMessage := method.Broadcast{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "broadcast",
+		},
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			c.channelID,
+			msg,
+		},
 	}
 
-	buf, err := json.Marshal(query)
+	buf, err := json.Marshal(&rpcMessage)
 	if err != nil {
-		log.Fatalf("failed to marshal broadcast query: %v", err)
+		log.Printf("failed to marshal broadcast query: %v", err)
 	}
 
 	c.sockets.RLock()
@@ -144,35 +166,26 @@ func (c *baseChannel) broadcastToAllClients(msg message.Message) {
 }
 
 // VerifyPublishMessage checks if a Publish message is valid
-func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
+func (c *baseChannel) VerifyPublishMessage(publish method.Publish) error {
 	log.Printf("received a publish with id: %d", publish.ID)
 
 	// Check if the structure of the message is correct
 	msg := publish.Params.Message
 
-	// Verify the data
-	err := c.hub.schemaValidator.VerifyJson(msg.RawData, validation.Data)
+	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
-		return message.NewError("failed to validate the data", err)
+		return xerrors.Errorf("failed to decode message data: %v", err)
 	}
 
-	// Unmarshal the data
-	laoID := c.channelID[6:]
-	err = msg.VerifyAndUnmarshalData(laoID)
+	// Verify the data
+	err = c.hub.schemaValidator.VerifyJson(jsonData, validation.Data)
 	if err != nil {
-		// Return a error of type "-4 request data is invalid" for all the verifications and unmarshalling problems of the data
-		return &message.Error{
-			Code:        -4,
-			Description: fmt.Sprintf("failed to verify and unmarshal data: %v", err),
-		}
+		return xerrors.Errorf("failed to verify json schema: %w", err)
 	}
 
 	// Check if the message already exists
 	if _, ok := c.inbox.getMessage(msg.MessageID); ok {
-		return &message.Error{
-			Code:        -3,
-			Description: "message already exists",
-		}
+		return answer.NewError(-3, "message already exists")
 	}
 
 	return nil

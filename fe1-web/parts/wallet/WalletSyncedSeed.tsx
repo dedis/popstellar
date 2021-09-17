@@ -7,13 +7,15 @@ import styleContainer from 'styles/stylesheets/container';
 import STRINGS from 'res/strings';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
-import { HDWallet } from 'model/objects/HDWallet';
-import { WalletStore } from 'store/stores/WalletStore';
-import { Hash } from 'model/objects';
+import {
+  LaoEventType, RollCall, PopToken, Wallet,
+} from 'model/objects';
 import CopiableTextBlock from 'components/CopiableTextBlock';
 import QRCode from 'components/QRCode';
 import PROPS_TYPE from 'res/Props';
 import PropTypes from 'prop-types';
+import { makeEventByTypeSelector, makeLaosMap } from 'store';
+import { useSelector } from 'react-redux';
 
 const styles = StyleSheet.create({
   smallPadding: {
@@ -25,133 +27,118 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-let cachedKeyPairs: Map<[Hash, string], string>;
-
 /**
  * wallet UI once the wallet is synced
  * @constructor
  */
 const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   /* boolean set to true if the token recover process is finished */
-  const [tokensRecovered, setTokensRecovered] = useState(false);
+  const [showTokens, setShowTokens] = useState(false);
   const [showPublicKey, setShowPublicKey] = useState(false);
   const [showQRPublicKey, setShowQRPublicKey] = useState(false);
 
-  WalletStore.get().then((encryptedSeed) => {
-    if (encryptedSeed !== undefined) {
-      HDWallet.fromState(encryptedSeed)
-        .then((wallet) => {
-          wallet.recoverWalletPoPTokens().then((cachedTokens) => {
-            cachedKeyPairs = cachedTokens;
-          });
-        });
-    }
-  });
+  const rollCallSelector = makeEventByTypeSelector<RollCall>(LaoEventType.ROLL_CALL);
+  const rollCalls = useSelector(rollCallSelector);
 
-  function showTokens() {
-    const tokens: string[] = [];
-    const laoId: string[] = [];
-    const rollCallNames: string[] = [];
+  const laoSelector = makeLaosMap();
+  const laos = useSelector(laoSelector);
 
-    if (cachedKeyPairs.size === 0) {
-      return (
-        <View>
-          <TextBlock text={STRINGS.no_tokens_in_wallet} />
-          <View style={styles.largePadding} />
-          <WideButtonView
-            title={STRINGS.back_to_wallet_home}
-            onPress={() => setTokensRecovered(false)}
-          />
-          <WideButtonView
-            title={STRINGS.logout_from_wallet}
-            onPress={() => {
-              HDWallet.logoutFromWallet();
-              navigation.navigate(STRINGS.navigation_home_tab_wallet);
-            }}
-          />
-        </View>
-      );
-    }
+  let tokensByLaoRollCall: Record<string, Record<string, PopToken>> = {};
 
-    let i = 0;
+  Wallet.recoverWalletPoPTokens()
+    .then((kp) => {
+      tokensByLaoRollCall = kp;
+    })
+    .catch((err) => console.debug(err));
 
-    cachedKeyPairs.forEach((value, key) => {
-      const ids: string[] = key.toString().split(',');
-      // eslint-disable-next-line prefer-destructuring
-      laoId[i] = ids[0];
-      // eslint-disable-next-line prefer-destructuring
-      rollCallNames[i] = ids[1];
-      tokens[i] = value;
-      i += 1;
-    });
+  /* the below 4 functions are to manage user interaction with buttons */
+  function hidePublicKeyButton() {
+    return (
+      <WideButtonView
+        title={STRINGS.hide_public_keys}
+        onPress={() => {
+          setShowPublicKey(false);
+        }}
+      />
+    );
+  }
 
-    /* the below 4 functions are to manage user interaction with buttons */
-    function hidePublicKeyButton() {
-      return (
+  function showPublicKeyButton() {
+    return (
+      <WideButtonView
+        title={STRINGS.show_public_keys}
+        onPress={() => {
+          setShowPublicKey(true);
+        }}
+      />
+    );
+  }
+
+  function hideQRButton() {
+    return (
+      <WideButtonView
+        title={STRINGS.hide_qr_public_keys}
+        onPress={() => {
+          setShowQRPublicKey(false);
+        }}
+      />
+    );
+  }
+
+  function showQRButton() {
+    return (
+      <WideButtonView
+        title={STRINGS.show_qr_public_keys}
+        onPress={() => {
+          setShowQRPublicKey(true);
+        }}
+      />
+    );
+  }
+
+  function displayNoTokens() {
+    return (
+      <View>
+        <TextBlock text={STRINGS.no_tokens_in_wallet} />
+        <View style={styles.largePadding} />
         <WideButtonView
-          title={STRINGS.hide_public_keys}
+          title={STRINGS.back_to_wallet_home}
+          onPress={() => setShowTokens(false)}
+        />
+        <WideButtonView
+          title={STRINGS.logout_from_wallet}
           onPress={() => {
-            setShowPublicKey(false);
+            Wallet.forget();
+            navigation.navigate(STRINGS.navigation_home_tab_wallet);
           }}
         />
-      );
-    }
+      </View>
+    );
+  }
 
-    function showPublicKeyButton() {
-      return (
-        <WideButtonView
-          title={STRINGS.show_public_keys}
-          onPress={() => {
-            setShowPublicKey(true);
-          }}
-        />
-      );
-    }
+  function displayOneToken(laoId: string, rollCallId: string) {
+    const lao = laos[laoId];
+    const rollCall = rollCalls[laoId][rollCallId];
+    const tokenPk = tokensByLaoRollCall[laoId][rollCallId].publicKey;
 
-    function hideQRButton() {
-      return (
-        <WideButtonView
-          title={STRINGS.hide_qr_public_keys}
-          onPress={() => {
-            setShowQRPublicKey(false);
-          }}
-        />
-      );
-    }
+    return (
+      <View style={styleContainer.centered}>
+        <View style={styles.smallPadding} />
+        <TextBlock bold text={STRINGS.lao_id} />
+        <CopiableTextBlock text={lao.name} visibility />
+        <TextBlock bold text={STRINGS.roll_call_name} />
+        <TextBlock text={rollCall.name} visibility />
+        <View style={styles.smallPadding} />
+        <CopiableTextBlock text={tokenPk.valueOf()} visibility={showPublicKey} />
+        <View style={styles.smallPadding} />
+        <QRCode value={tokenPk.valueOf()} visibility={showQRPublicKey} />
+      </View>
+    );
+  }
 
-    function showQRButton() {
-      return (
-        <WideButtonView
-          title={STRINGS.show_qr_public_keys}
-          onPress={() => {
-            setShowQRPublicKey(true);
-          }}
-        />
-      );
-    }
-
-    /**
-     * this functions displays the LAOId, the RollCall name
-     * and the public key generated from the two
-     */
-    function displayTokens() {
-      return (
-        <View>
-          { laoId.map((value, key) => (
-            <View style={styleContainer.centered}>
-              <View style={styles.smallPadding} />
-              <TextBlock bold text={STRINGS.lao_id} />
-              <CopiableTextBlock id={key} text={value} visibility />
-              <TextBlock bold text={STRINGS.roll_call_name} />
-              <TextBlock text={rollCallNames[key]} visibility />
-              <View style={styles.smallPadding} />
-              <CopiableTextBlock id={key} text={tokens[key]} visibility={showPublicKey} />
-              <View style={styles.smallPadding} />
-              <QRCode value={tokens[key]} visibility={showQRPublicKey} />
-            </View>
-          ))}
-        </View>
-      );
+  function displayTokens() {
+    if (Object.keys(tokensByLaoRollCall).length === 0) {
+      return displayNoTokens();
     }
 
     return (
@@ -159,14 +146,22 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
         <View style={styles.largePadding} />
         <TextBlock bold text={STRINGS.your_tokens_title} />
         <View style={styles.smallPadding} />
-        { displayTokens() }
+        <View>
+          {
+            Object.keys(tokensByLaoRollCall).map(
+              (laoId) => Object.keys(tokensByLaoRollCall[laoId]).map(
+                (rollCallId) => displayOneToken(laoId, rollCallId),
+              ),
+            )
+          }
+        </View>
         {!showPublicKey && showPublicKeyButton()}
         {showPublicKey && hidePublicKeyButton()}
         {!showQRPublicKey && showQRButton()}
         {showQRPublicKey && hideQRButton()}
         <WideButtonView
           title={STRINGS.back_to_wallet_home}
-          onPress={() => setTokensRecovered(false)}
+          onPress={() => setShowTokens(false)}
         />
         <View style={styles.largePadding} />
       </ScrollView>
@@ -181,13 +176,13 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
         <WideButtonView
           title={STRINGS.show_tokens_title}
           onPress={() => {
-            setTokensRecovered(true);
+            setShowTokens(true);
           }}
         />
         <WideButtonView
           title={STRINGS.logout_from_wallet}
           onPress={() => {
-            HDWallet.logoutFromWallet();
+            Wallet.forget();
             navigation.navigate(STRINGS.navigation_home_tab_wallet);
           }}
         />
@@ -195,16 +190,12 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
     );
   }
 
-  function getWalletDisplay() {
-    return (
-      <View style={styleContainer.centered}>
-        {!tokensRecovered && recoverTokens()}
-        {tokensRecovered && showTokens()}
-      </View>
-    );
-  }
-
-  return getWalletDisplay();
+  return (
+    <View style={styleContainer.centered}>
+      {!showTokens && recoverTokens()}
+      {showTokens && displayTokens()}
+    </View>
+  );
 };
 
 const propTypes = {

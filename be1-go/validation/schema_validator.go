@@ -4,13 +4,12 @@ import (
 	"bytes"
 	"embed"
 	"encoding/base64"
-	"fmt"
 	"io"
 	"io/fs"
 	"log"
 	"path/filepath"
 	"strings"
-	"student20_pop/message"
+	"student20_pop/message/answer"
 
 	"github.com/santhosh-tekuri/jsonschema/v3"
 	"golang.org/x/xerrors"
@@ -63,19 +62,13 @@ func (s *SchemaValidator) VerifyJson(msg []byte, st SchemaType) error {
 	case Data:
 		schema = s.dataSchema
 	default:
-		return &message.Error{
-			Code:        -6,
-			Description: fmt.Sprintf("unsupported schema type: %v", st),
-		}
+		return answer.NewErrorf(-6, "unsupported schema type: %v", st)
 	}
 
 	err := schema.Validate(reader)
 	if err != nil {
-		log.Printf("failed to validate schema: %v", err)
-		return &message.Error{
-			Code:        -4,
-			Description: "failed to validate schema",
-		}
+		log.Printf("failed to validate schema: %s %v", msg, err)
+		return answer.NewErrorf(-4, "failed to validate schema: %v", err)
 	}
 
 	return nil
@@ -116,8 +109,8 @@ func NewSchemaValidator() (*SchemaValidator, error) {
 		return nil, xerrors.Errorf("failed to load schema: %v", err)
 	}
 
-	// read genericMessage.json
-	gmSchema, err := gmCompiler.Compile("file://protocol/genericMessage.json")
+	// read jsonRPC.json
+	gmSchema, err := gmCompiler.Compile("file://protocol/jsonRPC.json")
 	if err != nil {
 		return nil, xerrors.Errorf("failed to compile validator: %v", err)
 	}

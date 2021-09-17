@@ -2,9 +2,12 @@ import {
   EventTags, Hash, Lao, PublicKey, Timestamp,
 } from 'model/objects';
 import {
+  CloseRollCall,
   CreateLao,
   CreateMeeting,
   CreateRollCall,
+  OpenRollCall,
+  ReopenRollCall,
   SetupElection,
   StateLao,
   UpdateLao,
@@ -33,10 +36,7 @@ export function requestCreateLao(laoName: string): Promise<Channel> {
   });
 
   return publish(ROOT_CHANNEL, message)
-    .then(() => {
-      console.info(`LAO was created with ID: ${message.id}`);
-      return channelFromId(message.id);
-    });
+    .then(() => channelFromId(message.id));
 }
 
 /** Send a server query asking for a LAO update providing a new name (String) */
@@ -98,28 +98,6 @@ export function requestCreateMeeting(
   return publish(channelFromId(currentLao.id), message);
 }
 
-/** Send a server query asking for the state of a meeting *
-export function requestStateMeeting(startTime: Timestamp): Promise<void> {
-  const laoData = get().params.message.data;
-
-  let message = new StateMeeting({
-    id: Hash.fromStringArray(
-      EventTags.MEETING, laoData.id.toString(), laoData.creation.toString(), laoData.name
-    ),
-    name: laoData.name,
-    creation: laoData.creation,
-    last_modified: Timestamp.EpochNow(),
-    start: startTime,
-    location: laoData.location,
-    end: laoData.end,
-    extra: laoData.extra,
-    modification_id: Hash.fromStringArray(), // FIXME need modification_id from storage
-    modification_signatures :[], // FIXME need modification_signatures from storage
-  });
-
-  return publish(channelFromId(laoData.id), message);
-}
-
 /** Send a server message to acknowledge witnessing the message message (JS object) */
 export function requestWitnessMessage(channel: Channel, messageId: Hash): Promise<void> {
   const message = new WitnessMessage({
@@ -130,11 +108,18 @@ export function requestWitnessMessage(channel: Channel, messageId: Hash): Promis
   return publish(channel, message);
 }
 
-/** Send a server query asking for the creation of a roll call with a given name (String) and a
- *  given location (String). An optional start time (Timestamp), scheduled time (Timestamp) or
- *  description (String) can be specified */
+/**
+ * Send a server query asking for the creation of a roll call
+ * @param name the name of the roll call event
+ * @param location the location of the roll call event
+ * @param proposedStart the time at which the attendee scanning will start (pending confirmation)
+ * @param proposedEnd the time at which the attendee scanning will stop (pending confirmation)
+ * @param description (optional) further information regarding the event
+ * @return A Promise resolving when the operation is completed
+ */
 export function requestCreateRollCall(
-  name: string, location: string, proposedStart: Timestamp, proposedEnd: Timestamp,
+  name: string, location: string,
+  proposedStart: Timestamp, proposedEnd: Timestamp,
   description?: string,
 ): Promise<void> {
   const time: Timestamp = Timestamp.EpochNow();
@@ -156,53 +141,74 @@ export function requestCreateRollCall(
   return publish(laoCh, message);
 }
 
-/** Send a server query asking for the opening of a roll call given its id (Number) and an
- * optional start time (Timestamp). If the start time is not specified, then the current time
- * will be used instead *
-export function requestOpenRollCall(rollCallId: Number, start?: Timestamp): Promise<void> {
-    const rollCall = { creation: 1609455600, name: 'r-cName' }; // FIXME: hardcoded
-    const laoId = get().params.message.data.id;
-    const startTime = (start === undefined) ? Timestamp.EpochNow() : start;
+/**
+ * Send a server query asking for the opening of a roll call
+ * @param rollCallId the ID of the roll call
+ * @param start (optional) the time at which the operation happens, defaults to now.
+ * @return A Promise resolving when the operation is completed
+ */
+export function requestOpenRollCall(rollCallId: Hash, start?: Timestamp): Promise<void> {
+  const lao: Lao = OpenedLaoStore.get();
+  const time = (start === undefined) ? Timestamp.EpochNow() : start;
 
-    let message = new OpenRollCall({
-      action: ActionType.OPEN,
-      id: Hash.fromStringArray(
-        EventTags.ROLL_CALL, toString64(laoId), rollCall.creation.toString(), rollCall.name
-      ),
-      start: startTime,
-    });
-
-    return publish(channelFromId(laoId), message);
-}
-
-/** Send a server query asking for the reopening of a roll call given its id (Number) and an
- * optional start time (Timestamp). If the start time is not specified, then the current time
- * will be used instead *
-export function requestReopenRollCall(rollCallId: Number, start?: Timestamp): Promise<void> {
-    // FIXME: not implemented
-}
-
-/** Send a server query asking for the closing of a roll call given its id (Number) and the
- * list of attendees (Array of public keys) *
-export function requestCloseRollCall(rollCallId: Number, attendees: PublicKey[]): Promise<void> {
-  // FIXME: functionality is clearly incomplete here
-  // get roll call by id from localStorage
-  const rollCall = { creation: 1609455600, start: 1609455601, name: 'r-cName' };
-  const laoId = get().params.message.data.id;
-
-  let message = new CloseRollCall({
-    action: ActionType.REOPEN,
-    id: Hash.fromStringArray(
-      EventTags.ROLL_CALL, toString64(laoId), rollCall.creation.toString(), rollCall.name
+  const message = new OpenRollCall({
+    update_id: Hash.fromStringArray(
+      EventTags.ROLL_CALL, lao.id.toString(), rollCallId.toString(), time.toString(),
     ),
-    start: rollCall.start,
-    end: Timestamp.EpochNow(),
+    opens: rollCallId,
+    opened_at: time,
+  });
+
+  return publish(channelFromId(lao.id), message);
+}
+
+/**
+ * Send a server query asking for the re-opening of a roll call
+ * @param rollCallId the ID of the roll call
+ * @param start (optional) the time at which the operation happens, defaults to now.
+ * @return A Promise resolving when the operation is completed
+ */
+export function requestReopenRollCall(rollCallId: Hash, start?: Timestamp): Promise<void> {
+  const lao: Lao = OpenedLaoStore.get();
+  const time = (start === undefined) ? Timestamp.EpochNow() : start;
+
+  const message = new ReopenRollCall({
+    update_id: Hash.fromStringArray(
+      EventTags.ROLL_CALL, lao.id.toString(), rollCallId.toString(), time.toString(),
+    ),
+    opens: rollCallId,
+    opened_at: time,
+  });
+
+  return publish(channelFromId(lao.id), message);
+}
+
+/**
+ * Send a server query asking for the closing of a roll call
+ * @param rollCallId the ID of the roll call
+ * @param attendees list of the attendees' public keys
+ * @param close (optional) the time at which the operation happens, defaults to now.
+ * @return A Promise resolving when the operation is completed
+ */
+export function requestCloseRollCall(
+  rollCallId: Hash,
+  attendees: PublicKey[],
+  close?: Timestamp,
+): Promise<void> {
+  const lao: Lao = OpenedLaoStore.get();
+  const time = (close === undefined) ? Timestamp.EpochNow() : close;
+
+  const message = new CloseRollCall({
+    update_id: Hash.fromStringArray(
+      EventTags.ROLL_CALL, lao.id.toString(), rollCallId.toString(), time.toString(),
+    ),
+    closes: rollCallId,
+    closed_at: time,
     attendees: attendees,
   });
 
-  return publish(channelFromId(laoId), message);
+  return publish(channelFromId(lao.id), message);
 }
- */
 
 /** Sends a server query asking for creation of an Election with a given name (String),
  *  an array of questions, a version (String), the current lao (String), the id, and the  creation,
