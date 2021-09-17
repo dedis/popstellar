@@ -45,8 +45,8 @@ func TestOrganizer_Create_LAO(t *testing.T) {
 	laoID := base64.URLEncoding.EncodeToString(h.Sum(nil))
 
 	data := messagedata.LaoCreate{
-		Object:    "lao",
-		Action:    "create",
+		Object:    messagedata.LAOObject,
+		Action:    messagedata.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  123,
@@ -73,7 +73,7 @@ func TestOrganizer_Create_LAO(t *testing.T) {
 				JSONRPC: "2.0",
 			},
 
-			Method: "publish",
+			Method: query.MethodPublish,
 		},
 
 		ID: 1,
@@ -141,7 +141,7 @@ func TestOrganizer_Handle_Publish(t *testing.T) {
 				JSONRPC: "2.0",
 			},
 
-			Method: "publish",
+			Method: query.MethodPublish,
 		},
 
 		ID: 1,
@@ -193,7 +193,7 @@ func TestOrganizer_Handle_Subscribe(t *testing.T) {
 				JSONRPC: "2.0",
 			},
 
-			Method: "subscribe",
+			Method: query.MethodSubscribe,
 		},
 
 		ID: 1,
@@ -243,7 +243,7 @@ func TestOrganizer_Handle_Unsubscribe(t *testing.T) {
 				JSONRPC: "2.0",
 			},
 
-			Method: "unsubscribe",
+			Method: query.MethodUnsubscribe,
 		},
 
 		ID: 1,
@@ -303,7 +303,7 @@ func TestOrganizer_Handle_Catchup(t *testing.T) {
 				JSONRPC: "2.0",
 			},
 
-			Method: "catchup",
+			Method: query.MethodCatchUp,
 		},
 
 		ID: 1,

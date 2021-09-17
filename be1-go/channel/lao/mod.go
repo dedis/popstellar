@@ -186,15 +186,15 @@ func (c *Channel) Publish(publish method.Publish) error {
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
 
 	switch object {
-	case "lao":
+	case messagedata.LAOObject:
 		err = c.processLaoObject(action, msg)
-	case "meeting":
+	case messagedata.MeetingObject:
 		err = c.processMeetingObject(action, msg)
-	case "message":
+	case messagedata.MessageObject:
 		err = c.processMessageObject(action, msg)
-	case "roll_call":
+	case messagedata.RollCallObject:
 		err = c.processRollCallObject(action, msg)
-	case "election":
+	case messagedata.ElectionObject:
 		err = c.processElectionObject(action, msg)
 	}
 
@@ -209,8 +209,8 @@ func (c *Channel) Publish(publish method.Publish) error {
 // processLaoObject processes a LAO object.
 func (c *Channel) processLaoObject(action string, msg message.Message) error {
 	switch action {
-	case "update_properties":
-	case "state":
+	case messagedata.LAOActionUpdate:
+	case messagedata.LAOActionState:
 		var laoState messagedata.LaoState
 
 		err := msg.UnmarshalData(&laoState)
@@ -327,9 +327,8 @@ func (c *Channel) processMeetingObject(action string, msg message.Message) error
 
 	// Nothing to do ...🤷‍♂️
 	switch action {
-	case "create":
-	case "update_properties":
-	case "state":
+	case messagedata.MeetingActionCreate:
+	case messagedata.MeetingActionState:
 	}
 
 	c.inbox.StoreMessage(msg)
@@ -341,7 +340,7 @@ func (c *Channel) processMeetingObject(action string, msg message.Message) error
 func (c *Channel) processMessageObject(action string, msg message.Message) error {
 
 	switch action {
-	case "witness":
+	case messagedata.MessageActionWitness:
 		var witnessData messagedata.MessageWitness
 
 		err := msg.UnmarshalData(&witnessData)
@@ -386,7 +385,7 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 	}
 
 	switch action {
-	case "create":
+	case messagedata.RollCallActionCreate:
 		var rollCallCreate messagedata.RollCallCreate
 
 		err := msg.UnmarshalData(&rollCallCreate)
@@ -399,13 +398,13 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 			return xerrors.Errorf("failed to process roll call create: %v", err)
 		}
 
-	case "open", "reopen":
+	case messagedata.RollCallActionOpen, messagedata.RollCallActionReopen:
 		err := c.processOpenRollCall(msg, action)
 		if err != nil {
 			return xerrors.Errorf("failed to process open roll call: %v", err)
 		}
 
-	case "close":
+	case messagedata.RollCallActionClose:
 		var rollCallClose messagedata.RollCallClose
 
 		err := msg.UnmarshalData(&rollCallClose)
@@ -432,8 +431,10 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 
 // processElectionObject handles an election object.
 func (c *Channel) processElectionObject(action string, msg message.Message) error {
-	if action != "setup" {
-		return answer.NewErrorf(-4, "invalid action: %s", action)
+	expectedAction := messagedata.ElectionActionSetup
+
+	if action != expectedAction {
+		return answer.NewErrorf(-4, "invalid action: %s != %s)", action, expectedAction)
 	}
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
@@ -514,7 +515,7 @@ func (c *Channel) processCreateRollCall(msg messagedata.RollCallCreate) error {
 
 // processOpenRollCall processes an open roll call object.
 func (c *Channel) processOpenRollCall(msg message.Message, action string) error {
-	if action == "open" {
+	if action == messagedata.RollCallActionOpen {
 		// If the action is an OpenRollCallAction,
 		// the previous roll call action should be a CreateRollCallAction
 		if c.rollCall.state != Created {
@@ -541,7 +542,7 @@ func (c *Channel) processOpenRollCall(msg message.Message, action string) error 
 		return answer.NewError(-1, "The field `opens` does not correspond to the id of the previous roll call message")
 	}
 
-	c.rollCall.id = string(rollCallOpen.UpdateID)
+	c.rollCall.id = rollCallOpen.UpdateID
 	c.rollCall.state = Open
 	return nil
 }
