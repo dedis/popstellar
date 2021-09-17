@@ -4,15 +4,15 @@ import static com.github.dedis.popstellar.utility.handler.ElectionHandler.electi
 import static com.github.dedis.popstellar.utility.handler.MessageHandler.handleMessage;
 
 import com.github.dedis.popstellar.Injection;
-import com.github.dedis.popstellar.model.Election;
-import com.github.dedis.popstellar.model.Lao;
-import com.github.dedis.popstellar.model.RollCall;
-import com.github.dedis.popstellar.model.WitnessMessage;
-import com.github.dedis.popstellar.model.data.LAOLocalDataSource;
-import com.github.dedis.popstellar.model.data.LAORemoteDataSource;
-import com.github.dedis.popstellar.model.data.LAORepository;
-import com.github.dedis.popstellar.model.data.LAOState;
-import com.github.dedis.popstellar.model.event.EventState;
+import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.WitnessMessage;
+import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
+import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
+import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.LAOState;
+import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;

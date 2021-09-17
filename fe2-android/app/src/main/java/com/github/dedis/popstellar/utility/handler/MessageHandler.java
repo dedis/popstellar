@@ -1,8 +1,8 @@
 package com.github.dedis.popstellar.utility.handler;
 
 import android.util.Log;
-import com.github.dedis.popstellar.model.data.LAORepository;
-import com.github.dedis.popstellar.model.data.LAOState;
+import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;

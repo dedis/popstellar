@@ -1,10 +1,10 @@
 package com.github.dedis.popstellar.utility.handler;
 
 import android.util.Log;
-import com.github.dedis.popstellar.model.Lao;
-import com.github.dedis.popstellar.model.PendingUpdate;
-import com.github.dedis.popstellar.model.WitnessMessage;
-import com.github.dedis.popstellar.model.data.LAORepository;
+import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.PendingUpdate;
+import com.github.dedis.popstellar.model.objects.WitnessMessage;
+import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;

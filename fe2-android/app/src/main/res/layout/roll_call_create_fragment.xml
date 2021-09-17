@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/fragment_create_roll_call_event"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+      layout="@layout/tab_home"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent" />
+
+    <include
+      layout="@layout/tab_identity"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+      android:id="@+id/roll_call_guideline_horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:orientation="horizontal"
+      app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
+
+    <LinearLayout
+      android:id="@+id/roll_call_title"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      app:layout_constraintTop_toBottomOf="@id/roll_call_guideline_horizontal">
+
+      <EditText
+        android:id="@+id/roll_call_title_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/roll_call_title_required"
+        android:inputType="text"
+        android:autofillHints="false" />
+
+
+      <include
+        android:id="@+id/roll_call_date"
+        layout="@layout/event_enter_date_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/roll_call_title" />
+
+      <include
+        android:id="@+id/roll_call_time"
+        layout="@layout/event_enter_time_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/date" />
+
+      <LinearLayout
+        android:id="@+id/roll_call_event_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/time">
+
+        <EditText
+          android:id="@+id/roll_call_event_description_text"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="start"
+          android:hint="@string/event_description"
+          android:inputType="textMultiLine"
+          android:maxLines="10"
+          android:autofillHints="false" />
+
+      </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+      android:id="@+id/roll_call_confirm_cancel"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintRight_toRightOf="parent">
+
+      <Button
+        android:id="@+id/roll_call_cancel"
+        style="@style/Theme.AppCompat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/cancel" />
+
+      <Button
+        android:id="@+id/roll_call_confirm"
+        style="@style/Theme.AppCompat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:text="@string/confirm" />
+
+      <Button
+        android:id="@+id/roll_call_open"
+        style="@style/Theme.AppCompat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:text="@string/roll_call_open_attendees" />
+    </LinearLayout>
+
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

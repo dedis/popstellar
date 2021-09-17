@@ -1,14 +1,14 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import static com.github.dedis.popstellar.model.event.EventState.CLOSED;
-import static com.github.dedis.popstellar.model.event.EventState.OPENED;
-import static com.github.dedis.popstellar.model.event.EventState.RESULTS_READY;
+import static com.github.dedis.popstellar.model.objects.event.EventState.CLOSED;
+import static com.github.dedis.popstellar.model.objects.event.EventState.OPENED;
+import static com.github.dedis.popstellar.model.objects.event.EventState.RESULTS_READY;
 
 import android.util.Log;
-import com.github.dedis.popstellar.model.Election;
-import com.github.dedis.popstellar.model.Lao;
-import com.github.dedis.popstellar.model.WitnessMessage;
-import com.github.dedis.popstellar.model.data.LAORepository;
+import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.WitnessMessage;
+import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.ElectionResultQuestion;

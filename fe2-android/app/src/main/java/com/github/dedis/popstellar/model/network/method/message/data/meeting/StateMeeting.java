@@ -3,7 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.meeting;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
-import com.github.dedis.popstellar.utility.network.IdGenerator;
+import com.github.dedis.popstellar.model.network.IdGenerator;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
 

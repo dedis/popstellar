@@ -1,6 +1,6 @@
 package com.github.dedis.popstellar.model.network.method.message.data;
 
-import com.github.dedis.popstellar.utility.network.IdGenerator;
+import com.github.dedis.popstellar.model.network.IdGenerator;
 import com.google.gson.annotations.SerializedName;
 import java.util.Collections;
 import java.util.List;

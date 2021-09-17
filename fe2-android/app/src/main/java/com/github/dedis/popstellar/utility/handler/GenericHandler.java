@@ -3,9 +3,9 @@ package com.github.dedis.popstellar.utility.handler;
 import static com.github.dedis.popstellar.utility.handler.MessageHandler.handleMessage;
 
 import android.util.Log;
-import com.github.dedis.popstellar.model.Lao;
-import com.github.dedis.popstellar.model.data.LAORepository;
-import com.github.dedis.popstellar.model.data.LAOState;
+import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Error;
 import com.github.dedis.popstellar.model.network.answer.Result;
