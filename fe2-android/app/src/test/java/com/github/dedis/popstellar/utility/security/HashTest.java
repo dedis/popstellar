@@ -12,7 +12,7 @@ import org.junit.Test;
 public class HashTest {
 
   @Test
-  public void hashTest() {
+  public void hashNotNullTest() {
     assertNotNull(Hash.hash("Data to hash"));
   }
 
@@ -31,14 +31,8 @@ public class HashTest {
   }
 
   @Test
-  public void hashObjectTest() {
-    // Hashing : CreateRollCall ID from past pop party
-    String id = IdGenerator.generateCreateRollCallId(
-        "u_y6BWJaedUb8C7xY2V9P1SC2ocaQkMymQgCX2SZGPo=",
-        1631871775,
-        "mon rôle call"
-    );
-    String expected = "axL39-AXOH9nJnLEueyNI6Q-zbmZNSfOq5WOJSB8nyc=";
-    assertEquals(expected, id);
+  public void hashUTF8Test() {
+    String expected = "bkkql8ZyOdbqrWY1QJHPGiz29zNMOEtaXXBHK1aWgjY=";
+    assertEquals(expected, Hash.hash("你们是真的", "好学生！"));
   }
 }
