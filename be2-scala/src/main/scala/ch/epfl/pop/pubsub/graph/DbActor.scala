@@ -19,7 +19,7 @@ import scala.util.{Failure, Success, Try}
 object DbActor extends AskPatternConstants {
 
   final val DATABASE_FOLDER: String = "database"
-  final val DATABASE_MAX_CHANNELS: Int = (1 << 10)
+  final val DATABASE_MAX_CHANNELS: Int = 1 << 10
   final lazy val INSTANCE: AskableActorRef = PublishSubscribe.getDbActorRef
 
   // DbActor Events correspond to messages the actor may receive

@@ -1,9 +1,13 @@
 package ch.epfl.pop.pubsub.graph.handlers
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
+import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestSetupElection}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
-import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
+
+import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object ElectionHandler extends MessageHandler {
 
@@ -25,10 +29,21 @@ object ElectionHandler extends MessageHandler {
     case graphMessage@_ => graphMessage
   }
 
-  // FIXME election stuff
-  def handleSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = Left(rpcMessage)
+  def handleSetupElection(rpcMessage: JsonRpcRequestSetupElection): GraphMessage = {
+    val message: Message = rpcMessage.getParamsMessage.get
 
+    val f: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
+      case DbActor.DbActorWriteAck => Left(rpcMessage)
+      case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
+      case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
+    }
+
+    Await.result(f, duration)
+  }
+
+  // FIXME election stuff
   def handleResultElection(rpcMessage: JsonRpcRequest): GraphMessage = Left(rpcMessage)
 
+  // FIXME election stuff
   def handleEndElection(rpcMessage: JsonRpcRequest): GraphMessage = Left(rpcMessage)
 }

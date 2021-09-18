@@ -22,14 +22,5 @@ object ResultElection extends Parsable {
              witness_signatures: List[Signature]
            ): ResultElection = new ResultElection(questions, witness_signatures)
 
-  override def buildFromJson(payload: String): ResultElection = {
-    val a = payload.parseJson
-    println(a)
-    val b = a.asJsObject
-    println(b)
-    val c = b.convertTo[ResultElection]
-    print(c)
-    c
-    //payload.parseJson.asJsObject.convertTo[ResultElection]
-  }
+  override def buildFromJson(payload: String): ResultElection = payload.parseJson.asJsObject.convertTo[ResultElection]
 }

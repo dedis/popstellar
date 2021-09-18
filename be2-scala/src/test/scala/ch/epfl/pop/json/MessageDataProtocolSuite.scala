@@ -11,6 +11,41 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
 
   final val EXAMPLES_DIRECTORY_PATH: String = "../protocol/examples"
 
+  implicit class RichCastVoteElection(cv: CastVoteElection) {
+    def shouldEqualTo(o: CastVoteElection): Unit = {
+
+      @scala.annotation.tailrec
+      def checkVoteElectionLists(l1: List[VoteElection], l2: List[VoteElection]) {
+        l1.length should equal (l2.length)
+
+        (l1, l2) match {
+          case _ if l1.isEmpty =>
+          case (h1 :: tail1, h2 :: tail2) =>
+            h1.id should equal (h2.id)
+            h1.question should equal (h2.question)
+            h1.vote should equal (h2.vote)
+            h1.write_in should equal (h2.write_in)
+
+            checkVoteElectionLists(tail1, tail2)
+        }
+      }
+
+      val cv_1: CastVoteElection = this.cv
+      val cv_2: CastVoteElection = o
+
+      cv_1 shouldBe a [CastVoteElection]
+      cv_2 shouldBe a [CastVoteElection]
+
+      cv_1.lao should equal (cv_2.lao)
+      cv_1.election should equal (cv_2.election)
+      cv_1.created_at should equal (cv_2.created_at)
+      println(cv_1.votes.head)
+      println(cv_2.votes.head)
+      checkVoteElectionLists(cv_1.votes, cv_2.votes)
+    }
+  }
+  
+
   // path is the path with protocol/examples as base directory
   private def getExampleMessage(path: String): String = {
     val bufferedSource: BufferedSource = Source.fromFile(s"$EXAMPLES_DIRECTORY_PATH/$path")
@@ -72,6 +107,6 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     val expected = CastVoteElection(Hash(Base64Data("XXX")), Hash(Base64Data("XXX")), Timestamp(123L), votes :: Nil)
 
     messageData shouldBe a [CastVoteElection]
-    messageData should equal (expected)
+    messageData shouldEqualTo (expected)
   }
 }

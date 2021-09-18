@@ -33,7 +33,7 @@ object PublishSubscribe extends App {
 
       /* building blocks */
       // input message from the client
-      val input = builder.add(Flow[Message].collect { case TextMessage.Strict(s) => s })
+      val input = builder.add(Flow[Message].collect { case TextMessage.Strict(s) => println(s">>> Incoming message : $s"); s })
 
       val schemaValidator = builder.add(Validator.schemaValidator)
 
