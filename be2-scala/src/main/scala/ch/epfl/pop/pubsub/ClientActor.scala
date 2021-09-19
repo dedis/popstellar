@@ -2,19 +2,24 @@ package ch.epfl.pop.pubsub
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.event.LoggingReceive
+import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.ClientActor._
 import ch.epfl.pop.pubsub.PubSubMediator._
-import ch.epfl.pop.pubsub.graph.GraphMessage
+import ch.epfl.pop.pubsub.graph.{DbActor, GraphMessage}
 
 import scala.collection.mutable
 import scala.util.Failure
 
+import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
 
-case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging {
+case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging with AskPatternConstants {
 
   private var wsHandle: Option[ActorRef] = None
   private val subscribedChannels: mutable.Set[Channel] = mutable.Set.empty
+
+  private val mediatorAskable: AskableActorRef = mediator
 
   // called just after actor creation
   // override def preStart(): Unit = mediator ! Subscribe("topic", self) // FIXME topic
@@ -28,9 +33,20 @@ case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging {
       case ConnectWsHandle(wsClient: ActorRef) =>
         log.info(s"Connecting wsHandle $wsClient to actor ${this.self}")
         wsHandle = Some(wsClient)
+
       case DisconnectWsHandle => subscribedChannels.foreach(channel => mediator ! UnsubscribeFrom(channel))
-      case SubscribeTo(channel) => mediator ! SubscribeTo(channel)
-      case UnsubscribeFrom(channel) => mediator ! UnsubscribeFrom(channel)
+
+      case SubscribeTo(channel) =>
+        val f: Future[PubSubMediatorMessage] = (mediatorAskable ? SubscribeTo(channel)).map {
+          case m: PubSubMediatorMessage => m
+        }
+        sender ! Await.result(f, duration)
+
+      case UnsubscribeFrom(channel) =>
+        val f: Future[PubSubMediatorMessage] = (mediatorAskable ? UnsubscribeFrom(channel)).map {
+          case m: PubSubMediatorMessage => m
+        }
+        sender ! Await.result(f, duration)
     }
     case message: PubSubMediatorMessage => message match {
       case SubscribeToAck(channel) =>

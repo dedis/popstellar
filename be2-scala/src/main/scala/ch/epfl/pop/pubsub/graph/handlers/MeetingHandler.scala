@@ -53,6 +53,6 @@ case object MeetingHandler extends MessageHandler {
         rpcMessage.id
       ))
     }
-    Await.result(ask, DbActor.getDuration)
+    Await.result(ask, duration)
   }
 }

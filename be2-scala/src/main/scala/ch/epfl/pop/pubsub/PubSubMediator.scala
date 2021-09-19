@@ -14,6 +14,7 @@ class PubSubMediator extends Actor with ActorLogging {
   private var channelMap: mutable.Map[Channel, mutable.Set[ActorRef]] = mutable.Map.empty
 
   override def receive: Receive = LoggingReceive {
+    // FIXME pubsub mediator doesnt check that the channel exists in db
     case SubscribeTo(channel) => channelMap.get(channel) match {
       case Some(set) =>
         if (set.contains(sender)) {
