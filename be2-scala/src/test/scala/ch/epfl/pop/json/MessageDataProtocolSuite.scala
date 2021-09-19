@@ -44,7 +44,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
       checkVoteElectionLists(cv_1.votes, cv_2.votes)
     }
   }
-  
+
 
   // path is the path with protocol/examples as base directory
   private def getExampleMessage(path: String): String = {
