@@ -2,7 +2,6 @@ package ch.epfl.pop.pubsub.graph
 
 import java.io.File
 import java.nio.charset.StandardCharsets
-import java.nio.file.Files
 
 import akka.actor.{Actor, ActorLogging}
 import akka.event.LoggingReceive
@@ -19,6 +18,7 @@ import scala.util.{Failure, Success, Try}
 object DbActor extends AskPatternConstants {
 
   final val DATABASE_FOLDER: String = "database"
+  final val CHANNELS_FOLDER: String = s"$DATABASE_FOLDER/channels"
   final val DATABASE_MAX_CHANNELS: Int = 1 << 10
   final lazy val INSTANCE: AskableActorRef = PublishSubscribe.getDbActorRef
 
@@ -44,6 +44,12 @@ object DbActor extends AskPatternConstants {
    * @param channel the channel where the messages should be fetched
    */
   final case class Catchup(channel: Channel) extends Event
+
+  /**
+   * Request to create channel <channel> in the db
+   * @param channel channel to create
+   */
+  final case class CreateChannel(channel: Channel) extends Event
 
   /**
    * Request to append witness <signature> to a stored message with message_id <messageId>
@@ -79,6 +85,11 @@ object DbActor extends AskPatternConstants {
   final case class DbActorCatchupAck(messages: List[Message]) extends DbActorMessage
 
   /**
+   * Response for a general db actor ACK
+   */
+  final case class DbActorAck() extends DbActorMessage
+
+  /**
    * Response for a negative db request
    *
    * @param code error code corresponding to the error encountered
@@ -95,30 +106,31 @@ object DbActor extends AskPatternConstants {
    * @return the newly created [[DbActor]]
    */
   def apply(): DbActor = {
-    val laoFolder = new File(s"$DATABASE_FOLDER${Channel.rootChannelPrefix}").toPath
 
-    // fetch all channel names (e.g. root/u9n...) stored
-    val initialChannelsMap: Map[Channel, DB] = Try(Files.list(laoFolder)) match {
-      case Success(stream) =>
-        val initialChannelsMap: mutable.Map[Channel, DB] = mutable.Map.empty
-        val options: Options = new Options()
-        options.createIfMissing(false)
+    val options: Options = new Options()
+    options.createIfMissing(true)
+    val channelNamesDb: DB = factory.open(new File(CHANNELS_FOLDER), options)
 
-        stream.forEach(dbPath => {
-          // open each db associated with each channel name
-          val channelDb = factory.open(new File(dbPath.toString), options)
-          // store the channel name and its database in the map
-          initialChannelsMap += (Channel(dbPath.toString.stripPrefix(DATABASE_FOLDER)) -> channelDb)
-        })
+    val iterator: DBIterator = channelNamesDb.iterator
+    val initialChannelsMap: mutable.Map[Channel, DB] = mutable.Map.empty
 
-        initialChannelsMap.toMap
-      case _ => Map.empty
+    iterator.seekToFirst()
+    options.createIfMissing(false)
+
+    while (iterator.hasNext) {
+      // open each db associated with each channel name
+      val channelName: String = new String(iterator.next().getKey, StandardCharsets.UTF_8)
+      val channelDb: DB = factory.open(new File(channelName), options)
+
+      // store the channel name and its database in the map
+      initialChannelsMap += (Channel(channelName.toString.stripPrefix(DATABASE_FOLDER)) -> channelDb)
     }
 
-    DbActor(initialChannelsMap)
+    iterator.close()
+    DbActor(initialChannelsMap.toMap, channelNamesDb)
   }
 
-  sealed case class DbActor(initialChannelsMap: Map[Channel, DB]) extends Actor with ActorLogging {
+  sealed case class DbActor(initialChannelsMap: Map[Channel, DB], channelNamesDb: DB) extends Actor with ActorLogging {
     private val channelsMap: mutable.Map[Channel, DB] = initialChannelsMap.to(collection.mutable.Map)
 
     override def preStart(): Unit = {
@@ -130,18 +142,26 @@ object DbActor extends AskPatternConstants {
       super.preStart()
     }
 
+    private def createDatabase(channel: Channel): DB = {
+      val options: Options = new Options()
+      options.createIfMissing(true)
+
+      val channelName: String = s"$DATABASE_FOLDER$channel"
+      val channelDb = factory.open(new File(channelName), options)
+
+      channelNamesDb.put(channelName.getBytes, "".getBytes)
+      channelsMap += (channel -> channelDb)
+
+      channelDb
+    }
+
     override def receive: Receive = LoggingReceive {
       case Write(channel, message) =>
         log.info(s"Actor $self (db) received a WRITE request on channel '$channel'")
 
         val channelDb: DB = channelsMap.get(channel) match {
           case Some(channelDb) => channelDb
-          case _ =>
-            val options = new Options()
-            options.createIfMissing(true)
-            val channelDb = factory.open(new File(s"$DATABASE_FOLDER/$channel"), options)
-            channelsMap += (channel -> channelDb)
-            channelDb
+          case _ => createDatabase(channel)
         }
 
         val messageId: Hash = message.message_id
@@ -196,6 +216,18 @@ object DbActor extends AskPatternConstants {
             ErrorCodes.INVALID_RESOURCE.id,
             "Database cannot catchup from a channel that does not exist in db"
           )
+        }
+
+      case CreateChannel(channel) =>
+        log.info(s"Actor $self (db) received an CreateChannel request for channel '$channel'")
+        channelsMap.get(channel) match {
+          case Some(_) => sender ! DbActorNAck(
+            ErrorCodes.INVALID_RESOURCE.id,
+            s"Database cannot create an already existing channel ($channel)"
+          )
+          case _ =>
+            createDatabase(channel)
+            sender ! DbActorAck
         }
 
       case AddWitnessSignature(messageId, _) =>
