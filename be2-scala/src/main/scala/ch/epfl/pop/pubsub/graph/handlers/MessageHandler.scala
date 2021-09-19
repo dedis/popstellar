@@ -28,10 +28,10 @@ trait MessageHandler {
           case true =>
             // FIXME propagate
             Left(rpcMessage)
-          case _ => Right(PipelineError(-10, "")) // FIXME add DbActor "answers" with error description if failed
+          case _ => Right(PipelineError(-10, "", rpcMessage.id)) // FIXME add DbActor "answers" with error description if failed
         }
         Await.result(ask, DbActor.getDuration)
-      case _ => Right(PipelineError(ErrorCodes.INVALID_DATA.id, s"RPC-params does not contain any message"))
+      case _ => Right(PipelineError(ErrorCodes.INVALID_DATA.id, s"RPC-params does not contain any message", rpcMessage.id))
     }
   }
 }

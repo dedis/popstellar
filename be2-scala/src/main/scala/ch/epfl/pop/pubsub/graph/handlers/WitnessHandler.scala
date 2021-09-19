@@ -2,14 +2,15 @@ package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
-import ch.epfl.pop.model.network.JsonRpcRequest
+import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage
 import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
 import ch.epfl.pop.model.objects.{Hash, WitnessSignaturePair}
+import ch.epfl.pop.pubsub.graph.DbActor.{DbActorNAck, DbActorWriteAck}
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 case object WitnessHandler extends MessageHandler {
@@ -19,7 +20,12 @@ case object WitnessHandler extends MessageHandler {
       case message@(_: JsonRpcRequestWitnessMessage) => handleWitnessMessage(message)
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
-        "Internal server fault: WitnessHandler was given a message it could not recognize"
+        "Internal server fault: WitnessHandler was given a message it could not recognize",
+        jsonRpcMessage match {
+          case r: JsonRpcRequest => r.id
+          case r: JsonRpcResponse => r.id
+          case _ => None
+        }
       ))
     }
     case graphMessage@_ => graphMessage
@@ -29,24 +35,21 @@ case object WitnessHandler extends MessageHandler {
     val decodedData: WitnessMessage = rpcMessage.getDecodedData.get.asInstanceOf[WitnessMessage]
     val messageId: Hash = decodedData.message_id
 
-    // val ask = dbActor.ask(ref => DbActor.Read(rpcMessage.getParamsChannel, modificationId, ref)).map {
-    val ask = dbActor.ask("TODO").map {
-      case Some(message: Message) =>
-        /*
-        val askWrite = dbActor.ask(ref => DbActor.Write(
-          rpcMessage.getParamsChannel,
-          message.addWitnessSignature(WitnessSignaturePair(rpcMessage.getParamsMessage.get.sender, decodedData.signature)),
-          ref
-        )).map { */
-        val askWrite = dbActor.ask("m").map {
-          case true =>
-            // FIXME propagate
-            Left(rpcMessage)
-          case _ => Right(PipelineError(-10, "")) // FIXME add DbActor "answers" with error description if failed
-        }
-        Await.result(askWrite, DbActor.getDuration)
-      case None => Right(PipelineError(-10, "")) // FIXME add DbActor "answers" with error description if failed
+    // get message (Message) with messageId message_id from db
+    var message: Message = ???
+
+    // add new witness signature to existing ones
+    message = message.addWitnessSignature(WitnessSignaturePair(message.sender, message.signature))
+
+    // overwrite message in db
+    val f: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
+      case DbActorWriteAck =>
+        // TODO propagate
+        Left(rpcMessage)
+      case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
+      case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
     }
-    Await.result(ask, DbActor.getDuration)
+
+    Await.result(f, duration)
   }
 }

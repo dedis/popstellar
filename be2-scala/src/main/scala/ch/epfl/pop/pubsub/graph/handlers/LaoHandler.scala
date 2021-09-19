@@ -2,7 +2,7 @@ package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
-import ch.epfl.pop.model.network.JsonRpcRequest
+import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao}
 import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
@@ -22,7 +22,12 @@ case object LaoHandler extends MessageHandler {
       case message@(_: JsonRpcRequestUpdateLao) => handleUpdateLao(message)
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
-        "Internal server fault: LaoHandler was given a message it could not recognize"
+        "Internal server fault: LaoHandler was given a message it could not recognize",
+        jsonRpcMessage match {
+          case r: JsonRpcRequest => r.id
+          case r: JsonRpcResponse => r.id
+          case _ => None
+        }
       ))
     }
     case graphMessage@_ => graphMessage
@@ -37,15 +42,16 @@ case object LaoHandler extends MessageHandler {
 
         val f: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map {
           case DbActorWriteAck => Left(rpcMessage)
-          case DbActorNAck(code, description) => Right(PipelineError(code, description))
-          case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer"))
+          case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
+          case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
         }
 
         Await.result(f, duration)
 
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
-        s"Unable to handle lao message $rpcMessage. Not a Publish/Broadcast message"
+        s"Unable to handle lao message $rpcMessage. Not a Publish/Broadcast message",
+        rpcMessage.id
       ))
     }
   }
@@ -58,7 +64,8 @@ case object LaoHandler extends MessageHandler {
       // TODO careful about asynchrony and the fact that the network may reorder some messages
       case _ => Right(PipelineError(
         ErrorCodes.INVALID_DATA.id,
-        s"Unable to request lao state: invalid modification_id '$modificationId' (no message associated to this id)"
+        s"Unable to request lao state: invalid modification_id '$modificationId' (no message associated to this id)",
+        rpcMessage.id
       ))
     }
     Await.result(ask, DbActor.getDuration)

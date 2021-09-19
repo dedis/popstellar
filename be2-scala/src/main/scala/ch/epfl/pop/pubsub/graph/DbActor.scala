@@ -3,6 +3,7 @@ package ch.epfl.pop.pubsub.graph
 import java.util.concurrent.TimeUnit
 import java.io.File
 import java.nio.charset.StandardCharsets
+import java.nio.file.Files
 
 import akka.actor.{Actor, ActorLogging}
 import akka.event.LoggingReceive
@@ -51,7 +52,7 @@ object DbActor {
   final case class AddWitnessSignature() extends Event // TODO add sig to a message
 
 
-  // DbActor Events correspond to messages the actor may emit
+  // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
 
   /**
@@ -91,21 +92,53 @@ object DbActor {
 
   def getDuration: FiniteDuration = DURATION
 
-  def apply(): DbActor = DbActor()
+  /**
+   * Creates a new [[DbActor]] which is aware of channels already stored in the db
+   *
+   * @return the newly created [[DbActor]]
+   */
+  def apply(): DbActor = {
+    val laoFolder = new File(s"$DATABASE_FOLDER${Channel.rootChannelPrefix}").toPath
 
-  sealed case class DbActor() extends Actor with ActorLogging {
-    private val channelsMap: mutable.Map[Channel, DB] = mutable.Map.empty
+    // fetch all channel names (e.g. root/u9n...) stored
+    val initialChannelsMap: Map[Channel, DB] = Try(Files.list(laoFolder).limit(1 << 8)) match {
+      case Success(stream) =>
+        val initialChannelsMap: mutable.Map[Channel, DB] = mutable.Map.empty
+        val options: Options = new Options()
+        options.createIfMissing(false)
+
+        stream.forEach(dbPath => {
+          // open each db associated with each channel name
+          val channelDb = factory.open(new File(dbPath.toString), options)
+          // store the channel name and its database in the map
+          initialChannelsMap += (Channel(dbPath.toString.stripPrefix(DATABASE_FOLDER)) -> channelDb)
+        })
+
+        initialChannelsMap.toMap
+      case _ => Map.empty
+    }
+
+    DbActor(initialChannelsMap)
+  }
+
+  sealed case class DbActor(initialChannelsMap: Map[Channel, DB]) extends Actor with ActorLogging {
+    private val channelsMap: mutable.Map[Channel, DB] = initialChannelsMap.to(collection.mutable.Map)
+
+    override def preStart(): Unit = {
+      log.info(s"Actor $self (db) was initialised with a total of ${initialChannelsMap.size} recovered channels")
+      super.preStart()
+    }
 
     override def receive: Receive = LoggingReceive {
       case Write(channel, message) =>
-        log.info(s"Actor $self (db) received a WRITE request on channel '${channel.toString}'")
+        log.info(s"Actor $self (db) received a WRITE request on channel '$channel'")
 
         val channelDb: DB = channelsMap.get(channel) match {
           case Some(channelDb) => channelDb
           case _ =>
             val options = new Options()
             options.createIfMissing(true)
-            val channelDb = factory.open(new File(s"$DATABASE_FOLDER/${channel.toString}"), options)
+            val channelDb = factory.open(new File(s"$DATABASE_FOLDER/$channel"), options)
             channelsMap += (channel -> channelDb)
             channelDb
         }
