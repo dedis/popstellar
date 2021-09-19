@@ -52,6 +52,14 @@ object DbActor extends AskPatternConstants {
   final case class CreateChannel(channel: Channel) extends Event
 
   /**
+   * Request to check if channel <channel> exists in the db
+   * @param channel targeted channel
+   *
+   * Note: db answers with a simple boolean
+   */
+  final case class ChannelExists(channel: Channel) extends Event
+
+  /**
    * Request to append witness <signature> to a stored message with message_id <messageId>
    * @param messageId message_id of the targeted message
    * @param signature signature to append to the witness signature list of the message
@@ -229,6 +237,10 @@ object DbActor extends AskPatternConstants {
             createDatabase(channel)
             sender ! DbActorAck
         }
+
+      case ChannelExists(channel) =>
+        log.info(s"Actor $self (db) received an ChannelExists request for channel '$channel'")
+        sender ! channelsMap.contains(channel)
 
       case AddWitnessSignature(messageId, _) =>
         log.info(s"Actor $self (db) received an AddWitnessSignature request for message_id '$messageId'")

@@ -2,35 +2,48 @@ package ch.epfl.pop.pubsub
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.event.LoggingReceive
+import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.ClientActor.{SubscribeTo, UnsubscribeFrom}
 import ch.epfl.pop.pubsub.PubSubMediator.{SubscribeToAck, SubscribeToNAck, UnsubscribeFromAck, UnsubscribeFromNAck}
+import ch.epfl.pop.pubsub.graph.DbActor
 
 import scala.collection.mutable
 
-class PubSubMediator extends Actor with ActorLogging {
+import scala.concurrent._
+import ExecutionContext.Implicits.global
+
+class PubSubMediator(val dbActor: AskableActorRef) extends Actor with ActorLogging with AskPatternConstants {
 
   // Map from channels to the collection of actors subscribed to the channel
   private var channelMap: mutable.Map[Channel, mutable.Set[ActorRef]] = mutable.Map.empty
 
   override def receive: Receive = LoggingReceive {
-    // FIXME pubsub mediator doesnt check that the channel exists in db
-    case SubscribeTo(channel) => channelMap.get(channel) match {
-      case Some(set) =>
-        if (set.contains(sender)) {
-          val reason: String = s"Actor $sender was already subscribed to channel '$channel'"
-          log.info(reason)
-          sender ! SubscribeToNAck(channel, reason)
-        } else {
-          log.info(s"Subscribing $sender to channel '$channel'")
-          set += sender
-          sender ! SubscribeToAck(channel)
+
+    case SubscribeTo(channel) =>
+      val senderRef = sender // since we are asking dbActor, sender (client) will get overwritten!
+      (dbActor ? DbActor.ChannelExists(channel)).map {
+        case true => channelMap.get(channel) match {
+          case Some(set) =>
+            if (set.contains(senderRef)) {
+              val reason: String = s"Actor $senderRef was already subscribed to channel '$channel'"
+              log.info(reason)
+              senderRef ! SubscribeToNAck(channel, reason)
+            } else {
+              log.info(s"Subscribing $senderRef to channel '$channel'")
+              set += senderRef
+              senderRef ! SubscribeToAck(channel)
+            }
+          case _ =>
+            log.info(s"Subscribing $senderRef to channel '$channel'")
+            channelMap = channelMap + (channel -> mutable.Set(senderRef))
+            senderRef ! SubscribeToAck(channel)
         }
-      case _ =>
-        log.info(s"Subscribing $sender to channel '$channel'")
-        channelMap = channelMap + (channel -> mutable.Set(sender))
-        sender ! SubscribeToAck(channel)
-    }
+        case _ =>
+          val reason: String = s"Channel '$channel' doesn't exist in db"
+          log.info(reason)
+          senderRef ! SubscribeToNAck(channel, reason)
+      }
 
     case UnsubscribeFrom(channel) => channelMap.get(channel) match {
       case Some(set) if set.contains(sender) =>
@@ -46,7 +59,7 @@ class PubSubMediator extends Actor with ActorLogging {
 }
 
 object PubSubMediator {
-  def props: Props = Props(new PubSubMediator())
+  def props(dbActorRef: AskableActorRef): Props = Props(new PubSubMediator(dbActorRef))
 
   sealed trait PubSubMediatorMessage
   // subscribe confirmation (sender successfully subscribed to channel channel)
