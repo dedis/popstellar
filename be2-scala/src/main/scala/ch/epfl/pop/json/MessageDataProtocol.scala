@@ -198,7 +198,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
         PARAM_LAST_MODIFIED -> obj.last_modified.toJson,
         PARAM_START -> obj.start.toJson,
         PARAM_MOD_ID -> obj.modification_id.toJson,
-        PARAM_MOD_SIGNATURES -> obj.modification_signatures.toJson // FIXME does this work? Otherwise use " JsArray(obj.modification_signatures.map(_.toJson).toVector))"
+        PARAM_MOD_SIGNATURES -> obj.modification_signatures.toJson
       )
 
       if (obj.location.isDefined) jsObjectContent += (PARAM_LOCATION -> obj.location.get.toJson)

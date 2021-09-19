@@ -49,7 +49,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
       PARAM_SENDER -> obj.sender.toJson,
       PARAM_SIGNATURE -> obj.signature.toJson,
       PARAM_MESSAGE_ID -> obj.message_id.toJson,
-      PARAM_WITNESS_SIG -> obj.witness_signatures.toJson // FIXME does this work? Otherwise use "JsArray(obj.witness_signatures.map(_.toJson).toVector))"
+      PARAM_WITNESS_SIG -> obj.witness_signatures.toJson
     )
   }
 

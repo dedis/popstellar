@@ -21,9 +21,6 @@ case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging with 
 
   private val mediatorAskable: AskableActorRef = mediator
 
-  // called just after actor creation
-  // override def preStart(): Unit = mediator ! Subscribe("topic", self) // FIXME topic
-
   private def messageWsHandle(event: ClientActorMessage): Unit = event match {
     case ClientAnswer(graphMessage) => wsHandle.fold(())(_ ! graphMessage)
   }

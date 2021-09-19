@@ -41,9 +41,11 @@ object ElectionHandler extends MessageHandler {
     Await.result(f, duration)
   }
 
-  // FIXME election stuff
-  def handleResultElection(rpcMessage: JsonRpcRequest): GraphMessage = Left(rpcMessage)
+  def handleResultElection(rpcMessage: JsonRpcRequest): GraphMessage = Right(
+    PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionHandler cannot handle ResultElection messages yet", rpcMessage.id)
+  )
 
-  // FIXME election stuff
-  def handleEndElection(rpcMessage: JsonRpcRequest): GraphMessage = Left(rpcMessage)
+  def handleEndElection(rpcMessage: JsonRpcRequest): GraphMessage = Right(
+    PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionHandler cannot handle EndElection messages yet", rpcMessage.id)
+  )
 }

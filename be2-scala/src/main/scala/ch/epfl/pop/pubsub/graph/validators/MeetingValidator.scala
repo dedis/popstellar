@@ -19,7 +19,9 @@ case object MeetingValidator extends MessageDataContentValidator with EventValid
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val data: CreateMeeting = message.decodedData.get.asInstanceOf[CreateMeeting]
-        val expectedHash: Hash = Hash.fromStrings() // FIXME get id from db
+
+        val laoId: Hash = rpcMessage.extractLaoId
+        val expectedHash: Hash = generateValidationId(laoId, data.creation, data.name)
 
         if (!validateTimestampStaleness(data.creation)) {
           Right(validationError(s"stale 'creation' timestamp (${data.creation})"))
@@ -42,7 +44,9 @@ case object MeetingValidator extends MessageDataContentValidator with EventValid
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val data: StateMeeting = message.decodedData.get.asInstanceOf[StateMeeting]
-        val expectedHash: Hash = Hash.fromStrings() // FIXME get id from db
+
+        val laoId: Hash = rpcMessage.extractLaoId
+        val expectedHash: Hash = generateValidationId(laoId, data.creation, data.name)
 
         if (!validateTimestampStaleness(data.creation)) {
           Right(validationError(s"stale 'creation' timestamp (${data.creation})"))

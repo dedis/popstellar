@@ -67,7 +67,6 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
     validateOpenRollCall(rpcMessage, "ReopenRollCall")
   }
 
-  // TODO check that this is correct (correct validations)
   def validateCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CloseRollCall", rpcMessage.id)
 

@@ -8,7 +8,7 @@ import akka.actor.{Actor, ActorLogging}
 import akka.event.LoggingReceive
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.objects.{Channel, Hash}
+import ch.epfl.pop.model.objects.{Channel, Hash, Signature}
 import ch.epfl.pop.pubsub.{AskPatternConstants, PublishSubscribe}
 import org.iq80.leveldb.impl.Iq80DBFactory.factory
 import org.iq80.leveldb.{DB, DBIterator, Options}
@@ -33,19 +33,24 @@ object DbActor extends AskPatternConstants {
   final case class Write(channel: Channel, message: Message) extends Event
 
   /**
-   * Request to read a specific messages on a channel
+   * Request to read a specific message with id <messageId> from <channel>
    * @param channel the channel where the message was published
-   * @param id the id of the message (message_id) we want to read
+   * @param messageId the id of the message (message_id) we want to read
    */
-  final case class Read(channel: Channel, id: Hash) extends Event
+  final case class Read(channel: Channel, messageId: Hash) extends Event
 
   /**
-   * Request to read all messages from a specific channel
+   * Request to read all messages from a specific <channel>
    * @param channel the channel where the messages should be fetched
    */
   final case class Catchup(channel: Channel) extends Event
 
-  final case class AddWitnessSignature() extends Event // TODO add sig to a message
+  /**
+   * Request to append witness <signature> to a stored message with message_id <messageId>
+   * @param messageId message_id of the targeted message
+   * @param signature signature to append to the witness signature list of the message
+   */
+  final case class AddWitnessSignature(messageId: Hash, signature: Signature) extends Event
 
 
   // DbActor Events correspond to messages the actor may emit
@@ -193,6 +198,9 @@ object DbActor extends AskPatternConstants {
           )
         }
 
+      case AddWitnessSignature(messageId, _) =>
+        log.info(s"Actor $self (db) received an AddWitnessSignature request for message_id '$messageId'")
+        sender ! DbActorNAck(ErrorCodes.SERVER_ERROR.id, s"NOT IMPLEMENTED: database actor cannot handle AddWitnessSignature requests yet")
 
       case m@_ =>
         log.info(s"Actor $self (db) received an unknown message")
