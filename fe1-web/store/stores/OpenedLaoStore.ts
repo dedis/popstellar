@@ -2,6 +2,8 @@ import { Lao } from 'model/objects';
 import { dispatch, getStore } from '../Storage';
 import { connectToLao, makeCurrentLao } from '../reducers';
 
+// TODO: rename & document this
+
 export namespace OpenedLaoStore {
   let currentLao: any;
   export function store(lao: Lao): void {

@@ -3,16 +3,31 @@ import {
   KeyPair, KeyPairState, PrivateKey, PublicKey,
 } from 'model/objects';
 import { sign } from 'tweetnacl';
-import { encodeBase64 } from 'tweetnacl-util';
 import { dispatch, getStore } from '../Storage';
 import { getKeyPairState, setKeyPair } from '../reducers';
 
+/**
+ * The KeyPairStore stores the unique public/private key pair
+ * that uniquely identifies (and de-anonymizes) the user in the PoP system.
+ * An organizer's or witness's public key would be stored here.
+ *
+ * @remarks
+ * It should ensure that all data gets stored in an encrypted format,
+ * but this is not yet the case and would require some amount of refactoring.
+ */
 export namespace KeyPairStore {
-
+  /**
+   * Stores unique public/private key pair
+   * @param kp the key pair
+   */
   export function store(kp: KeyPair): void {
     dispatch(setKeyPair(kp.toState()));
   }
 
+  /**
+   * Returns the keypair
+   * @returns A KeyPair object
+   */
   export function get(): KeyPair {
     // if keys.publicKey or keys.privateKey is undefined (no key in the
     // storage), then a fresh instance is automatically created
@@ -23,9 +38,9 @@ export namespace KeyPairStore {
       const pair = sign.keyPair();
 
       const keyPair: KeyPair = new KeyPair({
-        publicKey: new PublicKey(Base64UrlData.fromBase64(encodeBase64(pair.publicKey)).valueOf()),
+        publicKey: new PublicKey(Base64UrlData.fromBuffer(Buffer.from(pair.publicKey)).valueOf()),
         privateKey: new PrivateKey(
-          Base64UrlData.fromBase64(encodeBase64(pair.secretKey)).valueOf(),
+          Base64UrlData.fromBuffer(Buffer.from(pair.secretKey)).valueOf(),
         ),
       });
 
@@ -36,10 +51,18 @@ export namespace KeyPairStore {
     return KeyPair.fromState(keysState);
   }
 
+  /**
+   * Retrieves the public key
+   * @returns A PublicKey object
+   */
   export function getPublicKey(): PublicKey {
     return get().publicKey;
   }
 
+  /**
+   * Retrieves the private key
+   * @returns A PrivateKey object
+   */
   export function getPrivateKey(): PrivateKey {
     return get().privateKey;
   }

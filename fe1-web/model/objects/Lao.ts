@@ -9,6 +9,8 @@ export interface LaoState {
   last_modified: number;
   organizer: string;
   witnesses: string[];
+  last_roll_call_id?: string;
+  last_tokenized_roll_call_id?: string;
 }
 
 export class Lao {
@@ -23,6 +25,12 @@ export class Lao {
   public readonly organizer: PublicKey;
 
   public readonly witnesses: PublicKey[];
+
+  // ID of the last roll call that happened in the LAO
+  public last_roll_call_id?: Hash;
+
+  // ID of the last roll call for which we have a token
+  public last_tokenized_roll_call_id?: Hash;
 
   constructor(obj: Partial<Lao>) {
     if (obj === undefined || obj === null) {
@@ -54,6 +62,8 @@ export class Lao {
     this.last_modified = obj.last_modified;
     this.organizer = obj.organizer;
     this.witnesses = [...obj.witnesses];
+    this.last_roll_call_id = obj.last_roll_call_id;
+    this.last_tokenized_roll_call_id = obj.last_tokenized_roll_call_id;
   }
 
   public static fromState(lao: LaoState): Lao {
@@ -64,6 +74,12 @@ export class Lao {
       last_modified: new Timestamp(lao.last_modified),
       organizer: new PublicKey(lao.organizer),
       witnesses: lao.witnesses.map((w) => new PublicKey(w)),
+      last_roll_call_id: (lao.last_roll_call_id)
+        ? new Hash(lao.last_roll_call_id)
+        : undefined,
+      last_tokenized_roll_call_id: (lao.last_tokenized_roll_call_id)
+        ? new Hash(lao.last_tokenized_roll_call_id)
+        : undefined,
     });
   }
 

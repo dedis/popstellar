@@ -1,1 +1,3 @@
 cli/cli
+pop
+db/sqlite/cli/pop_go_hub.db

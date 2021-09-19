@@ -47,7 +47,7 @@ object DbActor extends AskPatternConstants {
   final case class AddWitnessSignature() extends Event // TODO add sig to a message
 
 
-  // DbActor Events correspond to messages the actor may emit
+  // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
 
   /**

@@ -70,11 +70,12 @@ export class CreateRollCall implements MessageData {
     }
     const lao: Lao = OpenedLaoStore.get();
     const expectedHash = Hash.fromStringArray(
-      EventTags.ROLL_CALL, lao.id.toString(), lao.creation.toString(), msg.name,
+      EventTags.ROLL_CALL, lao.id.toString(), msg.creation.toString(), msg.name,
     );
     if (!expectedHash.equals(msg.id)) {
       throw new ProtocolError("Invalid 'id' parameter encountered during 'CreateRollCall':"
-        + ' re-computing the value yields a different result');
+        + ' re-computing the value yields a different result ('
+      + `(expected: '${expectedHash}', actual: '${msg.id}')`);
     }
     this.id = msg.id;
   }

@@ -7,9 +7,10 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage
 import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
 import ch.epfl.pop.model.objects.{Hash, WitnessSignaturePair}
+import ch.epfl.pop.pubsub.graph.DbActor.{DbActorNAck, DbActorWriteAck}
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 case object WitnessHandler extends MessageHandler {
@@ -34,24 +35,21 @@ case object WitnessHandler extends MessageHandler {
     val decodedData: WitnessMessage = rpcMessage.getDecodedData.get.asInstanceOf[WitnessMessage]
     val messageId: Hash = decodedData.message_id
 
-    // val ask = dbActor.ask(ref => DbActor.Read(rpcMessage.getParamsChannel, modificationId, ref)).map {
-    val ask = dbActor.ask("TODO").map {
-      case Some(message: Message) =>
-        /*
-        val askWrite = dbActor.ask(ref => DbActor.Write(
-          rpcMessage.getParamsChannel,
-          message.addWitnessSignature(WitnessSignaturePair(rpcMessage.getParamsMessage.get.sender, decodedData.signature)),
-          ref
-        )).map { */
-        val askWrite = dbActor.ask("m").map {
-          case true =>
-            // FIXME propagate
-            Left(rpcMessage)
-          case _ => Right(PipelineError(-10, "", rpcMessage.id)) // FIXME add DbActor "answers" with error description if failed
-        }
-        Await.result(askWrite, duration)
-      case None => Right(PipelineError(-10, "", rpcMessage.id)) // FIXME add DbActor "answers" with error description if failed
+    // get message (Message) with messageId message_id from db
+    var message: Message = ???
+
+    // add new witness signature to existing ones
+    message = message.addWitnessSignature(WitnessSignaturePair(message.sender, message.signature))
+
+    // overwrite message in db
+    val f: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
+      case DbActorWriteAck =>
+        // TODO propagate
+        Left(rpcMessage)
+      case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
+      case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
     }
-    Await.result(ask, duration)
+
+    Await.result(f, duration)
   }
 }

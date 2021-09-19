@@ -1,0 +1,14 @@
+{
+    "jsonrpc": "2.0",
+    "method": "broadcast",
+    "params": {
+        "channel": "/XXX",
+        "message": {
+            "data": "XXX",
+            "sender": "XXX",
+            "signature": "XXX",
+            "message_id": "XXX",
+            "witness_signatures": []
+        }
+    }
+}

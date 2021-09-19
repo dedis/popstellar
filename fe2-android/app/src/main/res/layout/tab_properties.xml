@@ -19,14 +19,25 @@
     android:orientation="vertical"
     app:layout_constraintGuide_percent="@dimen/guideline_vertical_tab_connect" />
 
+
+  <androidx.constraintlayout.widget.Guideline
+    android:id="@+id/guideline_vertical_tab_properties2"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    app:layout_constraintGuide_percent="@dimen/guideline_vertical_tab_wallet" />
+
   <Button
     android:id="@+id/tab_properties"
     android:layout_width="0dp"
     android:layout_height="0dp"
     android:text="@string/tab_properties"
-    app:layout_constraintEnd_toEndOf="parent"
+    android:textSize="@dimen/tab_lao_detail"
     app:layout_constraintBottom_toTopOf="@+id/guideline_horizontal_tab_properties"
-    app:layout_constraintStart_toStartOf="@+id/guideline_vertical_tab_properties"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_tab_properties2"
+    app:layout_constraintHorizontal_bias="0.4"
+    app:layout_constraintStart_toEndOf="@+id/guideline_vertical_tab_properties"
     app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

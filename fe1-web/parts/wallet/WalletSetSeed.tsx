@@ -7,9 +7,9 @@ import STRINGS from 'res/strings';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
 import { Spacing, Typography } from 'styles';
-import { HDWallet } from 'model/objects/HDWallet';
 import PROPS_TYPE from 'res/Props';
 import PropTypes from 'prop-types';
+import { Wallet } from 'model/objects';
 
 const styles = StyleSheet.create({
   textInput: {
@@ -26,21 +26,20 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-const wallet: HDWallet = new HDWallet();
-
 /**
  * wallet screen to set an already existing mnemonic
- * @constructor
  */
 const WalletSetSeed = ({ navigation }: IPropTypes) => {
   /* used to set the mnemonic seed inserted by the user */
   const [seed, setSeed] = useState('');
 
-  const initWallet = () => {
-    wallet.initialize(seed)
-      .then((seedIsValid) => ((seedIsValid)
-        ? navigation.navigate(STRINGS.navigation_synced_wallet)
-        : navigation.navigate(STRINGS.navigation_home_tab_wallet)));
+  const initWallet = async () => {
+    try {
+      await Wallet.initializeMnemonic(seed);
+      navigation.navigate(STRINGS.navigation_synced_wallet);
+    } catch {
+      navigation.navigate(STRINGS.navigation_wallet_error);
+    }
   };
 
   function getInsertSeedWalletDisplay() {

@@ -6,9 +6,15 @@ import {
   ObjectType,
   OpenRollCall,
 } from 'model/network/method/message/data';
-import { RollCall, RollCallStatus } from 'model/objects';
+import { RollCall, RollCallStatus, Wallet } from 'model/objects';
 import {
-  addEvent, dispatch, getStore, makeCurrentLao, updateEvent,
+  addEvent,
+  AsyncDispatch,
+  dispatch,
+  getStore,
+  makeCurrentLao,
+  setLaoLastRollCall,
+  updateEvent,
 } from 'store';
 import { getEventFromId, hasWitnessSignatureQuorum } from './Utils';
 
@@ -113,12 +119,19 @@ function handleRollCallCloseMessage(msg: Message): boolean {
   });
 
   // We can now dispatch an updated (closed) roll call, containing the attendees' public keys.
-  //
-  // Future development:
-  // We could either dispatch a new action containing our newfound PoP tokens,
-  // or we could extend the KeyPair reducer to listen on this updateEvent, so that
-  // we can automatically retrieve the PoP tokens when such an event happens.
   dispatch(updateEvent(lao.id, rc.toState()));
+
+  // ... and update the Lao state to point to the latest roll call, if we have a token in it.
+  dispatch((() => async (aDispatch: AsyncDispatch) => {
+    try {
+      const token = await Wallet.generateToken(lao.id, rc.id);
+      const hasToken = rc.containsToken(token);
+      aDispatch(setLaoLastRollCall(lao.id, rc.id, hasToken));
+    } catch (err) {
+      console.debug(err);
+    }
+  }));
+
   return true;
 }
 

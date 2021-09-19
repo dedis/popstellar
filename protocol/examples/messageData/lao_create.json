@@ -1,0 +1,9 @@
+{
+    "object": "lao",
+    "action": "create",
+    "id": "XXX",
+    "name": "XXX",
+    "creation": 123,
+    "organizer": "XXX",
+    "witnesses": ["XXX"]
+}
