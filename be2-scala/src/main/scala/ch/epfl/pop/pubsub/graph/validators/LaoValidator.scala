@@ -46,7 +46,7 @@ case object LaoValidator extends MessageDataContentValidator {
         if (!validateTimestampStaleness(data.creation)) {
           Right(validationError(s"stale 'creation' timestamp (${data.creation})"))
         } else if (!validateTimestampOrder(data.creation, data.last_modified)) {
-          Right(validationError(s"'last_modified' (${data.last_modified}) timestamp is younger than 'creation' (${data.creation})"))
+          Right(validationError(s"'last_modified' (${data.last_modified}) timestamp is smaller than 'creation' (${data.creation})"))
         } else if (!validateWitnesses(data.witnesses)) {
           Right(validationError("duplicate witnesses keys"))
         } else if (!validateWitnessSignatures(data.modification_signatures, data.modification_id)) {

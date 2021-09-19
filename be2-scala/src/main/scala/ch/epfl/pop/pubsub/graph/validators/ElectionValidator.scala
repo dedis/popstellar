@@ -25,9 +25,9 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
         if (!validateTimestampStaleness(data.created_at)) {
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
         } else if (!validateTimestampOrder(data.created_at, data.start_time)) {
-          Right(validationError(s"'start_time' (${data.start_time}) timestamp is younger than 'created_at' (${data.created_at})"))
+          Right(validationError(s"'start_time' (${data.start_time}) timestamp is smaller than 'created_at' (${data.created_at})"))
         } else if (!validateTimestampOrder(data.start_time, data.end_time)) {
-          Right(validationError(s"'end_time' (${data.end_time}) timestamp is younger than 'start_time' (${data.start_time})"))
+          Right(validationError(s"'end_time' (${data.end_time}) timestamp is smaller than 'start_time' (${data.start_time})"))
         } else if (expectedHash != data.id) {
           Right(validationError("unexpected id"))
         } else {

@@ -26,9 +26,9 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
         if (!validateTimestampStaleness(data.creation)) {
           Right(validationError(s"stale 'creation' timestamp (${data.creation})"))
         } else if (!validateTimestampOrder(data.creation, data.proposed_start)) {
-          Right(validationError(s"'proposed_start' (${data.proposed_start}) timestamp is younger than 'creation' (${data.creation})"))
+          Right(validationError(s"'proposed_start' (${data.proposed_start}) timestamp is smaller than 'creation' (${data.creation})"))
         } else if (!validateTimestampOrder(data.proposed_start, data.proposed_end)) {
-          Right(validationError(s"'proposed_end' (${data.proposed_end}) timestamp is younger than 'proposed_start' (${data.proposed_start})"))
+          Right(validationError(s"'proposed_end' (${data.proposed_end}) timestamp is smaller than 'proposed_start' (${data.proposed_start})"))
         } else if (expectedRollCallId != data.id) {
           Right(validationError("unexpected id"))
         } else {
