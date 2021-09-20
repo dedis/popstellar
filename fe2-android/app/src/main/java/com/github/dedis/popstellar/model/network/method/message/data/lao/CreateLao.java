@@ -3,7 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.lao;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
-import com.github.dedis.popstellar.utility.network.IdGenerator;
+import com.github.dedis.popstellar.model.objects.Lao;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ public class CreateLao extends Data {
    */
   public CreateLao(
       String id, String name, long creation, String organizer, List<String> witnesses) {
-    if (!id.equals(IdGenerator.generateLaoId(organizer, creation, name))) {
+    if (!id.equals(Lao.generateLaoId(organizer, creation, name))) {
       throw new IllegalArgumentException("CreateLao id must be Hash(organizer||creation||name)");
     }
     this.id = id;
@@ -45,8 +45,18 @@ public class CreateLao extends Data {
     this.name = name;
     this.organizer = organizer;
     this.creation = Instant.now().getEpochSecond();
-    this.id = IdGenerator.generateLaoId(organizer, creation, name);
+    this.id = Lao.generateLaoId(organizer, creation, name);
     this.witnesses = new ArrayList<>();
+  }
+
+  @Override
+  public String getObject() {
+    return Objects.LAO.getObject();
+  }
+
+  @Override
+  public String getAction() {
+    return Action.CREATE.getAction();
   }
 
   public String getId() {
@@ -67,16 +77,6 @@ public class CreateLao extends Data {
 
   public List<String> getWitnesses() {
     return new ArrayList<>(witnesses);
-  }
-
-  @Override
-  public String getObject() {
-    return Objects.LAO.getObject();
-  }
-
-  @Override
-  public String getAction() {
-    return Action.CREATE.getAction();
   }
 
   @Override

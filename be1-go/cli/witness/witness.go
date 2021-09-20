@@ -9,6 +9,7 @@ import (
 	"os"
 	"student20_pop/crypto"
 	"student20_pop/hub"
+	"student20_pop/hub/witness"
 	"student20_pop/network"
 	"student20_pop/network/socket"
 	"sync"
@@ -52,13 +53,14 @@ func Serve(cliCtx *cli.Context) error {
 	}
 
 	point := crypto.Suite.Point()
+
 	err = point.UnmarshalBinary(pkBuf)
 	if err != nil {
 		return xerrors.Errorf("failed to unmarshal public key: %v", err)
 	}
 
 	// create witness hub
-	h, err := hub.NewWitnessHub(point, log)
+	h, err := witness.NewHub(point, log)
 	if err != nil {
 		return xerrors.Errorf("failed create the witness hub: %v", err)
 	}

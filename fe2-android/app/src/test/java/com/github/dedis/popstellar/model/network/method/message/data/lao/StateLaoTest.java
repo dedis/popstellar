@@ -7,7 +7,9 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
-import com.github.dedis.popstellar.utility.network.IdGenerator;
+import com.github.dedis.popstellar.model.network.method.message.data.Action;
+import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.Lao;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -22,7 +24,7 @@ public class StateLaoTest {
   private final String organizer = "Organizer Id";
   private final String modificationId = " modification id";
   private final Set<String> witnesses = new HashSet<>(Arrays.asList("0x3434", "0x4747"));
-  private final String id = IdGenerator.generateLaoId(organizer, creation, name);
+  private final String id = Lao.generateLaoId(organizer, creation, name);
   private final List<PublicKeySignaturePair> modificationSignatures = Arrays
       .asList(new PublicKeySignaturePair(
           new byte[10], new byte[10]));
@@ -39,6 +41,16 @@ public class StateLaoTest {
   @Test
   public void getIdTest() {
     assertThat(stateLao.getId(), is(id));
+  }
+
+  @Test
+  public void getObjectTest() {
+    assertThat(stateLao.getObject(), is(Objects.LAO.getObject()));
+  }
+
+  @Test
+  public void getActionTest() {
+    assertThat(stateLao.getAction(), is(Action.STATE.getAction()));
   }
 
   @Test
@@ -89,15 +101,15 @@ public class StateLaoTest {
     assertEquals(stateLao,
         new StateLao(id, name, creation, lastModified, organizer, modificationId, witnesses, null));
     String random = " random string";
-    String newId = IdGenerator.generateLaoId(organizer, creation, random);
+    String newId = Lao.generateLaoId(organizer, creation, random);
     assertNotEquals(stateLao,
         new StateLao(newId, random, creation, lastModified, organizer, modificationId, witnesses,
             modificationSignatures));
-    newId = IdGenerator.generateLaoId(random, creation, name);
+    newId = Lao.generateLaoId(random, creation, name);
     assertNotEquals(stateLao,
         new StateLao(newId, name, creation, lastModified, random, modificationId, witnesses,
             modificationSignatures));
-    newId = IdGenerator.generateLaoId(organizer, 99, name);
+    newId = Lao.generateLaoId(organizer, 99, name);
     assertNotEquals(stateLao,
         new StateLao(newId, name, 99, lastModified, organizer, modificationId, witnesses,
             modificationSignatures));

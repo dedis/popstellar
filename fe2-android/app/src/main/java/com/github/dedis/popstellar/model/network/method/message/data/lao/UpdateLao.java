@@ -3,7 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.lao;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
-import com.github.dedis.popstellar.utility.network.IdGenerator;
+import com.github.dedis.popstellar.model.objects.Lao;
 import com.google.gson.annotations.SerializedName;
 import java.util.HashSet;
 import java.util.Set;
@@ -32,10 +32,20 @@ public class UpdateLao extends Data {
    */
   public UpdateLao(String organizer, long creation, String name, long lastModified,
       Set<String> witnesses) {
-    this.id = IdGenerator.generateLaoId(organizer, creation, name);
+    this.id = Lao.generateLaoId(organizer, creation, name);
     this.name = name;
     this.lastModified = lastModified;
     this.witnesses = witnesses;
+  }
+
+  @Override
+  public String getObject() {
+    return Objects.LAO.getObject();
+  }
+
+  @Override
+  public String getAction() {
+    return Action.UPDATE.getAction();
   }
 
   public String getId() {
@@ -52,16 +62,6 @@ public class UpdateLao extends Data {
 
   public Set<String> getWitnesses() {
     return new HashSet<>(witnesses);
-  }
-
-  @Override
-  public String getObject() {
-    return Objects.LAO.getObject();
-  }
-
-  @Override
-  public String getAction() {
-    return Action.UPDATE.getAction();
   }
 
   @Override

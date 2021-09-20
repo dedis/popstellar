@@ -6,6 +6,9 @@ import static org.junit.Assert.assertThrows;
 
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.model.objects.event.EventType;
+import com.github.dedis.popstellar.utility.security.Hash;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
@@ -23,6 +26,14 @@ public class ElectionSetupTest {
   private String laoId = "my lao id";
   private ElectionSetup electionSetup = new ElectionSetup(electionSetupName, start, end,
       votingMethod, writeIn, ballotOptions, question, laoId);
+
+  @Test
+  public void electionSetupGetterReturnsCorrectId() {
+    // Hash('Election'||lao_id||created_at||name)
+    String expectedId = Hash.hash(EventType.ELECTION.getSuffix(), electionSetup.getLao(),
+        Long.toString(electionSetup.getCreation()), electionSetup.getName());
+    assertThat(electionSetup.getId(), is(expectedId));
+  }
 
   @Test
   public void electionSetupGetterReturnsCorrectName() {

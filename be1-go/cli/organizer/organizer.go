@@ -5,8 +5,9 @@ package organizer
 import (
 	"encoding/base64"
 	"os"
+	"student20_pop/channel/lao"
 	"student20_pop/crypto"
-	"student20_pop/hub"
+	"student20_pop/hub/organizer"
 	"student20_pop/network"
 	"student20_pop/network/socket"
 	"time"
@@ -47,14 +48,16 @@ func Serve(cliCtx *cli.Context) error {
 	if err != nil {
 		return xerrors.Errorf("failed to base64url decode public key: %v", err)
 	}
+
 	point := crypto.Suite.Point()
+
 	err = point.UnmarshalBinary(pkBuf)
 	if err != nil {
 		return xerrors.Errorf("failed to unmarshal public key: %v", err)
 	}
 
 	// create organizer hub
-	h, err := hub.NewOrganizerHub(point, log.With().Str("role", "organizer").Logger())
+	h, err := organizer.NewHub(point, log.With().Str("role", "organizer").Logger(), lao.NewChannel)
 	if err != nil {
 		return xerrors.Errorf("failed create the organizer hub: %v", err)
 	}

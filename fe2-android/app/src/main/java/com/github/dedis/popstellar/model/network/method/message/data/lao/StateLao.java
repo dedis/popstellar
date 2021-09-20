@@ -4,7 +4,7 @@ import com.github.dedis.popstellar.model.network.method.message.PublicKeySignatu
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
-import com.github.dedis.popstellar.utility.network.IdGenerator;
+import com.github.dedis.popstellar.model.objects.Lao;
 import com.google.gson.annotations.SerializedName;
 import java.util.HashSet;
 import java.util.List;
@@ -48,7 +48,7 @@ public class StateLao extends Data {
       String modificationId,
       Set<String> witnesses,
       List<PublicKeySignaturePair> modificationSignatures) {
-    if (!id.equals(IdGenerator.generateLaoId(organizer, creation, name))) {
+    if (!id.equals(Lao.generateLaoId(organizer, creation, name))) {
       throw new IllegalArgumentException("StateLao id must be Hash(organizer||creation||name)");
     }
     this.id = id;
@@ -59,6 +59,16 @@ public class StateLao extends Data {
     this.modificationId = modificationId;
     this.witnesses = witnesses;
     this.modificationSignatures = modificationSignatures;
+  }
+
+  @Override
+  public String getObject() {
+    return Objects.LAO.getObject();
+  }
+
+  @Override
+  public String getAction() {
+    return Action.STATE.getAction();
   }
 
   public String getId() {
@@ -83,16 +93,6 @@ public class StateLao extends Data {
 
   public Set<String> getWitnesses() {
     return new HashSet<>(witnesses);
-  }
-
-  @Override
-  public String getObject() {
-    return Objects.LAO.getObject();
-  }
-
-  @Override
-  public String getAction() {
-    return Action.STATE.getAction();
   }
 
   @Override

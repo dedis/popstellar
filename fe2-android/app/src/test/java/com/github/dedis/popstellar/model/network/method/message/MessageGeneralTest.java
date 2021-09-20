@@ -5,7 +5,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
-import com.github.dedis.popstellar.utility.network.IdGenerator;
+import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.google.android.gms.common.util.Hex;
 import java.nio.charset.StandardCharsets;
@@ -38,7 +38,7 @@ public class MessageGeneralTest {
       -125, -14, -61, 56, 117, 35, -113, -82, 57, 107, 85, 100, -30, 43, 69, 22, 42, -25, 66, -70,
       -64, 20, -31, -32, -112, -78, 115, 9, 13, -37, 59, -29, 45, 12, 54, 71, -73, 119, 89, 119,
       106, 24, -115, 67, 103, -91, 29, -122, 83, -38, 101, 101, 11};
-  private final CreateLao data = new CreateLao(IdGenerator.generateLaoId(organizer, creation, name),
+  private final CreateLao data = new CreateLao(Lao.generateLaoId(organizer, creation, name),
       name, creation, organizer, new ArrayList<>());
   private final MessageGeneral messageGeneral = new MessageGeneral(sender, dataBuf, data, signature,
       messageId, witnessSignatures);

@@ -158,6 +158,79 @@ All the incoming messages are validated in a two-steps process using the `pubsub
 
 Each additional message constraint (e.g. in this particular case, "start_time" should always equal "end_time") is checked in the corresponding validator (e.g. `LaoValidator`) before the case class instance representing the message is created.
 
+### Storage
+
+We are using [leveldb](https://github.com/codeborui/leveldb-scala) in order to store messages "inside" channels. A channel is represented with a standard directory. In the following example, we have 3 distinct channels (e.g. `root/u9nHxKYQkx7PXawcqs0DHUGEuc9Xv_P6blf7HxcDUTk=`).
+
+```
+.
+├── database
+│   └── root
+│       └── u9nHxKYQkx7PXawcqs0DHUGEuc9Xv_P6blf7HxcDUTk=
+│           ├── /* ... db stuff ... */
+│       └── wfbY_ni1IbF7ziacoGlh7J9aAP1ukG2BPccRe4Z8EUc=
+│           ├── /* ... db stuff ... */
+│       └── zoaPYwfl9YRKEgdngCC6StufvhXWuvy-09g7l-KjG5g=
+│           ├── /* ... db stuff ... */
+```
+
+Multiple messages may then be stored inside each channel. Since leveldb is a key-value database, we are using `message_id` as key and the corresponding `message` (in its json representation) as value
+
+```scala
+val messageId: Hash = message.message_id
+
+Try(channelDb.put(messageId.getBytes, message.toJsonString.getBytes)) match {
+	case Success(_) =>
+		log.info(s"Actor $self (db) wrote message_id '$messageId' on channel '$channel'")
+		sender ! DbActorWriteAck
+	case Failure(exception) =>
+		log.info(s"Actor $self (db) encountered a problem while writing message_id '$messageId' on channel '$channel'")
+		sender ! DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
+}
+```
+
+
+
+You may store/fetch data on/from the database using a special unique database actor (`DbActor`) using standard [akka ask pattern](https://doc.akka.io/docs/akka/current/typed/interaction-patterns.html#request-response). Akka messages `DbActor` understands are defined in `DbActor.scala:Event`, they include:
+
+```scala
+// DbActor Events correspond to messages the actor may receive
+sealed trait Event
+
+final case class Write(channel: Channel, message: Message) extends Event
+final case class Read(channel: Channel, id: Hash) extends Event
+```
+
+`DbActor` will then answer using one of its predetermined answers alors defined within the same file:
+
+```scala
+// DbActor Events correspond to messages the actor may emit
+sealed trait DbActorMessage
+
+final case object DbActorWriteAck extends DbActorMessage
+final case class DbActorReadAck(message: Option[Message]) extends DbActorMessage
+final case class DbActorCatchupAck(messages: List[Message]) extends DbActorMessage
+final case class DbActorNAck(code: Int, description: String) extends DbActorMessage
+```
+
+Here's an example (shamefully stolen from `LaoHandler.scala`) showing the power of `DbActor` coupled with Scala [Future](https://www.scala-lang.org/files/archive/api/2.13.1/scala/concurrent/Future.html)
+
+```scala
+val f: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map {
+	case DbActorWriteAck => Left(rpcMessage)
+	case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
+	case _ => Right(PipelineError(
+    ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id)
+	)
+}
+
+// Await.result waits for <duration> for the future <f> to complete. It returns the value contained by the future (here `GraphMessage`) if the latter is succesful, or throws if the Future termintes withtout being successful (i.e. either Failure or Timeout) 
+Await.result(f, duration)
+```
+
+
+
+:information_source: the database may easily be reset/purged by either deleting a folder corresponding to a channel or by deleting the `database` folder entirely
 
 ## Debugging Tips
 

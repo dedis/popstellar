@@ -1,10 +1,10 @@
 package com.github.dedis.popstellar.model.network.method.message.data.rollcall;
 
-import com.github.dedis.popstellar.model.event.EventState;
+import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
-import com.github.dedis.popstellar.utility.network.IdGenerator;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -29,7 +29,7 @@ public class OpenRollCall extends Data {
    * @param state    the state in which the roll call is when this instance is created
    */
   public OpenRollCall(String laoId, String opens, long openedAt, EventState state) {
-    this.updateId = IdGenerator.generateOpenRollCallId(laoId, opens, openedAt);
+    this.updateId = RollCall.generateOpenRollCallId(laoId, opens, openedAt);
     this.opens = opens;
     this.openedAt = openedAt;
     if (state == EventState.CLOSED) {
@@ -44,10 +44,6 @@ public class OpenRollCall extends Data {
     this.opens = opens;
     this.openedAt = openedAt;
     this.action = action;
-  }
-
-  public long getOpenedAt() {
-    return openedAt;
   }
 
   @Override
@@ -66,5 +62,9 @@ public class OpenRollCall extends Data {
 
   public String getOpens() {
     return opens;
+  }
+
+  public long getOpenedAt() {
+    return openedAt;
   }
 }

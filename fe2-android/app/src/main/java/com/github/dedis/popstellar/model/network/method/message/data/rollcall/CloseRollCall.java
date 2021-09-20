@@ -3,7 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.rollcall;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
-import com.github.dedis.popstellar.utility.network.IdGenerator;
+import com.github.dedis.popstellar.model.objects.RollCall;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
@@ -29,7 +29,7 @@ public class CloseRollCall extends Data {
    * @param attendees list of attendees of the Roll-Call
    */
   public CloseRollCall(String laoId, String closes, long closedAt, List<String> attendees) {
-    this.updateId = IdGenerator.generateCloseRollCallId(laoId, closes, closedAt);
+    this.updateId = RollCall.generateCloseRollCallId(laoId, closes, closedAt);
     this.closes = closes;
     this.closedAt = closedAt;
     this.attendees = attendees;

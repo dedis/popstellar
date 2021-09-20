@@ -3,7 +3,8 @@ package com.github.dedis.popstellar.model.network.method.message.data.meeting;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
-import com.github.dedis.popstellar.utility.network.IdGenerator;
+import com.github.dedis.popstellar.model.objects.event.EventType;
+import com.github.dedis.popstellar.utility.security.Hash;
 
 /**
  * Data sent to create a new meeting
@@ -31,7 +32,7 @@ public class CreateMeeting extends Data {
    */
   public CreateMeeting(
       String laoId, String id, String name, long creation, String location, long start, long end) {
-    if (!id.equals(IdGenerator.generateCreateMeetingId(laoId, creation, name))) {
+    if (!id.equals(Hash.hash(EventType.MEETING.getSuffix(), laoId, Long.toString(creation), name))) {
       throw new IllegalArgumentException(
           "CreateMeeting id must be Hash(\"M\"||laoId||creation||name)");
     }
@@ -45,7 +46,7 @@ public class CreateMeeting extends Data {
 
   public CreateMeeting(
       String laoId, String name, long creation, String location, long start, long end) {
-    this.id = IdGenerator.generateCreateMeetingId(laoId, creation, name);
+    this.id = Hash.hash(EventType.MEETING.getSuffix(), laoId, Long.toString(creation), name);
     this.name = name;
     this.creation = creation;
     this.location = location;

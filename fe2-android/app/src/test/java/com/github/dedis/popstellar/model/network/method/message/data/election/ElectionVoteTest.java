@@ -7,8 +7,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import com.github.dedis.popstellar.model.network.method.message.data.ElectionVote;
-import com.github.dedis.popstellar.utility.network.IdGenerator;
+import com.github.dedis.popstellar.utility.security.Hash;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,10 +24,23 @@ public class ElectionVoteTest {
   ElectionVote electionVote2 = new ElectionVote(questionId, votes, true, writeIn, electionId);
 
   @Test
-  public void electionVoteGetterReturnsCorrectId() {
-    assertThat(electionVote1.getId(), is(IdGenerator
-        .generateElectionVoteId(electionId, questionId, electionVote1.getVotes(),
-            electionVote1.getWriteIn(), false)));
+  public void electionVoteWriteInDisabledReturnsCorrectId() {
+    // WriteIn enabled so id is Hash('Vote'||election_id||question_id||write_in)
+    String expectedId = Hash
+        .hash("Vote", electionId, electionVote1.getQuestionId(),
+            electionVote1.getVotes().toString());
+    assertThat(electionVote1.getId(), is(expectedId));
+    assertNull(electionVote1.getWriteIn());
+  }
+
+  @Test
+  public void electionVoteWriteInEnabledReturnsCorrectId() {
+    // WriteIn enabled so id is Hash('Vote'||election_id||question_id||write_in)
+    String expectedId = Hash
+        .hash("Vote", electionId, electionVote2.getQuestionId(),
+            electionVote2.getWriteIn());
+    assertThat(electionVote2.getId(), is(expectedId));
+    assertNull(electionVote2.getVotes());
   }
 
   @Test

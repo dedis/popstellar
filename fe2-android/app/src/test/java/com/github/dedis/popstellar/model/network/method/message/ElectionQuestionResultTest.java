@@ -4,8 +4,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 
-import com.github.dedis.popstellar.model.network.method.message.data.ElectionResultQuestion;
-import com.github.dedis.popstellar.model.network.method.message.data.QuestionResult;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
+import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

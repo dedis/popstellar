@@ -2,9 +2,8 @@ package com.github.dedis.popstellar.model.network.method.message.data.election;
 
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
-import com.github.dedis.popstellar.model.network.method.message.data.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
-import com.github.dedis.popstellar.utility.network.IdGenerator;
+import com.github.dedis.popstellar.model.objects.Election;
 import com.google.gson.annotations.SerializedName;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -57,7 +56,7 @@ public class ElectionSetup extends Data {
     this.endTime = end;
     this.lao = laoId;
     this.version = "1.0.0";
-    this.id = IdGenerator.generateElectionSetupId(laoId, createdAt, name);
+    this.id = Election.generateElectionSetupId(laoId, createdAt, name);
     this.questions = new ArrayList<>();
     for (int i = 0; i < questionList.size(); i++) {
       this.questions.add(
@@ -67,6 +66,15 @@ public class ElectionSetup extends Data {
 
   }
 
+  @Override
+  public String getObject() {
+    return Objects.ELECTION.getObject();
+  }
+
+  @Override
+  public String getAction() {
+    return Action.SETUP.getAction();
+  }
 
   public String getId() {
     return id;
@@ -98,17 +106,6 @@ public class ElectionSetup extends Data {
 
   public String getVersion() {
     return version;
-  }
-
-
-  @Override
-  public String getObject() {
-    return Objects.ELECTION.getObject();
-  }
-
-  @Override
-  public String getAction() {
-    return Action.SETUP.getAction();
   }
 
   @Override
