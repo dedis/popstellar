@@ -46,17 +46,24 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
     override def read(json: JsValue): VoteElection = json.asJsObject.getFields(PARAM_ID, PARAM_QUESTION) match {
       case Seq(id@JsString(_), question@JsString(_)) =>
-        val (voteOpt, writeInOpt): (Option[List[Int]], Option[String]) = json.asJsObject.getFields(PARAM_VOTE) match {
-          case Seq(JsArray(vote)) => (Some(vote.map(_.convertTo[Int]).toList), None)
-          case _ => json.asJsObject.getFields(PARAM_WRITE_IN) match {
-            case Seq(JsString(writeIn)) => (None, Some(writeIn))
-            case _ => throw new IllegalArgumentException(
-              s"Unable to parse vote election $json to a VoteElection object: '$PARAM_VOTE' and '$PARAM_WRITE_IN' fields are missing or wrongly formatted"
-            )
-          }
+
+        val voteOpt: Option[List[Int]] = json.asJsObject.getFields(PARAM_VOTE) match {
+          case Seq(JsArray(vote)) => Some(vote.map(_.convertTo[Int]).toList)
+          case _ => None
+        }
+        val writeInOpt: Option[String] = json.asJsObject.getFields(PARAM_WRITE_IN) match {
+          case Seq(JsString(writeIn)) => Some(writeIn)
+          case _ => None
         }
 
-        VoteElection(id.convertTo[Hash], question.convertTo[Hash], voteOpt, writeInOpt)
+        if (voteOpt.isEmpty && writeInOpt.isEmpty) {
+          throw new IllegalArgumentException(
+            s"Unable to parse vote election $json to a VoteElection object: '$PARAM_VOTE' and '$PARAM_WRITE_IN' fields are missing or wrongly formatted"
+          )
+        } else {
+          VoteElection(id.convertTo[Hash], question.convertTo[Hash], voteOpt, writeInOpt)
+        }
+
       case _ => throw new IllegalArgumentException(
         s"Unable to parse vote election $json to a VoteElection object: '$PARAM_ID' or '$PARAM_QUESTION' field missing or wrongly formatted"
       )

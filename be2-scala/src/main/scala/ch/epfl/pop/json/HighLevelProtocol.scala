@@ -184,17 +184,23 @@ object HighLevelProtocol extends DefaultJsonProtocol {
           case _ => throw new IllegalArgumentException(s"Unable to parse json value $id to an id (number or null)")
         }
 
-        val (resultOpt, errorOpt): (Option[ResultObject], Option[ErrorObject]) = json.asJsObject.getFields(PARAM_RESULT) match {
-          case Seq(result) => (Some(result.convertTo[ResultObject]), None)
-          case _ => json.asJsObject.getFields(PARAM_ERROR) match {
-            case Seq(error) => (None, Some(error.convertTo[ErrorObject]))
-            case _ => throw new IllegalArgumentException(
-              s"Unable to parse json answer $json to a JsonRpcResponse object: 'result' and 'error' fields are missing or wrongly formatted"
-            )
-          }
+        val resultOpt: Option[ResultObject] = json.asJsObject.getFields(PARAM_RESULT) match {
+          case Seq(result) => Some(result.convertTo[ResultObject])
+          case _ => None
+        }
+        val errorOpt: Option[ErrorObject] = json.asJsObject.getFields(PARAM_ERROR) match {
+          case Seq(error) => Some(error.convertTo[ErrorObject])
+          case _ => None
         }
 
-        JsonRpcResponse(version, resultOpt, errorOpt, idOpt)
+        if (resultOpt.isEmpty && errorOpt.isEmpty) {
+          throw new IllegalArgumentException(
+            s"Unable to parse json answer $json to a JsonRpcResponse object: 'result' and 'error' fields are missing or wrongly formatted"
+          )
+        } else {
+          JsonRpcResponse(version, resultOpt, errorOpt, idOpt)
+        }
+
       case _ => throw new IllegalArgumentException(
         s"Unable to parse json answer $json to a JsonRpcResponse object: 'jsonrpc' or 'id' field missing or wrongly formatted"
       )

@@ -55,14 +55,11 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
         val data: EndElection = message.decodedData.get.asInstanceOf[EndElection]
 
         val laoId: Hash = rpcMessage.extractLaoId
-        val expectedElectionHash: Hash = Hash.fromStrings() // TODO calculate expected election hash
 
         if (!validateTimestampStaleness(data.created_at)) {
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
         } else if (laoId != data.lao) {
           Right(validationError("unexpected lao id"))
-        } else if (expectedElectionHash != data.election) {
-          Right(validationError("unexpected election id"))
         } else {
           Left(rpcMessage)
         }

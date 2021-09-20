@@ -144,7 +144,7 @@ object DbActor extends AskPatternConstants {
     override def preStart(): Unit = {
       log.info(s"Actor $self (db) was initialised with a total of ${initialChannelsMap.size} recovered channels")
       if (initialChannelsMap.size > DATABASE_MAX_CHANNELS) {
-        log.info(s"Actor $self (db) has surpassed a large number of active lao channels (${initialChannelsMap.size} > $DATABASE_MAX_CHANNELS)")
+        log.warning(s"Actor $self (db) has surpassed a large number of active lao channels (${initialChannelsMap.size} > $DATABASE_MAX_CHANNELS)")
       }
 
       super.preStart()
