@@ -69,7 +69,7 @@ public class LAORepositoryTest extends TestCase {
     testSchedulerProvider = new TestSchedulerProvider();
     testScheduler = (TestScheduler) testSchedulerProvider.io();
 
-    // Mock the signing of of the data CreateLao
+    // Mock the signing of the data CreateLao
     byte[] dataBuf = Injection.provideGson().toJson(CREATE_LAO, Data.class).getBytes();
     Mockito.when(signer.sign(dataBuf)).thenReturn(dataBuf);
 

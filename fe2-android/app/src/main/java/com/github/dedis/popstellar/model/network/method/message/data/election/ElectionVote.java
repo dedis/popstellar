@@ -1,6 +1,6 @@
-package com.github.dedis.popstellar.model.network.method.message.data;
+package com.github.dedis.popstellar.model.network.method.message.data.election;
 
-import com.github.dedis.popstellar.model.network.IdGenerator;
+import com.github.dedis.popstellar.model.objects.Election;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
@@ -38,7 +38,7 @@ public class ElectionVote {
     this.writeInEnabled = writeInEnabled;
     this.vote = writeInEnabled ? null : vote;
     this.writeIn = writeInEnabled ? writeIn : null;
-    this.id = IdGenerator
+    this.id = Election
         .generateElectionVoteId(electionId, questionId, vote, writeIn, writeInEnabled);
   }
 
