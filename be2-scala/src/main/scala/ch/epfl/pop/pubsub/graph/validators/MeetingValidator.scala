@@ -3,15 +3,12 @@ package ch.epfl.pop.pubsub.graph.validators
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
-import ch.epfl.pop.model.objects.{Hash, Timestamp}
+import ch.epfl.pop.model.objects.Hash
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
 
 case object MeetingValidator extends MessageDataContentValidator with EventValidator {
   override def EVENT_HASH_PREFIX: String = "M"
-
-  override def generateValidationId(hash: Hash, timestamp: Timestamp, string: String): Hash =
-    Hash.fromStrings(EVENT_HASH_PREFIX, hash.toString, timestamp.toString, string)
 
   def validateCreateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CreateMeeting", rpcMessage.id)
@@ -21,7 +18,7 @@ case object MeetingValidator extends MessageDataContentValidator with EventValid
         val data: CreateMeeting = message.decodedData.get.asInstanceOf[CreateMeeting]
 
         val laoId: Hash = rpcMessage.extractLaoId
-        val expectedHash: Hash = generateValidationId(laoId, data.creation, data.name)
+        val expectedHash: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, laoId.toString, data.creation.toString, data.name)
 
         if (!validateTimestampStaleness(data.creation)) {
           Right(validationError(s"stale 'creation' timestamp (${data.creation})"))
@@ -46,7 +43,7 @@ case object MeetingValidator extends MessageDataContentValidator with EventValid
         val data: StateMeeting = message.decodedData.get.asInstanceOf[StateMeeting]
 
         val laoId: Hash = rpcMessage.extractLaoId
-        val expectedHash: Hash = generateValidationId(laoId, data.creation, data.name)
+        val expectedHash: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, laoId.toString, data.creation.toString, data.name)
 
         if (!validateTimestampStaleness(data.creation)) {
           Right(validationError(s"stale 'creation' timestamp (${data.creation})"))

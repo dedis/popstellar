@@ -3,14 +3,11 @@ package ch.epfl.pop.pubsub.graph.validators
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.election.{EndElection, SetupElection}
-import ch.epfl.pop.model.objects.{Hash, Timestamp}
+import ch.epfl.pop.model.objects.Hash
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
 object ElectionValidator extends MessageDataContentValidator with EventValidator {
   override def EVENT_HASH_PREFIX: String = "Election"
-
-  override def generateValidationId(hash: Hash, timestamp: Timestamp, string: String): Hash =
-    Hash.fromStrings(EVENT_HASH_PREFIX, hash.toString, timestamp.toString, string)
 
   def validateSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "SetupElection", rpcMessage.id)
@@ -20,7 +17,7 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
         val data: SetupElection = message.decodedData.get.asInstanceOf[SetupElection]
 
         val laoId: Hash = rpcMessage.extractLaoId
-        val expectedHash: Hash = generateValidationId(laoId, data.created_at, data.name)
+        val expectedHash: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, laoId.toString, data.created_at.toString, data.name)
 
         if (!validateTimestampStaleness(data.created_at)) {
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
