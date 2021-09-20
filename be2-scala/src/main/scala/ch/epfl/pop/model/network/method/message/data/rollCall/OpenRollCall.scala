@@ -11,7 +11,7 @@ import spray.json._
 case class OpenRollCall(
                          update_id: Hash,
                          opens: Hash,
-                         start: Timestamp
+                         opened_at: Timestamp
                        ) extends MessageData {
   override val _object: ObjectType = ObjectType.ROLL_CALL
   override val action: ActionType = ActionType.OPEN
@@ -21,9 +21,9 @@ object OpenRollCall extends Parsable {
   def apply(
              update_id: Hash,
              opens: Hash,
-             start: Timestamp
+             opened_at: Timestamp
            ): OpenRollCall = {
-    new OpenRollCall(update_id, opens, start)
+    new OpenRollCall(update_id, opens, opened_at)
   }
 
   override def buildFromJson(payload: String): OpenRollCall = payload.parseJson.asJsObject.convertTo[OpenRollCall]

@@ -209,10 +209,10 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     }
   }
 
-  implicit val closeRollCallFormat: JsonFormat[CloseRollCall] = jsonFormat[Hash, Hash, Timestamp, List[PublicKey], CloseRollCall](CloseRollCall.apply, "update_id", "closes", "end", "attendees")
-  implicit val createRollCallFormat: JsonFormat[CreateRollCall] = jsonFormat[Hash, String, Timestamp, Option[Timestamp], Option[Timestamp], String, Option[String], CreateRollCall](CreateRollCall.apply, "id", "name", "creation", "start", "scheduled", "location", "roll_call_description")
-  implicit val openRollCallFormat: JsonFormat[OpenRollCall] = jsonFormat[Hash, Hash, Timestamp, OpenRollCall](OpenRollCall.apply, "update_id", "opens", "start")
-  implicit val reopenRollCallFormat: JsonFormat[ReopenRollCall] = jsonFormat[Hash, Hash, Timestamp, ReopenRollCall](ReopenRollCall.apply, "update_id", "opens", "start")
+  implicit val closeRollCallFormat: JsonFormat[CloseRollCall] = jsonFormat[Hash, Hash, Timestamp, List[PublicKey], CloseRollCall](CloseRollCall.apply, "update_id", "closes", "closed_at", "attendees")
+  implicit val createRollCallFormat: JsonFormat[CreateRollCall] = jsonFormat[Hash, String, Timestamp, Timestamp, Timestamp, String, Option[String], CreateRollCall](CreateRollCall.apply, "id", "name", "creation", "proposed_start", "proposed_end", "location", "roll_call_description")
+  implicit val openRollCallFormat: JsonFormat[OpenRollCall] = jsonFormat[Hash, Hash, Timestamp, OpenRollCall](OpenRollCall.apply, "update_id", "opens", "opened_at")
+  implicit val reopenRollCallFormat: JsonFormat[ReopenRollCall] = jsonFormat[Hash, Hash, Timestamp, ReopenRollCall](ReopenRollCall.apply, "update_id", "opens", "opened_at")
 
   implicit val witnessMessageFormat: JsonFormat[WitnessMessage] = jsonFormat[Hash, Signature, WitnessMessage](WitnessMessage.apply, "message_id", "signature")
 
