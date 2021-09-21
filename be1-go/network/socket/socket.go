@@ -66,9 +66,9 @@ func (s *baseSocket) ReadPump() {
 		s.wg.Done()
 
 		// it is safe to send a message on s.closedSockets after calling
-		// s.wg.Done() If the hub is still open then it will be processed an the
-		// client will be unsubscribed. Otherwise, since the hub is being shut
-		// down, this won't block because the process will exit.
+		// s.wg.Done() If the hub is still open then it will be processed and
+		// the client will be unsubscribed. Otherwise, since the hub is being
+		// shut down, this won't block because the process will exit.
 		s.closedSockets <- s.ID()
 	}()
 
@@ -116,9 +116,9 @@ func (s *baseSocket) WritePump() {
 		s.conn.Close()
 		s.wg.Done()
 		// it's safe to send a message on s.closedSockets after calling
-		// s.wg.Done() If the hub is still open then it will be processed an the
-		// client will be unsubscribed. Otherwise, since the hub is being shut
-		// down, this won't block because the process will exit.
+		// s.wg.Done() If the hub is still open then it will be processed and
+		// the client will be unsubscribed. Otherwise, since the hub is being
+		// shut down, this won't block because the process will exit.
 		s.closedSockets <- s.ID()
 	}()
 

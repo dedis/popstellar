@@ -2,8 +2,7 @@
 // JSON-RPC messages from the websocket connection and replying to them by
 // either sending a Result, Error or broadcasting a message to other clients.
 //
-// A concrete instance of a Hub may be an Organizer or a Witness. A baseHub type
-// contains the implementation common across both types.
+// A concrete instance of a Hub may be an Organizer or a Witness.
 package hub
 
 import (
