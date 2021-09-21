@@ -1,16 +1,19 @@
 package messagedata
 
-// VoteCastWriteIn ...
+// VoteCastWriteIn defines a message data
 type VoteCastWriteIn struct {
-	Object    string        `json:"object"`
-	Action    string        `json:"action"`
-	Lao       string        `json:"lao"`
-	Election  string        `json:"election"`
-	CreatedAt int64         `json:"created_at"`
-	Votes     []WriteInVote `json:"votes"`
+	Object   string `json:"object"`
+	Action   string `json:"action"`
+	Lao      string `json:"lao"`
+	Election string `json:"election"`
+
+	// CreatedAt is a Unix timestamp
+	CreatedAt int64 `json:"created_at"`
+
+	Votes []WriteInVote `json:"votes"`
 }
 
-// WriteInVote ...
+// WriteInVote defines a vote in a write in
 type WriteInVote struct {
 	ID       string `json:"id"`
 	Question string `json:"question"`

@@ -24,8 +24,8 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
-// Server represents a Websocket Server for an organizer or a witness
-// and it may listen to requests from organizer, witness or an attendee.
+// Server represents a Websocket Server for an organizer or a witness and it may
+// listen to requests from organizer, witness or an attendee.
 type Server struct {
 	h   hub.Hub
 	st  socket.SocketType
@@ -43,8 +43,8 @@ type Server struct {
 }
 
 // NewServer creates a new Server which is used to handle requests for
-// /<hubType>/<socketType> endpoint. Please use the Start() method to
-// start listening for connections.
+// /<hubType>/<socketType> endpoint. Please use the Start() method to start
+// listening for connections.
 func NewServer(h hub.Hub, port int, st socket.SocketType, log zerolog.Logger) *Server {
 
 	server := &Server{
@@ -109,13 +109,15 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	switch s.st {
 	case socket.ClientSocketType:
-		client := socket.NewClientSocket(s.h.Receiver(), s.h.OnSocketClose(), conn, s.wg, s.done, s.log)
+		client := socket.NewClientSocket(s.h.Receiver(), s.h.OnSocketClose(),
+			conn, s.wg, s.done, s.log)
 		s.wg.Add(2)
 
 		go client.ReadPump()
 		go client.WritePump()
 	case socket.WitnessSocketType:
-		witness := socket.NewWitnessSocket(s.h.Receiver(), s.h.OnSocketClose(), conn, s.wg, s.done, s.log)
+		witness := socket.NewWitnessSocket(s.h.Receiver(), s.h.OnSocketClose(),
+			conn, s.wg, s.done, s.log)
 		s.wg.Add(2)
 
 		go witness.ReadPump()

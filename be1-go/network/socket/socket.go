@@ -64,10 +64,11 @@ func (s *baseSocket) ReadPump() {
 	defer func() {
 		s.conn.Close()
 		s.wg.Done()
-		// it's safe to send a message on s.closedSockets after calling s.wg.Done()
-		// If the hub is still open then it will be processed an the client will be
-		// unsubscribed. Otherwise, since the hub is being shut down, this won't
-		// block because the process will exit.
+
+		// it is safe to send a message on s.closedSockets after calling
+		// s.wg.Done() If the hub is still open then it will be processed an the
+		// client will be unsubscribed. Otherwise, since the hub is being shut
+		// down, this won't block because the process will exit.
 		s.closedSockets <- s.ID()
 	}()
 
@@ -75,7 +76,10 @@ func (s *baseSocket) ReadPump() {
 
 	s.conn.SetReadLimit(maxMessageSize)
 	s.conn.SetReadDeadline(time.Now().Add(pongWait))
-	s.conn.SetPongHandler(func(string) error { s.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+	s.conn.SetPongHandler(func(string) error {
+		s.conn.SetReadDeadline(time.Now().Add(pongWait))
+		return nil
+	})
 
 	for {
 		_, message, err := s.conn.ReadMessage()
@@ -111,10 +115,10 @@ func (s *baseSocket) WritePump() {
 		ticker.Stop()
 		s.conn.Close()
 		s.wg.Done()
-		// it's safe to send a message on s.closedSockets after calling s.wg.Done()
-		// If the hub is still open then it will be processed an the client will be
-		// unsubscribed. Otherwise, since the hub is being shut down, this won't
-		// block because the process will exit.
+		// it's safe to send a message on s.closedSockets after calling
+		// s.wg.Done() If the hub is still open then it will be processed an the
+		// client will be unsubscribed. Otherwise, since the hub is being shut
+		// down, this won't block because the process will exit.
 		s.closedSockets <- s.ID()
 	}()
 
@@ -153,7 +157,7 @@ func (s *baseSocket) WritePump() {
 	}
 }
 
-// Send allows sending a serialised message to the socket.
+// Send allows sending a serialized message to the socket.
 func (s *baseSocket) Send(msg []byte) {
 	s.log.Info().
 		Str("to", s.conn.RemoteAddr().String()).
@@ -162,8 +166,8 @@ func (s *baseSocket) Send(msg []byte) {
 	s.send <- msg
 }
 
-// SendError is a utility method that allows sending an `error` as a `message.Error`
-// message to the socket.
+// SendError is a utility method that allows sending an `error` as a
+// `message.Error` message to the socket.
 func (s *baseSocket) SendError(id *int, err error) {
 	log.Printf("Error: %v", err)
 	msgError := &answer.Error{}
@@ -189,7 +193,8 @@ func (s *baseSocket) SendError(id *int, err error) {
 	}
 }
 
-// SendResult is a utility method that allows sending a `message.Result` to the socket.
+// SendResult is a utility method that allows sending a `message.Result` to the
+// socket.
 func (s *baseSocket) SendResult(id int, res []message.Message) {
 	var answer interface{}
 
@@ -229,7 +234,10 @@ func (s *baseSocket) SendResult(id int, res []message.Message) {
 	s.send <- answerBuf
 }
 
-func newBaseSocket(socketType SocketType, receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup, done chan struct{}, log zerolog.Logger) *baseSocket {
+func newBaseSocket(socketType SocketType, receiver chan<- IncomingMessage,
+	closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup,
+	done chan struct{}, log zerolog.Logger) *baseSocket {
+
 	return &baseSocket{
 		id:            xid.New().String(),
 		socketType:    socketType,
@@ -248,12 +256,16 @@ type ClientSocket struct {
 	*baseSocket
 }
 
-// NewClient returns an instance of a baseSocket.
-func NewClientSocket(receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup, done chan struct{}, log zerolog.Logger) *ClientSocket {
+// NewClientSocket returns an instance of a baseSocket.
+func NewClientSocket(receiver chan<- IncomingMessage,
+	closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup,
+	done chan struct{}, log zerolog.Logger) *ClientSocket {
+
 	log = log.With().Str("role", "client socket").Logger()
 
 	return &ClientSocket{
-		baseSocket: newBaseSocket(ClientSocketType, receiver, closedSockets, conn, wg, done, log),
+		baseSocket: newBaseSocket(ClientSocketType, receiver, closedSockets,
+			conn, wg, done, log),
 	}
 }
 
@@ -263,11 +275,15 @@ type OrganizerSocket struct {
 }
 
 // NewOrganizerSocket returns a new OrganizerSocket.
-func NewOrganizerSocket(receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup, done chan struct{}, log zerolog.Logger) *OrganizerSocket {
+func NewOrganizerSocket(receiver chan<- IncomingMessage,
+	closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup,
+	done chan struct{}, log zerolog.Logger) *OrganizerSocket {
+
 	log = log.With().Str("role", "organizer socket").Logger()
 
 	return &OrganizerSocket{
-		baseSocket: newBaseSocket(OrganizerSocketType, receiver, closedSockets, conn, wg, done, log),
+		baseSocket: newBaseSocket(OrganizerSocketType, receiver, closedSockets,
+			conn, wg, done, log),
 	}
 }
 
@@ -277,10 +293,14 @@ type WitnessSocket struct {
 }
 
 // NewWitnessSocket returns a new WitnessSocket.
-func NewWitnessSocket(receiver chan<- IncomingMessage, closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup, done chan struct{}, log zerolog.Logger) *WitnessSocket {
+func NewWitnessSocket(receiver chan<- IncomingMessage,
+	closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup,
+	done chan struct{}, log zerolog.Logger) *WitnessSocket {
+
 	log = log.With().Str("role", "witness socket").Logger()
 
 	return &WitnessSocket{
-		baseSocket: newBaseSocket(WitnessSocketType, receiver, closedSockets, conn, wg, done, log),
+		baseSocket: newBaseSocket(WitnessSocketType, receiver, closedSockets,
+			conn, wg, done, log),
 	}
 }

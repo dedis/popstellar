@@ -588,6 +588,10 @@ func (c *Channel) processCloseRollCall(msg messagedata.RollCallClose) error {
 	return nil
 }
 
+// ---
+// DB operations
+// ---
+
 func insertAttendee(db *sql.DB, key string, channelID string) error {
 	stmt, err := db.Prepare("insert into lao_attendee(attendee_key, lao_channel_id) values(?, ?)")
 	if err != nil {
@@ -608,10 +612,6 @@ func insertAttendee(db *sql.DB, key string, channelID string) error {
 func (r *rollCall) checkPrevID(prevID []byte) bool {
 	return string(prevID) == r.id
 }
-
-// ---
-// DB restore
-// ---
 
 // CreateChannelFromDB restores a channel from the db
 func CreateChannelFromDB(db *sql.DB, channelPath string, hub channel.HubFunctionalities) (channel.Channel, error) {

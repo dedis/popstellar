@@ -1,12 +1,15 @@
 package messagedata
 
-// LaoCreate ...
+// LaoCreate defines a message data
 type LaoCreate struct {
-	Object    string   `json:"object"`
-	Action    string   `json:"action"`
-	ID        string   `json:"id"`
-	Name      string   `json:"name"`
-	Creation  int64    `json:"creation"`
+	Object string `json:"object"`
+	Action string `json:"action"`
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+
+	// Creation is a Unix timestamp
+	Creation int64 `json:"creation"`
+
 	Organizer string   `json:"organizer"`
 	Witnesses []string `json:"witnesses"`
 }

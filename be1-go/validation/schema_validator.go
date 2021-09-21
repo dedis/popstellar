@@ -44,8 +44,7 @@ const baseURL = "https://raw.githubusercontent.com/dedis/student_21_pop/master/"
 var protocolFS embed.FS
 
 func init() {
-	// Override the defaults for loading files and decoding base64 encoded
-	// data
+	// Override the defaults for loading files and decoding base64 encoded data
 	jsonschema.Loaders["file"] = loadFileURL
 	jsonschema.Decoders["base64"] = base64.URLEncoding.DecodeString
 }

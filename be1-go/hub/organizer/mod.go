@@ -424,22 +424,26 @@ func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate)
 	return nil
 }
 
-// GetPubkey implements ...
+// GetPubkey implements channel.HubFunctionalities
 func (h *Hub) GetPubkey() kyber.Point {
 	return h.public
 }
 
-// GetSchemaValidator implements ...
+// GetSchemaValidator implements channel.HubFunctionalities
 func (h *Hub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator
 }
 
-// RegisterNewChannel ...
+// RegisterNewChannel implements channel.HubFunctionalities
 func (h *Hub) RegisterNewChannel(channeID string, channel channel.Channel) {
 	h.Lock()
 	h.channelByID[channeID] = channel
 	h.Unlock()
 }
+
+// ---
+// DB operations
+// --
 
 func saveChannel(channelPath string) error {
 	log.Printf("trying to save the channel in db at %s", sqlite.GetDBPath())
@@ -471,8 +475,6 @@ func saveChannel(channelPath string) error {
 
 	return nil
 }
-
-// DB operations. To be replaced by an abstraction.
 
 func getChannelsFromDB(h *Hub) (map[string]channel.Channel, error) {
 	db, err := sql.Open("sqlite3", sqlite.GetDBPath())

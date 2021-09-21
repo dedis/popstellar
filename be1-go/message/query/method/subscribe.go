@@ -2,7 +2,7 @@ package method
 
 import "popstellar/message/query"
 
-// Subscribe ...
+// Subscribe defines a JSON RPC subscribe message
 type Subscribe struct {
 	query.Base
 

@@ -24,14 +24,15 @@ var logout = zerolog.ConsoleWriter{
 	TimeFormat: time.RFC3339,
 }
 
-// Serve parses the CLI arguments and spawns a hub and a websocket server
-// for the organizer.
+// Serve parses the CLI arguments and spawns a hub and a websocket server for
+// the organizer.
 func Serve(cliCtx *cli.Context) error {
 	log := zerolog.New(logout).Level(defaultLevel).
 		With().Timestamp().Logger().
 		With().Caller().Logger()
 
-	// get command line args which specify public key, port to use for clients and witnesses
+	// get command line args which specify public key, port to use for clients
+	// and witnesses
 	clientPort := cliCtx.Int("client-port")
 	witnessPort := cliCtx.Int("witness-port")
 	if clientPort == witnessPort {
@@ -63,11 +64,13 @@ func Serve(cliCtx *cli.Context) error {
 	}
 
 	// Start a client websocket server
-	clientSrv := network.NewServer(h, clientPort, socket.ClientSocketType, log.With().Str("role", "client server").Logger())
+	clientSrv := network.NewServer(h, clientPort, socket.ClientSocketType,
+		log.With().Str("role", "client server").Logger())
 	clientSrv.Start()
 
 	// Start a witness websocket server
-	witnessSrv := network.NewServer(h, witnessPort, socket.WitnessSocketType, log.With().Str("role", "witness server").Logger())
+	witnessSrv := network.NewServer(h, witnessPort, socket.WitnessSocketType,
+		log.With().Str("role", "witness server").Logger())
 	witnessSrv.Start()
 
 	// start the processing loop
