@@ -3,12 +3,11 @@ package ch.epfl.pop.pubsub.graph.validators
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao, UpdateLao}
-import ch.epfl.pop.model.objects.{Channel, Hash}
+import ch.epfl.pop.model.objects.Hash
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
 
 import scala.concurrent._
 import ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
 
 
 case object LaoValidator extends MessageDataContentValidator {
@@ -42,38 +41,21 @@ case object LaoValidator extends MessageDataContentValidator {
       case Some(message: Message) =>
         val data: StateLao = message.decodedData.get.asInstanceOf[StateLao]
 
-        // FIXME get lao creation message in order to calculate expected hash
-        val f: Future[GraphMessage] = (dbActor ? DbActor.Read(Channel.rootChannel, ???)).map {
-          case DbActor.DbActorReadAck(Some(retrievedMessage)) =>
-            val laoCreationMessage = retrievedMessage.decodedData.get.asInstanceOf[CreateLao]
-            // Calculate expected hash
-            val expectedHash: Hash = Hash.fromStrings(
-              retrievedMessage.sender.toString, laoCreationMessage.creation.toString, laoCreationMessage.name
-            )
+        val expectedHash: Hash = Hash.fromStrings(data.organizer.toString, data.creation.toString, data.name)
 
-            if (!validateTimestampStaleness(data.creation)) {
-              Right(validationError(s"stale 'creation' timestamp (${data.creation})"))
-            } else if (!validateTimestampOrder(data.creation, data.last_modified)) {
-              Right(validationError(s"'last_modified' (${data.last_modified}) timestamp is younger than 'creation' (${data.creation})"))
-            } else if (!validateWitnesses(data.witnesses)) {
-              Right(validationError("duplicate witnesses keys"))
-            } else if (!validateWitnessSignatures(data.modification_signatures, data.modification_id)) {
-              Right(validationError("witness key-signature pairs are not valid for the given modification_id"))
-            } else if (expectedHash != data.id) {
-              Right(validationError("unexpected id"))
-            } else {
-              Left(rpcMessage)
-            }
-
-          case DbActor.DbActorReadAck(None) =>
-            Right(PipelineError(ErrorCodes.INVALID_RESOURCE.id, "No CreateLao message associated found", rpcMessage.id))
-          case DbActor.DbActorNAck(code, description) =>
-            Right(PipelineError(code, description, rpcMessage.id))
-          case _ =>
-            Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
+        if (!validateTimestampStaleness(data.creation)) {
+          Right(validationError(s"stale 'creation' timestamp (${data.creation})"))
+        } else if (!validateTimestampOrder(data.creation, data.last_modified)) {
+          Right(validationError(s"'last_modified' (${data.last_modified}) timestamp is smaller than 'creation' (${data.creation})"))
+        } else if (!validateWitnesses(data.witnesses)) {
+          Right(validationError("duplicate witnesses keys"))
+        } else if (!validateWitnessSignatures(data.modification_signatures, data.modification_id)) {
+          Right(validationError("witness key-signature pairs are not valid for the given modification_id"))
+        } else if (expectedHash != data.id) {
+          Right(validationError("unexpected id"))
+        } else {
+          Left(rpcMessage)
         }
-
-        Await.result(f, duration)
 
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
@@ -87,7 +69,7 @@ case object LaoValidator extends MessageDataContentValidator {
         val data: UpdateLao = message.decodedData.get.asInstanceOf[UpdateLao]
 
         // FIXME get lao creation message in order to calculate "SHA256(organizer||creation||name)"
-        val f: Future[GraphMessage] = (dbActor ? DbActor.Read(Channel.rootChannel, ???)).map {
+        val f: Future[GraphMessage] = (dbActor ? DbActor.Read(rpcMessage.getParamsChannel, ???)).map {
           case DbActor.DbActorReadAck(Some(retrievedMessage)) =>
             val laoCreationMessage = retrievedMessage.decodedData.get.asInstanceOf[CreateLao]
             // Calculate expected hash

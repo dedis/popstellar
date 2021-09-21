@@ -6,13 +6,13 @@ import scala.util.{Success, Try}
 
 case class Signature(signature: Base64Data) {
   def verify(key: PublicKey, message: Base64Data): Boolean = {
-    val ed = new Ed25519Verify(key.getBytes)
+    val ed = new Ed25519Verify(key.base64Data.decode())
 
-    Try(ed.verify(this.getBytes, message.getBytes)) match {
+    Try(ed.verify(this.signature.decode(), message.decode())) match {
       case Success(_) => true
       case _ => false
     }
   }
 
-  def getBytes: Array[Byte] = signature.data.getBytes
+  override def toString: String = signature.toString
 }
