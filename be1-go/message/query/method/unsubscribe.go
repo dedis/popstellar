@@ -2,7 +2,7 @@ package method
 
 import "popstellar/message/query"
 
-// Unsubscribe ....
+// Unsubscribe defines a JSON RPC unsubscribe message
 type Unsubscribe struct {
 	query.Base
 

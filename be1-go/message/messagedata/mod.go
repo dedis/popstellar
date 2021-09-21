@@ -34,7 +34,7 @@ const (
 	VoteActionWriteIn  = "write_in"
 )
 
-// GetObjectAndAction ...
+// GetObjectAndAction returns the object and action of a JSON RPC message.
 func GetObjectAndAction(buf []byte) (string, string, error) {
 	var objmap map[string]json.RawMessage
 

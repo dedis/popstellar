@@ -5,7 +5,7 @@ import (
 	"popstellar/message/query/method/message"
 )
 
-// Broadcast ....
+// Broadcast defines a JSON RPC broadcast message
 type Broadcast struct {
 	query.Base
 

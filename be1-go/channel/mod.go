@@ -29,20 +29,20 @@ type Channel interface {
 	Catchup(msg method.Catchup) []message.Message
 }
 
-// NewSockets ...
+// NewSockets returns a new initialized sockets
 func NewSockets() Sockets {
 	return Sockets{
 		store: make(map[string]socket.Socket),
 	}
 }
 
-// Sockets ...
+// Sockets provides thread-funcionalities around a socket store.
 type Sockets struct {
 	sync.RWMutex
 	store map[string]socket.Socket
 }
 
-// SendToAll ...
+// SendToAll sends a message to all sockets.
 func (s *Sockets) SendToAll(buf []byte) {
 	s.RLock()
 	defer s.RUnlock()

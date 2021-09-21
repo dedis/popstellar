@@ -5,7 +5,7 @@ import (
 	"popstellar/message/query/method/message"
 )
 
-// Publish ...
+// Publish defines a JSON RPC publish message
 type Publish struct {
 	query.Base
 

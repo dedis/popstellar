@@ -1,16 +1,19 @@
 package messagedata
 
-// VoteCastVote ...
+// VoteCastVote defines a message data
 type VoteCastVote struct {
-	Object    string `json:"object"`
-	Action    string `json:"action"`
-	Lao       string `json:"lao"`
-	Election  string `json:"election"`
-	CreatedAt int64  `json:"created_at"`
-	Votes     []Vote `json:"votes"`
+	Object   string `json:"object"`
+	Action   string `json:"action"`
+	Lao      string `json:"lao"`
+	Election string `json:"election"`
+
+	// CreatedAt is a Unix timestamp
+	CreatedAt int64 `json:"created_at"`
+
+	Votes []Vote `json:"votes"`
 }
 
-// Vote ...
+// Vote defines a vote of a cast vote
 type Vote struct {
 	ID       string `json:"id"`
 	Question string `json:"question"`

@@ -7,7 +7,7 @@ import (
 	"golang.org/x/xerrors"
 )
 
-// Message ...
+// Message defines a JSON RPC message
 type Message struct {
 	Data              string             `json:"data"`
 	Sender            string             `json:"sender"`
@@ -19,7 +19,7 @@ type Message struct {
 // UnmarshalData fills the provided elements with the message data stored in the
 // data field. Recall that the Data field contains a base64URL representation of
 // a message data, it takes care of proprely decoding it. The provided element
-// MUST be a pointer.
+// 'e' MUST be a pointer.
 func (m Message) UnmarshalData(e interface{}) error {
 	jsonData, err := base64.URLEncoding.DecodeString(m.Data)
 	if err != nil {
@@ -34,7 +34,7 @@ func (m Message) UnmarshalData(e interface{}) error {
 	return nil
 }
 
-// WitnessSignature ...
+// WitnessSignature defines a witness signature in a message
 type WitnessSignature struct {
 	Witness   string `json:"witness"`
 	Signature string `json:"signature"`
