@@ -6,13 +6,12 @@ import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.ClientActor._
 import ch.epfl.pop.pubsub.PubSubMediator._
-import ch.epfl.pop.pubsub.graph.{DbActor, GraphMessage}
+import ch.epfl.pop.pubsub.graph.GraphMessage
 
 import scala.collection.mutable
-import scala.util.Failure
-
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
+import scala.util.Failure
 
 case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging with AskPatternConstants {
 

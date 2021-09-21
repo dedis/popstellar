@@ -9,8 +9,8 @@ import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.DbActor.{DbActorNAck, DbActorWriteAck}
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 trait MessageHandler extends AskPatternConstants {
   implicit final val dbActor: AskableActorRef = DbActor.getInstance

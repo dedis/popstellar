@@ -7,8 +7,8 @@ import akka.pattern.AskableActorRef
 import akka.stream.FlowShape
 import akka.stream.scaladsl.{Flow, GraphDSL, Merge, Partition}
 import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.pubsub.graph.handlers.{ParamsHandler, ParamsWithMessageHandler}
 import ch.epfl.pop.pubsub.graph._
+import ch.epfl.pop.pubsub.graph.handlers.{ParamsHandler, ParamsWithMessageHandler}
 
 
 object PublishSubscribe extends App {

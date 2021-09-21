@@ -9,9 +9,8 @@ import ch.epfl.pop.pubsub.PubSubMediator.{SubscribeToAck, SubscribeToNAck, Unsub
 import ch.epfl.pop.pubsub.graph.DbActor
 
 import scala.collection.mutable
-
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
-import ExecutionContext.Implicits.global
 
 class PubSubMediator(val dbActor: AskableActorRef) extends Actor with ActorLogging with AskPatternConstants {
 

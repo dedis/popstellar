@@ -2,9 +2,9 @@ package ch.epfl.pop.json
 
 import ch.epfl.pop.json.ObjectProtocol._
 import ch.epfl.pop.model.network.MethodType.MethodType
+import ch.epfl.pop.model.network._
 import ch.epfl.pop.model.network.method._
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network._
 import ch.epfl.pop.model.objects._
 import spray.json._
 
