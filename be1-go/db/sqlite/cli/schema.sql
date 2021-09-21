@@ -52,3 +52,59 @@ CREATE TABLE message_witness (
         REFERENCES message_info(message_id)
         ON UPDATE CASCADE ON DELETE CASCADE
 );
+
+--
+-- Election channel
+--
+
+CREATE TABLE election_channel (
+    election_channel_id TEXT NOT NULL PRIMARY KEY,
+
+    start_timestamp INTEGER,
+    end_timestamp INTEGER,
+    terminated INTEGER
+);
+
+CREATE TABLE election_attendee (
+    attendee_key TEXT NOT NULL,
+
+    election_channel_id TEXT NOT NULL
+        REFERENCES election_channel(election_channel_id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE election_question (
+    question_id TEXT NOT NULL PRIMARY KEY,
+
+    method TEXT NOT NULL,
+
+    election_channel_id TEXT NOT NULL
+        REFERENCES election_channel(election_channel_id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE election_question_ballot_option (
+    option_text TEXT NOT NULL,
+
+    question_id TEXT NOT NULL
+        REFERENCES election_question(question_id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE election_valid_vote (
+    voter_id TEXT NOT NULL,
+
+    vote_timestamp INTEGER,
+
+    question_id TEXT NOT NULL
+        REFERENCES election_question(question_id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE vote_index (
+    vote_index INTEGER
+
+    voter_id TEXT NOT NULL
+        REFERENCES election_valid_vote(voter_id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+);

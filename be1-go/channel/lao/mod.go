@@ -25,13 +25,6 @@ import (
 	"golang.org/x/xerrors"
 )
 
-const (
-	dbPrepareErr  = "failed to prepare query: %v"
-	dbParseRowErr = "failed to parse row: %v"
-	dbRowIterErr  = "error in row iteration: %v"
-	dbQueryRowErr = "failed to query rows: %v"
-)
-
 // Channel defines a LAO channel
 type Channel struct {
 	sockets channel.Sockets
@@ -56,7 +49,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	inbox := inbox.NewInbox(channelID)
 	inbox.StoreMessage(msg)
 
-	return &Channel{
+	channel := &Channel{
 		channelID: channelID,
 		sockets:   channel.NewSockets(),
 		inbox:     inbox,
@@ -64,6 +57,20 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 		rollCall:  rollCall{},
 		attendees: make(map[string]struct{}),
 	}
+
+	if sqlite.GetDBPath() != "" {
+		err := channel.saveChannel()
+		if err != nil {
+			log.Printf("Error: failed to save channel: %v", err)
+		}
+	}
+
+	return channel
+}
+
+// GetPath implements channel.Channel
+func (c *Channel) GetPath() string {
+	return c.channelID
 }
 
 // Subscribe is used to handle a subscribe message from the client.
@@ -450,7 +457,9 @@ func (c *Channel) processElectionObject(action string, msg message.Message) erro
 	}
 
 	if !c.hub.GetPubkey().Equal(senderPoint) {
-		return answer.NewError(-5, "The sender of the election setup message has a different public key from the organizer")
+		return answer.NewErrorf(-5, "the sender of the election setup message "+
+			"has a different public key from the organizer: %s != %s",
+			c.hub.GetPubkey().String(), senderPoint.String())
 	}
 
 	var electionSetup messagedata.ElectionSetup
@@ -496,7 +505,7 @@ func (c *Channel) createElection(msg message.Message, setupMsg messagedata.Elect
 	c.inbox.StoreMessage(msg)
 
 	// Add the new election channel to the organizerHub
-	c.hub.RegisterNewChannel(channelPath, &electionCh)
+	c.hub.RegisterNewChannel(channelPath, electionCh)
 
 	return nil
 }
@@ -588,152 +597,7 @@ func (c *Channel) processCloseRollCall(msg messagedata.RollCallClose) error {
 	return nil
 }
 
-// ---
-// DB operations
-// ---
-
-func insertAttendee(db *sql.DB, key string, channelID string) error {
-	stmt, err := db.Prepare("insert into lao_attendee(attendee_key, lao_channel_id) values(?, ?)")
-	if err != nil {
-		return xerrors.Errorf("failed to prepare query: %v", err)
-	}
-
-	defer stmt.Close()
-
-	_, err = stmt.Exec(key, channelID)
-	if err != nil {
-		return xerrors.Errorf("failed to exec query: %v", err)
-	}
-
-	return nil
-}
-
 // checkPrevID is a helper method which validates the roll call ID.
 func (r *rollCall) checkPrevID(prevID []byte) bool {
 	return string(prevID) == r.id
-}
-
-// CreateChannelFromDB restores a channel from the db
-func CreateChannelFromDB(db *sql.DB, channelPath string, hub channel.HubFunctionalities) (channel.Channel, error) {
-	channel := Channel{
-		channelID: channelPath,
-		sockets:   channel.NewSockets(),
-		inbox:     inbox.NewInbox(channelPath),
-		hub:       hub,
-		rollCall:  rollCall{},
-		attendees: make(map[string]struct{}),
-	}
-
-	attendees, err := getAttendeesChannelFromDB(db, channelPath)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to get attendees: %v", err)
-	}
-
-	for _, attendee := range attendees {
-		channel.attendees[attendee] = struct{}{}
-	}
-
-	witnesses, err := getWitnessChannelFromDB(db, channelPath)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to get witnesses: %v", err)
-	}
-
-	channel.witnesses = witnesses
-
-	inbox, err := inbox.CreateInboxFromDB(db, channelPath)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to load inbox: %v", err)
-	}
-
-	channel.inbox = inbox
-
-	return &channel, nil
-}
-
-func getAttendeesChannelFromDB(db *sql.DB, channelPath string) ([]string, error) {
-	query := `
-		SELECT
-			attendee_key
-		FROM
-			lao_attendee
-		WHERE
-			lao_channel_id = ?`
-
-	stmt, err := db.Prepare(query)
-	if err != nil {
-		return nil, xerrors.Errorf(dbPrepareErr, err)
-	}
-
-	defer stmt.Close()
-
-	rows, err := stmt.Query(channelPath)
-	if err != nil {
-		return nil, xerrors.Errorf(dbQueryRowErr, err)
-	}
-
-	defer rows.Close()
-
-	result := make([]string, 0)
-
-	for rows.Next() {
-		var attendeeKey string
-
-		err = rows.Scan(&attendeeKey)
-		if err != nil {
-			return nil, xerrors.Errorf(dbParseRowErr, err)
-		}
-
-		result = append(result, attendeeKey)
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return nil, xerrors.Errorf(dbRowIterErr, err)
-	}
-
-	return result, nil
-}
-
-func getWitnessChannelFromDB(db *sql.DB, channelPath string) ([]string, error) {
-	query := `
-		SELECT
-			pub_key
-		FROM
-			lao_witness
-		WHERE
-			lao_channel_id = ?`
-
-	stmt, err := db.Prepare(query)
-	if err != nil {
-		return nil, xerrors.Errorf(dbPrepareErr, err)
-	}
-
-	defer stmt.Close()
-
-	rows, err := stmt.Query(channelPath)
-	if err != nil {
-		return nil, xerrors.Errorf(dbQueryRowErr, err)
-	}
-
-	defer rows.Close()
-
-	result := make([]string, 0)
-
-	for rows.Next() {
-		var pubKey string
-
-		err = rows.Scan(&pubKey)
-		if err != nil {
-			return nil, xerrors.Errorf(dbParseRowErr, err)
-		}
-
-		result = append(result, pubKey)
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return nil, xerrors.Errorf(dbRowIterErr, err)
-	}
-
-	return result, nil
 }

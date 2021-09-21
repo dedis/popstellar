@@ -392,6 +392,11 @@ type fakeChannel struct {
 	msgs []message.Message
 }
 
+// GetPath implements channel.Channel
+func (f *fakeChannel) GetPath() string {
+	return ""
+}
+
 // Subscribe implements channel.Channel
 func (f *fakeChannel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
 	f.socket = socket

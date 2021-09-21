@@ -27,6 +27,9 @@ type Channel interface {
 
 	// Catchup is used to handle a catchup message.
 	Catchup(msg method.Catchup) []message.Message
+
+	// GetPath returns the channel path, sometimes referred as its ID
+	GetPath() string
 }
 
 // NewSockets returns a new initialized sockets

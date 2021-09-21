@@ -7,6 +7,7 @@ import (
 	"popstellar/channel"
 	"popstellar/channel/inbox"
 	"popstellar/crypto"
+	"popstellar/db/sqlite"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -68,11 +69,9 @@ func (a *attendees) Copy() *attendees {
 // NewChannel returns a new initialized election channel
 func NewChannel(channelPath string, start, end int64, terminated bool,
 	questions []messagedata.ElectionSetupQuestion, attendeesMap map[string]struct{},
-	msg message.Message, hub channel.HubFunctionalities) Channel {
+	msg message.Message, hub channel.HubFunctionalities) channel.Channel {
 
-	// Saving on election channel too so it self-contains the entire election history
-	// electionCh.inbox.storeMessage(msg)
-	return Channel{
+	channel := &Channel{
 		sockets:   channel.NewSockets(),
 		inbox:     inbox.NewInbox(channelPath),
 		channelID: channelPath,
@@ -88,6 +87,18 @@ func NewChannel(channelPath string, start, end int64, terminated bool,
 
 		hub: hub,
 	}
+
+	// Saving on election channel too so it self-contains the entire election history
+	channel.inbox.StoreMessage(msg)
+
+	if sqlite.GetDBPath() != "" {
+		err := channel.saveChannel()
+		if err != nil {
+			log.Printf("Error: failed to save channel: %v", err)
+		}
+	}
+
+	return channel
 }
 
 // Channel is used to handle election messages.
@@ -95,8 +106,6 @@ type Channel struct {
 	sockets   channel.Sockets
 	inbox     *inbox.Inbox
 	channelID string
-
-	// *baseChannel
 
 	// Starting time of the election
 	start int64
@@ -143,6 +152,11 @@ type validVote struct {
 
 	// indexes represents the indexes of the ballot options
 	indexes []int
+}
+
+// GetPath implements channel.Channel
+func (c *Channel) GetPath() string {
+	return c.channelID
 }
 
 // Publish is used to handle publish messages in the election channel.
