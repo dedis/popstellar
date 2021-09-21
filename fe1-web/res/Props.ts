@@ -88,7 +88,6 @@ const PROPS_TYPE = {
   // --- navigation type of react-navigation (simplified) ---
   navigation: shape({
     navigate: func.isRequired,
-    dangerouslyGetParent: func.isRequired,
     addListener: func.isRequired,
   }),
 
@@ -100,7 +99,6 @@ const PROPS_TYPE = {
 
 export interface INavigation {
   navigate: (...args: any) => Action;
-  dangerouslyGetParent: () => NavigationProp<ParamListBase> | undefined;
   addListener: (type: any, callback: any) => (() => void);
 }
 

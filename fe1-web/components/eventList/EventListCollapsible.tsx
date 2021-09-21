@@ -10,7 +10,12 @@ import PROPS_TYPE from 'res/Props';
 
 import * as RootNavigation from 'navigation/RootNavigation';
 import TextBlock from 'components/TextBlock';
+import { useSelector } from 'react-redux';
 import Event from './events';
+import {
+  getKeyPairState, getStore, makeCurrentLao, WalletStore,
+} from '../../store';
+import { LaoEvent, PublicKey } from '../../model/objects';
 
 const styles = StyleSheet.create({
   flexBox: {
@@ -57,16 +62,22 @@ function renderSectionHeader(title: string, isOrganizer: boolean) {
 */
 const EventListCollapsible = (props: IPropTypes) => {
   const { data } = props;
-  const { isOrganizer } = props;
+
+  // consider refactoring this into a selector that returns a boolean if we're organizers
+  const laoSelect = makeCurrentLao();
+  const lao = useSelector(laoSelect);
+  const publicKeyRaw = getKeyPairState(getStore().getState()).keyPair?.publicKey;
+  const publicKey = publicKeyRaw ? new PublicKey(publicKeyRaw) : undefined;
+  const isOrganizer = !!(lao && publicKey && (publicKey.equals(lao.organizer)));
 
   const renderItemFn = (
-    ({ item }: any) => <Event event={item} renderItemFn={renderItemFn} />
+    ({ item }: any) => <Event event={item} isOrganizer={isOrganizer} renderItemFn={renderItemFn} />
   );
 
   return (
     <SectionList
       sections={data}
-      keyExtractor={(item, index) => `${item?.object}-${item?.id}-${index}`}
+      keyExtractor={(item, index) => `${item.id}`}
       renderItem={renderItemFn}
       renderSectionHeader={({ section: { title } }) => renderSectionHeader(title, !!isOrganizer)}
     />
@@ -76,14 +87,12 @@ const EventListCollapsible = (props: IPropTypes) => {
 const propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({
     title: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(PROPS_TYPE.event).isRequired,
+    data: PropTypes.arrayOf(PropTypes.shape({})),
   }).isRequired).isRequired,
-  isOrganizer: PropTypes.bool,
 };
 EventListCollapsible.propTypes = propTypes;
 
 EventListCollapsible.defaultProps = {
-  isOrganizer: false,
 };
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

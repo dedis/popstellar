@@ -35,7 +35,7 @@ const Organizer = () => {
   });
   // TODO: nesting logic
 
-  const DATA_EXAMPLE = [
+  const eventsData = [
     {
       title: 'Past',
       data: pastEvents,
@@ -54,7 +54,7 @@ const Organizer = () => {
     <ScrollView>
       { /* Add edit button for the organizer in the Lao properties panel */ }
       <LaoProperties />
-      <EventListCollapsible isOrganizer data={DATA_EXAMPLE} />
+      <EventListCollapsible data={eventsData} />
     </ScrollView>
   );
 };

@@ -29,7 +29,10 @@ export function makeMessageStoreWatcher(store: Store) {
     }
 
     const msgs = currentValue.map((id: string) => ExtendedMessage.fromState(msgState.byId[id]));
-    console.table(msgs);
+    if (msgs.length > 0) {
+      console.log('Ingestion is going to process the following messages:');
+      console.table(msgs);
+    }
 
     msgs.forEach((msg) => {
       try {
