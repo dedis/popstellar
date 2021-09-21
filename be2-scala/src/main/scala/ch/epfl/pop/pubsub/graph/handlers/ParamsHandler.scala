@@ -109,7 +109,7 @@ object ParamsHandler extends AskPatternConstants {
   }
 
   def catchupHandler(clientActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
-    // case Left(jsonRpcMessage: Catchup) => clientActorRef ! ClientActor.CatchupChannel(jsonRpcMessage.channel)
-    case graphMessage@_ => graphMessage // FIXME catchup handler
+    // Catchup requests are treated at the AnswerGenerator stage since it generates a JsonRpcResponse directly
+    case graphMessage@_ => graphMessage
   }
 }

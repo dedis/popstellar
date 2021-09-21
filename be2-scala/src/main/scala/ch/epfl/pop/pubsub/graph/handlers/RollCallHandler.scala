@@ -2,9 +2,13 @@ package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
+import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
-import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
+
+import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 case object RollCallHandler extends MessageHandler {
 
@@ -27,15 +31,17 @@ case object RollCallHandler extends MessageHandler {
     case graphMessage@_ => graphMessage
   }
 
-  def handleCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage =
-    rpcMessage.getParamsChannel.decodeSubChannel match {
-      case Some(_) => dbAskWritePropagate(rpcMessage)
-      case _ => Right(PipelineError(
-        ErrorCodes.INVALID_DATA.id,
-        s"Unable to create meeting: invalid encoded laoId '${rpcMessage.getParamsChannel}'",
-        rpcMessage.id
-      ))
+  def handleCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
+    val message: Message = rpcMessage.getParamsMessage.get
+
+    val f: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
+      case DbActor.DbActorWriteAck => Left(rpcMessage)
+      case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
+      case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
     }
+
+    Await.result(f, duration)
+  }
   def handleOpenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = dbAskWritePropagate(rpcMessage)
   def handleReopenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = dbAskWritePropagate(rpcMessage)
   def handleCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = dbAskWritePropagate(rpcMessage)

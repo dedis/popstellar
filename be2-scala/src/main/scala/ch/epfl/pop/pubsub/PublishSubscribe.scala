@@ -1,7 +1,7 @@
 package ch.epfl.pop.pubsub
 
 import akka.NotUsed
-import akka.actor.{ActorRef, ActorSystem, Props}
+import akka.actor.{ActorRef, ActorSystem}
 import akka.http.scaladsl.model.ws.{Message, TextMessage}
 import akka.pattern.AskableActorRef
 import akka.stream.FlowShape
@@ -33,7 +33,7 @@ object PublishSubscribe extends App {
 
       /* building blocks */
       // input message from the client
-      val input = builder.add(Flow[Message].collect { case TextMessage.Strict(s) => s })
+      val input = builder.add(Flow[Message].collect { case TextMessage.Strict(s) => println(s">>> Incoming message : $s"); s })
 
       val schemaValidator = builder.add(Validator.schemaValidator)
 

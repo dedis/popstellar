@@ -3,6 +3,7 @@ package ch.epfl.pop.pubsub.graph
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method._
+import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestSetupElection}
 import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
 import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, JsonRpcRequestStateMeeting}
 import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
@@ -13,6 +14,7 @@ import ch.epfl.pop.pubsub.graph.validators.MeetingValidator._
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.validators.ParamsValidator._
 import ch.epfl.pop.pubsub.graph.validators.RollCallValidator._
+import ch.epfl.pop.pubsub.graph.validators.ElectionValidator._
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator._
 import ch.epfl.pop.pubsub.graph.validators.WitnessValidator._
 
@@ -90,6 +92,9 @@ object Validator {
       case message@(_: JsonRpcRequestOpenRollCall) => validateOpenRollCall(message)
       case message@(_: JsonRpcRequestReopenRollCall) => validateReopenRollCall(message)
       case message@(_: JsonRpcRequestCloseRollCall) => validateCloseRollCall(message)
+      case message@(_: JsonRpcRequestSetupElection) => validateSetupElection(message)
+      case message@(_: JsonRpcRequestResultElection) => validateResultElection(message)
+      case message@(_: JsonRpcRequestEndElection) => validateEndElection(message)
       case message@(_: JsonRpcRequestWitnessMessage) => validateWitnessMessage(message)
       case _ => Right(validationError(jsonRpcMessage match {
         case r: JsonRpcRequest => r.id

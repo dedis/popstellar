@@ -4,7 +4,7 @@ import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.MessageData
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.{Params, ParamsWithMessage}
-import ch.epfl.pop.model.objects.{Base64Data, Channel}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash}
 import ch.epfl.pop.pubsub.graph.PipelineError
 
 import scala.util.{Success, Try}
@@ -44,6 +44,7 @@ class JsonRpcRequest(
     case Some(message) => message.decodedData = Some(decodedData)
     case _ =>
   }
+  def extractLaoId: Hash = this.getParamsChannel.extractChildChannel
 
   /**
    * Returns a typed request (model/network/requests) that can be instantiated with <typedConstructor>

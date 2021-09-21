@@ -20,6 +20,15 @@ final case class Channel(channel: String) {
     case _ => None
   }
 
+  /**
+   * Extract the channel id from a Channel (i.e. the last part of the path)
+   *
+   * @return the id of the Channel
+   *
+   * @example extractChannelId(Channel("/root/mEKXWFCMwb") == Hash(Base64Data("mEKXWFCMwb"))
+   */
+  def extractChildChannel: Hash = Hash(Base64Data(channel.split(Channel.SEPARATOR).last))
+
   def isRootChannel: Boolean = channel == Channel.rootChannel.channel
 
   def isSubChannel: Boolean = channel.startsWith(Channel.rootChannelPrefix)
@@ -33,6 +42,7 @@ final case class Channel(channel: String) {
 }
 
 object Channel {
-  val rootChannel: Channel = Channel("/root")
-  val rootChannelPrefix: String = "/root/"
+  final val SEPARATOR: Char = '/'
+  final val rootChannel: Channel = Channel(s"${SEPARATOR}root")
+  final val rootChannelPrefix: String = s"${SEPARATOR}root${SEPARATOR}"
 }
