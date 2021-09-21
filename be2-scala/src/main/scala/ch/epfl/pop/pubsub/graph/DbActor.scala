@@ -27,6 +27,7 @@ object DbActor extends AskPatternConstants {
 
   /**
    * Request to write a message in the database
+   *
    * @param channel the channel where the message must be published
    * @param message the message to write in the database
    */
@@ -34,33 +35,37 @@ object DbActor extends AskPatternConstants {
 
   /**
    * Request to read a specific message with id <messageId> from <channel>
-   * @param channel the channel where the message was published
+   *
+   * @param channel   the channel where the message was published
    * @param messageId the id of the message (message_id) we want to read
    */
   final case class Read(channel: Channel, messageId: Hash) extends Event
 
   /**
    * Request to read all messages from a specific <channel>
+   *
    * @param channel the channel where the messages should be fetched
    */
   final case class Catchup(channel: Channel) extends Event
 
   /**
    * Request to create channel <channel> in the db
+   *
    * @param channel channel to create
    */
   final case class CreateChannel(channel: Channel) extends Event
 
   /**
    * Request to check if channel <channel> exists in the db
-   * @param channel targeted channel
    *
-   * Note: db answers with a simple boolean
+   * @param channel targeted channel
+   * @note db answers with a simple boolean
    */
   final case class ChannelExists(channel: Channel) extends Event
 
   /**
    * Request to append witness <signature> to a stored message with message_id <messageId>
+   *
    * @param messageId message_id of the targeted message
    * @param signature signature to append to the witness signature list of the message
    */
@@ -100,7 +105,7 @@ object DbActor extends AskPatternConstants {
   /**
    * Response for a negative db request
    *
-   * @param code error code corresponding to the error encountered
+   * @param code        error code corresponding to the error encountered
    * @param description description of the error encountered
    */
   final case class DbActorNAck(code: Int, description: String) extends DbActorMessage
@@ -251,4 +256,5 @@ object DbActor extends AskPatternConstants {
         sender ! DbActorNAck(ErrorCodes.SERVER_ERROR.id, s"database actor received a message '$m' that it could not recognize")
     }
   }
+
 }

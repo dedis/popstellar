@@ -55,7 +55,7 @@ object MessageDecoder {
    * Decodes the JsonRpcRequest's Message 'data' field
    *
    * @param _object object of the targeted MessageData
-   * @param action action of the targeted MessageData
+   * @param action  action of the targeted MessageData
    * @return the decoded 'data' field as a subclass of MessageData
    */
   @throws(classOf[ProtocolException])

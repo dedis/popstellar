@@ -154,6 +154,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
       JsObject(jsObjectContent)
     }
   }
+
   implicit object StateMeetingFormat extends RootJsonFormat[StateMeeting] {
     final private val PARAM_ID: String = "id"
     final private val PARAM_NAME: String = "name"

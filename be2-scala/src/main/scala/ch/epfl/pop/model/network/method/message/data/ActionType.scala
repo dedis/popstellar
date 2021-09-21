@@ -22,5 +22,6 @@ object ActionType extends Enumeration {
   val CAST_VOTE: Value = MatchingValue("cast_vote")
 
   def MatchingValue(v: String): Value with Matching = new Val(nextId, v) with Matching
+
   def unapply(s: String): Option[Value] = values.find(s == _.toString)
 }

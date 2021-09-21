@@ -16,8 +16,12 @@ object ParamsValidator extends MethodContentValidator {
   }
 
   def validateBroadcast(rpcMessage: JsonRpcRequest): GraphMessage = validateGeneralParams(rpcMessage)
+
   def validateCatchup(rpcMessage: JsonRpcRequest): GraphMessage = validateGeneralParams(rpcMessage)
+
   def validatePublish(rpcMessage: JsonRpcRequest): GraphMessage = validateGeneralParams(rpcMessage)
+
   def validateSubscribe(rpcMessage: JsonRpcRequest): GraphMessage = validateGeneralParams(rpcMessage)
+
   def validateUnsubscribe(rpcMessage: JsonRpcRequest): GraphMessage = validateGeneralParams(rpcMessage)
 }

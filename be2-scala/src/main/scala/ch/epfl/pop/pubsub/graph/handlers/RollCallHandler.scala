@@ -42,7 +42,10 @@ case object RollCallHandler extends MessageHandler {
 
     Await.result(f, duration)
   }
+
   def handleOpenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = dbAskWritePropagate(rpcMessage)
+
   def handleReopenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = dbAskWritePropagate(rpcMessage)
+
   def handleCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = dbAskWritePropagate(rpcMessage)
 }

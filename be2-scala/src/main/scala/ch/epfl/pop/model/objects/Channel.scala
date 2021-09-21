@@ -24,7 +24,6 @@ final case class Channel(channel: String) {
    * Extract the channel id from a Channel (i.e. the last part of the path)
    *
    * @return the id of the Channel
-   *
    * @example extractChannelId(Channel("/root/mEKXWFCMwb") == Hash(Base64Data("mEKXWFCMwb"))
    */
   def extractChildChannel: Hash = Hash(Base64Data(channel.split(Channel.SEPARATOR).last))

@@ -16,10 +16,9 @@ object DataBuilder {
    * Builds a MessageData from its headers ('object' and 'action' fields) and its json representation
    *
    * @param _object 'object' field of the message data
-   * @param action 'action' field of the message data
+   * @param action  'action' field of the message data
    * @param payload json string representation of the message data
-   * @throws ch.epfl.pop.model.network.method.message.data.ProtocolException if the tuple (_object, action)
-   *         doesn't make sense with respect to the protocol
+   * @throws ch.epfl.pop.model.network.method.message.data.ProtocolException if the tuple (_object, action) doesn't make sense with respect to the protocol
    * @return
    */
   @throws(classOf[ProtocolException])

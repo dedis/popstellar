@@ -10,7 +10,7 @@ object MessageValidator extends ContentValidator {
    * Creates a validation error message for reason <reason> that happened in
    * validator module <validator> with optional error code <errorCode>
    *
-   * @param reason the reason of the validation error
+   * @param reason    the reason of the validation error
    * @param validator validator module where the error occurred
    * @param errorCode error code related to the error
    * @return a description of the error and where it occurred

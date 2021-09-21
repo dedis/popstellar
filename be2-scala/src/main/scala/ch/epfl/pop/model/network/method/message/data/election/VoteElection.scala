@@ -8,6 +8,7 @@ import spray.json._
 class VoteElection(val id: Hash, val question: Hash, val vote: Option[List[Int]], val write_in: Option[String]) {
 
   def this(id: Hash, question: Hash, vote: List[Int]) = this(id, question, Some(vote), None)
+
   def this(id: Hash, question: Hash, write_in: String) = this(id, question, None, Some(write_in))
 
   def isWriteIn: Boolean = write_in.isDefined
@@ -15,7 +16,9 @@ class VoteElection(val id: Hash, val question: Hash, val vote: Option[List[Int]]
 
 object VoteElection extends Parsable {
   def apply(id: Hash, question: Hash, vote: List[Int]): VoteElection = new VoteElection(id, question, Some(vote), None)
+
   def apply(id: Hash, question: Hash, writeIn: String): VoteElection = new VoteElection(id, question, None, Some(writeIn))
+
   def apply(
              id: Hash,
              question: Hash,

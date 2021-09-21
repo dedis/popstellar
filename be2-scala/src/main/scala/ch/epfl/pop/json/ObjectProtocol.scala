@@ -4,6 +4,7 @@ import ch.epfl.pop.model.objects._
 import spray.json._
 
 object ObjectProtocol extends DefaultJsonProtocol {
+
   implicit object Base64DataFormat extends JsonFormat[Base64Data] {
     override def read(json: JsValue): Base64Data = json match {
       case JsString(data) => Base64Data(data)
@@ -81,4 +82,5 @@ object ObjectProtocol extends DefaultJsonProtocol {
       PARAM_SIGNATURE -> JsString(obj.signature.signature.data),
     )
   }
+
 }

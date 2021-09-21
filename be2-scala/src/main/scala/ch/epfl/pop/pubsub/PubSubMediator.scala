@@ -61,12 +61,17 @@ object PubSubMediator {
   def props(dbActorRef: AskableActorRef): Props = Props(new PubSubMediator(dbActorRef))
 
   sealed trait PubSubMediatorMessage
+
   // subscribe confirmation (sender successfully subscribed to channel channel)
   final case class SubscribeToAck(channel: Channel) extends PubSubMediatorMessage
+
   // subscribe confirmation (sender successfully unsubscribed from channel channel)
   final case class UnsubscribeFromAck(channel: Channel) extends PubSubMediatorMessage
+
   // unsubscribe infirmation (sender failed to subscribe to channel channel)
   final case class SubscribeToNAck(channel: Channel, reason: String) extends PubSubMediatorMessage
+
   // unsubscribe infirmation (sender failed to unsubscribe from channel channel)
   final case class UnsubscribeFromNAck(channel: Channel, reason: String) extends PubSubMediatorMessage
+
 }
