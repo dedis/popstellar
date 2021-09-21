@@ -22,6 +22,8 @@
       
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
+- [High-level (message data) communication](messageData.md)
+
 **Note**: do not edit JSON messages directly. Those are automatically embedded
 from `../protocol`. Use [embedme](https://github.com/zakhenry/embedme) to make
 an update. 
