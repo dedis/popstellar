@@ -2,9 +2,9 @@ package lao
 
 import (
 	"fmt"
-	"student20_pop/channel"
-	"student20_pop/message/query/method"
-	"student20_pop/message/query/method/message"
+	"popstellar/channel"
+	"popstellar/message/query/method"
+	"popstellar/message/query/method/message"
 	"testing"
 	"time"
 

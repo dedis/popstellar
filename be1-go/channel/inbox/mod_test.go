@@ -4,7 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
-	"student20_pop/message/query/method/message"
+	"popstellar/message/query/method/message"
 	"testing"
 
 	"github.com/stretchr/testify/require"

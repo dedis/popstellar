@@ -1,6 +1,6 @@
 package query
 
-import message "student20_pop/message"
+import message "popstellar/message"
 
 const (
 	MethodPublish     = "publish"

@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"student20_pop/hub"
-	"student20_pop/network/socket"
+	"popstellar/hub"
+	"popstellar/network/socket"
 	"sync"
 	"time"
 

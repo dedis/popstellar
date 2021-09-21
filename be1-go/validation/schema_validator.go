@@ -8,8 +8,8 @@ import (
 	"io/fs"
 	"log"
 	"path/filepath"
+	"popstellar/message/answer"
 	"strings"
-	"student20_pop/message/answer"
 
 	"github.com/santhosh-tekuri/jsonschema/v3"
 	"golang.org/x/xerrors"

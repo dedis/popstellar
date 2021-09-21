@@ -5,11 +5,11 @@ package organizer
 import (
 	"encoding/base64"
 	"os"
-	"student20_pop/channel/lao"
-	"student20_pop/crypto"
-	"student20_pop/hub/organizer"
-	"student20_pop/network"
-	"student20_pop/network/socket"
+	"popstellar/channel/lao"
+	"popstellar/crypto"
+	"popstellar/hub/organizer"
+	"popstellar/network"
+	"popstellar/network/socket"
 	"time"
 
 	"github.com/rs/zerolog"

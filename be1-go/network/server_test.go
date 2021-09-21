@@ -2,8 +2,8 @@ package network
 
 import (
 	"io"
-	"student20_pop/crypto"
-	"student20_pop/hub/witness"
+	"popstellar/crypto"
+	"popstellar/hub/witness"
 	"testing"
 
 	"github.com/rs/zerolog"
