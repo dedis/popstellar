@@ -1,7 +1,7 @@
 package ch.epfl.pop.model.network.requests.election
 
-import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.network.method.Params
+import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 
 final case class JsonRpcRequestSetupElection(
                                               override val jsonrpc: String,

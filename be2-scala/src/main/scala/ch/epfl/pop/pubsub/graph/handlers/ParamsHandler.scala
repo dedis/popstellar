@@ -5,14 +5,14 @@ import akka.actor.ActorRef
 import akka.pattern.AskableActorRef
 import akka.stream.FlowShape
 import akka.stream.scaladsl.{Flow, GraphDSL, Merge, Partition}
-import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.network.method.{Catchup, Subscribe, Unsubscribe}
+import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.objects.Channel
-import ch.epfl.pop.pubsub.{AskPatternConstants, ClientActor, PubSubMediator}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.{AskPatternConstants, ClientActor, PubSubMediator}
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 object ParamsHandler extends AskPatternConstants {
 

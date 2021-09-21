@@ -3,7 +3,7 @@ package ch.epfl.pop.json
 import ch.epfl.pop.json.ObjectProtocol._
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
-import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, ElectionBallotVotes, ElectionQuestion, ElectionQuestionResult, EndElection, ResultElection, SetupElection, VoteElection}
+import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.network.method.message.data.lao._
 import ch.epfl.pop.model.network.method.message.data.meeting._
 import ch.epfl.pop.model.network.method.message.data.rollCall._
@@ -154,6 +154,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
       JsObject(jsObjectContent)
     }
   }
+
   implicit object StateMeetingFormat extends RootJsonFormat[StateMeeting] {
     final private val PARAM_ID: String = "id"
     final private val PARAM_NAME: String = "name"

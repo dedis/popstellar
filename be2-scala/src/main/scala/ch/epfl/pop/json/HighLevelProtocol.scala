@@ -2,9 +2,9 @@ package ch.epfl.pop.json
 
 import ch.epfl.pop.json.ObjectProtocol._
 import ch.epfl.pop.model.network.MethodType.MethodType
+import ch.epfl.pop.model.network._
 import ch.epfl.pop.model.network.method._
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network._
 import ch.epfl.pop.model.objects._
 import spray.json._
 
@@ -83,11 +83,13 @@ object HighLevelProtocol extends DefaultJsonProtocol {
       val params: ParamsWithMessage = json.convertTo[Params].asInstanceOf[ParamsWithMessage]
       Broadcast(params.channel, params.message)
     }
+
     override def write(obj: Broadcast): JsValue = obj.toJson(ParamsFormat.write)
   }
 
   implicit object CatchupFormat extends RootJsonFormat[Catchup] {
     override def read(json: JsValue): Catchup = Catchup(json.convertTo[Params].channel)
+
     override def write(obj: Catchup): JsValue = obj.toJson(ParamsFormat.write)
   }
 
@@ -96,27 +98,32 @@ object HighLevelProtocol extends DefaultJsonProtocol {
       val params: ParamsWithMessage = json.convertTo[Params].asInstanceOf[ParamsWithMessage]
       Publish(params.channel, params.message)
     }
+
     override def write(obj: Publish): JsValue = obj.toJson(ParamsFormat.write)
   }
 
   implicit object SubscribeFormat extends RootJsonFormat[Subscribe] {
     override def read(json: JsValue): Subscribe = Subscribe(json.convertTo[Params].channel)
+
     override def write(obj: Subscribe): JsValue = obj.toJson(ParamsFormat.write)
   }
 
   implicit object UnsubscribeFormat extends RootJsonFormat[Unsubscribe] {
     override def read(json: JsValue): Unsubscribe = Unsubscribe(json.convertTo[Params].channel)
+
     override def write(obj: Unsubscribe): JsValue = obj.toJson(ParamsFormat.write)
   }
 
 
   implicit val errorObjectFormat: JsonFormat[ErrorObject] = jsonFormat2(ErrorObject.apply)
+
   implicit object ResultObjectFormat extends RootJsonFormat[ResultObject] {
     override def read(json: JsValue): ResultObject = json match {
       case JsNumber(resultInt) => new ResultObject(resultInt.toInt)
       case JsArray(resultArray) => new ResultObject(resultArray.map(_.convertTo[Message]).toList)
       case _ => throw new IllegalArgumentException(s"Unrecognizable channel value in $json")
     }
+
     override def write(obj: ResultObject): JsValue = {
       if (obj.isIntResult) {
         JsNumber(obj.resultInt.get)
@@ -223,4 +230,5 @@ object HighLevelProtocol extends DefaultJsonProtocol {
       JsObject(jsObjectContent)
     }
   }
+
 }

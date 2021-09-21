@@ -6,13 +6,12 @@ import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.ClientActor._
 import ch.epfl.pop.pubsub.PubSubMediator._
-import ch.epfl.pop.pubsub.graph.{DbActor, GraphMessage}
+import ch.epfl.pop.pubsub.graph.GraphMessage
 
 import scala.collection.mutable
-import scala.util.Failure
-
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
+import scala.util.Failure
 
 case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging with AskPatternConstants {
 
@@ -62,7 +61,7 @@ case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging with 
       messageWsHandle(clientAnswer)
 
     case m@_ => m match {
-      case Failure(exception : Exception) =>
+      case Failure(exception: Exception) =>
         println(">>> Standard Exception : " + m + exception.getMessage)
         exception.printStackTrace()
       case akka.actor.Status.Failure(exception: Exception) =>
@@ -83,18 +82,24 @@ object ClientActor {
   def props(mediator: ActorRef): Props = Props(new ClientActor(mediator))
 
   sealed trait ClientActorMessage
+
   // answer to be sent to the client represented by the client actor
   final case class ClientAnswer(graphMessage: GraphMessage) extends ClientActorMessage
 
 
   sealed trait Event
+
   // connect the client actor with the front-end
   final case class ConnectWsHandle(wsClient: ActorRef) extends Event
+
   // unsubscribe from all channels
   final case object DisconnectWsHandle extends Event
+
   // subscribe to a particular channel
   final case class SubscribeTo(channel: Channel) extends Event
+
   // unsubscribe from a particular channel
   final case class UnsubscribeFrom(channel: Channel) extends Event
+
 }
 

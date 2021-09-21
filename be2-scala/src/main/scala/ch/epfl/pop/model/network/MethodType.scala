@@ -13,6 +13,7 @@ object MethodType extends Enumeration {
   val CATCHUP: Value = MatchingValue("catchup")
 
   def MatchingValue(v: String): Value with Matching = new Val(nextId, v) with Matching
+
   def unapply(s: String): Option[Value] = values.find(s == _.toString)
 }
 

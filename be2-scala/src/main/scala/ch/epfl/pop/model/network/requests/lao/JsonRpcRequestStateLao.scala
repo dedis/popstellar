@@ -8,4 +8,4 @@ final case class JsonRpcRequestStateLao(
                                          override val method: MethodType.MethodType,
                                          override val params: Params,
                                          override val id: Option[Int]
-                                        ) extends JsonRpcRequest(jsonrpc, method, params, id)
+                                       ) extends JsonRpcRequest(jsonrpc, method, params, id)

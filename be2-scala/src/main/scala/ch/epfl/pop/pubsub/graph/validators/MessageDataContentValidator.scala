@@ -12,7 +12,7 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
    * Creates a validation error message for reason <reason> that happened in
    * validator module <validator> with optional error code <errorCode>
    *
-   * @param reason the reason of the validation error
+   * @param reason    the reason of the validation error
    * @param validator validator module where the error occurred
    * @param errorCode error code related to the error
    * @return a description of the error and where it occurred
@@ -36,7 +36,7 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
   /**
    * Check whether timestamp <first> is not older than timestamp <second>
    *
-   * @param first first timestamp to be checked
+   * @param first  first timestamp to be checked
    * @param second second timestamp to be checked
    * @return true iff the timestamps are in chronological order
    */
@@ -54,7 +54,7 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
    * Check whether a list of <witnessesKeyPairs> are valid modification_id <data>
    *
    * @param witnessesKeyPairs list of witness key-signature pairs
-   * @param data modification_id of the message
+   * @param data              modification_id of the message
    * @return true iff the witness key-signature pairs are valid wrt. modification_id data
    */
   final def validateWitnessSignatures(witnessesKeyPairs: List[WitnessSignaturePair], data: Hash): Boolean =
