@@ -1,10 +1,10 @@
 package channel
 
 import (
-	"student20_pop/message/query/method"
-	"student20_pop/message/query/method/message"
-	"student20_pop/network/socket"
-	"student20_pop/validation"
+	"popstellar/message/query/method"
+	"popstellar/message/query/method/message"
+	"popstellar/network/socket"
+	"popstellar/validation"
 	"sync"
 
 	"go.dedis.ch/kyber/v3"

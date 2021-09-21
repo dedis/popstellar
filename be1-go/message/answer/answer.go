@@ -2,7 +2,7 @@ package answer
 
 import (
 	"encoding/json"
-	message "student20_pop/message"
+	message "popstellar/message"
 
 	"golang.org/x/xerrors"
 )

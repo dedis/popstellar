@@ -1,5 +1,10 @@
-# student_21_pop
-Proof-of-personhood, Fall 2021. Go back-end version.
+# Backend 1 - popstellar in Go
+
+<div align="center">
+  <img alt="PoP stellar" src="docs/images/popstellar-be1-go.png" width="600" />
+</div>
+
+> Welcome to the go-side of popstellar.
 
 ## Overview
 

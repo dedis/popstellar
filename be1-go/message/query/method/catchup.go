@@ -1,6 +1,6 @@
 package method
 
-import "student20_pop/message/query"
+import "popstellar/message/query"
 
 // Catchup ....
 type Catchup struct {

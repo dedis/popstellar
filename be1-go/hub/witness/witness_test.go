@@ -3,8 +3,8 @@ package witness
 import (
 	"encoding/base64"
 	"io"
-	"student20_pop/crypto"
-	"student20_pop/hub"
+	"popstellar/crypto"
+	"popstellar/hub"
 	"testing"
 
 	"github.com/rs/zerolog"

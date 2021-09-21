@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"student20_pop/message/answer"
-	"student20_pop/message/query/method/message"
+	"popstellar/message/answer"
+	"popstellar/message/query/method/message"
 
 	"github.com/gorilla/websocket"
 	"github.com/rs/xid"

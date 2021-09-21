@@ -11,9 +11,9 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 
-	"student20_pop/db/sqlite"
-	"student20_pop/message/answer"
-	"student20_pop/message/query/method/message"
+	"popstellar/db/sqlite"
+	"popstellar/message/answer"
+	"popstellar/message/query/method/message"
 )
 
 const (

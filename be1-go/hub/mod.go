@@ -8,7 +8,7 @@
 package hub
 
 import (
-	"student20_pop/network/socket"
+	"popstellar/network/socket"
 )
 
 // HubType denotes the type of the hub.
