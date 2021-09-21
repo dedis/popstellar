@@ -25,15 +25,15 @@ case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging with 
   }
 
   override def receive: Receive = LoggingReceive {
-    case message: Event => message match {
+    case message: ClientActor.Event => message match {
       case ConnectWsHandle(wsClient: ActorRef) =>
         log.info(s"Connecting wsHandle $wsClient to actor ${this.self}")
         wsHandle = Some(wsClient)
 
       case DisconnectWsHandle => subscribedChannels.foreach(channel => mediator ! UnsubscribeFrom(channel))
 
-      case SubscribeTo(channel) =>
-        val f: Future[PubSubMediatorMessage] = (mediatorAskable ? SubscribeTo(channel)).map {
+      case SubscribeTo(channel, clientRef) =>
+        val f: Future[PubSubMediatorMessage] = (mediatorAskable ? SubscribeTo(channel, clientRef)).map {
           case m: PubSubMediatorMessage => m
         }
         sender ! Await.result(f, duration)
@@ -96,7 +96,7 @@ object ClientActor {
   final case object DisconnectWsHandle extends Event
 
   // subscribe to a particular channel
-  final case class SubscribeTo(channel: Channel) extends Event
+  final case class SubscribeTo(channel: Channel, client: ActorRef) extends Event
 
   // unsubscribe from a particular channel
   final case class UnsubscribeFrom(channel: Channel) extends Event

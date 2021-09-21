@@ -59,7 +59,7 @@ object ParamsHandler extends AskPatternConstants {
   def subscribeHandler(clientActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Left(jsonRpcMessage: JsonRpcRequest) =>
       val channel: Channel = jsonRpcMessage.getParams.channel
-      val f: Future[GraphMessage] = (clientActorRef ? ClientActor.SubscribeTo(jsonRpcMessage.getParams.channel)).map {
+      val f: Future[GraphMessage] = (clientActorRef ? ClientActor.SubscribeTo(jsonRpcMessage.getParams.channel, clientActorRef.actorRef)).map {
         case PubSubMediator.SubscribeToAck(returnedChannel) if returnedChannel == channel =>
           Left(jsonRpcMessage)
         case PubSubMediator.SubscribeToAck(returnedChannel) =>

@@ -24,6 +24,7 @@ trait MessageHandler extends AskPatternConstants {
         val f: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
           case DbActorWriteAck =>
             // FIXME propagate
+            println("++ Propaaagaaaating in message handler")
             Left(rpcMessage)
           case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
           case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
