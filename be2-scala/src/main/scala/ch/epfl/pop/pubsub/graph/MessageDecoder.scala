@@ -100,7 +100,7 @@ object MessageDecoder {
       case _ if !jsonRpcRequest.hasParamsMessage => graphMessage // do nothing if rpc-message doesn't contain any message
       case _ =>
         // json string representation of the 'data' field
-        val jsonString: String = jsonRpcRequest.getEncodedData.get.decode()
+        val jsonString: String = jsonRpcRequest.getEncodedData.get.decodeToString()
 
         // Try to extract data header from the json string
         Try(jsonString.parseJson.asJsObject.getFields("object", "action")) match {

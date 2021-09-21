@@ -19,7 +19,7 @@ object Hash {
    * @param data values to be hashed
    * @return resulting hash
    */
-  def fromStrings(data: String*): Hash = Hash.fromString(data.foldLeft("")((acc, s) => acc + s.length + s))
+  def fromStrings(data: String*): Hash = Hash.sha256Hash(data.foldLeft("")((acc, s) => acc + s.length + s))
 
   /**
    * Create a hash of a string
@@ -27,7 +27,7 @@ object Hash {
    * @param data value to be hashed
    * @return resulting hash
    */
-  def fromString(data: String): Hash = Hash(Base64Data.encode(
-    messageDigest.digest(data.getBytes(StandardCharsets.UTF_8)).map(_.toChar).mkString
+  def sha256Hash(data: String): Hash = Hash(Base64Data.encode(
+    messageDigest.digest(data.getBytes(StandardCharsets.UTF_8))
   ))
 }

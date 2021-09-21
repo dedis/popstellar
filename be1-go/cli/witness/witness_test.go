@@ -1,6 +1,7 @@
 package witness
 
 import (
+	"io"
 	"student20_pop/crypto"
 	"student20_pop/hub"
 	"student20_pop/network"
@@ -9,27 +10,30 @@ import (
 	"testing"
 	"time"
 
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 )
 
 func TestConnectToWitnessSocket(t *testing.T) {
-	oh, err := hub.NewOrganizerHub(crypto.Suite.Point())
+	log := zerolog.New(io.Discard)
+
+	oh, err := hub.NewOrganizerHub(crypto.Suite.Point(), log)
 	require.NoError(t, err)
 	oh.Start()
 
-	witnessSrv := network.NewServer(oh, 9001, socket.WitnessSocketType)
+	witnessSrv := network.NewServer(oh, 9001, socket.WitnessSocketType, log)
 	witnessSrv.Start()
 	<-witnessSrv.Started
 
 	time.Sleep(1 * time.Second)
 
-	wh, err := hub.NewWitnessHub(crypto.Suite.Point())
+	wh, err := hub.NewWitnessHub(crypto.Suite.Point(), log)
 	require.NoError(t, err)
 	wDone := make(chan struct{})
 	wh.Start()
 
 	wg := &sync.WaitGroup{}
-	err = connectToWitnessSocket(hub.OrganizerHubType, "localhost:9001", wh, wg, wDone)
+	err = connectToWitnessSocket(hub.OrganizerHubType, "localhost:9001", wh, wg, wDone, log)
 	require.NoError(t, err)
 
 	err = witnessSrv.Shutdown()

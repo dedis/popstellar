@@ -5,22 +5,34 @@ package witness
 import (
 	"encoding/base64"
 	"fmt"
-	"log"
 	"net/url"
+	"os"
 	"student20_pop/crypto"
 	"student20_pop/hub"
 	"student20_pop/network"
 	"student20_pop/network/socket"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/rs/zerolog"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 )
 
+const defaultLevel = zerolog.InfoLevel
+
+var logout = zerolog.ConsoleWriter{
+	Out:        os.Stdout,
+	TimeFormat: time.RFC3339,
+}
+
 // Serve parses the CLI arguments and spawns a hub and a websocket server
 // for the witness.
 func Serve(cliCtx *cli.Context) error {
+	log := zerolog.New(logout).Level(defaultLevel).
+		With().Timestamp().Logger().
+		With().Caller().Logger()
 
 	// get command line args which specify public key, organizer address, port for organizer,
 	// clients, witnesses, other witness' addresses
@@ -46,7 +58,7 @@ func Serve(cliCtx *cli.Context) error {
 	}
 
 	// create witness hub
-	h, err := hub.NewWitnessHub(point)
+	h, err := hub.NewWitnessHub(point, log)
 	if err != nil {
 		return xerrors.Errorf("failed create the witness hub: %v", err)
 	}
@@ -59,24 +71,24 @@ func Serve(cliCtx *cli.Context) error {
 	done := make(chan struct{})
 
 	// connect to organizer's witness endpoint
-	err = connectToWitnessSocket(hub.OrganizerHubType, organizerAddress, h, wg, done)
+	err = connectToWitnessSocket(hub.OrganizerHubType, organizerAddress, h, wg, done, log.With().Str("role", "witness socket").Logger())
 	if err != nil {
 		return xerrors.Errorf("failed to connect to organizer: %v", err)
 	}
 
 	// connect to other witnesses
 	for _, witness := range otherWitness {
-		err = connectToWitnessSocket(hub.WitnessHubType, witness, h, wg, done)
+		err = connectToWitnessSocket(hub.WitnessHubType, witness, h, wg, done, log.With().Str("role", "other witness socket").Logger())
 		if err != nil {
 			return xerrors.Errorf("failed to connect to witness: %v", err)
 		}
 	}
 
 	// create and serve servers for witnesses and clients
-	clientSrv := network.NewServer(h, clientPort, socket.ClientSocketType)
+	clientSrv := network.NewServer(h, clientPort, socket.ClientSocketType, log)
 	clientSrv.Start()
 
-	witnessSrv := network.NewServer(h, witnessPort, socket.WitnessSocketType)
+	witnessSrv := network.NewServer(h, witnessPort, socket.WitnessSocketType, log)
 	witnessSrv.Start()
 
 	// shut down client server and witness server when ctrl+c received
@@ -97,7 +109,7 @@ func Serve(cliCtx *cli.Context) error {
 
 // connectToSocket establishes a connection to another server's witness
 // endpoint.
-func connectToWitnessSocket(otherHubType hub.HubType, address string, h hub.Hub, wg *sync.WaitGroup, done chan struct{}) error {
+func connectToWitnessSocket(otherHubType hub.HubType, address string, h hub.Hub, wg *sync.WaitGroup, done chan struct{}, log zerolog.Logger) error {
 	urlString := fmt.Sprintf("ws://%s/%s/witness/", address, otherHubType)
 	u, err := url.Parse(urlString)
 	if err != nil {
@@ -113,13 +125,13 @@ func connectToWitnessSocket(otherHubType hub.HubType, address string, h hub.Hub,
 
 	switch otherHubType {
 	case hub.OrganizerHubType:
-		organizerSocket := socket.NewOrganizerSocket(h.Receiver(), h.OnSocketClose(), ws, wg, done)
+		organizerSocket := socket.NewOrganizerSocket(h.Receiver(), h.OnSocketClose(), ws, wg, done, log)
 		wg.Add(2)
 
 		go organizerSocket.WritePump()
 		go organizerSocket.ReadPump()
 	case hub.WitnessHubType:
-		witnessSocket := socket.NewWitnessSocket(h.Receiver(), h.OnSocketClose(), ws, wg, done)
+		witnessSocket := socket.NewWitnessSocket(h.Receiver(), h.OnSocketClose(), ws, wg, done, log)
 		wg.Add(2)
 
 		go witnessSocket.WritePump()

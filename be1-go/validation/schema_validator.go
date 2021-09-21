@@ -9,7 +9,7 @@ import (
 	"log"
 	"path/filepath"
 	"strings"
-	"student20_pop/message"
+	"student20_pop/message/answer"
 
 	"github.com/santhosh-tekuri/jsonschema/v3"
 	"golang.org/x/xerrors"
@@ -62,13 +62,13 @@ func (s *SchemaValidator) VerifyJson(msg []byte, st SchemaType) error {
 	case Data:
 		schema = s.dataSchema
 	default:
-		return message.NewErrorf(-6, "unsupported schema type: %v", st)
+		return answer.NewErrorf(-6, "unsupported schema type: %v", st)
 	}
 
 	err := schema.Validate(reader)
 	if err != nil {
-		log.Printf("failed to validate schema: %v", err)
-		return message.NewErrorf(-4, "failed to validate schema: %v", err)
+		log.Printf("failed to validate schema: %s %v", msg, err)
+		return answer.NewErrorf(-4, "failed to validate schema: %v", err)
 	}
 
 	return nil

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.github.dedis.student20_pop">
+  package="com.github.dedis.popstellar">
 
   <uses-feature android:name="android.hardware.camera" />
 
@@ -16,7 +16,7 @@
     android:supportsRtl="true"
     android:networkSecurityConfig="@xml/network_security_config"
     android:theme="@style/AppTheme">
-    <activity android:name=".home.HomeActivity">
+    <activity android:name="com.github.dedis.popstellar.ui.home.HomeActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
 
@@ -24,9 +24,8 @@
       </intent-filter>
     </activity>
     <activity
-        android:name=".detail.LaoDetailActivity"
-        android:windowSoftInputMode="adjustPan">
-    </activity>
+      android:name="com.github.dedis.popstellar.ui.detail.LaoDetailActivity"
+      android:windowSoftInputMode="adjustPan"></activity>
 
     <uses-library
       android:name="android.test.runner"
