@@ -213,7 +213,7 @@ final case class DbActorCatchupAck(messages: List[Message]) extends DbActorMessa
 final case class DbActorNAck(code: Int, description: String) extends DbActorMessage
 ```
 
-Here's an example (shamefully stolen from `LaoHandler.scala`) showing the power of `DbActor` coupled with Scala [Future](https://www.scala-lang.org/files/archive/api/2.13.1/scala/concurrent/Future.html)
+Here's an example (shamefully stolen from `MessageHandler.scala`) showing the power of `DbActor` coupled with Scala [Future](https://www.scala-lang.org/files/archive/api/2.13.1/scala/concurrent/Future.html)
 
 ```scala
 val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map {
