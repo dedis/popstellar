@@ -33,7 +33,6 @@ case object RollCallHandler extends MessageHandler {
 
   def handleCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
     // FIXME reutrn Futures whenver possible?
-    // FIXME rename "f" into "ask"
     val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
     Await.result(ask, duration)
   }

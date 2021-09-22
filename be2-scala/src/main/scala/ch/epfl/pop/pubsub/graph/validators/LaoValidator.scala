@@ -69,7 +69,7 @@ case object LaoValidator extends MessageDataContentValidator {
         val data: UpdateLao = message.decodedData.get.asInstanceOf[UpdateLao]
 
         // FIXME get lao creation message in order to calculate "SHA256(organizer||creation||name)"
-        val f: Future[GraphMessage] = (dbActor ? DbActor.Read(rpcMessage.getParamsChannel, ???)).map {
+        val ask: Future[GraphMessage] = (dbActor ? DbActor.Read(rpcMessage.getParamsChannel, ???)).map {
           case DbActor.DbActorReadAck(Some(retrievedMessage)) =>
             val laoCreationMessage = retrievedMessage.decodedData.get.asInstanceOf[CreateLao]
             // Calculate expected hash
@@ -95,7 +95,7 @@ case object LaoValidator extends MessageDataContentValidator {
             Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
         }
 
-        Await.result(f, duration)
+        Await.result(ask, duration)
 
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }

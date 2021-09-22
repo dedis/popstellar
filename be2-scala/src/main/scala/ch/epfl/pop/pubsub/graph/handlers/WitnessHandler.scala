@@ -42,7 +42,7 @@ case object WitnessHandler extends MessageHandler {
     message = message.addWitnessSignature(WitnessSignaturePair(message.sender, message.signature))
 
     // overwrite message in db
-    val f: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
+    val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
       case DbActorWriteAck =>
         // TODO propagate
         Left(rpcMessage)
@@ -50,6 +50,6 @@ case object WitnessHandler extends MessageHandler {
       case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
     }
 
-    Await.result(f, duration)
+    Await.result(ask, duration)
   }
 }

@@ -216,7 +216,7 @@ final case class DbActorNAck(code: Int, description: String) extends DbActorMess
 Here's an example (shamefully stolen from `LaoHandler.scala`) showing the power of `DbActor` coupled with Scala [Future](https://www.scala-lang.org/files/archive/api/2.13.1/scala/concurrent/Future.html)
 
 ```scala
-val f: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map {
+val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map {
 	case DbActorWriteAck => Left(rpcMessage)
 	case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
 	case _ => Right(PipelineError(
@@ -224,8 +224,8 @@ val f: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map {
 	)
 }
 
-// Await.result waits for <duration> for the future <f> to complete. It returns the value contained by the future (here `GraphMessage`) if the latter is succesful, or throws if the Future termintes withtout being successful (i.e. either Failure or Timeout) 
-Await.result(f, duration)
+// Await.result waits for <duration> for the future <ask> to complete. It returns the value contained by the future (here `GraphMessage`) if the latter is successful, or throws if the Future terminates without being successful (i.e. either Failure or Timeout) 
+Await.result(ask, duration)
 ```
 
 

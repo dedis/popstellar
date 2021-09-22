@@ -40,13 +40,13 @@ case object LaoHandler extends MessageHandler {
         // we are using the lao id instead of the message_id at lao creation
         val channel: Channel = Channel(s"${Channel.rootChannelPrefix}${data.id}")
 
-        val f: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map {
+        val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map {
           case DbActorWriteAck => Left(rpcMessage)
           case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
           case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
         }
 
-        Await.result(f, duration)
+        Await.result(ask, duration)
 
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
