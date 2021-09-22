@@ -17,8 +17,6 @@ import scala.util.{Failure, Success, Try}
 
 object DbActor extends AskPatternConstants {
 
-  final val DATABASE_FOLDER: String = "database"
-  final val CHANNELS_FOLDER: String = s"$DATABASE_FOLDER/channels"
   final val DATABASE_MAX_CHANNELS: Int = 1 << 10
   final lazy val INSTANCE: AskableActorRef = PublishSubscribe.getDbActorRef
 
@@ -70,7 +68,7 @@ object DbActor extends AskPatternConstants {
    * Request to check if channel <channel> exists in the db
    *
    * @param channel targeted channel
-   * @note db answers with a simple boolean // FIXME remove booleans
+   * @note db answers with a simple boolean
    */
   final case class ChannelExists(channel: Channel) extends Event
 
@@ -130,7 +128,9 @@ object DbActor extends AskPatternConstants {
    * @param mediatorRef reference pointing towards the pub sub mediator
    * @return the newly created [[DbActor]]
    */
-  def apply(mediatorRef: ActorRef): DbActor = {
+  def apply(mediatorRef: ActorRef, DATABASE_FOLDER: String = "database"): DbActor = {
+
+    val CHANNELS_FOLDER: String = s"$DATABASE_FOLDER/channels"
 
     val options: Options = new Options()
     options.createIfMissing(true)
@@ -152,10 +152,10 @@ object DbActor extends AskPatternConstants {
     }
 
     iterator.close()
-    DbActor(mediatorRef, initialChannelsMap.toMap, channelNamesDb)
+    DbActor(mediatorRef, initialChannelsMap.toMap, channelNamesDb, DATABASE_FOLDER, CHANNELS_FOLDER)
   }
 
-  sealed case class DbActor(mediatorRef: ActorRef, initialChannelsMap: Map[Channel, DB], channelNamesDb: DB) extends Actor with ActorLogging {
+  sealed case class DbActor(mediatorRef: ActorRef, initialChannelsMap: Map[Channel, DB], channelNamesDb: DB, DATABASE_FOLDER: String, CHANNELS_FOLDER: String) extends Actor with ActorLogging {
     private val channelsMap: mutable.Map[Channel, DB] = initialChannelsMap.to(collection.mutable.Map)
 
     override def preStart(): Unit = {
@@ -250,6 +250,14 @@ object DbActor extends AskPatternConstants {
       }
     }
 
+    private def channelExists(channel: Channel): DbActorMessage = {
+      if (channelsMap.contains(channel)) {
+        DbActorAck()
+      } else {
+        DbActorNAck(ErrorCodes.INVALID_RESOURCE.id, s"Channel '$channel' does not exist in db")
+      }
+    }
+
 
     override def receive: Receive = LoggingReceive {
       case Write(channel, message) =>
@@ -276,7 +284,7 @@ object DbActor extends AskPatternConstants {
 
       case ChannelExists(channel) =>
         log.info(s"Actor $self (db) received an ChannelExists request for channel '$channel'")
-        sender ! channelsMap.contains(channel)
+        sender ! channelExists(channel)
 
       case AddWitnessSignature(messageId, _) =>
         log.info(s"Actor $self (db) received an AddWitnessSignature request for message_id '$messageId'")

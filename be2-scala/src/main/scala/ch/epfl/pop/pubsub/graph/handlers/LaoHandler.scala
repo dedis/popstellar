@@ -58,19 +58,7 @@ case object LaoHandler extends MessageHandler {
 
   def handleStateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
     val modificationId: Hash = rpcMessage.getDecodedData.asInstanceOf[StateLao].modification_id
-    // val ask = dbActor.ask(ref => DbActor.Read(rpcMessage.getParamsChannel, modificationId, ref)).map {
-    val ask = dbActor.ask("TODO").map {
-      case Some(_) =>
-        val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
-        Await.result(ask, duration)
-      // TODO careful about asynchrony and the fact that the network may reorder some messages
-      case _ => Right(PipelineError(
-        ErrorCodes.INVALID_DATA.id,
-        s"Unable to request lao state: invalid modification_id '$modificationId' (no message associated to this id)",
-        rpcMessage.id
-      ))
-    }
-    Await.result(ask, duration)
+    Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED : handleStateMeeting is not implemented", rpcMessage.id))
   }
 
   def handleUpdateLao(rpcMessage: JsonRpcRequest): GraphMessage = {

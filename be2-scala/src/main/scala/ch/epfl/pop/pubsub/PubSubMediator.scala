@@ -8,6 +8,7 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.PubSubMediator._
+import ch.epfl.pop.pubsub.graph.DbActor.DbActorAck
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.pubsub.graph.{DbActor, GraphMessage}
 
@@ -25,7 +26,7 @@ class PubSubMediator extends Actor with ActorLogging with AskPatternConstants {
   private def subscribeTo(channel: Channel, clientActorRef: ActorRef): Future[PubSubMediatorMessage] = {
     val ask: Future[PubSubMediatorMessage] = (dbActor ? DbActor.ChannelExists(channel)).map {
       // if the channel exists in db, we can start thinking about subscribing a client to it
-      case true => channelMap.get(channel) match {
+      case DbActorAck() => channelMap.get(channel) match {
         // if we have people already subscribed to said channel
         case Some(set) =>
           if (set.contains(clientActorRef)) {
@@ -101,7 +102,8 @@ class PubSubMediator extends Actor with ActorLogging with AskPatternConstants {
 
     case PubSubMediator.Propagate(channel, message) => broadcast(channel, message)
 
-    case _ => ??? // FIXME
+    case m@_ =>
+      log.error(s"PubSubMediator received an unknown message : $m")
   }
 }
 
@@ -111,13 +113,13 @@ object PubSubMediator {
   // PubSubMediator Events correspond to messages the actor may receive
   sealed trait Event
 
-  // subscribe to a particular channel
+  // subscribe a client to a particular channel
   final case class SubscribeTo(channel: Channel, clientActorRef: ActorRef) extends Event
 
-  // unsubscribe from a particular channel
+  // unsubscribe a client from a particular channel
   final case class UnsubscribeFrom(channel: Channel, clientActorRef: ActorRef) extends Event
 
-  // FIXME
+  // propagate a messasge to clients subscribed to a particular channel
   final case class Propagate(channel: Channel, message: Message) extends Event
 
 
