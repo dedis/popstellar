@@ -40,6 +40,9 @@ libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.1.3" % Runtime
 // distributed pub sub cluster
 libraryDependencies += "com.typesafe.akka" %% "akka-cluster-tools" % AkkaVersion
 
+// Akka actor test kit
+libraryDependencies += "com.typesafe.akka" %% "akka-testkit" % AkkaVersion % Test
+
 // For LevelDB database
 // https://mvnrepository.com/artifact/org.iq80.leveldb/leveldb
 libraryDependencies += "org.iq80.leveldb" % "leveldb" % "0.12"
