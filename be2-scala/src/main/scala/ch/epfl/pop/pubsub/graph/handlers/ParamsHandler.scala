@@ -59,7 +59,7 @@ object ParamsHandler extends AskPatternConstants {
   def subscribeHandler(clientActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Left(jsonRpcMessage: JsonRpcRequest) =>
       val channel: Channel = jsonRpcMessage.getParams.channel
-      val f: Future[GraphMessage] = (clientActorRef ? ClientActor.SubscribeTo(jsonRpcMessage.getParams.channel, clientActorRef.actorRef)).map {
+      val f: Future[GraphMessage] = (clientActorRef ? ClientActor.SubscribeTo(jsonRpcMessage.getParams.channel)).map {
         case PubSubMediator.SubscribeToAck(returnedChannel) if returnedChannel == channel =>
           Left(jsonRpcMessage)
         case PubSubMediator.SubscribeToAck(returnedChannel) =>
@@ -108,8 +108,6 @@ object ParamsHandler extends AskPatternConstants {
     case graphMessage@_ => graphMessage
   }
 
-  def catchupHandler(clientActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
-    // Catchup requests are treated at the AnswerGenerator stage since it generates a JsonRpcResponse directly
-    case graphMessage@_ => graphMessage
-  }
+  // Catchup requests are treated at the AnswerGenerator stage since it generates a JsonRpcResponse directly
+  def catchupHandler(clientActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map(m => m)
 }

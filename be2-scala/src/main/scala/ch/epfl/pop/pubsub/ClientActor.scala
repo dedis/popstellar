@@ -5,7 +5,7 @@ import akka.event.LoggingReceive
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.ClientActor._
-import ch.epfl.pop.pubsub.PubSubMediator._
+import ch.epfl.pop.pubsub.PubSubMediator.{PubSubMediatorMessage, SubscribeToAck, SubscribeToNAck, UnsubscribeFromAck, UnsubscribeFromNAck}
 import ch.epfl.pop.pubsub.graph.GraphMessage
 
 import scala.collection.mutable
@@ -30,16 +30,16 @@ case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging with 
         log.info(s"Connecting wsHandle $wsClient to actor ${this.self}")
         wsHandle = Some(wsClient)
 
-      case DisconnectWsHandle => subscribedChannels.foreach(channel => mediator ! UnsubscribeFrom(channel))
+      case DisconnectWsHandle => subscribedChannels.foreach(channel => mediator ! PubSubMediator.UnsubscribeFrom(channel, this.self))
 
-      case SubscribeTo(channel, clientRef) =>
-        val f: Future[PubSubMediatorMessage] = (mediatorAskable ? SubscribeTo(channel, clientRef)).map {
+      case ClientActor.SubscribeTo(channel) =>
+        val f: Future[PubSubMediatorMessage] = (mediatorAskable ? PubSubMediator.SubscribeTo(channel, this.self)).map {
           case m: PubSubMediatorMessage => m
         }
         sender ! Await.result(f, duration)
 
-      case UnsubscribeFrom(channel) =>
-        val f: Future[PubSubMediatorMessage] = (mediatorAskable ? UnsubscribeFrom(channel)).map {
+      case ClientActor.UnsubscribeFrom(channel) =>
+        val f: Future[PubSubMediatorMessage] = (mediatorAskable ? PubSubMediator.UnsubscribeFrom(channel, this.self)).map {
           case m: PubSubMediatorMessage => m
         }
         sender ! Await.result(f, duration)
@@ -96,7 +96,7 @@ object ClientActor {
   final case object DisconnectWsHandle extends Event
 
   // subscribe to a particular channel
-  final case class SubscribeTo(channel: Channel, client: ActorRef) extends Event
+  final case class SubscribeTo(channel: Channel) extends Event
 
   // unsubscribe from a particular channel
   final case class UnsubscribeFrom(channel: Channel) extends Event

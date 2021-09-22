@@ -22,26 +22,26 @@ class PubSubMediator extends Actor with ActorLogging with AskPatternConstants {
   lazy val dbActor: AskableActorRef = DbActor.getInstance
 
 
-  private def subscribeTo(channel: Channel, senderRef: ActorRef): Future[PubSubMediatorMessage] = {
+  private def subscribeTo(channel: Channel, clientActorRef: ActorRef): Future[PubSubMediatorMessage] = {
     val ask: Future[PubSubMediatorMessage] = (dbActor ? DbActor.ChannelExists(channel)).map {
       // if the channel exists in db, we can start thinking about subscribing a client to it
       case true => channelMap.get(channel) match {
         // if we have people already subscribed to said channel
         case Some(set) =>
-          if (set.contains(senderRef)) {
-            val reason: String = s"Actor $senderRef was already subscribed to channel '$channel'"
+          if (set.contains(clientActorRef)) {
+            val reason: String = s"Actor $clientActorRef was already subscribed to channel '$channel'"
             log.info(reason)
             SubscribeToNAck(channel, reason)
           } else {
-            log.info(s"Subscribing $senderRef to channel '$channel'")
-            set += senderRef
+            log.info(s"Subscribing $clientActorRef to channel '$channel'")
+            set += clientActorRef
             SubscribeToAck(channel)
           }
 
         // if we have no one subscribed to said channel
         case _ =>
-          log.info(s"Subscribing $senderRef to channel '$channel'")
-          channelMap = channelMap + (channel -> mutable.Set(senderRef))
+          log.info(s"Subscribing $clientActorRef to channel '$channel'")
+          channelMap = channelMap + (channel -> mutable.Set(clientActorRef))
           SubscribeToAck(channel)
       }
 
@@ -55,15 +55,19 @@ class PubSubMediator extends Actor with ActorLogging with AskPatternConstants {
     ask
   }
 
-  private def unsubscribeFrom(channel: Channel): PubSubMediatorMessage = channelMap.get(channel) match {
-    case Some(set) if set.contains(sender) =>
-      log.info(s"Unsubscribing $sender from channel '$channel'")
-      set -= sender
+  private def unsubscribeFrom(channel: Channel, clientActorRef: ActorRef): PubSubMediatorMessage = channelMap.get(channel) match {
+    case Some(set) if set.contains(clientActorRef) =>
+      log.info(s"Unsubscribing $clientActorRef from channel '$channel'")
+      set -= clientActorRef
       UnsubscribeFromAck(channel)
     case Some(_) =>
-      UnsubscribeFromNAck(channel, s"Actor $sender is not subscribed to channel '$channel'")
+      val reason: String = s"Actor $clientActorRef is not subscribed to channel '$channel'"
+      log.info(reason)
+      UnsubscribeFromNAck(channel, reason)
     case _ =>
-      UnsubscribeFromNAck(channel, s"Channel '$channel' does not exist in the system")
+      val reason: String = s"Channel '$channel' does not exist in the system"
+      log.info(reason)
+      UnsubscribeFromNAck(channel, reason)
   }
 
   private def broadcast(channel: Channel, message: Message): Unit = {
@@ -87,14 +91,15 @@ class PubSubMediator extends Actor with ActorLogging with AskPatternConstants {
 
   override def receive: Receive = LoggingReceive {
 
-    case ClientActor.SubscribeTo(channel, clientActorRef) =>
-      val senderRef = sender // since we are asking dbActor, sender (client) will get overwritten!
+    case PubSubMediator.SubscribeTo(channel, clientActorRef) =>
+      val senderRef = sender // since we are asking dbActor, sender (client) could get overwritten!
       val ask: Future[PubSubMediatorMessage] = subscribeTo(channel, clientActorRef)
       senderRef ! Await.result(ask, duration)
 
-    case ClientActor.UnsubscribeFrom(channel) => sender ! unsubscribeFrom(channel)
+    case PubSubMediator.UnsubscribeFrom(channel, clientActorRef) =>
+      sender ! unsubscribeFrom(channel, clientActorRef)
 
-    case Propagate(channel, message) => broadcast(channel, message)
+    case PubSubMediator.Propagate(channel, message) => broadcast(channel, message)
 
     case _ => ??? // FIXME
   }
@@ -103,10 +108,16 @@ class PubSubMediator extends Actor with ActorLogging with AskPatternConstants {
 object PubSubMediator {
   def props: Props = Props(new PubSubMediator())
 
-  // FIXME add sub to and unsub from here
   // PubSubMediator Events correspond to messages the actor may receive
   sealed trait Event
 
+  // subscribe to a particular channel
+  final case class SubscribeTo(channel: Channel, clientActorRef: ActorRef) extends Event
+
+  // unsubscribe from a particular channel
+  final case class UnsubscribeFrom(channel: Channel, clientActorRef: ActorRef) extends Event
+
+  // FIXME
   final case class Propagate(channel: Channel, message: Message) extends Event
 
 

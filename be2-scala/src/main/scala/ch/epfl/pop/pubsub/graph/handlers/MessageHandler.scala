@@ -23,7 +23,7 @@ trait MessageHandler extends AskPatternConstants {
       case Some(message: Message) =>
         val f: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
           case DbActorWriteAck =>
-            // FIXME propagate
+            // FIXME propagate useful this function?
             println("++ Propaaagaaaating in message handler")
             Left(rpcMessage)
           case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
