@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"student20_pop/message"
-	"student20_pop/message/query/method"
+	"popstellar/message"
+	"popstellar/message/query/method"
 	"testing"
 
 	"github.com/stretchr/testify/require"

@@ -1,5 +1,10 @@
-# student_21_pop
-Proof-of-personhood, Fall 2021. Go back-end version.
+# Backend 1 - popstellar in Go
+
+<div align="center">
+  <img alt="PoP stellar" src="docs/images/popstellar-be1-go.png" width="600" />
+</div>
+
+> Welcome to the go-side of popstellar.
 
 ## Overview
 
@@ -75,6 +80,7 @@ other witnesses. The full path to connect to the organizer as a client is
 `ws://host:witnessport/organizer/witness/`.
 
 ## Unit-tests
+
 Some unit-tests exist directly in their corresponding packages, as per Go
 specification. They can be run with `make check` (recursive from the top-level
 folder) or simply `go test` for the current package (except the `validation`).
@@ -96,6 +102,7 @@ The above command would make this module's documentation available at
 ## Potential improvements
 
 ### WebSockets
+
 Maybe we should consider using websocket secure (websocket over TLS) instead of
 "standards" websocket (over TCP). It would protect from MitM attacks, as we
 currently don't offer data privacy.

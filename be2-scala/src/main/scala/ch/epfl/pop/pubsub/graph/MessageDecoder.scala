@@ -7,6 +7,7 @@ import ch.epfl.pop.json.MessageDataProtocol._
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data._
+import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestSetupElection}
 import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
 import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, JsonRpcRequestStateMeeting}
 import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
@@ -34,7 +35,8 @@ object MessageDecoder {
         }
       case _ => Right(PipelineError(
         ErrorCodes.INVALID_DATA.id,
-        "MessageDecoder parsing failed : input json is not correctly formatted"
+        "MessageDecoder parsing failed : input json is not correctly formatted (and thus unknown rpcId).",
+        None // no rpcId since we couldn't decrypt the message
       ))
     }
 
@@ -53,7 +55,7 @@ object MessageDecoder {
    * Decodes the JsonRpcRequest's Message 'data' field
    *
    * @param _object object of the targeted MessageData
-   * @param action action of the targeted MessageData
+   * @param action  action of the targeted MessageData
    * @return the decoded 'data' field as a subclass of MessageData
    */
   @throws(classOf[ProtocolException])
@@ -80,6 +82,9 @@ object MessageDecoder {
       case (ObjectType.ROLL_CALL, ActionType.CREATE) => request.toTypedRequest(JsonRpcRequestCreateRollCall)
       case (ObjectType.ROLL_CALL, ActionType.OPEN) => request.toTypedRequest(JsonRpcRequestOpenRollCall)
       case (ObjectType.ROLL_CALL, ActionType.REOPEN) => request.toTypedRequest(JsonRpcRequestReopenRollCall)
+      case (ObjectType.ELECTION, ActionType.SETUP) => request.toTypedRequest(JsonRpcRequestSetupElection)
+      case (ObjectType.ELECTION, ActionType.RESULT) => request.toTypedRequest(JsonRpcRequestResultElection)
+      case (ObjectType.ELECTION, ActionType.END) => request.toTypedRequest(JsonRpcRequestEndElection)
       case (ObjectType.MESSAGE, ActionType.WITNESS) => request.toTypedRequest(JsonRpcRequestWitnessMessage)
       case _ => throw new IllegalArgumentException(s"Illegal ('object'/'action') = (${data._object}/${data.action}) combination")
     }
@@ -115,16 +120,18 @@ object MessageDecoder {
               typedRequest = typeCastRequest(jsonRpcRequest)
             } match {
               case Success(_) => Left(typedRequest) // everything worked at expected, 'decodedData' field was populated
-              case Failure(exception) => Right(PipelineError(ErrorCodes.INVALID_DATA.id, s"Invalid data: $exception"))
+              case Failure(exception) => Right(PipelineError(ErrorCodes.INVALID_DATA.id, s"Invalid data: $exception", jsonRpcRequest.id))
             }
 
           case Success(_) => Right(PipelineError(
             ErrorCodes.INVALID_DATA.id,
-            "Invalid data: Unable to parse 'data' field: 'object' or 'action' field is missing/wrongly formatted"
+            "Invalid data: Unable to parse 'data' field: 'object' or 'action' field is missing/wrongly formatted",
+            jsonRpcRequest.id
           ))
           case _ => Right(PipelineError(
             ErrorCodes.INVALID_DATA.id,
-            "Invalid data: Unable to parse 'data' field: 'data' is not a valid json string"
+            "Invalid data: Unable to parse 'data' field: 'data' is not a valid json string",
+            jsonRpcRequest.id
           ))
         }
     }

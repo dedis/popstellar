@@ -2,7 +2,7 @@ package answer
 
 import "fmt"
 
-// Error ...
+// Error defines a JSON RPC error
 type Error struct {
 	Code        int    `json:"code"`
 	Description string `json:"description"`

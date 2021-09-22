@@ -1,8 +1,8 @@
 package method
 
-import "student20_pop/message/query"
+import "popstellar/message/query"
 
-// Catchup ....
+// Catchup define a JSON RPC catchup message
 type Catchup struct {
 	query.Base
 

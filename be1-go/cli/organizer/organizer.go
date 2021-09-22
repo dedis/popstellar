@@ -5,10 +5,11 @@ package organizer
 import (
 	"encoding/base64"
 	"os"
-	"student20_pop/crypto"
-	"student20_pop/hub"
-	"student20_pop/network"
-	"student20_pop/network/socket"
+	"popstellar/channel/lao"
+	"popstellar/crypto"
+	"popstellar/hub/organizer"
+	"popstellar/network"
+	"popstellar/network/socket"
 	"time"
 
 	"github.com/rs/zerolog"
@@ -23,14 +24,15 @@ var logout = zerolog.ConsoleWriter{
 	TimeFormat: time.RFC3339,
 }
 
-// Serve parses the CLI arguments and spawns a hub and a websocket server
-// for the organizer.
+// Serve parses the CLI arguments and spawns a hub and a websocket server for
+// the organizer.
 func Serve(cliCtx *cli.Context) error {
 	log := zerolog.New(logout).Level(defaultLevel).
 		With().Timestamp().Logger().
 		With().Caller().Logger()
 
-	// get command line args which specify public key, port to use for clients and witnesses
+	// get command line args which specify public key, port to use for clients
+	// and witnesses
 	clientPort := cliCtx.Int("client-port")
 	witnessPort := cliCtx.Int("witness-port")
 	if clientPort == witnessPort {
@@ -47,24 +49,28 @@ func Serve(cliCtx *cli.Context) error {
 	if err != nil {
 		return xerrors.Errorf("failed to base64url decode public key: %v", err)
 	}
+
 	point := crypto.Suite.Point()
+
 	err = point.UnmarshalBinary(pkBuf)
 	if err != nil {
 		return xerrors.Errorf("failed to unmarshal public key: %v", err)
 	}
 
 	// create organizer hub
-	h, err := hub.NewOrganizerHub(point, log.With().Str("role", "organizer").Logger())
+	h, err := organizer.NewHub(point, log.With().Str("role", "organizer").Logger(), lao.NewChannel)
 	if err != nil {
 		return xerrors.Errorf("failed create the organizer hub: %v", err)
 	}
 
 	// Start a client websocket server
-	clientSrv := network.NewServer(h, clientPort, socket.ClientSocketType, log.With().Str("role", "client server").Logger())
+	clientSrv := network.NewServer(h, clientPort, socket.ClientSocketType,
+		log.With().Str("role", "client server").Logger())
 	clientSrv.Start()
 
 	// Start a witness websocket server
-	witnessSrv := network.NewServer(h, witnessPort, socket.WitnessSocketType, log.With().Str("role", "witness server").Logger())
+	witnessSrv := network.NewServer(h, witnessPort, socket.WitnessSocketType,
+		log.With().Str("role", "witness server").Logger())
 	witnessSrv.Start()
 
 	// start the processing loop

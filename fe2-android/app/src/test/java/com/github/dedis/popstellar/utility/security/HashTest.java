@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.utility.security;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Assert;
@@ -8,7 +9,7 @@ import org.junit.Test;
 public class HashTest {
 
   @Test
-  public void hashTest() {
+  public void hashNotNullTest() {
     assertNotNull(Hash.hash("Data to hash"));
   }
 
@@ -27,9 +28,8 @@ public class HashTest {
   }
 
   @Test
-  public void hashObjectTest() {
-    // Hashing : test 0 \fwa"fwa-fwa
-    String expected = Hash.hash("[\"test\",\"0\",\"\\\\fwa\\\"fwa-fwa\"]");
-    //    assertThat(Hash.hash("test", 0, "\\fwa\"fwa-fwa"), is(expected));
+  public void hashUTF8Test() {
+    String expected = "bkkql8ZyOdbqrWY1QJHPGiz29zNMOEtaXXBHK1aWgjY=";
+    assertEquals(expected, Hash.hash("你们是真的", "好学生！"));
   }
 }

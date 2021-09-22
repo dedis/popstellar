@@ -6,7 +6,35 @@ import (
 	"golang.org/x/xerrors"
 )
 
-// GetObjectAndAction ...
+const (
+	ElectionObject       = "election"
+	ElectionActionEnd    = "end"
+	ElectionActionResult = "result"
+	ElectionActionSetup  = "setup"
+
+	LAOObject       = "lao"
+	LAOActionCreate = "create"
+	LAOActionState  = "state"
+	LAOActionUpdate = "update_properties"
+
+	MeetingObject       = "meeting"
+	MeetingActionCreate = "create"
+	MeetingActionState  = "state"
+
+	MessageObject        = "message"
+	MessageActionWitness = "witness"
+
+	RollCallObject       = "roll_call"
+	RollCallActionClose  = "close"
+	RollCallActionCreate = "create"
+	RollCallActionOpen   = "open"
+	RollCallActionReopen = "reopen"
+
+	VoteActionCastVote = "cast_vote"
+	VoteActionWriteIn  = "write_in"
+)
+
+// GetObjectAndAction returns the object and action of a JSON RPC message.
 func GetObjectAndAction(buf []byte) (string, string, error) {
 	var objmap map[string]json.RawMessage
 

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	message "student20_pop/message"
-	"student20_pop/message/answer"
+	message "popstellar/message"
+	"popstellar/message/answer"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -39,6 +39,6 @@ func Test_Answer_General(t *testing.T) {
 	require.True(t, answer.Result.IsEmpty())
 
 	// > should contain the expected elements
-	require.Equal(t, 999, answer.ID)
+	require.Equal(t, 999, *answer.ID)
 	require.Equal(t, "2.0", answer.JSONRPC)
 }

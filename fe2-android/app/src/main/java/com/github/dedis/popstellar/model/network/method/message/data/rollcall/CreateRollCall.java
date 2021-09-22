@@ -4,7 +4,7 @@ import androidx.annotation.Nullable;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
-import com.github.dedis.popstellar.model.network.IdGenerator;
+import com.github.dedis.popstellar.model.objects.RollCall;
 import com.google.gson.annotations.SerializedName;
 import java.time.Instant;
 import java.util.Optional;
@@ -54,7 +54,7 @@ public class CreateRollCall extends Data {
     }
     this.location = location;
     this.description = description;
-    this.id = IdGenerator.generateCreateRollCallId(laoId, this.creation, name);
+    this.id = RollCall.generateCreateRollCallId(laoId, creation, name);
   }
 
   public CreateRollCall(
@@ -72,6 +72,16 @@ public class CreateRollCall extends Data {
     this.proposedEnd = proposedEnd;
     this.location = location;
     this.description = description;
+  }
+
+  @Override
+  public String getObject() {
+    return Objects.ROLL_CALL.getObject();
+  }
+
+  @Override
+  public String getAction() {
+    return Action.CREATE.getAction();
   }
 
   public String getId() {
@@ -100,16 +110,6 @@ public class CreateRollCall extends Data {
 
   public Optional<String> getDescription() {
     return Optional.ofNullable(description);
-  }
-
-  @Override
-  public String getObject() {
-    return Objects.ROLL_CALL.getObject();
-  }
-
-  @Override
-  public String getAction() {
-    return Action.CREATE.getAction();
   }
 
   @Override

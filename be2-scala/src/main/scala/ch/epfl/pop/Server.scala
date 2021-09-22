@@ -2,10 +2,10 @@ package ch.epfl.pop
 
 import java.util.concurrent.TimeUnit
 
-import akka.actor.{ActorRef, Props}
 import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.scaladsl.adapter._
+import akka.actor.{ActorRef, Props}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{RequestContext, RouteResult}
@@ -22,7 +22,7 @@ import scala.util.{Failure, Success}
 object Server {
 
   /**
-   * Create a webserver that handles http requests and websockets requests.
+   * Create a WebServer that handles http requests and WebSockets requests.
    */
   def main(args: Array[String]): Unit = {
     val PORT = 8000
@@ -37,8 +37,8 @@ object Server {
       val options: Options = new Options()
       options.createIfMissing(true)
 
-      val pubSubMediator: ActorRef = system.actorOf(PubSubMediator.props)
       val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor()), "DbActor")
+      val pubSubMediator: ActorRef = system.actorOf(PubSubMediator.props(dbActorRef))
 
       def publishSubscribeRoute: RequestContext => Future[RouteResult] = path(PATH) {
         handleWebSocketMessages(PublishSubscribe.buildGraph(pubSubMediator, dbActorRef)(system))

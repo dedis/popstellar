@@ -2,88 +2,88 @@ package ch.epfl.pop.pubsub.graph.validators
 
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall}
+import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall}
 import ch.epfl.pop.model.objects.Hash
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
 
-case object RollCallValidator extends MessageDataContentValidator {
-  // TODO the roll call validator checks with the old roll call specs!
+case object RollCallValidator extends MessageDataContentValidator with EventValidator {
+  override def EVENT_HASH_PREFIX: String = "R"
+
   def validateCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
-    def validationError(reason: String): PipelineError = super.validationError(reason, "CreateRollCall")
+    def validationError(reason: String): PipelineError = super.validationError(reason, "CreateRollCall", rpcMessage.id)
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val data: CreateRollCall = message.decodedData.get.asInstanceOf[CreateRollCall]
-        val expectedHash: Hash = Hash.fromStrings() // FIXME get id from db
+
+        val laoId: Hash = rpcMessage.extractLaoId
+        val expectedRollCallId: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, laoId.toString, data.creation.toString, data.name)
 
         if (!validateTimestampStaleness(data.creation)) {
           Right(validationError(s"stale 'creation' timestamp (${data.creation})"))
-        } else if ((data.start.isDefined && data.scheduled.isDefined) || (data.start.isEmpty && data.scheduled.isEmpty)) {
-          Right(validationError(s"the message should include either 'start' or 'scheduled' values, but not both"))
-        } else if (data.start.isDefined && !validateTimestampOrder(data.creation, data.start.get)) {
-          Right(validationError(s"'start' (${data.start.get}) timestamp is younger than 'creation' (${data.creation})"))
-        } else if (data.scheduled.isDefined && !validateTimestampOrder(data.creation, data.scheduled.get)) {
-          Right(validationError(s"'scheduled' (${data.scheduled.get}) timestamp is younger than 'creation' (${data.creation})"))
-        } else if (expectedHash != data.id) {
+        } else if (!validateTimestampOrder(data.creation, data.proposed_start)) {
+          Right(validationError(s"'proposed_start' (${data.proposed_start}) timestamp is smaller than 'creation' (${data.creation})"))
+        } else if (!validateTimestampOrder(data.proposed_start, data.proposed_end)) {
+          Right(validationError(s"'proposed_end' (${data.proposed_end}) timestamp is smaller than 'proposed_start' (${data.proposed_start})"))
+        } else if (expectedRollCallId != data.id) {
           Right(validationError("unexpected id"))
         } else {
           Left(rpcMessage)
         }
-      case _ => Right(validationErrorNoMessage)
+      case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
-  // TODO check that this is correct (correct validations)
-  def validateOpenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
-    def validationError(reason: String): PipelineError = super.validationError(reason, "OpenRollCall")
+  def validateOpenRollCall(rpcMessage: JsonRpcRequest, validatorName: String = "OpenRollCall"): GraphMessage = {
+    def validationError(reason: String): PipelineError = super.validationError(reason, validatorName, rpcMessage.id)
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val data: OpenRollCall = message.decodedData.get.asInstanceOf[OpenRollCall]
 
-        if (!validateTimestampStaleness(data.start)) {
-          Right(validationError(s"stale 'start' timestamp (${data.start})"))
+        val laoId: Hash = rpcMessage.extractLaoId
+        val expectedRollCallId: Hash = Hash.fromStrings(
+          EVENT_HASH_PREFIX, laoId.toString, data.opens.toString, data.opened_at.toString
+        )
+
+        if (!validateTimestampStaleness(data.opened_at)) {
+          Right(validationError(s"stale 'opened_at' timestamp (${data.opened_at})"))
+        } else if (expectedRollCallId != data.update_id) {
+          Right(validationError("unexpected id 'update_id'"))
         } else {
           Left(rpcMessage)
         }
-      case _ => Right(validationErrorNoMessage)
+      case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
-  // TODO check that this is correct (correct validations)
   def validateReopenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
-    def validationError(reason: String): PipelineError = super.validationError(reason, "ReopenRollCall")
-
-    rpcMessage.getParamsMessage match {
-      case Some(message: Message) =>
-        val data: ReopenRollCall = message.decodedData.get.asInstanceOf[ReopenRollCall]
-
-        if (!validateTimestampStaleness(data.start)) {
-          Right(validationError(s"stale 'start' timestamp (${data.start})"))
-        } else {
-          Left(rpcMessage)
-        }
-      case _ => Right(validationErrorNoMessage)
-    }
+    validateOpenRollCall(rpcMessage, "ReopenRollCall")
   }
 
-  // TODO check that this is correct (correct validations)
   def validateCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
-    def validationError(reason: String): PipelineError = super.validationError(reason, "CloseRollCall")
+    def validationError(reason: String): PipelineError = super.validationError(reason, "CloseRollCall", rpcMessage.id)
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val data: CloseRollCall = message.decodedData.get.asInstanceOf[CloseRollCall]
 
-        if (!validateTimestampStaleness(data.end)) {
-          Right(validationError(s"stale 'end' timestamp (${data.end})"))
+        val laoId: Hash = rpcMessage.extractLaoId
+        val expectedRollCallId: Hash = Hash.fromStrings(
+          EVENT_HASH_PREFIX, laoId.toString, data.closes.toString, data.closed_at.toString
+        )
+
+        if (!validateTimestampStaleness(data.closed_at)) {
+          Right(validationError(s"stale 'closed_at' timestamp (${data.closed_at})"))
         } else if (data.attendees.size != data.attendees.toSet.size) {
           Right(validationError("duplicate attendees keys"))
+        } else if (expectedRollCallId != data.update_id) {
+          Right(validationError("unexpected id 'update_id'"))
         } else {
           Left(rpcMessage)
         }
-      case _ => Right(validationErrorNoMessage)
+      case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
 }

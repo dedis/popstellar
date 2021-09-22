@@ -1,11 +1,11 @@
 package ch.epfl.pop.model.network
 
 case class JsonRpcResponse(
-                           jsonrpc: String,
-                           result: Option[ResultObject],
-                           error: Option[ErrorObject],
-                           id: Option[Int]
-                         ) extends JsonRpcMessage {
+                            jsonrpc: String,
+                            result: Option[ResultObject],
+                            error: Option[ErrorObject],
+                            id: Option[Int]
+                          ) extends JsonRpcMessage {
   def isPositive: Boolean = result.isDefined
 }
 
