@@ -27,7 +27,9 @@ The project is organized into different modules as follows
 
 ```
 app/src
-├── main                        
+├── main 
+│    ├── AndroidManifest.xml    # file describing essential information about the app (for example the activities)
+│    │                           
 │    ├── res                    # resources (layouts, strings, dimensions, etc.)
 │    │    
 │    └── java/P                 

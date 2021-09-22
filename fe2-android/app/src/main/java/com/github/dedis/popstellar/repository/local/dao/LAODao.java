@@ -18,6 +18,9 @@ import com.github.dedis.popstellar.repository.local.entities.RollCallEntity;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * LAODao represents a Data Access Object, it defines the database interactions.
+ */
 @Dao
 public abstract class LAODao {
 

@@ -44,6 +44,9 @@ import java.security.GeneralSecurityException;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
+/**
+ * Injection is used to provide the services needed to the application.
+ */
 public class Injection {
 
   private static String SERVER_URL = "ws://10.0.2.2:9000/organizer/client";
