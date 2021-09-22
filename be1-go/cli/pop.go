@@ -24,8 +24,8 @@ import (
 	"context"
 	"log"
 	"os"
-	"student20_pop/cli/organizer"
-	"student20_pop/cli/witness"
+	"popstellar/cli/organizer"
+	"popstellar/cli/witness"
 
 	"github.com/urfave/cli/v2"
 )

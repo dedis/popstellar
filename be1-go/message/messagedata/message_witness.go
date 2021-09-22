@@ -1,6 +1,6 @@
 package messagedata
 
-// MessageWitness ...
+// MessageWitness defines a message data
 type MessageWitness struct {
 	Object    string `json:"object"`
 	Action    string `json:"action"`

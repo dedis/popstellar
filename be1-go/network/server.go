@@ -3,16 +3,20 @@ package network
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
-	"student20_pop/hub"
-	"student20_pop/network/socket"
+	"popstellar/hub"
+	"popstellar/network/socket"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
 )
+
+type key int
+
+const requestIDKey key = 0
 
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
@@ -20,8 +24,8 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
-// Server represents a Websocket Server for an organizer or a witness
-// and it may listen to requests from organizer, witness or an attendee.
+// Server represents a Websocket Server for an organizer or a witness and it may
+// listen to requests from organizer, witness or an attendee.
 type Server struct {
 	h   hub.Hub
 	st  socket.SocketType
@@ -39,8 +43,8 @@ type Server struct {
 }
 
 // NewServer creates a new Server which is used to handle requests for
-// /<hubType>/<socketType> endpoint. Please use the Start() method to
-// start listening for connections.
+// /<hubType>/<socketType> endpoint. Please use the Start() method to start
+// listening for connections.
 func NewServer(h hub.Hub, port int, st socket.SocketType, log zerolog.Logger) *Server {
 
 	server := &Server{
@@ -58,10 +62,16 @@ func NewServer(h hub.Hub, port int, st socket.SocketType, log zerolog.Logger) *S
 	mux := http.NewServeMux()
 	mux.HandleFunc(path, server.ServeHTTP)
 
+	nextRequestID := func() string {
+		return fmt.Sprintf("%d", time.Now().UnixNano())
+	}
+
 	httpServer := &http.Server{
 		Addr:    fmt.Sprintf(":%d", port),
-		Handler: mux,
+		Handler: tracing(nextRequestID)(logging(log)(mux)),
 	}
+
+	log.Info().Msgf("setting handler at %s for port %d", path, port)
 
 	server.srv = httpServer
 	return server
@@ -70,15 +80,15 @@ func NewServer(h hub.Hub, port int, st socket.SocketType, log zerolog.Logger) *S
 // Start spawns a new go-routine which invokes ListenAndServe on the http.Server
 func (s *Server) Start() {
 	go func() {
-		log.Printf("starting to listen at: %s", s.srv.Addr)
+		s.log.Info().Msgf("starting to listen at: %s", s.srv.Addr)
 		s.Started <- struct{}{}
 		err := s.srv.ListenAndServe()
 		if err != nil && err != http.ErrServerClosed {
-			log.Fatalf("failed to start the server: %v", err)
+			s.log.Fatal().Err(err).Msg("failed to start the server")
 		}
 
 		s.Stopped <- struct{}{}
-		log.Println("stopped the server...")
+		s.log.Info().Msg("stopped the server...")
 	}()
 }
 
@@ -93,19 +103,21 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Printf("failed to upgrade connection: %v", err)
+		s.log.Err(err).Msg("failed to upgrade connection")
 		return
 	}
 
 	switch s.st {
 	case socket.ClientSocketType:
-		client := socket.NewClientSocket(s.h.Receiver(), s.h.OnSocketClose(), conn, s.wg, s.done, s.log)
+		client := socket.NewClientSocket(s.h.Receiver(), s.h.OnSocketClose(),
+			conn, s.wg, s.done, s.log)
 		s.wg.Add(2)
 
 		go client.ReadPump()
 		go client.WritePump()
 	case socket.WitnessSocketType:
-		witness := socket.NewWitnessSocket(s.h.Receiver(), s.h.OnSocketClose(), conn, s.wg, s.done, s.log)
+		witness := socket.NewWitnessSocket(s.h.Receiver(), s.h.OnSocketClose(),
+			conn, s.wg, s.done, s.log)
 		s.wg.Add(2)
 
 		go witness.ReadPump()
@@ -130,4 +142,39 @@ func (s *Server) Shutdown() error {
 
 	s.wg.Wait()
 	return nil
+}
+
+// logging is a utility function that logs the http server events
+func logging(logger zerolog.Logger) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			defer func() {
+				requestID, ok := r.Context().Value(requestIDKey).(string)
+				if !ok {
+					requestID = "unknown"
+				}
+				logger.Info().Str("requestID", requestID).
+					Str("method", r.Method).
+					Str("url", r.URL.Path).
+					Str("remoteAddr", r.RemoteAddr).
+					Str("agent", r.UserAgent()).Msg("")
+			}()
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+// tracing is a utility function that adds header tracing
+func tracing(nextRequestID func() string) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			requestID := r.Header.Get("X-Request-Id")
+			if requestID == "" {
+				requestID = nextRequestID()
+			}
+			ctx := context.WithValue(r.Context(), requestIDKey, requestID)
+			w.Header().Set("X-Request-Id", requestID)
+			next.ServeHTTP(w, r.WithContext(ctx))
+		})
+	}
 }

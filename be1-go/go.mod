@@ -1,4 +1,4 @@
-module student20_pop
+module popstellar
 
 go 1.16
 

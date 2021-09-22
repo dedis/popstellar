@@ -36,23 +36,36 @@ The project is organized into different modules as follows
 
 ```
 .
+├── channel            # contains the abstract definition of a channel
+│   ├── election       # channel implementation for an election channel. It is 
+│   │                  # used as a sub-channel in a lao channel
+│   ├── inbox          # helper to store messages used by channels
+│   └── lao            # channel implementation for a LAO channel
 ├── cli
-│   ├── organizer       # cli for the organizer
-│   └── witness         # cli for the witness
-├── db                  # persistance module
-│   ├── sqlite          # sqlite implementation of persistance 
+│   ├── organizer      # cli for the organizer
+│   └── witness        # cli for the witness
+├── db                 # persistance module
+│   ├── sqlite         # sqlite implementation of persistance 
 ├── docs
-├── hub                 # logic for organizer/witness
-├── message             # message types and marshaling/unmarshaling logic
-├── network             # module to set up Websocket connections
-│   └── socket          # module to send/receive data over the wire
-├── test                # sample test data
-└── validation          # module to validate incoming/outgoing messages
+├── hub                # contains the abstract definition of a hub
+│   ├── organizer      # hub implementation for the organizer
+│   └── witness        # hub implementation for a witness
+├── message            # message types and marshaling/unmarshaling logic
+├── network            # module to set up Websocket connections
+│   └── socket         # module to send/receive data over the wire
+└── validation         # module to validate incoming/outgoing messages
 ```
 
 Depending on which component you're working on, the entry point would either be
 cli/organizer or cli/witness, with bulk of the implementation logic in the hub
 module.
+
+The following diagram represents the relations between the packages in the
+application.
+
+<div align="center">
+  <img alt="Global architecture" src="images/global architecture.png" width="600" />
+</div>
 
 #### Architecture
 
@@ -115,11 +128,9 @@ the `Hub` which is responsible for processing it and sending a `Result`, `Error`
 or a `Broadcast`.
 
 The `Hub` interface has two concrete implementations - one for the organizer and
-another for the witness. Since both share common implementations they embed the
-`baseHub` implementation with a few methods "overridden" where custom
-implementation is needed.
+another for the witness (`hub/organizer` and `hub/witness` respectively).
 
-The `baseHub` on receiving a message, processes it by invoking the
+A hub, on receiving a message, processes it by invoking the
 `handleIncomingMessage` method where its handled depending on which `Socket` the
 message originates from.
 
@@ -138,13 +149,12 @@ the default one, where messages for creation of new LAOs may be published for
 instance. Another example of a channel would be one for an `Election` which
 would be a sub-channel within the LAO channel.
 
-The hubs use `Socket.SendError` to send an `Error` back to the client.
-We suggest using `message.NewError` and `message.NewErrorf` to create
-these error messages and wrap them using `xerrors.Errorf` with the `%w`
-format specifier if required. The rule of thumb is the leaf/last method
-called from the hub should create/return a `message.Error` and intermediate
-methods should propagate it up by wrapping it until it reaches a point
-where `Socket.SendError` is invoked.
+The hubs use `Socket.SendError` to send an `Error` back to the client. We
+suggest using `message.NewError` and `message.NewErrorf` to create these error
+messages and wrap them using `xerrors.Errorf` with the `%w` format specifier if
+required. The rule of thumb is the leaf/last method called from the hub should
+create/return a `message.Error` and intermediate methods should propagate it up
+by wrapping it until it reaches a point where `Socket.SendError` is invoked.
 
 The backend is able to persist any data on disk and maintains in-memory data
 structures for storing messages. To make use of this functionality set the
@@ -152,16 +162,11 @@ structures for storing messages. To make use of this functionality set the
 you launch the server. Package `db/sqlite/cli` implements a CLI to initialize
 such db. See the README in `be1-go/README.md` for instructions.
 
-
 ##### Message definitions
 
-All messages are defined in the `message` package along with the logic for
-marshaling and unmarshaling them. Please note that the JSON-RPC definitions in
-the root of the repository are to be considered a source of truth since the
-validation library checks the messages against it.
-
-Please refer to existing message types, `MarshalJSON` and `UnmarshalJSON`
-methods to get an idea about how to implement a new type.
+All messages are defined in the `message` package. Please note that the JSON-RPC
+definitions in the root of the repository are to be considered a source of truth
+since the validation library checks the messages against it.
 
 ##### Validation
 
@@ -173,7 +178,9 @@ specifications and bundle it up during compilation.
 
 * Be generous with the use of log statements while developing a new feature.
 It's useful to get feedback about which steps executed and how far the message
-reached in the processing pipeline rather than getting an opaque error.
+reached in the processing pipeline rather than getting an opaque error. Use the
+new `zerolog.Logger` for that, instead of the legacy, to be removed, vanilla
+`log`.
 * Ensure your error messages are descriptive and ALWAYS wrap errors with a small
   description, for example `xerrors.Errorf("failed to parse message: %v", err)`
 * If you're stuck, using a debugger can be of great help. GoLand has good

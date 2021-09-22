@@ -3,21 +3,34 @@ package com.github.dedis.popstellar.model.network.method.message.data.election;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import com.github.dedis.popstellar.model.network.method.message.data.ElectionQuestion;
+import com.github.dedis.popstellar.utility.security.Hash;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
 
 public class ElectionQuestionTest {
 
-  private String electionId = "my election id";
-  private String votingMethod = "Plurality";
-  private boolean writeIn = false;
-  private List<String> ballotOptions = Arrays.asList("candidate1", "candidate2");
-  private String question = "which is the best ?";
+  private final String laoId = Hash.hash("laoId");
+  private final String name = "name";
+  private final long time = Instant.now().getEpochSecond();
+  private final String votingMethod = "Plurality";
+  private final String question = "Question";
+  private final List<String> allMethods = Arrays.asList("Plurality", "Plurality");
+  private final List<String> allQuestions = Arrays.asList("Question", "Question2");
+  private final List<Boolean> allWriteIns = Arrays.asList(false, false);
+  private final ElectionSetup electionSetup = new ElectionSetup(name, time, time, allMethods, allWriteIns,
+      Arrays.asList(new ArrayList<>(), new ArrayList<>()), allQuestions, laoId);
+  private final ElectionQuestion electionQuestion = electionSetup.getQuestions().get(0);
 
-  ElectionQuestion electionQuestion = new ElectionQuestion(question, votingMethod, writeIn,
-      ballotOptions, electionId);
+  @Test
+  public void electionQuestionGetterReturnsCorrectId() {
+    // Hash(“Question”||election_id||question)
+    String expectedId = Hash
+        .hash("Question", electionSetup.getId(), question);
+    assertThat(electionSetup.getQuestions().get(0).getId(), is(expectedId));
+  }
 
   @Test
   public void electionQuestionGetterReturnsCorrectQuestion() {
@@ -31,12 +44,12 @@ public class ElectionQuestionTest {
 
   @Test
   public void electionQuestionGetterReturnsCorrectWriteIn() {
-    assertThat(electionQuestion.getWriteIn(), is(writeIn));
+    assertThat(electionQuestion.getWriteIn(), is(allWriteIns.get(0)));
   }
 
   @Test
   public void electionQuestionGetterReturnsCorrectBallotOptions() {
-    assertThat(electionQuestion.getBallotOptions(), is(ballotOptions));
+    assertThat(electionQuestion.getBallotOptions(), is(new ArrayList<>()));
   }
 
 }

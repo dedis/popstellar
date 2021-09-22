@@ -1,28 +1,25 @@
 package ch.epfl.pop.pubsub.graph
 
-import java.util.concurrent.TimeUnit
 import java.io.File
 import java.nio.charset.StandardCharsets
 
 import akka.actor.{Actor, ActorLogging}
 import akka.event.LoggingReceive
 import akka.pattern.AskableActorRef
-import akka.util.Timeout
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.objects.{Channel, Hash}
-import ch.epfl.pop.pubsub.PublishSubscribe
+import ch.epfl.pop.model.objects.{Channel, Hash, Signature}
+import ch.epfl.pop.pubsub.{AskPatternConstants, PublishSubscribe}
 import org.iq80.leveldb.impl.Iq80DBFactory.factory
 import org.iq80.leveldb.{DB, DBIterator, Options}
 
 import scala.collection.mutable
-import scala.concurrent.duration.{Duration, FiniteDuration}
 import scala.util.{Failure, Success, Try}
 
-object DbActor {
+object DbActor extends AskPatternConstants {
 
   final val DATABASE_FOLDER: String = "database"
-  final val DURATION: FiniteDuration = Duration(1, TimeUnit.SECONDS)
-  final val TIMEOUT: Timeout = Timeout(DURATION)
+  final val CHANNELS_FOLDER: String = s"$DATABASE_FOLDER/channels"
+  final val DATABASE_MAX_CHANNELS: Int = 1 << 10
   final lazy val INSTANCE: AskableActorRef = PublishSubscribe.getDbActorRef
 
   // DbActor Events correspond to messages the actor may receive
@@ -30,28 +27,52 @@ object DbActor {
 
   /**
    * Request to write a message in the database
+   *
    * @param channel the channel where the message must be published
    * @param message the message to write in the database
    */
   final case class Write(channel: Channel, message: Message) extends Event
 
   /**
-   * Request to read a specific messages on a channel
-   * @param channel the channel where the message was published
-   * @param id the id of the message (message_id) we want to read
+   * Request to read a specific message with id <messageId> from <channel>
+   *
+   * @param channel   the channel where the message was published
+   * @param messageId the id of the message (message_id) we want to read
    */
-  final case class Read(channel: Channel, id: Hash) extends Event
+  final case class Read(channel: Channel, messageId: Hash) extends Event
 
   /**
-   * Request to read all messages from a specific channel
+   * Request to read all messages from a specific <channel>
+   *
    * @param channel the channel where the messages should be fetched
    */
   final case class Catchup(channel: Channel) extends Event
 
-  final case class AddWitnessSignature() extends Event // TODO add sig to a message
+  /**
+   * Request to create channel <channel> in the db
+   *
+   * @param channel channel to create
+   */
+  final case class CreateChannel(channel: Channel) extends Event
+
+  /**
+   * Request to check if channel <channel> exists in the db
+   *
+   * @param channel targeted channel
+   * @note db answers with a simple boolean
+   */
+  final case class ChannelExists(channel: Channel) extends Event
+
+  /**
+   * Request to append witness <signature> to a stored message with message_id <messageId>
+   *
+   * @param messageId message_id of the targeted message
+   * @param signature signature to append to the witness signature list of the message
+   */
+  final case class AddWitnessSignature(messageId: Hash, signature: Signature) extends Event
 
 
-  // DbActor Events correspond to messages the actor may emit
+  // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
 
   /**
@@ -77,9 +98,14 @@ object DbActor {
   final case class DbActorCatchupAck(messages: List[Message]) extends DbActorMessage
 
   /**
+   * Response for a general db actor ACK
+   */
+  final case class DbActorAck() extends DbActorMessage
+
+  /**
    * Response for a negative db request
    *
-   * @param code error code corresponding to the error encountered
+   * @param code        error code corresponding to the error encountered
    * @param description description of the error encountered
    */
   final case class DbActorNAck(code: Int, description: String) extends DbActorMessage
@@ -87,27 +113,68 @@ object DbActor {
 
   def getInstance: AskableActorRef = INSTANCE
 
-  def getTimeout: Timeout = TIMEOUT
+  /**
+   * Creates a new [[DbActor]] which is aware of channels already stored in the db
+   *
+   * @return the newly created [[DbActor]]
+   */
+  def apply(): DbActor = {
 
-  def getDuration: FiniteDuration = DURATION
+    val options: Options = new Options()
+    options.createIfMissing(true)
+    val channelNamesDb: DB = factory.open(new File(CHANNELS_FOLDER), options)
 
-  def apply(): DbActor = DbActor()
+    val iterator: DBIterator = channelNamesDb.iterator
+    val initialChannelsMap: mutable.Map[Channel, DB] = mutable.Map.empty
 
-  sealed case class DbActor() extends Actor with ActorLogging {
-    private val channelsMap: mutable.Map[Channel, DB] = mutable.Map.empty
+    iterator.seekToFirst()
+    options.createIfMissing(false)
+
+    while (iterator.hasNext) {
+      // open each db associated with each channel name
+      val channelName: String = new String(iterator.next().getKey, StandardCharsets.UTF_8)
+      val channelDb: DB = factory.open(new File(channelName), options)
+
+      // store the channel name and its database in the map
+      initialChannelsMap += (Channel(channelName.toString.stripPrefix(DATABASE_FOLDER)) -> channelDb)
+    }
+
+    iterator.close()
+    DbActor(initialChannelsMap.toMap, channelNamesDb)
+  }
+
+  sealed case class DbActor(initialChannelsMap: Map[Channel, DB], channelNamesDb: DB) extends Actor with ActorLogging {
+    private val channelsMap: mutable.Map[Channel, DB] = initialChannelsMap.to(collection.mutable.Map)
+
+    override def preStart(): Unit = {
+      log.info(s"Actor $self (db) was initialised with a total of ${initialChannelsMap.size} recovered channels")
+      if (initialChannelsMap.size > DATABASE_MAX_CHANNELS) {
+        log.warning(s"Actor $self (db) has surpassed a large number of active lao channels (${initialChannelsMap.size} > $DATABASE_MAX_CHANNELS)")
+      }
+
+      super.preStart()
+    }
+
+    private def createDatabase(channel: Channel): DB = {
+      val options: Options = new Options()
+      options.createIfMissing(true)
+
+      val channelName: String = s"$DATABASE_FOLDER$channel"
+      val channelDb = factory.open(new File(channelName), options)
+
+      channelNamesDb.put(channelName.getBytes, "".getBytes)
+      channelsMap += (channel -> channelDb)
+
+      channelDb
+    }
 
     override def receive: Receive = LoggingReceive {
       case Write(channel, message) =>
-        log.info(s"Actor $self (db) received a WRITE request on channel '${channel.toString}'")
+        log.info(s"Actor $self (db) received a WRITE request on channel '$channel'")
 
         val channelDb: DB = channelsMap.get(channel) match {
           case Some(channelDb) => channelDb
-          case _ =>
-            val options = new Options()
-            options.createIfMissing(true)
-            val channelDb = factory.open(new File(s"$DATABASE_FOLDER/${channel.toString}"), options)
-            channelsMap += (channel -> channelDb)
-            channelDb
+          case _ => createDatabase(channel)
         }
 
         val messageId: Hash = message.message_id
@@ -164,10 +231,30 @@ object DbActor {
           )
         }
 
+      case CreateChannel(channel) =>
+        log.info(s"Actor $self (db) received an CreateChannel request for channel '$channel'")
+        channelsMap.get(channel) match {
+          case Some(_) => sender ! DbActorNAck(
+            ErrorCodes.INVALID_RESOURCE.id,
+            s"Database cannot create an already existing channel ($channel)"
+          )
+          case _ =>
+            createDatabase(channel)
+            sender ! DbActorAck
+        }
+
+      case ChannelExists(channel) =>
+        log.info(s"Actor $self (db) received an ChannelExists request for channel '$channel'")
+        sender ! channelsMap.contains(channel)
+
+      case AddWitnessSignature(messageId, _) =>
+        log.info(s"Actor $self (db) received an AddWitnessSignature request for message_id '$messageId'")
+        sender ! DbActorNAck(ErrorCodes.SERVER_ERROR.id, s"NOT IMPLEMENTED: database actor cannot handle AddWitnessSignature requests yet")
 
       case m@_ =>
         log.info(s"Actor $self (db) received an unknown message")
         sender ! DbActorNAck(ErrorCodes.SERVER_ERROR.id, s"database actor received a message '$m' that it could not recognize")
     }
   }
+
 }

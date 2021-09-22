@@ -1,11 +1,11 @@
 package method
 
 import (
-	"student20_pop/message/query"
-	"student20_pop/message/query/method/message"
+	"popstellar/message/query"
+	"popstellar/message/query/method/message"
 )
 
-// Broadcast ....
+// Broadcast defines a JSON RPC broadcast message
 type Broadcast struct {
 	query.Base
 

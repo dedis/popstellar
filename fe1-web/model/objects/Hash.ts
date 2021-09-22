@@ -46,29 +46,15 @@ export class Hash extends Base64UrlData {
 
   /**
    * Computes the byte-length of a UTF-8 string
-   * This value is necessary as part of the hashing algorithm,
-   * and naive `.length` usage reports the number of unicode code points.
-   *
    * @param str string whose length is to be measured
    * @private
+   *
+   * @remarks
+   * This value is necessary as part of the hashing algorithm,
+   * and naive `.length` usage reports the number of unicode code points.
    */
   private static computeByteLength(str: string): number {
-    let s = str.length;
-
-    for (let i: number = str.length - 1; i >= 0; i -= 1) {
-      const code = str.charCodeAt(i);
-
-      if (code > 0x7f && code <= 0x7ff) {
-        s += 1;
-      } else if (code > 0x7ff && code <= 0xffff) {
-        s += 2;
-      }
-
-      if (code >= 0xDC00 && code <= 0xDFFF) {
-        i -= 1; // trail surrogate
-      }
-    }
-
-    return s;
+    const byteArray = new TextEncoder().encode(str);
+    return byteArray.length;
   }
 }

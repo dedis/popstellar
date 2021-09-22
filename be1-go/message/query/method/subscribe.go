@@ -1,8 +1,8 @@
 package method
 
-import "student20_pop/message/query"
+import "popstellar/message/query"
 
-// Subscribe ...
+// Subscribe defines a JSON RPC subscribe message
 type Subscribe struct {
 	query.Base
 

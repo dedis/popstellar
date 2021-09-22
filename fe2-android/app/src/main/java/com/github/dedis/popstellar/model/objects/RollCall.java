@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.objects;
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.event.EventType;
+import com.github.dedis.popstellar.utility.security.Hash;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,6 +25,15 @@ public class RollCall extends Event {
     this.id = id;
     this.persistentId = id;
     this.attendees = new HashSet<>();
+  }
+
+  public RollCall(String laoId, long creation, String name) {
+    this(generateCreateRollCallId(laoId, creation, name));
+    if (name == null) {
+      throw new IllegalArgumentException("The name of the RollCall is null");
+    }
+    this.name = name;
+    this.creation = creation;
   }
 
   public String getId() {
@@ -118,5 +128,41 @@ public class RollCall extends Event {
       return Long.MAX_VALUE;
     }
     return end;
+  }
+
+  /**
+   * Generate the id for dataCreateRollCall. https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataCreateRollCall.json
+   *
+   * @param laoId    ID of the LAO
+   * @param creation creation time of RollCall
+   * @param name     name of RollCall
+   * @return the ID of CreateRollCall computed as Hash('R'||lao_id||creation||name)
+   */
+  public static String generateCreateRollCallId(String laoId, long creation, String name) {
+    return Hash.hash(EventType.ROLL_CALL.getSuffix(), laoId, Long.toString(creation), name);
+  }
+
+  /**
+   * Generate the id for dataOpenRollCall. https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataOpenRollCall.json
+   *
+   * @param laoId    ID of the LAO
+   * @param opens    id of RollCall to open
+   * @param openedAt open time of RollCall
+   * @return the ID of OpenRollCall computed as Hash('R'||lao_id||opens||opened_at)
+   */
+  public static String generateOpenRollCallId(String laoId, String opens, long openedAt) {
+    return Hash.hash(EventType.ROLL_CALL.getSuffix(), laoId, opens, Long.toString(openedAt));
+  }
+
+  /**
+   * Generate the id for dataCloseRollCall. https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataCloseRollCall.json
+   *
+   * @param laoId    ID of the LAO
+   * @param closes   id of RollCall to close
+   * @param closedAt closing time of RollCall
+   * @return the ID of CloseRollCall computed as Hash('R'||lao_id||closes||closed_at)
+   */
+  public static String generateCloseRollCallId(String laoId, String closes, long closedAt) {
+    return Hash.hash(EventType.ROLL_CALL.getSuffix(), laoId, closes, Long.toString(closedAt));
   }
 }

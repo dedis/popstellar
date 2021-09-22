@@ -1,16 +1,16 @@
 package com.github.dedis.popstellar.model.objects;
 
-
 import static com.github.dedis.popstellar.model.objects.event.EventState.OPENED;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 
-import com.github.dedis.popstellar.model.network.method.message.data.ElectionQuestion;
-import com.github.dedis.popstellar.model.network.method.message.data.ElectionResultQuestion;
-import com.github.dedis.popstellar.model.network.method.message.data.ElectionVote;
-import com.github.dedis.popstellar.model.network.method.message.data.QuestionResult;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
+import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
 import com.github.dedis.popstellar.utility.security.Hash;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +25,7 @@ public class ElectionTest {
   private long startTime = 0;
   private long endTime = 1;
   private String channel = "channel id";
-  private Election election = new Election();
+  private Election election = new Election("lao id", Instant.now().getEpochSecond(), name);
 
 
   @Test

@@ -5,7 +5,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-import com.github.dedis.popstellar.model.network.IdGenerator;
+import android.util.ArraySet;
+import com.github.dedis.popstellar.model.network.method.message.data.Action;
+import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.utility.security.Hash;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,10 +18,30 @@ import org.junit.Test;
 public class UpdateLaoTest {
 
   private final String name = "New name";
+  private final long time = 0xC972;
+  private final String organizer = " Organizer Id ";
   private final long lastModified = 972;
 
   private final Set<String> witnesses = new HashSet<>(Arrays.asList("0x3434", "0x4747"));
   private final UpdateLao updateLao = new UpdateLao("organizer", 10, name, lastModified, witnesses);
+
+  @Test
+  public void generateUpdateLaoIdTest() {
+    UpdateLao updateLao = new UpdateLao(organizer, time, name, time, new ArraySet<>());
+    // Hash(organizer||creation||name)
+    String expectedId = Hash.hash(organizer, Long.toString(time), updateLao.getName());
+    assertThat(updateLao.getId(), is(expectedId));
+  }
+
+  @Test
+  public void getObjectTest() {
+    assertThat(updateLao.getObject(), is(Objects.LAO.getObject()));
+  }
+
+  @Test
+  public void getActionTest() {
+    assertThat(updateLao.getAction(), is(Action.UPDATE.getAction()));
+  }
 
   @Test
   public void getNameTest() {
@@ -31,7 +55,7 @@ public class UpdateLaoTest {
 
   @Test
   public void getIdTest() {
-    assertThat(updateLao.getId(), is(IdGenerator.generateLaoId("organizer", 10, name)));
+    assertThat(updateLao.getId(), is(Lao.generateLaoId("organizer", 10, name)));
   }
 
   @Test

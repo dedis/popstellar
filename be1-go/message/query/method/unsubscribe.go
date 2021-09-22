@@ -1,8 +1,8 @@
 package method
 
-import "student20_pop/message/query"
+import "popstellar/message/query"
 
-// Unsubscribe ....
+// Unsubscribe defines a JSON RPC unsubscribe message
 type Unsubscribe struct {
 	query.Base
 

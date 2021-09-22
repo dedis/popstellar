@@ -11,8 +11,8 @@ import (
 	"golang.org/x/xerrors"
 )
 
-// WaitAndShutdownServers blocks until the user passes a SIGINT or SIGTERM and then
-// shuts down the http servers.
+// WaitAndShutdownServers blocks until the user passes a SIGINT or SIGTERM and
+// then shuts down the http servers.
 func WaitAndShutdownServers(servers ...*Server) error {
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)
@@ -28,7 +28,8 @@ func WaitAndShutdownServers(servers ...*Server) error {
 	}
 
 	if len(errors) > 0 {
-		return xerrors.Errorf("failed to shutdown one or more servers: %s", strings.Join(errors, ";"))
+		return xerrors.Errorf("failed to shutdown one or more servers: %s",
+			strings.Join(errors, ";"))
 	}
 
 	return nil

@@ -15,13 +15,13 @@ object RpcValidator extends ContentValidator {
   }
 
   def validateRpcRequest(rpcMessage: JsonRpcRequest): GraphMessage = {
-    def validationError(reason: String): PipelineError = super.validationError(reason, "RpcRequest")
+    def validationError(reason: String): PipelineError = super.validationError(reason, "RpcRequest", rpcMessage.id)
 
     validateGeneralRpc(rpcMessage, validationError)
   }
 
   def validateRpcResponse(rpcMessage: JsonRpcResponse): GraphMessage = {
-    def validationError(reason: String): PipelineError = super.validationError(reason, "RpcResponse")
+    def validationError(reason: String): PipelineError = super.validationError(reason, "RpcResponse", rpcMessage.id)
 
     validateGeneralRpc(rpcMessage, validationError)
   }

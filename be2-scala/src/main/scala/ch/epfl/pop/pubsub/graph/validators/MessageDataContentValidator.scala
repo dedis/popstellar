@@ -1,30 +1,26 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import akka.pattern.AskableActorRef
-import akka.util.Timeout
 import ch.epfl.pop.model.objects.{Hash, PublicKey, Timestamp, WitnessSignaturePair}
+import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, PipelineError}
 
-import scala.concurrent.duration.FiniteDuration
-
-trait MessageDataContentValidator extends ContentValidator {
+trait MessageDataContentValidator extends ContentValidator with AskPatternConstants {
   implicit lazy val dbActor: AskableActorRef = DbActor.getInstance
-  implicit lazy val timeout: Timeout = DbActor.getTimeout
-  implicit lazy val duration: FiniteDuration = DbActor.getDuration
 
   /**
    * Creates a validation error message for reason <reason> that happened in
    * validator module <validator> with optional error code <errorCode>
    *
-   * @param reason the reason of the validation error
+   * @param reason    the reason of the validation error
    * @param validator validator module where the error occurred
    * @param errorCode error code related to the error
    * @return a description of the error and where it occurred
    */
-  override def validationError(reason: String, validator: String, errorCode: ErrorCodes.ErrorCodes = ErrorCodes.INVALID_DATA): PipelineError =
-    super.validationError(reason, validator, errorCode)
+  override def validationError(reason: String, validator: String, rpcId: Option[Int], errorCode: ErrorCodes.ErrorCodes = ErrorCodes.INVALID_DATA): PipelineError =
+    super.validationError(reason, validator, rpcId, errorCode)
 
-  final val validationErrorNoMessage: PipelineError = PipelineError(ErrorCodes.INVALID_DATA.id, s"RPC-params does not contain any message")
+  def validationErrorNoMessage(rpcId: Option[Int]): PipelineError = PipelineError(ErrorCodes.INVALID_DATA.id, s"RPC-params does not contain any message", rpcId)
 
   // Lower bound for a timestamp to not be stale
   final val TIMESTAMP_BASE_TIME: Timestamp = Timestamp(1577833200L) // 1st january 2020
@@ -40,7 +36,7 @@ trait MessageDataContentValidator extends ContentValidator {
   /**
    * Check whether timestamp <first> is not older than timestamp <second>
    *
-   * @param first first timestamp to be checked
+   * @param first  first timestamp to be checked
    * @param second second timestamp to be checked
    * @return true iff the timestamps are in chronological order
    */
@@ -58,7 +54,7 @@ trait MessageDataContentValidator extends ContentValidator {
    * Check whether a list of <witnessesKeyPairs> are valid modification_id <data>
    *
    * @param witnessesKeyPairs list of witness key-signature pairs
-   * @param data modification_id of the message
+   * @param data              modification_id of the message
    * @return true iff the witness key-signature pairs are valid wrt. modification_id data
    */
   final def validateWitnessSignatures(witnessesKeyPairs: List[WitnessSignaturePair], data: Hash): Boolean =

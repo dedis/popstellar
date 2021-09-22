@@ -9,14 +9,14 @@ import ch.epfl.pop.model.objects.{Hash, Timestamp}
 import spray.json._
 
 case class CreateRollCall(
-                          id: Hash,
-                          name: String,
-                          creation: Timestamp,
-                          start: Option[Timestamp],
-                          scheduled: Option[Timestamp],
-                          location: String,
-                          roll_call_description: Option[String]
-                        ) extends MessageData {
+                           id: Hash,
+                           name: String,
+                           creation: Timestamp,
+                           proposed_start: Timestamp,
+                           proposed_end: Timestamp,
+                           location: String,
+                           roll_call_description: Option[String]
+                         ) extends MessageData {
   override val _object: ObjectType = ObjectType.ROLL_CALL
   override val action: ActionType = ActionType.CREATE
 }
@@ -26,12 +26,12 @@ object CreateRollCall extends Parsable {
              id: Hash,
              name: String,
              creation: Timestamp,
-             start: Option[Timestamp],
-             scheduled: Option[Timestamp],
+             proposed_start: Timestamp,
+             proposed_end: Timestamp,
              location: String,
              roll_call_description: Option[String]
            ): CreateRollCall = {
-    new CreateRollCall(id, name, creation, start, scheduled, location, roll_call_description)
+    new CreateRollCall(id, name, creation, proposed_start, proposed_end, location, roll_call_description)
   }
 
   override def buildFromJson(payload: String): CreateRollCall = payload.parseJson.asJsObject.convertTo[CreateRollCall]

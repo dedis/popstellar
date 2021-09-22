@@ -8,8 +8,8 @@ import (
 	"io/fs"
 	"log"
 	"path/filepath"
+	"popstellar/message/answer"
 	"strings"
-	"student20_pop/message/answer"
 
 	"github.com/santhosh-tekuri/jsonschema/v3"
 	"golang.org/x/xerrors"
@@ -33,7 +33,7 @@ const (
 )
 
 // baseUrl is the baseUrl for all schemas.
-const baseUrl = "https://raw.githubusercontent.com/dedis/student_21_pop/master/"
+const baseURL = "https://raw.githubusercontent.com/dedis/student_21_pop/master/"
 
 // protocolFS is an embedded file system which allows us to bake the schemas
 // into the binary during compilation. Since Go doesn't allow embedded files
@@ -44,15 +44,14 @@ const baseUrl = "https://raw.githubusercontent.com/dedis/student_21_pop/master/"
 var protocolFS embed.FS
 
 func init() {
-	// Override the defaults for loading files and decoding base64 encoded
-	// data
+	// Override the defaults for loading files and decoding base64 encoded data
 	jsonschema.Loaders["file"] = loadFileURL
 	jsonschema.Decoders["base64"] = base64.URLEncoding.DecodeString
 }
 
-// VerifyJson verifies that the `msg` follow the schema protocol of name 'schemaName',
-// it returns an error otherwise.
-func (s *SchemaValidator) VerifyJson(msg []byte, st SchemaType) error {
+// VerifyJSON verifies that the `msg` follow the schema protocol of name
+// 'schemaName', it returns an error otherwise.
+func (s SchemaValidator) VerifyJSON(msg []byte, st SchemaType) error {
 	reader := bytes.NewBuffer(msg[:])
 	var schema *jsonschema.Schema
 
@@ -95,7 +94,7 @@ func NewSchemaValidator() (*SchemaValidator, error) {
 		}
 		defer file.Close()
 
-		url := baseUrl + path
+		url := baseURL + path
 		if strings.HasPrefix(path, "protocol/query/method/message/data") {
 			dataCompiler.AddResource(url, file)
 		} else {

@@ -5,7 +5,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-import com.github.dedis.popstellar.model.network.method.message.data.ElectionVote;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

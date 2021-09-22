@@ -74,7 +74,8 @@ export class CreateRollCall implements MessageData {
     );
     if (!expectedHash.equals(msg.id)) {
       throw new ProtocolError("Invalid 'id' parameter encountered during 'CreateRollCall':"
-        + ' re-computing the value yields a different result');
+        + ' re-computing the value yields a different result ('
+      + `(expected: '${expectedHash}', actual: '${msg.id}')`);
     }
     this.id = msg.id;
   }

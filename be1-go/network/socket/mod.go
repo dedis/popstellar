@@ -7,7 +7,7 @@
 package socket
 
 import (
-	"student20_pop/message/query/method/message"
+	"popstellar/message/query/method/message"
 	"time"
 )
 
